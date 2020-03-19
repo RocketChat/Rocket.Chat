@@ -16,8 +16,10 @@ import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
 import CustomUserStatus from './models/CustomUserStatus';
+import Imports from './models/Imports';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
+import Invites from './models/Invites';
 import CredentialTokens from './models/CredentialTokens';
 import EmojiCustom from './models/EmojiCustom';
 import OAuthApps from './models/OAuthApps';
@@ -33,6 +35,7 @@ import LivechatRooms from './models/LivechatRooms';
 import LivechatTrigger from './models/LivechatTrigger';
 import LivechatVisitors from './models/LivechatVisitors';
 import LivechatAgentActivity from './models/LivechatAgentActivity';
+import LivechatInquiry from './models/LivechatInquiry';
 import ReadReceipts from './models/ReadReceipts';
 import LivechatExternalMessage from './models/LivechatExternalMessages';
 
@@ -63,8 +66,10 @@ export {
 	Roles,
 	CustomSounds,
 	CustomUserStatus,
+	Imports,
 	Integrations,
 	IntegrationHistory,
+	Invites,
 	CredentialTokens,
 	EmojiCustom,
 	OAuthApps,
@@ -82,4 +87,5 @@ export {
 	LivechatAgentActivity,
 	ReadReceipts,
 	LivechatExternalMessage,
+	LivechatInquiry,
 };

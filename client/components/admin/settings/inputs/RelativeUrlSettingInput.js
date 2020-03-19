@@ -1,11 +1,7 @@
-import {
-	Field,
-	Label,
-	UrlInput,
-} from '@rocket.chat/fuselage';
-import { Meteor } from 'meteor/meteor';
+import { Box, Field, Flex, UrlInput } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { useAbsoluteUrl } from '../../../../contexts/ServerContext';
 import { ResetSettingButton } from '../ResetSettingButton';
 
 export function RelativeUrlSettingInput({
@@ -20,19 +16,23 @@ export function RelativeUrlSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }) {
+	const getAbsoluteUrl = useAbsoluteUrl();
+
 	const handleChange = (event) => {
-		onChangeValue(event.currentTarget.value);
+		onChangeValue && onChangeValue(event.currentTarget.value);
 	};
 
 	return <>
-		<Field.Row>
-			<Label htmlFor={_id} text={label} title={_id} />
-			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-		</Field.Row>
+		<Flex.Container>
+			<Box>
+				<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</Box>
+		</Flex.Container>
 		<UrlInput
 			data-qa-setting-id={_id}
 			id={_id}
-			value={Meteor.absoluteUrl(value)}
+			value={getAbsoluteUrl(value)}
 			placeholder={placeholder}
 			disabled={disabled}
 			readOnly={readonly}

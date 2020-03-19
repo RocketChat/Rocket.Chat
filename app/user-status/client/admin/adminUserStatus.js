@@ -1,22 +1,23 @@
-import s from 'underscore.string';
+import _ from 'underscore';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 
-import { CustomUserStatus } from '../../../models';
 import { TabBar, SideNav, RocketChatTabBar } from '../../../ui-utils';
 import { t } from '../../../utils';
+import { APIClient } from '../../../utils/client';
+
+const LIST_SIZE = 50;
+const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 Template.adminUserStatus.helpers({
-	isReady() {
-		if (Template.instance().ready != null) {
-			return Template.instance().ready.get();
-		}
-		return undefined;
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
 	},
 	customUserStatus() {
-		return Template.instance().customUserStatus().map((userStatus) => {
+		return Template.instance().statuses.get().map((userStatus) => {
 			const { _id, name, statusType } = userStatus;
 			const localizedStatusType = statusType ? t(statusType) : '';
 
@@ -29,24 +30,35 @@ Template.adminUserStatus.helpers({
 		});
 	},
 	isLoading() {
-		if (Template.instance().ready != null) {
-			if (!Template.instance().ready.get()) {
-				return 'btn-loading';
-			}
-		}
-	},
-	hasMore() {
-		if (Template.instance().limit != null) {
-			if (typeof Template.instance().customUserStatus === 'function') {
-				return Template.instance().limit.get() === Template.instance().customUserStatus().length;
-			}
-		}
-		return false;
+		return Template.instance().isLoading.get();
 	},
 	flexData() {
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+		};
+	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (currentTarget.offsetHeight + currentTarget.scrollTop < currentTarget.scrollHeight - 100) {
+				return;
+			}
+			const statuses = instance.statuses.get();
+			if (instance.total.get() > statuses.length) {
+				instance.offset.set(instance.offset.get() + LIST_SIZE);
+			}
+		};
+	},
+	onTableItemClick() {
+		const instance = Template.instance();
+		return function(item) {
+			instance.tabBarData.set({
+				status: instance.statuses.get().find((status) => status._id === item._id),
+				onSuccess: instance.onSuccessCallback,
+			});
+			instance.tabBar.showGroup('user-status-custom-selected');
+			instance.tabBar.open('admin-user-status-info');
 		};
 	},
 });
@@ -56,13 +68,18 @@ Template.adminUserStatus.onCreated(function() {
 	this.limit = new ReactiveVar(50);
 	this.filter = new ReactiveVar('');
 	this.ready = new ReactiveVar(false);
+	this.total = new ReactiveVar(0);
+	this.query = new ReactiveVar({});
+	this.statuses = new ReactiveVar([]);
+	this.isLoading = new ReactiveVar(false);
+	this.offset = new ReactiveVar(0);
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
 
 	TabBar.addButton({
-		groups: ['user-status-custom'],
+		groups: ['user-status-custom', 'user-status-custom-selected'],
 		id: 'add-user-status',
 		i18nTitle: 'Custom_User_Status_Add',
 		icon: 'plus',
@@ -71,7 +88,7 @@ Template.adminUserStatus.onCreated(function() {
 	});
 
 	TabBar.addButton({
-		groups: ['user-status-custom'],
+		groups: ['user-status-custom-selected'],
 		id: 'admin-user-status-info',
 		i18nTitle: 'Custom_User_Status_Info',
 		icon: 'customize',
@@ -79,26 +96,40 @@ Template.adminUserStatus.onCreated(function() {
 		order: 2,
 	});
 
-	this.autorun(function() {
-		const limit = instance.limit !== null ? instance.limit.get() : 0;
-		const subscription = instance.subscribe('fullUserStatusData', '', limit);
-		instance.ready.set(subscription.ready());
+	this.onSuccessCallback = () => {
+		this.offset.set(0);
+		return this.loadStatus(this.query.get(), this.offset.get());
+	};
+
+	this.tabBarData.set({
+		onSuccess: instance.onSuccessCallback,
 	});
 
-	this.customUserStatus = function() {
-		const filter = instance.filter != null ? s.trim(instance.filter.get()) : '';
-
-		let query = {};
-
-		if (filter) {
-			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ name: filterReg }] };
+	this.loadStatus = _.debounce(async (query, offset) => {
+		this.isLoading.set(true);
+		const { statuses, total } = await APIClient.v1.get('custom-user-status.list', {
+			count: LIST_SIZE,
+			offset,
+			query: JSON.stringify(query),
+		});
+		this.total.set(total);
+		if (offset === 0) {
+			this.statuses.set(statuses);
+		} else {
+			this.statuses.set(this.statuses.get().concat(statuses));
 		}
+		this.isLoading.set(false);
+	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
 
-		const limit = instance.limit != null ? instance.limit.get() : 0;
-
-		return CustomUserStatus.find(query, { limit, sort: { name: 1 } }).fetch();
-	};
+	this.autorun(() => {
+		const filter = this.filter.get() && this.filter.get().trim();
+		const offset = this.offset.get();
+		if (filter) {
+			const regex = { $regex: filter, $options: 'i' };
+			return this.loadStatus({ name: regex }, offset);
+		}
+		return this.loadStatus({}, offset);
+	});
 });
 
 Template.adminUserStatus.onRendered(() =>
@@ -121,12 +152,7 @@ Template.adminUserStatus.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	},
-
-	'click .user-status-info'(e, instance) {
-		e.preventDefault();
-		instance.tabBarData.set(CustomUserStatus.findOne({ _id: this._id }));
-		instance.tabBar.open('admin-user-status-info');
+		t.offset.set(0);
 	},
 
 	'click .load-more'(e, t) {

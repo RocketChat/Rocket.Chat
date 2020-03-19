@@ -130,6 +130,7 @@ html.rtl .attachment {
 		align-items: flex-start;
 
 		& .attachment-flex-column-grow {
+			word-break: break-word;
 			flex-grow: 1;
 		}
 	}

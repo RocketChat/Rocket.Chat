@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 
+import { expect } from 'chai';
+
 import {
 	getCredentials,
 	api,
@@ -9,12 +11,13 @@ import {
 	apiUsername,
 	targetUser,
 	log,
+	wait,
 } from '../../data/api-data.js';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createUser, login } from '../../data/users.helper.js';
+import { createUser, login, deleteUser } from '../../data/users.helper.js';
 
 describe('[Users]', function() {
 	this.retries(0);
@@ -193,7 +196,22 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.info]', () => {
-		after((done) => updatePermission('view-other-user-channels', ['admin']).then(done));
+		after(() => updatePermission('view-other-user-channels', ['admin']));
+
+		it('should return an error when the user does not exist', (done) => {
+			request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					username: 'invalid-username',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('User not found.');
+				})
+				.end(done);
+		});
 
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
@@ -401,42 +419,21 @@ describe('[Users]', function() {
 
 	describe('[/users.setAvatar]', () => {
 		let user;
-		before((done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
+		before(async () => {
+			user = await createUser();
 		});
 
 		let userCredentials;
-		before((done) => {
-			request.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+		before(async () => {
+			userCredentials = await login(user.username, password);
 		});
 		before((done) => {
 			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
 		});
-		after((done) => {
-			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id,
-			}).end(() => updatePermission('edit-other-user-info', ['admin']).then(done));
+		after(async () => {
+			await deleteUser(user);
 			user = undefined;
+			await updatePermission('edit-other-user-info', ['admin']);
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request.post(api('users.setAvatar'))
@@ -1250,11 +1247,10 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
+				.end(wait(done, 200));
 		});
 
 		it('should delete user own account', (done) => {
-			browser.pause(500);
 			request.post(api('users.deleteOwnAccount'))
 				.set(userCredentials)
 				.send({
@@ -1368,7 +1364,7 @@ describe('[Users]', function() {
 						.end(done);
 				});
 			});
-			it('Grant necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', ['admin']).then(done));
+			it('Grant necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', ['admin']));
 			describe('[/users.generatePersonalAccessToken]', () => {
 				it('should return a personal access token to user', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
@@ -1470,7 +1466,7 @@ describe('[Users]', function() {
 			});
 		});
 		describe('unsuccessful cases', () => {
-			it('Remove necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', []).then(done));
+			it('Remove necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', []));
 			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
@@ -1698,6 +1694,92 @@ describe('[Users]', function() {
 					expect(res.body.exportOperation).to.have.property('fullExport', true);
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/users.autocomplete]', () => {
+		it('should return an empty list when the user does not have the necessary permission', (done) => {
+			updatePermission('view-outside-room', []).then(() => {
+				request.get(api('users.autocomplete?selector={}'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
+				request.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('The \'selector\' param is required');
+					})
+					.end(done);
+			});
+		});
+		it('should return the users to fill auto complete', (done) => {
+			request.get(api('users.autocomplete?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.removeOtherTokens]', () => {
+		let user;
+		let userCredentials;
+		let newCredentials;
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+			newCredentials = await login(user.username, password);
+		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+		});
+
+		it('should invalidate all active sesions', (done) => {
+			/* We want to validate that the login with the "old" credentials fails
+			However, the removal of the tokens is done asynchronously.
+			Thus, we check that within the next seconds, at least one try to
+			access an authentication requiring route fails */
+			let counter = 0;
+
+			async function checkAuthenticationFails() {
+				const result = await request.get(api('me'))
+					.set(userCredentials);
+				return result.statusCode === 401;
+			}
+
+			async function tryAuthentication() {
+				if (await checkAuthenticationFails()) {
+					done();
+				} else if (++counter < 20) {
+					setTimeout(tryAuthentication, 1000);
+				} else {
+					done('Session did not invalidate in time');
+				}
+			}
+
+			request.post(api('users.removeOtherTokens'))
+				.set(newCredentials)
+				.expect(200)
+				.then(tryAuthentication);
 		});
 	});
 });

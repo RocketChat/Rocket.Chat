@@ -2,8 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
 
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users } from '../../../models/server';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
@@ -77,7 +76,6 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus) 
 		},
 		t: 'l',
 	};
-
 	return LivechatInquiry.insert(inquiry);
 };
 
@@ -276,4 +274,14 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 		...name && { name },
 		type,
 	};
+};
+
+export const checkServiceStatus = ({ guest, agent }) => {
+	if (agent) {
+		const { agentId } = agent;
+		const users = Users.findOnlineAgents(agentId);
+		return users && users.count() > 0;
+	}
+
+	return Livechat.online(guest.department);
 };

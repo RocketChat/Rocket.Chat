@@ -3,6 +3,7 @@ import Busboy from 'busboy';
 
 import { EmojiCustom } from '../../../models';
 import { API } from '../api';
+import { findEmojisCustom } from '../lib/emoji-custom';
 
 // DEPRECATED
 // Will be removed after v3.0.0
@@ -48,6 +49,22 @@ API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
 				remove: [],
 			},
 		});
+	},
+});
+
+API.v1.addRoute('emoji-custom.all', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort, query } = this.parseJsonQuery();
+
+		return API.v1.success(Promise.await(findEmojisCustom({
+			query,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		})));
 	},
 });
 

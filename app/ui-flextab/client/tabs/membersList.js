@@ -9,6 +9,7 @@ import { ChatRoom, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
+import { hasPermission } from '../../../authorization';
 
 Template.membersList.helpers({
 	ignored() {
@@ -22,7 +23,7 @@ Template.membersList.helpers({
 
 	isGroupChat() {
 		const room = ChatRoom.findOne(this.rid, { reactive: false });
-		return roomTypes.roomTypes[room.t].isGroupChat();
+		return roomTypes.getConfig(room.t).isGroupChat();
 	},
 
 	isDirectChat() {
@@ -97,31 +98,11 @@ Template.membersList.helpers({
 	canAddUser() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return (() => roomTypes.roomTypes[roomData.t].canAddUser(roomData))();
+		return (() => roomTypes.getConfig(roomData.t).canAddUser(roomData))();
 	},
 
-	autocompleteSettingsAddUser() {
-		return {
-			limit: 10,
-			// inputDelay: 300
-			rules: [
-				{
-					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
-					field: 'username',
-					template: Template.userSearch,
-					noMatchTemplate: Template.userSearchEmpty,
-					matchAll: true,
-					filter: {
-						exceptions: [Meteor.user().username],
-					},
-					selector(match) {
-						return { term: match };
-					},
-					sort: 'username',
-				},
-			],
-		};
+	canInviteUser() {
+		return hasPermission('create-invite-links', this._id);
 	},
 
 	showUserInfo() {
@@ -142,10 +123,10 @@ Template.membersList.helpers({
 			tabBar: Template.currentData().tabBar,
 			username: Template.instance().userDetail.get(),
 			clear: Template.instance().clearUserDetail,
-			showAll: roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
-			hideAdminControls: roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
+			showAll: roomTypes.getConfig(room.t).userDetailShowAll(room) || false,
+			hideAdminControls: roomTypes.getConfig(room.t).userDetailShowAdmin(room) || false,
 			video: ['d'].includes(room && room.t),
-			showBackButton: roomTypes.roomTypes[room.t].isGroupChat(),
+			showBackButton: roomTypes.getConfig(room.t).isGroupChat(),
 		};
 	},
 	displayName() {
@@ -163,13 +144,25 @@ Template.membersList.helpers({
 
 Template.membersList.events({
 	'click .js-add'() {
-		Template.parentData(0).tabBar.setTemplate('inviteUsers');
-		Template.parentData(0).tabBar.setData({
+		const { tabBar } = Template.currentData();
+
+		tabBar.setTemplate('inviteUsers');
+		tabBar.setData({
 			label: 'Add_users',
 			icon: 'user',
 		});
 
-		Template.parentData(0).tabBar.open();
+		tabBar.open();
+	},
+	'click .js-invite'() {
+		const { tabBar } = Template.currentData();
+		tabBar.setTemplate('createInviteLink');
+		tabBar.setData({
+			label: 'Invite_Users',
+			icon: 'user-plus',
+		});
+
+		tabBar.open();
 	},
 	'submit .js-search-form'(event) {
 		event.preventDefault();
@@ -190,8 +183,8 @@ Template.membersList.events({
 		const room = Session.get(`roomData${ instance.data.rid }`);
 		const _actions = getActions({
 			user: this.user.user,
-			hideAdminControls: roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
-			directActions: roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
+			hideAdminControls: roomTypes.getConfig(room.t).userDetailShowAdmin(room) || false,
+			directActions: roomTypes.getConfig(room.t).userDetailShowAll(room) || false,
 		})
 			.map((action) => (typeof action === 'function' ? action.call(this) : action))
 			.filter((action) => action && (!action.condition || action.condition.call(this)));
@@ -242,7 +235,7 @@ Template.membersList.events({
 	'autocompleteselect #user-add-search'(event, template, doc) {
 		const roomData = Session.get(`roomData${ template.data.rid }`);
 
-		if (roomTypes.roomTypes[roomData.t].canAddUser(roomData)) {
+		if (roomTypes.getConfig(roomData.t).canAddUser(roomData)) {
 			return Meteor.call('addUserToRoom', { rid: roomData._id, username: doc.username }, function(error) {
 				if (error) {
 					return handleError(error);
@@ -329,6 +322,7 @@ Template.membersList.onCreated(function() {
 });
 
 Template.membersList.onRendered(function() {
+	this.firstNode.parentNode.querySelector('#user-search').focus();
 	this.autorun(() => {
 		const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');

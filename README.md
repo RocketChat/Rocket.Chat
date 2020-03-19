@@ -66,15 +66,7 @@ At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is
 
 If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
-Explore current openings below:
-
-- [Lead Security Researcher and Developer](https://rocketchat.recruitee.com/o/lead-security-researcher-and-developer)
-
-- [Sales Engineer](https://rocketchat.recruitee.com/o/sales-engineer)
-
-- [Business Developer/Sales/Channel](https://rocketchat.recruitee.com/o/business-developer-sales-channel)
-
-- [Front-End Developer](https://rocketchat.recruitee.com/o/frontend-developer)
+Get to know more about us and explore current openings at https://jobs.rocket.chat/"
 
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
@@ -83,7 +75,7 @@ Join thousands of members worldwide 24/7 in our [community server](https://open.
 
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
 
-You can also join the conversation at [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
+You can also join the conversation on [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
 
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
@@ -103,7 +95,7 @@ Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 sudo snap install rocketchat-server
 ```
 
-[![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/rocketchat-server)
 
 Installing snaps is very quick. By running that command you have your full Rocket.Chat server up and running. Snaps are secure. They are isolated with all of their dependencies. Snaps also auto-update when we release new versions.
 
@@ -138,18 +130,9 @@ The easiest way to install a ready-to-run Rocket.Chat server on a Linux machine,
 [![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/images/logo.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
 ## IndieHosters
-Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...).
+Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
 
 [![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
-
-## Ubuntu 16.04
-[![Ubuntu Apps Explorer](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/uappexplorer.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
-
-Deploy from shell:
-
-`snap install rocketchat-server`
-
-In under 30 seconds, your Rocket.Chat server will be up and running at `http://host-ip:3000`
 
 ## Cloudron.io
 
@@ -236,7 +219,7 @@ Run Rocket.Chat on your easy to use personal device.
 
 # About Rocket.Chat
 
-Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
+Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) full stack framework.
 
 It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.
 
@@ -321,7 +304,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## Roadmap
 
-To see an up to date view of what we have planned view our [milestones](https://github.com/RocketChat/Rocket.Chat/milestones).
+To see an up to date view of what we have planned, view our [milestones](https://github.com/RocketChat/Rocket.Chat/milestones).
 
 
 ## How it all started
@@ -352,7 +335,7 @@ Please use the [Stack Overflow TAG](http://stackoverflow.com/questions/tagged/ro
 #### Hubot
 
 The docker image is ready.
-Everyone can start hacking the adapter code, or launch his/her own bot within a few minutes now.
+Everyone can start hacking the adapter code or launch his/her own bot within a few minutes now.
 Please head over to the [Hubot Integration Project](https://github.com/RocketChat/hubot-rocketchat) for more information.
 
 
@@ -393,7 +376,7 @@ meteor npm install
 meteor npm start
 ```
 
-In order to debug the server part use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
+To debug the server part, use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
 
 ```sh
 meteor debug
@@ -416,7 +399,7 @@ If you want to help, send an email to support at rocket.chat to be invited to th
 
 ## How to Contribute
 
-Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://rocket.chat/docs/contributing/).
+Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors' community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://rocket.chat/docs/contributing/).
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
@@ -434,7 +417,7 @@ Thanks to our core team
 [Marcelo Schmidt](https://github.com/marceloschmidt),
 [Rodrigo Nascimento](https://github.com/rodrigok),
 [Sing Li](https://github.com/Sing-Li),
-and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
+and hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
 ![JoyPixels](https://i.imgur.com/OrhYvLe.png)
 

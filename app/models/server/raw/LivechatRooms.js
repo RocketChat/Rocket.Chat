@@ -83,15 +83,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (Object.keys(matchUsers.$match)) {
 			firstParams.push(matchUsers);
 		}
-		const params = [...firstParams, usersGroup, project];
+		const sort = { $sort: options.sort || { chats: -1 } };
+		const params = [...firstParams, usersGroup, project, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -144,15 +142,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, group, presentationProject];
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, group, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -245,15 +241,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -332,15 +326,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -419,15 +411,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -490,15 +480,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, ...projects];
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, ...projects, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -578,15 +566,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject];
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -688,15 +674,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, messagesLookup, messagesProject, transferProject, transferGroup, presentationProject];
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, messagesLookup, messagesProject, transferProject, transferGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -1094,15 +1078,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			});
 		}
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, serviceTimeProject, roomsGroup, presentationProject];
+		const sort = { $sort: options.sort || { name: 1 } };
+		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, serviceTimeProject, roomsGroup, presentationProject, sort];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
 		if (options.count) {
 			params.push({ $limit: options.count });
-		}
-		if (options.sort) {
-			params.push({ $sort: { name: 1 } });
 		}
 		return this.col.aggregate(params).toArray();
 	}
@@ -1117,75 +1099,45 @@ export class LivechatRoomsRaw extends BaseRaw {
 	}
 
 	findRoomsWithCriteria({ agents, roomName, departmentId, open, createdAt, closedAt, tags, customFields, options = {} }) {
-		const match = {
-			$match: {
-				t: 'l',
-			},
+		const query = {
+			t: 'l',
 		};
 		if (agents) {
-			match.$match.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
+			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
 		}
 		if (roomName) {
-			match.$match.fname = new RegExp(roomName, 'i');
+			query.fname = new RegExp(roomName, 'i');
 		}
 		if (departmentId) {
-			match.$match.departmentId = departmentId;
+			query.departmentId = departmentId;
 		}
 		if (open !== undefined) {
-			match.$match.open = { $exists: open };
+			query.open = { $exists: open };
 		}
 		if (createdAt) {
-			match.$match.ts = {};
+			query.ts = {};
 			if (createdAt.start) {
-				match.$match.ts.$gte = new Date(createdAt.start);
+				query.ts.$gte = new Date(createdAt.start);
 			}
 			if (createdAt.end) {
-				match.$match.ts.$lte = new Date(createdAt.end);
+				query.ts.$lte = new Date(createdAt.end);
 			}
 		}
 		if (closedAt) {
-			match.$match.closedAt = {};
+			query.closedAt = {};
 			if (closedAt.start) {
-				match.$match.closedAt.$gte = new Date(closedAt.start);
+				query.closedAt.$gte = new Date(closedAt.start);
 			}
 			if (closedAt.end) {
-				match.$match.closedAt.$lte = new Date(closedAt.end);
+				query.closedAt.$lte = new Date(closedAt.end);
 			}
 		}
 		if (tags) {
-			match.$match.tags = { $in: tags };
+			query.tags = { $in: tags };
 		}
 		if (customFields) {
-			match.$match.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
+			query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
 		}
-		const firstParams = [match];
-		if (options.sort) {
-			firstParams.push({ $sort: options.sort });
-		}
-		if (options.offset) {
-			firstParams.push({ $skip: options.offset });
-		}
-		if (options.count) {
-			firstParams.push({ $limit: options.count });
-		}
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
-				as: 'department',
-			},
-		};
-		const unwind = {
-			$unwind: {
-				path: '$department',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const params = [...firstParams, lookup, unwind];
-		if (options.fields) {
-			params.push({ $project: options.fields });
-		}
-		return this.col.aggregate(params).toArray();
+		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
 	}
 }
