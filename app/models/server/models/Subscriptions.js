@@ -529,6 +529,17 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
+	findByRoomIdAndTypes(roomId, types, options) {
+		const query = {
+			rid: roomId,
+			t: {
+				$in: types,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findByType(types, options) {
 		const query = {
 			t: {

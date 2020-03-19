@@ -73,6 +73,11 @@ Meteor.methods({
 		if (hasPermission(userId, 'view-outside-room')) {
 			if (type.users === true && hasPermission(userId, 'view-d-room')) {
 				result.users = Users.findByActiveUsersExcept(text, usernames, userOptions).fetch();
+				// fetch current (private) room user's data
+				const roomUsersData = Subscriptions.findByRoomIdAndTypes(rid, ['p'], { fields: { u: 1 } }).fetch().map((user) => user.u._id);
+				if (roomUsersData.length > 0) {
+					result.users = result.users.filter((user) => roomUsersData.indexOf(user._id) !== -1);
+				}
 			}
 
 			if (type.rooms === true && hasPermission(userId, 'view-c-room')) {
