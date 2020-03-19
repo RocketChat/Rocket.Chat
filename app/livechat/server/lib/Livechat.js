@@ -829,8 +829,8 @@ export const Livechat = {
 		]));
 
 		const { requestTagBeforeClosingChat, chatClosingTags } = departmentData;
-		if (requestTagBeforeClosingChat && (!chatClosingTags || [...chatClosingTags].length === 0)) {
-			throw new Meteor.Error('error-validating-department-chat-closing-tags', 'lalalala', { method: 'livechat:saveDepartment' });
+		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
+			throw new Meteor.Error('error-validating-department-chat-closing-tags', 'At least one closing tag is required when the department requires tag(s) on closing conversations.', { method: 'livechat:saveDepartment' });
 		}
 
 		if (_id) {
