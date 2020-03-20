@@ -528,6 +528,22 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
+	deleteWhenParentOfThread(_id) {
+		const query = { _id };
+
+		if (settings.get('Message_ShowDeletedStatus')) {
+			return;
+		}
+
+		const update = {
+			$set: {
+				msg: 'deleted message',
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	setAsDeletedByIdAndUser(_id, user) {
 		const query = { _id };
 
