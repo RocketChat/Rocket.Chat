@@ -11,10 +11,9 @@ import s from 'underscore.string';
 
 import { SAML } from './saml_utils';
 import { settings } from '../../settings/server';
-import { Rooms, Subscriptions, CredentialTokens } from '../../models';
+import { Users, Rooms, CredentialTokens } from '../../models/server';
 import { generateUsernameSuggestion } from '../../lib';
-import { _setUsername } from '../../lib/server/functions';
-import { Users } from '../../models/server';
+import { _setUsername, createRoom } from '../../lib/server/functions';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -419,18 +418,7 @@ Accounts.saml.subscribeToSAMLChannels = function(channels, user) {
 
 			let room = Rooms.findOneByNameAndType(roomName, 'c');
 			if (!room) {
-				room = Rooms.createWithIdTypeAndName(Random.id(), 'c', roomName);
-			}
-
-			if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
-				Subscriptions.createWithRoomAndUser(room, user, {
-					ts: new Date(),
-					open: true,
-					alert: true,
-					unread: 1,
-					userMentions: 1,
-					groupMentions: 0,
-				});
+				room = createRoom('c', roomName, user.username);
 			}
 		}
 	}	catch (err) {
