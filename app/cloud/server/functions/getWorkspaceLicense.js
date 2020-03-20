@@ -4,7 +4,7 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 import { callbacks } from '../../../callbacks';
-
+import { LICENSE_VERSION } from '../../../../ee/app/license/server';
 
 export function getWorkspaceLicense() {
 	const token = getWorkspaceAccessToken();
@@ -16,7 +16,7 @@ export function getWorkspaceLicense() {
 
 	let licenseResult;
 	try {
-		licenseResult = HTTP.get(`${ settings.get('Cloud_Workspace_Registration_Client_Uri') }/license?version=2`, {
+		licenseResult = HTTP.get(`${ settings.get('Cloud_Workspace_Registration_Client_Uri') }/license?version=${ LICENSE_VERSION }`, {
 			headers: {
 				Authorization: `Bearer ${ token }`,
 			},
