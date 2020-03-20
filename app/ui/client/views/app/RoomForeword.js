@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { Avatar, Margins, Flex, Box } from '@rocket.chat/fuselage';
+import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
 import { Template } from 'meteor/templating';
 
 import './RoomForeword.html';
@@ -39,7 +39,7 @@ const RoomForeword = ({ room, user }) => {
 					<Flex.Item grow={1}>
 						<Margins block='x8'>
 							<Box is='div'>
-								{users.map((username, index) => <Margins inline='x8' key={index}><Box is='a' href={ `/direct/${ username }` } data-username={username} componentClassName='mention-link mention-link--user'>{username}</Box></Margins>)}
+								{users.map((username, index) => <Margins inline='x4' key={index}><Tag textStyle='p2' is='a' href={ `/direct/${ username }` } data-username={username} className='mention-link mention-link--user'>{username}</Tag></Margins>)}
 							</Box>
 						</Margins>
 					</Flex.Item>
