@@ -9,7 +9,9 @@ import { getValidRoomName } from '../../../utils';
 import { Apps } from '../../../apps/server';
 import { createDirectRoom } from './createDirectRoom';
 
-export const createRoom = function(type, name, owner, members, readOnly, extraData = {}, options = {}) {
+export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}) {
+	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
+
 	if (type === 'd') {
 		return createDirectRoom(members[0], members[1], extraData, options);
 	}
@@ -58,10 +60,6 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		ts: now,
 		ro: readOnly === true,
 	});
-
-	if (type === 'd') {
-		room.usernames = members;
-	}
 
 	if (Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));

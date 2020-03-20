@@ -17,7 +17,7 @@ import { adminEmail, preferences, password, adminUsername } from '../../data/use
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createUser, login } from '../../data/users.helper.js';
+import { createUser, login, deleteUser } from '../../data/users.helper.js';
 
 describe('[Users]', function() {
 	this.retries(0);
@@ -419,42 +419,21 @@ describe('[Users]', function() {
 
 	describe('[/users.setAvatar]', () => {
 		let user;
-		before((done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
+		before(async () => {
+			user = await createUser();
 		});
 
 		let userCredentials;
-		before((done) => {
-			request.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+		before(async () => {
+			userCredentials = await login(user.username, password);
 		});
 		before((done) => {
 			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
 		});
-		after((done) => {
-			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id,
-			}).end(() => updatePermission('edit-other-user-info', ['admin']).then(done));
+		after(async () => {
+			await deleteUser(user);
 			user = undefined;
+			await updatePermission('edit-other-user-info', ['admin']);
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request.post(api('users.setAvatar'))
@@ -1756,6 +1735,51 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/users.removeOtherTokens]', () => {
+		let user;
+		let userCredentials;
+		let newCredentials;
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+			newCredentials = await login(user.username, password);
+		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+		});
+
+		it('should invalidate all active sesions', (done) => {
+			/* We want to validate that the login with the "old" credentials fails
+			However, the removal of the tokens is done asynchronously.
+			Thus, we check that within the next seconds, at least one try to
+			access an authentication requiring route fails */
+			let counter = 0;
+
+			async function checkAuthenticationFails() {
+				const result = await request.get(api('me'))
+					.set(userCredentials);
+				return result.statusCode === 401;
+			}
+
+			async function tryAuthentication() {
+				if (await checkAuthenticationFails()) {
+					done();
+				} else if (++counter < 20) {
+					setTimeout(tryAuthentication, 1000);
+				} else {
+					done('Session did not invalidate in time');
+				}
+			}
+
+			request.post(api('users.removeOtherTokens'))
+				.set(newCredentials)
+				.expect(200)
+				.then(tryAuthentication);
 		});
 	});
 });
