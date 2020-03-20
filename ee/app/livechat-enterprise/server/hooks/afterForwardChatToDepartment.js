@@ -9,9 +9,9 @@ callbacks.add('livechat.afterForwardChatToDepartment', ({ rid, newDepartmentId }
 	}
 
 	const department = LivechatDepartment.findOneById(newDepartmentId, { fields: { ancestors: 1 } });
-    if (!department) {
-        return;
-    }
+	if (!department) {
+		return;
+	}
 
 	const { departmentAncestors } = room;
 	const { ancestors } = department;
