@@ -87,7 +87,7 @@
 			{{/unless}}
 
 			{{#if image_url}}
-				{{#unless mediaCollapsed}}
+				{{#unless collapsed}}
 					<div class="attachment-image inline-image">
 					{{#if loadImage}}
 						<figure>
@@ -114,7 +114,7 @@
 			{{/if}}
 
 			{{#if audio_url}}
-				{{#unless mediaCollapsed}}
+				{{#unless collapsed}}
 					<div class="attachment-audio">
 						<audio controls>
 							<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{description}}">
@@ -125,7 +125,7 @@
 			{{/if}}
 
 			{{#if video_url}}
-				{{#unless mediaCollapsed}}
+				{{#unless collapsed}}
 					<div class="attachment-video">
 						<video controls class="inline-video">
 							<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
@@ -172,7 +172,8 @@
 			{{#each attachments}}
 				{{injectMessage . ../msg}}
 			 	{{injectSettings . ../settings}}
-				{{injectIndex . ../index @index}} {{> messageAttachment}}
+				{{injectIndex . ../index @index}}
+				{{> messageAttachment (injectCollapsedMedia ..)}}
 			{{/each}}
 		</div>
 	</div>

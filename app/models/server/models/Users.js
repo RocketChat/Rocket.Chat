@@ -398,6 +398,32 @@ export class Users extends Base {
 		});
 	}
 
+	enableEmail2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.email2fa': {
+					enabled: true,
+					changedAt: new Date(),
+				},
+			},
+		});
+	}
+
+	disableEmail2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.email2fa': {
+					enabled: false,
+					changedAt: new Date(),
+				},
+			},
+		});
+	}
+
 	findByIdsWithPublicE2EKey(ids, options) {
 		const query = {
 			_id: {
@@ -415,6 +441,40 @@ export class Users extends Base {
 		this.update({ _id: userId }, {
 			$unset: {
 				e2e: '',
+			},
+		});
+	}
+
+	removeExpiredEmailCodesOfUserId(userId) {
+		this.update({ _id: userId }, {
+			$pull: {
+				'services.emailCode': {
+					expire: { $lt: new Date() },
+				},
+			},
+		});
+	}
+
+	removeEmailCodeByUserIdAndCode(userId, code) {
+		this.update({ _id: userId }, {
+			$pull: {
+				'services.emailCode': {
+					code,
+				},
+			},
+		});
+	}
+
+	addEmailCodeByUserId(userId, code, expire) {
+		this.update({ _id: userId }, {
+			$push: {
+				'services.emailCode': {
+					$each: [{
+						code,
+						expire,
+					}],
+					$slice: -5,
+				},
 			},
 		});
 	}
@@ -1072,6 +1132,18 @@ export class Users extends Base {
 		}
 
 		return this.update(_id, update);
+	}
+
+	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id, token, hash, until) {
+		return this.update({
+			_id,
+			'services.resume.loginTokens.hashedToken': token,
+		}, {
+			$set: {
+				'services.resume.loginTokens.$.twoFactorAuthorizedHash': hash,
+				'services.resume.loginTokens.$.twoFactorAuthorizedUntil': until,
+			},
+		});
 	}
 
 	setUtcOffset(_id, utcOffset) {
