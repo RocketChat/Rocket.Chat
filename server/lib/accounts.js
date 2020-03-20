@@ -111,9 +111,9 @@ Accounts.onCreateUser(function(options, user = {}) {
 			} else if (options.profile.firstName && options.profile.lastName) {
 				// LinkedIn new format
 				if (options.profile.firstName.preferredLocale && options.profile.firstName.preferredLocale.language && options.profile.firstName.preferredLocale.country) {
-					locale = `${options.profile.firstName.preferredLocale.language}_${options.profile.firstName.preferredLocale.country}`;
+					const locale = `${ options.profile.firstName.preferredLocale.language }_${ options.profile.firstName.preferredLocale.country }`;
 					if (options.profile.firstName.localized && options.profile.firstName.localized[locale] && options.profile.lastName.localized[locale]) {
-						user.name = `${options.profile.firstName.localized[locale]} ${options.profile.lastName.localized[locale]}`;
+						user.name = `${ options.profile.firstName.localized[locale] } ${ options.profile.lastName.localized[locale] }`;
 					} else if (options.profile.firstName.localized && options.profile.firstName.localized[locale]) {
 						user.name = options.profile.firstName.localized[locale];
 					}
