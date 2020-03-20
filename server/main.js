@@ -74,3 +74,5 @@ import './routes/avatar';
 import './stream/messages';
 import './stream/rooms';
 import './stream/streamBroadcast';
+
+import '../ee/server';
