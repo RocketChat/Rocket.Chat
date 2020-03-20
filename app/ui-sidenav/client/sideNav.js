@@ -4,7 +4,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 
-import { lazyloadtick } from '../../lazy-load';
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference } from '../../utils';
@@ -59,7 +58,6 @@ Template.sideNav.events({
 	},
 
 	'scroll .rooms-list'() {
-		lazyloadtick();
 		return menu.updateUnreadBars();
 	},
 
@@ -105,7 +103,6 @@ const openMainContentIfNeeded = () => {
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-	lazyloadtick();
 	redirectToDefaultChannelIfNeeded();
 	Tracker.autorun(function() {
 		FlowRouter.watchPathChange();

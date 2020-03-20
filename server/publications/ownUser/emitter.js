@@ -22,6 +22,6 @@ Users.on('change', ({ clientAction, id, data }) => {
 		id,
 		'ownUser-changed',
 		clientAction,
-		data
+		data,
 	);
 });

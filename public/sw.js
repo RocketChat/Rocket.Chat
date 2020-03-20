@@ -31,9 +31,9 @@ self.addEventListener('activate', (event) => {
 						res = caches.delete(cacheName);
 					}
 					return res;
-				}
-			))
-		).then(self.clients.claim())
+				},
+			)),
+		).then(self.clients.claim()),
 	);
 });
 
@@ -59,7 +59,7 @@ self.addEventListener('fetch', (event) => {
 				const contentType = clonedResponse.headers.get('content-type');
 
 				if (!clonedResponse || clonedResponse.status !== 200 || clonedResponse.type !== 'basic'
-      || /\/sockjs\//.test(event.request.url)) {
+					|| /\/sockjs\//.test(event.request.url)) {
 					return response;
 				}
 
@@ -89,6 +89,6 @@ self.addEventListener('fetch', (event) => {
 					headers: new Headers({ 'Content-Type': 'text/plain' }),
 				});
 			});
-		})
+		}),
 	);
 });

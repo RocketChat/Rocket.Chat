@@ -73,4 +73,5 @@ function Archive(command, params, item) {
 slashCommands.add('archive', Archive, {
 	description: 'Archive',
 	params: '#channel',
+	permission: 'archive-room',
 });

@@ -8,6 +8,7 @@ import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api';
 import { findGuest, findRoom, getRoom, settings, findAgent } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { normalizeTransferredByData } from '../../lib/Helper';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -103,7 +104,10 @@ API.v1.addRoute('livechat/room.transfer', {
 			// update visited page history to not expire
 			Messages.keepHistoryForToken(token);
 
-			if (!Promise.await(Livechat.transfer(room, guest, { roomId: rid, departmentId: department }))) {
+			const { _id, username, name } = guest;
+			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
+
+			if (!Promise.await(Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 

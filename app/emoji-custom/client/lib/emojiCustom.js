@@ -187,5 +187,5 @@ Meteor.defer(() =>
 		} catch (e) {
 			console.error('Error getting custom emoji', e);
 		}
-	})
+	}),
 );

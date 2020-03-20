@@ -11,7 +11,7 @@ Migrations.add({
 					_id: 'Show_Setup_Wizard',
 				}, {
 					$set: { value: 'completed' },
-				}
+				},
 			);
 		}
 	},

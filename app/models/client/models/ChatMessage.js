@@ -103,7 +103,7 @@ const messagePreFetch = () => {
 						rid: 1,
 						ls: 1,
 					},
-				}
+				},
 			);
 			const limit = parseInt(getConfig('roomListLimit')) || 50;
 			subscriptions.forEach((subscription) => {

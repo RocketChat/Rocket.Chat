@@ -144,7 +144,9 @@
 								{{#if $eq searchWorkspace 'external'}}
 								<td>{{domain}}</td>
 								{{/if}}
+								{{#if $eq searchWorkspace 'local'}}
 								<td>{{createdAt}}</td>
+								{{/if}}
 							</tr>
 						{{else}}
 							{{# with searchText}}

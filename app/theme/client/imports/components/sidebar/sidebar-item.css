@@ -343,6 +343,7 @@
 
 		&__body {
 			display: -webkit-box;
+
 			height: 100%;
 			-webkit-box-flex: 1;
 			-webkit-box-align: center;

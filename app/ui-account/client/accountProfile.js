@@ -19,7 +19,7 @@ const validateUsername = (username) => {
 	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	return reg.test(username);
 };
-const validateName = (name) => name && name.length;
+const validateName = (name) => (name && name.length) || !settings.get('Accounts_RequireNameForSignUp');
 const validateStatusMessage = (statusMessage) => {
 	if (!statusMessage || statusMessage.length <= 120 || statusMessage.length === 0) {
 		return true;
@@ -135,10 +135,10 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
+		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password) {
 			return ret;
 		}
-		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
+		if (!validateEmail(email) || !validatePassword(password, confirmationPassword) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
 			return ret;
 		}
 	},
