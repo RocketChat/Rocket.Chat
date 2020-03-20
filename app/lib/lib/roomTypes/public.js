@@ -11,12 +11,12 @@ export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'channel',
-			path: '/channel/:name',
+			path: '/channel/:rid',
 		});
 	}
 
 	action(params) {
-		return openRoom('c', params.name);
+		return openRoom('c', params.rid);
 	}
 }
 
@@ -41,7 +41,10 @@ export class PublicRoomType extends RoomTypeConfig {
 	findRoom(identifier) {
 		const query = {
 			t: 'c',
-			name: identifier,
+			$or: [
+				{ name: identifier },
+				{ _id: identifier },
+			],
 		};
 		return ChatRoom.findOne(query);
 	}

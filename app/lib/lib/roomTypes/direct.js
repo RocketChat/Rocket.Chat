@@ -13,16 +13,16 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'direct',
-			path: '/direct/:username',
+			path: '/direct/:rid',
 		});
 	}
 
 	action(params) {
-		return openRoom('d', params.username);
+		return openRoom('d', params.rid);
 	}
 
 	link(sub) {
-		return { username: sub.name };
+		return { rid: sub.rid };
 	}
 }
 
@@ -52,7 +52,10 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 		const query = {
 			t: 'd',
-			name: identifier,
+			$or: [
+				{ name: identifier },
+				{ rid: identifier },
+			],
 		};
 
 		const subscription = Subscriptions.findOne(query);

@@ -47,6 +47,22 @@ export const openRoom = function(type, name) {
 			return;
 		}
 
+		const room = roomTypes.findRoom(type, name, user);
+		if (room == null) {
+			if (type === 'd') {
+				Meteor.call('createDirectMessage', ...name.split(', '), function(error) { // TODO provide a function to handle
+					if (!error) {
+						return;
+						// RoomManager.close(type + name);
+						// return openRoom('d', name);
+					}
+					Session.set('roomNotFound', { type, name, error });
+					BlazeLayout.render('main', { center: 'roomNotFound' });
+				});
+			}
+			return;
+		}
+
 		if (RoomManager.open(type + name).ready() !== true) {
 			if (settings.get('Accounts_AllowAnonymousRead')) {
 				BlazeLayout.render('main');
@@ -57,31 +73,11 @@ export const openRoom = function(type, name) {
 		if (window.currentTracker) {
 			window.currentTracker = undefined;
 		}
-		c.stop();
 
-		const room = roomTypes.findRoom(type, name, user);
-		if (room == null) {
-			if (type === 'd') {
-				Meteor.call('createDirectMessage', ...name.split(', '), function(error) { // TODO provide a function to handle
-					if (!error) {
-						RoomManager.close(type + name);
-						return openRoom('d', name);
-					}
-					Session.set('roomNotFound', { type, name, error });
-					BlazeLayout.render('main', { center: 'roomNotFound' });
-				});
-			} else {
-				Meteor.call('getRoomByTypeAndName', type, name, function(error, record) {
-					if (error) {
-						Session.set('roomNotFound', { type, name, error });
-						return BlazeLayout.render('main', { center: 'roomNotFound' });
-					}
-					Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
-					RoomManager.close(type + name);
-					return openRoom(type, name);
-				});
-			}
-			return;
+		c.stop();
+		if (room._id !== name && type === 'd') {
+			RoomManager.close(type + name);
+			return FlowRouter.go('direct', { username: room._id }, FlowRouter.current().queryParams);
 		}
 
 		const roomDom = RoomManager.getDomOfRoom(type + name, room._id);

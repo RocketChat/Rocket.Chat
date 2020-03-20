@@ -13,12 +13,12 @@ export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'group',
-			path: '/group/:name',
+			path: '/group/:rid',
 		});
 	}
 
 	action(params) {
-		return openRoom('p', params.name);
+		return openRoom('p', params.rid);
 	}
 }
 
@@ -43,7 +43,10 @@ export class PrivateRoomType extends RoomTypeConfig {
 	findRoom(identifier) {
 		const query = {
 			t: 'p',
-			name: identifier,
+			$or: [
+				{ name: identifier },
+				{ _id: identifier },
+			],
 		};
 
 		return ChatRoom.findOne(query);
