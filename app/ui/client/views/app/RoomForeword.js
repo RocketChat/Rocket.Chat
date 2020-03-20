@@ -33,7 +33,7 @@ const RoomForeword = ({ room, user }) => {
 					</Flex.Item>
 					<Flex.Item grow={1}>
 						<Box textColor='default' textStyle='headline' >
-							{ t('You have joined a new direct message with') }
+							{ t('Direct_message_you_have_joined') }
 						</Box>
 					</Flex.Item>
 					<Flex.Item grow={1}>
