@@ -26,9 +26,9 @@ const RoomForeword = ({ room, user }) => {
 				<Box is='div'>
 					<Flex.Item grow={1}>
 						<Margins block='x24'>
-							<Box is='div'>
-								{users.map((username, index) => <Margins inline='x2' key={index}><Avatar size='x40' title={username} url={username}/> </Margins>)}
-							</Box>
+							<Avatar.Stack>
+								{users.map((username, index) => <Avatar size='x48' title={username} url={username} key={index} data-username={username} />)}
+							</Avatar.Stack>
 						</Margins>
 					</Flex.Item>
 					<Flex.Item grow={1}>
