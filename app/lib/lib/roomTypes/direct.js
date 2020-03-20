@@ -40,7 +40,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	getIcon(roomData) {
 		if (roomData.usernames && roomData.usernames.length > 2) {
-			return 'group';
+			return 'team';
 		}
 		return this.icon;
 	}

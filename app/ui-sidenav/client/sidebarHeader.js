@@ -177,7 +177,7 @@ const toolbarButtons = (user) => [{
 		};
 
 		const createChannel = action('Create_A_New_Channel', 'createChannel');
-		const createDirectMessage = action('Direct_Message', 'CreateDirectMessage');
+		const createDirectMessage = action('Direct_Messages', 'CreateDirectMessage');
 		const createDiscussion = action('Discussion_title', 'CreateDiscussion');
 
 

@@ -8,7 +8,7 @@ import { Session } from 'meteor/session';
 import mem from 'mem';
 import _ from 'underscore';
 
-import { ChatSubscription, Rooms } from '../../../models';
+import { ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes, handleError } from '../../../utils';
