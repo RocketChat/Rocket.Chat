@@ -10,10 +10,10 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { SAML } from './saml_utils';
-import { Rooms, CredentialTokens } from '../../models';
+import { settings } from '../../settings/server';
+import { Users, Rooms, CredentialTokens } from '../../models/server';
 import { generateUsernameSuggestion } from '../../lib';
 import { _setUsername, createRoom } from '../../lib/server/functions';
-import { Users } from '../../models/server';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -192,7 +192,7 @@ function overwriteData(user, fullName, eppnMatch, emailList) {
 			$set: {
 				emails: emailList.map((email) => ({
 					address: email,
-					verified: true,
+					verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 				})),
 			},
 		});
@@ -294,7 +294,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 		const emails = emailList.map((email) => ({
 			address: email,
-			verified: true,
+			verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 		}));
 
 		let globalRoles;
