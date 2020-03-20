@@ -4,7 +4,6 @@ import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
-import { statistics } from '../../../statistics';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 
@@ -13,16 +12,6 @@ export function syncWorkspace(reconnectCheck = false) {
 	if (!workspaceRegistered || (!connectToCloud && !reconnectCheck)) {
 		return false;
 	}
-
-	const stats = statistics.get();
-
-	const address = settings.get('Site_Url');
-	const siteName = settings.get('Site_Name');
-	const website = settings.get('Website');
-
-	const setupComplete = settings.get('Show_Setup_Wizard') === 'completed';
-
-	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
 
 	const info = buildWorkspaceRegistrationData();
 
