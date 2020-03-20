@@ -5047,6 +5047,7 @@ rc-old select,
 	.section-content {
 		& .mydata {
 			display: block !important;
+
 			white-space: nowrap;
 		}
 
