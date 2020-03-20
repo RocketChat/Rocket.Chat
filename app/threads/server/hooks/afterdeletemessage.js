@@ -14,7 +14,7 @@ Meteor.startup(function() {
 
 		// is a thread
 		if (message.tcount) {
-			Messages.removeThreadRefByThreadId(message._id);
+			Messages.deleteWhenParentOfThread(message._id);
 		}
 
 		return message;
