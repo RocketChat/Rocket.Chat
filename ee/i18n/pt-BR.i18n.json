@@ -45,5 +45,6 @@
 	"Shortcut": "Atalho",
 	"Waiting_queue": "Fila de espera",
 	"Waiting_queue_message": "Mensagem de fila de espera",
-	"Waiting_queue_message_description": "Mensagem que será exibida aos visitantes quando eles entrarem na fila de espera"
+  "Waiting_queue_message_description": "Mensagem que será exibida aos visitantes quando eles entrarem na fila de espera",
+  "Enterprise_License": "Licença Enterprise"
 }

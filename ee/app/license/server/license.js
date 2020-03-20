@@ -146,6 +146,8 @@ export function addLicense(encryptedLicense) {
 		}
 
 		License.addLicense(JSON.parse(decrypted));
+
+		return true;
 	} catch (e) {
 		console.error('##### Invalid license');
 		if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
