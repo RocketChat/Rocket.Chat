@@ -322,10 +322,11 @@
 			display: flex;
 			overflow: visible !important;
 			flex: 1;
-			-webkit-box-flex:1;
 
 			margin: 0 -3px;
+
 			align-items: center;
+			-webkit-box-flex: 1;
 			justify-content: space-between;
 
 			&-top {
@@ -345,8 +346,8 @@
 			display: -webkit-box;
 
 			height: 100%;
-			-webkit-box-flex: 1;
 			-webkit-box-align: center;
+			-webkit-box-flex: 1;
 		}
 
 		&__time {
