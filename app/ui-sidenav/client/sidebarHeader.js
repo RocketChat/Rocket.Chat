@@ -177,7 +177,7 @@ const toolbarButtons = (user) => [{
 		};
 
 		const createChannel = action('Create_A_New_Channel', 'createChannel');
-		const createDirectMessage = action('Direct Message', 'CreateDirectMessage');
+		const createDirectMessage = action('Direct_Message', 'CreateDirectMessage');
 		const createDiscussion = action('Discussion_title', 'CreateDiscussion');
 
 
@@ -190,7 +190,7 @@ const toolbarButtons = (user) => [{
 			},
 			hasPermission('create-d')
 			&& {
-				icon: 'group',
+				icon: 'team',
 				name: t('Direct_Messages'),
 				action: createDirectMessage,
 			},

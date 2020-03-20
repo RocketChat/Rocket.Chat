@@ -35,7 +35,7 @@ TabBar.addButton({
 	groups: ['direct'],
 	id: 'user-info',
 	i18nTitle: 'Members_List',
-	icon: 'group',
+	icon: 'team',
 	template: 'membersList',
 	order: 2,
 	condition() {
