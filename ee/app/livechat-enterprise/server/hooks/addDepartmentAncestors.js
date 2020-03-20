@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks';
 import LivechatRooms from '../../../../../app/models/server/models/LivechatRooms';
-import { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
+import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 
 callbacks.add('livechat.newRoom', (room) => {
 	if (!room.departmentId) {

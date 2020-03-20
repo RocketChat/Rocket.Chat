@@ -1,8 +1,16 @@
+import { hasLicense } from '../../license/client';
 import './views/livechatMonitors';
 import './views/livechatUnits';
 import './views/livechatUnitForm';
-import './views/livechatSideNavItems';
+import './route';
 import './views/livechatTags';
 import './views/livechatTagForm';
-import './route';
-import './views/app/registerCustomTemplates.js';
+
+hasLicense('livechat-enterprise').then((enabled) => {
+	if (!enabled) {
+		return;
+	}
+
+	require('./views/app/registerCustomTemplates');
+	require('./views/livechatSideNavItems');
+});
