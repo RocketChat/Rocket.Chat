@@ -49,6 +49,8 @@ export function buildWorkspaceRegistrationData() {
 		deploymentMethod: stats.deploy.method,
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version,
+		licenseVersion: 2,
+		enterpriseReady: true,
 		setupComplete: true,
 	};
 }

@@ -1,6 +1,6 @@
 import { HTTP } from 'meteor/http';
 
-
+import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
@@ -24,22 +24,7 @@ export function syncWorkspace(reconnectCheck = false) {
 
 	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
 
-	const info = {
-		uniqueId: stats.uniqueId,
-		address,
-		siteName,
-		website,
-		organizationType,
-		industry,
-		orgSize,
-		country,
-		language,
-		workspaceType,
-		deploymentMethod: stats.deploy.method,
-		deploymentPlatform: stats.deploy.platform,
-		version: stats.version,
-		setupComplete,
-	};
+	const info = buildWorkspaceRegistrationData();
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
 
