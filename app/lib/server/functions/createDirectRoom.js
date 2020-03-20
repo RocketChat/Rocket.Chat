@@ -1,6 +1,6 @@
 import { Rooms, Subscriptions } from '../../../models/server';
-import { getDefaultSubscriptionPref } from '../../../utils';
-import { callbacks } from '../../../callbacks';
+import { getDefaultSubscriptionPref } from '../../../utils/server';
+import { callbacks } from '../../../callbacks/server';
 
 export const createDirectRoom = function(source, target, extraData, options) {
 	const rid = [source._id, target._id].sort().join('');
