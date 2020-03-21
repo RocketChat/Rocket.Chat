@@ -7,6 +7,7 @@ import { settings } from '../../../../settings';
 import { roomTypes } from '../../../../utils';
 import { metrics } from '../../../../metrics';
 import { callbacks } from '../../../../callbacks';
+import { getURL } from '../../../../utils/server';
 
 let advice = '';
 let goToMessage = '';
@@ -95,10 +96,12 @@ function getEmailContent({ message, user, room }) {
 }
 
 const getButtonUrl = (room, subscription, message) => {
-	const siteUrl = settings.get('Site_Url').replace(/https?\:\/\//i, '');
-	const host = s.rtrim(siteUrl, '/');
-	const path = `${ s.ltrim(roomTypes.getRelativePath(room.t, subscription), '/') }&msg=${ message._id }`;
-	return `${ settings.get('Offline_Message_Link_To_Redirect') }/room?host=${ host }&path=${ path }`;
+	const path = `${ s.ltrim(roomTypes.getRelativePath(room.t, subscription), '/') }?msg=${ message._id }`;
+	return getURL(path, {
+		full: true,
+		cloud: settings.get('Offline_Message_Use_DeepLink'),
+		cloud_route: 'room',
+	});
 };
 
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {

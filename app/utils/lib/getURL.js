@@ -4,12 +4,14 @@ import { isURL } from './isURL';
 import { settings } from '../../settings';
 
 function getCloudUrl(path, _site_url, cloudRoute) {
+	const cloudBaseUrl = (settings.get('DeepLink_Url') || '').replace(/\/+$/, '');
+
 	const siteUrl = s.rtrim(_site_url, '/');
 
 	// Remove the protocol
 	const host = siteUrl.replace(/https?\:\/\//i, '');
 	path = s.ltrim(path, '/');
-	const url = `https://go.rocket.chat/${ cloudRoute }?host=${ encodeURIComponent(host) }&path=${ encodeURIComponent(path) }`;
+	const url = `${ cloudBaseUrl }/${ cloudRoute }?host=${ encodeURIComponent(host) }&path=${ encodeURIComponent(path) }`;
 
 	if (siteUrl.includes('http://')) {
 		return `${ url }&secure=no`;
