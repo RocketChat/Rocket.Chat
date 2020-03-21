@@ -9,7 +9,7 @@
   "Edit_Tag": "Edit Tag",
   "Edit_Unit": "Edit Unit",
   "Enterprise_License": "Enterprise License",
-  "Enterprise_License_Description": "If your workspace registered and license is provided by Rocket.Chat Cloud you don't need to manually update the license here.",
+  "Enterprise_License_Description": "If your workspace is registered and license is provided by Rocket.Chat Cloud you don't need to manually update the license here.",
   "Failed_to_add_monitor": "Failed to add monitor",
   "Invalid Canned Response": "Invalid Canned Response",
   "Invalid_Department": "Invalid Department",
