@@ -41,10 +41,7 @@ export class PublicRoomType extends RoomTypeConfig {
 	findRoom(identifier) {
 		const query = {
 			t: 'c',
-			$or: [
-				{ name: identifier },
-				{ _id: identifier },
-			],
+			name: identifier,
 		};
 		return ChatRoom.findOne(query);
 	}
