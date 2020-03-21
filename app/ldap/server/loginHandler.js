@@ -74,11 +74,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	if (ldapUser === undefined) {
-		if (settings.get('LDAP_Login_Fallback') === true) {
-			return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
-		}
-
-		throw new Meteor.Error('LDAP-login-error', `LDAP Authentication failed with provided username [${ loginRequest.username }]`);
+		return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
 	}
 
 	// Look to see if user already exists
@@ -120,7 +116,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	if (user) {
 		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
 			logger.info('User exists without "ldap: true"');
-			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeded, but there's already an existing user with provided username [${ username }] in Mongo.`);
+			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeeded, but there's already an existing user with provided username [${ username }] in Mongo.`);
 		}
 
 		logger.info('Logging user');
@@ -155,4 +151,20 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	callbacks.run('afterLDAPLogin', { user: result, ldapUser, ldap });
 
 	return result;
+});
+
+callbacks.add('beforeValidateLogin', (login) => {
+	if (!login.allowed) {
+		return login;
+	}
+
+	if (login.type === 'ldap') {
+		return login;
+	}
+
+	if (login.user.services && login.user.services.ldap && login.user.services.ldap.id) {
+		login.allowed = !!settings.get('LDAP_Login_Fallback');
+	}
+
+	return login;
 });
