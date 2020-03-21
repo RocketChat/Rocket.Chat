@@ -19,6 +19,9 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		// Livechat - statistics
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
+
+		// field used for DMs only
+		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -537,6 +540,13 @@ export class Rooms extends Base {
 		}
 
 		return this.find(query, options);
+	}
+
+	findGroupDMsByUids(uids, options) {
+		return this.find({
+			usersCount: { $gt: 2 },
+			uids,
+		}, options);
 	}
 
 	// UPDATE

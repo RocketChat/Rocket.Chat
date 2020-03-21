@@ -20,8 +20,8 @@ const generateSubscription = (fname, name, user, extra) => ({
 	},
 });
 
-const getFname = (uid, members) => members.filter(({ _id }) => _id !== uid).map(({ name, username }) => name || username).join(', ');
-const getName = (uid, members) => members.filter(({ _id }) => _id !== uid).map(({ username }) => username).join(', ');
+const getFname = (members) => members.map(({ name, username }) => name || username).join(', ');
+const getName = (members) => members.map(({ username }) => username).join(',');
 
 export const createDirectRoom = function(members, roomExtraData = {}, options = {}) {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
@@ -42,6 +42,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 		usersCount: members.length,
 		msgs: 0,
 		ts: new Date(),
+		uids: sortedMembers.map(({ _id }) => _id),
 		...roomExtraData,
 	});
 
@@ -51,20 +52,23 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 			$setOnInsert: generateSubscription(members[0].name || members[0].username, members[0].username, members[0], { ...options.subscriptionExtra }),
 		});
 	} else {
-		members.forEach((member) =>
+		members.forEach((member) => {
+			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
+
 			Subscriptions.upsert({ rid, 'u._id': member._id }, {
 				...options.creator === member._id && { $set: { open: true } },
 				$setOnInsert: generateSubscription(
-					getFname(member._id, sortedMembers),
-					getName(member._id, sortedMembers),
+					getFname(otherMembers),
+					getName(otherMembers),
 					member,
 					{
+						uids: otherMembers.map(({ _id }) => _id),
 						...options.subscriptionExtra,
 						...options.creator !== member._id && { open: members.length > 2 },
 					},
 				),
-			}),
-		);
+			});
+		});
 	}
 
 	// If the room is new, run a callback

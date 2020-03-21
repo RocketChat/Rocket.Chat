@@ -6,6 +6,7 @@ import { saveCustomFields, passwordPolicy } from '../../app/lib';
 import { Users } from '../../app/models';
 import { settings as rcSettings } from '../../app/settings';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 
 Meteor.methods({
 	saveUserProfile: twoFactorRequired(function(settings, customFields) {
@@ -42,12 +43,12 @@ Meteor.methods({
 			return true;
 		}
 
-		if (settings.realname || (!settings.realname && !rcSettings.get('Accounts_RequireNameForSignUp'))) {
-			Meteor.call('setRealName', settings.realname);
-		}
-
-		if (settings.username) {
-			Meteor.call('setUsername', settings.username);
+		if (settings.realname || (!settings.realname && !rcSettings.get('Accounts_RequireNameForSignUp')) || settings.username) {
+			saveUserIdentity(this.userId, {
+				_id: this.userId,
+				name: settings.realname,
+				username: settings.username,
+			});
 		}
 
 		if (settings.statusText || settings.statusText === '') {
