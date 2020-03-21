@@ -490,6 +490,18 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findByTypeAndNameOrId(type, identifier, options) {
+		const query = {
+			t: type,
+			$or: [
+				{ name: identifier },
+				{ _id: identifier },
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByTypeAndNameContaining(type, name, options) {
 		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
 
