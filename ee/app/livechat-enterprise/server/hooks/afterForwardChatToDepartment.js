@@ -1,8 +1,10 @@
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../app/callbacks/server';
 import LivechatRooms from '../../../../../app/models/server/models/LivechatRooms';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 
-callbacks.add('livechat.afterForwardChatToDepartment', ({ rid, newDepartmentId }) => {
+callbacks.add('livechat.afterForwardChatToDepartment', (options) => {
+	const { rid, newDepartmentId } = options;
+
 	const room = LivechatRooms.findOneById(rid);
 	if (!room) {
 		return;
@@ -20,5 +22,6 @@ callbacks.add('livechat.afterForwardChatToDepartment', ({ rid, newDepartmentId }
 	}
 
 	LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
-	return LivechatRooms.findOneById(rid);
+
+	return options;
 }, callbacks.priority.MEDIUM, 'livechat-after-forward-room-to-department');
