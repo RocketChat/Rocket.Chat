@@ -1521,6 +1521,7 @@ rc-old select,
 		}
 
 		.setting-action {
+			height: auto;
 			margin: 0 4px;
 		}
 
