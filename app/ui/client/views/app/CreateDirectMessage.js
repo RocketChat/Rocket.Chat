@@ -8,7 +8,6 @@ import { roomTypes } from '../../../../utils/client';
 import { ChatSubscription } from '../../../../models/client';
 import { call } from '../../../../ui-utils/client';
 import './CreateDirectMessage.html';
-import { Subscriptions } from '../../../../models/client/models/Subscriptions';
 
 Template.CreateDirectMessage.helpers({
 	onSelectUser() {
@@ -54,17 +53,15 @@ Template.CreateDirectMessage.helpers({
 	},
 });
 
-const waitUntilRoomBeInserted = async (rid) => {
-	return new Promise((resolve) => {
-		Tracker.autorun((c) => {
-			const room = Subscriptions.findOne({ rid });
-			if (room) {
-				c.stop();
-				return resolve(room);
-			}
-		});
+const waitUntilRoomBeInserted = async (rid) => new Promise((resolve) => {
+	Tracker.autorun((c) => {
+		const room = roomTypes.findRoom('d', rid, Meteor.user());
+		if (room) {
+			c.stop();
+			return resolve(room);
+		}
 	});
-};
+});
 
 Template.CreateDirectMessage.events({
 	async 'submit #create-dm, click .js-save-dm'(event, instance) {
