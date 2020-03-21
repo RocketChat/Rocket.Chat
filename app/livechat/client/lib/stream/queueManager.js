@@ -15,12 +15,12 @@ const events = {
 	},
 	changed: (inquiry, collection) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !agentDepartments.includes(inquiry.department))) {
-			return collection.remove({ rid: inquiry.rid });
+			return collection.remove(inquiry._id);
 		}
 		delete inquiry.type;
-		collection.upsert({ rid: inquiry.rid }, inquiry);
+		collection.upsert({ _id: inquiry._id }, inquiry);
 	},
-	removed: (inquiry, collection) => collection.remove({ rid: inquiry.rid }),
+	removed: (inquiry, collection) => collection.remove(inquiry._id),
 };
 
 const appendListenerToDepartment = (departmentId, collection) => livechatQueueStreamer.on(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`, (inquiry) => events[inquiry.type](inquiry, collection));

@@ -12,6 +12,9 @@ export class LivechatRooms extends Base {
 
 		this.tryEnsureIndex({ open: 1 }, { sparse: true });
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'metrics.chatDuration': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -68,7 +71,7 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setTopicAndTagsById(_id, topic, tags) {
+	saveRoomById({ _id, topic, tags, livechatData }) {
 		const setData = {};
 		const unsetData = {};
 
@@ -84,6 +87,17 @@ export class LivechatRooms extends Base {
 			setData.tags = tags;
 		} else {
 			unsetData.tags = 1;
+		}
+
+		if (livechatData) {
+			Object.keys(livechatData).forEach((key) => {
+				const value = s.trim(livechatData[key]);
+				if (value) {
+					setData[`livechatData.${ key }`] = value;
+				} else {
+					unsetData[`livechatData.${ key }`] = 1;
+				}
+			});
 		}
 
 		const update = {};
@@ -191,6 +205,16 @@ export class LivechatRooms extends Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneOpenByVisitorToken(visitorToken, options) {
+		const query = {
+			t: 'l',
+			open: true,
+			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
@@ -400,16 +424,20 @@ export class LivechatRooms extends Base {
 
 
 	closeByRoomId(roomId, closeInfo) {
+		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, ...extraData } = closeInfo;
+
 		return this.update({
 			_id: roomId,
 			t: 'l',
 		}, {
 			$set: {
-				closer: closeInfo.closer,
-				closedBy: closeInfo.closedBy,
-				closedAt: closeInfo.closedAt,
-				'metrics.chatDuration': closeInfo.chatDuration,
+				closer,
+				closedBy,
+				closedAt,
+				'metrics.chatDuration': chatDuration,
+				'metrics.serviceTimeDuration': serviceTimeDuration,
 				'v.status': 'offline',
+				...extraData,
 			},
 			$unset: {
 				open: 1,

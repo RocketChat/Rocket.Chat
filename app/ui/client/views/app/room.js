@@ -34,7 +34,6 @@ import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { promises } from '../../../../promises/client';
 import { hasAllPermission, hasRole } from '../../../../authorization';
-import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
@@ -60,10 +59,13 @@ const openProfileTab = (e, instance, username) => {
 	}
 
 	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
-	if (roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
+	if (roomTypes.getConfig(roomData.t).enableMembersListProfile()) {
 		instance.userDetail.set(username);
 	}
 
+	if (roomTypes.roomTypes[roomData.t].openCustomProfileTab(instance, roomData, username)) {
+		return;
+	}
 	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('membersList');
 	instance.tabBar.open();
@@ -253,11 +255,28 @@ callbacks.add('enter-room', wipeFailedUploads);
 
 const ignoreReplies = getConfig('ignoreReplies') === 'true';
 
-Template.room.helpers({
-	useNrr() {
-		const useNrr = getConfig('useNrr');
-		return useNrr === 'true' || useNrr !== 'false';
+export const dropzoneHelpers = {
+	dragAndDrop() {
+		return settings.get('FileUpload_Enabled') && 'dropzone--disabled';
 	},
+
+	isDropzoneDisabled() {
+		return settings.get('FileUpload_Enabled') ? 'dropzone-overlay--enabled' : 'dropzone-overlay--disabled';
+	},
+
+	dragAndDropLabel() {
+		if (!userCanDrop(this._id)) {
+			return 'error-not-allowed';
+		}
+		if (!settings.get('FileUpload_Enabled')) {
+			return 'FileUpload_Disabled';
+		}
+		return 'Drop_to_upload_file';
+	},
+};
+
+Template.room.helpers({
+	...dropzoneHelpers,
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -268,35 +287,19 @@ Template.room.helpers({
 	embeddedVersion() {
 		return Layout.isEmbedded();
 	},
-
+	showTopNavbar() {
+		return !Layout.isEmbedded() || settings.get('UI_Show_top_navbar_embedded_layout');
+	},
 	subscribed() {
 		const { state } = Template.instance();
 		return state.get('subscribed');
 	},
-
 	messagesHistory() {
 		const { rid } = Template.instance();
-		const hideMessagesOfType = [];
-		settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
-			let types;
-			const type = record._id.replace('Message_HideType_', '');
-			switch (type) {
-				case 'mute_unmute':
-					types = ['user-muted', 'user-unmuted'];
-					break;
-				default:
-					types = [type];
-			}
-			return types.forEach(function(type) {
-				const index = hideMessagesOfType.indexOf(type);
-
-				if ((record.value === true) && (index === -1)) {
-					hideMessagesOfType.push(type);
-				} else if (index > -1) {
-					hideMessagesOfType.splice(index, 1);
-				}
-			});
-		});
+		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
+		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
+		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
+		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
 
 		const modes = ['', 'cozy', 'compact'];
 		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
@@ -306,8 +309,8 @@ Template.room.helpers({
 			...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
 		};
 
-		if (hideMessagesOfType.length > 0) {
-			query.t =				{ $nin: hideMessagesOfType };
+		if (hideMessagesOfType.size) {
+			query.t = { $nin: Array.from(hideMessagesOfType.values()) };
 		}
 
 		const options = {
@@ -479,10 +482,6 @@ Template.room.helpers({
 		return getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
 	},
 
-	userCanDrop() {
-		return userCanDrop(this._id);
-	},
-
 	toolbarButtons() {
 		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
 		const buttons = Object.keys(toolbar.buttons).map((key) => ({
@@ -585,6 +584,11 @@ export const dropzoneEvents = {
 		const e = event.originalEvent || event;
 
 		e.stopPropagation();
+		e.preventDefault();
+
+		if (!userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
+			return false;
+		}
 
 		let files = (e.dataTransfer && e.dataTransfer.files) || [];
 
@@ -758,8 +762,8 @@ Template.room.events({
 		Session.set(`uploading-cancel-${ this.id }`, true);
 	},
 
-	'click .unread-bar > button.mark-read'() {
-		readMessage.readNow(true);
+	'click .unread-bar > button.mark-read'(e, t) {
+		readMessage.readNow(t.data._id);
 	},
 
 	'click .unread-bar > button.jump-to'(e, t) {
@@ -803,8 +807,6 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
-		lazyloadtick();
-
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
 			if (e.target.scrollTop < lastScrollTop) {
@@ -908,23 +910,12 @@ Template.room.events({
 		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
 	},
-
-	'click .collapse-switch'(e) {
-		const { msg } = messageArgs(this);
-		const index = $(e.currentTarget).data('index');
-		const collapsed = $(e.currentTarget).data('collapsed');
-		const id = msg._id;
-
-		if ((msg != null ? msg.attachments : undefined) != null) {
-			ChatMessage.update({ _id: id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
-		}
-
-		if ((msg != null ? msg.urls : undefined) != null) {
-			ChatMessage.update({ _id: id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
-		}
+	'load .gallery-item'(e, template) {
+		template.sendToBottomIfNecessaryDebounced();
 	},
-	'load img'(e, template) {
-		return typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined;
+
+	'rendered .js-block-wrapper'(e, i) {
+		i.sendToBottomIfNecessaryDebounced();
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -1017,8 +1008,6 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
-
-	lazyloadtick();
 	const rid = this.data._id;
 
 	this.onFile = (filesToUpload) => {
@@ -1146,13 +1135,14 @@ Template.room.onCreated(function() {
 		},
 	});
 
-	this.sendToBottomIfNecessary = () => {};
+	this.sendToBottomIfNecessary = () => {
+		if (this.atBottom === true) {
+			this.sendToBottom();
+		}
+	};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
-	if (this.messageObserver) {
-		this.messageObserver.stop();
-	}
 	if (this.rolesObserve) {
 		this.rolesObserve.stop();
 	}
@@ -1161,8 +1151,10 @@ Template.room.onDestroyed(function() {
 
 	window.removeEventListener('resize', this.onWindowResize);
 
+	this.observer && this.observer.disconnect();
+
 	const chatMessage = chatMessages[this.data._id];
-	return chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
+	chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
 });
 
 Template.room.onRendered(function() {
@@ -1199,37 +1191,23 @@ Template.room.onRendered(function() {
 		template.atBottom = template.isAtBottom(100);
 	};
 
-	template.sendToBottomIfNecessary = function() {
-		if (template.atBottom === true) {
-			template.sendToBottom();
-		}
-
-		lazyloadtick();
-	};
-
-	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 10);
-
-	template.sendToBottomIfNecessary();
+	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 150);
 
 	if (window.MutationObserver) {
-		const observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
+		template.observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
 
-		observer.observe(wrapperUl, { childList: true });
+		template.observer.observe(wrapperUl, { childList: true });
 	} else {
 		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
 	}
-	// observer.disconnect()
 
 	template.onWindowResize = () => template.sendToBottomIfNecessaryDebounced();
 
 	window.addEventListener('resize', template.onWindowResize);
 
-	const wheelHandler = (() => {
-		const fn = _.throttle(function() {
-			template.checkIfScrollIsAtBottom();
-		}, 50);
-		return fn;
-	})();
+	const wheelHandler = _.throttle(function() {
+		template.checkIfScrollIsAtBottom();
+	}, 100);
 	wrapper.addEventListener('mousewheel', wheelHandler);
 
 	wrapper.addEventListener('wheel', wheelHandler);
@@ -1242,7 +1220,10 @@ Template.room.onRendered(function() {
 		setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
 	});
 
-	wrapper.addEventListener('scroll', wheelHandler);
+	Tracker.afterFlush(() => {
+		template.sendToBottomIfNecessary();
+		wrapper.addEventListener('scroll', wheelHandler);
+	});
 
 	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 
@@ -1280,9 +1261,16 @@ Template.room.onRendered(function() {
 		});
 	}, 300);
 
+	const read = _.debounce(function() {
+		if (rid !== Session.get('openedRoom')) {
+			return;
+		}
+		readMessage.read(rid);
+	}, 500);
+
 	this.autorun(() => {
 		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
-		readMessage.read();
+		read();
 		return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
 	});
 
@@ -1311,7 +1299,7 @@ Template.room.onRendered(function() {
 		Rooms.findOne(rid);
 		const count = this.state.get('count');
 		if (count === 0) {
-			return readMessage.read();
+			return read();
 		}
 		readMessage.refreshUnreadMark(rid);
 	});
@@ -1360,6 +1348,8 @@ Template.room.onRendered(function() {
 		if (!room) {
 			FlowRouter.go('home');
 		}
+
+		callbacks.run('onRenderRoom', template, room);
 	});
 });
 
@@ -1371,5 +1361,5 @@ callbacks.add('enter-room', (sub) => {
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
 		chatMessages[sub.rid].restoreReplies();
 	}
-	readMessage.refreshUnreadMark(sub.rid);
+	setTimeout(() => readMessage.read(sub.rid), 1000);
 });

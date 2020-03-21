@@ -98,6 +98,29 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 	});
 };
 
+const getLinkedInName = ({ firstName, lastName }) => {
+	const { preferredLocale, localized: firstNameLocalized } = firstName;
+	const { localized: lastNameLocalized } = lastName;
+
+	// LinkedIn new format
+	if (preferredLocale && firstNameLocalized && preferredLocale.language && preferredLocale.country) {
+		const locale = `${ preferredLocale.language }_${ preferredLocale.country }`;
+
+		if (firstNameLocalized[locale] && lastNameLocalized[locale]) {
+			return `${ firstNameLocalized[locale] } ${ lastNameLocalized[locale] }`;
+		}
+		if (firstNameLocalized[locale]) {
+			return firstNameLocalized[locale];
+		}
+	}
+
+	// LinkedIn old format
+	if (!lastName) {
+		return firstName;
+	}
+	return `${ firstName } ${ lastName }`;
+};
+
 Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
@@ -108,17 +131,16 @@ Accounts.onCreateUser(function(options, user = {}) {
 		if (options.profile) {
 			if (options.profile.name) {
 				user.name = options.profile.name;
-			} else if (options.profile.firstName && options.profile.lastName) {
-				// LinkedIn format
-				user.name = `${ options.profile.firstName } ${ options.profile.lastName }`;
 			} else if (options.profile.firstName) {
 				// LinkedIn format
-				user.name = options.profile.firstName;
+				user.name = getLinkedInName(options.profile);
 			}
 		}
 	}
 
 	if (user.services) {
+		const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+
 		for (const service of Object.values(user.services)) {
 			if (!user.name) {
 				user.name = service.name || service.username;
@@ -127,7 +149,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 			if (!user.emails && service.email) {
 				user.emails = [{
 					address: service.email,
-					verified: true,
+					verified,
 				}];
 			}
 		}
@@ -175,6 +197,14 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	if (!user.type) {
 		user.type = 'user';
+	}
+
+	if (settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')) {
+		user.services = user.services || {};
+		user.services.email2fa = {
+			enabled: true,
+			changedAt: new Date(),
+		};
 	}
 
 	const _id = insertUserDoc.call(Accounts, options, user);
@@ -245,6 +275,12 @@ Accounts.validateLoginAttempt(function(login) {
 
 	if (login.user.type === 'visitor') {
 		return true;
+	}
+
+	if (login.user.type === 'app') {
+		throw new Meteor.Error('error-app-user-is-not-allowed-to-login', 'App user is not allowed to login', {
+			function: 'Accounts.validateLoginAttempt',
+		});
 	}
 
 	if (!!login.user.active !== true) {

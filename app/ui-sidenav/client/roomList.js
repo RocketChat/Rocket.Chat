@@ -128,11 +128,7 @@ Template.roomList.helpers({
 		if (instance.data.anonymous) {
 			return 'No_channels_yet';
 		}
-		return roomTypes.roomTypes[instance.data.identifier].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
-	},
-
-	showRoomCounter() {
-		return getUserPreference(Meteor.userId(), 'roomCounterSidebar');
+		return roomTypes.getConfig(instance.data.identifier).getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 });
 
