@@ -168,12 +168,12 @@ export function MessagesPerChannelSection() {
 						<Flex.Item grow={1} shrink={0} basis='0'>
 							<Box>
 								<Margins blockEnd='x16'>
-									{table ? <Box textStyle='p1'>{t('Most popular Channels (Top5)')}</Box> : <Skeleton width='50%' />}
+									{table ? <Box textStyle='p1'>{t('Most popular channels (Top 5)')}</Box> : <Skeleton width='50%' />}
 								</Margins>
 								{table && !table.length && <Tile textStyle='p1' textColor='info' style={{ textAlign: 'center' }}>
 									{t('Not enough data')}
 								</Tile>}
-								{(!table || table.length) && <Table>
+								{(!table || !!table.length) && <Table>
 									<Table.Head>
 										<Table.Row>
 											<Table.Cell>{t('#')}</Table.Cell>
