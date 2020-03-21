@@ -18,7 +18,7 @@ try {
 }
 
 export class BaseDb extends EventEmitter {
-	constructor(model, baseModel) {
+	constructor(model, baseModel, options = {}) {
 		super();
 
 		if (Match.test(model, String)) {
@@ -68,7 +68,7 @@ export class BaseDb extends EventEmitter {
 		};
 		this.on('newListener', handleListener);
 
-		this.tryEnsureIndex({ _updatedAt: 1 });
+		this.tryEnsureIndex({ _updatedAt: 1 }, options._updatedAtIndexOptions);
 	}
 
 	get baseName() {
@@ -128,6 +128,10 @@ export class BaseDb extends EventEmitter {
 	find(...args) {
 		this._doNotMixInclusionAndExclusionFields(args[1]);
 		return this.model.find(...args);
+	}
+
+	findById(_id, options) {
+		return this.find({ _id }, options);
 	}
 
 	findOne(...args) {

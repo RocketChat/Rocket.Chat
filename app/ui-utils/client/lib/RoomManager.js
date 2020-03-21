@@ -78,7 +78,7 @@ export const RoomManager = new function() {
 								// Do not load command messages into channel
 								if (msg.t !== 'command') {
 									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-									const isNew = !ChatMessage.findOne(msg._id);
+									const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
 									upsertMessage({ msg, subscription });
 
 									msg.room = {
