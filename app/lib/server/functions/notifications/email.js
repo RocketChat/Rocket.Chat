@@ -101,6 +101,10 @@ const getButtonUrl = (room, subscription, message) => {
 		full: true,
 		cloud: settings.get('Offline_Message_Use_DeepLink'),
 		cloud_route: 'room',
+		cloud_params: {
+			rid: room._id,
+			mid: message._id,
+		},
 	});
 };
 
