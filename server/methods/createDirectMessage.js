@@ -3,11 +3,10 @@ import { check } from 'meteor/check';
 
 import { settings } from '../../app/settings';
 import { hasPermission } from '../../app/authorization';
-import { Users, Rooms, Subscriptions } from '../../app/models';
-import { getDefaultSubscriptionPref } from '../../app/utils';
+import { Users } from '../../app/models';
 import { RateLimiter } from '../../app/lib';
-import { callbacks } from '../../app/callbacks';
 import { addUser } from '../../app/federation/server/functions/addUser';
+import { createRoom } from '../../app/lib/server';
 
 Meteor.methods({
 	createDirectMessage(username) {
@@ -58,91 +57,7 @@ Meteor.methods({
 			});
 		}
 
-		const rid = [me._id, to._id].sort().join('');
-
-		const now = new Date();
-
-		// Make sure we have a room
-		const roomUpsertResult = Rooms.upsert({
-			_id: rid,
-		}, {
-			$set: {
-				usernames: [me.username, to.username],
-			},
-			$setOnInsert: {
-				t: 'd',
-				msgs: 0,
-				ts: now,
-				usersCount: 2,
-			},
-		});
-
-		const myNotificationPref = getDefaultSubscriptionPref(me);
-
-		// Make user I have a subcription to this room
-		const upsertSubscription = {
-			$set: {
-				ls: now,
-				open: true,
-			},
-			$setOnInsert: {
-				fname: to.name,
-				name: to.username,
-				t: 'd',
-				alert: false,
-				unread: 0,
-				userMentions: 0,
-				groupMentions: 0,
-				customFields: me.customFields,
-				u: {
-					_id: me._id,
-					username: me.username,
-				},
-				ts: now,
-				...myNotificationPref,
-			},
-		};
-
-		if (to.active === false) {
-			upsertSubscription.$set.archived = true;
-		}
-
-		Subscriptions.upsert({
-			rid,
-			$and: [{ 'u._id': me._id }], // work around to solve problems with upsert and dot
-		}, upsertSubscription);
-
-		const toNotificationPref = getDefaultSubscriptionPref(to);
-
-		Subscriptions.upsert({
-			rid,
-			$and: [{ 'u._id': to._id }], // work around to solve problems with upsert and dot
-		}, {
-			$setOnInsert: {
-				fname: me.name,
-				name: me.username,
-				t: 'd',
-				open: false,
-				alert: false,
-				unread: 0,
-				userMentions: 0,
-				groupMentions: 0,
-				customFields: to.customFields,
-				u: {
-					_id: to._id,
-					username: to.username,
-				},
-				ts: now,
-				...toNotificationPref,
-			},
-		});
-
-		// If the room is new, run a callback
-		if (roomUpsertResult.insertedId) {
-			const insertedRoom = Rooms.findOneById(rid);
-
-			callbacks.run('afterCreateDirectRoom', insertedRoom, { from: me, to });
-		}
+		const { _id: rid } = createRoom('d', undefined, undefined, [me, to]);
 
 		return {
 			rid,
