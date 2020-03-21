@@ -2,7 +2,7 @@ import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { CounterSet } from '../data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { StreamGraph } from '../data/StreamGraph';

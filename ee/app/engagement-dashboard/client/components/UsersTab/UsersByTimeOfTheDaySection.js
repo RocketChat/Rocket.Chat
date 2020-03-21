@@ -3,7 +3,7 @@ import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { Section } from '../Section';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { monochromaticColors } from '../data/colors';
