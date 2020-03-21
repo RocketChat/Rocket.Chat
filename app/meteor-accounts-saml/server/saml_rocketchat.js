@@ -182,12 +182,21 @@ Meteor.methods({
 			i18nLabel: 'SAML_Role_Attribute_Name',
 			i18nDescription: 'SAML_Role_Attribute_Name_Description',
 		});
+
 		settings.add(`SAML_Custom_${ name }_role_attribute_sync`, false, {
 			type: 'boolean',
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Role_Attribute_Sync',
 			i18nDescription: 'SAML_Role_Attribute_Sync_Description',
+		});
+
+		settings.add(`SAML_Custom_${ name }_allowed_clock_drift`, 0, {
+			type: 'int',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Allowed_Clock_Drift',
+			i18nDescription: 'SAML_Allowed_Clock_Drift_Description',
 		});
 	},
 });
@@ -230,6 +239,7 @@ const getSamlConfigs = function(service) {
 			cert: normalizeCert(settings.get(`${ service.key }_cert`)),
 		},
 		userDataFieldMap: settings.get(`${ service.key }_user_data_fieldmap`),
+		allowedClockDrift: settings.get(`${ service.key }_allowed_clock_drift`),
 	};
 };
 
@@ -279,6 +289,7 @@ const configureSamlService = function(samlConfigs) {
 		defaultUserRole: samlConfigs.defaultUserRole,
 		roleAttributeName: samlConfigs.roleAttributeName,
 		roleAttributeSync: samlConfigs.roleAttributeSync,
+		allowedClockDrift: samlConfigs.allowedClockDrift,
 	};
 };
 
