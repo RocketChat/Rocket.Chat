@@ -10,7 +10,7 @@
 
 	width: 100%;
 
-	/* max-width: var(--sidebar-width); */
+	max-width: var(--sidebar-width);
 
 	height: 100%;
 
@@ -72,6 +72,7 @@
 @media (width < 780px) {
 	.sidebar {
 		position: absolute;
+		max-width: none;
 	}
 
 	.sidebar:not(.sidebar-light) {
@@ -94,7 +95,7 @@
 
 		width: 100%;
 
-		/* max-width: var(--sidebar-width); */
+		max-width: none;
 
 		&__footer {
 			display: none;
