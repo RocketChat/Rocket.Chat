@@ -67,9 +67,9 @@ export const KonchatNotification = {
 							case 'd':
 								return FlowRouter.go('direct', { rid: notification.payload.sender.username }, FlowRouter.current().queryParams); // TODO CHANGE
 							case 'c':
-								return FlowRouter.go('channel', { rid: notification.payload.name }, FlowRouter.current().queryParams);
+								return FlowRouter.go('channel', { name: notification.payload.name }, FlowRouter.current().queryParams);
 							case 'p':
-								return FlowRouter.go('group', { rid: notification.payload.name }, FlowRouter.current().queryParams);
+								return FlowRouter.go('group', { name: notification.payload.name }, FlowRouter.current().queryParams);
 						}
 					};
 				}

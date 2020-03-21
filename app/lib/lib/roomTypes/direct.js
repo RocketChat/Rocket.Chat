@@ -22,7 +22,7 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	}
 
 	link(sub) {
-		return { rid: sub.rid };
+		return { rid: sub.rid || sub.name };
 	}
 }
 

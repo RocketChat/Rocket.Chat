@@ -13,12 +13,12 @@ export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'group',
-			path: '/group/:rid',
+			path: '/group/:name',
 		});
 	}
 
 	action(params) {
-		return openRoom('p', params.rid);
+		return openRoom('p', params.name);
 	}
 }
 

@@ -8,7 +8,7 @@ import { Session } from 'meteor/session';
 import mem from 'mem';
 import _ from 'underscore';
 
-import { ChatSubscription } from '../../../models';
+import { ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes, handleError } from '../../../utils';
@@ -49,15 +49,26 @@ export const openRoom = function(type, name) {
 
 		const room = roomTypes.findRoom(type, name, user);
 		if (room == null) {
-			if (type === 'd') {
-				Meteor.call('createDirectMessage', ...name.split(', '), function(error, result) { // TODO provide a function to handle
-					if (!error) {
-						return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+			Meteor.call('getRoomByTypeAndName', type, name, function(error, record) {
+				if (error) {
+					if (type === 'd') {
+						return Meteor.call('createDirectMessage', ...name.split(', '), function(error, result) { // TODO provide a function to handle
+							if (!error) {
+								return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+							}
+							Session.set('roomNotFound', { type, name, error });
+							BlazeLayout.render('main', { center: 'roomNotFound' });
+						});
 					}
+
 					Session.set('roomNotFound', { type, name, error });
-					BlazeLayout.render('main', { center: 'roomNotFound' });
-				});
-			}
+					return BlazeLayout.render('main', { center: 'roomNotFound' });
+				}
+				Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
+				RoomManager.close(type + name);
+				return openRoom(type, name);
+			});
+
 			c.stop();
 			return;
 		}

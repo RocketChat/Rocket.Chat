@@ -11,12 +11,12 @@ export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'channel',
-			path: '/channel/:rid',
+			path: '/channel/:name',
 		});
 	}
 
 	action(params) {
-		return openRoom('c', params.rid);
+		return openRoom('c', params.name);
 	}
 }
 
