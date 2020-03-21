@@ -50,16 +50,15 @@ export const openRoom = function(type, name) {
 		const room = roomTypes.findRoom(type, name, user);
 		if (room == null) {
 			if (type === 'd') {
-				Meteor.call('createDirectMessage', ...name.split(', '), function(error) { // TODO provide a function to handle
+				Meteor.call('createDirectMessage', ...name.split(', '), function(error, result) { // TODO provide a function to handle
 					if (!error) {
-						return;
-						// RoomManager.close(type + name);
-						// return openRoom('d', name);
+						return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
 					}
 					Session.set('roomNotFound', { type, name, error });
 					BlazeLayout.render('main', { center: 'roomNotFound' });
 				});
 			}
+			c.stop();
 			return;
 		}
 

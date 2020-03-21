@@ -1,3 +1,4 @@
+import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -6,8 +7,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { roomTypes } from '../../../../utils/client';
 import { ChatSubscription } from '../../../../models/client';
 import { call } from '../../../../ui-utils/client';
-
 import './CreateDirectMessage.html';
+import { Subscriptions } from '../../../../models/client/models/Subscriptions';
 
 Template.CreateDirectMessage.helpers({
 	onSelectUser() {
@@ -53,6 +54,18 @@ Template.CreateDirectMessage.helpers({
 	},
 });
 
+const waitUntilRoomBeInserted = async (rid) => {
+	return new Promise((resolve) => {
+		Tracker.autorun((c) => {
+			const room = Subscriptions.findOne({ rid });
+			if (room) {
+				c.stop();
+				return resolve(room);
+			}
+		});
+	});
+};
+
 Template.CreateDirectMessage.events({
 	async 'submit #create-dm, click .js-save-dm'(event, instance) {
 		event.preventDefault();
@@ -63,6 +76,9 @@ Template.CreateDirectMessage.events({
 		if (instance.data.onCreate) {
 			instance.data.onCreate(result);
 		}
+
+		await waitUntilRoomBeInserted(result.rid);
+
 		const user = Meteor.user();
 		roomTypes.openRouteLink(result.t, { ...result, name: result.usernames.filter((username) => username !== user.username).join(', ') });
 	},
