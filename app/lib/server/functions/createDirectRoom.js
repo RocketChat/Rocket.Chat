@@ -30,20 +30,20 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username).localeCompare(u2.name || u2.username));
 
-	const rid = members.map(({ _id }) => _id).sort().join(''); // TODO provide a better rid heuristic
+	const usernames = members.map(({ username }) => username);
 
-	const usernames = sortedMembers.map(({ username }) => username);
+	const room = Rooms.findOne({ t: 'd', usernames: { $all: usernames } }, { fields: { _id: 1 } });
 
-	const { insertedId } = Rooms.upsert({ _id: rid }, {
-		$setOnInsert: {
-			t: 'd',
-			usernames,
-			usersCount: members.length,
-			msgs: 0,
-			ts: new Date(),
-			...roomExtraData,
-		},
+	const rid = room?._id || Rooms.insert({
+		t: 'd',
+		usernames,
+		usersCount: members.length,
+		msgs: 0,
+		ts: new Date(),
+		...roomExtraData,
 	});
+
+	const newRoom = !room;
 
 	if (members.length === 1) { // dm to yourself
 		Subscriptions.upsert({ rid, 'u._id': members[0]._id }, {
@@ -51,14 +51,24 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 			$setOnInsert: generateSubscription(members[0].name || members[0].username, members[0].username, members[0], { ...options.subscriptionExtra }),
 		});
 	} else {
-		members.forEach((member) => Subscriptions.upsert({ rid, 'u._id': member._id }, {
-			...options.creator === member._id && { $set: { open: true } },
-			$setOnInsert: generateSubscription(getFname(member._id, sortedMembers), getName(member._id, sortedMembers), member, { ...options.subscriptionExtra, ...options.creator !== member._id && { open: members.length > 2 } }),
-		}));
+		members.forEach((member) =>
+			Subscriptions.upsert({ rid, 'u._id': member._id }, {
+				...options.creator === member._id && { $set: { open: true } },
+				$setOnInsert: generateSubscription(
+					getFname(member._id, sortedMembers),
+					getName(member._id, sortedMembers),
+					member,
+					{
+						...options.subscriptionExtra,
+						...options.creator !== member._id && { open: members.length > 2 }
+					},
+				),
+			})
+		);
 	}
 
 	// If the room is new, run a callback
-	if (insertedId) {
+	if (newRoom) {
 		const insertedRoom = Rooms.findOneById(rid);
 
 		callbacks.run('afterCreateDirectRoom', insertedRoom, { from: members[0], to: members[1] }); // TODO PLEASE CHECK FEDERATION!!!
@@ -68,6 +78,6 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 		_id: rid,
 		usernames,
 		t: 'd',
-		inserted: !!insertedId,
+		inserted: newRoom,
 	};
 };
