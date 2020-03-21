@@ -32,7 +32,9 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	const usernames = members.map(({ username }) => username);
 
-	const room = Rooms.findOne({ t: 'd', usernames: { $all: usernames } }, { fields: { _id: 1 } });
+	const room = Rooms.findDirectRoomContainingAllUsernames(usernames, { fields: { _id: 1 } });
+
+	const isNewRoom = !room;
 
 	const rid = room?._id || Rooms.insert({
 		t: 'd',
@@ -42,8 +44,6 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 		ts: new Date(),
 		...roomExtraData,
 	});
-
-	const newRoom = !room;
 
 	if (members.length === 1) { // dm to yourself
 		Subscriptions.upsert({ rid, 'u._id': members[0]._id }, {
@@ -68,7 +68,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 	}
 
 	// If the room is new, run a callback
-	if (newRoom) {
+	if (isNewRoom) {
 		const insertedRoom = Rooms.findOneById(rid);
 
 		callbacks.run('afterCreateDirectRoom', insertedRoom, { from: members[0], to: members[1] }); // TODO PLEASE CHECK FEDERATION!!!
@@ -78,6 +78,6 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 		_id: rid,
 		usernames,
 		t: 'd',
-		inserted: newRoom,
+		inserted: isNewRoom,
 	};
 };
