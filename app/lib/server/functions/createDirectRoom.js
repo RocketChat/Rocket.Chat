@@ -60,7 +60,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 					member,
 					{
 						...options.subscriptionExtra,
-						...options.creator !== member._id && { open: members.length > 2 }
+						...options.creator !== member._id && { open: members.length > 2 },
 					},
 				),
 			}),
