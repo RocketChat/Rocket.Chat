@@ -4,7 +4,7 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 import { callbacks } from '../../../callbacks';
-import { LICENSE_VERSION } from '../../../../ee/app/license/server';
+import { LICENSE_VERSION } from '../license';
 
 export function getWorkspaceLicense() {
 	const token = getWorkspaceAccessToken();
@@ -12,7 +12,6 @@ export function getWorkspaceLicense() {
 	if (!token) {
 		return { updated: false, license: '' };
 	}
-
 
 	let licenseResult;
 	try {

@@ -5,6 +5,7 @@
   "Edit_Tag": "Editar Tag",
   "Edit_Unit": "Editar Unidade",
   "Enterprise_License": "Licença Enterprise",
+  "Enterprise_License_Description": "Se você registrou seu workspace e a licença foi fornecida pelo Rocket.Chat Cloud você não precisa atualizar a licença manualmente aqui.",
   "LDAP_Default_Role_To_User": "Papel padrão para o usuário",
   "LDAP_Default_Role_To_User_Description": "Papel padrão par ser aplicado ao usuário, caso ele tenha algum papel do LDAP que não esteja mapeado.",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Habilitar o mapeamento de papéis do LDAP para o Rocket.Chat",

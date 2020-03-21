@@ -1,7 +1,7 @@
 import { settings } from '../../../settings';
 import { Users } from '../../../models';
 import { statistics } from '../../../statistics';
-import { LICENSE_VERSION } from '../../../../ee/app/license/server';
+import { LICENSE_VERSION } from '../license';
 
 export function buildWorkspaceRegistrationData() {
 	const stats = statistics.get();
