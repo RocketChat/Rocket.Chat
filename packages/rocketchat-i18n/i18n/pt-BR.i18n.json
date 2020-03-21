@@ -2273,6 +2273,7 @@
   "Offline_Message_Use_DeepLink": "Usar URL no formato Deep Link",
   "Offline_Mention_All_Email": "Mencionar todo o assunto do e-mail",
   "Offline_Mention_Email": "Você foi mencionado por __user__ em #__room__",
+  "Offline_message": "Mensagem quando offline",
   "Offline_success_message": "Mensagem de sucesso ao enviar formulário offline",
   "Offline_unavailable": "Form offline indisponível",
   "Old Colors": "Cores antigas",
