@@ -77,7 +77,7 @@ export const openRoom = function(type, name) {
 		c.stop();
 		if (room._id !== name && type === 'd') {
 			RoomManager.close(type + name);
-			return FlowRouter.go('direct', { username: room._id }, FlowRouter.current().queryParams);
+			return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 		}
 
 		const roomDom = RoomManager.getDomOfRoom(type + name, room._id);

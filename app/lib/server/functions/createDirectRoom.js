@@ -1,6 +1,7 @@
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/lib/settings';
-import { getDefaultSubscriptionPref } from '../../../utils';
+import { getDefaultSubscriptionPref } from '../../../utils/server';
+import { callbacks } from '../../../callbacks/server';
 
 const generateSubscription = (fname, name, user, extra) => ({
 	alert: false,
@@ -23,7 +24,7 @@ const getFname = (uid, members) => members.filter(({ _id }) => _id !== uid).map(
 const getName = (uid, members) => members.filter(({ _id }) => _id !== uid).map(({ username }) => username).join(', ');
 
 export const createDirectRoom = function(members, roomExtraData = {}, options = {}) {
-	if (members.length > settings.get('DirectMesssage_maxUsers')) {
+	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
 
@@ -43,6 +44,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 			...roomExtraData,
 		},
 	});
+
 	if (members.length === 1) { // dm to yourself
 		Subscriptions.upsert({ rid, 'u._id': members[0]._id }, {
 			$set: { open: true },
@@ -53,6 +55,13 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 			...options.creator === member._id && { $set: { open: true } },
 			$setOnInsert: generateSubscription(getFname(member._id, sortedMembers), getName(member._id, sortedMembers), member, { ...options.subscriptionExtra, ...options.creator !== member._id && { open: members.length > 2 } }),
 		}));
+	}
+
+	// If the room is new, run a callback
+	if (insertedId) {
+		const insertedRoom = Rooms.findOneById(rid);
+
+		callbacks.run('afterCreateDirectRoom', insertedRoom, { from: members[0], to: members[1] }); // TODO PLEASE CHECK FEDERATION!!!
 	}
 
 	return {

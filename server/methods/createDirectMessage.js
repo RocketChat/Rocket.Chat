@@ -3,11 +3,10 @@ import { check } from 'meteor/check';
 
 import { settings } from '../../app/settings';
 import { hasPermission } from '../../app/authorization';
-import { Users, Rooms } from '../../app/models';
+import { Users } from '../../app/models';
 import { RateLimiter } from '../../app/lib';
-import { callbacks } from '../../app/callbacks';
 import { addUser } from '../../app/federation/server/functions/addUser';
-import { createDirectRoom } from '../../app/lib/server';
+import { createRoom } from '../../app/lib/server';
 
 Meteor.methods({
 	createDirectMessage(...usernames) {
@@ -53,22 +52,10 @@ Meteor.methods({
 					method: 'createDirectMessage',
 				});
 			}
-
-			if (!hasPermission(to._id, 'view-d-room')) {
-				throw new Meteor.Error('error-not-allowed', `Target user ${ username } not allowed to receive messages`, {
-					method: 'createDirectMessage',
-				});
-			}
 			return to;
 		});
 
-		const { _id: rid, inserted, ...room } = createDirectRoom([me, ...users], { }, { creator: me._id });
-
-		// If the room is new, run a callback
-		if (inserted) {
-			const insertedRoom = Rooms.findOneById(rid);
-			callbacks.run('afterCreateDirectRoom', insertedRoom, { from: me, to: users[0] }); // TODO CHECK FEDERATION
-		}
+		const { _id: rid, inserted, ...room } = createRoom('d', null, null, [me, ...users], { }, { creator: me._id });
 
 		return {
 			t: 'd',
