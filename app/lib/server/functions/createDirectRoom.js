@@ -63,7 +63,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 						...options.creator !== member._id && { open: members.length > 2 }
 					},
 				),
-			})
+			}),
 		);
 	}
 
