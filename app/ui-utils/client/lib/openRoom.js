@@ -11,7 +11,8 @@ import _ from 'underscore';
 import { ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { roomTypes, handleError } from '../../../utils';
+import { roomTypes } from '../../../utils';
+import { call } from './callMethod';
 
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 
@@ -39,88 +40,87 @@ function replaceCenterDomBy(dom) {
 	return mainNode;
 }
 
-export const openRoom = function(type, name) {
-	window.currentTracker = Tracker.autorun(function(c) {
+const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
+	Tracker.autorun((c) => {
+		const room = roomTypes.findRoom(type, rid, Meteor.user());
+		if (room) {
+			c.stop();
+			return resolve(room);
+		}
+	});
+});
+
+export const openRoom = async function(type, name) {
+	window.currentTracker && window.currentTracker.stop();
+	window.currentTracker = Tracker.autorun(async function(c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
 			BlazeLayout.render('main');
 			return;
 		}
 
-		const room = roomTypes.findRoom(type, name, user);
-		if (room == null) {
-			Meteor.call('getRoomByTypeAndName', type, name, function(error, record) {
-				if (error) {
-					if (type === 'd') {
-						return Meteor.call('createDirectMessage', ...name.split(', '), function(error, result) { // TODO provide a function to handle
-							if (!error) {
-								return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
-							}
-							Session.set('roomNotFound', { type, name, error });
-							BlazeLayout.render('main', { center: 'roomNotFound' });
-						});
-					}
+		try {
+			const room = roomTypes.findRoom(type, name, user) || await call('getRoomByTypeAndName', type, name);
 
-					Session.set('roomNotFound', { type, name, error });
-					return BlazeLayout.render('main', { center: 'roomNotFound' });
+			if (RoomManager.open(type + name).ready() !== true) {
+				if (settings.get('Accounts_AllowAnonymousRead')) {
+					BlazeLayout.render('main');
 				}
-				Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
-				RoomManager.close(type + name);
-				return openRoom(type, name);
-			});
+				replaceCenterDomBy(getDomOfLoading());
+				return;
+			}
 
 			c.stop();
-			return;
-		}
 
-		if (RoomManager.open(type + name).ready() !== true) {
-			if (settings.get('Accounts_AllowAnonymousRead')) {
-				BlazeLayout.render('main');
+			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
+
+			if (window.currentTracker) {
+				window.currentTracker = undefined;
 			}
-			replaceCenterDomBy(getDomOfLoading());
-			return;
-		}
-		if (window.currentTracker) {
-			window.currentTracker = undefined;
-		}
 
-		c.stop();
-		if (room._id !== name && type === 'd') {
-			RoomManager.close(type + name);
-			return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
-		}
-
-		const roomDom = RoomManager.getDomOfRoom(type + name, room._id);
-		const mainNode = replaceCenterDomBy(roomDom);
-
-		if (mainNode) {
-			if (roomDom.classList.contains('room-container')) {
-				roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
+			if (room._id !== name && type === 'd') { // Redirect old url using username to rid
+				RoomManager.close(type + name);
+				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 			}
-		}
 
-		Session.set('openedRoom', room._id);
-		RoomManager.openedRoom = room._id;
+			const roomDom = RoomManager.getDomOfRoom(type + name, room._id);
+			const mainNode = replaceCenterDomBy(roomDom);
 
-		fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
-
-		Session.set('editRoomTitle', false);
-		// KonchatNotification.removeRoomNotification(params._id)
-		// update user's room subscription
-		const sub = ChatSubscription.findOne({ rid: room._id });
-		if (sub && sub.open === false) {
-			Meteor.call('openRoom', room._id, function(err) {
-				if (err) {
-					return handleError(err);
+			if (mainNode) {
+				if (roomDom.classList.contains('room-container')) {
+					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
 				}
-			});
-		}
+			}
 
-		if (FlowRouter.getQueryParam('msg')) {
-			const msg = { _id: FlowRouter.getQueryParam('msg'), rid: room._id };
-			RoomHistoryManager.getSurroundingMessages(msg);
-		}
+			Session.set('openedRoom', room._id);
+			RoomManager.openedRoom = room._id;
 
-		return callbacks.run('enter-room', sub);
+			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
+
+			Session.set('editRoomTitle', false);
+			// KonchatNotification.removeRoomNotification(params._id)
+			// update user's room subscription
+			const sub = ChatSubscription.findOne({ rid: room._id });
+			if (sub && sub.open === false) {
+				call('openRoom', room._id);
+			}
+
+			if (FlowRouter.getQueryParam('msg')) {
+				const msg = { _id: FlowRouter.getQueryParam('msg'), rid: room._id };
+				RoomHistoryManager.getSurroundingMessages(msg);
+			}
+
+			return callbacks.run('enter-room', sub);
+		} catch (error) {
+			c.stop();
+			if (type !== 'd') {
+				const result = await call('createDirectMessage', ...name.split(', ')).then((result) => waitUntilRoomBeInserted(type, result.rid)).catch(() => {});
+				if (result) {
+					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+				}
+			}
+			Session.set('roomNotFound', { type, name, error });
+			return BlazeLayout.render('main', { center: 'roomNotFound' });
+		}
 	});
 };
