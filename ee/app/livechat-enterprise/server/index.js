@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import './hooks/addDepartmentAncestors';
+import './hooks/afterForwardChatToDepartment';
 import './hooks/beforeListTags';
 import './methods/addMonitor';
 import './methods/getUnitsFromUserRoles';

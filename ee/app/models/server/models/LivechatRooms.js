@@ -35,11 +35,7 @@ LivechatRooms.prototype.updateDepartmentAncestorsById = function(_id, department
 	const query = {
 		_id,
 	};
-	const update = {
-		$set: {
-			departmentAncestors,
-		},
-	};
+	const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
 	return this.update(query, update);
 };
 
