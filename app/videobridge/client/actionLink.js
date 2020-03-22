@@ -13,7 +13,7 @@ actionLinks.register('joinJitsiCall', function(message, params, instance) {
 		const currentTime = new Date().getTime();
 		const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 
-		if (jitsiTimeout > currentTime) {
+		if (true || jitsiTimeout > currentTime) {
 			instance.tabBar.open('video');
 		} else {
 			toastr.info(TAPi18n.__('Call Already Ended', ''));
