@@ -75,7 +75,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 	if (isNewRoom) {
 		const insertedRoom = Rooms.findOneById(rid);
 
-		callbacks.run('afterCreateDirectRoom', insertedRoom, { from: members[0], to: members[1] }); // TODO PLEASE CHECK FEDERATION!!!
+		callbacks.run('afterCreateDirectRoom', insertedRoom, { members });
 	}
 
 	return {
