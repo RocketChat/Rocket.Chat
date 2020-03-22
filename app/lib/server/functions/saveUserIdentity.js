@@ -53,8 +53,8 @@ export function saveUserIdentity(userId, { _id, name, username }) {
 	const previousUsername = user.username;
 
 	if (username) {
-		user.username = username;
 		setUsername(_id, username, user);
+		user.username = username;
 	}
 
 	if (name) {
