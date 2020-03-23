@@ -5,6 +5,8 @@
 	for the *client* pieces of code which does include the shared
 	library files.
 */
+import * as DateFormat from './formatDate';
+
 export { RocketChatAnnouncement } from './RocketChatAnnouncement';
 export { LoginPresence } from './LoginPresence';
-export * as DateFormat from './formatDate';
+export { DateFormat };
