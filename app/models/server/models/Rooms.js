@@ -484,6 +484,15 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findDirectRoomContainingAllUserIDs(uid, options) {
+		const query = {
+			t: 'd',
+			uids: { $size: uid.length, $all: uid },
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByTypeAndName(type, name, options) {
 		const query = {
 			name,
@@ -659,11 +668,12 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	incUsersCountByIds(ids, inc = 1) {
+	incUsersCountNotDMsByIds(ids, inc = 1) {
 		const query = {
 			_id: {
 				$in: ids,
 			},
+			t: { $ne: 'd' },
 		};
 
 		const update = {
@@ -952,6 +962,22 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	updateGroupDMsRemovingUsernamesByUsername(username) {
+		const query = {
+			t: 'd',
+			usernames: username,
+			usersCount: { $gt: 2 },
+		};
+
+		const update = {
+			$pull: {
+				usernames: username,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	// INSERT
 	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
 		const room = {
@@ -1004,10 +1030,20 @@ export class Rooms extends Base {
 		return this.remove(query);
 	}
 
+	remove1on1ById(_id) {
+		const query = {
+			_id,
+			usersCount: { $lte: 2 },
+		};
+
+		return this.remove(query);
+	}
+
 	removeDirectRoomContainingUsername(username) {
 		const query = {
 			t: 'd',
 			usernames: username,
+			usersCount: { $lte: 2 },
 		};
 
 		return this.remove(query);

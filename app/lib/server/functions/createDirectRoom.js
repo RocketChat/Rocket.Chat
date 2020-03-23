@@ -30,9 +30,10 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username).localeCompare(u2.name || u2.username));
 
-	const usernames = members.map(({ username }) => username);
+	const usernames = sortedMembers.map(({ username }) => username);
+	const uids = sortedMembers.map(({ _id }) => _id);
 
-	const room = Rooms.findDirectRoomContainingAllUsernames(usernames, { fields: { _id: 1 } });
+	const room = Rooms.findDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
 
 	const isNewRoom = !room;
 
@@ -42,7 +43,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 		usersCount: members.length,
 		msgs: 0,
 		ts: new Date(),
-		uids: sortedMembers.map(({ _id }) => _id),
+		uids,
 		...roomExtraData,
 	});
 

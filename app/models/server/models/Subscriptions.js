@@ -1296,7 +1296,7 @@ export class Subscriptions extends Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			Rooms.incUsersCountByIds(roomIds, -1);
+			Rooms.incUsersCountNotDMsByIds(roomIds, -1);
 		}
 
 		return result;
