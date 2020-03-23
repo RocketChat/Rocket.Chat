@@ -265,12 +265,14 @@ export const saveUser = function(userId, userData) {
 	validateUserEditing(userId, userData);
 
 	// update user
-	if (userData.username || userData.hasOwnProperty('name')) {
-		saveUserIdentity(userId, {
+	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
+		if (!saveUserIdentity(userId, {
 			_id: userData._id,
 			username: userData.username,
 			name: userData.name,
-		});
+		})) {
+			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUser' });
+		}
 	}
 
 	if (typeof userData.statusText === 'string') {

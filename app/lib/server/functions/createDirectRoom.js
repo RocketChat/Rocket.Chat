@@ -62,7 +62,6 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 					getName(otherMembers),
 					member,
 					{
-						uids: otherMembers.map(({ _id }) => _id),
 						...options.subscriptionExtra,
 						...options.creator !== member._id && { open: members.length > 2 },
 					},
