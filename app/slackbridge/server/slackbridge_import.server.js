@@ -29,30 +29,32 @@ function SlackBridgeImport(command, params, item) {
 	});
 
 	try {
-		SlackBridge.slack.importMessages(item.rid, (error) => {
-			if (error) {
-				msgStream.emit(item.rid, {
-					_id: Random.id(),
-					rid: item.rid,
-					u: { username: 'rocket.cat' },
-					ts: new Date(),
-					msg: TAPi18n.__('SlackBridge_error', {
-						postProcess: 'sprintf',
-						sprintf: [channel, error.message],
-					}, user.language),
-				});
-			} else {
-				msgStream.emit(item.rid, {
-					_id: Random.id(),
-					rid: item.rid,
-					u: { username: 'rocket.cat' },
-					ts: new Date(),
-					msg: TAPi18n.__('SlackBridge_finish', {
-						postProcess: 'sprintf',
-						sprintf: [channel],
-					}, user.language),
-				});
-			}
+		SlackBridge.slackAdapters.forEach((slack) => {
+			slack.importMessages(item.rid, (error) => {
+				if (error) {
+					msgStream.emit(item.rid, {
+						_id: Random.id(),
+						rid: item.rid,
+						u: { username: 'rocket.cat' },
+						ts: new Date(),
+						msg: TAPi18n.__('SlackBridge_error', {
+							postProcess: 'sprintf',
+							sprintf: [channel, error.message],
+						}, user.language),
+					});
+				} else {
+					msgStream.emit(item.rid, {
+						_id: Random.id(),
+						rid: item.rid,
+						u: { username: 'rocket.cat' },
+						ts: new Date(),
+						msg: TAPi18n.__('SlackBridge_finish', {
+							postProcess: 'sprintf',
+							sprintf: [channel],
+						}, user.language),
+					});
+				}
+			});
 		});
 	} catch (error) {
 		msgStream.emit(item.rid, {
