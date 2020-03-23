@@ -99,7 +99,7 @@
 
 			padding: 0;
 
-			color: var(--icon-color);
+			color: var(--icons-color);
 
 			font-size: 22px;
 		}
@@ -342,7 +342,7 @@
 
 		color: var(--rc-color-alert-message-secondary);
 		border-color: var(--rc-color-alert-message-secondary);
-		background: pink;
+		background: var(--rc-color-alert-message-secondary-background);
 	}
 
 	&--warning {

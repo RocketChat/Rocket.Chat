@@ -136,8 +136,10 @@
 	}
 
 	&--outline {
+		color: var(--outline-buttons);
 		border-width: 2px;
 		border-style: solid;
+		border-color: var(--outline-buttons);
 		background: transparent;
 	}
 

@@ -4,7 +4,6 @@
 	width: 100%;
 	padding: 24px;
 
-	/* color: var(--icon-color); */
 	font-size: var(--message-box-text-size);
 
 	&--embedded {

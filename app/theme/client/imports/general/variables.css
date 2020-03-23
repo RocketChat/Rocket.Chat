@@ -36,26 +36,34 @@
 	/*
 	* New Variables
 	*/
-	--message-container-background: #36393e;
-	--header-room-background: #36393e;
-	--footer-message-background: #36393e;
-	--home-section-background: #36393e;
-	--room-sidebar: #2f3136;
-	--room-sidebar-header: #2f3136;
-	--room-sidebar-header-border: #494d55;
-	--room-sidebar-header-icon-title: #dcddde;
-	--room-header-actions: #dcddde;
-	--emoji-picker-background: #36393e;
-	--directory-background: #36393e;
-	--title-color: #dcddde;
-	--home-font-color: #dcddde;
-	--icons-color: #dcddde;
-	--room-name: #dcddde;
-	--room-font-color: #dcddde;
-	--font-color-new-day: #494d55;
-	--table-hover: #c2c3c5;
-	--popover-background-color-hover: #26282c;
-	--role-tag-color: #494d55;
+
+	/* TODO: improve variables names */
+	--dark-theme-gray: #dcddde;
+	--dark-theme-black-1: #2f3136;
+	--dark-theme-black-2: #36393e;
+	--dark-theme-black-3: #494d55;
+	--dark-theme-blue: #7289da;
+	--message-container-background: var(--dark-theme-black-2);
+	--header-room-background: var(--dark-theme-black-2);
+	--footer-message-background: var(--dark-theme-black-2);
+	--home-section-background: var(--dark-theme-black-2);
+	--room-sidebar: var(--dark-theme-black-1);
+	--room-sidebar-header: var(--dark-theme-black-1);
+	--room-sidebar-header-border: var(--dark-theme-black-3);
+	--room-sidebar-header-icon-title: var(--dark-theme-gray);
+	--room-header-actions: var(--dark-theme-gray);
+	--emoji-picker-background: var(--dark-theme-black-2);
+	--directory-background: var(--dark-theme-black-2);
+	--title-color: var(--dark-theme-gray);
+	--home-font-color: var(--dark-theme-gray);
+	--icons-color: var(--dark-theme-gray);
+	--room-name: var(--dark-theme-gray);
+	--room-font-color: var(--dark-theme-gray);
+	--font-color-new-day: var(--dark-theme-black-3);
+	--table-hover: var(--dark-theme-black-3);
+	--popover-background-color-hover: var(--dark-theme-black-1);
+	--role-tag-color: var(--dark-theme-black-3);
+	--outline-buttons: var(--dark-theme-blue);
 
 	/*
 	* General Colors
@@ -156,8 +164,8 @@
 	*/
 	--input-font-size: 0.875rem;
 	--input-title-text-size: var(--input-font-size);
-	--input-title-color: #2d343d;
-	--input-text-color: #dcddde;
+	--input-title-color: var(--dark-theme-black-1);
+	--input-text-color: var(--dark-theme-gray);
 	--input-placeholder-color: var(--color-gray-medium);
 	--input-icon-color: var(--color-dark);
 
@@ -366,12 +374,12 @@
 	*/
 	--popover-padding: 1rem;
 	--popover-radius: var(--border-radius);
-	--popover-background: #494d55;
+	--popover-background: var(--dark-theme-black-3);
 	--popover-column-min-width: 130px;
 	--popover-column-padding: 1rem;
-	--popover-title-color: #dcddde;
+	--popover-title-color: var(--dark-theme-gray);
 	--popover-title-text-size: 0.75rem;
-	--popover-item-color: #dcddde;
+	--popover-item-color: var(--dark-theme-gray);
 	--popover-item-text-size: 0.875rem;
 	--popover-divider-height: 2px;
 	--popover-divider-color: var(--color-gray-light);
