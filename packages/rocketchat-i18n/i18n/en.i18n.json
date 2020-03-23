@@ -2895,6 +2895,8 @@
   "SAML_Default_User_Role_Description": "You can specify multiple roles, separating them with commas.",
   "SAML_Role_Attribute_Name": "Role Attribute Name",
   "SAML_Role_Attribute_Name_Description": "If this attribute is found on the SAML response, it's values will be used as role names for new users.",
+  "SAML_Role_Attribute_Sync": "Sync User Roles",
+  "SAML_Role_Attribute_Sync_Description": "Sync SAML user roles on login (overwrites local user roles).",
   "SAML_Allowed_Clock_Drift": "Allowed clock drift from Identity Provider",
   "SAML_Allowed_Clock_Drift_Description": "The clock of the Identity Provider may drift slightly ahead of your system clocks. You can allow for a small amount of clock drift. Its value must be given in a number of milliseconds (ms). The value given is added to the current time at which the response is validated.",
   "Saturday": "Saturday",

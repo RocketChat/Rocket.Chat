@@ -2813,6 +2813,8 @@
   "SAML_Default_User_Role_Description": "Sie können mehrere Rollen angeben, indem Sie sie durch Kommas trennen.",
   "SAML_Role_Attribute_Name": "Rollenattributname",
   "SAML_Role_Attribute_Name_Description": "Wenn dieses Attribut in der SAML-Antwort gefunden wird, werden seine Werte als Rollennamen für neue Benutzer verwendet.",
+  "SAML_Role_Attribute_Sync": "Benutzerrollen synchronisieren",
+  "SAML_Role_Attribute_Sync_Description": "Synchronisiere Benutzerrollen beim Login (Überschreibt lokale Benutzerrollen).",
   "SAML_Allowed_Clock_Drift": "Erlaubte Zeitabweichung zum Identity Provider",
   "SAML_Allowed_Clock_Drift_Description": "Die Uhrzeit des Identitätsproviders kann minimal vor der eigenen Systemzeit liegen. Um eine geringe Abweichung der Zeiten zu berücksichtigen, kann eine Zeitabweichung definiert werden. Der Wert muss in einer Anzahl von Millisekunden (ms) angegeben werden. Der angegebene Wert wird zur aktuellen Zeit, zu der die Antwort validiert wird, addiert.",
   "Saturday": "Samstag",
