@@ -344,7 +344,10 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+    # WideChat does not need this
+    if: github.event_name == 'DEACTIVATED'
+
+    # if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: test
 
     steps:
@@ -390,6 +393,8 @@ jobs:
 
   image-build:
     runs-on: ubuntu-latest
+    # EAR - WideChat uses Terranovax/aws-ecr-deploy@v1 to deploy to ecr
+    if: github.event_name == 'DEACTIVATED'
     needs: deploy
 
     strategy:
@@ -463,3 +468,55 @@ jobs:
 
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop
+
+  # EAR NOTE: This currently pushes only PRs to develop_pwa to our DEV account.  TODO: Implement merges to DEV, then to PROD when ready.
+  widechat-ecr-push:
+    runs-on: ubuntu-latest
+    if: github.base_ref == 'develop_pwa'
+    needs: test
+      
+    steps:
+    - uses: actions/checkout@v1
+
+    # - name: Install jq
+    #   run: |
+    #     sudo apt-get -y -qq update
+    #     sudo apt-get -y -qq install jq
+
+    - name: Parse for PR num
+      if: github.event_name == 'pull_request'
+
+      run: |
+        git_ref=${{ github.ref }}
+        arrRef=(${git_ref//\// })
+        pr_num=${arrRef[2]}
+        echo "pr_num is this: $pr_num"
+        echo ::set-env name=PR_TAG::pr-num-$pr_num
+
+    - name: Restore build
+      uses: actions/download-artifact@v1
+      with:
+        name: build
+        path: /tmp/build
+
+    - name: Unpack build
+      run: |
+        cd /tmp/build
+        tar xzf Rocket.Chat.tar.gz
+        rm Rocket.Chat.tar.gz
+        cp "${GITHUB_WORKSPACE}/.docker/Dockerfile" .
+
+    - name: AWS Deploy to ECR
+      if: github.event_name == 'pull_request'
+
+      uses: Terranovax/aws-ecr-deploy@v1
+      with:
+        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+        region: us-east-1
+        dockerfile: /tmp/build/Dockerfile
+        path: /tmp/build
+        repo: widechat
+        tags: ${{ env.PR_TAG }}
+
