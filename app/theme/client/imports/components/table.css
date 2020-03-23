@@ -26,7 +26,7 @@
 			cursor: pointer;
 
 			&:hover {
-				background-color: var(--rc-color-primary-lightest);
+				background-color: var(--table-hover);
 			}
 		}
 	}
@@ -97,13 +97,12 @@
 
 		text-overflow: ellipsis;
 
-		
-
 		line-height: normal;
 
 		& .rc-icon {
-			color: var(--rc-color-primary-light);
 			margin: 0 -4px;
+
+			color: var(--rc-color-primary-light);
 
 			font-size: 1rem;
 		}

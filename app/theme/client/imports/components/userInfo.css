@@ -2,9 +2,13 @@
 	z-index: 1;
 
 	display: flex;
+
 	flex-direction: column;
 
 	margin-bottom: var(--default-padding);
+
+	color: var(--room-font-color);
+
 	align-items: center;
 
 	&-container {
@@ -34,7 +38,6 @@
 
 	&-wrapper {
 		overflow-y: auto;
-
 		flex: 1 1;
 	}
 
@@ -173,6 +176,8 @@
 
 		margin-bottom: 37px;
 
+		color: var(--room-font-color);
+
 		font-size: 15px;
 		font-weight: 400;
 	}
@@ -188,6 +193,8 @@
 		overflow: hidden;
 
 		margin-bottom: var(--default-padding);
+
+		color: var(--room-font-color);
 		justify-content: center;
 
 		&__item {
@@ -209,7 +216,7 @@
 		margin-bottom: calc(var(--default-small-padding) * -1);
 		padding: var(--default-padding);
 
-		background-color: #f7f8fa;
+		background-color: transparent;
 
 		&__item:not(:last-child) {
 			margin-bottom: var(--default-small-padding);
@@ -230,7 +237,7 @@
 
 			text-overflow: ellipsis;
 
-			color: var(--color-dark);
+			color: var(--room-font-color);
 
 			font-size: 16px;
 			line-height: 18px;

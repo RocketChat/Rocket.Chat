@@ -6,6 +6,8 @@
 
 	padding: 1.25rem 2rem;
 
+	background-color: var(--directory-background);
+
 	& &__search-form {
 		display: grid;
 		grid-gap: 0 10px;

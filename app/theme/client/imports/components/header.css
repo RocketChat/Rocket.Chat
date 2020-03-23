@@ -3,7 +3,6 @@
 	z-index: 10;
 
 	font-size: var(--text-heading-size);
-	/* color: var(--icon-color); */
 
 	.rc-badge {
 		position: absolute;
@@ -46,10 +45,10 @@
 	&--room {
 		padding: 1.25rem;
 
+		background-color: var(--header-room-background);
 		box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
 
 		font-size: var(--header-title-font-size);
-		background-color: var(--header-room-background);
 	}
 
 	&__wrap {
@@ -63,6 +62,7 @@
 
 		white-space: nowrap;
 
+		color: var(--title-color);
 		background-color: transparent;
 
 		align-items: center;
@@ -129,10 +129,12 @@
 		padding-bottom: 1px;
 
 		text-overflow: ellipsis;
-		/* color: var(--icon-color); */
+
+		color: var(--room-name);
 	}
 
 	&__section-title {
+
 		color: var(--header-title-username-color-darker); /* TODO: make sure if is being used in some place */
 
 		font-weight: var(--header-title-username-weight);
@@ -149,7 +151,7 @@
 
 		/* max-width: use this to allign the buttons with the form */
 	}
-	
+
 	/* TODO: make sure if is being used in some place */
 	&__section-button > button {
 		margin: 0.3rem;
@@ -253,7 +255,6 @@
 		padding: 0 0.25rem;
 
 		color: var(--header-toggle-favorite-color);
-		/* color: var(--icon-color); */
 
 		& > .rc-header__icon {
 			font-size: 2rem;
@@ -317,9 +318,10 @@
 		cursor: pointer;
 		transition: all 0.3s;
 
+		color: var(--room-header-actions);
+
 		font-size: 20px;
 		align-items: center;
-		color: var(--room-header-actions);
 
 		&.active,
 		&:hover {

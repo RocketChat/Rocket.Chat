@@ -38,8 +38,9 @@
 		height: 100%;
 
 		padding: var(--default-padding);
-		justify-content: space-between;
+
 		background-color: var(--room-sidebar);
+		justify-content: space-between;
 
 		&--no-padding {
 			padding-right: 0;
@@ -64,13 +65,13 @@
 		align-items: center;
 		justify-content: flex-end;
 
-
 		&-data {
 			display: flex;
 			overflow: hidden;
 			flex: 1 1;
-			align-items: center;
+
 			color: var(--room-sidebar-header-icon-title);
+			align-items: center;
 		}
 
 		&-icon {
@@ -91,9 +92,14 @@
 			left: 0;
 
 			width: auto;
+
 			height: auto;
+
 			margin: 0;
+
 			padding: 0;
+
+			color: var(--icon-color);
 
 			font-size: 22px;
 		}
@@ -361,7 +367,6 @@
 
 			transform: rotate3d(0, 0, 1, -25deg);
 			fill: currentColor;
-			/* stroke: var(--icon-colors); */
 		}
 	}
 

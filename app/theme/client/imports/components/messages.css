@@ -1,5 +1,6 @@
 .messages-container-wrapper {
 	position: relative;
+
 	background-color: var(--message-container-background);
 }
 
@@ -18,6 +19,8 @@
 
 	&__buttons {
 		display: flex;
+
+		color: var(--icons-color);
 	}
 
 	&__button {

@@ -39,6 +39,8 @@ textarea.rc-input__element {
 		height: 100%;
 
 		cursor: default;
+
+		color: var(--icons-color);
 		align-items: center;
 		justify-content: center;
 

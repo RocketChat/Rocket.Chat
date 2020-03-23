@@ -10,7 +10,7 @@
 
 	&__counter {
 
-		color: #25292f;
+		color: var(--room-font-color);
 
 		font-size: 14px;
 	}
