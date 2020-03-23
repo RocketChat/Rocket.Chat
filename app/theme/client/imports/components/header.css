@@ -134,7 +134,6 @@
 	}
 
 	&__section-title {
-
 		color: var(--header-title-username-color-darker); /* TODO: make sure if is being used in some place */
 
 		font-weight: var(--header-title-username-weight);
