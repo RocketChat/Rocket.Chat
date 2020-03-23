@@ -98,6 +98,10 @@ export class PrivateRoomType extends RoomTypeConfig {
 		}
 	}
 
+	allowMemberAction(/* room, action */) {
+		return true;
+	}
+
 	enableMembersListProfile() {
 		return true;
 	}

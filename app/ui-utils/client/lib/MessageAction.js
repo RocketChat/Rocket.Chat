@@ -176,7 +176,7 @@ Meteor.startup(async function() {
 			if (subscription == null) {
 				return false;
 			}
-			if (room.t === 'd') {
+			if (room.t === 'd' || room.t === 'l') {
 				return false;
 			}
 			return true;
@@ -192,7 +192,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			const { input } = chatMessages[message.rid];
+			const { input } = chatMessages[message.rid + (message.tmid ? `-${ message.tmid }` : '')];
 			const $input = $(input);
 
 			let messages = $input.data('reply') || [];
