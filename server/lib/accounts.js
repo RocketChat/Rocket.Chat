@@ -98,6 +98,29 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 	});
 };
 
+const getLinkedInName = ({ firstName, lastName }) => {
+	const { preferredLocale, localized: firstNameLocalized } = firstName;
+	const { localized: lastNameLocalized } = lastName;
+
+	// LinkedIn new format
+	if (preferredLocale && firstNameLocalized && preferredLocale.language && preferredLocale.country) {
+		const locale = `${ preferredLocale.language }_${ preferredLocale.country }`;
+
+		if (firstNameLocalized[locale] && lastNameLocalized[locale]) {
+			return `${ firstNameLocalized[locale] } ${ lastNameLocalized[locale] }`;
+		}
+		if (firstNameLocalized[locale]) {
+			return firstNameLocalized[locale];
+		}
+	}
+
+	// LinkedIn old format
+	if (!lastName) {
+		return firstName;
+	}
+	return `${ firstName } ${ lastName }`;
+};
+
 Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
@@ -108,12 +131,9 @@ Accounts.onCreateUser(function(options, user = {}) {
 		if (options.profile) {
 			if (options.profile.name) {
 				user.name = options.profile.name;
-			} else if (options.profile.firstName && options.profile.lastName) {
-				// LinkedIn format
-				user.name = `${ options.profile.firstName } ${ options.profile.lastName }`;
 			} else if (options.profile.firstName) {
 				// LinkedIn format
-				user.name = options.profile.firstName;
+				user.name = getLinkedInName(options.profile);
 			}
 		}
 	}

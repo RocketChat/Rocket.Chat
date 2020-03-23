@@ -1738,6 +1738,87 @@ describe('[Users]', function() {
 		});
 	});
 
+	describe('[/users.setStatus]', () => {
+		let user;
+		before((done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					user = res.body.user;
+					done();
+				});
+		});
+		let userCredentials;
+		before((done) => {
+			request.post(api('login'))
+				.send({
+					user: user.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+		before((done) => {
+			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
+		});
+		after((done) => {
+			request.post(api('users.delete')).set(credentials).send({
+				userId: user._id,
+			}).end(() => updatePermission('edit-other-user-info', ['admin']).then(done));
+			user = undefined;
+		});
+		it('should set other user status to busy', (done) => {
+			const testUsername = `testuserdelete${ +new Date() }`;
+			let targetUser;
+			request.post(api('users.register'))
+				.set(credentials)
+				.send({
+					email: `${ testUsername }.@teste.com`,
+					username: `${ testUsername }test`,
+					name: testUsername,
+					pass: password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					targetUser = res.body.user;
+				})
+				.end(() => {
+					request.post(api('users.setStatus'))
+						.set(userCredentials)
+						.send({
+							status: 'busy',
+							message: '',
+							userId: targetUser._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(() => {
+							request.get(api(`users.getStatus?userId=${ targetUser._id }`))
+								.set(userCredentials)
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.property('status', 'busy');
+								})
+								.end(done);
+						});
+				});
+		});
+	});
+
 	describe('[/users.removeOtherTokens]', () => {
 		let user;
 		let userCredentials;
