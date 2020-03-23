@@ -65,6 +65,7 @@ export const FileUpload = {
 
 		const room = Rooms.findOneById(file.rid);
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
+		const livechatMessageAllowed = settings.get('Livechat_fileupload_enabled');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
 		if (canAccessRoom(room, user, file) !== true) {
 			return false;
@@ -78,6 +79,11 @@ export const FileUpload = {
 		if (!directMessageAllowed && room.t === 'd') {
 			const reason = TAPi18n.__('File_not_allowed_direct_messages', language);
 			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
+		}
+
+		if (!livechatMessageAllowed && room.t === 'l') {
+			const reason = TAPi18n.__('File_not_allowed_livechat_messages', language);
+			throw new Meteor.Error('error-livechat-message-file-upload-not-allowed', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
