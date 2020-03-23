@@ -90,7 +90,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, options = {} }) {
+	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -179,6 +179,10 @@ export class RoomsRaw extends BaseRaw {
 		const firstParams = [lookup, messagesProject, messagesUnwind, messagesGroup, lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
 		const sort = { $sort: options.sort || { messages: -1 } };
 		const params = [...firstParams, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}

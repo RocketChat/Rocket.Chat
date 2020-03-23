@@ -12,10 +12,15 @@ API.v1.addRoute('engagement-dashboard/channels/list', { authRequired: true }, {
 		check(start, String);
 		check(end, String);
 
-		const data = Promise.await(findAllChannelsWithNumberOfMessages({
+		const { channels, total } = Promise.await(findAllChannelsWithNumberOfMessages({
 			...transformDatesForAPI(start, end),
 			options: { offset, count },
 		}));
-		return API.v1.success(data);
+		return API.v1.success({
+			channels,
+			count: channels.length,
+			offset,
+			total,
+		});
 	},
 });
