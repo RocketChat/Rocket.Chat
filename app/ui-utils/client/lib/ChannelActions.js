@@ -7,7 +7,7 @@ import { RoomManager } from './RoomManager';
 import { t, UiTextContext, roomTypes, handleError } from '../../../utils';
 
 export function hide(type, rid, name) {
-	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
+	const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
 
 	modal.open({
 		title: t('Are_you_sure'),
@@ -37,7 +37,7 @@ export function hide(type, rid, name) {
 }
 
 export async function leave(type, rid, name) {
-	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.LEAVE_WARNING);
+	const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
 
 	modal.open({
 		title: t('Are_you_sure'),
@@ -84,6 +84,9 @@ export function erase(rid) {
 		html: false,
 	}, async () => {
 		await call('eraseRoom', rid);
+		if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+			FlowRouter.go('home');
+		}
 		modal.open({
 			title: t('Deleted'),
 			text: t('Room_has_been_deleted'),
