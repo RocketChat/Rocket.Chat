@@ -11,6 +11,7 @@ import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
 import { AppRealLogsStorage, AppRealStorage } from './storage';
+import { callbacks } from '../../callbacks/server';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -123,6 +124,25 @@ class AppServerOrchestrator {
 		return this._marketplaceUrl;
 	}
 
+	/**
+	 * This methods centralizes the triggering of Apps-Engine events,
+	 * only triggering them if the Apps Frameworks has been loaded and
+	 * hiding implementation details (bridges, listeners, etc.) from
+	 * the rest of the world.
+	 */
+	async trigger(event, ...payload) {
+		if (!this.isLoaded()) {
+			return;
+		}
+
+		switch (event) {
+			case 'IPostUserCreated':
+				return this.getBridges().getListenerBridge().userEvent('IPostUserCreated', ...payload);
+			default:
+				throw new Error(`Unknown event ${ event } triggered`);
+		}
+	}
+
 	async load() {
 		// Don't try to load it again if it has
 		// already been loaded
@@ -190,6 +210,32 @@ settings.addGroup('General', function() {
 });
 
 
+const registerCallbacks = {
+	afterCreateUser: {
+		callbackId: 'Apps.AfterCreateUser.IPostUserCreated',
+		callback: (user) => Apps.trigger('IPostUserCreated', user),
+	},
+};
+
+function runLoadingRoutine() {
+	Apps.load();
+
+	// Add listeners to events which outcomes won't
+	// be affected by apps (i.e. "passive" events)
+
+	Object.entries(registerCallbacks).forEach(([hook, { callback, callbackId }]) => {
+		callbacks.add(hook, callback, callbacks.priority.MEDIUM, callbackId);
+	});
+}
+
+function runUnloadingRoutine() {
+	Apps.unload();
+
+	Object.entries(registerCallbacks).forEach(([hook, { callbackId }]) => {
+		callbacks.remove(hook, callbackId);
+	});
+}
+
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	// In case this gets called before `Meteor.startup`
 	if (!Apps.isInitialized()) {
@@ -197,9 +243,9 @@ settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	}
 
 	if (isEnabled) {
-		Apps.load();
+		runLoadingRoutine();
 	} else {
-		Apps.unload();
+		runUnloadingRoutine();
 	}
 });
 
@@ -207,6 +253,6 @@ Meteor.startup(function _appServerOrchestrator() {
 	Apps.initialize();
 
 	if (Apps.isEnabled()) {
-		Apps.load();
+		runLoadingRoutine();
 	}
 });

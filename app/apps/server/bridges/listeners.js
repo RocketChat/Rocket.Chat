@@ -45,13 +45,12 @@ export class AppListenerBridge {
 
 	async uiKitInteractionEvent(inte, action) {
 		return this.orch.getManager().getListenerManager().executeListener(inte, action);
+	}
 
-		// try {
+	async userEvent(eventInterace, user) {
+		const compatibleUser = this.orch.getConverters().get('users').convertToApp(user);
 
-		// } catch (e) {
-		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
-		// 	this.orch.debugLog(e.stack);
-		// }
+		return this.orch.getManager().getListenerManager().executeListener(eventInterace, compatibleUser);
 	}
 
 	async livechatEvent(inte, room) {
