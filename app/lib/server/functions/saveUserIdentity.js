@@ -43,22 +43,29 @@ const updateGroupDMsName = (user) => {
  * @param {string} userId user performing the action
  * @param {object} changes changes to the user
  */
-export function saveUserIdentity(userId, { _id, name, username }) {
+export function saveUserIdentity(userId, { _id, name: rawName, username: rawUsername }) {
 	if (!_id) {
 		return false;
 	}
+
+	const name = String(rawName).trim();
+	const username = String(rawUsername).trim();
 
 	const user = Users.findOneById(_id);
 
 	const previousUsername = user.username;
 
-	if (username) {
-		setUsername(_id, username, user);
+	if (typeof rawUsername !== 'undefined') {
+		if (!setUsername(_id, username, user)) {
+			return false;
+		}
 		user.username = username;
 	}
 
-	if (name) {
-		setRealName(_id, name, user);
+	if (typeof rawName !== 'undefined') {
+		if (!setRealName(_id, name, user)) {
+			return false;
+		}
 	}
 
 	// Username is available; if coming from old username, update all references
