@@ -49,7 +49,7 @@ Template.accountPreferences.helpers({
 		const languages = TAPi18n.getLanguages();
 
 		const result = Object.entries(languages)
-			.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+			.map(([key, language]) => ({ ...language, key }))
 			.sort((a, b) => a.key - b.key);
 
 		result.unshift({
@@ -62,7 +62,7 @@ Template.accountPreferences.helpers({
 	},
 	isUserLanguage(key) {
 		const languageKey = Meteor.user().language;
-		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key.toLowerCase();
 	},
 	ifThenElse(condition, val, not = '') {
 		return condition ? val : not;
@@ -89,6 +89,13 @@ Template.accountPreferences.helpers({
 	},
 	defaultDesktopNotificationDuration() {
 		return settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration');
+	},
+	desktopNotificationRequireInteraction() {
+		const userPref = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction', 'undefined');
+		return userPref !== 'undefined' ? userPref : undefined;
+	},
+	defaultDesktopNotificationRequireInteraction() {
+		return settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction');
 	},
 	idleTimeLimit() {
 		return getUserPreference(Meteor.userId(), 'idleTimeLimit');
@@ -196,10 +203,32 @@ Template.accountPreferences.onCreated(function() {
 			}
 		}
 
-		if (settings.get('UI_DisplayPrivacy')) {
-			data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map((option) => ({ action: option.value, label: option.text }));
-			data.discoverability = $('#discoverability').find('input:checked').val();
-		}
+		data.newRoomNotification = $('select[name=newRoomNotification]').val();
+		data.newMessageNotification = $('select[name=newMessageNotification]').val();
+		data.clockMode = parseInt($('select[name=clockMode]').val());
+		data.useEmojis = JSON.parse($('input[name=useEmojis]:checked').val());
+		data.convertAsciiEmoji = JSON.parse($('input[name=convertAsciiEmoji]:checked').val());
+		data.saveMobileBandwidth = JSON.parse($('input[name=saveMobileBandwidth]:checked').val());
+		data.collapseMediaByDefault = JSON.parse($('input[name=collapseMediaByDefault]:checked').val());
+		data.muteFocusedConversations = JSON.parse($('#muteFocusedConversations').find('input:checked').val());
+		data.hideUsernames = JSON.parse($('#hideUsernames').find('input:checked').val());
+		data.messageViewMode = parseInt($('#messageViewMode').find('select').val());
+		data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
+		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
+		data.sidebarHideAvatar = JSON.parse($('#sidebarHideAvatar').find('input:checked').val());
+		data.sendOnEnter = $('#sendOnEnter').find('select').val();
+		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
+		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
+		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
+		data.desktopNotifications = $('#desktopNotifications').find('select').val();
+		data.mobileNotifications = $('#mobileNotifications').find('select').val();
+		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
+		data.sidebarShowDiscussion = JSON.parse($('#sidebarShowDiscussion').find('input:checked').val());
+		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
+		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
+			return s.trim(e);
+		}));
+		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map((option) => ({ action: option.value, label: option.text }));
 
 		if (settings.get('UI_DisplayUserPresence')) {
 			const enableAutoAway = JSON.parse($('#enableAutoAway').find('input:checked').val());
@@ -224,23 +253,16 @@ Template.accountPreferences.onCreated(function() {
 			data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		}
 
-		if (settings.get('UI_DisplayMessages')) {
-			data.clockMode = parseInt($('select[name=clockMode]').val());
-			data.useEmojis = JSON.parse($('input[name=useEmojis]:checked').val());
-			data.convertAsciiEmoji = JSON.parse($('input[name=convertAsciiEmoji]:checked').val());
-			data.saveMobileBandwidth = JSON.parse($('input[name=saveMobileBandwidth]:checked').val());
-			data.collapseMediaByDefault = JSON.parse($('input[name=collapseMediaByDefault]:checked').val());
-			data.hideUsernames = JSON.parse($('#hideUsernames').find('input:checked').val());
-			data.messageViewMode = parseInt($('#messageViewMode').find('select').val());
-			data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
-			data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
-			data.sendOnEnter = $('#sendOnEnter').find('select').val();
-			data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
-			data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
+		if ($('input[name=desktopNotificationRequireInteraction]:checked').val() === undefined) {
+			data.desktopNotificationRequireInteraction = settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction');
+		} else {
+			data.desktopNotificationRequireInteraction = JSON.parse($('input[name=desktopNotificationRequireInteraction]:checked').val());
+		}
 
-			if (settings.get('UI_DisplayRoles')) {
-				data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
-			}
+		// if highlights changed we need page reload
+		const highlights = getUserPreference(Meteor.userId(), 'highlights');
+		if (highlights && highlights.join('\n') !== data.highlights.join('\n')) {
+			reload = true;
 		}
 
 		if (settings.get('UI_DisplaySidebar')) {

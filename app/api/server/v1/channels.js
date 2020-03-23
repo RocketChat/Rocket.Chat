@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
-import { hasPermission } from '../../../authorization';
+import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
+import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { settings } from '../../../settings';
@@ -286,7 +287,12 @@ API.v1.addRoute('channels.files', { authRequired: true }, {
 
 API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'manage-integrations')) {
+		if (!hasAtLeastOnePermission(this.userId, [
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		])) {
 			return API.v1.unauthorized();
 		}
 
@@ -310,8 +316,7 @@ API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		ourQuery = Object.assign({}, query, ourQuery);
-
+		ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
 		const integrations = Integrations.find(ourQuery, {
 			sort: sort || { _createdAt: 1 },
 			skip: offset,

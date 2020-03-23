@@ -1,6 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Settings, LivechatRooms, Rooms } from '../../../app/models/server';
-import { LivechatInquiry } from '../../../app/livechat/lib/LivechatInquiry';
+import { Settings, LivechatRooms, Rooms, LivechatInquiry } from '../../../app/models/server';
 import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
 
 Migrations.add({
@@ -48,7 +47,7 @@ Migrations.add({
 					$set: {
 						'metrics.chatDuration': (room.closedAt - room.ts) / 1000,
 					},
-				}
+				},
 			);
 		});
 
@@ -60,7 +59,7 @@ Migrations.add({
 					status: 'queued',
 				},
 			},
-			{ multi: true }
+			{ multi: true },
 		);
 	},
 });

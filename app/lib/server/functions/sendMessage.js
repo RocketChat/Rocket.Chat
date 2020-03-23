@@ -6,7 +6,7 @@ import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
-import { isURL } from '../../../utils/lib/isURL';
+import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
 
 /**
@@ -18,10 +18,24 @@ import { FileUpload } from '../../../file-upload/server';
  * is going to be rendered in the href attribute of a
  * link.
  */
-const ValidLinkParam = Match.Where((value) => {
+const ValidFullURLParam = Match.Where((value) => {
 	check(value, String);
 
 	if (!isURL(value) && !value.startsWith(FileUpload.getPath())) {
+		throw new Error('Invalid href value provided');
+	}
+
+	if (/^javascript:/i.test(value)) {
+		throw new Error('Invalid href value provided');
+	}
+
+	return true;
+});
+
+const ValidPartialURLParam = Match.Where((value) => {
+	check(value, String);
+
+	if (!isRelativeURL(value) && !isURL(value) && !value.startsWith(FileUpload.getPath())) {
 		throw new Error('Invalid href value provided');
 	}
 
@@ -63,8 +77,8 @@ const validateAttachmentsActions = (attachmentActions) => {
 	check(attachmentActions, objectMaybeIncluding({
 		type: String,
 		text: String,
-		url: ValidLinkParam,
-		image_url: ValidLinkParam,
+		url: ValidFullURLParam,
+		image_url: ValidFullURLParam,
 		is_webview: Boolean,
 		webview_height_ratio: String,
 		msg: String,
@@ -76,27 +90,27 @@ const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
-		ts: Match.OneOf(String, Match.Integer),
-		thumb_url: ValidLinkParam,
+		ts: Match.OneOf(String, Number),
+		thumb_url: ValidFullURLParam,
 		button_alignment: String,
 		actions: [Match.Any],
-		message_link: ValidLinkParam,
+		message_link: ValidFullURLParam,
 		collapsed: Boolean,
 		author_name: String,
-		author_link: ValidLinkParam,
-		author_icon: ValidLinkParam,
+		author_link: ValidFullURLParam,
+		author_icon: ValidFullURLParam,
 		title: String,
-		title_link: ValidLinkParam,
+		title_link: ValidFullURLParam,
 		title_link_download: Boolean,
 		image_dimensions: Object,
-		image_url: ValidLinkParam,
+		image_url: ValidFullURLParam,
 		image_preview: String,
 		image_type: String,
 		image_size: Number,
-		audio_url: ValidLinkParam,
+		audio_url: ValidFullURLParam,
 		audio_type: String,
 		audio_size: Number,
-		video_url: ValidLinkParam,
+		video_url: ValidFullURLParam,
 		video_type: String,
 		video_size: Number,
 		fields: [Match.Any],
@@ -120,8 +134,9 @@ const validateMessage = (message) => {
 		text: String,
 		alias: String,
 		emoji: String,
-		avatar: ValidLinkParam,
+		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
+		blocks: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -163,7 +178,11 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
+			if (settings.get('Apps_Framework_Development_Mode')) {
+				console.log('A Rocket.Chat App prevented the message sending.', message);
+			}
+
+			return;
 		}
 
 		let result;

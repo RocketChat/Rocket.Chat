@@ -4,15 +4,14 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import toastr from 'toastr';
 import _ from 'underscore';
 
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { t, roomTypes } from '../../../../utils';
-import { offlineAction } from '../../../../ui-utils';
 import { hasAllPermission } from '../../../../authorization';
+import { AutoComplete } from '../../../../meteor-autocomplete/client';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -97,11 +96,8 @@ Template.createChannel.helpers({
 	typeDescription() {
 		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel') : t('Everyone_can_access_this_channel'));
 	},
-	readOnlyDisabled() {
-		return Template.instance().broadcast.get() || !hasAllPermission(['create-ro']);
-	},
-	broadcastDisabled() {
-		return !hasAllPermission(['create-ro']);
+	broadcast() {
+		return Template.instance().broadcast.get();
 	},
 	encrypted() {
 		return Template.instance().encrypted.get();
@@ -159,17 +155,17 @@ Template.createChannel.helpers({
 	roomTypesBeforeStandard() {
 		const orderLow = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
 		return roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order < orderLow
+			(roomTypeOrder) => roomTypeOrder.order < orderLow,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier]
+			(roomTypeOrder) => roomTypes.getConfig(roomTypeOrder.identifier),
 		).filter((roomType) => roomType.creationTemplate);
 	},
 	roomTypesAfterStandard() {
 		const orderHigh = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
 		return roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order > orderHigh
+			(roomTypeOrder) => roomTypeOrder.order > orderHigh,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier]
+			(roomTypeOrder) => roomTypes.getConfig(roomTypeOrder.identifier),
 		).filter((roomType) => roomType.creationTemplate);
 	},
 });
@@ -227,9 +223,6 @@ Template.createChannel.events({
 	'submit .create-channel__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
-		if (offlineAction('Creating channel')) {
-			return;
-		}
 		const name = e.target.name.value;
 		const type = instance.type.get();
 		const readOnly = instance.readOnly.get();
@@ -356,7 +349,7 @@ Template.createChannel.onCreated(function() {
 				// @TODO maybe change this 'collection' and/or template
 
 					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					matchAll: true,
 					filter,

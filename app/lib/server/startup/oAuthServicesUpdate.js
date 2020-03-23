@@ -87,6 +87,12 @@ function _OAuthServicesUpdate() {
 				};
 			}
 
+			if (serviceName === 'Nextcloud') {
+				data.buttonLabelText = settings.get('Accounts_OAuth_Nextcloud_button_label_text');
+				data.buttonLabelColor = settings.get('Accounts_OAuth_Nextcloud_button_label_color');
+				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
+			}
+
 			ServiceConfiguration.configurations.upsert({
 				service: serviceName.toLowerCase(),
 			}, {

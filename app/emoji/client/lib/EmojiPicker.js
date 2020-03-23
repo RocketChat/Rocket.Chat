@@ -6,7 +6,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { emoji } from '../../lib/rocketchat';
-import { updateRecentEmoji } from '../emojiPicker';
 
 let updatePositions = true;
 
@@ -22,10 +21,11 @@ export const EmojiPicker = {
 	pickCallback: null,
 	scrollingToCategory: false,
 	currentCategory: new ReactiveVar('recent'),
-	init() {
+	async init() {
 		if (this.initiated) {
 			return;
 		}
+
 		this.initiated = true;
 
 		this.recent = Meteor._localStorage.getItem('emoji.recent') ? Meteor._localStorage.getItem('emoji.recent').split(',') : [];
@@ -87,9 +87,9 @@ export const EmojiPicker = {
 
 		return $('.emoji-picker').css(cssProperties);
 	},
-	open(source, callback) {
+	async open(source, callback) {
 		if (!this.initiated) {
-			this.init();
+			await this.init();
 		}
 		this.pickCallback = callback;
 		this.source = source;
@@ -113,6 +113,7 @@ export const EmojiPicker = {
 	close() {
 		$('.emoji-picker').removeClass('show');
 		this.opened = false;
+		this.source.focus();
 	},
 	pickEmoji(emoji) {
 		this.pickCallback(emoji);
@@ -143,7 +144,9 @@ export const EmojiPicker = {
 		this.recent.splice(pos, 1);
 		Meteor._localStorage.setItem('emoji.recent', this.recent);
 	},
-	updateRecent(category) {
+	async updateRecent(category) {
+		const emojiPickerImport = await import('../emojiPicker');
+		const { updateRecentEmoji } = emojiPickerImport;
 		updateRecentEmoji(category);
 	},
 	calculateCategoryPositions() {

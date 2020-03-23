@@ -15,6 +15,7 @@ import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
+import { RoomSettingsEnum, roomTypes } from '../../../utils';
 
 const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
 Meteor.methods({
@@ -59,13 +60,6 @@ Meteor.methods({
 			});
 		}
 
-		if (room.prid) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing discussion room is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
 		if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
 				method: 'saveRoomSettings',
@@ -97,13 +91,7 @@ Meteor.methods({
 					action: 'Change_Room_Type',
 				});
 			}
-			if (setting === 'readOnly' && value !== room.ro && !hasPermission(userId, 'create-ro', rid)) {
-				throw new Meteor.Error('error-action-not-allowed', 'Changing a room\'s read only setting is not allowed', {
-					method: 'saveRoomSettings',
-					action: 'Change_Room_Read_Only',
-				});
-			}
-			if (setting === 'encrypted' && value !== room.encrypted && (room.t !== 'd' && room.t !== 'p')) {
+			if (setting === 'encrypted' && value !== room.encrypted && !roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
@@ -196,7 +184,7 @@ Meteor.methods({
 					}
 					break;
 				case 'systemMessages':
-					if (value !== room.sysMes) {
+					if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
 						saveRoomSystemMessages(rid, value, user);
 					}
 					break;

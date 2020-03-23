@@ -16,7 +16,7 @@ import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../mo
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../callbacks/client';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -94,6 +94,10 @@ Template.body.onRendered(function() {
 		}
 
 		popover.close();
+
+		if (document.querySelector('.rc-modal-wrapper dialog[open]')) {
+			return;
+		}
 
 		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
 		if (!inputMessage) {

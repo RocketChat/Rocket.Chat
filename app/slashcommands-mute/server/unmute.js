@@ -52,4 +52,5 @@ slashCommands.add('unmute', function Unmute(command, params, item) {
 }, {
 	description: 'Unmute_someone_in_room',
 	params: '@username',
+	permission: 'mute-user',
 });
