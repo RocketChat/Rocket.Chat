@@ -57,7 +57,7 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 	}
 
 	// update name and fname of 1-on-1 direct messages
-	Subscriptions.updateDirectNameAndFnameByName(previousUsername, username, name);
+	Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
 
 	// update name and fname of group direct messages
 	updateGroupDMsName(user);
