@@ -38,6 +38,8 @@
 
 		cursor: pointer;
 
+		color: var(--icons-color);
+
 		&:hover &-icon {
 			fill: var(--rc-color-button-primary);
 		}
