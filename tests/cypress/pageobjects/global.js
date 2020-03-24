@@ -6,7 +6,7 @@ class Global {
 
 	get modalConfirm() { return browser.element('.rc-modal .js-confirm'); }
 
-	get modalCancel() { return browser.element('.rc-modal .js-modal'); }
+	get modalCancel() { return browser.element('.rc-modal .js-close'); }
 
 	get modalPasswordField() { return browser.element('.rc-modal [type="password"]'); }
 

@@ -89,6 +89,7 @@
 		"eslint-plugin-import": "^2.19.1",
 		"eslint-plugin-react": "^7.17.0",
 		"fast-glob": "^2.2.6",
+		"http-proxy": "^1.18.0",
 		"husky": "^1.2.0",
 		"i18next": "^17.0.17",
 		"inquirer": "^7.0.3",
