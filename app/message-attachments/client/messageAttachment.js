@@ -63,7 +63,7 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	canvas.style.display = 'block';
 }
 
-createCollapseable(Template.messageAttachment, (instance) => instance.data.collapsed || instance.data.settings.collapseMediaByDefault);
+createCollapseable(Template.messageAttachment, (instance) => (instance.data && (instance.data.collapsed || (instance.data.settings && instance.data.settings.collapseMediaByDefault))) || false);
 
 Template.messageAttachment.helpers({
 	parsedText() {
@@ -142,7 +142,7 @@ Template.messageAttachment.helpers({
 Template.messageAttachment.onRendered(function() {
 	const { msg } = Template.parentData(1);
 	this.autorun(() => {
-		if (msg.file && msg.file.type === 'application/pdf' && !this.collapsedMedia.get()) {
+		if (msg && msg.file && msg.file.type === 'application/pdf' && !this.collapsedMedia.get()) {
 			Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
 		}
 	});
