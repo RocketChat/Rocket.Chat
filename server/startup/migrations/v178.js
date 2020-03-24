@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import Future from 'fibers/future';
 
 import { Migrations } from '../../../app/migrations/server';
 import { Rooms } from '../../../app/models/server';
@@ -6,10 +7,12 @@ import { Rooms } from '../../../app/models/server';
 const batchSize = 5000;
 
 const getIds = (_id) => {
+	// DM alone
 	if (_id.length === 17) {
 		return [_id];
 	}
 
+	// DM with rocket.cat
 	if (_id.match(/rocket\.cat/)) {
 		return [
 			'rocket.cat',
@@ -19,11 +22,13 @@ const getIds = (_id) => {
 
 	const total = _id.length;
 
+	// regular DMs
 	const id1 = _id.substr(0, Math.ceil(total / 2));
 	const id2 = _id.substr(Math.ceil(total / 2));
 
+	// buggy (?) DM alone but with duplicated _id
 	// if (id1 === id2) {
-	// 	return id1;
+	// 	return [id1];
 	// }
 
 	return [id1, id2];
@@ -54,17 +59,16 @@ async function migrateDMs(models, total, current) {
 Migrations.add({
 	version: 178,
 	up() {
+		const fut = new Future();
+
 		const roomCollection = Rooms.model.rawCollection();
 
-		/*
-		 * Move visitor navigation history to messages
-		 */
 		Meteor.setTimeout(async () => {
 			const rooms = roomCollection.find({ t: 'd' });
 			const total = await rooms.count();
 			await rooms.close();
 
-			if (total < batchSize) {
+			if (total < batchSize * 2) {
 				return migrateDMs({ roomCollection }, total, 0);
 			}
 
@@ -73,6 +77,10 @@ Migrations.add({
 			await migrateDMs({ roomCollection }, total, 0);
 
 			console.log('Changing schema of Direct Message rooms finished.');
-		}, 1000);
+
+			fut.return();
+		}, 200);
+
+		fut.wait();
 	},
 });
