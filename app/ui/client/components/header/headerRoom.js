@@ -13,6 +13,7 @@ import { settings } from '../../../../settings';
 import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';
+import { getUidDirectMessage } from '../../../../ui-utils/client/lib/getUidDirectMessage';
 
 import './headerRoom.html';
 
@@ -38,7 +39,7 @@ Template.headerRoom.helpers({
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
 	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
 	uid() {
-		return this._id.replace(Meteor.userId(), '');
+		return getUidDirectMessage(this._id);
 	},
 	back() {
 		return Template.instance().data.back;
@@ -192,7 +193,7 @@ const loadUserStatusText = () => {
 		return;
 	}
 
-	const userId = id.replace(Meteor.userId(), '');
+	const userId = getUidDirectMessage(id);
 
 	// If the user is already on the local collection, the method call is not necessary
 	const found = Meteor.users.findOne(userId, { fields: { _id: 1 } });
