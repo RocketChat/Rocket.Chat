@@ -481,7 +481,7 @@ Template.channelSettingsEditing.onCreated(function() {
 							const action = value ? 'archiveRoom' : 'unarchiveRoom';
 							return resolve(call(action, room._id).then(() => {
 								modal.open({
-									title: value ? t('Room_archived') : t('Room_has_been_archived'),
+									title: value ? t('Room_archived') : t('Room_unarchived'),
 									text: value ? t('Room_has_been_archived') : t('Room_has_been_unarchived'),
 									type: 'success',
 									timer: 2000,

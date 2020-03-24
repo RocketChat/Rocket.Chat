@@ -264,7 +264,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
 	}
 
-	updateChatDepartment({ rid, departmentId, oldDepartmentId });
+	updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
 
 	const { token } = guest;
 	Livechat.setDepartmentForGuest({ token, department: departmentId });

@@ -221,6 +221,13 @@ Accounts.registerLoginHandler(function(options) {
 			},
 		};
 
+		// Add username
+		if (int_attrs.username) {
+			_.extend(newUser, {
+				username: int_attrs.username,
+			});
+		}
+
 		// Add User.name
 		if (int_attrs.name) {
 			_.extend(newUser, {
