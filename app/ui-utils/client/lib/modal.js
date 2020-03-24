@@ -233,6 +233,10 @@ Template.rc_modal.events({
 		event.stopPropagation();
 		this.close();
 	},
+	'click .js-input-action'(e, instance) {
+		!this.inputAction || this.inputAction.call(instance.data.data, e, instance);
+		e.stopPropagation();
+	},
 	'click .js-close'(e) {
 		e.preventDefault();
 		e.stopPropagation();

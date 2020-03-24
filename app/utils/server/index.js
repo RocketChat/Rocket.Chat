@@ -4,7 +4,7 @@ export { Info } from '../rocketchat.info';
 export { getUserPreference } from '../lib/getUserPreference';
 export { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
 export { roomTypes } from './lib/roomTypes';
-export { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, UiTextContext } from '../lib/RoomTypeConfig';
+export { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../lib/RoomTypeConfig';
 export { RoomTypesCommon } from '../lib/RoomTypesCommon';
 export { isDocker } from './functions/isDocker';
 export { getMongoInfo } from './functions/getMongoInfo';
