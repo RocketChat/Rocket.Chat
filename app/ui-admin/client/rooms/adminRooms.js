@@ -40,7 +40,7 @@ Template.adminRooms.helpers({
 		return Template.instance().rooms.get().length;
 	},
 	type() {
-		return TAPi18n.__(roomTypes.roomTypes[this.t].label);
+		return TAPi18n.__(roomTypes.getConfig(this.t).label);
 	},
 	'default'() {
 		if (this.default) {
@@ -108,8 +108,8 @@ Template.adminRooms.onCreated(function() {
 		template: 'channelSettingsDefault',
 		data() {
 			return {
-				session: Session.get('adminRoomsSelected'),
-				data: instance.tabBarData.get(),
+				room: instance.tabBarData.get().room,
+				onSuccess: instance.tabBarData.get().onSuccess,
 			};
 		},
 		validation() {

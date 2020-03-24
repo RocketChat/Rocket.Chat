@@ -108,8 +108,8 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
 	}
 
-	addTranslations(messageId, translations) {
-		const updateObj = {};
+	addTranslations(messageId, translations, providerName) {
+		const updateObj = { translationProvider: providerName };
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
 			updateObj[`translations.${ key }`] = translation;
@@ -124,6 +124,22 @@ export class Messages extends Base {
 			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
+	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
+		const query = {
+			'_importFile.id': importFileId,
+		};
+
+		return this.update(query, {
+			$set: {
+				'_importFile.rocketChatUrl': rocketChatUrl,
+				'_importFile.downloaded': true,
+			},
+			$addToSet: {
+				attachments: attachment,
+			},
+		}, { multi: true });
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
@@ -545,6 +561,9 @@ export class Messages extends Base {
 					username: user.username,
 				},
 			},
+			$unset: {
+				blocks: 1,
+			},
 		};
 
 		return this.update(query, update);
@@ -715,10 +734,6 @@ export class Messages extends Base {
 
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
-		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
-		if ((room != null ? room.sysMes : undefined) === false) {
-			return;
-		}
 		const record = {
 			t: type,
 			rid: roomId,
@@ -744,10 +759,6 @@ export class Messages extends Base {
 
 	createNavigationHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
 		const type = 'livechat_navigation_history';
-		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
-		if ((room != null ? room.sysMes : undefined) === false) {
-			return;
-		}
 		const record = {
 			t: type,
 			rid: roomId,
@@ -772,10 +783,6 @@ export class Messages extends Base {
 
 	createTransferHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
 		const type = 'livechat_transfer_history';
-		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
-		if ((room != null ? room.sysMes : undefined) === false) {
-			return;
-		}
 		const record = {
 			t: type,
 			rid: roomId,
@@ -1145,6 +1152,25 @@ export class Messages extends Base {
 		};
 
 		return this.findOne(query, { sort: { ts: 1 } });
+	}
+
+	findAllImportedMessagesWithFilesToDownload() {
+		const query = {
+			'_importFile.downloadUrl': {
+				$exists: true,
+			},
+			'_importFile.rocketChatUrl': {
+				$exists: false,
+			},
+			'_importFile.downloaded': {
+				$ne: true,
+			},
+			'_importFile.external': {
+				$ne: true,
+			},
+		};
+
+		return this.find(query);
 	}
 }
 

@@ -1,7 +1,4 @@
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-
-import { getUserPreference } from '../../utils';
 
 const getTitle = function(self) {
 	if (self.meta == null) {
@@ -29,10 +26,7 @@ Template.oembedVideoWidget.helpers({
 		return getTitle(this);
 	},
 	collapsed() {
-		if (this.collapsed) {
-			return this.collapsed;
-		}
-		return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
+		return this.collapsedMedia;
 	},
 
 });

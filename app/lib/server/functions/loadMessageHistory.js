@@ -1,16 +1,19 @@
 import { settings } from '../../../settings';
-import { Messages } from '../../../models';
+import { Messages, Rooms } from '../../../models';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 
-const hideMessagesOfType = new Set();
+const hideMessagesOfTypeServer = new Set();
 
 settings.get('Hide_System_Messages', function(key, values) {
 	const hiddenTypes = values.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []);
-	hideMessagesOfType.clear();
-	hiddenTypes.forEach((item) => hideMessagesOfType.add(item));
+	hideMessagesOfTypeServer.clear();
+	hiddenTypes.forEach((item) => hideMessagesOfTypeServer.add(item));
 });
 
 export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
+	const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
+
+	const hiddenMessageTypes = Array.isArray(room && room.sysMes) ? room.sysMes : Array.from(hideMessagesOfTypeServer.values()); // TODO probably remove on chained event system
 	const options = {
 		sort: {
 			ts: -1,
@@ -24,7 +27,7 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 		};
 	}
 
-	const records = end != null ? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, Array.from(hideMessagesOfType.values()), options).fetch() : Messages.findVisibleByRoomIdNotContainingTypes(rid, Array.from(hideMessagesOfType.values()), options).fetch();
+	const records = end != null ? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hiddenMessageTypes, options).fetch() : Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options).fetch();
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
@@ -34,8 +37,7 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
-
-			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, Array.from(hideMessagesOfType.values()), {
+			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hiddenMessageTypes, {
 				limit: 1,
 				sort: {
 					ts: 1,

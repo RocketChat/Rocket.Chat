@@ -32,7 +32,9 @@ Template.headerRoom.helpers({
 	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
 	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
-
+	uid() {
+		return this._id.replace(Meteor.userId(), '');
+	},
 	back() {
 		return Template.instance().data.back;
 	},
