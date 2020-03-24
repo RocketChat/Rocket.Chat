@@ -33,7 +33,7 @@ TabBar.addButton({
 
 TabBar.addButton({
 	groups: ['direct'],
-	id: 'user-info',
+	id: 'user-info-group',
 	i18nTitle: 'Members_List',
 	icon: 'team',
 	template: 'membersList',
