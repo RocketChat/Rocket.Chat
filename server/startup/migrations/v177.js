@@ -1,11 +1,16 @@
 import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Settings } from '../../../app/models/server';
 
 Migrations.add({
 	version: 177,
 	up() {
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter' });
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter_Limit_Calls_Default' });
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter_Limit_Time_Default' });
+		// Disable auto opt in for existent installations
+		Settings.upsert({
+			_id: 'Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In',
+		}, {
+			$set: {
+				value: false,
+			},
+		});
 	},
 });

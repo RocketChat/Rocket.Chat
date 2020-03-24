@@ -12,6 +12,7 @@ import { settings } from '../../settings';
 import { metrics } from '../../metrics';
 import { hasPermission, hasAllPermission } from '../../authorization';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
+import { checkCodeForUser } from '../../2fa/server/code';
 
 
 const logger = new Logger('API', {});
@@ -108,7 +109,7 @@ export class APIClass extends Restivus {
 		return result;
 	}
 
-	failure(result, errorType, stack) {
+	failure(result, errorType, stack, error) {
 		if (_.isObject(result)) {
 			result.success = false;
 		} else {
@@ -120,6 +121,14 @@ export class APIClass extends Restivus {
 
 			if (errorType) {
 				result.errorType = errorType;
+			}
+
+			if (error && error.details) {
+				try {
+					result.details = JSON.parse(error.details);
+				} catch (e) {
+					result.details = error.details;
+				}
 			}
 		}
 
@@ -341,6 +350,15 @@ export class APIClass extends Restivus {
 			.map(addRateLimitRuleToEveryRoute);
 	}
 
+	processTwoFactor({ userId, request, invocation, options, connection }) {
+		const code = request.headers['x-2fa-code'];
+		const method = request.headers['x-2fa-method'];
+
+		checkCodeForUser({ user: userId, code, method, options, connection });
+
+		invocation.twoFactorChecked = true;
+	}
+
 	getFullRouteName(route, method, apiVersion = null) {
 		let prefix = `/${ this.apiPath || '' }`;
 		if (apiVersion) {
@@ -409,6 +427,8 @@ export class APIClass extends Restivus {
 						id: Random.id(),
 						close() {},
 						token: this.token,
+						httpHeaders: this.request.headers,
+						clientAddress: getRequestIP(this.request),
 					};
 
 					try {
@@ -431,6 +451,10 @@ export class APIClass extends Restivus {
 						};
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
+						if (options.twoFactorRequired) {
+							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: options.twoFactorOptions, connection });
+						}
+
 						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
@@ -440,7 +464,7 @@ export class APIClass extends Restivus {
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
-						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error);
+						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, undefined, e);
 					} finally {
 						delete Accounts._accountData[connection.id];
 					}
@@ -469,9 +493,9 @@ export class APIClass extends Restivus {
 	}
 
 	_initAuth() {
-		const loginCompatibility = (bodyParams) => {
+		const loginCompatibility = (bodyParams, request) => {
 			// Grab the username or email that the user is logging in with
-			const { user, username, email, password, code } = bodyParams;
+			const { user, username, email, password, code: bodyCode } = bodyParams;
 
 			if (password == null) {
 				return bodyParams;
@@ -480,6 +504,8 @@ export class APIClass extends Restivus {
 			if (_.without(Object.keys(bodyParams), 'user', 'username', 'email', 'password', 'code').length > 0) {
 				return bodyParams;
 			}
+
+			const code = bodyCode || request.headers['x-2fa-code'];
 
 			const auth = {
 				password,
@@ -520,7 +546,7 @@ export class APIClass extends Restivus {
 
 		this.addRoute('login', { authRequired: false }, {
 			post() {
-				const args = loginCompatibility(this.bodyParams);
+				const args = loginCompatibility(this.bodyParams, this.request);
 				const getUserInfo = self.getHelperMethod('getUserInfo');
 
 				const invocation = new DDPCommon.MethodInvocation({
