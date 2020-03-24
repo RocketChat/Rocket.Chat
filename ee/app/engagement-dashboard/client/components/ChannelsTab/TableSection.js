@@ -137,7 +137,7 @@ export function TableSection() {
 				itemsPerPageLabel={() => t('Items per page:')}
 				showingResultsLabel={({ count, current, itemsPerPage }) =>
 					t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count)}
-				count={1} // TODO
+				count={(data && data.total) || 0}
 				onSetItemsPerPage={setItemsPerPage}
 				onSetCurrent={setCurrent}
 			/>
