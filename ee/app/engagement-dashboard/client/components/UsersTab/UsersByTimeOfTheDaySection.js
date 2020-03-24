@@ -11,9 +11,9 @@ export function UsersByTimeOfTheDaySection() {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
-		['last 7 days', t('Last 7 days')],
-		['last 30 days', t('Last 30 days')],
-		['last 90 days', t('Last 90 days')],
+		['last 7 days', t('Last_7_days')],
+		['last 30 days', t('Last_30_days')],
+		['last 90 days', t('Last_90_days')],
 	], [t]);
 
 	const [periodId, setPeriodId] = useState('last 7 days');
@@ -78,7 +78,7 @@ export function UsersByTimeOfTheDaySection() {
 	}, [data]);
 
 	return <Section
-		title={t('Users by time of day')}
+		title={t('Users_by_time_of_day')}
 		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
 	>
 		<Flex.Container>
@@ -153,7 +153,7 @@ export function UsersByTimeOfTheDaySection() {
 										},
 									}}
 									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
-										{t('%d users', value)}
+										{t('Value_users', { value })}
 									</Box>}
 								/>
 							</Box>

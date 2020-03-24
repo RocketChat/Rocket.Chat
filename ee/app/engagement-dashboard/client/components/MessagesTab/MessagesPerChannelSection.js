@@ -12,9 +12,9 @@ export function MessagesPerChannelSection() {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
-		['last 7 days', t('Last 7 days')],
-		['last 30 days', t('Last 30 days')],
-		['last 90 days', t('Last 90 days')],
+		['last 7 days', t('Last_7_days')],
+		['last 30 days', t('Last_30_days')],
+		['last 90 days', t('Last_90_days')],
 	], [t]);
 
 	const [periodId, setPeriodId] = useState('last 7 days');
@@ -65,7 +65,7 @@ export function MessagesPerChannelSection() {
 	}, [period, pieData, tableData]);
 
 	return <Section
-		title={t('Where are the messages be sent?')}
+		title={t('Where_are_the_messages_being_sent?')}
 		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
 	>
 		<Flex.Container>
@@ -85,19 +85,19 @@ export function MessagesPerChannelSection() {
 																data={[
 																	{
 																		id: 'd',
-																		label: t('Private chats'),
+																		label: t('Private_Chats'),
 																		value: pie.d,
 																		color: '#FFD031',
 																	},
 																	{
 																		id: 'c',
-																		label: t('Private channels'),
+																		label: t('Private_Channels'),
 																		value: pie.c,
 																		color: '#2DE0A5',
 																	},
 																	{
 																		id: 'p',
-																		label: t('Public channels'),
+																		label: t('Public_Channels'),
 																		value: pie.p,
 																		color: '#1D74F5',
 																	},
@@ -133,7 +133,7 @@ export function MessagesPerChannelSection() {
 																	},
 																}}
 																tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
-																	{t('%d messages', value)}
+																	{t('Value_messages', { value })}
 																</Box>}
 															/>
 														</Box>
@@ -146,15 +146,15 @@ export function MessagesPerChannelSection() {
 														<Margins block='x4'>
 															<Box textColor='info' textStyle='p1'>
 																<LegendSymbol color='#FFD031' />
-																{t('Private chats')}
+																{t('Private_Chats')}
 															</Box>
 															<Box textColor='info' textStyle='p1'>
 																<LegendSymbol color='#2DE0A5' />
-																{t('Private channels')}
+																{t('Private_Channels')}
 															</Box>
 															<Box textColor='info' textStyle='p1'>
 																<LegendSymbol color='#1D74F5' />
-																{t('Public channels')}
+																{t('Public_Channels')}
 															</Box>
 														</Margins>
 													</Box>
@@ -168,17 +168,17 @@ export function MessagesPerChannelSection() {
 						<Flex.Item grow={1} shrink={0} basis='0'>
 							<Box>
 								<Margins blockEnd='x16'>
-									{table ? <Box textStyle='p1'>{t('Most popular channels (Top 5)')}</Box> : <Skeleton width='50%' />}
+									{table ? <Box textStyle='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
 								</Margins>
 								{table && !table.length && <Tile textStyle='p1' textColor='info' style={{ textAlign: 'center' }}>
-									{t('Not enough data')}
+									{t('Not_enough_data')}
 								</Tile>}
 								{(!table || !!table.length) && <Table>
 									<Table.Head>
 										<Table.Row>
-											<Table.Cell>{t('#')}</Table.Cell>
+											<Table.Cell>{'#'}</Table.Cell>
 											<Table.Cell>{t('Channel')}</Table.Cell>
-											<Table.Cell align='end'>{t('Number of messages')}</Table.Cell>
+											<Table.Cell align='end'>{t('Number_of_messages')}</Table.Cell>
 										</Table.Row>
 									</Table.Head>
 									<Table.Body>

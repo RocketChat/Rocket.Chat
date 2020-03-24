@@ -11,9 +11,9 @@ export function TableSection() {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
-		['last 7 days', t('Last 7 days')],
-		['last 30 days', t('Last 30 days')],
-		['last 90 days', t('Last 90 days')],
+		['last 7 days', t('Last_7_days')],
+		['last 30 days', t('Last_30_days')],
+		['last 90 days', t('Last_90_days')],
 	], [t]);
 
 	const [periodId, setPeriodId] = useState('last 7 days');
@@ -76,17 +76,17 @@ export function TableSection() {
 	return <Section filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}>
 		<Box>
 			{channels && !channels.length && <Tile textStyle='p1' textColor='info' style={{ textAlign: 'center' }}>
-				{t('No data found')}
+				{t('No_data_found')}
 			</Tile>}
 			{(!channels || channels.length)
 			&& <Table>
 				<Table.Head>
 					<Table.Row>
-						<Table.Cell>{t('#')}</Table.Cell>
+						<Table.Cell>{'#'}</Table.Cell>
 						<Table.Cell>{t('Channel')}</Table.Cell>
 						<Table.Cell>{t('Created')}</Table.Cell>
-						<Table.Cell>{t('Last active')}</Table.Cell>
-						<Table.Cell>{t('Messages sent')}</Table.Cell>
+						<Table.Cell>{t('Last_active')}</Table.Cell>
+						<Table.Cell>{t('Messages_sent')}</Table.Cell>
 					</Table.Row>
 				</Table.Head>
 				<Table.Body>
@@ -134,7 +134,7 @@ export function TableSection() {
 			<Pagination
 				current={current}
 				itemsPerPage={itemsPerPage}
-				itemsPerPageLabel={() => t('Items per page:')}
+				itemsPerPageLabel={() => t('Items_per_page:')}
 				showingResultsLabel={({ count, current, itemsPerPage }) =>
 					t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count)}
 				count={(data && data.total) || 0}

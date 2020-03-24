@@ -112,7 +112,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 										},
 									}}
 									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
-										{t('%d users', value)}
+										{t('Value_users', { value })}
 									</Box>}
 								/>
 							</Box>
@@ -238,7 +238,7 @@ export function BusiestChatTimesSection() {
 	const Content = (timeUnit === 'hours' && ContentForHours) || (timeUnit === 'days' && ContentForDays);
 
 	return <Section
-		title={t('When is the chat busier?')}
+		title={t('When_is_the_chat_busier?')}
 		filter={<Select options={timeUnitOptions} value={timeUnit} onChange={handleTimeUnitChange} />}
 	>
 		<Content

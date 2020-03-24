@@ -22,14 +22,6 @@ export function UsersTab() {
 						<Flex.Item grow={1} shrink={0} basis='0'>
 							<Box>
 								<BusiestChatTimesSection />
-								{/* <Divider />
-								<Section title={t('UTCs most used')}>
-									<Flex.Container>
-										<Box style={{ height: 196 }}>
-											<Histogram />
-										</Box>
-									</Flex.Container>
-								</Section> */}
 							</Box>
 						</Flex.Item>
 					</Margins>

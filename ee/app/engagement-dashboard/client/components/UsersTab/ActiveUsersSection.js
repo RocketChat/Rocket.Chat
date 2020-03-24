@@ -91,23 +91,23 @@ export function ActiveUsersSection() {
 		];
 	}, [period, data]);
 
-	return <Section title={t('Active users')} filter={null}>
+	return <Section title={t('Active_users')} filter={null}>
 		<CounterSet
 			counters={[
 				{
 					count: data ? countDailyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
 					variation: data ? diffDailyActiveUsers : 0,
-					description: <><LegendSymbol color='#D1EBFE' /> {t('Daily Active Users')}</>,
+					description: <><LegendSymbol color='#D1EBFE' /> {t('Daily_Active_Users')}</>,
 				},
 				{
 					count: data ? countWeeklyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
 					variation: data ? diffWeeklyActiveUsers : 0,
-					description: <><LegendSymbol color='#76B7FC' /> {t('Weekly Active Users')}</>,
+					description: <><LegendSymbol color='#76B7FC' /> {t('Weekly_Active_Users')}</>,
 				},
 				{
 					count: data ? countMonthlyActiveUsers : <Skeleton variant='rect' width='3ex' height='1em' />,
 					variation: data ? diffMonthlyActiveUsers : 0,
-					description: <><LegendSymbol color='#1D74F5' /> {t('Monthly Active Users')}</>,
+					description: <><LegendSymbol color='#1D74F5' /> {t('Monthly_Active_Users')}</>,
 				},
 			]}
 		/>
@@ -207,9 +207,9 @@ export function ActiveUsersSection() {
 									sliceTooltip={({ slice: { points } }) => <Tile elevation='2'>
 										{points.map(({ serieId, data: { y: activeUsers } }) =>
 											<Box key={serieId} textStyle='p2'>
-												{(serieId === 'dau' && t('DAU = %d', activeUsers))
-										|| (serieId === 'wau' && t('WAU = %d', activeUsers))
-										|| (serieId === 'mau' && t('MAU = %d', activeUsers))}
+												{(serieId === 'dau' && t('DAU_value', { value: activeUsers }))
+										|| (serieId === 'wau' && t('WAU_value', { value: activeUsers }))
+										|| (serieId === 'mau' && t('MAU_value', { value: activeUsers }))}
 											</Box>)}
 									</Tile>}
 								/>
