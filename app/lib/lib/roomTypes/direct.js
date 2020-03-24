@@ -174,7 +174,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData, subData) {
-		if (roomData.uids && roomData.uids.length > 2) {
+		if (roomData && roomData.uids && roomData.uids.length > 2) {
 			return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
 		}
 		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
