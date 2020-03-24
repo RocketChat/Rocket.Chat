@@ -40,7 +40,7 @@ if (Meteor.isServer) {
 				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);
 			},
-		})
+		}),
 	);
 
 	if (settings.get('Accounts_OAuth_Dolphin_URL')) {
@@ -65,6 +65,6 @@ if (Meteor.isServer) {
 				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);
 			}
-		})
+		}),
 	);
 }

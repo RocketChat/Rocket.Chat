@@ -254,7 +254,7 @@
 	/*
 	* Rooms list
 	*/
-	--rooms-list-title-color: var(--color-gray);
+	--rooms-list-title-color: var(--rc-color-primary-light);
 	--rooms-list-title-text-size: 0.75rem;
 	--rooms-list-empty-text-color: var(--color-gray);
 	--rooms-list-empty-text-size: 0.75rem;

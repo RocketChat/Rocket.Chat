@@ -14,7 +14,7 @@ Meteor.methods({
 			check(_id, String);
 		}
 
-		check(customFieldData, Match.ObjectIncluding({ field: String, label: String, scope: String, visibility: String }));
+		check(customFieldData, Match.ObjectIncluding({ field: String, label: String, scope: String, visibility: String, regexp: String }));
 
 		if (!/^[0-9a-zA-Z-_]+$/.test(customFieldData.field)) {
 			throw new Meteor.Error('error-invalid-custom-field-nmae', 'Invalid custom field name. Use only letters, numbers, hyphens and underscores.', { method: 'livechat:saveCustomField' });
@@ -26,7 +26,6 @@ Meteor.methods({
 				throw new Meteor.Error('error-invalid-custom-field', 'Custom Field Not found', { method: 'livechat:saveCustomField' });
 			}
 		}
-
-		return LivechatCustomField.createOrUpdateCustomField(_id, customFieldData.field, customFieldData.label, customFieldData.scope, customFieldData.visibility);
+		return LivechatCustomField.createOrUpdateCustomField(_id, customFieldData.field, customFieldData.label, customFieldData.scope, customFieldData.visibility, { regexp: customFieldData.regexp });
 	},
 });

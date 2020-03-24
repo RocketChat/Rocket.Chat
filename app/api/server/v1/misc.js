@@ -3,13 +3,14 @@ import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
 
-import { hasRole } from '../../../authorization';
-import { Info } from '../../../utils';
-import { Users } from '../../../models';
-import { settings } from '../../../settings';
+import { hasRole, hasPermission } from '../../../authorization/server';
+import { Info } from '../../../utils/server';
+import { Users } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
+import { StdOut } from '../../../logger/server/streamer';
 
 
 // DEPRECATED
@@ -87,6 +88,9 @@ API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRe
 				text = `#${ channel }`;
 				break;
 			case 'user':
+				if (settings.get('API_Shield_user_require_auth') && !this.getLoggedInUser()) {
+					return API.v1.failure('You must be logged in to do this.');
+				}
 				const user = this.getUserFromParams();
 
 				// Respect the server's choice for using their real names or not
@@ -162,7 +166,7 @@ API.v1.addRoute('spotlight', { authRequired: true }, {
 		const { query } = this.queryParams;
 
 		const result = Meteor.runAsUser(this.userId, () =>
-			Meteor.call('spotlight', query)
+			Meteor.call('spotlight', query),
 		);
 
 		return API.v1.success(result);
@@ -200,5 +204,14 @@ API.v1.addRoute('directory', { authRequired: true }, {
 			offset,
 			total: result.total,
 		});
+	},
+});
+
+API.v1.addRoute('stdout.queue', { authRequired: true }, {
+	get() {
+		if (!hasPermission(this.userId, 'view-logs')) {
+			return API.v1.unauthorized();
+		}
+		return API.v1.success({ queue: StdOut.queue });
 	},
 });

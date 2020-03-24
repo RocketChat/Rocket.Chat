@@ -1,28 +1,25 @@
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import s from 'underscore.string';
 import _ from 'underscore';
 
 import { modal, call } from '../../../../ui-utils';
 import { t, handleError } from '../../../../utils';
+import { APIClient } from '../../../../utils/client';
 
 import './livechatManagers.html';
 
-let ManagerUsers;
-
-Meteor.startup(function() {
-	ManagerUsers = new Mongo.Collection('managerUsers');
-});
+const MANAGERS_COUNT = 50;
+const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 const getUsername = (user) => user.username;
 Template.livechatManagers.helpers({
 	exceptionsManagers() {
 		const { selectedManagers } = Template.instance();
-		return ManagerUsers.find({}, { fields: { username: 1 } })
-			.fetch()
+		return Template.instance()
+			.managers
+			.get()
 			.map(getUsername)
 			.concat(selectedManagers.get().map(getUsername));
 	},
@@ -38,7 +35,7 @@ Template.livechatManagers.helpers({
 		return Template.instance().state.get('loading');
 	},
 	managers() {
-		return Template.instance().managers();
+		return Template.instance().managers.get();
 	},
 	emailAddress() {
 		if (this.emails && this.emails.length > 0) {
@@ -53,7 +50,7 @@ Template.livechatManagers.helpers({
 					? text
 					: text.replace(
 						new RegExp(filter.get()),
-						(part) => `<strong>${ part }</strong>`
+						(part) => `<strong>${ part }</strong>`,
 					)
 			}`;
 		};
@@ -67,27 +64,22 @@ Template.livechatManagers.helpers({
 	onClickTagManagers() {
 		return Template.instance().onClickTagManagers;
 	},
-	isReady() {
-		const instance = Template.instance();
-		return instance.ready && instance.ready.get();
-	},
 	onTableScroll() {
 		const instance = Template.instance();
 		return function(currentTarget) {
-			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop
-				>= currentTarget.scrollHeight - 100
-			) {
-				return instance.limit.set(instance.limit.get() + 50);
+			if (currentTarget.offsetHeight + currentTarget.scrollTop < currentTarget.scrollHeight - 100) {
+				return;
+			}
+			const managers = instance.managers.get();
+			if (instance.total.get() > managers.length) {
+				instance.offset.set(instance.offset.get() + MANAGERS_COUNT);
 			}
 		};
 	},
 });
 
-const DEBOUNCE_TIME_FOR_SEARCH_MANAGERS_IN_MS = 300;
-
 Template.livechatManagers.events({
-	'click .remove-manager'(e /* , instance*/) {
+	'click .remove-manager'(e, instance) {
 		e.preventDefault();
 
 		modal.open(
@@ -103,11 +95,12 @@ Template.livechatManagers.events({
 			},
 			() => {
 				Meteor.call('livechat:removeManager', this.username, function(
-					error /* , result*/
+					error, /* , result*/
 				) {
 					if (error) {
 						return handleError(error);
 					}
+					instance.loadManagers(instance.filter.get(), 0);
 					modal.open({
 						title: t('Removed'),
 						text: t('Manager_removed'),
@@ -116,7 +109,7 @@ Template.livechatManagers.events({
 						showConfirmButton: false,
 					});
 				});
-			}
+			},
 		);
 	},
 	async 'submit #form-manager'(e, instance) {
@@ -132,11 +125,12 @@ Template.livechatManagers.events({
 		state.set('loading', true);
 		try {
 			await Promise.all(
-				users.map(({ username }) => call('livechat:addManager', username))
+				users.map(({ username }) => call('livechat:addManager', username)),
 			);
 			selectedManagers.set([]);
 		} finally {
 			state.set('loading', false);
+			instance.loadManagers(instance.filter.get(), 0);
 		}
 	},
 	'keydown #managers-filter'(e) {
@@ -149,18 +143,19 @@ Template.livechatManagers.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	}, DEBOUNCE_TIME_FOR_SEARCH_MANAGERS_IN_MS),
+		t.offset.set(0);
+	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS),
 });
 
 Template.livechatManagers.onCreated(function() {
 	const instance = this;
-	this.limit = new ReactiveVar(50);
+	this.offset = new ReactiveVar(0);
 	this.filter = new ReactiveVar('');
 	this.state = new ReactiveDict({
 		loading: false,
 	});
-	this.ready = new ReactiveVar(true);
-
+	this.total = new ReactiveVar(0);
+	this.managers = new ReactiveVar([]);
 	this.selectedManagers = new ReactiveVar([]);
 
 	this.onSelectManagers = ({ item: manager }) => {
@@ -169,30 +164,29 @@ Template.livechatManagers.onCreated(function() {
 
 	this.onClickTagManagers = ({ username }) => {
 		this.selectedManagers.set(
-			this.selectedManagers.curValue.filter((user) => user.username !== username)
+			this.selectedManagers.curValue.filter((user) => user.username !== username),
 		);
 	};
 
-	this.autorun(function() {
-		const filter = instance.filter.get();
-		const limit = instance.limit.get();
-		const subscription = instance.subscribe('livechat:managers', filter, limit);
-		instance.ready.set(subscription.ready());
-	});
-	this.managers = function() {
-		let filter;
-		let query = {};
-
-		if (instance.filter && instance.filter.get()) {
-			filter = s.trim(instance.filter.get());
-		}
-
+	this.loadManagers = _.debounce(async (filter, offset) => {
+		this.state.set('loading', true);
+		let url = `livechat/users/manager?count=${ MANAGERS_COUNT }&offset=${ offset }`;
 		if (filter) {
-			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] };
+			url += `&text=${ encodeURIComponent(filter) }`;
 		}
+		const { users, total } = await APIClient.v1.get(url);
+		this.total.set(total);
+		if (offset === 0) {
+			this.managers.set(users);
+		} else {
+			this.managers.set(this.managers.get().concat(users));
+		}
+		this.state.set('loading', false);
+	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
 
-		const limit = instance.limit && instance.limit.get();
-		return ManagerUsers.find(query, { limit, sort: { name: 1 } }).fetch();
-	};
+	this.autorun(async () => {
+		const filter = instance.filter.get();
+		const offset = instance.offset.get();
+		return this.loadManagers(filter, offset);
+	});
 });
