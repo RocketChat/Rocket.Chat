@@ -7,7 +7,7 @@ on:
     branches: '**'
   push:
     branches:
-      - develop
+      - develop_pwa
 
 env:
   CI: true
@@ -469,10 +469,11 @@ jobs:
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop
 
-  # EAR NOTE: This currently pushes only PRs to develop_pwa to our DEV account.  TODO: Implement merges to DEV, then to PROD when ready.
+  # TODO: configure for merges to develop when ready; configure for PROD as needed
+  # NOTE: Right now it will only push on every merge into develop_pwa because we have a standing PR from it -> develop.
   widechat-ecr-push:
     runs-on: ubuntu-latest
-    if: github.base_ref == 'develop_pwa'
+    if: github.base_ref == 'develop'
     needs: test
       
     steps:
