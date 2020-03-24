@@ -39,7 +39,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 
 	getIcon(roomData) {
-		if (roomData.usernames && roomData.usernames.length > 2) {
+		if (roomData.uids && roomData.uids.length > 2) {
 			return 'team';
 		}
 		return this.icon;
@@ -173,11 +173,12 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		return { title, text };
 	}
 
-	getAvatarPath(roomData) {
-		if (roomData.usernames && roomData.usernames.length > 2) {
-			return getAvatarURL({ username: roomData.usernames.length + roomData.usernames.join() });
+	getAvatarPath(roomData, subData) {
+		if (roomData.uids && roomData.uids.length > 2) {
+			return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
 		}
-		return getUserAvatarURL(roomData.name || this.roomName(roomData));
+		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+		return getUserAvatarURL(sub.name || this.roomName(roomData));
 	}
 
 	includeInDashboard() {
