@@ -21,7 +21,7 @@ const generateSubscription = (fname, name, user, extra) => ({
 });
 
 const getFname = (members) => members.map(({ name, username }) => name || username).join(', ');
-const getName = (members) => members.map(({ username }) => username).join(',');
+const getName = (members) => members.map(({ username }) => username).join(', ');
 
 export const createDirectRoom = function(members, roomExtraData = {}, options = {}) {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
