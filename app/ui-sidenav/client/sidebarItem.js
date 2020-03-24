@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 
 import { t, getUserPreference, roomTypes } from '../../utils';
 import { popover, renderMessageBody, menu } from '../../ui-utils';
-import { Users, ChatSubscription } from '../../models';
+import { Users, ChatSubscription, Rooms } from '../../models/client';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { timeAgo } from '../../lib/client/lib/formatDate';
@@ -200,12 +200,25 @@ Template.sidebarItem.events({
 	},
 });
 
+const getOtherUserId = (rid, userId) => {
+	const room = Rooms.findOne({ _id: rid }, { fields: { uids: 1 } });
+
+	if (!room || !room.uids || room.uids.length > 2) {
+		return false;
+	}
+
+	const other = room && room.uids.filter((uid) => uid !== userId);
+
+	return other && other[0];
+};
+
 Template.sidebarItemIcon.helpers({
 	uid() {
 		if (!this.rid) {
 			return this._id;
 		}
-		return this.rid.replace(this.u._id, '');
+
+		return getOtherUserId(this.rid, Meteor.userId());
 	},
 	isRoom() {
 		return this.rid || this._id;
