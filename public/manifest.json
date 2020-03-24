@@ -2,6 +2,7 @@
     "name": "Viasat Connect",
     "short_name": "Viasat Connect",
     "background_color": "#0B6379",
+    "theme_color":"#0B6379",
     "icons": [
         {
             "src": "images/icons/icon-72x72.png",
