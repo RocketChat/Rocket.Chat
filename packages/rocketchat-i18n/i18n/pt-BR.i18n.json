@@ -2269,6 +2269,8 @@
   "Offline_form": "Formulário offline",
   "Offline_form_unavailable_message": "Mensage quando formulário offline indisponível",
   "Offline_Link_Message": "VÁ PARA A MENSAGEM",
+  "Offline_Message": "Mensagem quando Offline",
+  "Offline_Message_Use_DeepLink": "Usar URL no formato Deep Link",
   "Offline_Mention_All_Email": "Mencionar todo o assunto do e-mail",
   "Offline_Mention_Email": "Você foi mencionado por __user__ em #__room__",
   "Offline_message": "Mensagem quando offline",

@@ -831,6 +831,12 @@ settings.addGroup('General', function() {
 		],
 		public: true,
 	});
+
+	this.add('DeepLink_Url', 'https://go.rocket.chat', {
+		type: 'string',
+		public: true,
+	});
+
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		public: true,
