@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -12,7 +11,7 @@ import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMe
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
-import { t, roomTypes, getURL } from '../../utils';
+import { t, roomTypes } from '../../utils';
 import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import './message.html';
 import './messageThread.html';
@@ -505,7 +504,7 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	return false;
 };
 
-const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies }) => {
+const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, shouldCollapseReplies }) => {
 	if (!showDateSeparator && !groupable) {
 		return;
 	}
