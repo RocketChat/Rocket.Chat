@@ -69,7 +69,8 @@ Migrations.add({
 			await rooms.close();
 
 			if (total < batchSize * 2) {
-				return migrateDMs({ roomCollection }, total, 0);
+				await migrateDMs({ roomCollection }, total, 0);
+				return fut.return();
 			}
 
 			console.log('Changing schema of Direct Message rooms, this may take a long time ...');
