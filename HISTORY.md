@@ -1,4 +1,20 @@
 
+# 3.0.5
+`2020-03-24  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Race conditions on/before login ([#16989](https://github.com/RocketChat/Rocket.Chat/pull/16989))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.0.4
 `2020-03-16  ·  1 🚀  ·  2 🐛  ·  3 👩‍💻👨‍💻`
 
