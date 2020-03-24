@@ -12,7 +12,7 @@ import { ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
-import { call } from './callMethod';
+import { call, callMethod } from './callMethod';
 
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 
@@ -60,7 +60,7 @@ export const openRoom = async function(type, name) {
 		}
 
 		try {
-			const room = roomTypes.findRoom(type, name, user) || await call('getRoomByTypeAndName', type, name);
+			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
 
 			if (RoomManager.open(type + name).ready() !== true) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
@@ -113,10 +113,10 @@ export const openRoom = async function(type, name) {
 			return callbacks.run('enter-room', sub);
 		} catch (error) {
 			c.stop();
-			if (type !== 'd') {
+			if (type === 'd') {
 				const result = await call('createDirectMessage', ...name.split(', ')).then((result) => waitUntilRoomBeInserted(type, result.rid)).catch(() => {});
 				if (result) {
-					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+					return FlowRouter.go('direct', { rid: result._id }, FlowRouter.current().queryParams);
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });

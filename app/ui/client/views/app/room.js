@@ -1019,7 +1019,22 @@ Template.room.onCreated(function() {
 
 	this.subscription = new ReactiveVar();
 	this.state = new ReactiveDict();
-	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
+	this.userDetail = new ReactiveVar('');
+	const user = Meteor.user();
+	this.autorun((c) => {
+		const room = Rooms.findOne({ _id: rid }, {
+			fields: {
+				t: 1,
+				usernames: 1,
+			},
+		});
+
+		if (room.t !== 'd') {
+			return c.stop();
+		}
+
+		this.userDetail.set(room.usernames.filter((username) => username !== user.username)[0]);
+	});
 
 	this.autorun(() => {
 		const rid = Template.currentData()._id;
@@ -1352,7 +1367,7 @@ Template.room.onRendered(function() {
 
 		const room = Rooms.findOne({ _id: template.data._id });
 		if (!room) {
-			FlowRouter.go('home');
+			return FlowRouter.go('home');
 		}
 
 		callbacks.run('onRenderRoom', template, room);

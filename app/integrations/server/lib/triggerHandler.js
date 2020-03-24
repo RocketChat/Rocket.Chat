@@ -496,28 +496,35 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		if (room) {
 			switch (room.t) {
 				case 'd':
-					const id = room._id.replace(message.u._id, '');
-					const username = _.without(room.usernames, message.u.username)[0];
-
-					if (this.triggers[`@${ id }`]) {
-						for (const trigger of Object.values(this.triggers[`@${ id }`])) {
-							triggersToExecute.push(trigger);
-						}
-					}
-
 					if (this.triggers.all_direct_messages) {
 						for (const trigger of Object.values(this.triggers.all_direct_messages)) {
 							triggersToExecute.push(trigger);
 						}
 					}
 
-					if (id !== username && this.triggers[`@${ username }`]) {
-						for (const trigger of Object.values(this.triggers[`@${ username }`])) {
-							triggersToExecute.push(trigger);
-						}
+					if (!room.uids) {
+						return;
 					}
-					break;
 
+					room.uids.forEach((uid) => {
+						if (this.triggers[`@${ uid }`]) {
+							for (const trigger of Object.values(this.triggers[`@${ uid }`])) {
+								triggersToExecute.push(trigger);
+							}
+						}
+					});
+
+					room.usernames.forEach((username) => {
+						if (room.uids.includes(username) || username === message.u.username) {
+							return;
+						}
+						if (this.triggers[`@${ username }`]) {
+							for (const trigger of Object.values(this.triggers[`@${ username }`])) {
+								triggersToExecute.push(trigger);
+							}
+						}
+					});
+					break;
 				case 'c':
 					if (this.triggers.all_public_channels) {
 						for (const trigger of Object.values(this.triggers.all_public_channels)) {
