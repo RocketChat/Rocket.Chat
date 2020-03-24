@@ -88,6 +88,9 @@ Tracker.autorun(() => {
 });
 
 Template.userPresence.onRendered(function() {
+	if (!this.data || !this.data.uid) {
+		return;
+	}
 	data.set(this.firstNode, this.data);
 	if (featureExists) {
 		return observer.observe(this.firstNode);
