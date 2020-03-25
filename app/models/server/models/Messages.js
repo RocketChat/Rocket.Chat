@@ -107,6 +107,14 @@ export class Messages extends Base {
 		return { _cid, v2Query };
 	}
 
+	findV1(...args) {
+		return this.model.rawCollection().find(...args);
+	}
+
+	removeV1(...args) {
+		return this.model.rawCollection().remove(...args);
+	}
+
 	find(...args) {
 		args[0] = args[0] || {};
 

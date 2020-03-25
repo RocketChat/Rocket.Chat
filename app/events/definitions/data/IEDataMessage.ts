@@ -1,6 +1,7 @@
 import { IUser } from '../IUser';
 
 export interface IEDataMessage {
+	t: string;
 	u: IUser;
 	msg: string;
 	_msgSha: string;

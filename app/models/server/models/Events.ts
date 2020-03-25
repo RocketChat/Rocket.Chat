@@ -57,6 +57,10 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 				.toArray();
 
 			_pids = previousEvents.map((e: IEvent<any>) => e._id);
+
+			if (_pids.length === 0) {
+				throw new Error(`The event type:${ stub.t } cannot have zero parents, something went wrong`);
+			}
 		}
 
 		const event: IEvent<T> = {

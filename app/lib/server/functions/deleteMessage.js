@@ -19,17 +19,31 @@ export const deleteMessage = function(message, user) {
 		}
 	}
 
-	if (keepHistory) {
-		if (showDeletedStatus) {
-			Messages.cloneAndSaveAsHistoryById(message._id, user);
-		} else {
-			Messages.setHiddenById(message._id, true);
-		}
+	console.log('==========> keepHistory', keepHistory);
 
+	if (keepHistory) {
+		// !!!!!!!!!!!!!!!!!!
+		// Do NOT erase the event's msg
+		// !!!!!!!!!!!!!!!!!!
+
+		// if (showDeletedStatus) {
+		// 	Messages.cloneAndSaveAsHistoryById(message._id, user);
+		// } else {
+		// 	Messages.setHiddenById(message._id, true);
+		// }
+		//
 		if (message.file && message.file._id) {
 			Uploads.update(message.file._id, { $set: { _hidden: true } });
 		}
+
+		//
+		// Do not erase the event's "msg" property
+		//
 	} else {
+		// !!!!!!!!!!!!!!!!!!
+		// Erase the event's msg property for every event, emsg for example
+		// !!!!!!!!!!!!!!!!!!
+
 		if (!showDeletedStatus) {
 			Messages.removeById(message._id);
 		}
