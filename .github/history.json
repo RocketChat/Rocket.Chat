@@ -40047,6 +40047,26 @@
           ]
         }
       ]
+    },
+    "3.0.7": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17017",
+          "title": "Regression: Remove deprecated Omnichannel setting used to fetch the queue data through subscription ",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
     }
   }
 }
