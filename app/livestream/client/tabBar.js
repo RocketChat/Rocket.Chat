@@ -13,7 +13,7 @@ Meteor.startup(function() {
 			const live = Rooms.findOne({
 				_id: Session.get('openedRoom'),
 				'streamingOptions.type': 'livestream',
-				'streamingOptions.id': { $exists: 1 }
+				'streamingOptions.id': { $exists: 1 },
 			}, { fields: { streamingOptions: 1 } });
 
 			return TabBar.addButton({
