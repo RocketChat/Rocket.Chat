@@ -23,9 +23,9 @@ const events = {
 	removed: (inquiry, collection) => collection.remove(inquiry._id),
 };
 
-const appendListenerToDepartment = (departmentId, collection) => livechatQueueStreamer.on(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`, (inquiry) => events[inquiry.type](inquiry, collection));
+const appendListenerToDepartment = (departmentId, collection) => livechatQueueStreamer.on(`department/${ departmentId }`, (inquiry) => events[inquiry.type](inquiry, collection));
 
-const removeListenerOfDepartment = (departmentId) => livechatQueueStreamer.removeListener(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`);
+const removeListenerOfDepartment = (departmentId) => livechatQueueStreamer.removeListener(`department/${ departmentId }`);
 
 const getInquiriesFromAPI = async (url) => {
 	const { inquiries } = await APIClient.v1.get(url);
@@ -54,7 +54,7 @@ const removeDepartmentsListeners = (departments) => {
 };
 
 const removeGlobalListener = () => {
-	livechatQueueStreamer.removeListener(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER);
+	livechatQueueStreamer.removeListener('public');
 };
 
 export const initializeLivechatInquiryStream = async (userId) => {
@@ -68,6 +68,6 @@ export const initializeLivechatInquiryStream = async (userId) => {
 	agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
 	await addListenerForeachDepartment(userId, agentDepartments);
 	if (agentDepartments.length === 0 || hasRole(userId, 'livechat-manager')) {
-		livechatQueueStreamer.on(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
+		livechatQueueStreamer.on('public', (inquiry) => events[inquiry.type](inquiry, collection));
 	}
 };

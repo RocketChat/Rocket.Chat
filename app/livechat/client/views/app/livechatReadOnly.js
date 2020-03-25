@@ -49,11 +49,12 @@ Template.livechatReadOnly.onCreated(function() {
 	this.routingConfig = new ReactiveVar({});
 	this.preparing = new ReactiveVar(true);
 
-	this.updateInquiry = async (inquiry) => {
-		this.inquiry.set(inquiry);
-		if (!await call('canAccessRoom', inquiry.rid, Meteor.userId())) {
+	this.updateInquiry = async ({ clientAction, ...inquiry }) => {
+		if (clientAction === 'removed' || !await call('canAccessRoom', inquiry.rid, Meteor.userId())) {
 			FlowRouter.go('/home');
 		}
+
+		this.inquiry.set(inquiry);
 	};
 
 	Meteor.call('livechat:getRoutingConfig', (err, config) => {

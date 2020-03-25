@@ -16,32 +16,32 @@ const mountDataToEmit = (type, data) => ({ type, ...data });
 LivechatInquiry.on('change', ({ clientAction, id: _id, data: record }) => {
 	switch (clientAction) {
 		case 'inserted':
+			emitQueueDataEvent(_id, { ...record, clientAction });
 			if (record && record.department) {
-				return emitQueueDataEvent(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ record.department }`, mountDataToEmit('added', { ...record, _id }));
+				return emitQueueDataEvent(`department/${ record.department }`, mountDataToEmit('added', { ...record, _id }));
 			}
-			emitQueueDataEvent(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER, mountDataToEmit('added', { ...record, _id }));
-			emitQueueDataEvent(_id, LivechatInquiry.findOneById(_id));
+			emitQueueDataEvent('public', mountDataToEmit('added', { ...record, _id }));
 			break;
 		case 'updated':
 			const isUpdatingDepartment = record && record.department;
 			const updatedRecord = LivechatInquiry.findOneById(_id);
+			emitQueueDataEvent(_id, { ...updatedRecord, clientAction });
 			if (updatedRecord && !updatedRecord.department) {
-				return emitQueueDataEvent(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER, mountDataToEmit('changed', updatedRecord));
+				return emitQueueDataEvent('public', mountDataToEmit('changed', updatedRecord));
 			}
 			if (isUpdatingDepartment) {
-				emitQueueDataEvent(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER, mountDataToEmit('changed', updatedRecord));
+				emitQueueDataEvent('public', mountDataToEmit('changed', updatedRecord));
 			}
-			emitQueueDataEvent(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ updatedRecord.department }`, mountDataToEmit('changed', updatedRecord));
-			emitQueueDataEvent(_id, updatedRecord);
+			emitQueueDataEvent(`department/${ updatedRecord.department }`, mountDataToEmit('changed', updatedRecord));
 			break;
 
 		case 'removed':
 			const removedRecord = LivechatInquiry.trashFindOneById(_id);
+			emitQueueDataEvent(_id, { _id, clientAction });
 			if (removedRecord && removedRecord.department) {
-				return emitQueueDataEvent(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ removedRecord.department }`, mountDataToEmit('removed', { _id }));
+				return emitQueueDataEvent(`department/${ removedRecord.department }`, mountDataToEmit('removed', { _id }));
 			}
-			emitQueueDataEvent(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER, mountDataToEmit('removed', { _id }));
-			emitQueueDataEvent(_id, { _id });
+			emitQueueDataEvent('public', mountDataToEmit('removed', { _id }));
 			break;
 	}
 });
