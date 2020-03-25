@@ -466,19 +466,11 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findDirectRoomContainingUsername(username, options) {
-		const query = {
-			t: 'd',
-			usernames: username,
-		};
-
-		return this.find(query, options);
-	}
-
 	findDirectRoomContainingAllUsernames(usernames, options) {
 		const query = {
 			t: 'd',
 			usernames: { $size: usernames.length, $all: usernames },
+			usersCount: usernames.length,
 		};
 
 		return this.findOne(query, options);
