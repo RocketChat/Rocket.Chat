@@ -53,6 +53,8 @@ const removeGlobalListener = () => {
 };
 
 export const initializeLivechatInquiryStream = async (userId) => {
+	LivechatInquiry.remove({});
+
 	if (agentDepartments.length) {
 		removeDepartmentsListeners(agentDepartments);
 	}
