@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { Users } from '../../../../../app/models';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
+import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 
 export const LivechatEnterprise = {
@@ -112,5 +113,28 @@ export const LivechatEnterprise = {
 		check(tagDepartments, [String]);
 
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
+	},
+
+	savePriority(_id, priorityData) {
+		check(_id, Match.Maybe(String));
+
+		check(tagData, {
+			name: String,
+			description: Match.Optional(String),
+		});
+
+		return LivechatPriority.createOrUpdatePriority(_id, tagData);
+	},
+
+	removePriority(_id) {
+		check(_id, String);
+
+		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
+
+		if (!priority) {
+			throw new Meteor.Error('priority-not-found', 'Priority not found', { method: 'livechat:removePriority' });
+		}
+
+		return LivechatPriority.removeById(_id);
 	},
 };
