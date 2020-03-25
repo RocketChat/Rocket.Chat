@@ -1,8 +1,5 @@
-import { Meteor } from 'meteor/meteor';
-
 import { APIClient } from '../../../../utils/client';
 import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
-import { LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER } from '../../../lib/stream/constants';
 import { inquiryDataStream } from './inquiry';
 import { hasRole } from '../../../../authorization/client';
 
@@ -24,7 +21,7 @@ const events = {
 	removed: (inquiry, collection) => collection.remove(inquiry._id),
 };
 
-const updateCollection = (inquiry) => { events[inquiry.type](inquiry, collection) };
+const updateCollection = (inquiry) => { events[inquiry.type](inquiry, collection); };
 const appendListenerToDepartment = (departmentId) => inquiryDataStream.on(`department/${ departmentId }`, updateCollection);
 const removeListenerOfDepartment = (departmentId) => inquiryDataStream.removeListener(`department/${ departmentId }`, updateCollection);
 
