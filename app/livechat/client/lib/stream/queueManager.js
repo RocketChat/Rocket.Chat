@@ -5,7 +5,7 @@ import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry'
 import { LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER } from '../../../lib/stream/constants';
 import { hasRole } from '../../../../authorization/client';
 
-const livechatQueueStreamer = new Meteor.Streamer('livechat-queue-stream');
+const livechatQueueStreamer = new Meteor.Streamer(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER);
 let agentDepartments = [];
 
 const events = {
