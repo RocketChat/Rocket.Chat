@@ -1,4 +1,23 @@
 
+# 3.0.7
+`2020-03-25  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Remove deprecated Omnichannel setting used to fetch the queue data through subscription  ([#17017](https://github.com/RocketChat/Rocket.Chat/pull/17017))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+
 # 3.0.6
 `2020-03-25  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
