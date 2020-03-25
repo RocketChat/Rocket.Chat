@@ -55,7 +55,7 @@ Meteor.methods({
 			return to;
 		});
 
-		const { _id: rid, inserted, ...room } = createRoom('d', null, null, [me, ...users], { }, { creator: me._id });
+		const { _id: rid, inserted, ...room } = createRoom('d', null, null, [me, ...users], null, { }, { creator: me._id });
 
 		return {
 			t: 'd',
