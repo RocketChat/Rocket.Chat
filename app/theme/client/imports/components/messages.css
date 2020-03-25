@@ -57,6 +57,14 @@
 		display: none;
 	}
 
+	&.new-day::before {
+		background-color: var(--rc-color-default-content-background);
+	}
+
+	&.new-day::after {
+		border-color: var(--rc-color-primary-light);
+	}
+
 	&&--ignored {
 		min-height: 25px;
 		padding: 2px 50px 2px 70px;

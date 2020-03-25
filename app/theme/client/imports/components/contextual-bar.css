@@ -10,7 +10,7 @@
 	width: var(--flex-tab-width);
 	height: 100%;
 
-	background: var(--color-white);
+	background: var(--contextualbar-background);
 	box-shadow: 0 3px 1px 2px rgba(31, 35, 41, 0.08);
 
 	&-wrap {
@@ -56,9 +56,9 @@
 
 		padding: var(--default-padding);
 
-		border-bottom: solid 1px var(--color-gray-light);
+		border-bottom: solid 1px var(--room-sidebar-header-border);
 
-		background: var(--color-gray-lightest);
+		background: var(--room-sidebar-header-background);
 
 		align-items: center;
 		justify-content: flex-end;

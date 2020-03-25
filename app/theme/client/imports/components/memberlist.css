@@ -26,7 +26,7 @@
 
 		&.active,
 		&:hover {
-			background-color: #eeeeee;
+			background-color: var(--rc-color-primary-light-medium);
 
 			& .rc-member-list__menu {
 				opacity: 1;

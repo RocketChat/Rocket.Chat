@@ -1939,6 +1939,7 @@ rc-old select,
 
 .rc-old .room-container {
 	height: 100%;
+	background-color: var(--rc-color-default-content-background);
 }
 
 /* change to page-messages */
@@ -1995,6 +1996,7 @@ rc-old select,
 
 	& .footer {
 		flex-shrink: 0;
+		background-color: var(--rooms-footer-background);
 	}
 
 	& .message-form {
@@ -5132,7 +5134,7 @@ rc-old select,
 
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
-	border-bottom: 1px solid var(--color-gray-lightest);
+	border-bottom: 1px solid var(--rc-color-primary-lightest);
 	justify-content: center;
 
 	&.message:hover {

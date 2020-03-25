@@ -4,6 +4,8 @@
 
 	font-size: var(--text-heading-size);
 
+	background-color: var(--header-background-color);
+
 	.rc-badge {
 		position: absolute;
 		z-index: 1;
@@ -60,8 +62,6 @@
 		height: 36px;
 
 		white-space: nowrap;
-
-		background-color: var(--header-background-color);
 
 		align-items: center;
 

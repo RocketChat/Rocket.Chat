@@ -39,7 +39,7 @@
 
 	opacity: 1;
 
-	background-color: rgba(255, 255, 255, 0.98);
+	background-color: var(--emoji-picker-background);
 
 	&.show {
 		display: flex;
