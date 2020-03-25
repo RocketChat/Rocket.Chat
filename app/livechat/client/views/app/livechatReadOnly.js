@@ -51,7 +51,7 @@ Template.livechatReadOnly.onCreated(function() {
 
 	this.updateInquiry = async ({ clientAction, ...inquiry }) => {
 		if (clientAction === 'removed' || !await call('canAccessRoom', inquiry.rid, Meteor.userId())) {
-			FlowRouter.go('/home');
+			return FlowRouter.go('/home');
 		}
 
 		this.inquiry.set(inquiry);
