@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
 export const TABBAR_DEFAULT_VISIBLE_ICON_COUNT = 4;
 
@@ -38,12 +39,22 @@ export const TabBar = new class TabBar {
 			btns[config.id].groups = _.union(btns[config.id].groups || [], this.extraGroups[config.id]);
 		}
 
+		if (config.order === -1) {
+			Tracker.nonreactive(() => this.size++);
+		}
+
 		this.buttons.set(btns);
 	}
 
 	removeButton(id) {
 		const btns = this.buttons.curValue;
+
+		if (btns[id] && btns[id].order === -1) {
+			Tracker.nonreactive(() => this.size--);
+		}
+
 		delete btns[id];
+
 		this.buttons.set(btns);
 	}
 
