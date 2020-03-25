@@ -6,6 +6,7 @@ import '../imports/startup/client';
 
 import '../lib/RegExp';
 
+import '../ee/client';
 import './lib/toastr';
 import './templateHelpers';
 import './methods/deleteMessage';
@@ -27,5 +28,3 @@ import './startup/startup';
 import './startup/unread';
 import './startup/userSetUtcOffset';
 import './startup/usersObserve';
-
-import '../ee/client';
