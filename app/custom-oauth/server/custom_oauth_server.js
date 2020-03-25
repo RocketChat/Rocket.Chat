@@ -402,7 +402,7 @@ export class CustomOAuth {
 			}
 
 			if (serviceData.username) {
-				const user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceName);
+				const user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
 				if (!user) {
 					return;
 				}

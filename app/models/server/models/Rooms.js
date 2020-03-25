@@ -218,9 +218,13 @@ export class Rooms extends Base {
 		const query = {
 			_id,
 		};
-		const update = {
+		const update = systemMessages && systemMessages.length > 0 ? {
 			$set: {
 				sysMes: systemMessages,
+			},
+		} : {
+			$unset: {
+				sysMes: '',
 			},
 		};
 		return this.update(query, update);

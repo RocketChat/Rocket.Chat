@@ -15,7 +15,7 @@ export class AppMessageBridge {
 
 		const convertedMessage = this.orch.getConverters().get('messages').convertAppMessage(message);
 
-		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage, true);
+		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
 
 		return sentMessage._id;
 	}

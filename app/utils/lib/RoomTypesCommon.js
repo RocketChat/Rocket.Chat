@@ -11,6 +11,10 @@ export class RoomTypesCommon {
 		this.mainOrder = 1;
 	}
 
+	getTypesToShowOnDashboard() {
+		return Object.keys(this.roomTypes).filter((key) => this.roomTypes[key].includeInDashboard && this.roomTypes[key].includeInDashboard());
+	}
+
 	/**
 	 * Adds a room type to the application.
 	 *
@@ -88,6 +92,10 @@ export class RoomTypesCommon {
 		}
 
 		return FlowRouter.url(this.roomTypes[roomType].route.name, routeData);
+	}
+
+	getRelativePath(roomType, subData) {
+		return this.getRouteLink(roomType, subData).replace(Meteor.absoluteUrl(), '');
 	}
 
 	getRouteData(roomType, subData) {
