@@ -6,6 +6,7 @@ import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
+import { fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
@@ -16,21 +17,6 @@ const logger = new Logger('CustomOAuth');
 
 const Services = {};
 const BeforeUpdateOrCreateUserFromExternalService = [];
-
-const IDENTITY_PROPNAME_FILTER = /(\.)/g;
-const renameInvalidProperties = (input) => {
-	if (Array.isArray(input)) {
-		return input.map(renameInvalidProperties);
-	}
-	if (!_.isObject(input)) {
-		return input;
-	}
-
-	return Object.entries(input).reduce((result, [name, value]) => ({
-		...result,
-		[name.replace(IDENTITY_PROPNAME_FILTER, '_')]: renameInvalidProperties(value),
-	}), {});
-};
 
 const normalizers = {
 	// Set 'id' to '_id' for any sources that provide it
@@ -131,50 +117,6 @@ const normalizers = {
 			identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 		}
 	},
-};
-
-const getNestedValue = (propertyPath, source) =>
-	propertyPath.split('.').reduce((prev, curr) => (prev ? prev[curr] : undefined), source);
-
-// /^(.+)@/::email
-const REGEXP_FROM_FORMULA = /^\/((?!\/::).*)\/::(.+)/;
-const getRegexpMatch = (formula, data) => {
-	const regexAndPath = REGEXP_FROM_FORMULA.exec(formula);
-	if (!regexAndPath) {
-		return getNestedValue(formula, data);
-	}
-	if (regexAndPath.length !== 3) {
-		throw new Error(`expected array of length 3, got ${ regexAndPath.length }`);
-	}
-
-	const [, regexString, path] = regexAndPath;
-	const nestedValue = getNestedValue(path, data);
-	try {
-		const regex = new RegExp(regexString);
-		const matches = regex.exec(nestedValue);
-
-		// regexp does not match nested value
-		if (!matches) {
-			return undefined;
-		}
-
-		// we only support regular expressions with a single capture group
-		const [, value] = matches;
-
-		// this could mean we return `undefined` (e.g. when capture group is empty)
-		return value;
-	} catch (error) {
-		throw new Meteor.Error('CustomOAuth: Failed to extract identity value', error.message);
-	}
-};
-
-const templateStringRegex = /{{((?:(?!}}).)+)}}/g;
-const fromTemplate = (template, data) => {
-	if (!templateStringRegex.test(template)) {
-		return getNestedValue(template, data);
-	}
-
-	return template.replace(templateStringRegex, (fullMatch, match) => getRegexpMatch(match, data));
 };
 
 export class CustomOAuth {
@@ -416,40 +358,56 @@ export class CustomOAuth {
 	}
 
 	getUsername(data) {
-		const value = fromTemplate(this.usernameField, data);
+		try {
+			const value = fromTemplate(this.usernameField, data);
 
-		if (!value) {
-			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
+			if (!value) {
+				throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
+			}
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract username', error.message);
 		}
-		return value;
 	}
 
 	getEmail(data) {
-		const value = fromTemplate(this.emailField, data);
+		try {
+			const value = fromTemplate(this.emailField, data);
 
-		if (!value) {
-			throw new Meteor.Error('field_not_found', `Email field "${ this.emailField }" not found in data`, data);
+			if (!value) {
+				throw new Meteor.Error('field_not_found', `Email field "${ this.emailField }" not found in data`, data);
+			}
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract email', error.message);
 		}
-		return value;
 	}
 
 	getCustomName(data) {
-		const value = fromTemplate(this.nameField, data);
+		try {
+			const value = fromTemplate(this.nameField, data);
 
-		if (!value) {
-			return this.getName(data);
+			if (!value) {
+				return this.getName(data);
+			}
+
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract custom name', error.message);
 		}
-
-		return value;
 	}
 
 	getAvatarUrl(data) {
-		const value = fromTemplate(this.avatarField, data);
+		try {
+			const value = fromTemplate(this.avatarField, data);
 
-		if (!value) {
-			logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
+			if (!value) {
+				logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
+			}
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract avatar url', error.message);
 		}
-		return value;
 	}
 
 	getName(identity) {
