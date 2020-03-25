@@ -18,9 +18,9 @@ LivechatInquiry.on('change', ({ clientAction, id: _id, data: record }) => {
 		case 'inserted':
 			emitQueueDataEvent(_id, { ...record, clientAction });
 			if (record && record.department) {
-				return emitQueueDataEvent(`department/${ record.department }`, mountDataToEmit('added', { ...record, _id }));
+				return emitQueueDataEvent(`department/${ record.department }`, mountDataToEmit('added', record));
 			}
-			emitQueueDataEvent('public', mountDataToEmit('added', { ...record, _id }));
+			emitQueueDataEvent('public', mountDataToEmit('added', record));
 			break;
 		case 'updated':
 			const isUpdatingDepartment = record && record.department;
