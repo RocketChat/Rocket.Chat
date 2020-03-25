@@ -7,21 +7,21 @@ let agentDepartments = [];
 const collection = getLivechatInquiryCollection();
 
 const events = {
-	added: (inquiry, collection) => {
+	added: (inquiry) => {
 		delete inquiry.type;
 		collection.insert(inquiry);
 	},
-	changed: (inquiry, collection) => {
+	changed: (inquiry) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !agentDepartments.includes(inquiry.department))) {
 			return collection.remove(inquiry._id);
 		}
 		delete inquiry.type;
 		collection.upsert({ _id: inquiry._id }, inquiry);
 	},
-	removed: (inquiry, collection) => collection.remove(inquiry._id),
+	removed: (inquiry) => collection.remove(inquiry._id),
 };
 
-const updateCollection = (inquiry) => { events[inquiry.type](inquiry, collection); };
+const updateCollection = (inquiry) => { events[inquiry.type](inquiry); };
 const appendListenerToDepartment = (departmentId) => inquiryDataStream.on(`department/${ departmentId }`, updateCollection);
 const removeListenerOfDepartment = (departmentId) => inquiryDataStream.removeListener(`department/${ departmentId }`, updateCollection);
 
