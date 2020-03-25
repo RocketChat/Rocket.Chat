@@ -343,7 +343,7 @@ function syncUserAvatar(user, ldapUser) {
 	}
 
 	const avatarField = (settings.get('LDAP_Avatar_Field') || 'thumbnailPhoto').trim();
-	const avatar = ldapUser._raw[avatarField] || ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
+	const avatar = ldapUser._raw[avatarField] || ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto || ldapUser._raw['thumbnailPhoto;binary'] || ldapUser._raw['jpegPhoto;binary'];
 	if (!avatar) {
 		return;
 	}
