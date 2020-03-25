@@ -1495,6 +1495,15 @@ rc-old select,
 				border-bottom: none;
 			}
 
+			& .add-token {
+				display: flex;
+
+				& .rc-select {
+					width: 40%;
+					margin: 0 0 0 10px;
+				}
+			}
+
 			&:first-child {
 				padding-top: 0;
 			}
@@ -5023,6 +5032,15 @@ rc-old select,
 
 		& .jump-to-large {
 			display: none;
+		}
+	}
+
+	.add-token {
+		display: block !important;
+
+		& .rc-select {
+			width: 100% !important;
+			margin: 10px 0 !important;
 		}
 	}
 }
