@@ -18,7 +18,7 @@ Template.chatRoomItem.helpers({
 
 		const room = Rooms.findOne(this.rid);
 
-		const icon = this.t === 'd' ? roomTypes.getIcon(room) : roomTypes.getIcon(this);
+		const icon = roomTypes.getIcon(this.t === 'd' ? room : this);
 
 		const roomData = {
 			...this,

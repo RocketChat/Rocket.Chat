@@ -57,7 +57,7 @@ async function migrateDMs(models, total, current) {
 }
 
 Migrations.add({
-	version: 178,
+	version: 179,
 	up() {
 		const fut = new Future();
 
