@@ -1,3 +1,5 @@
+import { hasPermission } from '../../../../authorization/server';
+
 import { LivechatInquiry } from '../../../../models/server';
 import { LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER } from '../../../lib/stream/constants';
 
