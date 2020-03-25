@@ -40017,6 +40017,36 @@
           ]
         }
       ]
+    },
+    "3.0.6": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16999",
+          "title": "Regression: Replace the Omnichannel queue model observe with Stream",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16787",
+          "title": "[FIX]  Keeps the agent in the room after accepting a new Omnichannel request",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
