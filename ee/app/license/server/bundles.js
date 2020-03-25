@@ -4,6 +4,7 @@ const bundles = {
 		'canned-responses',
 		'ldap-enterprise',
 		'livechat-enterprise',
+		'engagement-dashboard',
 	],
 	pro: [
 	],
