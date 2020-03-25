@@ -30,7 +30,6 @@ export const fields = {
 	retention: 1,
 	prid: 1,
 	usersCount: 1,
-	usernames: 1,
 
 	// @TODO create an API to register this fields based on room type
 	livechatData: 1,

@@ -1,11 +1,8 @@
 import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
-
 
 import { roomTypes } from '../../../../utils/client';
-import { ChatSubscription } from '../../../../models/client';
 import { call } from '../../../../ui-utils/client';
 import './CreateDirectMessage.html';
 
@@ -86,24 +83,7 @@ Template.CreateDirectMessage.onRendered(function() {
 });
 
 Template.CreateDirectMessage.onCreated(function() {
-	const { rid, message: msg } = this.data;
-
-	const parentRoom = rid && ChatSubscription.findOne({ rid });
-
-	// if creating a discussion from inside a discussion, uses the same channel as parent channel
-	const room = parentRoom && parentRoom.prid ? ChatSubscription.findOne({ rid: parentRoom.prid }) : parentRoom;
-
-	if (room) {
-		room.text = room.name;
-	}
-
-	this.selectedUsers = new ReactiveVar([]);
-
 	this.onSelectUser = ({ item: user }) => {
-		if (user.username === (msg && msg.u.username)) {
-			return;
-		}
-
 		if (user.username === Meteor.user().username) {
 			return;
 		}
