@@ -62,7 +62,7 @@
 	}
 
 	&.new-day::after {
-		border-color: var(--rc-color-primary-light);
+		border-color: var(--rc-color-default-border);
 	}
 
 	&&--ignored {

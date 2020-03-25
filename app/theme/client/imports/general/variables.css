@@ -59,6 +59,7 @@
 	--rc-color-content: var(--color-white);
 	--rc-color-link-active: var(--rc-color-button-primary);
 	--rc-color-default-content-background: var(--rc-color-content);
+	--rc-color-default-border: var(--color-dark-10);
 	--contextualbar-background: var(--rc-color-default-content-background);
 	--emoji-picker-background: var(--rc-color-default-content-background);
 
@@ -265,7 +266,7 @@
 
 	--rooms-box-width: 280px;
 	--rooms-container-background: var(--rc-color-default-content-background);
-	--room-sidebar-header-border: var(--rc-color-primary-light);
+	--room-sidebar-header-border: var(--rc-color-default-border);
 	--room-sidebar-header-background: var(--rc-color-primary-lightest);
 	--rooms-footer-background: var(--rc-color-default-content-background);
 
