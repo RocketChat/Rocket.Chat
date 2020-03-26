@@ -1,6 +1,7 @@
 import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { roomTypes } from '../../../../utils/client';
 import { call } from '../../../../ui-utils/client';
@@ -83,6 +84,8 @@ Template.CreateDirectMessage.onRendered(function() {
 });
 
 Template.CreateDirectMessage.onCreated(function() {
+	this.selectedUsers = new ReactiveVar([]);
+
 	this.onSelectUser = ({ item: user }) => {
 		if (user.username === Meteor.user().username) {
 			return;

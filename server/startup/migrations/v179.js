@@ -41,13 +41,22 @@ async function migrateDMs(models, total, current) {
 
 	const items = await roomCollection.find({ t: 'd', uids: { $exists: false } }, { fields: { _id: 1 } }).limit(batchSize).toArray();
 
-	const actions = items.map((room) => roomCollection.updateOne({ _id: room._id }, {
-		$set: {
-			uids: getIds(room._id),
+	const actions = items.map((room) => ({
+		updateOne: {
+			filter: { _id: room._id },
+			update: {
+				$set: {
+					uids: getIds(room._id),
+				},
+			},
 		},
 	}));
 
-	const batch = Promise.all(actions);
+	if (actions.length === 0) {
+		return;
+	}
+
+	const batch = await roomCollection.bulkWrite(actions, { ordered: false });
 	if (actions.length === batchSize) {
 		await batch;
 		return migrateDMs(models, total, current + batchSize);
@@ -68,7 +77,7 @@ Migrations.add({
 			const total = await rooms.count();
 			await rooms.close();
 
-			if (total < batchSize * 2) {
+			if (total < batchSize * 10) {
 				await migrateDMs({ roomCollection }, total, 0);
 				return fut.return();
 			}
