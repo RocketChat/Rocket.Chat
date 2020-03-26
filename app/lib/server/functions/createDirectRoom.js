@@ -31,13 +31,17 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 	const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username).localeCompare(u2.name || u2.username));
 
 	const usernames = sortedMembers.map(({ username }) => username);
-	const uids = sortedMembers.map(({ _id }) => _id);
+	const uids = members.map(({ _id }) => _id).sort();
 
-	const room = Rooms.findDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
+	// Deprecated: using users' _id to compose the room _id is deprecated
+	const room = uids.length <= 2
+		? Rooms.findById(uids.join(''), { fields: { _id: 1 } })
+		: Rooms.findDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
 
 	const isNewRoom = !room;
 
 	const rid = room?._id || Rooms.insert({
+		...uids.length <= 2 && { _id: uids.join('') }, // Deprecated: using users' _id to compose the room _id is deprecated
 		t: 'd',
 		usernames,
 		usersCount: members.length,
