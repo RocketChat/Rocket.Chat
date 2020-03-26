@@ -16,12 +16,14 @@ Template.chatRoomItem.helpers({
 
 		const archivedClass = this.archived ? 'archived' : false;
 
-		const icon = this.t !== 'd' && roomTypes.getIcon(this);
+		const room = Rooms.findOne(this.rid);
+
+		const icon = roomTypes.getIcon(this.t === 'd' ? room : this);
 
 		const roomData = {
 			...this,
-			icon,
-			avatar: roomType.getAvatarPath(this),
+			icon: icon !== 'at' && icon,
+			avatar: roomTypes.getConfig(this.t).getAvatarPath(room, this),
 			username: this.name,
 			route: roomTypes.getRouteLink(this.t, this),
 			name: roomType.roomName(this),
