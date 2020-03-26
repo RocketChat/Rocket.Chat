@@ -615,8 +615,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountById(_id, inc) {
-		if (inc == null) { inc = 1; }
+	incMsgCountById(_id, inc = 1) {
 		const query = { _id };
 
 		const update = {
@@ -648,16 +647,8 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	decreaseMessageCountById(_id, count = -1) {
-		const query = { _id };
-
-		const update = {
-			$inc: {
-				msgs: count,
-			},
-		};
-
-		return this.update(query, update);
+	decreaseMessageCountById(_id, count = 1) {
+		return this.incMsgCountById(_id, -count);
 	}
 
 	incUsersCountById(_id, inc = 1) {
