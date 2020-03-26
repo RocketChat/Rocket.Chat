@@ -257,15 +257,13 @@
 	}
 
 	&__content {
-
 		display: flex;
-		flex-direction: column;
 		overflow-y: auto;
-
+		flex-direction: column;
 		flex: 1;
 
 		margin: 0 -1.25rem;
-    	padding: 1.25rem 1.25rem 0;
+		padding: 1.25rem 1.25rem 0;
 	}
 
 	&--apps .preferences-page__header {
