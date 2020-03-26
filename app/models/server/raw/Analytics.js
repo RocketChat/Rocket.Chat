@@ -140,6 +140,10 @@ export class AnalyticsRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params).toArray();
 	}
+
+	findByType(type) {
+		return this.find({ type });
+	}
 }
 
 export default new AnalyticsRaw(Analytics.model.rawCollection());

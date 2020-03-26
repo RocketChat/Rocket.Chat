@@ -63,11 +63,11 @@ export function MessagesSentSection() {
 
 		const values = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => ({
 			date: moment(period.start).add(i, 'days').toISOString(),
-			newUsers: 0,
+			newMessages: 0,
 		}));
-		for (const { day, users } of data.days) {
+		for (const { day, messages } of data.days) {
 			const i = moment(day).diff(period.start, 'days');
-			values[i].newUsers += users;
+			values[i].newMessages += messages;
 		}
 
 		return [
@@ -106,7 +106,7 @@ export function MessagesSentSection() {
 								<ResponsiveBar
 									data={values}
 									indexBy='date'
-									keys={['newUsers']}
+									keys={['newMessages']}
 									groupMode='grouped'
 									padding={0.25}
 									margin={{
