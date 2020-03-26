@@ -1111,6 +1111,10 @@ settings.addGroup('Message', function() {
 		values: MessageTypesValues,
 	});
 
+	this.add('DirectMesssage_maxUsers', 8, {
+		type: 'int',
+		public: true,
+	});
 
 	this.add('Message_ErasureType', 'Delete', {
 		type: 'select',

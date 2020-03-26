@@ -9,6 +9,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { userStatus } from '../../user-status';
+import { hasPermission } from '../../authorization/client';
 
 const setStatus = (status, statusText) => {
 	AccountBox.setStatus(status, statusText);
@@ -155,14 +156,14 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Create_new'),
 	icon: 'edit-rounded',
-	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
+	condition: () => hasAtLeastOnePermission(['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user']),
 	hasPopup: true,
 	action: (e) => {
-		const createChannel = (e) => {
+		const action = (title, content) => (e) => {
 			e.preventDefault();
 			modal.open({
-				title: t('Create_A_New_Channel'),
-				content: 'createChannel',
+				title: t(title),
+				content,
 				data: {
 					onCreate() {
 						modal.close();
@@ -175,42 +176,42 @@ const toolbarButtons = (user) => [{
 			});
 		};
 
-		const discussionEnabled = settings.get('Discussion_enabled');
-		if (!discussionEnabled) {
-			return createChannel(e);
+		const createChannel = action('Create_A_New_Channel', 'createChannel');
+		const createDirectMessage = action('Direct_Messages', 'CreateDirectMessage');
+		const createDiscussion = action('Discussion_title', 'CreateDiscussion');
+
+
+		const items = [
+			hasAtLeastOnePermission(['create-c', 'create-p'])
+			&& {
+				icon: 'hashtag',
+				name: t('Channel'),
+				action: createChannel,
+			},
+			hasPermission('create-d')
+			&& {
+				icon: 'team',
+				name: t('Direct_Messages'),
+				action: createDirectMessage,
+			},
+			settings.get('Discussion_enabled') && hasAtLeastOnePermission(['start-discussion', 'start-discussion-other-user'])
+			&& {
+				icon: 'discussion',
+				name: t('Discussion'),
+				action: createDiscussion,
+			},
+		].filter(Boolean);
+
+		if (items.length === 1) {
+			return items[0].action(e);
 		}
+
 		const config = {
 			columns: [
 				{
 					groups: [
 						{
-							items: [
-								{
-									icon: 'hashtag',
-									name: t('Channel'),
-									action: createChannel,
-								},
-								{
-									icon: 'discussion',
-									name: t('Discussion'),
-									action: (e) => {
-										e.preventDefault();
-										modal.open({
-											title: t('Discussion_title'),
-											content: 'CreateDiscussion',
-											data: {
-												onCreate() {
-													modal.close();
-												},
-											},
-											modifier: 'modal',
-											showConfirmButton: false,
-											showCancelButton: false,
-											confirmOnEnter: false,
-										});
-									},
-								},
-							],
+							items,
 						},
 					],
 				},

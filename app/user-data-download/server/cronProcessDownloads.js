@@ -47,7 +47,7 @@ const loadUserSubscriptions = function(exportOperation) {
 		const roomId = subscription.rid;
 		const roomData = Rooms.findOneById(roomId);
 		const roomName = roomData && roomData.name && subscription.t !== 'd' ? roomData.name : roomId;
-		const userId = subscription.t === 'd' ? roomId.replace(exportUserId, '') : null;
+		const [userId] = subscription.t === 'd' ? roomId.uids.filter((uid) => uid !== exportUserId) : [null];
 		const fileName = exportOperation.fullExport ? roomId : roomName;
 		const fileType = exportOperation.fullExport ? 'json' : 'html';
 		const targetFile = `${ fileName }.${ fileType }`;
