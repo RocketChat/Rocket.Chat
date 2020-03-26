@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import _ from 'underscore';
 
 import { getActions } from './userActions';
 import { RoomManager, popover } from '../../../ui-utils';
@@ -40,16 +41,6 @@ Template.membersList.helpers({
 		let totalOnline = 0;
 		let users = roomUsers;
 
-		const filter = Template.instance().filter.get();
-		let reg = null;
-		try {
-			reg = new RegExp(filter, 'i');
-		} catch (e) {
-			console.log(e);
-		}
-		if (filter && reg) {
-			users = users.filter((user) => reg.test(user.username) || reg.test(user.name));
-		}
 
 		users = users.map(function(user) {
 			let utcOffset;
@@ -169,10 +160,10 @@ Template.membersList.events({
 		event.stopPropagation();
 	},
 	'keydown .js-filter'(event, instance) {
-		instance.filter.set(event.target.value.trim());
+		_.debounce(() => { instance.filter.set(event.target.value.trim()); }, 500)();
 	},
-	'input .js-filter'(e, instance) {
-		instance.filter.set(e.target.value.trim());
+	'input .js-filter'(event, instance) {
+		_.debounce(() => { instance.filter.set(event.target.value.trim()); }, 500)();
 	},
 	'change .js-type'(e, instance) {
 		instance.showAllUsers.set(e.currentTarget.value === 'all');
@@ -250,7 +241,7 @@ Template.membersList.events({
 		const { showAllUsers, usersLimit, users, total, loadingMore } = instance;
 
 		loadingMore.set(true);
-		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: usersLimit.get() + 100, skip: 0 }, (error, result) => {
+		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: usersLimit.get() + 100, skip: 0, filter: instance.filter.get() }, (error, result) => {
 			if (error) {
 				console.error(error);
 				loadingMore.set(false);
@@ -283,7 +274,7 @@ Template.membersList.onCreated(function() {
 	this.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
-		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
+		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0, filter: this.filter.get() }, (error, users) => {
 			if (error) {
 				console.error(error);
 				this.loading.set(false);

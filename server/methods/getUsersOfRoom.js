@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
 
 import { Subscriptions } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 
-function findUsers({ rid, status, skip, limit }) {
+function findUsers({ rid, status, skip, limit, filter }) {
+	const regex = filter ? new RegExp(s.trim(s.escapeRegExp(filter)), 'i') : undefined;
 	return Subscriptions.model.rawCollection().aggregate([
 		{ $match: { rid } },
 		{
@@ -24,6 +26,7 @@ function findUsers({ rid, status, skip, limit }) {
 				'u.status': 1,
 			},
 		},
+		...regex ? [{ $match: { $or: [{ 'u.username': regex }, { 'u.name': regex }] } }] : [],
 		...status ? [{ $match: { 'u.status': status } }] : [],
 		{
 			$sort: {
@@ -43,7 +46,7 @@ function findUsers({ rid, status, skip, limit }) {
 }
 
 Meteor.methods({
-	async getUsersOfRoom(rid, showAll, { limit, skip } = {}) {
+	async getUsersOfRoom(rid, showAll, { limit, skip, filter = '' } = {}) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUsersOfRoom' });
@@ -59,13 +62,14 @@ Meteor.methods({
 		}
 
 		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
-		const users = await findUsers({ rid, status: { $ne: 'offline' }, limit, skip });
+		const users = await findUsers({ rid, status: { $ne: 'offline' }, limit, skip, filter });
 		if (showAll && (!limit || users.length < limit)) {
 			const offlineUsers = await findUsers({
 				rid,
 				status: { $eq: 'offline' },
 				limit: limit ? limit - users.length : 0,
 				skip: skip || 0,
+				filter,
 			});
 
 			return {
