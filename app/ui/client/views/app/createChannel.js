@@ -157,7 +157,7 @@ Template.createChannel.helpers({
 		return roomTypes.roomTypesOrder.filter(
 			(roomTypeOrder) => roomTypeOrder.order < orderLow,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier],
+			(roomTypeOrder) => roomTypes.getConfig(roomTypeOrder.identifier),
 		).filter((roomType) => roomType.creationTemplate);
 	},
 	roomTypesAfterStandard() {
@@ -165,7 +165,7 @@ Template.createChannel.helpers({
 		return roomTypes.roomTypesOrder.filter(
 			(roomTypeOrder) => roomTypeOrder.order > orderHigh,
 		).map(
-			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier],
+			(roomTypeOrder) => roomTypes.getConfig(roomTypeOrder.identifier),
 		).filter((roomType) => roomType.creationTemplate);
 	},
 });
@@ -264,7 +264,8 @@ Template.createChannel.events({
 			if (instance.data.onCreate) {
 				instance.data.onCreate(result);
 			}
-			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
+
+			return FlowRouter.go(isPrivate ? 'group' : 'channel', { ...result }, FlowRouter.current().queryParams);
 		});
 		return false;
 	},
