@@ -314,7 +314,22 @@ SAML.prototype.validateStatus = function(doc) {
 SAML.prototype.validateSignature = function(xml, cert, response) {
 	const self = this;
 
-	const signature = response.getElementsByTagName('ds:Signature')[0];
+	const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
+	const signatures = xmlCrypto.xpath(response, xpathSigQuery);
+	let signature = null;
+
+	for (const sign of signatures) {
+		if (sign.parentNode !== response) {
+			continue;
+		}
+
+		// Too many signatures
+		if (signature) {
+			return false;
+		}
+
+		signature = sign;
+	}
 
 	const sig = new xmlCrypto.SignedXml();
 
@@ -509,7 +524,12 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	}
 	debugLog('Status ok');
 
-	const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response')[0];
+	const allResponses = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response');
+	if (allResponses.length !== 1) {
+		return callback(new Error('Too many SAML responses'), null, false);
+	}
+
+	const response = allResponses[0];
 	if (!response) {
 		const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
 
