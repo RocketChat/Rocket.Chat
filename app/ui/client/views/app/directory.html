@@ -45,8 +45,8 @@
 								<div class="table-fake-th"><span>{{_ "Users"}}</span> {{> icon icon=(sortIcon 'usersCount')}}</div>
 							</th>
 							{{#if showLastMessage}}
-							<th class="table-column-date">
-								<div class="table-fake-th">{{_ "Last_Message"}}</div>
+							<th class="table-column-date js-sort {{#if searchSortBy 'lastMessage'}}is-sorting{{/if}}" data-sort="lastMessage">
+								<div class="table-fake-th"><span>{{_ "Last_Message"}}</span> {{> icon icon=(sortIcon 'lastMessage')}}</div>
 							</th>
 							{{/if}}
 							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
