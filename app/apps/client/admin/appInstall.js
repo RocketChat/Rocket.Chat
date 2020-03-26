@@ -148,9 +148,9 @@ Template.appInstall.events({
 			let result;
 
 			if (isUpdating) {
-				result = await APIClient.upload(`apps/${ t.isUpdatingId.get() }`, data);
+				result = await APIClient.upload(`apps/${ t.isUpdatingId.get() }`, data).promise;
 			} else {
-				result = await APIClient.upload('apps', data);
+				result = await APIClient.upload('apps', data).promise;
 			}
 
 			FlowRouter.go(`/admin/apps/${ result.app.id }?version=${ result.app.version }`);
