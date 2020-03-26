@@ -14,13 +14,16 @@ export const handleUserCreated = (user) => {
 	return user;
 };
 
-const fillFirstDaysIfNeeded = async (start, end) => {
-	const usersFromAnalytics = await AnalyticsRaw.findByType('users').toArray();
+export const fillFirstDaysOfUsersIfNeeded = async (date) => {
+	const usersFromAnalytics = await AnalyticsRaw.findByTypeBeforeDate({
+		type: 'users',
+		date: convertDateToInt(date),
+	}).toArray();
 	if (!usersFromAnalytics.length) {
-		const startOfPeriod = moment(convertIntToDate(end)).subtract(90, 'days').toDate();
+		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
 		const users = await Users.getTotalOfRegisteredUsersByDate({
 			start: startOfPeriod,
-			end,
+			end: date,
 		});
 		users.forEach((user) => Analytics.insert(user));
 	}
@@ -32,7 +35,6 @@ export const findWeeklyUsersRegisteredData = async ({ start, end }) => {
 	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
 	const today = convertDateToInt(end);
 	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
-	await fillFirstDaysIfNeeded(start, end);
 	const currentPeriodUsers = await AnalyticsRaw.getTotalOfRegisteredUsersByDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),

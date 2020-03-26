@@ -40,11 +40,10 @@ Template.EngagementDashboardRoute.onRendered(async function() {
 	render(createElement(MeteorProvider, { children: createElement(EngagementDashboardRoute) }), container);
 });
 
-let licensed = false;
-
 FlowRouter.route('/admin/engagement-dashboard/:tab?', {
 	name: 'engagement-dashboard',
-	action: () => {
+	action: async () => {
+		const licensed = await hasLicense('engagement-dashboard');
 		if (!licensed) {
 			return;
 		}
@@ -57,8 +56,6 @@ hasLicense('engagement-dashboard').then((enabled) => {
 	if (!enabled) {
 		return;
 	}
-
-	licensed = true;
 
 	AdminBox.addOption({
 		href: 'engagement-dashboard',

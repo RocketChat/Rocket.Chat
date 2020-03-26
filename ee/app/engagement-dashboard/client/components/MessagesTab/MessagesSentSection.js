@@ -156,7 +156,7 @@ export function MessagesSentSection() {
 										},
 									}}
 									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
-										{t('Value_users', { value })}
+										{t('Value_messages', { value })}
 									</Box>}
 								/>
 							</Box>
