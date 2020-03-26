@@ -93,7 +93,7 @@ Template.InvitePlayers.events({
 				call('sendMessage', {
 					_id: Random.id(),
 					rid: result.rid,
-					msg: TAPi18n.__('Game_Center_Play_Game_Together', { name }),
+					msg: TAPi18n.__('Apps_Game_Center_Play_Game_Together', { name }),
 				});
 
 				c.stop();
