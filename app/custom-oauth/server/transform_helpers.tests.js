@@ -11,6 +11,7 @@ import {
 
 
 const data = {
+	id: '123456',
 	'invalid.property': true,
 	name: 'foo',
 	email: 'foo@bar.com',
