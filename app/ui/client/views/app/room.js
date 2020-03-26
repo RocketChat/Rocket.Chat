@@ -1026,6 +1026,7 @@ Template.room.onCreated(function() {
 			fields: {
 				t: 1,
 				usernames: 1,
+				uids: 1,
 			},
 		});
 
@@ -1033,17 +1034,17 @@ Template.room.onCreated(function() {
 			return c.stop();
 		}
 
+		if (roomTypes.getConfig(room.t).isGroupChat(room)) {
+			return;
+		}
+
 		this.userDetail.set(room.usernames.filter((username) => username !== user.username)[0]);
 	});
 
 	this.autorun(() => {
 		const rid = Template.currentData()._id;
-		const room = Rooms.findOne({ _id: rid }, { fields: { announcement: 1, usernames: 1, t: 1 } });
+		const room = Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } });
 		this.state.set('announcement', room.announcement);
-
-		if (roomTypes.getConfig(room.t).isGroupChat(room)) {
-			this.userDetail.set(undefined);
-		}
 	});
 
 	this.autorun(() => {
