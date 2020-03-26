@@ -3,6 +3,7 @@
 import { expect } from 'chai';
 
 import {
+	normalizers,
 	fromTemplate,
 	renameInvalidProperties,
 	getNestedValue,
@@ -25,34 +26,45 @@ const data = {
 };
 
 describe('fromTemplate', () => {
+	const normalizedData = Object.values(normalizers).reduce((normalizedData, normalizer) => {
+		const result = { ...normalizedData };
+		normalizer({ ...result });
+
+		return result;
+	}, data);
+
 	it('returns match from regexp on top-level properties', () => {
 		const template = '{{/^foo@bar\.(.+)/::email}}';
 		const expected = 'com';
-		expect(fromTemplate(template, data)).to.equal(expected);
+		const result = fromTemplate(template, normalizedData);
+		expect(result).to.equal(expected);
 	});
 
 	it('returns match from regexp on nested properties', () => {
 		const template = '{{/^ba(.+)/::nested.value}}';
 		const expected = 'z';
-		expect(fromTemplate(template, data)).to.equal(expected);
+		const result = fromTemplate(template, normalizedData);
+		expect(result).to.equal(expected);
 	});
 
 	it('returns value from nested prop with plain syntax', () => {
 		const template = 'nested.value';
-		const expected = data.nested.value;
-		expect(fromTemplate(template, data)).to.equal(expected);
+		const expected = normalizedData.nested.value;
+		const result = fromTemplate(template, normalizedData);
+		expect(result).to.equal(expected);
 	});
 
 	it('returns value from nested prop with template syntax', () => {
 		const template = '{{nested.value}}';
-		const expected = data.nested.value;
-		expect(fromTemplate(template, data)).to.equal(expected);
+		const expected = normalizedData.nested.value;
+		const result = fromTemplate(template, normalizedData);
+		expect(result).to.equal(expected);
 	});
 
 	it('returns composed value from nested prop with template syntax', () => {
 		const template = '{{name}}.{{nested.value}}';
-		const expected = `${ data.name }.${ data.nested.value }`;
-		const result = fromTemplate(template, data);
+		const expected = `${ normalizedData.name }.${ normalizedData.nested.value }`;
+		const result = fromTemplate(template, normalizedData);
 
 		expect(result).to.equal(expected);
 	});
@@ -60,7 +72,8 @@ describe('fromTemplate', () => {
 	it('returns composed string from multiple template chunks with static parts', () => {
 		const template = 'composed-{{name}}-at-{{nested.value}}-dot-{{/^foo@bar\.(.+)/::email}}-from-template';
 		const expected = 'composed-foo-at-baz-dot-com-from-template';
-		expect(fromTemplate(template, data)).to.equal(expected);
+		const result = fromTemplate(template, normalizedData);
+		expect(result).to.equal(expected);
 	});
 });
 
