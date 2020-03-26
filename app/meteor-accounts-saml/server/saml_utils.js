@@ -548,8 +548,15 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	}
 	debugLog('Signature OK');
 
-	let assertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')[0];
-	const encAssertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion')[0];
+	const allAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
+	const allEncrypedAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion');
+
+	if (allAssertions.length + allEncrypedAssertions.length > 1) {
+		return callback(new Error('Too many SAML assertions'), null, false);
+	}
+
+	let assertion = allAssertions[0];
+	const encAssertion = allEncrypedAssertions[0];
 
 	const options = { key: this.options.privateKey };
 
