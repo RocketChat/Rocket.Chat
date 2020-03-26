@@ -5,10 +5,11 @@ import { Template } from 'meteor/templating';
 
 import { t, getUserPreference, roomTypes } from '../../utils';
 import { popover, renderMessageBody, menu } from '../../ui-utils';
-import { Users, ChatSubscription } from '../../models';
+import { Users, ChatSubscription } from '../../models/client';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { timeAgo } from '../../lib/client/lib/formatDate';
+import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 
 Template.sidebarItem.helpers({
 	streaming() {
@@ -205,7 +206,7 @@ Template.sidebarItemIcon.helpers({
 		if (!this.rid) {
 			return this._id;
 		}
-		return this.rid.replace(this.u._id, '');
+		return getUidDirectMessage(this.rid);
 	},
 	isRoom() {
 		return this.rid || this._id;
