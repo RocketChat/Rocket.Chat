@@ -3,6 +3,7 @@ import '../imports/startup/server';
 
 import '../lib/RegExp';
 
+import '../ee/server';
 import './lib/accounts';
 import './lib/cordova';
 import './lib/roomFiles';
@@ -74,5 +75,3 @@ import './routes/avatar';
 import './stream/messages';
 import './stream/rooms';
 import './stream/streamBroadcast';
-
-import '../ee/server';

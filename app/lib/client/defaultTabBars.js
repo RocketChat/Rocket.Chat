@@ -3,6 +3,7 @@ import { Session } from 'meteor/session';
 import { TabBar } from '../../ui-utils';
 import { Rooms } from '../../models';
 import { hasAllPermission } from '../../authorization';
+import { roomTypes } from '../../utils/client';
 
 TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
@@ -20,6 +21,31 @@ TabBar.addButton({
 	icon: 'user',
 	template: 'membersList',
 	order: 2,
+	condition() {
+		const rid = Session.get('openedRoom');
+		const room = Rooms.findOne({
+			_id: rid,
+		});
+
+		return room && !roomTypes.getConfig(room.t).isGroupChat(room);
+	},
+});
+
+TabBar.addButton({
+	groups: ['direct'],
+	id: 'user-info-group',
+	i18nTitle: 'Members_List',
+	icon: 'team',
+	template: 'membersList',
+	order: 2,
+	condition() {
+		const rid = Session.get('openedRoom');
+		const room = Rooms.findOne({
+			_id: rid,
+		});
+
+		return room && roomTypes.getConfig(room.t).isGroupChat(room);
+	},
 });
 
 TabBar.addButton({
