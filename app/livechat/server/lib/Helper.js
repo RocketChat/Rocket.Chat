@@ -1,3 +1,4 @@
+import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
@@ -7,6 +8,7 @@ import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
+import { Apps } from '../../../apps/server';
 
 export const createLivechatRoom = (rid, name, guest, extraData) => {
 	check(rid, String);
@@ -41,6 +43,8 @@ export const createLivechatRoom = (rid, name, guest, extraData) => {
 	}, extraData);
 
 	const roomId = Rooms.insert(room);
+
+	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomStartedHandler, room);
 	callbacks.run('livechat.newRoom', room);
 	return roomId;
 };
