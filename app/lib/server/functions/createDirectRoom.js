@@ -35,8 +35,8 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
 	const room = uids.length <= 2
-		? Rooms.findById(uids.join(''), { fields: { _id: 1 } })
-		: Rooms.findDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
+		? Rooms.findOneById(uids.join(''), { fields: { _id: 1 } })
+		: Rooms.findOneDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
 
 	const isNewRoom = !room;
 
