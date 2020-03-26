@@ -49,6 +49,14 @@ describe('fromTemplate', () => {
 		expect(fromTemplate(template, data)).to.equal(expected);
 	});
 
+	it('returns composed value from nested prop with template syntax', () => {
+		const template = '{{name}}.{{nested.value}}';
+		const expected = `${ data.name }.${ data.nested.value }`;
+		const result = fromTemplate(template, data);
+
+		expect(result).to.equal(expected);
+	});
+
 	it('returns composed string from multiple template chunks with static parts', () => {
 		const template = 'composed-{{name}}-at-{{nested.value}}-dot-{{/^foo@bar\.(.+)/::email}}-from-template';
 		const expected = 'composed-foo-at-baz-dot-com-from-template';
