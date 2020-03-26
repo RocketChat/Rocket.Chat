@@ -28,9 +28,17 @@ export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 		return false;
 	}
 	const searchOptions = {
-		filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapGroup),
+		filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapGroup).replace(/#{userdn}/g, ldapUser.dn),
 		scope: 'sub',
 	};
+
+	if (!ldap) {
+		ldap = new LDAP();
+	}
+
+	if (!ldap.connected) {
+		ldap.connectSync();
+	}
 
 	const result = ldap.searchAllSync(syncUserRolesBaseDN, searchOptions);
 	if (!Array.isArray(result) || result.length === 0) {
