@@ -229,6 +229,22 @@ const guessNameFromUsername = (username) =>
 		.replace(/^(.)/, (u) => u.toLowerCase())
 		.replace(/^\w/, (u) => u.toUpperCase());
 
+const findUser = (username, emailRegex) => {
+	if (Accounts.saml.settings.immutableProperty === 'Username') {
+		if (username) {
+			return Meteor.users.findOne({
+				username,
+			});
+		}
+
+		return null;
+	}
+
+	return Meteor.users.findOne({
+		'emails.address': emailRegex,
+	});
+};
+
 Accounts.registerLoginHandler(function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
@@ -279,17 +295,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 		// If eppn is not exist
 		if (!user) {
-			if (Accounts.saml.settings.immutableProperty === 'Username') {
-				if (username) {
-					user = Meteor.users.findOne({
-						username,
-					});
-				}
-			} else {
-				user = Meteor.users.findOne({
-					'emails.address': emailRegex,
-				});
-			}
+			user = findUser(username, emailRegex);
 		}
 
 		const emails = emailList.map((email) => ({
