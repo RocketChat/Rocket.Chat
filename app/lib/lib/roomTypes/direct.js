@@ -7,21 +7,22 @@ import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnu
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'direct',
-			path: '/direct/:username',
+			path: '/direct/:rid',
 		});
 	}
 
 	action(params) {
-		return openRoom('d', params.username);
+		return openRoom('d', params.rid);
 	}
 
 	link(sub) {
-		return { username: sub.name };
+		return { rid: sub.rid || sub.name };
 	}
 }
 
@@ -36,6 +37,14 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		});
 	}
 
+
+	getIcon(roomData) {
+		if (this.isGroupChat(roomData)) {
+			return 'team';
+		}
+		return this.icon;
+	}
+
 	findRoom(identifier) {
 		if (!hasPermission('view-d-room')) {
 			return null;
@@ -43,7 +52,10 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 		const query = {
 			t: 'd',
-			name: identifier,
+			$or: [
+				{ name: identifier },
+				{ rid: identifier },
+			],
 		};
 
 		const subscription = Subscriptions.findOne(query);
@@ -161,11 +173,19 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		return { title, text };
 	}
 
-	getAvatarPath(roomData) {
-		return getUserAvatarURL(roomData.name || this.roomName(roomData));
+	getAvatarPath(roomData, subData) {
+		if (roomData && this.isGroupChat(roomData)) {
+			return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
+		}
+		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+		return getUserAvatarURL(sub.name || this.roomName(roomData));
 	}
 
 	includeInDashboard() {
 		return true;
+	}
+
+	isGroupChat(room) {
+		return room.uids && room.uids.length > 2;
 	}
 }

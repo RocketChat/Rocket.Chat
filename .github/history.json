@@ -39745,6 +39745,328 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "3.0.1": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16624",
+          "title": "[FIX] UiKit not updating new actionIds received as responses from actions",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16625",
+          "title": "[FIX] Regression: Jitsi on external window infinite loop",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16623",
+          "title": "[FIX] livechat/rooms endpoint not working with big amount of livechats",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.1",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16637",
+          "title": "[FIX] Regression: New 'app' role with no permissions when updating to 3.0.0",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16626",
+          "title": "[FIX] Block user option inside admin view",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16639",
+          "title": "[FIX] Data converters overriding fields added by apps",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16629",
+          "title": "[FIX] Admin height if the blue banner is opened",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "2.4.10": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16495",
+          "title": "[FIX] users.info endpoint not handling the error if the user does not exist",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.2",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.0.2": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16682",
+          "title": "[FIX] ie11 support",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.2",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16603",
+          "title": "[FIX] Omnichannel Inquiry queues when removing chats",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16495",
+          "title": "[FIX] users.info endpoint not handling the error if the user does not exist",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.2",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16668",
+          "title": "[FIX] Clear unread red line when the ESC key is pressed ",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "2.4.11": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.0.3": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16757",
+          "title": "[FIX] Language country has been ignored on translation load",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16726",
+          "title": "[FIX] Manual Register use correct state for determining registered",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.0.3",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16723",
+          "title": "[FIX] Rocket.Chat takes too long to set the username when it fails to send enrollment email",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.0.3",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "16671",
+          "title": "[FIX] LDAP sync admin action was not syncing existent users",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16618",
+          "title": "[FIX] Check agent status when starting a new conversation with an agent assigned",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.3",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
+    },
+    "3.0.4": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16617",
+          "title": "[IMPROVE] Send files over REST API",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16838",
+          "title": "[FIX] Integrations page pagination",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16699",
+          "title": "[FIX] TypeError when trying to load avatar of an invalid room.",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "3.0.5": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16989",
+          "title": "[FIX] Race conditions on/before login",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.0.6": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16999",
+          "title": "Regression: Replace the Omnichannel queue model observe with Stream",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16787",
+          "title": "[FIX]  Keeps the agent in the room after accepting a new Omnichannel request",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.0.7": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17017",
+          "title": "Regression: Remove deprecated Omnichannel setting used to fetch the queue data through subscription ",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
     }
   }
 }
