@@ -1,6 +1,8 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+export const TABBAR_DEFAULT_VISIBLE_ICON_COUNT = 4;
+
 export const TabBar = new class TabBar {
 	get size() {
 		return this._size.get();
@@ -12,7 +14,7 @@ export const TabBar = new class TabBar {
 
 	constructor() {
 		this.buttons = new ReactiveVar({});
-		this._size = new ReactiveVar(4);
+		this._size = new ReactiveVar(TABBAR_DEFAULT_VISIBLE_ICON_COUNT);
 		this.extraGroups = {};
 	}
 

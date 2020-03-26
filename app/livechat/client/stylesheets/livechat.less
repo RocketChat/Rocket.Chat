@@ -13,8 +13,8 @@
 
 .trigger-option,
 .trigger-value {
-	float: left;
 	display: inline-block;
+	float: left;
 }
 
 .trigger-option {
@@ -26,29 +26,37 @@
 .trigger-value {
 	width: 70%;
 
-	textarea, input, select {
+	textarea,
+	input,
+	select {
 		display: block !important;
+
 		width: auto !important;
-		margin-bottom: 4px;
 		min-width: 50%;
+		margin-bottom: 4px;
 	}
 }
 
 .livechat-code {
 	width: 90%;
 	max-width: 750px;
+
 	text-align: right;
 
 	textarea {
-		text-align: left;
-		width: 100%;
-		height: 200px;
-		background-color: #efefef;
-		font-family: courier;
-		font-size: 12px;
 		display: block;
 
+		width: 100%;
+		height: 200px;
+
 		margin-bottom: 1rem;
+
+		text-align: left;
+
+		background-color: #efefef;
+
+		font-family: courier;
+		font-size: 12px;
 	}
 }
 
@@ -69,14 +77,18 @@
 
 	li {
 		display: inline-block;
-		background-color: #dddddd;
-		border-radius: 10px;
-		padding: 2px 8px 2px 2px;
+
 		margin: 1px 0;
+		padding: 2px 8px 2px 2px;
+
 		cursor: pointer;
+
+		border-radius: 10px;
+		background-color: #dddddd;
 
 		.icon-plus-circled {
 			opacity: 0.5;
+
 			font-size: 0.8rem;
 		}
 	}
@@ -85,8 +97,9 @@
 .agent-info {
 	input[type='text'] {
 		width: auto;
-		line-height: 24px;
 		height: 24px;
+
+		line-height: 24px;
 	}
 }
 
@@ -97,24 +110,28 @@
 .visitor-navigation,
 .visitor-custom-fields {
 	.visitor-scroll {
-		height: 130px;
 		overflow-y: auto;
-		border: 1px solid #e7e7e7;
-		border-radius: 4px;
-		padding: 4px;
+
+		height: 130px;
 		margin-top: 4px;
 		margin-bottom: 20px;
+		padding: 4px;
+
+		border: 1px solid #e7e7e7;
+		border-radius: 4px;
 
 		ul {
 			li {
 				white-space: nowrap;
 
 				a {
-					text-overflow: ellipsis;
 					display: block;
 					overflow: hidden;
-					color: @secondary-font-color;
+
 					text-decoration: underline;
+					text-overflow: ellipsis;
+
+					color: @secondary-font-color;
 
 					&:hover {
 						text-decoration: none;
@@ -130,39 +147,46 @@
 }
 
 .livechat-status {
+	color: #9d9fa3;
+
 	font-size: 20px;
 	line-height: 18px;
-	color: #9d9fa3;
 }
 
 .external-message {
-	padding: 10px;
 	position: relative;
 
+	padding: 10px;
+
 	&::after {
-		content: " ";
 		position: absolute;
-		border-bottom: 1px solid #cccccc;
-		left: 10px;
 		right: 10px;
 		bottom: 0;
+		left: 10px;
+
+		content: " ";
+
+		border-bottom: 1px solid #cccccc;
 	}
 }
 
 .user-view {
 	li {
 		color: @secondary-font-color;
-		line-height: 18px;
+
 		font-size: 12px;
 		font-weight: 300;
+		line-height: 18px;
 	}
 
 	nav.centered-buttons {
-		text-align: center;
 		margin-bottom: 1em;
+
+		text-align: center;
 
 		button {
 			display: inline-block;
+
 			width: auto;
 		}
 	}
@@ -178,8 +202,9 @@
 
 .visitor-edit {
 	h3 {
-		font-size: 24px;
 		margin-bottom: 8px;
+
+		font-size: 24px;
 		line-height: 22px;
 	}
 }
@@ -192,27 +217,31 @@
 
 .lc-analytics-table {
 	display: flex;
-	flex-flow: column;
-	// width: 100%;
-	min-height: 300px;
+
 	height: ~"calc(100% - 280px)";
 	height: ~"-webkit-calc-height(100% - 280px)";
+
+	min-height: 300px;
+	flex-flow: column;
 }
 
 .lc-analytics-flex-container {
 	position: relative;
+
 	display: flex;
-	flex-flow: row;
+
 	height: 100%;
-	// align-content: stretch;
+	flex-flow: row;
 }
 
 .lc-analytics-chart-col {
 	position: relative;
+
 	flex: 66.66666%;
+
 	max-width: 66.66666%;
-	padding-right: 2px;
 	max-height: 100%;
+	padding-right: 2px;
 }
 
 .lc-chart-ov-content {
@@ -221,137 +250,141 @@
 
 .lc-analytics-chart-ov-col {
 	position: relative;
+
 	flex: 33.33333%;
+
 	max-width: 33.33333%;
-	// overflow: scroll;
-	padding-left: 2px;
 	height: 100%;
+
+	padding-left: 2px;
 }
 
 .lc-chart-section {
 	position: relative;
+
 	height: 100%;
 	max-height: 100%;
 }
 
 .lc-chart-section-content {
 	position: relative;
-	width: 100%;
-	height: 100%;
-	// max-height: 100%;
+
 	display: flex;
 	flex-direction: column;
-}
 
-.lc-chart-options {
-	// flex: 1;
+	width: 100%;
+	height: 100%;
 }
 
 .border-component-td {
-  padding: 0.5rem;
+	padding: 0.5rem;
 }
 
 .lc-analytics-chart-container {
-	// flex-grow: 100%;
-	flex: auto;
 	position: relative;
-	// height: inherit;
+
+	flex: auto;
 }
 
 .lc-analytics-header {
 	float: right;
-  & > .lc-date-picker-btn {
-    font-weight: inherit;
-    font-size: inherit;
-    color: #383838;
-    //line-height: 1;
-    padding-top: 23px;
-  }
 
-  & > .lc-date-picker-btn {
-    // padding-top: 15px;
-    // padding-right: 25px;
-    // padding-left: 10px;
-    position: relative;
+	& > .lc-date-picker-btn {
+		position: relative;
 
-    .fade {
-      color: #9ea2a8;
-    }
-  }
+		padding-top: 23px;
+
+		color: #383838;
+
+		font-size: inherit;
+		font-weight: inherit;
+
+		.fade {
+			color: #9ea2a8;
+		}
+	}
 }
 
 .lc-analytics-overview {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 10px;
-  margin-bottom: 10px;
+	display: flex;
+
+	margin-top: 10px;
+	margin-bottom: 10px;
+	flex-wrap: wrap;
 	justify-content: center;
 }
 
 .lc-analytics-ov-col {
-  min-height: 20px;
-  flex: 25%; //1;
-  max-width: 25%;
+	flex: 25%;
 
-  &.-full-width {
-    max-width: 100%;
-  }
+	max-width: 25%;
+	min-height: 20px;
 
-  &:not(:last-child) {
-    border-right: 1px solid #E9E9E9;
-  }
+	&.-full-width {
+		max-width: 100%;
+	}
+
+	&:not(:last-child) {
+		border-right: 1px solid #e9e9e9;
+	}
 }
 
 .lc-analytics-ov-case {
-  width: 100%;
-  text-align: center;
-  margin-bottom: 20px;
-  user-select: text;
+	width: 100%;
+	margin-bottom: 20px;
 
-  &:first-child {
-    margin-top: 8px;
-		//border-bottom: 1px solid #E9E9E9;
-  }
+	user-select: text;
+	text-align: center;
 
-  &.-standalone {
-    & > .title {
-			margin-top: 1px;
-			display: inline-block;
-      font-size: .875rem;
-      font-weight: 300;
-      text-transform: none;
-      // margin-bottom: 6px;
-    }
-    & > .value {
-      // margin-top: 1px;
-      font-size: 1.75rem;
-			margin-bottom: 6px;
-    }
-  }
-
-  & > .title {
+	&:first-child {
 		margin-top: 8px;
+	}
+
+	&.-standalone {
+		& > .title {
+			display: inline-block;
+
+			margin-top: 1px;
+
+			text-transform: none;
+
+			font-size: 0.875rem;
+			font-weight: 300;
+		}
+
+		& > .value {
+			margin-bottom: 6px;
+
+			font-size: 1.75rem;
+		}
+	}
+
+	& > .title {
 		display: inline-block;
-    font-weight: 300;
-    font-size: 0.875rem;
-    color: #9ea2a8;
-    text-transform: uppercase;
-    //cursor: help;
-  }
 
-  & > .value {
-    display: inline-block;
-    width: 100%;
-  }
+		margin-top: 8px;
 
-  & > .value {
-    // margin-top: 8px;
-    font-weight: 400;
-    font-size: 1.75rem;
-    color: #383838;
-    line-height: 1;
-    text-transform: capitalize;
-  }
+		text-transform: uppercase;
+
+		color: #9ea2a8;
+
+		font-size: 0.875rem;
+		font-weight: 300;
+	}
+
+	& > .value {
+		display: inline-block;
+
+		width: 100%;
+
+		text-transform: capitalize;
+
+		color: #383838;
+
+		font-size: 1.75rem;
+		font-weight: 400;
+		line-height: 1;
+	}
 }
 
 @media screen and (max-width: 925px) {
@@ -359,6 +392,7 @@
 		& > .title {
 			font-size: 0.5rem;
 		}
+
 		& > .value {
 			font-size: 1rem;
 		}
@@ -370,18 +404,20 @@
 
 	.lc-analytics-chart-col {
 		flex: 100%;
+
 		max-width: 100%;
-		padding-right: 0px;
 		max-height: 100%;
+		padding-right: 0;
 		padding-bottom: 2px;
 	}
 
 	.lc-analytics-chart-ov-col {
-		padding-left: 0;
 		flex: 100%;
+
 		max-width: 100%;
 		max-height: 100%;
 		padding-top: 2px;
+		padding-left: 0;
 	}
 }
 
@@ -390,6 +426,7 @@
 		& > .title {
 			font-size: 0.875rem;
 		}
+
 		& > .value {
 			font-size: 1.75rem;
 		}
@@ -401,18 +438,20 @@
 
 	.lc-analytics-chart-col {
 		flex: 66.66666%;
+
 		max-width: 66.66666%;
-		padding-right: 2px;
 		max-height: 100%;
+		padding-right: 2px;
 		padding-bottom: 0;
 	}
 
 	.lc-analytics-chart-ov-col {
-		padding-left: 2px;
 		flex: 33.33333%;
+
 		max-width: 33.33333%;
 		max-height: 100%;
 		padding-top: 0;
+		padding-left: 2px;
 	}
 }
 
@@ -421,6 +460,7 @@
 		& > .title {
 			font-size: 0.5rem;
 		}
+
 		& > .value {
 			font-size: 1rem;
 		}
@@ -432,55 +472,56 @@
 
 	.lc-analytics-chart-col {
 		flex: 100%;
+
 		max-width: 100%;
-		padding-right: 0;
 		max-height: 100%;
+		padding-right: 0;
 		padding-bottom: 2px;
 	}
 
 	.lc-analytics-chart-ov-col {
-		padding-left: 0;
 		flex: 100%;
+
 		max-width: 100%;
 		max-height: 100%;
 		padding-top: 2px;
+		padding-left: 0;
 	}
 }
 
 .lc-monitoring-flex {
 	display: flex;
-	flex-wrap: wrap;
-	margin-bottom: 2px !important;
+
 	margin-top: 2px !important;
-	// flex-direction: row;
-  // margin-top: 10px;
-  // margin-bottom: 10px;
-	// justify-content: center;
-	// padding: 0 4px;
+	margin-bottom: 2px !important;
+	flex-wrap: wrap;
 }
 
 .lc-monitoring-doughnut-chart {
 	flex: 33.33333%;
+
 	max-width: 33.33333%;
-	padding: 2px 2px;
+	padding: 2px;
 }
 
 .lc-monitoring-line-chart {
 	flex: 66.66666%;
+
 	max-width: 66.66666%;
-	padding: 2px 2px;
+	padding: 2px;
 
 	& .lc-analytics-ov-col {
-		min-height: 20px;
-		flex: 33.3%; //1;
+		flex: 33.3%;
+
 		max-width: 33.3%;
+		min-height: 20px;
 
 		&.-full-width {
-		  max-width: 100%;
+			max-width: 100%;
 		}
 
 		&:not(:last-child) {
-		  border-right: 1px solid #E9E9E9;
+			border-right: 1px solid #e9e9e9;
 		}
 	}
 
@@ -491,8 +532,9 @@
 
 .lc-monitoring-line-chart-full {
 	flex: 66.66666%;
+
 	width: 100%;
-	padding: 2px 2px;
+	padding: 2px;
 }
 
 .lc-monitoring-chart-container {
@@ -502,16 +544,19 @@
 @media screen and (max-width: 925px) {
 	.lc-monitoring-doughnut-chart {
 		flex: 100%;
+
 		max-width: 100%;
 	}
 
 	.lc-monitoring-line-chart {
 		flex: 100%;
+
 		max-width: 100%;
 	}
 
 	.lc-monitoring-line-chart-full {
 		flex: 100%;
+
 		max-width: 100%;
 	}
 }
@@ -519,16 +564,19 @@
 @media screen and (max-width: 800px) {
 	.lc-monitoring-doughnut-chart {
 		flex: 33.33333%;
+
 		max-width: 33.33333%;
 	}
 
 	.lc-monitoring-line-chart {
 		flex: 66.66666%;
+
 		max-width: 66.66666%;
 	}
 
 	.lc-monitoring-line-chart-full {
 		flex: 66.66666%;
+
 		width: 66.66666%;
 		max-width: 100%;
 	}
@@ -537,16 +585,19 @@
 @media screen and (max-width: 600px) {
 	.lc-monitoring-doughnut-chart {
 		flex: 100%;
+
 		max-width: 100%;
 	}
 
 	.lc-monitoring-line-chart {
 		flex: 100%;
+
 		max-width: 100%;
 	}
 
 	.lc-monitoring-line-chart-full {
 		flex: 100%;
+
 		max-width: 100%;
 	}
 }
@@ -561,6 +612,7 @@
 
 .livechat-group-filters-buttons {
 	flex: 0 0 auto;
+
 	margin-top: 26px;
 	padding-left: 30px;
 
@@ -581,4 +633,3 @@
 .livechat-current-chats-add-filter-button {
 	margin-top: 17px;
 }
-

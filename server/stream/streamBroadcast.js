@@ -10,7 +10,7 @@ import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
-import { Users } from '../../app/models/server/models/Users';
+import { Users } from '../../app/models/server';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -189,6 +189,7 @@ function startStreamCastBroadcast(value) {
 
 	connections[instance] = connection;
 	connection.instanceId = instance;
+	connection.instanceRecord = {};
 	connection.onReconnect = function() {
 		return authorizeConnection(instance);
 	};
@@ -218,7 +219,7 @@ function startStreamCastBroadcast(value) {
 			const scope = {};
 			return instance.emitWithScope(eventName, scope, args);
 		}
-		return instance.emitWithoutBroadcast(eventName, args);
+		return instance._emit(eventName, args);
 	});
 
 	return connection.subscribe('stream');

@@ -108,8 +108,8 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
 	}
 
-	addTranslations(messageId, translations) {
-		const updateObj = {};
+	addTranslations(messageId, translations, providerName) {
+		const updateObj = { translationProvider: providerName };
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
 			updateObj[`translations.${ key }`] = translation;

@@ -126,6 +126,8 @@ export const statistics = {
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
+		statistics.enterpriseReady = true;
+
 		statistics.uploadsTotal = Uploads.find().count();
 		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
 		statistics.uploadsTotalSize = result ? result.total : 0;
