@@ -15,7 +15,7 @@ Meteor.startup(function() {
 			groups: ['live'],
 			id: 'omnichannelExternalFrame',
 			i18nTitle: 'Omnichannel_External_Frame',
-			icon: 'game',
+			icon: 'cube',
 			template: 'ExternalFrameContainer',
 			order: -1,
 		});
