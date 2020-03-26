@@ -357,15 +357,15 @@ export class CustomOAuth {
 			}
 
 			if (this.usernameField) {
-				user.username = this.getUsername(user.services[this.name]);
+				user.username = user.services[this.name].username;
 			}
 
 			if (this.emailField) {
-				user.email = this.getEmail(user.services[this.name]);
+				user.email = user.services[this.name].email;
 			}
 
 			if (this.nameField) {
-				user.name = this.getCustomName(user.services[this.name]);
+				user.name = user.services[this.name].name;
 			}
 
 			if (this.mergeRoles) {
