@@ -648,8 +648,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	decreaseMessageCountById(_id, count) {
-		if (count == null) { count = -1; }
+	decreaseMessageCountById(_id, count = -1) {
 		const query = { _id };
 
 		const update = {
