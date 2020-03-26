@@ -476,7 +476,7 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findDirectRoomContainingAllUserIDs(uid, options) {
+	findOneDirectRoomContainingAllUserIDs(uid, options) {
 		const query = {
 			t: 'd',
 			uids: { $size: uid.length, $all: uid },
