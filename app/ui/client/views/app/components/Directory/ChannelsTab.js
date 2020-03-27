@@ -45,7 +45,6 @@ export function ChannelsTab() {
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(({ _id, ts, default: d, name, description, usersCount, lastMessage, topic, ...rest }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
 		<Table.Cell>
-			{console.log(rest)}
 			<Flex.Container>
 				<Box>
 					<Flex.Item>
