@@ -5,6 +5,7 @@ import _ from 'underscore';
 import moment from 'moment';
 
 import {
+	RawImports,
 	Base,
 	ProgressStep,
 	Selection,
@@ -18,8 +19,8 @@ import { sendMessage } from '../../lib';
 import 'moment-timezone';
 
 export class HipChatImporter extends Base {
-	constructor(info) {
-		super(info);
+	constructor(info, importRecord) {
+		super(info, importRecord);
 
 		this.userTags = [];
 		this.roomPrefix = 'hipchat_export/rooms/';
@@ -99,35 +100,40 @@ export class HipChatImporter extends Base {
 		this.addCountToTotal(tempRooms.length);
 		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 		let messagesCount = 0;
+
 		Object.keys(tempMessages).forEach((channel) => {
 			const messagesObj = tempMessages[channel];
-			this.messages[channel] = this.messages[channel] || {};
+
 			Object.keys(messagesObj).forEach((date) => {
 				const msgs = messagesObj[date];
 				messagesCount += msgs.length;
 				this.updateRecord({
 					messagesstatus: `${ channel }/${ date }`,
 				});
+
 				if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
 					Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
-						const messagesId = this.collection.insert({
+						this.collection.insert({
 							import: this.importRecord._id,
 							importer: this.name,
 							type: 'messages',
 							name: `${ channel }/${ date }.${ i }`,
 							messages: splitMsg,
+							channel,
+							date,
+							i,
 						});
-						this.messages[channel][`${ date }.${ i }`] = this.collection.findOne(messagesId);
 					});
 				} else {
-					const messagesId = this.collection.insert({
+					this.collection.insert({
 						import: this.importRecord._id,
 						importer: this.name,
 						type: 'messages',
 						name: `${ channel }/${ date }`,
 						messages: msgs,
+						channel,
+						date,
 					});
-					this.messages[channel][date] = this.collection.findOne(messagesId);
 				}
 			});
 		});
@@ -153,6 +159,10 @@ export class HipChatImporter extends Base {
 	}
 
 	startImport(importSelection) {
+		this.users = RawImports.findOne({ import: this.importRecord._id, type: 'users' });
+		this.channels = RawImports.findOne({ import: this.importRecord._id, type: 'channels' });
+		this.reloadCount();
+
 		super.startImport(importSelection);
 		const start = Date.now();
 
@@ -222,11 +232,15 @@ export class HipChatImporter extends Base {
 
 				this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 
+				const channelNames = [];
+
 				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				this.channels.channels.forEach((channel) => {
 					if (!channel.do_import) {
 						return;
 					}
+
+					channelNames.push(channel.name);
 					Meteor.runAsUser(startedByUserId, () => {
 						channel.name = channel.name.replace(/ /g, '');
 						const existantRoom = Rooms.findOneByName(channel.name);
@@ -264,50 +278,53 @@ export class HipChatImporter extends Base {
 				super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 				const nousers = {};
 
-				Object.keys(this.messages).forEach((channel) => {
-					const messagesObj = this.messages[channel];
-					Meteor.runAsUser(startedByUserId, () => {
-						const hipchatChannel = this.getHipChatChannelFromName(channel);
-						if (hipchatChannel != null ? hipchatChannel.do_import : undefined) {
-							const room = Rooms.findOneById(hipchatChannel.rocketId, {
-								fields: {
-									usernames: 1,
-									t: 1,
-									name: 1,
-								},
-							});
+				for (const channel of channelNames) {
+					const hipchatChannel = this.getHipChatChannelFromName(channel);
 
-							Object.keys(messagesObj).forEach((date) => {
-								const msgs = messagesObj[date];
-								this.updateRecord({
-									messagesstatus: `${ channel }/${ date }.${ msgs.messages.length }`,
-								});
+					if (!hipchatChannel || !hipchatChannel.do_import) {
+						continue;
+					}
 
-								msgs.messages.forEach((message) => {
-									if (message.from != null) {
-										const user = this.getRocketUser(message.from.user_id);
-										if (user != null) {
-											const msgObj = {
-												msg: this.convertHipChatMessageToRocketChat(message.message),
-												ts: new Date(message.date),
-												u: {
-													_id: user._id,
-													username: user.username,
-												},
-											};
-											sendMessage(user, msgObj, room, true);
-										} else if (!nousers[message.from.user_id]) {
-											nousers[message.from.user_id] = message.from;
-										}
-									} else if (!_.isArray(message)) {
-										console.warn('Please report the following:', message);
-									}
-									this.addCountCompleted(1);
-								});
-							});
-						}
+					const room = Rooms.findOneById(hipchatChannel.rocketId, {
+						fields: {
+							usernames: 1,
+							t: 1,
+							name: 1,
+						},
 					});
-				});
+
+					const messagePacks = this.collection.find({ import: this.importRecord._id, type: 'messages', channel });
+
+					Meteor.runAsUser(startedByUserId, () => {
+						messagePacks.forEach((pack) => {
+							const packId = pack.i ? `${ pack.date }.${ pack.i }` : pack.date;
+
+							this.updateRecord({ messagesstatus: `${ channel }/${ packId } (${ pack.messages.length })` });
+							pack.messages.forEach((message) => {
+								if (message.from != null) {
+									const user = this.getRocketUser(message.from.user_id);
+									if (user != null) {
+										const msgObj = {
+											msg: this.convertHipChatMessageToRocketChat(message.message),
+											ts: new Date(message.date),
+											u: {
+												_id: user._id,
+												username: user.username,
+											},
+										};
+										sendMessage(user, msgObj, room, true);
+									} else if (!nousers[message.from.user_id]) {
+										nousers[message.from.user_id] = message.from;
+									}
+								} else if (!_.isArray(message)) {
+									console.warn('Please report the following:', message);
+								}
+
+								this.addCountCompleted(1);
+							});
+						});
+					});
+				}
 
 				this.logger.warn('The following did not have users:', nousers);
 				super.updateProgress(ProgressStep.FINISHING);
@@ -354,15 +371,5 @@ export class HipChatImporter extends Base {
 			message = '';
 		}
 		return message;
-	}
-
-	getSelection() {
-		const selectionUsers = this.users.users.map(function(user) {
-			return new SelectionUser(user.user_id, user.name, user.email, user.is_deleted, false, !user.is_bot);
-		});
-		const selectionChannels = this.channels.channels.map(function(room) {
-			return new SelectionChannel(room.room_id, room.name, room.is_archived, true, false);
-		});
-		return new Selection(this.name, selectionUsers, selectionChannels, this.importRecord.count.messages);
 	}
 }

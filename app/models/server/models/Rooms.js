@@ -19,6 +19,9 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		// Livechat - statistics
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
+
+		// field used for DMs only
+		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -218,9 +221,13 @@ export class Rooms extends Base {
 		const query = {
 			_id,
 		};
-		const update = {
+		const update = systemMessages && systemMessages.length > 0 ? {
 			$set: {
 				sysMes: systemMessages,
+			},
+		} : {
+			$unset: {
+				sysMes: '',
 			},
 		};
 		return this.update(query, update);
@@ -459,19 +466,20 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findDirectRoomContainingUsername(username, options) {
-		const query = {
-			t: 'd',
-			usernames: username,
-		};
-
-		return this.find(query, options);
-	}
-
 	findDirectRoomContainingAllUsernames(usernames, options) {
 		const query = {
 			t: 'd',
 			usernames: { $size: usernames.length, $all: usernames },
+			usersCount: usernames.length,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneDirectRoomContainingAllUserIDs(uid, options) {
+		const query = {
+			t: 'd',
+			uids: { $size: uid.length, $all: uid },
 		};
 
 		return this.findOne(query, options);
@@ -481,6 +489,18 @@ export class Rooms extends Base {
 		const query = {
 			name,
 			t: type,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByTypeAndNameOrId(type, identifier, options) {
+		const query = {
+			t: type,
+			$or: [
+				{ name: identifier },
+				{ _id: identifier },
+			],
 		};
 
 		return this.findOne(query, options);
@@ -521,6 +541,13 @@ export class Rooms extends Base {
 		}
 
 		return this.find(query, options);
+	}
+
+	findGroupDMsByUids(uids, options) {
+		return this.find({
+			usersCount: { $gt: 2 },
+			uids,
+		}, options);
 	}
 
 	// UPDATE
@@ -588,8 +615,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountById(_id, inc) {
-		if (inc == null) { inc = 1; }
+	incMsgCountById(_id, inc = 1) {
 		const query = { _id };
 
 		const update = {
@@ -621,6 +647,10 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	decreaseMessageCountById(_id, count = 1) {
+		return this.incMsgCountById(_id, -count);
+	}
+
 	incUsersCountById(_id, inc = 1) {
 		const query = { _id };
 
@@ -633,11 +663,12 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	incUsersCountByIds(ids, inc = 1) {
+	incUsersCountNotDMsByIds(ids, inc = 1) {
 		const query = {
 			_id: {
 				$in: ids,
 			},
+			t: { $ne: 'd' },
 		};
 
 		const update = {
@@ -926,6 +957,22 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	updateGroupDMsRemovingUsernamesByUsername(username) {
+		const query = {
+			t: 'd',
+			usernames: username,
+			usersCount: { $gt: 2 },
+		};
+
+		const update = {
+			$pull: {
+				usernames: username,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	// INSERT
 	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
 		const room = {
@@ -978,10 +1025,20 @@ export class Rooms extends Base {
 		return this.remove(query);
 	}
 
+	remove1on1ById(_id) {
+		const query = {
+			_id,
+			usersCount: { $lte: 2 },
+		};
+
+		return this.remove(query);
+	}
+
 	removeDirectRoomContainingUsername(username) {
 		const query = {
 			t: 'd',
 			usernames: username,
+			usersCount: { $lte: 2 },
 		};
 
 		return this.remove(query);
