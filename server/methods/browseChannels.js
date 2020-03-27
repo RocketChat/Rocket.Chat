@@ -88,6 +88,7 @@ Meteor.methods({
 					lastMessage: 1,
 					ts: 1,
 					archived: 1,
+					default: 1,
 					usersCount: 1,
 				},
 			});

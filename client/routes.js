@@ -39,6 +39,8 @@ const createTemplateForComponent = async (
 	props = {},
 	// eslint-disable-next-line new-cap
 	renderContainerView = () => HTML.DIV(),
+	url,
+
 ) => {
 	const name = component.displayName || component.name;
 
@@ -73,6 +75,13 @@ const createTemplateForComponent = async (
 				React.createElement(MeteorProvider, {
 					children: React.createElement(TemplateComponent),
 				}), Template.instance().firstNode);
+		});
+
+		Template.instance().autorun(() => {
+			const routeName = FlowRouter.getRouteName();
+			if (routeName !== url) {
+				ReactDOM.unmountComponentAtNode(Template.instance().container);
+			}
 		});
 	});
 
@@ -136,11 +145,12 @@ FlowRouter.route('/home', {
 	},
 });
 
-FlowRouter.route('/directory', {
+FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 
-	action() {
-		BlazeLayout.render('main', { center: 'directory' });
+	async action() {
+		const { DirectoryPage } = await require('../app/ui/client/views/app/components/Directory');
+		BlazeLayout.render('main', { center: await createTemplateForComponent(DirectoryPage, { }, () => HTML.DIV({ style }), 'directory')}); // eslint-disable-line
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');

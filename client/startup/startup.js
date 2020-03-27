@@ -5,6 +5,8 @@ import { TimeSync } from 'meteor/mizzao:timesync';
 import { UserPresence } from 'meteor/konecty:user-presence';
 import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
+import '@rocket.chat/fuselage-polyfills';
+
 
 import hljs from '../../app/markdown/lib/hljs';
 import { fireGlobalEvent } from '../../app/ui-utils';
