@@ -9,8 +9,8 @@ import { addUser } from '../../app/federation/server/functions/addUser';
 import { createRoom } from '../../app/lib/server';
 
 Meteor.methods({
-	createDirectMessage(username) {
-		check(username, String);
+	createDirectMessage(...usernames) {
+		check(usernames, [String]);
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -26,7 +26,7 @@ Meteor.methods({
 			});
 		}
 
-		if (settings.get('Message_AllowDirectMessagesToYourself') === false && me.username === username) {
+		if (settings.get('Message_AllowDirectMessagesToYourself') === false && usernames.length === 1 && me.username === usernames[0]) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createDirectMessage',
 			});
@@ -38,29 +38,29 @@ Meteor.methods({
 			});
 		}
 
-		let to = Users.findOneByUsernameIgnoringCase(username);
 
-		// If the username does have an `@`, but does not exist locally, we create it first
-		if (!to && username.indexOf('@') !== -1) {
-			to = addUser(username);
-		}
+		const users = usernames.filter((username) => username !== me.username).map((username) => {
+			let to = Users.findOneByUsernameIgnoringCase(username);
 
-		if (!to) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'createDirectMessage',
-			});
-		}
+			// If the username does have an `@`, but does not exist locally, we create it first
+			if (!to && username.indexOf('@') !== -1) {
+				to = addUser(username);
+			}
 
-		if (!hasPermission(to._id, 'view-d-room')) {
-			throw new Meteor.Error('error-not-allowed', 'Target user not allowed to receive messages', {
-				method: 'createDirectMessage',
-			});
-		}
+			if (!to) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'createDirectMessage',
+				});
+			}
+			return to;
+		});
 
-		const { _id: rid } = createRoom('d', undefined, undefined, [me, to]);
+		const { _id: rid, inserted, ...room } = createRoom('d', null, null, [me, ...users], null, { }, { creator: me._id });
 
 		return {
+			t: 'd',
 			rid,
+			...room,
 		};
 	},
 });
