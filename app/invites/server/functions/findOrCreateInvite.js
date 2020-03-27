@@ -3,9 +3,10 @@ import { Random } from 'meteor/random';
 
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
-import { Invites, Subscriptions } from '../../../models';
+import { Invites, Subscriptions, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils/lib/getURL';
+import { roomTypes } from '../../../utils/server';
 
 function getInviteUrl(invite) {
 	const { _id } = invite;
@@ -33,6 +34,12 @@ export const findOrCreateInvite = (userId, invite) => {
 
 	if (!hasPermission(userId, 'create-invite-links', invite.rid)) {
 		throw new Meteor.Error('not_authorized');
+	}
+
+	const room = Rooms.findById(invite.rid);
+
+	if (!roomTypes.getConfig(room.t).canAddUser(room)) {
+		throw new Meteor.Error('error-invalid-token', 'room type not allowed', { method: 'useInviteToken' });
 	}
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, { fields: { _id: 1 } });

@@ -98,11 +98,13 @@ Template.membersList.helpers({
 	canAddUser() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return (() => roomTypes.getConfig(roomData.t).canAddUser(roomData))();
+		return roomTypes.getConfig(roomData.t).canAddUser(roomData);
 	},
 
 	canInviteUser() {
-		return hasPermission('create-invite-links', this._id);
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return ''; }
+		return roomTypes.getConfig(roomData.t).canAddUser(roomData) && hasPermission('create-invite-links', this._id);
 	},
 
 	showUserInfo() {

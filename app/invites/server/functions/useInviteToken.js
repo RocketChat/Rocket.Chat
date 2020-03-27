@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Invites, Users, Subscriptions } from '../../../models/server';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { roomTypes } from '../../../utils/server';
 
 export const useInviteToken = (userId, token) => {
 	if (!userId) {
@@ -14,6 +15,10 @@ export const useInviteToken = (userId, token) => {
 	}
 
 	const { inviteData, room } = validateInviteToken(token);
+
+	if (!roomTypes.getConfig(room.t).canAddUser(room)) {
+		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', { method: 'useInviteToken' });
+	}
 
 	const user = Users.findOneById(userId);
 	Users.updateInviteToken(user._id, token);

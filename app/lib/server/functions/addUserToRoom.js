@@ -2,11 +2,15 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Subscriptions, Messages } from '../../../models';
 import { callbacks } from '../../../callbacks';
+import { roomTypes } from '../../../utils/server';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
 	const room = Rooms.findOneById(rid);
 
+	if (!roomTypes.getConfig(room.t).canAddUser(room)) {
+		throw new Meteor.Error('error-not-allowed', 'room type not allowed', { method: 'addUserToRoom' });
+	}
 	// Check if user is already in room
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	if (subscription) {
