@@ -121,4 +121,36 @@ export class AppRoomBridge {
 			addUserToRoom(rm._id, member);
 		}
 	}
+
+	async createDiscussion(room, parentMessage = null, reply = '', members = [], appId) {
+		this.orch.debugLog(`The App ${appId} is creating a new discussion.`, room);
+
+		const rcRoom = this.orch.getConverters().get('rooms').convertAppRoom(room);
+
+		let rcMessage;
+		if (parentMessage) {
+			rcMessage = this.orch.getConverters().get('messages').convertAppMessage(parentMessage);
+		}
+
+		if (!rcRoom.prid || !Rooms.findOneById(rcRoom.prid)) {
+			throw new Error('There must be a parent room to create a discussion.');
+		}
+
+		const discussion = {
+			prid: rcRoom.prid,
+			t_name: rcRoom.fname,
+			pmid: rcMessage ? rcMessage._id : undefined,
+			reply: reply && reply.trim() !== '' ? reply : undefined,
+			users: members.length > 0 ? members : []
+		};
+
+		let rid;
+		Meteor.runAsUser(room.creator.id, () => {
+			const info = Meteor.call('createDiscussion', discussion);
+			rid = info.rid;
+		});
+
+		return rid;
+	}
+
 }
