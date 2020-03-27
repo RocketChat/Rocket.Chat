@@ -153,8 +153,13 @@ export const createLivechatQueueView = () => {
 };
 
 export const removeAgentFromSubscription = (rid, { _id, username }) => {
+	const room = LivechatRooms.findOneById(rid);
+	const user = Users.findOneById(_id);
+
 	Subscriptions.removeByRoomIdAndUserId(rid, _id);
 	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
+
+	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatUnassignAgentHandler, { room, user });
 };
 
 export const normalizeAgent = (agentId) => {

@@ -106,13 +106,9 @@ export const RoutingManager = {
 		const { servedBy } = room;
 
 		if (servedBy) {
-			const user = Users.findOneById(servedBy._id);
-
 			removeAgentFromSubscription(rid, servedBy);
 			LivechatRooms.removeAgentByRoomId(rid);
 			dispatchAgentDelegated(rid, null);
-
-			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatUnassignAgentHandler, { room, user });
 		}
 
 		LivechatInquiry.queueInquiry(_id);
