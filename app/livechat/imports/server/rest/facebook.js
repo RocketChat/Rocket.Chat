@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { Random } from 'meteor/random';
 
 import { API } from '../../../../api';
-import { LivechatRooms, Users, LivechatVisitors } from '../../../../models';
+import { LivechatRooms, LivechatVisitors } from '../../../../models';
 import { settings } from '../../../../settings';
 import { Livechat } from '../../../server/lib/Livechat';
 
@@ -78,7 +78,7 @@ API.v1.addRoute('livechat/facebook', {
 				name: `${ this.bodyParams.first_name } ${ this.bodyParams.last_name }`,
 			});
 
-			visitor = Users.findOneById(userId);
+			visitor = LivechatVisitors.findOneById(userId);
 		}
 
 		sendMessage.message.msg = this.bodyParams.text;
