@@ -59,6 +59,7 @@ export class LivechatDepartment extends Base {
 				LivechatDepartmentAgents.saveAgent({
 					agentId: agent.agentId,
 					departmentId: _id,
+					departmentEnabled: data.enabled,
 					username: agent.username,
 					count: agent.count ? parseInt(agent.count) : 0,
 					order: agent.order ? parseInt(agent.order) : 0,
