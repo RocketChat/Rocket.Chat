@@ -5,26 +5,11 @@ import { Session } from 'meteor/session';
 import s from 'underscore.string';
 import { Handlebars } from 'meteor/ui';
 
-import { fileUploadHandler } from '../../../file-upload';
 import { settings } from '../../../settings/client';
 import { ChatMessage } from '../../../models/client';
 import { t, fileUploadIsValidContentType, SWCache, APIClient } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
 import { sendOfflineFileMessage } from './sendOfflineFileMessage';
-
-const setMsgId = (msgData = {}) => {
-	let id;
-	if (msgData.id) {
-		id = msgData.id;
-	} else {
-		id = Random.id();
-	}
-	return Object.assign({
-		id,
-		msg: '',
-		groupable: false,
-	}, msgData);
-};
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
@@ -172,7 +157,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 		tmid = replies[0]._id;
 	}
 
-	const msgData = setMsgId({ msg, tmid });
+	const msgData = { id: Random.id(), msg: msg, tmid: tmid };
 	let offlineFile = null;
 
 	const uploadNextFile = () => {
@@ -228,71 +213,41 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 
 			const data = new FormData();
 			record.description && data.append('description', record.description);
+			data.append('id', msgData.id);
 			msg && data.append('msg', msg);
 			tmid && data.append('tmid', tmid);
 			data.append('file', file.file, fileName);
 
-			const upload = fileUploadHandler('Uploads', record, file.file);
-			const uploading = {
-				id: upload.id,
-				name: upload.getFileName(),
+			const upload = {
+				id: Random.id(),
+				name: fileName,
 				percentage: 0,
 			};
 			file.file._id = upload.id;
 			uploadNextFile();
 
-			// Session.set(`uploading-${ upload.id }`, uploading);
-
-			upload.onProgress = (progress) => {
-				const uploads = uploading;
-				uploads.percentage = Math.round(progress * 100) || 0;
-				ChatMessage.setProgress(msgData.id, uploads);
-			};
-
-			const offlineUpload = (file, meta) => sendOfflineFileMessage(rid, msgData, file, meta, (file) => {
+			sendOfflineFileMessage(rid, msgData, file.file, record, (file) => {
 				offlineFile = file;
 			});
 
-			upload.start((error, file, storage) => {
-				if (error) {
-					ChatMessage.setProgress(msgData.id, uploading);
-					return;
-				}
-
-				if (!file) {
-					return;
-				}
-
-				Meteor.call('sendFileMessage', rid, storage, file, msgData, () => {
-					$(input)
-						.removeData('reply')
-						.trigger('dataChange');
-
-					if (offlineFile) {
-						SWCache.removeFromCache(offlineFile);
-					}
-				});
-			}, offlineUpload);
-
 			const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
 				progress(progress) {
-					const uploads = Session.get('uploading') || [];
-
 					if (progress === 100) {
+						console.log('done');
+						offlineFile && SWCache.removeFromCache(offlineFile);
 						return;
 					}
-					uploads.filter((u) => u.id === upload.id).forEach((u) => {
-						u.percentage = Math.round(progress) || 0;
-					});
-					Session.set('uploading', uploads);
+					
+					const uploads = upload;
+					uploads.percentage = Math.round(progress * 100) || 0;
+					console.log(uploads);
+					ChatMessage.setProgress(msgData.id, uploads);
+
+
 				},
 				error(error) {
-					const uploads = Session.get('uploading') || [];
-					uploads.filter((u) => u.id === upload.id).forEach((u) => {
-						u.error = error.message;
-						u.percentage = 0;
-					});
-					Session.set('uploading', uploads);
+					ChatMessage.setProgress(msgData.id, upload);
+					return;
 				},
 			});
 
@@ -307,20 +262,17 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 
 				xhr.abort();
 
-				ChatMessage.setProgress(msgData.id, uploading);
+				ChatMessage.setProgress(msgData.id, upload);
 			});
 
 			try {
 				await promise;
-				const uploads = Session.get('uploading') || [];
-				return Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+				console.log('quick done');
 			} catch (error) {
-				const uploads = Session.get('uploading') || [];
-				uploads.filter((u) => u.id === upload.id).forEach((u) => {
-					u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
-					u.percentage = 0;
-				});
-				Session.set('uploading', uploads);
+				const uploads = upload;
+				uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+				uploads.percentage = 0;
+				ChatMessage.setProgress(msgData.id, uploads);
 			}
 		}));
 	};
