@@ -52,7 +52,7 @@ export const appMessageMock = {
 		updatedAt: new Date('2019-04-13T01:33:14.191Z'),
 	},
 	_unmappedProperties_: {
-		unmappedProperty: true,
+		t: 'uj',
 	},
 };
 
@@ -110,6 +110,6 @@ export const appMessageInvalidRoomMock = {
 		updatedAt: new Date('2019-04-13T01:33:14.191Z'),
 	},
 	_unmappedProperties_: {
-		unmappedProperty: true,
+		t: 'uj',
 	},
 };
