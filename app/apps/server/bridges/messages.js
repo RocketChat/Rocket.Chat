@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 
-import { Messages, Users, Subscriptions } from '../../../models';
+import { Messages, Users, Subscriptions } from '../../../models/server';
 import { Notifications } from '../../../notifications';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
@@ -48,12 +48,16 @@ export class AppMessageBridge {
 
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
 
-		Notifications.notifyUser(user.id, 'message', Object.assign(msg, {
+		if (!msg) {
+			return;
+		}
+
+		Notifications.notifyUser(user.id, 'message', {
+			...msg,
 			_id: Random.id(),
 			ts: new Date(),
-			u: undefined,
-			editor: undefined,
-		}));
+			u: msg.u ? msg.u : Users.findOneByAppId(appId) || undefined,
+		});
 	}
 
 	async notifyRoom(room, message, appId) {
