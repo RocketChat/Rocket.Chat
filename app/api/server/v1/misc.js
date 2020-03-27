@@ -88,6 +88,9 @@ API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRe
 				text = `#${ channel }`;
 				break;
 			case 'user':
+				if (settings.get('API_Shield_user_require_auth') && !this.getLoggedInUser()) {
+					return API.v1.failure('You must be logged in to do this.');
+				}
 				const user = this.getUserFromParams();
 
 				// Respect the server's choice for using their real names or not

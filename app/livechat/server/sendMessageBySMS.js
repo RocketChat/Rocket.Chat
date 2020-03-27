@@ -36,6 +36,11 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		extraData = Object.assign({}, { rid, userId, fileUpload });
 	}
 
+	if (message.location) {
+		const { location } = message;
+		extraData = Object.assign({}, extraData, { location });
+	}
+
 	const SMSService = SMS.getService(settings.get('SMS_Service'));
 
 	if (!SMSService) {

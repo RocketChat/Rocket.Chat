@@ -59,9 +59,10 @@ export const statistics = {
 		}
 
 		// User statistics
-		statistics.totalUsers = Meteor.users.find().count();
-		statistics.activeUsers = Meteor.users.find({ active: true }).count();
-		statistics.nonActiveUsers = statistics.totalUsers - statistics.activeUsers;
+		statistics.totalUsers = Users.find().count();
+		statistics.activeUsers = Users.getActiveLocalUserCount();
+		statistics.nonActiveUsers = Users.find({ active: false }).count();
+		statistics.appUsers = Users.find({ type: 'app' }).count();
 		statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
 		statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
@@ -86,11 +87,11 @@ export const statistics = {
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 		// Message statistics
-		statistics.totalMessages = Messages.find().count();
 		statistics.totalChannelMessages = _.reduce(Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
 		statistics.totalPrivateGroupMessages = _.reduce(Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
 		statistics.totalDirectMessages = _.reduce(Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
 		statistics.totalLivechatMessages = _.reduce(Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
+		statistics.totalMessages = statistics.totalChannelMessages + statistics.totalPrivateGroupMessages + statistics.totalDirectMessages + statistics.totalLivechatMessages;
 
 		// Federation statistics
 		const federationOverviewData = federationGetStatistics();
@@ -124,6 +125,8 @@ export const statistics = {
 			method: process.env.DEPLOY_METHOD || 'tar',
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
+
+		statistics.enterpriseReady = true;
 
 		statistics.uploadsTotal = Uploads.find().count();
 		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
