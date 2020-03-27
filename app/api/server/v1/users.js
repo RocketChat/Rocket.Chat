@@ -365,6 +365,7 @@ API.v1.addRoute('users.getStatus', { authRequired: true }, {
 		if (this.isUserFromParams()) {
 			const user = Users.findOneById(this.userId);
 			return API.v1.success({
+				_id: user._id,
 				message: user.statusText,
 				connectionStatus: user.statusConnection,
 				status: user.status,
@@ -374,6 +375,7 @@ API.v1.addRoute('users.getStatus', { authRequired: true }, {
 		const user = this.getUserFromParams();
 
 		return API.v1.success({
+			_id: user._id,
 			message: user.statusText,
 			status: user.status,
 		});
