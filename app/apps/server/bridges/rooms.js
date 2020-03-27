@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { Rooms, Subscriptions, Users } from '../../../models/server';
 
 export class AppRoomBridge {
 	constructor(orch) {
@@ -122,7 +122,7 @@ export class AppRoomBridge {
 	}
 
 	async createDiscussion(room, parentMessage = null, reply = '', members = [], appId) {
-		this.orch.debugLog(`The App ${appId} is creating a new discussion.`, room);
+		this.orch.debugLog(`The App ${ appId } is creating a new discussion.`, room);
 
 		const rcRoom = this.orch.getConverters().get('rooms').convertAppRoom(room);
 
@@ -140,7 +140,7 @@ export class AppRoomBridge {
 			t_name: rcRoom.fname,
 			pmid: rcMessage ? rcMessage._id : undefined,
 			reply: reply && reply.trim() !== '' ? reply : undefined,
-			users: members.length > 0 ? members : []
+			users: members.length > 0 ? members : [],
 		};
 
 		let rid;
@@ -151,5 +151,4 @@ export class AppRoomBridge {
 
 		return rid;
 	}
-
 }
