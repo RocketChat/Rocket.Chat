@@ -102,6 +102,17 @@ export class LivechatInquiry extends Base {
 		return this.update(query, update);
 	}
 
+	setNameByRoomId(rid, name) {
+		const query = { rid };
+
+		const update = {
+			$set: {
+				name,
+			},
+		};
+		return this.update(query, update);
+	}
+
 	findOneByToken(token) {
 		const query = {
 			'v.token': token,
@@ -171,6 +182,14 @@ export class LivechatInquiry extends Base {
 	*/
 	removeByRoomId(rid) {
 		return this.remove({ rid });
+	}
+
+	removeByVisitorToken(token) {
+		const query = {
+			'v.token': token,
+		};
+
+		this.remove(query);
 	}
 }
 

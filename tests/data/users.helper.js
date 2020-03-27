@@ -23,3 +23,20 @@ export const login = (username, password) => new Promise((resolve) => {
 			resolve(userCredentials);
 		});
 });
+
+export const deleteUser = (user) => new Promise((resolve) => {
+	request.post(api('users.delete'))
+		.set(credentials)
+		.send({
+			userId: user._id,
+		})
+		.end(resolve);
+});
+
+export const getUserByUsername = (username) => new Promise((resolve) => {
+	request.get(api(`users.info?username=${ username }`))
+		.set(credentials)
+		.end((err, res) => {
+			resolve(res.body.user);
+		});
+});

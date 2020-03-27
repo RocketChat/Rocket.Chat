@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { Rooms, Subscriptions, Users } from '../../../models';
+import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 
 export class AppRoomBridge {
@@ -38,8 +38,7 @@ export class AppRoomBridge {
 			delete extraData.customFields;
 			let info;
 			if (room.type === RoomType.DIRECT_MESSAGE) {
-				members.splice(members.indexOf(room.creator.username), 1);
-				info = Meteor.call(method, members[0]);
+				info = Meteor.call(method, ...members);
 			} else {
 				info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
 			}
