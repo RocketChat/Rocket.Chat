@@ -1,9 +1,11 @@
-import { Template } from 'meteor/templating';
+import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 
-import { messageBlockWithContext } from './MessageBlock';
-import './Blocks.html';
 import * as ActionManager from '../ActionManager';
+import './Blocks.html';
+import { messageBlockWithContext } from './MessageBlock';
+
 
 Template.Blocks.onRendered(async function() {
 	const React = await import('react');
@@ -17,7 +19,18 @@ Template.Blocks.onRendered(async function() {
 		React.createElement(messageBlockWithContext({
 			action: (options) => {
 				const { actionId, value, blockId, mid = this.data.mid } = options;
-				ActionManager.triggerBlockAction({ actionId, appId: this.data.blocks[0].appId, value, blockId, rid: this.data.rid, mid });
+				ActionManager.triggerBlockAction({
+					blockId,
+					actionId,
+					value,
+					mid,
+					rid: this.data.rid,
+					appId: this.data.blocks[0].appId,
+					container: {
+						type: UIKitIncomingInteractionContainerType.MESSAGE,
+						id: mid,
+					},
+				});
 			},
 			// state: alert,
 			appId: this.data.appId,
