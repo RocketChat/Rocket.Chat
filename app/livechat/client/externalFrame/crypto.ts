@@ -12,13 +12,13 @@ function str2ab(str: string): ArrayBuffer {
 }
 
 export async function generateKey(): Promise<string> {
-	const key = await window.crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+	const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
 	const exportedKey = await crypto.subtle.exportKey('jwk', key);
-	return btoa(JSON.stringify(exportedKey));
+	return JSON.stringify(exportedKey);
 }
 
 export async function getKeyFromString(keyStr: string): Promise<CryptoKey> {
-	const key = JSON.parse(atob(keyStr));
+	const key = JSON.parse(keyStr);
 	return crypto.subtle.importKey('jwk', key, { name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
 }
 
