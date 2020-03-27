@@ -67,3 +67,26 @@ export async function findDepartmentsToAutocomplete({ uid, selector }) {
 		items,
 	};
 }
+
+export async function findDepartmentAgents({ userId, departmentId, pagination: { offset, count, sort } }) {
+	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+
+	const cursor = LivechatDepartmentAgents.findAgentsByDepartmentId(departmentId, {
+		sort: sort || { username: 1 },
+		skip: offset,
+		limit: count,
+	});
+
+	const total = await cursor.count();
+
+	const agents = await cursor.toArray();
+
+	return {
+		agents,
+		count: agents.length,
+		offset,
+		total,
+	};
+}

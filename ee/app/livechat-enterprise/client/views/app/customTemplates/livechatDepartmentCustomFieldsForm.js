@@ -17,7 +17,7 @@ Template.livechatDepartmentCustomFieldsForm.onCreated(function() {
 
 	if (!contextDepartment && _id) {
 		this.autorun(async () => {
-			const { department } = await APIClient.v1.get(`livechat/department/${ _id }`);
+			const { department } = await APIClient.v1.get(`livechat/department/${ _id }?includeAgents=false`);
 			this.department.set(department);
 		});
 	}

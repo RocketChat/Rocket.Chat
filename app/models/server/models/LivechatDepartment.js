@@ -35,6 +35,8 @@ export class LivechatDepartment extends Base {
 		const hasAgents = agents && Array.isArray(agents);
 		const numAgents = hasAgents && agents.length;
 
+		const oldData = this.findOneById(_id);
+
 		const record = {
 			...data,
 			...hasAgents && { numAgents },
@@ -44,6 +46,9 @@ export class LivechatDepartment extends Base {
 			this.update({ _id }, { $set: record });
 		} else {
 			_id = this.insert(record);
+		}
+		if (oldData.enabled !== data.enabled) {
+			LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
 		}
 
 		if (hasAgents) {
@@ -59,7 +64,6 @@ export class LivechatDepartment extends Base {
 				LivechatDepartmentAgents.saveAgent({
 					agentId: agent.agentId,
 					departmentId: _id,
-					departmentEnabled: data.enabled,
 					username: agent.username,
 					count: agent.count ? parseInt(agent.count) : 0,
 					order: agent.order ? parseInt(agent.order) : 0,

@@ -12,6 +12,8 @@ import { getCustomFormTemplate } from './customTemplates/register';
 import './livechatDepartmentForm.html';
 import { APIClient } from '../../../../utils/client';
 
+const LIST_SIZE = 50;
+
 Template.livechatDepartmentForm.helpers({
 	department() {
 		return Template.instance().department.get();
@@ -90,6 +92,18 @@ Template.livechatDepartmentForm.helpers({
 	},
 	hasChatClosingTags() {
 		return [...Template.instance().chatClosingTags.get()].length > 0;
+	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (currentTarget.offsetHeight + currentTarget.scrollTop < currentTarget.scrollHeight - 100) {
+				return;
+			}
+			const agents = instance.departmentAgents.get();
+			if (instance.total.get() > agents.length) {
+				instance.offset.set(instance.offset.get() + LIST_SIZE);
+			}
+		};
 	},
 });
 
@@ -242,6 +256,8 @@ Template.livechatDepartmentForm.onCreated(async function() {
 	this.chatClosingTags = new ReactiveVar([]);
 	this.availableTags = new ReactiveVar([]);
 	this.availableDepartmentTags = new ReactiveVar([]);
+	this.offset = new ReactiveVar(0);
+	this.total = new ReactiveVar(0);
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
@@ -261,13 +277,22 @@ Template.livechatDepartmentForm.onCreated(async function() {
 			this.availableDepartmentTags.set(availableTags);
 		});
 	};
+	this.autorun(async () => {
+		const offset = this.offset.get();
+		const { agents, total } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }/agents?count=${ LIST_SIZE }&offset=${ offset }`);
+		this.total.set(total);
+		if (offset === 0) {
+			this.departmentAgents.set(agents);
+		} else {
+			this.departmentAgents.set(this.departmentAgents.get().concat(agents));
+		}
+	});
 
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');
 		if (id) {
-			const { department, agents } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
+			const { department } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }?includeAgents=false`);
 			this.department.set(department);
-			this.departmentAgents.set(agents);
 			this.chatClosingTags.set((department && department.chatClosingTags) || []);
 			this.loadAvailableTags(id);
 		}

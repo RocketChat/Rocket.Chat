@@ -4,7 +4,7 @@ import { API } from '../../../../api';
 import { hasPermission } from '../../../../authorization';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
-import { findDepartments, findDepartmentById, findDepartmentsToAutocomplete } from '../../../server/api/lib/departments';
+import { findDepartments, findDepartmentById, findDepartmentsToAutocomplete, findDepartmentAgents } from '../../../server/api/lib/departments';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
@@ -145,5 +145,28 @@ API.v1.addRoute('livechat/department.autocomplete', { authRequired: true }, {
 			uid: this.userId,
 			selector: JSON.parse(selector),
 		})));
+	},
+});
+
+API.v1.addRoute('livechat/department/:departmentId/agents', { authRequired: true }, {
+	get() {
+		check(this.urlParams, {
+			departmentId: String,
+		});
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		const agents = Promise.await(findDepartmentAgents({
+			userId: this.userId,
+			departmentId: this.urlParams.departmentId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+
+		return API.v1.success(agents);
 	},
 });

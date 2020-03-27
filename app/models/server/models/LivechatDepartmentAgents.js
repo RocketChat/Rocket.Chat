@@ -206,5 +206,11 @@ export class LivechatDepartmentAgents extends Base {
 
 		return this.update(query, update, { multi: true });
 	}
+
+	setDepartmentEnabledByDepartmentId(departmentId, enabled) {
+		return this.update({ departmentId },
+			{ $set: { departmentEnabled: enabled } },
+			{ multi: true });
+	}
 }
 export default new LivechatDepartmentAgents();
