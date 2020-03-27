@@ -22,7 +22,7 @@ class Global {
 
 	confirmPopup() {
 		this.modalConfirm.waitForVisible(5000);
-		browser.pause(500);
+		cy.wait(500);
 		this.modalConfirm.click();
 		this.modal.waitForVisible(5000, true);
 	}

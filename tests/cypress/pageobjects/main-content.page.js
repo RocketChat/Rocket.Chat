@@ -148,38 +148,11 @@ class MainContent extends Page {
 	}
 
 	// uploads a file in the given fileName (url).
-	async fileUpload(fileName) {
+	fileUpload(fileName) {
 		this.sendMessage('Prepare for the file');
 		this.plusBtn.click();
 		this.fileUploadBtn.click();
-
-		// browser.chooseFile("#fileupload-input", fileName);
-		// cy.get('#fileupload-input').then((subject) => {
-		// 	cy.fixture(fileName, 'base64').then(Cypress.Blob.base64StringToBlob)
-		// 		.then((blob) => {
-		// 			const el = subject[0];
-		// 			const testFile = new File([blob], fileName, { type: 'image/png' });
-		// 			const dataTransfer = new DataTransfer();
-		// 			dataTransfer.items.add(testFile);
-		// 			cy.pause();
-		// 			el.files = dataTransfer.files;
-		// 			console.log(el.files);
-		// 			cy.pause();
-		// 		});
-		// });
-
-		const subject = cy.get('#fileupload-input');
-		const blob = cy.fixture(fileName, 'base64').then(Cypress.Blob.base64StringToBlob);
-		const el = subject[0];
-		const testFile = new File([blob], fileName, { type: 'image/png' });
-		const dataTransfer = new DataTransfer();
-		dataTransfer.items.add(testFile);
-		// cy.pause();
-		el.files = dataTransfer.files;
-		cy.get('#fileupload-input').trigger('change', { force: true })
-		cy.log(el.files);
-		cy.log("SHUBHAMSINGH");
-		// cy.pause(); 
+		cy.get('[id="fileupload-input"]').attachFile(fileName, { force: true });
 	}	
 
 	waitForLastMessageEqualsText(text) {

@@ -78,12 +78,10 @@ function messagingTest(currentTest) {
 
 		it('it should click the confirm', () => {
 			Global.modalConfirm.click();
-			Global.modalConfirm.waitForVisible(5000, true);
 		});
 
 		it('it should show the file in the message', () => {
-			mainContent.lastMessageDesc.waitForVisible(10000);
-			mainContent.lastMessageDesc.getText().should.equal('File Description');
+			mainContent.lastMessageDesc.get('text').should('contain' ,'File Description');
 		});
 	});
 }
