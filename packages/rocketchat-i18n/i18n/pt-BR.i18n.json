@@ -2282,6 +2282,8 @@
   "Omnichannel_External_Frame": "Frame Externo",
   "Omnichannel_External_Frame_Enabled": "Frame Externo habilitado",
   "Omnichannel_External_Frame_URL": "URL do Frame Externo",
+  "Omnichannel_External_Frame_SharedSecret": "Chave Compartilhada",
+  "Omnichannel_External_Frame_SharedSecret_Description": "Se a chave for fornecida o token do usuário será encriptado com esta chave e a outra aplicação precisará descriptografar o campo de token para ter acesso a informação",
   "On": "Em",
   "Online": "Online",
   "online": "online",

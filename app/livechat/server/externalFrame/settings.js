@@ -18,5 +18,15 @@ settings.addGroup('Omnichannel', function() {
 				value: true,
 			},
 		});
+
+		this.add('Omnichannel_External_Frame_SharedSecret', '', {
+			type: 'string',
+			hidden: false,
+			public: true,
+			enableQuery: {
+				_id: 'Omnichannel_External_Frame_Enabled',
+				value: true,
+			},
+		});
 	});
 });

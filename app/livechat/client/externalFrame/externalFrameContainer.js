@@ -1,16 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { APIClient } from '../../../utils/client';
 import { settings } from '../../../settings/client';
+import { encrypt, getKeyFromString } from './crypto';
 
 import './externalFrameContainer.html';
 
 Template.ExternalFrameContainer.helpers({
 	externalFrameUrl() {
+		const authToken = Template.instance().authToken.get();
+
+		if (!authToken) {
+			return '';
+		}
+
 		const frameURLSetting = settings.get('Omnichannel_External_Frame_URL');
-		const { 'X-Auth-Token': authToken } = APIClient.getCredentials();
 
 		try {
 			const frameURL = new URL(frameURLSetting);
@@ -26,4 +33,17 @@ Template.ExternalFrameContainer.helpers({
 			return '';
 		}
 	},
+});
+
+Template.ExternalFrameContainer.onCreated(async function() {
+	this.authToken = new ReactiveVar();
+
+	const { 'X-Auth-Token': authToken } = APIClient.getCredentials();
+	const keyStr = settings.get('Omnichannel_External_Frame_SharedSecret');
+
+	if (keyStr) {
+		return this.authToken.set(await encrypt(authToken, await getKeyFromString(keyStr)));
+	}
+
+	this.authToken.set(authToken);
 });

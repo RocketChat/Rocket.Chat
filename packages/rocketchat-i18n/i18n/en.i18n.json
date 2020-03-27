@@ -2533,6 +2533,8 @@
   "Omnichannel_External_Frame": "External Frame",
   "Omnichannel_External_Frame_Enabled": "External frame enabled",
   "Omnichannel_External_Frame_URL": "External frame URL",
+  "Omnichannel_External_Frame_SharedSecret": "Shared Secret",
+  "Omnichannel_External_Frame_SharedSecret_Description": "If provided it will encrypt the user's token with the provided secret and the external system will need to decode the data to access the token",
   "On": "On",
   "Online": "Online",
   "online": "online",
