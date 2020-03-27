@@ -20,4 +20,5 @@ addDecorator(withKnobs);
 configure([
 	require.context('../app', true, /\.stories\.js$/),
 	require.context('../client', true, /\.stories\.js$/),
+	require.context('../ee/app', true, /\.stories\.js$/),
 ], module);

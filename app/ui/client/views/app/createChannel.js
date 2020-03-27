@@ -264,7 +264,8 @@ Template.createChannel.events({
 			if (instance.data.onCreate) {
 				instance.data.onCreate(result);
 			}
-			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
+
+			return FlowRouter.go(isPrivate ? 'group' : 'channel', { ...result }, FlowRouter.current().queryParams);
 		});
 		return false;
 	},
