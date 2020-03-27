@@ -16,6 +16,10 @@ export class AppLivechatBridge {
 		return Livechat.online(department);
 	}
 
+	async isOnlineAsync(department) {
+		return Livechat.online(department);
+	}
+
 	async createMessage(message, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating a new message.`);
 
@@ -28,7 +32,7 @@ export class AppLivechatBridge {
 			message: this.orch.getConverters().get('messages').convertAppMessage(message),
 		};
 
-		const msg = Livechat.sendMessage(data);
+		const msg = await Livechat.sendMessage(data);
 
 		return msg._id;
 	}

@@ -125,7 +125,7 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
-		this.add('Accounts_RequireNameForSignUp', true, {
+		this.add('Accounts_RequireNameForSignUp', true, { // TODO rename to Accounts_RequireFullName
 			type: 'boolean',
 			public: true,
 		});
@@ -143,6 +143,9 @@ settings.addGroup('Accounts', function() {
 					$ne: '',
 				},
 			},
+		});
+		this.add('Accounts_Verify_Email_For_External_Accounts', true, {
+			type: 'boolean',
 		});
 		this.add('Accounts_ManuallyApproveNewUsers', false, {
 			public: true,
@@ -828,6 +831,12 @@ settings.addGroup('General', function() {
 		],
 		public: true,
 	});
+
+	this.add('DeepLink_Url', 'https://go.rocket.chat', {
+		type: 'string',
+		public: true,
+	});
+
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		public: true,
@@ -1102,6 +1111,10 @@ settings.addGroup('Message', function() {
 		values: MessageTypesValues,
 	});
 
+	this.add('DirectMesssage_maxUsers', 8, {
+		type: 'int',
+		public: true,
+	});
 
 	this.add('Message_ErasureType', 'Delete', {
 		type: 'select',
