@@ -39,7 +39,7 @@ Template.ExternalFrameContainer.onCreated(async function() {
 	this.authToken = new ReactiveVar();
 
 	const { 'X-Auth-Token': authToken } = APIClient.getCredentials();
-	const keyStr = settings.get('Omnichannel_External_Frame_SharedSecret');
+	const keyStr = settings.get('Omnichannel_External_Frame_Encryption_JWK');
 
 	if (keyStr) {
 		return this.authToken.set(await encrypt(authToken, await getKeyFromString(keyStr)));
