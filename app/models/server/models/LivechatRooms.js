@@ -578,6 +578,31 @@ export class LivechatRooms extends Base {
 
 		return this.update(query, update);
 	}
+
+	setTimeWhenRoomWillBeInactive(roomId, willBeInactiveAt) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				'omnichannel.inactiveAt': willBeInactiveAt,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	findInactiveOpenRooms(date) {
+		return this.find({
+			'omnichannel.inactiveAt': { $lte: date },
+			'omnichannel.frozen': { $exists: false },
+			open: true,
+		});
+	}
+
+	freezeRoomById(_id) {
+		return this.update({ _id }, { $set: { 'omnichannel.frozen': true } });
+	}
 }
 
 export default new LivechatRooms(Rooms.model, true);
