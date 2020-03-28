@@ -33,8 +33,8 @@ export function useQuery(params, sort, type, workspace = 'local') {
 const dayFormat = ['h:mm A', 'H:mm'];
 export function useFormatTime() {
 	const clockMode = useUserPreference('clockMode', false);
-	const sameDay = dayFormat[clockMode - 1] || useSetting('Message_TimeFormat');
 	const format = useSetting('Message_TimeFormat');
+	const sameDay = dayFormat[clockMode - 1] || format;
 	return useCallback((time) => {
 		switch (clockMode) {
 			case 1:

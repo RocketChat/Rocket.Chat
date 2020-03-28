@@ -7,6 +7,8 @@ import { useTranslation } from '../../../../../../../client/contexts/Translation
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { useQuery, useFormatDate } from '../hooks';
 
+const style = { whiteSpace: 'nowrap' };
+
 export function ChannelsTab() {
 	const t = useTranslation();
 	const [sort, setSort] = useState(['name', 'asc']);
@@ -24,13 +26,13 @@ export function ChannelsTab() {
 		setSort([id, 'asc']);
 	}, [sort]);
 
-	const header = [
-		<Th direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount'>{t('Users')}</Th>,
-		<Th direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt'>{t('Created_at')}</Th>,
-		<Th direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage'>{t('Last_Message')}</Th>,
-		<Th>{t('Topic')}</Th>,
-	];
+	const header = useMemo(() => [
+		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
+		<Th key={'usersCount'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount'>{t('Users')}</Th>,
+		<Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt'>{t('Created_at')}</Th>,
+		<Th key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage'>{t('Last_Message')}</Th>,
+		<Th key={'topic'}>{t('Topic')}</Th>,
+	], [sort]);
 
 	const go = useRoute('channel');
 
@@ -43,9 +45,8 @@ export function ChannelsTab() {
 	}, []);
 
 	const formatDate = useFormatDate();
-	const renderRow = useCallback(({ _id, ts, default: d, name, description, usersCount, lastMessage, topic, ...rest }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
+	const renderRow = useCallback(({ _id, ts, default: d, name, description, usersCount, lastMessage, topic }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
 		<Table.Cell>
-			{console.log(rest)}
 			<Flex.Container>
 				<Box>
 					<Flex.Item>
@@ -64,16 +65,16 @@ export function ChannelsTab() {
 				</Box>
 			</Flex.Container>
 		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={{ whiteSpace: 'nowrap' }}>
+		<Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{usersCount}
 		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={{ whiteSpace: 'nowrap' }}>
+		<Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{formatDate(ts)}
 		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={{ whiteSpace: 'nowrap' }}>
+		<Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{lastMessage && formatDate(lastMessage.ts)}
 		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={{ whiteSpace: 'nowrap' }}>
+		<Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{topic}
 		</Table.Cell>
 	</Table.Row>

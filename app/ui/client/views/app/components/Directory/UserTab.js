@@ -32,10 +32,10 @@ export function UserTab({
 	};
 
 	const header = [
-		<Th direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		canViewFullOtherUserInfo && <Th direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email'>{t('Email')}</Th>,
-		federation && <Th direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin'>{t('Domain')}</Th>,
-		<Th direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='createdAt'>{t('Joined_at')}</Th>,
+		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
+		canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email'>{t('Email')}</Th>,
+		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin'>{t('Domain')}</Th>,
+		<Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='createdAt'>{t('Joined_at')}</Th>,
 	].filter(Boolean);
 
 	const go = useRoute('direct');

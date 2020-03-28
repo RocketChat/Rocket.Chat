@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { Box, Icon, Margins, Pagination, Skeleton, Table, Flex, Avatar, TextInput, Tile } from '@rocket.chat/fuselage';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { Box, Icon, Margins, Pagination, Skeleton, Table, Flex, TextInput, Tile } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useDebounce } from '../hooks';
@@ -13,7 +13,7 @@ function SortIcon({ direction }) {
 
 export function Th({ children, active, direction, sort, onClick, ...props }) {
 	const fn = useMemo(() => () => onClick && onClick(sort), [sort, onClick]);
-	return <Table.Cell style={ { width: '100%' } } clickable={!!sort} onClick={fn} { ...props }>
+	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
 		<Flex.Container alignItems='center' wrap='no-wrap'>
 			<Box>{children}{sort && <SortIcon mod-active={active} direction={active && direction} />}</Box>
 		</Flex.Container>
@@ -69,11 +69,13 @@ export function DirectoryTable({
 	const { result: channels, total } = data;
 
 
-	const handleChange = useMemo(() => (event) => setText(event.currentTarget.value), []);
+	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
 
-	const Loading = useMemo(() => () => Array.from({ length: 10 }, (_, i) => <LoadingRow cols={header.length} kye={i}/>), [header && header.length]);
+	const Loading = useCallback(() => Array.from({ length: 10 }, (_, i) => <LoadingRow cols={header.length} key={i}/>), [header && header.length]);
 
-	const showingResultsLabel = useMemo(() => ({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), []);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), []);
+
+	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
 
 	return <>
 		<Flex.Container direction='column'>
@@ -85,7 +87,7 @@ export function DirectoryTable({
 					? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
 						{t('No_data_found')}
 					</Tile>
-					: <Avatar.Context.Provider value={{ baseUrl: '/avatar/' }}>
+					: <>
 						<Table>
 							{ header && <Table.Head>
 								<Table.Row>
@@ -101,13 +103,14 @@ export function DirectoryTable({
 						<Pagination
 							current={current}
 							itemsPerPage={itemsPerPage}
-							itemsPerPageLabel={() => t('Items_per_page:')}
+							itemsPerPageLabel={itemsPerPageLabel}
 							showingResultsLabel={showingResultsLabel}
 							count={total || 0}
 							onSetItemsPerPage={setItemsPerPage}
 							onSetCurrent={setCurrent}
 						/>
-					</Avatar.Context.Provider>}
+					</>
+				}
 			</Box>
 		</Flex.Container>
 	</>;
