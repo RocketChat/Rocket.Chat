@@ -169,7 +169,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 		const text = notificationMessage;
 
-		if (room.usersCount > 2) {
+		if (this.isGroupChat(room)) {
 			return {
 				title: this.roomName(room),
 				text,
