@@ -3531,7 +3531,7 @@
   "Value_messages": "__value__ messages",
   "Value_users": "__value__ users",
   "Validate_email_address": "Validate Email Address",
-  "Verification_email_body": "Welcome to [Site_Name], the best open source chat solution available today!. Please, click on the button below to confirm your email address and finish registration.",
+  "Verification_email_body": "Welcome to [Site_Name]. Please, click on the button below to confirm your email address and finish registration.",
   "Verification": "Verification",
   "Verification_Description": "You may use the following placeholders: <br/><ul><li>[Verification_Url] for the verification URL.</li><li>[name], [fname], [lname] for the user's full name, first name or last name, respectively.</li><li>[email] for the user's email.</li><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
   "Verification_email_sent": "Verification email sent",
