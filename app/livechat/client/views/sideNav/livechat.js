@@ -9,7 +9,7 @@ import { KonchatNotification } from '../../../../ui';
 import { settings } from '../../../../settings';
 import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';
-import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
+import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { Notifications } from '../../../../notifications/client';
 import { initializeLivechatInquiryStream } from '../../lib/stream/queueManager';
 
@@ -37,24 +37,20 @@ Template.livechat.helpers({
 			open: true,
 		};
 
-		const user = Users.findOne(Meteor.userId(), {
-			fields: { 'settings.preferences.sidebarShowUnread': 1 },
-		});
+		const user = Meteor.userId();
 
 		if (getUserPreference(user, 'sidebarShowUnread')) {
 			query.alert = { $ne: true };
 		}
 
-		return ChatSubscription.find(query, {
-			sort: {
-				t: 1,
-				fname: 1,
-			},
-		});
+		const sortBy = getUserPreference(user, 'sidebarSortby');
+		const sort = sortBy === 'activity' ? { _updatedAt: - 1 } : { fname: 1 };
+
+		return ChatSubscription.find(query, { sort });
 	},
 
 	inquiries() {
-		const inqs = getLivechatInquiryCollection().find({
+		const inqs = LivechatInquiry.find({
 			status: 'queued',
 		}, {
 			sort: {
@@ -135,11 +131,8 @@ Template.livechat.onCreated(function() {
 			this.statusLivechat.set();
 		}
 	});
-	if (!settings.get('Livechat_enable_inquiry_fetch_by_stream')) {
-		this.subscribe('livechat:inquiry');
-	} else {
-		initializeLivechatInquiryStream(Meteor.userId());
-	}
+
+	initializeLivechatInquiryStream(Meteor.userId());
 	this.updateAgentDepartments = () => initializeLivechatInquiryStream(Meteor.userId());
 	this.autorun(() => this.inquiriesLimit.set(settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed')));
 

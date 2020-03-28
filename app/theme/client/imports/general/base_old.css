@@ -157,13 +157,15 @@
 	top: 0;
 
 	width: 100%;
+	margin-top: 0 !important;
 	padding: 2px;
 
 	border-width: 0 0 1px;
 }
 
 .rc-old .alert {
-	margin-bottom: 20px;
+	margin: 1rem 0;
+	padding: 0.5rem;
 
 	border-width: 1px;
 	border-radius: var(--border-radius);
@@ -1519,6 +1521,7 @@ rc-old select,
 		}
 
 		.setting-action {
+			height: auto;
 			margin: 0 4px;
 		}
 
@@ -1952,8 +1955,9 @@ rc-old select,
 	&-wrapper {
 		display: flex;
 
-		height: calc(100% - 61px);
-		flex-grow: 1;
+		flex: 1 1 auto;
+
+		height: 1%;
 	}
 
 	&-main {

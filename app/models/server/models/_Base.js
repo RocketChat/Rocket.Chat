@@ -7,8 +7,8 @@ import { BaseDb } from './_BaseDb';
 import { oplogEvents } from '../oplogEvents';
 
 export class Base {
-	constructor(nameOrModel) {
-		this._db = new BaseDb(nameOrModel, this);
+	constructor(nameOrModel, options) {
+		this._db = new BaseDb(nameOrModel, this, options);
 		this.model = this._db.model;
 		this.collectionName = this._db.collectionName;
 		this.name = this._db.name;
@@ -114,6 +114,14 @@ export class Base {
 	find(...args) {
 		try {
 			return this[this.origin].find(...args);
+		} catch (e) {
+			console.error('Exception on find', e, ...args);
+		}
+	}
+
+	findById(...args) {
+		try {
+			return this[this.origin].findById(...args);
 		} catch (e) {
 			console.error('Exception on find', e, ...args);
 		}
