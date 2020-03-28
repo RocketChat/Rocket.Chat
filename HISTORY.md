@@ -1,4 +1,85 @@
 
+# 3.0.7
+`2020-03-25  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Remove deprecated Omnichannel setting used to fetch the queue data through subscription  ([#17017](https://github.com/RocketChat/Rocket.Chat/pull/17017))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+
+# 3.0.6
+`2020-03-25  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Keeps the agent in the room after accepting a new Omnichannel request ([#16787](https://github.com/RocketChat/Rocket.Chat/pull/16787))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Replace the Omnichannel queue model observe with Stream ([#16999](https://github.com/RocketChat/Rocket.Chat/pull/16999))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+
+# 3.0.5
+`2020-03-24  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Race conditions on/before login ([#16989](https://github.com/RocketChat/Rocket.Chat/pull/16989))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.0.4
+`2020-03-16  ·  1 🚀  ·  2 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🚀 Improvements
+
+- Send files over REST API ([#16617](https://github.com/RocketChat/Rocket.Chat/pull/16617))
+
+### 🐛 Bug fixes
+
+- Integrations page pagination ([#16838](https://github.com/RocketChat/Rocket.Chat/pull/16838))
+- TypeError when trying to load avatar of an invalid room. ([#16699](https://github.com/RocketChat/Rocket.Chat/pull/16699))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.0.3
 `2020-03-02  ·  5 🐛  ·  5 👩‍💻👨‍💻`
 
@@ -24,7 +105,7 @@
 - [@rodrigok](https://github.com/rodrigok)
 
 # 3.0.2
-`2020-02-21  ·  4 🐛  ·  5 👩‍💻👨‍💻`
+`2020-02-21  ·  3 🐛  ·  3 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.14.0`
@@ -35,16 +116,13 @@
 
 - ie11 support ([#16682](https://github.com/RocketChat/Rocket.Chat/pull/16682))
 - Omnichannel Inquiry queues when removing chats ([#16603](https://github.com/RocketChat/Rocket.Chat/pull/16603))
-- users.info endpoint not handling the error if the user does not exist ([#16495](https://github.com/RocketChat/Rocket.Chat/pull/16495))
 - Clear unread red line when the ESC key is pressed  ([#16668](https://github.com/RocketChat/Rocket.Chat/pull/16668))
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@ggazzo](https://github.com/ggazzo)
 - [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.0.1
 `2020-02-19  ·  7 🐛  ·  4 👩‍💻👨‍💻`
