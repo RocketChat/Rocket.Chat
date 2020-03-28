@@ -61,6 +61,7 @@ export const openRoom = async function(type, name) {
 
 		try {
 			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
+			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (RoomManager.open(type + name).ready() !== true) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
@@ -71,8 +72,6 @@ export const openRoom = async function(type, name) {
 			}
 
 			c.stop();
-
-			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (window.currentTracker) {
 				window.currentTracker = undefined;
