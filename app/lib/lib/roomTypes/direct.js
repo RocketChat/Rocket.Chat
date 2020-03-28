@@ -167,18 +167,16 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			return {};
 		}
 
-		const text = notificationMessage;
-
 		if (this.isGroupChat(room)) {
 			return {
 				title: this.roomName(room),
-				text,
+				text: `${ (settings.get('UI_Use_Real_Name') && user.name) || user.username }: ${ notificationMessage }`,
 			};
 		}
 
 		return {
-			title: settings.get('UI_Use_Real_Name') ? user.name : user.username,
-			text,
+			title: (settings.get('UI_Use_Real_Name') && user.name) || user.username,
+			text: notificationMessage,
 		};
 	}
 
