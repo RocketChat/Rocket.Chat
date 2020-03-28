@@ -550,6 +550,13 @@ export class Rooms extends Base {
 		}, options);
 	}
 
+	find1On1ByUserId(userId, options) {
+		return this.find({
+			uids: userId,
+			usersCount: 2,
+		}, options);
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -1025,13 +1032,8 @@ export class Rooms extends Base {
 		return this.remove(query);
 	}
 
-	remove1on1ById(_id) {
-		const query = {
-			_id,
-			usersCount: { $lte: 2 },
-		};
-
-		return this.remove(query);
+	removeByIds(ids) {
+		return this.remove({ _id: { $in: ids } });
 	}
 
 	removeDirectRoomContainingUsername(username) {
