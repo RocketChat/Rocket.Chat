@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Messages } from '../../../models';
+import { Messages, Subscriptions } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib';
@@ -357,6 +357,30 @@ API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('ignoreUser', { rid, userId, ignore }));
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('chat.getIgnoredUsers', { authRequired: true }, {
+	get() {
+		const { rid } = this.queryParams;
+		if (!rid || !rid.trim()) {
+			throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.', { method: 'getIgnoredUsers' });
+		}
+
+		const userId = this.userId;
+		if(!userId) {
+		    throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getIgnoredUsers' });
+		}
+
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId);
+		if(!subscription) {
+		    throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'getIgnoredUsers' });
+		}
+		
+		const result = subscription.ignored;
+		return API.v1.success({
+			ignoredUsers: (result) ? result : []
+		});	
 	},
 });
 
