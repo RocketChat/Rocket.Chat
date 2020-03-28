@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
 export const TABBAR_DEFAULT_VISIBLE_ICON_COUNT = 4;
 
@@ -38,12 +39,28 @@ export const TabBar = new class TabBar {
 			btns[config.id].groups = _.union(btns[config.id].groups || [], this.extraGroups[config.id]);
 		}
 
+		// When you add a button with an order value of -1
+		// we assume you want to force the visualization of your button
+		// so we increase the number of buttons that are shown so you
+		// don't end up hiding any of the default ones
+		if (config.order === -1) {
+			Tracker.nonreactive(() => this.size++);
+		}
+
 		this.buttons.set(btns);
 	}
 
 	removeButton(id) {
 		const btns = this.buttons.curValue;
+
+		// Here we decrease the shown count as your
+		// button is no longer present
+		if (btns[id] && btns[id].order === -1) {
+			Tracker.nonreactive(() => this.size--);
+		}
+
 		delete btns[id];
+
 		this.buttons.set(btns);
 	}
 
