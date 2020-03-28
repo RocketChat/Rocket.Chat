@@ -171,3 +171,14 @@ export function onLicense(feature, cb) {
 
 	EnterpriseLicenses.once(`valid:${ feature }`, cb);
 }
+
+export function overwriteClassOnLicense(license, original, overwrite) {
+	onLicense(license, () => {
+		Object.entries(overwrite).forEach(([key, value]) => {
+			const originalFn = original.prototype[key];
+			original.prototype[key] = function(...args) {
+				return value.call(this, originalFn, ...args);
+			};
+		});
+	});
+}
