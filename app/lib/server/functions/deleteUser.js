@@ -94,16 +94,14 @@ export const deleteUser = function(userId) {
 				break;
 		}
 
-		const roomIds = roomCache.map((roomData) => {
+		const roomIds = roomCache.filter((roomData) => {
 			if (roomData.subscribers === null && roomData.t !== 'd' && roomData.t !== 'c') {
 				roomData.subscribers = Subscriptions.findByRoomId(roomData.rid).count();
 			}
 
 			// Remove non-channel rooms with only 1 user (the one being deleted)
-			if (roomData.t !== 'c' && roomData.subscribers === 1) {
-				return roomData._id;
-			}
-		});
+			return roomData.t !== 'c' && roomData.subscribers === 1;
+		}).map(({ _id }) => _id);
 
 		Rooms.find1On1ByUserId(user._id, { fields: { _id: 1 } }).forEach(({ _id }) => roomIds.push(_id));
 
