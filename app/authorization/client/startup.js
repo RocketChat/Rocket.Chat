@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 import { hasAtLeastOnePermission } from './hasPermission';
 import { CachedCollectionManager } from '../../ui-cached-collection';
@@ -28,5 +29,12 @@ Meteor.startup(() => {
 		},
 		removed: (role) => Roles.remove({ _id: role.name }),
 	};
-	rolesStreamer.on('roles', (role) => events[role.type](role));
+
+	Tracker.autorun((c) => {
+		if (!Meteor.userId()) {
+			return;
+		}
+		rolesStreamer.on('roles', (role) => events[role.type](role));
+		c.stop();
+	});
 });

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
+import { Imports } from '../../../models';
 
 import {
 	Importers,
@@ -11,7 +12,7 @@ import {
 
 
 Meteor.methods({
-	startImport(key, input) {
+	startImport(input) {
 		// Takes name and object with users / channels selected to import
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'startImport' });
@@ -21,15 +22,18 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'startImport' });
 		}
 
-		if (!key) {
-			throw new Meteor.Error('error-invalid-importer', `No defined importer by: "${ key }"`, { method: 'startImport' });
+		const operation = Imports.findLastImport();
+		if (!operation) {
+			throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', { method: 'startImport' });
 		}
 
-		const importer = Importers.get(key);
-
-		if (!importer || !importer.instance) {
-			throw new Meteor.Error('error-importer-not-defined', `The importer (${ key }) has no import class defined.`, { method: 'startImport' });
+		const { importerKey } = operation;
+		const importer = Importers.get(importerKey);
+		if (!importer) {
+			throw new Meteor.Error('error-importer-not-defined', `The importer (${ importerKey }) has no import class defined.`, { method: 'startImport' });
 		}
+
+		importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
 		const usersSelection = input.users.map((user) => new SelectionUser(user.user_id, user.username, user.email, user.is_deleted, user.is_bot, user.do_import));
 		const channelsSelection = input.channels.map((channel) => new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import));

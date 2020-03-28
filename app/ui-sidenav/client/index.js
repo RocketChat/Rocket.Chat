@@ -13,6 +13,7 @@ import './sideNav';
 import './roomList';
 import './sortlist';
 import './toolbar';
+import './userPresence';
 
 export {
 	toolbarSearch,

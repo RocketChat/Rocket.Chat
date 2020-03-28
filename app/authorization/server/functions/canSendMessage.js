@@ -9,10 +9,10 @@ const subscriptionOptions = {
 	},
 };
 
-export const canSendMessageAsync = async (rid, { uid, username }, extraData) => {
+export const canSendMessageAsync = async (rid, { uid, username, type }, extraData) => {
 	const room = await Rooms.findOneById(rid);
 
-	if (!await canAccessRoomAsync(room, { _id: uid, username }, extraData)) {
+	if (type !== 'app' && !await canAccessRoomAsync(room, { _id: uid, username }, extraData)) {
 		throw new Error('error-not-allowed');
 	}
 
@@ -35,4 +35,4 @@ export const canSendMessageAsync = async (rid, { uid, username }, extraData) => 
 	return room;
 };
 
-export const canSendMessage = (rid, { uid, username }, extraData) => Promise.await(canSendMessageAsync(rid, { uid, username }, extraData));
+export const canSendMessage = (rid, { uid, username, type }, extraData) => Promise.await(canSendMessageAsync(rid, { uid, username, type }, extraData));
