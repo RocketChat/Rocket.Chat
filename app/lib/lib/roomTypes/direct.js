@@ -167,10 +167,19 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			return {};
 		}
 
-		const title = settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`;
 		const text = notificationMessage;
 
-		return { title, text };
+		if (room.usersCount > 2) {
+			return {
+				title: this.roomName(room),
+				text,
+			};
+		}
+
+		return {
+			title: settings.get('UI_Use_Real_Name') ? user.name : user.username,
+			text,
+		};
 	}
 
 	getAvatarPath(roomData, subData) {
