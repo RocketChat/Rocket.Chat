@@ -1,8 +1,8 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import { settings } from '../../../settings/server';
-import { LivechatRooms } from '../../../models/server';
-import { Livechat } from './Livechat';
+import { settings } from '../../../../../app/settings/server';
+import { LivechatRooms } from '../../../../../app/models/server';
+import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 
 export class VisitorInactivityMonitor {
 	start() {

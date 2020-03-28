@@ -39,4 +39,47 @@ LivechatRooms.prototype.updateDepartmentAncestorsById = function(_id, department
 	return this.update(query, update);
 };
 
+
+LivechatRooms.prototype.setTimeWhenRoomWillBeInactive = function(roomId, willBeInactiveAt) {
+	const query = {
+		_id: roomId,
+	};
+	const update = {
+		$set: {
+			'omnichannel.inactiveAt': willBeInactiveAt,
+		},
+	};
+
+	return this.update(query, update);
+};
+
+LivechatRooms.prototype.findInactiveOpenRooms = function(date) {
+	return this.find({
+		'omnichannel.inactiveAt': { $lte: date },
+		'omnichannel.frozen': { $exists: false },
+		open: true,
+	});
+};
+
+LivechatRooms.prototype.freezeRoomById = function(_id) {
+	return this.update({ _id }, { $set: { 'omnichannel.frozen': true } });
+};
+
+LivechatRooms.prototype.setVisitorInactivityInSecondsByRoomId = function(roomId, visitorInactivity) {
+	const query = {
+		_id: roomId,
+	};
+	const update = {
+		$set: {
+			'metrics.visitorInactivity': visitorInactivity,
+		},
+	};
+
+	return this.update(query, update);
+};
+
+LivechatRooms.prototype.unsetInactivityPropertyById = function(_id) {
+	return this.update({ _id }, { $unset: { 'omnichannel.inactiveAt': 1 } });
+};
+
 export default LivechatRooms;

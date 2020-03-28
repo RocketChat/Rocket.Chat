@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import moment from 'moment';
 
 import { hasRole } from '../../../../../app/authorization';
-import { LivechatDepartment, Users, LivechatInquiry } from '../../../../../app/models/server';
+import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms } from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
@@ -64,7 +65,7 @@ export const normalizeQueueInfo = async ({ position, queueInfo, department }) =>
 		queueInfo = await getQueueInfo(department);
 	}
 
-	const { message, numberMostRecentChats, statistics: { avgChatDuration } = { } } = queueInfo;
+	const { message, numberMostRecentChats, statistics: { avgChatDuration } = {} } = queueInfo;
 	const spot = position + 1;
 	const estimatedWaitTimeSeconds = getSpotEstimatedWaitTime(spot, numberMostRecentChats, avgChatDuration);
 	return { spot, message, estimatedWaitTimeSeconds };
@@ -136,4 +137,28 @@ export const allowAgentSkipQueue = (agent) => {
 	}));
 
 	return settings.get('Livechat_assign_new_conversation_to_bot') && hasRole(agent.agentId, 'bot');
+};
+
+export const setVisitorInactivity = (room) => {
+	let secondsToAdd = settings.get('Livechat_visitor_inactivity_timeout');
+	let department;
+	if (room.departmentId) {
+		department = LivechatDepartment.findOneById(room.departmentId);
+	}
+	if (department && department.visitorInactivityTimeoutInSeconds) {
+		secondsToAdd = department.visitorInactivityTimeoutInSeconds;
+	}
+	let willBeInactiveAt = room.v.lastMessageTs;
+	if (secondsToAdd) {
+		willBeInactiveAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
+	}
+	LivechatRooms.setTimeWhenRoomWillBeInactive(room._id, willBeInactiveAt);
+};
+
+export const updateInactiveRoomProperty = (closeRooms) => {
+	if (closeRooms) {
+		LivechatRooms.findOpenRooms().forEach((room) => setVisitorInactivity(room));
+	} else {
+		LivechatRooms.findOpenRooms().forEach((room) => LivechatRooms.unsetInactivityPropertyById(room._id));
+	}
 };
