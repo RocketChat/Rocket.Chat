@@ -311,26 +311,8 @@ SAML.prototype.validateStatus = function(doc) {
 	};
 };
 
-SAML.prototype.validateSignature = function(xml, cert, response) {
+SAML.prototype.validateSignature = function(xml, cert, signature) {
 	const self = this;
-
-	const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
-	const signatures = xmlCrypto.xpath(response, xpathSigQuery);
-	let signature = null;
-
-	for (const sign of signatures) {
-		if (sign.parentNode !== response) {
-			continue;
-		}
-
-		// Too many signatures
-		if (signature) {
-			return false;
-		}
-
-		signature = sign;
-	}
-
 	const sig = new xmlCrypto.SignedXml();
 
 	sig.keyInfoProvider = {
@@ -345,6 +327,35 @@ SAML.prototype.validateSignature = function(xml, cert, response) {
 	sig.loadSignature(signature);
 
 	return sig.checkSignature(xml);
+};
+
+SAML.prototype.validateSignatureChildren = function(xml, cert, parent) {
+	const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
+	const signatures = xmlCrypto.xpath(parent, xpathSigQuery);
+	let signature = null;
+
+	for (const sign of signatures) {
+		if (sign.parentNode !== parent) {
+			continue;
+		}
+
+		// Too many signatures
+		if (signature) {
+			return false;
+		}
+
+		signature = sign;
+	}
+
+	return this.validateSignature(xml, cert, signature);
+};
+
+SAML.prototype.validateResponseSignature = function(xml, cert, response) {
+	return this.validateSignatureChildren(xml, cert, response);
+};
+
+SAML.prototype.validateAssertionSignature = function(xml, cert, assertion) {
+	return this.validateSignatureChildren(xml, cert, assertion);
 };
 
 SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
@@ -478,6 +489,23 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 	}
 };
 
+SAML.prototype.validateAssertionConditions = function(assertion) {
+	const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
+	if (conditions && !this.validateNotBeforeNotOnOrAfterAssertions(conditions)) {
+		throw new Error('NotBefore / NotOnOrAfter assertion failed');
+	}
+};
+
+SAML.prototype.validateSubjectConditions = function(subject) {
+	const subjectConfirmation = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmation')[0];
+	if (subjectConfirmation) {
+		const subjectConfirmationData = subjectConfirmation.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmationData')[0];
+		if (subjectConfirmationData && !this.validateNotBeforeNotOnOrAfterAssertions(subjectConfirmationData)) {
+			throw new Error('NotBefore / NotOnOrAfter assertion failed');
+		}
+	}
+};
+
 SAML.prototype.validateNotBeforeNotOnOrAfterAssertions = function(element) {
 	const sysnow = new Date();
 	const allowedclockdrift = this.options.allowedClockDrift;
@@ -503,6 +531,76 @@ SAML.prototype.validateNotBeforeNotOnOrAfterAssertions = function(element) {
 	}
 
 	return true;
+};
+
+SAML.prototype.getAssertion = function(response) {
+	const allAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
+	const allEncrypedAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion');
+
+	if (allAssertions.length + allEncrypedAssertions.length > 1) {
+		throw new Error('Too many SAML assertions');
+	}
+
+	let assertion = allAssertions[0];
+	const encAssertion = allEncrypedAssertions[0];
+
+
+	if (typeof encAssertion !== 'undefined') {
+		const options = { key: this.options.privateKey };
+		xmlenc.decrypt(encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+			assertion = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+		});
+	}
+
+	if (!assertion) {
+		throw new Error('Missing SAML assertion');
+	}
+
+	return assertion;
+};
+
+SAML.prototype.verifySignatures = function(response, assertion, xml) {
+	if (!this.options.cert) {
+		return;
+	}
+
+	debugLog('Verify Document Signature');
+	if (!self.validateResponseSignature(xml, self.options.cert, response)) {
+		debugLog('Document Signature WRONG');
+		throw new Error('Invalid Signature');
+	}
+	debugLog('Document Signature OK');
+
+	debugLog('Verify Assertion Signature');
+	if (!self.validateAssertionSignature(xml, self.options.cert, assertion)) {
+		debugLog('Assertion Signature WRONG');
+		throw new Error('Invalid Assertion signature');
+	}
+	debugLog('Assertion Signature OK');
+};
+
+SAML.prototype.getSubject = function(assertion) {
+	let subject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
+	const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
+
+	if (typeof encSubject !== 'undefined') {
+		const options = { key: this.options.privateKey };
+		xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+			subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+		});
+	}
+
+	return subject;
+};
+
+SAML.prototype.getIssuer = function(assertion) {
+	const issuers = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer');
+
+	if (issuers.length > 1) {
+		throw new Error('Too many Issuers');
+	}
+
+	return issuers[0];
 };
 
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
@@ -540,34 +638,15 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	}
 	debugLog('Got response');
 
-	// Verify signature
-	debugLog('Verify signature');
-	if (self.options.cert && !self.validateSignature(xml, self.options.cert, response)) {
-		debugLog('Signature WRONG');
-		return callback(new Error('Invalid signature'), null, false);
-	}
-	debugLog('Signature OK');
+	let assertion;
+	let issuer;
 
-	const allAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
-	const allEncrypedAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion');
+	try {
+		assertion = this.getAssertion(response, callback);
 
-	if (allAssertions.length + allEncrypedAssertions.length > 1) {
-		return callback(new Error('Too many SAML assertions'), null, false);
-	}
-
-	let assertion = allAssertions[0];
-	const encAssertion = allEncrypedAssertions[0];
-
-	const options = { key: this.options.privateKey };
-
-	if (typeof encAssertion !== 'undefined') {
-		xmlenc.decrypt(encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
-			assertion = new xmldom.DOMParser().parseFromString(result, 'text/xml');
-		});
-	}
-
-	if (!assertion) {
-		return callback(new Error('Missing SAML assertion'), null, false);
+		this.verifySignatures();
+	} catch (e) {
+		return callback(e, null, false);
 	}
 
 	const profile = {};
@@ -576,19 +655,17 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 		profile.inResponseToId = response.getAttribute('InResponseTo');
 	}
 
-	const issuer = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')[0];
+	try {
+		issuer = this.getIssuer(assertion);
+	} catch (e) {
+		return callback(e, null, false);
+	}
+
 	if (issuer) {
 		profile.issuer = issuer.textContent;
 	}
 
-	let subject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
-	const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
-
-	if (typeof encSubject !== 'undefined') {
-		xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
-			subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
-		});
-	}
+	const subject = this.getSubject(assertion);
 
 	if (subject) {
 		const nameID = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')[0];
@@ -600,18 +677,17 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 			}
 		}
 
-		const subjectConfirmation = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmation')[0];
-		if (subjectConfirmation) {
-			const subjectConfirmationData = subjectConfirmation.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmationData')[0];
-			if (subjectConfirmationData && !this.validateNotBeforeNotOnOrAfterAssertions(subjectConfirmationData)) {
-				return callback(new Error('NotBefore / NotOnOrAfter assertion failed'), null, false);
-			}
+		try {
+			this.validateSubjectConditions(subject);
+		} catch (e) {
+			return callback(e, null, false);
 		}
 	}
 
-	const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
-	if (conditions && !this.validateNotBeforeNotOnOrAfterAssertions(conditions)) {
-		return callback(new Error('NotBefore / NotOnOrAfter assertion failed'), null, false);
+	try {
+		this.validateAssertionConditions(assertion);
+	} catch (e) {
+		return callback(e, null, false);
 	}
 
 	const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];
