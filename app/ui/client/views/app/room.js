@@ -806,6 +806,15 @@ Template.room.events({
 		openProfileTabOrOpenDM(e, instance, username);
 	},
 
+	'click .open-flexTab'(e, instance) {
+		if (!Meteor.userId()) {
+			return;
+		}
+		const username = e.currentTarget.innerText;
+
+		openProfileTabOrOpenDM(e, instance, username);
+	},
+
 	'scroll .wrapper': _.throttle(function(e, t) {
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
