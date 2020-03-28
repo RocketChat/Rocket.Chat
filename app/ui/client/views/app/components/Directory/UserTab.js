@@ -9,6 +9,7 @@ import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
 import { useQuery, useFormatDate } from '../hooks';
 
+const style = { whiteSpace: 'nowrap' };
 export function UserTab({
 	workspace = 'local',
 }) {
@@ -31,12 +32,12 @@ export function UserTab({
 		setSort([id, 'asc']);
 	};
 
-	const header = [
+	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
 		canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email'>{t('Email')}</Th>,
 		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin'>{t('Domain')}</Th>,
 		<Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='createdAt'>{t('Joined_at')}</Th>,
-	].filter(Boolean);
+	].filter(Boolean), [federation, canViewFullOtherUserInfo]);
 
 	const go = useRoute('direct');
 
@@ -78,7 +79,7 @@ export function UserTab({
 		&& <Table.Cell>
 			{domain}
 		</Table.Cell>}
-		<Table.Cell textStyle='p1' textColor='hint' style={{ whiteSpace: 'nowrap' }}>
+		<Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{formatDate(createdAt)}
 		</Table.Cell>
 	</Table.Row>, []);
