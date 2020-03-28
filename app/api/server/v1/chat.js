@@ -367,20 +367,20 @@ API.v1.addRoute('chat.getIgnoredUsers', { authRequired: true }, {
 			throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.', { method: 'getIgnoredUsers' });
 		}
 
-		const userId = this.userId;
-		if(!userId) {
-		    throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getIgnoredUsers' });
+		const { userId } = this.userId;
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getIgnoredUsers' });
 		}
 
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId);
-		if(!subscription) {
-		    throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'getIgnoredUsers' });
+		if (!subscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'getIgnoredUsers' });
 		}
-		
+
 		const result = subscription.ignored;
 		return API.v1.success({
-			ignoredUsers: (result) ? result : []
-		});	
+			ignoredUsers: result || [],
+		});
 	},
 });
 
