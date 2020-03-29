@@ -41323,6 +41323,107 @@
           ]
         }
       ]
+    },
+    "3.1.0-rc.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17061",
+          "title": "Regression: Overwrite model functions on EE only when license applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17036",
+          "title": "Regression: `users.setStatus` throwing an error if message is empty",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16346",
+          "title": "Regression: Omnichannel notification on new conversations displaying incorrect information",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17058",
+          "title": "Fix: Notifications of Group DM were not showing the room name",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17059",
+          "title": "Fix: Last message of Group DMs not showing the sender",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17056",
+          "title": "Regression: Invite links working for group DMs",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17060",
+          "title": "Regression: Do not refresh statistics when opening the info panel",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17057",
+          "title": "Regression: Fix removing user not removing his 1-on-1 DMs",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17048",
+          "title": "Regression: omnichannel manual queued sidebarlist",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo",
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }
