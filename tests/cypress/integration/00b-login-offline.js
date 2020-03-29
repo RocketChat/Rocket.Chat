@@ -1,9 +1,10 @@
-import loginPage from '../../pageobjects/login.page';
+import loginPage from '../pageobjects/login.page';
 
 describe('Test login page in Offline', () => {
 	before(() => {
 		localStorage.clear();
 		loginPage.open();
+		// time to register sw
 		cy.wait(5000);
 		loginPage.gotToForgotPassword();
 		loginPage.gotBackToLogin();
@@ -13,7 +14,6 @@ describe('Test login page in Offline', () => {
 
 	describe('[Render]', () => {
 		before(() => {
-			// time to register sw and cache files
 			loginPage.offlineMode(true);
 		});
 
@@ -270,4 +270,3 @@ describe('Test Forgot Password in Offline', () => {
 		});
 	});
 });
-

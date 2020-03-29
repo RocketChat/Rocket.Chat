@@ -11,6 +11,7 @@
 //
 // -- This is a parent command --
 import 'cypress-file-upload';
+
 Cypress.Commands.add('login', (email, password) => cy.window().then(({ Meteor }) => new Promise((resolve) => {
 	Meteor.loginWithPassword(email, password, resolve);
 })));

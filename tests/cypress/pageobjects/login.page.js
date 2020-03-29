@@ -35,7 +35,7 @@ class LoginPage extends Page {
 
 	get registrationSucceededCard() { return browser.element('#login-card h2'); }
 
-	get warningAlert() { return browser.element('.alert-warning'); } 
+	get warningAlert() { return browser.element('.alert-warning'); }
 
 	open(options = {}) {
 		super.open('', options);

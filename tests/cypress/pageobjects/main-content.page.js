@@ -17,7 +17,7 @@ class MainContent extends Page {
 
 	get plusBtn() { return browser.element('.rc-message-box__icon.js-plus'); }
 
-	get fileUploadBtn() { return browser.element('.rc-popover__item[data-id="file-upload"]'); } 
+	get fileUploadBtn() { return browser.element('.rc-popover__item[data-id="file-upload"]'); }
 
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
 
@@ -44,7 +44,7 @@ class MainContent extends Page {
 
 	get lastMessage() { return browser.element('.message:last-child'); }
 
-	get lastMessageDesc() { return browser.element('.message:last-child .attachment .attachment-description'); }
+	get lastMessageDesc() { return browser.element('.message:last-child .attachment-image .attachment-description'); }
 
 	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
 
@@ -153,7 +153,7 @@ class MainContent extends Page {
 		this.plusBtn.click();
 		this.fileUploadBtn.click();
 		cy.get('[id="fileupload-input"]').attachFile(fileName, { force: true });
-	}	
+	}
 
 	waitForLastMessageEqualsText(text) {
 		cy.get('.message:last-child .body').should('contain', text);

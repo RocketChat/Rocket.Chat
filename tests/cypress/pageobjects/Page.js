@@ -8,7 +8,7 @@ class Page {
 
 	offlineMode(offline) {
 		cy.server(offline ? { force404: true } : { enable: false });
-		cy.reload();
+		offline && cy.reload();
 	}
 }
 module.exports = Page;

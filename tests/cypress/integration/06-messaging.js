@@ -81,7 +81,7 @@ function messagingTest(currentTest) {
 		});
 
 		it('it should show the file in the message', () => {
-			mainContent.lastMessageDesc.get('text').should('contain' ,'File Description');
+			mainContent.lastMessageDesc.invoke('text').should('contain', 'File Description');
 		});
 	});
 }
