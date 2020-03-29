@@ -379,7 +379,6 @@ export class Sessions extends Base {
 		this.tryEnsureIndex({ year: 1, month: 1, day: 1, type: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ _computedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 45 });
-		this.tryEnsureIndex({ sessionId: 1 });
 	}
 
 	getUniqueUsersOfYesterday() {

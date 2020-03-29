@@ -15,7 +15,6 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'metrics.chatDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
-		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
