@@ -99,7 +99,7 @@ export const MessageAction = new class {
 	})
 
 	_getButtonsByGroup = mem(function(group) {
-		return this._getButtons().filter((button) => button.group === group);
+		return this._getButtons().filter((button) => (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 	})
 
 	getButtons(message, context, group) {
