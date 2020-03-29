@@ -33,7 +33,7 @@ Meteor.startup(function() {
 			condition({ subscription }) {
 				return Boolean(subscription);
 			},
-			order: -2,
+			order: -1,
 			group: ['message', 'menu'],
 		});
 	});

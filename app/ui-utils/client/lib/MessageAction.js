@@ -181,7 +181,7 @@ Meteor.startup(async function() {
 			}
 			return true;
 		},
-		order: 2,
+		order: 0,
 		group: 'menu',
 	});
 

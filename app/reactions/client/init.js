@@ -93,7 +93,7 @@ Meteor.startup(function() {
 
 			return true;
 		},
-		order: -1,
+		order: -2,
 		group: ['message', 'menu'],
 	});
 });
