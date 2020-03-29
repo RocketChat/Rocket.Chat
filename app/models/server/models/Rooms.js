@@ -17,6 +17,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ ts: 1 });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// Livechat - statistics
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 
@@ -408,6 +409,20 @@ export class Rooms extends Base {
 		const query = {
 			t: type,
 			name,
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
+	findByNameOrFNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			$or: [{
+				name,
+			}, {
+				fname: name,
+			}],
 		};
 
 		// do not use cache

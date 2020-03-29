@@ -45,19 +45,19 @@ export function ChannelsTab() {
 	}, []);
 
 	const formatDate = useFormatDate();
-	const renderRow = useCallback(({ _id, ts, default: d, name, description, usersCount, lastMessage, topic }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
+	const renderRow = useCallback(({ _id, ts, default: d, name, fname, description, usersCount, lastMessage, topic }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
 		<Table.Cell>
 			<Flex.Container>
 				<Box>
 					<Flex.Item>
 						<Box>
-							<Avatar size='x40' title={name} url={`%40${ name }`} />
+							<Avatar size='x40' title={fname || name} url={`%40${ fname || name }`} />
 						</Box>
 					</Flex.Item>
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>
 							<Box>
-								<Box textStyle='p2'>{name} {d && <Tag variant='primary'>{t('default')}</Tag>}</Box>
+								<Box textStyle='p2'>{fname || name} {d && <Tag variant='primary'>{t('default')}</Tag>}</Box>
 								{description && <Box textStyle='p1' textColor='hint'>{description}</Box> }
 							</Box>
 						</Flex.Item>
