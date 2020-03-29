@@ -193,6 +193,20 @@ function validateUserEditing(userId, userData) {
 	}
 }
 
+const handleBio = (updateUser, bio) => {
+	if (bio && bio.trim()) {
+		if (typeof bio !== 'string') {
+			throw new Meteor.Error('error-invalid-field', 'bio', {
+				method: 'saveUserProfile',
+			});
+		}
+		updateUser.$set.bio = bio;
+	} else {
+		updateUser.$unset = updateUser.$unset || {};
+		updateUser.$unset.bio = 1;
+	}
+};
+
 export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
 	let sendPassword = false;
@@ -225,13 +239,10 @@ export const saveUser = function(userId, userData) {
 		const updateUser = {
 			$set: {
 				roles: userData.roles || ['user'],
+				...typeof userData.name !== 'undefined' && { name: userData.name },
 				settings: userData.settings || {},
 			},
 		};
-
-		if (typeof userData.name !== 'undefined') {
-			updateUser.$set.name = userData.name;
-		}
 
 		if (typeof userData.requirePasswordChange !== 'undefined') {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
@@ -240,6 +251,8 @@ export const saveUser = function(userId, userData) {
 		if (typeof userData.verified === 'boolean') {
 			updateUser.$set['emails.0.verified'] = userData.verified;
 		}
+
+		handleBio(updateUser, userData.bio);
 
 		Meteor.users.update({ _id }, updateUser);
 
@@ -293,6 +306,8 @@ export const saveUser = function(userId, userData) {
 	const updateUser = {
 		$set: {},
 	};
+
+	handleBio(updateUser, userData.bio);
 
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;

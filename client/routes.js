@@ -34,7 +34,7 @@ FlowRouter.goToRoomById = async (rid) => {
 
 BlazeLayout.setRoot('body');
 
-const createTemplateForComponent = async (
+export const createTemplateForComponent = async (
 	component,
 	props = {},
 	// eslint-disable-next-line new-cap
@@ -62,7 +62,7 @@ const createTemplateForComponent = async (
 	const { MeteorProvider } = await import('./providers/MeteorProvider');
 
 	function TemplateComponent() {
-		return React.createElement(component, Template[name].props.get());
+		return React.createElement(component, Template.currentData());
 	}
 
 	Template[name].onRendered(() => {
@@ -77,7 +77,7 @@ const createTemplateForComponent = async (
 				}), Template.instance().firstNode);
 		});
 
-		Template.instance().autorun(() => {
+		url && Template.instance().autorun(() => {
 			const routeName = FlowRouter.getRouteName();
 			if (routeName !== url) {
 				ReactDOM.unmountComponentAtNode(Template.instance().container);
@@ -160,10 +160,12 @@ FlowRouter.route('/directory/:tab?', {
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 
-	action(params) {
+	async action(params) {
 		if (!params.group) {
-			params.group = 'Preferences';
+			params.group = 'Profile';
 		}
+		const { Input } = await require('../client/components/admin/settings/inputs/StringSettingInput');
+		console.log(await createTemplateForComponent(Input, { }, () => HTML.DIV({ style }))); // eslint-disable-line
 		params.group = s.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
 	},

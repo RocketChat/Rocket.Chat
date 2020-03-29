@@ -55,7 +55,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames', 'lastMessage'] : [], ...type === 'users' ? ['username', 'email'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames', 'lastMessage'] : [], ...type === 'users' ? ['username', 'email', 'bio'] : []].includes(sortBy)) {
 			return;
 		}
 
@@ -119,6 +119,7 @@ Meteor.methods({
 			fields: {
 				username: 1,
 				name: 1,
+				bio: 1,
 				createdAt: 1,
 				emails: 1,
 				federation: 1,
@@ -148,6 +149,7 @@ Meteor.methods({
 				results.unshift({
 					username: user.username,
 					name: user.name,
+					bio: user.bio,
 					emails: user.emails,
 					federation: user.federation,
 					isRemote: true,

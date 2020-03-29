@@ -10,6 +10,7 @@ import { usePermission } from '../../../../../../../client/contexts/Authorizatio
 import { useQuery, useFormatDate } from '../hooks';
 
 const style = { whiteSpace: 'nowrap' };
+
 export function UserTab({
 	workspace = 'local',
 }) {
@@ -34,6 +35,7 @@ export function UserTab({
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
+		<Th key={'bio'} direction={sort[1]} active={sort[0] === 'bio'} onClick={onHeaderClick} sort='boi'>{t('Bio')}</Th>,
 		canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email'>{t('Email')}</Th>,
 		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin'>{t('Domain')}</Th>,
 		<Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='createdAt'>{t('Joined_at')}</Th>,
@@ -51,7 +53,7 @@ export function UserTab({
 
 	const formatDate = useFormatDate();
 
-	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
+	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 		<Table.Cell>
 			<Flex.Container>
 				<Box>
@@ -70,6 +72,9 @@ export function UserTab({
 					</Margins>
 				</Box>
 			</Flex.Container>
+		</Table.Cell>
+		<Table.Cell textStyle='p1' textColor='hint'>
+			{bio}
 		</Table.Cell>
 		{canViewFullOtherUserInfo
 			&& <Table.Cell>
