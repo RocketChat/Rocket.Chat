@@ -1,6 +1,41 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.2
+`2020-03-29  ·  9 🔍  ·  5 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Overwrite model functions on EE only when license applied ([#17061](https://github.com/RocketChat/Rocket.Chat/pull/17061))
+
+- Regression: `users.setStatus` throwing an error if message is empty ([#17036](https://github.com/RocketChat/Rocket.Chat/pull/17036))
+
+- Regression: Omnichannel notification on new conversations displaying incorrect information ([#16346](https://github.com/RocketChat/Rocket.Chat/pull/16346))
+
+- Fix: Notifications of Group DM were not showing the room name ([#17058](https://github.com/RocketChat/Rocket.Chat/pull/17058))
+
+- Fix: Last message of Group DMs not showing the sender ([#17059](https://github.com/RocketChat/Rocket.Chat/pull/17059))
+
+- Regression: Invite links working for group DMs ([#17056](https://github.com/RocketChat/Rocket.Chat/pull/17056))
+
+- Regression: Do not refresh statistics when opening the info panel ([#17060](https://github.com/RocketChat/Rocket.Chat/pull/17060))
+
+- Regression: Fix removing user not removing his 1-on-1 DMs ([#17057](https://github.com/RocketChat/Rocket.Chat/pull/17057))
+
+- Regression: omnichannel manual queued sidebarlist ([#17048](https://github.com/RocketChat/Rocket.Chat/pull/17048))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.1.0-rc.1
 `2020-03-26  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
