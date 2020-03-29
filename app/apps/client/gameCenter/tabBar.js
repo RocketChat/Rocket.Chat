@@ -25,7 +25,7 @@ Meteor.startup(function() {
 			i18nTitle: 'Apps_Game_Center',
 			icon: 'game',
 			template: 'GameCenter',
-			order: -1,
+			order: 99,
 		});
 	});
 });
