@@ -1331,6 +1331,10 @@ export class Subscriptions extends Base {
 		return result;
 	}
 
+	removeByRoomIds(rids) {
+		return this.remove({ rid: { $in: rids } });
+	}
+
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
