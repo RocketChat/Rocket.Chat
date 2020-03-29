@@ -120,6 +120,11 @@ function _checkCodeForUser({ user, code, method, options = {}, connection }: ICh
 		user = getUserForCheck(user);
 	}
 
+	if (!code && !method && connection?.httpHeaders?.['x-2fa-code'] && connection.httpHeaders['x-2fa-method']) {
+		code = connection.httpHeaders['x-2fa-code'];
+		method = connection.httpHeaders['x-2fa-method'];
+	}
+
 	if (connection && isAuthorizedForToken(connection, user, options)) {
 		return true;
 	}

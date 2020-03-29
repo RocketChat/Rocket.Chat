@@ -40,3 +40,13 @@ export const getUserByUsername = (username) => new Promise((resolve) => {
 			resolve(res.body.user);
 		});
 });
+
+export const getUserStatus = (userId) => new Promise((resolve) => {
+	request.get(api(`users.getStatus?userId=${ userId }`))
+		.set(credentials)
+		.expect('Content-Type', 'application/json')
+		.expect(200)
+		.end((end, res) => {
+			resolve(res.body);
+		});
+});
