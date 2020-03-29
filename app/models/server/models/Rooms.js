@@ -11,6 +11,7 @@ export class Rooms extends Base {
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
 		this.tryEnsureIndex({ default: 1 });
+		this.tryEnsureIndex({ featured: 1 });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
@@ -882,6 +883,19 @@ export class Rooms extends Base {
 			},
 			$addToSet: {
 				unmuted: username,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveFeaturedById(_id, featured) {
+		const query = { _id };
+		const set = ['true', true].includes(featured);
+
+		const update = {
+			[set ? '$set' : '$unset']: {
+				featured: true,
 			},
 		};
 

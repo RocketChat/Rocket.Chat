@@ -9,6 +9,14 @@ import { useQuery, useFormatDate } from '../hooks';
 
 const style = { whiteSpace: 'nowrap' };
 
+function RoomTags({ room }) {
+	const t = useTranslation();
+	return <Margins inline='x2'>
+		{room.default && <Tag variant='primary'>{t('default')}</Tag>}
+		{room.featured && <Tag variant='primary'>{t('featured')}</Tag>}
+	</Margins>;
+}
+
 export function ChannelsTab() {
 	const t = useTranslation();
 	const [sort, setSort] = useState(['name', 'asc']);
@@ -45,7 +53,7 @@ export function ChannelsTab() {
 	}, []);
 
 	const formatDate = useFormatDate();
-	const renderRow = useCallback(({ _id, ts, default: d, name, fname, description, usersCount, lastMessage, topic }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
+	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
 		<Table.Cell>
 			<Flex.Container>
 				<Box>
@@ -57,7 +65,7 @@ export function ChannelsTab() {
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>
 							<Box>
-								<Box textStyle='p2'>{fname || name} {d && <Tag variant='primary'>{t('default')}</Tag>}</Box>
+								<Box textStyle='p2'>{fname || name} <RoomTags room={room}/></Box>
 								{description && <Box textStyle='p1' textColor='hint'>{description}</Box> }
 							</Box>
 						</Flex.Item>

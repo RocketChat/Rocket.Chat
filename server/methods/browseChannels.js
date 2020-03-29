@@ -90,6 +90,7 @@ Meteor.methods({
 					ts: 1,
 					archived: 1,
 					default: 1,
+					featured: 1,
 					usersCount: 1,
 				},
 			});
