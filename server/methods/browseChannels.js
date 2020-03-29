@@ -78,13 +78,14 @@ Meteor.methods({
 				return;
 			}
 
-			const result = Rooms.findByNameAndType(regex, 'c', {
+			const result = Rooms.findByNameOrFNameAndType(regex, 'c', {
 				...pagination,
 				sort,
 				fields: {
 					description: 1,
 					topic: 1,
 					name: 1,
+					fname: 1,
 					lastMessage: 1,
 					ts: 1,
 					archived: 1,

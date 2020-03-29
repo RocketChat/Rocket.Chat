@@ -17,6 +17,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ ts: 1 });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// Livechat - statistics
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 
@@ -414,6 +415,20 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
+	findByNameOrFNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			$or: [{
+				name,
+			}, {
+				fname: name,
+			}],
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,
@@ -547,6 +562,13 @@ export class Rooms extends Base {
 		return this.find({
 			usersCount: { $gt: 2 },
 			uids,
+		}, options);
+	}
+
+	find1On1ByUserId(userId, options) {
+		return this.find({
+			uids: userId,
+			usersCount: 2,
 		}, options);
 	}
 
@@ -1025,13 +1047,8 @@ export class Rooms extends Base {
 		return this.remove(query);
 	}
 
-	remove1on1ById(_id) {
-		const query = {
-			_id,
-			usersCount: { $lte: 2 },
-		};
-
-		return this.remove(query);
+	removeByIds(ids) {
+		return this.remove({ _id: { $in: ids } });
 	}
 
 	removeDirectRoomContainingUsername(username) {
