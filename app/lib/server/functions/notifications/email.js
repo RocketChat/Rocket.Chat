@@ -26,7 +26,9 @@ function getEmailContent({ message, user, room }) {
 	const roomName = s.escapeHTML(`#${ roomTypes.getRoomName(room.t, room) }`);
 	const userName = s.escapeHTML(settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
 
-	const header = TAPi18n.__(room.t === 'd' ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
+	const roomType = roomTypes.getConfig(room.t);
+
+	const header = TAPi18n.__(!roomType.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
 		username: userName,
 		channel: roomName,
 		lng,
@@ -54,7 +56,7 @@ function getEmailContent({ message, user, room }) {
 	}
 
 	if (message.file) {
-		const fileHeader = TAPi18n.__(room.t === 'd' ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
+		const fileHeader = TAPi18n.__(!roomType.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
 			username: userName,
 			channel: roomName,
 			lng,
@@ -112,7 +114,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
-	if (room.t === 'd') {
+	if (!roomTypes.getConfig(room.t).isGroupChat(room)) {
 		subjectKey = 'Offline_DM_Email';
 	} else if (hasMentionToUser) {
 		subjectKey = 'Offline_Mention_Email';
