@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
@@ -157,7 +156,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 		tmid = replies[0]._id;
 	}
 
-	const msgData = { id: Random.id(), msg: msg, tmid: tmid };
+	const msgData = { id: Random.id(), msg, tmid };
 	let offlineFile = null;
 
 	const uploadNextFile = () => {
@@ -233,27 +232,20 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
 				progress(progress) {
 					if (progress === 100) {
-						console.log('done');
-						offlineFile && SWCache.removeFromCache(offlineFile);
 						return;
 					}
-					
+
 					const uploads = upload;
 					uploads.percentage = Math.round(progress * 100) || 0;
-					console.log(uploads);
 					ChatMessage.setProgress(msgData.id, uploads);
-
-
 				},
-				error(error) {
+				error() {
 					ChatMessage.setProgress(msgData.id, upload);
-					return;
 				},
 			});
 
 			Tracker.autorun((computation) => {
 				const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
-
 				if (!isCanceling) {
 					return;
 				}
@@ -261,13 +253,11 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				Session.delete(`uploading-cancel-${ upload.id }`);
 
 				xhr.abort();
-
-				ChatMessage.setProgress(msgData.id, upload);
 			});
 
 			try {
 				await promise;
-				console.log('quick done');
+				offlineFile && SWCache.removeFromCache(offlineFile);
 			} catch (error) {
 				const uploads = upload;
 				uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;

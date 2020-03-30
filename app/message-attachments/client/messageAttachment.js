@@ -41,7 +41,6 @@ Template.messageAttachment.helpers({
 		return true;
 	},
 	uploading() {
-		console.log(Template.parentData(2).msg.uploads);
 		return Template.parentData(2).msg.uploads;
 	},
 	getImageHeight(height = 200) {

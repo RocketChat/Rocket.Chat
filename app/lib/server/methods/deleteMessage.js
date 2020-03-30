@@ -28,7 +28,11 @@ Meteor.methods({
 			},
 		});
 
-		if (!originalMessage || !canDeleteMessage(uid, originalMessage)) {
+		if (!originalMessage) {
+			return;
+		}
+
+		if (!canDeleteMessage(uid, originalMessage)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 				method: 'deleteMessage',
 				action: 'Delete_message',
