@@ -30,7 +30,7 @@ const onlineAgents = {
 	queue: new Map(),
 
 	add(userId) {
-		if (this.onlineAgents.exists(userId)) {
+		if (this.exists(userId)) {
 			return;
 		}
 
@@ -42,13 +42,14 @@ const onlineAgents = {
 	},
 
 	remove(userId) {
-		if (!this.onlineAgents.exists(userId)) {
+		if (!this.exists(userId)) {
 			return;
 		}
 
 		if (this.queue.has(userId)) {
 			clearTimeout(this.queue.get(userId));
 		}
+
 		this.queue.set(userId, setTimeout(this.runAgentLeaveAction, actionTimeout, userId));
 	},
 
@@ -57,8 +58,8 @@ const onlineAgents = {
 	},
 
 	runAgentLeaveAction: Meteor.bindEnvironment((userId) => {
-		this.users.delete(userId);
-		this.queue.delete(userId);
+		onlineAgents.users.delete(userId);
+		onlineAgents.queue.delete(userId);
 
 		if (action === 'close') {
 			return Livechat.closeOpenChats(userId, comment);
