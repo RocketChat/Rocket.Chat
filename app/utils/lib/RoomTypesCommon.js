@@ -94,6 +94,10 @@ export class RoomTypesCommon {
 		return FlowRouter.url(this.roomTypes[roomType].route.name, routeData);
 	}
 
+	getRelativePath(roomType, subData) {
+		return this.getRouteLink(roomType, subData).replace(Meteor.absoluteUrl(), '');
+	}
+
 	getRouteData(roomType, subData) {
 		if (!this.roomTypes[roomType]) {
 			return false;
@@ -104,6 +108,7 @@ export class RoomTypesCommon {
 			routeData = this.roomTypes[roomType].route.link(subData);
 		} else if (subData && subData.name) {
 			routeData = {
+				rid: subData.rid || subData._id,
 				name: subData.name,
 			};
 		}

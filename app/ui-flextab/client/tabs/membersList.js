@@ -23,7 +23,7 @@ Template.membersList.helpers({
 
 	isGroupChat() {
 		const room = ChatRoom.findOne(this.rid, { reactive: false });
-		return roomTypes.getConfig(room.t).isGroupChat();
+		return roomTypes.getConfig(room.t).isGroupChat(room);
 	},
 
 	isDirectChat() {
@@ -117,7 +117,7 @@ Template.membersList.helpers({
 	},
 
 	userInfoDetail() {
-		const room = ChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		const room = ChatRoom.findOne(this.rid, { fields: { t: 1, usernames: 1 } });
 
 		return {
 			tabBar: Template.currentData().tabBar,
@@ -126,7 +126,7 @@ Template.membersList.helpers({
 			showAll: roomTypes.getConfig(room.t).userDetailShowAll(room) || false,
 			hideAdminControls: roomTypes.getConfig(room.t).userDetailShowAdmin(room) || false,
 			video: ['d'].includes(room && room.t),
-			showBackButton: roomTypes.getConfig(room.t).isGroupChat(),
+			showBackButton: roomTypes.getConfig(room.t).isGroupChat(room),
 		};
 	},
 	displayName() {
@@ -298,7 +298,7 @@ Template.membersList.onCreated(function() {
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);
 		this.tabBar.setData({
-			label: 'Members_List',
+			label: 'Members',
 			icon: 'team',
 		});
 		setTimeout(() => this.clearRoomUserDetail(), 100);
@@ -322,6 +322,7 @@ Template.membersList.onCreated(function() {
 });
 
 Template.membersList.onRendered(function() {
+	this.firstNode.parentNode.querySelector('#user-search').focus();
 	this.autorun(() => {
 		const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');
