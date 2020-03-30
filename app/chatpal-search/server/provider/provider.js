@@ -2,8 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { searchProviderService, SearchProvider } from '../../../search/server';
 import ChatpalLogger from '../utils/logger';
-import { Subscriptions } from '../../../models';
-import { Rooms } from '../../../models';
+import { Subscriptions, Rooms } from '../../../models';
 
 import Index from './index';
 
