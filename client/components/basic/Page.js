@@ -16,9 +16,9 @@ export function Page(props) {
 export function PageHeader({ children, title, ...props }) {
 	const [border] = useContext(PageContext);
 	return <Box style={{ borderBlockEndColor: border ? 'var(--color-gray-lightest)' : 'transparent', transition: 'border-block-end-color 0.3s', borderBlockEnd: '2px solid transparent' }}>
-		<Margins all='x24'>
+		<Margins block='x16' all='x24'>
 			<Flex.Container wrap='no-wrap' alignItems='center' direction='row'>
-				<Box style={{ minHeight: '2.75rem' }} {...props}>
+				<Box {...props}>
 					<Margins inlineEnd='x8'>
 						<BurgerMenuButton />
 					</Margins>

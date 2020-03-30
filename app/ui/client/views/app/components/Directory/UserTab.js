@@ -7,9 +7,11 @@ import { DirectoryTable, Th } from './DirectoryTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
-import { useQuery, useFormatDate } from '../hooks';
+import { useQuery, useFormatDate, useMediaQuery } from '../hooks';
 
-const style = { whiteSpace: 'nowrap' };
+const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+
+const bioStyle = { ...style, maxWidth: '200px' };
 
 export function UserTab({
 	workspace = 'local',
@@ -23,6 +25,8 @@ export function UserTab({
 
 	const query = useQuery(params, sort, 'users', workspace);
 
+	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+
 	const onHeaderClick = (id) => {
 		const [sortBy, sortDirection] = sort;
 
@@ -35,11 +39,11 @@ export function UserTab({
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th key={'bio'} direction={sort[1]} active={sort[0] === 'bio'} onClick={onHeaderClick} sort='boi'>{t('Bio')}</Th>,
-		canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email'>{t('Email')}</Th>,
-		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin'>{t('Domain')}</Th>,
-		<Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='createdAt'>{t('Joined_at')}</Th>,
-	].filter(Boolean), [federation, canViewFullOtherUserInfo]);
+		<Th key={'bio'} direction={sort[1]} active={sort[0] === 'bio'} onClick={onHeaderClick} sort='bio' style={{ width: mediaQuery ? '300px' : '100px' }}>{t('Bio')}</Th>,
+		mediaQuery && canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email' style={{ width: '200px' }} >{t('Email')}</Th>,
+		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin' style={{ width: '200px' }} >{t('Domain')}</Th>,
+		mediaQuery && <Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '200px' }}>{t('Joined_at')}</Th>,
+	].filter(Boolean), [sort, federation, canViewFullOtherUserInfo, mediaQuery]);
 
 	const go = useRoute('direct');
 
@@ -73,10 +77,12 @@ export function UserTab({
 				</Box>
 			</Flex.Container>
 		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint'>
-			{bio}
+		<Table.Cell textStyle='p1' textColor='hint' style={ bioStyle }>
+			<Box is='div' style={ style }>
+				{bio}
+			</Box>
 		</Table.Cell>
-		{canViewFullOtherUserInfo
+		{mediaQuery && canViewFullOtherUserInfo
 			&& <Table.Cell>
 				{emails && emails[0].address}
 			</Table.Cell>}
@@ -84,10 +90,10 @@ export function UserTab({
 		&& <Table.Cell>
 			{domain}
 		</Table.Cell>}
-		<Table.Cell textStyle='p1' textColor='hint' style={style}>
+		{mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{formatDate(createdAt)}
-		</Table.Cell>
-	</Table.Row>, []);
+		</Table.Cell>}
+	</Table.Row>, [mediaQuery, federation, canViewFullOtherUserInfo]);
 
 	return <DirectoryTable searchPlaceholder={t('Search_Users')} header={header} renderRow={renderRow} data={data} setParams={setParams} />;
 }

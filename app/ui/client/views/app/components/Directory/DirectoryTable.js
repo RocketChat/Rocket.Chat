@@ -11,7 +11,7 @@ function SortIcon({ direction }) {
 	</Box>;
 }
 
-export function Th({ children, active, direction, sort, onClick, ...props }) {
+export function Th({ children, active, direction, sort, onClick, align, ...props }) {
 	const fn = useMemo(() => () => onClick && onClick(sort), [sort, onClick]);
 	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
 		<Flex.Container alignItems='center' wrap='no-wrap'>

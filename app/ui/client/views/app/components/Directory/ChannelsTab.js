@@ -5,7 +5,7 @@ import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboar
 import { DirectoryTable, Th } from './DirectoryTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
-import { useQuery, useFormatDate } from '../hooks';
+import { useQuery, useFormatDate, useMediaQuery } from '../hooks';
 
 const style = { whiteSpace: 'nowrap' };
 
@@ -22,6 +22,8 @@ export function ChannelsTab() {
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [params, setParams] = useState({});
 
+	const mediaQuery = useMediaQuery('(min-width: 768px)');
+
 	const query = useQuery(params, sort, 'channels');
 
 	const onHeaderClick = useCallback((id) => {
@@ -36,10 +38,10 @@ export function ChannelsTab() {
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th key={'usersCount'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount'>{t('Users')}</Th>,
-		<Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt'>{t('Created_at')}</Th>,
-		<Th key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage'>{t('Last_Message')}</Th>,
-	], [sort]);
+		<Th key={'usersCount'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount' style={{ width: '100px' }}>{t('Users')}</Th>,
+		mediaQuery && <Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '150px' }}>{t('Created_at')}</Th>,
+		mediaQuery && <Th key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage' style={{ width: '150px' }}>{t('Last_Message')}</Th>,
+	].filter(Boolean), [sort, mediaQuery]);
 
 	const go = useRoute('channel');
 
@@ -75,14 +77,14 @@ export function ChannelsTab() {
 		<Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{usersCount}
 		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={style}>
+		{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{formatDate(ts)}
-		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={style}>
+		</Table.Cell>}
+		{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{lastMessage && formatDate(lastMessage.ts)}
-		</Table.Cell>
+		</Table.Cell>}
 	</Table.Row>
-	, []);
+	, [mediaQuery]);
 
 	return <DirectoryTable searchPlaceholder={t('Search_Channels')} header={header} renderRow={renderRow} data={data} setParams={setParams} />;
 }
