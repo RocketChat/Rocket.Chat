@@ -41424,6 +41424,95 @@
           ]
         }
       ]
+    },
+    "3.1.0-rc.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17077",
+          "title": "[NEW] Add update method for user bridge",
+          "userLogin": "d-gubert",
+          "milestone": "3.1.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17062",
+          "title": "[FIX] Verification email body",
+          "userLogin": "GOVINDDIXIT",
+          "milestone": "3.1.0",
+          "contributors": [
+            "GOVINDDIXIT",
+            "web-flow",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "17075",
+          "title": "Add User’s index for field `appId`",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16979",
+          "title": "Regression: OmniChannel agent activity monitor was counting time wrongly",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17052",
+          "title": "[NEW] Home button on sidebar",
+          "userLogin": "gabriellsh",
+          "milestone": "3.2.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17073",
+          "title": "[IMPROVE] Repeat “Reply In Thread” and “Add Reaction” inside the message actions menu",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17074",
+          "title": "Regression: Broken Search if users without DM subscriptions are listed",
+          "userLogin": "tassoevan",
+          "milestone": "3.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17072",
+          "title": "[IMPROVE] Tab Bar actions reorder",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
