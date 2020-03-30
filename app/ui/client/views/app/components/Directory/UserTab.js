@@ -1,17 +1,15 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Margins, Table, Flex, Avatar } from '@rocket.chat/fuselage';
-
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { DirectoryTable, Th } from './DirectoryTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
-import { useQuery, useFormatDate, useMediaQuery } from '../hooks';
+import { useQuery, useFormatDate } from '../hooks';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
-
-const bioStyle = { ...style, maxWidth: '200px' };
 
 export function UserTab({
 	workspace = 'local',
@@ -36,10 +34,11 @@ export function UserTab({
 		}
 		setSort([id, 'asc']);
 	};
+	const bioStyle = useMemo(() => ({ ...style, width: '200px' }), [mediaQuery]);
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th key={'bio'} direction={sort[1]} active={sort[0] === 'bio'} onClick={onHeaderClick} sort='bio' style={{ width: mediaQuery ? '300px' : '100px' }}>{t('Bio')}</Th>,
+		<Th key={'bio'} direction={sort[1]} active={sort[0] === 'bio'} onClick={onHeaderClick} sort='bio' style={bioStyle}>{t('Bio')}</Th>,
 		mediaQuery && canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email' style={{ width: '200px' }} >{t('Email')}</Th>,
 		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin' style={{ width: '200px' }} >{t('Domain')}</Th>,
 		mediaQuery && <Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '200px' }}>{t('Joined_at')}</Th>,
@@ -55,6 +54,7 @@ export function UserTab({
 		}
 	}, []);
 
+
 	const formatDate = useFormatDate();
 
 	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
@@ -68,7 +68,7 @@ export function UserTab({
 					</Flex.Item>
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>
-							<Box>
+							<Box style={style}>
 								<Box textStyle='p2'>{name || username}</Box>
 								<Box textStyle='p1' textColor='hint'>{name && username}</Box>
 							</Box>

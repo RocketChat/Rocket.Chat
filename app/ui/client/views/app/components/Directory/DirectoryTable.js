@@ -88,7 +88,7 @@ export function DirectoryTable({
 						{t('No_data_found')}
 					</Tile>
 					: <>
-						<Table>
+						<Table fixed>
 							{ header && <Table.Head>
 								<Table.Row>
 									{header}

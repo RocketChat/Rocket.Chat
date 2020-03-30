@@ -1,13 +1,14 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Margins, Table, Flex, Avatar, Tag } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { DirectoryTable, Th } from './DirectoryTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
-import { useQuery, useFormatDate, useMediaQuery } from '../hooks';
+import { useQuery, useFormatDate } from '../hooks';
 
-const style = { whiteSpace: 'nowrap' };
+const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
 function RoomTags({ room }) {
 	const t = useTranslation();
@@ -66,8 +67,8 @@ export function ChannelsTab() {
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>
 							<Box>
-								<Box textStyle='p2'>{fname || name} <RoomTags room={room}/></Box>
-								{topic && <Box textStyle='p1' textColor='hint'>{topic}</Box> }
+								<Box textStyle='p2'>{fname || name} <RoomTags room={room} style={style} /></Box>
+								{topic && <Box textStyle='p1' textColor='hint' style={style}>{topic}</Box> }
 							</Box>
 						</Flex.Item>
 					</Margins>
