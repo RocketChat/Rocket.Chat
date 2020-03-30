@@ -26,7 +26,7 @@ function Archive(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 
 	if (!room) {
-		return Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
+		return Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -43,7 +43,7 @@ function Archive(command, params, item) {
 	}
 
 	if (room.archived) {
-		Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
+		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -57,7 +57,7 @@ function Archive(command, params, item) {
 	Meteor.call('archiveRoom', room._id);
 
 	Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
-	Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
+	Notifications.notifyUser(Meteor.userId(), 'message', {
 		_id: Random.id(),
 		rid: item.rid,
 		ts: new Date(),

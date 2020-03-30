@@ -27,7 +27,7 @@ function Unarchive(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 
 	if (!room) {
-		return Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
+		return Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -44,7 +44,7 @@ function Unarchive(command, params, item) {
 	}
 
 	if (!room.archived) {
-		Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
+		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -59,7 +59,7 @@ function Unarchive(command, params, item) {
 	Meteor.call('unarchiveRoom', room._id);
 
 	Messages.createRoomUnarchivedByRoomIdAndUser(room._id, Meteor.user());
-	Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
+	Notifications.notifyUser(Meteor.userId(), 'message', {
 		_id: Random.id(),
 		rid: item.rid,
 		ts: new Date(),

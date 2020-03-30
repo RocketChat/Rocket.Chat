@@ -22,7 +22,7 @@ const Kick = function(command, params, { rid }) {
 	const kickedUser = Users.findOneByUsernameIgnoringCase(username);
 
 	if (kickedUser == null) {
-		return Notifications.notifyUserInThisInstance(userId, 'message', {
+		return Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date(),
@@ -35,7 +35,7 @@ const Kick = function(command, params, { rid }) {
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		return Notifications.notifyUserInThisInstance(userId, 'message', {
+		return Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date(),

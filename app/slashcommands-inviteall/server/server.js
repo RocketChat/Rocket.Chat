@@ -30,7 +30,7 @@ function inviteAll(type) {
 		const targetChannel = type === 'from' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
 
 		if (!baseChannel) {
-			return Notifications.notifyUserInThisInstance(userId, 'message', {
+			return Notifications.notifyUser(userId, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
@@ -52,7 +52,7 @@ function inviteAll(type) {
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
 				Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
-				Notifications.notifyUserInThisInstance(userId, 'message', {
+				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date(),
@@ -67,7 +67,7 @@ function inviteAll(type) {
 					users,
 				});
 			}
-			return Notifications.notifyUserInThisInstance(userId, 'message', {
+			return Notifications.notifyUser(userId, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
@@ -75,7 +75,7 @@ function inviteAll(type) {
 			});
 		} catch (e) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
-			Notifications.notifyUserInThisInstance(userId, 'message', {
+			Notifications.notifyUser(userId, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),

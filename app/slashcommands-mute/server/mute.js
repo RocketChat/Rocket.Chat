@@ -23,7 +23,7 @@ slashCommands.add('mute', function Mute(command, params, item) {
 	const user = Meteor.users.findOne(userId);
 	const mutedUser = Users.findOneByUsernameIgnoringCase(username);
 	if (mutedUser == null) {
-		Notifications.notifyUserInThisInstance(userId, 'message', {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -37,7 +37,7 @@ slashCommands.add('mute', function Mute(command, params, item) {
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, mutedUser._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		Notifications.notifyUserInThisInstance(userId, 'message', {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),

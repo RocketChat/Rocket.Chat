@@ -29,7 +29,7 @@ function Hide(command, param, item) {
 		});
 
 		if (!roomObject) {
-			return Notifications.notifyUserInThisInstance(user._id, 'message', {
+			return Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
@@ -41,7 +41,7 @@ function Hide(command, param, item) {
 		}
 
 		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
-			return Notifications.notifyUserInThisInstance(user._id, 'message', {
+			return Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
@@ -56,7 +56,7 @@ function Hide(command, param, item) {
 
 	Meteor.call('hideRoom', rid, (error) => {
 		if (error) {
-			return Notifications.notifyUserInThisInstance(user._id, 'message', {
+			return Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
