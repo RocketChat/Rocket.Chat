@@ -1,7 +1,6 @@
-import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
-import { hasRole } from '../../../../authorization/server';
-
+import { Meteor } from 'meteor/meteor';
 import { Users } from '../../../../models/server';
+
 import { settings } from '../../../../settings';
 import { Livechat } from '../Livechat';
 
@@ -66,9 +65,9 @@ const userWasAgent = (id) => {
 	}
 
 	return true;
-}
+};
 
-Users.on('change', ({ clientAction, id, data, diff }) => {
+Users.on('change', ({ clientAction, id, diff }) => {
 	if (!monitorAgents) {
 		return;
 	}
@@ -95,7 +94,7 @@ Users.on('change', ({ clientAction, id, data, diff }) => {
 
 			break;
 		case 'removed':
-			if (userWasAgent(id) && (onlineAgents.exists(id))) {
+			if (userWasAgent(id) && onlineAgents.exists(id)) {
 				onlineAgents.remove(id, () => {
 					runAgentLeaveAction(id);
 				});
