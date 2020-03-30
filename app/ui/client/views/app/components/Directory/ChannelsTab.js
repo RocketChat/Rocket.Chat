@@ -39,7 +39,6 @@ export function ChannelsTab() {
 		<Th key={'usersCount'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount'>{t('Users')}</Th>,
 		<Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt'>{t('Created_at')}</Th>,
 		<Th key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage'>{t('Last_Message')}</Th>,
-		<Th key={'topic'}>{t('Topic')}</Th>,
 	], [sort]);
 
 	const go = useRoute('channel');
@@ -66,7 +65,7 @@ export function ChannelsTab() {
 						<Flex.Item grow={1}>
 							<Box>
 								<Box textStyle='p2'>{fname || name} <RoomTags room={room}/></Box>
-								{description && <Box textStyle='p1' textColor='hint'>{description}</Box> }
+								{topic && <Box textStyle='p1' textColor='hint'>{topic}</Box> }
 							</Box>
 						</Flex.Item>
 					</Margins>
@@ -81,9 +80,6 @@ export function ChannelsTab() {
 		</Table.Cell>
 		<Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{lastMessage && formatDate(lastMessage.ts)}
-		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={style}>
-			{topic}
 		</Table.Cell>
 	</Table.Row>
 	, []);
