@@ -98,6 +98,10 @@ export class PrivateRoomType extends RoomTypeConfig {
 		}
 	}
 
+	allowMemberAction(/* room, action */) {
+		return true;
+	}
+
 	enableMembersListProfile() {
 		return true;
 	}
@@ -129,5 +133,9 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 		// otherwise gets discussion's avatar via _id
 		return getRoomAvatarURL(roomData.prid);
+	}
+
+	includeInDashboard() {
+		return true;
 	}
 }

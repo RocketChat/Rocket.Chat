@@ -29,10 +29,10 @@ jobs:
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
-    - name: Use Node.js 12.14.0
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: "12.14.0"
+        node-version: "12.16.1"
 
     - uses: actions/checkout@v1
 
@@ -164,7 +164,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["12.14.0"]
+        node-version: ["12.16.1"]
         mongodb-version: ["3.4", "3.6", "4.0"]
 
     steps:
@@ -245,7 +245,7 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-latest
-    if: github.event_name == 'DEACTIVATED-pull_request'
+    if: github.event_name == 'pull_request'
 
     steps:
     - uses: actions/checkout@v1
@@ -269,10 +269,10 @@ jobs:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Use Node.js 12.14.0
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: "12.14.0"
+        node-version: "12.16.1"
 
     - name: Install Meteor
       run: |
@@ -419,7 +419,6 @@ jobs:
 
         export DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
           export DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
@@ -437,6 +436,10 @@ jobs:
         cd /tmp/build
         export CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+        fi;
+
         docker build -t ${IMAGE}:$CIRCLE_TAG .
         docker push ${IMAGE}:$CIRCLE_TAG
 
@@ -453,5 +456,10 @@ jobs:
       if: github.ref == 'refs/heads/develop'
       run: |
         cd /tmp/build
+
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+        fi;
+
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop

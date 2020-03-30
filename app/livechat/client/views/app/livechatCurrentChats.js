@@ -11,10 +11,31 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { modal, call, popover } from '../../../../ui-utils';
 import { t, handleError, APIClient } from '../../../../utils/client';
-import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../authorization';
+import { hasRole, hasPermission } from '../../../../authorization';
 import './livechatCurrentChats.html';
 
 const ROOMS_COUNT = 50;
+const FILTER_STORE_NAME = 'Filters.LivechatCurrentChats';
+
+const loadStoredFilters = () => {
+	let storedFilters;
+	try {
+		const storeItem = Meteor._localStorage.getItem(FILTER_STORE_NAME);
+		storedFilters = storeItem ? JSON.parse(Meteor._localStorage.getItem(FILTER_STORE_NAME)) : {};
+	} catch (e) {
+		storedFilters = {};
+	}
+
+	return storedFilters;
+};
+
+const storeFilters = (filters) => {
+	Meteor._localStorage.setItem(FILTER_STORE_NAME, JSON.stringify(filters));
+};
+
+const removeStoredFilters = () => {
+	Meteor._localStorage.removeItem(FILTER_STORE_NAME);
+};
 
 Template.livechatCurrentChats.helpers({
 	hasMore() {
@@ -63,14 +84,23 @@ Template.livechatCurrentChats.helpers({
 	tagFilters() {
 		return Template.instance().tagFilters.get();
 	},
-	departments() {
-		return Template.instance().departments.get();
-	},
 	tagId() {
 		return this;
 	},
-	hasPopoverPermissions() {
-		return hasAtLeastOnePermission(['remove-closed-livechat-rooms']);
+	departmentModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	onClickTagDepartment() {
+		return Template.instance().onClickTagDepartment;
+	},
+	selectedDepartments() {
+		return Template.instance().selectedDepartments.get();
+	},
+	onSelectDepartments() {
+		return Template.instance().onSelectDepartments;
 	},
 });
 
@@ -160,6 +190,11 @@ Template.livechatCurrentChats.events({
 				groups: [
 					{
 						items: [
+							{
+								icon: 'customize',
+								name: t('Clear_filters'),
+								action: instance.clearFilters,
+							},
 							canRemoveAllClosedRooms
 							&& {
 								icon: 'trash',
@@ -276,11 +311,17 @@ Template.livechatCurrentChats.events({
 
 		const agents = instance.selectedAgents.get();
 		if (agents && agents.length > 0) {
-			filter.agents = [agents[0]._id];
+			filter.agents = [agents[0]];
+		}
+
+		const departments = instance.selectedDepartments.get();
+		if (departments && departments.length > 0) {
+			filter.department = [departments[0]];
 		}
 
 		instance.filter.set(filter);
 		instance.offset.set(0);
+		storeFilters(filter);
 	},
 	'click .remove-livechat-room'(event, instance) {
 		event.preventDefault();
@@ -323,13 +364,22 @@ Template.livechatCurrentChats.onCreated(async function() {
 	this.isLoading = new ReactiveVar(false);
 	this.offset = new ReactiveVar(0);
 	this.total = new ReactiveVar(0);
-	this.filter = new ReactiveVar({});
+	this.filter = new ReactiveVar(loadStoredFilters());
 	this.livechatRooms = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
 	this.customFilters = new ReactiveVar([]);
 	this.customFields = new ReactiveVar([]);
 	this.tagFilters = new ReactiveVar([]);
-	this.departments = new ReactiveVar([]);
+	this.selectedDepartments = new ReactiveVar([]);
+
+	this.onSelectDepartments = ({ item: department }) => {
+		department.text = department.name;
+		this.selectedDepartments.set([department]);
+	};
+
+	this.onClickTagDepartment = () => {
+		this.selectedDepartments.set([]);
+	};
 
 	const mountArrayQueryParameters = (label, items, index) => items.reduce((acc, item) => {
 		const isTheLastElement = index === items.length - 1;
@@ -344,8 +394,8 @@ Template.livechatCurrentChats.onCreated(async function() {
 		if (status) {
 			url += `&open=${ status === 'opened' }`;
 		}
-		if (department) {
-			url += `&departmentId=${ department }`;
+		if (department && Array.isArray(department) && department.length) {
+			url += `&departmentId=${ department[0]._id }`;
 		}
 		if (from) {
 			dateRange.start = `${ moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss') }Z`;
@@ -357,7 +407,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 			url += `&${ mountArrayQueryParameters('tags', tags) }`;
 		}
 		if (agents && Array.isArray(agents) && agents.length) {
-			url += `&${ mountArrayQueryParameters('agents', agents) }`;
+			url += `&${ mountArrayQueryParameters('agents', agents.map((agent) => agent._id)) }`;
 		}
 		if (customFields) {
 			url += `&customFields=${ JSON.stringify(customFields) }`;
@@ -369,6 +419,37 @@ Template.livechatCurrentChats.onCreated(async function() {
 			url += `&roomName=${ roomName }`;
 		}
 		return url;
+	};
+
+	this.loadDefaultFilters = () => {
+		const defaultFilters = this.filter.get();
+
+		Object.keys(defaultFilters).forEach((key) => {
+			const value = defaultFilters[key];
+			if (!value) {
+				return;
+			}
+
+			switch (key) {
+				case 'agents':
+					return this.selectedAgents.set(value);
+				case 'department':
+					return this.selectedDepartments.set(value);
+				case 'from':
+				case 'to':
+					return $(`#${ key }`).datepicker('setDate', new Date(value));
+			}
+
+			$(`#${ key }`).val(value);
+		});
+	};
+
+	this.clearFilters = () => {
+		removeStoredFilters();
+		$('#form-filters').get(0).reset();
+		this.selectedAgents.set([]);
+		this.selectedDepartments.set([]);
+		this.filter.set({});
 	};
 
 	this.loadRooms = async (filter, offset) => {
@@ -397,14 +478,13 @@ Template.livechatCurrentChats.onCreated(async function() {
 		this.loadRooms(filter, offset);
 	});
 
-	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
-	this.departments.set(departments);
-
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
 			this.customFields.set(customFields);
 		}
 	});
+
+	this.loadDefaultFilters();
 });
 
 Template.livechatCurrentChats.onRendered(function() {

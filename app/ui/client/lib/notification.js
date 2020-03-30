@@ -65,7 +65,7 @@ export const KonchatNotification = {
 						window.focus();
 						switch (notification.payload.type) {
 							case 'd':
-								return FlowRouter.go('direct', { username: notification.payload.sender.username }, FlowRouter.current().queryParams);
+								return FlowRouter.go('direct', { rid: notification.payload.rid }, FlowRouter.current().queryParams);
 							case 'c':
 								return FlowRouter.go('channel', { name: notification.payload.name }, FlowRouter.current().queryParams);
 							case 'p':
