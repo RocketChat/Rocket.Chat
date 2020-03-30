@@ -63,7 +63,6 @@ class ValidationService {
 
 		if (result.file) {
 			result.file.docs.forEach((file) => {
-
 				const subscription = getSubscription(file.rid, uid);
 
 				if (subscription) {

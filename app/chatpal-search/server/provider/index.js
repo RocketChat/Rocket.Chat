@@ -5,6 +5,7 @@ import { Random } from 'meteor/random';
 import ChatpalLogger from '../utils/logger';
 import { Rooms, Messages, Uploads } from '../../../models';
 import { FileUpload } from '../../../file-upload';
+
 const getFileBuffer = Meteor.wrapAsync(FileUpload.getBuffer, FileUpload);
 
 /**
@@ -49,7 +50,7 @@ class Backend {
 	 */
 	indexFile(fileObj) {
 		const options = Object.assign({
-			params: { language:this._options.language },
+			params: { language: this._options.language },
 			...this._options.httpOptions,
 		}, fileObj);
 
@@ -58,7 +59,6 @@ class Backend {
 		ChatpalLogger.debug('file index options:', JSON.stringify(logObj, null, 2));
 
 		try {
-
 			const response = HTTP.call('POST', `${ this._options.baseurl }${ this._options.fileupdatepath }`, options);
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -66,7 +66,6 @@ class Backend {
 			} else {
 				throw new Error(response);
 			}
-
 		} catch (e) {
 			if (e.response.statusCode === 404) {
 				ChatpalLogger.warn('Current Chatpal backend doesn\'t support file content extraction!');
@@ -75,7 +74,6 @@ class Backend {
 			}
 			return false;
 		}
-
 	}
 
 	/**
