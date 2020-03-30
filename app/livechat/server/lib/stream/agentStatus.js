@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Users } from '../../../../models/server';
-
 import { settings } from '../../../../settings';
 import { Livechat } from '../Livechat';
 
