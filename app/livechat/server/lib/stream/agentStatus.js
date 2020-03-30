@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from '../../../../models/server';
-import { settings } from '../../../../settings';
+
 import { Livechat } from '../Livechat';
+import { settings } from '../../../../settings';
+import { Users } from '../../../../models/server';
 
 let monitorAgents = false;
 let actionTimeout = 60000;
