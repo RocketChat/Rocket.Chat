@@ -52,11 +52,11 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 		const today = moment(new Date());
-		const yesterday = today.clone().subtract(1, 'days');
-		const stoppedAt = new Date(yesterday.year(), yesterday.month(), yesterday.date(), 23, 59, 59);
 		const startedAt = new Date(today.year(), today.month(), today.date());
 		for (const session of openLivechatAgentSessions) {
-			const data = { ...formatDate(yesterday), agentId: session.agentId };
+			const startDate = moment(session.lastStartedAt);
+			const stoppedAt = new Date(startDate.year(), startDate.month(), startDate.date(), 23, 59, 59);
+			const data = { ...formatDate(startDate.toDate()), agentId: session.agentId };
 			const availableTime = moment(stoppedAt).diff(moment(new Date(session.lastStartedAt)), 'seconds');
 			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
 			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: session.lastStartedAt, stoppedAt } });

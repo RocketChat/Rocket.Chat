@@ -21,7 +21,7 @@ export function InformationRoute() {
 	useEffect(() => {
 		let didCancel = false;
 
-		const fetchStatistics = async () => {
+		const fetchStatistics = async ({ refresh = false } = {}) => {
 			if (!canViewStatistics) {
 				setStatistics(null);
 				setInstances(null);
@@ -32,7 +32,7 @@ export function InformationRoute() {
 
 			try {
 				const [statistics, instances] = await Promise.all([
-					getStatistics({ refresh: true }),
+					getStatistics({ refresh }),
 					getInstances(),
 				]);
 
@@ -62,7 +62,7 @@ export function InformationRoute() {
 			return;
 		}
 
-		fetchStatistics();
+		fetchStatistics({ refresh: true });
 	};
 
 	const handleClickDownloadInfo = () => {

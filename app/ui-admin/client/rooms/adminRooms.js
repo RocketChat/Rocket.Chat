@@ -40,7 +40,7 @@ Template.adminRooms.helpers({
 		return Template.instance().rooms.get().length;
 	},
 	type() {
-		return TAPi18n.__(roomTypes.roomTypes[this.t].label);
+		return TAPi18n.__(roomTypes.getConfig(this.t).label);
 	},
 	'default'() {
 		if (this.default) {
@@ -100,7 +100,7 @@ Template.adminRooms.onCreated(function() {
 		i18nTitle: 'Room_Info',
 		icon: 'info-circled',
 		template: 'adminRoomInfo',
-		order: 1,
+		order: 7,
 	});
 	ChannelSettings.addOption({
 		group: ['admin-room'],
