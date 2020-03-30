@@ -12,7 +12,7 @@ import { inquiryDataStream } from '../../lib/stream/inquiry';
 Template.livechatReadOnly.helpers({
 	inquiryOpen() {
 		const inquiry = Template.instance().inquiry.get();
-		return (inquiry && inquiry.status === 'queued') || FlowRouter.go('/home');
+		return inquiry && inquiry.status === 'queued';
 	},
 
 	roomOpen() {
@@ -49,10 +49,12 @@ Template.livechatReadOnly.onCreated(function() {
 	this.routingConfig = new ReactiveVar({});
 	this.preparing = new ReactiveVar(true);
 
-	this.updateInquiry = (inquiry) => {
-		if (inquiry && inquiry.rid === this.rid) {
-			this.inquiry.set(inquiry);
+	this.updateInquiry = async ({ clientAction, ...inquiry }) => {
+		if (clientAction === 'removed' || !await call('canAccessRoom', inquiry.rid, Meteor.userId())) {
+			return FlowRouter.go('/home');
 		}
+
+		this.inquiry.set(inquiry);
 	};
 
 	Meteor.call('livechat:getRoutingConfig', (err, config) => {

@@ -2,6 +2,7 @@ import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings';
 import './email';
+import { MessageTypesValues } from '../../lib/MessageTypes';
 
 // Insert server unique id if it doesn't exist
 settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
@@ -124,7 +125,7 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
-		this.add('Accounts_RequireNameForSignUp', true, {
+		this.add('Accounts_RequireNameForSignUp', true, { // TODO rename to Accounts_RequireFullName
 			type: 'boolean',
 			public: true,
 		});
@@ -142,6 +143,9 @@ settings.addGroup('Accounts', function() {
 					$ne: '',
 				},
 			},
+		});
+		this.add('Accounts_Verify_Email_For_External_Accounts', true, {
+			type: 'boolean',
 		});
 		this.add('Accounts_ManuallyApproveNewUsers', false, {
 			public: true,
@@ -827,6 +831,12 @@ settings.addGroup('General', function() {
 		],
 		public: true,
 	});
+
+	this.add('DeepLink_Url', 'https://go.rocket.chat', {
+		type: 'string',
+		public: true,
+	});
+
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		public: true,
@@ -1093,25 +1103,16 @@ settings.addGroup('Message', function() {
 		type: 'int',
 		public: true,
 	});
-	this.add('Message_HideType_uj', false, {
-		type: 'boolean',
+
+
+	this.add('Hide_System_Messages', [], {
+		type: 'multiSelect',
 		public: true,
-	});
-	this.add('Message_HideType_ul', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_ru', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_au', false, {
-		type: 'boolean',
-		public: true,
+		values: MessageTypesValues,
 	});
 
-	this.add('Message_HideType_mute_unmute', false, {
-		type: 'boolean',
+	this.add('DirectMesssage_maxUsers', 8, {
+		type: 'int',
 		public: true,
 	});
 
@@ -1292,6 +1293,10 @@ settings.addGroup('Layout', function() {
 	this.section('Content', function() {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
+			public: true,
+		});
+		this.add('Layout_Show_Home_Button', true, {
+			type: 'boolean',
 			public: true,
 		});
 		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {

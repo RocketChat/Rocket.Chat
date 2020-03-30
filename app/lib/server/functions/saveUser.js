@@ -10,8 +10,9 @@ import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
+import { saveUserIdentity } from './saveUserIdentity';
 
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusText } from '.';
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 
 let html = '';
 let passwordChangedHtml = '';
@@ -264,12 +265,14 @@ export const saveUser = function(userId, userData) {
 	validateUserEditing(userId, userData);
 
 	// update user
-	if (userData.username) {
-		setUsername(userData._id, userData.username);
-	}
-
-	if (userData.hasOwnProperty('name')) {
-		setRealName(userData._id, userData.name);
+	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
+		if (!saveUserIdentity(userId, {
+			_id: userData._id,
+			username: userData.username,
+			name: userData.name,
+		})) {
+			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUser' });
+		}
 	}
 
 	if (typeof userData.statusText === 'string') {

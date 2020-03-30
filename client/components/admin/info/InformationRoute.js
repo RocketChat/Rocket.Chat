@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useMethod, useServerInformation } from '../../../contexts/ServerContext';
+import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
 import { useAdminSideNav } from '../../../hooks/useAdminSideNav';
 import { InformationPage } from './InformationPage';
+import { downloadJsonAsAFile } from '../../../helpers/download';
 
 export function InformationRoute() {
 	useAdminSideNav();
@@ -14,13 +15,13 @@ export function InformationRoute() {
 	const [statistics, setStatistics] = useState({});
 	const [instances, setInstances] = useState([]);
 	const [fetchStatistics, setFetchStatistics] = useState(() => () => ({}));
-	const getStatistics = useMethod('getStatistics');
+	const getStatistics = useEndpoint('GET', 'statistics');
 	const getInstances = useMethod('instances/get');
 
 	useEffect(() => {
 		let didCancel = false;
 
-		const fetchStatistics = async () => {
+		const fetchStatistics = async ({ refresh = false } = {}) => {
 			if (!canViewStatistics) {
 				setStatistics(null);
 				setInstances(null);
@@ -31,14 +32,13 @@ export function InformationRoute() {
 
 			try {
 				const [statistics, instances] = await Promise.all([
-					getStatistics(),
+					getStatistics({ refresh }),
 					getInstances(),
 				]);
 
 				if (didCancel) {
 					return;
 				}
-
 				setStatistics(statistics);
 				setInstances(instances);
 			} finally {
@@ -62,7 +62,14 @@ export function InformationRoute() {
 			return;
 		}
 
-		fetchStatistics();
+		fetchStatistics({ refresh: true });
+	};
+
+	const handleClickDownloadInfo = () => {
+		if (isLoading) {
+			return;
+		}
+		downloadJsonAsAFile(statistics, 'statistics');
 	};
 
 	return <InformationPage
@@ -72,5 +79,6 @@ export function InformationRoute() {
 		statistics={statistics}
 		instances={instances}
 		onClickRefreshButton={handleClickRefreshButton}
+		onClickDownloadInfo={handleClickDownloadInfo}
 	/>;
 }
