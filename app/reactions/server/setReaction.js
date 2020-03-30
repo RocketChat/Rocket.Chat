@@ -31,7 +31,7 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 	}
 
 	if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
-		Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
+		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: room._id,
 			ts: new Date(),

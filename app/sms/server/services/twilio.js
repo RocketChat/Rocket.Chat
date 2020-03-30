@@ -11,7 +11,7 @@ import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestr
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) => Notifications.notifyUserInThisInstance(userId, 'message', {
+const notifyAgent = (userId, rid, msg) => Notifications.notifyUser(userId, 'message', {
 	_id: Random.id(),
 	rid,
 	ts: new Date(),
