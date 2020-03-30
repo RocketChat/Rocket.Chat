@@ -10,7 +10,7 @@ queueDataStreamer.allowRead(function() {
 	return this.userId ? hasPermission(this.userId, 'view-l-room') : false;
 });
 
-const emitQueueDataEvent = (event, data) => queueDataStreamer.emit(event, data);
+const emitQueueDataEvent = (event, data) => queueDataStreamer.emitWithoutBroadcast(event, data);
 const mountDataToEmit = (type, data) => ({ type, ...data });
 
 LivechatInquiry.on('change', ({ clientAction, id: _id, data: record }) => {
