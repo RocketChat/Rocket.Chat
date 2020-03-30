@@ -52,18 +52,11 @@ export class LivechatDepartment extends Base {
 		}
 
 		if (hasAgents) {
-			const savedAgents = _.pluck(LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
-			const agentsToSave = _.pluck(agents, 'agentId');
-
-			// remove other agents
-			_.difference(savedAgents, agentsToSave).forEach((agentId) => {
-				LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(_id, agentId);
-			});
-
 			agents.forEach((agent) => {
 				LivechatDepartmentAgents.saveAgent({
 					agentId: agent.agentId,
 					departmentId: _id,
+					departmentEnabled: data.enabled,
 					username: agent.username,
 					count: agent.count ? parseInt(agent.count) : 0,
 					order: agent.order ? parseInt(agent.order) : 0,
@@ -86,10 +79,12 @@ export class LivechatDepartment extends Base {
 		});
 
 		departments.forEach((departmentId) => {
+			const { enabled: departmentEnabled } = this.findOneById(departmentId, { fields: { enabled: 1 } });
 			const saveResult = LivechatDepartmentAgents.saveAgent({
 				agentId,
 				departmentId,
 				username,
+				departmentEnabled,
 				count: 0,
 				order: 0,
 			});

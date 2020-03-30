@@ -14,6 +14,18 @@ import { APIClient } from '../../../../utils/client';
 
 const LIST_SIZE = 50;
 
+const saveDepartmentsAgents = (_id, instance) => {
+	const upsert = [...instance.agentsToUpsert.values()];
+	const remove = [...instance.agentsToRemove.values()];
+	if (!upsert.length && !remove.length) {
+		return;
+	}
+	APIClient.v1.post(`livechat/department/${ _id }/agents`, {
+		upsert,
+		remove,
+	});
+};
+
 Template.livechatDepartmentForm.helpers({
 	department() {
 		return Template.instance().department.get();
@@ -158,14 +170,6 @@ Template.livechatDepartmentForm.events({
 			departmentData[name] = elField.val();
 		});
 
-		const departmentAgents = [];
-		instance.departmentAgents.get().forEach((agent) => {
-			agent.count = instance.$(`.count-${ agent.agentId }`).val();
-			agent.order = instance.$(`.order-${ agent.agentId }`).val();
-
-			departmentAgents.push(agent);
-		});
-
 		const callback = (error) => {
 			$btn.html(oldBtnValue);
 			if (error) {
@@ -177,9 +181,10 @@ Template.livechatDepartmentForm.events({
 		};
 
 		if (hasPermission('manage-livechat-departments')) {
-			Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, callback);
+			Meteor.call('livechat:saveDepartment', _id, departmentData, [], callback);
+			saveDepartmentsAgents(_id, instance);
 		} else if (hasPermission('add-livechat-department-agents')) {
-			Meteor.call('livechat:saveDepartmentAgents', _id, departmentAgents, callback);
+			saveDepartmentsAgents(_id, instance);
 		} else {
 			throw new Error(t('error-not-authorized'));
 		}
@@ -189,7 +194,6 @@ Template.livechatDepartmentForm.events({
 		e.preventDefault();
 
 		const users = instance.selectedAgents.get();
-
 		users.forEach(async (user) => {
 			const { _id, username } = user;
 
@@ -197,10 +201,13 @@ Template.livechatDepartmentForm.events({
 			if (departmentAgents.find(({ agentId }) => agentId === _id)) {
 				return toastr.error(t('This_agent_was_already_selected'));
 			}
-
 			const newAgent = _.clone(user);
 			newAgent.agentId = _id;
 			delete newAgent._id;
+			if (instance.agentsToRemove.has(newAgent.agentId)) {
+				instance.agentsToRemove.delete(newAgent.agentId);
+			}
+			instance.agentsToUpsert.set(newAgent.agentId, { ...newAgent, count: 0, order: 0 });
 			departmentAgents.push(newAgent);
 			instance.departmentAgents.set(departmentAgents);
 			instance.selectedAgents.set(instance.selectedAgents.get().filter((user) => user.username !== username));
@@ -214,8 +221,22 @@ Template.livechatDepartmentForm.events({
 
 	'click .remove-agent'(e, instance) {
 		e.preventDefault();
+		if (instance.agentsToUpsert.has(this.agentId)) {
+			instance.agentsToUpsert.delete(this.agentId);
+		}
+		instance.agentsToRemove.set(this.agentId, this);
 
 		instance.departmentAgents.set(instance.departmentAgents.get().filter((agent) => agent.agentId !== this.agentId));
+	},
+
+	'keyup .count'(event, instance) {
+		const agent = instance.agentsToUpsert.get(this.agentId) || this;
+		instance.agentsToUpsert.set(this.agentId, { ...agent, count: parseInt(event.currentTarget.value) || 0 });
+	},
+
+	'keyup .order'(event, instance) {
+		const agent = instance.agentsToUpsert.get(this.agentId) || this;
+		instance.agentsToUpsert.set(this.agentId, { ...agent, order: parseInt(event.currentTarget.value) || 0 });
 	},
 
 	'click #addTag'(e, instance) {
@@ -247,6 +268,8 @@ Template.livechatDepartmentForm.events({
 });
 
 Template.livechatDepartmentForm.onCreated(async function() {
+	this.agentsToUpsert = new Map();
+	this.agentsToRemove = new Map();
 	this.department = new ReactiveVar({ enabled: true });
 	this.departmentAgents = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);

@@ -98,7 +98,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			}
 
 			if (success && agents && permissionToAddAgents) {
-				success = Livechat.saveDepartmentAgents(_id, agents);
+				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
 			}
 
 			if (success) {
@@ -168,5 +168,19 @@ API.v1.addRoute('livechat/department/:departmentId/agents', { authRequired: true
 		}));
 
 		return API.v1.success(agents);
+	},
+	post() {
+		if (!hasPermission(this.userId, 'manage-livechat-departments') || !hasPermission(this.userId, 'add-livechat-department-agents')) {
+			return API.v1.unauthorized();
+		}
+		check(this.urlParams, {
+			departmentId: String,
+		});
+
+		check(this.bodyParams, Match.ObjectIncluding({
+			upsert: Array,
+			remove: Array,
+		}));
+		Livechat.saveDepartmentAgents(this.urlParams.departmentId, this.bodyParams);
 	},
 });

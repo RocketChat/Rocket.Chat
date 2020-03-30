@@ -785,19 +785,38 @@ export const Livechat = {
 
 	saveDepartmentAgents(_id, departmentAgents) {
 		check(_id, String);
-		check(departmentAgents, [
-			Match.ObjectIncluding({
-				agentId: String,
-				username: String,
-			}),
-		]);
+		check(departmentAgents, {
+			upsert: [
+				Match.ObjectIncluding({
+					agentId: String,
+					username: String,
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			],
+			remove: [
+				Match.ObjectIncluding({
+					agentId: String,
+					username: Match.Maybe(String),
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			],
+		});
 
 		const department = LivechatDepartment.findOneById(_id);
 		if (!department) {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartmentAgents' });
 		}
-
-		return LivechatDepartment.createOrUpdateDepartment(_id, department, departmentAgents);
+		departmentAgents.upsert.forEach((agent) => LivechatDepartmentAgents.saveAgent({
+			agentId: agent.agentId,
+			departmentId: _id,
+			username: agent.username,
+			departmentEnabled: department.enabled,
+			count: agent.count ? parseInt(agent.count) : 0,
+			order: agent.order ? parseInt(agent.order) : 0,
+		}));
+		departmentAgents.remove.forEach((agent) => LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(_id, agent.agentId));
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
