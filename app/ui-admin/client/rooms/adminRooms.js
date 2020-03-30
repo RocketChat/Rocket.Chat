@@ -100,7 +100,7 @@ Template.adminRooms.onCreated(function() {
 		i18nTitle: 'Room_Info',
 		icon: 'info-circled',
 		template: 'adminRoomInfo',
-		order: 1,
+		order: 7,
 	});
 	ChannelSettings.addOption({
 		group: ['admin-room'],
