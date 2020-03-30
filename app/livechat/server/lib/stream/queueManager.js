@@ -17,7 +17,7 @@ const mountDataToEmit = (type, data) => ({ type, ...data });
 LivechatInquiry.on('change', ({ clientAction, id: _id, data: record }) => {
 	if (RoutingManager.getConfig().autoAssignAgent) {
 		return;
-	};
+	}
 
 	switch (clientAction) {
 		case 'inserted':
