@@ -6,6 +6,8 @@ import { Users } from '../../../../models/server';
 
 let monitorAgents = false;
 let actionTimeout = 60000;
+let action = 'none';
+let comment = '';
 
 settings.get('Livechat_agent_leave_action_timeout', function(key, value) {
 	actionTimeout = value * 1000;
@@ -15,56 +17,57 @@ settings.get('Livechat_agent_leave_action', function(key, value) {
 	monitorAgents = value;
 });
 
+settings.get('Livechat_agent_leave_action', function(key, value) {
+	action = value;
+});
+
+settings.get('Livechat_agent_leave_comment', function(key, value) {
+	comment = value;
+});
+
 const onlineAgents = {
-	users: {},
-	queue: {},
+	users: new Set(),
+	queue: new Map(),
 
 	add(userId) {
-		if (this.queue[userId]) {
-			clearTimeout(this.queue[userId]);
-			delete this.queue[userId];
+		if (this.onlineAgents.exists(userId)) {
+			return;
 		}
-		this.users[userId] = 1;
+
+		if (this.queue.has(userId)) {
+			clearTimeout(this.queue.get(userId));
+			this.queue.delete(userId);
+		}
+		this.users.add(userId);
 	},
 
-	remove(userId, callback) {
-		if (this.queue[userId]) {
-			clearTimeout(this.queue[userId]);
+	remove(userId) {
+		if (!this.onlineAgents.exists(userId)) {
+			return;
 		}
-		this.queue[userId] = setTimeout(Meteor.bindEnvironment(() => {
-			callback();
 
-			delete this.users[userId];
-			delete this.queue[userId];
-		}), actionTimeout);
+		if (this.queue.has(userId)) {
+			clearTimeout(this.queue.get(userId));
+		}
+		this.queue.set(userId, setTimeout(this.runAgentLeaveAction, actionTimeout, userId));
 	},
 
 	exists(userId) {
-		return !!this.users[userId];
+		return this.users.has(userId);
 	},
-};
 
-const runAgentLeaveAction = (userId) => {
-	const action = settings.get('Livechat_agent_leave_action');
-	if (action === 'close') {
-		return Livechat.closeOpenChats(userId, settings.get('Livechat_agent_leave_comment'));
-	} if (action === 'forward') {
-		return Livechat.forwardOpenChats(userId);
-	}
-};
+	runAgentLeaveAction: Meteor.bindEnvironment((userId) => {
+		this.users.delete(userId);
+		this.queue.delete(userId);
 
-const userWasAgent = (id) => {
-	const removedUser = Users.trashFindOneById(id);
-	if (!removedUser) {
-		return false;
-	}
+		if (action === 'close') {
+			return Livechat.closeOpenChats(userId, comment);
+		}
 
-	const { roles } = removedUser;
-	if (!roles || !Array.isArray(roles) || !roles.includes('livechat-agent')) {
-		return false;
-	}
-
-	return true;
+		if (action === 'forward') {
+			return Livechat.forwardOpenChats(userId);
+		}
+	}),
 };
 
 Users.on('change', ({ clientAction, id, diff }) => {
@@ -72,33 +75,30 @@ Users.on('change', ({ clientAction, id, diff }) => {
 		return;
 	}
 
-	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
+	if (clientAction !== 'removed' && diff && !diff.status && !diff.statusLivechat) {
 		return;
 	}
 
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
-			const agent = Users.findOneAgentById(id);
+			const agent = Users.findOneAgentById(id, {
+				fields: {
+					status: 1,
+					statusLivechat: 1,
+				},
+			});
 			const serviceOnline = agent && agent.status !== 'offline' && agent.statusLivechat === 'available';
 
-			if (agent && serviceOnline && !onlineAgents.exists(id)) {
+			if (serviceOnline) {
 				return onlineAgents.add(id);
 			}
 
-			if (onlineAgents.exists(id) && (!agent || !serviceOnline)) {
-				onlineAgents.remove(id, () => {
-					runAgentLeaveAction(id);
-				});
-			}
+			onlineAgents.remove(id);
 
 			break;
 		case 'removed':
-			if (userWasAgent(id) && onlineAgents.exists(id)) {
-				onlineAgents.remove(id, () => {
-					runAgentLeaveAction(id);
-				});
-			}
+			onlineAgents.remove(id);
 			break;
 	}
 });
