@@ -1,6 +1,53 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.3
+`2020-03-30  ·  2 🎉  ·  2 🚀  ·  1 🐛  ·  3 🔍  ·  7 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- Add update method for user bridge ([#17077](https://github.com/RocketChat/Rocket.Chat/pull/17077))
+
+- Home button on sidebar ([#17052](https://github.com/RocketChat/Rocket.Chat/pull/17052))
+
+### 🚀 Improvements
+
+
+- Repeat “Reply In Thread” and “Add Reaction” inside the message actions menu ([#17073](https://github.com/RocketChat/Rocket.Chat/pull/17073))
+
+- Tab Bar actions reorder ([#17072](https://github.com/RocketChat/Rocket.Chat/pull/17072))
+
+### 🐛 Bug fixes
+
+
+- Verification email body ([#17062](https://github.com/RocketChat/Rocket.Chat/pull/17062) by [@GOVINDDIXIT](https://github.com/GOVINDDIXIT))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Add User’s index for field `appId` ([#17075](https://github.com/RocketChat/Rocket.Chat/pull/17075))
+
+- Regression: OmniChannel agent activity monitor was counting time wrongly ([#16979](https://github.com/RocketChat/Rocket.Chat/pull/16979))
+
+- Regression: Broken Search if users without DM subscriptions are listed ([#17074](https://github.com/RocketChat/Rocket.Chat/pull/17074))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@GOVINDDIXIT](https://github.com/GOVINDDIXIT)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@d-gubert](https://github.com/d-gubert)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@rodrigok](https://github.com/rodrigok)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.1.0-rc.2
 `2020-03-29  ·  9 🔍  ·  5 👩‍💻👨‍💻`
 
