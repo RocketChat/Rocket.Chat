@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Livechat } from '../Livechat';
-import { settings } from '../../../../settings';
+import { settings } from '../../../../settings/server';
 import { Users } from '../../../../models/server';
 
 let monitorAgents = false;
@@ -9,19 +9,19 @@ let actionTimeout = 60000;
 let action = 'none';
 let comment = '';
 
-settings.get('Livechat_agent_leave_action_timeout', function(key, value) {
+settings.get('Livechat_agent_leave_action_timeout', function(_key: string, value: number) {
 	actionTimeout = value * 1000;
 });
 
-settings.get('Livechat_agent_leave_action', function(key, value) {
+settings.get('Livechat_agent_leave_action', function(_key: string, value: boolean) {
 	monitorAgents = value;
 });
 
-settings.get('Livechat_agent_leave_action', function(key, value) {
+settings.get('Livechat_agent_leave_action', function(_key: string, value: string) {
 	action = value;
 });
 
-settings.get('Livechat_agent_leave_comment', function(key, value) {
+settings.get('Livechat_agent_leave_comment', function(_key: string, value: string) {
 	comment = value;
 });
 
@@ -29,7 +29,7 @@ const onlineAgents = {
 	users: new Set(),
 	queue: new Map(),
 
-	add(userId) {
+	add(userId: string): void {
 		if (this.exists(userId)) {
 			return;
 		}
@@ -41,7 +41,7 @@ const onlineAgents = {
 		this.users.add(userId);
 	},
 
-	remove(userId) {
+	remove(userId: string): void {
 		if (!this.exists(userId)) {
 			return;
 		}
@@ -53,11 +53,11 @@ const onlineAgents = {
 		this.queue.set(userId, setTimeout(this.runAgentLeaveAction, actionTimeout, userId));
 	},
 
-	exists(userId) {
+	exists(userId: string): boolean {
 		return this.users.has(userId);
 	},
 
-	runAgentLeaveAction: Meteor.bindEnvironment((userId) => {
+	runAgentLeaveAction: Meteor.bindEnvironment((userId: string) => {
 		onlineAgents.users.delete(userId);
 		onlineAgents.queue.delete(userId);
 
