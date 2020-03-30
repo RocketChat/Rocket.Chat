@@ -80,7 +80,10 @@ Meteor.methods({
 
 			const result = Rooms.findByNameOrFNameAndType(regex, 'c', {
 				...pagination,
-				sort,
+				sort: {
+					featured: -1,
+					...sort,
+				},
 				fields: {
 					description: 1,
 					topic: 1,
@@ -140,7 +143,7 @@ Meteor.methods({
 		const total = result.count(); // count ignores the `skip` and `limit` options
 		const results = result.fetch();
 
-		// Try to find federated users, when appliable
+		// Try to find federated users, when applicable
 		if (isFederationEnabled() && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
 			const users = federationSearchUsers(text);
 
