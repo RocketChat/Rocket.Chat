@@ -87,7 +87,7 @@ const eventHandlers = {
 	//
 	// ROOM_ADD_USER
 	//
-	async [eventTypes.ROOM_ADD_USER0](event) {
+	async [eventTypes.ROOM_ADD_USER](event) {
 		const eventResult = await FederationRoomEvents.addEvent(event.context, event);
 
 		// If the event was successfully added, handle the event locally
@@ -422,7 +422,7 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 			}
 
 			// If there was an error handling the event, take action
-			if (!eventResult.success) {
+			if (!eventResult || !eventResult.success) {
 				logger.server.debug(`federation.events.dispatch => Event has missing parents -> event=${ JSON.stringify(event, null, 2) }`);
 
 				requestEventsFromLatest(event.origin, getFederationDomain(), contextDefinitions.defineType(event), event.context, eventResult.latestEventIds);
