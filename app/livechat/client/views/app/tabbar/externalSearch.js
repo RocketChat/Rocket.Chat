@@ -45,6 +45,7 @@ Template.externalSearch.onCreated(function() {
 		this.roomId = Template.currentData().rid;
 		if (this.roomId) {
 			const { messages, total } = await APIClient.v1.get(`livechat/messages.external/${ this.roomId }?count=${ MESSAGES_COUNT }&offset=${ offset }`);
+			console.log("messagessss::::::::"+messages);
 			this.total.set(total);
 			if (offset === 0) {
 				this.externalMessages.set(messages);

@@ -117,6 +117,7 @@ API.v1.addRoute('livechat/message/:_id', {
 				rid: String,
 				msg: String,
 			});
+			
 
 			const { token, rid } = this.bodyParams;
 			const { _id } = this.urlParams;

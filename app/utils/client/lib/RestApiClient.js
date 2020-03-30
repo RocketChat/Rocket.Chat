@@ -8,7 +8,7 @@ export const APIClient = {
 		return APIClient._jqueryCall('DELETE', endpoint, params);
 	},
 
-	get(endpoint, params) {
+	get(endpoint, params) { console.log('endpoint2:'+endpoint+' para2 : '+params);
 		return APIClient._jqueryCall('GET', endpoint, params);
 	},
 
@@ -57,6 +57,7 @@ export const APIClient = {
 				},
 				data: JSON.stringify(body),
 				success: function _rlGetSuccess(result) {
+					
 					resolve(result);
 				},
 				error: function _rlGetFailure(xhr, status, errorThrown) {
@@ -122,6 +123,7 @@ export const APIClient = {
 		},
 
 		get(endpoint, params) {
+			console.log("endpoint:"+endpoint+"para"+params);
 			return APIClient.get(`v1/${ endpoint }`, params);
 		},
 

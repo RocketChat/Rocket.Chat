@@ -125,7 +125,10 @@
 										</li>
 									{{/if}}
 								{{/if}}
-
+								{{#each allHistoryChat}}
+										<h1>{{rid}}</h1>
+										
+								{{/each}}
 								{{# with messageContext}}
 									{{#each msg in messagesHistory}}{{> message index=@index shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
 								{{/with}}

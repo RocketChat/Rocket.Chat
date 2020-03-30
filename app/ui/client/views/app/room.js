@@ -10,7 +10,7 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-
+import { APIClient } from '../../../../utils/client'
 import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
@@ -277,6 +277,10 @@ export const dropzoneHelpers = {
 
 Template.room.helpers({
 	...dropzoneHelpers,
+	isChat(){
+
+		
+	},
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -300,9 +304,9 @@ Template.room.helpers({
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
 		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
 		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
-
 		const modes = ['', 'cozy', 'compact'];
 		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
+	
 		const query = {
 			rid,
 			_hidden: { $ne: true },
@@ -318,7 +322,10 @@ Template.room.helpers({
 				ts: 1,
 			},
 		};
-
+		ChatMessage.update({rid:'12121212',msg:'tthis is updated message'}, options)
+		console.log('query',query);
+		console.log('optios',options)
+	//	console.log('=======',ChatMessage.collection._docs._map);
 		return ChatMessage.find(query, options);
 	},
 
@@ -1184,7 +1191,7 @@ Template.room.onRendered(function() {
 	}
 	chatMessages[rid].initializeWrapper(this.find('.wrapper'));
 	chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
-
+console.log("chatmsg --",chatMessages);
 	const wrapper = this.find('.wrapper');
 	const wrapperUl = this.find('.wrapper > ul');
 	const newMessage = this.find('.new-message');

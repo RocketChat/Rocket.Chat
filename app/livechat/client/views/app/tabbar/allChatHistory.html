@@ -1,0 +1,138 @@
+<template name='allChatHistory'>
+	<div class="content">
+		<div class="list-view">
+			<div class="active-pink-4 mb-4 inner-addon right-addon">
+				<i class="glyphicon glyphicon-search"></i>
+				<input type="text" id="searchInput" class="" placeholder="Search" aria-label="Search">
+            </div>
+            {{#if isAllChat}}
+			<div class="vistior-history-block">
+        
+				<ul>
+					{{#each previousChats}}
+					<li class='list-chat' id='{{_id}}' aria='{{v.token}}'>
+					
+						<div class="history-div">
+							<div class="visitor-img">
+								<img src="/avatar/{{responseBy.username}}" alt="">
+							</div>
+							<div class="visitor-history-details">
+								<div class="visitor-details">
+									<h1>{{responseBy.username}}</h1>
+									{{#if open}}
+										<p class='open'>Open</p>
+										{{else}}
+									<p>Close at time({{closedAt}})</p>
+									{{/if}}
+								</div>
+								<div class="total-messages">
+									<p>{{msgs}} messages</p>
+								</div>
+								<div class="agent-comment">
+									<p class="comment-heading">Agent comment:</p>
+									<p class="comment-text">"{{lastMessage.msg}}"</p>
+								</div>
+								
+							</div>
+						</div>
+						
+					</li>
+					{{/each}}
+				</ul>      
+			</div>
+			{{else}}
+			{{#if isChatClicked}}
+			<div class="chatHistory">
+				<div class='msgcount'>
+					
+					<p><span>{{len}} messages</span></p>
+					
+				</div>
+				<ul>
+
+					{{#each historyResult}}
+					{{#unless t}}
+					
+					<li>
+						<div class="history-main">
+							<div class="history-img">
+								<img src="/avatar/{{u.username}}" >
+							</div>
+							<div class="history-detail-main">
+								<div class="detail-main-upper">
+									<h1>{{u.name}}</h1>
+									<p>{{ts}}</p>
+								</div>
+								<div class="detail-main-lower">
+									<p>{{msg}}</p>
+								</div>
+							</div>
+						</div>
+					</li>
+					{{else}}
+					{{#if u.name}}
+					<div class="closed-div">
+					<p class='closed-div-p'><span>Conversation closed</span></p>
+					<div class="history-main">
+						<div class="history-img">
+							<div class='belldiv'>
+								<i class="icon-bell"></i>
+							</div>
+						</div>
+						<div class="history-detail-main">
+							<div class="detail-main-upper closed-h1">
+								<h1>Agent comment:</h1>
+							</div>
+							<div class="detail-main-lower closed-p">
+								<p>"{{msg}}".</p>
+							</div>
+						</div>
+					</div>
+					</div>
+					{{/if}}
+					{{/unless}}
+					{{/each}}
+				</ul>
+			</div>
+			{{else}}
+			<div class='visitor-history-block'>
+				{{#if isfound }}
+				<ul class='searchresults'>
+					
+					{{#each searchResults}} 
+					
+					<li class='search-li'>
+						<div class="history-main">
+							<div class="history-img">
+								<img src="/avatar/{{u.username}}" >
+							</div>
+							<div class="history-detail-main">
+								<div class="detail-main-upper">
+									<h1>{{u.name}}</h1>
+									<p>{{ts}}</p>
+								</div>
+								<div class="detail-main-lower">
+									<p>{{msg}}</p>
+								</div>
+							</div>
+						</div>
+					
+					</li>
+					{{/each}}
+					
+				</ul>
+				{{else}}
+				<h1 class='noresult'>No result found</h1> 
+				{{/if}}
+			</div>
+		
+			{{/if}}
+       
+            {{/if}}
+		
+		</div>
+	</div>
+	
+		
+	
+</template>

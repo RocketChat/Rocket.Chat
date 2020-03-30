@@ -148,6 +148,7 @@ templating-tools@1.1.2
 tmeasday:check-npm-versions@0.3.2
 todda00:friendly-slugs@0.6.0
 tracker@1.2.0
+twbs:bootstrap@3.3.6
 twitter-oauth@1.2.0
 typescript@3.7.5
 ui@1.0.13
