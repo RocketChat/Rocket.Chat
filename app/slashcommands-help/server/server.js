@@ -39,7 +39,7 @@ slashCommands.add('help', function Help(command, params, item) {
 	},
 	];
 	keys.forEach((key) => {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),

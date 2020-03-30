@@ -22,7 +22,7 @@ slashCommands.add('unmute', function Unmute(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 	const unmutedUser = Users.findOneByUsernameIgnoringCase(username);
 	if (unmutedUser == null) {
-		return Notifications.notifyUser(Meteor.userId(), 'message', {
+		return Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -35,7 +35,7 @@ slashCommands.add('unmute', function Unmute(command, params, item) {
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, unmutedUser._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		return Notifications.notifyUser(Meteor.userId(), 'message', {
+		return Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),

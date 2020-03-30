@@ -17,7 +17,7 @@ function Leave(command, params, item) {
 	try {
 		Meteor.call('leaveRoom', item.rid);
 	} catch ({ error }) {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),

@@ -73,7 +73,7 @@ Meteor.methods({
 			if (!subscription) {
 				addUserToRoom(data.rid, newUser, user);
 			} else {
-				Notifications.notifyUser(userId, 'message', {
+				Notifications.notifyUserInThisInstance(userId, 'message', {
 					_id: Random.id(),
 					rid: data.rid,
 					ts: new Date(),

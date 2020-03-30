@@ -16,7 +16,7 @@ function Status(command, params, item) {
 				}
 
 				if (err.error === 'error-not-allowed') {
-					Notifications.notifyUser(Meteor.userId(), 'message', {
+					Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 						_id: Random.id(),
 						rid: item.rid,
 						ts: new Date(),
@@ -26,7 +26,7 @@ function Status(command, params, item) {
 
 				throw err;
 			} else {
-				Notifications.notifyUser(Meteor.userId(), 'message', {
+				Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date(),

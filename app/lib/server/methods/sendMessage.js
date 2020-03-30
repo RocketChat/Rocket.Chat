@@ -82,7 +82,7 @@ export function executeSendMessage(uid, message) {
 
 		SystemLogger.error('Error sending message:', error);
 
-		Notifications.notifyUser(uid, 'message', {
+		Notifications.notifyUserInThisInstance(uid, 'message', {
 			_id: Random.id(),
 			rid: message.rid,
 			ts: new Date(),

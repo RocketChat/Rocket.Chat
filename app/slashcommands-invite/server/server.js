@@ -30,7 +30,7 @@ function Invite(command, params, item) {
 	const userId = Meteor.userId();
 	const currentUser = Meteor.users.findOne(userId);
 	if (users.count() === 0) {
-		Notifications.notifyUser(userId, 'message', {
+		Notifications.notifyUserInThisInstance(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -46,7 +46,7 @@ function Invite(command, params, item) {
 		if (subscription == null) {
 			return true;
 		}
-		Notifications.notifyUser(userId, 'message', {
+		Notifications.notifyUserInThisInstance(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -66,14 +66,14 @@ function Invite(command, params, item) {
 			});
 		} catch ({ error }) {
 			if (error === 'cant-invite-for-direct-room') {
-				Notifications.notifyUser(userId, 'message', {
+				Notifications.notifyUserInThisInstance(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date(),
 					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language),
 				});
 			} else {
-				Notifications.notifyUser(userId, 'message', {
+				Notifications.notifyUserInThisInstance(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date(),

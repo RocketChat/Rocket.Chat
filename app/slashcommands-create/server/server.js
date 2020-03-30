@@ -36,7 +36,7 @@ function Create(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 	const room = Rooms.findOneByName(channel);
 	if (room != null) {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),

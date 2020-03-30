@@ -27,7 +27,7 @@ callbacks.add('beforeSaveMessage', function(message) {
 
 			// Add a notification to the chat, informing the user that this
 			// action is not allowed.
-			Notifications.notifyUser(message.u._id, 'message', {
+			Notifications.notifyUserInThisInstance(message.u._id, 'message', {
 				_id: Random.id(),
 				rid: message.rid,
 				ts: new Date(),

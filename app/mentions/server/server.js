@@ -21,7 +21,7 @@ const mention = new MentionsServer({
 		const { language } = this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
-		Notifications.notifyUser(sender._id, 'message', {
+		Notifications.notifyUserInThisInstance(sender._id, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date(),

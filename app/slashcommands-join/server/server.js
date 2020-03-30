@@ -19,7 +19,7 @@ function Join(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 	const room = Rooms.findOneByNameAndType(channel, 'c');
 	if (!room) {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),

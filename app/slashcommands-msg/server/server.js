@@ -19,7 +19,7 @@ function Msg(command, params, item) {
 	const separator = trimmedParams.indexOf(' ');
 	const user = Meteor.users.findOne(Meteor.userId());
 	if (separator === -1) {
-		return	Notifications.notifyUser(Meteor.userId(), 'message', {
+		return	Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -31,7 +31,7 @@ function Msg(command, params, item) {
 	const targetUsername = targetUsernameOrig.replace('@', '');
 	const targetUser = Users.findOneByUsernameIgnoringCase(targetUsername);
 	if (targetUser == null) {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUserInThisInstance(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
