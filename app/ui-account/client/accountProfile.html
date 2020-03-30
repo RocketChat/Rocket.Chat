@@ -111,11 +111,32 @@
 						</div>
 						<div class="rc-form-group rc-grid">
 							{{# with canChange=allowStatusMessageChange}}
-								{{> Input onChangeValue=(set 'statusText') value=(get 'statusText') label=(_ 'StatusMessage') maxLength="120" placeholder=(_ 'StatusMessage_Placeholder') _id='statusText' key='statusText' name='statusText' addon='edit' disabled=(ifThenElse canChange false true) hint=(ifThenElse canChange false (_ 'StatusMessage_Change_Disabled')) }}
+								<div class="rc-input rc-w100 padded {{#if statusMessageInvalid}}rc-input--error{{/if}}">
+									<label class="rc-input__label">
+										<div class="rc-input__title">{{_ "StatusMessage"}}</div>
+										<div class="rc-input__wrapper">
+											<div class="rc-input__icon">
+												{{> icon block="rc-input__icon-svg" icon="edit"}}
+											</div>
+
+											<input type="text" class="rc-input__element" maxlength="120" name="statusText" id="statusText" placeholder="{{_ "StatusMessage_Placeholder" }}" value="{{get 'statusText'}}" {{ifThenElse canChange '' 'disabled'}}>
+										</div>
+									</label>
+									{{# unless canChange}}
+										<div class="rc-input__description">{{_ 'StatusMessage_Change_Disabled'}}</div>
+									{{/unless}}
+								</div>
 							{{/with}}
 						</div>
 						<div class="rc-form-group">
-							{{> Input onChangeValue=(set 'bio') value=(get 'bio') multiline=true label=(_ 'Bio') placeholder=(_ 'User_bio') _id='bio' key='bio' }}
+							<div class="rc-input rc-w100 padded">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Bio"}}</div>
+									<div class="rc-input__wrapper">
+										<textarea type="text" class="rc-input__element" name="bio" id="bio" rows="4" style="height: auto" placeholder="{{_ "Bio_Placeholder" }}" value="{{get 'bio'}}"></textarea>
+									</div>
+								</label>
+							</div>
 						</div>
 						<div class="rc-form-group rc-grid">
 							{{#with canChange=allowEmailChange}}

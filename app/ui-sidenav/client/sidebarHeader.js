@@ -229,7 +229,7 @@ Template.sidebarHeader.helpers({
 		} });
 	},
 	toolbarButtons() {
-		return toolbarButtons(Meteor.userId()).filter((button) => !button.condition || button.condition());
+		return toolbarButtons(/* Meteor.userId() */).filter((button) => !button.condition || button.condition());
 	},
 	showToolbar() {
 		return showToolbar.get();

@@ -426,6 +426,9 @@ Template.accountProfile.events({
 			instance.confirmationPassword.set('');
 		}
 	},
+	'input [name=bio], input [name=statusText]'(e, instance) {
+		instance.fields.set(e.target.name, e.target.value);
+	},
 	'input [name=confirmation-password]'(e, instance) {
 		instance.confirmationPassword.set(e.target.value);
 	},
