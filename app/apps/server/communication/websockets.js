@@ -41,7 +41,7 @@ export class AppServerListener {
 	async onAppStatusUpdated({ appId, status }) {
 		const app = this.orch.getManager().getOneById(appId);
 
-		if (app.getStatus() === status) {
+		if (!app || app.getStatus() === status) {
 			return;
 		}
 
