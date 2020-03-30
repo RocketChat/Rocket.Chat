@@ -194,16 +194,18 @@ function validateUserEditing(userId, userData) {
 }
 
 const handleBio = (updateUser, bio) => {
-	if (bio && bio.trim()) {
-		if (typeof bio !== 'string') {
-			throw new Meteor.Error('error-invalid-field', 'bio', {
-				method: 'saveUserProfile',
-			});
+	if (bio) {
+		if (bio.trim()) {
+			if (typeof bio !== 'string') {
+				throw new Meteor.Error('error-invalid-field', 'bio', {
+					method: 'saveUserProfile',
+				});
+			}
+			updateUser.$set.bio = bio;
+		} else {
+			updateUser.$unset = updateUser.$unset || {};
+			updateUser.$unset.bio = 1;
 		}
-		updateUser.$set.bio = bio;
-	} else {
-		updateUser.$unset = updateUser.$unset || {};
-		updateUser.$unset.bio = 1;
 	}
 };
 

@@ -69,8 +69,8 @@ export function UserTab({
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>
 							<Box style={style}>
-								<Box textStyle='p2'>{name || username}</Box>
-								<Box textStyle='p1' textColor='hint'>{name && username}</Box>
+								<Box textStyle='p2' style={style}>{name || username}</Box>
+								<Box textStyle='p1' textColor='hint' style={style}>{name && username}</Box>
 							</Box>
 						</Flex.Item>
 					</Margins>
@@ -83,11 +83,11 @@ export function UserTab({
 			</Box>
 		</Table.Cell>
 		{mediaQuery && canViewFullOtherUserInfo
-			&& <Table.Cell>
+			&& <Table.Cell style={style} >
 				{emails && emails[0].address}
 			</Table.Cell>}
 		{federation
-		&& <Table.Cell>
+		&& <Table.Cell style={style}>
 			{domain}
 		</Table.Cell>}
 		{mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
