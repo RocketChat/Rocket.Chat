@@ -62,7 +62,7 @@ export const createTemplateForComponent = async (
 	const { MeteorProvider } = await import('./providers/MeteorProvider');
 
 	function TemplateComponent() {
-		return React.createElement(component, Template.currentData());
+		return React.createElement(component, Template[name].props.get());
 	}
 
 	Template[name].onRendered(() => {

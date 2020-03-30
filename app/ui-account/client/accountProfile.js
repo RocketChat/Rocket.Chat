@@ -189,19 +189,9 @@ Template.accountProfile.helpers({
 	get(field) {
 		return Template.instance().fields.get(field);
 	},
-	set(field) {
-		const instance = Template.instance();
-		const fn = (value) => instance.fields.set(field, value);
-		if (!instance.set[field]) { // avoid react rerender
-			instance.set[field] = () => fn;
-		}
-		return instance.set[field];
-	},
 });
 
 Template.accountProfile.onCreated(function() {
-	this.set = {};
-
 	const user = Meteor.user();
 
 	this.fields = new ReactiveDict({
