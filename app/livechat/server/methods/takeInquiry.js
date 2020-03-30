@@ -17,6 +17,14 @@ Meteor.methods({
 		}
 
 		const user = Users.findOneById(Meteor.userId());
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:takeInquiry' });
+		}
+
+		const { status, statusLivechat } = user;
+		if (status === 'offline' || statusLivechat !== 'available') {
+			throw new Meteor.Error('error-agent-offline', 'Agent offline', { method: 'livechat:takeInquiry' });
+		}
 
 		const agent = {
 			agentId: user._id,
