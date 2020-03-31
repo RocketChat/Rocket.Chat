@@ -201,6 +201,7 @@ const handleBio = (updateUser, bio) => {
 					method: 'saveUserProfile',
 				});
 			}
+			updateUser.$set = updateUser.$set || {};
 			updateUser.$set.bio = bio;
 		} else {
 			updateUser.$unset = updateUser.$unset || {};
