@@ -167,16 +167,28 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			return {};
 		}
 
-		const title = settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`;
-		const text = notificationMessage;
+		if (this.isGroupChat(room)) {
+			return {
+				title: this.roomName(room),
+				text: `${ (settings.get('UI_Use_Real_Name') && user.name) || user.username }: ${ notificationMessage }`,
+			};
+		}
 
-		return { title, text };
+		return {
+			title: (settings.get('UI_Use_Real_Name') && user.name) || user.username,
+			text: notificationMessage,
+		};
 	}
 
 	getAvatarPath(roomData, subData) {
-		if (roomData && this.isGroupChat(roomData)) {
+		if (this.isGroupChat(roomData)) {
 			return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
 		}
+
+		if (roomData) {
+			return getUserAvatarURL(roomData.name || this.roomName(roomData));
+		}
+
 		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
 		return getUserAvatarURL(sub.name || this.roomName(roomData));
 	}
@@ -186,6 +198,6 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	isGroupChat(room) {
-		return room.uids && room.uids.length > 2;
+		return room && room.uids && room.uids.length > 2;
 	}
 }

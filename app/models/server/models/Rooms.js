@@ -476,7 +476,7 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findDirectRoomContainingAllUserIDs(uid, options) {
+	findOneDirectRoomContainingAllUserIDs(uid, options) {
 		const query = {
 			t: 'd',
 			uids: { $size: uid.length, $all: uid },
@@ -547,6 +547,13 @@ export class Rooms extends Base {
 		return this.find({
 			usersCount: { $gt: 2 },
 			uids,
+		}, options);
+	}
+
+	find1On1ByUserId(userId, options) {
+		return this.find({
+			uids: userId,
+			usersCount: 2,
 		}, options);
 	}
 
@@ -1025,13 +1032,8 @@ export class Rooms extends Base {
 		return this.remove(query);
 	}
 
-	remove1on1ById(_id) {
-		const query = {
-			_id,
-			usersCount: { $lte: 2 },
-		};
-
-		return this.remove(query);
+	removeByIds(ids) {
+		return this.remove({ _id: { $in: ids } });
 	}
 
 	removeDirectRoomContainingUsername(username) {
