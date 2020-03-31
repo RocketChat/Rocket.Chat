@@ -1,6 +1,27 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.6
+`2020-03-31  ·  3 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Files were been deleted when deleting users as last members of private rooms ([#17111](https://github.com/RocketChat/Rocket.Chat/pull/17111))
+
+- Regression: Block users was not possible for 1:1 DMs ([#17105](https://github.com/RocketChat/Rocket.Chat/pull/17105))
+
+- Regression: Collapsible elements didn't respect attachment parameter. ([#16994](https://github.com/RocketChat/Rocket.Chat/pull/16994))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 3.1.0-rc.5
 `2020-03-31  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
