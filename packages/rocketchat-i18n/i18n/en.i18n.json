@@ -1324,6 +1324,7 @@
   "Entertainment": "Entertainment",
   "Error": "Error",
   "error-action-not-allowed": "__action__ is not allowed",
+  "error-agent-offline": "Agent is offline",
   "error-application-not-found": "Application not found",
   "error-archived-duplicate-name": "There's an archived channel with name '__room_name__'",
   "error-avatar-invalid-url": "Invalid avatar URL: __url__",
