@@ -1,4 +1,21 @@
 
+# 3.0.9
+`2020-03-31  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+
+- Apps Engine notifyRoom sending notification to wrong users ([#17093](https://github.com/RocketChat/Rocket.Chat/pull/17093))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.0.8
 `2020-03-30  ·  2 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
 
