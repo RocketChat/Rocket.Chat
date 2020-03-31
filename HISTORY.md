@@ -379,6 +379,38 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 
+# 3.0.8
+`2020-03-30  ·  2 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+
+- Emit livechat events to instace only ([#17086](https://github.com/RocketChat/Rocket.Chat/pull/17086))
+
+- Error when websocket received status update event ([#17089](https://github.com/RocketChat/Rocket.Chat/pull/17089))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Remove model observe that was used to control the status of the Omnichannel agents ([#17078](https://github.com/RocketChat/Rocket.Chat/pull/17078))
+
+- Reduce notifyUser propagation ([#17088](https://github.com/RocketChat/Rocket.Chat/pull/17088))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.0.7
 `2020-03-25  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
