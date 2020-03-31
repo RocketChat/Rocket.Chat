@@ -62,9 +62,7 @@ export function UserTab({
 			<Flex.Container>
 				<Box>
 					<Flex.Item>
-						<Box>
 							<Avatar size='x40' title={username} url={username} />
-						</Box>
 					</Flex.Item>
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>

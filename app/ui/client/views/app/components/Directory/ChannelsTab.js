@@ -60,9 +60,7 @@ export function ChannelsTab() {
 			<Flex.Container>
 				<Box>
 					<Flex.Item>
-						<Box>
 							<Avatar size='x40' title={fname || name} url={`%40${ fname || name }`} />
-						</Box>
 					</Flex.Item>
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>
