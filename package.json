@@ -128,7 +128,7 @@
 		"@nivo/heatmap": "^0.61.0",
 		"@nivo/line": "^0.61.1",
 		"@nivo/pie": "^0.61.1",
-		"@rocket.chat/apps-engine": "^1.13.0-beta.2931",
+		"@rocket.chat/apps-engine": "^1.13.0-beta.3003",
 		"@rocket.chat/fuselage": "^0.6.1",
 		"@rocket.chat/fuselage-hooks": "^0.6.1",
 		"@rocket.chat/fuselage-ui-kit": "^0.6.1",

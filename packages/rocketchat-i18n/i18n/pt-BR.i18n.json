@@ -1213,6 +1213,7 @@
   "Entertainment": "Diversão",
   "Error": "Erro",
   "error-action-not-allowed": "__action__ não é permitido",
+  "error-agent-offline": "Agente está offline",
   "error-application-not-found": "Aplicação não encontrada",
   "error-archived-duplicate-name": "Já há um canal arquivado com o nome '__room_name__'",
   "error-avatar-invalid-url": "URL inválida de avatar: __url__",

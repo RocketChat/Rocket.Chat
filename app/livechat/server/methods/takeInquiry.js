@@ -17,6 +17,10 @@ Meteor.methods({
 		}
 
 		const user = Users.findOneById(Meteor.userId());
+		const { status, statusLivechat } = user;
+		if (status === 'offline' || statusLivechat !== 'available') {
+			throw new Meteor.Error('error-agent-offline', 'Agent offline', { method: 'livechat:takeInquiry' });
+		}
 
 		const agent = {
 			agentId: user._id,
