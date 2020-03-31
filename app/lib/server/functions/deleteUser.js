@@ -1,12 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { FileUpload } from '../../../file-upload';
+import { FileUpload } from '../../../file-upload/server';
 import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models/server';
 import { hasRole, getUsersInRole } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { Notifications } from '../../../notifications/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
+
+const bulkRoomCleanUp = (rids) => {
+	// no bulk deletion for files
+	rids.forEach((rid) => FileUpload.removeFilesByRoomId(rid));
+
+	return Promise.await(Promise.all([
+		Subscriptions.removeByRoomIds(rids),
+		Messages.removeByRoomIds(rids),
+		Rooms.removeByIds(rids),
+	]));
+};
 
 export const deleteUser = function(userId) {
 	const user = Users.findOneById(userId, {
@@ -83,21 +94,19 @@ export const deleteUser = function(userId) {
 				break;
 		}
 
-		roomCache.forEach((roomData) => {
+		const roomIds = roomCache.filter((roomData) => {
 			if (roomData.subscribers === null && roomData.t !== 'd' && roomData.t !== 'c') {
 				roomData.subscribers = Subscriptions.findByRoomId(roomData.rid).count();
 			}
 
 			// Remove non-channel rooms with only 1 user (the one being deleted)
-			if (roomData.t !== 'c' && roomData.subscribers === 1) {
-				Subscriptions.removeByRoomId(roomData.rid);
-				FileUpload.removeFilesByRoomId(roomData.rid);
-				Messages.removeByRoomId(roomData.rid);
-				Rooms.removeById(roomData.rid);
-			}
-		});
+			return roomData.t !== 'c' && roomData.subscribers === 1;
+		}).map(({ _id }) => _id);
 
-		// TODO: do not remove group DMs
+		Rooms.find1On1ByUserId(user._id, { fields: { _id: 1 } }).forEach(({ _id }) => roomIds.push(_id));
+
+		bulkRoomCleanUp(roomIds);
+
 		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username); // Remove direct rooms with the user
 		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 

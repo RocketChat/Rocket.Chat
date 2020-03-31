@@ -1,8 +1,9 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
 import { DateFormat } from '../../lib';
 import { getURL } from '../../utils/client';
-import { renderMessageBody } from '../../ui-utils';
+import { renderMessageBody, createCollapseable } from '../../ui-utils';
 
 const colors = {
 	good: '#35AC19',
@@ -10,6 +11,59 @@ const colors = {
 	danger: '#D30230',
 };
 
+async function renderPdfToCanvas(canvasId, pdfLink) {
+	const isSafari = /constructor/i.test(window.HTMLElement)
+		|| ((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari
+			|| (typeof window.safari !== 'undefined' && window.safari.pushNotification));
+
+	if (isSafari) {
+		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
+		if (version <= 12) {
+			return;
+		}
+	}
+
+	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) {
+		return;
+	}
+	pdfLink = getURL(pdfLink);
+
+	const canvas = document.getElementById(canvasId);
+	if (!canvas) {
+		return;
+	}
+
+	const pdfjsLib = await import('pdfjs-dist');
+	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }pdf.worker.min.js`;
+
+	const loader = document.getElementById(`js-loading-${ canvasId }`);
+
+	if (loader) {
+		loader.style.display = 'block';
+	}
+
+	const pdf = await pdfjsLib.getDocument(pdfLink);
+	const page = await pdf.getPage(1);
+	const scale = 0.5;
+	const viewport = page.getViewport(scale);
+	const context = canvas.getContext('2d');
+	canvas.height = viewport.height;
+	canvas.width = viewport.width;
+	await page.render({
+		canvasContext: context,
+		viewport,
+	}).promise;
+
+	if (loader) {
+		loader.style.display = 'none';
+	}
+
+	canvas.style.maxWidth = '-webkit-fill-available';
+	canvas.style.maxWidth = '-moz-available';
+	canvas.style.display = 'block';
+}
+
+createCollapseable(Template.messageAttachment, (instance) => (instance.data && (instance.data.collapsed || (instance.data.settings && instance.data.settings.collapseMediaByDefault))) || false);
 
 Template.messageAttachment.helpers({
 	parsedText() {
@@ -46,9 +100,6 @@ Template.messageAttachment.helpers({
 	color() {
 		return colors[this.color] || this.color;
 	},
-	collapsed() {
-		return this.collapsedMedia;
-	},
 	time() {
 		const messageDate = new Date(this.ts);
 		const today = new Date();
@@ -78,12 +129,21 @@ Template.messageAttachment.helpers({
 		if (
 			this.type === 'file'
 			&& this.title_link.endsWith('.pdf')
-			&& Template.parentData(2).msg.file
+			&& Template.parentData(1).msg.file
 		) {
-			this.fileId = Template.parentData(2).msg.file._id;
+			this.fileId = Template.parentData(1).msg.file._id;
 			return true;
 		}
 		return false;
 	},
 	getURL,
+});
+
+Template.messageAttachment.onRendered(function() {
+	const { msg } = Template.parentData(1);
+	this.autorun(() => {
+		if (msg && msg.file && msg.file.type === 'application/pdf' && !this.collapsedMedia.get()) {
+			Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
+		}
+	});
 });
