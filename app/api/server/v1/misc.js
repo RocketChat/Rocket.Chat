@@ -215,3 +215,23 @@ API.v1.addRoute('stdout.queue', { authRequired: true }, {
 		return API.v1.success({ queue: StdOut.queue });
 	},
 });
+
+const methodCall = {
+	post() {
+		check(this.bodyParams, {
+			method: String,
+			params: Array,
+		});
+
+		const { method, params } = this.bodyParams;
+
+		const result = Meteor.call(method, ...params);
+
+		return API.v1.success({ result });
+	},
+};
+
+// had to create different endpoint for authenticated and non-authenticated calls
+// because restivus does not 'this.userId' when 'authRequired: false'
+API.v1.addRoute('method.call', { authRequired: true }, methodCall);
+API.v1.addRoute('method.callAnon', { authRequired: false }, methodCall);
