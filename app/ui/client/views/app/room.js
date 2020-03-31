@@ -879,6 +879,9 @@ Template.room.events({
 		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
+		e.stopPropagation();
+		e.preventDefault();
+
 		if (!Meteor.userId()) {
 			return;
 		}
@@ -894,8 +897,6 @@ Template.room.events({
 		}
 
 		if (group) {
-			e.stopPropagation();
-			e.preventDefault();
 			openMembersListTab(instance, group);
 			return;
 		}
@@ -1018,10 +1019,32 @@ Template.room.onCreated(function() {
 
 	this.subscription = new ReactiveVar();
 	this.state = new ReactiveDict();
+	this.userDetail = new ReactiveVar('');
+	const user = Meteor.user();
+	this.autorun((c) => {
+		const room = Rooms.findOne({ _id: rid }, {
+			fields: {
+				t: 1,
+				usernames: 1,
+				uids: 1,
+			},
+		});
+
+		if (room.t !== 'd') {
+			return c.stop();
+		}
+
+		if (roomTypes.getConfig(room.t).isGroupChat(room)) {
+			return;
+		}
+
+		this.userDetail.set(room.usernames.filter((username) => username !== user.username)[0]);
+	});
 
 	this.autorun(() => {
 		const rid = Template.currentData()._id;
-		this.state.set('announcement', Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } }).announcement);
+		const room = Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } });
+		this.state.set('announcement', room.announcement);
 	});
 
 	this.autorun(() => {
@@ -1045,7 +1068,6 @@ Template.room.onCreated(function() {
 
 	this.flexTemplate = new ReactiveVar();
 
-	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
 	this.groupDetail = new ReactiveVar();
 
 	this.tabBar = new RocketChatTabBar();
@@ -1346,7 +1368,7 @@ Template.room.onRendered(function() {
 
 		const room = Rooms.findOne({ _id: template.data._id });
 		if (!room) {
-			FlowRouter.go('home');
+			return FlowRouter.go('home');
 		}
 
 		callbacks.run('onRenderRoom', template, room);

@@ -1,16 +1,15 @@
-import toastr from 'toastr';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal } from '../../../ui-utils/client';
-import { APIClient, t } from '../../../utils/client';
+import { APIClient, t, handleError } from '../../../utils/client';
 
 const getExternalComponents = async (instance) => {
 	try {
 		const { externalComponents } = await APIClient.get('apps/externalComponents');
 		instance.games.set(externalComponents);
 	} catch (e) {
-		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+		handleError(e);
 	}
 
 	instance.isLoading.set(false);
@@ -98,7 +97,7 @@ Template.GameCenter.events({
 	'click .js-invite'(event) {
 		event.stopPropagation();
 		modal.open({
-			title: t('Invite You Friends to Join'),
+			title: t('Apps_Game_Center_Invite_Friends'),
 			content: 'InvitePlayers',
 			data: this,
 			confirmOnEnter: false,

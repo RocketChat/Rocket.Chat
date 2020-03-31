@@ -1,15 +1,20 @@
-const bundles = {
+interface IBundle {
+	[key: string]: string[];
+}
+
+const bundles: IBundle = {
 	enterprise: [
 		'auditing',
 		'canned-responses',
 		'ldap-enterprise',
 		'livechat-enterprise',
+		'engagement-dashboard',
 	],
 	pro: [
 	],
 };
 
-const getBundleFromModule = (moduleName) => {
+const getBundleFromModule = (moduleName: string): string|undefined => {
 	const match = moduleName.match(/(.*):\*$/);
 	if (!match) {
 		return;
@@ -18,7 +23,7 @@ const getBundleFromModule = (moduleName) => {
 	return match[1];
 };
 
-export function isBundle(moduleName) {
+export function isBundle(moduleName: string): boolean {
 	if (moduleName === '*') {
 		return true;
 	}
@@ -31,10 +36,10 @@ export function isBundle(moduleName) {
 	return true;
 }
 
-export function getBundleModules(moduleName) {
+export function getBundleModules(moduleName: string): string[] {
 	if (moduleName === '*') {
 		return Object.keys(bundles)
-			.reduce((modules, bundle) => modules.concat(bundles[bundle]), []);
+			.reduce<string[]>((modules, bundle) => modules.concat(bundles[bundle]), []);
 	}
 
 	const bundle = getBundleFromModule(moduleName);
