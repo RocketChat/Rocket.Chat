@@ -41631,6 +41631,54 @@
           ]
         }
       ]
+    },
+    "3.0.9": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17094",
+          "title": "Release 3.0.9",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17093",
+          "title": "[FIX] Apps Engine notifyRoom sending notification to wrong users",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.9",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.5": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17093",
+          "title": "[FIX] Apps Engine notifyRoom sending notification to wrong users",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.9",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
