@@ -41679,6 +41679,46 @@
           ]
         }
       ]
+    },
+    "3.1.0-rc.6": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17111",
+          "title": "Regression: Files were been deleted when deleting users as last members of private rooms",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17105",
+          "title": "Regression: Block users was not possible for 1:1 DMs",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16994",
+          "title": "Regression: Collapsible elements didn't respect attachment parameter.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.1.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
