@@ -58,7 +58,7 @@ Meteor.methods({
 		}
 
 		if (settings.bio) {
-			if (typeof settings.bio !== 'string' || settings.bio.length > 256) {
+			if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
 				throw new Meteor.Error('error-invalid-field', 'bio', {
 					method: 'saveUserProfile',
 				});
