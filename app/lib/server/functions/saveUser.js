@@ -196,7 +196,7 @@ function validateUserEditing(userId, userData) {
 const handleBio = (updateUser, bio) => {
 	if (bio) {
 		if (bio.trim()) {
-			if (typeof bio !== 'string') {
+			if (typeof bio !== 'string' || bio.length > 256) {
 				throw new Meteor.Error('error-invalid-field', 'bio', {
 					method: 'saveUserProfile',
 				});
