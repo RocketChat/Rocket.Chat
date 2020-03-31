@@ -25,7 +25,7 @@ const LoadingRow = ({ cols }) => <Table.Row>
 		<Flex.Container>
 			<Box>
 				<Flex.Item>
-						<Skeleton variant='rect' height={40} width={40} />
+					<Skeleton variant='rect' height={40} width={40} />
 				</Flex.Item>
 				<Margins inline='x8'>
 					<Flex.Item grow={1}>
