@@ -43,7 +43,7 @@ API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 		const room = Meteor.runAsUser(this.userId, () => Meteor.call('createDirectMessage', ...users));
 
 		return API.v1.success({
-			room,
+			room: { ...room, _id: room.rid },
 		});
 	},
 });
