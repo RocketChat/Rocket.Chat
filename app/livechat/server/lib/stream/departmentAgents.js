@@ -9,7 +9,7 @@ const emitNotification = (action, payload = {}) => {
 		return;
 	}
 
-	Notifications.notifyUser(agentId, 'departmentAgentData', {
+	Notifications.notifyUserInThisInstance(agentId, 'departmentAgentData', {
 		action,
 		...payload,
 	});
