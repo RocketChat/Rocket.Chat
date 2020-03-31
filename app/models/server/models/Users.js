@@ -680,8 +680,9 @@ export class Users extends Base {
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
 		const orStmt = _.reduce(searchFields, function(acc, el) {
-			if (!['name', 'username', 'bio'].includes(el.trim())) {
-				acc.push({ [el.trim()]: termRegex });
+			el = el.trim();
+			if (el && !['name', 'username', 'bio'].includes(el)) {
+				acc.push({ [el]: termRegex });
 			}
 			return acc;
 		}, []);
