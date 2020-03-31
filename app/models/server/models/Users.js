@@ -30,7 +30,7 @@ export class Users extends Base {
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
-		this.tryEnsureIndex({ bio: 1 });
+		this.tryEnsureIndex({ name: 'text', username: 'text', bio: 'text' }, { default_language: 'none', language_override: 'documentLanguage' });
 		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
@@ -680,16 +680,19 @@ export class Users extends Base {
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
 		const orStmt = _.reduce(searchFields, function(acc, el) {
-			acc.push({ [el.trim()]: termRegex });
+			if (!['name', 'username', 'bio'].includes(el.trim())) {
+				acc.push({ [el.trim()]: termRegex });
+			}
 			return acc;
 		}, []);
+
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: orStmt,
-				},
-				{
+					$or: [{
+						$text: { $search: searchTerm },
+					}, ...orStmt],
 					username: { $exists: true, $nin: exceptions },
 				},
 				...extraQuery,
