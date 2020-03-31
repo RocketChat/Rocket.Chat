@@ -108,6 +108,7 @@ export class RoomTypesCommon {
 			routeData = this.roomTypes[roomType].route.link(subData);
 		} else if (subData && subData.name) {
 			routeData = {
+				rid: subData.rid || subData._id,
 				name: subData.name,
 			};
 		}

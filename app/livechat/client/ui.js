@@ -34,7 +34,7 @@ TabBar.addButton({
 	groups: ['live'],
 	id: 'visitor-history',
 	i18nTitle: 'Past_Chats',
-	icon: 'chat',
+	icon: 'clock',
 	template: 'visitorHistory',
 	order: 11,
 });

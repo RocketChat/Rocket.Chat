@@ -17,3 +17,12 @@ export const call = (method, ...params) => new Promise((resolve, reject) => {
 		return resolve(result);
 	});
 });
+
+export const callMethod = (method, ...params) => new Promise((resolve, reject) => {
+	Meteor.call(method, ...params, (err, result) => {
+		if (err) {
+			return reject(err);
+		}
+		return resolve(result);
+	});
+});
