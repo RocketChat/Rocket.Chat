@@ -14,6 +14,21 @@ import { CONSTANTS } from '../../lib';
 
 import { hasAtLeastOnePermission } from '..';
 
+const permissionName = (permission) => {
+	if (permission.level === CONSTANTS.SETTINGS_LEVEL) {
+		let path = '';
+		if (permission.group) {
+			path = `${ t(permission.group) } > `;
+		}
+		if (permission.section) {
+			path = `${ path }${ t(permission.section) } > `;
+		}
+		return `${ path }${ t(permission.settingId) }`;
+	}
+
+	return t(permission._id);
+};
+
 Template.permissions.helpers({
 	tabsData() {
 		const {
@@ -77,7 +92,6 @@ Template.permissions.helpers({
 		return ChatPermissions.find(
 			{
 				level: { $ne: CONSTANTS.SETTINGS_LEVEL },
-				_id: filter,
 			},
 			{
 				sort: {
@@ -85,7 +99,7 @@ Template.permissions.helpers({
 				},
 				limit,
 			},
-		);
+		).fetch().map((permission) => ({ ...permission, name: t(permission._id) })).filter((permission) => filter.test(permission.name) || filter.test(permission._id)).slice(0, limit);
 	},
 
 	settingPermissions() {
@@ -94,18 +108,16 @@ Template.permissions.helpers({
 		const filter = new RegExp(s.escapeRegExp(state.get('filter')), 'i');
 		return ChatPermissions.find(
 			{
-				_id: filter,
 				level: CONSTANTS.SETTINGS_LEVEL,
 				group: { $exists: true },
 			},
 			{
-				limit,
 				sort: {
 					group: 1,
 					section: 1,
 				},
 			},
-		);
+		).fetch().map((permission) => ({ ...permission, name: permissionName(permission) })).filter((permission) => filter.test(permission.name) || filter.test(permission._id)).slice(0, limit);
 	},
 
 	hasPermission() {
