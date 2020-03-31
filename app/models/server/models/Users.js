@@ -135,6 +135,15 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
+	findOneAgentById(_id, options) {
+		const query = {
+			_id,
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findAgents() {
 		const query = {
 			roles: 'livechat-agent',
