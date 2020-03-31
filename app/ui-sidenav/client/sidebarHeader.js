@@ -237,9 +237,9 @@ const toolbarButtons = (user) => [{
 	hasPopup: true,
 	action: (e) => {
 		let adminOption;
-		if (hasAtLeastOnePermission(['manage-emoji', 'manage-oauth-apps', 'manage-outgoing-integrations', 'manage-incoming-integrations', 'manage-own-outgoing-integrations', 'manage-own-incoming-integrations', 'manage-selected-settings', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration', 'access-setting-permissions'])) {
+		if (hasAtLeastOnePermission(['manage-emoji', 'manage-oauth-apps', 'manage-outgoing-integrations', 'manage-incoming-integrations', 'manage-own-outgoing-integrations', 'manage-own-incoming-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration', 'access-setting-permissions'])) {
 			adminOption = {
-				icon: 'customize',
+				icon: 'user',
 				name: t('Administration'),
 				type: 'open',
 				id: 'administration',
@@ -247,6 +247,22 @@ const toolbarButtons = (user) => [{
 					SideNav.setFlex('adminFlex');
 					SideNav.openFlex();
 					FlowRouter.go('admin', { group: 'info' });
+					popover.close();
+				},
+			};
+		}
+
+		let settingsOption;
+		if (hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'])) {
+			settingsOption = {
+				icon: 'customize',
+				name: t('Settings'),
+				type: 'open',
+				id: 'settings',
+				action: () => {
+					SideNav.setFlex('settingsFlex');
+					FlowRouter.go('settings', { group: 'General' });
+					SideNav.openFlex();
 					popover.close();
 				},
 			};
@@ -285,7 +301,7 @@ const toolbarButtons = (user) => [{
 									sideNav: item.sideNav,
 									action,
 								};
-							}).concat([adminOption]),
+							}).concat([adminOption, settingsOption]),
 						},
 					],
 				},

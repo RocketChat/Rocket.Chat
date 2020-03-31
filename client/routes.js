@@ -253,6 +253,15 @@ FlowRouter.route('/admin/:group?', {
 	},
 });
 
+FlowRouter.route('/settings/:group?', {
+	name: 'settings',
+	action: async ({ group = 'General' } = {}) => {
+		const { SettingsRoute } = await import('./components/admin/settings/SettingsRoute');
+		BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }, () => HTML.DIV({ style })) }); // eslint-disable-line
+		// BlazeLayout.render('main', { center: 'admin' });
+	},
+});
+
 FlowRouter.notFound = {
 	action: async () => {
 		const { PageNotFound } = await import('./components/pageNotFound/PageNotFound');

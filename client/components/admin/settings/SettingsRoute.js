@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
-import { useAdminSideNav } from '../../../hooks/useAdminSideNav';
+import { useSettingsSideNav } from '../../../hooks/useSettingsSideNav';
 import { GroupSelector } from './GroupSelector';
 import { NotAuthorizedPage } from './NotAuthorizedPage';
 import { SettingsState } from './SettingsState';
@@ -9,7 +9,7 @@ import { SettingsState } from './SettingsState';
 export function SettingsRoute({
 	group: groupId,
 }) {
-	useAdminSideNav();
+	useSettingsSideNav();
 
 	const hasPermission = useAtLeastOnePermission([
 		'view-privileged-setting',

@@ -40,6 +40,8 @@ class SideNav extends Page {
 
 	get admin() { return browser.element('[data-id="administration"][data-type="open"]'); }
 
+	get settings() { return browser.element('[data-id="settings"][data-type="open"]'); }
+
 	get logout() { return browser.element('[data-id="logout"][data-type="open"]'); }
 
 	get sideNavBar() { return browser.element('.sidebar'); }
