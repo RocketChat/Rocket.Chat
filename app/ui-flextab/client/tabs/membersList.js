@@ -298,7 +298,7 @@ Template.membersList.onCreated(function() {
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);
 		this.tabBar.setData({
-			label: 'Members_List',
+			label: 'Members',
 			icon: 'team',
 		});
 		setTimeout(() => this.clearRoomUserDetail(), 100);

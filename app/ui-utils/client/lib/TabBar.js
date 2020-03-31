@@ -2,7 +2,7 @@ import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-export const TABBAR_DEFAULT_VISIBLE_ICON_COUNT = 4;
+export const TABBAR_DEFAULT_VISIBLE_ICON_COUNT = 6;
 
 export const TabBar = new class TabBar {
 	get size() {
