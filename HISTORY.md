@@ -1,6 +1,35 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.4
+`2020-03-30  ·  4 🐛  ·  6 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Emit livechat events to instace only ([#17086](https://github.com/RocketChat/Rocket.Chat/pull/17086))
+
+- Error when websocket received status update event ([#17089](https://github.com/RocketChat/Rocket.Chat/pull/17089))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Remove model observe that was used to control the status of the Omnichannel agents ([#17078](https://github.com/RocketChat/Rocket.Chat/pull/17078))
+
+- Reduce notifyUser propagation ([#17088](https://github.com/RocketChat/Rocket.Chat/pull/17088))
+
+- Regression: Check Omnichannel routing system before emitting queue changes ([#17087](https://github.com/RocketChat/Rocket.Chat/pull/17087))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.1.0-rc.3
 `2020-03-30  ·  2 🎉  ·  2 🚀  ·  1 🐛  ·  3 🔍  ·  7 👩‍💻👨‍💻`
 
