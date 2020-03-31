@@ -31,11 +31,12 @@ const style = {
 	textTransform: 'uppercase',
 };
 export function SortList() {
-	return <><div className='rc-popover__column'>
-		<SortModeList/>
-		<ViewModeList/>
-		<GroupingList/>
-	</div>
+	return <>
+		<div className='rc-popover__column'>
+			<SortModeList/>
+			<ViewModeList/>
+			<GroupingList/>
+		</div>
 	</>;
 }
 
