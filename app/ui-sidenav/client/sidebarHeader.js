@@ -10,7 +10,7 @@ import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { userStatus } from '../../user-status';
 import { hasPermission } from '../../authorization/client';
-import { createTemplateForComponent } from '../../../client/routes';
+import { createTemplateForComponent } from '../../../client/createTemplateForComponent';
 
 
 const setStatus = (status, statusText) => {
