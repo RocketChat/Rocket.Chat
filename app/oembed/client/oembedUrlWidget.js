@@ -60,7 +60,4 @@ Template.oembedUrlWidget.helpers({
 	show() {
 		return (getDescription(this) != null) || (getTitle(this) != null);
 	},
-	collapsed() {
-		return this.collapsedMedia;
-	},
 });
