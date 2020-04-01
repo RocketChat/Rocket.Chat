@@ -34,7 +34,7 @@
   * [Sloppy.io](#sloppyio)
   * [Docker](#docker)
   * [Ansible](#ansible)
-  * [Raspberry Pi 2](#raspberry-pi-2)
+  * [Raspberry Pi 4](#raspberry-pi-4)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
   * [Hyper.sh](#hypersh)
