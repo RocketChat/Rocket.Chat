@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../callbacks/server';
 import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
@@ -286,16 +286,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	};
 }
 
-let troubleshootDisableNotifications = false;
-settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
-	troubleshootDisableNotifications = value;
-});
-
 export async function sendAllNotifications(message, room) {
-	if (troubleshootDisableNotifications) {
-		return message;
-	}
-
 	// threads
 	if (message.tmid) {
 		return message;
@@ -362,4 +353,10 @@ export async function sendAllNotifications(message, room) {
 	return message;
 }
 
-callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
+settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
+	if (value) {
+		return callbacks.remove('afterSaveMessage', 'sendNotificationsOnMessage');
+	}
+
+	callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
+});

@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import './email';
 import { MessageTypesValues } from '../../lib/MessageTypes';
 
@@ -2822,14 +2822,38 @@ settings.addGroup('Rate Limiter', function() {
 });
 
 settings.addGroup('Troubleshoot', function() {
-	this.add('Troubleshoot_Disable_Notifications', false, { type: 'boolean' });
-	this.add('Troubleshoot_Disable_Presence_Broadcast', false, { type: 'boolean' });
-	this.add('Troubleshoot_Disable_Instance_Broadcast', false, { type: 'boolean' });
-	this.add('Troubleshoot_Disable_Sessions_Monitor', false, { type: 'boolean' });
-	this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, { type: 'boolean' });
-	this.add('Troubleshoot_Disable_Statistics_Generator', false, { type: 'boolean' });
-	this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, { type: 'boolean' });
-	this.add('Troubleshoot_Disable_Workspace_Sync', false, { type: 'boolean' });
+	this.add('Troubleshoot_Disable_Notifications', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Notifications_Alert',
+	});
+	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Sessions_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Sessions_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Statistics_Generator', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Statistics_Generator_Alert',
+	});
+	this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Workspace_Sync', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
+	});
 });
 
 settings.init();

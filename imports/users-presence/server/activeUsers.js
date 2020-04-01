@@ -11,16 +11,7 @@ export const STATUS_MAP = {
 	busy: 3,
 };
 
-let troubleshootDisablePresenceBroadcast = false;
-settings.get('Troubleshoot_Disable_Presence_Broadcast', (key, value) => {
-	troubleshootDisablePresenceBroadcast = value;
-});
-
-UserPresenceEvents.on('setUserStatus', (user, status/* , statusConnection*/) => {
-	if (troubleshootDisablePresenceBroadcast) {
-		return;
-	}
-
+const setUserStatus = (user, status/* , statusConnection*/) => {
 	const {
 		_id,
 		username,
@@ -35,4 +26,12 @@ UserPresenceEvents.on('setUserStatus', (user, status/* , statusConnection*/) => 
 		STATUS_MAP[status],
 		statusText,
 	]);
+};
+
+settings.get('Troubleshoot_Disable_Presence_Broadcast', (key, value) => {
+	if (value) {
+		return UserPresenceEvents.removeListener('setUserStatus', setUserStatus);
+	}
+
+	UserPresenceEvents.on('setUserStatus', setUserStatus);
 });
