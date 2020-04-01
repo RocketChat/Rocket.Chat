@@ -73,7 +73,7 @@ const toolbarButtons = (/* user */) => [{
 			},
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
-		const { SortList } = require('./SortList');
+		const { SortList } = await import('./SortList');
 		await createTemplateForComponent(SortList);
 		popover.open(config);
 	},
