@@ -353,7 +353,11 @@ export async function sendAllNotifications(message, room) {
 	return message;
 }
 
+let TroubleshootDisableNotifications;
 settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
+	if (TroubleshootDisableNotifications === value) { return; }
+	TroubleshootDisableNotifications = value;
+
 	if (value) {
 		return callbacks.remove('afterSaveMessage', 'sendNotificationsOnMessage');
 	}

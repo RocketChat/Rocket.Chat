@@ -72,7 +72,11 @@ Meteor.startup(() => {
 
 	const monitor = new LivechatAgentActivityMonitor();
 
+	let TroubleshootDisableLivechatActivityMonitor;
 	settings.get('Troubleshoot_Disable_Livechat_Activity_Monitor', (key, value) => {
+		if (TroubleshootDisableLivechatActivityMonitor === value) { return; }
+		TroubleshootDisableLivechatActivityMonitor = value;
+
 		if (value) {
 			return monitor.stop();
 		}

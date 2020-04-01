@@ -49,7 +49,11 @@ const name = 'Generate and save statistics';
 
 Meteor.startup(function() {
 	return Meteor.defer(function() {
+		let TroubleshootDisableStatisticsGenerator;
 		settings.get('Troubleshoot_Disable_Statistics_Generator', (key, value) => {
+			if (TroubleshootDisableStatisticsGenerator === value) { return; }
+			TroubleshootDisableStatisticsGenerator = value;
+
 			if (value) {
 				return SyncedCron.remove(name);
 			}

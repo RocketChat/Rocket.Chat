@@ -28,7 +28,11 @@ const setUserStatus = (user, status/* , statusConnection*/) => {
 	]);
 };
 
+let TroubleshootDisablePresenceBroadcast;
 settings.get('Troubleshoot_Disable_Presence_Broadcast', (key, value) => {
+	if (TroubleshootDisablePresenceBroadcast === value) { return; }
+	TroubleshootDisablePresenceBroadcast = value;
+
 	if (value) {
 		return UserPresenceEvents.removeListener('setUserStatus', setUserStatus);
 	}

@@ -291,7 +291,11 @@ function startStreamBroadcast() {
 		return broadcast(streamName, eventName, args);
 	};
 
+	let TroubleshootDisableInstanceBroadcast;
 	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+		if (TroubleshootDisableInstanceBroadcast === value) { return; }
+		TroubleshootDisableInstanceBroadcast = value;
+
 		if (value) {
 			return Meteor.StreamerCentral.removeListener('broadcast', onBroadcast);
 		}
