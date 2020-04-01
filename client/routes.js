@@ -39,6 +39,8 @@ export const createTemplateForComponent = async (
 	props = {},
 	// eslint-disable-next-line new-cap
 	renderContainerView = () => HTML.DIV(),
+	url,
+
 ) => {
 	const name = component.displayName || component.name;
 
@@ -73,6 +75,13 @@ export const createTemplateForComponent = async (
 				React.createElement(MeteorProvider, {
 					children: React.createElement(TemplateComponent),
 				}), Template.instance().firstNode);
+		});
+
+		url && Template.instance().autorun(() => {
+			const routeName = FlowRouter.getRouteName();
+			if (routeName !== url) {
+				ReactDOM.unmountComponentAtNode(Template.instance().container);
+			}
 		});
 	});
 
@@ -136,11 +145,12 @@ FlowRouter.route('/home', {
 	},
 });
 
-FlowRouter.route('/directory', {
+FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 
-	action() {
-		BlazeLayout.render('main', { center: 'directory' });
+	async action() {
+		const { DirectoryPage } = await require('../app/ui/client/views/app/components/Directory');
+		BlazeLayout.render('main', { center: await createTemplateForComponent(DirectoryPage, { }, () => HTML.DIV({ style }), 'directory')}); // eslint-disable-line
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
@@ -150,10 +160,12 @@ FlowRouter.route('/directory', {
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 
-	action(params) {
+	async action(params) {
 		if (!params.group) {
-			params.group = 'Preferences';
+			params.group = 'Profile';
 		}
+		const { Input } = await require('../client/components/admin/settings/inputs/StringSettingInput');
+		console.log(await createTemplateForComponent(Input, { }, () => HTML.DIV({ style }))); // eslint-disable-line
 		params.group = s.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
 	},

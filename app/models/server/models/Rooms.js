@@ -11,12 +11,14 @@ export class Rooms extends Base {
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
 		this.tryEnsureIndex({ default: 1 });
+		this.tryEnsureIndex({ featured: 1 });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// Livechat - statistics
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 
@@ -408,6 +410,20 @@ export class Rooms extends Base {
 		const query = {
 			t: type,
 			name,
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
+	findByNameOrFNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			$or: [{
+				name,
+			}, {
+				fname: name,
+			}],
 		};
 
 		// do not use cache
@@ -867,6 +883,19 @@ export class Rooms extends Base {
 			},
 			$addToSet: {
 				unmuted: username,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveFeaturedById(_id, featured) {
+		const query = { _id };
+		const set = ['true', true].includes(featured);
+
+		const update = {
+			[set ? '$set' : '$unset']: {
+				featured: true,
 			},
 		};
 
