@@ -48,4 +48,4 @@ export function DirectoryPage() {
 }
 
 
-DirectoryPage.name = 'DirectoryPage';
+DirectoryPage.displayName = 'DirectoryPage';
