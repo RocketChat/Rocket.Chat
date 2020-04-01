@@ -32,12 +32,17 @@ export function PageHeader({ children, title, ...props }) {
 	</Box>;
 }
 
-export function PageContent(props) {
+export function PageContentShadowScroll({ onScrollContent, ...props }) {
 	const [, setBorder] = useContext(PageContext);
-	return <Scrollable onScrollContent={({ top }) => { setBorder(!top); }}>
+	return <PageContent onScrollContent={({ top, ...args }) => { setBorder(!top); onScrollContent && onScrollContent({ top, ...args }); }} { ...props } ></PageContent>;
+}
+
+export function PageContent({ onScrollContent, ...props }) {
+	return <Scrollable onScrollContent={onScrollContent} >
 		<Box style={useMemo(() => ({ padding: '1rem' }), [])} {...props} />
 	</Scrollable>;
 }
 
 Page.Header = PageHeader;
 Page.Content = PageContent;
+Page.ContentShadowScroll = PageContentShadowScroll;
