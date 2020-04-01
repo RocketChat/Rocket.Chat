@@ -39,7 +39,6 @@ export class LivechatPriority extends Base {
 
 		return this.remove(query);
 	}
-
 }
 
 export default new LivechatPriority();

@@ -118,12 +118,12 @@ export const LivechatEnterprise = {
 	savePriority(_id, priorityData) {
 		check(_id, Match.Maybe(String));
 
-		check(tagData, {
+		check(priorityData, {
 			name: String,
 			description: Match.Optional(String),
 		});
 
-		return LivechatPriority.createOrUpdatePriority(_id, tagData);
+		return LivechatPriority.createOrUpdatePriority(_id, priorityData);
 	},
 
 	removePriority(_id) {
