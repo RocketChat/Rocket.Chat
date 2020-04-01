@@ -6,6 +6,7 @@ export const getDefaultUserFields = () => ({
 	statusDefault: 1,
 	statusText: 1,
 	statusConnection: 1,
+	bio: 1,
 	avatarOrigin: 1,
 	utcOffset: 1,
 	language: 1,
