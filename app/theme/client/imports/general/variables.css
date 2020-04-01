@@ -2,40 +2,72 @@
 	/*
 	 * Color palette
 	 */
-	--color-dark-100: #0c0d0f;
-	--color-dark-90: #1e232a;
-	--color-dark-80: #2e343e;
-	--color-dark-70: #53585f;
-	--color-dark-30: #9da2a9;
-	--color-dark-20: #caced1;
-	--color-dark-10: #e0e5e8;
-	--color-dark-05: #f1f2f4;
+	--color-dark-100: #0c0d0f; 	/* TODO: make sure if is being used in some place */
+	--color-dark-90: #1e232a; 	/* TODO: make sure if is being used in some place */
+	--color-dark-80: #2e343e; 	/* TODO: make sure if is being used in some place */
+	--color-dark-70: #53585f; 	/* TODO: make sure if is being used in some place */
+	--color-dark-30: #9da2a9; 	/* TODO: make sure if is being used in some place */
+	--color-dark-20: #caced1; 	/* TODO: make sure if is being used in some place */
+	--color-dark-10: #e0e5e8; 	/* TODO: make sure if is being used in some place */
+	--color-dark-05: #f1f2f4; 	/* TODO: make sure if is being used in some place */
 	--color-dark-blue: #175cc4;
 	--color-blue: #1d74f5;
-	--color-light-blue: #4eb2f5;
+	--color-light-blue: #4eb2f5; /* TODO: make sure if is being used in some place */
 	--color-lighter-blue: #e8f2ff;
-	--color-purple: #861da8;
+	--color-purple: #861da8; /* TODO: make sure if is being used in some place */
 	--color-red: #f5455c;
-	--color-dark-red: #e0364d;
-	--color-orange: #f59547;
+	--color-dark-red: #e0364d; /* TODO: make sure if is being used in some place */
+	--color-orange: #f59547; /* TODO: make sure if is being used in some place */
 	--color-yellow: #ffd21f;
 	--color-dark-yellow: #f6c502;
 	--color-green: #2de0a5;
-	--color-dark-green: #26d198;
-
-	/*
-	* General Colors
-	*/
+	--color-dark-green: #26d198; /* TODO: make sure if is being used in some place */
 	--color-darkest: #1f2329;
 	--color-dark: #2f343d;
 	--color-dark-medium: #414852;
-	--color-dark-light: #6c727a;
+	--color-dark-light: #6c727a; /* TODO: make sure if is being used in some place */
 	--color-gray: #9ea2a8;
 	--color-gray-medium: #cbced1;
 	--color-gray-light: #e1e5e8;
 	--color-gray-lightest: #f2f3f5;
-	--color-black: #000000;
+	--color-black: #000000; /* TODO: make sure if is being used in some place */
 	--color-white: #ffffff;
+
+	/*
+	* New Variables
+	*/
+
+	/* TODO: improve variables names */
+	--dark-theme-gray: #dcddde;
+	--dark-theme-black-1: #2f3136;
+	--dark-theme-black-2: #36393e;
+	--dark-theme-black-3: #494d55;
+	--dark-theme-blue: #7289da;
+	--message-container-background: var(--dark-theme-black-2);
+	--header-room-background: var(--dark-theme-black-2);
+	--footer-message-background: var(--dark-theme-black-2);
+	--home-section-background: var(--dark-theme-black-2);
+	--room-sidebar: var(--dark-theme-black-1);
+	--room-sidebar-header: var(--dark-theme-black-1);
+	--room-sidebar-header-border: var(--dark-theme-black-3);
+	--room-sidebar-header-icon-title: var(--dark-theme-gray);
+	--room-header-actions: var(--dark-theme-gray);
+	--emoji-picker-background: var(--dark-theme-black-2);
+	--directory-background: var(--dark-theme-black-2);
+	--title-color: var(--dark-theme-gray);
+	--home-font-color: var(--dark-theme-gray);
+	--icons-color: var(--dark-theme-gray);
+	--room-name: var(--dark-theme-gray);
+	--room-font-color: var(--dark-theme-gray);
+	--font-color-new-day: var(--dark-theme-black-3);
+	--table-hover: var(--dark-theme-black-3);
+	--popover-background-color-hover: var(--dark-theme-black-1);
+	--role-tag-color: var(--dark-theme-black-3);
+	--outline-buttons: var(--dark-theme-blue);
+
+	/*
+	* General Colors
+	*/
 	--rc-color-error: var(--color-red);
 	--rc-color-error-light: #e1364c;
 	--rc-color-alert: var(--color-yellow);
@@ -132,11 +164,12 @@
 	*/
 	--input-font-size: 0.875rem;
 	--input-title-text-size: var(--input-font-size);
-	--input-title-color: #2d343d;
-	--input-text-color: var(--color-dark-medium);
+	--input-title-color: var(--dark-theme-black-1);
+	--input-text-color: var(--dark-theme-gray);
 	--input-placeholder-color: var(--color-gray-medium);
 	--input-icon-color: var(--color-dark);
-	--input-border-color: var(--color-gray-light);
+
+	/* --input-border-color: var(--color-gray-light); */
 	--input-border-width: var(--border);
 	--input-border-radius: var(--border-radius);
 	--input-description-text-color: var(--color-gray);
@@ -203,10 +236,10 @@
 	--sidebar-account-username-size: 1rem;
 	--sidebar-account-username-weight: 700;
 	--sidebar-small-account-username-weight: 400;
-	--sidebar-account-username-color: var(--color-white);
-	--sidebar-account-username-color-darker: var(--color-dark);
+	--sidebar-account-username-color: var(--color-white); /* TODO: make sure if is being used in some place */
+	--sidebar-account-username-color-darker: var(--color-dark); /* TODO: make sure if is being used in some place */
 	--sidebar-account-status-font-size: 0.875rem;
-	--sidebar-account-status-color: var(--color-gray);
+	--sidebar-account-status-color: var(--color-gray); /* TODO: make sure if is being used in some place */
 
 	/*
 	* Sidebar Item
@@ -241,7 +274,7 @@
 	* Modal - Create Channel
 	*/
 	--create-channel-gap-between-elements: 1rem;
-	--create-channel-title-color: var(--color-darkest);
+	--create-channel-title-color: var(--color-darkest); /* TODO: make sure if is being used in some place */
 	--create-channel-title-text-size: 1.375rem;
 	--create-channel-description-color: var(--color-gray);
 	--create-channel-description-text-size: 0.875rem;
@@ -341,12 +374,12 @@
 	*/
 	--popover-padding: 1rem;
 	--popover-radius: var(--border-radius);
-	--popover-background: var(--color-white);
+	--popover-background: var(--dark-theme-black-3);
 	--popover-column-min-width: 130px;
 	--popover-column-padding: 1rem;
-	--popover-title-color: var(--color-dark);
+	--popover-title-color: var(--dark-theme-gray);
 	--popover-title-text-size: 0.75rem;
-	--popover-item-color: var(--color-dark);
+	--popover-item-color: var(--dark-theme-gray);
 	--popover-item-text-size: 0.875rem;
 	--popover-divider-height: 2px;
 	--popover-divider-color: var(--color-gray-light);

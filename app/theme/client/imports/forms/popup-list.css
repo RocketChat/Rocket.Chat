@@ -32,7 +32,7 @@
 			background-color: var(--popup-list-selected-background);
 		}
 
-		&:hover {
+		&:hover { /* TODO: make sure if is being used in some place */
 			background-color: var(--popup-list-background-hover);
 		}
 

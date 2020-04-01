@@ -38,6 +38,8 @@
 		height: 100%;
 
 		padding: var(--default-padding);
+
+		background-color: var(--room-sidebar);
 		justify-content: space-between;
 
 		&--no-padding {
@@ -56,9 +58,9 @@
 
 		padding: var(--default-padding);
 
-		border-bottom: solid 1px var(--color-gray-light);
+		border-bottom: solid 1px var(--room-sidebar-header-border);
 
-		background: var(--color-gray-lightest);
+		background: var(--room-sidebar-header);
 
 		align-items: center;
 		justify-content: flex-end;
@@ -67,6 +69,8 @@
 			display: flex;
 			overflow: hidden;
 			flex: 1 1;
+
+			color: var(--room-sidebar-header-icon-title);
 			align-items: center;
 		}
 
@@ -88,9 +92,14 @@
 			left: 0;
 
 			width: auto;
+
 			height: auto;
+
 			margin: 0;
+
 			padding: 0;
+
+			color: var(--icons-color);
 
 			font-size: 22px;
 		}

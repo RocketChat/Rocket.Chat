@@ -1,5 +1,7 @@
 .messages-container-wrapper {
 	position: relative;
+
+	background-color: var(--message-container-background);
 }
 
 .message-actions {
@@ -17,6 +19,8 @@
 
 	&__buttons {
 		display: flex;
+
+		color: var(--icons-color);
 	}
 
 	&__button {
@@ -33,6 +37,8 @@
 		padding: 2px 0;
 
 		cursor: pointer;
+
+		color: var(--icons-color);
 
 		&:hover &-icon {
 			fill: var(--rc-color-button-primary);

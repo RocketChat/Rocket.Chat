@@ -360,7 +360,7 @@
 		display: none;
 	}
 
-	& .rc-popover__title {
+	& .rc-popover__title { /* TODO: make sure if is being used in some place */
 		text-transform: none;
 
 		color: var(--message-box-popover-title-text-color);

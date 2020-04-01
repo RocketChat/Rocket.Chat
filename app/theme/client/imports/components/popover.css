@@ -45,7 +45,9 @@
 		opacity: 0;
 
 		border-radius: var(--popover-radius);
+
 		background-color: var(--popover-background);
+
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 	}
 
@@ -102,6 +104,10 @@
 
 		font-size: var(--popover-item-text-size);
 		align-items: center;
+
+		&:hover {
+			background-color: var(--popover-background-color-hover);
+		}
 
 		&--alert {
 			color: var(--rc-color-error);
