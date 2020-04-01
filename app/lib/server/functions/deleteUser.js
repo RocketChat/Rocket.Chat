@@ -101,7 +101,7 @@ export const deleteUser = function(userId) {
 
 			// Remove non-channel rooms with only 1 user (the one being deleted)
 			return roomData.t !== 'c' && roomData.subscribers === 1;
-		}).map(({ _id }) => _id);
+		}).map(({ rid }) => rid);
 
 		Rooms.find1On1ByUserId(user._id, { fields: { _id: 1 } }).forEach(({ _id }) => roomIds.push(_id));
 

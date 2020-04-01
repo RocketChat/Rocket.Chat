@@ -179,6 +179,7 @@ API.v1.addRoute('directory', { authRequired: true }, {
 		const { sort, query } = this.parseJsonQuery();
 
 		const { text, type, workspace = 'local' } = query;
+
 		if (sort && Object.keys(sort).length > 1) {
 			return API.v1.failure('This method support only one "sort" parameter');
 		}

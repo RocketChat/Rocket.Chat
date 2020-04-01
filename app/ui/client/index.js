@@ -37,7 +37,6 @@ import './views/app/CreateDirectMessage';
 import './views/app/editStatus';
 import './views/app/fullModal';
 import './views/app/home';
-import './views/app/directory';
 import './views/app/roomSearch';
 import './views/app/secretURL';
 import './views/app/invite';
