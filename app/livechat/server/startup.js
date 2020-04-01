@@ -70,5 +70,13 @@ Meteor.startup(() => {
 
 	createLivechatQueueView();
 
-	new LivechatAgentActivityMonitor().start();
+	const monitor = new LivechatAgentActivityMonitor();
+
+	settings.get('Troubleshoot_Disable_Livechat_Activity_Monitor', (key, value) => {
+		if (value) {
+			return monitor.stop();
+		}
+
+		monitor.start();
+	});
 });

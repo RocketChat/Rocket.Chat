@@ -2821,4 +2821,15 @@ settings.addGroup('Rate Limiter', function() {
 	});
 });
 
+settings.addGroup('Troubleshoot', function() {
+	this.add('Troubleshoot_Disable_Notifications', false, { type: 'boolean' });
+	this.add('Troubleshoot_Disable_Presence_Broadcast', false, { type: 'boolean' });
+	this.add('Troubleshoot_Disable_Instance_Broadcast', false, { type: 'boolean' });
+	this.add('Troubleshoot_Disable_Sessions_Monitor', false, { type: 'boolean' });
+	this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, { type: 'boolean' });
+	this.add('Troubleshoot_Disable_Statistics_Generator', false, { type: 'boolean' });
+	this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, { type: 'boolean' });
+	this.add('Troubleshoot_Disable_Workspace_Sync', false, { type: 'boolean' });
+});
+
 settings.init();

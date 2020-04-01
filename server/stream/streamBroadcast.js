@@ -250,7 +250,16 @@ function startStreamBroadcast() {
 		return startMatrixBroadcast();
 	});
 
+	let troubleshootDisableInstanceBroadcast = false;
+	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+		troubleshootDisableInstanceBroadcast = value;
+	});
+
 	function broadcast(streamName, eventName, args/* , userId*/) {
+		if (troubleshootDisableInstanceBroadcast) {
+			return;
+		}
+
 		const fromInstance = `${ process.env.INSTANCE_IP }:${ process.env.PORT }`;
 		const results = [];
 

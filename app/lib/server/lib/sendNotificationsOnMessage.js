@@ -286,7 +286,16 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	};
 }
 
+let troubleshootDisableNotifications = false;
+settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
+	troubleshootDisableNotifications = value;
+});
+
 export async function sendAllNotifications(message, room) {
+	if (troubleshootDisableNotifications) {
+		return message;
+	}
+
 	// threads
 	if (message.tmid) {
 		return message;
