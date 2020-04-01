@@ -1,64 +1,41 @@
 import { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
 import { logger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToDepartmentsModel } from '../../../livechat-enterprise/server/lib/query.helper';
-import { onLicense } from '../../../license/server';
+import { overwriteClassOnLicense } from '../../../license/server';
 
-const _find = LivechatDepartment.prototype.find;
-const _findOne = LivechatDepartment.prototype.findOne;
-const _update = LivechatDepartment.prototype.update;
-const _remove = LivechatDepartment.prototype.remove;
-const _createOrUpdateDepartment = LivechatDepartment.prototype.createOrUpdateDepartment;
+const { find, findOne, update, remove } = LivechatDepartment.prototype;
 
-LivechatDepartment.prototype.unfilteredFind = function(...args) {
-	return _find.call(this, ...args);
+const applyRestrictions = (method) => function(originalFn, originalQuery, ...args) {
+	const query = addQueryRestrictionsToDepartmentsModel(originalQuery);
+	logger.queries.debug(() => `LivechatDepartment.${ method } - ${ JSON.stringify(query) }`);
+	return originalFn.call(this, query, ...args);
 };
 
-LivechatDepartment.prototype.unfilteredFindOne = function(...args) {
-	return _findOne.call(this, ...args);
-};
-
-LivechatDepartment.prototype.unfilteredUpdate = function(...args) {
-	return _update.call(this, ...args);
-};
-
-LivechatDepartment.prototype.unfilteredRemove = function(...args) {
-	return _remove.call(this, ...args);
-};
-
-onLicense('livechat-enterprise', () => {
-	LivechatDepartment.prototype.find = function(originalQuery, ...args) {
-		const query = addQueryRestrictionsToDepartmentsModel(originalQuery);
-		logger.queries.debug('LivechatDepartment.find', JSON.stringify(query));
-		return _find.call(this, query, ...args);
-	};
-
-	LivechatDepartment.prototype.findOne = function(originalQuery, ...args) {
-		const query = addQueryRestrictionsToDepartmentsModel(originalQuery);
-		logger.queries.debug('LivechatDepartment.findOne', JSON.stringify(query));
-		return _findOne.call(this, query, ...args);
-	};
-
-	LivechatDepartment.prototype.update = function(originalQuery, ...args) {
-		const query = addQueryRestrictionsToDepartmentsModel(originalQuery);
-		logger.queries.debug('LivechatDepartment.update', JSON.stringify(query));
-		return _update.call(this, query, ...args);
-	};
-
-	LivechatDepartment.prototype.remove = function(originalQuery, ...args) {
-		const query = addQueryRestrictionsToDepartmentsModel(originalQuery);
-		logger.queries.debug('LivechatDepartment.remove', JSON.stringify(query));
-		return _remove.call(this, query, ...args);
-	};
-
-	LivechatDepartment.prototype.createOrUpdateDepartment = function(...args) {
+overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
+	find: applyRestrictions('find'),
+	findOne: applyRestrictions('findOne'),
+	update: applyRestrictions('update'),
+	remove: applyRestrictions('remove'),
+	unfilteredFind(originalFn, ...args) {
+		return find.apply(this, args);
+	},
+	unfilteredFindOne(originalFn, ...args) {
+		return findOne.apply(this, args);
+	},
+	unfilteredUpdate(originalFn, ...args) {
+		return update.apply(this, args);
+	},
+	unfilteredRemove(originalFn, ...args) {
+		return remove.apply(this, args);
+	},
+	createOrUpdateDepartment(originalFn, ...args) {
 		if (args.length > 2 && !args[1].type) {
 			args[1].type = 'd';
 		}
 
-		return _createOrUpdateDepartment.apply(this, args);
-	};
-
-	LivechatDepartment.prototype.removeParentAndAncestorById = function(parentId) {
+		return originalFn.apply(this, args);
+	},
+	removeParentAndAncestorById(originalFn, parentId) {
 		const query = {
 			parentId,
 		};
@@ -69,7 +46,7 @@ onLicense('livechat-enterprise', () => {
 		};
 
 		return this.update(query, update, { multi: true });
-	};
+	},
 });
 
 export default LivechatDepartment;
