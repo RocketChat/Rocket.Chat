@@ -40136,6 +40136,75 @@
           ]
         }
       ]
+    },
+    "3.0.10": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17114",
+          "title": "New Troubleshoot section for disabling features",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17115",
+          "title": "[IMPROVE] Apps Engine: Reduce some stream calls and remove a find user from the app's status changes",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.10",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17060",
+          "title": "Regression: Do not refresh statistics when opening the info panel",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17075",
+          "title": "Add User’s index for field `appId`",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16878",
+          "title": "[FIX] Federation Event ROOM_ADD_USER not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16861",
+          "title": "[FIX] Federation delete room event not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
