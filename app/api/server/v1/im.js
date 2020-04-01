@@ -37,7 +37,7 @@ API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 		const users = username ? [username] : usernames && usernames.split(',').map((username) => username.trim());
 
 		if (!users) {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId", "username" or "usernames" param provided does not match any direct message');
+			throw new Meteor.Error('error-room-not-found', 'The required "username" or "usernames" param provided does not match any direct message');
 		}
 
 		const room = Meteor.runAsUser(this.userId, () => Meteor.call('createDirectMessage', ...users));
