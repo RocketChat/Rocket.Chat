@@ -8,4 +8,12 @@ export class LivechatInquiryRaw extends BaseRaw {
 		};
 		return this.findOne(query);
 	}
+
+	findOneByRoomId(rid) {
+		const query = {
+			rid,
+		};
+		return this.findOne(query);
+	}
+
 }
