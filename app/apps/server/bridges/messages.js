@@ -56,7 +56,6 @@ export class AppMessageBridge {
 			...msg,
 			_id: Random.id(),
 			ts: new Date(),
-			u: msg.u ? msg.u : Users.findOneByAppId(appId) || undefined,
 		});
 	}
 
@@ -72,8 +71,6 @@ export class AppMessageBridge {
 			_id: Random.id(),
 			rid: room.id,
 			ts: new Date(),
-			u: undefined,
-			editor: undefined,
 		});
 
 		const users = Subscriptions.findByRoomIdWhenUserIdExists(room.id, { fields: { 'u._id': 1 } })
