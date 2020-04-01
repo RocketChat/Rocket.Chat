@@ -572,14 +572,24 @@ async function processDataDownloads() {
 	}
 }
 
+const name = 'Generate download files for user data';
+
 Meteor.startup(function() {
 	Meteor.defer(function() {
-		processDataDownloads();
+		let TroubleshootDisableDataExporterProcessor;
+		settings.get('Troubleshoot_Disable_Data_Exporter_Processor', (key, value) => {
+			if (TroubleshootDisableDataExporterProcessor === value) { return; }
+			TroubleshootDisableDataExporterProcessor = value;
 
-		SyncedCron.add({
-			name: 'Generate download files for user data',
-			schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
-			job: processDataDownloads,
+			if (value) {
+				return SyncedCron.remove(name);
+			}
+
+			SyncedCron.add({
+				name,
+				schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
+				job: processDataDownloads,
+			});
 		});
 	});
 });

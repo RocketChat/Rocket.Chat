@@ -377,4 +377,29 @@ export class UsersRaw extends BaseRaw {
 		params.push(group);
 		return this.col.aggregate(params).toArray();
 	}
+
+	updateStatusText(_id, statusText) {
+		const update = {
+			$set: {
+				statusText,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	updateStatusByAppId(appId, status) {
+		const query = {
+			appId,
+			status: { $ne: status },
+		};
+
+		const update = {
+			$set: {
+				status,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
 }
