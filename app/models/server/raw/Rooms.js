@@ -77,14 +77,15 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, options) {
+	findChannelAndOrPrivateByNameStarting(name, options, withPrivate = true, exceptions = []) {
 		const nameRegex = new RegExp(`^${ s.escapeRegExp(name).trim() }`, 'i');
 
 		const query = {
-			t: {
-				$in: ['c', 'p'],
-			},
+			t: withPrivate ? { $in: ['c', 'p'] } : 'c',
 			name: nameRegex,
+			_id: {
+				$nin: exceptions,
+			},
 		};
 
 		return this.find(query, options);

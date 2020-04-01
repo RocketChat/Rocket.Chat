@@ -20,6 +20,7 @@ import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
 import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
 import { WebdavAccounts } from './models/WebdavAccounts';
+import { MentionGroups } from './models/MentionGroups';
 import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';
 
@@ -53,4 +54,5 @@ export {
 	CustomSounds,
 	EmojiCustom,
 	WebdavAccounts,
+	MentionGroups,
 };

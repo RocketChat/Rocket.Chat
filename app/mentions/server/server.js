@@ -7,9 +7,10 @@ import MentionsServer from './Mentions';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Notifications } from '../../notifications';
-import { Users, Subscriptions, Rooms } from '../../models';
+import { Users, Subscriptions, Rooms, MentionGroups } from '../../models';
 
 const mention = new MentionsServer({
+	getMentionGroups: () => MentionGroups.find({}).fetch(),
 	pattern: () => settings.get('UTF8_Names_Validation'),
 	messageMaxAll: () => settings.get('Message_MaxAll'),
 	getUsers: (usernames) => Meteor.users.find({ username: { $in: _.unique(usernames) } }, { fields: { _id: true, username: true, name: 1 } }).fetch(),

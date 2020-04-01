@@ -14,6 +14,7 @@ export default class MentionsServer extends MentionsParser {
 		this.getUser = args.getUser;
 		this.getTotalChannelMembers = args.getTotalChannelMembers;
 		this.onMaxRoomMembersExceeded = args.onMaxRoomMembersExceeded || (() => {});
+		this.getMentionGroups = args.getMentionGroups;
 	}
 
 	set getUsers(m) {
@@ -50,16 +51,23 @@ export default class MentionsServer extends MentionsParser {
 
 	getUsersByMentions({ msg, rid, u: sender }) {
 		let mentions = this.getUserMentions(msg);
+		const mentionGroups = this.getMentionGroups();
+		const mentionGroupNames = mentionGroups.map((group) => group.name);
+
 		const mentionsAll = [];
 		const userMentions = [];
 
 		mentions.forEach((m) => {
 			const mention = m.trim().substr(1);
-			if (mention !== 'all' && mention !== 'here') {
+			const isGroupMention = mentionGroupNames.includes(mention);
+			if (mention !== 'all' && mention !== 'here' && !isGroupMention) {
 				return userMentions.push(mention);
 			}
 			if (this.messageMaxAll > 0 && this.getTotalChannelMembers(rid) > this.messageMaxAll) {
 				return this.onMaxRoomMembersExceeded({ sender, rid });
+			}
+			if (mention !== 'all' && mention !== 'here' && !isGroupMention) {
+				return;
 			}
 			mentionsAll.push({
 				_id: mention,

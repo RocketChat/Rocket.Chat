@@ -11,7 +11,7 @@ class Notifications {
 			}
 			this.logged = Meteor.userId() !== null;
 		});
-		this.debug = false;
+		this.debug = true;
 		this.streamAll = new Meteor.Streamer('notify-all');
 		this.streamLogged = new Meteor.Streamer('notify-logged');
 		this.streamRoom = new Meteor.Streamer('notify-room');

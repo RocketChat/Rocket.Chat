@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { Roles } from '../../../models';
 import { API } from '../api';
 import { getUsersInRole, hasPermission } from '../../../authorization/server';
+import { findRoleAutocomplete } from '../lib/roles';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
@@ -101,5 +102,20 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 			fields,
 		}).fetch();
 		return API.v1.success({ users });
+	},
+});
+
+
+API.v1.addRoute('roles.autocomplete', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findRoleAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
 	},
 });

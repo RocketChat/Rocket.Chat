@@ -1,0 +1,14 @@
+.autocomplete .rc-popup-list__list {
+	/* top: 0 !important; */
+	padding: 0;
+}
+
+.autocomplete-list__item,
+.autocomplete-list__item--empty {
+	margin-bottom: 0 !important;
+	padding: 10px;
+}
+
+.autocomplete-list__item:hover {
+	background: rgba(0, 0, 0, 0.1);
+}

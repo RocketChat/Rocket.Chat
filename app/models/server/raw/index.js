@@ -46,6 +46,8 @@ import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import { LivechatAgentActivityRaw } from './LivechatAgentActivity';
 import StatisticsModel from '../models/Statistics';
 import { StatisticsRaw } from './Statistics';
+import MentionGroupsModel from '../models/MentionGroups';
+import { MentionGroupsRaw } from './MentionGroups';
 
 export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection());
 export const Roles = new RolesRaw(RolesModel.model.rawCollection());
@@ -71,3 +73,4 @@ export const CustomSounds = new CustomSoundsRaw(CustomSoundsModel.model.rawColle
 export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.model.rawCollection());
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection());
 export const Statistics = new StatisticsRaw(StatisticsModel.model.rawCollection());
+export const MentionGroups = new MentionGroupsRaw(MentionGroupsModel.model.rawCollection());

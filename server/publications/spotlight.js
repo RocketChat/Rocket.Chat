@@ -3,7 +3,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 
 import { hasPermission } from '../../app/authorization';
-import { Users, Subscriptions, Rooms } from '../../app/models';
+import { Users, Subscriptions, Rooms, MentionGroups } from '../../app/models';
 import { settings } from '../../app/settings';
 import { roomTypes } from '../../app/utils';
 
@@ -19,7 +19,7 @@ function fetchRooms(userId, rooms) {
 }
 
 Meteor.methods({
-	spotlight(text, usernames, type = { users: true, rooms: true }, rid) {
+	spotlight(text, usernames, type = { users: true, rooms: true, groups: false }, rid) {
 		const searchForChannels = text[0] === '#';
 		const searchForDMs = text[0] === '@';
 		if (searchForChannels) {
@@ -34,6 +34,7 @@ Meteor.methods({
 		const result = {
 			users: [],
 			rooms: [],
+			groups: [],
 		};
 		const roomOptions = {
 			limit: 5,
@@ -95,6 +96,10 @@ Meteor.methods({
 				fields: userOptions.fields,
 				sort: userOptions.sort,
 			}).fetch();
+		}
+
+		if (type.groups === true) {
+			result.groups = MentionGroups.find({ name: regex, $or: [{ channels: { $eq: [] } }, { channels: rid }] }, { fields: { name: 1, description: 1 }, limit: 5 }).fetch();
 		}
 
 		return result;

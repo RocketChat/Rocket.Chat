@@ -58,6 +58,7 @@ import './components/header/headerRoom';
 import './components/contextualBar.html';
 import './components/contextualBar';
 import './components/tooltip';
+import './components/userAutocomplete';
 
 export { ChatMessages } from './lib/chatMessages';
 export { fileUpload } from './lib/fileUpload';

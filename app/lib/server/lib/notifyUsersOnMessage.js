@@ -2,7 +2,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 
-import { Rooms, Subscriptions } from '../../../models/server';
+import { Rooms, Subscriptions, MentionGroups } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 
@@ -28,6 +28,7 @@ export function updateUsersSubscriptions(message, room, users) {
 	if (room != null) {
 		let toAll = false;
 		let toHere = false;
+		let toGroup = false;
 		const mentionIds = [];
 		const highlightsIds = [];
 
@@ -44,6 +45,9 @@ export function updateUsersSubscriptions(message, room, users) {
 				}
 				if (!toHere && mention._id === 'here') {
 					toHere = true;
+				}
+				if (MentionGroups.findOne({ name: mention._id })) {
+					toGroup = true;
 				}
 				if (mention._id !== message.u._id) {
 					mentionIds.push(mention._id);
@@ -62,7 +66,7 @@ export function updateUsersSubscriptions(message, room, users) {
 		const unreadSetting = room.t === 'd' ? 'Unread_Count_DM' : 'Unread_Count';
 		const unreadCount = settings.get(unreadSetting);
 
-		if (toAll || toHere) {
+		if (toAll || toHere || toGroup) {
 			const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
 			const incUnread = room.t === 'd' || incUnreadByGroup ? 1 : 0;
 

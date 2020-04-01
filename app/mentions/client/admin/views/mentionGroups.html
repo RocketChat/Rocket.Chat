@@ -1,0 +1,72 @@
+<template name="mentionGroups">
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+      {{# header sectionName="Mentions_Groups" fixedHeight="true" fullpage="true"}}
+        <div class="rc-header__section-button">
+          <a href="{{pathFor "admin-mention-group"}}" class="rc-button rc-button--primary new-role">{{_ "New_Group"}}</a>
+        </div>
+      {{/header}}
+      <div class="content">
+				{{#unless hasPermission 'view-room-administration'}}
+					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+				{{else}}
+					<form class="search-form" role="form">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{#if isReady}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+								{{else}}
+									{{> loading }}
+								{{/if}}
+							</div>
+							<input id="groups-filter" type="text" class="rc-input__element" placeholder="{{_ "Search"}}" autofocus dir="auto">
+						</div>
+					</form>
+					<div class="results">
+						{{{_ "Showing_results" groupCount}}}
+					</div>
+					{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize}}
+						<thead>
+							<tr>
+								<th width="*"><div class="table-fake-th">{{_ "Name"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Mentions_UserCanJoin"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Mentions_Offline"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Mentions_Outside"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Users"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Groups"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Roles"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Channels"}}</div></th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each groups}}
+								<tr>
+									<td><div class="rc-table-wrapper">
+										<a href="/admin/mention-group/{{name}}">{{name}}</a>
+									</div></td>
+									<td><div class="rc-table-wrapper">{{userCanJoin}}</div></td>
+									<td><div class="rc-table-wrapper">{{mentionsOffline}}</div></td>
+									<td><div class="rc-table-wrapper">{{mentionsOutside}}</div></td>
+									<td><div class="rc-table-wrapper">{{fieldCount this 'users'}}</div></td>
+									<td><div class="rc-table-wrapper">{{fieldCount this 'groups'}}</div></td>
+									<td><div class="rc-table-wrapper">{{fieldCount this 'roles'}}</div></td>
+									<td><div class="rc-table-wrapper">{{fieldCount this 'channels'}}</div></td>
+								</tr>
+							 {{else}} {{# with searchText}}
+							<tr class="table-no-click">
+								<td>{{_ "No_results_found_for"}} {{.}}</td>
+							</tr>
+							{{/with}}
+							{{/each}}
+							{{#unless isReady}}
+								<tr class="table-no-click">
+									<td class="table-loading-td" colspan="{{#if showLastMessage}}5{{else}}4{{/if}}">{{> loading}}</td>
+								</tr>
+							{{/unless}}
+						</tbody>
+					{{/table}}
+				{{/unless}}
+			</div>
+		</section>
+	</div>
+</template>

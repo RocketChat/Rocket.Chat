@@ -56,6 +56,32 @@ const reloadUsersFromRoomMessages = (rid, template) => {
 		}));
 };
 
+const fetchMentionGroupsFromServer = _.throttle(async (filterText, records, rid, cb) => {
+	const { groups } = await call('spotlight', filterText, [], { groups: true }, rid);
+
+	if (!groups || groups.length <= 0) {
+		return;
+	}
+
+	groups
+		.slice(0, 5)
+		.forEach(({ name, description }) => {
+			if (records.length < 5) {
+				records.push({
+					_id: name,
+					username: name,
+					name: description,
+					system: true,
+					sort: 5,
+				});
+			}
+		});
+
+	records.sort(({ sort: sortA }, { sort: sortB }) => sortA - sortB);
+
+	cb && cb(records);
+}, 1000);
+
 const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => {
 	const usernames = records.map(({ username }) => username);
 
@@ -341,6 +367,10 @@ Template.messagePopupConfig.helpers({
 						name: t('Notify_active_in_this_room'),
 						sort: 4,
 					});
+				}
+
+				if (filterRegex) {
+					fetchMentionGroupsFromServer(filterText, items, rid, cb);
 				}
 
 				return items;

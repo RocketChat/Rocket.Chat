@@ -1,0 +1,37 @@
+<template name="userAutocompleteTag">
+  <span class="rc-tags__tag">
+    <span class="rc-tags__tag-text">{{display}}</span>
+    {{>icon icon='cross' block='rc-tags__tag-icon'}}
+  </span>
+</template>
+
+<template name="autocompleteItemTemplate">
+  <li class="autocomplete-list__item">
+    {{ modifier item }}
+  </li>
+</template>
+
+<template name="autocompleteEmpty">
+  <li class="autocomplete-list__item--empty">
+    <p>{{_ "Nothing_found"}}.</p>
+  </li>
+</template>
+
+<template name="userAutocomplete">
+  <div class="rc-input autocomplete" id="{{ id }}">
+      <div class="rc-input__wrapper">
+        <div class="rc-tags rc-tags--no-icon">
+          {{#each user in selectedUsers}}
+            {{> userAutocompleteTag user=user display=(field user)}}
+          {{/each}}
+          <input type="text" class="rc-tags__input" placeholder="{{_ placeholder}}"
+              name="users" autocomplete="off"/>
+        </div>
+      </div>
+      {{#with config}}
+        {{#if autocomplete 'isShowing'}}
+          {{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
+        {{/if}}
+      {{/with}}
+  </div>
+</template>
