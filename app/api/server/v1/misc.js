@@ -217,7 +217,7 @@ API.v1.addRoute('stdout.queue', { authRequired: true }, {
 	},
 });
 
-const methodCall = {
+const methodCall = () => ({
 	post() {
 		check(this.bodyParams, {
 			method: String,
@@ -230,9 +230,9 @@ const methodCall = {
 
 		return API.v1.success({ result });
 	},
-};
+});
 
 // had to create different endpoint for authenticated and non-authenticated calls
 // because restivus does not 'this.userId' when 'authRequired: false'
-API.v1.addRoute('method.call', { authRequired: true }, methodCall);
-API.v1.addRoute('method.callAnon', { authRequired: false }, methodCall);
+API.v1.addRoute('method.call', { authRequired: true }, methodCall());
+API.v1.addRoute('method.callAnon', { authRequired: false }, methodCall());
