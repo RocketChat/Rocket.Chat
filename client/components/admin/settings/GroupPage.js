@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, ButtonGroup, Paragraph, Skeleton } from '@rocket.chat/fuselage';
+import { Accordion, Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -48,7 +48,7 @@ export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabe
 
 		<Page.ContentShadowScroll>
 			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
-				{t.has(i18nDescription) && <Paragraph hintColor>{t(i18nDescription)}</Paragraph>}
+				{t.has(i18nDescription) && <Box is='p' textColor='hint' textStyle='p1'>{t(i18nDescription)}</Box>}
 
 				<Accordion className='page-settings'>
 					{children}
@@ -74,7 +74,11 @@ export function GroupPageSkeleton() {
 
 		<Page.Content>
 			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
-				<Paragraph.Skeleton />
+				<Box is='p' textColor='hint' textStyle='p1'>
+					<Skeleton />
+					<Skeleton />
+					<Skeleton width='75%' />
+				</Box>
 
 				<Accordion className='page-settings'>
 					<Section.Skeleton />
