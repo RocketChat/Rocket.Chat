@@ -7,7 +7,7 @@ export function Section({
 	filter = <InputBox.Skeleton />,
 }) {
 	return <Box>
-		<Margins block='x16'>
+		<Margins block='x24'>
 			<Flex.Container alignItems='center' wrap='no-wrap'>
 				<Box>
 					<Flex.Item grow={1}>

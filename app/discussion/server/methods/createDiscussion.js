@@ -86,8 +86,7 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
-	// discussions are always created as private groups
-	const discussion = createRoom('p', name, user.username, [...new Set(invitedUsers)], false, {
+	const discussion = createRoom(p_room.t, name, user.username, [...new Set(invitedUsers)], false, {
 		fname: t_name,
 		description: message.msg, // TODO discussions remove
 		topic: p_room.name, // TODO discussions remove

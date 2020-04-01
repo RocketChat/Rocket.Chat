@@ -57,6 +57,15 @@ Meteor.methods({
 			Meteor.call('setUserStatus', null, settings.statusText);
 		}
 
+		if (settings.bio) {
+			if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
+				throw new Meteor.Error('error-invalid-field', 'bio', {
+					method: 'saveUserProfile',
+				});
+			}
+			Users.setBio(user._id, settings.bio.trim());
+		}
+
 		if (settings.email) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
