@@ -232,7 +232,7 @@ const methodCall = () => ({
 	},
 });
 
-// had to create different endpoint for authenticated and non-authenticated calls
-// because restivus does not 'this.userId' when 'authRequired: false'
-API.v1.addRoute('method.call', { authRequired: true }, methodCall());
-API.v1.addRoute('method.callAnon', { authRequired: false }, methodCall());
+// had to create two different endpoints for authenticated and non-authenticated calls
+// because restivus does not provide 'this.userId' if 'authRequired: false'
+API.v1.addRoute('method.call', { authRequired: true, rateLimiterOptions: false }, methodCall());
+API.v1.addRoute('method.callAnon', { authRequired: false, rateLimiterOptions: false }, methodCall());
