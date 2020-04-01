@@ -34,7 +34,7 @@ FlowRouter.goToRoomById = async (rid) => {
 
 BlazeLayout.setRoot('body');
 
-const createTemplateForComponent = async (
+export const createTemplateForComponent = async (
 	component,
 	props = {},
 	// eslint-disable-next-line new-cap
