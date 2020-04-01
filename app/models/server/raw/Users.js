@@ -237,6 +237,6 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.update(query, update);
+		return this.update(query, update, { multi: true });
 	}
 }
