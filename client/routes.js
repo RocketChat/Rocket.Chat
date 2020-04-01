@@ -233,22 +233,6 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
-FlowRouter.route('/admin/users', {
-	name: 'admin-users',
-	async action() {
-		await import('../app/ui-admin/client/users/views');
-		BlazeLayout.render('main', { center: 'adminUsers' });
-	},
-});
-
-FlowRouter.route('/admin/rooms', {
-	name: 'admin-rooms',
-	async action() {
-		await import('../app/ui-admin/client/rooms/views');
-		BlazeLayout.render('main', { center: 'adminRooms' });
-	},
-});
-
 const style = 'overflow: hidden; flex: 1 1 auto; height: 1%;';
 FlowRouter.route('/admin/:group?', {
 	name: 'admin',
