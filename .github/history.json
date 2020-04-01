@@ -40067,6 +40067,55 @@
           ]
         }
       ]
+    },
+    "3.0.8": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17078",
+          "title": "Regression: Remove model observe that was used to control the status of the Omnichannel agents",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.8",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17086",
+          "title": "[FIX] Emit livechat events to instace only",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.8",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17088",
+          "title": "Reduce notifyUser propagation",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.8",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17089",
+          "title": "[FIX] Error when websocket received status update event",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.8",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
     }
   }
 }
