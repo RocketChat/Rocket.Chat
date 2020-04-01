@@ -11,7 +11,7 @@ Migrations.add({
 				return LivechatInquiry.removeByRoomId(rid);
 			}
 
-			const room = LivechatRooms.findOneById(rid);
+			const room = LivechatRooms.findOneById(rid, { fields: { closedAt: 1 } });
 			if (!room || room.closedAt) {
 				LivechatInquiry.removeByRoomId(rid);
 			}
