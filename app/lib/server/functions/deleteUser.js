@@ -1,16 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { FileUpload } from '../../../file-upload';
-import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models';
-import { settings } from '../../../settings';
-import { Notifications } from '../../../notifications';
+import { FileUpload } from '../../../file-upload/server';
+import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Notifications } from '../../../notifications/server';
+import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 
 export const deleteUser = function(userId) {
 	const user = Users.findOneById(userId, {
 		fields: { username: 1, avatarOrigin: 1, federation: 1 },
 	});
+
+	if (!user) {
+		return;
+	}
 
 	if (user.federation) {
 		const existingSubscriptions = Subscriptions.find({ 'u._id': user._id }).count();
@@ -40,8 +45,10 @@ export const deleteUser = function(userId) {
 				break;
 		}
 
-		Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username); // Remove direct rooms with the user
 		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
+
+		Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
@@ -52,7 +59,11 @@ export const deleteUser = function(userId) {
 		Notifications.notifyLogged('Users:Deleted', { userId });
 	}
 
-	Users.removeById(userId); // Remove user from users database
+	// Remove user from users database
+	Users.removeById(userId);
+
+	// update name and fname of group direct messages
+	updateGroupDMsName(user);
 
 	// Refresh the servers list
 	FederationServers.refreshServers();

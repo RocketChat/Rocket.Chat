@@ -20,9 +20,6 @@ Template.discussionsTabbar.helpers({
 		const instance = Template.instance();
 		return instance.messages.find({}, { limit: instance.limit.get(), sort: { ts: -1 } });
 	},
-	message() {
-		return _.extend(this, { customClass: 'pinned', actionContext: 'pinned' });
-	},
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},

@@ -12,3 +12,5 @@ export default {
 };
 
 export const _default = () => <Section groupId='General' />;
+
+export const skeleton = () => <Section.Skeleton />;

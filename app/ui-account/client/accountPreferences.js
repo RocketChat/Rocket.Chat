@@ -49,7 +49,7 @@ Template.accountPreferences.helpers({
 		const languages = TAPi18n.getLanguages();
 
 		const result = Object.entries(languages)
-			.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+			.map(([key, language]) => ({ ...language, key }))
 			.sort((a, b) => a.key - b.key);
 
 		result.unshift({
@@ -62,7 +62,7 @@ Template.accountPreferences.helpers({
 	},
 	isUserLanguage(key) {
 		const languageKey = Meteor.user().language;
-		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key.toLowerCase();
 	},
 	ifThenElse(condition, val, not = '') {
 		return condition ? val : not;
@@ -184,7 +184,6 @@ Template.accountPreferences.onCreated(function() {
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
 		data.sidebarShowDiscussion = JSON.parse($('#sidebarShowDiscussion').find('input:checked').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
-		data.roomCounterSidebar = JSON.parse($('#roomCounterSidebar').find('input:checked').val());
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
 			return s.trim(e);
 		}));

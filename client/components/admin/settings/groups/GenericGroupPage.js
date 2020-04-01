@@ -3,13 +3,13 @@ import React from 'react';
 import { GroupPage } from '../GroupPage';
 import { Section } from '../Section';
 
-export function GenericGroupPage({ group }) {
-	const solo = group.sections.length === 1;
+export function GenericGroupPage({ _id, sections, ...group }) {
+	const solo = sections.length === 1;
 
-	return <GroupPage group={group}>
-		{group.sections.map((sectionName) => <Section
+	return <GroupPage _id={_id} {...group}>
+		{sections.map((sectionName) => <Section
 			key={sectionName}
-			groupId={group._id}
+			groupId={_id}
 			sectionName={sectionName}
 			solo={solo}
 		/>)}

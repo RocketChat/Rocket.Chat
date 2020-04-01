@@ -44,6 +44,12 @@
 				<ul class="rooms-list__list">
 					{{#each groups}}
 						{{> sidebarItem menuItem label false "admin" _id }}
+					{{else}}
+						<div class="rc-input sidebar-flex__search">
+							<div class="rc-input__wrapper">
+								<p>{{_ "Nothing_found"}}.</p>
+							</div>
+						</div>
 					{{/each}}
 				</ul>
 			{{/if}}
