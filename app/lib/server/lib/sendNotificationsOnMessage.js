@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../callbacks/server';
 import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
@@ -353,4 +353,14 @@ export async function sendAllNotifications(message, room) {
 	return message;
 }
 
-callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
+let TroubleshootDisableNotifications;
+settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
+	if (TroubleshootDisableNotifications === value) { return; }
+	TroubleshootDisableNotifications = value;
+
+	if (value) {
+		return callbacks.remove('afterSaveMessage', 'sendNotificationsOnMessage');
+	}
+
+	callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
+});
