@@ -34,11 +34,13 @@ FlowRouter.goToRoomById = async (rid) => {
 
 BlazeLayout.setRoot('body');
 
-const createTemplateForComponent = async (
+export const createTemplateForComponent = async (
 	component,
 	props = {},
 	// eslint-disable-next-line new-cap
 	renderContainerView = () => HTML.DIV(),
+	url,
+
 ) => {
 	const name = component.displayName || component.name;
 
@@ -73,6 +75,13 @@ const createTemplateForComponent = async (
 				React.createElement(MeteorProvider, {
 					children: React.createElement(TemplateComponent),
 				}), Template.instance().firstNode);
+		});
+
+		url && Template.instance().autorun(() => {
+			const routeName = FlowRouter.getRouteName();
+			if (routeName !== url) {
+				ReactDOM.unmountComponentAtNode(Template.instance().container);
+			}
 		});
 	});
 
@@ -136,11 +145,12 @@ FlowRouter.route('/home', {
 	},
 });
 
-FlowRouter.route('/directory', {
+FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 
-	action() {
-		BlazeLayout.render('main', { center: 'directory' });
+	async action() {
+		const { DirectoryPage } = await require('../app/ui/client/views/app/components/Directory');
+		BlazeLayout.render('main', { center: await createTemplateForComponent(DirectoryPage, { }, () => HTML.DIV({ style }), 'directory')}); // eslint-disable-line
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
@@ -150,10 +160,12 @@ FlowRouter.route('/directory', {
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 
-	action(params) {
+	async action(params) {
 		if (!params.group) {
-			params.group = 'Preferences';
+			params.group = 'Profile';
 		}
+		const { Input } = await require('../client/components/admin/settings/inputs/StringSettingInput');
+		console.log(await createTemplateForComponent(Input, { }, () => HTML.DIV({ style }))); // eslint-disable-line
 		params.group = s.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
 	},
@@ -233,19 +245,20 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
+const style = 'overflow: hidden; flex: 1 1 auto; height: 1%;';
 FlowRouter.route('/admin/:group?', {
 	name: 'admin',
 	action: async ({ group = 'info' } = {}) => {
 		switch (group) {
 			case 'info': {
 				const { InformationRoute } = await import('./components/admin/info/InformationRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute) });
+				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute, { }, () => HTML.DIV({ style })) }); // eslint-disable-line
 				break;
 			}
 
 			default: {
 				const { SettingsRoute } = await import('./components/admin/settings/SettingsRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }) });
+				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }, () => HTML.DIV({ style })) }); // eslint-disable-line
 				// BlazeLayout.render('main', { center: 'admin' });
 			}
 		}

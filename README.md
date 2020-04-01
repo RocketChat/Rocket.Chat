@@ -14,8 +14,7 @@
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/RocketChat/Rocket.Chat) 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
-
-* [**NEW!** Help Wanted](#help-wanted)
+* [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-one-codebase) 
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
@@ -59,7 +58,12 @@
   * [Translations](#translations)
   * [How to Contribute](#how-to-contribute)
 * [Credits](#credits)
+* [Help Wanted](#help-wanted)
 * [Donate](#donate)
+
+# Moving to a Single Codebase
+
+Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/2020/03/28/moving-to-a-single-codebase/).
 
 # Help Wanted
 
@@ -67,15 +71,7 @@ At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is
 
 If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
-Explore current openings below:
-
-- [Lead Security Researcher and Developer](https://rocketchat.recruitee.com/o/lead-security-researcher-and-developer)
-
-- [Sales Engineer](https://rocketchat.recruitee.com/o/sales-engineer)
-
-- [Business Developer/Sales/Channel](https://rocketchat.recruitee.com/o/business-developer-sales-channel)
-
-- [Front-End Developer](https://rocketchat.recruitee.com/o/frontend-developer)
+Get to know more about us and explore current openings at https://jobs.rocket.chat/"
 
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
@@ -104,7 +100,7 @@ Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 sudo snap install rocketchat-server
 ```
 
-[![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/rocketchat-server)
 
 Installing snaps is very quick. By running that command you have your full Rocket.Chat server up and running. Snaps are secure. They are isolated with all of their dependencies. Snaps also auto-update when we release new versions.
 
@@ -142,15 +138,6 @@ The easiest way to install a ready-to-run Rocket.Chat server on a Linux machine,
 Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
 
 [![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
-
-## Ubuntu 16.04
-[![Ubuntu Apps Explorer](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/uappexplorer.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
-
-Deploy from shell:
-
-`snap install rocketchat-server`
-
-In under 30 seconds, your Rocket.Chat server will be up and running at `http://host-ip:3000`
 
 ## Cloudron.io
 

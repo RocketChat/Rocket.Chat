@@ -112,7 +112,7 @@ function startChimp() {
 	startProcess({
 		name: 'Chimp',
 		command: 'npm',
-		params: ['run', 'chimp-test'],
+		params: ['run', 'testci'],
 		// command: 'exit',
 		// params: ['2'],
 		options: {

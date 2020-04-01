@@ -23,7 +23,7 @@ Template.membersList.helpers({
 
 	isGroupChat() {
 		const room = ChatRoom.findOne(this.rid, { reactive: false });
-		return roomTypes.roomTypes[room.t].isGroupChat();
+		return roomTypes.getConfig(room.t).isGroupChat(room);
 	},
 
 	isDirectChat() {
@@ -39,17 +39,6 @@ Template.membersList.helpers({
 		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
 		let totalOnline = 0;
 		let users = roomUsers;
-
-		const filter = Template.instance().filter.get();
-		let reg = null;
-		try {
-			reg = new RegExp(filter, 'i');
-		} catch (e) {
-			console.log(e);
-		}
-		if (filter && reg) {
-			users = users.filter((user) => reg.test(user.username) || reg.test(user.name));
-		}
 
 		users = users.map(function(user) {
 			let utcOffset;
@@ -98,11 +87,11 @@ Template.membersList.helpers({
 	canAddUser() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return (() => roomTypes.roomTypes[roomData.t].canAddUser(roomData))();
+		return (() => roomTypes.getConfig(roomData.t).canAddUser(roomData))();
 	},
 
 	canInviteUser() {
-		return hasPermission('create-invite-links');
+		return hasPermission('create-invite-links', this._id);
 	},
 
 	showUserInfo() {
@@ -117,16 +106,16 @@ Template.membersList.helpers({
 	},
 
 	userInfoDetail() {
-		const room = ChatRoom.findOne(this.rid, { fields: { t: 1 } });
+		const room = ChatRoom.findOne(this.rid, { fields: { t: 1, usernames: 1 } });
 
 		return {
 			tabBar: Template.currentData().tabBar,
 			username: Template.instance().userDetail.get(),
 			clear: Template.instance().clearUserDetail,
-			showAll: roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
-			hideAdminControls: roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
+			showAll: roomTypes.getConfig(room.t).userDetailShowAll(room) || false,
+			hideAdminControls: roomTypes.getConfig(room.t).userDetailShowAdmin(room) || false,
 			video: ['d'].includes(room && room.t),
-			showBackButton: roomTypes.roomTypes[room.t].isGroupChat(),
+			showBackButton: roomTypes.getConfig(room.t).isGroupChat(room),
 		};
 	},
 	displayName() {
@@ -183,8 +172,8 @@ Template.membersList.events({
 		const room = Session.get(`roomData${ instance.data.rid }`);
 		const _actions = getActions({
 			user: this.user.user,
-			hideAdminControls: roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
-			directActions: roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
+			hideAdminControls: roomTypes.getConfig(room.t).userDetailShowAdmin(room) || false,
+			directActions: roomTypes.getConfig(room.t).userDetailShowAll(room) || false,
 		})
 			.map((action) => (typeof action === 'function' ? action.call(this) : action))
 			.filter((action) => action && (!action.condition || action.condition.call(this)));
@@ -235,7 +224,7 @@ Template.membersList.events({
 	'autocompleteselect #user-add-search'(event, template, doc) {
 		const roomData = Session.get(`roomData${ template.data.rid }`);
 
-		if (roomTypes.roomTypes[roomData.t].canAddUser(roomData)) {
+		if (roomTypes.getConfig(roomData.t).canAddUser(roomData)) {
 			return Meteor.call('addUserToRoom', { rid: roomData._id, username: doc.username }, function(error) {
 				if (error) {
 					return handleError(error);
@@ -247,10 +236,10 @@ Template.membersList.events({
 	},
 
 	'click .show-more-users'(e, instance) {
-		const { showAllUsers, usersLimit, users, total, loadingMore } = instance;
+		const { showAllUsers, usersLimit, users, total, loadingMore, filter } = instance;
 
 		loadingMore.set(true);
-		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: usersLimit.get() + 100, skip: 0 }, (error, result) => {
+		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: usersLimit.get() + 100, skip: 0 }, filter.get(), (error, result) => {
 			if (error) {
 				console.error(error);
 				loadingMore.set(false);
@@ -283,7 +272,7 @@ Template.membersList.onCreated(function() {
 	this.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
-		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
+		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, this.filter.get(), (error, users) => {
 			if (error) {
 				console.error(error);
 				this.loading.set(false);
@@ -298,7 +287,7 @@ Template.membersList.onCreated(function() {
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);
 		this.tabBar.setData({
-			label: 'Members_List',
+			label: 'Members',
 			icon: 'team',
 		});
 		setTimeout(() => this.clearRoomUserDetail(), 100);
@@ -322,6 +311,7 @@ Template.membersList.onCreated(function() {
 });
 
 Template.membersList.onRendered(function() {
+	this.firstNode.parentNode.querySelector('#user-search').focus();
 	this.autorun(() => {
 		const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');

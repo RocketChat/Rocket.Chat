@@ -50,19 +50,19 @@ export const Livechat = {
 		},
 	}),
 
-	online() {
+	online(department) {
 		if (settings.get('Livechat_accept_chats_with_no_agents')) {
 			return true;
 		}
 
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
-			const botAgents = Livechat.getBotAgents();
+			const botAgents = Livechat.getBotAgents(department);
 			if (botAgents && botAgents.count() > 0) {
 				return true;
 			}
 		}
 
-		const onlineAgents = Livechat.getOnlineAgents();
+		const onlineAgents = Livechat.getOnlineAgents(department);
 		return (onlineAgents && onlineAgents.count() > 0) || settings.get('Livechat_accept_chats_with_no_agents');
 	},
 
@@ -72,6 +72,7 @@ export const Livechat = {
 
 	getAgents(department) {
 		if (department) {
+			// TODO: This and all others should get the user's info as well
 			return LivechatDepartmentAgents.findByDepartmentId(department);
 		}
 		return Users.findAgents();
@@ -276,7 +277,7 @@ export const Livechat = {
 		return false;
 	},
 
-	saveGuest({ _id, name, email, phone }) {
+	saveGuest({ _id, name, email, phone, livechatData = {} }) {
 		const updateData = {};
 
 		if (name) {
@@ -288,6 +289,23 @@ export const Livechat = {
 		if (phone) {
 			updateData.phone = phone;
 		}
+
+		const customFields = {};
+		const fields = LivechatCustomField.find({ scope: 'visitor' });
+		fields.forEach((field) => {
+			if (!livechatData.hasOwnProperty(field._id)) {
+				return;
+			}
+			const value = s.trim(livechatData[field._id]);
+			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+				const regexp = new RegExp(field.regexp);
+				if (!regexp.test(value)) {
+					throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+				}
+			}
+			customFields[field._id] = value;
+		});
+		updateData.livechatData = customFields;
 		const ret = LivechatVisitors.saveGuestById(_id, updateData);
 
 		Meteor.defer(() => {
@@ -297,18 +315,22 @@ export const Livechat = {
 		return ret;
 	},
 
-	closeRoom({ user, visitor, room, comment }) {
+	closeRoom({ user, visitor, room, comment, options = {} }) {
 		if (!room || room.t !== 'l' || !room.open) {
 			return false;
 		}
 
-		callbacks.run('livechat.beforeCloseRoom', room);
+		const extraData = callbacks.run('livechat.beforeCloseRoom', { room, options });
 
 		const now = new Date();
+		const { _id: rid, servedBy } = room;
+		const serviceTimeDuration = servedBy && (now.getTime() - servedBy.ts) / 1000;
 
 		const closeData = {
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000,
+			...serviceTimeDuration && { serviceTimeDuration },
+			...extraData,
 		};
 
 		if (user) {
@@ -325,7 +347,6 @@ export const Livechat = {
 			};
 		}
 
-		const { _id: rid, servedBy } = room;
 		LivechatRooms.closeByRoomId(rid, closeData);
 		LivechatInquiry.removeByRoomId(rid);
 
@@ -338,10 +359,10 @@ export const Livechat = {
 		// Retreive the closed room
 		room = LivechatRooms.findOneByIdOrName(rid);
 
-		sendMessage(user, message, room);
+		sendMessage(user || visitor, message, room);
 
 		if (servedBy) {
-			Subscriptions.hideByRoomIdAndUserId(rid, servedBy._id);
+			Subscriptions.removeByRoomIdAndUserId(rid, servedBy._id);
 		}
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
@@ -353,6 +374,20 @@ export const Livechat = {
 		return true;
 	},
 
+	removeRoom(rid) {
+		check(rid, String);
+		const room = LivechatRooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:removeRoom' });
+		}
+
+		Messages.removeByRoomId(rid);
+		Subscriptions.removeByRoomId(rid);
+		LivechatInquiry.removeByRoomId(rid);
+		return LivechatRooms.removeById(rid);
+	},
+
+
 	setCustomFields({ token, key, value, overwrite } = {}) {
 		check(token, String);
 		check(key, String);
@@ -362,6 +397,13 @@ export const Livechat = {
 		const customField = LivechatCustomField.findOneById(key);
 		if (!customField) {
 			throw new Meteor.Error('invalid-custom-field');
+		}
+
+		if (customField.regexp !== undefined && customField.regexp !== '') {
+			const regexp = new RegExp(customField.regexp);
+			if (!regexp.test(value)) {
+				throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: key }));
+			}
 		}
 
 		if (customField.scope === 'room') {
@@ -414,7 +456,26 @@ export const Livechat = {
 	},
 
 	saveRoomInfo(roomData, guestData) {
-		if ((roomData.topic != null || roomData.tags != null) && !LivechatRooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
+		const { livechatData = {} } = roomData;
+		const customFields = {};
+
+		const fields = LivechatCustomField.find({ scope: 'room' });
+		fields.forEach((field) => {
+			if (!livechatData.hasOwnProperty(field._id)) {
+				return;
+			}
+			const value = s.trim(livechatData[field._id]);
+			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+				const regexp = new RegExp(field.regexp);
+				if (!regexp.test(value)) {
+					throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+				}
+			}
+			customFields[field._id] = value;
+		});
+		roomData.livechatData = customFields;
+
+		if (!LivechatRooms.saveRoomById(roomData)) {
 			return false;
 		}
 
@@ -423,7 +484,13 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return Rooms.setFnameById(roomData._id, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			const { _id: rid } = roomData;
+			const { name } = guestData;
+			return Rooms.setFnameById(rid, name)
+				&& LivechatInquiry.setNameByRoomId(rid, name)
+				// This one needs to be the last since the agent may not have the subscription
+				// when the conversation is in the queue, then the result will be 0(zero)
+				&& Subscriptions.updateDisplayNameByRoomId(rid, name);
 		}
 	},
 
@@ -714,6 +781,7 @@ export const Livechat = {
 
 		Subscriptions.removeByVisitorToken(token);
 		LivechatRooms.removeByVisitorToken(token);
+		LivechatInquiry.removeByVisitorToken(token);
 	},
 
 	saveDepartmentAgents(_id, departmentAgents) {
@@ -743,6 +811,8 @@ export const Livechat = {
 			showOnRegistration: Boolean,
 			email: String,
 			showOnOfflineForm: Boolean,
+			requestTagBeforeClosingChat: Match.Optional(Boolean),
+			chatClosingTags: Match.Optional([String]),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
@@ -760,6 +830,11 @@ export const Livechat = {
 				username: String,
 			}),
 		]));
+
+		const { requestTagBeforeClosingChat, chatClosingTags } = departmentData;
+		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
+			throw new Meteor.Error('error-validating-department-chat-closing-tags', 'At least one closing tag is required when the department requires tag(s) on closing conversations.', { method: 'livechat:saveDepartment' });
+		}
 
 		if (_id) {
 			const department = LivechatDepartment.findOneById(_id);

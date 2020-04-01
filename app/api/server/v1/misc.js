@@ -10,7 +10,7 @@ import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
-import { StdOut } from '../../../logger/server/publish';
+import { StdOut } from '../../../logger/server/streamer';
 
 
 // DEPRECATED
@@ -88,6 +88,9 @@ API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRe
 				text = `#${ channel }`;
 				break;
 			case 'user':
+				if (settings.get('API_Shield_user_require_auth') && !this.getLoggedInUser()) {
+					return API.v1.failure('You must be logged in to do this.');
+				}
 				const user = this.getUserFromParams();
 
 				// Respect the server's choice for using their real names or not
@@ -176,6 +179,7 @@ API.v1.addRoute('directory', { authRequired: true }, {
 		const { sort, query } = this.parseJsonQuery();
 
 		const { text, type, workspace = 'local' } = query;
+
 		if (sort && Object.keys(sort).length > 1) {
 			return API.v1.failure('This method support only one "sort" parameter');
 		}

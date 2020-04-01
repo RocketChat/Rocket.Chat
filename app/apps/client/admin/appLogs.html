@@ -31,6 +31,10 @@
 									</div>
 								</div>
 								<div class="section-content">
+									{{#if log.instanceId}}
+										<span>Instance: {{log.instanceId}}</span>
+									{{/if}}
+									<span></span>
 									{{#each entry in log.entries}}
 										<div>{{ entry.severity }}: {{ entry.timestamp }} (Caller: {{ entry.caller }})</div>
 										<div>
