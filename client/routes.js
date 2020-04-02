@@ -12,7 +12,7 @@ import { KonchatNotification } from '../app/ui';
 import { ChatSubscription } from '../app/models';
 import { roomTypes } from '../app/utils';
 import { call } from '../app/ui-utils';
-import { createTemplateForComponent } from './createTemplateForComponent';
+import { createTemplateForComponent, renderRouteComponent } from './reactAdapters';
 
 const getRoomById = mem((rid) => call('getRoomById', rid));
 
@@ -204,7 +204,8 @@ FlowRouter.route('/admin/:group?', {
 });
 
 FlowRouter.notFound = {
-	action: async () => {
-		BlazeLayout.render(createTemplateForComponent(() => import('./components/pageNotFound/PageNotFound'), { name: 'PageNotFound' }));
+	action: () => {
+		BlazeLayout.reset();
+		renderRouteComponent(() => import('./components/pageNotFound/PageNotFound'));
 	},
 };

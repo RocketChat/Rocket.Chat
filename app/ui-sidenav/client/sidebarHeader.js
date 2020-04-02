@@ -10,7 +10,7 @@ import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { userStatus } from '../../user-status';
 import { hasPermission } from '../../authorization/client';
-import { createTemplateForComponent } from '../../../client/createTemplateForComponent';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
 
 
 const setStatus = (status, statusText) => {
