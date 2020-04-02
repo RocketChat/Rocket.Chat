@@ -98,7 +98,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	return UIKitInteractionType.MODAL_ClOSE;
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, ...rest }) => new Promise(async (resolve, reject) => {
+export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) => new Promise(async (resolve, reject) => {
 	const triggerId = generateTriggerId(appId);
 
 	const payload = rest.payload || rest;
@@ -107,7 +107,7 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, .
 
 	const { type: interactionType, ...data } = await APIClient.post(
 		`apps/ui.interaction/${ appId }`,
-		{ type, actionId, payload, mid, rid, triggerId, viewId },
+		{ type, actionId, payload, container, mid, rid, triggerId, viewId },
 	);
 
 	return resolve(handlePayloadUserInteraction(interactionType, data));

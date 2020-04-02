@@ -14,6 +14,7 @@ import { settings } from '../../../settings';
 import { getActions } from './userActions';
 import './userInfo.html';
 import { APIClient } from '../../../utils/client';
+import { Markdown } from '../../../markdown/lib/markdown';
 
 const shownActionsCount = 2;
 
@@ -188,7 +189,14 @@ Template.userInfo.helpers({
 			},
 		};
 	},
-
+	hasBio() {
+		const user = Template.instance().user.get();
+		return user.bio && user.bio.trim();
+	},
+	bio() {
+		const user = Template.instance().user.get();
+		return Markdown.parse(user.bio);
+	},
 	roleTags() {
 		const user = Template.instance().user.get();
 		if (!user || !user._id) {
@@ -284,6 +292,8 @@ Template.userInfo.onCreated(function() {
 			params.userId = _id;
 		} else if (username != null) {
 			params.username = username;
+		} else {
+			return;
 		}
 
 		const { user } = await APIClient.v1.get('users.info', params);

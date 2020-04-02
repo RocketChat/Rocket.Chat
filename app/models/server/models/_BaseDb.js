@@ -130,6 +130,10 @@ export class BaseDb extends EventEmitter {
 		return this.model.find(...args);
 	}
 
+	findById(_id, options) {
+		return this.find({ _id }, options);
+	}
+
 	findOne(...args) {
 		this._doNotMixInclusionAndExclusionFields(args[1]);
 		return this.model.findOne(...args);
