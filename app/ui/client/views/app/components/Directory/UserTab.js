@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Box, Margins, Table, Flex, Avatar } from '@rocket.chat/fuselage';
+import { Box, Table, Flex, Avatar } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
@@ -34,11 +34,9 @@ export function UserTab({
 		}
 		setSort([id, 'asc']);
 	};
-	const bioStyle = useMemo(() => ({ ...style, width: '200px' }), [mediaQuery]);
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th key={'bio'} direction={sort[1]} active={sort[0] === 'bio'} onClick={onHeaderClick} sort='bio' style={bioStyle}>{t('Bio')}</Th>,
 		mediaQuery && canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email' style={{ width: '200px' }} >{t('Email')}</Th>,
 		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin' style={{ width: '200px' }} >{t('Domain')}</Th>,
 		mediaQuery && <Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '200px' }}>{t('Joined_at')}</Th>,
@@ -64,21 +62,14 @@ export function UserTab({
 					<Flex.Item>
 						<Avatar size='x40' title={username} url={username} />
 					</Flex.Item>
-					<Margins inline='x8'>
-						<Flex.Item grow={1}>
-							<Box style={style}>
-								<Box textStyle='p2' style={style}>{name || username}</Box>
-								<Box textStyle='p1' textColor='hint' style={style}>{name && username}</Box>
-							</Box>
-						</Flex.Item>
-					</Margins>
+					<Box style={style} grow={1} mi='x8'>
+						<Box display='flex'>
+							<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box> <Box mi='x4'/> <Box textStyle='p1' textColor='hint' style={style}>{username}</Box>
+						</Box>
+						<Box textStyle='p1' textColor='hint' style={style}> {bio} </Box>
+					</Box>
 				</Box>
 			</Flex.Container>
-		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={ bioStyle }>
-			<Box is='div' style={ style }>
-				{bio}
-			</Box>
 		</Table.Cell>
 		{mediaQuery && canViewFullOtherUserInfo
 			&& <Table.Cell style={style} >

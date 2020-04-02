@@ -1,8 +1,9 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Box, Icon, Margins, Pagination, Skeleton, Table, Flex, TextInput, Tile } from '@rocket.chat/fuselage';
+import { Box, Icon, Pagination, Skeleton, Table, Flex, TextInput, Tile } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useDebounce } from '../hooks';
+import { Markdown as mrkd } from '../../../../../../markdown/client';
 
 function SortIcon({ direction }) {
 	return <Box is='svg' width='x16' height='x16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -14,10 +15,14 @@ function SortIcon({ direction }) {
 export function Th({ children, active, direction, sort, onClick, align, ...props }) {
 	const fn = useMemo(() => () => onClick && onClick(sort), [sort, onClick]);
 	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
-		<Flex.Container alignItems='center' wrap='no-wrap'>
-			<Box>{children}{sort && <SortIcon mod-active={active} direction={active && direction} />}</Box>
-		</Flex.Container>
+		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon mod-active={active} direction={active && direction} />}</Box>
 	</Table.Cell>;
+}
+
+export function Markdown({ children, ...props }) {
+	return React.Children.map(children, function(text, index) {
+		return <Box { ...props } key={index} dangerouslySetInnerHTML={{ __html: mrkd.parse(text) }}/>;
+	});
 }
 
 const LoadingRow = ({ cols }) => <Table.Row>
@@ -27,14 +32,10 @@ const LoadingRow = ({ cols }) => <Table.Row>
 				<Flex.Item>
 					<Skeleton variant='rect' height={40} width={40} />
 				</Flex.Item>
-				<Margins inline='x8'>
-					<Flex.Item grow={1}>
-						<Box>
-							<Skeleton width='100%' />
-							<Skeleton width='100%' />
-						</Box>
-					</Flex.Item>
-				</Margins>
+				<Box mi='x8' grow={1}>
+					<Skeleton width='100%' />
+					<Skeleton width='100%' />
+				</Box>
 			</Box>
 		</Flex.Container>
 	</Table.Cell>
@@ -78,9 +79,9 @@ export function DirectoryTable({
 	return <>
 		<Flex.Container direction='column'>
 			<Box>
-				<Margins block='x16'>
+				<Box mb='x16' display='flex'>
 					<TextInput placeholder={searchPlaceholder} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-				</Margins>
+				</Box>
 				{channels && !channels.length
 					? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
 						{t('No_data_found')}

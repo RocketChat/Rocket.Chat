@@ -1,21 +1,24 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Box, Margins, Table, Flex, Avatar, Tag } from '@rocket.chat/fuselage';
+import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { DirectoryTable, Th } from './DirectoryTable';
+import { DirectoryTable, Th, Markdown } from './DirectoryTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { useQuery, useFormatDate } from '../hooks';
+import { roomTypes } from '../../../../../../utils/client';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
 function RoomTags({ room }) {
 	const t = useTranslation();
-	return <Margins inline='x2'>
-		{room.default && <Tag variant='primary'>{t('default')}</Tag>}
-		{room.featured && <Tag variant='primary'>{t('featured')}</Tag>}
-	</Margins>;
+	return <Box mi='x4' alignItems='center' display='flex'>
+		<Margins inline='x2'>
+			{room.default && <Tag variant='primary'>{t('default')}</Tag>}
+			{room.featured && <Tag variant='primary'>{t('featured')}</Tag>}
+		</Margins>
+	</Box>;
 }
 
 export function ChannelsTab() {
@@ -57,21 +60,15 @@ export function ChannelsTab() {
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
 		<Table.Cell>
-			<Flex.Container>
-				<Box>
-					<Flex.Item>
-						<Avatar size='x40' title={fname || name} url={`%40${ fname || name }`} />
-					</Flex.Item>
-					<Margins inline='x8'>
-						<Flex.Item grow={1}>
-							<Box>
-								<Box textStyle='p2'>{fname || name} <RoomTags room={room} style={style} /></Box>
-								{topic && <Box textStyle='p1' textColor='hint' style={style}>{topic}</Box> }
-							</Box>
-						</Flex.Item>
-					</Margins>
+			<Box display='flex'>
+				<Avatar size='x40' title={fname || name} url={`%40${ fname || name }`} flexGrow={0} />
+				<Box grow={1} mi='x8' style={style}>
+					<Box display='flex' alignItems='center'>
+						<Icon name={roomTypes.getIcon(room)} textColor='hint' /> <Box textStyle='p2' textColor='default' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
+					</Box>
+					{topic && <Markdown textStyle='p1' textColor='hint' style={style}>{topic}</Markdown> }
 				</Box>
-			</Flex.Container>
+			</Box>
 		</Table.Cell>
 		<Table.Cell textStyle='p1' textColor='hint' style={style}>
 			{usersCount}
