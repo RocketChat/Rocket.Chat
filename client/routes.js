@@ -88,7 +88,7 @@ FlowRouter.route('/directory/:tab?', {
 
 	async action() {
 		const { DirectoryPage } = await require('../app/ui/client/views/app/components/Directory');
-		BlazeLayout.render('main', { center: await createTemplateForComponent(DirectoryPage, { }, () => HTML.DIV({ style }), 'directory')}); // eslint-disable-line
+		BlazeLayout.render('main', { center: await createTemplateForComponent(DirectoryPage, () => HTML.DIV({ style }), 'directory')}); // eslint-disable-line
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
@@ -103,7 +103,7 @@ FlowRouter.route('/account/:group?', {
 			params.group = 'Profile';
 		}
 		const { Input } = await require('../client/components/admin/settings/inputs/StringSettingInput');
-		console.log(await createTemplateForComponent(Input, { }, () => HTML.DIV({ style }))); // eslint-disable-line
+		console.log(await createTemplateForComponent(Input, () => HTML.DIV({ style }))); // eslint-disable-line
 		params.group = s.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
 	},
@@ -191,13 +191,13 @@ FlowRouter.route('/admin/:group?', {
 		switch (group) {
 			case 'info': {
 				const { InformationRoute } = await import('./components/admin/info/InformationRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute, { }, () => HTML.DIV({ style })) }); // eslint-disable-line
+				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute, () => HTML.DIV({ style })) }); // eslint-disable-line
 				break;
 			}
 
 			default: {
 				const { SettingsRoute } = await import('./components/admin/settings/SettingsRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }, () => HTML.DIV({ style })) }); // eslint-disable-line
+				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, () => HTML.DIV({ style })) }); // eslint-disable-line
 				// BlazeLayout.render('main', { center: 'admin' });
 			}
 		}
