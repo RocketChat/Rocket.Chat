@@ -1,6 +1,72 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.7
+`2020-04-02  ·  2 🎉  ·  1 🚀  ·  4 🐛  ·  9 🔍  ·  9 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- Directory page refactored, new user's bio field ([#17043](https://github.com/RocketChat/Rocket.Chat/pull/17043))
+
+- Merge Sort List and View Mode menus and improve its UI/UX ([#17103](https://github.com/RocketChat/Rocket.Chat/pull/17103))
+  ![image](https://user-images.githubusercontent.com/5263975/78036622-e8db2a80-7340-11ea-91d0-65728eabdcb6.png)
+
+### 🚀 Improvements
+
+
+- Apps Engine: Reduce some stream calls and remove a find user from the app's status changes ([#17115](https://github.com/RocketChat/Rocket.Chat/pull/17115))
+
+### 🐛 Bug fixes
+
+
+- Federation delete room event not being dispatched ([#16861](https://github.com/RocketChat/Rocket.Chat/pull/16861) by [@1rV1N-git](https://github.com/1rV1N-git))
+
+- Federation Event ROOM_ADD_USER not being dispatched ([#16878](https://github.com/RocketChat/Rocket.Chat/pull/16878) by [@1rV1N-git](https://github.com/1rV1N-git))
+
+- Discussions were not inheriting the public status of parent's channel ([#17070](https://github.com/RocketChat/Rocket.Chat/pull/17070))
+
+- Member's list only filtering users already on screen ([#17110](https://github.com/RocketChat/Rocket.Chat/pull/17110))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Direct message creation by REST ([#17109](https://github.com/RocketChat/Rocket.Chat/pull/17109))
+
+- Regression: Can't login with 2FA over REST API when 2FA via Email is enabled ([#17128](https://github.com/RocketChat/Rocket.Chat/pull/17128))
+
+- Regression: Fix engagement dashboard urls, fixing Flowrouter imports ([#17127](https://github.com/RocketChat/Rocket.Chat/pull/17127))
+
+- Regression: IE11 Support ([#17125](https://github.com/RocketChat/Rocket.Chat/pull/17125))
+
+- New Troubleshoot section for disabling features ([#17114](https://github.com/RocketChat/Rocket.Chat/pull/17114))
+
+- Regression: Wrong size of Directory search/sort icons and Sort Channels menu not showing on production build ([#17118](https://github.com/RocketChat/Rocket.Chat/pull/17118))
+
+- Regression: fix fuselage import, remove directory css ([#17116](https://github.com/RocketChat/Rocket.Chat/pull/17116))
+
+- Regression: Remove old and closed Omnichannel inquiries ([#17113](https://github.com/RocketChat/Rocket.Chat/pull/17113))
+
+- Single codebase announcement ([#17081](https://github.com/RocketChat/Rocket.Chat/pull/17081))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@1rV1N-git](https://github.com/1rV1N-git)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Sing-Li](https://github.com/Sing-Li)
+- [@d-gubert](https://github.com/d-gubert)
+- [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.1.0-rc.6
 `2020-03-31  ·  3 🔍  ·  3 👩‍💻👨‍💻`
 
@@ -486,6 +552,50 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 3.0.10
+`2020-04-01  ·  1 🚀  ·  2 🐛  ·  4 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🚀 Improvements
+
+
+- Apps Engine: Reduce some stream calls and remove a find user from the app's status changes ([#17115](https://github.com/RocketChat/Rocket.Chat/pull/17115))
+
+### 🐛 Bug fixes
+
+
+- Federation Event ROOM_ADD_USER not being dispatched ([#16878](https://github.com/RocketChat/Rocket.Chat/pull/16878) by [@1rV1N-git](https://github.com/1rV1N-git))
+
+- Federation delete room event not being dispatched ([#16861](https://github.com/RocketChat/Rocket.Chat/pull/16861) by [@1rV1N-git](https://github.com/1rV1N-git))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.0.10 ([#17126](https://github.com/RocketChat/Rocket.Chat/pull/17126) by [@1rV1N-git](https://github.com/1rV1N-git))
+
+- New Troubleshoot section for disabling features ([#17114](https://github.com/RocketChat/Rocket.Chat/pull/17114))
+
+- Regression: Do not refresh statistics when opening the info panel ([#17060](https://github.com/RocketChat/Rocket.Chat/pull/17060))
+
+- Add User’s index for field `appId` ([#17075](https://github.com/RocketChat/Rocket.Chat/pull/17075))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@1rV1N-git](https://github.com/1rV1N-git)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.0.9
 `2020-03-31  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`

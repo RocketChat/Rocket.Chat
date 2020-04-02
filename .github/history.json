@@ -41719,6 +41719,247 @@
           ]
         }
       ]
+    },
+    "3.0.10": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17126",
+          "title": "Release 3.0.10",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "1rV1N-git",
+            "sampaiodiego",
+            "rodrigok",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17114",
+          "title": "New Troubleshoot section for disabling features",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17115",
+          "title": "[IMPROVE] Apps Engine: Reduce some stream calls and remove a find user from the app's status changes",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.10",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17060",
+          "title": "Regression: Do not refresh statistics when opening the info panel",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17075",
+          "title": "Add User’s index for field `appId`",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16878",
+          "title": "[FIX] Federation Event ROOM_ADD_USER not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16861",
+          "title": "[FIX] Federation delete room event not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.7": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17109",
+          "title": "Regression: Direct message creation by REST",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17128",
+          "title": "Regression: Can't login with 2FA over REST API when 2FA via Email is enabled",
+          "userLogin": "djorkaeffalexandre",
+          "milestone": "3.1.0",
+          "contributors": [
+            "djorkaeffalexandre"
+          ]
+        },
+        {
+          "pr": "17127",
+          "title": "Regression: Fix engagement dashboard urls, fixing Flowrouter imports",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17125",
+          "title": "Regression: IE11 Support",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16861",
+          "title": "[FIX] Federation delete room event not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16878",
+          "title": "[FIX] Federation Event ROOM_ADD_USER not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17114",
+          "title": "New Troubleshoot section for disabling features",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17118",
+          "title": "Regression: Wrong size of Directory search/sort icons and Sort Channels menu not showing on production build",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17070",
+          "title": "[FIX] Discussions were not inheriting the public status of parent's channel",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17116",
+          "title": "Regression: fix fuselage import, remove directory css",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17115",
+          "title": "[IMPROVE] Apps Engine: Reduce some stream calls and remove a find user from the app's status changes",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.10",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17113",
+          "title": "Regression: Remove old and closed Omnichannel inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17110",
+          "title": "[FIX] Member's list only filtering users already on screen",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17081",
+          "title": "Single codebase announcement",
+          "userLogin": "Sing-Li",
+          "milestone": "3.1.0",
+          "contributors": [
+            "Sing-Li",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17043",
+          "title": "[NEW] Directory page refactored, new user's bio field",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17103",
+          "title": "[NEW] Merge Sort List and View Mode menus and improve its UI/UX",
+          "userLogin": "ggazzo",
+          "description": "![image](https://user-images.githubusercontent.com/5263975/78036622-e8db2a80-7340-11ea-91d0-65728eabdcb6.png)",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
