@@ -28,6 +28,8 @@ Meteor.methods({
 			},
 		});
 
+		// return if message does not exist, instead of error, for offline messages
+		// which are deleted before they are send (e.g. file uploads)
 		if (!originalMessage) {
 			return;
 		}

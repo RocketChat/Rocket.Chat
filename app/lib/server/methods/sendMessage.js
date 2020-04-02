@@ -21,6 +21,7 @@ export function executeSendMessage(uid, message) {
 		});
 	}
 
+	// don't check for ts diff for offline messages which are send after long time
 	message.ts = new Date();
 
 	if (message.msg) {
