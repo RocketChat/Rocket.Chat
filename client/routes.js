@@ -85,10 +85,17 @@ FlowRouter.route('/home', {
 
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
-
-	async action() {
-		const { DirectoryPage } = await require('../app/ui/client/views/app/components/Directory');
-		BlazeLayout.render('main', { center: await createTemplateForComponent(DirectoryPage, () => HTML.DIV({ style }), 'directory')}); // eslint-disable-line
+	action: () => {
+		BlazeLayout.render('main', {
+			center: createTemplateForComponent(
+				() => import('../app/ui/client/views/app/components/Directory'),
+				{
+					name: 'Directory',
+					renderContainerView: () => HTML.DIV({ style }), // eslint-disable-line
+					routeName: 'directory',
+				},
+			),
+		});
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
@@ -97,13 +104,10 @@ FlowRouter.route('/directory/:tab?', {
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
-
-	async action(params) {
+	action: (params) => {
 		if (!params.group) {
 			params.group = 'Profile';
 		}
-		const { Input } = await require('../client/components/admin/settings/inputs/StringSettingInput');
-		console.log(await createTemplateForComponent(Input, () => HTML.DIV({ style }))); // eslint-disable-line
 		params.group = s.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
 	},
@@ -114,8 +118,7 @@ FlowRouter.route('/account/:group?', {
 
 FlowRouter.route('/terms-of-service', {
 	name: 'terms-of-service',
-
-	action() {
+	action: () => {
 		Session.set('cmsPage', 'Layout_Terms_of_Service');
 		BlazeLayout.render('cmsPage');
 	},
@@ -123,8 +126,7 @@ FlowRouter.route('/terms-of-service', {
 
 FlowRouter.route('/privacy-policy', {
 	name: 'privacy-policy',
-
-	action() {
+	action: () => {
 		Session.set('cmsPage', 'Layout_Privacy_Policy');
 		BlazeLayout.render('cmsPage');
 	},
@@ -132,8 +134,7 @@ FlowRouter.route('/privacy-policy', {
 
 FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
-
-	action() {
+	action: () => {
 		Session.set('cmsPage', 'Layout_Legal_Notice');
 		BlazeLayout.render('cmsPage');
 	},
@@ -141,36 +142,22 @@ FlowRouter.route('/legal-notice', {
 
 FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
-
-	action(params) {
-		Session.set('roomNotFound', { type: params.type, name: params.name });
+	action: ({ type, name }) => {
+		Session.set('roomNotFound', { type, name });
 		BlazeLayout.render('main', { center: 'roomNotFound' });
 	},
 });
 
 FlowRouter.route('/register/:hash', {
 	name: 'register-secret-url',
-
-	action(/* params*/) {
+	action: () => {
 		BlazeLayout.render('secretURL');
-
-		// if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL'
-		// 	Meteor.call 'checkRegistrationSecretURL', params.hash, (err, success) ->
-		// 		if success
-		// 			Session.set 'loginDefaultState', 'register'
-		// 			BlazeLayout.render 'main', {center: 'home'}
-		// 			KonchatNotification.getDesktopPermission()
-		// 		else
-		// 			BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
-		// else
-		// 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
 	},
 });
 
 FlowRouter.route('/invite/:hash', {
 	name: 'invite',
-
-	action(/* params */) {
+	action: () => {
 		BlazeLayout.render('invite');
 	},
 });
@@ -178,8 +165,7 @@ FlowRouter.route('/invite/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: async () => {
-		const { SetupWizardRoute } = await import('./components/setupWizard/SetupWizardRoute');
-		BlazeLayout.render(await createTemplateForComponent(SetupWizardRoute));
+		BlazeLayout.render(createTemplateForComponent(() => import('./components/setupWizard/SetupWizardRoute'), { name: 'SetupWizardRoute' }));
 	},
 });
 
@@ -190,15 +176,28 @@ FlowRouter.route('/admin/:group?', {
 	action: async ({ group = 'info' } = {}) => {
 		switch (group) {
 			case 'info': {
-				const { InformationRoute } = await import('./components/admin/info/InformationRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute, () => HTML.DIV({ style })) }); // eslint-disable-line
+				BlazeLayout.render('main', {
+					center: createTemplateForComponent(
+						() => import('./components/admin/info/InformationRoute'),
+						{
+							name: 'InformationRoute',
+							renderContainerView: () => HTML.DIV({ style }) // eslint-disable-line
+						},
+					),
+				});
 				break;
 			}
 
 			default: {
-				const { SettingsRoute } = await import('./components/admin/settings/SettingsRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, () => HTML.DIV({ style })) }); // eslint-disable-line
-				// BlazeLayout.render('main', { center: 'admin' });
+				BlazeLayout.render('main', {
+					center: createTemplateForComponent(
+						() => import('./components/admin/settings/SettingsRoute'),
+						{
+							name: 'SettingsRoute',
+							renderContainerView: () => HTML.DIV({ style }) // eslint-disable-line
+						},
+					),
+				});
 			}
 		}
 	},
@@ -206,7 +205,6 @@ FlowRouter.route('/admin/:group?', {
 
 FlowRouter.notFound = {
 	action: async () => {
-		const { PageNotFound } = await import('./components/pageNotFound/PageNotFound');
-		BlazeLayout.render(await createTemplateForComponent(PageNotFound));
+		BlazeLayout.render(createTemplateForComponent(() => import('./components/pageNotFound/PageNotFound'), { name: 'PageNotFound' }));
 	},
 };

@@ -26,3 +26,5 @@ export function SettingsRoute() {
 		<GroupSelector groupId={groupId} />
 	</SettingsState>;
 }
+
+export default SettingsRoute;

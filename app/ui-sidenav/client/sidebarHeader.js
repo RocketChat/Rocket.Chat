@@ -66,15 +66,13 @@ const toolbarButtons = (/* user */) => [{
 	action: async (e) => {
 		const options = [];
 		const config = {
-			template: 'SortList',
+			template: createTemplateForComponent(() => import('./SortList'), { name: 'SortList' }),
 			currentTarget: e.currentTarget,
 			data: {
 				options,
 			},
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
-		const { SortList } = await import('./SortList');
-		await createTemplateForComponent(SortList);
 		popover.open(config);
 	},
 },

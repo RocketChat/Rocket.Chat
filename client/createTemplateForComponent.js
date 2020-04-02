@@ -3,56 +3,63 @@ import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
-export const createTemplateForComponent = async (
-	component,
-	// eslint-disable-next-line new-cap
-	renderContainerView = () => HTML.DIV(),
-	url,
+export const createTemplateForComponent = (
+	importFn,
+	{
+		name = Math.random().toString(36).slice(2),
+		// eslint-disable-next-line new-cap
+		renderContainerView = () => HTML.DIV(),
+		routeName,
+	} = {},
 ) => {
-	const name = component.displayName || component.name;
-
-	if (!name) {
-		throw new Error('the component must have a name');
-	}
-
 	if (Template[name]) {
 		return name;
 	}
 
 	const template = new Blaze.Template(name, renderContainerView);
 
-	const React = await import('react');
-	const ReactDOM = await import('react-dom');
-	const { MeteorProvider } = await import('./providers/MeteorProvider');
+	template.onRendered(async function() {
+		const [
+			{ createElement, lazy, Suspense },
+			{ render, unmountComponentAtNode },
+		] = await Promise.all([
+			import('react'),
+			import('react-dom'),
+		]);
 
-	function TemplateComponent() {
-		return React.createElement(component);
-	}
+		const { firstNode } = this;
 
-	template.onRendered(() => {
-		Template.instance().autorun((computation) => {
-			if (computation.firstRun) {
-				Template.instance().container = Template.instance().firstNode;
-			}
+		if (!firstNode) {
+			return;
+		}
 
-			ReactDOM.render(
-				React.createElement(MeteorProvider, {
-					children: React.createElement(TemplateComponent),
-				}), Template.instance().firstNode);
+		const LazyMeteorProvider = lazy(async () => {
+			const { MeteorProvider } = await import('./providers/MeteorProvider');
+			return { default: MeteorProvider };
 		});
+		const LazyComponent = lazy(importFn);
+		render(
+			createElement(Suspense, { fallback: null },
+				createElement(LazyMeteorProvider, {},
+					createElement(Suspense, { fallback: null },
+						createElement(LazyComponent),
+					),
+				),
+			), firstNode);
 
-		url && Template.instance().autorun(() => {
-			const routeName = FlowRouter.getRouteName();
-			if (routeName !== url) {
-				ReactDOM.unmountComponentAtNode(Template.instance().container);
+		this.unmount = () => {
+			unmountComponentAtNode(firstNode);
+		};
+
+		routeName && this.autorun(() => {
+			if (FlowRouter.getRouteName() !== routeName) {
+				this.unmount();
 			}
 		});
 	});
 
-	template.onDestroyed(() => {
-		if (Template.instance().container) {
-			ReactDOM.unmountComponentAtNode(Template.instance().container);
-		}
+	template.onDestroyed(async function() {
+		this.unmount && this.unmount();
 	});
 
 	Template[name] = template;
