@@ -18,10 +18,11 @@ export class LivechatPriority extends Base {
 		return this.findOne(query, options);
 	}
 
-	createOrUpdatePriority(_id, { name, description }) {
+	createOrUpdatePriority(_id, { name, description, color }) {
 		const record = {
 			name,
 			description,
+			color,
 		};
 
 		if (_id) {

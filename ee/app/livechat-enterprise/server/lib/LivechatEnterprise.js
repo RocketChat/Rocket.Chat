@@ -121,6 +121,7 @@ export const LivechatEnterprise = {
 		check(priorityData, {
 			name: String,
 			description: Match.Optional(String),
+			color: Match.Optional(String),
 		});
 
 		return LivechatPriority.createOrUpdatePriority(_id, priorityData);
