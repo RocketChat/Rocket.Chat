@@ -1,15 +1,13 @@
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { sortBy } from 'underscore';
 import localforage from 'localforage';
 
-import { call } from '../../app/ui-utils/client';
-import { getConfig } from '../../app/ui-utils/client/config';
-import { SWCache } from '../../app/utils/client';
-import { fileUploadHandler } from '../../app/file-upload';
-import { ChatMessage, CachedChatMessage } from '../../app/models/client';
-import { callbacks } from '../../app/callbacks';
+import { call } from '../../../ui-utils/client';
+import { getConfig } from '../../../ui-utils/client/config';
+import { ChatMessage, CachedChatMessage } from '../../../models/client';
+
+import { SWCache, APIClient } from '..';
 
 const action = {
 	clean: (msg) => {
@@ -28,7 +26,7 @@ const action = {
 
 	sendFile: async (msg) => {
 		const file = await SWCache.getFileFromCache(msg.file);
-		const uploading = {
+		const upload = {
 			id: msg.file._id,
 			name: msg.file.name,
 			percentage: 0,
@@ -36,45 +34,48 @@ const action = {
 
 		if (!file) { return; }
 
-		const upload = fileUploadHandler('Uploads', msg.meta, file);
+		const data = new FormData();
+		msg.meta.description && data.append('description', msg.meta.description);
+		data.append('id', msg._id);
+		msg.msg && data.append('msg', msg.msg);
+		msg.tmid && data.append('tmid', msg.tmid);
+		data.append('file', file, msg.file.name);
 
-		// Session.set(`uploading-${msg.file._id}`, uploading);
-
-		upload.onProgress = (progress) => {
-			const uploads = uploading;
-			uploads.percentage = Math.round(progress * 100) || 0;
-			ChatMessage.setProgress(msg._id, uploads);
-		};
-
-		upload.start((error, file, storage) => {
-			if (error) {
-				ChatMessage.setProgress(msg._id, uploading);
-				return;
-			}
-
-			if (!file) {
-				return;
-			}
-
-			const msgData = { id: msg._id, msg: msg.msg, tmid: msg.tmid };
-
-			Meteor.call('sendFileMessage', msg.rid, storage, file, msgData, () => {
-				SWCache.removeFromCache(msg.file);
-			});
+		const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ msg.rid }`, {}, data, {
+			progress(progress) {
+				if (progress === 100) {
+					return;
+				}
+				const uploads = upload;
+				uploads.percentage = Math.round(progress * 100) || 0;
+				ChatMessage.setProgress(msg._id, uploads);
+			},
+			error() {
+				ChatMessage.setProgress(msg._id, upload);
+			},
 		});
 
 		Tracker.autorun((computation) => {
-			// using file._id as initial upload id, as messsageAttachment have access to file._id
-			const isCanceling = Session.get(`uploading-cancel-${ msg.file._id }`);
+			const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
+
 			if (!isCanceling) {
 				return;
 			}
-
 			computation.stop();
-			upload.stop();
+			Session.delete(`uploading-cancel-${ upload.id }`);
 
-			ChatMessage.setProgress(msg._id, uploading);
+			xhr.abort();
 		});
+
+		try {
+			await promise;
+			SWCache.removeFromCache(msg.file);
+		} catch (error) {
+			const uploads = upload;
+			uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+			uploads.percentage = 0;
+			ChatMessage.setProgress(msg._id, uploads);
+		}
 	},
 
 	update: (msg) => {
@@ -137,16 +138,14 @@ function clearOldMessages({ records: messages, ...value }) {
 	value.updatedAt = new Date();
 	localforage.setItem('chatMessage', value).then(() => {
 		CachedChatMessage.loadFromCache();
-		triggerOfflineMsgs(retain);
 	});
 }
 
-const cleanMessagesAtStartup = () => {
+export const cleanMessagesAtStartup = (offline = true) => {
 	localforage.getItem('chatMessage').then((value) => {
 		if (value && value.records) {
-			clearOldMessages(value);
+			triggerOfflineMsgs(value.records);
+			offline && clearOldMessages(value);
 		}
 	});
 };
-
-callbacks.add('afterMainReady', cleanMessagesAtStartup, callbacks.priority.MEDIUM, 'cleanMessagesAtStartup');
