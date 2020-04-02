@@ -1,13 +1,13 @@
 import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
-// import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 
 let rootNode;
+let invalidatePortals = () => {};
 const portalsMap = new Map();
-const portalsDep = new Tracker.Dependency();
 
 const mountRoot = async () => {
 	rootNode = document.getElementById('react-root');
@@ -19,7 +19,7 @@ const mountRoot = async () => {
 	}
 
 	const [
-		{ Suspense, createElement, lazy, useEffect, useState },
+		{ Suspense, createElement, lazy, useState },
 		{ render },
 	] = await Promise.all([
 		import('react'),
@@ -30,22 +30,12 @@ const mountRoot = async () => {
 
 	function AppRoot() {
 		const [portals, setPortals] = useState(() => Tracker.nonreactive(() => Array.from(portalsMap.values())));
-
-		useEffect(() => {
-			const computation = Tracker.autorun(() => {
-				portalsDep.depend();
-				setPortals(() => Array.from(portalsMap.values()));
-			});
-
-			return () => {
-				computation.stop();
-			};
-		}, []);
+		invalidatePortals = () => {
+			setPortals(Array.from(portalsMap.values()));
+		};
 
 		return createElement(Suspense, { fallback: null },
-			createElement(LazyMeteorProvider, {},
-				...portals,
-			),
+			createElement(LazyMeteorProvider, {}, ...portals),
 		);
 	}
 
@@ -58,12 +48,12 @@ export const registerPortal = (key, portal) => {
 	}
 
 	portalsMap.set(key, portal);
-	portalsDep.changed();
+	invalidatePortals();
 };
 
 export const unregisterPortal = (key) => {
 	portalsMap.delete(key);
-	portalsDep.changed();
+	invalidatePortals();
 };
 
 export const createTemplateForComponent = (
@@ -125,32 +115,60 @@ export const createTemplateForComponent = (
 	return name;
 };
 
-const createConnectedElement = async (importFn) => {
-	const { createElement, lazy, Suspense } = await import('react');
-
-	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
+const createLazyElement = async (importFn) => {
+	const { createElement, lazy } = await import('react');
 	const LazyComponent = lazy(importFn);
-
-	return createElement(Suspense, { fallback: null },
-		createElement(LazyMeteorProvider, {},
-			createElement(LazyComponent),
-		),
-	);
+	return createElement(LazyComponent);
 };
 
-export const renderRouteComponent = (importFn) => {
+const createLazyPortal = async (importFn, node) => {
+	const { createPortal } = await import('react-dom');
+	return createPortal(await createLazyElement(importFn), node);
+};
+
+export const renderRouteComponent = (importFn, { template, region } = {}) => {
 	const routeName = FlowRouter.getRouteName();
-	const key = Symbol();
 
 	Tracker.autorun(async (computation) => {
 		if (routeName !== FlowRouter.getRouteName()) {
-			unregisterPortal(key);
+			unregisterPortal(routeName);
 			computation.stop();
 			return;
 		}
 
-		if (computation.firstRun) {
-			registerPortal(key, await createConnectedElement(importFn));
+		if (!computation.firstRun) {
+			return;
 		}
+
+		if (!template || !region) {
+			BlazeLayout.reset();
+
+			const element = await createLazyElement(importFn);
+
+			if (routeName !== FlowRouter.getRouteName()) {
+				return;
+			}
+
+			registerPortal(routeName, element);
+			return;
+		}
+
+		if (!Template[routeName]) {
+			const blazeTemplate = new Blaze.Template(routeName, () => HTML.DIV()); // eslint-disable-line new-cap
+
+			blazeTemplate.onRendered(async function() {
+				const portal = await createLazyPortal(importFn, this.firstNode);
+
+				if (routeName !== FlowRouter.getRouteName()) {
+					return;
+				}
+
+				registerPortal(routeName, portal);
+			});
+
+			Template[routeName] = blazeTemplate;
+		}
+
+		BlazeLayout.render(template, { [region]: routeName });
 	});
 };

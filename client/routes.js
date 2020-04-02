@@ -3,7 +3,6 @@ import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
-import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
@@ -12,7 +11,7 @@ import { KonchatNotification } from '../app/ui';
 import { ChatSubscription } from '../app/models';
 import { roomTypes } from '../app/utils';
 import { call } from '../app/ui-utils';
-import { createTemplateForComponent, renderRouteComponent } from './reactAdapters';
+import { renderRouteComponent } from './reactAdapters';
 
 const getRoomById = mem((rid) => call('getRoomById', rid));
 
@@ -86,16 +85,7 @@ FlowRouter.route('/home', {
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		BlazeLayout.render('main', {
-			center: createTemplateForComponent(
-				() => import('../app/ui/client/views/app/components/Directory'),
-				{
-					name: 'Directory',
-					renderContainerView: () => HTML.DIV({ style }), // eslint-disable-line
-					routeName: 'directory',
-				},
-			),
-		});
+		renderRouteComponent(() => import('../app/ui/client/views/app/components/Directory'), { template: 'main', region: 'center' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
@@ -164,48 +154,29 @@ FlowRouter.route('/invite/:hash', {
 
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
-	action: async () => {
-		BlazeLayout.render(createTemplateForComponent(() => import('./components/setupWizard/SetupWizardRoute'), { name: 'SetupWizardRoute' }));
+	action: () => {
+		renderRouteComponent(() => import('./components/setupWizard/SetupWizardRoute'));
 	},
 });
 
-const style = 'overflow: hidden; flex: 1 1 auto; height: 1%;';
+// const style = 'overflow: hidden; flex: 1 1 auto; height: 1%;';
+
+FlowRouter.route('/admin/info', {
+	name: 'admin-info',
+	action: () => {
+		renderRouteComponent(() => import('./components/admin/info/InformationRoute'), { template: 'main', region: 'center' });
+	},
+});
 
 FlowRouter.route('/admin/:group?', {
 	name: 'admin',
-	action: async ({ group = 'info' } = {}) => {
-		switch (group) {
-			case 'info': {
-				BlazeLayout.render('main', {
-					center: createTemplateForComponent(
-						() => import('./components/admin/info/InformationRoute'),
-						{
-							name: 'InformationRoute',
-							renderContainerView: () => HTML.DIV({ style }) // eslint-disable-line
-						},
-					),
-				});
-				break;
-			}
-
-			default: {
-				BlazeLayout.render('main', {
-					center: createTemplateForComponent(
-						() => import('./components/admin/settings/SettingsRoute'),
-						{
-							name: 'SettingsRoute',
-							renderContainerView: () => HTML.DIV({ style }) // eslint-disable-line
-						},
-					),
-				});
-			}
-		}
+	action: () => {
+		renderRouteComponent(() => import('./components/admin/settings/SettingsRoute'), { template: 'main', region: 'center' });
 	},
 });
 
 FlowRouter.notFound = {
 	action: () => {
-		BlazeLayout.reset();
 		renderRouteComponent(() => import('./components/pageNotFound/PageNotFound'));
 	},
 };
