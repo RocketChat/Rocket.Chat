@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { EJSON } from 'meteor/ejson';
 import s from 'underscore.string';
 
 import { hasRole, hasPermission } from '../../../authorization/server';
@@ -217,22 +218,22 @@ API.v1.addRoute('stdout.queue', { authRequired: true }, {
 	},
 });
 
-const methodCall = {
+const methodCall = () => ({
 	post() {
 		check(this.bodyParams, {
 			method: String,
-			params: Array,
+			params: String,
 		});
 
 		const { method, params } = this.bodyParams;
 
-		const result = Meteor.call(method, ...params);
+		const result = Meteor.call(method, ...params ? EJSON.parse(params) : []);
 
-		return API.v1.success({ result });
+		return API.v1.success({ result: EJSON.stringify(result) });
 	},
-};
+});
 
-// had to create different endpoint for authenticated and non-authenticated calls
-// because restivus does not 'this.userId' when 'authRequired: false'
-API.v1.addRoute('method.call', { authRequired: true }, methodCall);
-API.v1.addRoute('method.callAnon', { authRequired: false }, methodCall);
+// had to create two different endpoints for authenticated and non-authenticated calls
+// because restivus does not provide 'this.userId' if 'authRequired: false'
+API.v1.addRoute('method.call', { authRequired: true, rateLimiterOptions: false }, methodCall());
+API.v1.addRoute('method.callAnon', { authRequired: false, rateLimiterOptions: false }, methodCall());

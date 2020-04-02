@@ -3373,6 +3373,8 @@
   "Troubleshoot_Disable_Data_Exporter_Processor_Alert": "This setting stops the processing of all export requests from users, so they will not receive the link to download their data!",
   "Troubleshoot_Disable_Workspace_Sync": "Disable Workspace Sync",
   "Troubleshoot_Disable_Workspace_Sync_Alert": "This setting stops the sync of this server with Rocket.Chat's cloud and may cause issues with marketplace and enteprise licenses!",
+  "Troubleshoot_Use_REST_For_DDP_Calls": "Use REST instead of websocket for Meteor calls",
+  "Troubleshoot_Use_REST_For_DDP_Calls_Alert": "Force web client to use REST requests instead of using websockets for Meteor method calls.",
   "Tuesday": "Tuesday",
   "Turn_OFF": "Turn OFF",
   "Turn_ON": "Turn ON",

@@ -2854,6 +2854,10 @@ settings.addGroup('Troubleshoot', function() {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 	});
+	this.add('Troubleshoot_Use_REST_For_DDP_Calls', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Use_REST_For_DDP_Calls_Alert',
+	});
 });
 
 settings.init();
