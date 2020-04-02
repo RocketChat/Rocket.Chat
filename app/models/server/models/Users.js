@@ -30,12 +30,14 @@ export class Users extends Base {
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ name: 'text', username: 'text', bio: 'text' }, { default_language: 'none', language_override: 'documentLanguage' });
 		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
 		this.tryEnsureIndex({ statusText: 1 });
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ appId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
@@ -132,6 +134,15 @@ export class Users extends Base {
 		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
+	}
+
+	findOneAgentById(_id, options) {
+		const query = {
+			_id,
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findAgents() {
@@ -678,16 +689,20 @@ export class Users extends Base {
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
 		const orStmt = _.reduce(searchFields, function(acc, el) {
-			acc.push({ [el.trim()]: termRegex });
+			el = el.trim();
+			if (el && !['name', 'username', 'bio'].includes(el)) {
+				acc.push({ [el]: termRegex });
+			}
 			return acc;
 		}, []);
+
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: orStmt,
-				},
-				{
+					$or: [{
+						$text: { $search: searchTerm },
+					}, ...orStmt],
 					username: { $exists: true, $nin: exceptions },
 				},
 				...extraQuery,
@@ -1104,6 +1119,21 @@ export class Users extends Base {
 			},
 		};
 
+		return this.update(_id, update);
+	}
+
+	setBio(_id, bio = '') {
+		const update = {
+			...bio.trim() ? {
+				$set: {
+					bio,
+				},
+			} : {
+				$unset: {
+					bio: 1,
+				},
+			},
+		};
 		return this.update(_id, update);
 	}
 

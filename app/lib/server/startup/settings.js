@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import './email';
 import { MessageTypesValues } from '../../lib/MessageTypes';
 
@@ -97,7 +97,7 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_SearchFields', 'username, name', {
+	this.add('Accounts_SearchFields', '', {
 		type: 'string',
 		public: true,
 	});
@@ -1293,6 +1293,10 @@ settings.addGroup('Layout', function() {
 	this.section('Content', function() {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
+			public: true,
+		});
+		this.add('Layout_Show_Home_Button', true, {
+			type: 'boolean',
 			public: true,
 		});
 		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {
@@ -2814,6 +2818,41 @@ settings.addGroup('Rate Limiter', function() {
 		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+	});
+});
+
+settings.addGroup('Troubleshoot', function() {
+	this.add('Troubleshoot_Disable_Notifications', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Notifications_Alert',
+	});
+	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Sessions_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Sessions_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Statistics_Generator', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Statistics_Generator_Alert',
+	});
+	this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Workspace_Sync', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 	});
 });
 
