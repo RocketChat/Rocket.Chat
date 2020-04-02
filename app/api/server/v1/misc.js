@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { EJSON } from 'meteor/ejson';
 import s from 'underscore.string';
 
 import { hasRole, hasPermission } from '../../../authorization/server';
@@ -221,14 +222,14 @@ const methodCall = () => ({
 	post() {
 		check(this.bodyParams, {
 			method: String,
-			params: Array,
+			params: String,
 		});
 
 		const { method, params } = this.bodyParams;
 
-		const result = Meteor.call(method, ...params);
+		const result = Meteor.call(method, ...params ? EJSON.parse(params) : []);
 
-		return API.v1.success({ result });
+		return API.v1.success({ result: EJSON.stringify(result) });
 	},
 });
 
