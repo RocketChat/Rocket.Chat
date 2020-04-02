@@ -4,6 +4,7 @@ import client from 'prom-client';
 import connect from 'connect';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 
 import { Info } from '../../../utils';
 import { Migrations } from '../../../migrations';
@@ -57,6 +58,7 @@ metrics.version = new client.Gauge({ name: 'rocketchat_version', labelNames: ['v
 metrics.migration = new client.Gauge({ name: 'rocketchat_migration', help: 'migration versoin' });
 metrics.instanceCount = new client.Gauge({ name: 'rocketchat_instance_count', help: 'instances running' });
 metrics.oplogEnabled = new client.Gauge({ name: 'rocketchat_oplog_enabled', labelNames: ['enabled'], help: 'oplog enabled' });
+metrics.oplogQueue = new client.Gauge({ name: 'rocketchat_oplog_queue', labelNames: ['queue'], help: 'oplog queue' });
 metrics.oplog = new client.Counter({
 	name: 'rocketchat_oplog',
 	help: 'summary of oplog operations',
@@ -134,6 +136,8 @@ const setPrometheusData = async () => {
 	metrics.totalPrivateGroupMessages.set(statistics.totalPrivateGroupMessages, date);
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages, date);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages, date);
+
+	metrics.oplogQueue.set(MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._entryQueue.length, date);
 };
 
 const app = connect();
