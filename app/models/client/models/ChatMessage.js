@@ -6,6 +6,7 @@ import { CachedCollection } from '../../../ui-cached-collection';
 import { CachedChatSubscription } from './CachedChatSubscription';
 import { ChatSubscription } from './ChatSubscription';
 import { getConfig } from '../../../ui-utils/client/config';
+import { cleanMessagesAtStartup } from '../../../utils';
 import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
@@ -91,6 +92,7 @@ const messagePreFetch = () => {
 		if (!messagesFetched && CachedChatSubscription.ready.get()) {
 			const status = Meteor.status();
 			if (status.status !== 'connected') {
+				cleanMessagesAtStartup();
 				return;
 			}
 			messagesFetched = true;
@@ -120,6 +122,7 @@ const messagePreFetch = () => {
 					});
 				});
 			});
+			cleanMessagesAtStartup(false);
 		}
 	});
 };
