@@ -40243,6 +40243,35 @@
           ]
         }
       ]
+    },
+    "3.0.12": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17155",
+          "title": "Fix: Missing checks for Troubleshoot > Disable Notifications",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17152",
+          "title": "Fix: Error message on startup of multiple instances related to the metrics’ server",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }
