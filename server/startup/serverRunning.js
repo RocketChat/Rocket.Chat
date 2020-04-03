@@ -6,8 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SystemLogger } from '../../app/logger';
-import { settings } from '../../app/settings';
-import { Info, getMongoInfo } from '../../app/utils';
+import { settings } from '../../app/settings/server';
+import { Info, getMongoInfo } from '../../app/utils/server';
 import { Users } from '../../app/models/server';
 import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 
