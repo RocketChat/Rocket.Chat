@@ -406,7 +406,7 @@ export class SlackImporter extends Base {
 				});
 			}
 
-			if (message.subtype) {
+			if (message.subtype && (message.subtype !== 'thread_broadcast')) {
 				this.processMessageSubType(message, room, msgDataDefaults, missedTypes);
 			} else {
 				const user = this.getRocketUserFromUserId(message.user);
