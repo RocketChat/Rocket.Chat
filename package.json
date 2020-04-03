@@ -260,6 +260,6 @@
 		]
 	},
 	"browserslist": [
-		"last 2 versions"
+		"last 2 versions and > 1%"
 	]
 }
