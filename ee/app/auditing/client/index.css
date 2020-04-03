@@ -9,10 +9,6 @@
 	text-align: center;
 }
 
-.rc-select {
-	margin: 0.5rem 0;
-}
-
 .rc-audit-container {
 	overflow-y: scroll;
 	flex: 1 1 auto;
