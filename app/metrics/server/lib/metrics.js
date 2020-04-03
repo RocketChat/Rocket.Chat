@@ -4,9 +4,8 @@ import client from 'prom-client';
 import connect from 'connect';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 
-import { Info } from '../../../utils';
+import { Info, getOplogInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations';
 import { settings } from '../../../settings';
 import { Statistics } from '../../../models';
@@ -137,7 +136,8 @@ const setPrometheusData = async () => {
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages, date);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages, date);
 
-	metrics.oplogQueue.set(MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._entryQueue.length, date);
+	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
+	metrics.oplogQueue.set(oplogQueue, date);
 };
 
 const app = connect();
