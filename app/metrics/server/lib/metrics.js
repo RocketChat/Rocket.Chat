@@ -175,11 +175,18 @@ const oplogMetric = ({ collection, op }) => {
 };
 
 let timer;
+let wasEnabled = false;
 const updatePrometheusConfig = async () => {
 	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
-	const enabled = settings.get('Prometheus_Enabled');
+	const enabled = Boolean(port && settings.get('Prometheus_Enabled'));
 
-	if (!port || !enabled) {
+	if (wasEnabled === enabled) {
+		return;
+	}
+
+	wasEnabled = enabled;
+
+	if (!enabled) {
 		server.close();
 		Meteor.clearInterval(timer);
 		oplogEvents.removeListener('record', oplogMetric);
