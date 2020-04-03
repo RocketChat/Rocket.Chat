@@ -27,7 +27,7 @@ function fallbackMongoInfo() {
 		console.error('==================================');
 	}
 
-	return { oplogEnabled, mongoVersion, mongoStorageEngine };
+	return { oplogEnabled, mongoVersion, mongoStorageEngine, mongo };
 }
 
 export function getMongoInfo() {
@@ -47,5 +47,5 @@ export function getMongoInfo() {
 		return fallbackMongoInfo();
 	}
 
-	return { oplogEnabled, mongoVersion, mongoStorageEngine };
+	return { oplogEnabled, mongoVersion, mongoStorageEngine, mongo };
 }
