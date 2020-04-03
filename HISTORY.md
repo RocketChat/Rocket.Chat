@@ -1,6 +1,32 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.8
+`2020-04-02  ·  2 🐛  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Option BYPASS_OPLOG_VALIDATION not working ([#17143](https://github.com/RocketChat/Rocket.Chat/pull/17143))
+
+- Omnichannel endpoint `inquiries.getOne` returning only queued inquiries ([#17132](https://github.com/RocketChat/Rocket.Chat/pull/17132))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- New metric to track oplog queue ([#17142](https://github.com/RocketChat/Rocket.Chat/pull/17142))
+
+- Regression: fix design review of Directory ([#17133](https://github.com/RocketChat/Rocket.Chat/pull/17133))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 3.1.0-rc.7
 `2020-04-02  ·  2 🎉  ·  1 🚀  ·  4 🐛  ·  9 🔍  ·  9 👩‍💻👨‍💻`
 
