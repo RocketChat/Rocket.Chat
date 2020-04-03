@@ -18,7 +18,7 @@ function wrapMeteorDDPCalls(): void {
 			message: DDPCommon.stringifyDDP(message),
 		};
 
-		APIClient.v1.post(endpoint, restParams)
+		APIClient.v1.post(`${ endpoint }/${ encodeURIComponent(message.method) }`, restParams)
 			.then(({ message: result }) => {
 				Meteor.connection._livedata_data({
 					msg: 'updated',
