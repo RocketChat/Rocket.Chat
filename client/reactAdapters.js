@@ -2,6 +2,7 @@ import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 
@@ -56,13 +57,43 @@ export const unregisterPortal = (key) => {
 	invalidatePortals();
 };
 
+const createLazyElement = async (importFn, propsFn) => {
+	const { createElement, lazy, useEffect, useState } = await import('react');
+	const LazyComponent = lazy(importFn);
+
+	if (!propsFn) {
+		return createElement(LazyComponent);
+	}
+
+	const WrappedComponent = () => {
+		const [props, setProps] = useState(() => Tracker.nonreactive(propsFn));
+
+		useEffect(() => {
+			const computation = Tracker.autorun(() => {
+				setProps(propsFn);
+			});
+
+			return () => {
+				computation.stop();
+			};
+		}, []);
+
+		return createElement(LazyComponent, props);
+	};
+
+	return createElement(WrappedComponent);
+};
+
+const createLazyPortal = async (importFn, propsFn, node) => {
+	const { createPortal } = await import('react-dom');
+	return createPortal(await createLazyElement(importFn, propsFn), node);
+};
+
 export const createTemplateForComponent = (
+	name,
 	importFn,
 	{
-		name = Math.random().toString(36).slice(2),
-		// eslint-disable-next-line new-cap
-		renderContainerView = () => HTML.DIV(),
-		routeName,
+		renderContainerView = () => HTML.DIV(), // eslint-disable-line new-cap
 	} = {},
 ) => {
 	if (Template[name]) {
@@ -72,58 +103,27 @@ export const createTemplateForComponent = (
 	const template = new Blaze.Template(name, renderContainerView);
 
 	template.onRendered(async function() {
-		const [
-			{ createElement, lazy, Suspense },
-			{ render, unmountComponentAtNode },
-		] = await Promise.all([
-			import('react'),
-			import('react-dom'),
-		]);
+		const props = new ReactiveVar(this.data);
+		this.autorun(() => {
+			props.set(Template.currentData());
+		});
 
-		const { firstNode } = this;
+		const portal = await createLazyPortal(importFn, () => props.get(), this.firstNode);
 
-		if (!firstNode) {
+		if (!this.firstNode) {
 			return;
 		}
 
-		const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
-		const LazyComponent = lazy(importFn);
-		render(
-			createElement(Suspense, { fallback: null },
-				createElement(LazyMeteorProvider, {},
-					createElement(LazyComponent),
-				),
-			), firstNode);
-
-		this.unmount = () => {
-			unmountComponentAtNode(firstNode);
-		};
-
-		routeName && this.autorun(() => {
-			if (FlowRouter.getRouteName() !== routeName) {
-				this.unmount();
-			}
-		});
+		registerPortal(this, portal);
 	});
 
-	template.onDestroyed(async function() {
-		this.unmount && this.unmount();
+	template.onDestroyed(function() {
+		unregisterPortal(this);
 	});
 
 	Template[name] = template;
 
 	return name;
-};
-
-const createLazyElement = async (importFn) => {
-	const { createElement, lazy } = await import('react');
-	const LazyComponent = lazy(importFn);
-	return createElement(LazyComponent);
-};
-
-const createLazyPortal = async (importFn, node) => {
-	const { createPortal } = await import('react-dom');
-	return createPortal(await createLazyElement(importFn), node);
 };
 
 export const renderRouteComponent = (importFn, { template, region } = {}) => {
@@ -157,7 +157,12 @@ export const renderRouteComponent = (importFn, { template, region } = {}) => {
 			const blazeTemplate = new Blaze.Template(routeName, () => HTML.DIV()); // eslint-disable-line new-cap
 
 			blazeTemplate.onRendered(async function() {
-				const portal = await createLazyPortal(importFn, this.firstNode);
+				const props = new ReactiveVar(this.data);
+				this.autorun(() => {
+					props.set(Template.currentData());
+				});
+
+				const portal = await createLazyPortal(importFn, () => props.get(), this.firstNode);
 
 				if (routeName !== FlowRouter.getRouteName()) {
 					return;
