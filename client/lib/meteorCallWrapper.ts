@@ -18,13 +18,23 @@ function wrapMeteorDDPCalls(): void {
 			message: DDPCommon.stringifyDDP(message),
 		};
 
+		const processResult = (_message: any): void => {
+			Meteor.connection._livedata_data({
+				msg: 'updated',
+				methods: [message.id],
+			});
+			Meteor.connection.onMessage(_message);
+		};
+
 		APIClient.v1.post(`${ endpoint }/${ encodeURIComponent(message.method) }`, restParams)
-			.then(({ message: result }) => {
-				Meteor.connection._livedata_data({
-					msg: 'updated',
-					methods: [message.id],
-				});
-				Meteor.connection.onMessage(result);
+			.then(({ message: _message }) => {
+				processResult(_message);
+				if (message.method === 'login') {
+					const parsedMessage = DDPCommon.parseDDP(_message);
+					if (parsedMessage.result?.token) {
+						Meteor.loginWithToken(parsedMessage.result.token);
+					}
+				}
 			})
 			.catch((error) => {
 				console.error(error);

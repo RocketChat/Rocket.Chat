@@ -37,7 +37,8 @@ declare module 'meteor/meteor' {
 
 declare module 'meteor/ddp-common' {
 	namespace DDPCommon {
-		const stringifyDDP: (msg: EJSON) => string;
+		function stringifyDDP(msg: EJSON): string;
+		function parseDDP(msg: string): EJSON;
 	}
 }
 
