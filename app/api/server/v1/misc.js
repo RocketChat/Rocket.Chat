@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EJSON } from 'meteor/ejson';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 
 import { hasRole, hasPermission } from '../../../authorization/server';
@@ -235,7 +236,25 @@ const methodCall = () => ({
 
 		const { method, params, id } = EJSON.parse(this.bodyParams.message);
 
+		const rateLimiterInput = {
+			userId: this.userId,
+			clientAddress: this.requestIp,
+			type: 'method',
+			name: method,
+			connectionId: this.token,
+		};
+
 		try {
+			DDPRateLimiter._increment(rateLimiterInput);
+			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
+			if (!rateLimitResult.allowed) {
+				throw new Meteor.Error(
+					'too-many-requests',
+					DDPRateLimiter.getErrorMessage(rateLimitResult),
+					{ timeToReset: rateLimitResult.timeToReset },
+				);
+			}
+
 			const result = Meteor.call(method, ...params);
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
