@@ -4,11 +4,27 @@ import { DDPCommon } from 'meteor/ddp-common';
 
 import { APIClient } from '../../app/utils/client';
 
+const bypassMethods: string[] = [
+	'setUserStatus',
+];
+
+function shouldBypass({ method, params }: Meteor.IDDPMessage): boolean {
+	if (method === 'login' && params[0]?.resume) {
+		return true;
+	}
+
+	if (method.startsWith('UserPresence:') || bypassMethods.includes(method)) {
+		return true;
+	}
+
+	return false;
+}
+
 function wrapMeteorDDPCalls(): void {
 	const { _send } = Meteor.connection;
 
 	Meteor.connection._send = function _DDPSendOverREST(message): void {
-		if (message.msg !== 'method' || (message.method === 'login' && message.params[0]?.resume)) {
+		if (message.msg !== 'method' || shouldBypass(message)) {
 			return _send.call(Meteor.connection, message);
 		}
 
