@@ -35,5 +35,5 @@ export function emitRoomDataEvent(id, data) {
 		return;
 	}
 
-	roomDataStream.emit(id, data);
+	roomDataStream.emitWithoutBroadcast(id, data);
 }

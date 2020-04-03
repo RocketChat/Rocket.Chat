@@ -1,30 +1,48 @@
-import EventEmiter from 'events';
+import EventEmitter from 'events';
 
 import { Users } from '../../../../app/models/server';
 import decrypt from './decrypt';
 import { getBundleModules, isBundle } from './bundles';
 
-const EnterpriseLicenses = new EventEmiter();
+const EnterpriseLicenses = new EventEmitter();
 
-const License = {
-	url: null,
-	licenses: [],
-	modules: {},
+export interface IModules {
+	[key: string]: number;
+}
 
-	_validateExpiration(expiration) {
+export interface ILicense {
+	url: string;
+	expiry: string;
+	maxActiveUsers: number;
+	modules: string[];
+}
+
+export interface IValidLicense {
+	valid?: boolean;
+	license: ILicense;
+}
+
+class LicenseClass {
+	private url: string|null = null;
+
+	private licenses: IValidLicense[] = [];
+
+	private modules: IModules = {};
+
+	_validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
-	},
+	}
 
-	_validateURL(licenseURL, url) {
+	_validateURL(licenseURL: string, url: string): boolean {
 		licenseURL = licenseURL
 			.replace(/\./g, '\\.') // convert dots to literal
 			.replace(/\*/g, '.*'); // convert * to .*
 		const regex = new RegExp(`^${ licenseURL }$`, 'i');
 
-		return regex.exec(url);
-	},
+		return !!regex.exec(url);
+	}
 
-	_validModules(licenseModules) {
+	_validModules(licenseModules: string[]): void {
 		licenseModules.forEach((licenseModule) => {
 			const modules = isBundle(licenseModule)
 				? getBundleModules(licenseModule)
@@ -35,9 +53,9 @@ const License = {
 				EnterpriseLicenses.emit(`valid:${ module }`);
 			});
 		});
-	},
+	}
 
-	_invalidModules(licenseModules) {
+	_invalidModules(licenseModules: string[]): void {
 		licenseModules.forEach((licenseModule) => {
 			const modules = isBundle(licenseModule)
 				? getBundleModules(licenseModule)
@@ -45,32 +63,32 @@ const License = {
 
 			modules.forEach((module) => EnterpriseLicenses.emit(`invalid:${ module }`));
 		});
-	},
+	}
 
-	_hasValidNumberOfActiveUsers(maxActiveUsers) {
+	_hasValidNumberOfActiveUsers(maxActiveUsers: number): boolean {
 		return Users.getActiveLocalUserCount() <= maxActiveUsers;
-	},
+	}
 
-	addLicense(license) {
+	addLicense(license: ILicense): void {
 		this.licenses.push({
-			valid: null,
+			valid: undefined,
 			license,
 		});
 
 		this.validate();
-	},
+	}
 
-	hasModule(module) {
+	hasModule(module: string): boolean {
 		return typeof this.modules[module] !== 'undefined';
-	},
+	}
 
-	setURL(url) {
+	setURL(url: string): void {
 		this.url = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
 
 		this.validate();
-	},
+	}
 
-	validate() {
+	validate(): void {
 		this.licenses = this.licenses.map((item) => {
 			const { license } = item;
 
@@ -79,20 +97,20 @@ const License = {
 					return item;
 				}
 				if (!this._validateURL(license.url, this.url)) {
-					license.valid = false;
+					item.valid = false;
 					this._invalidModules(license.modules);
 					return item;
 				}
 			}
 
 			if (license.expiry && this._validateExpiration(license.expiry)) {
-				license.valid = false;
+				item.valid = false;
 				this._invalidModules(license.modules);
 				return item;
 			}
 
-			if (license.maxActiveUsers && !this._hasValidNumberOfActiveUsers(parseInt(license.maxActiveUsers))) {
-				license.valid = false;
+			if (license.maxActiveUsers && !this._hasValidNumberOfActiveUsers(license.maxActiveUsers)) {
+				item.valid = false;
 				this._invalidModules(license.modules);
 				return item;
 			}
@@ -106,9 +124,9 @@ const License = {
 		});
 
 		this.showLicenses();
-	},
+	}
 
-	showLicenses() {
+	showLicenses(): void {
 		if (!process.env.LICENSE_DEBUG || process.env.LICENSE_DEBUG === 'false') {
 			return;
 		}
@@ -125,20 +143,22 @@ const License = {
 				console.log('        modules ->', license.modules.join(', '));
 				console.log('-------------------------');
 			});
-	},
-};
+	}
+}
 
-export function addLicense(encryptedLicense) {
+const License = new LicenseClass();
+
+export function addLicense(encryptedLicense: string): boolean {
 	if (!encryptedLicense || String(encryptedLicense).trim() === '') {
-		return;
+		return false;
 	}
 
-	console.log('### New Enteprise License');
+	console.log('### New Enterprise License');
 
 	try {
 		const decrypted = decrypt(encryptedLicense);
 		if (!decrypted) {
-			return;
+			return false;
 		}
 
 		if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
@@ -153,21 +173,39 @@ export function addLicense(encryptedLicense) {
 		if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
 			console.error('##### Invalid raw license ->', encryptedLicense, e);
 		}
+		return false;
 	}
 }
 
-export function setURL(url) {
+export function setURL(url: string): void {
 	License.setURL(url);
 }
 
-export function hasLicense(feature) {
+export function hasLicense(feature: string): boolean {
 	return License.hasModule(feature);
 }
 
-export function onLicense(feature, cb) {
+export function onLicense(feature: string, cb: (...args: any[]) => void): void {
 	if (hasLicense(feature)) {
 		return cb();
 	}
 
 	EnterpriseLicenses.once(`valid:${ feature }`, cb);
+}
+
+export interface IOverrideClassProperties {
+	[key: string]: (...args: any[]) => any;
+}
+
+type Class = { new(...args: any[]): any };
+
+export function overwriteClassOnLicense(license: string, original: Class, overwrite: IOverrideClassProperties): void {
+	onLicense(license, () => {
+		Object.entries(overwrite).forEach(([key, value]) => {
+			const originalFn = original.prototype[key];
+			original.prototype[key] = function(...args: any[]): any {
+				return value.call(this, originalFn, ...args);
+			};
+		});
+	});
 }

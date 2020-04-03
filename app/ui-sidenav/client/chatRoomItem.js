@@ -23,7 +23,7 @@ Template.chatRoomItem.helpers({
 		const roomData = {
 			...this,
 			icon: icon !== 'at' && icon,
-			avatar: roomTypes.getConfig(this.t).getAvatarPath(room, this),
+			avatar: roomTypes.getConfig(this.t).getAvatarPath(room || this),
 			username: this.name,
 			route: roomTypes.getRouteLink(this.t, this),
 			name: roomType.roomName(this),
@@ -31,6 +31,7 @@ Template.chatRoomItem.helpers({
 			active: false,
 			archivedClass,
 			status: this.t === 'd' || this.t === 'l',
+			isGroupChat: roomType.isGroupChat(room),
 		};
 		roomData.username = roomData.username || roomData.name;
 

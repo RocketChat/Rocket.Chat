@@ -93,15 +93,16 @@
 			{{#if hasOembed}}
 				{{#each msg.urls}}
 					{{injectMessage . ../msg}}
+					{{injectSettings . ../settings}}
 					{{injectIndex . @index}}
-					{{> oembedBaseWidget (injectCollapsedMedia .)}}
+					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
 			{{#each msg.attachments}}
 				{{injectMessage . ../msg}}
 				{{injectSettings . ../settings}}
 				{{injectIndex . @index}}
-				{{> messageAttachment (injectCollapsedMedia .)}}
+				{{> messageAttachment}}
 			{{/each}}
 
 			{{#if msg.drid}}
