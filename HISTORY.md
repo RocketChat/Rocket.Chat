@@ -1,4 +1,32 @@
 
+# 3.0.11
+`2020-04-02  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+
+- Omnichannel endpoint `inquiries.getOne` returning only queued inquiries ([#17132](https://github.com/RocketChat/Rocket.Chat/pull/17132))
+
+- Option BYPASS_OPLOG_VALIDATION not working ([#17143](https://github.com/RocketChat/Rocket.Chat/pull/17143))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- New metric to track oplog queue ([#17142](https://github.com/RocketChat/Rocket.Chat/pull/17142))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+
 # 3.0.10
 `2020-04-01  ·  1 🚀  ·  2 🐛  ·  3 🔍  ·  3 👩‍💻👨‍💻`
 

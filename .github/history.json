@@ -40205,6 +40205,44 @@
           ]
         }
       ]
+    },
+    "3.0.11": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17132",
+          "title": "[FIX] Omnichannel endpoint `inquiries.getOne` returning only queued inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.11",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17143",
+          "title": "[FIX] Option BYPASS_OPLOG_VALIDATION not working",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.11",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17142",
+          "title": "New metric to track oplog queue",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.11",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }
