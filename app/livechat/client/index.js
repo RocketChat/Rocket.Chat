@@ -6,3 +6,4 @@ import './hooks/onRenderRoom';
 import './startup/notifyUnreadRooms';
 import './views/sideNav/livechat';
 import './views/sideNav/livechatFlex';
+import './externalFrame';
