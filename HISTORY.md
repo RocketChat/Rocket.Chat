@@ -1,4 +1,26 @@
 
+# 3.0.12
+`2020-04-03  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Fix: Missing checks for Troubleshoot > Disable Notifications ([#17155](https://github.com/RocketChat/Rocket.Chat/pull/17155))
+
+- Fix: Error message on startup of multiple instances related to the metrics’ server ([#17152](https://github.com/RocketChat/Rocket.Chat/pull/17152))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+
 # 3.0.11
 `2020-04-02  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
