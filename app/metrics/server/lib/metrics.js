@@ -179,10 +179,11 @@ const updatePrometheusConfig = async () => {
 	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
 	const enabled = settings.get('Prometheus_Enabled');
 
+	server.close();
+	Meteor.clearInterval(timer);
+	oplogEvents.removeListener('record', oplogMetric);
+
 	if (!port || !enabled) {
-		server.close();
-		Meteor.clearInterval(timer);
-		oplogEvents.removeListener('record', oplogMetric);
 		return;
 	}
 
