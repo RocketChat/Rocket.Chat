@@ -218,18 +218,29 @@ API.v1.addRoute('stdout.queue', { authRequired: true }, {
 	},
 });
 
+const mountResult = ({ id, error, result }) => ({
+	message: EJSON.stringify({
+		msg: 'result',
+		id,
+		error,
+		result,
+	}),
+});
+
 const methodCall = () => ({
 	post() {
 		check(this.bodyParams, {
-			method: String,
-			params: String,
+			message: String,
 		});
 
-		const { method, params } = this.bodyParams;
+		const { method, params, id } = EJSON.parse(this.bodyParams.message);
 
-		const result = Meteor.call(method, ...params ? EJSON.parse(params) : []);
-
-		return API.v1.success({ result: EJSON.stringify(result) });
+		try {
+			const result = Meteor.call(method, ...params);
+			return API.v1.success(mountResult({ id, result }));
+		} catch (error) {
+			return API.v1.success(mountResult({ id, error }));
+		}
 	},
 });
 
