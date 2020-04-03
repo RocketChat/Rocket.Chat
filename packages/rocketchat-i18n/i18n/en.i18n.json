@@ -625,6 +625,8 @@
   "CAS_button_color": "Login Button Background Color",
   "CAS_button_label_color": "Login Button Text Color",
   "CAS_button_label_text": "Login Button Label",
+  "CAS_Creation_User_Enabled": "Allow user creation",
+  "CAS_Creation_User_Enabled_Description": "Allow CAS User creation from data provided by the CAS ticket.",
   "CAS_enabled": "Enabled",
   "CAS_Login_Layout": "CAS Login Layout",
   "CAS_login_url": "SSO Login URL",
