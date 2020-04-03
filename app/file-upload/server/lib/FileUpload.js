@@ -64,7 +64,7 @@ export const FileUpload = {
 		const user = file.userId ? Meteor.users.findOne(file.userId) : null;
 
 		const room = Rooms.findOneById(file.rid);
-		const directMessageAllow = settings.get('FileUpload_Enabled_Direct');
+		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
 		if (canAccessRoom(room, user, file) !== true) {
 			return false;
@@ -75,7 +75,7 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-upload-disabled', reason);
 		}
 
-		if (!directMessageAllow && room.t === 'd') {
+		if (!directMessageAllowed && room.t === 'd') {
 			const reason = TAPi18n.__('File_not_allowed_direct_messages', language);
 			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
 		}
@@ -405,6 +405,9 @@ export const FileUpload = {
 	},
 
 	removeFilesByRoomId(rid) {
+		if (typeof rid !== 'string' || rid.trim().length === 0) {
+			return;
+		}
 		Messages.find({
 			rid,
 			'file._id': {

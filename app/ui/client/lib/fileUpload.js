@@ -270,7 +270,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			} catch (error) {
 				const uploads = Session.get('uploading') || [];
 				uploads.filter((u) => u.id === upload.id).forEach((u) => {
-					u.error = error.message;
+					u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
 					u.percentage = 0;
 				});
 				Session.set('uploading', uploads);
