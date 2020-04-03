@@ -481,6 +481,7 @@ export class APIClass extends Restivus {
 						body: {
 							status: 'error',
 							error: e.error,
+							details: e.details,
 							message: e.reason || e.message,
 						},
 					};
