@@ -176,6 +176,7 @@ const oplogMetric = ({ collection, op }) => {
 
 let timer;
 let wasEnabled = false;
+let resetTimer;
 const updatePrometheusConfig = async () => {
 	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
 	const enabled = Boolean(port && settings.get('Prometheus_Enabled'));
@@ -189,6 +190,7 @@ const updatePrometheusConfig = async () => {
 	if (!enabled) {
 		server.close();
 		Meteor.clearInterval(timer);
+		Meteor.clearInterval(resetTimer);
 		oplogEvents.removeListener('record', oplogMetric);
 		return;
 	}
@@ -199,6 +201,13 @@ const updatePrometheusConfig = async () => {
 	});
 
 	timer = Meteor.setInterval(setPrometheusData, 5000);
+
+	const resetInterval = settings.get('Prometheus_Reset_Interval');
+	if (resetInterval) {
+		resetTimer = Meteor.setInterval(() => {
+			client.register.getMetricsAsArray().forEach((metric) => { metric.hashMap = {}; });
+		}, resetInterval);
+	}
 
 	oplogEvents.on('record', oplogMetric);
 };

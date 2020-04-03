@@ -2685,6 +2685,7 @@
   "Profile_picture": "Profile Picture",
   "Profile_saved_successfully": "Profile saved successfully",
   "Prometheus": "Prometheus",
+  "Prometheus_Reset_Interval": "Reset Interval (ms)",
   "Protocol": "Protocol",
   "Prune": "Prune",
   "Prune_finished": "Prune finished",

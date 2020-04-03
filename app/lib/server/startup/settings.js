@@ -1460,6 +1460,9 @@ settings.addGroup('Logs', function() {
 			type: 'string',
 			i18nLabel: 'Port',
 		});
+		this.add('Prometheus_Reset_Interval', 0, {
+			type: 'string',
+		});
 	});
 });
 
