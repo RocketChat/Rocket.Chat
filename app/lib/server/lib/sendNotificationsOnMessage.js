@@ -12,6 +12,8 @@ import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/m
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
+let TroubleshootDisableNotifications;
+
 export const sendNotification = async ({
 	subscription,
 	sender,
@@ -24,6 +26,10 @@ export const sendNotification = async ({
 	mentionIds,
 	disableAllMessageNotifications,
 }) => {
+	if (TroubleshootDisableNotifications === true) {
+		return;
+	}
+
 	// don't notify the sender
 	if (subscription.u._id === sender._id) {
 		return;
@@ -187,6 +193,10 @@ const lookup = {
 };
 
 export async function sendMessageNotifications(message, room, usersInThread = []) {
+	if (TroubleshootDisableNotifications === true) {
+		return;
+	}
+
 	const sender = roomTypes.getConfig(room.t).getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
@@ -287,6 +297,10 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 }
 
 export async function sendAllNotifications(message, room) {
+	if (TroubleshootDisableNotifications === true) {
+		return;
+	}
+
 	// threads
 	if (message.tmid) {
 		return message;
@@ -353,7 +367,6 @@ export async function sendAllNotifications(message, room) {
 	return message;
 }
 
-let TroubleshootDisableNotifications;
 settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
 	if (TroubleshootDisableNotifications === value) { return; }
 	TroubleshootDisableNotifications = value;
