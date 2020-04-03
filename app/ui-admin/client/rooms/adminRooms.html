@@ -34,7 +34,8 @@
 								<th width="20%"><div class="table-fake-th">{{_ "Type"}}</div></th>
 								<th width="20%"><div class="table-fake-th">{{_ "Users"}}</div></th>
 								<th width="10%"><div class="table-fake-th">{{_ "Msgs"}}</div></th>
-								<th width="20%"><div class="table-fake-th">{{_ "Default"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Default"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Featured"}}</div></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -51,7 +52,8 @@
 									<td width="20%"><div class="rc-table-wrapper">{{type}}</div></td>
 									<td width="20%"><div class="rc-table-wrapper">{{usersCount}}</div></td>
 									<td width="10%"><div class="rc-table-wrapper">{{msgs}}</div></td>
-									<td width="20%"><div class="rc-table-wrapper">{{default}}</div></td>
+									<td width="10%"><div class="rc-table-wrapper">{{default}}</div></td>
+									<td width="10%"><div class="rc-table-wrapper">{{#if featured}}True{{else}}False{{/if}}</div></td>
 								</tr>
 							 {{else}} {{# with searchText}}
 							<tr class="table-no-click">
