@@ -1461,11 +1461,14 @@ settings.addGroup('Logs', function() {
 			i18nLabel: 'Port',
 		});
 		this.add('Prometheus_Reset_Interval', 0, {
-			type: 'string',
+			type: 'int',
 		});
 		this.add('Prometheus_Garbage_Collector', false, {
 			type: 'boolean',
 			alert: 'Prometheus_Garbage_Collector_Alert',
+		});
+		this.add('Prometheus_API_User_Agent', false, {
+			type: 'boolean',
 		});
 	});
 });

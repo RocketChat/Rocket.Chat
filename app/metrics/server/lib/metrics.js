@@ -184,52 +184,76 @@ const oplogMetric = ({ collection, op }) => {
 
 let timer;
 let resetTimer;
-let wasEnabled = false;
+let defaultMetricsInitiated = false;
+let gcStatsInitiated = false;
+const was = {
+	enabled: false,
+	port: 9458,
+	resetInterval: 0,
+	collectGC: false,
+};
 const updatePrometheusConfig = async () => {
-	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
-	const enabled = Boolean(port && settings.get('Prometheus_Enabled'));
-	const resetInterval = settings.get('Prometheus_Reset_Interval');
-	const collectGC = settings.get('Prometheus_Garbage_Collector');
+	const is = {
+		port: process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port'),
+		enabled: settings.get('Prometheus_Enabled'),
+		resetInterval: settings.get('Prometheus_Reset_Interval'),
+		collectGC: settings.get('Prometheus_Garbage_Collector'),
+	};
 
-	if (port == null || enabled == null || resetInterval == null || collectGC == null) {
+	if (Object.values(is).some((s) => s == null)) {
 		return;
 	}
 
-	if (wasEnabled === enabled) {
+	if (Object.entries(is).every(([k, v]) => v === was[k])) {
 		return;
 	}
 
-	wasEnabled = enabled;
-
-	if (!enabled) {
-		server.close();
-		Meteor.clearInterval(timer);
-		Meteor.clearInterval(resetTimer);
-		oplogEvents.removeListener('record', oplogMetric);
+	if (!is.enabled) {
+		if (was.enabled) {
+			console.log('Disabling Prometheus');
+			server.close();
+			Meteor.clearInterval(timer);
+			oplogEvents.removeListener('record', oplogMetric);
+		}
+		Object.assign(was, is);
 		return;
 	}
 
+	console.log('Configuring Prometheus', is);
+
+	if (!was.enabled) {
+		server.listen({
+			port: is.port,
+			host: process.env.BIND_IP || '0.0.0.0',
+		});
+
+		timer = Meteor.setInterval(setPrometheusData, 5000);
+		oplogEvents.on('record', oplogMetric);
+	}
+
+	Meteor.clearInterval(resetTimer);
+	if (is.resetInterval) {
+		resetTimer = Meteor.setInterval(() => {
+			client.register.getMetricsAsArray().forEach((metric) => { metric.hashMap = {}; });
+		}, is.resetInterval);
+	}
+
+	// Prevent exceptions on calling those methods twice since
+	// it's not possible to stop them to be able to restart
 	try {
-		client.collectDefaultMetrics();
-		collectGC && gcStats()();
+		if (defaultMetricsInitiated === false) {
+			defaultMetricsInitiated = true;
+			client.collectDefaultMetrics();
+		}
+		if (is.collectGC && gcStatsInitiated === false) {
+			gcStatsInitiated = true;
+			gcStats()();
+		}
 	} catch (error) {
 		console.error(error);
 	}
 
-	server.listen({
-		port,
-		host: process.env.BIND_IP || '0.0.0.0',
-	});
-
-	timer = Meteor.setInterval(setPrometheusData, 5000);
-
-	if (resetInterval) {
-		resetTimer = Meteor.setInterval(() => {
-			client.register.getMetricsAsArray().forEach((metric) => { metric.hashMap = {}; });
-		}, resetInterval);
-	}
-
-	oplogEvents.on('record', oplogMetric);
+	Object.assign(was, is);
 };
 
 Meteor.startup(async () => {
