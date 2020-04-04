@@ -320,7 +320,7 @@ export class APIClass extends Restivus {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
-						user_agent: this.request.headers['user-agent'],
+						// user_agent: this.request.headers['user-agent'],
 						entrypoint: decodeURIComponent(this.request._parsedUrl.pathname),
 					});
 
