@@ -2688,6 +2688,7 @@
   "Prometheus_Reset_Interval": "Reset Interval (ms)",
   "Prometheus_Garbage_Collector": "Collect NodeJS GC",
   "Prometheus_Garbage_Collector_Alert": "Restart required to deactivate",
+  "Prometheus_API_User_Agent": "API: Track User Agent",
   "Protocol": "Protocol",
   "Prune": "Prune",
   "Prune_finished": "Prune finished",
