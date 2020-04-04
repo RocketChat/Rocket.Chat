@@ -19,7 +19,7 @@ onLicense('auditing', () => {
 		];
 
 		permissions.forEach((permission) => {
-			Permissions.createOrUpdate(permission._id, permission.roles);
+			Permissions.create(permission._id, permission.roles);
 		});
 
 		defaultRoles.forEach((role) =>

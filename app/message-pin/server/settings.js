@@ -9,5 +9,5 @@ Meteor.startup(function() {
 		group: 'Message',
 		public: true,
 	});
-	return Permissions.createOrUpdate('pin-message', ['owner', 'moderator', 'admin']);
+	return Permissions.create('pin-message', ['owner', 'moderator', 'admin']);
 });

@@ -10,6 +10,6 @@ Meteor.startup(() => {
 	];
 
 	for (const permission of permissions) {
-		Permissions.createOrUpdate(permission._id, permission.roles);
+		Permissions.create(permission._id, permission.roles);
 	}
 });

@@ -9,5 +9,5 @@ Meteor.startup(function() {
 		public: true,
 		group: 'Message',
 	});
-	Permissions.createOrUpdate('snippet-message', ['owner', 'moderator', 'admin']);
+	Permissions.create('snippet-message', ['owner', 'moderator', 'admin']);
 });

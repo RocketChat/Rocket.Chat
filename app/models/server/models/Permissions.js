@@ -17,7 +17,18 @@ export class Permissions extends Base {
 	createOrUpdate(name, roles) {
 		const exists = this.findOne({
 			_id: name,
+			roles,
 		}, { fields: { _id: 1 } });
+
+		if (exists) {
+			return exists._id;
+		}
+
+		this.upsert({ _id: name }, { $set: { roles } });
+	}
+
+	create(name, roles) {
+		const exists = this.findOneById(name, { fields: { _id: 1 } });
 
 		if (exists) {
 			return exists._id;

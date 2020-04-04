@@ -7,5 +7,5 @@ Meteor.startup(function() {
 		_id: 'mail-messages',
 		roles: ['admin'],
 	};
-	return Permissions.createOrUpdate(permission._id, permission.roles);
+	return Permissions.create(permission._id, permission.roles);
 });
