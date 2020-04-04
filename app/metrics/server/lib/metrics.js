@@ -3,6 +3,7 @@ import http from 'http';
 import client from 'prom-client';
 import connect from 'connect';
 import _ from 'underscore';
+import gcStats from 'prometheus-gc-stats';
 import { Meteor } from 'meteor/meteor';
 
 import { Info, getOplogInfo } from '../../../utils/server';
@@ -10,8 +11,6 @@ import { Migrations } from '../../../migrations';
 import { settings } from '../../../settings';
 import { Statistics } from '../../../models';
 import { oplogEvents } from '../../../models/server/oplogEvents';
-
-client.collectDefaultMetrics();
 
 export const metrics = {};
 
@@ -193,6 +192,13 @@ const updatePrometheusConfig = async () => {
 		Meteor.clearInterval(resetTimer);
 		oplogEvents.removeListener('record', oplogMetric);
 		return;
+	}
+
+	try {
+		client.collectDefaultMetrics();
+		gcStats()();
+	} catch (error) {
+		console.error(error);
 	}
 
 	server.listen({
