@@ -5,7 +5,7 @@ import connect from 'connect';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
-import { Info } from '../../../utils';
+import { Info, getOplogInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations';
 import { settings } from '../../../settings';
 import { Statistics } from '../../../models';
@@ -57,6 +57,7 @@ metrics.version = new client.Gauge({ name: 'rocketchat_version', labelNames: ['v
 metrics.migration = new client.Gauge({ name: 'rocketchat_migration', help: 'migration versoin' });
 metrics.instanceCount = new client.Gauge({ name: 'rocketchat_instance_count', help: 'instances running' });
 metrics.oplogEnabled = new client.Gauge({ name: 'rocketchat_oplog_enabled', labelNames: ['enabled'], help: 'oplog enabled' });
+metrics.oplogQueue = new client.Gauge({ name: 'rocketchat_oplog_queue', labelNames: ['queue'], help: 'oplog queue' });
 metrics.oplog = new client.Counter({
 	name: 'rocketchat_oplog',
 	help: 'summary of oplog operations',
@@ -134,6 +135,9 @@ const setPrometheusData = async () => {
 	metrics.totalPrivateGroupMessages.set(statistics.totalPrivateGroupMessages, date);
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages, date);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages, date);
+
+	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
+	metrics.oplogQueue.set(oplogQueue, date);
 };
 
 const app = connect();
@@ -171,11 +175,18 @@ const oplogMetric = ({ collection, op }) => {
 };
 
 let timer;
+let wasEnabled = false;
 const updatePrometheusConfig = async () => {
 	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
-	const enabled = settings.get('Prometheus_Enabled');
+	const enabled = Boolean(port && settings.get('Prometheus_Enabled'));
 
-	if (!port || !enabled) {
+	if (wasEnabled === enabled) {
+		return;
+	}
+
+	wasEnabled = enabled;
+
+	if (!enabled) {
 		server.close();
 		Meteor.clearInterval(timer);
 		oplogEvents.removeListener('record', oplogMetric);
