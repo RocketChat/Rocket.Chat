@@ -120,9 +120,12 @@ settings.add = function(_id, value, { editor, ...options } = {}) {
 			updateOperations.$setOnInsert.value = value;
 		}
 	}
-	const query = _.extend({
+
+	const query = {
 		_id,
-	}, updateOperations.$set);
+		...updateOperations.$set,
+	};
+
 	if (options.section == null) {
 		updateOperations.$unset = {
 			section: 1,
@@ -131,15 +134,19 @@ settings.add = function(_id, value, { editor, ...options } = {}) {
 			$exists: false,
 		};
 	}
+
 	const existentSetting = Settings.db.findOne(query);
-	if (existentSetting != null) {
-		if (existentSetting.editor == null && updateOperations.$setOnInsert.editor != null) {
-			updateOperations.$set.editor = updateOperations.$setOnInsert.editor;
-			delete updateOperations.$setOnInsert.editor;
+	if (existentSetting) {
+		if (existentSetting.editor || !updateOperations.$setOnInsert.editor) {
+			return;
 		}
-	} else {
-		updateOperations.$set.ts = new Date();
+
+		updateOperations.$set.editor = updateOperations.$setOnInsert.editor;
+		delete updateOperations.$setOnInsert.editor;
 	}
+
+	updateOperations.$set.ts = new Date();
+
 	return Settings.upsert({
 		_id,
 	}, updateOperations);
@@ -165,7 +172,7 @@ settings.addGroup = function(_id, options = {}, cb) {
 	if (options.i18nDescription == null) {
 		options.i18nDescription = `${ _id }_Description`;
 	}
-	options.ts = new Date();
+
 	options.blocked = false;
 	options.hidden = false;
 	if (blockedSettings[_id] != null) {
@@ -174,15 +181,27 @@ settings.addGroup = function(_id, options = {}, cb) {
 	if (hiddenSettings[_id] != null) {
 		options.hidden = true;
 	}
-	Settings.upsert({
+
+	const existentGroup = Settings.findOne({
 		_id,
-	}, {
-		$set: options,
-		$setOnInsert: {
-			type: 'group',
-			createdAt: new Date(),
-		},
+		type: 'group',
+		...options,
 	});
+
+	if (!existentGroup) {
+		options.ts = new Date();
+
+		Settings.upsert({
+			_id,
+		}, {
+			$set: options,
+			$setOnInsert: {
+				type: 'group',
+				createdAt: new Date(),
+			},
+		});
+	}
+
 	if (cb != null) {
 		cb.call({
 			add(id, value, options) {

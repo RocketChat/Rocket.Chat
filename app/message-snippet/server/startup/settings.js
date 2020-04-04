@@ -9,9 +9,5 @@ Meteor.startup(function() {
 		public: true,
 		group: 'Message',
 	});
-	Permissions.upsert('snippet-message', {
-		$setOnInsert: {
-			roles: ['owner', 'moderator', 'admin'],
-		},
-	});
+	Permissions.createOrUpdate('snippet-message', ['owner', 'moderator', 'admin']);
 });

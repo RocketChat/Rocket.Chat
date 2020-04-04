@@ -2766,7 +2766,7 @@ settings.addGroup('Setup_Wizard', function() {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
+		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(0), {
 			type: 'date',
 			hidden: true,
 			readonly: true,

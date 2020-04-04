@@ -29,21 +29,22 @@ export class Roles extends Base {
 		});
 	}
 
-	createOrUpdate(name, scope = 'Users', description, protectedRole, mandatory2fa) {
-		const updateData = {};
-		updateData.name = name;
-		updateData.scope = scope;
+	createOrUpdate(name, scope = 'Users', description = '', protectedRole = true, mandatory2fa = false) {
+		const updateData = {
+			name,
+			scope,
+			description,
+			protected: protectedRole,
+			mandatory2fa,
+		};
 
-		if (description != null) {
-			updateData.description = description;
-		}
+		const exists = this.findOne({
+			_id: name,
+			...updateData,
+		}, { fields: { _id: 1 } });
 
-		if (protectedRole) {
-			updateData.protected = protectedRole;
-		}
-
-		if (mandatory2fa != null) {
-			updateData.mandatory2fa = mandatory2fa;
+		if (exists) {
+			return exists._id;
 		}
 
 		this.upsert({ _id: name }, { $set: updateData });

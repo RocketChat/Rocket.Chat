@@ -9,9 +9,5 @@ Meteor.startup(function() {
 		group: 'Message',
 		public: true,
 	});
-	return Permissions.upsert('pin-message', {
-		$setOnInsert: {
-			roles: ['owner', 'moderator', 'admin'],
-		},
-	});
+	return Permissions.createOrUpdate('pin-message', ['owner', 'moderator', 'admin']);
 });
