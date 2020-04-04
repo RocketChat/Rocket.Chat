@@ -7,6 +7,6 @@ createTemplateForComponent(
 	() => import('../../../../client/components/admin/settings/inputs/MultiSelectSettingInput'),
 	{
 		// eslint-disable-next-line new-cap
-		renderContainerView: () => HTML.DIV({ className: 'rc-multiselect', style: 'display: flex;' }),
+		renderContainerView: () => HTML.DIV({ class: 'rc-multiselect', style: 'display: flex;' }),
 	},
 );

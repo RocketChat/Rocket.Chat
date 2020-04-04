@@ -1,9 +1,11 @@
-import React from 'react';
-import { UiKitMessage as uiKitMessage, kitContext, messageParser } from '@rocket.chat/fuselage-ui-kit';
+import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+import { UiKitMessage, UiKitComponent, kitContext, messageParser } from '@rocket.chat/fuselage-ui-kit';
+import React, { useRef, useEffect } from 'react';
 
 import { renderMessageBody } from '../../../ui-utils/client';
-import { useReactiveValue } from '../../../../client/hooks/useReactiveValue';
+import * as ActionManager from '../ActionManager';
 
+// TODO: move this to fuselage-ui-kit itself
 messageParser.text = ({ text, type } = {}) => {
 	if (type !== 'mrkdwn') {
 		return text;
@@ -12,23 +14,37 @@ messageParser.text = ({ text, type } = {}) => {
 	return <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
 };
 
-const contextDefault = {
-	action: console.log,
-	state: (data) => {
-		console.log('state', data);
-	},
-};
-export const messageBlockWithContext = (context) => (props) => {
-	const data = useReactiveValue(props.data);
+export function MessageBlock({ mid: _mid, rid, blocks, appId }) {
+	const context = {
+		action: ({ actionId, value, blockId, mid = _mid }) => {
+			ActionManager.triggerBlockAction({
+				blockId,
+				actionId,
+				value,
+				mid,
+				rid,
+				appId: blocks[0].appId,
+				container: {
+					type: UIKitIncomingInteractionContainerType.MESSAGE,
+					id: mid,
+				},
+			});
+		},
+		appId,
+		rid,
+	};
+
+	const ref = useRef();
+	useEffect(() => {
+		ref.current.dispatchEvent(new Event('rendered'));
+	}, []);
+
 	return (
 		<kitContext.Provider value={context}>
-			{uiKitMessage(data.blocks)}
+			<div className='js-block-wrapper' ref={ref} />
+			<UiKitComponent render={UiKitMessage} blocks={blocks} />
 		</kitContext.Provider>
 	);
-};
+}
 
-export const MessageBlock = ({ blocks }, context = contextDefault) => (
-	<kitContext.Provider value={context}>
-		{uiKitMessage(blocks)}
-	</kitContext.Provider>
-);
+export default MessageBlock;
