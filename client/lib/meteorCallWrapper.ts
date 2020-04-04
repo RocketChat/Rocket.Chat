@@ -17,6 +17,10 @@ function shouldBypass({ method, params }: Meteor.IDDPMessage): boolean {
 		return true;
 	}
 
+	if (method.startsWith('stream-')) {
+		return true;
+	}
+
 	return false;
 }
 
