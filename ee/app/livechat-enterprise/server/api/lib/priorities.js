@@ -1,5 +1,6 @@
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import LivechatPriority from '../../../../models/server/raw/LivechatPriority';
+import LivechatRooms from '../../../../models/server/models/LivechatRooms';
 
 export async function findPriorities({ userId, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-priorities')) {
@@ -28,4 +29,11 @@ export async function findPriorityById({ userId, priorityId }) {
 		throw new Error('error-not-authorized');
 	}
 	return LivechatPriority.findOneById(priorityId);
+}
+
+export async function setPriorityToRoom({ userId, roomId, priorityId }) {
+	if (!await hasPermissionAsync(userId, 'manage-livechat-priorities')) {
+		throw new Error('error-not-authorized');
+	}
+	return LivechatRooms.setPriorityByRoomId(roomId, priorityId);
 }

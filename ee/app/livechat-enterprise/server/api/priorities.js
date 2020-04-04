@@ -1,5 +1,5 @@
 import { API } from '../../../../../app/api/server';
-import { findPriorities, findPriorityById } from './lib/priorities';
+import { findPriorities, findPriorityById, setPriorityToRoom } from './lib/priorities';
 
 API.v1.addRoute('livechat/priorities.list', { authRequired: true }, {
 	get() {
@@ -19,11 +19,28 @@ API.v1.addRoute('livechat/priorities.list', { authRequired: true }, {
 
 API.v1.addRoute('livechat/priorities.getOne', { authRequired: true }, {
 	get() {
-		const { tagId } = this.queryParams;
+		const { priorityId } = this.queryParams;
 
 		return API.v1.success(Promise.await(findPriorityById({
 			userId: this.userId,
-			tagId,
+			priorityId,
+		})));
+	},
+});
+
+API.v1.addRoute('livechat/priorities.setPriorityToRoom', { authRequired: true }, {
+	post() {
+		const { roomId, priorityId } = this.bodyParams;
+		if (!roomId) {
+			return API.v1.failure('The \'roomId\' param is required');
+		}
+		if (!priorityId) {
+			return API.v1.failure('The \'priorityId\' param is required');
+		}
+		return API.v1.success(Promise.await(setPriorityToRoom({
+			userId: this.userId,
+			roomId,
+			priorityId,
 		})));
 	},
 });

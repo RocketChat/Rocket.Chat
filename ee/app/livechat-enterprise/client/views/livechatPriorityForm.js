@@ -37,6 +37,7 @@ Template.livechatPriorityForm.events({
 
 		const description = instance.$('textarea[name=description]').val();
 		const color = instance.$('input[name=color]').val();
+		const dueTime = instance.$('input[name=dueTime]').val();
 
 		const oldBtnValue = $btn.html();
 		$btn.html(t('Saving'));
@@ -45,6 +46,7 @@ Template.livechatPriorityForm.events({
 			name: name.trim(),
 			description: description.trim(),
 			color: color.trim(),
+			dueTime,
 		};
 
 		Meteor.call('livechat:savePriority', _id, priorityData, function(error/* , result*/) {

@@ -1,0 +1,11 @@
+<template name="visitorEditCustomFields" args="agentId">
+	<div class="rc-input__title">{{_ "Priority"}}</div>
+	<div class="rc-form-group rc-form-group--small rc-form-group--inline">
+		<select name="priority" id="prioritySelect" class="rc-input rc-input--small rc-form-item-inline customFormField">
+			<option value=""></option>
+			{{#each availablePriorities}}
+				<option value={{_id}} selected="{{$eq roomPriority._id _id}}">{{name}}</option>
+			{{/each}}
+		</select>
+	</div>
+</template>

@@ -2,6 +2,7 @@ import { LivechatRooms } from '../../../../../app/models/server/models/LivechatR
 import { logger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../livechat-enterprise/server/lib/query.helper';
 import { overwriteClassOnLicense } from '../../../license/server';
+import LivechatPriority from './LivechatPriority';
 
 const applyRestrictions = (method) => function(originalFn, originalQuery, ...args) {
 	const query = addQueryRestrictionsToRoomsModel(originalQuery);
@@ -20,6 +21,30 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 		};
 		const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
 		return this.update(query, update);
+	},
+	saveRoomById(originalFn, ...args) {
+		if (!args.length || !args[0].priority) {
+			this.update({ _id: args[0]._id }, {
+				$unset: { 'omnichannel.priority': 1 },
+			});
+			return originalFn.apply(this, args);
+		}
+		const priority = LivechatPriority.findOneById(args[0].priority);
+		if (!priority) {
+			throw new Error('Invalid Priority');
+		}
+		this.update({ _id: args[0]._id }, {
+			$set: {
+				'omnichannel.priority': {
+					_id: priority._id,
+					name: priority.name,
+					description: priority.description,
+					color: priority.color,
+					dueTime: parseInt(priority.dueTime),
+				},
+			},
+		});
+		return originalFn.apply(this, args);
 	},
 });
 

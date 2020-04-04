@@ -18,6 +18,7 @@ import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
 import { DateFormat } from '../../../../../lib/client';
+import { getCustomFormTemplate } from '../customTemplates/register';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -220,6 +221,16 @@ Template.visitorInfo.helpers({
 		const closerLabel = closer.charAt(0).toUpperCase() + closer.slice(1);
 		return t(`${ closerLabel }`);
 	},
+
+	customVisitorRoomInfo() {
+		return getCustomFormTemplate('visitorRoomInfo');
+	},
+
+	roomDataContext() {
+		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
+		// because only the dynamic template data will be reloaded
+		return Template.instance().room;
+	},
 });
 
 Template.visitorInfo.events({
@@ -316,7 +327,9 @@ Template.visitorInfo.onCreated(function() {
 		this.user.set(visitor);
 	};
 
-	this.updateRoom = (room) => {
+	const { rid } = Template.currentData();
+	this.updateRoom = async () => {
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
 		this.departmentId.set(room && room.departmentId);
 		this.tags.set(room && room.tags);
 		this.room.set(room);
@@ -331,20 +344,14 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	const { rid } = Template.currentData();
 	Meteor.call('livechat:getRoutingConfig', (err, config) => {
 		if (config) {
 			this.routingConfig.set(config);
 		}
 	});
 
-	const loadRoomData = async (rid) => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
-		this.updateRoom(room);
-	};
-
 	if (rid) {
-		loadRoomData(rid);
+		this.updateRoom();
 		RoomManager.roomStream.on(rid, this.updateRoom);
 	}
 

@@ -53,6 +53,9 @@
 						</div>
 					</label>
 				</div>
+				{{#if customFieldsTemplate}}
+					{{> Template.dynamic template=customFieldsTemplate data=room }}
+				{{/if}}
 				{{#if hasAvailableTags}}
 					<div class="rc-form-group rc-form-group--small rc-form-group--inline">
 						<select id="tagSelect" class="rc-input rc-input--small rc-form-item-inline">
