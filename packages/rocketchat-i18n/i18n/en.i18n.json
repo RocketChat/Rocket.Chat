@@ -2686,6 +2686,8 @@
   "Profile_saved_successfully": "Profile saved successfully",
   "Prometheus": "Prometheus",
   "Prometheus_Reset_Interval": "Reset Interval (ms)",
+  "Prometheus_Garbage_Collector": "Collect NodeJS GC",
+  "Prometheus_Garbage_Collector_Alert": "Restart required to deactivate",
   "Protocol": "Protocol",
   "Prune": "Prune",
   "Prune_finished": "Prune finished",

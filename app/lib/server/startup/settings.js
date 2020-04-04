@@ -1463,6 +1463,10 @@ settings.addGroup('Logs', function() {
 		this.add('Prometheus_Reset_Interval', 0, {
 			type: 'string',
 		});
+		this.add('Prometheus_Garbage_Collector', false, {
+			type: 'boolean',
+			alert: 'Prometheus_Garbage_Collector_Alert',
+		});
 	});
 });
 

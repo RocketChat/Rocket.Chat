@@ -179,6 +179,12 @@ let wasEnabled = false;
 const updatePrometheusConfig = async () => {
 	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
 	const enabled = Boolean(port && settings.get('Prometheus_Enabled'));
+	const resetInterval = settings.get('Prometheus_Reset_Interval');
+	const collectGC = settings.get('Prometheus_Garbage_Collector');
+
+	if (port == null || enabled == null || resetInterval == null || collectGC == null) {
+		return;
+	}
 
 	if (wasEnabled === enabled) {
 		return;
@@ -196,7 +202,7 @@ const updatePrometheusConfig = async () => {
 
 	try {
 		client.collectDefaultMetrics();
-		gcStats()();
+		collectGC && gcStats()();
 	} catch (error) {
 		console.error(error);
 	}
@@ -208,7 +214,6 @@ const updatePrometheusConfig = async () => {
 
 	timer = Meteor.setInterval(setPrometheusData, 5000);
 
-	const resetInterval = settings.get('Prometheus_Reset_Interval');
 	if (resetInterval) {
 		resetTimer = Meteor.setInterval(() => {
 			client.register.getMetricsAsArray().forEach((metric) => { metric.hashMap = {}; });
@@ -219,6 +224,5 @@ const updatePrometheusConfig = async () => {
 };
 
 Meteor.startup(async () => {
-	settings.get('Prometheus_Enabled', updatePrometheusConfig);
-	settings.get('Prometheus_Port', updatePrometheusConfig);
+	settings.get(/^Prometheus_.+/, updatePrometheusConfig);
 });
