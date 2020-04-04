@@ -321,7 +321,7 @@ export class APIClass extends Restivus {
 						method,
 						version,
 						user_agent: this.request.headers['user-agent'],
-						entrypoint: route,
+						entrypoint: decodeURIComponent(this.request._parsedUrl.pathname),
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
