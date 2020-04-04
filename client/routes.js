@@ -1,5 +1,6 @@
 import mem from 'mem';
 import s from 'underscore.string';
+import { HTML } from 'meteor/htmljs';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
@@ -159,19 +160,27 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
-// const style = 'overflow: hidden; flex: 1 1 auto; height: 1%;';
-
 FlowRouter.route('/admin/info', {
 	name: 'admin-info',
 	action: () => {
-		renderRouteComponent(() => import('./components/admin/info/InformationRoute'), { template: 'main', region: 'center' });
+		renderRouteComponent(() => import('./components/admin/info/InformationRoute'), {
+			template: 'main',
+			region: 'center',
+			// eslint-disable-next-line new-cap
+			renderContainerView: () => HTML.DIV({ style: 'overflow: hidden; flex: 1 1 auto; height: 1%;' }),
+		});
 	},
 });
 
 FlowRouter.route('/admin/:group?', {
 	name: 'admin',
 	action: () => {
-		renderRouteComponent(() => import('./components/admin/settings/SettingsRoute'), { template: 'main', region: 'center' });
+		renderRouteComponent(() => import('./components/admin/settings/SettingsRoute'), {
+			template: 'main',
+			region: 'center',
+			// eslint-disable-next-line new-cap
+			renderContainerView: () => HTML.DIV({ style: 'overflow: hidden; flex: 1 1 auto; height: 1%;' }),
+		});
 	},
 });
 

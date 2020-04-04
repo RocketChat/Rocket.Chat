@@ -126,7 +126,11 @@ export const createTemplateForComponent = (
 	return name;
 };
 
-export const renderRouteComponent = (importFn, { template, region } = {}) => {
+export const renderRouteComponent = (importFn, {
+	template,
+	region,
+	renderContainerView = () => HTML.DIV(), // eslint-disable-line new-cap
+} = {}) => {
 	const routeName = FlowRouter.getRouteName();
 
 	Tracker.autorun(async (computation) => {
@@ -154,7 +158,7 @@ export const renderRouteComponent = (importFn, { template, region } = {}) => {
 		}
 
 		if (!Template[routeName]) {
-			const blazeTemplate = new Blaze.Template(routeName, () => HTML.DIV()); // eslint-disable-line new-cap
+			const blazeTemplate = new Blaze.Template(routeName, renderContainerView);
 
 			blazeTemplate.onRendered(async function() {
 				const props = new ReactiveVar(this.data);
