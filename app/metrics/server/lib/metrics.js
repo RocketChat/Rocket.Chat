@@ -85,6 +85,10 @@ metrics.totalPrivateGroupMessages = new client.Gauge({ name: 'rocketchat_private
 metrics.totalDirectMessages = new client.Gauge({ name: 'rocketchat_direct_messages_total', help: 'total of messages in direct rooms' });
 metrics.totalLivechatMessages = new client.Gauge({ name: 'rocketchat_livechat_messages_total', help: 'total of messages in livechat rooms' });
 
+// Metrics
+metrics.metricsRequests = new client.Counter({ name: 'rocketchat_metrics_requests', labelNames: ['notification_type'], help: 'cumulated number of calls to the metrics endpoint' });
+metrics.metricsSize = new client.Gauge({ name: 'rocketchat_metrics_size', help: 'size of the metrics response in chars' });
+
 const setPrometheusData = async () => {
 	client.register.setDefaultLabels({
 		uniqueId: settings.get('uniqueID'),
@@ -146,7 +150,12 @@ const app = connect();
 
 app.use('/metrics', (req, res) => {
 	res.setHeader('Content-Type', 'text/plain');
-	res.end(client.register.metrics());
+	const data = client.register.metrics();
+
+	metrics.metricsRequests.inc();
+	metrics.metricsSize.set(data.length);
+
+	res.end(data);
 });
 
 app.use('/', (req, res) => {
