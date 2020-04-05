@@ -322,7 +322,7 @@ export class APIClass extends Restivus {
 						method,
 						version,
 						...prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] },
-						entrypoint: decodeURIComponent(this.request._parsedUrl.pathname),
+						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
