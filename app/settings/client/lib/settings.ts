@@ -2,45 +2,49 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { CachedCollection } from '../../../ui-cached-collection';
-import { settings } from '../../lib/settings';
+import { SettingsBase, SettingValue } from '../../lib/settings';
 
-settings.cachedCollection = new CachedCollection({
+const cachedCollection = new CachedCollection({
 	name: 'public-settings',
 	eventType: 'onAll',
 	userRelated: false,
 	listenChangesForLoggedUsersOnly: true,
 });
 
-settings.collection = settings.cachedCollection.collection;
+class Settings extends SettingsBase {
+	cachedCollection = cachedCollection
 
-settings.dict = new ReactiveDict('settings');
+	collection = cachedCollection.collection;
 
-settings.get = function(_id) {
-	return settings.dict.get(_id);
-};
+	dict = new ReactiveDict<any>('settings');
 
-settings.init = function() {
-	let initialLoad = true;
-	settings.collection.find().observe({
-		added(record) {
-			Meteor.settings[record._id] = record.value;
-			settings.dict.set(record._id, record.value);
-			settings.load(record._id, record.value, initialLoad);
-		},
-		changed(record) {
-			Meteor.settings[record._id] = record.value;
-			settings.dict.set(record._id, record.value);
-			settings.load(record._id, record.value, initialLoad);
-		},
-		removed(record) {
-			delete Meteor.settings[record._id];
-			settings.dict.set(record._id, null);
-			settings.load(record._id, null, initialLoad);
-		},
-	});
-	initialLoad = false;
-};
+	get(_id: string): any {
+		return this.dict.get(_id);
+	}
+
+	init(): void {
+		let initialLoad = true;
+		this.collection.find().observe({
+			added: (record: {_id: string; value: SettingValue}) => {
+				Meteor.settings[record._id] = record.value;
+				this.dict.set(record._id, record.value);
+				this.load(record._id, record.value, initialLoad);
+			},
+			changed: (record: {_id: string; value: SettingValue}) => {
+				Meteor.settings[record._id] = record.value;
+				this.dict.set(record._id, record.value);
+				this.load(record._id, record.value, initialLoad);
+			},
+			removed: (record: {_id: string}) => {
+				delete Meteor.settings[record._id];
+				this.dict.set(record._id, null);
+				this.load(record._id, undefined, initialLoad);
+			},
+		});
+		initialLoad = false;
+	}
+}
+
+export const settings = new Settings();
 
 settings.init();
-
-export { settings };
