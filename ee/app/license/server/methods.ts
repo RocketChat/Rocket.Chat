@@ -1,12 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasLicense } from './license';
+import { hasLicense, getModules } from './license';
 
 Meteor.methods({
-	'license:hasLicense'(feature: string) {
-		check(feature, String);
+	'license:hasLicense'(features: string[]) {
+		check(features, [String]);
 
-		return hasLicense(feature);
+		return features.map((feature) => ({
+			[feature]: hasLicense(feature),
+		}));
+	},
+	'license:getModules'() {
+		return getModules();
 	},
 });

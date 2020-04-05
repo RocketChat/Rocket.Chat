@@ -82,6 +82,10 @@ class LicenseClass {
 		return typeof this.modules[module] !== 'undefined';
 	}
 
+	getModules(): string[] {
+		return Object.keys(this.modules).filter((module) => typeof this.modules[module] !== 'undefined');
+	}
+
 	setURL(url: string): void {
 		this.url = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
 
@@ -183,6 +187,10 @@ export function setURL(url: string): void {
 
 export function hasLicense(feature: string): boolean {
 	return License.hasModule(feature);
+}
+
+export function getModules(): string[] {
+	return License.getModules();
 }
 
 export function onLicense(feature: string, cb: (...args: any[]) => void): void {
