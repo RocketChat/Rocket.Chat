@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -236,12 +238,14 @@ const methodCall = () => ({
 
 		const { method, params, id } = EJSON.parse(this.bodyParams.message);
 
+		const connectionId = this.token || crypto.createHash('md5').update(this.requestIp + this.request.headers['user-agent']).digest('hex');
+
 		const rateLimiterInput = {
 			userId: this.userId,
 			clientAddress: this.requestIp,
 			type: 'method',
 			name: method,
-			connectionId: this.token,
+			connectionId,
 		};
 
 		try {
