@@ -298,9 +298,9 @@ OEmbed.rocketUrlParser = function(message) {
 
 settings.get('API_Embed', function(key, value) {
 	if (value) {
-		return callbacks.add('afterSaveMessage', OEmbed.rocketUrlParser, callbacks.priority.LOW, 'API_Embed');
+		return callbacks.add('beforeSaveMessage', OEmbed.rocketUrlParser, callbacks.priority.LOW, 'API_Embed');
 	}
-	return callbacks.remove('afterSaveMessage', 'API_Embed');
+	return callbacks.remove('beforeSaveMessage', 'API_Embed');
 });
 
 export { OEmbed };
