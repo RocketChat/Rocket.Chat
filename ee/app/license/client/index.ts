@@ -1,58 +1,23 @@
-import { Meteor } from 'meteor/meteor';
-
 import { CachedCollectionManager } from '../../../../app/ui-cached-collection';
+import { callMethod } from '../../../../app/ui-utils/client/lib/callMethod';
 
-interface IPromiseParams {
-	resolve: (resolve: boolean) => void;
-	reject: (reason: any) => void;
-}
-
-const pendingFeatures = new Map<string, Set<IPromiseParams>>();
-let validatedFeatures: Set<string>;
-let rejectError: any;
-
-export async function hasLicense(feature: string): Promise<boolean> {
-	if (rejectError) {
-		throw rejectError;
-	}
-
-	if (validatedFeatures) {
-		return validatedFeatures.has(feature);
-	}
-
-	if (!pendingFeatures.has(feature)) {
-		pendingFeatures.set(feature, new Set());
-	}
-
-	return new Promise<boolean>((resolve, reject) => {
-		pendingFeatures.get(feature)?.add({ reject, resolve });
-	});
-}
-
-function resolvePending(): void {
-	pendingFeatures.forEach((promises, feature) => {
-		const value = validatedFeatures.has(feature);
-		promises.forEach(({ resolve }) => resolve(value));
-		pendingFeatures.delete(feature);
-	});
-}
-
-function rejectPending(): void {
-	pendingFeatures.forEach((promises, feature) => {
-		promises.forEach(({ reject }) => reject(rejectError));
-		pendingFeatures.delete(feature);
-	});
-}
-
-CachedCollectionManager.onLogin(() => {
-	Meteor.call('license:getModules', (error: any, features: string[] = []) => {
-		if (error) {
-			rejectError = error;
-			return rejectPending();
+const allModules = new Promise<Set<string>>((resolve, reject) => {
+	CachedCollectionManager.onLogin(async () => {
+		try {
+			const features: string[] = await callMethod('license:getModules');
+			resolve(new Set(features));
+		} catch (e) {
+			console.error('Error getting modules', e);
+			reject(e);
 		}
-
-		validatedFeatures = new Set(features);
-
-		resolvePending();
 	});
 });
+
+export async function hasLicense(feature: string): Promise<boolean> {
+	try {
+		const features = await allModules;
+		return features.has(feature);
+	} catch (e) {
+		return false;
+	}
+}
