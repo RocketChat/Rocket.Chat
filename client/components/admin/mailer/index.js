@@ -1,8 +1,7 @@
 import React from 'react';
-import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox } from '@rocket.chat/fuselage';
+import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { GroupPage } from '../settings/GroupPage';
 import { Page } from '../../basic/Page';
 
 
@@ -10,7 +9,7 @@ export function Mailer() {
 	const t = useTranslation();
 	return <Page _id='mailer' i18nLabel='Mailer'>
 		<Page.Header title={t('Mailer')}></Page.Header>
-		<Page.ContentShadowScroll >
+		<Page.ContentShadowScroll maxWidth='x600' alignSelf='center' display='flex' flexDirection='column'>
 			<FieldGroup>
 				<Field>
 					<Field.Label>{t('From')}</Field.Label>
@@ -46,6 +45,7 @@ export function Mailer() {
 					<Field.Hint dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }}></Field.Hint>
 				</Field>
 			</FieldGroup>
+			<Button primary width='fit-content' alignSelf='flex-end'><Icon name='send' size='x20' mie='x8'/>{t('Send_email')}</Button>
 		</Page.ContentShadowScroll>
 	</Page>;
 }
