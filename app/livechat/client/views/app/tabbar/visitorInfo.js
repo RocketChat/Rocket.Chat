@@ -231,7 +231,7 @@ Template.visitorInfo.events({
 	'click .close-livechat'(event) {
 		event.preventDefault();
 
-		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, function(error/* , result*/) {
+		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function(error/* , result*/) {
 			if (error) {
 				return handleError(error);
 			}
@@ -311,8 +311,18 @@ Template.visitorInfo.onCreated(function() {
 	this.department = new ReactiveVar({});
 	this.room = new ReactiveVar({});
 
+	this.updateVisitor = async (visitorId) => {
+		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
+		this.user.set(visitor);
+	};
+
 	this.updateRoom = (room) => {
+		this.departmentId.set(room && room.departmentId);
+		this.tags.set(room && room.tags);
 		this.room.set(room);
+		const visitorId = room && room.v && room.v._id;
+		this.visitorId.set(visitorId);
+		this.updateVisitor(visitorId);
 	};
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
@@ -330,10 +340,7 @@ Template.visitorInfo.onCreated(function() {
 
 	const loadRoomData = async (rid) => {
 		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
-		this.visitorId.set(room && room.v && room.v._id);
-		this.departmentId.set(room && room.departmentId);
-		this.tags.set(room && room.tags);
-		this.room.set(room);
+		this.updateRoom(room);
 	};
 
 	if (rid) {
@@ -348,11 +355,10 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	this.autorun(async () => {
+	this.autorun(() => {
 		const visitorId = this.visitorId.get();
 		if (visitorId) {
-			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
-			this.user.set(visitor);
+			this.updateVisitor(visitorId);
 		}
 	});
 });

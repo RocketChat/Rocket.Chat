@@ -30,12 +30,14 @@ export class Users extends Base {
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ name: 'text', username: 'text', bio: 'text' }, { default_language: 'none', language_override: 'documentLanguage' });
 		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
 		this.tryEnsureIndex({ statusText: 1 });
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ appId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
@@ -132,6 +134,15 @@ export class Users extends Base {
 		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
+	}
+
+	findOneAgentById(_id, options) {
+		const query = {
+			_id,
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findAgents() {
@@ -398,6 +409,32 @@ export class Users extends Base {
 		});
 	}
 
+	enableEmail2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.email2fa': {
+					enabled: true,
+					changedAt: new Date(),
+				},
+			},
+		});
+	}
+
+	disableEmail2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.email2fa': {
+					enabled: false,
+					changedAt: new Date(),
+				},
+			},
+		});
+	}
+
 	findByIdsWithPublicE2EKey(ids, options) {
 		const query = {
 			_id: {
@@ -415,6 +452,40 @@ export class Users extends Base {
 		this.update({ _id: userId }, {
 			$unset: {
 				e2e: '',
+			},
+		});
+	}
+
+	removeExpiredEmailCodesOfUserId(userId) {
+		this.update({ _id: userId }, {
+			$pull: {
+				'services.emailCode': {
+					expire: { $lt: new Date() },
+				},
+			},
+		});
+	}
+
+	removeEmailCodeByUserIdAndCode(userId, code) {
+		this.update({ _id: userId }, {
+			$pull: {
+				'services.emailCode': {
+					code,
+				},
+			},
+		});
+	}
+
+	addEmailCodeByUserId(userId, code, expire) {
+		this.update({ _id: userId }, {
+			$push: {
+				'services.emailCode': {
+					$each: [{
+						code,
+						expire,
+					}],
+					$slice: -5,
+				},
 			},
 		});
 	}
@@ -449,12 +520,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByUsernameAndServiceNameIgnoringCase(username, serviceName, options) {
+	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
 		}
 
-		const query = { username, [`services.${ serviceName }.id`]: serviceName };
+		const query = { username, [`services.${ serviceName }.id`]: userId };
 
 		return this.findOne(query, options);
 	}
@@ -618,16 +689,20 @@ export class Users extends Base {
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
 		const orStmt = _.reduce(searchFields, function(acc, el) {
-			acc.push({ [el.trim()]: termRegex });
+			el = el.trim();
+			if (el && !['name', 'username', 'bio'].includes(el)) {
+				acc.push({ [el]: termRegex });
+			}
 			return acc;
 		}, []);
+
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: orStmt,
-				},
-				{
+					$or: [{
+						$text: { $search: searchTerm },
+					}, ...orStmt],
 					username: { $exists: true, $nin: exceptions },
 				},
 				...extraQuery,
@@ -973,6 +1048,25 @@ export class Users extends Base {
 		return this.update({}, update, { multi: true });
 	}
 
+	setActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', active = false) {
+		const neverActive = { lastLogin: { $exists: 0 }, createdAt: { $lte: latestLastLoginDate } };
+		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
+
+		const query = {
+			$or: [neverActive, idleTooLong],
+			active: true,
+			roles: role,
+		};
+
+		const update = {
+			$set: {
+				active,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	unsetLoginTokens(_id) {
 		const update = {
 			$set: {
@@ -1028,6 +1122,21 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	setBio(_id, bio = '') {
+		const update = {
+			...bio.trim() ? {
+				$set: {
+					bio,
+				},
+			} : {
+				$unset: {
+					bio: 1,
+				},
+			},
+		};
+		return this.update(_id, update);
+	}
+
 	clearSettings(_id) {
 		const update = {
 			$set: {
@@ -1053,6 +1162,18 @@ export class Users extends Base {
 		}
 
 		return this.update(_id, update);
+	}
+
+	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id, token, hash, until) {
+		return this.update({
+			_id,
+			'services.resume.loginTokens.hashedToken': token,
+		}, {
+			$set: {
+				'services.resume.loginTokens.$.twoFactorAuthorizedHash': hash,
+				'services.resume.loginTokens.$.twoFactorAuthorizedUntil': until,
+			},
+		});
 	}
 
 	setUtcOffset(_id, utcOffset) {
