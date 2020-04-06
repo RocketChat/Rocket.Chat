@@ -381,11 +381,29 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_Avatars_Sidebar',
 		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Unread_on_top',
 		});
+
+		this.add('Accounts_Default_User_Preferences_sidebarSortby', 'activity', {
+			type: 'select',
+			values: [
+				{
+					key: 'activity',
+					i18nLabel: 'Activity',
+				},
+				{
+					key: 'alphabetical',
+					i18nLabel: 'Alphabetical',
+				},
+			],
+			public: true,
+			i18nLabel: 'Sort_By',
+		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
 			type: 'boolean',
 			public: true,
