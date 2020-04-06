@@ -4,12 +4,10 @@ import { check } from 'meteor/check';
 import { hasLicense, getModules } from './license';
 
 Meteor.methods({
-	'license:hasLicense'(features: string[]) {
-		check(features, [String]);
+	'license:hasLicense'(feature: string) {
+		check(feature, String);
 
-		return features.map((feature) => ({
-			[feature]: hasLicense(feature),
-		}));
+		return hasLicense(feature);
 	},
 	'license:getModules'() {
 		return getModules();
