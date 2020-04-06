@@ -7,7 +7,7 @@ import _ from 'underscore';
 
 import { WebRTC } from '../../../webrtc/client';
 import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models';
-import { modal } from '../../../ui-utils';
+import { modal, warnUserDeletionMayRemoveRooms } from '../../../ui-utils';
 import { t, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization';
@@ -448,17 +448,9 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				const erasureType = settings.get('Message_ErasureType');
 				const warningKey = `Delete_User_Warning_${ erasureType }`;
 
-				modal.open({
-					title: t('Are_you_sure'),
-					text: t(warningKey),
-					type: 'warning',
-					showCancelButton: true,
-					confirmButtonColor: '#DD6B55',
-					confirmButtonText: t('Yes_delete_it'),
-					cancelButtonText: t('Cancel'),
-					closeOnConfirm: false,
-					html: false,
-				}, () => {
+				const { instance } = this;
+
+				const deleteFn = () => {
 					Meteor.call('deleteUser', _id, success(() => {
 						modal.open({
 							title: t('Deleted'),
@@ -467,8 +459,13 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 							timer: 2000,
 							showConfirmButton: false,
 						});
-						this.instance.tabBar.close();
+
+						instance.tabBar.close();
 					}));
+				};
+
+				warnUserDeletionMayRemoveRooms(_id, deleteFn, {
+					warningKey,
 				});
 			}),
 			group: 'admin',
@@ -512,12 +509,21 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					id: 'deactivate',
 					name: t('Deactivate'),
 					modifier: 'alert',
-					action: prevent(getUser, (user) =>
-						Meteor.call('setUserActiveStatus', user._id, false, success(() => {
-							toastr.success(t('User_has_been_deactivated'));
-							user.active = false;
-						})),
-					),
+					action: prevent(getUser, (user) => {
+						const deactivateFn = () => {
+							Meteor.call('setUserActiveStatus', user._id, false, success(() => {
+								toastr.success(t('User_has_been_deactivated'));
+								user.active = false;
+							}));
+						};
+
+						warnUserDeletionMayRemoveRooms(user._id, deactivateFn, {
+							warningKey: false,
+							confirmButtonKey: 'Yes_deactivate_it',
+							closeOnConfirm: true,
+							skipModalIfEmpty: true,
+						});
+					}),
 				};
 			}
 			return {

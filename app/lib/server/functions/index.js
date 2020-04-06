@@ -12,6 +12,7 @@ export { deleteRoom } from './deleteRoom';
 export { deleteUser } from './deleteUser';
 export { getFullUserData } from './getFullUserData';
 export { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
+export { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
 export { insertMessage } from './insertMessage';
 export { isTheLastMessage } from './isTheLastMessage';

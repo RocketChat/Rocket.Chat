@@ -5,7 +5,7 @@ import _ from 'underscore';
 import Busboy from 'busboy';
 
 import { Users, Subscriptions } from '../../../models/server';
-import { hasPermission } from '../../../authorization';
+import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
 import {
@@ -18,7 +18,7 @@ import {
 } from '../../../lib';
 import { getFullUserData, getFullUserDataById } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
-import { setStatusText } from '../../../lib/server';
+import { setStatusText, getUserSingleOwnedRooms } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 
@@ -172,6 +172,22 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 		return API.v1.success({
 			presence: user.status,
+		});
+	},
+});
+
+API.v1.addRoute('users.getSingleOwnedRooms', { authRequired: true }, {
+	get() {
+		if (!this.isUserFromParams() && !hasAtLeastOnePermission(this.userId, ['delete-user', 'edit-other-user-active-status'])) {
+			return API.v1.unauthorized();
+		}
+
+		const user = this.getUserFromParams();
+
+		const rooms = Meteor.runAsUser(this.userId, () => getUserSingleOwnedRooms(user._id));
+
+		return API.v1.success({
+			rooms,
 		});
 	},
 });

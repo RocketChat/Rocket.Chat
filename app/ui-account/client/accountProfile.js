@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { modal, SideNav } from '../../ui-utils';
+import { modal, SideNav, warnUserDeletionMayRemoveRooms } from '../../ui-utils';
 import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
@@ -475,61 +475,71 @@ Template.accountProfile.events({
 	'click .js-delete-account'(e) {
 		e.preventDefault();
 		const user = Meteor.user();
-		if (s.trim(user && user.services && user.services.password && user.services.password.bcrypt)) {
-			modal.open({
-				title: t('Are_you_sure_you_want_to_delete_your_account'),
-				text: t('If_you_are_sure_type_in_your_password'),
-				type: 'input',
-				inputType: 'password',
-				showCancelButton: true,
-				closeOnConfirm: false,
-				confirmButtonText: t('Delete'),
-				cancelButtonText: t('Cancel'),
-			}, (typedPassword) => {
-				if (typedPassword) {
-					toastr.remove();
-					toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
-					Meteor.call('deleteUserOwnAccount', SHA256(typedPassword), function(error) {
-						if (error) {
-							toastr.remove();
-							modal.showInputError(t('Your_password_is_wrong'));
-						} else {
-							modal.close();
-						}
-					});
-				} else {
-					modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
-					return false;
-				}
-			});
-		} else {
-			modal.open({
-				title: t('Are_you_sure_you_want_to_delete_your_account'),
-				text: t('If_you_are_sure_type_in_your_username'),
-				type: 'input',
-				showCancelButton: true,
-				closeOnConfirm: false,
-				confirmButtonText: t('Delete'),
-				cancelButtonText: t('Cancel'),
-			}, (deleteConfirmation) => {
-				const user = Meteor.user();
-				if (deleteConfirmation === (user && user.username)) {
-					toastr.remove();
-					toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
-					Meteor.call('deleteUserOwnAccount', deleteConfirmation, function(error) {
-						if (error) {
-							toastr.remove();
-							modal.showInputError(t('Your_password_is_wrong'));
-						} else {
-							modal.close();
-						}
-					});
-				} else {
-					modal.showInputError(t('You_need_to_type_in_your_username_in_order_to_do_this'));
-					return false;
-				}
-			});
-		}
+
+		const deleteFn = () => {
+			if (s.trim(user && user.services && user.services.password && user.services.password.bcrypt)) {
+				modal.open({
+					title: t('Are_you_sure_you_want_to_delete_your_account'),
+					text: t('If_you_are_sure_type_in_your_password'),
+					type: 'input',
+					inputType: 'password',
+					showCancelButton: true,
+					closeOnConfirm: false,
+					confirmButtonText: t('Delete'),
+					cancelButtonText: t('Cancel'),
+				}, (typedPassword) => {
+					if (typedPassword) {
+						toastr.remove();
+						toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
+						Meteor.call('deleteUserOwnAccount', SHA256(typedPassword), function(error) {
+							if (error) {
+								toastr.remove();
+								modal.showInputError(t('Your_password_is_wrong'));
+							} else {
+								modal.close();
+							}
+						});
+					} else {
+						modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
+						return false;
+					}
+				});
+			} else {
+				modal.open({
+					title: t('Are_you_sure_you_want_to_delete_your_account'),
+					text: t('If_you_are_sure_type_in_your_username'),
+					type: 'input',
+					showCancelButton: true,
+					closeOnConfirm: false,
+					confirmButtonText: t('Delete'),
+					cancelButtonText: t('Cancel'),
+				}, (deleteConfirmation) => {
+					const user = Meteor.user();
+					if (deleteConfirmation === (user && user.username)) {
+						toastr.remove();
+						toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
+						Meteor.call('deleteUserOwnAccount', deleteConfirmation, function(error) {
+							if (error) {
+								toastr.remove();
+								modal.showInputError(t('Your_password_is_wrong'));
+							} else {
+								modal.close();
+							}
+						});
+					} else {
+						modal.showInputError(t('You_need_to_type_in_your_username_in_order_to_do_this'));
+						return false;
+					}
+				});
+			}
+		};
+
+		warnUserDeletionMayRemoveRooms(user._id, deleteFn, {
+			warningKey: false,
+			confirmButtonKey: 'Continue',
+			closeOnConfirm: true,
+			skipModalIfEmpty: true,
+		});
 	},
 	'click #resend-verification-email'(e) {
 		const user = Meteor.user();
