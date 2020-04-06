@@ -21,6 +21,7 @@ export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
+let prometheusAPIUserAgent = false;
 
 export let API = {};
 
@@ -320,8 +321,8 @@ export class APIClass extends Restivus {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
-						user_agent: this.request.headers['user-agent'],
-						entrypoint: route,
+						...prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] },
+						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
@@ -694,4 +695,8 @@ settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
 settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
+});
+
+settings.get('Prometheus_API_User_Agent', (key, value) => {
+	prometheusAPIUserAgent = value;
 });
