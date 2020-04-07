@@ -381,11 +381,29 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_Avatars_Sidebar',
 		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Unread_on_top',
 		});
+
+		this.add('Accounts_Default_User_Preferences_sidebarSortby', 'activity', {
+			type: 'select',
+			values: [
+				{
+					key: 'activity',
+					i18nLabel: 'Activity',
+				},
+				{
+					key: 'alphabetical',
+					i18nLabel: 'Alphabetical',
+				},
+			],
+			public: true,
+			i18nLabel: 'Sort_By',
+		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
 			type: 'boolean',
 			public: true,
@@ -1459,6 +1477,16 @@ settings.addGroup('Logs', function() {
 		this.add('Prometheus_Port', 9458, {
 			type: 'string',
 			i18nLabel: 'Port',
+		});
+		this.add('Prometheus_Reset_Interval', 0, {
+			type: 'int',
+		});
+		this.add('Prometheus_Garbage_Collector', false, {
+			type: 'boolean',
+			alert: 'Prometheus_Garbage_Collector_Alert',
+		});
+		this.add('Prometheus_API_User_Agent', false, {
+			type: 'boolean',
 		});
 	});
 });

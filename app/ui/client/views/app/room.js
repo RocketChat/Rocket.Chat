@@ -1381,6 +1381,9 @@ Template.room.onRendered(function() {
 
 		callbacks.run('onRenderRoom', template, room);
 	});
+
+	const observer = new ResizeObserver(template.sendToBottomIfNecessary);
+	observer.observe(this.firstNode.querySelector('.wrapper ul'));
 });
 
 callbacks.add('enter-room', (sub) => {
