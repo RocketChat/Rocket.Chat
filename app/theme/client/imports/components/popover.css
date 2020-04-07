@@ -32,9 +32,11 @@
 	&__content {
 		position: absolute;
 
-		display: flex;
+		display: -webkit-box;
 
 		flex-direction: column;
+
+		height: 70%;
 
 		padding: var(--popover-padding);
 
@@ -51,6 +53,7 @@
 
 	&__column {
 		display: flex;
+		overflow: auto;
 		flex-direction: column;
 		flex: 1 0 auto;
 
