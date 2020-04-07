@@ -42006,6 +42006,246 @@
           ]
         }
       ]
+    },
+    "3.0.11": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17148",
+          "title": "Release 3.0.11",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17132",
+          "title": "[FIX] Omnichannel endpoint `inquiries.getOne` returning only queued inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.11",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17143",
+          "title": "[FIX] Option BYPASS_OPLOG_VALIDATION not working",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.11",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17142",
+          "title": "New metric to track oplog queue",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.11",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.0.12": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17158",
+          "title": "Release 3.0.12",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17155",
+          "title": "Fix: Missing checks for Troubleshoot > Disable Notifications",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17152",
+          "title": "Fix: Error message on startup of multiple instances related to the metrics’ server",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.9": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17035",
+          "title": "[IMPROVE] First data load from existing data on engagement dashboard",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "ggazzo",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17193",
+          "title": "Regression: Fix calling readmessage after mark as unread",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17194",
+          "title": "[IMPROVE] Increase the push throughput to prevent queuing",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17092",
+          "title": "Add wrapper to make Meteor methods calls over REST",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17189",
+          "title": "[IMPROVE] Change sidebar sort mode to activity by default",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17192",
+          "title": "Regression: Fix auditing for Multiple Direct Messages",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17145",
+          "title": "[FIX] WebRTC echo while talking",
+          "userLogin": "ndroo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "1rV1N-git",
+            "rodrigok",
+            "d-gubert",
+            "ndroo",
+            "renatobecker",
+            "engelgabriel",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "17186",
+          "title": "Regression: Admin create user button",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17188",
+          "title": "Regression: fix scroll after room loads",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17183",
+          "title": "Metrics: New metrics, performance and size improvements",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17169",
+          "title": "Fix: Huge amount of hasLicense calls to the server",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17155",
+          "title": "Fix: Missing checks for Troubleshoot > Disable Notifications",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17038",
+          "title": "[NEW] Add omnichannel external frame feature",
+          "userLogin": "d-gubert",
+          "milestone": "3.1.0",
+          "contributors": [
+            "d-gubert",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17152",
+          "title": "Fix: Error message on startup of multiple instances related to the metrics’ server",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }

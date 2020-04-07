@@ -1,6 +1,69 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.9
+`2020-04-07  ·  1 🎉  ·  3 🚀  ·  1 🐛  ·  9 🔍  ·  11 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- Add omnichannel external frame feature ([#17038](https://github.com/RocketChat/Rocket.Chat/pull/17038))
+
+### 🚀 Improvements
+
+
+- First data load from existing data on engagement dashboard ([#17035](https://github.com/RocketChat/Rocket.Chat/pull/17035))
+
+- Increase the push throughput to prevent queuing ([#17194](https://github.com/RocketChat/Rocket.Chat/pull/17194))
+
+- Change sidebar sort mode to activity by default ([#17189](https://github.com/RocketChat/Rocket.Chat/pull/17189))
+
+### 🐛 Bug fixes
+
+
+- WebRTC echo while talking ([#17145](https://github.com/RocketChat/Rocket.Chat/pull/17145) by [@1rV1N-git](https://github.com/1rV1N-git) & [@ndroo](https://github.com/ndroo))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix calling readmessage after mark as unread ([#17193](https://github.com/RocketChat/Rocket.Chat/pull/17193))
+
+- Add wrapper to make Meteor methods calls over REST ([#17092](https://github.com/RocketChat/Rocket.Chat/pull/17092))
+
+- Regression: Fix auditing for Multiple Direct Messages ([#17192](https://github.com/RocketChat/Rocket.Chat/pull/17192))
+
+- Regression: Admin create user button ([#17186](https://github.com/RocketChat/Rocket.Chat/pull/17186))
+
+- Regression: fix scroll after room loads ([#17188](https://github.com/RocketChat/Rocket.Chat/pull/17188))
+
+- Metrics: New metrics, performance and size improvements ([#17183](https://github.com/RocketChat/Rocket.Chat/pull/17183))
+
+- Fix: Huge amount of hasLicense calls to the server ([#17169](https://github.com/RocketChat/Rocket.Chat/pull/17169))
+
+- Fix: Missing checks for Troubleshoot > Disable Notifications ([#17155](https://github.com/RocketChat/Rocket.Chat/pull/17155))
+
+- Fix: Error message on startup of multiple instances related to the metrics’ server ([#17152](https://github.com/RocketChat/Rocket.Chat/pull/17152))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@1rV1N-git](https://github.com/1rV1N-git)
+- [@ndroo](https://github.com/ndroo)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@d-gubert](https://github.com/d-gubert)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.1.0-rc.8
 `2020-04-02  ·  2 🐛  ·  2 🔍  ·  3 👩‍💻👨‍💻`
 
@@ -578,6 +641,62 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 3.0.12
+`2020-04-03  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.0.12 ([#17158](https://github.com/RocketChat/Rocket.Chat/pull/17158))
+
+- Fix: Missing checks for Troubleshoot > Disable Notifications ([#17155](https://github.com/RocketChat/Rocket.Chat/pull/17155))
+
+- Fix: Error message on startup of multiple instances related to the metrics’ server ([#17152](https://github.com/RocketChat/Rocket.Chat/pull/17152))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.0.11
+`2020-04-02  ·  2 🐛  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+
+- Omnichannel endpoint `inquiries.getOne` returning only queued inquiries ([#17132](https://github.com/RocketChat/Rocket.Chat/pull/17132))
+
+- Option BYPASS_OPLOG_VALIDATION not working ([#17143](https://github.com/RocketChat/Rocket.Chat/pull/17143))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.0.11 ([#17148](https://github.com/RocketChat/Rocket.Chat/pull/17148))
+
+- New metric to track oplog queue ([#17142](https://github.com/RocketChat/Rocket.Chat/pull/17142))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.0.10
 `2020-04-01  ·  1 🚀  ·  2 🐛  ·  4 🔍  ·  4 👩‍💻👨‍💻`
