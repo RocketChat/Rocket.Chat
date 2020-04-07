@@ -69,7 +69,7 @@ export function userCanAccessAvatar({ headers = {}, query = {} }) {
 
 const getFirstLetter = (name) => name.replace(/[^A-Za-z0-9]/g, '').substr(0, 1).toUpperCase();
 
-export const renderSVGLetters = (username, viewSize = 200) => {
+export const renderSVGLetters = (username, viewSize = 200, avatarColor) => {
 	let color = '';
 	let initials = '';
 
@@ -77,7 +77,7 @@ export const renderSVGLetters = (username, viewSize = 200) => {
 		color = '#000';
 		initials = username;
 	} else {
-		color = getAvatarColor(username);
+		color = avatarColor || getAvatarColor(username);
 		initials = getFirstLetter(username);
 	}
 

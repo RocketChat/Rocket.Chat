@@ -9,6 +9,9 @@ import LivechatTagRaw from './raw/LivechatTag';
 import LivechatUnitMonitorsRaw from './raw/LivechatUnitMonitors';
 import './models/LivechatDepartment';
 import './models/LivechatRooms';
+import './models/Subscriptions';
+import './models/LivechatInquiry';
+import './models/Messages';
 import './raw/LivechatDepartment';
 import './raw/LivechatRooms';
 

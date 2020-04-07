@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
+import '../lib/messageTypes';
 import './hooks/addDepartmentAncestors';
 import './hooks/afterForwardChatToDepartment';
 import './hooks/beforeListTags';
@@ -23,6 +24,7 @@ import './hooks/checkAgentBeforeTakeInquiry';
 import './hooks/onLoadConfigApi';
 import './hooks/onSetUserStatusLivechat';
 import './hooks/onCloseLivechat';
+import './hooks/onSaveVisitorInfo';
 import './lib/routing/LoadBalancing';
 import { onLicense } from '../../license/server';
 

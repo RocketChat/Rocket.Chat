@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Users } from '../../../../../app/models';
+import { Users, LivechatRooms, Subscriptions, LivechatInquiry, Messages } from '../../../../../app/models';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
@@ -122,9 +122,11 @@ export const LivechatEnterprise = {
 			name: String,
 			description: Match.Optional(String),
 			color: String,
-			dueTime: String,
+			dueTimeInMinutes: String,
 		});
-
+		LivechatRooms.updatePriorityDataByPriorityId(_id, priorityData);
+		Subscriptions.updatePriorityDataByPriorityId(_id, priorityData);
+		LivechatInquiry.updatePriorityDataByPriorityId(_id, priorityData);
 		return LivechatPriority.createOrUpdatePriority(_id, priorityData);
 	},
 
@@ -136,7 +138,27 @@ export const LivechatEnterprise = {
 		if (!priority) {
 			throw new Meteor.Error('priority-not-found', 'Priority not found', { method: 'livechat:removePriority' });
 		}
-
+		LivechatRooms.unsetPriorityByPriorityId(_id);
+		Subscriptions.unsetPriorityByPriorityId(_id);
+		LivechatInquiry.unsetPriorityByPriorityId(_id);
 		return LivechatPriority.removeById(_id);
+	},
+
+	savePriorityDataOnRooms(room, user) {
+		if (room.omnichannel && room.omnichannel.priority) {
+			const priority = LivechatPriority.findOneById(room.omnichannel.priority._id);
+			Subscriptions.setPriorityByRoomId(room._id, priority);
+			LivechatInquiry.setPriorityByRoomId(room._id, priority);
+		} else {
+			Subscriptions.unsetPriorityByRoomId(room._id);
+			LivechatInquiry.unsetPriorityByRoomId(room._id);
+		}
+		const extraData = {
+			priorityData: {
+				definedBy: user,
+				priority: room.omnichannel && room.omnichannel.priority ? room.omnichannel.priority : {},
+			},
+		};
+		Messages.createPriorityHistoryWithRoomIdMessageAndUser(room._id, '', user, extraData);
 	},
 };

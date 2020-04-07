@@ -34,13 +34,11 @@ API.v1.addRoute('livechat/priorities.setPriorityToRoom', { authRequired: true },
 		if (!roomId) {
 			return API.v1.failure('The \'roomId\' param is required');
 		}
-		if (!priorityId) {
-			return API.v1.failure('The \'priorityId\' param is required');
-		}
-		return API.v1.success(Promise.await(setPriorityToRoom({
+		Promise.await(setPriorityToRoom({
 			userId: this.userId,
 			roomId,
 			priorityId,
-		})));
+		}));
+		return API.v1.success();
 	},
 });

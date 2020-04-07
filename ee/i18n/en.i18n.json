@@ -34,6 +34,7 @@
   "Monitor_removed": "Monitor removed",
   "Monitors": "Monitors",
   "New_Canned_Response": "New Canned Response",
+  "New_chat_priority": "New Chat Priority Defined: __user__ defined chat priority to __priority__",
   "New_Tag": "New Tag",
   "New_Unit": "New Unit",
   "New_Priority": "New Priority",
@@ -43,6 +44,7 @@
   "Others": "Others",
   "Please_select_visibility": "Please select a visibility",
   "Priorities": "Priorities",
+  "Priority": "Priority",
   "Role_Mapping": "Role mapping",
   "Selected_departments": "Selected Departments",
   "Selected_monitors": "Selected Monitors",
@@ -62,5 +64,6 @@
   "view-livechat-unit": "View Livechat Units",
   "Waiting_queue": "Waiting queue",
   "Waiting_queue_message": "Waiting queue message",
-  "Waiting_queue_message_description": "Message that will be displayed to the visitors when they get in the queue"
+  "Waiting_queue_message_description": "Message that will be displayed to the visitors when they get in the queue",
+  "Without_priority": "Without priority"
 }

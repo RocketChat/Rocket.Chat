@@ -23,6 +23,7 @@ const getRoom = (roomId) => {
 export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 	const roomId = req.url.substr(1);
 	const room = getRoom(roomId);
+	const { avatarColor } = req.query;
 
 	if (!room) {
 		res.writeHead(404);
@@ -41,7 +42,7 @@ export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 		return;
 	}
 
-	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size));
+	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size), avatarColor);
 
 	return serveAvatar(svg, req.query.format, res);
 });

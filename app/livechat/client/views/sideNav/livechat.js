@@ -45,8 +45,12 @@ Template.livechat.helpers({
 
 		const sortBy = getUserPreference(user, 'sidebarSortby');
 		const sort = sortBy === 'activity' ? { _updatedAt: - 1 } : { fname: 1 };
-
-		return ChatSubscription.find(query, { sort });
+		return ChatSubscription.find(query, {
+			sort: {
+				'omnichannel.priority.dueTimeInMinutes': 1,
+				...sort,
+			},
+		});
 	},
 
 	inquiries() {
@@ -54,6 +58,7 @@ Template.livechat.helpers({
 			status: 'queued',
 		}, {
 			sort: {
+				'omnichannel.priority.dueTimeInMinutes': 1,
 				ts: 1,
 			},
 			limit: Template.instance().inquiriesLimit.get(),

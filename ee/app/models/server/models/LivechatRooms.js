@@ -38,14 +38,46 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 				'omnichannel.priority': {
 					_id: priority._id,
 					name: priority.name,
-					description: priority.description,
-					color: priority.color,
-					dueTime: parseInt(priority.dueTime),
+					dueTimeInMinutes: parseInt(priority.dueTimeInMinutes),
+				},
+				customProperties: {
+					avatar: {
+						color: priority.color,
+					},
 				},
 			},
 		});
 		return originalFn.apply(this, args);
 	},
 });
+
+LivechatRooms.prototype.updatePriorityDataByPriorityId = function(priorityId, priorityData) {
+	return this.update({
+		'omnichannel.priority._id': priorityId,
+		t: 'l',
+		open: true,
+	},
+	{
+		$set: {
+			'omnichannel.priority.name': priorityData.name,
+			'omnichannel.priority.dueTimeInMinutes': parseInt(priorityData.dueTimeInMinutes),
+			'customProperties.avatar.color': priorityData.color,
+		},
+	});
+};
+
+LivechatRooms.prototype.unsetPriorityByPriorityId = function(priorityId) {
+	return this.update({
+		'omnichannel.priority._id': priorityId,
+		t: 'l',
+		open: true,
+	},
+	{
+		$unset: {
+			'omnichannel.priority': 1,
+			'customProperties.avatar.color': 1,
+		},
+	});
+};
 
 export default LivechatRooms;

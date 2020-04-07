@@ -10,6 +10,7 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ ts: 1 }); // timestamp
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
+		this.tryEnsureIndex({ 'omnichannel.priority._id': 1 }, { sparse: true });
 	}
 
 	findOneById(inquiryId) {

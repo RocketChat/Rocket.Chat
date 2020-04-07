@@ -41,9 +41,9 @@ Meteor.methods({
 		}
 
 		const ret = Livechat.saveGuest(guestData) && Livechat.saveRoomInfo(roomData, guestData);
-
+		const user = Meteor.user();
 		Meteor.defer(() => {
-			callbacks.run('livechat.saveInfo', LivechatRooms.findOneById(roomData._id));
+			callbacks.run('livechat.saveInfo', LivechatRooms.findOneById(roomData._id), { _id: user._id, username: user.username });
 		});
 
 		return ret;

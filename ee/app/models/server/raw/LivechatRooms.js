@@ -22,3 +22,29 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
 		return this.update(query, update);
 	},
 });
+
+LivechatRoomsRaw.prototype.setPriorityById = function(_id, priority) {
+	return this.update({ _id }, {
+		$set: {
+			'omnichannel.priority': {
+				_id: priority._id,
+				name: priority.name,
+				dueTimeInMinutes: parseInt(priority.dueTimeInMinutes),
+			},
+			customProperties: {
+				avatar: {
+					color: priority.color,
+				},
+			},
+		},
+	});
+};
+
+LivechatRoomsRaw.prototype.unsetPriorityById = function(_id) {
+	return this.update({ _id }, {
+		$unset: {
+			'omnichannel.priority': 1,
+			'customProperties.avatar.color': 1,
+		},
+	});
+};

@@ -1,6 +1,7 @@
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import LivechatPriority from '../../../../models/server/raw/LivechatPriority';
-import LivechatRooms from '../../../../models/server/models/LivechatRooms';
+import { LivechatRooms, Users } from '../../../../../../app/models/server/raw';
+import { LivechatEnterprise } from '../../lib/LivechatEnterprise';
 
 export async function findPriorities({ userId, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-priorities')) {
@@ -35,5 +36,18 @@ export async function setPriorityToRoom({ userId, roomId, priorityId }) {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-priorities')) {
 		throw new Error('error-not-authorized');
 	}
-	return LivechatRooms.setPriorityByRoomId(roomId, priorityId);
+	const room = await LivechatRooms.findOneById(roomId);
+	if (!room) {
+		throw new Error('Invalid Room');
+	}
+	const priority = await LivechatPriority.findOneById(priorityId);
+	if (!priority && priorityId !== '') {
+		throw new Error('Invalid priority');
+	}
+	if (priority) {
+		await LivechatRooms.setPriorityById(roomId, priority);
+	} else {
+		await LivechatRooms.unsetPriorityById(roomId);
+	}
+	LivechatEnterprise.savePriorityDataOnRooms(await LivechatRooms.findOneById(roomId), await Users.findOneById(userId, { fields: { username: 1 } }));
 }

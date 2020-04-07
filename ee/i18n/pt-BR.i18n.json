@@ -25,6 +25,7 @@
   "Message_auditing_log": "Log de auditoria",
   "Monitor_removed": "Monitor removido",
   "Monitors": "Monitores",
+  "New_chat_priority": "Nova prioridade da sala definida: __user__ definiu a prioridade para __priority__",
   "New_Tag": "Nova Tag",
   "New_Unit": "Nova Unidade",
   "New_Priority": "Nova Prioridade",
@@ -33,6 +34,7 @@
   "Others": "Outros",
   "Please_select_visibility": "Por favor selecione o tipo de visibilidade",
   "Priorities": "Prioridades",
+  "Priority": "Prioridade",
   "Role_Mapping": "Mapeamento de papéis",
   "Selected_departments": "Departamentos selecionados",
   "Selected_monitors": "Monitores selecionados",
@@ -50,5 +52,6 @@
   "view-livechat-unit": "Visualizar Unidades de Livechat",
   "Waiting_queue": "Fila de espera",
   "Waiting_queue_message": "Mensagem de fila de espera",
-  "Waiting_queue_message_description": "Mensagem que será exibida aos visitantes quando eles entrarem na fila de espera"
+  "Waiting_queue_message_description": "Mensagem que será exibida aos visitantes quando eles entrarem na fila de espera",
+  "Without_priority": "Sem prioridade"
 }

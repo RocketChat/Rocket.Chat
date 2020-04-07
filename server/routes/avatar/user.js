@@ -14,7 +14,7 @@ import { Users, Avatars } from '../../../app/models/server';
 // request /avatar/@name forces returning the svg
 export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 	const requestUsername = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
-
+	const { avatarColor } = req.query;
 	if (!requestUsername) {
 		res.writeHead(404);
 		res.end();
@@ -27,7 +27,7 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 
 	// if request starts with @ always return the svg letters
 	if (requestUsername[0] === '@') {
-		const svg = renderSVGLetters(requestUsername.substr(1), avatarSize);
+		const svg = renderSVGLetters(requestUsername.substr(1), avatarSize, avatarColor);
 		serveAvatar(svg, req.query.format, res);
 		return;
 	}
@@ -59,7 +59,7 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 		return;
 	}
 
-	let svg = renderSVGLetters(requestUsername, avatarSize);
+	let svg = renderSVGLetters(requestUsername, avatarSize, avatarColor);
 
 	if (settings.get('UI_Use_Name_Avatar')) {
 		const user = Users.findOneByUsernameIgnoringCase(requestUsername, {
@@ -69,7 +69,7 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 		});
 
 		if (user && user.name) {
-			svg = renderSVGLetters(user.name, avatarSize);
+			svg = renderSVGLetters(user.name, avatarSize, avatarColor);
 		}
 	}
 

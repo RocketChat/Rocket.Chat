@@ -111,7 +111,10 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+		return getAvatarURL({
+			username: `@${ this.roomName(roomData) }`,
+			color: roomData.customProperties && roomData.customProperties.avatar && roomData.customProperties.avatar.color ? roomData.customProperties.avatar.color : undefined,
+		});
 	}
 
 	openCustomProfileTab(instance, room, username) {

@@ -1,10 +1,17 @@
 import { getURL } from './getURL';
 
-export const getAvatarURL = ({ username, roomId, cache }) => {
+const addColorParameterIfNeeds = (color, cache) => {
+	if (!color) {
+		return '';
+	}
+	return `${ cache ? '&' : '?' }avatarColor=${ encodeURIComponent(color) }`;
+};
+
+export const getAvatarURL = ({ username, roomId, color, cache }) => {
 	if (username) {
-		return getURL(`/avatar/${ encodeURIComponent(username) }${ cache ? `?_dc=${ cache }` : '' }`);
+		return getURL(`/avatar/${ encodeURIComponent(username) }${ cache ? `?_dc=${ cache }` : '' }${ addColorParameterIfNeeds(color, cache) }`);
 	}
 	if (roomId) {
-		return getURL(`/avatar/room/${ encodeURIComponent(roomId) }${ cache ? `?_dc=${ cache }` : '' }`);
+		return getURL(`/avatar/room/${ encodeURIComponent(roomId) }${ cache ? `?_dc=${ cache }` : '' }${ addColorParameterIfNeeds(color, cache) }`);
 	}
 };
