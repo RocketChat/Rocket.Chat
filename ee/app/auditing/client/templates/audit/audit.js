@@ -1,3 +1,4 @@
+import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -44,15 +45,11 @@ Template.audit.events({
 		e.currentTarget.blur();
 
 		if (t.type.get() === 'd') {
-			if (!t.user.username) {
-				return form.querySelector('#autocomplete-user').classList.add('rc-input--error');
+			if (!t.users) {
+				return form.querySelector('#autocomplete-users').classList.add('rc-input--error');
 			}
-			form.querySelector('#autocomplete-user').classList.remove('rc-input--error');
-			if (!t.user2.username) {
-				return form.querySelector('#autocomplete-user').classList.add('rc-input--error');
-			}
-			form.querySelector('#autocomplete-user').classList.remove('rc-input--error');
-			result.users = [t.user.username, t.user2.username];
+			form.querySelector('#autocomplete-users').classList.remove('rc-input--error');
+			result.users = t.users.map((user) => user.username);
 		} else {
 			if (!t.room || !t.room._id) {
 				return form.querySelector('#autocomplete-room').classList.add('rc-input--error');
@@ -151,7 +148,7 @@ const acEvents = (key/* , variable, name*/) => ({
 	},
 	'keydown input'(e, t) {
 		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
-			const users = t.selectedUsers;
+			const users = t.selected;
 			const usersArr = users.get();
 			usersArr.pop();
 			return users.set(usersArr);
@@ -169,6 +166,20 @@ const acEvents = (key/* , variable, name*/) => ({
 	},
 });
 
+Template.auditAutocompleteDirectMessage.events({
+	...acEvents('ac', 'selected'),
+	'input input'(e, t) {
+		t.filter.set(e.target.value);
+	},
+	'click .rc-tags__tag-icon'(e, t) {
+		t.selected.set();
+	},
+	'click .rc-tags__tag'({ target }, t) {
+		const { onClickTag } = t;
+		return onClickTag & onClickTag(Blaze.getData(target));
+	},
+});
+
 Template.auditAutocomplete.events({
 	...acEvents('ac', 'selected'),
 	'input input'(e, t) {
@@ -176,6 +187,41 @@ Template.auditAutocomplete.events({
 	},
 	'click .rc-tags__tag-icon'(e, t) {
 		t.selected.set();
+	},
+	'click .rc-tags__tag'({ target }, t) {
+		const { onClickTag } = t;
+		return onClickTag & onClickTag(Blaze.getData(target));
+	},
+});
+
+Template.auditAutocompleteDirectMessage.helpers({
+	selected() {
+		const instance = Template.instance();
+		const selected = instance.selected.get();
+		return selected && (instance.data.prepare ? instance.data.prepare(selected) : selected);
+	},
+	config() {
+		const { filter } = Template.instance();
+		return {
+			template_item: 'popupList_item_channel',
+			// noMatchTemplate: Template.roomSearchEmpty,
+			filter: filter.get(),
+			noMatchTemplate: 'userSearchEmpty',
+			modifier: (text) => (Template.parentData(8).modifier || function(text, filter) {
+				const f = filter.get();
+				return `#${ f.length === 0 ? text : text.replace(new RegExp(f), function(part) {
+					return `<strong>${ part }</strong>`;
+				}) }`;
+			})(text, filter),
+		};
+	},
+	autocomplete(key) {
+		const instance = Template.instance();
+		const param = instance.ac[key];
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
+	},
+	items() {
+		return Template.instance().ac.filteredList();
 	},
 });
 
@@ -221,6 +267,37 @@ Template.auditAutocomplete.onRendered(async function() {
 	});
 });
 
+Template.auditAutocomplete.helpers({
+	selected() {
+		const instance = Template.instance();
+		const selected = instance.selected.get();
+		return selected && (instance.data.prepare ? instance.data.prepare(selected) : selected);
+	},
+	config() {
+		const { filter } = Template.instance();
+		return {
+			template_item: 'popupList_item_channel',
+			// noMatchTemplate: Template.roomSearchEmpty,
+			filter: filter.get(),
+			noMatchTemplate: 'userSearchEmpty',
+			modifier: (text) => (Template.parentData(8).modifier || function(text, filter) {
+				const f = filter.get();
+				return `#${ f.length === 0 ? text : text.replace(new RegExp(f), function(part) {
+					return `<strong>${ part }</strong>`;
+				}) }`;
+			})(text, filter),
+		};
+	},
+	autocomplete(key) {
+		const instance = Template.instance();
+		const param = instance.ac[key];
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
+	},
+	items() {
+		return Template.instance().ac.filteredList();
+	},
+});
+
 const autocompleteConfig = ({
 	collection,
 	endpoint,
@@ -253,6 +330,10 @@ Template.auditAutocomplete.onCreated(function() {
 	this.filter = new ReactiveVar('');
 	this.selected = new ReactiveVar('');
 
+	this.onClickTag = () => {
+		this.selected.set('');
+	};
+
 	this.autorun(() => {
 		const value = this.selected.get();
 		this.data.onChange(value, this.data.key);
@@ -264,4 +345,37 @@ Template.auditAutocomplete.onCreated(function() {
 		term: this.data.term || 'term',
 	}));
 	this.ac.tmplInst = this;
+});
+
+
+Template.auditAutocompleteDirectMessage.onCreated(function() {
+	this.filter = new ReactiveVar('');
+	this.selected = new ReactiveVar([]);
+
+	this.onClickTag = ({ username }) => {
+		this.selected.set(this.selected.get().filter((user) => user.username !== username));
+	};
+
+	this.autorun(() => {
+		const value = this.selected.get();
+		this.data.onChange(value, this.data.key);
+	});
+	this.ac = new AutoComplete(autocompleteConfig({
+		field: this.data.field,
+		collection: this.data.collection || 'CachedChannelList',
+		endpoint: this.data.endpoint || 'rooms.autocomplete.channelAndPrivate',
+		term: this.data.term || 'term',
+	}));
+	this.ac.tmplInst = this;
+});
+
+Template.auditAutocompleteDirectMessage.onRendered(async function() {
+	const { selected } = this;
+
+	this.ac.element = this.firstNode.querySelector('input');
+	this.ac.$element = $(this.ac.element);
+
+	this.ac.$element.on('autocompleteselect', function(e, { item }) {
+		selected.set([...selected.get(), item]);
+	});
 });
