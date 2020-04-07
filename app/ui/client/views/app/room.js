@@ -1294,6 +1294,11 @@ Template.room.onRendered(function() {
 		if (!Object.values(roomTypes.roomTypes).map(({ route }) => route && route.name).filter(Boolean).includes(FlowRouter.getRouteName())) {
 			return;
 		}
+
+		if (rid !== Session.get('openedRoom')) {
+			return;
+		}
+
 		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
 		read();
 		return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
