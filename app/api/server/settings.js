@@ -14,6 +14,7 @@ settings.addGroup('General', function() {
 
 		this.add('API_Use_REST_For_DDP_Calls', false, {
 			type: 'boolean',
+			public: true,
 			alert: 'API_Use_REST_For_DDP_Calls_Alert',
 		});
 	});
