@@ -79,7 +79,7 @@ export function DirectoryTable({
 	return <>
 		<Flex.Container direction='column'>
 			<Box>
-				<Box mb='x16' display='flex'>
+				<Box mb='x16' display='flex' flexDirection='column'>
 					<TextInput placeholder={searchPlaceholder} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 				</Box>
 				{channels && !channels.length
