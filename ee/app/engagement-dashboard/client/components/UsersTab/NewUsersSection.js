@@ -67,7 +67,9 @@ export function NewUsersSection() {
 		}));
 		for (const { day, users } of data.days) {
 			const i = moment(day).diff(period.start, 'days');
-			values[i].newUsers += users;
+			if (i >= 0) {
+				values[i].newUsers += users;
+			}
 		}
 
 		return [
