@@ -51,7 +51,7 @@ Meteor.startup(() => {
 		`);
 	}
 
-	settings.get('Troubleshoot_Use_REST_For_DDP_Calls', (key, value) => {
+	settings.get('API_Use_REST_For_DDP_Calls', (key, value) => {
 		if (!value) {
 			return injectIntoHead(key, '');
 		}
