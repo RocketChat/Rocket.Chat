@@ -17,7 +17,7 @@ Meteor.methods({
 			throw new Meteor.Error('Not allowed');
 		}
 
-		const room = !rid ? Rooms.findOne({ t: 'd', usernames: { $all: users } }) : Rooms.findOne({ _id: rid });
+		const room = !rid ? Rooms.findDirectRoomContainingAllUsernames(users) : Rooms.findOne({ _id: rid });
 		if (!room) {
 			throw new Meteor.Error('Room doesn`t exist');
 		}

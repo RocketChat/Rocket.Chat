@@ -5,11 +5,10 @@ import { AdminBox } from '../../../../app/ui-utils';
 import { renderRouteComponent } from '../../../../client/reactAdapters';
 import { hasLicense } from '../../license/client';
 
-let licensed = false;
-
 FlowRouter.route('/admin/engagement-dashboard/:tab?', {
 	name: 'engagement-dashboard',
-	action: () => {
+	action: async () => {
+		const licensed = await hasLicense('engagement-dashboard');
 		if (!licensed) {
 			return;
 		}
@@ -22,8 +21,6 @@ hasLicense('engagement-dashboard').then((enabled) => {
 	if (!enabled) {
 		return;
 	}
-
-	licensed = true;
 
 	AdminBox.addOption({
 		href: 'engagement-dashboard',

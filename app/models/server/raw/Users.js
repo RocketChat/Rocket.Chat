@@ -215,6 +215,51 @@ export class UsersRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
+	getTotalOfRegisteredUsersByDate({ start, end, options = {} }) {
+		const params = [
+			{
+				$match: {
+					createdAt: { $gte: start, $lte: end },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						$concat: [
+							{ $substr: ['$createdAt', 0, 4] },
+							{ $substr: ['$createdAt', 5, 2] },
+							{ $substr: ['$createdAt', 8, 2] },
+						],
+					},
+					users: { $sum: 1 },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						$toInt: '$_id',
+					},
+					users: { $sum: '$users' },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					date: '$_id',
+					users: 1,
+					type: 'users',
+				},
+			},
+		];
+		if (options.sort) {
+			params.push({ $sort: options.sort });
+		}
+		if (options.count) {
+			params.push({ $limit: options.count });
+		}
+		return this.col.aggregate(params).toArray();
+	}
+
 	updateStatusText(_id, statusText) {
 		const update = {
 			$set: {
