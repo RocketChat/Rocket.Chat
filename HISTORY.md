@@ -1,6 +1,21 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.10
+`2020-04-07  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix users raw model ([#17204](https://github.com/RocketChat/Rocket.Chat/pull/17204))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.1.0-rc.9
 `2020-04-07  ·  1 🎉  ·  3 🚀  ·  1 🐛  ·  9 🔍  ·  11 👩‍💻👨‍💻`
 
