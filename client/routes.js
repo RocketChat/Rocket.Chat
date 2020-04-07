@@ -160,22 +160,10 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
-FlowRouter.route('/admin/info', {
-	name: 'admin-info',
-	action: () => {
-		renderRouteComponent(() => import('./components/admin/info/InformationRoute'), {
-			template: 'main',
-			region: 'center',
-			// eslint-disable-next-line new-cap
-			renderContainerView: () => HTML.DIV({ style: 'overflow: hidden; flex: 1 1 auto; height: 1%;' }),
-		});
-	},
-});
-
 FlowRouter.route('/admin/:group?', {
 	name: 'admin',
 	action: () => {
-		renderRouteComponent(() => import('./components/admin/settings/SettingsRoute'), {
+		renderRouteComponent(() => import('./components/admin/Router'), {
 			template: 'main',
 			region: 'center',
 			// eslint-disable-next-line new-cap
