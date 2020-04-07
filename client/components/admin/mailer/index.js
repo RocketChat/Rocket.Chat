@@ -1,5 +1,4 @@
 import React, { useReducer } from 'react';
-import _ from 'underscore';
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon } from '@rocket.chat/fuselage';
 
 import { useMethod } from '../../../contexts/ServerContext';
