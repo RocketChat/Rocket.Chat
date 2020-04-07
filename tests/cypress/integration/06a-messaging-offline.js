@@ -4,6 +4,12 @@ import Global from '../pageobjects/global';
 import { username, email, password } from '../../data/user.js';
 import { fileName } from '../../data/interactions.js';
 import { checkIfUserIsValid } from '../../data/checks';
+import {
+	api,
+	request,
+	credentials,
+	getCredentials,
+} from '../../data/api-data.js';
 
 const storage = {
 	db: 'localforage',
@@ -70,6 +76,7 @@ function offlineMessageTest(message, action) {
 
 	it('it should show the offline message after refresh', () => {
 		mainContent.lastMessage.should('be.visible');
+		mainContent.lastMessage.should('contain', message);
 	});
 
 	it(`it should ${ action } the offline message after coming online`, () => {
@@ -85,6 +92,15 @@ function offlineMessageTest(message, action) {
 			});
 		}
 	});
+}
+
+function sendMessageRequest(done = () => {}) {
+	request.post(api('chat.sendMessage'))
+		.set(credentials)
+		.send({ message: { _id: `id-${ Date.now() }`, rid: 'GENERAL', msg: `Check ${ message }` } })
+		.expect('Content-Type', 'application/json')
+		.expect(200)
+		.end(done);
 }
 
 describe('[Message]', () => {
@@ -186,7 +202,7 @@ describe('[Message]', () => {
 			Global.modalFileDescription.should('be.visible');
 			Global.modalFileDescription.type(message);
 			Global.modalConfirm.click();
-			cy.wait(1000);
+			cy.wait(3000);
 		});
 
 		it('it should show the file in the message', () => {
@@ -211,6 +227,23 @@ describe('[Message]', () => {
 			testMsgFromForge(message, true, (msg) => {
 				expect(isOnlineAttachment({ msg, message })).to.equal(true);
 			});
+		});
+	});
+
+	describe('Message retain:', () => {
+		before((done) => {
+			getCredentials(done);
+		});
+
+		it('it should send API message request', (done) => {
+			sendMessageRequest(done);
+		});
+
+		it('it should show the message after refresh', () => {
+			cy.reload();
+			mainContent.lastMessage.should('be.visible');
+			mainContent.lastMessage.should('contain', `Check ${ message }`);
+			cy.wait(3000);
 		});
 	});
 });

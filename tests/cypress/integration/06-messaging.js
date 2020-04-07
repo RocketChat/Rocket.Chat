@@ -18,6 +18,7 @@ function messagingTest(currentTest) {
 
 		it('it should show the last message', () => {
 			mainContent.lastMessage.should('be.visible');
+			mainContent.lastMessage.should('contain', message);
 		});
 
 		if (currentTest !== 'direct') {

@@ -149,7 +149,6 @@ class MainContent extends Page {
 
 	// uploads a file in the given fileName (url).
 	fileUpload(fileName) {
-		this.sendMessage('Prepare for the file');
 		this.plusBtn.click();
 		this.fileUploadBtn.click();
 		cy.get('[id="fileupload-input"]').attachFile(fileName, { force: true });
