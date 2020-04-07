@@ -1,55 +1,30 @@
-import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { Template } from 'meteor/templating';
+
 
 import { hasAllPermission } from '../../../../app/authorization';
 import { AdminBox } from '../../../../app/ui-utils';
 import { hasLicense } from '../../license/client';
+import { createTemplateForComponent } from '../../../../client/createTemplateForComponent';
 
-Template.EngagementDashboardRoute = new Blaze.Template('EngagementDashboardRoute',
-	() => HTML.DIV.call(null, { style: 'overflow: hidden; flex: 1 1 auto; height: 1%;' }));
-
-Template.EngagementDashboardRoute.onRendered(async function() {
-	const [
-		{ createElement },
-		{ render, unmountComponentAtNode },
-		{ MeteorProvider },
-		{ EngagementDashboardRoute },
-	] = await Promise.all([
-		import('react'),
-		import('react-dom'),
-		import('../../../../client/providers/MeteorProvider'),
-		import('./components/EngagementDashboardRoute'),
-	]);
-
-	const container = this.firstNode;
-
-	if (!container) {
-		return;
-	}
-
-	this.autorun(() => {
-		const routeName = FlowRouter.getRouteName();
-		if (routeName !== 'engagement-dashboard') {
-			unmountComponentAtNode(container);
-		}
-	});
-
-	render(createElement(MeteorProvider, { children: createElement(EngagementDashboardRoute) }), container);
-});
-
-let licensed = false;
 
 FlowRouter.route('/admin/engagement-dashboard/:tab?', {
 	name: 'engagement-dashboard',
-	action: () => {
+	action: async () => {
+		const licensed = await hasLicense('engagement-dashboard');
 		if (!licensed) {
 			return;
 		}
 
-		BlazeLayout.render('main', { center: 'EngagementDashboardRoute' });
+		const { EngagementDashboardRoute } = await import('./components/EngagementDashboardRoute');
+
+		BlazeLayout.render('main', { center: await createTemplateForComponent(EngagementDashboardRoute,
+			{},
+			// eslint-disable-next-line new-cap
+			() => HTML.DIV.call(null, { style: 'overflow: hidden; flex: 1 1 auto; height: 1%;' }),
+			'engagement-dashboard'),
+		});
 	},
 });
 
@@ -57,8 +32,6 @@ hasLicense('engagement-dashboard').then((enabled) => {
 	if (!enabled) {
 		return;
 	}
-
-	licensed = true;
 
 	AdminBox.addOption({
 		href: 'engagement-dashboard',
