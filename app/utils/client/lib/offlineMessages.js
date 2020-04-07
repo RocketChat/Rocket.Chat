@@ -138,14 +138,14 @@ function clearOldMessages({ records: messages, ...value }) {
 	value.updatedAt = new Date();
 	localforage.setItem('chatMessage', value).then(() => {
 		CachedChatMessage.loadFromCache();
+		triggerOfflineMsgs(retain);
 	});
 }
 
 export const cleanMessagesAtStartup = (offline = true) => {
 	localforage.getItem('chatMessage').then((value) => {
 		if (value && value.records) {
-			triggerOfflineMsgs(value.records);
-			offline && clearOldMessages(value);
+			offline ? clearOldMessages(value) : triggerOfflineMsgs(value.records);
 		}
 	});
 };

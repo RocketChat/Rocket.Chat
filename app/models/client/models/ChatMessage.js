@@ -15,6 +15,8 @@ export const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
 
 export const ChatMessage = CachedChatMessage.collection;
 
+let timeout;
+
 ChatMessage.setReactions = function(messageId, reactions, tempActions) {
 	this.update({ _id: messageId }, { $set: { temp: true, tempActions, reactions } });
 	return CachedChatMessage.save();
@@ -92,7 +94,8 @@ const messagePreFetch = () => {
 		if (!messagesFetched && CachedChatSubscription.ready.get()) {
 			const status = Meteor.status();
 			if (status.status !== 'connected') {
-				cleanMessagesAtStartup();
+				clearTimeout(timeout);
+				timeout = setTimeout(cleanMessagesAtStartup, 3000);
 				return;
 			}
 			messagesFetched = true;
@@ -122,6 +125,7 @@ const messagePreFetch = () => {
 					});
 				});
 			});
+			clearTimeout(timeout);
 			cleanMessagesAtStartup(false);
 		}
 	});
