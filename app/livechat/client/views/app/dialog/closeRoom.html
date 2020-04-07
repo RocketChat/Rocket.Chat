@@ -1,0 +1,33 @@
+<template name="closeRoom">
+	<section class="create-channel">
+		<div class="create-channel__wrapper">
+			<p class="create-channel__description">{{_ "Close_room_description"}}</p>
+			<form id="close-room" class="close-room__content">
+				<div class="create-channel__inputs">
+					<div class="rc-input {{#if invalidComment}}rc-input--error{{/if}}">
+						<label class="rc-input__label">
+							<div class="rc-input__wrapper">
+								<input name="comment" id="comment" type="text" class="rc-input__element"
+									   placeholder="{{_ "Please_add_a_comment"}}" autofocus>
+							</div>
+						</label>
+						{{#if invalidComment}}
+							<div class="rc-input__error">
+								<div class="rc-input__error-icon">
+									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								</div>
+								<div class="rc-input__error-message">{{_ "Please_add_a_comment_to_close_the_room"}}</div>
+							</div>
+						{{/if}}
+						{{#if customFieldsTemplate}}
+							{{> Template.dynamic template=customFieldsTemplate data=data }}
+						{{/if}}
+					</div>
+				</div>
+			</form>
+			<div class="rc-input">
+				<button form="close-room" class="rc-button rc-button--primary js-close-room">{{_ " Confirm "}}</button>
+			</div>
+		</div>
+	</section>
+</template>

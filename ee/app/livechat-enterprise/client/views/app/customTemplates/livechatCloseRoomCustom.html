@@ -1,0 +1,19 @@
+<template name="livechatCloseRoomCustom">
+	{{> livechatAutocompleteUser
+		onClickTag=onClickTag
+		list=selectedTags
+		onSelect=onSelectTags
+		collection='CachedTagsList'
+		endpoint='livechat/tags.autocomplete'
+		field='name'
+		sort='name'
+		label="Enter_a_tag"
+		placeholder="Enter_a_tag"
+		name="department"
+		noMatchTemplate="userSearchEmpty"
+		templateItem="popupList_item_channel"
+		template="roomSearch"
+		noMatchTemplate="roomSearchEmpty"
+		modifier=tagsModifier
+	}}
+</template>

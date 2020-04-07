@@ -27,3 +27,18 @@ API.v1.addRoute('livechat/tags.getOne', { authRequired: true }, {
 		})));
 	},
 });
+
+API.v1.addRoute('livechat/tags.autocomplete', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findTagsToAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
+	},
+});
+

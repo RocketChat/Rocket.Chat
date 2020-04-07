@@ -231,43 +231,19 @@ Template.visitorInfo.events({
 	'click .close-livechat'(event) {
 		event.preventDefault();
 
-		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function(error/* , result*/) {
-			if (error) {
-				return handleError(error);
-			}
-			modal.open({
-				title: t('Chat_closed'),
-				text: t('Chat_closed_successfully'),
-				type: 'success',
-				timer: 1000,
-				showConfirmButton: false,
-			});
-		});
-
-		if (!settings.get('Livechat_request_comment_when_closing_conversation')) {
-			const comment = TAPi18n.__('Chat_closed_by_agent');
-			return closeRoom(comment);
-		}
-
-		// Setting for Ask_for_conversation_finished_message is set to true
 		modal.open({
 			title: t('Closing_chat'),
-			type: 'input',
-			inputPlaceholder: t('Please_add_a_comment'),
-			showCancelButton: true,
-			closeOnConfirm: false,
-		}, (inputValue) => {
-			if (!inputValue) {
-				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
-
-			if (s.trim(inputValue) === '') {
-				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
-
-			return closeRoom(inputValue);
+			modifier: 'modal',
+			content: 'closeRoom',
+			data: {
+				rid: this.rid,
+				onCreate() {
+					modal.close();
+				},
+			},
+			confirmOnEnter: false,
+			showConfirmButton: false,
+			showCancelButton: false,
 		});
 	},
 
