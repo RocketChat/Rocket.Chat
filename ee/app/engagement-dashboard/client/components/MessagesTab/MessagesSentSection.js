@@ -67,7 +67,9 @@ export function MessagesSentSection() {
 		}));
 		for (const { day, messages } of data.days) {
 			const i = moment(day).diff(period.start, 'days');
-			values[i].newMessages += messages;
+			if (i >= 0) {
+				values[i].newMessages += messages;
+			}
 		}
 
 		return [
