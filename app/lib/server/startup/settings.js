@@ -1175,7 +1175,7 @@ settings.addGroup('Push', function() {
 			value: true,
 		},
 	});
-	this.add('Push_send_interval', 5000, {
+	this.add('Push_send_interval', 2000, {
 		type: 'int',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
@@ -1184,7 +1184,7 @@ settings.addGroup('Push', function() {
 			value: true,
 		},
 	});
-	this.add('Push_send_batch_size', 10, {
+	this.add('Push_send_batch_size', 100, {
 		type: 'int',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
