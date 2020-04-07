@@ -69,4 +69,4 @@ export function StringSettingInput({
 	</>;
 }
 
-Input.name = 'Input';
+Input.displayName = 'Input';
