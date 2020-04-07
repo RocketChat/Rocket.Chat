@@ -326,9 +326,9 @@ export class APIClass extends Restivus {
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
-					const requestIp = getRequestIP(this.request);
+					this.requestIp = getRequestIP(this.request);
 					const objectForRateLimitMatch = {
-						IPAddr: requestIp,
+						IPAddr: this.requestIp,
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
 					let result;
@@ -338,7 +338,7 @@ export class APIClass extends Restivus {
 						close() {},
 						token: this.token,
 						httpHeaders: this.request.headers,
-						clientAddress: requestIp,
+						clientAddress: this.requestIp,
 					};
 
 					try {
