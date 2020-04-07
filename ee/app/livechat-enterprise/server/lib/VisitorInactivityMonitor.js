@@ -1,49 +1,65 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms } from '../../../../../app/models/server';
+import { LivechatRooms, LivechatDepartment } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 
 export class VisitorInactivityMonitor {
+	constructor() {
+		this._started = false;
+		this._name = 'Omnichannel Visitor Inactivity Monitor';
+	}
+
 	start() {
 		this._startMonitoring();
 	}
 
 	_startMonitoring() {
+		if (this.isRunning()) {
+			return;
+		}
 		const everyMinute = '* * * * *';
 		SyncedCron.add({
-			name: 'Visitor Inactivity Monitor',
+			name: this._name,
 			schedule: (parser) => parser.cron(everyMinute),
 			job: () => {
-				this._handleInactiveRooms();
+				this.handleAbandonedRooms();
 			},
 		});
+		this._started = true;
+	}
+
+	stop() {
+		if (!this.isRunning()) {
+			return;
+		}
+
+		SyncedCron.remove(this._name);
+
+		this._started = false;
+	}
+
+	isRunning() {
+		return this._started;
 	}
 
 	closeRooms(room) {
+		let comment = settings.get('Livechat_abandoned_rooms_closed_custom_message') || TAPi18n.__('Closed_automatically');
+		if (room.departmentId) {
+			const department = LivechatDepartment.findOneById(room.departmentId);
+			comment = department.abandonedRoomsCloseCustomMessage || comment;
+		}
 		Livechat.closeRoom({
-			comment: 'closed automatically by the system',
+			comment,
 			room,
 		});
 	}
 
-	freezeRooms(room) {
-		LivechatRooms.freezeRoomById(room._id);
-	}
-
-	executeAction(action, room) {
-		const actions = {
-			close: (room) => this.closeRooms(room),
-			freeze: (room) => this.freezeRooms(room),
-		};
-		actions[action](room);
-	}
-
-	_handleInactiveRooms() {
-		if (!settings.get('Livechat_auto_close_inactive_rooms')) {
+	handleAbandonedRooms() {
+		if (!settings.get('Livechat_auto_close_abandoned_rooms')) {
 			return;
 		}
-		const action = settings.get('Livechat_auto_close_inactive_rooms_action');
-		LivechatRooms.findInactiveOpenRooms(new Date()).forEach((room) => this.executeAction(action, room));
+		LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => this.closeRooms(room));
 	}
 }

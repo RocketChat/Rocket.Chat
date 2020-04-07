@@ -24,34 +24,31 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 });
 
 
-LivechatRooms.prototype.setTimeWhenRoomWillBeInactive = function(roomId, willBeInactiveAt) {
+LivechatRooms.prototype.setTimeWhenRoomWillBeAbandoned = function(roomId, willBeAbandonedAt) {
 	const query = {
 		_id: roomId,
 	};
 	const update = {
 		$set: {
-			'omnichannel.inactiveAt': willBeInactiveAt,
+			'omnichannel.abandonedAt': willBeAbandonedAt,
 		},
 	};
 
 	return this.update(query, update);
 };
 
-LivechatRooms.prototype.findInactiveOpenRooms = function(date) {
+LivechatRooms.prototype.findAbandonedOpenRooms = function(date) {
 	return this.find({
-		'omnichannel.inactiveAt': { $lte: date },
-		'omnichannel.frozen': { $exists: false },
+		'omnichannel.abandonedAt': { $lte: date },
+		waitingResponse: { $exists: false },
+		closedAt: { $exists: false },
 		open: true,
 	});
 };
 
-LivechatRooms.prototype.freezeRoomById = function(_id) {
-	return this.update({ _id }, { $set: { 'omnichannel.frozen': true } });
-};
-
-LivechatRooms.prototype.setVisitorInactivityInSecondsByRoomId = function(roomId, visitorInactivity) {
+LivechatRooms.prototype.setVisitorInactivityInSecondsById = function(_id, visitorInactivity) {
 	const query = {
-		_id: roomId,
+		_id,
 	};
 	const update = {
 		$set: {
@@ -62,8 +59,15 @@ LivechatRooms.prototype.setVisitorInactivityInSecondsByRoomId = function(roomId,
 	return this.update(query, update);
 };
 
-LivechatRooms.prototype.unsetInactivityPropertyById = function(_id) {
-	return this.update({ _id }, { $unset: { 'omnichannel.inactiveAt': 1 } });
+LivechatRooms.prototype.unsetAbandonedProperty = function() {
+	return this.update({
+		open: true,
+		t: 'l',
+	}, {
+		$unset: { 'omnichannel.abandonedAt': 1 },
+	}, {
+		multi: true,
+	});
 };
 
 export default LivechatRooms;

@@ -36,29 +36,19 @@ export const createSettings = () => {
 		enableQuery: { _id: 'Livechat_waiting_queue', value: true },
 	});
 
-	settings.add('Livechat_auto_close_inactive_rooms', false, {
+	settings.add('Livechat_auto_close_abandoned_rooms', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Sessions',
-		i18nLabel: 'Enable_omnichannel_auto_close_inactive_rooms',
-		i18nDescription: 'Enable_omnichannel_auto_close_inactive_rooms_description',
+		i18nLabel: 'Enable_omnichannel_auto_close_abandoned_rooms',
 	});
 
-	settings.add('Livechat_auto_close_inactive_rooms_action', 'close', {
-		type: 'select',
+	settings.add('Livechat_abandoned_rooms_closed_custom_message', '', {
+		type: 'string',
 		group: 'Omnichannel',
 		section: 'Sessions',
-		values: [{
-			key: 'close',
-			i18nLabel: 'Close_room',
-		}, {
-			key: 'freeze',
-			i18nLabel: 'Freeze_room',
-		}],
-		enableQuery: [{ _id: 'Livechat_auto_close_inactive_rooms', value: true }],
-		i18nLabel: 'Livechat_auto_close_inactive_rooms_action',
-		i18nDescription: 'Livechat_auto_close_inactive_rooms_action_description',
-		public: true,
+		i18nLabel: 'Livechat_abandoned_rooms_closed_custom_message',
+		enableQuery: { _id: 'Livechat_auto_close_abandoned_rooms', value: true },
 	});
 
 	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
