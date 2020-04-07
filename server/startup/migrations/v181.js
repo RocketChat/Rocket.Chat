@@ -13,6 +13,6 @@ Migrations.add({
 		date.setHours(date.getHours() - 2); // 2 hours ago;
 
 		// Remove all records older than 2h
-		await Push.notifications.rawCollection().removeMany({ createdAt: { $lt: date } });
+		Push.notifications.rawCollection().removeMany({ createdAt: { $lt: date } });
 	},
 });
