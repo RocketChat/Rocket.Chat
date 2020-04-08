@@ -75,6 +75,8 @@ metrics.oplog = new client.Counter({
 	labelNames: ['collection', 'op'],
 });
 
+metrics.pushQueue = new client.Gauge({ name: 'rocketchat_push_queue', labelNames: ['queue'], help: 'push queue' });
+
 // User statistics
 metrics.totalUsers = new client.Gauge({ name: 'rocketchat_users_total', help: 'total of users' });
 metrics.activeUsers = new client.Gauge({ name: 'rocketchat_users_active', help: 'total of active users' });
@@ -144,6 +146,8 @@ const setPrometheusData = async () => {
 
 	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
 	metrics.oplogQueue.set(oplogQueue);
+
+	metrics.pushQueue.set(statistics.pushQueue || 0);
 };
 
 const app = connect();
