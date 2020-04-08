@@ -1,6 +1,21 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.11
+`2020-04-07  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Add statistics and metrics about push queue ([#17208](https://github.com/RocketChat/Rocket.Chat/pull/17208))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 3.1.0-rc.10
 `2020-04-07  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
