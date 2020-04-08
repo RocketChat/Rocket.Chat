@@ -243,170 +243,177 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'No matching login attempt found'),
 		};
 	}
-
 	const { emailField, usernameField, nameField, userDataFieldMap, regexes } = getUserDataMapping();
 	const { defaultUserRole = 'user', roleAttributeName, roleAttributeSync } = Accounts.saml.settings;
 
 	if (loginResult && loginResult.profile && loginResult.profile[emailField]) {
-		const emailList = Array.isArray(loginResult.profile[emailField]) ? loginResult.profile[emailField] : [loginResult.profile[emailField]];
-		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
+		try {
+			const emailList = Array.isArray(loginResult.profile[emailField]) ? loginResult.profile[emailField] : [loginResult.profile[emailField]];
+			const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
 
-		const eduPersonPrincipalName = loginResult.profile.eppn;
-		const profileFullName = getProfileValue(loginResult.profile, nameField, regexes.name);
-		const fullName = profileFullName || loginResult.profile.displayName || loginResult.profile.username;
+			const eduPersonPrincipalName = loginResult.profile.eppn;
+			const profileFullName = getProfileValue(loginResult.profile, nameField, regexes.name);
+			const fullName = profileFullName || loginResult.profile.displayName || loginResult.profile.username;
 
-		let eppnMatch = false;
-		let user = null;
+			let eppnMatch = false;
+			let user = null;
 
-		// Check eppn
-		if (eduPersonPrincipalName) {
-			user = Meteor.users.findOne({
-				eppn: eduPersonPrincipalName,
-			});
+			// Check eppn
+			if (eduPersonPrincipalName) {
+				user = Meteor.users.findOne({
+					eppn: eduPersonPrincipalName,
+				});
 
-			if (user) {
-				eppnMatch = true;
+				if (user) {
+					eppnMatch = true;
+				}
 			}
-		}
 
-		let username;
-		if (loginResult.profile[usernameField]) {
-			const profileUsername = getProfileValue(loginResult.profile, usernameField, regexes.username);
-			if (profileUsername) {
-				username = Accounts.normalizeUsername(profileUsername);
+			let username;
+			if (loginResult.profile[usernameField]) {
+				const profileUsername = getProfileValue(loginResult.profile, usernameField, regexes.username);
+				if (profileUsername) {
+					username = Accounts.normalizeUsername(profileUsername);
+				}
 			}
-		}
 
-		// If eppn is not exist
-		if (!user) {
-			if (Accounts.saml.settings.immutableProperty === 'Username') {
-				if (username) {
+			// If eppn is not exist
+			if (!user) {
+				if (Accounts.saml.settings.immutableProperty === 'Username') {
+					if (username) {
+						user = Meteor.users.findOne({
+							username,
+						});
+					}
+				} else {
 					user = Meteor.users.findOne({
-						username,
+						'emails.address': emailRegex,
 					});
 				}
+			}
+
+			const emails = emailList.map((email) => ({
+				address: email,
+				verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
+			}));
+
+			let globalRoles;
+			if (roleAttributeName && loginResult.profile[roleAttributeName]) {
+				globalRoles = [].concat(loginResult.profile[roleAttributeName]);
 			} else {
-				user = Meteor.users.findOne({
-					'emails.address': emailRegex,
+				globalRoles = [].concat(defaultUserRole.split(','));
+			}
+
+			if (!user) {
+				const newUser = {
+					name: fullName,
+					active: true,
+					eppn: eduPersonPrincipalName,
+					globalRoles,
+					emails,
+					services: {},
+				};
+
+				if (Accounts.saml.settings.generateUsername === true) {
+					username = generateUsernameSuggestion(newUser);
+				}
+
+				if (username) {
+					newUser.username = username;
+					newUser.name = newUser.name || guessNameFromUsername(username);
+				}
+
+				const languages = TAPi18n.getLanguages();
+				if (languages[loginResult.profile.language]) {
+					newUser.language = loginResult.profile.language;
+				}
+
+				const userId = Accounts.insertUserDoc({}, newUser);
+				user = Meteor.users.findOne(userId);
+
+				if (loginResult.profile.channels) {
+					const channels = loginResult.profile.channels.split(',');
+					Accounts.saml.subscribeToSAMLChannels(channels, user);
+				}
+			}
+
+			// If eppn is not exist then update
+			if (eppnMatch === false) {
+				Meteor.users.update({
+					_id: user._id,
+				}, {
+					$set: {
+						eppn: eduPersonPrincipalName,
+					},
 				});
 			}
-		}
 
-		const emails = emailList.map((email) => ({
-			address: email,
-			verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
-		}));
+			// creating the token and adding to the user
+			const stampedToken = Accounts._generateStampedLoginToken();
+			Meteor.users.update(user, {
+				$push: {
+					'services.resume.loginTokens': stampedToken,
+				},
+			});
 
-		let globalRoles;
-		if (roleAttributeName && loginResult.profile[roleAttributeName]) {
-			globalRoles = [].concat(loginResult.profile[roleAttributeName]);
-		} else {
-			globalRoles = [].concat(defaultUserRole.split(','));
-		}
-
-		if (!user) {
-			const newUser = {
-				name: fullName,
-				active: true,
-				eppn: eduPersonPrincipalName,
-				globalRoles,
-				emails,
-				services: {},
+			const samlLogin = {
+				provider: Accounts.saml.RelayState,
+				idp: loginResult.profile.issuer,
+				idpSession: loginResult.profile.sessionIndex,
+				nameID: loginResult.profile.nameID,
 			};
 
-			if (Accounts.saml.settings.generateUsername === true) {
-				username = generateUsernameSuggestion(newUser);
+			const updateData = {
+				// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
+				'services.saml': samlLogin,
+			};
+
+			for (const field in userDataFieldMap) {
+				if (!userDataFieldMap.hasOwnProperty(field)) {
+					continue;
+				}
+
+				if (loginResult.profile[field]) {
+					const rcField = userDataFieldMap[field];
+					const value = getProfileValue(loginResult.profile, field, regexes[rcField]);
+					updateData[`customFields.${ rcField }`] = value;
+				}
 			}
 
-			if (username) {
-				newUser.username = username;
-				newUser.name = newUser.name || guessNameFromUsername(username);
+			if (Accounts.saml.settings.immutableProperty !== 'EMail') {
+				updateData.emails = emails;
 			}
 
-			const languages = TAPi18n.getLanguages();
-			if (languages[loginResult.profile.language]) {
-				newUser.language = loginResult.profile.language;
+			if (roleAttributeSync) {
+				updateData.roles = globalRoles;
 			}
 
-			const userId = Accounts.insertUserDoc({}, newUser);
-			user = Meteor.users.findOne(userId);
-
-			if (loginResult.profile.channels) {
-				const channels = loginResult.profile.channels.split(',');
-				Accounts.saml.subscribeToSAMLChannels(channels, user);
-			}
-		}
-
-		// If eppn is not exist then update
-		if (eppnMatch === false) {
 			Meteor.users.update({
 				_id: user._id,
 			}, {
-				$set: {
-					eppn: eduPersonPrincipalName,
-				},
+				$set: updateData,
 			});
-		}
 
-		// creating the token and adding to the user
-		const stampedToken = Accounts._generateStampedLoginToken();
-		Meteor.users.update(user, {
-			$push: {
-				'services.resume.loginTokens': stampedToken,
-			},
-		});
-
-		const samlLogin = {
-			provider: Accounts.saml.RelayState,
-			idp: loginResult.profile.issuer,
-			idpSession: loginResult.profile.sessionIndex,
-			nameID: loginResult.profile.nameID,
-		};
-
-		const updateData = {
-			// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
-			'services.saml': samlLogin,
-		};
-
-		for (const field in userDataFieldMap) {
-			if (!userDataFieldMap.hasOwnProperty(field)) {
-				continue;
+			if (username) {
+				_setUsername(user._id, username);
 			}
 
-			if (loginResult.profile[field]) {
-				const rcField = userDataFieldMap[field];
-				const value = getProfileValue(loginResult.profile, field, regexes[rcField]);
-				updateData[`customFields.${ rcField }`] = value;
-			}
+			overwriteData(user, fullName, eppnMatch, emailList);
+
+			// sending token along with the userId
+			const result = {
+				userId: user._id,
+				token: stampedToken.token,
+			};
+
+			return result;
+		} catch (error) {
+			console.error(error);
+			return {
+				type: 'saml',
+				error,
+			};
 		}
-
-		if (Accounts.saml.settings.immutableProperty !== 'EMail') {
-			updateData.emails = emails;
-		}
-
-		if (roleAttributeSync) {
-			updateData.roles = globalRoles;
-		}
-
-		Meteor.users.update({
-			_id: user._id,
-		}, {
-			$set: updateData,
-		});
-
-		if (username) {
-			_setUsername(user._id, username);
-		}
-
-		overwriteData(user, fullName, eppnMatch, emailList);
-
-		// sending token along with the userId
-		const result = {
-			userId: user._id,
-			token: stampedToken.token,
-		};
-
-		return result;
 	}
 	throw new Error('SAML Profile did not contain an email address');
 });
