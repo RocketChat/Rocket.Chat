@@ -320,8 +320,8 @@ Template.visitorInfo.onCreated(function() {
 	};
 
 	if (rid) {
-		loadRoomData(rid);
 		RoomManager.roomStream.on(rid, this.updateRoom);
+		loadRoomData(rid);
 	}
 
 	this.autorun(async () => {
