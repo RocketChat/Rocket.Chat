@@ -6,13 +6,13 @@ import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
+import { Users } from '../../../models';
 import { setupAutogrow } from './messageBoxAutogrow';
 import {
 	formattingButtons,
 	applyFormatting,
 } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji';
-import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import {
 	fileUpload,
@@ -183,6 +183,23 @@ Template.messageBox.onDestroyed(function() {
 	this.autogrow.destroy();
 });
 
+function checkCurrentChannelForTextInputLimit() {
+	if (settings.get('Message_Specific_Channel_Input_Limit_Allowed') !== false) {
+		let limitChannelNamesArr = [];
+
+		const { subscription } = Template.currentData();
+		const currentChannelName = subscription.name;
+
+		const limitedChannelNamesList = settings.get('Message_Specific_Channel_Input_ChannelNames');
+		const sortedChannelNames = limitedChannelNamesList.split(',').filter(Boolean).map((domain) => domain.trim());
+		limitChannelNamesArr = sortedChannelNames;
+
+		const isCurrentChannelInputLimited = limitChannelNamesArr.includes(currentChannelName);
+		return isCurrentChannelInputLimited;
+	}
+	return false;
+}
+
 Template.messageBox.helpers({
 	isAnonymousOrMustJoinWithCode() {
 		const instance = Template.instance();
@@ -222,7 +239,24 @@ Template.messageBox.helpers({
 	isEmojiEnabled() {
 		return getUserPreference(Meteor.userId(), 'useEmojis');
 	},
+	textLimitProgressCircleConfiguration() {
+		return {
+			canvasSize: 30,
+			arcWidth: 2.5,
+			sessionValueKey: 'textLimitProgressCircleValue',
+			tweenDuration: 100,
+			outerPadding: 0,
+			spacer: 0,
+		};
+	},
+	isChannelTextLimitEnabled() {
+		return checkCurrentChannelForTextInputLimit();
+	},
 	maxMessageLength() {
+		if (checkCurrentChannelForTextInputLimit() !== false) {
+			return settings.get('Message_Specific_Channel_Input_MaxAllowedSize');
+		}
+
 		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
 	},
 	isSendIconVisible() {
@@ -305,6 +339,7 @@ const handleSubmit = (event, instance) => {
 	instance.insertNewLine();
 	return true;
 };
+
 
 Template.messageBox.events({
 	async 'click .js-join'(event) {
@@ -403,6 +438,16 @@ Template.messageBox.events({
 
 		instance.isSendIconVisible.set(!!input.value);
 
+		if (checkCurrentChannelForTextInputLimit() !== false) {
+			const maxAllowedCharacters = settings.get('Message_Specific_Channel_Input_MaxAllowedSize');
+
+			const inputCharLength = input.value.length;
+
+			const inputPercentage = inputCharLength / maxAllowedCharacters * 100;
+			const progressPercentage = 100 - inputPercentage;
+			Session.set('textLimitProgressCircleValue', progressPercentage);
+		}
+
 		if (input.value.length > 0) {
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
@@ -421,6 +466,16 @@ Template.messageBox.events({
 		}
 
 		instance.sendIconDisabled.set(!!input.value);
+
+		if (checkCurrentChannelForTextInputLimit() !== false) {
+			const maxAllowedCharacters = settings.get('Message_Specific_Channel_Input_MaxAllowedSize');
+
+			const inputCharLength = input.value.length;
+
+			const inputPercentage = inputCharLength / maxAllowedCharacters * 100;
+			const progressPercentage = 100 - inputPercentage;
+			Session.set('textLimitProgressCircleValue', progressPercentage);
+		}
 
 		if (input.value.length > 0) {
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';

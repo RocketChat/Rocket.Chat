@@ -352,6 +352,10 @@
 			font-size: 20px;
 			order: 5;
 		}
+
+		&__textlimitprogresscircle {
+			order: 6;
+		}
 	}
 }
 
