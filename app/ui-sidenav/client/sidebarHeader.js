@@ -176,22 +176,17 @@ const toolbarButtons = (/* user */) => [{
 					groups: [
 						{
 							items: AccountBox.getItems().map((item) => {
-								let action;
-
-								if (item.href) {
-									action = () => {
+								const action = () => {
+									if (item.href) {
 										FlowRouter.go(item.href);
-										popover.close();
-									};
-								}
+									}
 
-								if (item.sideNav) {
-									action = () => {
+									if (item.sideNav) {
 										SideNav.setFlex(item.sideNav);
 										SideNav.openFlex();
-										popover.close();
-									};
-								}
+									}
+									popover.close();
+								};
 
 								return {
 									icon: item.icon,
