@@ -10,7 +10,7 @@ import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { userStatus } from '../../user-status';
 import { hasPermission } from '../../authorization/client';
-import { createTemplateForComponent } from '../../../client/routes';
+import { createTemplateForComponent } from '../../../client/createTemplateForComponent';
 
 
 const setStatus = (status, statusText) => {
@@ -73,7 +73,7 @@ const toolbarButtons = (/* user */) => [{
 			},
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
-		const { SortList } = require('./SortList');
+		const { SortList } = await import('./SortList');
 		await createTemplateForComponent(SortList);
 		popover.open(config);
 	},

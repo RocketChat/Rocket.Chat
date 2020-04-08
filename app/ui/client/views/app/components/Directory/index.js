@@ -28,12 +28,12 @@ export function DirectoryPage() {
 
 	return <Avatar.Context.Provider value={avatarBase}><Page>
 		<Page.Header title={t('Directory')} />
+		<Tabs>
+			<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')}</Tabs.Item>
+			<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')}</Tabs.Item>
+			{ federationEnabled && <Tabs.Item selected={tab === 'external'} onClick={handleTabClick('external')}>{t('External_Users')}</Tabs.Item> }
+		</Tabs>
 		<Page.Content style={style}>
-			<Tabs>
-				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')}</Tabs.Item>
-				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')}</Tabs.Item>
-				{ federationEnabled && <Tabs.Item selected={tab === 'external'} onClick={handleTabClick('external')}>{t('External_Users')}</Tabs.Item> }
-			</Tabs>
 			<Margins inline='x24'>
 				<Box>
 					{
@@ -48,4 +48,4 @@ export function DirectoryPage() {
 }
 
 
-DirectoryPage.name = 'DirectoryPage';
+DirectoryPage.displayName = 'DirectoryPage';
