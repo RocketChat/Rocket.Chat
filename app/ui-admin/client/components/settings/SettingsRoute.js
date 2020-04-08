@@ -2,14 +2,11 @@ import React from 'react';
 
 import { useAtLeastOnePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter } from '../../../../../client/contexts/RouterContext';
-import { useAdminSideNav } from '../../hooks/useAdminSideNav';
 import { GroupSelector } from './GroupSelector';
 import { NotAuthorizedPage } from './NotAuthorizedPage';
 import { SettingsState } from './SettingsState';
 
 export function SettingsRoute() {
-	useAdminSideNav();
-
 	const hasPermission = useAtLeastOnePermission([
 		'view-privileged-setting',
 		'edit-privileged-setting',

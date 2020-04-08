@@ -3,12 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useMethod, useServerInformation, useEndpoint } from '../../../../../client/contexts/ServerContext';
 import { downloadJsonAsAFile } from '../../../../../client/helpers/download';
-import { useAdminSideNav } from '../../hooks/useAdminSideNav';
 import { InformationPage } from './InformationPage';
 
 export function InformationRoute() {
-	useAdminSideNav();
-
 	const canViewStatistics = usePermission('view-statistics');
 
 	const [isLoading, setLoading] = useState(true);

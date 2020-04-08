@@ -4,13 +4,27 @@ import { Meteor } from 'meteor/meteor';
 
 import { renderRouteComponent } from '../../../client/reactAdapters';
 
-export const routeGroup = FlowRouter.group({
+const routeGroup = FlowRouter.group({
 	name: 'admin',
 	prefix: '/admin',
 });
 
-export const registerAdminRoute = (path, options) => {
-	routeGroup.route(path, options);
+export const registerAdminRoute = (path, { lazyRouteComponent, action, ...options } = {}) => {
+	routeGroup.route(path, {
+		...options,
+		action: (params, queryParams) => {
+			if (action) {
+				action(params, queryParams);
+				return;
+			}
+
+			renderRouteComponent(() => import('./components/AdministrationRouter'), {
+				template: 'main',
+				region: 'center',
+				propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams }),
+			});
+		},
+	});
 };
 
 registerAdminRoute('/', {
@@ -21,12 +35,7 @@ registerAdminRoute('/', {
 
 registerAdminRoute('/info', {
 	name: 'admin-info',
-	action: () => {
-		renderRouteComponent(() => import('./components/info/InformationRoute'), {
-			template: 'main',
-			region: 'center',
-		});
-	},
+	lazyRouteComponent: () => import('./components/info/InformationRoute'),
 });
 
 registerAdminRoute('/users', {
@@ -48,11 +57,6 @@ registerAdminRoute('/rooms', {
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
 		name: 'admin',
-		action: () => {
-			renderRouteComponent(() => import('./components/settings/SettingsRoute'), {
-				template: 'main',
-				region: 'center',
-			});
-		},
+		lazyRouteComponent: () => import('./components/settings/SettingsRoute'),
 	});
 });
