@@ -11,12 +11,14 @@ export class Rooms extends Base {
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
 		this.tryEnsureIndex({ default: 1 });
+		this.tryEnsureIndex({ featured: 1 });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// Livechat - statistics
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 
@@ -414,6 +416,20 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
+	findByNameOrFNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			$or: [{
+				name,
+			}, {
+				fname: name,
+			}],
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,
@@ -476,7 +492,7 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findDirectRoomContainingAllUserIDs(uid, options) {
+	findOneDirectRoomContainingAllUserIDs(uid, options) {
 		const query = {
 			t: 'd',
 			uids: { $size: uid.length, $all: uid },
@@ -547,6 +563,13 @@ export class Rooms extends Base {
 		return this.find({
 			usersCount: { $gt: 2 },
 			uids,
+		}, options);
+	}
+
+	find1On1ByUserId(userId, options) {
+		return this.find({
+			uids: userId,
+			usersCount: 2,
 		}, options);
 	}
 
@@ -866,6 +889,19 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	saveFeaturedById(_id, featured) {
+		const query = { _id };
+		const set = ['true', true].includes(featured);
+
+		const update = {
+			[set ? '$set' : '$unset']: {
+				featured: true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	saveDefaultById(_id, defaultValue) {
 		const query = { _id };
 
@@ -1025,13 +1061,8 @@ export class Rooms extends Base {
 		return this.remove(query);
 	}
 
-	remove1on1ById(_id) {
-		const query = {
-			_id,
-			usersCount: { $lte: 2 },
-		};
-
-		return this.remove(query);
+	removeByIds(ids) {
+		return this.remove({ _id: { $in: ids } });
 	}
 
 	removeDirectRoomContainingUsername(username) {
