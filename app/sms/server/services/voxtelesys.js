@@ -27,8 +27,6 @@ class Voxtelesys {
 
 	send(fromNumber, toNumber, message) {
 		const options = {
-			timeout: 30000,
-			followRedirects: false,
 			headers: {
 				Authorization: `Bearer ${ this.authToken }`,
 			},
@@ -36,12 +34,6 @@ class Voxtelesys {
 				to: [toNumber],
 				from: fromNumber,
 				body: message,
-			},
-			npmRequestOptions: {
-				agentOptions: {
-					ecdhCurve: 'auto',
-				},
-				forever: true,
 			},
 		};
 
