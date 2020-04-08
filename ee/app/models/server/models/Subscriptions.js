@@ -1,6 +1,13 @@
 import { Subscriptions } from '../../../../../app/models/server/models/Subscriptions';
 
 Subscriptions.prototype.setPriorityByRoomId = function(rid, priority) {
+	if (!priority) {
+		return this.update({ rid }, {
+			$unset: {
+				'omnichannel.priority': 1,
+			},
+		});
+	}
 	return this.update({ rid }, {
 		$set: {
 			'omnichannel.priority': {
@@ -8,14 +15,6 @@ Subscriptions.prototype.setPriorityByRoomId = function(rid, priority) {
 				name: priority.name,
 				dueTimeInMinutes: parseInt(priority.dueTimeInMinutes),
 			},
-		},
-	});
-};
-
-Subscriptions.prototype.unsetPriorityByRoomId = function(rid) {
-	return this.update({ rid }, {
-		$unset: {
-			'omnichannel.priority': 1,
 		},
 	});
 };

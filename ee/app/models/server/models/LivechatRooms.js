@@ -23,12 +23,24 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 		return this.update(query, update);
 	},
 	saveRoomById(originalFn, ...args) {
-		if (!args.length || !args[0].priority) {
+		if (!args.length) {
+			return;
+		}
+		const { omnichannel: { priority: { _id: priorityId = '' } = {} } = {} } = this.findOneById(args[0]._id, { omnichannel: 1 });
+		if (priorityId === args[0].priority) {
+			return originalFn.apply(this, args);
+		}
+
+		if (!args[0].priority) {
 			this.update({ _id: args[0]._id }, {
-				$unset: { 'omnichannel.priority': 1 },
+				$unset: {
+					'omnichannel.priority': 1,
+					'custom.avatar.color': 1,
+				},
 			});
 			return originalFn.apply(this, args);
 		}
+
 		const priority = LivechatPriority.findOneById(args[0].priority);
 		if (!priority) {
 			throw new Error('Invalid Priority');
@@ -40,7 +52,7 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 					name: priority.name,
 					dueTimeInMinutes: parseInt(priority.dueTimeInMinutes),
 				},
-				customProperties: {
+				custom: {
 					avatar: {
 						color: priority.color,
 					},
@@ -61,7 +73,7 @@ LivechatRooms.prototype.updatePriorityDataByPriorityId = function(priorityId, pr
 		$set: {
 			'omnichannel.priority.name': priorityData.name,
 			'omnichannel.priority.dueTimeInMinutes': parseInt(priorityData.dueTimeInMinutes),
-			'customProperties.avatar.color': priorityData.color,
+			'custom.avatar.color': priorityData.color,
 		},
 	});
 };
@@ -75,7 +87,7 @@ LivechatRooms.prototype.unsetPriorityByPriorityId = function(priorityId) {
 	{
 		$unset: {
 			'omnichannel.priority': 1,
-			'customProperties.avatar.color': 1,
+			'custom.avatar.color': 1,
 		},
 	});
 };

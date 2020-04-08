@@ -10,9 +10,10 @@ MessageTypes.registerType({
 		if (!message.priorityData) {
 			return;
 		}
+		const { definedBy: { username }, priority: { name = null } = {} } = message.priorityData;
 		return {
-			user: message.priorityData.definedBy.username,
-			priority: message.priorityData.priority && message.priorityData.priority.name ? message.priorityData.priority.name : TAPi18n.__('Without_priority'),
+			user: username,
+			priority: name || TAPi18n.__('Without_priority'),
 		};
 	},
 });

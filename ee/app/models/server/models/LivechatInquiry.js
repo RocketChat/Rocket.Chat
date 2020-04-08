@@ -1,6 +1,14 @@
 import { LivechatInquiry } from '../../../../../app/models/server/models/LivechatInquiry';
 
 LivechatInquiry.prototype.setPriorityByRoomId = function(rid, priority) {
+	if (!priority) {
+		return this.update({ rid }, {
+			$unset: {
+				'omnichannel.priority': 1,
+				'custom.avatar.color': 1,
+			},
+		});
+	}
 	return this.update({ rid }, {
 		$set: {
 			'omnichannel.priority': {
@@ -8,14 +16,11 @@ LivechatInquiry.prototype.setPriorityByRoomId = function(rid, priority) {
 				name: priority.name,
 				dueTimeInMinutes: parseInt(priority.dueTimeInMinutes),
 			},
-		},
-	});
-};
-
-LivechatInquiry.prototype.unsetPriorityByRoomId = function(rid) {
-	return this.update({ rid }, {
-		$unset: {
-			'omnichannel.priority': 1,
+			custom: {
+				avatar: {
+					color: priority.color,
+				},
+			},
 		},
 	});
 };
@@ -39,6 +44,7 @@ LivechatInquiry.prototype.unsetPriorityByPriorityId = function(priorityId) {
 	{
 		$unset: {
 			'omnichannel.priority': 1,
+			'custom.avatar.color': 1,
 		},
 	});
 };

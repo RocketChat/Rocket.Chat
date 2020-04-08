@@ -53,7 +53,7 @@ export const fields = {
 	departmentId: 1,
 	servedBy: 1,
 	omnichannel: 1,
-	customProperties: 1,
+	custom: 1,
 
 	// fields used by DMs
 	usernames: 1,

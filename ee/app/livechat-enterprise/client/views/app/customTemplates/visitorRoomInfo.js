@@ -15,11 +15,7 @@ Template.customVisitorRoomInfo.onCreated(function() {
 	this.autorun(() => {
 		// To make this template reactive we expect a ReactiveVar through the data property,
 		// because the parent form may not be rerender, only the dynamic template data
-		const { omnichannel } = this.data.get();
-		if (omnichannel && omnichannel.priority) {
-			this.priority.set(omnichannel.priority);
-		} else {
-			this.priority.set(null);
-		}
+		const { omnichannel: { priority = null } = {} } = this.data.get();
+		this.priority.set(priority);
 	});
 });

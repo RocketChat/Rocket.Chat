@@ -124,10 +124,13 @@ export const LivechatEnterprise = {
 			color: String,
 			dueTimeInMinutes: String,
 		});
-		LivechatRooms.updatePriorityDataByPriorityId(_id, priorityData);
-		Subscriptions.updatePriorityDataByPriorityId(_id, priorityData);
-		LivechatInquiry.updatePriorityDataByPriorityId(_id, priorityData);
-		return LivechatPriority.createOrUpdatePriority(_id, priorityData);
+		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
+		if (priority) {
+			LivechatRooms.updatePriorityDataByPriorityId(priority._id, priority);
+			Subscriptions.updatePriorityDataByPriorityId(priority._id, priority);
+			LivechatInquiry.updatePriorityDataByPriorityId(priority._id, priority);
+		}
+		return priority;
 	},
 
 	removePriority(_id) {
@@ -138,27 +141,24 @@ export const LivechatEnterprise = {
 		if (!priority) {
 			throw new Meteor.Error('priority-not-found', 'Priority not found', { method: 'livechat:removePriority' });
 		}
-		LivechatRooms.unsetPriorityByPriorityId(_id);
-		Subscriptions.unsetPriorityByPriorityId(_id);
-		LivechatInquiry.unsetPriorityByPriorityId(_id);
-		return LivechatPriority.removeById(_id);
+		const removed = LivechatPriority.removeById(_id);
+		if (removed) {
+			LivechatRooms.unsetPriorityByPriorityId(_id);
+			Subscriptions.unsetPriorityByPriorityId(_id);
+			LivechatInquiry.unsetPriorityByPriorityId(_id);
+		}
+		return removed;
 	},
 
-	savePriorityDataOnRooms(room, user) {
-		if (room.omnichannel && room.omnichannel.priority) {
-			const priority = LivechatPriority.findOneById(room.omnichannel.priority._id);
-			Subscriptions.setPriorityByRoomId(room._id, priority);
-			LivechatInquiry.setPriorityByRoomId(room._id, priority);
-		} else {
-			Subscriptions.unsetPriorityByRoomId(room._id);
-			LivechatInquiry.unsetPriorityByRoomId(room._id);
-		}
+	savePriorityDataOnRooms(roomId, user, priority) {
+		Subscriptions.setPriorityByRoomId(roomId, priority);
+		LivechatInquiry.setPriorityByRoomId(roomId, priority);
 		const extraData = {
 			priorityData: {
 				definedBy: user,
-				priority: room.omnichannel && room.omnichannel.priority ? room.omnichannel.priority : {},
+				priority: priority || {},
 			},
 		};
-		Messages.createPriorityHistoryWithRoomIdMessageAndUser(room._id, '', user, extraData);
+		Messages.createPriorityHistoryWithRoomIdMessageAndUser(roomId, '', user, extraData);
 	},
 };

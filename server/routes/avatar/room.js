@@ -42,7 +42,7 @@ export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 		return;
 	}
 
-	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size), avatarColor);
+	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size), { avatarColor });
 
 	return serveAvatar(svg, req.query.format, res);
 });

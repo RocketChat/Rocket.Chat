@@ -11,6 +11,9 @@ Template.visitorEditCustomFields.helpers({
 	roomPriority() {
 		return Template.instance().roomPriority.get();
 	},
+	showPriorities() {
+		return Template.instance().priorities.get().length > 0;
+	},
 });
 
 Template.visitorEditCustomFields.onCreated(async function() {
@@ -21,8 +24,6 @@ Template.visitorEditCustomFields.onCreated(async function() {
 	if (omnichannel && omnichannel.priority) {
 		this.roomPriority.set(omnichannel.priority);
 	}
-	this.autorun(async () => {
-		const { priorities } = await APIClient.v1.get('livechat/priorities.list');
-		this.priorities.set(priorities);
-	});
+	const { priorities } = await APIClient.v1.get('livechat/priorities.list');
+	this.priorities.set(priorities);
 });

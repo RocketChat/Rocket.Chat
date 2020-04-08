@@ -4,3 +4,4 @@ import './monitors';
 import './priorities';
 import './tags';
 import './units';
+import './rooms';
