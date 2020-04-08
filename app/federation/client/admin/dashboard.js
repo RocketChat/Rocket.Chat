@@ -6,7 +6,7 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { hasRole } from '../../../authorization';
 import { registerAdminRoute } from '../../../ui-admin/client/routes';
-import { AdminBox } from '../../../ui-utils';
+import { AdminBox } from '../../../ui-admin/client/AdminBox';
 
 import './dashboard.html';
 import './dashboard.css';

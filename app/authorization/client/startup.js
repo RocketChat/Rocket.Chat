@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { hasAtLeastOnePermission } from './hasPermission';
 import { CachedCollectionManager } from '../../ui-cached-collection';
-import { AdminBox } from '../../ui-utils/client/lib/AdminBox';
+import { AdminBox } from '../../ui-admin/client/AdminBox';
 import { APIClient } from '../../utils/client';
 import { Roles } from '../../models/client';
 import { rolesStreamer } from './lib/streamer';

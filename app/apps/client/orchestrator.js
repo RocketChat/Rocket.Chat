@@ -4,7 +4,7 @@ import toastr from 'toastr';
 
 import { AppWebsocketReceiver } from './communication';
 import { APIClient } from '../../utils';
-import { AdminBox } from '../../ui-utils';
+import { AdminBox } from '../../ui-admin/client/AdminBox';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { handleI18nResources } from './i18n';

@@ -1,4 +1,4 @@
-import { AdminBox } from '../../../ui-utils';
+import { AdminBox } from '../../../ui-admin/client/AdminBox';
 import { hasAllPermission } from '../../../authorization';
 
 AdminBox.addOption({
