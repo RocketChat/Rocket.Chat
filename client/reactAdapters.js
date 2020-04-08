@@ -129,7 +129,6 @@ export const createTemplateForComponent = (
 export const renderRouteComponent = (importFn, {
 	template,
 	region,
-	renderContainerView = () => HTML.DIV(), // eslint-disable-line new-cap
 } = {}) => {
 	const routeName = FlowRouter.getRouteName();
 
@@ -158,7 +157,7 @@ export const renderRouteComponent = (importFn, {
 		}
 
 		if (!Template[routeName]) {
-			const blazeTemplate = new Blaze.Template(routeName, renderContainerView);
+			const blazeTemplate = new Blaze.Template(routeName, () => HTML.DIV()); // eslint-disable-line new-cap
 
 			blazeTemplate.onRendered(async function() {
 				const props = new ReactiveVar(this.data);
@@ -166,7 +165,9 @@ export const renderRouteComponent = (importFn, {
 					props.set(Template.currentData());
 				});
 
-				const portal = await createLazyPortal(importFn, () => props.get(), this.firstNode);
+				const node = this.firstNode.parentElement;
+				this.firstNode.remove();
+				const portal = await createLazyPortal(importFn, () => props.get(), node);
 
 				if (routeName !== FlowRouter.getRouteName()) {
 					return;

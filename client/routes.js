@@ -1,6 +1,5 @@
 import mem from 'mem';
 import s from 'underscore.string';
-import { HTML } from 'meteor/htmljs';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
@@ -166,8 +165,6 @@ FlowRouter.route('/admin/:group?', {
 		renderRouteComponent(() => import('./components/admin/Router'), {
 			template: 'main',
 			region: 'center',
-			// eslint-disable-next-line new-cap
-			renderContainerView: () => HTML.DIV({ style: 'overflow: hidden; flex: 1 1 auto; height: 1%;' }),
 		});
 	},
 });
