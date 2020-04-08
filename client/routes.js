@@ -31,6 +31,8 @@ FlowRouter.goToRoomById = async (rid) => {
 
 BlazeLayout.setRoot('body');
 
+FlowRouter.wait();
+
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
@@ -159,18 +161,12 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
-FlowRouter.route('/admin/:group?', {
-	name: 'admin',
-	action: () => {
-		renderRouteComponent(() => import('./components/admin/Router'), {
-			template: 'main',
-			region: 'center',
-		});
-	},
-});
-
 FlowRouter.notFound = {
 	action: () => {
 		renderRouteComponent(() => import('./components/pageNotFound/PageNotFound'));
 	},
 };
+
+Meteor.startup(() => {
+	FlowRouter.initialize();
+});

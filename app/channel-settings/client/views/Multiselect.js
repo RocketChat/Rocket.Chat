@@ -4,7 +4,7 @@ import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
 createTemplateForComponent(
 	'Multiselect',
-	() => import('../../../../client/components/admin/settings/inputs/MultiSelectSettingInput'),
+	() => import('../../../ui-admin/client/components/settings/inputs/MultiSelectSettingInput'),
 	{
 		// eslint-disable-next-line new-cap
 		renderContainerView: () => HTML.DIV({ class: 'rc-multiselect', style: 'display: flex;' }),
