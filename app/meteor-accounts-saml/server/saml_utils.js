@@ -565,14 +565,14 @@ SAML.prototype.verifySignatures = function(response, assertion, xml) {
 	}
 
 	debugLog('Verify Document Signature');
-	if (!self.validateResponseSignature(xml, self.options.cert, response)) {
+	if (!this.validateResponseSignature(xml, this.options.cert, response)) {
 		debugLog('Document Signature WRONG');
 		throw new Error('Invalid Signature');
 	}
 	debugLog('Document Signature OK');
 
 	debugLog('Verify Assertion Signature');
-	if (!self.validateAssertionSignature(xml, self.options.cert, assertion)) {
+	if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
 		debugLog('Assertion Signature WRONG');
 		throw new Error('Invalid Assertion signature');
 	}
@@ -644,7 +644,7 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	try {
 		assertion = this.getAssertion(response, callback);
 
-		this.verifySignatures();
+		this.verifySignatures(response, assertion, xml);
 	} catch (e) {
 		return callback(e, null, false);
 	}
