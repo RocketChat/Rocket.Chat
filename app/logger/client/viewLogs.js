@@ -5,7 +5,7 @@ import { Mongo } from 'meteor/mongo';
 import { AdminBox } from '../../ui-utils';
 import { hasAllPermission } from '../../authorization';
 import { t } from '../../utils';
-import { routes } from '../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../ui-admin/client/routes';
 
 export const stdout = new Mongo.Collection(null);
 
@@ -20,7 +20,7 @@ Meteor.startup(function() {
 	});
 });
 
-routes.route('/view-logs', {
+registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
 	async action() {
 		await import('./views/viewLogs');

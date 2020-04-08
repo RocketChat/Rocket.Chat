@@ -1,11 +1,11 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { routes } from '../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../ui-admin/client/routes';
 import { t } from '../../utils';
 
 const dynamic = () => import('./views');
 
-routes.route('/integrations', {
+registerAdminRoute('/integrations', {
 	name: 'admin-integrations',
 	async action() {
 		await dynamic();
@@ -16,7 +16,7 @@ routes.route('/integrations', {
 	},
 });
 
-routes.route('/integrations/new', {
+registerAdminRoute('/integrations/new', {
 	name: 'admin-integrations-new',
 	async action() {
 		await dynamic();
@@ -27,7 +27,7 @@ routes.route('/integrations/new', {
 	},
 });
 
-routes.route('/integrations/incoming/:id?', {
+registerAdminRoute('/integrations/incoming/:id?', {
 	name: 'admin-integrations-incoming',
 	async action(params) {
 		await dynamic();
@@ -40,7 +40,7 @@ routes.route('/integrations/incoming/:id?', {
 	},
 });
 
-routes.route('/integrations/outgoing/:id?', {
+registerAdminRoute('/integrations/outgoing/:id?', {
 	name: 'admin-integrations-outgoing',
 	async action(params) {
 		await dynamic();
@@ -52,7 +52,7 @@ routes.route('/integrations/outgoing/:id?', {
 	},
 });
 
-routes.route('/integrations/outgoing/:id?/history', {
+registerAdminRoute('/integrations/outgoing/:id?/history', {
 	name: 'admin-integrations-outgoing-history',
 	async action(params) {
 		await dynamic();
@@ -64,7 +64,7 @@ routes.route('/integrations/outgoing/:id?/history', {
 	},
 });
 
-routes.route('/integrations/additional/zapier', {
+registerAdminRoute('/integrations/additional/zapier', {
 	name: 'admin-integrations-additional-zapier',
 	async action() {
 		await dynamic();

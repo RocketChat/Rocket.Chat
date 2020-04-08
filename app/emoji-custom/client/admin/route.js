@@ -1,8 +1,8 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { routes } from '../../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../../ui-admin/client/routes';
 
-routes.route('/emoji-custom', {
+registerAdminRoute('/emoji-custom', {
 	name: 'emoji-custom',
 	async action(/* params*/) {
 		await import('./views');

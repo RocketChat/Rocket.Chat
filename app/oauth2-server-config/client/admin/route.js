@@ -1,9 +1,9 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { routes } from '../../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../../ui-admin/client/routes';
 import { t } from '../../../utils';
 
-routes.route('/oauth-apps', {
+registerAdminRoute('/oauth-apps', {
 	name: 'admin-oauth-apps',
 	async action() {
 		await import('./views');
@@ -14,7 +14,7 @@ routes.route('/oauth-apps', {
 	},
 });
 
-routes.route('/oauth-app/:id?', {
+registerAdminRoute('/oauth-app/:id?', {
 	name: 'admin-oauth-app',
 	async action(params) {
 		await import('./views');

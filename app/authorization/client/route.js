@@ -1,9 +1,9 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { routes } from '../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../ui-admin/client/routes';
 import { t } from '../../utils/client';
 
-routes.route('/permissions', {
+registerAdminRoute('/permissions', {
 	name: 'admin-permissions',
 	async action(/* params*/) {
 		await import('./views');
@@ -14,7 +14,7 @@ routes.route('/permissions', {
 	},
 });
 
-routes.route('/permissions/:name?/edit', {
+registerAdminRoute('/permissions/:name?/edit', {
 	name: 'admin-permissions-edit',
 	async action(/* params*/) {
 		await import('./views');
@@ -26,7 +26,7 @@ routes.route('/permissions/:name?/edit', {
 	},
 });
 
-routes.route('/permissions/new', {
+registerAdminRoute('/permissions/new', {
 	name: 'admin-permissions-new',
 	async action(/* params*/) {
 		await import('./views');

@@ -2,9 +2,9 @@ import { hasAllPermission } from '../../../../app/authorization';
 import { AdminBox } from '../../../../app/ui-utils';
 import { renderRouteComponent } from '../../../../client/reactAdapters';
 import { hasLicense } from '../../license/client';
-import { routes } from '../../../../app/ui-admin/client/routes';
+import { registerAdminRoute } from '../../../../app/ui-admin/client/routes';
 
-routes.route('/engagement-dashboard/:tab?', {
+registerAdminRoute('/engagement-dashboard/:tab?', {
 	name: 'engagement-dashboard',
 	action: async () => {
 		const licensed = await hasLicense('engagement-dashboard');

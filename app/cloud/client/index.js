@@ -4,11 +4,11 @@ import './admin/cloudRegisterManually';
 
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { routes } from '../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../ui-admin/client/routes';
 import { AdminBox } from '../../ui-utils';
 import { hasAtLeastOnePermission } from '../../authorization';
 
-routes.route('/cloud', {
+registerAdminRoute('/cloud', {
 	name: 'cloud-config',
 	async action() {
 		await import('./admin');
@@ -16,7 +16,7 @@ routes.route('/cloud', {
 	},
 });
 
-routes.route('/cloud/oauth-callback', {
+registerAdminRoute('/cloud/oauth-callback', {
 	name: 'cloud-oauth-callback',
 	async action() {
 		await import('./admin');

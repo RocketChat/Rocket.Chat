@@ -4,18 +4,22 @@ import { Meteor } from 'meteor/meteor';
 
 import { renderRouteComponent } from '../../../client/reactAdapters';
 
-export const routes = FlowRouter.group({
-	prefix: '/admin',
+export const routeGroup = FlowRouter.group({
 	name: 'admin',
+	prefix: '/admin',
 });
 
-routes.route('/', {
-	triggersEnter: [function(context, redirect) {
+export const registerAdminRoute = (path, options) => {
+	routeGroup.route(path, options);
+};
+
+registerAdminRoute('/', {
+	triggersEnter: [(context, redirect) => {
 		redirect('admin-info');
 	}],
 });
 
-routes.route('/info', {
+registerAdminRoute('/info', {
 	name: 'admin-info',
 	action: () => {
 		renderRouteComponent(() => import('./components/info/InformationRoute'), {
@@ -25,7 +29,7 @@ routes.route('/info', {
 	},
 });
 
-routes.route('/users', {
+registerAdminRoute('/users', {
 	name: 'admin-users',
 	action: async () => {
 		await import('./users/views');
@@ -33,7 +37,7 @@ routes.route('/users', {
 	},
 });
 
-routes.route('/rooms', {
+registerAdminRoute('/rooms', {
 	name: 'admin-rooms',
 	action: async () => {
 		await import('./rooms/views');
@@ -42,7 +46,7 @@ routes.route('/rooms', {
 });
 
 Meteor.startup(() => {
-	routes.route('/:group+', {
+	registerAdminRoute('/:group+', {
 		name: 'admin',
 		action: () => {
 			renderRouteComponent(() => import('./components/settings/SettingsRoute'), {

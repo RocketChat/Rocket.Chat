@@ -1,8 +1,8 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { routes } from '../../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../../ui-admin/client/routes';
 
-routes.route('/user-status-custom', {
+registerAdminRoute('/user-status-custom', {
 	name: 'user-status-custom',
 	async action() {
 		await import('./views');

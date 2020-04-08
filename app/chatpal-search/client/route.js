@@ -1,9 +1,9 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { routes } from '../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../ui-admin/client/routes';
 import { t } from '../../utils';
 
-routes.route('/chatpal', {
+registerAdminRoute('/chatpal', {
 	name: 'chatpal-admin',
 	action() {
 		return BlazeLayout.render('main', {

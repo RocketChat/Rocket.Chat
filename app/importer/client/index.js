@@ -1,12 +1,12 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { routes } from '../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../ui-admin/client/routes';
 import { Importers } from '../lib/Importers';
 import { ImporterInfo } from '../lib/ImporterInfo';
 import { ProgressStep } from '../lib/ImporterProgressStep';
 import { ImporterWebsocketReceiver } from './ImporterWebsocketReceiver';
 
-routes.route('/import', {
+registerAdminRoute('/import', {
 	name: 'admin-import',
 	async action() {
 		await import('./admin/adminImport');
@@ -14,7 +14,7 @@ routes.route('/import', {
 	},
 });
 
-routes.route('/import/new', {
+registerAdminRoute('/import/new', {
 	name: 'admin-import-new',
 	async action() {
 		await import('./admin/adminImportNew');
@@ -22,7 +22,7 @@ routes.route('/import/new', {
 	},
 });
 
-routes.route('/import/prepare', {
+registerAdminRoute('/import/prepare', {
 	name: 'admin-import-prepare',
 	async action() {
 		await import('./admin/adminImportPrepare');
@@ -30,7 +30,7 @@ routes.route('/import/prepare', {
 	},
 });
 
-routes.route('/import/progress', {
+registerAdminRoute('/import/progress', {
 	name: 'admin-import-progress',
 	async action() {
 		await import('./admin/adminImportProgress');

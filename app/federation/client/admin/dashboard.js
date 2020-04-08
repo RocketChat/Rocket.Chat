@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { hasRole } from '../../../authorization';
-import { routes } from '../../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../../ui-admin/client/routes';
 import { AdminBox } from '../../../ui-utils';
 
 import './dashboard.html';
@@ -69,7 +69,7 @@ Template.dashboard.onRendered(() => {
 
 // Route setup
 
-routes.route('/federation-dashboard', {
+registerAdminRoute('/federation-dashboard', {
 	name: 'federation-dashboard',
 	action() {
 		BlazeLayout.render('main', { center: 'dashboard', old: true });
