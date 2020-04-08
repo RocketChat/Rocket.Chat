@@ -9,6 +9,12 @@ export const routes = FlowRouter.group({
 	name: 'admin',
 });
 
+routes.route('/', {
+	triggersEnter: [function(context, redirect) {
+		redirect('admin-info');
+	}],
+});
+
 routes.route('/info', {
 	name: 'admin-info',
 	action: () => {

@@ -3,10 +3,10 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { AdminBox } from '../../../ui-utils';
 import { hasRole } from '../../../authorization';
+import { routes } from '../../../ui-admin/client/routes';
+import { AdminBox } from '../../../ui-utils';
 
 import './dashboard.html';
 import './dashboard.css';
@@ -69,7 +69,7 @@ Template.dashboard.onRendered(() => {
 
 // Route setup
 
-FlowRouter.route('/admin/federation-dashboard', {
+routes.route('/federation-dashboard', {
 	name: 'federation-dashboard',
 	action() {
 		BlazeLayout.render('main', { center: 'dashboard', old: true });

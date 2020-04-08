@@ -1,9 +1,10 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
+import { routes } from '../../ui-admin/client/routes';
 import { Apps } from './orchestrator';
 
-FlowRouter.route('/admin/apps/what-is-it', {
+routes.route('/apps/what-is-it', {
 	name: 'apps-what-is-it',
 	action: async () => {
 		// TODO: render loading indicator
@@ -26,32 +27,32 @@ const createAppsRouteAction = (centerTemplate) => async () => {
 	}
 };
 
-FlowRouter.route('/admin/apps', {
+routes.route('/apps', {
 	name: 'apps',
 	action: createAppsRouteAction('apps'),
 });
 
-FlowRouter.route('/admin/apps/install', {
+routes.route('/apps/install', {
 	name: 'app-install',
 	action: createAppsRouteAction('appInstall'),
 });
 
-FlowRouter.route('/admin/apps/:appId', {
+routes.route('/apps/:appId', {
 	name: 'app-manage',
 	action: createAppsRouteAction('appManage'),
 });
 
-FlowRouter.route('/admin/apps/:appId/logs', {
+routes.route('/apps/:appId/logs', {
 	name: 'app-logs',
 	action: createAppsRouteAction('appLogs'),
 });
 
-FlowRouter.route('/admin/marketplace', {
+routes.route('/marketplace', {
 	name: 'marketplace',
 	action: createAppsRouteAction('marketplace'),
 });
 
-FlowRouter.route('/admin/marketplace/:appId', {
+routes.route('/marketplace/:appId', {
 	name: 'marketplace-app',
 	action: createAppsRouteAction('appManage'),
 });

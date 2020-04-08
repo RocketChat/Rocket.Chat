@@ -1,11 +1,11 @@
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { AdminBox } from '../../ui-utils';
 import { hasAllPermission } from '../../authorization';
 import { t } from '../../utils';
+import { routes } from '../../ui-admin/client/routes';
 
 export const stdout = new Mongo.Collection(null);
 
@@ -20,7 +20,7 @@ Meteor.startup(function() {
 	});
 });
 
-FlowRouter.route('/admin/view-logs', {
+routes.route('/view-logs', {
 	name: 'admin-view-logs',
 	async action() {
 		await import('./views/viewLogs');

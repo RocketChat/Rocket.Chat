@@ -1,11 +1,11 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
+import { routes } from '../../ui-admin/client/routes';
 import { t } from '../../utils';
 
 const dynamic = () => import('./views');
 
-FlowRouter.route('/admin/integrations', {
+routes.route('/integrations', {
 	name: 'admin-integrations',
 	async action() {
 		await dynamic();
@@ -16,7 +16,7 @@ FlowRouter.route('/admin/integrations', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/new', {
+routes.route('/integrations/new', {
 	name: 'admin-integrations-new',
 	async action() {
 		await dynamic();
@@ -27,7 +27,7 @@ FlowRouter.route('/admin/integrations/new', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/incoming/:id?', {
+routes.route('/integrations/incoming/:id?', {
 	name: 'admin-integrations-incoming',
 	async action(params) {
 		await dynamic();
@@ -40,7 +40,7 @@ FlowRouter.route('/admin/integrations/incoming/:id?', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/outgoing/:id?', {
+routes.route('/integrations/outgoing/:id?', {
 	name: 'admin-integrations-outgoing',
 	async action(params) {
 		await dynamic();
@@ -52,7 +52,7 @@ FlowRouter.route('/admin/integrations/outgoing/:id?', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/outgoing/:id?/history', {
+routes.route('/integrations/outgoing/:id?/history', {
 	name: 'admin-integrations-outgoing-history',
 	async action(params) {
 		await dynamic();
@@ -64,7 +64,7 @@ FlowRouter.route('/admin/integrations/outgoing/:id?/history', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/additional/zapier', {
+routes.route('/integrations/additional/zapier', {
 	name: 'admin-integrations-additional-zapier',
 	async action() {
 		await dynamic();

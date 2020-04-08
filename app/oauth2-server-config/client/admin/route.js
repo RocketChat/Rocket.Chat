@@ -1,9 +1,9 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
+import { routes } from '../../../ui-admin/client/routes';
 import { t } from '../../../utils';
 
-FlowRouter.route('/admin/oauth-apps', {
+routes.route('/oauth-apps', {
 	name: 'admin-oauth-apps',
 	async action() {
 		await import('./views');
@@ -14,7 +14,7 @@ FlowRouter.route('/admin/oauth-apps', {
 	},
 });
 
-FlowRouter.route('/admin/oauth-app/:id?', {
+routes.route('/oauth-app/:id?', {
 	name: 'admin-oauth-app',
 	async action(params) {
 		await import('./views');
