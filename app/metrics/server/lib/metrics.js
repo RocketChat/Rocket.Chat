@@ -5,6 +5,7 @@ import connect from 'connect';
 import _ from 'underscore';
 import gcStats from 'prometheus-gc-stats';
 import { Meteor } from 'meteor/meteor';
+import { Facts } from 'meteor/facts-base';
 
 import { Info, getOplogInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations';
@@ -98,6 +99,13 @@ metrics.totalChannelMessages = new client.Gauge({ name: 'rocketchat_channel_mess
 metrics.totalPrivateGroupMessages = new client.Gauge({ name: 'rocketchat_private_group_messages_total', help: 'total of messages in private rooms' });
 metrics.totalDirectMessages = new client.Gauge({ name: 'rocketchat_direct_messages_total', help: 'total of messages in direct rooms' });
 metrics.totalLivechatMessages = new client.Gauge({ name: 'rocketchat_livechat_messages_total', help: 'total of messages in livechat rooms' });
+
+// Meteor Facts
+metrics.meteorFacts = new client.Gauge({ name: 'rocketchat_meteor_facts', labelNames: ['pkg', 'fact'], help: 'internal meteor facts' });
+
+Facts.incrementServerFact = function(pkg, fact, increment) {
+	metrics.meteorFacts.inc({ pkg, fact }, increment);
+};
 
 const setPrometheusData = async () => {
 	metrics.info.set({
