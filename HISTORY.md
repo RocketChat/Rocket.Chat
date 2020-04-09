@@ -1,6 +1,34 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.12
+`2020-04-08  ·  4 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Random errors on SAML logout ([#17227](https://github.com/RocketChat/Rocket.Chat/pull/17227))
+
+- Room event emitter passing an invalid parameter when finding removed subscriptions ([#17224](https://github.com/RocketChat/Rocket.Chat/pull/17224))
+
+- Wrong SAML Response Signature Validation ([#16922](https://github.com/RocketChat/Rocket.Chat/pull/16922))
+
+- SAML login errors not showing on UI ([#17219](https://github.com/RocketChat/Rocket.Chat/pull/17219))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Collect metrics about meteor facts ([#17216](https://github.com/RocketChat/Rocket.Chat/pull/17216))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 3.1.0-rc.11
 `2020-04-07  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
