@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings';
-import { checkWaitingQueue, updateAbandonedRoomProperty } from './lib/Helper';
+import { checkWaitingQueue, updatePredictedVisitorAbandonment } from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
 import './lib/query.helper';
 
@@ -12,7 +12,7 @@ Meteor.startup(function() {
 		checkWaitingQueue();
 	});
 	settings.onload('Livechat_auto_close_abandoned_rooms', function(_, value) {
-		updateAbandonedRoomProperty(value);
+		updatePredictedVisitorAbandonment(value);
 		if (!value) {
 			return visitorActivityMonitor.stop();
 		}
@@ -21,7 +21,7 @@ Meteor.startup(function() {
 	settings.onload('Livechat_visitor_inactivity_timeout', function() {
 		const closeAbandonedRooms = settings.get('Livechat_auto_close_abandoned_rooms');
 		if (closeAbandonedRooms) {
-			updateAbandonedRoomProperty(closeAbandonedRooms);
+			updatePredictedVisitorAbandonment(closeAbandonedRooms);
 		}
 	});
 });

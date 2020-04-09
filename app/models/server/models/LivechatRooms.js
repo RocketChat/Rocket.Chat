@@ -15,7 +15,7 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'metrics.chatDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
-		this.tryEnsureIndex({ 'omnichannel.abandonedAt': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -561,6 +561,19 @@ export class LivechatRooms extends Base {
 		const update = {
 			$set: {
 				'v.lastMessageTs': lastMessageTs,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setVisitorInactivityInSecondsByRoomId(roomId, visitorInactivity) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				'metrics.visitorInactivity': visitorInactivity,
 			},
 		};
 

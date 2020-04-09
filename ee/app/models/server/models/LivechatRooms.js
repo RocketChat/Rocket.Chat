@@ -24,13 +24,13 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 });
 
 
-LivechatRooms.prototype.setTimeWhenRoomWillBeAbandoned = function(roomId, willBeAbandonedAt) {
+LivechatRooms.prototype.setPredictedVisitorAbandonment = function(roomId, willBeAbandonedAt) {
 	const query = {
 		_id: roomId,
 	};
 	const update = {
 		$set: {
-			'omnichannel.abandonedAt': willBeAbandonedAt,
+			'omnichannel.predictedVisitorAbandonmentAt': willBeAbandonedAt,
 		},
 	};
 
@@ -39,32 +39,19 @@ LivechatRooms.prototype.setTimeWhenRoomWillBeAbandoned = function(roomId, willBe
 
 LivechatRooms.prototype.findAbandonedOpenRooms = function(date) {
 	return this.find({
-		'omnichannel.abandonedAt': { $lte: date },
+		'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
 		waitingResponse: { $exists: false },
 		closedAt: { $exists: false },
 		open: true,
 	});
 };
 
-LivechatRooms.prototype.setVisitorInactivityInSecondsById = function(_id, visitorInactivity) {
-	const query = {
-		_id,
-	};
-	const update = {
-		$set: {
-			'metrics.visitorInactivity': visitorInactivity,
-		},
-	};
-
-	return this.update(query, update);
-};
-
-LivechatRooms.prototype.unsetAbandonedProperty = function() {
+LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
 	return this.update({
 		open: true,
 		t: 'l',
 	}, {
-		$unset: { 'omnichannel.abandonedAt': 1 },
+		$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
 	}, {
 		multi: true,
 	});

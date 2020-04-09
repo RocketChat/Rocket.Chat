@@ -140,28 +140,29 @@ export const allowAgentSkipQueue = (agent) => {
 };
 
 export const setPredictedVisitorAbandonmentTime = (room) => {
-	let secondsToAdd = settings.get('Livechat_visitor_inactivity_timeout');
-	if (secondsToAdd <= 0) {
+	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_auto_close_abandoned_rooms')) {
 		return;
 	}
-	let department;
-	if (room.departmentId) {
-		department = LivechatDepartment.findOneById(room.departmentId);
-	}
+
+	let secondsToAdd = settings.get('Livechat_visitor_inactivity_timeout');
+
+	const department = room.departmentId && LivechatDepartment.findOneById(room.departmentId);
 	if (department && department.visitorInactivityTimeoutInSeconds) {
 		secondsToAdd = department.visitorInactivityTimeoutInSeconds;
 	}
-	let willBeAbandonedAt = room.v.lastMessageTs;
-	if (secondsToAdd) {
-		willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
+
+	if (secondsToAdd <= 0) {
+		return;
 	}
-	LivechatRooms.setTimeWhenRoomWillBeAbandoned(room._id, willBeAbandonedAt);
+
+	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
+	LivechatRooms.setPredictedVisitorAbandonment(room._id, willBeAbandonedAt);
 };
 
-export const updateAbandonedRoomProperty = (closeRooms) => {
+export const updatePredictedVisitorAbandonment = (closeRooms) => {
 	if (closeRooms) {
 		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	} else {
-		LivechatRooms.unsetAbandonedProperty();
+		LivechatRooms.unsetPredictedVisitorAbandonment();
 	}
 };
