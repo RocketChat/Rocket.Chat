@@ -26,6 +26,13 @@
 					<textarea aria-label="{{_ 'Message'}}" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message"></textarea>
 					<div class="js-input-message-shadow"></div>
 					{{#if isSendIconVisible}}
+						{{#if isChannelTextLimitEnabled}}
+							<span class="rc-message-box__icon rc-message-box__textlimitprogresscircle" data-desktop>
+								{{#with textLimitProgressCircleConfiguration}}
+									{{> circularProgress}}
+								{{/with}}
+							</span>
+						{{/if}}
 						<span class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</span>
@@ -52,6 +59,13 @@
 								{{> icon block="rc-message-box__action" icon=action.icon }}
 							</span>
 						{{/each}}
+						{{#if isChannelTextLimitEnabled}}
+							<span class="rc-message-box__textlimitprogresscircle" data-small>
+								{{#with textLimitProgressCircleConfiguration}}
+									{{> circularProgress}}
+								{{/with}}
+							</span>
+						{{/if}}
 					</span>
 
 					<span class="rc-message-box__send js-message-action js-send" disabled="{{isSendIconDisabled}}" data-small>
