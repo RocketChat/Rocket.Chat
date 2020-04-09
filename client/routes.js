@@ -7,10 +7,11 @@ import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
+import toastr from 'toastr';
 
 import { KonchatNotification } from '../app/ui';
 import { ChatSubscription } from '../app/models';
-import { roomTypes } from '../app/utils';
+import { roomTypes, handleError } from '../app/utils';
 import { call } from '../app/ui-utils';
 import { createTemplateForComponent } from './createTemplateForComponent';
 
@@ -75,7 +76,16 @@ FlowRouter.route('/home', {
 					saml: true,
 					credentialToken: queryParams.saml_idp_credentialToken,
 				}],
-				userCallback() { BlazeLayout.render('main', { center: 'home' }); },
+				userCallback(error) {
+					if (error) {
+						if (error.reason) {
+							toastr.error(error.reason);
+						} else {
+							handleError(error);
+						}
+					}
+					BlazeLayout.render('main', { center: 'home' });
+				},
 			});
 		} else {
 			BlazeLayout.render('main', { center: 'home' });
