@@ -42285,6 +42285,61 @@
           ]
         }
       ]
+    },
+    "3.1.0-rc.12": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17227",
+          "title": "[FIX] Random errors on SAML logout",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17216",
+          "title": "Collect metrics about meteor facts",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17224",
+          "title": "[FIX] Room event emitter passing an invalid parameter when finding removed subscriptions",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16922",
+          "title": "[FIX] Wrong SAML Response Signature Validation",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17219",
+          "title": "[FIX] SAML login errors not showing on UI",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
