@@ -6,10 +6,6 @@ import { getBundleModules, isBundle } from './bundles';
 
 const EnterpriseLicenses = new EventEmitter();
 
-export interface IModules {
-	[key: string]: number;
-}
-
 export interface ILicense {
 	url: string;
 	expiry: string;
@@ -27,7 +23,7 @@ class LicenseClass {
 
 	private licenses: IValidLicense[] = [];
 
-	private modules: IModules = {};
+	private modules = new Set<string>();
 
 	_validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
@@ -49,7 +45,7 @@ class LicenseClass {
 				: [licenseModule];
 
 			modules.forEach((module) => {
-				this.modules[module] = 1;
+				this.modules.add(module);
 				EnterpriseLicenses.emit(`valid:${ module }`);
 			});
 		});
@@ -79,7 +75,11 @@ class LicenseClass {
 	}
 
 	hasModule(module: string): boolean {
-		return typeof this.modules[module] !== 'undefined';
+		return this.modules.has(module);
+	}
+
+	getModules(): string[] {
+		return [...this.modules];
 	}
 
 	setURL(url: string): void {
@@ -183,6 +183,10 @@ export function setURL(url: string): void {
 
 export function hasLicense(feature: string): boolean {
 	return License.hasModule(feature);
+}
+
+export function getModules(): string[] {
+	return License.getModules();
 }
 
 export function onLicense(feature: string, cb: (...args: any[]) => void): void {

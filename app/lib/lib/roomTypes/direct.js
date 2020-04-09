@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 
 import { ChatRoom, Subscriptions } from '../../../models';
 import { openRoom } from '../../../ui-utils';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../utils';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
@@ -131,8 +131,13 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(/* room, action */) {
-		return false;
+	allowMemberAction(room, action) {
+		switch (action) {
+			case RoomMemberActions.BLOCK:
+				return !this.isGroupChat(room);
+			default:
+				return false;
+		}
 	}
 
 	enableMembersListProfile() {
@@ -181,9 +186,14 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData, subData) {
-		if (roomData && this.isGroupChat(roomData)) {
+		if (this.isGroupChat(roomData)) {
 			return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
 		}
+
+		if (roomData) {
+			return getUserAvatarURL(roomData.name || this.roomName(roomData));
+		}
+
 		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
 		return getUserAvatarURL(sub.name || this.roomName(roomData));
 	}
@@ -193,6 +203,6 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	isGroupChat(room) {
-		return room.uids && room.uids.length > 2;
+		return room && room.uids && room.uids.length > 2;
 	}
 }
