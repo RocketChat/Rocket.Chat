@@ -33,7 +33,7 @@ settings.addGroup('LDAP', function() {
 	];
 
 	this.add('LDAP_Enable', false, { type: 'boolean', public: true });
-	this.add('LDAP_Login_Fallback', true, { type: 'boolean', enableQuery });
+	this.add('LDAP_Login_Fallback', false, { type: 'boolean', enableQuery: null });
 	this.add('LDAP_Find_User_After_Login', true, { type: 'boolean', enableQuery });
 	this.add('LDAP_Host', '', { type: 'string', enableQuery });
 	this.add('LDAP_Port', '389', { type: 'string', enableQuery });
