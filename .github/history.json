@@ -42340,6 +42340,34 @@
           ]
         }
       ]
+    },
+    "3.1.0-rc.13": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17239",
+          "title": "Fix self DMs created during release candidate",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17237",
+          "title": "[CHORE] Use REST API for sending audio messages",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }

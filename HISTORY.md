@@ -1,6 +1,25 @@
 
 # 3.1.0 (Under Release Candidate Process)
 
+## 3.1.0-rc.13
+`2020-04-09  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Fix self DMs created during release candidate ([#17239](https://github.com/RocketChat/Rocket.Chat/pull/17239))
+
+- [CHORE] Use REST API for sending audio messages ([#17237](https://github.com/RocketChat/Rocket.Chat/pull/17237))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.1.0-rc.12
 `2020-04-08  ·  4 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
 
