@@ -1,6 +1,6 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { registerAdminRoute } from '../../ui-admin/client/routes';
+import { registerAdminRoute } from '../../ui-admin/client';
 import { Importers } from '../lib/Importers';
 import { ImporterInfo } from '../lib/ImporterInfo';
 import { ProgressStep } from '../lib/ImporterProgressStep';

@@ -5,8 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { hasRole } from '../../../authorization';
-import { registerAdminRoute } from '../../../ui-admin/client/routes';
-import { AdminBox } from '../../../ui-admin/client/AdminBox';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../../ui-admin/client';
 
 import './dashboard.html';
 import './dashboard.css';
@@ -76,7 +75,7 @@ registerAdminRoute('/federation-dashboard', {
 	},
 });
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	icon: 'discover',
 	href: 'admin/federation-dashboard',
 	i18nLabel: 'Federation Dashboard',

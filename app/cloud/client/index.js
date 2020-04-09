@@ -4,8 +4,7 @@ import './admin/cloudRegisterManually';
 
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { registerAdminRoute } from '../../ui-admin/client/routes';
-import { AdminBox } from '../../ui-admin/client/AdminBox';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../ui-admin/client';
 import { hasAtLeastOnePermission } from '../../authorization';
 
 registerAdminRoute('/cloud', {
@@ -24,7 +23,7 @@ registerAdminRoute('/cloud/oauth-callback', {
 	},
 });
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	icon: 'cloud-plus',
 	href: 'admin/cloud',
 	i18nLabel: 'Connectivity_Services',

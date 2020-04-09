@@ -1,8 +1,7 @@
 import { hasAllPermission } from '../../../../app/authorization';
-import { AdminBox } from '../../../../app/ui-admin/client/AdminBox';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../../../app/ui-admin/client';
 import { renderRouteComponent } from '../../../../client/reactAdapters';
 import { hasLicense } from '../../license/client';
-import { registerAdminRoute } from '../../../../app/ui-admin/client/routes';
 
 registerAdminRoute('/engagement-dashboard/:tab?', {
 	name: 'engagement-dashboard',
@@ -21,7 +20,7 @@ hasLicense('engagement-dashboard').then((enabled) => {
 		return;
 	}
 
-	AdminBox.addOption({
+	registerAdminSidebarItem({
 		href: 'engagement-dashboard',
 		i18nLabel: 'Engagement Dashboard',
 		icon: 'file-keynote',

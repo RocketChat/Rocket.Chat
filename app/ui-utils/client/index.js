@@ -1,4 +1,3 @@
-export { AdminBox } from '../../ui-admin/client/AdminBox';
 export { modal } from './lib/modal';
 export { SideNav } from './lib/SideNav';
 export { AccountBox } from './lib/AccountBox';

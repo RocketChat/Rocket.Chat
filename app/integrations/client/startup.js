@@ -1,7 +1,7 @@
-import { AdminBox } from '../../ui-admin/client/AdminBox';
 import { hasAtLeastOnePermission } from '../../authorization';
+import { registerAdminSidebarItem } from '../../ui-admin/client';
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	href: 'admin-integrations',
 	i18nLabel: 'Integrations',
 	icon: 'code',
