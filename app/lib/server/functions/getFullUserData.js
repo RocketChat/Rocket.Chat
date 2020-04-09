@@ -64,8 +64,19 @@ const getFields = (canViewAllInfo) => ({
 	...getCustomFields(canViewAllInfo),
 });
 
-export function getFullUserDataById({ userId, filterId }) {
-	const canViewAllInfo = userId === filterId || hasPermission(userId, 'view-full-other-user-info');
+const removePasswordInfo = (user) => {
+	if (user && user.services) {
+		delete user.services.password;
+		delete user.services.email;
+		delete user.services.resume;
+		delete user.services.emailCode;
+	}
+	return user;
+};
+
+export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername }) {
+	const caller = Users.findOneById(userId, { fields: { username: 1 } });
+	const canViewAllInfo = (userId === filterId || filterUsername === caller.username) || hasPermission(userId, 'view-full-other-user-info');
 
 	const fields = getFields(canViewAllInfo);
 
@@ -73,7 +84,7 @@ export function getFullUserDataById({ userId, filterId }) {
 		fields,
 	};
 
-	return Users.findById(filterId, options);
+	return removePasswordInfo(Users.findOneByIdOrUsername(filterId || filterUsername, options));
 }
 
 export const getFullUserData = function({ userId, filter, limit: l }) {
