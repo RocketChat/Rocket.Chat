@@ -19,8 +19,8 @@ const readAsDataURL = (file, callback) => {
 export const uploadFileWithMessage = async (rid, tmid, { description, fileName, msg, file }) => {
 	const data = new FormData();
 	description	&& data.append('description', description);
-	msg			&& data.append('msg', msg);
-	tmid		&& data.append('tmid', tmid);
+	msg	&& data.append('msg', msg);
+	tmid && data.append('tmid', tmid);
 	data.append('file', file.file, fileName);
 
 	const uploads = Session.get('uploading') || [];
