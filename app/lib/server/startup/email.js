@@ -406,6 +406,11 @@ settings.addGroup('Email', function() {
 		});
 	});
 
+	this.section('Offline_Message', function() {
+		this.add('Offline_Message_Use_DeepLink', true, {
+			type: 'boolean',
+		});
+	});
 
 	this.section('Invitation', function() {
 		this.add('Invitation_Subject', '{Invitation_Subject_Default}', {
