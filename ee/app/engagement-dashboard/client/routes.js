@@ -1,11 +1,9 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
-
 import { hasAllPermission } from '../../../../app/authorization';
-import { AdminBox } from '../../../../app/ui-utils';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../../../app/ui-admin/client';
 import { renderRouteComponent } from '../../../../client/reactAdapters';
 import { hasLicense } from '../../license/client';
 
-FlowRouter.route('/admin/engagement-dashboard/:tab?', {
+registerAdminRoute('/engagement-dashboard/:tab?', {
 	name: 'engagement-dashboard',
 	action: async () => {
 		const licensed = await hasLicense('engagement-dashboard');
@@ -22,7 +20,7 @@ hasLicense('engagement-dashboard').then((enabled) => {
 		return;
 	}
 
-	AdminBox.addOption({
+	registerAdminSidebarItem({
 		href: 'engagement-dashboard',
 		i18nLabel: 'Engagement Dashboard',
 		icon: 'file-keynote',

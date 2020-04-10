@@ -1,6 +1,5 @@
 import mem from 'mem';
 import s from 'underscore.string';
-import { HTML } from 'meteor/htmljs';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
@@ -32,6 +31,8 @@ FlowRouter.goToRoomById = async (rid) => {
 
 
 BlazeLayout.setRoot('body');
+
+FlowRouter.wait();
 
 FlowRouter.route('/', {
 	name: 'index',
@@ -170,32 +171,12 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
-FlowRouter.route('/admin/info', {
-	name: 'admin-info',
-	action: () => {
-		renderRouteComponent(() => import('./components/admin/info/InformationRoute'), {
-			template: 'main',
-			region: 'center',
-			// eslint-disable-next-line new-cap
-			renderContainerView: () => HTML.DIV({ style: 'overflow: hidden; flex: 1 1 auto; height: 1%;' }),
-		});
-	},
-});
-
-FlowRouter.route('/admin/:group?', {
-	name: 'admin',
-	action: () => {
-		renderRouteComponent(() => import('./components/admin/settings/SettingsRoute'), {
-			template: 'main',
-			region: 'center',
-			// eslint-disable-next-line new-cap
-			renderContainerView: () => HTML.DIV({ style: 'overflow: hidden; flex: 1 1 auto; height: 1%;' }),
-		});
-	},
-});
-
 FlowRouter.notFound = {
 	action: () => {
 		renderRouteComponent(() => import('./components/pageNotFound/PageNotFound'));
 	},
 };
+
+Meteor.startup(() => {
+	FlowRouter.initialize();
+});
