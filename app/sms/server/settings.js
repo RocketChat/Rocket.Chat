@@ -24,6 +24,10 @@ Meteor.startup(function() {
 					key: 'mobex',
 					i18nLabel: 'Mobex',
 				},
+				{
+					key: 'zenvia',
+					i18nLabel: 'Zenvia',
+				},
 			],
 			i18nLabel: 'Service',
 		});
@@ -147,5 +151,54 @@ Meteor.startup(function() {
 				i18nDescription: 'Mobex_sms_gateway_from_numbers_list_desc',
 			});
 		});
+
+		this.section('Zenvia', function() {
+			this.add('SMS_Zenvia_API_Token', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'zenvia',
+				},
+				i18nLabel: 'API_Token',
+				secret: true,
+			});
+			this.add('SMS_Zenvia_Channel', 'whatsapp', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'zenvia',
+				},
+				i18nLabel: 'Channel',
+			});
+			this.add('SMS_Zenvia_From', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'zenvia',
+				},
+				i18nLabel: 'From',
+			});
+			this.add('SMS_Zenvia_FileUpload_Enabled', true, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'zenvia',
+				},
+				i18nLabel: 'FileUpload_Enabled',
+				secret: true,
+			});
+			this.add('SMS_Zenvia_FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,text/*,application/pdf', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'zenvia',
+				},
+				i18nLabel: 'FileUpload_MediaTypeWhiteList',
+				i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+				secret: true,
+			});
+
+		});
+
 	});
 });

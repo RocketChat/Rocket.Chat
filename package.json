@@ -136,6 +136,7 @@
 		"@rocket.chat/icons": "^0.7.1",
 		"@rocket.chat/ui-kit": "^0.7.1",
 		"@slack/client": "^4.8.0",
+		"@zenvia/sdk": "^1.2.0",
 		"adm-zip": "RocketChat/adm-zip",
 		"archiver": "^3.0.0",
 		"arraybuffer-to-string": "^1.0.2",
