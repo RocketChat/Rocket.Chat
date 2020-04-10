@@ -3,20 +3,34 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../callbacks';
 import { LivechatDepartment } from '../../../models';
 
-callbacks.add('livechat.beforeCloseRoom', (room) => {
-	const { departmentId } = room;
+const concatUnique = (...arrays) => [...new Set([].concat(...arrays.filter(Array.isArray)))];
+
+callbacks.add('livechat.beforeCloseRoom', ({ room, options }) => {
+	const { departmentId, tags: roomTags } = room;
 	if (!departmentId) {
-		return room;
+		return;
 	}
 
 	const department = LivechatDepartment.findOneById(departmentId);
-	if (!department || !department.requestTagBeforeClosingChat) {
-		return room;
+	if (!department) {
+		return;
 	}
 
-	if (room.tags && room.tags.length > 0) {
-		return room;
+	const { requestTagBeforeClosingChat, chatClosingTags } = department;
+	const extraData = {
+		tags: concatUnique(roomTags, chatClosingTags),
+	};
+
+	if (!requestTagBeforeClosingChat) {
+		return extraData;
 	}
 
-	throw new Meteor.Error('error-tags-must-be-assigned-before-closing-chat', 'Tag(s) must be assigned before closing the chat', { method: 'livechat.beforeCloseRoom' });
+	const { clientAction } = options;
+	const checkRoomTags = !clientAction || (roomTags && roomTags.length > 0);
+	const checkDepartmentTags = chatClosingTags && chatClosingTags.length > 0;
+	if (!checkRoomTags || !checkDepartmentTags) {
+		throw new Meteor.Error('error-tags-must-be-assigned-before-closing-chat', 'Tag(s) must be assigned before closing the chat', { method: 'livechat.beforeCloseRoom' });
+	}
+
+	return extraData;
 }, callbacks.priority.HIGH, 'livechat-before-close-Room');
