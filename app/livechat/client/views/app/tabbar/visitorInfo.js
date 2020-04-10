@@ -1,3 +1,4 @@
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -9,6 +10,7 @@ import UAParser from 'ua-parser-js';
 
 import { modal } from '../../../../../ui-utils';
 import { Subscriptions } from '../../../../../models';
+import { settings } from '../../../../../settings';
 import { t, handleError, roomTypes } from '../../../../../utils';
 import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import './visitorInfo.html';
@@ -25,6 +27,14 @@ const isSubscribedToRoom = () => {
 	const subscription = Subscriptions.findOne({ rid: data.rid });
 	return subscription !== undefined;
 };
+
+const closingDialogRequired = (department) => {
+	if (settings.get('Livechat_request_comment_when_closing_conversation')) {
+		return true;
+	};
+
+	return department && department.requestTagBeforeClosingChat;
+}
 
 Template.visitorInfo.helpers({
 	user() {
@@ -225,8 +235,24 @@ Template.visitorInfo.events({
 
 		instance.action.set('edit');
 	},
-	'click .close-livechat'(event) {
+	'click .close-livechat'(event, instance) {
 		event.preventDefault();
+
+		if (!closingDialogRequired(instance.department.get())) {
+			const comment = TAPi18n.__('Chat_closed_by_agent');
+			return Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function(error/* , result*/) {
+				if (error) {
+					return handleError(error);
+				}
+				modal.open({
+					title: t('Chat_closed'),
+					text: t('Chat_closed_successfully'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false,
+				});
+			});
+		}
 
 		modal.open({
 			title: t('Closing_chat'),
