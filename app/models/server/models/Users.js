@@ -221,20 +221,6 @@ export class Users extends Base {
 		return null;
 	}
 
-	setLastRoutingTime(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				lastRoutingTime: new Date(),
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setLivechatStatus(userId, status) {
 		const query = {
 			_id: userId,
@@ -626,40 +612,6 @@ export class Users extends Base {
 			active: true,
 			type: { $nin: ['app'] },
 		}, options);
-	}
-
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (conditions == null) { conditions = {}; }
-		if (options == null) { options = {}; }
-		if (!_.isArray(exceptions)) {
-			exceptions = [exceptions];
-		}
-
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
-		const query = {
-			$or: [{
-				username: termRegex,
-			}, {
-				name: termRegex,
-			}],
-			active: true,
-			type: {
-				$in: ['user', 'bot'],
-			},
-			$and: [{
-				username: {
-					$exists: true,
-				},
-			}, {
-				username: {
-					$nin: exceptions,
-				},
-			}],
-			...conditions,
-		};
-
-		return this.find(query, options);
 	}
 
 	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
