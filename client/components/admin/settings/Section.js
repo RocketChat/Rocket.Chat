@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, FieldGroup, Paragraph, Skeleton } from '@rocket.chat/fuselage';
+import { Accordion, Box, Button, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -20,9 +20,7 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		noncollapsible={solo || !section.name}
 		title={section.name && t(section.name)}
 	>
-		{help && <Paragraph>
-			<Box is='span' textColor='hint'>{help}</Box>
-		</Paragraph>}
+		{help && <Box is='p' textColor='hint' textStyle='p1'>{help}</Box>}
 
 		<FieldGroup>
 			{section.settings.map((settingId) => <Setting key={settingId} settingId={settingId} sectionChanged={changed} />)}
@@ -41,13 +39,10 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 }
 
 export function SectionSkeleton() {
-	return <Accordion.Item
-		noncollapsible
-		title={<Skeleton />}
-	>
-		<Paragraph>
+	return <Accordion.Item noncollapsible title={<Skeleton />}>
+		<Box is='p' textColor='hint' textStyle='p1'>
 			<Skeleton />
-		</Paragraph>
+		</Box>
 
 		<FieldGroup>
 			{Array.from({ length: 10 }).map((_, i) => <Setting.Skeleton key={i} />)}

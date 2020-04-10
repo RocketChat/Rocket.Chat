@@ -82,3 +82,5 @@ export function InformationRoute() {
 		onClickDownloadInfo={handleClickDownloadInfo}
 	/>;
 }
+
+export default InformationRoute;

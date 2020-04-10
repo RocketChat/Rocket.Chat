@@ -56,3 +56,5 @@ export function MultiSelectSettingInput({
 		</>
 	);
 }
+
+export default MultiSelectSettingInput;
