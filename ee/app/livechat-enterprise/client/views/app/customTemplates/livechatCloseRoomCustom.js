@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { APIClient } from '../../../../../../../app/utils/client';
 import { hasRole } from '../../../../../../../app/authorization';
 import './livechatCloseRoomCustom.html';
@@ -54,6 +54,9 @@ Template.livechatCloseRoomCustom.events({
 		const availableTags = t.availableTags.get();
 		const hasAvailableTags = availableTags && availableTags.length > 0;
 		const availableUserTags = t.availableUserTags.get();
+		if (!hasRole(Meteor.userId(), ['admin', 'livechat-manager']) && hasAvailableTags && (!availableUserTags || availableUserTags.indexOf(tag) === -1)) {
+			return;
+		}
 		let tags = t.tags.get();
 		tags = tags.filter((el) => el !== tag);
 		t.tags.set(tags);

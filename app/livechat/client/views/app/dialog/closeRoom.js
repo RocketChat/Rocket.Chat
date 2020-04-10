@@ -1,10 +1,9 @@
-import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { settings } from '../../../../../settings';
-import { call, modal } from '../../../../../ui-utils/client';
+import { modal } from '../../../../../ui-utils/client';
 import { APIClient, handleError, t } from '../../../../../utils';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './closeRoom.html';

@@ -41,4 +41,3 @@ API.v1.addRoute('livechat/tags.autocomplete', { authRequired: true }, {
 		})));
 	},
 });
-
