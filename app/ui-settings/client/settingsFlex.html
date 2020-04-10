@@ -1,0 +1,35 @@
+<template name="settingsFlex">
+	<aside class="sidebar-light sidebar--medium" role="navigation">
+		<header class="sidebar-flex__header">
+			<h1 class="sidebar-flex__title">{{_ "Settings"}}</h1>
+			<button class="sidebar-flex__close-button" data-action="close">
+				{{> icon block="sidebar-flex__close-icon" icon="cross"}}
+			</button>
+		</header>
+		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}" aria-label="{{_ "Settings"}}">
+			{{#if hasSettingPermission}}
+				<div class="rc-input sidebar-flex__search">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon block="rc-input__icon-sv" icon="magnifier"}}
+							</div>
+							<input type="text" class="rc-input__element rc-input__element--small" name="settings-search" placeholder="{{_ 'Search'}}">
+						</div>
+					</label>
+				</div>
+				<ul class="rooms-list__list">
+					{{#each groups}}
+						{{> sidebarItem menuItem label false "settings" _id }}
+					{{else}}
+						<div class="rc-input sidebar-flex__search">
+							<div class="rc-input__wrapper">
+								<p>{{_ "Nothing_found"}}.</p>
+							</div>
+						</div>
+					{{/each}}
+				</ul>
+			{{/if}}
+		</div>
+	</aside>
+</template>
