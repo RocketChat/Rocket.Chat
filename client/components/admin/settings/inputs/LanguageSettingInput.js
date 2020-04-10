@@ -1,4 +1,4 @@
-import { Box, Field, Flex, SelectInput } from '@rocket.chat/fuselage';
+import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useLanguages } from '../../../../contexts/TranslationContext';
@@ -18,8 +18,8 @@ export function LanguageSettingInput({
 }) {
 	const languages = useLanguages();
 
-	const handleChange = (event) => {
-		onChangeValue(event.currentTarget.value);
+	const handleChange = (value) => {
+		onChangeValue(value);
 	};
 
 	return <>
@@ -30,7 +30,7 @@ export function LanguageSettingInput({
 			</Box>
 		</Flex.Container>
 		<Field.Row>
-			<SelectInput
+			<Select
 				data-qa-setting-id={_id}
 				id={_id}
 				value={value}
@@ -39,11 +39,8 @@ export function LanguageSettingInput({
 				readOnly={readonly}
 				autoComplete={autocomplete === false ? 'off' : undefined}
 				onChange={handleChange}
-			>
-				{languages.map(({ key, name }) =>
-					<SelectInput.Option key={key} value={key} dir='auto'>{name}</SelectInput.Option>,
-				)}
-			</SelectInput>
+				options={languages.map(({ key, name }) => [key, name])}
+			/>
 		</Field.Row>
 	</>;
 }

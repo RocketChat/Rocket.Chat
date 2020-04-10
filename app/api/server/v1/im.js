@@ -1,26 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 
-import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib';
 import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { settings } from '../../../settings';
 import { API } from '../api';
+import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
 
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
 	}
 
-	const room = getRoomByNameOrIdWithOptionToJoin({
+	const room = getDirectMessageByNameOrIdWithOptionToJoin({
 		currentUserId: user._id,
 		nameOrId: params.username || params.roomId,
-		type: 'd',
 	});
 
 	const canAccess = Meteor.call('canAccessRoom', room._id, user._id);
 	if (!canAccess || !room || room.t !== 'd') {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any dirct message');
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any direct message');
 	}
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
@@ -33,10 +32,18 @@ function findDirectMessageRoom(params, user) {
 
 API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 	post() {
-		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+		const { username, usernames } = this.requestParams();
+
+		const users = username ? [username] : usernames && usernames.split(',').map((username) => username.trim());
+
+		if (!users) {
+			throw new Meteor.Error('error-room-not-found', 'The required "username" or "usernames" param provided does not match any direct message');
+		}
+
+		const room = Meteor.call('createDirectMessage', ...users);
 
 		return API.v1.success({
-			room: findResult.room,
+			room: { ...room, _id: room.rid },
 		});
 	},
 });
