@@ -32,9 +32,7 @@
 	&__content {
 		position: absolute;
 
-		display: -webkit-box;
-
-		flex-direction: column;
+		display: flex;
 
 		height: 70%;
 
@@ -281,6 +279,14 @@
 			&--safariIos {
 				bottom: initial;
 			}
+		}
+	}
+}
+
+@media (height >= 700px) {
+	.rc-popover {
+		& .rc-popover__content {
+			height: auto;
 		}
 	}
 }
