@@ -322,7 +322,6 @@ export const Livechat = {
 
 		const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
 		const { extraData } = params;
-		console.log(params);
 
 		const now = new Date();
 		const { _id: rid, servedBy } = room;
