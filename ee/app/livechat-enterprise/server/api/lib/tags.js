@@ -29,26 +29,3 @@ export async function findTagById({ userId, tagId }) {
 	}
 	return LivechatTag.findOneById(tagId);
 }
-
-export async function findTagsToAutocomplete({ uid, selector }) {
-	if (!await hasPermissionAsync(uid, 'manage-livechat-tags') && !await hasPermissionAsync(uid, 'view-l-room')) {
-		return { items: [] };
-	}
-	const { exceptions = [], conditions = {} } = selector;
-
-	const options = {
-		fields: {
-			_id: 1,
-			name: 1,
-		},
-		limit: 10,
-		sort: {
-			name: 1,
-		},
-	};
-
-	const items = await LivechatTag.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
-	return {
-		items,
-	};
-}

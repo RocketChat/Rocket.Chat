@@ -1,5 +1,5 @@
 import { API } from '../../../../../app/api/server';
-import { findTags, findTagById, findTagsToAutocomplete } from './lib/tags';
+import { findTags, findTagById } from './lib/tags';
 
 API.v1.addRoute('livechat/tags.list', { authRequired: true }, {
 	get() {
@@ -24,20 +24,6 @@ API.v1.addRoute('livechat/tags.getOne', { authRequired: true }, {
 		return API.v1.success(Promise.await(findTagById({
 			userId: this.userId,
 			tagId,
-		})));
-	},
-});
-
-API.v1.addRoute('livechat/tags.autocomplete', { authRequired: true }, {
-	get() {
-		const { selector } = this.queryParams;
-		if (!selector) {
-			return API.v1.failure('The \'selector\' param is required');
-		}
-
-		return API.v1.success(Promise.await(findTagsToAutocomplete({
-			uid: this.userId,
-			selector: JSON.parse(selector),
 		})));
 	},
 });
