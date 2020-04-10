@@ -22,4 +22,5 @@ export function EngagementDashboardRoute() {
 		onSelectTab={(tab) => goToEngagementDashboard({ tab })}
 	/>;
 }
-EngagementDashboardRoute.displayName = 'EngagementDashboardRoute';
+
+export default EngagementDashboardRoute;
