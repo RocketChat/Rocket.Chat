@@ -1,19 +1,44 @@
 <template name="livechatCloseRoomCustom">
-	{{> livechatAutocompleteUser
-		onClickTag=onClickTag
-		list=selectedTags
-		onSelect=onSelectTags
-		collection='CachedTagsList'
-		endpoint='livechat/tags.autocomplete'
-		field='name'
-		sort='name'
-		label="Enter_a_tag"
-		placeholder="Enter_a_tag"
-		name="department"
-		noMatchTemplate="userSearchEmpty"
-		templateItem="popupList_item_channel"
-		template="roomSearch"
-		noMatchTemplate="roomSearchEmpty"
-		modifier=tagsModifier
-	}}
+	{{#if hasAvailableTags}}
+	<div class="rc-form-group rc-form-group--small rc-form-group--inline {{#if invalidTags}}rc-input--error{{/if}}">
+		<select id="tagSelect" class="rc-input rc-input--small rc-form-item-inline">
+			<option value="placeholder" disabled selected>{{_ "Select_tag"}}</option>
+			{{#each availableUserTags}}
+				<option value="{{_id}}">{{this}}</option>
+			{{/each}}
+		</select>
+		<button id="addTag" class="rc-button rc-button--primary rc-form-item-inline"><i class="icon-plus"></i></button>
+	</div>
+	{{else}}
+	<div class="rc-input rc-form-group rc-form-group--small {{#if invalidTags}}rc-input--error{{/if}}">
+		<label class="rc-input__label">
+			<div class="rc-input__wrapper">
+				<div class="rc-input__icon">
+					{{> icon icon='edit' }}
+				</div>
+				<input id="tagInput" class="rc-input__element" type="text" name="tags" autocomplete="off" placeholder="{{tagsPlaceHolder}}">
+			</div>
+		</label>
+	</div>
+	{{/if}}
+	<div class="rc-form-group rc-form-group--small">
+		<ul id="tags" class="chip-container current-room-tags">
+			{{#each tags}}
+			<li class="remove-tag" title="{{this}}">
+				{{#if canRemoveTag availableUserTags this}}
+					<i class="icon icon-cancel-circled"></i>
+				{{/if}}
+				{{this}}
+			</li>
+			{{/each}}
+		</ul>
+		{{#if invalidTags}}
+		<div class="rc-input__error">
+			<div class="rc-input__error-icon">
+				{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+			</div>
+			<div class="rc-input__error-message">{{_ "error-tags-must-be-assigned-before-closing-chat"}}</div>
+		</div>
+		{{/if}}
+	</div>
 </template>

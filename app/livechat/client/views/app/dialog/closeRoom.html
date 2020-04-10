@@ -19,10 +19,10 @@
 								<div class="rc-input__error-message">{{_ "Please_add_a_comment_to_close_the_room"}}</div>
 							</div>
 						{{/if}}
-						{{#if customFieldsTemplate}}
-							{{> Template.dynamic template=customFieldsTemplate data=data }}
-						{{/if}}
 					</div>
+					{{#if customFieldsTemplate}}
+						{{> Template.dynamic template=customFieldsTemplate data=dataContext }}
+					{{/if}}
 				</div>
 			</form>
 			<div class="rc-input">

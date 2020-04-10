@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { settings } from '../../../../../settings';
 import { call, modal } from '../../../../../ui-utils/client';
-import { handleError, t } from '../../../../../utils';
+import { APIClient, handleError, t } from '../../../../../utils';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './closeRoom.html';
 
@@ -17,33 +17,31 @@ const validateRoomComment = (comment) => {
 	return comment && comment.length > 0;
 };
 
+const validateRoomTags = (tagsRequired, tags) => {
+	if (!tagsRequired) {
+		return true;
+	}
+
+	return tags && tags.length > 0;
+};
+
 Template.closeRoom.helpers({
 	invalidComment() {
 		return Template.instance().invalidComment.get();
 	},
-	hasTags() {
-		// return Template.instance().tags.get().filter((department) => department.enabled === true).length > 0;
-		return Template.instance().tags.get();
-	},
-	tagsModifier() {
-		return (filter, text = '') => {
-			const f = filter.get();
-			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
-		};
-	},
-	onClickTag() {
-		return Template.instance().onClickTag;
-	},
-	selectedTags() {
-		return Template.instance().selectedTags.get();
-	},
-	onSelectTags() {
-		return Template.instance().onSelectTags;
-	},
+
 	customFieldsTemplate() {
-		const temp = getCustomFormTemplate('livechatCloseRoom');
-		console.log(temp);
-		return temp;
+		return getCustomFormTemplate('livechatCloseRoom');
+	},
+
+	dataContext() {
+		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
+		// because only the dynamic template data will be reloaded
+		return {
+			tags: Template.instance().tags,
+			invalidTags: Template.instance().invalidTags,
+			tagsRequired: Template.instance().tagsRequired.get(),
+		};
 	},
 });
 
@@ -51,13 +49,22 @@ Template.closeRoom.events({
 	async 'submit .close-room__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
+
 		const comment = instance.$('#comment').val();
 		instance.invalidComment.set(!validateRoomComment(comment));
 		if (instance.invalidComment.get()) {
-			return instance.find('#comment').focus();
+			return;
 		}
 
-		Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function(error/* , result*/) {
+		const tagsRequired = instance.tagsRequired.get();
+		const tags = instance.tags.get();
+
+		instance.invalidTags.set(!validateRoomTags(tagsRequired, tags));
+		if (instance.invalidTags.get()) {
+			return;
+		}
+
+		Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true, tags }, function(error/* , result*/) {
 			if (error) {
 				console.log(error);
 				return handleError(error);
@@ -78,30 +85,18 @@ Template.closeRoom.onRendered(function() {
 	this.find('#comment').focus();
 });
 
-Template.closeRoom.onCreated(function() {
+Template.closeRoom.onCreated(async function() {
+	this.tags = new ReactiveVar([]);
 	this.invalidComment = new ReactiveVar(false);
 	this.invalidTags = new ReactiveVar(false);
-	this.selectedTags = new ReactiveVar([]);
+	this.tagsRequired = new ReactiveVar(false);
 
-	this.onSelectTags = ({ item: tag }) => {
-		tag.text = tag.name;
-		const tags = this.selectedTags.get();
-		if (!tags.find((t) => tags.name === t.name)) {
-			this.selectedTags.set([...tags, tag]);
-		}
-	};
+	const { rid } = Template.currentData();
+	const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+	this.tags.set((room && room.tags) || []);
 
-	this.onClickTag = ({ name }) => {
-		this.selectedTags.set(this.selectedTags.get().filter((tag) => tag.name !== name));
-	};
-
-	this.deleteLastItemTag = () => {
-		const arr = this.selectedTags.get();
-		arr.pop();
-		this.selectedTags.set(arr);
-	};
-	/*
-	const { tags } = await APIClient.v1.get('livechat/tags');
-	this.tags.set(tags);
-	*/
+	if (room && room.departmentId) {
+		const { department } = await APIClient.v1.get(`livechat/department/${ room.departmentId }?includeAgents=false`);
+		this.tagsRequired.set(department && department.requestTagBeforeClosingChat);
+	}
 });

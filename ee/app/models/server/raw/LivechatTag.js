@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 import { BaseRaw } from '../../../../../app/models/server/raw/BaseRaw';
 import LivechatTag from '../models/LivechatTag';
 

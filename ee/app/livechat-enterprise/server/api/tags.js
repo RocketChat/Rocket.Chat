@@ -1,5 +1,5 @@
 import { API } from '../../../../../app/api/server';
-import { findTags, findTagById } from './lib/tags';
+import { findTags, findTagById, findTagsToAutocomplete } from './lib/tags';
 
 API.v1.addRoute('livechat/tags.list', { authRequired: true }, {
 	get() {
