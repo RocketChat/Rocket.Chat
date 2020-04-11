@@ -101,11 +101,13 @@ Template.livechatCloseRoomCustom.events({
 });
 
 Template.livechatCloseRoomCustom.onCreated(async function() {
+	//non ReactiveVar passed from the parent template and used to valitation stuff
 	const { tags, invalidTags, tagsRequired, onEnterTag } = this.data;
 	this.tags = tags;
 	this.invalidTags = invalidTags;
 	this.tagsRequired = tagsRequired;
 	this.onEnterTag = onEnterTag;
+
 	this.availableTags = new ReactiveVar([]);
 	this.agentDepartments = new ReactiveVar([]);
 	this.availableUserTags = new ReactiveVar([]);
