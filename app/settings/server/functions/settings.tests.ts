@@ -223,4 +223,97 @@ describe('Settings', () => {
 		expect(Settings.upsertCalls).to.be.equal(3);
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
 	});
+
+	it('should keep original value if value on code was changed', () => {
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('my_setting', 0, {
+					type: 'int',
+					sorter: 0,
+				});
+			});
+		});
+
+		const expectedSetting = {
+			value: 0,
+			valueSource: 'packageValue',
+			type: 'int',
+			sorter: 0,
+			group: 'group',
+			section: 'section',
+			packageValue: 0,
+			hidden: false,
+			blocked: false,
+			secret: false,
+			i18nLabel: 'my_setting',
+			i18nDescription: 'my_setting_Description',
+			autocomplete: true,
+		};
+
+		expect(Settings.data.size).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('my_setting', 1, {
+					type: 'int',
+					sorter: 0,
+				});
+			});
+		});
+
+		expectedSetting.packageValue = 1;
+
+		expect(Settings.data.size).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(3);
+		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+	});
+
+	it('should change group and section', () => {
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('my_setting', 0, {
+					type: 'int',
+					sorter: 0,
+				});
+			});
+		});
+
+		const expectedSetting = {
+			value: 0,
+			valueSource: 'packageValue',
+			type: 'int',
+			sorter: 0,
+			group: 'group',
+			section: 'section',
+			packageValue: 0,
+			hidden: false,
+			blocked: false,
+			secret: false,
+			i18nLabel: 'my_setting',
+			i18nDescription: 'my_setting_Description',
+			autocomplete: true,
+		};
+
+		expect(Settings.data.size).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+
+		settings.addGroup('group2', function() {
+			this.section('section2', function() {
+				this.add('my_setting', 0, {
+					type: 'int',
+					sorter: 0,
+				});
+			});
+		});
+
+		expectedSetting.group = 'group2';
+		expectedSetting.section = 'section2';
+
+		expect(Settings.data.size).to.be.equal(3);
+		expect(Settings.upsertCalls).to.be.equal(4);
+		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+	});
 });
