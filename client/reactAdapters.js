@@ -20,7 +20,7 @@ const mountRoot = async () => {
 	}
 
 	const [
-		{ Suspense, createElement, lazy, useLayoutEffect, useState },
+		{ Component, Fragment, Suspense, createElement, lazy, useLayoutEffect, useState },
 		{ render },
 	] = await Promise.all([
 		import('react'),
@@ -28,6 +28,12 @@ const mountRoot = async () => {
 	]);
 
 	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
+
+	class Portals extends Component {
+		static getDerivedStateFromError = () => ({})
+
+		render = () => createElement(Fragment, {}, ...this.props.portals)
+	}
 
 	function AppRoot() {
 		const [portals, setPortals] = useState(() => Tracker.nonreactive(() => Array.from(portalsMap.values())));
@@ -44,7 +50,9 @@ const mountRoot = async () => {
 		}, []);
 
 		return createElement(Suspense, { fallback: null },
-			createElement(LazyMeteorProvider, {}, ...portals),
+			createElement(LazyMeteorProvider, {},
+				createElement(Portals, { portals }),
+			),
 		);
 	}
 
