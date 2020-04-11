@@ -23,8 +23,7 @@ Template.livechatCloseRoomCustom.helpers({
 	tagsPlaceHolder() {
 		let placeholder = TAPi18n.__('Enter_a_tag');
 
-		const tagsRequired = Template.instance().tagsRequired;
-		if (!tagsRequired) {
+		if (!Template.instance().tagsRequired) {
 			placeholder = placeholder.concat(`(${ TAPi18n.__('Optional') })`);
 		}
 
@@ -76,7 +75,7 @@ Template.livechatCloseRoomCustom.events({
 		instance.tags.set(tags);
 		$('#tagSelect').val('placeholder');
 
-		const onEnterTag = instance.onEnterTag;
+		const { onEnterTag } = instance;
 		return onEnterTag && onEnterTag();
 	},
 
@@ -95,7 +94,7 @@ Template.livechatCloseRoomCustom.events({
 			instance.tags.set(tags);
 			$('#tagInput').val('');
 
-			const onEnterTag = instance.onEnterTag;
+			const { onEnterTag } = instance;
 			return onEnterTag && onEnterTag();
 		}
 	},
