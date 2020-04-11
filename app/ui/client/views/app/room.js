@@ -878,11 +878,13 @@ Template.room.events({
 
 		popover.open(config);
 	},
-	'click .time a'(e) {
+	'click .time-link'(e) {
 		e.preventDefault();
 		const { msg } = messageArgs(this);
-		const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
-		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
+		const link = msg.attachments ? msg.attachments[0].message_link : this.message_link;
+		const repliedMessageId = link.split('?msg=')[1];
+		const pathname = `/${ link.split('?msg=')[0].split('/').slice(-2)[0] }/${ link.split('?msg=')[0].split('/').slice(-1)[0] }`;
+		FlowRouter.go(pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
 		if (!Meteor.userId()) {
