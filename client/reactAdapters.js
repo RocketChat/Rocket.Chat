@@ -186,6 +186,13 @@ export const renderRouteComponent = (importFn, {
 				}
 
 				registerPortal(routeName, portal);
+
+				const handleMainContentDestroyed = () => {
+					unregisterPortal(routeName);
+					document.removeEventListener('main-content-destroyed', handleMainContentDestroyed);
+				};
+
+				document.addEventListener('main-content-destroyed', handleMainContentDestroyed);
 			});
 
 			Template[routeName] = blazeTemplate;
