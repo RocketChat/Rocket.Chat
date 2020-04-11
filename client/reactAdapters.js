@@ -20,7 +20,7 @@ const mountRoot = async () => {
 	}
 
 	const [
-		{ Suspense, createElement, lazy, useState },
+		{ Suspense, createElement, lazy, useLayoutEffect, useState },
 		{ render },
 	] = await Promise.all([
 		import('react'),
@@ -31,9 +31,17 @@ const mountRoot = async () => {
 
 	function AppRoot() {
 		const [portals, setPortals] = useState(() => Tracker.nonreactive(() => Array.from(portalsMap.values())));
-		invalidatePortals = () => {
-			setPortals(Array.from(portalsMap.values()));
-		};
+
+		useLayoutEffect(() => {
+			invalidatePortals = () => {
+				setPortals(Array.from(portalsMap.values()));
+			};
+			invalidatePortals();
+
+			return () => {
+				invalidatePortals = () => {};
+			};
+		}, []);
 
 		return createElement(Suspense, { fallback: null },
 			createElement(LazyMeteorProvider, {}, ...portals),
