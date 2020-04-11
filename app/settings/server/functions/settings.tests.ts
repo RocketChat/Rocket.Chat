@@ -71,35 +71,55 @@ describe('Settings', () => {
 	});
 
 	it('should respect override via environment', () => {
-		process.env.OVERWRITE_SETTING_my_setting = 'false';
+		process.env.OVERWRITE_SETTING_my_setting = '1';
 
 		settings.addGroup('group', function() {
 			this.section('section', function() {
-				this.add('my_setting', true, {
-					type: 'boolean',
+				this.add('my_setting', 0, {
+					type: 'int',
 					sorter: 0,
 				});
 			});
 		});
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
-		expect(Settings.findOne({ _id: 'my_setting' })).to.include({
-			value: false,
-			processEnvValue: false,
+		const expectedSetting = {
+			value: 1,
+			processEnvValue: 1,
 			valueSource: 'processEnvValue',
-			type: 'boolean',
+			type: 'int',
 			sorter: 0,
 			group: 'group',
 			section: 'section',
-			packageValue: true,
+			packageValue: 0,
 			hidden: false,
 			blocked: false,
 			secret: false,
 			i18nLabel: 'my_setting',
 			i18nDescription: 'my_setting_Description',
 			autocomplete: true,
+		};
+
+		expect(Settings.data.size).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+
+		process.env.OVERWRITE_SETTING_my_setting = '2';
+
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('my_setting', 0, {
+					type: 'int',
+					sorter: 0,
+				});
+			});
 		});
+
+		expectedSetting.value = 2;
+		expectedSetting.processEnvValue = 2;
+
+		expect(Settings.data.size).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(3);
+		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
 	});
 
 	it('should respect initial value via environment', () => {
