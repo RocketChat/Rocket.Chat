@@ -7,3 +7,4 @@ import './startup/notifyUnreadRooms';
 import './views/sideNav/livechat';
 import './views/sideNav/livechatFlex';
 import './externalFrame';
+import './stylesheets/livechat.less';

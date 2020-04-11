@@ -6,3 +6,4 @@ import './views/videoFlexTabBbb';
 import './tabBar';
 import './actionLink';
 import '../lib/messageType';
+import './stylesheets/video.less';

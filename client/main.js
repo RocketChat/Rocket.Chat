@@ -2,7 +2,6 @@ import '@rocket.chat/fuselage-polyfills';
 import 'url-polyfill';
 
 import './lib/meteorCallWrapper';
-import './importsCss';
 import './importPackages';
 import '../imports/startup/client';
 
