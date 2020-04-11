@@ -40,6 +40,7 @@ Template.closeRoom.helpers({
 			tags: Template.instance().tags,
 			invalidTags: Template.instance().invalidTags,
 			tagsRequired: Template.instance().tagsRequired.get(),
+			onEnterTag: Template.instance().onEnterTag,
 		};
 	},
 });
@@ -89,6 +90,8 @@ Template.closeRoom.onCreated(async function() {
 	this.invalidComment = new ReactiveVar(false);
 	this.invalidTags = new ReactiveVar(false);
 	this.tagsRequired = new ReactiveVar(false);
+
+	this.onEnterTag = () => this.invalidTags.set(!validateRoomTags(this.tagsRequired.get(), this.tags.get()));
 
 	const { rid } = Template.currentData();
 	const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);

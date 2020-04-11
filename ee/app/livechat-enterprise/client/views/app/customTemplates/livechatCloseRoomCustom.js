@@ -16,10 +16,6 @@ Template.livechatCloseRoomCustom.helpers({
 		return Template.instance().invalidTags.get();
 	},
 
-	tagsRequired() {
-		return Template.instance().tagsRequired.get();
-	},
-
 	availableUserTags() {
 		return Template.instance().availableUserTags.get();
 	},
@@ -27,7 +23,7 @@ Template.livechatCloseRoomCustom.helpers({
 	tagsPlaceHolder() {
 		let placeholder = TAPi18n.__('Enter_a_tag');
 
-		const tagsRequired = Template.instance().tagsRequired.get();
+		const tagsRequired = Template.instance().tagsRequired;
 		if (!tagsRequired) {
 			placeholder = placeholder.concat(`(${ TAPi18n.__('Optional') })`);
 		}
@@ -79,6 +75,9 @@ Template.livechatCloseRoomCustom.events({
 		tags.push(tagVal);
 		instance.tags.set(tags);
 		$('#tagSelect').val('placeholder');
+
+		const onEnterTag = instance.onEnterTag;
+		return onEnterTag && onEnterTag();
 	},
 
 	'keydown #tagInput'(e, instance) {
@@ -95,15 +94,19 @@ Template.livechatCloseRoomCustom.events({
 			tags.push(tagVal);
 			instance.tags.set(tags);
 			$('#tagInput').val('');
+
+			const onEnterTag = instance.onEnterTag;
+			return onEnterTag && onEnterTag();
 		}
 	},
 });
 
 Template.livechatCloseRoomCustom.onCreated(async function() {
-	// The parent template pass a ReactiveVar through the template data
-	this.tags = this.data.tags;
-	this.invalidTags = this.data.invalidTags;
-	this.tagsRequired = new ReactiveVar(this.data.tagsRequired);
+	const { tags, invalidTags, tagsRequired, onEnterTag } = this.data;
+	this.tags = tags;
+	this.invalidTags = invalidTags;
+	this.tagsRequired = tagsRequired;
+	this.onEnterTag = onEnterTag;
 	this.availableTags = new ReactiveVar([]);
 	this.agentDepartments = new ReactiveVar([]);
 	this.availableUserTags = new ReactiveVar([]);
@@ -113,11 +116,11 @@ Template.livechatCloseRoomCustom.onCreated(async function() {
 	const agentDepartments = departments.map((dept) => dept.departmentId);
 	this.agentDepartments.set(agentDepartments);
 
-	const { tags } = await APIClient.v1.get('livechat/tags.list');
-	this.availableTags.set(tags);
+	const { tags: tagsList } = await APIClient.v1.get('livechat/tags.list');
+	this.availableTags.set(tagsList);
 
 	const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
-	const availableTags = tags
+	const availableTags = tagsList
 		.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
 		.map(({ name }) => name);
 

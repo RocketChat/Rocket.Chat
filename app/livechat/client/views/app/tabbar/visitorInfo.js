@@ -31,10 +31,10 @@ const isSubscribedToRoom = () => {
 const closingDialogRequired = (department) => {
 	if (settings.get('Livechat_request_comment_when_closing_conversation')) {
 		return true;
-	};
+	}
 
 	return department && department.requestTagBeforeClosingChat;
-}
+};
 
 Template.visitorInfo.helpers({
 	user() {
@@ -244,6 +244,7 @@ Template.visitorInfo.events({
 				if (error) {
 					return handleError(error);
 				}
+
 				modal.open({
 					title: t('Chat_closed'),
 					text: t('Chat_closed_successfully'),
