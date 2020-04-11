@@ -37,14 +37,14 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 		options.valueSource = 'meteorSettingsValue';
 	}
 
-	const meteorValue = process?.env?.[`OVERWRITE_SETTING_${ _id }`];
-	if (meteorValue) {
-		if (meteorValue.toLowerCase() === 'true') {
+	const overwriteValue = process?.env?.[`OVERWRITE_SETTING_${ _id }`];
+	if (overwriteValue) {
+		if (overwriteValue.toLowerCase() === 'true') {
 			value = true;
-		} else if (meteorValue.toLowerCase() === 'false') {
+		} else if (overwriteValue.toLowerCase() === 'false') {
 			value = false;
 		} else if (options.type === 'int') {
-			value = parseInt(meteorValue);
+			value = parseInt(overwriteValue);
 		}
 		options.value = value;
 		options.processEnvValue = value;
@@ -103,6 +103,15 @@ type QueryExpression = {
 type Query<T> = {
 	[P in keyof T]?: T[P] | QueryExpression;
 }
+
+type addSectionCallback = (this: {
+	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
+}) => void;
+
+type addGroupCallback = (this: {
+	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
+	section(section: string, cb: addSectionCallback): void;
+}) => void;
 
 class Settings extends SettingsBase {
 	private afterInitialLoad: Array<(settings: Meteor.Settings) => void> = [];
@@ -183,7 +192,7 @@ class Settings extends SettingsBase {
 			};
 		}
 
-		const existentSetting = SettingsModel.db.findOne(query);
+		const existentSetting = SettingsModel.findOne(query);
 		if (existentSetting) {
 			if (existentSetting.editor || !updateOperations.$setOnInsert.editor) {
 				return true;
@@ -204,10 +213,10 @@ class Settings extends SettingsBase {
 	/*
 	* Add a setting group
 	*/
-	addGroup(_id: string, cb: () => void): boolean;
+	addGroup(_id: string, cb: addGroupCallback): boolean;
 
 	// eslint-disable-next-line no-dupe-class-members
-	addGroup(_id: string, options: ISettingAddGroupOptions | (() => void) = {}, cb?: () => void): boolean {
+	addGroup(_id: string, options: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): boolean {
 		if (!_id) {
 			return false;
 		}
@@ -257,7 +266,7 @@ class Settings extends SettingsBase {
 					options.group = _id;
 					return this.add(id, value, options);
 				},
-				section: (section: string, cb: () => void) => cb.call({
+				section: (section: string, cb: addSectionCallback) => cb.call({
 					add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
 						options.group = _id;
 						options.section = section;
