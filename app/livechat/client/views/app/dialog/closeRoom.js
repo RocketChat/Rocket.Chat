@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { settings } from '../../../../../settings';
 import { modal } from '../../../../../ui-utils/client';
 import { APIClient, handleError, t } from '../../../../../utils';
-import { getCustomFormTemplate } from '../customTemplates/register';
+import { hasRole } from '../../../../../authorization';
 import './closeRoom.html';
 
 const validateRoomComment = (comment) => {
@@ -28,20 +28,30 @@ Template.closeRoom.helpers({
 	invalidComment() {
 		return Template.instance().invalidComment.get();
 	},
-
-	customFieldsTemplate() {
-		return getCustomFormTemplate('livechatCloseRoom');
+	tags() {
+		return Template.instance().tags.get();
 	},
+	invalidTags() {
+		return Template.instance().invalidTags.get();
+	},
+	availableUserTags() {
+		return Template.instance().availableUserTags.get();
+	},
+	tagsPlaceHolder() {
+		let placeholder = TAPi18n.__('Enter_a_tag');
 
-	dataContext() {
-		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
-		// because only the dynamic template data will be reloaded
-		return {
-			tags: Template.instance().tags,
-			invalidTags: Template.instance().invalidTags,
-			tagsRequired: Template.instance().tagsRequired.get(),
-			onEnterTag: Template.instance().onEnterTag,
-		};
+		if (!Template.instance().tagsRequired.get()) {
+			placeholder = placeholder.concat(`(${ TAPi18n.__('Optional') })`);
+		}
+
+		return placeholder;
+	},
+	hasAvailableTags() {
+		const tags = Template.instance().availableTags.get();
+		return tags && tags.length > 0;
+	},
+	canRemoveTag(availableUserTags, tag) {
+		return hasRole(Meteor.userId(), ['admin', 'livechat-manager']) || (Array.isArray(availableUserTags) && (availableUserTags.length === 0 || availableUserTags.indexOf(tag) > -1));
 	},
 });
 
@@ -79,6 +89,55 @@ Template.closeRoom.events({
 			});
 		});
 	},
+	'click .remove-tag'(e, t) {
+		e.stopPropagation();
+		e.preventDefault();
+
+		const tag = this.valueOf();
+		const availableTags = t.availableTags.get();
+		const hasAvailableTags = availableTags && availableTags.length > 0;
+		const availableUserTags = t.availableUserTags.get();
+		if (!hasRole(Meteor.userId(), ['admin', 'livechat-manager']) && hasAvailableTags && (!availableUserTags || availableUserTags.indexOf(tag) === -1)) {
+			return;
+		}
+		let tags = t.tags.get();
+		tags = tags.filter((el) => el !== tag);
+		t.tags.set(tags);
+	},
+	'click #addTag'(e, instance) {
+		e.stopPropagation();
+		e.preventDefault();
+
+		if ($('#tagSelect').find(':selected').is(':disabled')) {
+			return;
+		}
+
+		const tags = [...instance.tags.get()];
+		const tagVal = $('#tagSelect').val();
+		if (tagVal === '' || tags.indexOf(tagVal) > -1) {
+			return;
+		}
+
+		tags.push(tagVal);
+		instance.tags.set(tags);
+		$('#tagSelect').val('placeholder');
+	},
+	'keydown #tagInput'(e, instance) {
+		if (e.which === 13) {
+			e.stopPropagation();
+			e.preventDefault();
+
+			const tags = [...instance.tags.get()];
+			const tagVal = $('#tagInput').val();
+			if (tagVal === '' || tags.indexOf(tagVal) > -1) {
+				return;
+			}
+
+			tags.push(tagVal);
+			instance.tags.set(tags);
+			$('#tagInput').val('');
+		}
+	},
 });
 
 Template.closeRoom.onRendered(function() {
@@ -90,6 +149,9 @@ Template.closeRoom.onCreated(async function() {
 	this.invalidComment = new ReactiveVar(false);
 	this.invalidTags = new ReactiveVar(false);
 	this.tagsRequired = new ReactiveVar(false);
+	this.availableTags = new ReactiveVar([]);
+	this.availableUserTags = new ReactiveVar([]);
+	this.agentDepartments = new ReactiveVar([]);
 
 	this.onEnterTag = () => this.invalidTags.set(!validateRoomTags(this.tagsRequired.get(), this.tags.get()));
 
@@ -101,4 +163,19 @@ Template.closeRoom.onCreated(async function() {
 		const { department } = await APIClient.v1.get(`livechat/department/${ room.departmentId }?includeAgents=false`);
 		this.tagsRequired.set(department && department.requestTagBeforeClosingChat);
 	}
+
+	const uid = Meteor.userId();
+	const { departments } = await APIClient.v1.get(`livechat/agents/${ uid }/departments`);
+	const agentDepartments = departments.map((dept) => dept.departmentId);
+	this.agentDepartments.set(agentDepartments);
+
+	Meteor.call('livechat:getTagsList', (err, tagsList) => {
+		this.availableTags.set(tagsList);
+		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
+		const tags = this.availableTags.get() || [];
+		const availableTags = tagsList
+			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
+			.map(({ name }) => name);
+		this.availableUserTags.set(availableTags);
+	});
 });
