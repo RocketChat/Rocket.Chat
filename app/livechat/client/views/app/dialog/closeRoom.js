@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../../settings';
 import { modal } from '../../../../../ui-utils/client';
@@ -172,7 +173,6 @@ Template.closeRoom.onCreated(async function() {
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {
 		this.availableTags.set(tagsList);
 		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
-		const tags = this.availableTags.get() || [];
 		const availableTags = tagsList
 			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
 			.map(({ name }) => name);
