@@ -187,7 +187,7 @@ Meteor.startup(function() {
 				i18nLabel: 'FileUpload_Enabled',
 				secret: true,
 			});
-			this.add('SMS_Zenvia_FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,text/*,application/pdf', {
+			this.add('SMS_Zenvia_FileUpload_MediaTypeWhiteList', 'image/*,audio/*,text/*,application/pdf', {
 				type: 'string',
 				enableQuery: {
 					_id: 'SMS_Service',

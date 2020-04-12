@@ -28,6 +28,7 @@ class Zenvia {
 	}
 
 	parse(data) {
+		const defaultLanguage = settings.get('Language') || 'en';
 		let numMedia = 0;
 
 		const returnData = {
@@ -36,16 +37,16 @@ class Zenvia {
 			body: '',
 
 			extra: {
-				toCountry: '',
-				toState: '',
-				toCity: '',
-				toZip: '',
-				fromCountry: '',
-				fromState: '',
-				fromCity: '',
-				fromZip: 0,
-				fromLatitude: 0,
-				fromLongitude: 0,
+				toCountry: undefined,
+				toState: undefined,
+				toCity: undefined,
+				toZip: undefined,
+				fromCountry: undefined,
+				fromState: undefined,
+				fromCity: undefined,
+				fromZip: undefined,
+				fromLatitude: undefined,
+				fromLongitude: undefined,
 			},
 		};
 		returnData.media = [];
@@ -59,15 +60,23 @@ class Zenvia {
 						url: '',
 						contentType: '',
 					};
-				media.url = data.message.contents[contentIndex].fileUrl;
-				media.contentType = data.message.contents[contentIndex].fileMimeType;
-				
-				if(data.message.contents[contentIndex].hasOwnProperty('fileCaption')){
-					returnData.body += data.message.contents[contentIndex].fileCaption;
-				}
+					media.url = data.message.contents[contentIndex].fileUrl;
+					media.contentType = data.message.contents[contentIndex].fileMimeType;
+					
+					if(data.message.contents[contentIndex].hasOwnProperty('fileCaption')){
+						returnData.body += data.message.contents[contentIndex].fileCaption;
+					}
 
-				returnData.media.push(media);
-
+					returnData.media.push(media);
+				} else if(data.message.contents[contentIndex].type == 'contacts') {
+					// Right now this type of content can not be "read"
+					returnData.body += TAPi18n.__('Visitor_sent_contact', { defaultLanguage });
+				} else if(data.message.contents[contentIndex].type == 'json'
+						&& data.message.contents[contentIndex].payload.latitude
+						&& data.message.contents[contentIndex].payload.longitude) {
+					// Right now this type of content can not be "read"
+					returnData.extra.fromLatitude  = data.message.contents[contentIndex].payload.latitude;
+					returnData.extra.fromLongitude = data.message.contents[contentIndex].payload.longitude;
 				}
 			}
 		}
