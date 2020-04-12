@@ -90,20 +90,20 @@ Template.closeRoom.events({
 			});
 		});
 	},
-	'click .remove-tag'(e, t) {
+	'click .remove-tag'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 
 		const tag = this.valueOf();
-		const availableTags = t.availableTags.get();
+		const availableTags = instance.availableTags.get();
 		const hasAvailableTags = availableTags && availableTags.length > 0;
-		const availableUserTags = t.availableUserTags.get();
+		const availableUserTags = instance.availableUserTags.get();
 		if (!hasRole(Meteor.userId(), ['admin', 'livechat-manager']) && hasAvailableTags && (!availableUserTags || availableUserTags.indexOf(tag) === -1)) {
 			return;
 		}
-		let tags = t.tags.get();
+		let tags = instance.tags.get();
 		tags = tags.filter((el) => el !== tag);
-		t.tags.set(tags);
+		instance.tags.set(tags);
 	},
 	'click #addTag'(e, instance) {
 		e.stopPropagation();
