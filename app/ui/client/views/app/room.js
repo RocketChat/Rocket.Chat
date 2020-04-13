@@ -83,7 +83,7 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 			}
 
 			if (result && result.rid) {
-				FlowRouter.go('direct', { username }, FlowRouter.current().queryParams);
+				FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
 			}
 		});
 	} else {
