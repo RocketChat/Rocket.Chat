@@ -81,5 +81,6 @@ import './lib/stream/queueManager';
 import './sendMessageBySMS';
 import './api';
 import './api/rest';
+import './externalFrame';
 
 export { Livechat } from './lib/Livechat';
