@@ -15,6 +15,7 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'metrics.chatDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'omnichannel.priority._id': 1 }, { sparse: true });
 	}
 
@@ -283,6 +284,20 @@ export class LivechatRooms extends Base {
 			},
 			$unset: {
 				waitingResponse: 1,
+			},
+		});
+	}
+
+	setNotResponseByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				waitingResponse: true,
+			},
+			$unset: {
+				responseBy: 1,
 			},
 		});
 	}
@@ -567,7 +582,7 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setVisitorInactivityInSecondsByRoomId(roomId, visitorInactivity) {
+	setVisitorInactivityInSecondsById(roomId, visitorInactivity) {
 		const query = {
 			_id: roomId,
 		};

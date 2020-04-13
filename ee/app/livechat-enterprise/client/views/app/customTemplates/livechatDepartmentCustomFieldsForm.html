@@ -6,6 +6,18 @@
 		</div>
 	</div>
 	<div class="input-line">
+		<label>{{_ "How_long_to_wait_to_consider_visitor_abandonment"}}</label>
+		<div>
+			<input type="number" class="rc-input__element customFormField" name="visitorInactivityTimeoutInSeconds" value="{{department.visitorInactivityTimeoutInSeconds}}" placeholder="{{_ "Number_in_seconds"}}" />
+		</div>
+	</div>
+	<div class="input-line">
+		<label>{{_ "Livechat_abandoned_rooms_closed_custom_message"}}</label>
+		<div>
+			<input type="text" class="rc-input__element customFormField" name="abandonedRoomsCloseCustomMessage" value="{{department.abandonedRoomsCloseCustomMessage}}" placeholder="{{_ "Enter_a_custom_message"}}" />
+		</div>
+	</div>
+	<div class="input-line">
 		<label>{{_ "Waiting_queue_message"}}</label>
 		<div>
       		<textarea class="rc-input__element customFormField" name="waitingQueueMessage" rows="4">{{department.waitingQueueMessage}}</textarea>
