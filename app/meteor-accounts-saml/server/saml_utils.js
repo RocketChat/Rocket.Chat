@@ -329,7 +329,7 @@ SAML.prototype.validateSignature = function(xml, cert, signature) {
 	return sig.checkSignature(xml);
 };
 
-SAML.prototype.validateSignatureChildren = function(xml, cert, parent, mandatory = true) {
+SAML.prototype.validateSignatureChildren = function(xml, cert, parent) {
 	const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
 	const signatures = xmlCrypto.xpath(parent, xpathSigQuery);
 	let signature = null;
@@ -348,7 +348,7 @@ SAML.prototype.validateSignatureChildren = function(xml, cert, parent, mandatory
 	}
 
 	if (!signature) {
-		return !mandatory;
+		return false;
 	}
 
 	return this.validateSignature(xml, cert, signature);
@@ -359,7 +359,7 @@ SAML.prototype.validateResponseSignature = function(xml, cert, response) {
 };
 
 SAML.prototype.validateAssertionSignature = function(xml, cert, assertion) {
-	return this.validateSignatureChildren(xml, cert, assertion, false);
+	return this.validateSignatureChildren(xml, cert, assertion);
 };
 
 SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
@@ -568,19 +568,32 @@ SAML.prototype.verifySignatures = function(response, assertion, xml) {
 		return;
 	}
 
-	debugLog('Verify Document Signature');
-	if (!this.validateResponseSignature(xml, this.options.cert, response)) {
-		debugLog('Document Signature WRONG');
-		throw new Error('Invalid Signature');
-	}
-	debugLog('Document Signature OK');
+	const signatureType = this.options.signatureValidationType;
 
-	debugLog('Verify Assertion Signature');
-	if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
-		debugLog('Assertion Signature WRONG');
-		throw new Error('Invalid Assertion signature');
+	if (signatureType === 'None') {
+		return;
 	}
-	debugLog('Assertion Signature OK');
+
+	const checkResponse = signatureType === 'Response' || signatureType === 'All';
+	const checkAssertion = signatureType === 'Assertion' || signatureType === 'All';
+
+	if (checkResponse) {
+		debugLog('Verify Document Signature');
+		if (!this.validateResponseSignature(xml, this.options.cert, response)) {
+			debugLog('Document Signature WRONG');
+			throw new Error('Invalid Signature');
+		}
+		debugLog('Document Signature OK');
+	}
+
+	if (checkAssertion) {
+		debugLog('Verify Assertion Signature');
+		if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
+			debugLog('Assertion Signature WRONG');
+			throw new Error('Invalid Assertion signature');
+		}
+		debugLog('Assertion Signature OK');
+	}
 };
 
 SAML.prototype.getSubject = function(assertion) {
