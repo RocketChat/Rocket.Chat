@@ -40,17 +40,6 @@ Template.membersList.helpers({
 		let totalOnline = 0;
 		let users = roomUsers;
 
-		const filter = Template.instance().filter.get();
-		let reg = null;
-		try {
-			reg = new RegExp(filter, 'i');
-		} catch (e) {
-			console.log(e);
-		}
-		if (filter && reg) {
-			users = users.filter((user) => reg.test(user.username) || reg.test(user.name));
-		}
-
 		users = users.map(function(user) {
 			let utcOffset;
 			if (onlineUsers[user.username] != null) {
@@ -247,10 +236,10 @@ Template.membersList.events({
 	},
 
 	'click .show-more-users'(e, instance) {
-		const { showAllUsers, usersLimit, users, total, loadingMore } = instance;
+		const { showAllUsers, usersLimit, users, total, loadingMore, filter } = instance;
 
 		loadingMore.set(true);
-		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: usersLimit.get() + 100, skip: 0 }, (error, result) => {
+		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: usersLimit.get() + 100, skip: 0 }, filter.get(), (error, result) => {
 			if (error) {
 				console.error(error);
 				loadingMore.set(false);
@@ -283,7 +272,7 @@ Template.membersList.onCreated(function() {
 	this.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
-		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
+		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, this.filter.get(), (error, users) => {
 			if (error) {
 				console.error(error);
 				this.loading.set(false);

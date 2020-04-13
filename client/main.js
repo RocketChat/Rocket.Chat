@@ -1,6 +1,6 @@
-import 'url-polyfill';
+import './polyfills';
 
-import './importsCss';
+import './lib/meteorCallWrapper';
 import './importPackages';
 import '../imports/startup/client';
 

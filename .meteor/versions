@@ -43,6 +43,7 @@ ejson@1.1.1
 email@1.2.3
 es5-shim@4.8.0
 facebook-oauth@1.6.0
+facts-base@1.0.1
 fastclick@1.0.13
 fetch@0.1.1
 geojson-utils@1.0.10
