@@ -1,6 +1,7 @@
 import os from 'os';
 
 import _ from 'underscore';
+import { Push } from 'meteor/rocketchat:push';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
@@ -164,6 +165,8 @@ export const statistics = {
 			totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing').length,
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
+
+		statistics.pushQueue = Push.notifications.find().count();
 
 		return statistics;
 	},

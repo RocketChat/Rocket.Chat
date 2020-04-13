@@ -22,8 +22,13 @@ export function shouldNotifyAudio({
 		return false;
 	}
 
-	if (!audioNotifications && settings.get('Accounts_Default_User_Preferences_audioNotifications') === 'all') {
-		return true;
+	if (!audioNotifications) {
+		if (settings.get('Accounts_Default_User_Preferences_audioNotifications') === 'all') {
+			return true;
+		}
+		if (settings.get('Accounts_Default_User_Preferences_audioNotifications') === 'nothing') {
+			return false;
+		}
 	}
 
 	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || audioNotifications === 'all' || hasMentionToUser || hasReplyToThread;

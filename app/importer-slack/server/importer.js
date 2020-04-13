@@ -399,11 +399,14 @@ export class SlackImporter extends Base {
 						msg: file.url_private_download || '',
 						_importFile: this.convertSlackFileToPendingFile(file),
 					};
+					if (message.thread_ts && (message.thread_ts !== message.ts)) {
+						msgObj.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
+					}
 					insertMessage(fileUser, msgObj, room, this._anyExistingSlackMessage);
 				});
 			}
 
-			if (message.subtype) {
+			if (message.subtype && (message.subtype !== 'thread_broadcast')) {
 				this.processMessageSubType(message, room, msgDataDefaults, missedTypes);
 			} else {
 				const user = this.getRocketUserFromUserId(message.user);
@@ -418,6 +421,29 @@ export class SlackImporter extends Base {
 							username: user.username,
 						},
 					};
+
+					if (message.thread_ts) {
+						if (message.thread_ts === message.ts) {
+							if (message.reply_users) {
+								msgObj.replies = [];
+								message.reply_users.forEach(function(item) {
+									msgObj.replies.push(item);
+								});
+							} else if (message.replies) {
+								msgObj.replies = [];
+								message.replies.forEach(function(item) {
+									msgObj.replies.push(item.user);
+								});
+							} else {
+								this.logger.warn(`Failed to import the parent comment, message: ${ msgDataDefaults._id }. Missing replies/reply_users field`);
+							}
+
+							msgObj.tcount = message.reply_count;
+							msgObj.tlm = new Date(parseInt(message.latest_reply.split('.')[0]) * 1000);
+						} else {
+							msgObj.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
+						}
+					}
 
 					if (message.edited) {
 						msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
