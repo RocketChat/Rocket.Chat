@@ -13,6 +13,8 @@ const avatarBase = { baseUrl: '/avatar/' };
 export function DirectoryPage() {
 	const t = useTranslation();
 
+	const defaultTab = useSetting('Accounts_Directory_DefaultView', 'channels');
+
 	const federationEnabled = useSetting('FEDERATION_Enabled');
 
 	const tab = useRouteParameter('tab');
@@ -22,9 +24,9 @@ export function DirectoryPage() {
 
 	useEffect(() => {
 		if (!tab || (tab === 'external' && !federationEnabled)) {
-			return goToDirectory.replacingState({ tab: 'channels' });
+			return goToDirectory.replacingState({ tab: defaultTab });
 		}
-	}, [tab, federationEnabled]);
+	}, [tab, federationEnabled, defaultTab]);
 
 	return <Avatar.Context.Provider value={avatarBase}><Page>
 		<Page.Header title={t('Directory')} />
