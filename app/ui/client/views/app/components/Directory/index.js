@@ -49,3 +49,5 @@ export function DirectoryPage() {
 
 
 DirectoryPage.displayName = 'DirectoryPage';
+
+export default DirectoryPage;

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { useRoute, useRouteParameter } from '../../../../../client/contexts/RouterContext';
-import { useAdminSideNav } from '../../../../../client/hooks/useAdminSideNav';
+import { useAdminSideNav } from '../../../../../app/ui-admin/client/hooks/useAdminSideNav';
 import { EngagementDashboardPage } from './EngagementDashboardPage';
 
 export function EngagementDashboardRoute() {
@@ -22,4 +22,5 @@ export function EngagementDashboardRoute() {
 		onSelectTab={(tab) => goToEngagementDashboard({ tab })}
 	/>;
 }
-EngagementDashboardRoute.displayName = 'EngagementDashboardRoute';
+
+export default EngagementDashboardRoute;

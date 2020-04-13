@@ -17,8 +17,6 @@
 					<div class="section">
 						<h1>{{_ "Actions"}}</h1>
 						<div class="section-content">
-							<button class="button uncheck-deleted-users"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Deleted_Users"}}</span></button>
-							<button class="button uncheck-archived-channels"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Archived_Channels"}}</span></button>
 							<button class="button primary start"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Start_Import"}}</span></button>
 						</div>
 					</div>
@@ -31,6 +29,12 @@
 						<div class="section">
 							<h1>{{_ "Users"}}</h1>
 							<div class="section-content">
+								<div class="section-content">
+									<button class="button check-all-users"><i class="icon-send"></i><span>{{_ "Check_All"}}</span></button>
+									<button class="button uncheck-all-users"><i class="icon-send"></i><span>{{_ "Uncheck_All"}}</span></button>
+									<button class="button uncheck-deleted-users"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Deleted_Users"}}</span></button>
+								</div>
+
 								<ul>
 									{{#each users}}
 										{{#unless is_bot}}
@@ -51,6 +55,12 @@
 						<div class="section">
 							<h1>{{_ "Channels"}}</h1>
 							<div class="section-content">
+								<div class="section-content">
+									<button class="button check-all-channels"><i class="icon-send"></i><span>{{_ "Check_All"}}</span></button>
+									<button class="button uncheck-all-channels"><i class="icon-send"></i><span>{{_ "Uncheck_All"}}</span></button>
+									<button class="button uncheck-archived-channels"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Archived_Channels"}}</span></button>
+								</div>
+
 								<ul>
 									{{#each channels}}
 										<li>
