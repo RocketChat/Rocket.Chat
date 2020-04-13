@@ -86,7 +86,8 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
-	const discussion = createRoom(p_room.t, name, user.username, [...new Set(invitedUsers)], false, {
+	const type = p_room.t === 'c' ? 'c' : 'p';
+	const discussion = createRoom(type, name, user.username, [...new Set(invitedUsers)], false, {
 		fname: t_name,
 		description: message.msg, // TODO discussions remove
 		topic: p_room.name, // TODO discussions remove
