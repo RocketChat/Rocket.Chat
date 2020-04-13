@@ -27,17 +27,15 @@ export function Markdown({ children, ...props }) {
 
 const LoadingRow = ({ cols }) => <Table.Row>
 	<Table.Cell>
-		<Flex.Container>
-			<Box>
-				<Flex.Item>
-					<Skeleton variant='rect' height={40} width={40} />
-				</Flex.Item>
-				<Box mi='x8' grow={1}>
-					<Skeleton width='100%' />
-					<Skeleton width='100%' />
-				</Box>
+		<Box display='flex'>
+			<Flex.Item>
+				<Skeleton variant='rect' height={40} width={40} />
+			</Flex.Item>
+			<Box mi='x8' flexGrow={1}>
+				<Skeleton width='100%' />
+				<Skeleton width='100%' />
 			</Box>
-		</Flex.Container>
+		</Box>
 	</Table.Cell>
 	{ Array.from({ length: cols - 1 }, (_, i) => <Table.Cell key={i}>
 		<Skeleton width='100%' />
