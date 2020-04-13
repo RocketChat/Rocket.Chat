@@ -7,3 +7,4 @@ import './page/snippetPage';
 import './tabBar/tabBar';
 import './tabBar/views/snippetedMessages.html';
 import './tabBar/views/snippetedMessages';
+import './page/stylesheets/snippetPage.css';

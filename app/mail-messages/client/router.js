@@ -2,7 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-FlowRouter.route('/admin/mailer', {
+import { registerAdminRoute } from '../../ui-admin/client';
+
+registerAdminRoute('/mailer', {
 	name: 'admin-mailer',
 	async action() {
 		await import('./views');
