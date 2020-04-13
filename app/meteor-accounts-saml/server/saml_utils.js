@@ -329,7 +329,7 @@ SAML.prototype.validateSignature = function(xml, cert, signature) {
 	return sig.checkSignature(xml);
 };
 
-SAML.prototype.validateSignatureChildren = function(xml, cert, parent) {
+SAML.prototype.validateSignatureChildren = function(xml, cert, parent, mandatory = true) {
 	const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
 	const signatures = xmlCrypto.xpath(parent, xpathSigQuery);
 	let signature = null;
@@ -347,6 +347,10 @@ SAML.prototype.validateSignatureChildren = function(xml, cert, parent) {
 		signature = sign;
 	}
 
+	if (!signature && !mandatory) {
+		return true;
+	}
+
 	return this.validateSignature(xml, cert, signature);
 };
 
@@ -355,7 +359,7 @@ SAML.prototype.validateResponseSignature = function(xml, cert, response) {
 };
 
 SAML.prototype.validateAssertionSignature = function(xml, cert, assertion) {
-	return this.validateSignatureChildren(xml, cert, assertion);
+	return this.validateSignatureChildren(xml, cert, assertion, false);
 };
 
 SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
