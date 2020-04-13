@@ -287,6 +287,20 @@ export class LivechatRooms extends Base {
 		});
 	}
 
+	setNotResponseByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				waitingResponse: true,
+			},
+			$unset: {
+				responseBy: 1,
+			},
+		});
+	}
+
 	setAgentLastMessageTs(roomId) {
 		return this.update({
 			_id: roomId,
