@@ -159,8 +159,8 @@ export const setPredictedVisitorAbandonmentTime = (room) => {
 	LivechatRooms.setPredictedVisitorAbandonment(room._id, willBeAbandonedAt);
 };
 
-export const updatePredictedVisitorAbandonment = (closeRooms) => {
-	if (closeRooms) {
+export const updatePredictedVisitorAbandonment = () => {
+	if (settings.get('Livechat_auto_close_abandoned_rooms')) {
 		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	} else {
 		LivechatRooms.unsetPredictedVisitorAbandonment();

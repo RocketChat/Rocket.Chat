@@ -345,8 +345,6 @@ export const Livechat = {
 				_id: visitor._id,
 				username: visitor.username,
 			};
-		} else {
-			closeData.closer = 'system';
 		}
 
 		LivechatRooms.closeByRoomId(rid, closeData);

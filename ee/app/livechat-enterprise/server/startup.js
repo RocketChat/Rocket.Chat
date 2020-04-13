@@ -12,16 +12,13 @@ Meteor.startup(function() {
 		checkWaitingQueue();
 	});
 	settings.onload('Livechat_auto_close_abandoned_rooms', function(_, value) {
-		updatePredictedVisitorAbandonment(value);
+		updatePredictedVisitorAbandonment();
 		if (!value) {
 			return visitorActivityMonitor.stop();
 		}
 		visitorActivityMonitor.start();
 	});
 	settings.onload('Livechat_visitor_inactivity_timeout', function() {
-		const closeAbandonedRooms = settings.get('Livechat_auto_close_abandoned_rooms');
-		if (closeAbandonedRooms) {
-			updatePredictedVisitorAbandonment(closeAbandonedRooms);
-		}
+		updatePredictedVisitorAbandonment();
 	});
 });

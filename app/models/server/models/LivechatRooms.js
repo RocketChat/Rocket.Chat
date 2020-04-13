@@ -567,7 +567,7 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setVisitorInactivityInSecondsByRoomId(roomId, visitorInactivity) {
+	setVisitorInactivityInSecondsById(roomId, visitorInactivity) {
 		const query = {
 			_id: roomId,
 		};

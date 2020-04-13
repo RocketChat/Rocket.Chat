@@ -10,6 +10,7 @@
   "Edit_Tag": "Edit Tag",
   "Edit_Unit": "Edit Unit",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Enable automatic closing of rooms abandoned by the visitor",
+  "Enter_a_custom_message": "Enter a custom message",
   "Enterprise_License": "Enterprise License",
   "Enterprise_License_Description": "If your workspace is registered and license is provided by Rocket.Chat Cloud you don't need to manually update the license here.",
   "Failed_to_add_monitor": "Failed to add monitor",
