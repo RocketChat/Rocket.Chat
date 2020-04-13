@@ -1,12 +1,12 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { ImporterWebsocketReceiver } from './ImporterWebsocketReceiver';
+import { registerAdminRoute } from '../../ui-admin/client';
 import { Importers } from '../lib/Importers';
 import { ImporterInfo } from '../lib/ImporterInfo';
 import { ProgressStep } from '../lib/ImporterProgressStep';
+import { ImporterWebsocketReceiver } from './ImporterWebsocketReceiver';
 
-FlowRouter.route('/admin/import', {
+registerAdminRoute('/import', {
 	name: 'admin-import',
 	async action() {
 		await import('./admin/adminImport');
@@ -14,7 +14,7 @@ FlowRouter.route('/admin/import', {
 	},
 });
 
-FlowRouter.route('/admin/import/new', {
+registerAdminRoute('/import/new', {
 	name: 'admin-import-new',
 	async action() {
 		await import('./admin/adminImportNew');
@@ -22,7 +22,7 @@ FlowRouter.route('/admin/import/new', {
 	},
 });
 
-FlowRouter.route('/admin/import/prepare', {
+registerAdminRoute('/import/prepare', {
 	name: 'admin-import-prepare',
 	async action() {
 		await import('./admin/adminImportPrepare');
@@ -30,7 +30,7 @@ FlowRouter.route('/admin/import/prepare', {
 	},
 });
 
-FlowRouter.route('/admin/import/progress', {
+registerAdminRoute('/import/progress', {
 	name: 'admin-import-progress',
 	async action() {
 		await import('./admin/adminImportProgress');
