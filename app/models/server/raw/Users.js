@@ -1,8 +1,4 @@
-import s from 'underscore.string';
-
 import { BaseRaw } from './BaseRaw';
-
-import { Users } from '..';
 
 export class UsersRaw extends BaseRaw {
 	findUsersInRoles(roles, scope, options) {
@@ -54,10 +50,24 @@ export class UsersRaw extends BaseRaw {
 
 		const [agent] = await this.col.aggregate(aggregate).toArray();
 		if (agent) {
-			Users.setLastRoutingTime(agent.agentId);
+			await this.setLastRoutingTime(agent.agentId);
 		}
 
 		return agent;
+	}
+
+	setLastRoutingTime(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				lastRoutingTime: new Date(),
+			},
+		};
+
+		return this.col.updateOne(query, update);
 	}
 
 	async getAgentAndAmountOngoingChats(userId) {
@@ -97,7 +107,7 @@ export class UsersRaw extends BaseRaw {
 		]).toArray();
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(termRegex, exceptions, conditions, options) {
 		if (exceptions == null) { exceptions = []; }
 		if (conditions == null) { conditions = {}; }
 		if (options == null) { options = {}; }
@@ -105,7 +115,6 @@ export class UsersRaw extends BaseRaw {
 			exceptions = [exceptions];
 		}
 
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 		const query = {
 			$or: [{
 				username: termRegex,
