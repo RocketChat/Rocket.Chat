@@ -72,9 +72,18 @@ Template.loginForm.helpers({
 	manuallyApproveNewUsers() {
 		return settings.get('Accounts_ManuallyApproveNewUsers');
 	},
+	showPassword() {
+		return Template.instance().shouldShowPassword.get();
+	},
 });
 
 Template.loginForm.events({
+	'click .pass-icon'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+		$('.rc-input__password').children()[0].focus();
+		instance.shouldShowPassword.set(!instance.shouldShowPassword.get());
+	},
 	'submit #login-card'(event, instance) {
 		event.preventDefault();
 		$(event.target).find('button.login').focus();
@@ -170,6 +179,7 @@ Template.loginForm.onCreated(function() {
 	const instance = this;
 	this.customFields = new ReactiveVar();
 	this.loading = new ReactiveVar(false);
+	this.shouldShowPassword = new ReactiveVar(true);
 	Tracker.autorun(() => {
 		const Accounts_CustomFields = settings.get('Accounts_CustomFields');
 		if (typeof Accounts_CustomFields === 'string' && Accounts_CustomFields.trim() !== '') {
@@ -259,8 +269,13 @@ Template.loginForm.onCreated(function() {
 
 			Object.keys(validationObj).forEach((key) => {
 				const value = validationObj[key];
-				$(`#login-card input[name=${ key }], #login-card select[name=${ key }]`).addClass('error');
-				$(`#login-card input[name=${ key }]~.input-error, #login-card select[name=${ key }]~.input-error`).text(value);
+				const errorContainer = $(`#login-card input[name=${ key }], #login-card select[name=${ key }]`);
+				key === 'pass' ? errorContainer.parent().addClass('error') : errorContainer.addClass('error');
+				if (key === 'pass') {
+					$('.rc-input__password').next().text(value);
+				} else {
+					$(`#login-card input[name=${ key }]~.input-error, #login-card select[name=${ key }]~.input-error`).text(value);
+				}
 			});
 			instance.loading.set(false);
 			return false;

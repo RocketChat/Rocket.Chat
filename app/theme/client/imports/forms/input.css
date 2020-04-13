@@ -5,6 +5,26 @@ textarea.rc-input__element {
 	font-family: inherit;
 }
 
+.rc-input__password {
+	display: flex;
+
+	border-width: var(--input-border-width);
+	border-color: var(--input-border-color);
+
+	align-items: center;
+
+	& > .rc-input__element {
+		width: 90%;
+
+		border: 0;
+	}
+
+	& > .pass-icon {
+		width: 10%;
+		padding: 0.5em;
+	}
+}
+
 .rc-input {
 	position: relative;
 
