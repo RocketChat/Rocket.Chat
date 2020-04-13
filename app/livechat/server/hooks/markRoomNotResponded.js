@@ -8,8 +8,6 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	console.log(message);
-	console.log(room);
 	// if the message has not a token, it was sent by the agent, so ignore it
 	if (!message.token) {
 		return message;
