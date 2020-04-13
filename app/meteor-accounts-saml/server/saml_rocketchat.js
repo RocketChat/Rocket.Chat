@@ -182,6 +182,15 @@ Meteor.methods({
 			i18nLabel: 'SAML_Role_Attribute_Name',
 			i18nDescription: 'SAML_Role_Attribute_Name_Description',
 		});
+
+		settings.add(`SAML_Custom_${ name }_role_attribute_sync`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Role_Attribute_Sync',
+			i18nDescription: 'SAML_Role_Attribute_Sync_Description',
+		});
+
 		settings.add(`SAML_Custom_${ name }_allowed_clock_drift`, 0, {
 			type: 'int',
 			group: 'SAML',
@@ -222,6 +231,7 @@ const getSamlConfigs = function(service) {
 		authnContextComparison: settings.get(`${ service.key }_authn_context_comparison`),
 		defaultUserRole: settings.get(`${ service.key }_default_user_role`),
 		roleAttributeName: settings.get(`${ service.key }_role_attribute_name`),
+		roleAttributeSync: settings.get(`${ service.key }_role_attribute_sync`),
 		secret: {
 			privateKey: settings.get(`${ service.key }_private_key`),
 			publicCert: settings.get(`${ service.key }_public_cert`),
@@ -264,6 +274,7 @@ const configureSamlService = function(samlConfigs) {
 	Accounts.saml.settings.debug = samlConfigs.debug;
 	Accounts.saml.settings.defaultUserRole = samlConfigs.defaultUserRole;
 	Accounts.saml.settings.roleAttributeName = samlConfigs.roleAttributeName;
+	Accounts.saml.settings.roleAttributeSync = samlConfigs.roleAttributeSync;
 
 	return {
 		provider: samlConfigs.clientConfig.provider,
@@ -277,6 +288,7 @@ const configureSamlService = function(samlConfigs) {
 		authnContextComparison: samlConfigs.authnContextComparison,
 		defaultUserRole: samlConfigs.defaultUserRole,
 		roleAttributeName: samlConfigs.roleAttributeName,
+		roleAttributeSync: samlConfigs.roleAttributeSync,
 		allowedClockDrift: samlConfigs.allowedClockDrift,
 	};
 };

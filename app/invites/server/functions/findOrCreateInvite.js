@@ -3,9 +3,10 @@ import { Random } from 'meteor/random';
 
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
-import { Invites, Subscriptions } from '../../../models';
+import { Invites, Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils/lib/getURL';
+import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
 function getInviteUrl(invite) {
 	const { _id } = invite;
@@ -38,6 +39,11 @@ export const findOrCreateInvite = (userId, invite) => {
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, { fields: { _id: 1 } });
 	if (!subscription) {
 		throw new Meteor.Error('error-invalid-room', 'The rid field is invalid', { method: 'findOrCreateInvite', field: 'rid' });
+	}
+
+	const room = Rooms.findOneById(invite.rid);
+	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.INVITE)) {
+		throw new Meteor.Error('error-room-type-not-allowed', 'Cannot create invite links for this room type', { method: 'findOrCreateInvite' });
 	}
 
 	let { days, maxUses } = invite;

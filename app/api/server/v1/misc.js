@@ -1,6 +1,10 @@
+import crypto from 'crypto';
+
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { EJSON } from 'meteor/ejson';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 
 import { hasRole, hasPermission } from '../../../authorization/server';
@@ -179,6 +183,7 @@ API.v1.addRoute('directory', { authRequired: true }, {
 		const { sort, query } = this.parseJsonQuery();
 
 		const { text, type, workspace = 'local' } = query;
+
 		if (sort && Object.keys(sort).length > 1) {
 			return API.v1.failure('This method support only one "sort" parameter');
 		}
@@ -215,3 +220,54 @@ API.v1.addRoute('stdout.queue', { authRequired: true }, {
 		return API.v1.success({ queue: StdOut.queue });
 	},
 });
+
+const mountResult = ({ id, error, result }) => ({
+	message: EJSON.stringify({
+		msg: 'result',
+		id,
+		error,
+		result,
+	}),
+});
+
+const methodCall = () => ({
+	post() {
+		check(this.bodyParams, {
+			message: String,
+		});
+
+		const { method, params, id } = EJSON.parse(this.bodyParams.message);
+
+		const connectionId = this.token || crypto.createHash('md5').update(this.requestIp + this.request.headers['user-agent']).digest('hex');
+
+		const rateLimiterInput = {
+			userId: this.userId,
+			clientAddress: this.requestIp,
+			type: 'method',
+			name: method,
+			connectionId,
+		};
+
+		try {
+			DDPRateLimiter._increment(rateLimiterInput);
+			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
+			if (!rateLimitResult.allowed) {
+				throw new Meteor.Error(
+					'too-many-requests',
+					DDPRateLimiter.getErrorMessage(rateLimitResult),
+					{ timeToReset: rateLimitResult.timeToReset },
+				);
+			}
+
+			const result = Meteor.call(method, ...params);
+			return API.v1.success(mountResult({ id, result }));
+		} catch (error) {
+			return API.v1.success(mountResult({ id, error }));
+		}
+	},
+});
+
+// had to create two different endpoints for authenticated and non-authenticated calls
+// because restivus does not provide 'this.userId' if 'authRequired: false'
+API.v1.addRoute('method.call/:method', { authRequired: true, rateLimiterOptions: false }, methodCall());
+API.v1.addRoute('method.callAnon/:method', { authRequired: false, rateLimiterOptions: false }, methodCall());

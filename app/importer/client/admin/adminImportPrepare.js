@@ -73,8 +73,36 @@ Template.adminImportPrepare.events({
 		});
 	},
 
+	'click .button.check-all-users'(event, template) {
+		Array.from(template.users.get()).forEach((user) => {
+			const box = $(`[name=${ user.user_id }]`);
+			return box && box.length && !box[0].checked && box.click();
+		});
+	},
+
+	'click .button.uncheck-all-users'(event, template) {
+		Array.from(template.users.get()).forEach((user) => {
+			const box = $(`[name=${ user.user_id }]`);
+			return box && box.length && box[0].checked && box.click();
+		});
+	},
+
 	'click .button.uncheck-archived-channels'(event, template) {
 		Array.from(template.channels.get()).filter((channel) => channel.is_archived).map((channel) => {
+			const box = $(`[name=${ channel.channel_id }]`);
+			return box && box.length && box[0].checked && box.click();
+		});
+	},
+
+	'click .button.check-all-channels'(event, template) {
+		Array.from(template.channels.get()).forEach((channel) => {
+			const box = $(`[name=${ channel.channel_id }]`);
+			return box && box.length && !box[0].checked && box.click();
+		});
+	},
+
+	'click .button.uncheck-all-channels'(event, template) {
+		Array.from(template.channels.get()).forEach((channel) => {
 			const box = $(`[name=${ channel.channel_id }]`);
 			return box && box.length && box[0].checked && box.click();
 		});

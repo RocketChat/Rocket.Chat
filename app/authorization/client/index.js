@@ -4,6 +4,7 @@ import './usersNameChanged';
 import './requiresPermission.html';
 import './route';
 import './startup';
+import './stylesheets/permissions.css';
 
 export {
 	hasAllPermission,
