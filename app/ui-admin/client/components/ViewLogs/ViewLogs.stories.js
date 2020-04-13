@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { Mailer, ViewLogs } from '.';
+import { ViewLogs } from '.';
 
 export default {
 	title: 'admin/pages/ViewLogs',
-	component: Mailer,
+	component: ViewLogs,
 	// decorators: [
 	//  (storyFn) => <SettingsState>
 	//      {storyFn()}

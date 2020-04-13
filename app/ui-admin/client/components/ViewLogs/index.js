@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-// eslint-disable-next-line import/no-unresolved
-import { APIClient } from '../../../../app/utils/client/index';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { Page } from '../../basic/Page';
+// import { APIClient } from '../../../../app/utils/client/index';
+import { APIClient } from '../../../../utils/client/index';
+import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { Page } from '../../../../../client/components/basic/Page';
 
 export function ViewLogs() {
 	// const { queue } = await APIClient.v1.get('stdout.queue');
