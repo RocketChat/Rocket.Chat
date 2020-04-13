@@ -1,5 +1,6 @@
 import mem from 'mem';
 import s from 'underscore.string';
+// eslint-disable-next-line no-unused-vars
 import { HTML } from 'meteor/htmljs';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
