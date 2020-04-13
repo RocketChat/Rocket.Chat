@@ -347,8 +347,8 @@ SAML.prototype.validateSignatureChildren = function(xml, cert, parent, mandatory
 		signature = sign;
 	}
 
-	if (!signature && !mandatory) {
-		return true;
+	if (!signature) {
+		return !mandatory;
 	}
 
 	return this.validateSignature(xml, cert, signature);
