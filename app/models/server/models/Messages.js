@@ -32,6 +32,10 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
+
+		// push-message
+		this.tryEnsureIndex({ pushm: 1 }, { sparse: true });
+		this.tryEnsureIndex({ pushm_encrypted: 1 }, { sparse: true });
 	}
 
 	setReactions(messageId, reactions) {
