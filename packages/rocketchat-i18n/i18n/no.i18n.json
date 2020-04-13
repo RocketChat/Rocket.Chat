@@ -340,7 +340,7 @@
   "API_Personal_Access_Tokens_To_REST_API": "Personlig access token til REST API",
   "API_Personal_Access_Tokens_Remove_Modal": "Er du sikker på at du vil fjerne denne access-tokenen?",
   "API_Personal_Access_Token_Generated": "Personlig Access Token generert",
-  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Pass på å lagre tokenet ditt på et sikkert sted, da du ikke kan hente den ut igjen senere. <br/> Token: <strong> __ token __ </strong> <br/> Din bruker-ID: <strong> __ brukerId __ </strong>",
+  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "Pass på å lagre tokenet ditt på et sikkert sted, da du ikke kan hente den ut igjen senere. <br/> Token: <strong>__token__</strong> <br/> Din bruker-ID: <strong>__userId__</strong>",
   "API_Personal_Access_Tokens_Regenerate_Modal": "Hvis du har mistet eller glemt tokenet ditt kan du regenerere det, men husk at alle applikasjoner som bruker dette tokenet må oppdateres",
   "API_Personal_Access_Tokens_Regenerate_It": "Generer ny token",
   "API_Shield_Types": "Skjoldtyper",
