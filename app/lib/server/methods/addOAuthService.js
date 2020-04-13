@@ -41,12 +41,12 @@ Meteor.methods({
 		settings.add(`Accounts_OAuth_Custom-${ name }-avatar_field`           , ''                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Avatar_Field', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-roles_claim`            , 'roles'           , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Roles_Claim', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-merge_roles`	          , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles', persistent: true });
-		settings.add(`Accounts_OAuth_Custom-${ name }-merge_roles_use_map`    , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles_Use_Map', persistent: true });
+		settings.add(`Accounts_OAuth_Custom-${ name }-merge_roles_use_map`    , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Use_Custom_Map_To_Merge_Roles', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-merge_roles_map`, '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}', {
 			type: 'code',
 			group: 'OAuth',
 			section: `Custom OAuth: ${ name }`,
-			i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles_Map',
+			i18nLabel: 'Accounts_OAuth_Custom_Custom_Map_Used_To_Merge_Roles',
 			persistent: true,
 			multiline: true,
 			public: false,
