@@ -2,7 +2,6 @@ import { createTemplateForComponent } from '../../../client/reactAdapters';
 
 import './lib/accounts';
 import './lib/collections';
-import './lib/customEventPolyfill';
 import './lib/iframeCommands';
 import './lib/menu';
 import './lib/Modernizr';
