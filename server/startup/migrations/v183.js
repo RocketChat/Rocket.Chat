@@ -22,14 +22,19 @@ const unifyRooms = (room) => {
 			...room,
 			_id: newId,
 		});
+
+		// update subscription to point to new room _id
+		Subscriptions.update({ rid: room._id }, {
+			$set: {
+				rid: newId,
+			},
+		}, { multi: true });
+
+		return newId;
 	}
 
-	// update subscription to point to new room _id
-	Subscriptions.update({ rid: room._id }, {
-		$set: {
-			rid: newId,
-		},
-	}, { multi: true });
+	// the other room exists already, so just remove the subscription of the wrong room
+	Subscriptions.remove({ rid: room._id });
 
 	return newId;
 };
