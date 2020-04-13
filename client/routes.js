@@ -1,5 +1,6 @@
 import mem from 'mem';
 import s from 'underscore.string';
+import { HTML } from 'meteor/htmljs';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-// import { APIClient } from '../../../../app/utils/client/index';
 import { APIClient } from '../../../../utils/client/index';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { Page } from '../../../../../client/components/basic/Page';
