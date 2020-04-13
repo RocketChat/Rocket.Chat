@@ -79,5 +79,5 @@ export function UsersTab({
 		<Table.Cell textStyle='p1' textColor='hint' style={style}>{status}</Table.Cell>
 	</Table.Row>, [mediaQuery, federation]);
 
-	return <DirectoryTable searchPlaceholder={t('Search_Users')} header={header} renderRow={renderRow} data={data} setParams={setParams} />;
+	return <DirectoryTable searchPlaceholder={t('Search_Users')} header={header} renderRow={renderRow} result={data.users} total={data.total} setParams={setParams} />;
 }

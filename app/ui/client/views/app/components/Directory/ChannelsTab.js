@@ -82,5 +82,5 @@ export function ChannelsTab() {
 	</Table.Row>
 	, [mediaQuery]);
 
-	return <DirectoryTable searchPlaceholder={t('Search_Channels')} header={header} renderRow={renderRow} data={data} setParams={setParams} />;
+	return <DirectoryTable searchPlaceholder={t('Search_Channels')} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
 }

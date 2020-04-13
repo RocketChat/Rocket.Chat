@@ -45,7 +45,8 @@ const LoadingRow = ({ cols }) => <Table.Row>
 </Table.Row>;
 
 export function DirectoryTable({
-	data = {},
+	results,
+	total,
 	renderRow,
 	header,
 	searchPlaceholder = 'placeholder',
@@ -65,9 +66,6 @@ export function DirectoryTable({
 		setParams({ term, current, itemsPerPage });
 	}, [term, current, itemsPerPage]);
 
-	const { result: channels, total } = data;
-
-
 	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
 
 	const Loading = useCallback(() => Array.from({ length: 10 }, (_, i) => <LoadingRow cols={header.length} key={i}/>), [header && header.length]);
@@ -82,7 +80,7 @@ export function DirectoryTable({
 				<Box mb='x16' display='flex' flexDirection='column'>
 					<TextInput placeholder={searchPlaceholder} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 				</Box>
-				{channels && !channels.length
+				{results && !results.length
 					? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
 						{t('No_data_found')}
 					</Tile>
@@ -94,8 +92,8 @@ export function DirectoryTable({
 								</Table.Row>
 							</Table.Head> }
 							<Table.Body>
-								{channels
-									? channels.map(renderRow)
+								{results
+									? results.map(renderRow)
 									:	<Loading/>}
 							</Table.Body>
 						</Table>

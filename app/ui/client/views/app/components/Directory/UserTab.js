@@ -84,5 +84,5 @@ export function UserTab({
 		</Table.Cell>}
 	</Table.Row>, [mediaQuery, federation, canViewFullOtherUserInfo]);
 
-	return <DirectoryTable searchPlaceholder={t('Search_Users')} header={header} renderRow={renderRow} data={data} setParams={setParams} />;
+	return <DirectoryTable searchPlaceholder={t('Search_Users')} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
 }

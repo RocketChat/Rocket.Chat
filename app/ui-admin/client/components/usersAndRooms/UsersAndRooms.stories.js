@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ServerContext } from '../../../contexts/ServerContext';
+import { ServerContext } from '../../../../../client/contexts/ServerContext';
 
 import { UsersAndRooms } from '.';
 

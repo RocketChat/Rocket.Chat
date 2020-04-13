@@ -38,21 +38,33 @@ registerAdminRoute('/info', {
 	lazyRouteComponent: () => import('./components/info/InformationRoute'),
 });
 
+// registerAdminRoute('/users', {
+// 	name: 'admin-users',
+// 	action: async () => {
+// 		await import('./users/views');
+// 		BlazeLayout.render('main', { center: 'adminUsers' });
+// 	},
+// });
+
 registerAdminRoute('/users', {
 	name: 'admin-users',
-	action: async () => {
-		await import('./users/views');
-		BlazeLayout.render('main', { center: 'adminUsers' });
-	},
+	lazyRouteComponent: () => import('./components/usersAndRooms/UsersAndRoomsRoute'),
+	tab: 'users',
 });
 
 registerAdminRoute('/rooms', {
 	name: 'admin-rooms',
-	action: async () => {
-		await import('./rooms/views');
-		BlazeLayout.render('main', { center: 'adminRooms' });
-	},
+	lazyRouteComponent: () => import('./components/usersAndRooms/RoomsTabRoute'),
+	tab: 'rooms',
 });
+
+// registerAdminRoute('/rooms', {
+// 	name: 'admin-rooms',
+// 	action: async () => {
+// 		await import('./rooms/views');
+// 		BlazeLayout.render('main', { center: 'adminRooms' });
+// 	},
+// });
 
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
