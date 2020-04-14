@@ -883,7 +883,7 @@ Template.room.events({
 		const { msg } = messageArgs(this);
 		const link = msg.attachments ? msg.attachments[0].message_link : this.message_link;
 		const repliedMessageId = link.split('?msg=')[1];
-		const pathname = `/${ link.split('?msg=')[0].split('/').slice(-2)[0] }/${ link.split('?msg=')[0].split('/').slice(-1)[0] }`;
+		const { pathname } = new URL(link);
 		FlowRouter.go(pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
