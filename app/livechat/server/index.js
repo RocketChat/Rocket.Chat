@@ -17,6 +17,7 @@ import './hooks/sendToCRM';
 import './hooks/sendToFacebook';
 import './hooks/processRoomAbandonment';
 import './hooks/saveLastVisitorMessageTs';
+import './hooks/markRoomNotResponded';
 import './methods/addAgent';
 import './methods/addManager';
 import './methods/changeLivechatStatus';
