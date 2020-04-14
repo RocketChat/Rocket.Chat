@@ -22,6 +22,7 @@ const fullFields = {
 	emails: 1,
 	phone: 1,
 	statusConnection: 1,
+	bio: 1,
 	createdAt: 1,
 	lastLogin: 1,
 	services: 1,
@@ -78,6 +79,9 @@ export function getFullUserDataById({ userId, filterId }) {
 export const getFullUserData = function({ userId, filter, limit: l }) {
 	const username = s.trim(filter);
 	const userToRetrieveFullUserData = username && Users.findOneByUsername(username, { fields: { username: 1 } });
+	if (!userToRetrieveFullUserData) {
+		return;
+	}
 
 	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
 	const viewFullOtherUserInfo = hasPermission(userId, 'view-full-other-user-info');
