@@ -6,7 +6,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
-import { roomTypes, getUserPreference } from '../../utils';
+import { roomTypes, getUserPreference, isMobile } from '../../utils';
 import { Users } from '../../models';
 
 Template.sideNav.helpers({
@@ -39,6 +39,9 @@ Template.sideNav.helpers({
 	},
 
 	sidebarViewMode() {
+		if (isMobile()) {
+			return 'extended';
+		}
 		const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
 		return viewMode || 'extended';
 	},

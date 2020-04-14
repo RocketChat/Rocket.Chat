@@ -276,12 +276,6 @@ const toolbarButtons = (user) => [{
 			type: 'sort-action',
 		};
 
-		const viewModeOption = {
-			name: t('View_mode'),
-			icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'extended'],
-			type: 'view-mode-action',
-		};
-
 		const shareOption = {
 			name: t('Share'),
 			icon: 'share',
@@ -330,7 +324,7 @@ const toolbarButtons = (user) => [{
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		if (isMobile()) {
-			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([viewModeOption, sortOption]);
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
 		}
 		config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([shareOption]);
 
