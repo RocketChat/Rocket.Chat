@@ -42,6 +42,8 @@ const LoadingRow = ({ cols }) => <Table.Row>
 	</Table.Cell>)}
 </Table.Row>;
 
+const style = { minHeight: '40px' };
+
 export function DirectoryTable({
 	data = {},
 	renderRow,
@@ -77,7 +79,7 @@ export function DirectoryTable({
 	return <>
 		<Flex.Container direction='column'>
 			<Box>
-				<Box mb='x16' display='flex' flexDirection='column'>
+				<Box mb='x16' display='flex' flexDirection='column' style={style}>
 					<TextInput placeholder={searchPlaceholder} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 				</Box>
 				{channels && !channels.length
