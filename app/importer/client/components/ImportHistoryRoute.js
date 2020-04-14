@@ -108,7 +108,7 @@ function ImportHistoryRoute() {
 		goToImportProgress();
 	};
 
-	return <Page>
+	return <Page className='page-settings'>
 		<Page.Header title={t('Import')} />
 		<Page.ContentShadowScroll>
 			{!canRunImport
