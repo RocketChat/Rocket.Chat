@@ -1,15 +1,28 @@
 import React, { useMemo, useCallback } from 'react';
-import { Box, Table, Flex, Avatar } from '@rocket.chat/fuselage';
+import { Box, Table, Flex, Avatar, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-// import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { DirectoryTable, Th } from '../../../../ui/client/views/app/components/Directory/DirectoryTable';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-// import { useRoute } from '../../../../../client/contexts/RouterContext';
 // import { usePermission } from '../../../contexts/AuthorizationContext';
-// import { useQuery } from '../../../../ui/client/views/app/components/hooks';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+
+const roomTypeIconNameMap = {
+	l: 'livechat',
+	c: 'hashtag',
+	d: 'at',
+	p: 'lock',
+	discussion: 'discussion',
+};
+
+const roomTypeI18nMap = {
+	l: 'Livechat',
+	c: 'Channel',
+	d: 'Direct',
+	p: 'Group',
+	discussion: 'Discussion',
+};
 
 export function RoomsTab({
 	sort,
@@ -24,11 +37,11 @@ export function RoomsTab({
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
-		<Th key={'type'} direction={sort[1]} active={sort[0] === 'type'} onClick={onHeaderClick} sort='type' w='x100'>{t('Type')}</Th>,
-		<Th key={'users'} direction={sort[1]} active={sort[0] === 'users'} onClick={onHeaderClick} sort='users' w='x80'>{t('Users')}</Th>,
-		mediaQuery && <Th key={'messages'} direction={sort[1]} active={sort[0] === 'messages'} onClick={onHeaderClick} sort='messages' w='x80'>{t('Msgs')}</Th>,
-		mediaQuery && <Th key={'default'} direction={sort[1]} active={sort[0] === 'default'} onClick={onHeaderClick} sort='default' w='x40' >{t('Default')}</Th>,
-		mediaQuery && <Th key={'featured'} direction={sort[1]} active={sort[0] === 'featured'} onClick={onHeaderClick} sort='featured' w='x40'>{t('Featured')}</Th>,
+		<Th key={'type'} direction={sort[1]} active={sort[0] === 't'} onClick={onHeaderClick} sort='t' w='x100'>{t('Type')}</Th>,
+		<Th key={'users'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount' w='x80'>{t('Users')}</Th>,
+		mediaQuery && <Th key={'messages'} direction={sort[1]} active={sort[0] === 'msgs'} onClick={onHeaderClick} sort='msgs' w='x80'>{t('Msgs')}</Th>,
+		mediaQuery && <Th key={'default'} direction={sort[1]} active={sort[0] === 'default'} onClick={onHeaderClick} sort='default' w='x80' >{t('Default')}</Th>,
+		mediaQuery && <Th key={'featured'} direction={sort[1]} active={sort[0] === 'featured'} onClick={onHeaderClick} sort='featured' w='x80'>{t('Featured')}</Th>,
 	].filter(Boolean), [sort, mediaQuery]);
 
 	const renderRow = useCallback(({ _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames }) => {
@@ -38,17 +51,17 @@ export function RoomsTab({
 			<Table.Cell style={style}>
 				<Flex.Container>
 					<Box>
-						<Avatar size='x40' title={avatarUrl} url={avatarUrl} />
+						<Avatar size='x28' title={avatarUrl} url={avatarUrl} />
 						<Box display='flex' style={style} mi='x8'>
-							<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
-								<Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
+							<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
+								<Icon mi='x2' name={roomTypeIconNameMap[type]} textStyle='p2' textColor='hint'/><Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
 							</Box>
 						</Box>
 					</Box>
 				</Flex.Container>
 			</Table.Cell>
 			<Table.Cell>
-				<Box textStyle='p2' style={style} textColor='default'>{ type }</Box> <Box mi='x4'/>
+				<Box textStyle='p2' style={style} textColor='default'>{ t(roomTypeI18nMap[type]) }</Box> <Box mi='x4'/>
 			</Table.Cell>
 			<Table.Cell style={style}>{usersCount}</Table.Cell>
 			{mediaQuery && <Table.Cell style={style}>{msgs}</Table.Cell>}
@@ -56,8 +69,6 @@ export function RoomsTab({
 			{mediaQuery && <Table.Cell style={style}>{featured ? t('True') : t('False')}</Table.Cell>}
 		</Table.Row>;
 	}, [mediaQuery]);
-
-	console.log(data);
 
 	return <DirectoryTable searchPlaceholder={t('Search_Rooms')} header={header} renderRow={renderRow} results={data.rooms} total={data.total} setParams={setParams} />;
 }

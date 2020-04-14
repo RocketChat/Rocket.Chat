@@ -48,7 +48,7 @@ registerAdminRoute('/info', {
 
 registerAdminRoute('/users', {
 	name: 'admin-users',
-	lazyRouteComponent: () => import('./components/usersAndRooms/UsersAndRoomsRoute'),
+	lazyRouteComponent: () => import('./components/usersAndRooms/UsersTabRoute'),
 	tab: 'users',
 });
 
