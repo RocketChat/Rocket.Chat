@@ -34,7 +34,8 @@
 
 		display: flex;
 
-		height: 70%;
+		height: auto;
+		max-height: 70%;
 
 		padding: var(--popover-padding);
 
@@ -279,14 +280,6 @@
 			&--safariIos {
 				bottom: initial;
 			}
-		}
-	}
-}
-
-@media (height >= 700px) {
-	.rc-popover {
-		& .rc-popover__content {
-			height: auto;
 		}
 	}
 }
