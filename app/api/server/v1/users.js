@@ -7,7 +7,7 @@ import Busboy from 'busboy';
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { getURL, getUserPreference } from '../../../utils';
+import { getURL } from '../../../utils';
 import {
 	validateCustomFields,
 	saveUser,

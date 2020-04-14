@@ -285,6 +285,14 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				return;
 			}
 
+			const record = {
+				name: document.getElementById('file-name').value || file.name || file.file.name,
+				size: file.file.size,
+				type: file.file.type,
+				rid,
+				description: document.getElementById('file-description').value,
+			};
+
 			const fileName = document.getElementById('file-name').value || file.name || file.file.name;
 
 			const data = new FormData();
@@ -337,29 +345,21 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 
 			const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
 				progress(progress) {
-					const uploads = Session.get('uploading') || [];
-
 					if (progress === 100) {
 						return;
 					}
-					uploads.filter((u) => u.id === upload.id).forEach((u) => {
-						u.percentage = Math.round(progress) || 0;
-					});
-					Session.set('uploading', uploads);
+
+					const uploads = upload;
+					uploads.percentage = Math.round(progress * 100) || 0;
+					ChatMessage.setProgress(msgData.id, uploads);
 				},
-				error(error) {
-					const uploads = Session.get('uploading') || [];
-					uploads.filter((u) => u.id === upload.id).forEach((u) => {
-						u.error = error.message;
-						u.percentage = 0;
-					});
-					Session.set('uploading', uploads);
+				error() {
+					ChatMessage.setProgress(msgData.id, upload);
 				},
 			});
 
 			Tracker.autorun((computation) => {
 				const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
-
 				if (!isCanceling) {
 					return;
 				}
@@ -367,11 +367,17 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				Session.delete(`uploading-cancel-${ upload.id }`);
 
 				xhr.abort();
-
-				ChatMessage.setProgress(msgData.id, uploading);
 			});
 
-			uploadNextFile();
+			try {
+				await promise;
+				offlineFile && SWCache.removeFromCache(offlineFile);
+			} catch (error) {
+				const uploads = upload;
+				uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+				uploads.percentage = 0;
+				ChatMessage.setProgress(msgData.id, uploads);
+			}
 		}));
 	};
 
