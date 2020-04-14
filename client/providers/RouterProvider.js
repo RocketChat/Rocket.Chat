@@ -4,22 +4,35 @@ import React from 'react';
 
 import { RouterContext } from '../contexts/RouterContext';
 
-const pushRoute = (pathDefinition, parameters, queryStringParameters) => {
-	FlowRouter.go(pathDefinition, parameters, queryStringParameters);
+const pushRoute = (name, parameters, queryStringParameters) => {
+	FlowRouter.go(name, parameters, queryStringParameters);
 };
 
-const replaceRoute = (pathDefinition, parameters, queryStringParameters) => {
+const replaceRoute = (name, parameters, queryStringParameters) => {
 	FlowRouter.withReplaceState(() => {
-		FlowRouter.go(pathDefinition, parameters, queryStringParameters);
+		FlowRouter.go(name, parameters, queryStringParameters);
 	});
 };
 
-const getRoutePath = (pathDefinition, parameters, queryStringParameters) =>
-	Tracker.nonreactive(() => FlowRouter.path(pathDefinition, parameters, queryStringParameters));
+const getRoutePath = (name, parameters, queryStringParameters) =>
+	Tracker.nonreactive(() => FlowRouter.path(name, parameters, queryStringParameters));
 
-const subscribeToRoutePath = (pathDefinition, parameters, queryStringParameters, callback) => {
+const subscribeToRoutePath = (name, parameters, queryStringParameters, callback) => {
 	const computation = Tracker.autorun(() => {
-		callback(FlowRouter.path(pathDefinition, parameters, queryStringParameters));
+		callback(FlowRouter.path(name, parameters, queryStringParameters));
+	});
+
+	return () => {
+		computation.stop();
+	};
+};
+
+const getRouteUrl = (name, parameters, queryStringParameters) =>
+	Tracker.nonreactive(() => FlowRouter.url(name, parameters, queryStringParameters));
+
+const subscribeToRouteUrl = (name, parameters, queryStringParameters, callback) => {
+	const computation = Tracker.autorun(() => {
+		callback(FlowRouter.url(name, parameters, queryStringParameters));
 	});
 
 	return () => {
@@ -51,15 +64,36 @@ const subscribeToQueryStringParameter = (name, callback) => {
 	};
 };
 
+const getCurrentRoute = () => Tracker.nonreactive(() => {
+	const { route: { name }, params, queryParams } = FlowRouter.current();
+	return [name, params, queryParams];
+});
+
+const subscribeToCurrentRoute = (callback) => {
+	const computation = Tracker.autorun(() => {
+		FlowRouter.watchPathChange();
+		const { route: { name }, params, queryParams } = FlowRouter.current();
+		callback([name, params, queryParams]);
+	});
+
+	return () => {
+		computation.stop();
+	};
+};
+
 const contextValue = {
 	getRoutePath,
 	subscribeToRoutePath,
+	getRouteUrl,
+	subscribeToRouteUrl,
 	pushRoute,
 	replaceRoute,
 	getRouteParameter,
 	subscribeToRouteParameter,
 	getQueryStringParameter,
 	subscribeToQueryStringParameter,
+	getCurrentRoute,
+	subscribeToCurrentRoute,
 };
 
 export function RouterProvider({ children }) {
