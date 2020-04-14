@@ -49,3 +49,5 @@ export function SetupWizardRoute() {
 
 	return <SetupWizardState />;
 }
+
+export default SetupWizardRoute;

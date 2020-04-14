@@ -1,3 +1,5 @@
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
 import './lib/accounts';
 import './lib/collections';
 import './lib/customEventPolyfill';
@@ -43,7 +45,6 @@ import './views/app/invite';
 import './views/app/videoCall/videoButtons';
 import './views/app/videoCall/videoCall';
 import './views/app/photoswipe';
-import './views/app/RoomForeword';
 import './components/icon';
 import './components/status';
 import './components/table.html';
@@ -67,3 +68,5 @@ export { Login, animationSupport, animeBack, Button, preLoadImgs } from './lib/r
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 export { chatMessages } from './views/app/room';
+
+createTemplateForComponent('RoomForeword', () => import('./views/app/RoomForeword'));
