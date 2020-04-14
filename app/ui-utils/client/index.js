@@ -1,4 +1,3 @@
-export { AdminBox } from './lib/AdminBox';
 export { modal } from './lib/modal';
 export { SideNav } from './lib/SideNav';
 export { AccountBox } from './lib/AccountBox';
@@ -28,3 +27,4 @@ export { openRoom } from './lib/openRoom';
 export * from './lib/rtl';
 export * from './lib/keyCodes';
 export * from './lib/prependReplies';
+export * from './lib/collapseArrow';
