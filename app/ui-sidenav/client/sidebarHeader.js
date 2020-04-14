@@ -276,12 +276,6 @@ const toolbarButtons = (user) => [{
 			type: 'sort-action',
 		};
 
-		const viewModeOption = {
-			name: t('View_mode'),
-			icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'extended'],
-			type: 'view-mode-action',
-		};
-
 		const shareOption = {
 			name: t('Share'),
 			icon: 'share',
