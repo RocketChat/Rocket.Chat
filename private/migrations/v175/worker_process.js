@@ -1,4 +1,5 @@
-const { MongoClient } = require('mongodb');
+// eslint-disable-next-line import/no-dynamic-require
+const { MongoClient } = require(`${ __dirname }/../../../../npm/node_modules/mongodb`);
 
 const config = require('./config');
 const { Events, RoomEvents } = require('./model_extractions');
