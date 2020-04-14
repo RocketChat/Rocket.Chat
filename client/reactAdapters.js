@@ -20,7 +20,7 @@ const mountRoot = async () => {
 	}
 
 	const [
-		{ Suspense, createElement, lazy, useState },
+		{ Component, Fragment, Suspense, createElement, lazy, useLayoutEffect, useState },
 		{ render },
 	] = await Promise.all([
 		import('react'),
@@ -29,14 +29,30 @@ const mountRoot = async () => {
 
 	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
 
+	class Portals extends Component {
+		static getDerivedStateFromError = () => ({})
+
+		render = () => createElement(Fragment, {}, ...this.props.portals)
+	}
+
 	function AppRoot() {
 		const [portals, setPortals] = useState(() => Tracker.nonreactive(() => Array.from(portalsMap.values())));
-		invalidatePortals = () => {
-			setPortals(Array.from(portalsMap.values()));
-		};
+
+		useLayoutEffect(() => {
+			invalidatePortals = () => {
+				setPortals(Array.from(portalsMap.values()));
+			};
+			invalidatePortals();
+
+			return () => {
+				invalidatePortals = () => {};
+			};
+		}, []);
 
 		return createElement(Suspense, { fallback: null },
-			createElement(LazyMeteorProvider, {}, ...portals),
+			createElement(LazyMeteorProvider, {},
+				createElement(Portals, { portals }),
+			),
 		);
 	}
 
@@ -170,6 +186,13 @@ export const renderRouteComponent = (importFn, {
 				}
 
 				registerPortal(routeName, portal);
+
+				const handleMainContentDestroyed = () => {
+					unregisterPortal(routeName);
+					document.removeEventListener('main-content-destroyed', handleMainContentDestroyed);
+				};
+
+				document.addEventListener('main-content-destroyed', handleMainContentDestroyed);
 			});
 
 			Template[routeName] = blazeTemplate;

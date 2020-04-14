@@ -1,6 +1,8 @@
-@primary-font-color: #444444;
-@secondary-font-color: #7f7f7f;
-@info-font-color: #aaaaaa;
+:root {
+	--primary-font-color: #444444;
+	--secondary-font-color: #7f7f7f;
+	--info-font-color: #aaaaaa;
+}
 
 section.canned-responses {
 	overflow-x: hidden;
@@ -9,7 +11,7 @@ section.canned-responses {
 }
 
 .canned-response-shortcut {
-	color: @primary-font-color;
+	color: var(--primary-font-color);
 
 	font-weight: bold;
 }
@@ -21,11 +23,11 @@ section.canned-responses {
 
 	text-overflow: ellipsis;
 
-	color: @secondary-font-color;
+	color: var(--secondary-font-color);
 }
 
 .canned-response-shortcut-preview {
-	color: @primary-font-color;
+	color: var(--primary-font-color);
 
 	font-weight: 500;
 }
@@ -35,13 +37,13 @@ section.canned-responses {
 
 	white-space: pre-wrap;
 
-	color: @secondary-font-color;
+	color: var(--secondary-font-color);
 
 	line-height: 1.5;
 }
 
 .canned-response-scope {
-	color: @info-font-color;
+	color: var(--info-font-color);
 }
 
 .canned-response-list li {
@@ -81,13 +83,13 @@ section.canned-responses {
 }
 
 .canned-response-label {
-	color: @primary-font-color;
+	color: var(--primary-font-color);
 
 	font-weight: bold;
 }
 
 .canned-response-info {
-	color: @info-font-color;
+	color: var(--info-font-color);
 }
 
 .canned-response-creator-data {
@@ -99,7 +101,7 @@ section.canned-responses {
 }
 
 .canned-response-delete-button a {
-	color: @primary-font-color;
+	color: var(--primary-font-color);
 }
 
 .canned-response-delete-button a:hover,
