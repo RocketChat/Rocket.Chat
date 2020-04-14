@@ -1,7 +1,8 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-FlowRouter.route('/admin/invites', {
+import { registerAdminRoute } from '../../../ui-admin/client';
+
+registerAdminRoute('/invites', {
 	name: 'invites',
 	async action(/* params */) {
 		await import('./adminInvites');
