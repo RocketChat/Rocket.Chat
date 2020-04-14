@@ -260,6 +260,6 @@
 		]
 	},
 	"browserslist": [
-		"last 2 version and > 1%"
+		"two latest major versions and browsers with > 1% of market share"
 	]
 }
