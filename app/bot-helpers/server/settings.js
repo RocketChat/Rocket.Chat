@@ -15,7 +15,7 @@ Meteor.startup(function() {
 			public: true,
 			section: 'Bot Direct Message Input Limit',
 		});
-		this.add('Bot_Direct_Message_Char_Limit_MaxAllowedSize', '125', {
+		this.add('Bot_Direct_Message_Char_Limit_MaxAllowedSize', 125, {
 			type: 'int',
 			public: true,
 			section: 'Bot Direct Message Input Limit',

@@ -166,7 +166,6 @@ Template.messageBox.onRendered(function() {
 		const messages = $input.data('reply') || [];
 		this.replyMessageData.set(messages);
 	});
-
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
 		const room = Session.get(`roomData${ rid }`);

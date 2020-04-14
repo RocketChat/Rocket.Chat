@@ -23,6 +23,7 @@ callback-hook@1.3.0
 cfs:http-methods@0.0.32
 check@1.3.1
 coffeescript@1.0.17
+d3@1.0.0
 dandv:caret-position@2.1.1
 ddp@1.4.0
 ddp-client@2.3.3
@@ -58,6 +59,7 @@ inter-process-messaging@0.1.0
 jalik:ufs@1.0.2
 jalik:ufs-gridfs@1.0.2
 jalik:ufs-local@1.0.2
+jorisroling:circular-progress@1.0.0
 jparker:crypto-core@0.1.0
 jparker:crypto-md5@0.1.1
 jparker:gravatar@0.5.1
