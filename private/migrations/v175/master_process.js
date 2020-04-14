@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient } = require(`${ __dirname }/../../../../npm/node_modules/mongodb`);
 
 const config = require('./config');
 
