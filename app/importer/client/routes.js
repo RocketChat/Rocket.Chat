@@ -1,5 +1,3 @@
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-
 import { registerAdminRoute } from '../../ui-admin/client';
 
 registerAdminRoute('/import', {
@@ -20,8 +18,4 @@ registerAdminRoute('/import/prepare', {
 registerAdminRoute('/import/progress', {
 	name: 'admin-import-progress',
 	lazyRouteComponent: () => import('./components/ImportProgressRoute'),
-	async action() {
-		await import('./admin/adminImportProgress');
-		BlazeLayout.render('main', { center: 'adminImportProgress' });
-	},
 });
