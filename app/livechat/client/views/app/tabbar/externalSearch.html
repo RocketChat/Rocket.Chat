@@ -3,13 +3,16 @@
 		<div class="title">
 			<h2>{{_ "Knowledge_Base"}}</h2>
 		</div>
-		<div class="external-messages">
+		<div class="external-messages list-view">
 			{{#each messages}}
-				<div class="external-message">
-					<button class="pick-message"><i class="icon-edit"></i></button>
-					{{msg}}
-				</div>
+			<div class="external-message">
+				<button class="pick-message"><i class="icon-edit"></i></button>
+				{{msg}}
+			</div>
 			{{/each}}
+			{{#if hasMore}}
+				<button class="rc-button rc-button--secondary show-more-users load-more-livechat-external-messages {{#if loadingMore}}loading{{/if}}">{{_ "Show_more"}}</button>
+			{{/if}}
 		</div>
 	</div>
 </template>

@@ -1,6 +1,7 @@
+import { Base } from './_Base';
+
 import * as Models from '..';
 
-import { Base } from './_Base';
 
 export class Roles extends Base {
 	constructor(...args) {
@@ -82,6 +83,14 @@ export class Roles extends Base {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findByUpdatedDate(updatedAfterDate, options) {
+		const query = {
+			_updatedAt: { $gte: new Date(updatedAfterDate) },
+		};
+
+		return this.find(query, options);
 	}
 
 	canAddUserToRole(uid, roleName, scope) {
