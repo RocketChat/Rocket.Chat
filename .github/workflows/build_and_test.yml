@@ -507,7 +507,7 @@ jobs:
         rm Rocket.Chat.tar.gz
         cp "${GITHUB_WORKSPACE}/.docker/Dockerfile" .
 
-    - name: AWS Deploy to ECR
+    - name: AWS Deploy to ECR in DEV
       if: github.event_name == 'pull_request'
 
       uses: Terranovax/aws-ecr-deploy@v1
@@ -515,6 +515,21 @@ jobs:
         access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+        region: us-east-1
+        dockerfile: /tmp/build/Dockerfile
+        path: /tmp/build
+        repo: widechat
+        tags: ${{ env.PR_TAG }}
+
+    ## Temporarily we will deploy the PR tags to PROD as well as DEV
+    - name: AWS Deploy to ECR in PROD
+      if: github.event_name == 'pull_request'
+
+      uses: Terranovax/aws-ecr-deploy@v1
+      with:
+        access_key_id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
+        account_id: ${{ secrets.AWS_PROD_ACCOUNT_ID }}
         region: us-east-1
         dockerfile: /tmp/build/Dockerfile
         path: /tmp/build

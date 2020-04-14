@@ -95,15 +95,8 @@ Template.messageAttachment.helpers({
 		return true;
 	},
 	uploading() {
-		return Template.parentData().msg.uploads;
+		return Template.parentData(2).msg.uploads;
 	},
-	// cancel() {
-	// 	console.log(Template.parentData());
-	// 	Session.set(`uploading-cancel-${ Template.parentData().msg.file._id }`, true);
-	// },
-	// retry() {
-	// 	Session.set(`uploading-cancel-${ Template.parentData().msg.file._id }`, true);
-	// },
 	getImageHeight(height = 200) {
 		return height;
 	},

@@ -277,6 +277,14 @@ export const dropzoneHelpers = {
 
 Template.room.helpers({
 	...dropzoneHelpers,
+
+	openSearchPage() {
+		if (!isMobile()) {
+			return false;
+		}
+		return Session.get('openSearchPage');
+	},
+
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -870,11 +878,13 @@ Template.room.events({
 
 		popover.open(config);
 	},
-	'click .time a'(e) {
+	'click .time-link'(e) {
 		e.preventDefault();
 		const { msg } = messageArgs(this);
-		const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
-		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
+		const link = msg.attachments ? msg.attachments[0].message_link : this.message_link;
+		const repliedMessageId = link.split('?msg=')[1];
+		const { pathname } = new URL(link);
+		FlowRouter.go(pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
 		e.stopPropagation();
@@ -1007,6 +1017,8 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
+	Session.set('openSearchPage', false);
+
 	const rid = this.data._id;
 
 	this.onFile = (filesToUpload) => {

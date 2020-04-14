@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, getUserPreference, roomTypes } from '../../utils';
+import { t, getUserPreference, roomTypes, isMobile } from '../../utils';
 import { popover, renderMessageBody, menu } from '../../ui-utils';
 import { Users, ChatSubscription } from '../../models/client';
 import { settings } from '../../settings';
@@ -19,6 +19,9 @@ Template.sidebarItem.helpers({
 		return this.rid || this._id;
 	},
 	isExtendedViewMode() {
+		if (isMobile()) {
+			return 'extended';
+		}
 		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
 	},
 	lastMessage() {
@@ -170,7 +173,9 @@ Template.sidebarItem.onCreated(function() {
 		const currentData = Template.currentData();
 
 		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
-			return clearInterval(this.timeAgoInterval);
+			if (!isMobile()) {
+				return clearInterval(this.timeAgoInterval);
+			}
 		}
 
 		if (currentData.lastMessage && !currentData.lastMessage._id) {

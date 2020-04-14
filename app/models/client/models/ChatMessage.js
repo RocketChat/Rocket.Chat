@@ -6,6 +6,7 @@ import { CachedCollection } from '../../../ui-cached-collection';
 import { CachedChatSubscription } from './CachedChatSubscription';
 import { ChatSubscription } from './ChatSubscription';
 import { getConfig } from '../../../ui-utils/client/config';
+import { cleanMessagesAtStartup } from '../../../utils';
 import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
@@ -13,6 +14,8 @@ import { callbacks } from '../../../callbacks';
 export const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
 
 export const ChatMessage = CachedChatMessage.collection;
+
+let timeout;
 
 ChatMessage.setReactions = function(messageId, reactions, tempActions) {
 	this.update({ _id: messageId }, { $set: { temp: true, tempActions, reactions } });
@@ -91,6 +94,8 @@ const messagePreFetch = () => {
 		if (!messagesFetched && CachedChatSubscription.ready.get()) {
 			const status = Meteor.status();
 			if (status.status !== 'connected') {
+				clearTimeout(timeout);
+				timeout = setTimeout(cleanMessagesAtStartup, 3000);
 				return;
 			}
 			messagesFetched = true;
@@ -120,6 +125,8 @@ const messagePreFetch = () => {
 					});
 				});
 			});
+			clearTimeout(timeout);
+			cleanMessagesAtStartup(false);
 		}
 	});
 };

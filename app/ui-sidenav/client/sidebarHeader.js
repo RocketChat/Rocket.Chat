@@ -261,7 +261,6 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Options'),
 	icon: 'menu',
-	condition: () => AccountBox.getItems().length || hasAtLeastOnePermission(['manage-emoji', 'manage-oauth-apps', 'manage-outgoing-integrations', 'manage-incoming-integrations', 'manage-own-outgoing-integrations', 'manage-own-incoming-integrations', 'manage-selected-settings', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration', 'access-setting-permissions']),
 	hasPopup: true,
 	action: (e) => {
 		let adminOption;
@@ -286,12 +285,6 @@ const toolbarButtons = (user) => [{
 			name: t('Sort'),
 			icon: 'sort',
 			type: 'sort-action',
-		};
-
-		const viewModeOption = {
-			name: t('View_mode'),
-			icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'extended'],
-			type: 'view-mode-action',
 		};
 
 		const shareOption = {
@@ -342,7 +335,7 @@ const toolbarButtons = (user) => [{
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		if (isMobile()) {
-			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([viewModeOption, sortOption]);
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
 		}
 		config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([shareOption]);
 

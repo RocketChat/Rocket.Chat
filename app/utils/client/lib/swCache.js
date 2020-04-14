@@ -11,8 +11,9 @@ export const SWCache = {
 				statusText: 'No connection to the server',
 				headers: new Headers({ 'Content-Type': file.type }),
 			});
-			cache.put(getFileUrl(file), res);
-			callback();
+			cache.put(getFileUrl(file), res).then(() => {
+				callback();
+			});
 		}).catch((err) => {
 			callback(err);
 		});
