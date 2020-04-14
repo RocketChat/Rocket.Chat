@@ -1,11 +1,15 @@
-import { Mongo } from 'meteor/mongo';
+import { CachedCollection } from '../../../ui-cached-collection';
 
-export const ChatMessage = new Mongo.Collection(null);
+export const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
+
+export const ChatMessage = CachedChatMessage.collection;
 
 ChatMessage.setReactions = function(messageId, reactions) {
-	return this.update({ _id: messageId }, { $set: { reactions } });
+	this.update({ _id: messageId }, { $set: { reactions } });
+	return CachedChatMessage.save();
 };
 
 ChatMessage.unsetReactions = function(messageId) {
-	return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
+	this.update({ _id: messageId }, { $unset: { reactions: 1 } });
+	return CachedChatMessage.save();
 };
