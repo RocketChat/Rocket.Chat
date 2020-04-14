@@ -1,12 +1,14 @@
-import { createContext, useContext, useMemo, useCallback } from 'react';
-
-import { useObservableValue } from '../hooks/useObservableValue';
+import { createContext, useContext, useMemo } from 'react';
+import { useSubscription } from 'use-subscription';
 
 export const RouterContext = createContext({
 	navigateTo: () => {},
 	replaceWith: () => {},
+	getRoutePath: () => null,
 	getRouteParameter: () => {},
+	subscribeToRouteParameter: () => {},
 	getQueryStringParameter: () => {},
+	subscribeToQueryStringParameter: () => {},
 });
 
 export const useRoute = (pathDefinition) => {
@@ -20,11 +22,23 @@ export const useRoute = (pathDefinition) => {
 };
 
 export const useRouteParameter = (name) => {
-	const { getRouteParameter } = useContext(RouterContext);
-	return useObservableValue(useCallback((listener) => getRouteParameter(name, listener), [name]));
+	const { getRouteParameter, subscribeToRouteParameter } = useContext(RouterContext);
+
+	const subscription = useMemo(() => ({
+		getCurrentValue: () => getRouteParameter(name),
+		subscribe: (callback) => subscribeToRouteParameter(name, callback),
+	}), [name, getRouteParameter, subscribeToRouteParameter]);
+
+	return useSubscription(subscription);
 };
 
 export const useQueryStringParameter = (name) => {
-	const { getQueryStringParameter } = useContext(RouterContext);
-	return useObservableValue(useCallback((listener) => getQueryStringParameter(name, listener), [name]));
+	const { getQueryStringParameter, subscribeToQueryStringParameter } = useContext(RouterContext);
+
+	const subscription = useMemo(() => ({
+		getCurrentValue: () => getQueryStringParameter(name),
+		subscribe: (callback) => subscribeToQueryStringParameter(name, callback),
+	}), [name, getQueryStringParameter, subscribeToQueryStringParameter]);
+
+	return useSubscription(subscription);
 };

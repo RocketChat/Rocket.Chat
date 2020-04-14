@@ -1,4 +1,5 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Tracker } from 'meteor/tracker';
 import React from 'react';
 
 import { RouterContext } from '../contexts/RouterContext';
@@ -14,14 +15,37 @@ const replaceWith = (pathDefinition, parameters, queryStringParameters) => {
 	});
 };
 
-const getRouteParameter = createObservableFromReactive((name) => FlowRouter.getParam(name));
-const getQueryStringParameter = createObservableFromReactive((name) => FlowRouter.getQueryParam(name));
+const getRouteParameter = (name) => Tracker.nonreactive(() => FlowRouter.getParam(name));
+
+const subscribeToRouteParameter = (name, callback) => {
+	const computation = Tracker.autorun(() => {
+		callback(FlowRouter.getParam(name));
+	});
+
+	return () => {
+		computation.stop();
+	};
+};
+
+const getQueryStringParameter = (name) => Tracker.nonreactive(() => FlowRouter.getQueryParam(name));
+
+const subscribeToQueryStringParameter = (name, callback) => {
+	const computation = Tracker.autorun(() => {
+		callback(FlowRouter.getQueryParam(name));
+	});
+
+	return () => {
+		computation.stop();
+	};
+};
 
 const contextValue = {
 	navigateTo,
 	replaceWith,
 	getRouteParameter,
+	subscribeToRouteParameter,
 	getQueryStringParameter,
+	subscribeToQueryStringParameter,
 };
 
 export function RouterProvider({ children }) {
