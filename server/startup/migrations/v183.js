@@ -65,7 +65,7 @@ const fixSelfDMs = () => {
 };
 
 const fixDiscussions = () => {
-	Rooms.find({ t: 'd', prid: { $exists: true }, uids: [null] }, { fields: { _id: 1 } }).forEach(({ _id }) => {
+	Rooms.find({ t: 'd', prid: { $exists: true } }, { fields: { _id: 1 } }).forEach(({ _id }) => {
 		const { u } = Messages.findOne({ drid: _id }, { fields: { u: 1 } }) || {};
 
 		Rooms.update({ _id }, {
