@@ -90,7 +90,7 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 		id = this.options.id;
 	}
 
-	let request =		`<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant }" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
+	let request = `<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant }" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
 		this.options.entryPoint }">`
 		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>\n`;
 
@@ -98,12 +98,15 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 		request += `<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="${ this.options.identifierFormat }" AllowCreate="true"></samlp:NameIDPolicy>\n`;
 	}
 
-	const authnContextComparison = this.options.authnContextComparison || 'exact';
-	const authnContext = this.options.customAuthnContext || 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
-	request
-		+= `<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="${ authnContextComparison }">`
-		+ `<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ authnContext }</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>\n`
-		+ '</samlp:AuthnRequest>';
+	if (this.options.customAuthnContext) {
+		const authnContextComparison = this.options.authnContextComparison || 'exact';
+		const authnContext = this.options.customAuthnContext;
+		request
+			+= `<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="${ authnContextComparison }">`
+			+ `<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ authnContext }</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>\n`;
+	}
+
+	request += '</samlp:AuthnRequest>';
 
 	return request;
 };
