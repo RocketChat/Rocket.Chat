@@ -13,6 +13,7 @@ actionLinks.register('joinJitsiCall', function(message, params, instance) {
 		const currentTime = new Date().getTime();
 		const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 
+		toastr.info("OKKKKKKKKKK");
 		if (jitsiTimeout > currentTime) {
 			instance.tabBar.open('video');
 		} else {
