@@ -49,7 +49,7 @@ export default function RoomsTabRoute({ props }) {
 		setSort([id, 'asc']);
 	};
 
-	return <UsersAndRooms tab='users'>
+	return <UsersAndRooms tab='users' {...props}>
 		<UsersTab setParams={_.debounce(setParams, 300)} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
 	</UsersAndRooms>;
 }
