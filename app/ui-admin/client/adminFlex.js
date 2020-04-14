@@ -9,6 +9,7 @@ import { menu, SideNav, AdminBox, Layout, offlineAction } from '../../ui-utils/c
 import { t } from '../../utils';
 import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
 import { hasAtLeastOnePermission } from '../../authorization/client';
+import { getSidebarItems } from './sidebarItems';
 
 Template.adminFlex.onCreated(function() {
 	this.isEmbedded = Layout.isEmbedded();
@@ -66,7 +67,7 @@ Template.adminFlex.helpers({
 	},
 	label,
 	adminBoxOptions() {
-		return AdminBox.getOptions();
+		return getSidebarItems();
 	},
 	menuItem(name, icon, section, group) {
 		return {

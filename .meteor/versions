@@ -43,6 +43,7 @@ ejson@1.1.1
 email@1.2.3
 es5-shim@4.8.0
 facebook-oauth@1.6.0
+facts-base@1.0.1
 fastclick@1.0.13
 fetch@0.1.1
 geojson-utils@1.0.10
@@ -69,7 +70,7 @@ konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.1.0
-konecty:user-presence@2.6.1
+konecty:user-presence@2.6.3
 launch-screen@1.1.1
 less@2.8.0
 littledata:synced-cron@1.5.1

@@ -51,3 +51,5 @@ export function PageNotFound() {
 		</Flex.Container>
 	</>;
 }
+
+export default PageNotFound;

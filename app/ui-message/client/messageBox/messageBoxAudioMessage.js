@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
-import { fileUploadHandler } from '../../../file-upload';
+import { uploadFileWithMessage } from '../../../ui/client/lib/fileUpload';
 import { settings } from '../../../settings';
 import { AudioRecorder, sendOfflineFileMessage } from '../../../ui';
 import { call } from '../../../ui-utils';
@@ -232,6 +232,7 @@ Template.messageBoxAudioMessage.events({
 		instance.state.set(null);
 
 		const { rid, tmid } = this;
-		await uploadRecord({ rid, tmid, blob });
+
+		await uploadFileWithMessage(rid, tmid, { file: { file: blob }, fileName: `${ t('Audio record') }.mp3` });
 	},
 });

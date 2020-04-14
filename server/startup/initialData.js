@@ -99,7 +99,7 @@ Meteor.startup(function() {
 						if (!Users.findOneByEmailAddress(process.env.ADMIN_EMAIL)) {
 							adminUser.emails = [{
 								address: process.env.ADMIN_EMAIL,
-								verified: true,
+								verified: process.env.ADMIN_EMAIL_VERIFIED === 'true',
 							}];
 
 							console.log(`Email: ${ process.env.ADMIN_EMAIL }`.green);
@@ -189,7 +189,7 @@ Meteor.startup(function() {
 				emails: [
 					{
 						address: 'rocketchat.internal.admin.test@rocket.chat',
-						verified: true,
+						verified: false,
 					},
 				],
 				status: 'offline',

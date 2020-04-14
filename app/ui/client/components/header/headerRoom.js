@@ -13,6 +13,7 @@ import { settings } from '../../../../settings';
 import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';
+import { getUidDirectMessage } from '../../../../ui-utils/client/lib/getUidDirectMessage';
 
 import './headerRoom.html';
 
@@ -29,6 +30,11 @@ const getUserStatusText = (id) => {
 Template.headerRoom.helpers({
 	isDiscussion: () => Template.instance().state.get('discussion'),
 	isNotMobile: () => !isMobile(),
+	hasPresence() {
+		const room = Rooms.findOne(this._id);
+		return !roomTypes.getConfig(room.t).isGroupChat(room);
+	},
+	isDirect() { return Rooms.findOne(this._id).t === 'd'; },
 	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
 	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
@@ -39,6 +45,9 @@ Template.headerRoom.helpers({
 			return;
 		}
 		return Session.get('openSearchPage');
+	},
+	uid() {
+		return getUidDirectMessage(this._id);
 	},
 	back() {
 		return Template.instance().data.back;
@@ -51,7 +60,7 @@ Template.headerRoom.helpers({
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return roomTypes.getSecondaryRoomName(roomData.t, roomData) || roomTypes.getRoomName(roomData.t, roomData);
+		return roomTypes.getConfig(roomData.t).getAvatarPath(roomData);
 	},
 	buttons() {
 		return TabBar.getButtons();
@@ -61,11 +70,6 @@ Template.headerRoom.helpers({
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
-
-	isDirect() {
-		return Rooms.findOne(this._id).t === 'd';
-	},
-
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -210,7 +214,7 @@ const loadUserStatusText = () => {
 		return;
 	}
 
-	const userId = id.replace(Meteor.userId(), '');
+	const userId = getUidDirectMessage(id);
 
 	// If the user is already on the local collection, the method call is not necessary
 	const found = Meteor.users.findOne(userId, { fields: { _id: 1 } });

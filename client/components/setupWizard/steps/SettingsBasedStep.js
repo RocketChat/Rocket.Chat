@@ -53,9 +53,9 @@ export function SettingsBasedStep({ step, title, active }) {
 		resetFields(
 			settings
 				.filter(({ wizard }) => wizard.step === step)
-				.filter(({ type }) => ['string', 'select', 'language'].includes(type))
+				.filter(({ type }) => ['string', 'select', 'language', 'boolean'].includes(type))
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
-				.map(({ value, ...field }) => ({ ...field, value: value || '' })),
+				.map(({ value, ...field }) => ({ ...field, value: value != null ? value : '' })),
 		);
 	}, [settings, currentStep]);
 
@@ -133,6 +133,20 @@ export function SettingsBasedStep({ step, title, active }) {
 								value={value}
 								onChange={(value) => setFieldValue(_id, value)}
 								options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
+							/>}
+
+							{type === 'boolean' && <Select
+								type='select'
+								data-qa={_id}
+								id={_id}
+								name={_id}
+								ref={i === 0 ? autoFocusRef : undefined}
+								value={String(value)}
+								onChange={(value) => setFieldValue(_id, value === 'true')}
+								options={[
+									['true', t('Yes')],
+									['false', t('No')],
+								]}
 							/>}
 
 							{type === 'language' && <Select
