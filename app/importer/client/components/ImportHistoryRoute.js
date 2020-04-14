@@ -128,7 +128,7 @@ function ImportHistoryRoute() {
 								</div>
 
 								<div className='section'>
-									<ImportOperationSummary operation={operation} />
+									<ImportOperationSummary {...operation} />
 
 									{canContinueOperation
 										? <button className='rc-button rc-button--primary action prepare-btn' onClick={handlePrepareImportClick}>{t('Continue')}</button>
@@ -143,8 +143,8 @@ function ImportHistoryRoute() {
 								</div>
 
 								{history.map((_operation) => (operation?._id !== _operation._id || !operation?.valid)
-									&& <div className='section'>
-										<ImportOperationSummary operation={_operation} />
+									&& <div key={_operation._id} className='section'>
+										<ImportOperationSummary {..._operation} />
 									</div>)}
 							</>}
 						</>}
