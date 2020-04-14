@@ -133,4 +133,8 @@ export class PublicRoomType extends RoomTypeConfig {
 
 		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
 	}
+
+	getDiscussionType() {
+		return 'c';
+	}
 }
