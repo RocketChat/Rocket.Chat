@@ -13,6 +13,8 @@ const avatarBase = { baseUrl: '/avatar/' };
 export function DirectoryPage() {
 	const t = useTranslation();
 
+	const defaultTab = useSetting('Accounts_Directory_DefaultView');
+
 	const federationEnabled = useSetting('FEDERATION_Enabled');
 
 	const tab = useRouteParameter('tab');
@@ -22,13 +24,13 @@ export function DirectoryPage() {
 
 	useEffect(() => {
 		if (!tab || (tab === 'external' && !federationEnabled)) {
-			return goToDirectory.replacingState({ tab: 'channels' });
+			return goToDirectory.replacingState({ tab: defaultTab });
 		}
-	}, [tab, federationEnabled]);
+	}, [tab, federationEnabled, defaultTab]);
 
 	return <Avatar.Context.Provider value={avatarBase}><Page>
 		<Page.Header title={t('Directory')} />
-		<Tabs>
+		<Tabs flexShrink={0} >
 			<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')}</Tabs.Item>
 			<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')}</Tabs.Item>
 			{ federationEnabled && <Tabs.Item selected={tab === 'external'} onClick={handleTabClick('external')}>{t('External_Users')}</Tabs.Item> }

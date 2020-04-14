@@ -23,4 +23,38 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 	},
 });
 
+
+LivechatRooms.prototype.setPredictedVisitorAbandonment = function(roomId, willBeAbandonedAt) {
+	const query = {
+		_id: roomId,
+	};
+	const update = {
+		$set: {
+			'omnichannel.predictedVisitorAbandonmentAt': willBeAbandonedAt,
+		},
+	};
+
+	return this.update(query, update);
+};
+
+LivechatRooms.prototype.findAbandonedOpenRooms = function(date) {
+	return this.find({
+		'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
+		waitingResponse: { $exists: false },
+		closedAt: { $exists: false },
+		open: true,
+	});
+};
+
+LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
+	return this.update({
+		open: true,
+		t: 'l',
+	}, {
+		$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
+	}, {
+		multi: true,
+	});
+};
+
 export default LivechatRooms;
