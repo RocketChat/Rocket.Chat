@@ -47,15 +47,15 @@ export function ChannelsTab() {
 		mediaQuery && <Th key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage' style={{ width: '150px' }}>{t('Last_Message')}</Th>,
 	].filter(Boolean), [sort, mediaQuery]);
 
-	const go = useRoute('channel');
+	const channelRoute = useRoute('channel');
 
 	const data = useEndpointData('GET', 'directory', query) || {};
 
 	const onClick = useMemo(() => (name) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {
-			go({ name });
+			channelRoute.push({ name });
 		}
-	}, []);
+	}, [channelRoute]);
 
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>

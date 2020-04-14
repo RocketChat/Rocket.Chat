@@ -11,14 +11,14 @@ export function PageNotFound() {
 	useWipeInitialPageLoading();
 
 	const t = useTranslation();
-	const goToHome = useRoute('home');
+	const homeRoute = useRoute('home');
 
 	const handleGoToPreviousPageClick = () => {
 		window.history.back();
 	};
 
 	const handleGoHomeClick = () => {
-		goToHome();
+		homeRoute.push();
 	};
 
 	return <>
