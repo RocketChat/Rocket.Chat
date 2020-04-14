@@ -15,10 +15,6 @@ registerAdminRoute('/import/new', {
 registerAdminRoute('/import/prepare', {
 	name: 'admin-import-prepare',
 	lazyRouteComponent: () => import('./components/PrepareImportRoute'),
-	async action() {
-		await import('./admin/adminImportPrepare');
-		BlazeLayout.render('main', { center: 'adminImportPrepare' });
-	},
 });
 
 registerAdminRoute('/import/progress', {
