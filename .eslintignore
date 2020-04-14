@@ -8,7 +8,6 @@ app/katex/client/katex/katex.min.js
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 packages/rocketchat-livechat/assets/rocket-livechat.js
 app/theme/client/vendor/
-app/ui/client/lib/customEventPolyfill.js
 app/ui/client/lib/Modernizr.js
 public/mp3-realtime-worker.js
 public/lame.min.js

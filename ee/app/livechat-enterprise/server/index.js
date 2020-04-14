@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import './hooks/addDepartmentAncestors';
 import './hooks/afterForwardChatToDepartment';
 import './hooks/beforeListTags';
+import './hooks/setPredictedVisitorAbandonmentTime';
 import './methods/addMonitor';
 import './methods/getUnitsFromUserRoles';
 import './methods/removeMonitor';
