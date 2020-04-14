@@ -1,7 +1,8 @@
 import { Random } from 'meteor/random';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import './email';
+import { MessageTypesValues } from '../../lib/MessageTypes';
 
 // Insert server unique id if it doesn't exist
 settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
@@ -96,7 +97,7 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_SearchFields', 'username, name', {
+	this.add('Accounts_SearchFields', '', {
 		type: 'string',
 		public: true,
 	});
@@ -124,7 +125,7 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
-		this.add('Accounts_RequireNameForSignUp', true, {
+		this.add('Accounts_RequireNameForSignUp', true, { // TODO rename to Accounts_RequireFullName
 			type: 'boolean',
 			public: true,
 		});
@@ -142,6 +143,9 @@ settings.addGroup('Accounts', function() {
 					$ne: '',
 				},
 			},
+		});
+		this.add('Accounts_Verify_Email_For_External_Accounts', true, {
+			type: 'boolean',
 		});
 		this.add('Accounts_ManuallyApproveNewUsers', false, {
 			public: true,
@@ -377,11 +381,29 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_Avatars_Sidebar',
 		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Unread_on_top',
 		});
+
+		this.add('Accounts_Default_User_Preferences_sidebarSortby', 'activity', {
+			type: 'select',
+			values: [
+				{
+					key: 'activity',
+					i18nLabel: 'Activity',
+				},
+				{
+					key: 'alphabetical',
+					i18nLabel: 'Alphabetical',
+				},
+			],
+			public: true,
+			i18nLabel: 'Sort_By',
+		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
 			type: 'boolean',
 			public: true,
@@ -827,6 +849,12 @@ settings.addGroup('General', function() {
 		],
 		public: true,
 	});
+
+	this.add('DeepLink_Url', 'https://go.rocket.chat', {
+		type: 'string',
+		public: true,
+	});
+
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		public: true,
@@ -1098,50 +1126,13 @@ settings.addGroup('Message', function() {
 	this.add('Hide_System_Messages', [], {
 		type: 'multiSelect',
 		public: true,
-		values: [
-			{
-				key: 'uj',
-				i18nLabel: 'Message_HideType_uj',
-			}, {
-				key: 'ul',
-				i18nLabel: 'Message_HideType_ul',
-			}, {
-				key: 'ru',
-				i18nLabel: 'Message_HideType_ru',
-			}, {
-				key: 'au',
-				i18nLabel: 'Message_HideType_au',
-			}, {
-				key: 'mute_unmute',
-				i18nLabel: 'Message_HideType_mute_unmute',
-			}, {
-				key: 'r',
-				i18nLabel: 'Message_HideType_r',
-			}, {
-				key: 'ut',
-				i18nLabel: 'Message_HideType_ut',
-			}, {
-				key: 'wm',
-				i18nLabel: 'Message_HideType_wm',
-			}, {
-				key: 'rm',
-				i18nLabel: 'Message_HideType_rm',
-			}, {
-				key: 'subscription_role_added',
-				i18nLabel: 'Message_HideType_subscription_role_added',
-			}, {
-				key: 'subscription_role_removed',
-				i18nLabel: 'Message_HideType_subscription_role_removed',
-			}, {
-				key: 'room_archived',
-				i18nLabel: 'Message_HideType_room_archived',
-			}, {
-				key: 'room_unarchived',
-				i18nLabel: 'Message_HideType_room_unarchived',
-			},
-		],
+		values: MessageTypesValues,
 	});
 
+	this.add('DirectMesssage_maxUsers', 8, {
+		type: 'int',
+		public: true,
+	});
 
 	this.add('Message_ErasureType', 'Delete', {
 		type: 'select',
@@ -1202,7 +1193,7 @@ settings.addGroup('Push', function() {
 			value: true,
 		},
 	});
-	this.add('Push_send_interval', 5000, {
+	this.add('Push_send_interval', 2000, {
 		type: 'int',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
@@ -1211,7 +1202,7 @@ settings.addGroup('Push', function() {
 			value: true,
 		},
 	});
-	this.add('Push_send_batch_size', 10, {
+	this.add('Push_send_batch_size', 100, {
 		type: 'int',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
@@ -1320,6 +1311,10 @@ settings.addGroup('Layout', function() {
 	this.section('Content', function() {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
+			public: true,
+		});
+		this.add('Layout_Show_Home_Button', true, {
+			type: 'boolean',
 			public: true,
 		});
 		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {
@@ -1482,6 +1477,16 @@ settings.addGroup('Logs', function() {
 		this.add('Prometheus_Port', 9458, {
 			type: 'string',
 			i18nLabel: 'Port',
+		});
+		this.add('Prometheus_Reset_Interval', 0, {
+			type: 'int',
+		});
+		this.add('Prometheus_Garbage_Collector', false, {
+			type: 'boolean',
+			alert: 'Prometheus_Garbage_Collector_Alert',
+		});
+		this.add('Prometheus_API_User_Agent', false, {
+			type: 'boolean',
 		});
 	});
 });
@@ -2841,6 +2846,41 @@ settings.addGroup('Rate Limiter', function() {
 		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+	});
+});
+
+settings.addGroup('Troubleshoot', function() {
+	this.add('Troubleshoot_Disable_Notifications', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Notifications_Alert',
+	});
+	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Sessions_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Sessions_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Statistics_Generator', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Statistics_Generator_Alert',
+	});
+	this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Workspace_Sync', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 	});
 });
 
