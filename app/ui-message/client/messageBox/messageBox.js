@@ -38,6 +38,33 @@ import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
 
+function checkCurrentChannelForTextInputLimit() {
+	const { subscription } = Template.currentData();
+	const currentChannelName = subscription.name;
+
+	const limitedChannelNamesList = settings.get('Message_Specific_Channel_Input_ChannelNames');
+	const sortedChannelNames = limitedChannelNamesList.split(',').filter(Boolean).map((domain) => domain.trim());
+
+	if (sortedChannelNames.includes(currentChannelName)) {
+		const indexChannelName = sortedChannelNames.indexOf(currentChannelName);
+		const channelTextLimit = sortedChannelNames[indexChannelName + 1];
+
+		if (!channelTextLimit || isNaN(channelTextLimit) === true) {
+			return {
+				status: false,
+			};
+		}
+
+		return {
+			status: true,
+			channelTextLimit,
+		};
+	}
+	return {
+		status: false,
+	};
+}
+
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
 	this.popupConfig = new ReactiveVar(null);
@@ -103,6 +130,33 @@ Template.messageBox.onCreated(function() {
 			input.focus();
 		});
 	};
+
+	const { rid, subscription } = Template.currentData();
+
+	if (settings.get('Message_Specific_Channel_Input_Limit_Allowed') !== false) {
+		const isChannelCharLimitEnabled = checkCurrentChannelForTextInputLimit();
+
+		if (isChannelCharLimitEnabled.status === true) {
+			Session.set(`isCharLimitEnabledIn${ rid }`, isChannelCharLimitEnabled.status);
+			Session.set(`CharLimitFor${ rid }`, isChannelCharLimitEnabled.channelTextLimit);
+		} else {
+			Session.set(`isCharLimitEnabledIn${ rid }`, isChannelCharLimitEnabled.status);
+		}
+	}
+
+	if (subscription.t === 'd' && settings.get('Bot_Direct_Message_Char_Limit_Allow') !== false) {
+		Meteor.call('checkIfDirectMessageRecipientIsBot', rid, function(err, res) {
+			if (err) {
+				Session.set(`isDMCharLimitEnabledIn${ rid }`, false);
+			}
+
+			if (res === true) {
+				Session.set(`isDMCharLimitEnabledIn${ rid }`, res);
+			} else {
+				Session.set(`isDMCharLimitEnabledIn${ rid }`, res);
+			}
+		});
+	}
 });
 
 Template.messageBox.onRendered(function() {
@@ -112,6 +166,7 @@ Template.messageBox.onRendered(function() {
 		const messages = $input.data('reply') || [];
 		this.replyMessageData.set(messages);
 	});
+
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
 		const room = Session.get(`roomData${ rid }`);
@@ -183,23 +238,6 @@ Template.messageBox.onDestroyed(function() {
 	this.autogrow.destroy();
 });
 
-function checkCurrentChannelForTextInputLimit() {
-	if (settings.get('Message_Specific_Channel_Input_Limit_Allowed') !== false) {
-		let limitChannelNamesArr = [];
-
-		const { subscription } = Template.currentData();
-		const currentChannelName = subscription.name;
-
-		const limitedChannelNamesList = settings.get('Message_Specific_Channel_Input_ChannelNames');
-		const sortedChannelNames = limitedChannelNamesList.split(',').filter(Boolean).map((domain) => domain.trim());
-		limitChannelNamesArr = sortedChannelNames;
-
-		const isCurrentChannelInputLimited = limitChannelNamesArr.includes(currentChannelName);
-		return isCurrentChannelInputLimited;
-	}
-	return false;
-}
-
 Template.messageBox.helpers({
 	isAnonymousOrMustJoinWithCode() {
 		const instance = Template.instance();
@@ -250,11 +288,28 @@ Template.messageBox.helpers({
 		};
 	},
 	isChannelTextLimitEnabled() {
-		return checkCurrentChannelForTextInputLimit();
+		const { rid } = Template.currentData();
+
+		const isBotDMCharLimitEnabled = Session.get(`isDMCharLimitEnabledIn${ rid }`);
+
+		if (isBotDMCharLimitEnabled && isBotDMCharLimitEnabled !== false) {
+			return Session.get(`isDMCharLimitEnabledIn${ rid }`);
+		}
+
+		return Session.get(`isCharLimitEnabledIn${ rid }`);
 	},
 	maxMessageLength() {
-		if (checkCurrentChannelForTextInputLimit() !== false) {
-			return settings.get('Message_Specific_Channel_Input_MaxAllowedSize');
+		const { rid } = Template.currentData();
+
+		const isBotDMCharLimitEnabled = Session.get(`isDMCharLimitEnabledIn${ rid }`);
+		const isChannelCharLimitEnabled = Session.get(`isCharLimitEnabledIn${ rid }`);
+
+		if (isBotDMCharLimitEnabled && isBotDMCharLimitEnabled !== false) {
+			return settings.get('Bot_Direct_Message_Char_Limit_MaxAllowedSize');
+		}
+
+		if (isChannelCharLimitEnabled && isChannelCharLimitEnabled !== false) {
+			return Session.get(`CharLimitFor${ rid }`);
 		}
 
 		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
@@ -437,8 +492,23 @@ Template.messageBox.events({
 
 		instance.isSendIconVisible.set(!!input.value);
 
-		if (checkCurrentChannelForTextInputLimit() !== false) {
-			const maxAllowedCharacters = settings.get('Message_Specific_Channel_Input_MaxAllowedSize');
+		const { rid } = this;
+
+		const isChannelCharLimitEnabled = Session.get(`isCharLimitEnabledIn${ rid }`);
+		const isBotDMCharLimitEnabled = Session.get(`isDMCharLimitEnabledIn${ rid }`);
+
+		if (isChannelCharLimitEnabled && isChannelCharLimitEnabled !== false) {
+			const maxAllowedCharacters = Session.get(`CharLimitFor${ rid }`);
+
+			const inputCharLength = input.value.length;
+
+			const inputPercentage = inputCharLength / maxAllowedCharacters * 100;
+			const progressPercentage = 100 - inputPercentage;
+			Session.set('textLimitProgressCircleValue', progressPercentage);
+		}
+
+		if (isBotDMCharLimitEnabled && isBotDMCharLimitEnabled !== false) {
+			const maxAllowedCharacters = settings.get('Bot_Direct_Message_Char_Limit_MaxAllowedSize');
 
 			const inputCharLength = input.value.length;
 
@@ -451,7 +521,7 @@ Template.messageBox.events({
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
 
-		const { rid, tmid, onValueChanged } = this;
+		const { tmid, onValueChanged } = this;
 		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
 	},
 	'propertychange .js-input-message'(event, instance) {
@@ -466,8 +536,23 @@ Template.messageBox.events({
 
 		instance.sendIconDisabled.set(!!input.value);
 
-		if (checkCurrentChannelForTextInputLimit() !== false) {
-			const maxAllowedCharacters = settings.get('Message_Specific_Channel_Input_MaxAllowedSize');
+		const { rid } = this;
+
+		const isChannelCharLimitEnabled = Session.get(`isCharLimitEnabledIn${ rid }`);
+		const isBotDMCharLimitEnabled = Session.get(`isDMCharLimitEnabledIn${ rid }`);
+
+		if (isChannelCharLimitEnabled && isChannelCharLimitEnabled !== false) {
+			const maxAllowedCharacters = Session.get(`CharLimitFor${ rid }`);
+
+			const inputCharLength = input.value.length;
+
+			const inputPercentage = inputCharLength / maxAllowedCharacters * 100;
+			const progressPercentage = 100 - inputPercentage;
+			Session.set('textLimitProgressCircleValue', progressPercentage);
+		}
+
+		if (isBotDMCharLimitEnabled && isBotDMCharLimitEnabled !== false) {
+			const maxAllowedCharacters = settings.get('Bot_Direct_Message_Char_Limit_MaxAllowedSize');
 
 			const inputCharLength = input.value.length;
 
@@ -480,7 +565,7 @@ Template.messageBox.events({
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
 
-		const { rid, tmid, onValueChanged } = this;
+		const { tmid, onValueChanged } = this;
 		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
 	},
 	async 'click .js-send'(event, instance) {

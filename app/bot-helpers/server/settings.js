@@ -10,5 +10,19 @@ Meteor.startup(function() {
 			i18nLabel: 'BotHelpers_userFields',
 			i18nDescription: 'BotHelpers_userFields_Description',
 		});
+		this.add('Bot_Direct_Message_Char_Limit_Allow', false, {
+			type: 'boolean',
+			public: true,
+			section: 'Bot Direct Message Input Limit',
+		});
+		this.add('Bot_Direct_Message_Char_Limit_MaxAllowedSize', '125', {
+			type: 'int',
+			public: true,
+			section: 'Bot Direct Message Input Limit',
+			enableQuery: {
+				_id: 'Bot_Direct_Message_Char_Limit_Allow',
+				value: true,
+			},
+		});
 	});
 });

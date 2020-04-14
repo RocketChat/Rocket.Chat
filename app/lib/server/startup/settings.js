@@ -1063,14 +1063,6 @@ settings.addGroup('Message', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_Specific_Channel_Input_MaxAllowedSize', 125, {
-		type: 'int',
-		public: true,
-		enableQuery: {
-			_id: 'Message_Specific_Channel_Input_Limit_Allowed',
-			value: true,
-		},
-	});
 	this.add('Message_Specific_Channel_Input_ChannelNames', '', {
 		type: 'string',
 		public: true,
