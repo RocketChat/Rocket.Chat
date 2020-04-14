@@ -570,18 +570,20 @@ SAML.prototype.verifySignatures = function(response, assertion, xml) {
 
 	const signatureType = this.options.signatureValidationType;
 
-	if (signatureType === 'None') {
-		return;
-	}
-
-	const checkResponse = signatureType === 'Response' || signatureType === 'All';
-	const checkAssertion = signatureType === 'Assertion' || signatureType === 'All';
+	const checkEither = signatureType === 'Either';
+	const checkResponse = signatureType === 'Response' || signatureType === 'All' || checkEither;
+	const checkAssertion = signatureType === 'Assertion' || signatureType === 'All' || checkEither;
+	let anyValidSignature = false;
 
 	if (checkResponse) {
 		debugLog('Verify Document Signature');
 		if (!this.validateResponseSignature(xml, this.options.cert, response)) {
-			debugLog('Document Signature WRONG');
-			throw new Error('Invalid Signature');
+			if (!checkEither) {
+				debugLog('Document Signature WRONG');
+				throw new Error('Invalid Signature');
+			}
+		} else {
+			anyValidSignature = true;
 		}
 		debugLog('Document Signature OK');
 	}
@@ -589,10 +591,19 @@ SAML.prototype.verifySignatures = function(response, assertion, xml) {
 	if (checkAssertion) {
 		debugLog('Verify Assertion Signature');
 		if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
-			debugLog('Assertion Signature WRONG');
-			throw new Error('Invalid Assertion signature');
+			if (!checkEither) {
+				debugLog('Assertion Signature WRONG');
+				throw new Error('Invalid Assertion signature');
+			}
+		} else {
+			anyValidSignature = true;
 		}
 		debugLog('Assertion Signature OK');
+	}
+
+	if (checkEither && !anyValidSignature) {
+		debugLog('No Valid Signature');
+		throw new Error('No valid SAML Signature found');
 	}
 };
 

@@ -65,9 +65,9 @@ Meteor.methods({
 		settings.add(`SAML_Custom_${ name }_signature_validation_type`, 'All', {
 			type: 'select',
 			values: [
-				{ key: 'None', i18nLabel: 'SAML_Custom_signature_validation_none' },
 				{ key: 'Response', i18nLabel: 'SAML_Custom_signature_validation_response' },
 				{ key: 'Assertion', i18nLabel: 'SAML_Custom_signature_validation_assertion' },
+				{ key: 'Either', i18nLabel: 'SAML_Custom_signature_validation_either' },
 				{ key: 'All', i18nLabel: 'SAML_Custom_signature_validation_all' },
 			],
 			group: 'SAML',
