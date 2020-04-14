@@ -17,6 +17,7 @@ import './hooks/sendToCRM';
 import './hooks/sendToFacebook';
 import './hooks/processRoomAbandonment';
 import './hooks/saveLastVisitorMessageTs';
+import './hooks/markRoomNotResponded';
 import './methods/addAgent';
 import './methods/addManager';
 import './methods/changeLivechatStatus';
@@ -81,5 +82,6 @@ import './lib/stream/queueManager';
 import './sendMessageBySMS';
 import './api';
 import './api/rest';
+import './externalFrame';
 
 export { Livechat } from './lib/Livechat';

@@ -147,6 +147,7 @@ Meteor.methods({
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Custom_Authn_Context',
+			i18nDescription: 'SAML_Custom_Authn_Context_description',
 		});
 		settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "cn": "name"}', {
 			type: 'string',

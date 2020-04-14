@@ -109,3 +109,4 @@ import '../app/action-links';
 import '../app/reactions/client';
 import '../app/livechat/client';
 import '../app/meteor-autocomplete/client';
+import '../app/theme/client';

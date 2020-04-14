@@ -64,6 +64,6 @@ export async function findOneInquiryByRoomId({ userId, roomId }) {
 	}
 
 	return {
-		inquiry: await LivechatInquiry.findOneQueuedByRoomId(roomId),
+		inquiry: await LivechatInquiry.findOneByRoomId(roomId),
 	};
 }

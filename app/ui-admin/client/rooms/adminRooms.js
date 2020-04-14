@@ -120,7 +120,7 @@ Template.adminRooms.onCreated(function() {
 
 	ChannelSettings.addOption({
 		group: ['admin-room'],
-		id: 'make-default',
+		id: 'make-featured',
 		template: 'channelSettingsFeatured',
 		data() {
 			return {
