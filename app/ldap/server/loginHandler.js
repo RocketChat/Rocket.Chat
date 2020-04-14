@@ -158,7 +158,7 @@ callbacks.add('beforeValidateLogin', (login) => {
 		return login;
 	}
 
-	if (login.type === 'ldap') {
+	if (login.type === 'ldap' || login.type === 'resume') {
 		return login;
 	}
 
