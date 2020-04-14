@@ -2,9 +2,10 @@ import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 export const RouterContext = createContext({
-	navigateTo: () => {},
-	replaceWith: () => {},
-	getRoutePath: () => null,
+	getRoutePath: () => {},
+	subscribeToRoutePath: () => {},
+	pushRoute: () => {},
+	replaceRoute: () => {},
 	getRouteParameter: () => {},
 	subscribeToRouteParameter: () => {},
 	getQueryStringParameter: () => {},
@@ -12,13 +13,24 @@ export const RouterContext = createContext({
 });
 
 export const useRoute = (pathDefinition) => {
-	const { navigateTo, replaceWith } = useContext(RouterContext);
+	const { getRoutePath, pushRoute, replaceRoute } = useContext(RouterContext);
 
-	return useMemo(() => {
-		const navigate = (...args) => navigateTo(pathDefinition, ...args);
-		navigate.replacingState = (...args) => replaceWith(pathDefinition, ...args);
-		return navigate;
-	}, [navigateTo, replaceWith]);
+	return useMemo(() => ({
+		getPath: (...args) => getRoutePath(pathDefinition, ...args),
+		push: (...args) => pushRoute(pathDefinition, ...args),
+		replace: (...args) => replaceRoute(pathDefinition, ...args),
+	}), [getRoutePath, pushRoute, replaceRoute]);
+};
+
+export const useRoutePath = (pathDefinition, params, queryStringParams) => {
+	const { getRoutePath, subscribeToRoutePath } = useContext(RouterContext);
+
+	const subscription = useMemo(() => ({
+		getCurrentValue: () => getRoutePath(pathDefinition, params, queryStringParams),
+		subscribe: (callback) => subscribeToRoutePath(pathDefinition, params, queryStringParams, callback),
+	}), [pathDefinition, params, queryStringParams, getRoutePath, subscribeToRoutePath]);
+
+	return useSubscription(subscription);
 };
 
 export const useRouteParameter = (name) => {
