@@ -22,6 +22,7 @@ const fullFields = {
 	emails: 1,
 	phone: 1,
 	statusConnection: 1,
+	bio: 1,
 	createdAt: 1,
 	lastLogin: 1,
 	services: 1,

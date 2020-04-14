@@ -405,6 +405,9 @@ export const FileUpload = {
 	},
 
 	removeFilesByRoomId(rid) {
+		if (typeof rid !== 'string' || rid.trim().length === 0) {
+			return;
+		}
 		Messages.find({
 			rid,
 			'file._id': {
