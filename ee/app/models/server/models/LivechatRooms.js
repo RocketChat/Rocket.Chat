@@ -2,7 +2,6 @@ import { LivechatRooms } from '../../../../../app/models/server/models/LivechatR
 import { logger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../livechat-enterprise/server/lib/query.helper';
 import { overwriteClassOnLicense } from '../../../license/server';
-import LivechatPriority from './LivechatPriority';
 
 const applyRestrictions = (method) => function(originalFn, originalQuery, ...args) {
 	const query = addQueryRestrictionsToRoomsModel(originalQuery);
