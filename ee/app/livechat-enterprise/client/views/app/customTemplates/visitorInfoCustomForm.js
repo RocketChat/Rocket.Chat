@@ -18,7 +18,7 @@ Template.visitorInfoCustomForm.onCreated(function() {
 		// because the parent form may not be rerender, only the dynamic template data
 		const { omnichannel: { priorityId = null } = {} } = this.data.get();
 		if (priorityId) {
-			const priority = await APIClient.v1.get(`livechat/priorities.getOne?priorityId=${ id }`);
+			const priority = await APIClient.v1.get(`livechat/priorities.getOne?priorityId=${ priorityId }`);
 			this.priority.set(priority);
 		}
 	});

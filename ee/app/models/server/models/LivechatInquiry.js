@@ -1,6 +1,6 @@
 import { LivechatInquiry } from '../../../../../app/models/server/models/LivechatInquiry';
 
-LivechatInquiry.prototype.setEstimatedServiceTimeAt = function(rid, estimatedServiceTimeInSeconds) {
+LivechatInquiry.prototype.setEstimatedServiceTimeAt = function(rid /*, estimatedServiceTimeInSeconds*/) {
 	if (!priority) {
 		return this.update({ rid }, {
 			$unset: {
