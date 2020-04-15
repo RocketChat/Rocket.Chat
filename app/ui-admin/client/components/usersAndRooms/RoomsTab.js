@@ -4,7 +4,6 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { DirectoryTable, Th } from '../../../../ui/client/views/app/components/Directory/DirectoryTable';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-// import { usePermission } from '../../../contexts/AuthorizationContext';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -33,7 +32,7 @@ export function RoomsTab({
 }) {
 	const t = useTranslation();
 
-	const mediaQuery = useMediaQuery('(min-width: 700px)');
+	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,

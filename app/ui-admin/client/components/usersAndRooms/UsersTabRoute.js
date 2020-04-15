@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import _ from 'underscore';
 
-import { useRoute } from '../../../../../client/contexts/RouterContext';
+import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
 
-import { UsersAndRooms, UsersTab } from '.';
+import { UsersAndRooms, UsersTab, useSwitchTab } from '.';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -22,22 +23,19 @@ const useQuery = (params, sort) => useMemo(() => ({
 	...params.current && { offset: params.current },
 }), [params, sort]);
 
-
 export default function RoomsTabRoute({ props }) {
+	const canViewUserAdministration = usePermission('view-user-administration');
+
 	const [params, setParams] = useState({});
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const query = useQuery(params, sort);
 
-	const go = useRoute('direct');
+	const switchTab = useSwitchTab();
 
 	const data = useEndpointData('GET', 'users.list', query) || {};
 
-	const onClick = useMemo(() => (username) => (e) => {
-		if (e.type === 'click' || e.key === 'Enter') {
-			go({ rid: username });
-		}
-	}, []);
+	const onClick = () => {};
 
 	const onHeaderClick = (id) => {
 		const [sortBy, sortDirection] = sort;
@@ -49,7 +47,8 @@ export default function RoomsTabRoute({ props }) {
 		setSort([id, 'asc']);
 	};
 
-	return <UsersAndRooms tab='users' {...props}>
+	return canViewUserAdministration ? <UsersAndRooms switchTab={switchTab} tab='users' {...props}>
 		<UsersTab setParams={_.debounce(setParams, 300)} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
-	</UsersAndRooms>;
+	</UsersAndRooms>
+		: <NotAuthorizedPage />;
 }
