@@ -5,7 +5,7 @@ registerAdminRoute('/import', {
 	lazyRouteComponent: () => import('./components/ImportHistoryRoute'),
 });
 
-registerAdminRoute('/import/new', {
+registerAdminRoute('/import/new/:importerKey?', {
 	name: 'admin-import-new',
 	lazyRouteComponent: () => import('./components/NewImportRoute'),
 });
