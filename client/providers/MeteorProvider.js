@@ -34,3 +34,5 @@ export function MeteorProvider({ children }) {
 		</ServerProvider>
 	</ConnectionStatusProvider>;
 }
+
+export default MeteorProvider;

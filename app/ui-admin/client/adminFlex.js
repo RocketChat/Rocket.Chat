@@ -5,10 +5,11 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings';
-import { menu, SideNav, AdminBox, Layout } from '../../ui-utils/client';
+import { menu, SideNav, Layout } from '../../ui-utils/client';
 import { t } from '../../utils';
 import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
 import { hasAtLeastOnePermission } from '../../authorization/client';
+import { getSidebarItems } from './sidebarItems';
 
 Template.adminFlex.onCreated(function() {
 	this.isEmbedded = Layout.isEmbedded();
@@ -65,7 +66,7 @@ Template.adminFlex.helpers({
 	},
 	label,
 	adminBoxOptions() {
-		return AdminBox.getOptions();
+		return getSidebarItems();
 	},
 	menuItem(name, icon, section, group) {
 		return {
