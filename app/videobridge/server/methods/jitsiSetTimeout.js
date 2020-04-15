@@ -29,8 +29,7 @@ Meteor.methods({
 		if (!jitsiTimeout || currentTime > jitsiTimeout - CONSTANTS.TIMEOUT / 2) {
 			Rooms.setJitsiTimeout(rid, new Date(currentTime + CONSTANTS.TIMEOUT));
 		}
-		console.log(`JitsiTimeout => ${jitsiTimeout}
-					 currentTime => ${currentTime}`);
+
 		if (!jitsiTimeout || currentTime > jitsiTimeout) {
 			const message = Messages.createWithTypeRoomIdMessageAndUser('jitsi_call_started', rid, '', Meteor.user(), {
 				actionLinks: [
