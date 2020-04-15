@@ -22,28 +22,3 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
 		return this.update(query, update);
 	},
 });
-
-LivechatRoomsRaw.prototype.setPriorityById = function(_id, priority) {
-	if (!priority) {
-		return this.update({ _id }, {
-			$unset: {
-				'omnichannel.priority': 1,
-				'custom.avatar.color': 1,
-			},
-		});
-	}
-	return this.update({ _id }, {
-		$set: {
-			'omnichannel.priority': {
-				_id: priority._id,
-				name: priority.name,
-				dueTimeInMinutes: parseInt(priority.dueTimeInMinutes),
-			},
-			custom: {
-				avatar: {
-					color: priority.color,
-				},
-			},
-		},
-	});
-};

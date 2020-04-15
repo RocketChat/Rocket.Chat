@@ -8,7 +8,7 @@ import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
 
-export const createLivechatRoom = (rid, name, guest, extraData) => {
+export const createLivechatRoom = (rid, name, guest, extraData = {}) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -45,7 +45,7 @@ export const createLivechatRoom = (rid, name, guest, extraData) => {
 	return roomId;
 };
 
-export const createLivechatInquiry = (rid, name, guest, message, initialStatus) => {
+export const createLivechatInquiry = (rid, name, guest, message, initialStatus, extraData = {}) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -60,11 +60,12 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus) 
 
 	const { _id, username, token, department, status = 'online' } = guest;
 	const { msg } = message;
+	const ts = new Date();
 
-	const inquiry = {
+	const inquiry = Object.assign({
 		rid,
 		name,
-		ts: new Date(),
+		ts,
 		department,
 		message: msg,
 		status: initialStatus || 'ready',
@@ -75,7 +76,9 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus) 
 			status,
 		},
 		t: 'l',
-	};
+		defaultEstimatedSeviceTime: true,
+		estimatedServiceTimeAt: ts,
+	}, extraData);
 	return LivechatInquiry.insert(inquiry);
 };
 

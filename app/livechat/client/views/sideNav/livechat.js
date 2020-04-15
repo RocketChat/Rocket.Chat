@@ -15,29 +15,6 @@ import { initializeLivechatInquiryStream } from '../../lib/stream/queueManager';
 
 import './livechat.html';
 
-const extractPriorityFromRoom = (room) => {
-	const { omnichannel: { priority: { dueTimeInMinutes } = {} } = {} } = room;
-	return dueTimeInMinutes;
-};
-
-const sortRoomsByPriority = (a, b) => {
-	const firstPriority = extractPriorityFromRoom(a);
-	const secondPriority = extractPriorityFromRoom(b);
-	if (!firstPriority) {
-		return 1;
-	}
-	if (!secondPriority) {
-		return -1;
-	}
-	if (firstPriority > secondPriority) {
-		return 1;
-	}
-	if (firstPriority < secondPriority) {
-		return -1;
-	}
-	return 0;
-};
-
 Template.livechat.helpers({
 	isActive() {
 		const query = {
@@ -68,7 +45,8 @@ Template.livechat.helpers({
 
 		const sortBy = getUserPreference(user, 'sidebarSortby');
 		const sort = sortBy === 'activity' ? { _updatedAt: - 1 } : { fname: 1 };
-		return ChatSubscription.find(query, { sort }).fetch().sort(sortRoomsByPriority);
+
+		return ChatSubscription.find(query, { sort });
 	},
 
 	inquiries() {
@@ -76,10 +54,11 @@ Template.livechat.helpers({
 			status: 'queued',
 		}, {
 			sort: {
-				ts: 1,
+				defaultEstimatedSeviceTime: 1,
+				estimatedServiceTimeAt: 1,
 			},
 			limit: Template.instance().inquiriesLimit.get(),
-		}).fetch().sort(sortRoomsByPriority);
+		});
 
 		// for notification sound
 		inqs.forEach((inq) => {
