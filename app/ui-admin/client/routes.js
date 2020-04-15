@@ -38,6 +38,30 @@ registerAdminRoute('/info', {
 	lazyRouteComponent: () => import('./components/info/InformationRoute'),
 });
 
+registerAdminRoute('/mailer', {
+	name: 'admin-mailer',
+	lazyRouteComponent: () => import('./components/mailer'),
+});
+
+// registerAdminRoute('/mailer', {
+// 	name: 'admin-mailer',
+// 	async action() {
+// 		await import('./views');
+// 		return BlazeLayout.render('main', {
+// 			center: 'mailer',
+// 		});
+// 	},
+// });
+
+// FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
+// 	name: 'mailer-unsubscribe',
+// 	async action(params) {
+// 		await import('./views');
+// 		Meteor.call('Mailer:unsubscribe', params._id, params.createdAt);
+// 		return BlazeLayout.render('mailerUnsubscribe');
+// 	},
+// });
+
 registerAdminRoute('/users', {
 	name: 'admin-users',
 	action: async () => {

@@ -2742,6 +2742,7 @@
   "Purchase_for_price": "Purchase for $%s",
   "Query": "Query",
   "Query_description": "Additional conditions for determining which users to send the email to. Unsubscribed users are automatically removed from the query. It must be a valid JSON. Example: \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\"",
+  "Query_is_not_valid_JSON": "Query is not valid JSON",
   "Queue": "Queue",
   "quote": "quote",
   "Quote": "Quote",

@@ -5,6 +5,7 @@ import { hasRole } from '../../../authorization';
 
 Meteor.methods({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {
+		console.log('from ', from, 'subject ', subject, 'body ', body, 'dryrun ', dryrun, 'query ', query);
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
