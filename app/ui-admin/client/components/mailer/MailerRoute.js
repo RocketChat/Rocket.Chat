@@ -1,9 +1,12 @@
 import React from 'react';
 import toastr from 'toastr';
 
+import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useMethod } from '../../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { Mailer } from './Mailer';
+import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
+
 
 const useSendMail = () => {
 	const meteorSendMail = useMethod('Mailer.sendMail');
@@ -26,5 +29,7 @@ const useSendMail = () => {
 };
 
 export default function MailerRoute(props) {
-	return <Mailer sendMail={useSendMail()} {...props} />;
+	const canAccessMailer = usePermission('access-mailer');
+
+	return canAccessMailer ? <Mailer sendMail={useSendMail()} canAccessMailer={canAccessMailer} {...props} /> : <NotAuthorizedPage/>;
 }
