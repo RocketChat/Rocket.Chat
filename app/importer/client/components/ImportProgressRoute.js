@@ -7,6 +7,8 @@ import { ProgressStep, ImportingStartedStates } from '../../lib/ImporterProgress
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { ImporterWebsocketReceiver } from '../ImporterWebsocketReceiver';
 import { handleError, APIClient } from '../../../utils/client';
+import { usePermission } from '../../../../client/contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../../ui-admin/client/components/NotAuthorizedPage';
 
 function ImportProgressRoute() {
 	const t = useTranslation();
@@ -119,6 +121,12 @@ function ImportProgressRoute() {
 			return '';
 		}
 	});
+
+	const canRunImport = usePermission('run-import');
+
+	if (!canRunImport) {
+		return <NotAuthorizedPage />;
+	}
 
 	return <>
 		<Throbber justifyContent='center' />

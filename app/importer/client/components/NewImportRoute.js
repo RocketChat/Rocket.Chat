@@ -10,6 +10,7 @@ import { APIClient } from '../../../utils/client';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { showImporterException } from '../functions/showImporterException';
+import NotAuthorizedPage from '../../../ui-admin/client/components/NotAuthorizedPage';
 
 import { Importers } from '..';
 
@@ -65,7 +66,7 @@ function NewImportRoute() {
 		return message;
 	};
 
-	const goToPrepareImport = useRoute('admin-import-prepare');
+	const prepareImportRoute = useRoute('admin-import-prepare');
 
 	const handleImportFileChange = (event) => {
 		const e = event.originalEvent || event;
@@ -88,7 +89,7 @@ function NewImportRoute() {
 					importerKey: importType,
 				}).then(() => {
 					dispatchToastMessage({ type: 'success', message: t('File_uploaded_successfully') });
-					goToPrepareImport();
+					prepareImportRoute.push();
 				}).catch((error) => {
 					if (error) {
 						showImporterException(error);
@@ -113,7 +114,7 @@ function NewImportRoute() {
 			importerKey: importType,
 		}).then(() => {
 			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
-			goToPrepareImport();
+			prepareImportRoute.push();
 		}).catch((error) => {
 			if (error) {
 				showImporterException(error);
@@ -122,78 +123,76 @@ function NewImportRoute() {
 		});
 	};
 
+	if (!canRunImport) {
+		return <NotAuthorizedPage />;
+	}
+
 	return <Page className='page-settings'>
 		<Page.Header title={pageTitle()} />
 		<Page.ContentShadowScroll>
 			<a href={pathFor('admin-import')}><i className='icon-angle-left'></i> {t('Back_to_imports')}</a><br/><br/>
-
-			{!canRunImport ? (
-				<p>{t('You_are_not_authorized_to_view_this_page')}</p>
+			{preparing ? (
+				<Throbber justifyContent='center' />
 			) : <>
-				{preparing ? (
-					<Throbber justifyContent='center' />
-				) : <>
 
-					<div className='rocket-form'>
-						<div className='section'>
-							<div className='section-content'>
+				<div className='rocket-form'>
+					<div className='section'>
+						<div className='section-content'>
+							<div className='input-line double-col'>
+								<label>{t('Import_Type')}</label>
+								<select name='import-type' className='import-type required rc-input__element' value={importType} onChange={(event) => setImportType(event.currentTarget.value) }>
+									<option value=''>{t('Select_an_option')}</option>
+
+									{Importers.getAll().map((importer) =>
+										<option key={importer.key} value={importer.key}>{t(importer.name)}</option>,
+									)}
+								</select>
+							</div>
+
+							{importType && <>
 								<div className='input-line double-col'>
-									<label>{t('Import_Type')}</label>
-									<select name='import-type' className='import-type required rc-input__element' value={importType} onChange={(event) => setImportType(event.currentTarget.value) }>
-										<option value=''>{t('Select_an_option')}</option>
-
-										{Importers.getAll().map((importer) =>
-											<option key={importer.key} value={importer.key}>{t(importer.name)}</option>,
-										)}
+									<label>{t('File_Type')}</label>
+									<select name='file-type' className='file-type required rc-input__element' value={fileType} onChange={(event) => setFileType(event.currentTarget.value)}>
+										<option value='upload'>{t('Upload')}</option>
+										<option value='url'>{t('Public_URL')}</option>
+										<option value='path'>{t('Server_File_Path')}</option>
 									</select>
 								</div>
 
-								{importType && <>
+								{fileType === 'upload' ? <>
 									<div className='input-line double-col'>
-										<label>{t('File_Type')}</label>
-										<select name='file-type' className='file-type required rc-input__element' value={fileType} onChange={(event) => setFileType(event.currentTarget.value)}>
-											<option value='upload'>{t('Upload')}</option>
-											<option value='url'>{t('Public_URL')}</option>
-											<option value='path'>{t('Server_File_Path')}</option>
-										</select>
+										<label />
+										<div className='section-content'>
+											{fileSizeLimitMessage()}
+										</div>
 									</div>
 
-									{fileType === 'upload' ? <>
+									<div className='input-line double-col'>
+										<label>{t('Importer_Source_File')}</label>
+										<input type='file' className='import-file-input rc-input__element' onChange={handleImportFileChange} />
+									</div>
+								</> : <>
+									{fileType && <>
 										<div className='input-line double-col'>
-											<label />
-											<div className='section-content'>
-												{fileSizeLimitMessage()}
-											</div>
-										</div>
-
-										<div className='input-line double-col'>
-											<label>{t('Importer_Source_File')}</label>
-											<input type='file' className='import-file-input rc-input__element' onChange={handleImportFileChange} />
-										</div>
-									</> : <>
-										{fileType && <>
-											<div className='input-line double-col'>
-												{(fileType === 'url' && <label>{t('File_URL')}</label>)
+											{(fileType === 'url' && <label>{t('File_URL')}</label>)
 												|| (fileType === 'path' && <label>{t('File_Path')}</label>)}
 
-												<input type='text' className='import-file-url rc-input__element' value={fileUrl} onChange={handleFileUrlChange} />
-											</div>
+											<input type='text' className='import-file-url rc-input__element' value={fileUrl} onChange={handleFileUrlChange} />
+										</div>
 
-											<div className='input-line double-col'>
-												<label />
-												<button type='button' className='rc-button rc-button--primary action import-btn' onClick={handleImportClick}>{t('Import')}</button>
-											</div>
-										</>}
+										<div className='input-line double-col'>
+											<label />
+											<button type='button' className='rc-button rc-button--primary action import-btn' onClick={handleImportClick}>{t('Import')}</button>
+										</div>
 									</>}
 								</>}
-
-							</div>
+							</>}
 
 						</div>
+
 					</div>
+				</div>
 
-
-				</>}
 
 			</>}
 		</Page.ContentShadowScroll>

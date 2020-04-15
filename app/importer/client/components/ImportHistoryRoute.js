@@ -1,14 +1,15 @@
-import { Throbber } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Table, Throbber } from '@rocket.chat/fuselage';
 import React, { useState, useEffect, useMemo } from 'react';
 
 import { Page } from '../../../../client/components/basic/Page';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
-import { APIClient } from '../../../utils/client';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { ImportWaitingStates, ImportFileReadyStates, ImportPreparingStartedStates, ImportingStartedStates, ProgressStep } from '../../lib/ImporterProgressStep';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import ImportOperationSummary from './ImportOperationSummary';
+import NotAuthorizedPage from '../../../ui-admin/client/components/NotAuthorizedPage';
+import { useEndpoint } from '../../../../client/contexts/ServerContext';
 
 function ImportHistoryRoute() {
 	const t = useTranslation();
@@ -16,138 +17,151 @@ function ImportHistoryRoute() {
 
 	const canRunImport = usePermission('run-import');
 
-	const [preparing, setPreparing] = useState(true);
-	const [history, setHistory] = useState([]);
-	const [operation, setOperation] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [currentOperation, setCurrentOperation] = useState(false);
+	const [latestOperations, setLatestOperations] = useState([]);
 
-	const anySuccessfulSlackImports = useMemo(() => {
-		if (!history) {
-			return false;
-		}
+	const hasAnySuccessfulSlackImport = useMemo(() =>
+		latestOperations?.some(({ importerKey, status }) => importerKey === 'slack' && status === ProgressStep.DONE), [latestOperations]);
 
-		for (const _operation of history) {
-			if (_operation.importerKey === 'slack' && _operation.status === ProgressStep.DONE) {
-				return true;
-			}
-		}
-
-		return false;
-	}, [history]);
-
-	const canShowCurrentOperation = operation?.valid;
+	const canShowCurrentOperation = currentOperation?.valid;
 
 	const canContinueOperation = useMemo(() => {
-		if (!operation?.valid) {
+		if (!currentOperation?.valid) {
 			return false;
 		}
 
 		const possibleStatus = [ProgressStep.USER_SELECTION].concat(ImportWaitingStates).concat(ImportFileReadyStates).concat(ImportPreparingStartedStates);
-		return possibleStatus.includes(operation.status);
-	}, [operation]);
+		return possibleStatus.includes(currentOperation.status);
+	}, [currentOperation]);
 
 	const canCheckOperationProgress = useMemo(() => {
-		if (!operation?.valid) {
+		if (!currentOperation?.valid) {
 			return false;
 		}
 
-		return ImportingStartedStates.includes(operation.status);
-	}, [operation]);
+		return ImportingStartedStates.includes(currentOperation.status);
+	}, [currentOperation]);
+
+	const getCurrentImportOperation = useEndpoint('GET', 'getCurrentImportOperation');
+	const getLatestImportOperations = useEndpoint('GET', 'getLatestImportOperations');
+	const downloadPendingFiles = useEndpoint('POST', 'downloadPendingFiles');
 
 	useEffect(() => {
-		APIClient.get('v1/getCurrentImportOperation').then((data) => {
-			setOperation(data.operation);
+		let mounted = true;
 
-			APIClient.get('v1/getLatestImportOperations').then((data) => {
-				setHistory(data);
-				setPreparing(false);
-			}).catch((error) => {
-				if (error) {
-					dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') });
-					setPreparing(false);
-				}
-			});
-		}).catch((error) => {
-			if (error) {
-				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Operation') });
-				setPreparing(false);
+		const safe = (fn) => (...args) => {
+			if (!mounted) {
+				return;
 			}
-		});
+
+			fn(...args);
+		};
+
+		const loadData = async () => {
+			safe(setLoading)(true);
+
+			try {
+				const { operation } = await getCurrentImportOperation();
+				safe(setCurrentOperation)(operation);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Operation') });
+			}
+
+			try {
+				const operations = await getLatestImportOperations();
+				safe(setLatestOperations)(operations);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') });
+			}
+
+			safe(setLoading)(false);
+		};
+
+		loadData();
+
+		return () => {
+			mounted = false;
+		};
 	}, []);
 
-	const goToNewImport = useRoute('admin-import-new');
-	const goToImportProgress = useRoute('admin-import-progress');
-	const goToPrepareImport = useRoute('admin-import-prepare');
+	const newImportRoute = useRoute('admin-import-new');
+	const importProgressRoute = useRoute('admin-import-progress');
+	const prepareImportRoute = useRoute('admin-import-prepare');
 
 	const handleNewImportClick = () => {
-		goToNewImport();
+		newImportRoute.push();
 	};
 
-	const handleDownloadPendingFilesClick = () => {
-		setPreparing(true);
+	const handleDownloadPendingFilesClick = async () => {
+		try {
+			setLoading(true);
+			const { count } = await downloadPendingFiles();
 
-		APIClient.post('v1/downloadPendingFiles').then((data) => {
-			setPreparing(false);
-			if (data.count) {
-				dispatchToastMessage({ type: 'success', message: t('File_Downloads_Started') });
-				goToImportProgress();
-			} else {
+			if (count) {
 				dispatchToastMessage({ type: 'success', message: t('No_files_left_to_download') });
+				setLoading(false);
+				return;
 			}
-		}).catch((error) => {
-			setPreparing(false);
+
+			dispatchToastMessage({ type: 'success', message: t('File_Downloads_Started') });
+			importProgressRoute.push();
+		} catch (error) {
 			console.error(error);
 			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
-		});
+			setLoading(false);
+		}
 	};
 
 	const handlePrepareImportClick = () => {
-		goToPrepareImport();
+		prepareImportRoute.push();
 	};
 
 	const handleImportProgressClick = () => {
-		goToImportProgress();
+		importProgressRoute.push();
 	};
 
+	if (!canRunImport) {
+		return <NotAuthorizedPage />;
+	}
+
 	return <Page className='page-settings'>
-		<Page.Header title={t('Import')} />
+		<Page.Header title={t('Import')}>
+			<ButtonGroup>
+				<Button primary disabled={loading} onClick={handleNewImportClick}>{t('Import_New_File')}</Button>
+				{hasAnySuccessfulSlackImport && <Button disabled={loading} onClick={handleDownloadPendingFilesClick}>{t('Download_Pending_Files')}</Button>}
+			</ButtonGroup>
+		</Page.Header>
 		<Page.ContentShadowScroll>
-			{!canRunImport
-				? <p>{t('You_are_not_authorized_to_view_this_page')}</p>
+			{loading
+				? <Throbber justifyContent='center' />
 				: <>
-					{preparing
-						? <Throbber justifyContent='center' />
-						: <>
-							<div className='rc-button__group'>
-								<button className='rc-button rc-button--primary action new-import-btn' onClick={handleNewImportClick}>{t('Import_New_File')}</button>
-								{anySuccessfulSlackImports && <input type='button' className='rc-button action download-slack-files-btn' value={t('Download_Pending_Files')} onClick={handleDownloadPendingFilesClick} />}
-							</div>
 
-							{canShowCurrentOperation && <>
-								<div className='fixed-title'>
-									<h2>{t('Current_Import_Operation')}</h2>
-								</div>
+					{canShowCurrentOperation && <>
+						<div className='fixed-title'>
+							<h2>{t('Current_Import_Operation')}</h2>
+						</div>
 
-								<div className='section'>
-									<ImportOperationSummary {...operation} />
+						<div className='section'>
+							<ImportOperationSummary {...currentOperation} />
 
-									{canContinueOperation
-										? <button className='rc-button rc-button--primary action prepare-btn' onClick={handlePrepareImportClick}>{t('Continue')}</button>
-										: canCheckOperationProgress
+							{canContinueOperation
+								? <button className='rc-button rc-button--primary action prepare-btn' onClick={handlePrepareImportClick}>{t('Continue')}</button>
+								: canCheckOperationProgress
 									&& <button className='rc-button rc-button--primary action progress-btn' onClick={handleImportProgressClick}>{t('Check_Progress')}</button>}
-								</div>
-							</>}
+						</div>
+					</>}
 
-							{history?.length > 0 && <>
-								<div className='fixed-title'>
-									<h2>{t('Recent_Import_History')}</h2>
-								</div>
+					{latestOperations?.length > 0 && <>
+						<div className='fixed-title'>
+							<h2>{t('Recent_Import_History')}</h2>
+						</div>
 
-								{history.map((_operation) => (operation?._id !== _operation._id || !operation?.valid)
-									&& <div key={_operation._id} className='section'>
-										<ImportOperationSummary {..._operation} />
-									</div>)}
-							</>}
-						</>}
+						{latestOperations.map((_operation) => (currentOperation?._id !== _operation._id || !currentOperation?.valid)
+							&& <div key={_operation._id} className='section'>
+								<ImportOperationSummary {..._operation} />
+							</div>)}
+					</>}
 				</>}
 		</Page.ContentShadowScroll>
 	</Page>;

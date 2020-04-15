@@ -10,6 +10,7 @@ import { ProgressStep, ImportWaitingStates, ImportFileReadyStates, ImportPrepari
 import { ImporterWebsocketReceiver } from '../ImporterWebsocketReceiver';
 import { showImporterException } from '../functions/showImporterException';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../../ui-admin/client/components/NotAuthorizedPage';
 
 function PrepareImportRoute() {
 	const t = useTranslation();
@@ -228,32 +229,33 @@ function PrepareImportRoute() {
 		});
 	};
 
+	if (!canRunImport) {
+		return <NotAuthorizedPage />;
+	}
+
 	return <Page className='page-settings'>
 		<Page.Header title={t('Importing_Data')} />
 
 		<Page.ContentShadowScroll>
-			{!canRunImport ? (
-				<p>{t('You_are_not_authorized_to_view_this_page')}</p>
-			) : <>
-				{preparing ? <>
-					{progressRate ? `${ progressRate }%` : ''}
+			{preparing ? <>
+				{progressRate ? `${ progressRate }%` : ''}
 
-					<Throbber justifyContent='center' />
-				</> : <>
-					<a href={pathFor('admin-import')}><i className='icon-angle-left' /> {t('Back_to_imports')}</a><br/><br/>
+				<Throbber justifyContent='center' />
+			</> : <>
+				<a href={pathFor('admin-import')}><i className='icon-angle-left' /> {t('Back_to_imports')}</a><br/><br/>
 
-					<div className='section'>
-						<h1>{t('Actions')}</h1>
-						<div className='section-content'>
-							<button className='button primary start' disabled={startDisabled} onClick={handleStartButtonClick}><i className='icon-send' /><span>{t('Importer_Prepare_Start_Import')}</span></button>
-						</div>
+				<div className='section'>
+					<h1>{t('Actions')}</h1>
+					<div className='section-content'>
+						<button className='button primary start' disabled={startDisabled} onClick={handleStartButtonClick}><i className='icon-send' /><span>{t('Importer_Prepare_Start_Import')}</span></button>
 					</div>
+				</div>
 
-					<div className='section'>
-						<h1>{t('Messages')}: {messageCount}</h1>
-					</div>
+				<div className='section'>
+					<h1>{t('Messages')}: {messageCount}</h1>
+				</div>
 
-					{users.length
+				{users.length
 						&& <div className='section'>
 							<h1>{t('Users')}</h1>
 							<div className='section-content'>
@@ -275,9 +277,9 @@ function PrepareImportRoute() {
 								</ul>
 							</div>
 						</div>
-					}
+				}
 
-					{channels.length
+				{channels.length
 						&& <div className='section'>
 							<h1>{t('Channels')}</h1>
 							<div className='section-content'>
@@ -299,8 +301,7 @@ function PrepareImportRoute() {
 								</ul>
 							</div>
 						</div>
-					}
-				</>}
+				}
 			</>}
 		</Page.ContentShadowScroll>
 	</Page>;
