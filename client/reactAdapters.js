@@ -20,7 +20,7 @@ const mountRoot = async () => {
 	}
 
 	const [
-		{ Suspense, createElement, lazy, useState },
+		{ Component, Fragment, Suspense, createElement, lazy, useLayoutEffect, useState },
 		{ render },
 	] = await Promise.all([
 		import('react'),
@@ -29,14 +29,30 @@ const mountRoot = async () => {
 
 	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
 
+	class Portals extends Component {
+		static getDerivedStateFromError = () => ({})
+
+		render = () => createElement(Fragment, {}, ...this.props.portals)
+	}
+
 	function AppRoot() {
 		const [portals, setPortals] = useState(() => Tracker.nonreactive(() => Array.from(portalsMap.values())));
-		invalidatePortals = () => {
-			setPortals(Array.from(portalsMap.values()));
-		};
+
+		useLayoutEffect(() => {
+			invalidatePortals = () => {
+				setPortals(Array.from(portalsMap.values()));
+			};
+			invalidatePortals();
+
+			return () => {
+				invalidatePortals = () => {};
+			};
+		}, []);
 
 		return createElement(Suspense, { fallback: null },
-			createElement(LazyMeteorProvider, {}, ...portals),
+			createElement(LazyMeteorProvider, {},
+				createElement(Portals, { portals }),
+			),
 		);
 	}
 
@@ -129,7 +145,7 @@ export const createTemplateForComponent = (
 export const renderRouteComponent = (importFn, {
 	template,
 	region,
-	renderContainerView = () => HTML.DIV(), // eslint-disable-line new-cap
+	propsFn = () => ({}),
 } = {}) => {
 	const routeName = FlowRouter.getRouteName();
 
@@ -147,7 +163,7 @@ export const renderRouteComponent = (importFn, {
 		if (!template || !region) {
 			BlazeLayout.reset();
 
-			const element = await createLazyElement(importFn);
+			const element = await createLazyElement(importFn, propsFn);
 
 			if (routeName !== FlowRouter.getRouteName()) {
 				return;
@@ -158,21 +174,25 @@ export const renderRouteComponent = (importFn, {
 		}
 
 		if (!Template[routeName]) {
-			const blazeTemplate = new Blaze.Template(routeName, renderContainerView);
+			const blazeTemplate = new Blaze.Template(routeName, () => HTML.DIV()); // eslint-disable-line new-cap
 
 			blazeTemplate.onRendered(async function() {
-				const props = new ReactiveVar(this.data);
-				this.autorun(() => {
-					props.set(Template.currentData());
-				});
-
-				const portal = await createLazyPortal(importFn, () => props.get(), this.firstNode);
+				const node = this.firstNode.parentElement;
+				this.firstNode.remove();
+				const portal = await createLazyPortal(importFn, propsFn, node);
 
 				if (routeName !== FlowRouter.getRouteName()) {
 					return;
 				}
 
 				registerPortal(routeName, portal);
+
+				const handleMainContentDestroyed = () => {
+					unregisterPortal(routeName);
+					document.removeEventListener('main-content-destroyed', handleMainContentDestroyed);
+				};
+
+				document.addEventListener('main-content-destroyed', handleMainContentDestroyed);
 			});
 
 			Template[routeName] = blazeTemplate;
