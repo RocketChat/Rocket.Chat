@@ -5,7 +5,7 @@
 			<select name="priority" id="prioritySelect" class="rc-input rc-input--small rc-form-item-inline customFormField">
 				<option value=""></option>
 				{{#each availablePriorities}}
-					<option value={{_id}} selected="{{$eq roomPriority._id _id}}">{{name}}</option>
+					<option value={{_id}} selected="{{$eq roomPriority _id}}">{{name}}</option>
 				{{/each}}
 			</select>
 		</div>

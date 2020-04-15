@@ -1,6 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
+import { APIClient } from '../../../../../../../app/utils/client';
 import './visitorInfoCustomForm.html';
 
 Template.visitorInfoCustomForm.helpers({
@@ -9,13 +10,16 @@ Template.visitorInfoCustomForm.helpers({
 	},
 });
 
-Template.visitorInfoCustomForm.onCreated(function() {
+Template.visitorInfoCustomForm.onCreated(async function() {
 	this.priority = new ReactiveVar(null);
 
 	this.autorun(() => {
 		// To make this template reactive we expect a ReactiveVar through the data property,
 		// because the parent form may not be rerender, only the dynamic template data
-		const { omnichannel: { priority = null } = {} } = this.data.get();
-		this.priority.set(priority);
+		const { omnichannel: { priorityId = null } = {} } = this.data.get();
+		if (priorityId) {
+			const priority = await APIClient.v1.get(`livechat/priorities.getOne?priorityId=${ id }`);
+			this.priority.set(priority);
+		}
 	});
 });

@@ -1,6 +1,6 @@
 import { LivechatInquiry } from '../../../../../app/models/server/models/LivechatInquiry';
 
-LivechatInquiry.prototype.setPriorityByRoomId = function(rid, priority) {
+LivechatInquiry.prototype.setEstimatedServiceTimeAt = function(rid, estimatedServiceTimeInSeconds) {
 	if (!priority) {
 		return this.update({ rid }, {
 			$unset: {
@@ -24,19 +24,7 @@ LivechatInquiry.prototype.setPriorityByRoomId = function(rid, priority) {
 	});
 };
 
-LivechatInquiry.prototype.updatePriorityDataByPriorityId = function(priorityId, priorityData) {
-	return this.update({
-		'omnichannel.priority._id': priorityId,
-	},
-	{
-		$set: {
-			'omnichannel.priority.name': priorityData.name,
-			'omnichannel.priority.dueTimeInMinutes': parseInt(priorityData.dueTimeInMinutes),
-		},
-	});
-};
-
-LivechatInquiry.prototype.unsetPriorityByPriorityId = function(priorityId) {
+LivechatInquiry.prototype.unsetEstimatedServiceTimeAt = function(priorityId) {
 	return this.update({
 		'omnichannel.priority._id': priorityId,
 	},

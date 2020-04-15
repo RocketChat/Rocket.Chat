@@ -22,3 +22,11 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
 		return this.update(query, update);
 	},
 });
+
+LivechatRoomsRaw.prototype.setPriorityById = function(_id, priorityId) {
+	return this.update({ _id }, {
+		$set: {
+			'omnichannel.priorityId': priorityId,
+		},
+	});
+};

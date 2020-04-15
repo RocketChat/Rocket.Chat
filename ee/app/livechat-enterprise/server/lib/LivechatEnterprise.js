@@ -150,9 +150,15 @@ export const LivechatEnterprise = {
 		return removed;
 	},
 
-	savePriorityDataOnRooms(roomId, user, priority) {
-		Subscriptions.setPriorityByRoomId(roomId, priority);
-		LivechatInquiry.setPriorityByRoomId(roomId, priority);
+	savePriorityOnRoom(roomId, user, priority) {
+		check(priority, {
+			_id: String,
+		});
+
+		const { _id: priorityId } = priority;
+		LivechatRooms.setPriorityById(roomId, priorityId);
+		// LivechatInquiry.setPriorityByRoomId(roomId, priority);
+
 		const extraData = {
 			priorityData: {
 				definedBy: user,

@@ -39,7 +39,6 @@ export const fields = {
 	ignored: 1,
 	E2EKey: 1,
 	tunread: 1,
-	omnichannel: 1,
 };
 
 Meteor.methods({

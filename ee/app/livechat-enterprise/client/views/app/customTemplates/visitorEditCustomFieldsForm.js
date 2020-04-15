@@ -21,8 +21,8 @@ Template.visitorEditCustomFieldsForm.onCreated(async function() {
 	this.roomPriority = new ReactiveVar({});
 	const { omnichannel } = this.data;
 
-	if (omnichannel && omnichannel.priority) {
-		this.roomPriority.set(omnichannel.priority);
+	if (omnichannel && omnichannel.priorityId) {
+		this.roomPriority.set(omnichannel.priorityId);
 	}
 	const { priorities } = await APIClient.v1.get('livechat/priorities.list');
 	this.priorities.set(priorities);
