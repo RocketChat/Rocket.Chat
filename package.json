@@ -251,9 +251,12 @@
 		}
 	},
 	"houston": {
+		"minTag": "0.55.0-rc.0",
 		"metadata": ".scripts/houstonMetadata.js",
+		"markdown": ".scripts/houstonMarkdown.js",
 		"updateFiles": [
 			"package.json",
+			"package-lock.json",
 			".circleci/snap.sh",
 			".circleci/update-releases.sh",
 			".docker/Dockerfile",
