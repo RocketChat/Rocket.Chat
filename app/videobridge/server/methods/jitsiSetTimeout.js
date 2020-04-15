@@ -36,7 +36,7 @@ Meteor.methods({
 					{ icon: 'icon-videocam', label: TAPi18n.__('Click_to_join', { lng }), method_id: 'joinJitsiCall', params: '' },
 				],
 			});
-			message.msg = TAPi18n.__('Started_a_video_call');
+			message.msg = TAPi18n.__('Started_a_video_call', { lng });
 			message.mentions = [
 				{
 					_id: 'here',
