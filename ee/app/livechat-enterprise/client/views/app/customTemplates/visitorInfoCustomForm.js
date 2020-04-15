@@ -1,15 +1,15 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import './visitorRoomInfo.html';
+import './visitorInfoCustomForm.html';
 
-Template.customVisitorRoomInfo.helpers({
+Template.visitorInfoCustomForm.helpers({
 	priority() {
 		return Template.instance().priority.get();
 	},
 });
 
-Template.customVisitorRoomInfo.onCreated(function() {
+Template.visitorInfoCustomForm.onCreated(function() {
 	this.priority = new ReactiveVar(null);
 
 	this.autorun(() => {

@@ -2,11 +2,11 @@ import { addCustomFormTemplate } from '../../../../../../app/livechat/client/vie
 import './customTemplates/livechatDepartmentCustomFieldsForm';
 import './customTemplates/livechatAgentEditCustomFieldsForm';
 import './customTemplates/livechatAgentInfoCustomFieldsForm';
-import './customTemplates/visitorEditCustomFields';
-import './customTemplates/visitorRoomInfo';
+import './customTemplates/visitorEditCustomFieldsForm';
+import './customTemplates/visitorInfoCustomForm';
 
 addCustomFormTemplate('livechatDepartmentForm', 'livechatDepartmentCustomFieldsForm');
 addCustomFormTemplate('livechatAgentEditForm', 'livechatAgentEditCustomFieldsForm');
 addCustomFormTemplate('livechatAgentInfoForm', 'livechatAgentInfoCustomFieldsForm');
-addCustomFormTemplate('visitorEdit', 'visitorEditCustomFields');
-addCustomFormTemplate('visitorRoomInfo', 'customVisitorRoomInfo');
+addCustomFormTemplate('livechatVisitorEdit', 'visitorEditCustomFieldsForm');
+addCustomFormTemplate('livechatVisitorInfo', 'visitorInfoCustomForm');

@@ -2,9 +2,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { APIClient } from '../../../../../../../app/utils/client';
-import './visitorEditCustomFields.html';
+import './visitorEditCustomFieldsForm.html';
 
-Template.visitorEditCustomFields.helpers({
+Template.visitorEditCustomFieldsForm.helpers({
 	availablePriorities() {
 		return Template.instance().priorities.get();
 	},
@@ -16,7 +16,7 @@ Template.visitorEditCustomFields.helpers({
 	},
 });
 
-Template.visitorEditCustomFields.onCreated(async function() {
+Template.visitorEditCustomFieldsForm.onCreated(async function() {
 	this.priorities = new ReactiveVar([]);
 	this.roomPriority = new ReactiveVar({});
 	const { omnichannel } = this.data;

@@ -222,8 +222,8 @@ Template.visitorInfo.helpers({
 		return t(`${ closerLabel }`);
 	},
 
-	customVisitorRoomInfo() {
-		return getCustomFormTemplate('visitorRoomInfo');
+	customInfoTemplate() {
+		return getCustomFormTemplate('livechatVisitorInfo');
 	},
 
 	roomDataContext() {
@@ -327,9 +327,7 @@ Template.visitorInfo.onCreated(function() {
 		this.user.set(visitor);
 	};
 
-	const { rid } = Template.currentData();
-	this.updateRoom = async () => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+	this.updateRoom = (room) => {
 		this.departmentId.set(room && room.departmentId);
 		this.tags.set(room && room.tags);
 		this.room.set(room);
@@ -344,15 +342,21 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
+	const { rid } = Template.currentData();
 	Meteor.call('livechat:getRoutingConfig', (err, config) => {
 		if (config) {
 			this.routingConfig.set(config);
 		}
 	});
 
+	const loadRoomData = async (rid) => {
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+		this.updateRoom(room);
+	};
+
 	if (rid) {
-		this.updateRoom();
 		RoomManager.roomStream.on(rid, this.updateRoom);
+		loadRoomData(rid);
 	}
 
 	this.autorun(async () => {
