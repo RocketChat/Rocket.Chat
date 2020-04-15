@@ -33,5 +33,5 @@ export default function MailerRoute(props) {
 	const canAccessMailer = usePermission('access-mailer');
 	const sendMail = useSendMail();
 
-	return canAccessMailer ? <Mailer sendMail={sendMail} canAccessMailer={canAccessMailer} {...props} /> : <NotAuthorizedPage/>;
+	return canAccessMailer ? <Mailer sendMail={sendMail} {...props} /> : <NotAuthorizedPage/>;
 }
