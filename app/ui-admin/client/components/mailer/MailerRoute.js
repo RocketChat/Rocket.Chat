@@ -25,6 +25,7 @@ const useSendMail = () => {
 			return;
 		}
 		meteorSendMail(fromEmail.value, subject, emailBody, dryRun, query.value);
+		toastr.success(t('The_emails_are_being_sent'));
 	};
 };
 
