@@ -5,7 +5,6 @@ LivechatInquiry.prototype.setPriorityByRoomId = function(rid, priority) {
 		return this.update({ rid }, {
 			$unset: {
 				'omnichannel.priority': 1,
-				'custom.avatar.color': 1,
 			},
 		});
 	}
@@ -44,7 +43,6 @@ LivechatInquiry.prototype.unsetPriorityByPriorityId = function(priorityId) {
 	{
 		$unset: {
 			'omnichannel.priority': 1,
-			'custom.avatar.color': 1,
 		},
 	});
 };

@@ -97,7 +97,7 @@ Template.visitorEdit.helpers({
 	},
 
 	customFieldsTemplate() {
-		return getCustomFormTemplate('livechatVisitorEdit');
+		return getCustomFormTemplate('livechatVisitorEditForm');
 	},
 });
 

@@ -15,6 +15,7 @@
   "Enterprise_License": "Enterprise License",
   "Enterprise_License_Description": "If your workspace is registered and license is provided by Rocket.Chat Cloud you don't need to manually update the license here.",
   "Estimated_due_time": "Estimated due time(time in minutes)",
+  "error-invalid-priority": "Invalid priority",
   "Failed_to_add_monitor": "Failed to add monitor",
   "Invalid Canned Response": "Invalid Canned Response",
   "Invalid_Department": "Invalid Department",

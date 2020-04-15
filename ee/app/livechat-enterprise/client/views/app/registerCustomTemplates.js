@@ -8,5 +8,5 @@ import './customTemplates/visitorInfoCustomForm';
 addCustomFormTemplate('livechatDepartmentForm', 'livechatDepartmentCustomFieldsForm');
 addCustomFormTemplate('livechatAgentEditForm', 'livechatAgentEditCustomFieldsForm');
 addCustomFormTemplate('livechatAgentInfoForm', 'livechatAgentInfoCustomFieldsForm');
-addCustomFormTemplate('livechatVisitorEdit', 'visitorEditCustomFieldsForm');
+addCustomFormTemplate('livechatVisitorEditForm', 'visitorEditCustomFieldsForm');
 addCustomFormTemplate('livechatVisitorInfo', 'visitorInfoCustomForm');
