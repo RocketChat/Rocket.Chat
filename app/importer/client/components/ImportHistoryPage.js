@@ -107,8 +107,8 @@ function ImportHistoryPage() {
 						: <>
 							{currentOperation?.valid && <ImportOperationSummary {...currentOperation} />}
 							{latestOperations
-								.filter(({ _id }) => currentOperation?._id !== _id || !currentOperation?.valid)
-								.map((operation) => <ImportOperationSummary key={operation._id} {...operation} />)}
+								?.filter(({ _id }) => currentOperation?._id !== _id || !currentOperation?.valid)
+								?.map((operation) => <ImportOperationSummary key={operation._id} {...operation} />)}
 						</>}
 				</Table.Body>
 			</Table>
