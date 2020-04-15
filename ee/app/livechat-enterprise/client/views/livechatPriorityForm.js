@@ -66,7 +66,7 @@ Template.livechatPriorityForm.events({
 	},
 });
 
-Template.livechatPriorityForm.onCreated(async function() {
+Template.livechatPriorityForm.onCreated(function() {
 	this.priority = new ReactiveVar(null);
 
 	this.autorun(async () => {

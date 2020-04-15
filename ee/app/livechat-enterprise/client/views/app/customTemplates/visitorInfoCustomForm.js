@@ -10,10 +10,10 @@ Template.visitorInfoCustomForm.helpers({
 	},
 });
 
-Template.visitorInfoCustomForm.onCreated(async function() {
+Template.visitorInfoCustomForm.onCreated(function() {
 	this.priority = new ReactiveVar(null);
 
-	this.autorun(() => {
+	this.autorun(async () => {
 		// To make this template reactive we expect a ReactiveVar through the data property,
 		// because the parent form may not be rerender, only the dynamic template data
 		const { omnichannel: { priorityId = null } = {} } = this.data.get();
