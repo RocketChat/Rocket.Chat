@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
@@ -8,18 +9,19 @@ import { Rooms } from '../../models';
 
 actionLinks.register('joinJitsiCall', function(message, params, instance) {
 	if (Session.get('openedRoom')) {
-		const rid = Session.get('openedRoom');
 
+		const user =  Meteor.user();
+		const lng = (user && user.language) || settings.get('Language') || 'en';
+		const rid = Session.get('openedRoom');
+		console.log("Lenguaje: " + lng);
 		const room = Rooms.findOne({ _id: rid });
 		const currentTime = new Date().getTime();
 		const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
-		console.log("Las configuraciones?")
-		console.log(settings)
-		toastr.info("OKKKKKKKKKK");
+
 		if (jitsiTimeout > currentTime) {
 			instance.tabBar.open('video');
 		} else {
-			toastr.info(TAPi18n.__('Call Already Ended', ''));
+			toastr.info(TAPi18n.__('call_already_ended', { lng }));
 		}
 	}
 });
