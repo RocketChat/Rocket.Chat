@@ -42,15 +42,15 @@ export function UserTab({
 		mediaQuery && <Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '200px' }}>{t('Joined_at')}</Th>,
 	].filter(Boolean), [sort, federation, canViewFullOtherUserInfo, mediaQuery]);
 
-	const go = useRoute('direct');
+	const directRoute = useRoute('direct');
 
 	const data = useEndpointData('GET', 'directory', query) || {};
 
 	const onClick = useMemo(() => (username) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {
-			go({ rid: username });
+			directRoute.push({ rid: username });
 		}
-	}, []);
+	}, [directRoute]);
 
 
 	const formatDate = useFormatDate();
