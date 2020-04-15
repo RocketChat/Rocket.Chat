@@ -45,8 +45,11 @@
 								</td>
 								<td width="20%">
 										<div class="rc-table-wrapper">
-												{{>icon _id=_id icon="play" block="icon-play-circled"}}
-												{{>icon _id=_id icon="pause" block="icon-pause-circled"}}
+												{{#if isPlaying _id}}
+													{{>icon _id=_id icon="pause" block="icon-pause-circled"}}
+												{{else}}
+													{{>icon _id=_id icon="play" block="icon-play-circled"}}
+												{{/if}}
 												{{>icon _id=_id icon="ban" block="icon-reset-circled"}}
 										</div>
 								</td>
