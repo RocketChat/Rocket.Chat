@@ -30,7 +30,7 @@ Template.roomList.helpers({
 			},
 		});
 
-		const sortBy = getUserPreference(user, 'sidebarSortby') || 'alphabetical';
+		const sortBy = getUserPreference(user, 'sidebarSortby') || 'activity';
 		const query = {
 			open: true,
 		};
