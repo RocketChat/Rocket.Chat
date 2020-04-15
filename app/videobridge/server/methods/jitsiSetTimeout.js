@@ -5,12 +5,16 @@ import { Rooms, Messages } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import * as CONSTANTS from '../../constants';
 import { canAccessRoom } from '../../../authorization/server';
+import { settings } from '../../../settings';
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid) => {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:updateTimeout' });
 		}
+
+		const user =  Meteor.user();
+		const lng = (user && user.language) || settings.get('Language') || 'en';
 
 		const room = Rooms.findOneById(rid);
 
@@ -29,7 +33,7 @@ Meteor.methods({
 		if (!jitsiTimeout || currentTime > jitsiTimeout) {
 			const message = Messages.createWithTypeRoomIdMessageAndUser('jitsi_call_started', rid, '', Meteor.user(), {
 				actionLinks: [
-					{ icon: 'icon-videocam', label: TAPi18n.__('Click_to_join'), method_id: 'joinJitsiCall', params: '' },
+					{ icon: 'icon-videocam', label: TAPi18n.__('Click_to_join', { lng }), method_id: 'joinJitsiCall', params: '' },
 				],
 			});
 			message.msg = TAPi18n.__('Started_a_video_call');

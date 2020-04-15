@@ -13,7 +13,7 @@ actionLinks.register('joinJitsiCall', function(message, params, instance) {
 		const user =  Meteor.user();
 		const lng = (user && user.language) || settings.get('Language') || 'en';
 		const rid = Session.get('openedRoom');
-		console.log("Lenguaje: " + lng);
+		
 		const room = Rooms.findOne({ _id: rid });
 		const currentTime = new Date().getTime();
 		const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
