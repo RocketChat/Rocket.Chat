@@ -1,6 +1,8 @@
 const crypto = require('crypto');
 
-const _ = require('lodash');
+const moduleRequire = require('./moduleRequire');
+
+const _ = moduleRequire('lodash');
 
 //
 //

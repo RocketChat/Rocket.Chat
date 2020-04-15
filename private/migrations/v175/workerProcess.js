@@ -1,8 +1,8 @@
-// eslint-disable-next-line import/no-dynamic-require
-const { MongoClient } = require(`${ __dirname }/../../../../npm/node_modules/mongodb`);
-
+const moduleRequire = require('./moduleRequire');
 const config = require('./config');
-const { Events, RoomEvents } = require('./model_extractions');
+const { Events, RoomEvents } = require('./modelExtractions');
+
+const { MongoClient } = moduleRequire('mongodb');
 
 module.exports.getWorkerProcess = () => ({
 	async start() {

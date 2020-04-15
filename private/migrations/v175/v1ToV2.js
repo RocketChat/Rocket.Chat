@@ -1,8 +1,8 @@
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 
-const { getMasterProcess } = require('./master_process');
-const { getWorkerProcess } = require('./worker_process');
+const { getMasterProcess } = require('./masterProcess');
+const { getWorkerProcess } = require('./workerProcess');
 const config = require('./config');
 
 const { ROOM_BATCH_SIZE, MESSAGE_BATCH_SIZE, LOCAL_SRC, FEDERATION_DOMAIN, MONGO_URL } = process.env;
