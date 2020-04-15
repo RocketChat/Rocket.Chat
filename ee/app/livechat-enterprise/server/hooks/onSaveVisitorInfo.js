@@ -10,7 +10,7 @@ callbacks.add('livechat.saveInfo', (room, { user, room: oldRoom }) => {
 	const { omnichannel: { priority: currentPriority } = {} } = oldRoom;
 	const { omnichannel: { priority: newPriority } = {} } = room;
 	if ((!currentPriority && !newPriority) || (currentPriority && newPriority && currentPriority._id === newPriority._id)) {
-		return;
+		// return;
 	}
 	/*
 	LivechatEnterprise.savePriorityOnRoom(room._id, user, LivechatPriority.findOneById(newPriority && newPriority._id));
