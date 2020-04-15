@@ -23,8 +23,7 @@
 			</label>
 
 			{{> auditAutocomplete key='room' hide=typeD onChange=onChange prepare=prepareRoom field='name' term='name' icon='hashtag' label="room_name" placeholder='Channel_Name_Placeholder'}}
-			{{> auditAutocomplete key='user' hide=nTypeD onChange=onChange collection='UserAndRoom' modifier=modifierUser endpoint='users.autocomplete' field='username'  icon='at' label="From" placeholder='Username_Placeholder'}}
-			{{> auditAutocomplete key='user2' hide=nTypeD  onChange=onChange collection='UserAndRoom' modifier=modifierUser endpoint='users.autocomplete' field='username' icon='at' label="To" placeholder='Username_Placeholder'}}
+			{{> auditAutocompleteDirectMessage key='users' hide=nTypeD onChange=onChange collection='UserAndRoom' modifier=modifierUser endpoint='users.autocomplete' field='username' icon='at' label="From" placeholder='Username_Placeholder'}}
 
 			<div class="rc-input rc-input--small rc-audit-date">
 				<label class="rc-input__label">
@@ -85,6 +84,32 @@
 					{{/let}}
 					<input type="text" class="rc-tags__input{{#if selected}} hidden{{/if}}" placeholder="{{_ placeholder}}"
 					name="filter" autocomplete="off"/>
+				</div>
+			</div>
+		</label>
+		{{#with config}}
+			{{#if autocomplete 'isShowing'}}
+				{{#if autocomplete 'isLoaded'}}
+					{{> popupList data=config items=items}}
+				{{/if}}
+			{{/if}}
+		{{/with}}
+	</div>
+</template>
+
+<template name="auditAutocompleteDirectMessage">
+	<div id="autocomplete-{{key}}" class="rc-input {{#if hide}} hidden{{/if}}">
+		<label class="rc-input__label">
+			<div class="rc-input__title">{{_ label}}</div>
+			<div class="rc-input__wrapper">
+				<div class="rc-input__icon">
+					{{> icon block="rc-input__icon-svg" icon=icon}}
+				</div>
+				<div class="rc-tags">
+					{{#each user in selected}}
+						{{> tag user}}
+					{{/each}}
+					<input type="text" class="rc-tags__input" placeholder="{{_ placeholder}}" name="filter" autocomplete="off"/>
 				</div>
 			</div>
 		</label>

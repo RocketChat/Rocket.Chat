@@ -12,7 +12,7 @@ const useRouteLock = () => {
 	const userId = useUserId();
 	const user = useUser();
 	const hasAdminRole = useRole('admin');
-	const goToHome = useRoute('home');
+	const homeRoute = useRoute('home');
 
 	useEffect(() => {
 		if (!setupWizardState) {
@@ -30,12 +30,12 @@ const useRouteLock = () => {
 		const mustRedirect = isComplete || noUserLoggedInAndIsNotPending || userIsLoggedInButIsNotAdmin;
 
 		if (mustRedirect) {
-			goToHome.replacingState();
+			homeRoute.replace();
 			return;
 		}
 
 		setLocked(false);
-	}, [setupWizardState, userId, user, hasAdminRole]);
+	}, [homeRoute, setupWizardState, userId, user, hasAdminRole]);
 
 	return locked;
 };
@@ -49,3 +49,5 @@ export function SetupWizardRoute() {
 
 	return <SetupWizardState />;
 }
+
+export default SetupWizardRoute;
