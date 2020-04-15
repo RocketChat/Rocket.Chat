@@ -40,7 +40,7 @@ registerAdminRoute('/info', {
 
 registerAdminRoute('/mailer', {
 	name: 'admin-mailer',
-	lazyRouteComponent: () => import('./components/mailer'),
+	lazyRouteComponent: () => import('./components/mailer/MailerRoute'),
 });
 
 // registerAdminRoute('/mailer', {

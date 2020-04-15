@@ -1,12 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon } from '@rocket.chat/fuselage';
-import toastr from 'toastr';
 
-
-import { useMethod } from '../../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { Page } from '../../../../../client/components/basic/Page';
-
 
 const isValidEmail = (value) => /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(value);
 
@@ -20,30 +16,8 @@ const isValidQuery = (value) => {
 	}
 };
 
-const sendMailAction = () => {
-	const meteorSendMail = useMethod('Mailer.sendMail');
+export function Mailer({ sendMail = () => {}, ...props }) {
 	const t = useTranslation();
-	return ({ fromEmail, subject, emailBody, dryRun, query }) => {
-		if (query.error) {
-			toastr.error(t('Query_is_not_valid_JSON'));
-			return;
-		}
-		if (fromEmail.error || fromEmail.length < 1) {
-			toastr.error(t('error-invalid-from-address'));
-			return;
-		}
-		if (emailBody.indexOf('[unsubscribe]') === -1) {
-			toastr.error(t('error-missing-unsubscribe-link'));
-			return;
-		}
-		meteorSendMail(fromEmail.value, subject, emailBody, dryRun, query.value);
-	};
-};
-
-export default function Mailer() {
-	const t = useTranslation();
-
-	const sendMail = sendMailAction();
 
 	const [fromEmail, setFromEmail] = useState({ value: '', error: false });
 	const [dryRun, setDryRun] = useState(false);
@@ -51,7 +25,7 @@ export default function Mailer() {
 	const [subject, setSubject] = useState('');
 	const [emailBody, setEmailBody] = useState('');
 
-	return <Page _id='mailer'>
+	return <Page _id='mailer' {...props}>
 		<Page.Header title={t('Mailer')}></Page.Header>
 		<Page.ContentShadowScroll maxWidth='x600' alignSelf='center' display='flex' flexDirection='column'>
 			<FieldGroup is='form' method='post'>

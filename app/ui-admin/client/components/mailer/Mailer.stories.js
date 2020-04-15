@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Mailer } from '.';
+import { Mailer } from './Mailer';
 
 export default {
 	title: 'admin/pages/mailer',
