@@ -3,12 +3,11 @@ import './admin/cloud';
 import './admin/cloudRegisterManually';
 
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { AdminBox } from '../../ui-utils';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../ui-admin/client';
 import { hasAtLeastOnePermission } from '../../authorization';
 
-FlowRouter.route('/admin/cloud', {
+registerAdminRoute('/cloud', {
 	name: 'cloud-config',
 	async action() {
 		await import('./admin');
@@ -16,7 +15,7 @@ FlowRouter.route('/admin/cloud', {
 	},
 });
 
-FlowRouter.route('/admin/cloud/oauth-callback', {
+registerAdminRoute('/cloud/oauth-callback', {
 	name: 'cloud-oauth-callback',
 	async action() {
 		await import('./admin');
@@ -24,7 +23,7 @@ FlowRouter.route('/admin/cloud/oauth-callback', {
 	},
 });
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	icon: 'cloud-plus',
 	href: 'admin/cloud',
 	i18nLabel: 'Connectivity_Services',

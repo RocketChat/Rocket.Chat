@@ -34,10 +34,11 @@ const avatarProviders = {
 	},
 
 	linkedin(user) {
-		if (user.services && user.services.linkedin && user.services.linkedin.pictureUrl && settings.get('Accounts_OAuth_Linkedin')) {
+		if (user.services && user.services.linkedin && user.services.linkedin.profilePicture && user.services.linkedin.profilePicture.identifiersUrl && user.services.linkedin.profilePicture.identifiersUrl.length > 0 && settings.get('Accounts_OAuth_Linkedin')) {
+			const total = user.services.linkedin.profilePicture.identifiersUrl.length;
 			return {
 				service: 'linkedin',
-				url: user.services.linkedin.pictureUrl,
+				url: user.services.linkedin.profilePicture.identifiersUrl[total - 1],
 			};
 		}
 	},

@@ -199,6 +199,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 			user.rooms = Subscriptions.findByUserId(user._id, {
 				fields: {
 					rid: 1,
+					bio: 1,
 					name: 1,
 					t: 1,
 					roles: 1,
@@ -365,6 +366,7 @@ API.v1.addRoute('users.getStatus', { authRequired: true }, {
 		if (this.isUserFromParams()) {
 			const user = Users.findOneById(this.userId);
 			return API.v1.success({
+				_id: user._id,
 				message: user.statusText,
 				connectionStatus: user.statusConnection,
 				status: user.status,
@@ -374,6 +376,7 @@ API.v1.addRoute('users.getStatus', { authRequired: true }, {
 		const user = this.getUserFromParams();
 
 		return API.v1.success({
+			_id: user._id,
 			message: user.statusText,
 			status: user.status,
 		});
@@ -403,13 +406,13 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(user._id, () => {
-			if (this.bodyParams.message || this.bodyParams.message.length === 0) {
+			if (this.bodyParams.message || this.bodyParams.message === '') {
 				setStatusText(user._id, this.bodyParams.message);
 			}
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
-					Meteor.users.update(this.userId, {
+					Meteor.users.update(user._id, {
 						$set: {
 							status: this.bodyParams.status,
 							statusDefault: this.bodyParams.status,

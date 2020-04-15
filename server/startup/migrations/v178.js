@@ -1,21 +1,14 @@
 import {
 	Migrations,
-} from '../../../app/migrations/server';
+} from '../../../app/migrations';
 import {
 	Settings,
-} from '../../../app/models/server';
+} from '../../../app/models';
+
 
 Migrations.add({
 	version: 178,
 	up() {
-		const setting = Settings.findOne({ _id: 'Message_SetNameToAliasEnabled' });
-		if (setting.value) {
-			Settings.update({ _id: 'UI_Use_Real_Name' }, {
-				$set: {
-					value: true,
-				},
-			});
-		}
-		Settings.remove({ _id: 'Message_SetNameToAliasEnabled' });
+		Settings.remove({ _id: 'Livechat_enable_inquiry_fetch_by_stream' });
 	},
 });

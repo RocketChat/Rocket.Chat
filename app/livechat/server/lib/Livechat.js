@@ -72,6 +72,7 @@ export const Livechat = {
 
 	getAgents(department) {
 		if (department) {
+			// TODO: This and all others should get the user's info as well
 			return LivechatDepartmentAgents.findByDepartmentId(department);
 		}
 		return Users.findAgents();
@@ -322,10 +323,13 @@ export const Livechat = {
 		const extraData = callbacks.run('livechat.beforeCloseRoom', { room, options });
 
 		const now = new Date();
+		const { _id: rid, servedBy } = room;
+		const serviceTimeDuration = servedBy && (now.getTime() - servedBy.ts) / 1000;
 
 		const closeData = {
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000,
+			...serviceTimeDuration && { serviceTimeDuration },
 			...extraData,
 		};
 
@@ -343,7 +347,6 @@ export const Livechat = {
 			};
 		}
 
-		const { _id: rid, servedBy } = room;
 		LivechatRooms.closeByRoomId(rid, closeData);
 		LivechatInquiry.removeByRoomId(rid);
 

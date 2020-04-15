@@ -3,10 +3,9 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { AdminBox } from '../../../ui-utils';
 import { hasRole } from '../../../authorization';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../../ui-admin/client';
 
 import './dashboard.html';
 import './dashboard.css';
@@ -69,14 +68,14 @@ Template.dashboard.onRendered(() => {
 
 // Route setup
 
-FlowRouter.route('/admin/federation-dashboard', {
+registerAdminRoute('/federation-dashboard', {
 	name: 'federation-dashboard',
 	action() {
 		BlazeLayout.render('main', { center: 'dashboard', old: true });
 	},
 });
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	icon: 'discover',
 	href: 'admin/federation-dashboard',
 	i18nLabel: 'Federation Dashboard',

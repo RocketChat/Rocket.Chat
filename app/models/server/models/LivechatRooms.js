@@ -12,6 +12,10 @@ export class LivechatRooms extends Base {
 
 		this.tryEnsureIndex({ open: 1 }, { sparse: true });
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'metrics.chatDuration': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -283,6 +287,20 @@ export class LivechatRooms extends Base {
 		});
 	}
 
+	setNotResponseByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				waitingResponse: true,
+			},
+			$unset: {
+				responseBy: 1,
+			},
+		});
+	}
+
 	setAgentLastMessageTs(roomId) {
 		return this.update({
 			_id: roomId,
@@ -421,7 +439,7 @@ export class LivechatRooms extends Base {
 
 
 	closeByRoomId(roomId, closeInfo) {
-		const { closer, closedBy, closedAt, chatDuration, ...extraData } = closeInfo;
+		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, ...extraData } = closeInfo;
 
 		return this.update({
 			_id: roomId,
@@ -432,6 +450,7 @@ export class LivechatRooms extends Base {
 				closedBy,
 				closedAt,
 				'metrics.chatDuration': chatDuration,
+				'metrics.serviceTimeDuration': serviceTimeDuration,
 				'v.status': 'offline',
 				...extraData,
 			},
@@ -562,7 +581,7 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setVisitorInactivityInSecondsByRoomId(roomId, visitorInactivity) {
+	setVisitorInactivityInSecondsById(roomId, visitorInactivity) {
 		const query = {
 			_id: roomId,
 		};
