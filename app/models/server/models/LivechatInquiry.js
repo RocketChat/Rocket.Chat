@@ -28,7 +28,7 @@ export class LivechatInquiry extends Base {
 			},
 			{
 				sort: {
-					defaultEstimatedSeviceTime: 1,
+					defaultEstimatedServiceTime: 1,
 					estimatedServiceTimeAt: 1,
 				},
 			},

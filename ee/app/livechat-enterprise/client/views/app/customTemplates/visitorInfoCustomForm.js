@@ -16,7 +16,7 @@ Template.visitorInfoCustomForm.onCreated(function() {
 	this.autorun(async () => {
 		// To make this template reactive we expect a ReactiveVar through the data property,
 		// because the parent form may not be rerender, only the dynamic template data
-		const { omnichannel: { priorityId = null } = {} } = this.data.get();
+		const { priorityId = null } = this.data.get();
 		if (priorityId) {
 			const priority = await APIClient.v1.get(`livechat/priorities.getOne?priorityId=${ priorityId }`);
 			this.priority.set(priority);

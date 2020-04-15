@@ -39,7 +39,7 @@
   "Monitor_removed": "Monitor removed",
   "Monitors": "Monitors",
   "New_Canned_Response": "New Canned Response",
-  "New_chat_priority": "New Chat Priority Defined: __user__ defined chat priority to __priority__",
+  "New_chat_priority": "Priority Changed: __user__ changed the priority to __priority__",
   "New_Tag": "New Tag",
   "New_Unit": "New Unit",
   "New_Priority": "New Priority",

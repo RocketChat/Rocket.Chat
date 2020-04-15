@@ -27,7 +27,7 @@ Meteor.methods({
 			livechatData: Match.Optional(Object),
 		}));
 
-		const room = LivechatRooms.findOneById(roomData._id, { t: 1, servedBy: 1, omnichannel: 1 });
+		const room = LivechatRooms.findOneById(roomData._id, { t: 1, servedBy: 1 });
 		if (room == null || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:saveInfo' });
 		}

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Users, LivechatRooms, Subscriptions, LivechatInquiry, Messages } from '../../../../../app/models';
+import { Users, /* LivechatRooms, LivechatInquiry, */ Messages } from '../../../../../app/models';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
@@ -125,11 +125,10 @@ export const LivechatEnterprise = {
 			dueTimeInMinutes: String,
 		});
 		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
+		/*
 		if (priority) {
-			LivechatRooms.updatePriorityDataByPriorityId(priority._id, priority);
-			Subscriptions.updatePriorityDataByPriorityId(priority._id, priority);
 			LivechatInquiry.updatePriorityDataByPriorityId(priority._id, priority);
-		}
+		}*/
 		return priority;
 	},
 
@@ -143,20 +142,15 @@ export const LivechatEnterprise = {
 		}
 		const removed = LivechatPriority.removeById(_id);
 		if (removed) {
-			LivechatRooms.unsetPriorityByPriorityId(_id);
-			Subscriptions.unsetPriorityByPriorityId(_id);
+			/*
 			LivechatInquiry.unsetPriorityByPriorityId(_id);
+			*/
 		}
 		return removed;
 	},
 
 	savePriorityOnRoom(roomId, user, priority) {
-		check(priority, {
-			_id: String,
-		});
-
-		const { _id: priorityId } = priority;
-		LivechatRooms.setPriorityById(roomId, priorityId);
+		// const { _id: priorityId } = priority;
 		// LivechatInquiry.setPriorityByRoomId(roomId, priority);
 
 		const extraData = {

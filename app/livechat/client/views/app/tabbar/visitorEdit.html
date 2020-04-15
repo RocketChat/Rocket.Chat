@@ -45,6 +45,9 @@
 
 			{{#with room}}
 				<h3>{{_ "Conversation" }}</h3>
+				{{#if customFieldsTemplate}}
+					{{> Template.dynamic template=customFieldsTemplate data=room }}
+				{{/if}}
 				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Topic"}}</div>
@@ -53,9 +56,6 @@
 						</div>
 					</label>
 				</div>
-				{{#if customFieldsTemplate}}
-					{{> Template.dynamic template=customFieldsTemplate data=room }}
-				{{/if}}
 				{{#if hasAvailableTags}}
 					<div class="rc-form-group rc-form-group--small rc-form-group--inline">
 						<select id="tagSelect" class="rc-input rc-input--small rc-form-item-inline">

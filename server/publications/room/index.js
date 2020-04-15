@@ -52,7 +52,7 @@ export const fields = {
 	e2eKeyId: 1,
 	departmentId: 1,
 	servedBy: 1,
-	omnichannel: 1,
+	priorityId: 1,
 
 	// fields used by DMs
 	usernames: 1,

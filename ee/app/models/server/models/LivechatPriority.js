@@ -9,6 +9,7 @@ export class LivechatPriority extends Base {
 		super('livechat_priority');
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true });
+		this.tryEnsureIndex({ dueTimeInMinutes: 1 }, { unique: true });
 	}
 
 	// FIND

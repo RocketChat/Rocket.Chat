@@ -8,7 +8,7 @@ Template.visitorEditCustomFieldsForm.helpers({
 	availablePriorities() {
 		return Template.instance().priorities.get();
 	},
-	roomPriority() {
+	priorityId() {
 		return Template.instance().roomPriority.get();
 	},
 	showPriorities() {
@@ -18,11 +18,11 @@ Template.visitorEditCustomFieldsForm.helpers({
 
 Template.visitorEditCustomFieldsForm.onCreated(async function() {
 	this.priorities = new ReactiveVar([]);
-	this.roomPriority = new ReactiveVar({});
-	const { omnichannel } = this.data;
+	this.roomPriority = new ReactiveVar(null);
 
-	if (omnichannel && omnichannel.priorityId) {
-		this.roomPriority.set(omnichannel.priorityId);
+	const { priorityId } = this.data;
+	if (priorityId) {
+		this.roomPriority.set(priorityId);
 	}
 	const { priorities } = await APIClient.v1.get('livechat/priorities.list');
 	this.priorities.set(priorities);
