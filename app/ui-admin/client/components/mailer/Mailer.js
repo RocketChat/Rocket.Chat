@@ -1,20 +1,10 @@
 import React, { useState } from 'react';
-import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon } from '@rocket.chat/fuselage';
+import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { Page } from '../../../../../client/components/basic/Page';
-
-const isValidEmail = (value) => /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(value);
-
-const isValidQuery = (value) => {
-	try {
-		if (!value) { return true; }
-		JSON.parse(value);
-		return true;
-	} catch {
-		return false;
-	}
-};
+import { isEmail } from '../../../../utils/lib/isEmail.js';
+import { isJSON } from '../../../../utils/lib/isJSON.js';
 
 export function Mailer({ sendMail = () => {}, ...props }) {
 	const t = useTranslation();
@@ -40,7 +30,7 @@ export function Mailer({ sendMail = () => {}, ...props }) {
 							onChange={(e) => {
 								setFromEmail({
 									value: e.currentTarget.value,
-									error: !isValidEmail(e.currentTarget.value),
+									error: !isEmail(e.currentTarget.value),
 								});
 							}}
 						/>
@@ -68,7 +58,7 @@ export function Mailer({ sendMail = () => {}, ...props }) {
 							onChange={(e) => {
 								setQuery({
 									value: e.currentTarget.value,
-									error: !isValidQuery(e.currentTarget.value),
+									error: e.currentTarget.value && !isJSON(e.currentTarget.value),
 								});
 							}}
 						/>
@@ -100,8 +90,10 @@ export function Mailer({ sendMail = () => {}, ...props }) {
 					</Field.Row>
 					<Field.Hint dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }}></Field.Hint>
 				</Field>
+				<ButtonGroup align='end'>
+					<Button primary onClick={() => { sendMail({ fromEmail, dryRun, query, subject, emailBody }); }}><Icon name='send' size='x20' mie='x8'/>{t('Send_email')}</Button>
+				</ButtonGroup>
 			</FieldGroup>
-			<Button primary width='fit-content' alignSelf='flex-end' onClick={() => { sendMail({ fromEmail, dryRun, query, subject, emailBody }); }}><Icon name='send' size='x20' mie='x8'/>{t('Send_email')}</Button>
 		</Page.ContentShadowScroll>
 	</Page>;
 }
