@@ -1,7 +1,7 @@
 import { callbacks } from '../../../../../app/callbacks';
 import { settings } from '../../../../../app/settings';
 import { checkWaitingQueue, dispatchWaitingQueueStatus } from '../lib/Helper';
-import LivechatPriority from '../../../models/server/models/LivechatPriority';
+// import LivechatPriority from '../../../models/server/models/LivechatPriority';
 
 callbacks.add('livechat.afterTakeInquiry', async (inquiry) => {
 	/*
