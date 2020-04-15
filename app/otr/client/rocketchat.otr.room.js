@@ -12,12 +12,13 @@ import toastr from 'toastr';
 import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
 import { modal } from '../../ui-utils';
+import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
 		this.userId = userId;
 		this.roomId = roomId;
-		this.peerId = roomId.replace(userId, '');
+		this.peerId = getUidDirectMessage(roomId);
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 

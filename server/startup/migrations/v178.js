@@ -1,11 +1,14 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import {
+	Migrations,
+} from '../../../app/migrations';
+import {
+	Settings,
+} from '../../../app/models';
+
 
 Migrations.add({
 	version: 178,
 	up() {
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter' });
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter_Limit_Calls_Default' });
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter_Limit_Time_Default' });
+		Settings.remove({ _id: 'Livechat_enable_inquiry_fetch_by_stream' });
 	},
 });

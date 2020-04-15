@@ -189,6 +189,7 @@ function startStreamCastBroadcast(value) {
 
 	connections[instance] = connection;
 	connection.instanceId = instance;
+	connection.instanceRecord = {};
 	connection.onReconnect = function() {
 		return authorizeConnection(instance);
 	};
@@ -286,8 +287,20 @@ function startStreamBroadcast() {
 		return results;
 	}
 
-	return Meteor.StreamerCentral.on('broadcast', function(streamName, eventName, args) {
+	const onBroadcast = function(streamName, eventName, args) {
 		return broadcast(streamName, eventName, args);
+	};
+
+	let TroubleshootDisableInstanceBroadcast;
+	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+		if (TroubleshootDisableInstanceBroadcast === value) { return; }
+		TroubleshootDisableInstanceBroadcast = value;
+
+		if (value) {
+			return Meteor.StreamerCentral.removeListener('broadcast', onBroadcast);
+		}
+
+		Meteor.StreamerCentral.on('broadcast', onBroadcast);
 	});
 }
 

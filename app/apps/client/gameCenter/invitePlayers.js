@@ -4,6 +4,8 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 
 import { AutoComplete } from '../../../meteor-autocomplete/client';
 import { roomTypes } from '../../../utils/client';
@@ -79,15 +81,23 @@ Template.InvitePlayers.events({
 
 			roomTypes.openRouteLink(result.t, result);
 
-			// setTimeout ensures the message is only sent after the
+			// This ensures the message is only sent after the
 			// user has been redirected to the new room, preventing a
 			// weird bug that made the message appear as unsent until
 			// the screen gets refreshed
-			setTimeout(() => call('sendMessage', {
-				_id: Random.id(),
-				rid: result.rid,
-				msg: TAPi18n.__('Game_Center_Play_Game_Together', { name }),
-			}), 100);
+			Tracker.autorun((c) => {
+				if (Session.get('openedRoom') !== result.rid) {
+					return;
+				}
+
+				call('sendMessage', {
+					_id: Random.id(),
+					rid: result.rid,
+					msg: TAPi18n.__('Apps_Game_Center_Play_Game_Together', { name }),
+				});
+
+				c.stop();
+			});
 
 			modal.close();
 		} catch (err) {

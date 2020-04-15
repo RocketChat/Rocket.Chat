@@ -19,6 +19,7 @@ const logger = new Logger('API', {});
 const rateLimiterDictionary = {
 	globalLimiter: {},
 };
+let prometheusAPIUserAgent = false;
 
 export let API = {};
 
@@ -416,19 +417,19 @@ export class APIClass extends Restivus {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
-						user_agent: this.request.headers['user-agent'],
-						entrypoint: route,
+						...prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] },
+						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 					let result;
-
+					this.requestIp = getRequestIP(this.request);
 					const connection = {
 						id: Random.id(),
 						close() {},
 						token: this.token,
 						httpHeaders: this.request.headers,
-						clientAddress: getRequestIP(this.request),
+						clientAddress: this.requestIp,
 					};
 
 					try {
@@ -572,6 +573,7 @@ export class APIClass extends Restivus {
 						body: {
 							status: 'error',
 							error: e.error,
+							details: e.details,
 							message: e.reason || e.message,
 						},
 					};
@@ -785,3 +787,7 @@ if (!process.env.TEST_MODE) {
 	settings.get(/^API_Rate_Limit_User_By_Endpoint_.+/, () => reloadRoutes());
 	settings.get(/^API_Rate_Limit_Connection_By_Endpoint.+/, () => reloadRoutes());
 }
+
+settings.get('Prometheus_API_User_Agent', (key, value) => {
+	prometheusAPIUserAgent = value;
+});
