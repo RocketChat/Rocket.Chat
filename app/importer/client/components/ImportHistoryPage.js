@@ -8,14 +8,15 @@ import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import ImportOperationSummary from './ImportOperationSummary';
+import { useSafely } from './useSafely';
 
 function ImportHistoryPage() {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [loading, setLoading] = useState(true);
-	const [currentOperation, setCurrentOperation] = useState();
-	const [latestOperations, setLatestOperations] = useState([]);
+	const [isLoading, setLoading] = useSafely(useState(true));
+	const [currentOperation, setCurrentOperation] = useSafely(useState());
+	const [latestOperations, setLatestOperations] = useSafely(useState([]));
 
 	const getCurrentImportOperation = useEndpoint('GET', 'getCurrentImportOperation');
 	const getLatestImportOperations = useEndpoint('GET', 'getLatestImportOperations');
@@ -25,41 +26,27 @@ function ImportHistoryPage() {
 	const importProgressRoute = useRoute('admin-import-progress');
 
 	useEffect(() => {
-		let mounted = true;
-
-		const safe = (fn) => (...args) => {
-			if (!mounted) {
-				return;
-			}
-
-			fn(...args);
-		};
-
 		const loadData = async () => {
-			safe(setLoading)(true);
+			setLoading(true);
 
 			try {
 				const { operation } = await getCurrentImportOperation();
-				safe(setCurrentOperation)(operation);
+				setCurrentOperation(operation);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Operation') });
 			}
 
 			try {
 				const operations = await getLatestImportOperations();
-				safe(setLatestOperations)(operations);
+				setLatestOperations(operations);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') });
 			}
 
-			safe(setLoading)(false);
+			setLoading(false);
 		};
 
 		loadData();
-
-		return () => {
-			mounted = false;
-		};
 	}, []);
 
 	const hasAnySuccessfulSlackImport = useMemo(() =>
@@ -92,9 +79,9 @@ function ImportHistoryPage() {
 	return <Page>
 		<Page.Header title={t('Import')}>
 			<ButtonGroup>
-				<Button primary disabled={loading} onClick={handleNewImportClick}>{t('Import_New_File')}</Button>
+				<Button primary disabled={isLoading} onClick={handleNewImportClick}>{t('Import_New_File')}</Button>
 				{hasAnySuccessfulSlackImport
-					&& <Button disabled={loading} onClick={handleDownloadPendingFilesClick}>{t('Download_Pending_Files')}</Button>}
+					&& <Button disabled={isLoading} onClick={handleDownloadPendingFilesClick}>{t('Download_Pending_Files')}</Button>}
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ContentShadowScroll>
@@ -115,7 +102,7 @@ function ImportHistoryPage() {
 					</Table.Row>
 				</Table.Head>
 				<Table.Body>
-					{loading
+					{isLoading
 						? Array.from({ length: 20 }, (_, i) => <ImportOperationSummary.Skeleton key={i} />)
 						: <>
 							{currentOperation?.valid && <ImportOperationSummary {...currentOperation} />}
