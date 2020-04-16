@@ -4,9 +4,9 @@ import _ from 'underscore';
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
-
-import { UsersTab, useSwitchTab } from '.';
+import { useSwitchTab } from './hooks';
 import { UsersAndRoomsTab } from './UsersAndRoomsTab';
+import { UsersTab } from './UsersTab';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);

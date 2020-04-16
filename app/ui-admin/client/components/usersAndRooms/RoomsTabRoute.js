@@ -6,8 +6,8 @@ import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/clie
 import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
 import { UsersAndRoomsTab } from './UsersAndRoomsTab';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
-
-import { RoomsTab, useSwitchTab } from '.';
+import { useSwitchTab } from './hooks';
+import { RoomsTab } from './RoomsTab';
 
 const useQuery = (params, sort) => useMemo(() => ({
 	filter: params.term || '',
