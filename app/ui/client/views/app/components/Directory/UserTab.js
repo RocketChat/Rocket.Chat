@@ -14,7 +14,7 @@ const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidde
 export function UserTab({
 	workspace = 'local',
 }) {
-	const [params, setParams] = useState({});
+	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
 	const t = useTranslation();

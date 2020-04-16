@@ -24,7 +24,7 @@ function RoomTags({ room }) {
 export function ChannelsTab() {
 	const t = useTranslation();
 	const [sort, setSort] = useState(['name', 'asc']);
-	const [params, setParams] = useState({});
+	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
