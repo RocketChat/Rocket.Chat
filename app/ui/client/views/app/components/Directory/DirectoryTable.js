@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Box, Icon, Pagination, Skeleton, Table, Flex, TextInput, Tile } from '@rocket.chat/fuselage';
+import { Box, Icon, Pagination, Skeleton, Table, Flex, TextInput, Tile, Scrollable } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useDebounce } from '../hooks';
@@ -75,40 +75,42 @@ export function DirectoryTable({
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
 
 	return <>
-		<Flex.Container direction='column'>
-			<Box>
-				<Box mb='x16' display='flex' flexDirection='column' style={style}>
-					<TextInput placeholder={searchPlaceholder} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-				</Box>
-				{results && !results.length
-					? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
-						{t('No_data_found')}
-					</Tile>
-					: <>
-						<Table fixed>
-							{ header && <Table.Head>
-								<Table.Row>
-									{header}
-								</Table.Row>
-							</Table.Head> }
-							<Table.Body>
-								{results
-									? results.map(renderRow)
-									:	<Loading/>}
-							</Table.Body>
-						</Table>
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							itemsPerPageLabel={itemsPerPageLabel}
-							showingResultsLabel={showingResultsLabel}
-							count={total || 0}
-							onSetItemsPerPage={setItemsPerPage}
-							onSetCurrent={setCurrent}
-						/>
-					</>
-				}
+		<>
+			<Box mb='x16' display='flex' flexDirection='column' style={style}>
+				<TextInput placeholder={searchPlaceholder} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 			</Box>
-		</Flex.Container>
+			{results && !results.length
+				? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
+					{t('No_data_found')}
+				</Tile>
+				: <>
+					<Scrollable>
+						<Box mi={'neg-x24'} pi={'x24'} flexGrow={1}>
+							<Table fixed>
+								{ header && <Table.Head>
+									<Table.Row>
+										{header}
+									</Table.Row>
+								</Table.Head> }
+								<Table.Body>
+									{results
+										? results.map(renderRow)
+										:	<Loading/>}
+								</Table.Body>
+							</Table>
+						</Box>
+					</Scrollable>
+					<Pagination
+						current={current}
+						itemsPerPage={itemsPerPage}
+						itemsPerPageLabel={itemsPerPageLabel}
+						showingResultsLabel={showingResultsLabel}
+						count={total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+					/>
+				</>
+			}
+		</>
 	</>;
 }
