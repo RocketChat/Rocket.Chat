@@ -19,14 +19,14 @@ export function DirectoryPage() {
 
 	const tab = useRouteParameter('tab');
 
-	const goToDirectory = useRoute('directory');
-	const handleTabClick = useCallback((tab) => () => goToDirectory({ tab }), [tab]);
+	const directoryRoute = useRoute('directory');
+	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [tab]);
 
 	useEffect(() => {
 		if (!tab || (tab === 'external' && !federationEnabled)) {
-			return goToDirectory.replacingState({ tab: defaultTab });
+			return directoryRoute.replace({ tab: defaultTab });
 		}
-	}, [tab, federationEnabled, defaultTab]);
+	}, [directoryRoute, tab, federationEnabled, defaultTab]);
 
 	return <Avatar.Context.Provider value={avatarBase}><Page>
 		<Page.Header title={t('Directory')} />
