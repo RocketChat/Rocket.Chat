@@ -4,14 +4,15 @@ import LivechatPriority from '../../../models/server/models/LivechatPriority';
 
 callbacks.add('livechat.saveInfo', (room, { user, room: oldRoom }) => {
 	if (!room || !user) {
-		return;
+		return room;
 	}
 
 	const { priorityId: oldPriorityId = null } = oldRoom;
 	const { priorityId: newPriorityId = null } = room;
 	if (oldPriorityId === newPriorityId) {
-		return;
+		return room;
 	}
 
-	LivechatEnterprise.savePriorityOnRoom(room._id, user, LivechatPriority.findOneById(newPriorityId));
+	const priority = newPriorityId && LivechatPriority.findOneById(newPriorityId, { fields: { dueTimeInMinutes: 1 } });
+	LivechatEnterprise.updateInquiryPriority(room._id, user, priority);
 }, callbacks.priority.HIGH, 'livechat-on-save-visitor-info');
