@@ -1,38 +1,17 @@
 import { LivechatInquiry } from '../../../../../app/models/server/models/LivechatInquiry';
 
-LivechatInquiry.prototype.setEstimatedServiceTimeAt = function(rid, estimatedServiceTimeInMinutes) {
-	const self = this;
-	this.find({ rid }, { ts: 1 }).forEach(function(inq) {
-		const { ts } = inq;
-		const estimatedServiceTimeAt = new Date(ts.setMinutes(ts.getMinutes() + estimatedServiceTimeInMinutes));
+LivechatInquiry.prototype.setEstimatedServiceTimeAt = function(rid, data = {}) {
+	const { defaultEstimatedServiceTime, estimatedServiceTimeAt } = data;
 
-		self.update(
-			{ rid },
-			{
-				$set: {
-					estimatedServiceTimeAt,
-					defaultEstimatedServiceTime: false,
-				},
+	return this.update(
+		{ rid },
+		{
+			$set: {
+				estimatedServiceTimeAt,
+				defaultEstimatedServiceTime,
 			},
-		);
-	});
-};
-
-LivechatInquiry.prototype.unsetEstimatedServiceTimeAt = function(rid) {
-	const self = this;
-	this.find({ rid }, { ts: 1 }).forEach(function(inq) {
-		const { ts: estimatedServiceTimeAt } = inq;
-
-		self.update(
-			{ rid },
-			{
-				$set: {
-					estimatedServiceTimeAt,
-					defaultEstimatedServiceTime: true,
-				},
-			},
-		);
-	});
+		},
+	);
 };
 
 export default LivechatInquiry;

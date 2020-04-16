@@ -36,7 +36,6 @@ Template.livechatPriorityForm.events({
 		}
 
 		const description = instance.$('textarea[name=description]').val();
-		const color = instance.$('input[name=color]').val();
 		const dueTimeInMinutes = instance.$('input[name=dueTimeInMinutes]').val();
 
 		const oldBtnValue = $btn.html();
@@ -45,7 +44,6 @@ Template.livechatPriorityForm.events({
 		const priorityData = {
 			name: name.trim(),
 			description: description.trim(),
-			color: color.trim(),
 			dueTimeInMinutes,
 		};
 

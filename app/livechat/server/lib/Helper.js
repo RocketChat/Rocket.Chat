@@ -76,7 +76,7 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus, 
 			status,
 		},
 		t: 'l',
-		defaultEstimatedServiceTime: true,
+		defaultEstimatedServiceTime: 1,
 		estimatedServiceTimeAt: ts,
 	}, extraData);
 	return LivechatInquiry.insert(inquiry);

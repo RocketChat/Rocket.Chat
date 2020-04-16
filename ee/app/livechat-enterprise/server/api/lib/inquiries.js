@@ -17,5 +17,5 @@ export async function setPriorityToInquiry({ userId, roomId, priority }) {
 		throw new Error('error-invalid-priority');
 	}
 
-	LivechatEnterprise.updateInquiryPriority(roomId, await Users.findOneById(userId, { fields: { username: 1 } }), priorityData);
+	LivechatEnterprise.updateRoomPriority(roomId, await Users.findOneById(userId, { fields: { username: 1 } }), priorityData);
 }

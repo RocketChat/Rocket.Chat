@@ -2,7 +2,7 @@ import { callbacks } from '../../../../../app/callbacks';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 
-callbacks.add('livechat.saveInfo', (room, { user, room: oldRoom }) => {
+callbacks.add('livechat.saveInfo', (room, { user, oldRoom }) => {
 	if (!room || !user) {
 		return room;
 	}
@@ -13,6 +13,8 @@ callbacks.add('livechat.saveInfo', (room, { user, room: oldRoom }) => {
 		return room;
 	}
 
-	const priority = newPriorityId && LivechatPriority.findOneById(newPriorityId, { fields: { dueTimeInMinutes: 1 } });
-	LivechatEnterprise.updateInquiryPriority(room._id, user, priority);
+	const priority = newPriorityId && LivechatPriority.findOneById(newPriorityId);
+	LivechatEnterprise.updateRoomPriority(room._id, user, priority);
+
+	return room;
 }, callbacks.priority.HIGH, 'livechat-on-save-visitor-info');

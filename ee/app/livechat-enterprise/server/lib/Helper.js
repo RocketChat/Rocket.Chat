@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
 import { hasRole } from '../../../../../app/authorization';
-import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms } from '../../../../../app/models/server';
+import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms, Messages } from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
@@ -165,4 +165,53 @@ export const updatePredictedVisitorAbandonment = () => {
 	} else {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
 	}
+};
+
+export const updateRoomPriorityHistory = (rid, user, priority) => {
+	const history = {
+		priorityData: {
+			definedBy: user,
+			priority: priority || {},
+		},
+	};
+
+	Messages.createPriorityHistoryWithRoomIdMessageAndUser(rid, '', user, history);
+};
+
+export const updateInquiryQueuePriority = (inquiry, priority) => {
+	if (!inquiry) {
+		return;
+	}
+
+	let { ts: estimatedServiceTimeAt } = inquiry;
+	let defaultEstimatedServiceTime = 1;
+
+	if (priority) {
+		const { dueTimeInMinutes } = priority;
+		defaultEstimatedServiceTime = 0;
+		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
+	}
+
+	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, { defaultEstimatedServiceTime, estimatedServiceTimeAt });
+};
+
+export const removePriorityFromRooms = (priorityId) => {
+	LivechatRooms.find({ t: 'l', open: true, priorityId }).forEach((room) => {
+		const inquiry = LivechatInquiry.findOneByRoomId(room._id);
+		updateInquiryQueuePriority(inquiry);
+	});
+
+	LivechatRooms.unsetPriorityById(priorityId);
+};
+
+export const updatePriorityInquiries = (priority) => {
+	if (!priority) {
+		return;
+	}
+
+	const { _id: priorityId } = priority;
+	LivechatRooms.find({ t: 'l', open: true, priorityId }).forEach((room) => {
+		const inquiry = LivechatInquiry.findOneByRoomId(room._id);
+		updateInquiryQueuePriority(inquiry, priority);
+	});
 };

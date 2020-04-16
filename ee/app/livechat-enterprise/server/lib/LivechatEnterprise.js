@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Users, /* LivechatRooms, */ LivechatInquiry, Messages } from '../../../../../app/models';
+import { Users, /* LivechatRooms, */ LivechatInquiry } from '../../../../../app/models';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
+import { removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 
 export const LivechatEnterprise = {
 	addMonitor(username) {
@@ -121,15 +122,22 @@ export const LivechatEnterprise = {
 		check(priorityData, {
 			name: String,
 			description: Match.Optional(String),
-			color: String,
 			dueTimeInMinutes: String,
 		});
 
+		const oldPriority = _id && LivechatPriority.findOneById(_id, { fields: { dueTimeInMinutes: 1 } });
 		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
-		/*
-		if (priority) {
-			LivechatInquiry.updatePriorityDataByPriorityId(priority._id, priority);
-		}*/
+		if (!oldPriority) {
+			return priority;
+		}
+
+		const { dueTimeInMinutes: oldDueTimeInMinutes } = oldPriority;
+		const { dueTimeInMinutes } = priority;
+
+		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
+			updatePriorityInquiries(priority);
+		}
+
 		return priority;
 	},
 
@@ -139,32 +147,22 @@ export const LivechatEnterprise = {
 		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!priority) {
-			throw new Meteor.Error('priority-not-found', 'Priority not found', { method: 'livechat:removePriority' });
+			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', { method: 'livechat:removePriority' });
 		}
 		const removed = LivechatPriority.removeById(_id);
 		if (removed) {
-			/*
-			LivechatInquiry.unsetPriorityByPriorityId(_id);
-			*/
+			removePriorityFromRooms(_id);
 		}
 		return removed;
 	},
 
-	updateInquiryPriority(roomId, user, priority) {
-		const history = {
-			priorityData: {
-				definedBy: user,
-				priority: priority || {},
-			},
-		};
-
-		Messages.createPriorityHistoryWithRoomIdMessageAndUser(roomId, '', user, history);
-
-		if (!priority) {
-			return LivechatInquiry.unsetEstimatedServiceTimeAt(roomId);
+	updateRoomPriority(roomId, user, priority) {
+		const inquiry = LivechatInquiry.findOneByRoomId(roomId);
+		if (!inquiry) {
+			return;
 		}
 
-		const { dueTimeInMinutes } = priority;
-		LivechatInquiry.setEstimatedServiceTimeAt(roomId, dueTimeInMinutes);
+		updateInquiryQueuePriority(inquiry, priority);
+		updateRoomPriorityHistory(roomId, user, priority);
 	},
 };
