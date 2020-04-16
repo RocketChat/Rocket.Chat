@@ -90,7 +90,7 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 		id = this.options.id;
 	}
 
-	let request =		`<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant }" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
+	let request = `<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant }" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
 		this.options.entryPoint }">`
 		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>\n`;
 
@@ -98,12 +98,15 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 		request += `<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="${ this.options.identifierFormat }" AllowCreate="true"></samlp:NameIDPolicy>\n`;
 	}
 
-	const authnContextComparison = this.options.authnContextComparison || 'exact';
-	const authnContext = this.options.customAuthnContext || 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
-	request
-		+= `<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="${ authnContextComparison }">`
-		+ `<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ authnContext }</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>\n`
-		+ '</samlp:AuthnRequest>';
+	if (this.options.customAuthnContext) {
+		const authnContextComparison = this.options.authnContextComparison || 'exact';
+		const authnContext = this.options.customAuthnContext;
+		request
+			+= `<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="${ authnContextComparison }">`
+			+ `<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ authnContext }</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>\n`;
+	}
+
+	request += '</samlp:AuthnRequest>';
 
 	return request;
 };
@@ -347,6 +350,10 @@ SAML.prototype.validateSignatureChildren = function(xml, cert, parent) {
 		signature = sign;
 	}
 
+	if (!signature) {
+		return false;
+	}
+
 	return this.validateSignature(xml, cert, signature);
 };
 
@@ -564,19 +571,43 @@ SAML.prototype.verifySignatures = function(response, assertion, xml) {
 		return;
 	}
 
-	debugLog('Verify Document Signature');
-	if (!this.validateResponseSignature(xml, this.options.cert, response)) {
-		debugLog('Document Signature WRONG');
-		throw new Error('Invalid Signature');
-	}
-	debugLog('Document Signature OK');
+	const signatureType = this.options.signatureValidationType;
 
-	debugLog('Verify Assertion Signature');
-	if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
-		debugLog('Assertion Signature WRONG');
-		throw new Error('Invalid Assertion signature');
+	const checkEither = signatureType === 'Either';
+	const checkResponse = signatureType === 'Response' || signatureType === 'All' || checkEither;
+	const checkAssertion = signatureType === 'Assertion' || signatureType === 'All' || checkEither;
+	let anyValidSignature = false;
+
+	if (checkResponse) {
+		debugLog('Verify Document Signature');
+		if (!this.validateResponseSignature(xml, this.options.cert, response)) {
+			if (!checkEither) {
+				debugLog('Document Signature WRONG');
+				throw new Error('Invalid Signature');
+			}
+		} else {
+			anyValidSignature = true;
+		}
+		debugLog('Document Signature OK');
 	}
-	debugLog('Assertion Signature OK');
+
+	if (checkAssertion) {
+		debugLog('Verify Assertion Signature');
+		if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
+			if (!checkEither) {
+				debugLog('Assertion Signature WRONG');
+				throw new Error('Invalid Assertion signature');
+			}
+		} else {
+			anyValidSignature = true;
+		}
+		debugLog('Assertion Signature OK');
+	}
+
+	if (checkEither && !anyValidSignature) {
+		debugLog('No Valid Signature');
+		throw new Error('No valid SAML Signature found');
+	}
 };
 
 SAML.prototype.getSubject = function(assertion) {
