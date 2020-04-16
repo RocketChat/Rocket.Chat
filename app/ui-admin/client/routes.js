@@ -9,7 +9,7 @@ const routeGroup = FlowRouter.group({
 	prefix: '/admin',
 });
 
-export const registerAdminRoute = (path, { lazyRouteComponent, action, ...options } = {}) => {
+export const registerAdminRoute = (path, { lazyRouteComponent, props, action, ...options } = {}) => {
 	routeGroup.route(path, {
 		...options,
 		action: (params, queryParams) => {
@@ -21,7 +21,7 @@ export const registerAdminRoute = (path, { lazyRouteComponent, action, ...option
 			renderRouteComponent(() => import('./components/AdministrationRouter'), {
 				template: 'main',
 				region: 'center',
-				propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams }),
+				propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams, ...props }),
 			});
 		},
 	});
@@ -36,6 +36,11 @@ registerAdminRoute('/', {
 registerAdminRoute('/info', {
 	name: 'admin-info',
 	lazyRouteComponent: () => import('./components/info/InformationRoute'),
+});
+
+registerAdminRoute('/mailer', {
+	name: 'admin-mailer',
+	lazyRouteComponent: () => import('./components/mailer/MailerRoute'),
 });
 
 registerAdminRoute('/users', {
