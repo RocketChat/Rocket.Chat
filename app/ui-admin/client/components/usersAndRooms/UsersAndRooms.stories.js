@@ -1,13 +1,12 @@
 import React from 'react';
 
+import { UsersAndRoomsTab } from './UsersAndRoomsTab';
 import { ServerContext } from '../../../../../client/contexts/ServerContext';
-
-import { UsersAndRooms } from '.';
 
 
 export default {
 	title: 'admin/pages/UsersAndRooms',
-	component: UsersAndRooms,
+	component: UsersAndRoomsTab,
 };
 
 const usersResult = () => ({
@@ -39,5 +38,5 @@ const roomsResult = () => ({
 
 export const _default = () =>
 	<ServerContext.Provider value={{ callEndpoint: async (meth, endpoint, args) => (JSON.parse(args.query).type === 'users' ? usersResult() : roomsResult()) }}>
-		<UsersAndRooms />
+		<UsersAndRoomsTab />
 	</ServerContext.Provider>;
