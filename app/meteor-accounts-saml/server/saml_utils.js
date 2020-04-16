@@ -386,13 +386,25 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 
 		try {
 			const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
-			const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
+
+			const nameNodes1 = request.getElementsByTagName('saml:NameID');
+			const nameNodes2 = request.getElementsByTagName('NameID');
+
+			let nameIdNode;
+			if (nameNodes1 && nameNodes1.length) {
+				nameIdNode = nameNodes1[0];
+			} else if (nameNodes2 && nameNodes2.length) {
+				nameIdNode = nameNodes2[0];
+			} else {
+				throw new Error('SAML Logout Request: No NameID node found');
+			}
 
 			const idpSession = sessionNode.childNodes[0].nodeValue;
 			const nameID = nameIdNode.childNodes[0].nodeValue;
 
 			return callback(null, { idpSession, nameID });
 		} catch (e) {
+			console.error(e);
 			debugLog(`Caught error: ${ e }`);
 
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
