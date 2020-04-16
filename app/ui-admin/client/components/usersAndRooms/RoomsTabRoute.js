@@ -4,8 +4,10 @@ import _ from 'underscore';
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
+import { UsersAndRoomsTab } from './UsersAndRoomsTab';
+import { useRoute } from '../../../../../client/contexts/RouterContext';
 
-import { RoomsTab, UsersAndRooms, useSwitchTab } from '.';
+import { RoomsTab, useSwitchTab } from '.';
 
 const useQuery = (params, sort) => useMemo(() => ({
 	filter: params.term || '',
@@ -22,13 +24,19 @@ export default function RoomsTabRoute({ props }) {
 	const [params, setParams] = useState({});
 	const [sort, setSort] = useState(['name', 'asc']);
 
+	const routeName = 'admin-rooms';
+
 	const query = useQuery(params, sort);
 
 	const data = useEndpointData('GET', 'rooms.adminRooms', query) || {};
 
-	const switchTab = useSwitchTab();
+	const switchTab = useSwitchTab(routeName);
 
-	const onClick = () => {};
+	const router = useRoute(routeName);
+	const onClick = (rid) => () => router.push({
+		context: 'edit',
+		id: rid,
+	});
 
 	const onHeaderClick = (id) => {
 		const [sortBy, sortDirection] = sort;
@@ -40,7 +48,7 @@ export default function RoomsTabRoute({ props }) {
 		setSort([id, 'asc']);
 	};
 
-	if (sort[0] === 'name' && data?.rooms) {
+	if (sort[0] === 'name' && data.rooms) {
 		data.rooms = data.rooms.sort((a, b) => {
 			const aName = a.name || a.usernames.join(' x ');
 			const bName = b.name || b.usernames.join(' x ');
@@ -50,8 +58,11 @@ export default function RoomsTabRoute({ props }) {
 		});
 	}
 
-	return canViewRoomAdministration ? <UsersAndRooms switchTab={switchTab} tab='rooms' {...props}>
+	if (!canViewRoomAdministration) {
+		return <NotAuthorizedPage />;
+	}
+
+	return <UsersAndRoomsTab route={routeName} switchTab={switchTab} tab='rooms' {...props}>
 		<RoomsTab setParams={_.debounce(setParams, 300)} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
-	</UsersAndRooms>
-		: <NotAuthorizedPage />;
+	</UsersAndRoomsTab>;
 }
