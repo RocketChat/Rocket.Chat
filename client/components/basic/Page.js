@@ -2,6 +2,7 @@ import { Box, Flex, Margins, Scrollable } from '@rocket.chat/fuselage';
 import React, { useMemo, createContext, useContext, useState } from 'react';
 
 import { BurgerMenuButton } from './BurgerMenuButton';
+import { VerticalBar, VerticalBarHeader, VerticalBarClose } from './VerticalBar';
 
 const PageContext = createContext();
 export function Page(props) {
@@ -46,3 +47,8 @@ export function PageContent({ onScrollContent, ...props }) {
 Page.Header = PageHeader;
 Page.Content = PageContent;
 Page.ContentShadowScroll = PageContentShadowScroll;
+
+Page.VerticalBar = VerticalBar;
+Page.VerticalBar.Header = VerticalBarHeader;
+Page.VerticalBar.Content = PageContent;
+Page.VerticalBar.Close = VerticalBarClose;
