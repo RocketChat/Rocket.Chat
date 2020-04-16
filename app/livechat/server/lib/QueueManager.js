@@ -26,7 +26,7 @@ export const QueueManager = {
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
 		const room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo, extraData));
-		let inquiry = LivechatInquiry.findOneById(createLivechatInquiry(rid, name, guest, message, null, extraData));
+		let inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid, name, guest, message, extraData }));
 
 		LivechatRooms.updateRoomCount();
 

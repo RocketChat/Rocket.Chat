@@ -46,7 +46,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 	return roomId;
 };
 
-export const createLivechatInquiry = (rid, name, guest, message, initialStatus = 'ready', extraData = {}) => {
+export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus, extraData = {} }) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -71,7 +71,7 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus =
 		ts,
 		department,
 		message: msg,
-		status: initialStatus,
+		status: initialStatus || 'ready',
 		v: {
 			_id,
 			username,
@@ -83,6 +83,9 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus =
 		estimatedWaitingTimeQueue: 0,
 		estimatedServiceTimeAt: ts,
 	}, extraInquiryInfo);
+
+	console.log('inquiry');
+	console.log(inquiry);
 
 	return LivechatInquiry.insert(inquiry);
 };
