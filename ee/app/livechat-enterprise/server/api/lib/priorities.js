@@ -24,7 +24,7 @@ export async function findPriorities({ userId, pagination: { offset, count, sort
 }
 
 export async function findPriorityById({ userId, priorityId }) {
-	if (!await hasPermissionAsync(userId, 'manage-livechat-priorities')) {
+	if (!await hasPermissionAsync(userId, 'manage-livechat-priorities') && !await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
 	return LivechatPriority.findOneById(priorityId);

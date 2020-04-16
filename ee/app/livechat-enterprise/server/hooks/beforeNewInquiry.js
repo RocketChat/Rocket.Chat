@@ -4,7 +4,7 @@ import { callbacks } from '../../../../../app/callbacks';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 
 callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
-	const { priority: searchTerm } = extraData;
+	const { priority: searchTerm, ...props } = extraData;
 	if (!searchTerm) {
 		return extraData;
 	}
@@ -20,5 +20,5 @@ callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
 	const queueOrder = 0;
 	const estimatedServiceTimeAt = new Date(now.setMinutes(now.getMinutes() + estimatedWaitingTimeQueue));
 
-	return Object.assign({ ...extraData }, { ts, queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
+	return Object.assign({ ...props }, { ts, queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
 }, callbacks.priority.MEDIUM, 'livechat-before-new-inquiry');
