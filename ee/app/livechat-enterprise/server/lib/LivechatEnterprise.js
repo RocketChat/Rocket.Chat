@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Users, /* LivechatRooms, */ LivechatInquiry } from '../../../../../app/models';
+import { Users } from '../../../../../app/models';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
@@ -157,12 +157,7 @@ export const LivechatEnterprise = {
 	},
 
 	updateRoomPriority(roomId, user, priority) {
-		const inquiry = LivechatInquiry.findOneByRoomId(roomId);
-		if (!inquiry) {
-			return;
-		}
-
-		updateInquiryQueuePriority(inquiry, priority);
+		updateInquiryQueuePriority(roomId, priority);
 		updateRoomPriorityHistory(roomId, user, priority);
 	},
 };

@@ -20,8 +20,11 @@ import LivechatUnitMonitors from '../../models/server/models/LivechatUnitMonitor
 import './agentStatus';
 import './startup';
 import './hooks/afterTakeInquiry';
+import './hooks/beforeNewInquiry';
+import './hooks/beforeNewRoom';
 import './hooks/beforeRoutingChat';
 import './hooks/checkAgentBeforeTakeInquiry';
+import './hooks/onCheckRoomParamsApi';
 import './hooks/onLoadConfigApi';
 import './hooks/onSetUserStatusLivechat';
 import './hooks/onCloseLivechat';

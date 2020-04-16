@@ -8,7 +8,7 @@ import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
 
-export const createLivechatRoom = (rid, name, guest, extraData = {}) => {
+export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -18,6 +18,7 @@ export const createLivechatRoom = (rid, name, guest, extraData = {}) => {
 		department: Match.Maybe(String),
 	}));
 
+	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 
 	const room = Object.assign({
@@ -38,14 +39,14 @@ export const createLivechatRoom = (rid, name, guest, extraData = {}) => {
 		cl: false,
 		open: true,
 		waitingResponse: true,
-	}, extraData);
+	}, extraRoomInfo);
 
 	const roomId = Rooms.insert(room);
 	callbacks.run('livechat.newRoom', room);
 	return roomId;
 };
 
-export const createLivechatInquiry = (rid, name, guest, message, initialStatus, extraData = {}) => {
+export const createLivechatInquiry = (rid, name, guest, message, initialStatus = 'ready', extraData = {}) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -58,6 +59,8 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus, 
 		msg: String,
 	}));
 
+	const extraInquiryInfo = callbacks.run('livechat.beforeInquiry', extraData);
+
 	const { _id, username, token, department, status = 'online' } = guest;
 	const { msg } = message;
 	const ts = new Date();
@@ -68,7 +71,7 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus, 
 		ts,
 		department,
 		message: msg,
-		status: initialStatus || 'ready',
+		status: initialStatus,
 		v: {
 			_id,
 			username,
@@ -76,9 +79,11 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus, 
 			status,
 		},
 		t: 'l',
-		defaultEstimatedServiceTime: 1,
+		queueOrder: 1,
+		estimatedWaitingTimeQueue: 0,
 		estimatedServiceTimeAt: ts,
-	}, extraData);
+	}, extraInquiryInfo);
+
 	return LivechatInquiry.insert(inquiry);
 };
 

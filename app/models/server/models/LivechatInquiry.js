@@ -28,7 +28,8 @@ export class LivechatInquiry extends Base {
 			},
 			{
 				sort: {
-					defaultEstimatedServiceTime: 1,
+					queueOrder: 1,
+					estimatedWaitingTimeQueue: 1,
 					estimatedServiceTimeAt: 1,
 				},
 			},

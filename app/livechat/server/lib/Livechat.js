@@ -108,7 +108,7 @@ export const Livechat = {
 		});
 	},
 
-	async getRoom(guest, message, roomInfo, agent) {
+	async getRoom(guest, message, roomInfo, agent, extraData) {
 		let room = LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
 
@@ -128,7 +128,7 @@ export const Livechat = {
 			}
 
 			// delegate room creation to QueueManager
-			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent });
+			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent, extraData });
 			newRoom = true;
 		}
 

@@ -178,27 +178,29 @@ export const updateRoomPriorityHistory = (rid, user, priority) => {
 	Messages.createPriorityHistoryWithRoomIdMessageAndUser(rid, '', user, history);
 };
 
-export const updateInquiryQueuePriority = (inquiry, priority) => {
+export const updateInquiryQueuePriority = (roomId, priority) => {
+	const inquiry = LivechatInquiry.findOneByRoomId(roomId);
 	if (!inquiry) {
 		return;
 	}
 
 	let { ts: estimatedServiceTimeAt } = inquiry;
-	let defaultEstimatedServiceTime = 1;
+	let queueOrder = 1;
+	let estimatedWaitingTimeQueue = 0;
 
 	if (priority) {
 		const { dueTimeInMinutes } = priority;
-		defaultEstimatedServiceTime = 0;
+		queueOrder = 0;
+		estimatedWaitingTimeQueue = dueTimeInMinutes;
 		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
 	}
 
-	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, { defaultEstimatedServiceTime, estimatedServiceTimeAt });
+	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, { queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
 };
 
 export const removePriorityFromRooms = (priorityId) => {
 	LivechatRooms.find({ t: 'l', open: true, priorityId }).forEach((room) => {
-		const inquiry = LivechatInquiry.findOneByRoomId(room._id);
-		updateInquiryQueuePriority(inquiry);
+		updateInquiryQueuePriority(room._id);
 	});
 
 	LivechatRooms.unsetPriorityById(priorityId);
@@ -211,7 +213,6 @@ export const updatePriorityInquiries = (priority) => {
 
 	const { _id: priorityId } = priority;
 	LivechatRooms.find({ t: 'l', open: true, priorityId }).forEach((room) => {
-		const inquiry = LivechatInquiry.findOneByRoomId(room._id);
-		updateInquiryQueuePriority(inquiry, priority);
+		updateInquiryQueuePriority(room._id, priority);
 	});
 };

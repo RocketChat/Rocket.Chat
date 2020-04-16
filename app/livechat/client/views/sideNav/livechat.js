@@ -54,7 +54,8 @@ Template.livechat.helpers({
 			status: 'queued',
 		}, {
 			sort: {
-				defaultEstimatedServiceTime: 1,
+				queueOrder: 1,
+				estimatedWaitingTimeQueue: 1,
 				estimatedServiceTimeAt: 1,
 			},
 			limit: Template.instance().inquiriesLimit.get(),
