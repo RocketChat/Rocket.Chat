@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import _ from 'underscore';
 
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
@@ -8,6 +7,8 @@ import { UsersAndRoomsTab } from './UsersAndRoomsTab';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
 import { useSwitchTab } from './hooks';
 import { AdminRooms } from './AdminRooms';
+import { useDebounce } from '../../../../ui/client/views/app/components/hooks';
+
 
 const useQuery = (params, sort) => useMemo(() => ({
 	filter: params.text || '',
@@ -26,7 +27,10 @@ export default function AdminRoomsRoute({ props }) {
 
 	const routeName = 'admin-rooms';
 
-	const query = useQuery(params, sort);
+	const debouncedParams = useDebounce(params, 500);
+
+	const query = useQuery(debouncedParams, sort);
+
 	const data = useEndpointData('GET', 'rooms.adminRooms', query) || {};
 
 	const switchTab = useSwitchTab(routeName);

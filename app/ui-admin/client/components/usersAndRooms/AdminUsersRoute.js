@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import _ from 'underscore';
 
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
@@ -8,6 +7,7 @@ import { useSwitchTab } from './hooks';
 import { UsersAndRoomsTab } from './UsersAndRoomsTab';
 import { AdminUsers } from './AdminUsers';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
+import { useDebounce } from '../../../../ui/client/views/app/components/hooks';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -33,7 +33,9 @@ export default function AdminUsersRoute({ props }) {
 	const [params, setParams] = useState({});
 	const [sort, setSort] = useState(['name', 'asc']);
 
-	const query = useQuery(params, sort);
+	const debouncedParams = useDebounce(params, 500);
+
+	const query = useQuery(debouncedParams, sort);
 
 	const switchTab = useSwitchTab(routeName);
 
