@@ -163,9 +163,14 @@ function NewImportPage() {
 
 	return <Page className='page-settings'>
 		<Page.Header title={t('Import_New_File')}>
-			<Button ghost onClick={handleBackToImportsButtonClick}>
-				<Icon name='back' /> {t('Back_to_imports')}
-			</Button>
+			<ButtonGroup>
+				<Button ghost onClick={handleBackToImportsButtonClick}>
+					<Icon name='back' /> {t('Back_to_imports')}
+				</Button>
+				{importer && <Button primary minHeight='x40' disabled={isLoading} onClick={handleImportButtonClick}>
+					{isLoading ? <Throbber inheritColor /> : t('Import')}
+				</Button>}
+			</ButtonGroup>
 		</Page.Header>
 		<Page.ContentShadowScroll>
 			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
@@ -232,11 +237,6 @@ function NewImportPage() {
 								<TextInput id={fileSourceInputId} value={filePath} onChange={handleFilePathChange} />
 							</Field.Row>
 						</Field>}
-						<ButtonGroup>
-							<Button primary minHeight='x40' disabled={isLoading} onClick={handleImportButtonClick}>
-								{isLoading ? <Throbber inheritColor /> : t('Import')}
-							</Button>
-						</ButtonGroup>
 					</>}
 				</Margins>
 			</Box>

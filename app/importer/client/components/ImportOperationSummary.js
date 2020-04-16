@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Skeleton, Table } from '@rocket.chat/fuselage';
+import { Skeleton, Table } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -14,7 +14,6 @@ import {
 
 function ImportOperationSummary({
 	type,
-	importerKey,
 	_updatedAt,
 	status,
 	file,
@@ -60,42 +59,39 @@ function ImportOperationSummary({
 
 	const canCheckProgress = useMemo(() => valid && ImportingStartedStates.includes(status), [valid, status]);
 
-	const hasActions = canContinue || canCheckProgress;
-
-	const importProgressRoute = useRoute('admin-import-progress');
 	const prepareImportRoute = useRoute('admin-import-prepare');
+	const importProgressRoute = useRoute('admin-import-progress');
 
-	const handlePrepareImportClick = () => {
-		prepareImportRoute.push();
+	const handleClick = () => {
+		if (canContinue) {
+			prepareImportRoute.push();
+			return;
+		}
+
+		if (canCheckProgress) {
+			importProgressRoute.push();
+		}
 	};
 
-	const handleImportProgressClick = () => {
-		importProgressRoute.push();
-	};
+	const hasAction = canContinue || canCheckProgress;
 
-	return <>
-		<Table.Row>
-			<Table.Cell>
-				<Box textStyle='p1' textColor='default'>{type}</Box>
-				<Box textStyle='p1' textColor='hint'>{importerKey}</Box>
-			</Table.Cell>
-			<Table.Cell>{formatDateAndTime(_updatedAt)}</Table.Cell>
-			<Table.Cell>{status && t(status.replace('importer_', 'importer_status_'))}</Table.Cell>
-			<Table.Cell>{fileName}</Table.Cell>
-			<Table.Cell align='center'>{users}</Table.Cell>
-			<Table.Cell align='center'>{channels}</Table.Cell>
-			<Table.Cell align='center'>{messages}</Table.Cell>
-			<Table.Cell align='center'>{total}</Table.Cell>
-		</Table.Row>
-		{hasActions && <Table.Row>
-			<Table.Cell colSpan={8}>
-				<ButtonGroup>
-					{canContinue && <Button primary onClick={handlePrepareImportClick}>{t('Continue')}</Button>}
-					{canCheckProgress && <Button primary onClick={handleImportProgressClick}>{t('Check_Progress')}</Button>}
-				</ButtonGroup>
-			</Table.Cell>
-		</Table.Row>}
-	</>;
+	const props = hasAction ? {
+		tabIndex: 0,
+		role: 'link',
+		action: true,
+		onClick: handleClick,
+	} : {};
+
+	return <Table.Row {...props}>
+		<Table.Cell>{type}</Table.Cell>
+		<Table.Cell>{formatDateAndTime(_updatedAt)}</Table.Cell>
+		<Table.Cell>{status && t(status.replace('importer_', 'importer_status_'))}</Table.Cell>
+		<Table.Cell>{fileName}</Table.Cell>
+		<Table.Cell align='center'>{users}</Table.Cell>
+		<Table.Cell align='center'>{channels}</Table.Cell>
+		<Table.Cell align='center'>{messages}</Table.Cell>
+		<Table.Cell align='center'>{total}</Table.Cell>
+	</Table.Row>;
 }
 
 function ImportOperationSummarySkeleton() {
