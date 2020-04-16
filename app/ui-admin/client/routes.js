@@ -45,6 +45,10 @@ registerAdminRoute('/info', {
 // 		BlazeLayout.render('main', { center: 'adminUsers' });
 // 	},
 // });
+registerAdminRoute('/mailer', {
+	name: 'admin-mailer',
+	lazyRouteComponent: () => import('./components/mailer/MailerRoute'),
+});
 
 registerAdminRoute('/users', {
 	name: 'admin-users',
