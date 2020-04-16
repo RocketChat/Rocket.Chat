@@ -13,6 +13,7 @@
   "Enter_a_custom_message": "Enter a custom message",
   "Enterprise_License": "Enterprise License",
   "Enterprise_License_Description": "If your workspace is registered and license is provided by Rocket.Chat Cloud you don't need to manually update the license here.",
+  "error-forwarding-department-target-not-allowed": "The forwarding to the target department is not allowed.",
   "Failed_to_add_monitor": "Failed to add monitor",
   "Invalid Canned Response": "Invalid Canned Response",
   "Invalid_Department": "Invalid Department",

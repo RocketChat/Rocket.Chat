@@ -4,6 +4,8 @@ import './hooks/addDepartmentAncestors';
 import './hooks/afterForwardChatToDepartment';
 import './hooks/beforeListTags';
 import './hooks/setPredictedVisitorAbandonmentTime';
+import './hooks/beforeForwardRoomToDepartment';
+import './hooks/afterRemoveDepartment';
 import './methods/addMonitor';
 import './methods/getUnitsFromUserRoles';
 import './methods/removeMonitor';

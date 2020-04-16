@@ -9,6 +9,7 @@
   "Enter_a_custom_message": "Digite uma mensagem customizada",
   "Enterprise_License": "Licença Enterprise",
   "Enterprise_License_Description": "Se você registrou seu workspace e a licença foi fornecida pelo Rocket.Chat Cloud você não precisa atualizar a licença manualmente aqui.",
+  "error-forwarding-department-target-not-allowed": "O redirecionamento para o departamento alvo não é permitido.",
   "Invalid_Department": "Departamento inválido",
   "LDAP_Default_Role_To_User": "Papel padrão para o usuário",
   "LDAP_Default_Role_To_User_Description": "Papel padrão par ser aplicado ao usuário, caso ele tenha algum papel do LDAP que não esteja mapeado.",
