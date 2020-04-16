@@ -31,6 +31,7 @@ const sortUsers = function(field, direction) {
 		case 'email':
 			return {
 				'emails.address': direction === 'asc' ? 1 : -1,
+				username: direction === 'asc' ? 1 : -1,
 			};
 		default:
 			return {
@@ -85,6 +86,7 @@ Meteor.methods({
 					...sort,
 				},
 				fields: {
+					t: 1,
 					description: 1,
 					topic: 1,
 					name: 1,
@@ -95,6 +97,7 @@ Meteor.methods({
 					default: 1,
 					featured: 1,
 					usersCount: 1,
+					prid: 1,
 				},
 			});
 
@@ -114,8 +117,6 @@ Meteor.methods({
 			return;
 		}
 
-		const exceptions = [user.username];
-
 		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
 
 		const options = {
@@ -133,11 +134,11 @@ Meteor.methods({
 
 		let result;
 		if (workspace === 'all') {
-			result = Users.findByActiveUsersExcept(text, exceptions, options, forcedSearchFields);
+			result = Users.findByActiveUsersExcept(text, [], options, forcedSearchFields);
 		} else if (workspace === 'external') {
-			result = Users.findByActiveExternalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
+			result = Users.findByActiveExternalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
 		} else {
-			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, getFederationDomain());
+			result = Users.findByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
 		}
 
 		const total = result.count(); // count ignores the `skip` and `limit` options

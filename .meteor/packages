@@ -52,8 +52,8 @@ konecty:user-presence
 
 deepwell:bootstrap-datepicker2
 dispatch:run-as-user
-jalik:ufs
-jalik:ufs-gridfs
+jalik:ufs@1.0.2
+jalik:ufs-gridfs@1.0.2
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
@@ -68,7 +68,6 @@ pauli:accounts-linkedin
 raix:handlebar-helpers
 rocketchat:push
 raix:ui-dropped-event
-todda00:friendly-slugs
 
 rocketchat:tap-i18n
 underscore@1.0.10
@@ -76,7 +75,7 @@ juliancwirko:postcss
 littledata:synced-cron
 
 edgee:slingshot
-jalik:ufs-local@0.2.5
+jalik:ufs-local@1.0.2
 accounts-base@1.5.0
 accounts-oauth@1.1.16
 autoupdate@1.6.0
@@ -97,3 +96,4 @@ webapp-hashing@1.0.9
 rocketchat:oauth2-server
 rocketchat:i18n
 dandv:caret-position
+facts-base

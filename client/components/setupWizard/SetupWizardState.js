@@ -10,7 +10,7 @@ export const finalStep = 'final';
 const useStepRouting = () => {
 	const param = useRouteParameter('step');
 	const userId = useUserId();
-	const goToSetupWizard = useRoute('setup-wizard');
+	const setupWizardRoute = useRoute('setup-wizard');
 
 	const [currentStep, setCurrentStep] = useState(() => {
 		if (param === finalStep) {
@@ -32,8 +32,8 @@ const useStepRouting = () => {
 			setCurrentStep(2);
 		}
 
-		goToSetupWizard.replacingState({ step: String(currentStep) });
-	}, [goToSetupWizard, userId, currentStep]);
+		setupWizardRoute.replace({ step: String(currentStep) });
+	}, [setupWizardRoute, userId, currentStep]);
 
 	return [currentStep, setCurrentStep];
 };

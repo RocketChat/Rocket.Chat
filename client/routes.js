@@ -3,18 +3,16 @@ import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
-import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
-import { Template } from 'meteor/templating';
+import toastr from 'toastr';
 
 import { KonchatNotification } from '../app/ui';
 import { ChatSubscription } from '../app/models';
-import { roomTypes } from '../app/utils';
+import { roomTypes, handleError } from '../app/utils';
 import { call } from '../app/ui-utils';
+import { renderRouteComponent } from './reactAdapters';
 
 const getRoomById = mem((rid) => call('getRoomById', rid));
 
@@ -34,65 +32,7 @@ FlowRouter.goToRoomById = async (rid) => {
 
 BlazeLayout.setRoot('body');
 
-export const createTemplateForComponent = async (
-	component,
-	props = {},
-	// eslint-disable-next-line new-cap
-	renderContainerView = () => HTML.DIV(),
-	url,
-
-) => {
-	const name = component.displayName || component.name;
-
-	if (!name) {
-		throw new Error('the component must have a name');
-	}
-
-	if (Template[name]) {
-		Template[name].props.set(props);
-		return name;
-	}
-
-	Template[name] = new Blaze.Template(name, renderContainerView);
-
-	Template[name].props = new ReactiveVar(props);
-
-	const React = await import('react');
-	const ReactDOM = await import('react-dom');
-	const { MeteorProvider } = await import('./providers/MeteorProvider');
-
-	function TemplateComponent() {
-		return React.createElement(component, Template[name].props.get());
-	}
-
-	Template[name].onRendered(() => {
-		Template.instance().autorun((computation) => {
-			if (computation.firstRun) {
-				Template.instance().container = Template.instance().firstNode;
-			}
-
-			ReactDOM.render(
-				React.createElement(MeteorProvider, {
-					children: React.createElement(TemplateComponent),
-				}), Template.instance().firstNode);
-		});
-
-		url && Template.instance().autorun(() => {
-			const routeName = FlowRouter.getRouteName();
-			if (routeName !== url) {
-				ReactDOM.unmountComponentAtNode(Template.instance().container);
-			}
-		});
-	});
-
-	Template[name].onDestroyed(() => {
-		if (Template.instance().container) {
-			ReactDOM.unmountComponentAtNode(Template.instance().container);
-		}
-	});
-
-	return name;
-};
+FlowRouter.wait();
 
 FlowRouter.route('/', {
 	name: 'index',
@@ -137,7 +77,16 @@ FlowRouter.route('/home', {
 					saml: true,
 					credentialToken: queryParams.saml_idp_credentialToken,
 				}],
-				userCallback() { BlazeLayout.render('main', { center: 'home' }); },
+				userCallback(error) {
+					if (error) {
+						if (error.reason) {
+							toastr.error(error.reason);
+						} else {
+							handleError(error);
+						}
+					}
+					BlazeLayout.render('main', { center: 'home' });
+				},
 			});
 		} else {
 			BlazeLayout.render('main', { center: 'home' });
@@ -147,10 +96,8 @@ FlowRouter.route('/home', {
 
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
-
-	async action() {
-		const { DirectoryPage } = await require('../app/ui/client/views/app/components/Directory');
-		BlazeLayout.render('main', { center: await createTemplateForComponent(DirectoryPage, { }, () => HTML.DIV({ style }), 'directory')}); // eslint-disable-line
+	action: () => {
+		renderRouteComponent(() => import('../app/ui/client/views/app/components/Directory'), { template: 'main', region: 'center' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
@@ -159,13 +106,10 @@ FlowRouter.route('/directory/:tab?', {
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
-
-	async action(params) {
+	action: (params) => {
 		if (!params.group) {
 			params.group = 'Profile';
 		}
-		const { Input } = await require('../client/components/admin/settings/inputs/StringSettingInput');
-		console.log(await createTemplateForComponent(Input, { }, () => HTML.DIV({ style }))); // eslint-disable-line
 		params.group = s.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
 	},
@@ -176,8 +120,7 @@ FlowRouter.route('/account/:group?', {
 
 FlowRouter.route('/terms-of-service', {
 	name: 'terms-of-service',
-
-	action() {
+	action: () => {
 		Session.set('cmsPage', 'Layout_Terms_of_Service');
 		BlazeLayout.render('cmsPage');
 	},
@@ -185,8 +128,7 @@ FlowRouter.route('/terms-of-service', {
 
 FlowRouter.route('/privacy-policy', {
 	name: 'privacy-policy',
-
-	action() {
+	action: () => {
 		Session.set('cmsPage', 'Layout_Privacy_Policy');
 		BlazeLayout.render('cmsPage');
 	},
@@ -194,8 +136,7 @@ FlowRouter.route('/privacy-policy', {
 
 FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
-
-	action() {
+	action: () => {
 		Session.set('cmsPage', 'Layout_Legal_Notice');
 		BlazeLayout.render('cmsPage');
 	},
@@ -203,71 +144,39 @@ FlowRouter.route('/legal-notice', {
 
 FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
-
-	action(params) {
-		Session.set('roomNotFound', { type: params.type, name: params.name });
+	action: ({ type, name }) => {
+		Session.set('roomNotFound', { type, name });
 		BlazeLayout.render('main', { center: 'roomNotFound' });
 	},
 });
 
 FlowRouter.route('/register/:hash', {
 	name: 'register-secret-url',
-
-	action(/* params*/) {
+	action: () => {
 		BlazeLayout.render('secretURL');
-
-		// if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL'
-		// 	Meteor.call 'checkRegistrationSecretURL', params.hash, (err, success) ->
-		// 		if success
-		// 			Session.set 'loginDefaultState', 'register'
-		// 			BlazeLayout.render 'main', {center: 'home'}
-		// 			KonchatNotification.getDesktopPermission()
-		// 		else
-		// 			BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
-		// else
-		// 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
 	},
 });
 
 FlowRouter.route('/invite/:hash', {
 	name: 'invite',
-
-	action(/* params */) {
+	action: () => {
 		BlazeLayout.render('invite');
 	},
 });
 
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
-	action: async () => {
-		const { SetupWizardRoute } = await import('./components/setupWizard/SetupWizardRoute');
-		BlazeLayout.render(await createTemplateForComponent(SetupWizardRoute));
-	},
-});
-
-const style = 'overflow: hidden; flex: 1 1 auto; height: 1%;';
-FlowRouter.route('/admin/:group?', {
-	name: 'admin',
-	action: async ({ group = 'info' } = {}) => {
-		switch (group) {
-			case 'info': {
-				const { InformationRoute } = await import('./components/admin/info/InformationRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(InformationRoute, { }, () => HTML.DIV({ style })) }); // eslint-disable-line
-				break;
-			}
-
-			default: {
-				const { SettingsRoute } = await import('./components/admin/settings/SettingsRoute');
-				BlazeLayout.render('main', { center: await createTemplateForComponent(SettingsRoute, { group }, () => HTML.DIV({ style })) }); // eslint-disable-line
-				// BlazeLayout.render('main', { center: 'admin' });
-			}
-		}
+	action: () => {
+		renderRouteComponent(() => import('./components/setupWizard/SetupWizardRoute'));
 	},
 });
 
 FlowRouter.notFound = {
-	action: async () => {
-		const { PageNotFound } = await import('./components/pageNotFound/PageNotFound');
-		BlazeLayout.render(await createTemplateForComponent(PageNotFound));
+	action: () => {
+		renderRouteComponent(() => import('./components/pageNotFound/PageNotFound'));
 	},
 };
+
+Meteor.startup(() => {
+	FlowRouter.initialize();
+});
