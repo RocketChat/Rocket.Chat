@@ -4,38 +4,46 @@ import _ from 'underscore';
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
-import { UsersAndRoomsTab } from './UsersAndRoomsTab';
-import { useRoute } from '../../../../../client/contexts/RouterContext';
 import { useSwitchTab } from './hooks';
-import { RoomsTab } from './RoomsTab';
+import { UsersAndRoomsTab } from './UsersAndRoomsTab';
+import { AdminUsers } from './AdminUsers';
+import { useRoute } from '../../../../../client/contexts/RouterContext';
+
+const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
 const useQuery = (params, sort) => useMemo(() => ({
-	filter: params.term || '',
-	types: JSON.stringify(['c', 'p', 'd', 'l', 'discussion']),
-	sort: JSON.stringify({ [sort[0]]: sort[1] === 'asc' ? 1 : -1 }),
+	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1 }),
+	query: JSON.stringify({
+		$or: [
+			{ 'emails.address': { $regex: params.text || '', $options: 'i' } },
+			{ username: { $regex: params.text || '', $options: 'i' } },
+			{ name: { $regex: params.text || '', $options: 'i' } },
+		],
+	}),
+	sort: JSON.stringify({ [sort[0]]: sortDir(sort[1]), usernames: sort[0] === 'name' ? sortDir(sort[1]) : undefined }),
 	...params.itemsPerPage && { count: params.itemsPerPage },
 	...params.current && { offset: params.current },
 }), [params, sort]);
 
+export default function AdminUsersRoute({ props }) {
+	const canViewUserAdministration = usePermission('view-user-administration');
 
-export default function RoomsTabRoute({ props }) {
-	const canViewRoomAdministration = usePermission('view-room-administration');
+	const routeName = 'admin-users';
 
 	const [params, setParams] = useState({});
 	const [sort, setSort] = useState(['name', 'asc']);
 
-	const routeName = 'admin-rooms';
-
 	const query = useQuery(params, sort);
-
-	const data = useEndpointData('GET', 'rooms.adminRooms', query) || {};
 
 	const switchTab = useSwitchTab(routeName);
 
+	const data = useEndpointData('GET', 'users.list', query) || {};
+
 	const router = useRoute(routeName);
-	const onClick = (rid) => () => router.push({
+
+	const onClick = (username) => () => router.push({
 		context: 'edit',
-		id: rid,
+		id: username,
 	});
 
 	const onHeaderClick = (id) => {
@@ -48,21 +56,11 @@ export default function RoomsTabRoute({ props }) {
 		setSort([id, 'asc']);
 	};
 
-	if (sort[0] === 'name' && data.rooms) {
-		data.rooms = data.rooms.sort((a, b) => {
-			const aName = a.name || a.usernames.join(' x ');
-			const bName = b.name || b.usernames.join(' x ');
-			if (aName === bName) { return 0; }
-			const result = aName < bName ? -1 : 1;
-			return sort[1] === 'asc' ? result : result * -1;
-		});
-	}
-
-	if (!canViewRoomAdministration) {
+	if (!canViewUserAdministration) {
 		return <NotAuthorizedPage />;
 	}
 
-	return <UsersAndRoomsTab route={routeName} switchTab={switchTab} tab='rooms' {...props}>
-		<RoomsTab setParams={_.debounce(setParams, 300)} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
+	return <UsersAndRoomsTab route={routeName} switchTab={switchTab} tab='users' {...props}>
+		<AdminUsers setParams={_.debounce(setParams, 300)} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
 	</UsersAndRoomsTab>;
 }

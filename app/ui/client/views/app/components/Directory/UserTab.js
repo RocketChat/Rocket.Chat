@@ -1,15 +1,30 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { Box, Table, Flex, Avatar } from '@rocket.chat/fuselage';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import { Box, Table, Flex, Avatar, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { DirectoryTable, Th } from './DirectoryTable';
+// import { DirectoryTable, Th } from './DirectoryTable';
+import { GenericTable, Th } from '../../../../components/GenericTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
 import { useQuery, useFormatDate } from '../hooks';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+
+const FilterByText = ({ setFilter, ...props }) => {
+	const t = useTranslation();
+	const [text, setText] = useState('');
+	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+
+	useEffect(() => {
+		setFilter({ text });
+	}, [text]);
+
+	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+		<TextInput placeholder={t('Search_Channels')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+	</Box>;
+};
 
 export function UserTab({
 	workspace = 'local',
@@ -84,5 +99,5 @@ export function UserTab({
 		</Table.Cell>}
 	</Table.Row>, [mediaQuery, federation, canViewFullOtherUserInfo]);
 
-	return <DirectoryTable searchPlaceholder={t('Search_Users')} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
+	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
 }

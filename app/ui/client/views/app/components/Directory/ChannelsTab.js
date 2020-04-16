@@ -1,9 +1,10 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import { Box, Margins, Table, Avatar, Tag, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { DirectoryTable, Th, Markdown } from './DirectoryTable';
+// import { DirectoryTable, Th, Markdown } from './DirectoryTable';
+import { GenericTable, Th, Markdown } from '../../../../components/GenericTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { useQuery, useFormatDate } from '../hooks';
@@ -20,6 +21,20 @@ function RoomTags({ room }) {
 		</Margins>
 	</Box>;
 }
+
+const FilterByText = ({ setFilter, ...props }) => {
+	const t = useTranslation();
+	const [text, setText] = useState('');
+	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+
+	useEffect(() => {
+		setFilter({ text });
+	}, [text]);
+
+	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+		<TextInput placeholder={t('Search_Channels')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+	</Box>;
+};
 
 export function ChannelsTab() {
 	const t = useTranslation();
@@ -82,5 +97,5 @@ export function ChannelsTab() {
 	</Table.Row>
 	, [mediaQuery]);
 
-	return <DirectoryTable searchPlaceholder={t('Search_Channels')} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
+	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
 }

@@ -1,13 +1,26 @@
-import React, { useMemo, useCallback } from 'react';
-import { Box, Table, Avatar } from '@rocket.chat/fuselage';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import { Box, Table, Avatar, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { DirectoryTable, Th } from '../../../../ui/client/views/app/components/Directory/DirectoryTable';
+import { GenericTable, Th } from '../../../../ui/client/components/GenericTable';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-export function UsersTab({
+const FilterByText = ({ setFilter, ...props }) => {
+	const t = useTranslation();
+	const [text, setText] = useState('');
+	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+
+	useEffect(() => {
+		setFilter({ text });
+	}, [text]);
+	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+		<TextInput placeholder={t('Search_Users')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+	</Box>;
+};
+
+export function AdminUsers({
 	// workspace = 'local',
 	data,
 	sort,
@@ -48,5 +61,5 @@ export function UsersTab({
 		<Table.Cell textStyle='p1' textColor='hint' style={style}>{status}</Table.Cell>
 	</Table.Row>, [mediaQuery]);
 
-	return <DirectoryTable searchPlaceholder={t('Search_Users')} header={header} renderRow={renderRow} results={data.users} total={data.total} setParams={setParams} />;
+	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.users} total={data.total} setParams={setParams} />;
 }

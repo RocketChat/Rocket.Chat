@@ -1,8 +1,8 @@
-import React, { useMemo, useCallback } from 'react';
-import { Box, Table, Avatar, Icon } from '@rocket.chat/fuselage';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import { Box, Table, Avatar, Icon, TextInput, Field, CheckBox, Margins } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { DirectoryTable, Th } from '../../../../ui/client/views/app/components/Directory/DirectoryTable';
+import { GenericTable, Th } from '../../../../ui/client/components/GenericTable';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -23,7 +23,51 @@ const roomTypeI18nMap = {
 	discussion: 'Discussion',
 };
 
-export function RoomsTab({
+const FilterByTypeAndText = ({ setFilter, ...props }) => {
+	const [text, setText] = useState('');
+	const [types, setTypes] = useState({ d: true, c: true, p: true, l: true, discussion: true });
+
+	const t = useTranslation();
+
+	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+	const handleCheckBox = useCallback((type) => setTypes({ ...types, [type]: !types[type] }), [types]);
+
+	useEffect(() => {
+		setFilter({ text, types: Object.keys(types).filter((current) => types[current]) });
+	}, [text, types]);
+
+	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+		<TextInput placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+		<Field>
+			<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mb='x4'>
+				<Margins inlineEnd='x16'>
+					<Field.Row>
+						<CheckBox checked={types.d} onClick={() => handleCheckBox('d')}/>
+						<Field.Label>{t('Direct')}</Field.Label>
+					</Field.Row>
+					<Field.Row>
+						<CheckBox checked={types.c} onClick={() => handleCheckBox('c')}/>
+						<Field.Label>{t('Public')}</Field.Label>
+					</Field.Row>
+					<Field.Row>
+						<CheckBox checked={types.p} onClick={() => handleCheckBox('p')}/>
+						<Field.Label>{t('Private')}</Field.Label>
+					</Field.Row>
+					<Field.Row>
+						<CheckBox checked={types.l} onClick={() => handleCheckBox('l')}/>
+						<Field.Label>{t('Omnichannel')}</Field.Label>
+					</Field.Row>
+					<Field.Row mie='none'>
+						<CheckBox checked={types.discussion} onClick={() => handleCheckBox('discussion')}/>
+						<Field.Label>{t('Discussions')}</Field.Label>
+					</Field.Row>
+				</Margins>
+			</Box>
+		</Field>
+	</Box>;
+};
+
+export function AdminRooms({
 	sort,
 	data,
 	onHeaderClick,
@@ -67,5 +111,5 @@ export function RoomsTab({
 		</Table.Row>;
 	}, [mediaQuery]);
 
-	return <DirectoryTable searchPlaceholder={t('Search_Rooms')} header={header} renderRow={renderRow} results={data.rooms} total={data.total} setParams={setParams} />;
+	return <GenericTable FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data.rooms} total={data.total} setParams={setParams} />;
 }

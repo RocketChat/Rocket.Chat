@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Box, Icon, Pagination, Skeleton, Table, Flex, TextInput, Tile, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
-import { useDebounce } from '../hooks';
-import { Markdown as mrkd } from '../../../../../../markdown/client';
+import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useDebounce } from '../views/app/components/hooks';
+import { Markdown as mrkd } from '../../../markdown/client';
 
 function SortIcon({ direction }) {
 	return <Box is='svg' width='x16' height='x16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -42,31 +42,27 @@ const LoadingRow = ({ cols }) => <Table.Row>
 	</Table.Cell>)}
 </Table.Row>;
 
-const style = { minHeight: '40px' };
-
-export function DirectoryTable({
+export function GenericTable({
 	results,
 	total,
 	renderRow,
 	header,
-	searchPlaceholder = 'placeholder',
 	setParams = () => { },
+	FilterComponent = () => {},
 }) {
 	const t = useTranslation();
 
-	const [text, setText] = useState('');
+	const [filter, setFilter] = useState('');
 
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 
 	const [current, setCurrent] = useState(0);
 
-	const term = useDebounce(text, 500);
+	const params = useDebounce(filter, 500);
 
 	useEffect(() => {
-		setParams({ term, current, itemsPerPage });
-	}, [term, current, itemsPerPage]);
-
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+		setParams({ ...params, current, itemsPerPage });
+	}, [params, current, itemsPerPage]);
 
 	const Loading = useCallback(() => Array.from({ length: 10 }, (_, i) => <LoadingRow cols={header.length} key={i}/>), [header && header.length]);
 
@@ -76,9 +72,7 @@ export function DirectoryTable({
 
 	return <>
 		<>
-			<Box mb='x16' display='flex' flexDirection='column' style={style}>
-				<TextInput placeholder={searchPlaceholder} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-			</Box>
+			<FilterComponent setFilter={setFilter}/>
 			{results && !results.length
 				? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
 					{t('No_data_found')}

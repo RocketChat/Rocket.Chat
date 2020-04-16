@@ -29,8 +29,8 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 				{children}
 			</Page.Content>
 		</Page>
-		{ context &&
-			<Page.VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+		{ context
+			&& <Page.VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
 				<Page.VerticalBar.Header>{id} <Page.VerticalBar.Close onClick={() => {
 					router.push({});
 				}}/></Page.VerticalBar.Header>
