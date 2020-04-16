@@ -41,7 +41,7 @@ export function InformationPage({
 				</ButtonGroup>}
 		</Page.Header>
 
-		<Page.Content>
+		<Page.ContentShadowScroll>
 			{alertOplogForMultipleInstances
 				&& <Margins blockEnd='x16'>
 					<Callout type='danger' title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}>
@@ -62,6 +62,6 @@ export function InformationPage({
 			<BuildEnvironmentSection info={info} />
 			{canViewStatistics && <UsageSection statistics={statistics} isLoading={isLoading} />}
 			<InstancesSection instances={instances} />
-		</Page.Content>
+		</Page.ContentShadowScroll>
 	</Page>;
 }
