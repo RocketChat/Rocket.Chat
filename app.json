@@ -9,12 +9,12 @@
     "node": "12.x",
     "npm": "6.x"
   },
+  "scripts": {
+    "heroku-prebuild": "meteor npm install phantomjs-prebuilt@2.1.13 --ignore-scripts",
+  },
   "env": {
     "BUILDPACK_URL": "https://github.com/RocketChat/meteor-buildpack-horse.git",
-    "HEROKU_APP_NAME": {
-      "description": "Please re-enter your App Name from the top.",
-      "required": true
-    },
+    "HEROKU_APP_NAME": "chat-piperun",
     "DEPLOY_PLATFORM": "heroku"
   },
   "addons": [
