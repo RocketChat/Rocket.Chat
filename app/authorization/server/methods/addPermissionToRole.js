@@ -2,10 +2,17 @@ import { Meteor } from 'meteor/meteor';
 
 import { Permissions } from '../../../models/server';
 import { hasPermission } from '../functions/hasPermission';
-import { CONSTANTS } from '../../lib';
+import { CONSTANTS, AuthorizationUtils } from '../../lib';
 
 Meteor.methods({
 	'authorization:addPermissionToRole'(permissionId, role) {
+		if (AuthorizationUtils.isRoleReadOnly(role)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Role is readonly', {
+				method: 'authorization:addPermissionToRole',
+				action: 'Adding_permission',
+			});
+		}
+
 		const uid = Meteor.userId();
 		const permission = Permissions.findOneById(permissionId);
 
