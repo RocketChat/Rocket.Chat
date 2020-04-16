@@ -38,6 +38,11 @@ registerAdminRoute('/info', {
 	lazyRouteComponent: () => import('./components/info/InformationRoute'),
 });
 
+registerAdminRoute('/mailer', {
+	name: 'admin-mailer',
+	lazyRouteComponent: () => import('./components/mailer/MailerRoute'),
+});
+
 registerAdminRoute('/users', {
 	name: 'admin-users',
 	action: async () => {
