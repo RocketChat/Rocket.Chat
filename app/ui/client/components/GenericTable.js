@@ -48,7 +48,7 @@ export function GenericTable({
 	renderRow,
 	header,
 	setParams = () => { },
-	FilterComponent = () => {},
+	FilterComponent = () => null,
 }) {
 	const t = useTranslation();
 

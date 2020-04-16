@@ -1,10 +1,12 @@
 .rcx-table__cell--header {
 	position: sticky;
 	top: 0;
+
 	background: white;
 }
 
 .rcx-avatar__element {
 	position: relative;
+
 	/* z-index: -1; */
 }
