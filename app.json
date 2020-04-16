@@ -5,6 +5,10 @@
   "logo": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat/master/public/images/logo/1024x1024.png",
   "keywords": ["meteor", "social", "community", "chat"],
   "website": "https://rocket.chat",
+  "engines": {
+    "node": "12.x",
+    "npm": "6.x"
+  },
   "env": {
     "BUILDPACK_URL": "https://github.com/RocketChat/meteor-buildpack-horse.git",
     "HEROKU_APP_NAME": {
