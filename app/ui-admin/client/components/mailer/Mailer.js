@@ -17,8 +17,8 @@ export function Mailer({ sendMail = () => {}, ...props }) {
 
 	return <Page _id='mailer' {...props}>
 		<Page.Header title={t('Mailer')}></Page.Header>
-		<Page.ContentShadowScroll maxWidth='x600' alignSelf='center' display='flex' flexDirection='column'>
-			<FieldGroup is='form' method='post'>
+		<Page.ContentShadowScroll alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
+			<FieldGroup maxWidth='x600' is='form' method='post'>
 				<Field>
 					<Field.Label>{t('From')}</Field.Label>
 					<Field.Row>
