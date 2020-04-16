@@ -358,6 +358,9 @@ export function syncUserData(user, ldapUser, ldap) {
 			_setRealName(user._id, userData.name);
 			delete userData.name;
 		}
+		userData.customFields = {
+			...user.customFields, ...userData.customFields,
+		};
 		Meteor.users.update(user._id, { $set: userData });
 		user = Meteor.users.findOne({ _id: user._id });
 	}
