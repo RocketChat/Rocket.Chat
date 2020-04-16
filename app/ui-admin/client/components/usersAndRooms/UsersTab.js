@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { Box, Table, Flex, Avatar } from '@rocket.chat/fuselage';
+import { Box, Table, Avatar } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { DirectoryTable, Th } from '../../../../ui/client/views/app/components/Directory/DirectoryTable';
@@ -29,20 +29,19 @@ export function UsersTab({
 
 	const renderRow = useCallback(({ emails, _id, username, name, roles, status }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 		<Table.Cell style={style}>
-			<Flex.Container>
-				<Box>
-					<Avatar size='x20' title={username} url={username} />
-					<Box display='flex' style={style} mi='x8'>
-						<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
-							<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box>
-							{!mediaQuery && name && <Box textStyle='p1' textColor='hint' style={style}> {`@${ username }`} </Box>}
-						</Box>
+
+			<Box display='flex' alignItems='center'>
+				<Avatar size={mediaQuery ? 'x28' : 'x40'} title={username} url={username} />
+				<Box display='flex' style={style} mi='x8'>
+					<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
+						<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box>
+						{!mediaQuery && name && <Box textStyle='p1' textColor='hint' style={style}> {`@${ username }`} </Box>}
 					</Box>
 				</Box>
-			</Flex.Container>
+			</Box>
 		</Table.Cell>
 		{mediaQuery && <Table.Cell>
-			<Box textStyle='p2' style={style} textColor='default'>{ username }</Box> <Box mi='x4'/>
+			<Box textStyle='p2' style={style} textColor='hint'>{ username }</Box> <Box mi='x4'/>
 		</Table.Cell>}
 		<Table.Cell style={style}>{emails && emails[0].address}</Table.Cell>
 		{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}

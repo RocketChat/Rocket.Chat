@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { Box, Table, Flex, Avatar, Icon } from '@rocket.chat/fuselage';
+import { Box, Table, Avatar, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { DirectoryTable, Th } from '../../../../ui/client/views/app/components/Directory/DirectoryTable';
@@ -48,16 +48,14 @@ export function RoomsTab({
 		const avatarUrl = name || usernames[0];
 		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action>
 			<Table.Cell style={style}>
-				<Flex.Container>
-					<Box>
-						<Avatar size='x28' title={avatarUrl} url={avatarUrl} />
-						<Box display='flex' style={style} mi='x8'>
-							<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-								<Icon mi='x2' name={roomTypeIconNameMap[type]} textStyle='p2' textColor='hint'/><Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
-							</Box>
+				<Box display='flex' alignContent='center'>
+					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={avatarUrl} url={avatarUrl} />
+					<Box display='flex' style={style} mi='x8'>
+						<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
+							<Icon mi='x2' name={roomTypeIconNameMap[type]} textStyle='p2' textColor='hint'/><Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
 						</Box>
 					</Box>
-				</Flex.Container>
+				</Box>
 			</Table.Cell>
 			<Table.Cell>
 				<Box textStyle='p2' style={style} textColor='default'>{ t(roomTypeI18nMap[type]) }</Box> <Box mi='x4'/>
