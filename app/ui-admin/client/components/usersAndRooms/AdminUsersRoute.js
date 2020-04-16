@@ -63,6 +63,6 @@ export default function AdminUsersRoute({ props }) {
 	}
 
 	return <UsersAndRoomsTab route={routeName} switchTab={switchTab} tab='users' {...props}>
-		<AdminUsers setParams={_.debounce(setParams, 300)} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
+		<AdminUsers setParams={setParams} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
 	</UsersAndRoomsTab>;
 }
