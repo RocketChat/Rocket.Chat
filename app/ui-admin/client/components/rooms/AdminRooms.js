@@ -12,7 +12,7 @@ const roomTypeIconNameMap = {
 	c: 'hashtag',
 	d: 'at',
 	p: 'lock',
-	discussion: 'discussion',
+	discussion: 'chat',
 };
 
 const roomTypeI18nMap = {
@@ -25,7 +25,7 @@ const roomTypeI18nMap = {
 
 const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const [text, setText] = useState('');
-	const [types, setTypes] = useState({ d: true, c: true, p: true, l: true, discussion: true });
+	const [types, setTypes] = useState({ d: true, c: true, p: true, l: true, discussions: false });
 
 	const t = useTranslation();
 
@@ -58,7 +58,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 						<Field.Label>{t('Omnichannel')}</Field.Label>
 					</Field.Row>
 					<Field.Row mie='none'>
-						<CheckBox checked={types.discussion} onClick={() => handleCheckBox('discussion')}/>
+						<CheckBox checked={types.discussions} onClick={() => handleCheckBox('discussions')}/>
 						<Field.Label>{t('Discussions')}</Field.Label>
 					</Field.Row>
 				</Margins>
@@ -76,6 +76,8 @@ export function AdminRooms({
 }) {
 	const t = useTranslation();
 
+	console.log(data);
+
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const header = useMemo(() => [
@@ -87,8 +89,12 @@ export function AdminRooms({
 		mediaQuery && <Th key={'featured'} direction={sort[1]} active={sort[0] === 'featured'} onClick={onHeaderClick} sort='featured' w='x80'>{t('Featured')}</Th>,
 	].filter(Boolean), [sort, mediaQuery]);
 
-	const renderRow = useCallback(({ _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames }) => {
-		const roomName = name || usernames.join(' x ');
+	const renderRow = useCallback(({ _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, fname }) => {
+		let roomName = name || usernames.join(' x ');
+		if (fname) {
+			roomName = fname;
+			type = 'discussion';
+		}
 		const avatarUrl = name || usernames[0];
 		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action>
 			<Table.Cell style={style}>

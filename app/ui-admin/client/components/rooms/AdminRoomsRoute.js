@@ -3,9 +3,9 @@ import React, { useMemo, useState } from 'react';
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
-import { UsersAndRoomsTab } from './UsersAndRoomsTab';
+import { UsersAndRoomsTab } from '../usersAndRooms/UsersAndRoomsTab';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
-import { useSwitchTab } from './hooks';
+import { useSwitchTab } from '../usersAndRooms/hooks';
 import { AdminRooms } from './AdminRooms';
 import { useDebounce } from '../../../../ui/client/views/app/components/hooks';
 
@@ -22,7 +22,7 @@ const useQuery = (params, sort) => useMemo(() => ({
 export default function AdminRoomsRoute({ props }) {
 	const canViewRoomAdministration = usePermission('view-room-administration');
 
-	const [params, setParams] = useState({ text: '', types: ['c', 'p', 'd', 'l', 'discussion'], current: 0, itemsPerPage: 25 });
+	const [params, setParams] = useState({ text: '', types: ['c', 'p', 'd', 'l'], current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const routeName = 'admin-rooms';

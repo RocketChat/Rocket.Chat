@@ -45,13 +45,13 @@ registerAdminRoute('/mailer', {
 
 registerAdminRoute('/users/:context?/:id?', {
 	name: 'admin-users',
-	lazyRouteComponent: () => import('./components/usersAndRooms/AdminUsersRoute'),
+	lazyRouteComponent: () => import('./components/users/AdminUsersRoute'),
 	tab: 'users',
 });
 
 registerAdminRoute('/rooms/:context?/:id?', {
 	name: 'admin-rooms',
-	lazyRouteComponent: () => import('./components/usersAndRooms/AdminRoomsRoute'),
+	lazyRouteComponent: () => import('./components/rooms/AdminRoomsRoute'),
 	tab: 'rooms',
 });
 
