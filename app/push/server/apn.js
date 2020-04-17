@@ -1,20 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { EJSON } from 'meteor/ejson';
-import _ from 'underscore';
 import apn from 'apn';
 
 import { logger } from './logger';
 
 let apnConnection;
 
-export const sendAPN = function(userToken, notification) {
+export const sendAPN = (userToken, notification) => {
 	if (Match.test(notification.apn, Object)) {
-		notification = _.extend({}, notification, notification.apn);
+		notification = Object.assign({}, notification, notification.apn);
 	}
 
-	// console.log('sendAPN', notification.from, userToken, notification.title, notification.text,
-	// notification.badge, notification.priority);
 	const priority = notification.priority || notification.priority === 0 ? notification.priority : 10;
 
 	const myDevice = new apn.Device(userToken);
@@ -22,25 +19,20 @@ export const sendAPN = function(userToken, notification) {
 	const note = new apn.Notification();
 
 	note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
-	if (typeof notification.badge !== 'undefined') {
+	if (notification.badge != null) {
 		note.badge = notification.badge;
 	}
-	if (typeof notification.sound !== 'undefined') {
+	if (notification.sound != null) {
 		note.sound = notification.sound;
 	}
-	// console.log(notification.contentAvailable);
-	// console.log("lala2");
-	// console.log(notification);
-	if (typeof notification.contentAvailable !== 'undefined') {
-		// console.log("lala");
+	if (notification.contentAvailable != null) {
 		note.setContentAvailable(notification.contentAvailable);
-		// console.log(note);
 	}
 
 	// adds category support for iOS8 custom actions as described here:
 	// https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/
 	// RemoteNotificationsPG/Chapters/IPhoneOSClientImp.html#//apple_ref/doc/uid/TP40008194-CH103-SW36
-	if (typeof notification.category !== 'undefined') {
+	if (notification.category != null) {
 		note.category = notification.category;
 	}
 
@@ -48,7 +40,7 @@ export const sendAPN = function(userToken, notification) {
 		body: notification.text,
 	};
 
-	if (typeof notification.title !== 'undefined') {
+	if (notification.title != null) {
 		note.alert.title = notification.title;
 	}
 
@@ -58,11 +50,8 @@ export const sendAPN = function(userToken, notification) {
 	note.payload.messageFrom = notification.from;
 	note.priority = priority;
 
-
 	// Store the token on the note so we can reference it if there was an error
 	note.token = userToken;
-
-	// console.log('I:Send message to: ' + userToken + ' count=' + count);
 
 	apnConnection.pushNotification(note, myDevice);
 };
@@ -70,7 +59,7 @@ export const sendAPN = function(userToken, notification) {
 // Init feedback from apn server
 // This will help keep the appCollection up-to-date, it will help update
 // and remove token from appCollection.
-export const initFeedback = function({ options, _removeToken }) {
+export const initFeedback = ({ options, _removeToken }) => {
 	// console.log('Init feedback');
 	const feedbackOptions = {
 		batchFeedback: true,
@@ -84,8 +73,8 @@ export const initFeedback = function({ options, _removeToken }) {
 	};
 
 	const feedback = new apn.Feedback(feedbackOptions);
-	feedback.on('feedback', function(devices) {
-		devices.forEach(function(item) {
+	feedback.on('feedback', (devices) => {
+		devices.forEach((item) => {
 			// Do something with item.device and item.time;
 			// console.log('A:PUSH FEEDBACK ' + item.device + ' - ' + item.time);
 			// The app is most likely removed from the device, we should

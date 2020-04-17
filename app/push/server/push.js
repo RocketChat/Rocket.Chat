@@ -195,11 +195,11 @@ export class PushClass {
 	}
 
 	_replaceToken(currentToken, newToken) {
-		appTokensCollection.update({ token: currentToken }, { $set: { token: newToken } }, { multi: true });
+		appTokensCollection.rawCollection().updateMany({ token: currentToken }, { $set: { token: newToken } });
 	}
 
 	_removeToken(token) {
-		appTokensCollection.update({ token }, { $unset: { token: true } }, { multi: true });
+		appTokensCollection.rawCollection().updateMany({ token }, { $unset: { token: true } });
 	}
 
 	// Universal send function

@@ -1,19 +1,17 @@
 /* eslint-disable new-cap */
 import { Match } from 'meteor/check';
 import { EJSON } from 'meteor/ejson';
-import _ from 'underscore';
 import gcm from 'node-gcm';
-import Fiber from 'fibers';
 
 import { logger } from './logger';
 
 export const sendGCM = function({ userTokens, notification, _replaceToken, _removeToken, options }) {
 	if (Match.test(notification.gcm, Object)) {
-		notification = _.extend({}, notification, notification.gcm);
+		notification = Object.assign({}, notification, notification.gcm);
 	}
 
 	// Make sure userTokens are an array of strings
-	if (userTokens === `${ userTokens }`) {
+	if (Match.test(userTokens, String)) {
 		userTokens = [userTokens];
 	}
 
@@ -32,31 +30,30 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	data.message = notification.text;
 
 	// Set image
-	if (typeof notification.image !== 'undefined') {
+	if (notification.image != null) {
 		data.image = notification.image;
 	}
 
 	// Set extra details
-	if (typeof notification.badge !== 'undefined') {
+	if (notification.badge != null) {
 		data.msgcnt = notification.badge;
 	}
-	if (typeof notification.sound !== 'undefined') {
+	if (notification.sound != null) {
 		data.soundname = notification.sound;
 	}
-	if (typeof notification.notId !== 'undefined') {
+	if (notification.notId != null) {
 		data.notId = notification.notId;
 	}
-	if (typeof notification.style !== 'undefined') {
+	if (notification.style != null) {
 		data.style = notification.style;
 	}
-	if (typeof notification.summaryText !== 'undefined') {
+	if (notification.summaryText != null) {
 		data.summaryText = notification.summaryText;
 	}
-	if (typeof notification.picture !== 'undefined') {
+	if (notification.picture != null) {
 		data.picture = notification.picture;
 	}
 
-	// var message = new gcm.Message();
 	const message = new gcm.Message({
 		collapseKey: notification.from,
 		//    delayWhileIdle: true,
@@ -68,20 +65,7 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	logger.debug(`Create GCM Sender using "${ options.gcm.apiKey }"`);
 	const sender = new gcm.Sender(options.gcm.apiKey);
 
-	_.each(userTokens, function(value /* , key */) {
-		logger.debug(`A:Send message to: ${ value }`);
-	});
-
-	/* message.addData('title', title);
-	message.addData('message', text);
-	message.addData('msgcnt', '1');
-	message.collapseKey = 'sitDrift';
-	message.delayWhileIdle = true;
-	message.timeToLive = 3;*/
-
-	// /**
-	//  * Parameters: message-literal, userTokens-array, No. of retries, callback-function
-	//  */
+	userTokens.forEach((value) => logger.debug(`A:Send message to: ${ value }`));
 
 	const userToken = userTokens.length === 1 ? userTokens[0] : null;
 
@@ -98,43 +82,23 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 
 		logger.debuglog(`ANDROID: Result of sender: ${ JSON.stringify(result) }`);
 
-		if (result.canonical_ids === 1 && userToken) { // jshint ignore:line
+		if (result.canonical_ids === 1 && userToken) {
 			// This is an old device, token is replaced
-			Fiber(function(self) {
-				// Run in fiber
-				try {
-					self.callback(self.oldToken, self.newToken);
-				} catch (err) {
-					//
-				}
-			}).run({
-				oldToken: { gcm: userToken },
-				newToken: { gcm: result.results[0].registration_id }, // jshint ignore:line
-				callback: _replaceToken,
-			});
-			// _replaceToken({ gcm: userToken }, { gcm: result.results[0].registration_id });
+			try {
+				_replaceToken({ gcm: userToken }, { gcm: result.results[0].registration_id });
+			} catch (err) {
+				logger.error('Error replacing token', err);
+			}
 		}
-		// We cant send to that token - might not be registred
+		// We cant send to that token - might not be registered
 		// ask the user to remove the token from the list
 		if (result.failure !== 0 && userToken) {
 			// This is an old device, token is replaced
-			Fiber(function(self) {
-				// Run in fiber
-				try {
-					self.callback(self.token);
-				} catch (err) {
-					//
-				}
-			}).run({
-				token: { gcm: userToken },
-				callback: _removeToken,
-			});
-			// _replaceToken({ gcm: userToken }, { gcm: result.results[0].registration_id });
+			try {
+				_removeToken({ gcm: userToken });
+			} catch (err) {
+				logger.error('Error removing token', err);
+			}
 		}
 	});
-	// /** Use the following line if you want to send the message without retries
-	// sender.sendNoRetry(message, userTokens, function (result) {
-	//     console.log('ANDROID: ' + JSON.stringify(result));
-	// });
-	// **/
-}; // EO sendAndroid
+};
