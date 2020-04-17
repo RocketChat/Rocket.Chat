@@ -19,7 +19,6 @@ Meteor.startup(function() {
 	});
 });
 
-
 registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
 	lazyRouteComponent: () => import('./components/ViewLogs/ViewLogsRoute'),
