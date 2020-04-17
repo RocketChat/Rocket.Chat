@@ -10,7 +10,7 @@ const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidde
 
 export const DEFAULT_TYPES = ['d', 'p', 'c'];
 
-const roomTypeI18nMap = {
+export const roomTypeI18nMap = {
 	l: 'Omnichannel',
 	c: 'Channel',
 	d: 'Direct',

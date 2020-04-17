@@ -59,6 +59,8 @@ export const APIClient = {
 	_jqueryCall(method, endpoint, params, body, headers = {}) {
 		const query = APIClient._generateQueryFromParams(params);
 
+		console.log(query);
+
 		return new Promise(function _rlRestApiGet(resolve, reject) {
 			jQuery.ajax({
 				method,

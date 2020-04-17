@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react';
-import { Tabs, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { Tabs, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 
 import { Page } from '../../../../../client/components/basic/Page';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../../../client/contexts/RouterContext';
 import { useMediaQuery } from '../../../../ui/client/views/app/components/hooks';
+import { EditRoom } from '../rooms/edit/EditRoom';
 
 export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) {
 	const t = useTranslation();
@@ -40,10 +41,12 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 		</Page>
 		{ context
 			&& <Page.VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
-				<Page.VerticalBar.Header>{id} <Page.VerticalBar.Close onClick={() => {
+				<Page.VerticalBar.Header>{t('Room_Info')} <Page.VerticalBar.Close onClick={() => {
 					router.push({});
 				}}/></Page.VerticalBar.Header>
-				<Page.VerticalBar.Content></Page.VerticalBar.Content>
+				<Page.VerticalBar.Content>
+					<EditRoom roomId={id}/>
+				</Page.VerticalBar.Content>
 			</Page.VerticalBar>}
 	</Page>;
 }
