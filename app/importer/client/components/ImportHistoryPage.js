@@ -8,7 +8,7 @@ import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import ImportOperationSummary from './ImportOperationSummary';
-import { useSafely } from './useSafely';
+import { useSafely } from '../../../../client/hooks/useSafely';
 
 function ImportHistoryPage() {
 	const t = useTranslation();

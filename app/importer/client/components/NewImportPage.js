@@ -24,7 +24,7 @@ import { useRoute, useRouteParameter } from '../../../../client/contexts/RouterC
 import { showImporterException } from '../functions/showImporterException';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { Importers } from '../index';
-import { useSafely } from './useSafely';
+import { useSafely } from '../../../../client/hooks/useSafely';
 import { useFormatMemorySize } from '../../../ui/client/views/app/components/hooks';
 
 function NewImportPage() {

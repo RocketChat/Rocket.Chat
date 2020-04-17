@@ -27,7 +27,7 @@ import {
 import { ImporterWebsocketReceiver } from '../ImporterWebsocketReceiver';
 import { showImporterException } from '../functions/showImporterException';
 import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useSafely } from './useSafely';
+import { useSafely } from '../../../../client/hooks/useSafely';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
 
 const waitFor = (fn, predicate) => new Promise((resolve, reject) => {

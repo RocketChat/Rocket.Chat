@@ -6,7 +6,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { ProgressStep, ImportingStartedStates } from '../../lib/ImporterProgressStep';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { ImporterWebsocketReceiver } from '../ImporterWebsocketReceiver';
-import { useSafely } from './useSafely';
+import { useSafely } from '../../../../client/hooks/useSafely';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { Page } from '../../../../client/components/basic/Page';
