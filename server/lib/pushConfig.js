@@ -7,6 +7,7 @@ import { SystemLogger } from '../../app/logger';
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { hasRole } from '../../app/authorization';
 import { settings } from '../../app/settings';
+import { appTokensCollection } from '../../app/push/server/push';
 
 
 Meteor.methods({
@@ -51,7 +52,7 @@ Meteor.methods({
 			}],
 		};
 
-		const tokens = Push.appCollection.find(query).count();
+		const tokens = appTokensCollection.find(query).count();
 
 		if (tokens === 0) {
 			throw new Meteor.Error('error-no-tokens-for-this-user', 'There are no tokens for this user', {
@@ -98,7 +99,7 @@ function sendPush(gateway, service, token, options, tries = 0) {
 	return HTTP.post(`${ gateway }/push/${ service }/send`, data, function(error, response) {
 		if (response && response.statusCode === 406) {
 			console.log('removing push token', token);
-			Push.appCollection.remove({
+			appTokensCollection.remove({
 				$or: [{
 					'token.apn': token,
 				}, {
@@ -212,7 +213,7 @@ function configurePush() {
 						}],
 					};
 
-					Push.appCollection.find(query).forEach((app) => {
+					appTokensCollection.find(query).forEach((app) => {
 						if (settings.get('Push_debug')) {
 							console.log('Push: send to token', app.token);
 						}
