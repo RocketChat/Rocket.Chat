@@ -10,3 +10,4 @@ import * as DateFormat from './formatDate';
 export { RocketChatAnnouncement } from './RocketChatAnnouncement';
 export { LoginPresence } from './LoginPresence';
 export { DateFormat };
+export { isAbsoluteLocation } from './isAbsoluteLocation';
