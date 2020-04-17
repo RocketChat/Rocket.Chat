@@ -11,12 +11,17 @@ import { logger, LoggerManager } from './logger';
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 export const notificationsCollection = new Mongo.Collection('_raix_push_notifications');
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
-appTokensCollection._ensureIndex({ userId: 1 });
 
-let isConfigured = false;
+appTokensCollection._ensureIndex({ userId: 1 });
+notificationsCollection._ensureIndex({ createdAt: 1 });
+notificationsCollection._ensureIndex({ sent: 1 });
+notificationsCollection._ensureIndex({ sending: 1 });
+notificationsCollection._ensureIndex({ delayUntil: 1 });
 
 export class PushClass {
 	options = {}
+
+	isConfigured = false
 
 	configure(options) {
 		this.options = Object.assign({
@@ -36,17 +41,17 @@ export class PushClass {
 		// $ openssl pkcs12 -in key.p12 -out key.pem -nodes
 
 		// Block multiple calls
-		if (isConfigured) {
+		if (this.isConfigured) {
 			throw new Error('Configure should not be called more than once!');
 		}
 
-		isConfigured = true;
+		this.isConfigured = true;
 
 		logger.debug('Configure', this.options);
 
 		if (this.options.apn) {
 			initAPN({ options: this.options, _removeToken: this._removeToken });
-		} // EO ios notification
+		}
 
 		// This interval will allow only one notification to be sent at a time, it
 		// will check for new notifications at every `options.sendInterval`
@@ -69,123 +74,97 @@ export class PushClass {
 		//
 		let isSendingNotification = false;
 
-		if (this.options.sendInterval !== null) {
-			// This will require index since we sort notifications by createdAt
-			notificationsCollection._ensureIndex({ createdAt: 1 });
-			notificationsCollection._ensureIndex({ sent: 1 });
-			notificationsCollection._ensureIndex({ sending: 1 });
-			notificationsCollection._ensureIndex({ delayUntil: 1 });
-
-			const sendNotification = (notification) => {
-				// Reserve notification
-				const now = +new Date();
-				const timeoutAt = now + this.options.sendTimeout;
-				const reserved = notificationsCollection.update({
-					_id: notification._id,
-					sent: false, // xxx: need to make sure this is set on create
-					sending: { $lt: now },
+		const sendNotification = (notification) => {
+			// Reserve notification
+			const now = +new Date();
+			const timeoutAt = now + this.options.sendTimeout;
+			const reserved = notificationsCollection.update({
+				_id: notification._id,
+				sent: false, // xxx: need to make sure this is set on create
+				sending: { $lt: now },
+			}, {
+				$set: {
+					sending: timeoutAt,
 				},
-				{
-					$set: {
-						sending: timeoutAt,
-					},
-				});
+			});
 
-				// Make sure we only handle notifications reserved by this
-				// instance
-				if (reserved) {
-					// Check if query is set and is type String
-					if (notification.query && notification.query === `${ notification.query }`) {
-						try {
-							// The query is in string json format - we need to parse it
-							notification.query = JSON.parse(notification.query);
-						} catch (err) {
-							// Did the user tamper with this??
-							throw new Error(`Error while parsing query string, Error: ${ err.message }`);
-						}
+			// Make sure we only handle notifications reserved by this instance
+			if (reserved) {
+				// Check if query is set and is type String
+				if (notification.query && notification.query === String(notification.query)) {
+					try {
+						// The query is in string json format - we need to parse it
+						notification.query = JSON.parse(notification.query);
+					} catch (err) {
+						// Did the user tamper with this??
+						throw new Error(`Error while parsing query string, Error: ${ err.message }`);
 					}
-
-					// Send the notification
-					const result = this.serverSend(notification, this.options);
-
-					if (!this.options.keepNotifications) {
-						// Pr. Default we will remove notifications
-						notificationsCollection.remove({ _id: notification._id });
-					} else {
-						// Update the notification
-						notificationsCollection.update({ _id: notification._id }, {
-							$set: {
-								// Mark as sent
-								sent: true,
-								// Set the sent date
-								sentAt: new Date(),
-								// Count
-								count: result,
-								// Not being sent anymore
-								sending: 0,
-							},
-						});
-					}
-
-					// Emit the send
-					// self.emit('send', { notification: notification._id, result });
-				} // Else could not reserve
-			}; // EO sendNotification
-
-			this.sendWorker(() => {
-				if (isSendingNotification) {
-					return;
 				}
 
-				try {
-					// Set send fence
-					isSendingNotification = true;
+				// Send the notification
+				const result = this.serverSend(notification, this.options);
 
-					// var countSent = 0;
-					const batchSize = this.options.sendBatchSize || 1;
-
-					const now = +new Date();
-
-					// Find notifications that are not being or already sent
-					const pendingNotifications = notificationsCollection.find({ $and: [
-						// Message is not sent
-						{ sent: false },
-						// And not being sent by other instances
-						{ sending: { $lt: now } },
-						// And not queued for future
-						{ $or: [
-							{ delayUntil: { $exists: false } },
-							{ delayUntil: { $lte: new Date() } },
-						],
+				if (!this.options.keepNotifications) {
+					// Pr. Default we will remove notifications
+					notificationsCollection.remove({ _id: notification._id });
+				} else {
+					// Update the notification
+					notificationsCollection.update({ _id: notification._id }, {
+						$set: {
+							// Mark as sent
+							sent: true,
+							// Set the sent date
+							sentAt: new Date(),
+							// Count
+							count: result,
+							// Not being sent anymore
+							sending: 0,
 						},
-					] }, {
-						// Sort by created date
-						sort: { createdAt: 1 },
-						limit: batchSize,
 					});
-
-					pendingNotifications.forEach((notification) => {
-						try {
-							sendNotification(notification);
-						} catch (error) {
-							logger.debug(`Could not send notification id: "${ notification._id }", Error: ${ error.message }`);
-						}
-					}); // EO forEach
-				} finally {
-					// Remove the send fence
-					isSendingNotification = false;
 				}
-			}, this.options.sendInterval || 15000); // Default every 15th sec
-		} else {
-			logger.debug('Send server is disabled');
-		}
+			}
+		};
+
+		this.sendWorker(() => {
+			if (isSendingNotification) {
+				return;
+			}
+
+			try {
+				// Set send fence
+				isSendingNotification = true;
+
+				const batchSize = this.options.sendBatchSize || 1;
+
+				// Find notifications that are not being or already sent
+				notificationsCollection.find({
+					sent: false,
+					sending: { $lt: new Date() },
+					$or: [
+						{ delayUntil: { $exists: false } },
+						{ delayUntil: { $lte: new Date() } },
+					],
+				}, {
+					sort: { createdAt: 1 },
+					limit: batchSize,
+				}).forEach((notification) => {
+					try {
+						sendNotification(notification);
+					} catch (error) {
+						logger.debug(`Could not send notification id: "${ notification._id }", Error: ${ error.message }`);
+					}
+				});
+			} finally {
+				// Remove the send fence
+				isSendingNotification = false;
+			}
+		}, this.options.sendInterval || 15000); // Default every 15th sec
 	}
 
 	sendWorker(task, interval) {
 		logger.debug(`Send worker started, using interval: ${ interval }`);
 
-		return Meteor.setInterval(function() {
-			// xxx: add exponential backoff on error
+		return Meteor.setInterval(() => {
 			try {
 				task();
 			} catch (error) {
@@ -419,6 +398,8 @@ export class PushClass {
 		const notification = Object.assign({
 			createdAt: new Date(),
 			createdBy: currentUser,
+			sent: false,
+			sending: 0,
 		}, _.pick(options, 'from', 'title', 'text'));
 
 		// Add extra
@@ -434,22 +415,12 @@ export class PushClass {
 
 		// Set one token selector, this can be token, array of tokens or query
 		if (options.query) {
-			// Set query to the json string version fixing #43 and #39
 			notification.query = JSON.stringify(options.query);
-		} else if (options.token) {
-			// Set token
-			notification.token = options.token;
-		} else if (options.tokens) {
-			// Set tokens
-			notification.tokens = options.tokens;
-		}
-		// console.log(options);
-		if (typeof options.contentAvailable !== 'undefined') {
-			notification.contentAvailable = options.contentAvailable;
 		}
 
-		notification.sent = false;
-		notification.sending = 0;
+		if (options.contentAvailable != null) {
+			notification.contentAvailable = options.contentAvailable;
+		}
 
 		// Validate the notification
 		this._validateDocument(notification);
