@@ -1,1 +1,3 @@
-export { send, appTokensCollection, notificationsCollection, configure } from './push';
+import './methods';
+
+export { Push, appTokensCollection, notificationsCollection } from './push';

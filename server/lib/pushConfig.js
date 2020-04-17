@@ -4,14 +4,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { hasRole } from '../../app/authorization';
 import { settings } from '../../app/settings';
-import { appTokensCollection, send, configure } from '../../app/push/server';
+import { appTokensCollection, Push } from '../../app/push/server';
 
 
 Meteor.methods({
-	// log() {
-	// 	return console.log(...arguments);
-	// },
-
 	push_test() {
 		const user = Meteor.user();
 
@@ -57,7 +53,7 @@ Meteor.methods({
 			});
 		}
 
-		send({
+		Push.send({
 			from: 'push',
 			title: `@${ user.username }`,
 			text: TAPi18n.__('This_is_a_push_test_messsage'),
@@ -112,7 +108,7 @@ function configurePush() {
 			}
 		}
 
-		configure({
+		Push.configure({
 			apn,
 			gcm,
 			production: settings.get('Push_production'),

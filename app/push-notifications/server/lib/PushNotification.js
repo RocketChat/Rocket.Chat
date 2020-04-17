@@ -1,4 +1,4 @@
-import { send } from '../../../push/server';
+import { Push } from '../../../push/server';
 import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
 import { RocketChatAssets } from '../../../assets';
@@ -52,7 +52,7 @@ export class PushNotification {
 		}
 
 		metrics.notificationsSent.inc({ notification_type: 'mobile' });
-		return send(config);
+		return Push.send(config);
 	}
 }
 
