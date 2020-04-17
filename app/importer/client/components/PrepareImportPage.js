@@ -69,14 +69,14 @@ function PrepareImportPage() {
 	const startImport = useEndpoint('POST', 'startImport');
 
 	useEffect(() => {
-		const progressUpdated = ({ rate }) => {
+		const handleProgressUpdated = ({ rate }) => {
 			setProgressRate(rate);
 		};
 
-		ImporterWebsocketReceiver.registerCallback(progressUpdated);
+		ImporterWebsocketReceiver.registerCallback(handleProgressUpdated);
 
 		return () => {
-			ImporterWebsocketReceiver.unregisterCallback(progressUpdated);
+			ImporterWebsocketReceiver.unregisterCallback(handleProgressUpdated);
 		};
 	}, []);
 
