@@ -2,11 +2,12 @@ import { Subtitle, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { useFormatMemorySize } from '../../../../ui/client/views/app/components/hooks';
 import { DescriptionList } from './DescriptionList';
-import { formatMemorySize } from './formatters';
 
 export function UsageSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
+	const formatMemorySize = useFormatMemorySize();
 	const t = useTranslation();
 
 	return <>

@@ -3,17 +3,17 @@ import { useSubscription } from 'use-subscription';
 
 export const RouterContext = createContext({
 	getRoutePath: () => {},
-	subscribeToRoutePath: () => {},
+	subscribeToRoutePath: () => () => {},
 	getRouteUrl: () => {},
-	subscribeToRouteUrl: () => {},
+	subscribeToRouteUrl: () => () => {},
 	pushRoute: () => {},
 	replaceRoute: () => {},
 	getRouteParameter: () => {},
-	subscribeToRouteParameter: () => {},
+	subscribeToRouteParameter: () => () => {},
 	getQueryStringParameter: () => {},
-	subscribeToQueryStringParameter: () => {},
+	subscribeToQueryStringParameter: () => () => {},
 	getCurrentRoute: () => {},
-	subscribeToCurrentRoute: () => {},
+	subscribeToCurrentRoute: () => () => {},
 });
 
 export const useRoute = (name) => {
