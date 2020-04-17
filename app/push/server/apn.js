@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import { EJSON } from 'meteor/ejson';
 import apn from 'apn';
 
 import { logger } from './logger';
@@ -8,7 +5,7 @@ import { logger } from './logger';
 let apnConnection;
 
 export const sendAPN = (userToken, notification) => {
-	if (Match.test(notification.apn, Object)) {
+	if (typeof notification.apn === 'object') {
 		notification = Object.assign({}, notification, notification.apn);
 	}
 
@@ -40,10 +37,15 @@ export const sendAPN = (userToken, notification) => {
 
 	if (notification.title != null) {
 		note.alert.title = notification.title;
+		note.alert['summary-arg'] = notification.title;
+	}
+
+	if (notification.notId != null) {
+		note['thread-id'] = notification.notId;
 	}
 
 	// Allow the user to set payload data
-	note.payload = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
+	note.payload = notification.payload || {};
 
 	note.payload.messageFrom = notification.from;
 	note.priority = priority;
@@ -55,7 +57,7 @@ export const sendAPN = (userToken, notification) => {
 	apnConnection.send(note, userToken);
 };
 
-export const initAPN = ({ options, _removeToken }) => {
+export const initAPN = ({ options, _removeToken, absoluteUrl }) => {
 	logger.debug('APN configured');
 
 	// Allow production to be a general option for push notifications
@@ -82,15 +84,15 @@ export const initAPN = ({ options, _removeToken }) => {
 			console.warn('WARNING: Push APN is in development mode');
 		} else if (options.apn.gateway === 'gateway.push.apple.com') {
 			// In production - but warn if we are running on localhost
-			if (/http:\/\/localhost/.test(Meteor.absoluteUrl())) {
+			if (/http:\/\/localhost/.test(absoluteUrl)) {
 				console.warn('WARNING: Push APN is configured to production mode - but server is running from localhost');
 			}
 		} else {
 			// Warn about gateways we dont know about
-			console.warn(`WARNING: Push APN unkown gateway "${ options.apn.gateway }"`);
+			console.warn(`WARNING: Push APN unknown gateway "${ options.apn.gateway }"`);
 		}
 	} else if (options.apn.production) {
-		if (/http:\/\/localhost/.test(Meteor.absoluteUrl())) {
+		if (/http:\/\/localhost/.test(absoluteUrl)) {
 			console.warn('WARNING: Push APN is configured to production mode - but server is running from localhost');
 		}
 	} else {
@@ -111,7 +113,7 @@ export const initAPN = ({ options, _removeToken }) => {
 	apnConnection = new apn.Provider(options.apn);
 
 	// Listen to transmission errors - should handle the same way as feedback.
-	apnConnection.on('transmissionError', Meteor.bindEnvironment(function(errCode, notification/* , recipient*/) {
+	apnConnection.on('transmissionError', (errCode, notification/* , recipient*/) => {
 		logger.debug('Got error code %d for token %s', errCode, notification.token);
 
 		if ([2, 5, 8].indexOf(errCode) >= 0) {
@@ -120,5 +122,5 @@ export const initAPN = ({ options, _removeToken }) => {
 				apn: notification.token,
 			});
 		}
-	}));
+	});
 };

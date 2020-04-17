@@ -73,10 +73,7 @@ Meteor.methods({
 			});
 		}
 
-		if (doc) {
-			// xxx: Hack
-			// Clean up mech making sure tokens are uniq - android sometimes generate
-			// new tokens resulting in duplicates
+		if (doc && doc.token) {
 			const removed = appTokensCollection.remove({
 				$and: [
 					{ _id: { $ne: doc._id } },

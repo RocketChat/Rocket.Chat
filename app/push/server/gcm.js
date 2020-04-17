@@ -1,17 +1,14 @@
-/* eslint-disable new-cap */
-import { Match } from 'meteor/check';
-import { EJSON } from 'meteor/ejson';
 import gcm from 'node-gcm';
 
 import { logger } from './logger';
 
 export const sendGCM = function({ userTokens, notification, _replaceToken, _removeToken, options }) {
-	if (Match.test(notification.gcm, Object)) {
+	if (typeof notification.gcm === 'object') {
 		notification = Object.assign({}, notification, notification.gcm);
 	}
 
 	// Make sure userTokens are an array of strings
-	if (Match.test(userTokens, String)) {
+	if (typeof userTokens === 'string') {
 		userTokens = [userTokens];
 	}
 
@@ -24,7 +21,7 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	logger.debug('sendGCM', userTokens, notification);
 
 	// Allow user to set payload
-	const data = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
+	const data = notification.payload || {};
 
 	data.title = notification.title;
 	data.message = notification.text;
@@ -32,6 +29,12 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	// Set image
 	if (notification.image != null) {
 		data.image = notification.image;
+	}
+
+	if (notification.android_channel_id != null) {
+		data.android_channel_id = notification.android_channel_id;
+	} else {
+		logger.debug('For devices running Android 8.0 or later you are required to provide an android_channel_id. See https://github.com/raix/push/issues/341 for more info');
 	}
 
 	// Set extra details
@@ -52,6 +55,20 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	}
 	if (notification.picture != null) {
 		data.picture = notification.picture;
+	}
+
+	// Action Buttons
+	if (notification.actions != null) {
+		data.actions = notification.actions;
+	}
+
+	// Force Start
+	if (notification.forceStart != null) {
+		data['force-start'] = notification.forceStart;
+	}
+
+	if (notification.contentAvailable != null) {
+		data['content-available'] = notification.contentAvailable;
 	}
 
 	const message = new gcm.Message({

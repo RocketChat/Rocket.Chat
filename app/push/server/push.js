@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { EJSON } from 'meteor/ejson';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { HTTP } from 'meteor/http';
@@ -50,7 +51,7 @@ export class PushClass {
 		logger.debug('Configure', this.options);
 
 		if (this.options.apn) {
-			initAPN({ options: this.options, _removeToken: this._removeToken });
+			initAPN({ options: this.options, _removeToken: this._removeToken, absoluteUrl: Meteor.absoluteUrl() });
 		}
 
 		// This interval will allow only one notification to be sent at a time, it
@@ -183,6 +184,8 @@ export class PushClass {
 
 	serverSendNative(app, notification, countApn, countGcm) {
 		logger.debug('send to token', app.token);
+
+		notification.payload = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
 		if (app.token.apn) {
 			countApn.push(app._id);
@@ -346,6 +349,7 @@ export class PushClass {
 			sound: Match.Optional(String),
 			notId: Match.Optional(Match.Integer),
 			contentAvailable: Match.Optional(Match.Integer),
+			forceStart: Match.Optional(Match.Integer),
 			apn: Match.Optional({
 				from: Match.Optional(String),
 				title: Match.Optional(String),
@@ -353,6 +357,7 @@ export class PushClass {
 				badge: Match.Optional(Match.Integer),
 				sound: Match.Optional(String),
 				notId: Match.Optional(Match.Integer),
+				actions: Match.Optional([Match.Any]),
 				category: Match.Optional(String),
 			}),
 			gcm: Match.Optional({
@@ -367,6 +372,7 @@ export class PushClass {
 				sound: Match.Optional(String),
 				notId: Match.Optional(Match.Integer),
 			}),
+			android_channel_id: Match.Optional(String),
 			query: Match.Optional(String),
 			token: Match.Optional(_matchToken),
 			tokens: Match.Optional([_matchToken]),
@@ -403,14 +409,14 @@ export class PushClass {
 		}, _.pick(options, 'from', 'title', 'text'));
 
 		// Add extra
-		Object.assign(notification, _.pick(options, 'payload', 'badge', 'sound', 'notId', 'delayUntil'));
+		Object.assign(notification, _.pick(options, 'payload', 'badge', 'sound', 'notId', 'delayUntil', 'android_channel_id'));
 
 		if (Match.test(options.apn, Object)) {
 			notification.apn = _.pick(options.apn, 'from', 'title', 'text', 'badge', 'sound', 'notId', 'category');
 		}
 
 		if (Match.test(options.gcm, Object)) {
-			notification.gcm = _.pick(options.gcm, 'image', 'style', 'summaryText', 'picture', 'from', 'title', 'text', 'badge', 'sound', 'notId');
+			notification.gcm = _.pick(options.gcm, 'image', 'style', 'summaryText', 'picture', 'from', 'title', 'text', 'badge', 'sound', 'notId', 'actions', 'android_channel_id');
 		}
 
 		// Set one token selector, this can be token, array of tokens or query
@@ -420,6 +426,10 @@ export class PushClass {
 
 		if (options.contentAvailable != null) {
 			notification.contentAvailable = options.contentAvailable;
+		}
+
+		if (options.forceStart != null) {
+			notification.forceStart = options.forceStart;
 		}
 
 		// Validate the notification
