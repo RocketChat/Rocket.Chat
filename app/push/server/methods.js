@@ -73,7 +73,7 @@ Meteor.methods({
 			});
 		}
 
-		if (doc && doc.token) {
+		if (doc.token) {
 			const removed = appTokensCollection.remove({
 				$and: [
 					{ _id: { $ne: doc._id } },
@@ -88,13 +88,8 @@ Meteor.methods({
 			}
 		}
 
-		if (doc) {
-			logger.debug('updated', doc);
-		}
+		logger.debug('updated', doc);
 
-		if (!doc) {
-			throw new Meteor.Error(500, 'setPushToken could not create record');
-		}
 		// Return the doc we want to use
 		return doc;
 	},
