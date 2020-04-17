@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Box, Table, Avatar, Icon, TextInput, Field, CheckBox, Margins } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useUniqueId } from '@rocket.chat/fuselage-hooks';
 
 import { GenericTable, Th } from '../../../../ui/client/components/GenericTable';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
@@ -20,11 +20,11 @@ const roomTypeI18nMap = {
 
 const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const [text, setText] = useState('');
-	const [types, setTypes] = useState({ d: false, c: false, p: false, l: false, discussion: false });
+	const [types, setTypes] = useState({ d: false, c: false, p: false, l: false, discussions: false });
 
 	const t = useTranslation();
 
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+	const handleChange = useCallback((event) => setText(event.currentTarget), []);
 	const handleCheckBox = useCallback((type) => setTypes({ ...types, [type]: !types[type] }), [types]);
 
 	useEffect(() => {
@@ -35,30 +35,36 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 		setFilter({ text, types: _types });
 	}, [text, types]);
 
+	const idDirect = useUniqueId();
+	const idDPublic = useUniqueId();
+	const idPrivate = useUniqueId();
+	const idOmnichannel = useUniqueId();
+	const idDiscussions = useUniqueId();
+
 	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
 		<TextInput placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 		<Field>
 			<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mb='x8' mi='neg-x8'>
 				<Margins inline='x8'>
 					<Field.Row>
-						<CheckBox checked={types.d} onClick={() => handleCheckBox('d')}/>
-						<Field.Label>{t('Direct')}</Field.Label>
+						<CheckBox checked={types.d} id={idDirect} onChange={() => handleCheckBox('d')}/>
+						<Field.Label htmlFor={idDirect} >{t('Direct')}</Field.Label>
 					</Field.Row>
 					<Field.Row>
-						<CheckBox checked={types.c} onClick={() => handleCheckBox('c')}/>
-						<Field.Label>{t('Public')}</Field.Label>
+						<CheckBox checked={types.c} id={idDPublic} onChange={() => handleCheckBox('c')}/>
+						<Field.Label htmlFor={idDPublic}>{t('Public')}</Field.Label>
 					</Field.Row>
 					<Field.Row>
-						<CheckBox checked={types.p} onClick={() => handleCheckBox('p')}/>
-						<Field.Label>{t('Private')}</Field.Label>
+						<CheckBox checked={types.p} id={idPrivate} onChange={() => handleCheckBox('p')}/>
+						<Field.Label htmlFor={idPrivate}>{t('Private')}</Field.Label>
 					</Field.Row>
 					<Field.Row>
-						<CheckBox checked={types.l} onClick={() => handleCheckBox('l')}/>
-						<Field.Label>{t('Omnichannel')}</Field.Label>
+						<CheckBox checked={types.l} id={idOmnichannel} onChange={() => handleCheckBox('l')}/>
+						<Field.Label htmlFor={idOmnichannel}>{t('Omnichannel')}</Field.Label>
 					</Field.Row>
-					<Field.Row mie='none'>
-						<CheckBox checked={types.discussions} onClick={() => handleCheckBox('discussions')}/>
-						<Field.Label>{t('Discussions')}</Field.Label>
+					<Field.Row>
+						<CheckBox checked={types.discussions} id={idDiscussions} onChange={() => handleCheckBox('discussions')}/>
+						<Field.Label htmlFor={idDiscussions}>{t('Discussions')}</Field.Label>
 					</Field.Row>
 				</Margins>
 			</Box>
