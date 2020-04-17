@@ -1072,7 +1072,10 @@ Template.room.onCreated(function() {
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
-	callbacks.run('onCreateRoomTabBar', this.tabBar, Rooms.findOne(rid, { fields: { t: 1 } }));
+	callbacks.run('onCreateRoomTabBar', {
+		tabBar: this.tabBar,
+		room: Rooms.findOne(rid, { fields: { t: 1 } }),
+	});
 
 	this.hideLeaderHeader = new ReactiveVar(false);
 

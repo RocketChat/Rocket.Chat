@@ -1,17 +1,19 @@
 import { callbacks } from '../../../callbacks';
 
-callbacks.add('onCreateRoomTabBar', (tabBar, room) => {
+callbacks.add('onCreateRoomTabBar', (info) => {
+	const { tabBar, room } = info;
+
 	if (!tabBar) {
-		return;
+		return info;
 	}
 
 	if (!room || !room.t || room.t !== 'l') {
-		return;
+		return info;
 	}
 
 	const button = tabBar.getButtons().find((button) => button.id === 'visitor-info');
 	if (!button) {
-		return;
+		return info;
 	}
 
 	const { template, i18nTitle: label, icon } = button;
@@ -22,4 +24,6 @@ callbacks.add('onCreateRoomTabBar', (tabBar, room) => {
 	});
 
 	tabBar.open();
+
+	return info;
 });
