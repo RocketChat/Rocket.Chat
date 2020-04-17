@@ -1,0 +1,89 @@
+<template name='customerChatHistory'>
+	<div class="content">
+		<div class="list-view">
+			<div>
+			<div class="active-pink-4 mb-4 inner-addon right-addon">
+				<i class="glyphicon glyphicon-search icon-search"></i>
+				<input type="text" id="searchInput" class="" placeholder="Search" aria-label="Search">
+			</div>
+		</div>
+            {{#if isAllChat}}
+			<div class="vistior-history-block">
+        
+				<ul id='allist'>
+					{{#each previousChats}}
+					<li class='list-chat' id='{{_id}}' aria='{{v.token}}'>
+					
+						<div class="history-div">
+							<div class="visitor-img">
+								<img src="/avatar/{{responseBy.username}}" alt="">
+							</div>
+							<div class="visitor-history-details">
+								<div class="visitor-details">
+									<h1>{{responseBy.username}}</h1>
+									{{#if open}}
+										<p class='open'>Open</p>
+										{{else}}
+									<p>Close at time {{time}}</p>
+									{{/if}}
+								</div>
+								<div class="total-messages">
+									<p>{{count}} messages</p>
+								</div>
+								<div class="agent-comment">
+									<p class="comment-heading">Agent comment:</p>
+									<p class="comment-text">"{{lastMessage.msg}}"</p>
+								</div>
+								
+							</div>
+						</div>
+						
+					</li>
+					{{/each}}
+				</ul>      
+			</div>
+			{{else}}
+			{{#if isChatClicked}}
+				{{> customerChatHistoryMessages}}
+			{{else}}
+			<div class='visitor-history-block'>
+				{{#if isfound }}
+				<ul class='searchresults' id='searchresul'>
+					
+					{{#each searchResults}} 
+					
+					<li class='search-li'>
+						<div class="history-main">
+							<div class="history-img">
+								<img src="/avatar/{{u.username}}" >
+							</div>
+							<div class="history-detail-main">
+								<div class="detail-main-upper">
+									<h1>{{u.name}}</h1>
+									<p>{{time}}</p>
+								</div>
+								<div class="detail-main-lower">
+									<p>{{msg}}</p>
+								</div>
+							</div>
+						</div>
+					
+					</li>
+					{{/each}}
+					
+				</ul>
+				{{else}}
+				<h1 class='noresult'>No result found</h1> 
+				{{/if}}
+			</div>
+		
+			{{/if}}
+       
+            {{/if}}
+		
+		</div>
+	</div>
+	
+		
+	
+</template>

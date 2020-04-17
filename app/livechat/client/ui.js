@@ -35,7 +35,7 @@ TabBar.addButton({
 	id: 'visitor-history',
 	i18nTitle: 'Past_Chats',
 	icon: 'clock',
-	template: 'visitorHistory',
+	template: 'customerChatHistory',
 	order: 11,
 });
 
