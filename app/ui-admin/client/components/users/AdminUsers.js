@@ -27,6 +27,7 @@ export function AdminUsers({
 	onClick,
 	onHeaderClick,
 	setParams,
+	params,
 }) {
 	const t = useTranslation();
 
@@ -61,5 +62,5 @@ export function AdminUsers({
 		<Table.Cell textStyle='p1' textColor='hint' style={style}>{status}</Table.Cell>
 	</Table.Row>, [mediaQuery]);
 
-	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.users} total={data.total} setParams={setParams} />;
+	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.users} total={data.total} setParams={setParams} params={params} />;
 }

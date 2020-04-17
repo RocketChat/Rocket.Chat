@@ -23,19 +23,20 @@ const useQuery = (params, sort) => useMemo(() => ({
 	sort: JSON.stringify({ [sort[0]]: sortDir(sort[1]), usernames: sort[0] === 'name' ? sortDir(sort[1]) : undefined }),
 	...params.itemsPerPage && { count: params.itemsPerPage },
 	...params.current && { offset: params.current },
-}), [params, sort]);
+}), [JSON.stringify(params), JSON.stringify(sort)]);
 
 export default function AdminUsersRoute({ props }) {
 	const canViewUserAdministration = usePermission('view-user-administration');
 
 	const routeName = 'admin-users';
 
-	const [params, setParams] = useState({});
+	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const debouncedParams = useDebounce(params, 500);
+	const debouncedSort = useDebounce(sort, 500);
 
-	const query = useQuery(debouncedParams, sort);
+	const query = useQuery(debouncedParams, debouncedSort);
 
 	const switchTab = useSwitchTab(routeName);
 
@@ -63,6 +64,6 @@ export default function AdminUsersRoute({ props }) {
 	}
 
 	return <UsersAndRoomsTab route={routeName} switchTab={switchTab} tab='users' {...props}>
-		<AdminUsers setParams={setParams} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
+		<AdminUsers setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
 	</UsersAndRoomsTab>;
 }

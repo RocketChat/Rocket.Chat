@@ -4,19 +4,14 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { GenericTable, Th } from '../../../../ui/client/components/GenericTable';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { roomTypes } from '../../../../utils/client';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-const roomTypeIconNameMap = {
-	l: 'livechat',
-	c: 'hashtag',
-	d: 'at',
-	p: 'lock',
-	discussion: 'chat',
-};
+export const DEFAULT_TYPES = ['d', 'p', 'c'];
 
 const roomTypeI18nMap = {
-	l: 'Livechat',
+	l: 'Omnichannel',
 	c: 'Channel',
 	d: 'Direct',
 	p: 'Group',
@@ -25,7 +20,7 @@ const roomTypeI18nMap = {
 
 const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const [text, setText] = useState('');
-	const [types, setTypes] = useState({ d: true, c: true, p: true, l: true, discussions: false });
+	const [types, setTypes] = useState({ d: false, c: false, p: false, l: false, discussion: false });
 
 	const t = useTranslation();
 
@@ -33,14 +28,18 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const handleCheckBox = useCallback((type) => setTypes({ ...types, [type]: !types[type] }), [types]);
 
 	useEffect(() => {
-		setFilter({ text, types: Object.keys(types).filter((current) => types[current]) });
+		if (Object.values(types).filter(Boolean).length === 0) {
+			return setFilter({ text, types: DEFAULT_TYPES });
+		}
+		const _types = Object.entries(types).filter(([, value]) => Boolean(value)).map(([key]) => key);
+		setFilter({ text, types: _types });
 	}, [text, types]);
 
 	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
 		<TextInput placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 		<Field>
-			<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mb='x4'>
-				<Margins inlineEnd='x16'>
+			<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mb='x8' mi='neg-x8'>
+				<Margins inline='x8'>
 					<Field.Row>
 						<CheckBox checked={types.d} onClick={() => handleCheckBox('d')}/>
 						<Field.Label>{t('Direct')}</Field.Label>
@@ -73,10 +72,10 @@ export function AdminRooms({
 	onHeaderClick,
 	onClick,
 	setParams,
+	params,
 }) {
 	const t = useTranslation();
 
-	console.log(data);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -89,26 +88,23 @@ export function AdminRooms({
 		mediaQuery && <Th key={'featured'} direction={sort[1]} active={sort[0] === 'featured'} onClick={onHeaderClick} sort='featured' w='x80'>{t('Featured')}</Th>,
 	].filter(Boolean), [sort, mediaQuery]);
 
-	const renderRow = useCallback(({ _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, fname }) => {
-		let roomName = name || usernames.join(' x ');
-		if (fname) {
-			roomName = fname;
-			type = 'discussion';
-		}
-		const avatarUrl = name || usernames[0];
+	const renderRow = useCallback(({ _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, ...args }) => {
+		const icon = roomTypes.getIcon({ t: type, usernames, ...args });
+		const roomName = type === 'd' ? usernames.join(' x ') : roomTypes.getRoomName(type, { name, type, _id, ...args });
+		const avatarUrl = roomTypes.getConfig(type).getAvatarPath({ name, type, _id, ...args });
 		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action>
 			<Table.Cell style={style}>
 				<Box display='flex' alignContent='center'>
 					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={avatarUrl} url={avatarUrl} />
 					<Box display='flex' style={style} mi='x8'>
 						<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-							<Icon mi='x2' name={roomTypeIconNameMap[type]} textStyle='p2' textColor='hint'/><Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
+							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} textStyle='p2' textColor='hint'/><Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
 						</Box>
 					</Box>
 				</Box>
 			</Table.Cell>
 			<Table.Cell>
-				<Box textStyle='p2' style={style} textColor='default'>{ t(roomTypeI18nMap[type]) }</Box> <Box mi='x4'/>
+				<Box textStyle='p2' style={style} textColor='hint'>{ t(roomTypeI18nMap[type]) }</Box> <Box mi='x4'/>
 			</Table.Cell>
 			<Table.Cell style={style}>{usersCount}</Table.Cell>
 			{mediaQuery && <Table.Cell style={style}>{msgs}</Table.Cell>}
@@ -117,5 +113,5 @@ export function AdminRooms({
 		</Table.Row>;
 	}, [mediaQuery]);
 
-	return <GenericTable FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data.rooms} total={data.total} setParams={setParams} />;
+	return <GenericTable FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data.rooms} total={data.total} setParams={setParams} params={params}/>;
 }

@@ -48,11 +48,12 @@ export function GenericTable({
 	renderRow,
 	header,
 	setParams = () => { },
+	params: paramsDefault = '',
 	FilterComponent = () => null,
 }) {
 	const t = useTranslation();
 
-	const [filter, setFilter] = useState('');
+	const [filter, setFilter] = useState(paramsDefault);
 
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 

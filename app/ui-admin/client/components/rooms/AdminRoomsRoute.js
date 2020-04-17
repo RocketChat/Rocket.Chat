@@ -6,9 +6,9 @@ import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
 import { UsersAndRoomsTab } from '../usersAndRooms/UsersAndRoomsTab';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
 import { useSwitchTab } from '../usersAndRooms/hooks';
-import { AdminRooms } from './AdminRooms';
 import { useDebounce } from '../../../../ui/client/views/app/components/hooks';
-
+import { roomTypes } from '../../../../utils/client';
+import { AdminRooms, DEFAULT_TYPES } from './AdminRooms';
 
 const useQuery = (params, sort) => useMemo(() => ({
 	filter: params.text || '',
@@ -16,20 +16,20 @@ const useQuery = (params, sort) => useMemo(() => ({
 	sort: JSON.stringify({ [sort[0]]: sort[1] === 'asc' ? 1 : -1 }),
 	...params.itemsPerPage && { count: params.itemsPerPage },
 	...params.current && { offset: params.current },
-}), [params.text, params.types, sort]);
-
+}), [JSON.stringify(params), JSON.stringify(sort)]);
 
 export default function AdminRoomsRoute({ props }) {
 	const canViewRoomAdministration = usePermission('view-room-administration');
 
-	const [params, setParams] = useState({ text: '', types: ['c', 'p', 'd', 'l'], current: 0, itemsPerPage: 25 });
+	const [params, setParams] = useState({ text: '', types: DEFAULT_TYPES, current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const routeName = 'admin-rooms';
 
 	const debouncedParams = useDebounce(params, 500);
+	const debouncedSort = useDebounce(sort, 500);
 
-	const query = useQuery(debouncedParams, sort);
+	const query = useQuery(debouncedParams, debouncedSort);
 
 	const data = useEndpointData('GET', 'rooms.adminRooms', query) || {};
 
@@ -53,8 +53,8 @@ export default function AdminRoomsRoute({ props }) {
 
 	if (sort[0] === 'name' && data.rooms) {
 		data.rooms = data.rooms.sort((a, b) => {
-			const aName = a.name || a.usernames.join(' x ');
-			const bName = b.name || b.usernames.join(' x ');
+			const aName = a.type === 'd' ? a.usernames.join(' x ') : roomTypes.getRoomName(a.t, a);
+			const bName = b.type === 'd' ? b.usernames.join(' x ') : roomTypes.getRoomName(b.t, b);
 			if (aName === bName) { return 0; }
 			const result = aName < bName ? -1 : 1;
 			return sort[1] === 'asc' ? result : result * -1;
@@ -66,6 +66,6 @@ export default function AdminRoomsRoute({ props }) {
 	}
 
 	return <UsersAndRoomsTab route={routeName} switchTab={switchTab} tab='rooms' {...props}>
-		<AdminRooms setParams={setParams} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
+		<AdminRooms setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
 	</UsersAndRoomsTab>;
 }
