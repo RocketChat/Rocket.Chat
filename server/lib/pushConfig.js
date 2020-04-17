@@ -86,20 +86,20 @@ function configurePush() {
 
 			apn = {
 				passphrase: settings.get('Push_apn_passphrase'),
-				keyData: settings.get('Push_apn_key'),
-				certData: settings.get('Push_apn_cert'),
+				key: settings.get('Push_apn_key'),
+				cert: settings.get('Push_apn_cert'),
 			};
 
 			if (settings.get('Push_production') !== true) {
 				apn = {
 					passphrase: settings.get('Push_apn_dev_passphrase'),
-					keyData: settings.get('Push_apn_dev_key'),
-					certData: settings.get('Push_apn_dev_cert'),
+					key: settings.get('Push_apn_dev_key'),
+					cert: settings.get('Push_apn_dev_cert'),
 					gateway: 'gateway.sandbox.push.apple.com',
 				};
 			}
 
-			if (!apn.keyData || apn.keyData.trim() === '' || !apn.certData || apn.certData.trim() === '') {
+			if (!apn.key || apn.key.trim() === '' || !apn.cert || apn.cert.trim() === '') {
 				apn = undefined;
 			}
 

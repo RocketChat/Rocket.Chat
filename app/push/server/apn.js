@@ -14,12 +14,9 @@ export const sendAPN = (userToken, notification) => {
 	const note = new apn.Notification();
 
 	note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
-	if (notification.badge != null) {
-		note.badge = notification.badge;
-	}
-	if (notification.sound != null) {
-		note.sound = notification.sound;
-	}
+	note.badge = notification.badge;
+	note.sound = notification.sound;
+
 	if (notification.contentAvailable != null) {
 		note.setContentAvailable(notification.contentAvailable);
 	}
@@ -27,21 +24,13 @@ export const sendAPN = (userToken, notification) => {
 	// adds category support for iOS8 custom actions as described here:
 	// https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/
 	// RemoteNotificationsPG/Chapters/IPhoneOSClientImp.html#//apple_ref/doc/uid/TP40008194-CH103-SW36
-	if (notification.category != null) {
-		note.category = notification.category;
-	}
+	note.category = notification.category;
 
-	note.alert = {
-		body: notification.text,
-	};
-
-	if (notification.title != null) {
-		note.alert.title = notification.title;
-		note.alert['summary-arg'] = notification.title;
-	}
+	note.body = notification.text;
+	note.title = notification.title;
 
 	if (notification.notId != null) {
-		note['thread-id'] = notification.notId;
+		note.threadId = String(notification.notId);
 	}
 
 	// Allow the user to set payload data
@@ -53,6 +42,7 @@ export const sendAPN = (userToken, notification) => {
 	// Store the token on the note so we can reference it if there was an error
 	note.token = userToken;
 	note.topic = notification.topic;
+	note.mutableContent = 1;
 
 	apnConnection.send(note, userToken);
 };
@@ -100,13 +90,13 @@ export const initAPN = ({ options, _removeToken, absoluteUrl }) => {
 	}
 
 	// Check certificate data
-	if (!options.apn.certData || !options.apn.certData.length) {
-		console.error('ERROR: Push server could not find certData');
+	if (!options.apn.cert || !options.apn.cert.length) {
+		console.error('ERROR: Push server could not find cert');
 	}
 
 	// Check key data
-	if (!options.apn.keyData || !options.apn.keyData.length) {
-		console.error('ERROR: Push server could not find keyData');
+	if (!options.apn.key || !options.apn.key.length) {
+		console.error('ERROR: Push server could not find key');
 	}
 
 	// Rig apn connection

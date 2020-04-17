@@ -76,8 +76,10 @@ export class PushClass {
 		let isSendingNotification = false;
 
 		const sendNotification = (notification) => {
+			logger.debug('Sending notification', notification);
+
 			// Reserve notification
-			const now = +new Date();
+			const now = Date.now();
 			const timeoutAt = now + this.options.sendTimeout;
 			const reserved = notificationsCollection.update({
 				_id: notification._id,
@@ -140,7 +142,7 @@ export class PushClass {
 				// Find notifications that are not being or already sent
 				notificationsCollection.find({
 					sent: false,
-					sending: { $lt: new Date() },
+					sending: { $lt: Date.now() },
 					$or: [
 						{ delayUntil: { $exists: false } },
 						{ delayUntil: { $lte: new Date() } },
@@ -153,6 +155,7 @@ export class PushClass {
 						sendNotification(notification);
 					} catch (error) {
 						logger.debug(`Could not send notification id: "${ notification._id }", Error: ${ error.message }`);
+						logger.debug(error.stack);
 					}
 				});
 			} finally {
