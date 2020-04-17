@@ -19,15 +19,8 @@ Meteor.startup(function() {
 	});
 });
 
+
 registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
-	async action() {
-		await import('./views/viewLogs');
-		return BlazeLayout.render('main', {
-			center: 'pageSettingsContainer',
-			pageTitle: t('View_Logs'),
-			pageTemplate: 'viewLogs',
-			noScroll: true,
-		});
-	},
+	lazyRouteComponent: () => import('./components/ViewLogs/ViewLogsRoute'),
 });
