@@ -3,7 +3,7 @@ import { Avatar } from '@rocket.chat/fuselage';
 
 import { useSetting } from '../contexts/SettingsContext';
 
-const base = '/avatar/';
+const base = '';
 
 export function AvatarUrlProvider({ children }) {
 	const cdn = useSetting('CDN_PREFIX_ALL');

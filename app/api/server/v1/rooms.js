@@ -312,3 +312,13 @@ API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, 
 		})));
 	},
 });
+
+API.v1.addRoute('rooms.saveRoomSettings', { authRequired: true }, {
+	post() {
+		const { rid, ...params } = this.bodyParams;
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('saveRoomSettings', rid, params));
+
+		return API.v1.success({ rid: result.rid });
+	},
+});
