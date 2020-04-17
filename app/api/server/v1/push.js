@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { appTokensCollection } from '../../../push/server/push';
+import { appTokensCollection } from '../../../push/server';
 import { API } from '../api';
 
 API.v1.addRoute('push.token', { authRequired: true }, {

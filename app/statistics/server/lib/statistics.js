@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
-import { notificationsCollection } from '../../../push/server/push';
+import { notificationsCollection } from '../../../push/server';
 import {
 	Sessions,
 	Settings,

@@ -1,5 +1,4 @@
-import { Push } from 'meteor/rocketchat:push';
-
+import { send } from '../../../push/server';
 import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
 import { RocketChatAssets } from '../../../assets';
@@ -53,7 +52,7 @@ export class PushNotification {
 		}
 
 		metrics.notificationsSent.inc({ notification_type: 'mobile' });
-		return Push.send(config);
+		return send(config);
 	}
 }
 

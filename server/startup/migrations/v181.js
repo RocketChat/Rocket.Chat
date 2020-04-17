@@ -1,4 +1,4 @@
-import { notificationsCollection } from '../../../app/push/server/push';
+import { notificationsCollection } from '../../../app/push/server';
 import { Migrations } from '../../../app/migrations/server';
 import { Settings } from '../../../app/models/server';
 

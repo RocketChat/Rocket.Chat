@@ -100,7 +100,7 @@ export const initFeedback = function({ options, _removeToken }) {
 };
 
 export const initAPN = ({ options, _removeToken }) => {
-	logger.debug('Push: APN configured');
+	logger.debug('APN configured');
 
 	// Allow production to be a general option for push notifications
 	if (options.production === Boolean(options.production)) {

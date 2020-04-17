@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { initAPN, sendAPN } from './apn';
@@ -90,7 +91,7 @@ const _querySend = function(query, notification, options) {
 	};
 };
 
-const serverSend = function(notification, options) {
+const serverSendNative = function(notification, options) {
 	notification = notification || { badge: 0 };
 	let query;
 
@@ -158,7 +159,104 @@ const serverSend = function(notification, options) {
 	throw new Error('send: please set option "token"/"tokens" or "query"');
 };
 
-export const Configure = function(options) {
+const sendGatewayPush = (gateway, service, token, notification, options, tries = 0) => {
+	notification.uniqueId = options.uniqueId;
+
+	const data = {
+		data: {
+			token,
+			options: notification,
+		},
+		headers: {},
+	};
+
+	if (token && options.getAuthorization) {
+		data.headers.Authorization = options.getAuthorization();
+	}
+
+	return HTTP.post(`${ gateway }/push/${ service }/send`, data, function(error, response) {
+		if (response && response.statusCode === 406) {
+			console.log('removing push token', token);
+			appTokensCollection.remove({
+				$or: [{
+					'token.apn': token,
+				}, {
+					'token.gcm': token,
+				}],
+			});
+			return;
+		}
+
+		if (!error) {
+			return;
+		}
+
+		logger.error(`Error sending push to gateway (${ tries } try) ->`, error);
+
+		if (tries <= 6) {
+			const ms = Math.pow(10, tries + 2);
+
+			logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
+
+			return Meteor.setTimeout(function() {
+				return sendGatewayPush(gateway, service, token, notification, options, tries + 1);
+			}, ms);
+		}
+	});
+};
+
+const serverSendGateway = function(notification = { badge: 0 }, options) {
+	for (const gateway of options.gateways) {
+		if (notification.from !== String(notification.from)) {
+			throw new Error('Push.send: option "from" not a string');
+		}
+		if (notification.title !== String(notification.title)) {
+			throw new Error('Push.send: option "title" not a string');
+		}
+		if (notification.text !== String(notification.text)) {
+			throw new Error('Push.send: option "text" not a string');
+		}
+
+		logger.debug(`send message "${ notification.title }" via query`, notification.query);
+
+		const query = {
+			$and: [notification.query, {
+				$or: [{
+					'token.apn': {
+						$exists: true,
+					},
+				}, {
+					'token.gcm': {
+						$exists: true,
+					},
+				}],
+			}],
+		};
+
+		appTokensCollection.find(query).forEach((app) => {
+			logger.debug('send to token', app.token);
+
+			if (app.token.apn) {
+				notification.topic = app.appName;
+				return sendGatewayPush(gateway, 'apn', app.token.apn, notification, options);
+			}
+
+			if (app.token.gcm) {
+				return sendGatewayPush(gateway, 'gcm', app.token.gcm, notification, options);
+			}
+		});
+	}
+};
+
+const serverSend = function(notification, options) {
+	if (options.gateways) {
+		return serverSendGateway(notification, options);
+	}
+
+	return serverSendNative(notification, options);
+};
+
+export const configure = function(options) {
 	options = _.extend({
 		sendTimeout: 60000, // Timeout period for notification send
 	}, options);
