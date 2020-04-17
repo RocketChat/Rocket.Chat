@@ -214,6 +214,7 @@ export class PushClass {
 				countApn.push(app._id);
 				// Send to APN
 				if (this.options.apn) {
+					notification.topic = app.appName;
 					sendAPN(app.token.apn, notification);
 				}
 			} else if (app.token.gcm) {

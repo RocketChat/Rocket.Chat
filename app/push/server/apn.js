@@ -14,8 +14,6 @@ export const sendAPN = (userToken, notification) => {
 
 	const priority = notification.priority || notification.priority === 0 ? notification.priority : 10;
 
-	const myDevice = new apn.Device(userToken);
-
 	const note = new apn.Notification();
 
 	note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
@@ -52,40 +50,9 @@ export const sendAPN = (userToken, notification) => {
 
 	// Store the token on the note so we can reference it if there was an error
 	note.token = userToken;
+	note.topic = notification.topic;
 
-	apnConnection.pushNotification(note, myDevice);
-};
-
-// Init feedback from apn server
-// This will help keep the appCollection up-to-date, it will help update
-// and remove token from appCollection.
-export const initFeedback = ({ options, _removeToken }) => {
-	// console.log('Init feedback');
-	const feedbackOptions = {
-		batchFeedback: true,
-
-		// Time in SECONDS
-		interval: 5,
-		production: !options.apn.development,
-		cert: options.certData,
-		key: options.keyData,
-		passphrase: options.passphrase,
-	};
-
-	const feedback = new apn.Feedback(feedbackOptions);
-	feedback.on('feedback', (devices) => {
-		devices.forEach((item) => {
-			// Do something with item.device and item.time;
-			// console.log('A:PUSH FEEDBACK ' + item.device + ' - ' + item.time);
-			// The app is most likely removed from the device, we should
-			// remove the token
-			_removeToken({
-				apn: item.device,
-			});
-		});
-	});
-
-	feedback.start();
+	apnConnection.send(note, userToken);
 };
 
 export const initAPN = ({ options, _removeToken }) => {
@@ -141,7 +108,7 @@ export const initAPN = ({ options, _removeToken }) => {
 	}
 
 	// Rig apn connection
-	apnConnection = new apn.Connection(options.apn);
+	apnConnection = new apn.Provider(options.apn);
 
 	// Listen to transmission errors - should handle the same way as feedback.
 	apnConnection.on('transmissionError', Meteor.bindEnvironment(function(errCode, notification/* , recipient*/) {
@@ -154,6 +121,4 @@ export const initAPN = ({ options, _removeToken }) => {
 			});
 		}
 	}));
-
-	initFeedback({ options, _removeToken });
 };
