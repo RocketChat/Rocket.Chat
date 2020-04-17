@@ -202,127 +202,28 @@ export class PushClass {
 		appTokensCollection.rawCollection().updateMany({ token }, { $unset: { token: true } });
 	}
 
-	// Universal send function
-	_querySend(query, notification) {
-		const countApn = [];
-		const countGcm = [];
+	serverSendNative(app, notification, countApn, countGcm) {
+		logger.debug('send to token', app.token);
 
-		appTokensCollection.find(query).forEach((app) => {
-			logger.debug('send to token', app.token);
-
-			if (app.token.apn) {
-				countApn.push(app._id);
-				// Send to APN
-				if (this.options.apn) {
-					notification.topic = app.appName;
-					sendAPN(app.token.apn, notification);
-				}
-			} else if (app.token.gcm) {
-				countGcm.push(app._id);
-
-				// Send to GCM
-				// We do support multiple here - so we should construct an array
-				// and send it bulk - Investigate limit count of id's
-				if (this.options.gcm && this.options.gcm.apiKey) {
-					sendGCM({ userTokens: app.token.gcm, notification, _replaceToken: this._replaceToken, _removeToken: this._removeToken, options: this.options });
-				}
-			} else {
-				throw new Error('send got a faulty query');
+		if (app.token.apn) {
+			countApn.push(app._id);
+			// Send to APN
+			if (this.options.apn) {
+				notification.topic = app.appName;
+				sendAPN(app.token.apn, notification);
 			}
-		});
+		} else if (app.token.gcm) {
+			countGcm.push(app._id);
 
-		if (LoggerManager.logLevel === 2) {
-			logger.debug(`Sent message "${ notification.title }" to ${ countApn.length } ios apps ${ countGcm.length } android apps`);
-
-			// Add some verbosity about the send result, making sure the developer
-			// understands what just happened.
-			if (!countApn.length && !countGcm.length) {
-				if (appTokensCollection.find().count() === 0) {
-					logger.debug('GUIDE: The "appTokensCollection" is empty - No clients have registered on the server yet...');
-				}
-			} else if (!countApn.length) {
-				if (appTokensCollection.find({ 'token.apn': { $exists: true } }).count() === 0) {
-					logger.debug('GUIDE: The "appTokensCollection" - No APN clients have registered on the server yet...');
-				}
-			} else if (!countGcm.length) {
-				if (appTokensCollection.find({ 'token.gcm': { $exists: true } }).count() === 0) {
-					logger.debug('GUIDE: The "appTokensCollection" - No GCM clients have registered on the server yet...');
-				}
+			// Send to GCM
+			// We do support multiple here - so we should construct an array
+			// and send it bulk - Investigate limit count of id's
+			if (this.options.gcm && this.options.gcm.apiKey) {
+				sendGCM({ userTokens: app.token.gcm, notification, _replaceToken: this._replaceToken, _removeToken: this._removeToken, options: this.options });
 			}
+		} else {
+			throw new Error('send got a faulty query');
 		}
-
-		return {
-			apn: countApn,
-			gcm: countGcm,
-		};
-	}
-
-	serverSendNative(notification) {
-		notification = notification || { badge: 0 };
-		let query;
-
-		// Check basic options
-		if (notification.from !== `${ notification.from }`) {
-			throw new Error('send: option "from" not a string');
-		}
-
-		if (notification.title !== `${ notification.title }`) {
-			throw new Error('send: option "title" not a string');
-		}
-
-		if (notification.text !== `${ notification.text }`) {
-			throw new Error('send: option "text" not a string');
-		}
-
-		if (notification.token || notification.tokens) {
-			// The user set one token or array of tokens
-			const tokenList = notification.token ? [notification.token] : notification.tokens;
-
-			logger.debug(`Send message "${ notification.title }" via token(s)`, tokenList);
-
-			query = {
-				$or: [
-					// XXX: Test this query: can we hand in a list of push tokens?
-					{ $and: [
-						{ token: { $in: tokenList } },
-						// And is not disabled
-						{ enabled: { $ne: false } },
-					],
-					},
-					// XXX: Test this query: does this work on app id?
-					{ $and: [
-						{ _id: { $in: tokenList } }, // one of the app ids
-						{ $or: [
-							{ 'token.apn': { $exists: true } }, // got apn token
-							{ 'token.gcm': { $exists: true } }, // got gcm token
-						] },
-						// And is not disabled
-						{ enabled: { $ne: false } },
-					],
-					},
-				],
-			};
-		} else if (notification.query) {
-			logger.debug(`Send message "${ notification.title }" via query`, notification.query);
-
-			query = {
-				$and: [
-					notification.query, // query object
-					{ $or: [
-						{ 'token.apn': { $exists: true } }, // got apn token
-						{ 'token.gcm': { $exists: true } }, // got gcm token
-					] },
-					// And is not disabled
-					{ enabled: { $ne: false } },
-				],
-			};
-		}
-
-		if (query) {
-			// Convert to querySend and return status
-			return this._querySend(query, notification);
-		}
-		throw new Error('send: please set option "token"/"tokens" or "query"');
 	}
 
 	sendGatewayPush(gateway, service, token, notification, tries = 0) {
@@ -369,55 +270,87 @@ export class PushClass {
 		});
 	}
 
-	serverSendGateway(notification = { badge: 0 }) {
+	serverSendGateway(app, notification, countApn, countGcm) {
 		for (const gateway of this.options.gateways) {
-			if (notification.from !== String(notification.from)) {
-				throw new Error('Push.send: option "from" not a string');
-			}
-			if (notification.title !== String(notification.title)) {
-				throw new Error('Push.send: option "title" not a string');
-			}
-			if (notification.text !== String(notification.text)) {
-				throw new Error('Push.send: option "text" not a string');
+			logger.debug('send to token', app.token);
+
+			if (app.token.apn) {
+				countApn.push(app._id);
+				notification.topic = app.appName;
+				return this.sendGatewayPush(gateway, 'apn', app.token.apn, notification);
 			}
 
-			logger.debug(`send message "${ notification.title }" via query`, notification.query);
-
-			const query = {
-				$and: [notification.query, {
-					$or: [{
-						'token.apn': {
-							$exists: true,
-						},
-					}, {
-						'token.gcm': {
-							$exists: true,
-						},
-					}],
-				}],
-			};
-
-			appTokensCollection.find(query).forEach((app) => {
-				logger.debug('send to token', app.token);
-
-				if (app.token.apn) {
-					notification.topic = app.appName;
-					return this.sendGatewayPush(gateway, 'apn', app.token.apn, notification);
-				}
-
-				if (app.token.gcm) {
-					return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, notification);
-				}
-			});
+			if (app.token.gcm) {
+				countGcm.push(app._id);
+				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, notification);
+			}
 		}
 	}
 
-	serverSend(notification) {
-		if (this.options.gateways) {
-			return this.serverSendGateway(notification);
+	serverSend(notification = { badge: 0 }) {
+		const countApn = [];
+		const countGcm = [];
+
+		if (notification.from !== String(notification.from)) {
+			throw new Error('Push.send: option "from" not a string');
+		}
+		if (notification.title !== String(notification.title)) {
+			throw new Error('Push.send: option "title" not a string');
+		}
+		if (notification.text !== String(notification.text)) {
+			throw new Error('Push.send: option "text" not a string');
 		}
 
-		return this.serverSendNative(notification);
+		logger.debug(`send message "${ notification.title }" via query`, notification.query);
+
+		const query = {
+			$and: [notification.query, {
+				$or: [{
+					'token.apn': {
+						$exists: true,
+					},
+				}, {
+					'token.gcm': {
+						$exists: true,
+					},
+				}],
+			}],
+		};
+
+		appTokensCollection.find(query).forEach((app) => {
+			logger.debug('send to token', app.token);
+
+			if (this.options.gateways) {
+				return this.serverSendGateway(app, notification, countApn, countGcm);
+			}
+
+			return this.serverSendNative(app, notification, countApn, countGcm);
+		});
+
+		if (LoggerManager.logLevel === 2) {
+			logger.debug(`Sent message "${ notification.title }" to ${ countApn.length } ios apps ${ countGcm.length } android apps`);
+
+			// Add some verbosity about the send result, making sure the developer
+			// understands what just happened.
+			if (!countApn.length && !countGcm.length) {
+				if (appTokensCollection.find().count() === 0) {
+					logger.debug('GUIDE: The "appTokensCollection" is empty - No clients have registered on the server yet...');
+				}
+			} else if (!countApn.length) {
+				if (appTokensCollection.find({ 'token.apn': { $exists: true } }).count() === 0) {
+					logger.debug('GUIDE: The "appTokensCollection" - No APN clients have registered on the server yet...');
+				}
+			} else if (!countGcm.length) {
+				if (appTokensCollection.find({ 'token.gcm': { $exists: true } }).count() === 0) {
+					logger.debug('GUIDE: The "appTokensCollection" - No GCM clients have registered on the server yet...');
+				}
+			}
+		}
+
+		return {
+			apn: countApn,
+			gcm: countGcm,
+		};
 	}
 
 	// This is a general function to validate that the data added to notifications
