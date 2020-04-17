@@ -97,7 +97,7 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 			return;
 		}
 
-		logger.debuglog(`ANDROID: Result of sender: ${ JSON.stringify(result) }`);
+		logger.debug(`ANDROID: Result of sender: ${ JSON.stringify(result) }`);
 
 		if (result.canonical_ids === 1 && userToken) {
 			// This is an old device, token is replaced
