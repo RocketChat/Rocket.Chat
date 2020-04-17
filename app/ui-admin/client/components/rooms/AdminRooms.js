@@ -44,7 +44,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
 		<TextInput placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 		<Field>
-			<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mb='x8' mi='neg-x8'>
+			<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mbs='x8' mi='neg-x8'>
 				<Margins inline='x8'>
 					<Field.Row>
 						<CheckBox checked={types.d} id={idDirect} onChange={() => handleCheckBox('d')}/>
