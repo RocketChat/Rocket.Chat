@@ -449,6 +449,8 @@ Template.accountProfile.events({
 				toastr.remove();
 				toastr.warning(t('Please_wait_while_your_profile_is_being_saved'));
 				instance.save(SHA256(typedPassword), () => send.removeClass('loading'));
+				instance.password.set();
+				instance.confirmationPassword.set();
 			} else {
 				modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
 				return false;

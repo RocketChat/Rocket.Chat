@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "3.1.0-develop",
+	"version": "3.2.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -59,6 +59,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.6.2",
+		"@babel/plugin-proposal-optional-chaining": "^7.9.0",
 		"@babel/preset-env": "^7.6.2",
 		"@babel/preset-react": "^7.0.0",
 		"@octokit/rest": "^16.1.0",
@@ -128,7 +129,7 @@
 		"@nivo/heatmap": "^0.61.0",
 		"@nivo/line": "^0.61.1",
 		"@nivo/pie": "^0.61.1",
-		"@rocket.chat/apps-engine": "^1.13.0-beta.3003",
+		"@rocket.chat/apps-engine": "^1.14.0-beta.3119",
 		"@rocket.chat/fuselage": "^0.7.1",
 		"@rocket.chat/fuselage-hooks": "^0.7.1",
 		"@rocket.chat/fuselage-polyfills": "^0.7.1",
@@ -228,6 +229,7 @@
 		"underscore": "^1.9.1",
 		"underscore.string": "^3.3.5",
 		"url-polyfill": "^1.1.5",
+		"use-subscription": "^1.4.1",
 		"uuid": "^3.3.2",
 		"webdav": "^2.10.0",
 		"wolfy87-eventemitter": "^5.2.5",

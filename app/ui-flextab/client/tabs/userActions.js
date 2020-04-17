@@ -99,7 +99,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 	const actions = [
 		{
 			icon: 'message',
-			name: t('Conversation'),
+			name: t('Direct_Message'),
 			action: prevent(getUser, ({ username }) =>
 				Meteor.call('createDirectMessage', username, success((result) => result.rid && FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams))),
 			),
