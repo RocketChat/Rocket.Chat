@@ -631,7 +631,7 @@ export const Livechat = {
 			try {
 				const customFields = JSON.parse(settings.get('Accounts_CustomFields'));
 				return Object.keys(customFields)
-					.filter((customFieldKey) => customFields[customFieldKey].allowExternalSharing === true)
+					.filter((customFieldKey) => customFields[customFieldKey].sendToIntegrations === true)
 					.map((field) => field);
 			} catch (error) {
 				return [];
