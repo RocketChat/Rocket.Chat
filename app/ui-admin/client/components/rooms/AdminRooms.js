@@ -24,7 +24,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 
 	const t = useTranslation();
 
-	const handleChange = useCallback((event) => setText(event.currentTarget), []);
+	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
 	const handleCheckBox = useCallback((type) => setTypes({ ...types, [type]: !types[type] }), [types]);
 
 	useEffect(() => {

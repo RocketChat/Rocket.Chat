@@ -322,3 +322,18 @@ API.v1.addRoute('rooms.saveRoomSettings', { authRequired: true }, {
 		return API.v1.success({ rid: result.rid });
 	},
 });
+
+API.v1.addRoute('rooms.changeArchivationState', { authRequired: true }, {
+	post() {
+		const { rid, action } = this.bodyParams;
+
+		let result;
+		if (action === 'archive') {
+			result = Meteor.runAsUser(this.userId, () => Meteor.call('archiveRoom', rid));
+		} else {
+			result = Meteor.runAsUser(this.userId, () => Meteor.call('unarchiveRoom', rid));
+		}
+
+		return API.v1.success({ result });
+	},
+});
