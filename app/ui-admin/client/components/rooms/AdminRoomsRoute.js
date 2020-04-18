@@ -36,6 +36,7 @@ export default function AdminRoomsRoute({ props }) {
 	const switchTab = useSwitchTab(routeName);
 
 	const router = useRoute(routeName);
+
 	const onClick = (rid) => () => router.push({
 		context: 'edit',
 		id: rid,

@@ -5,7 +5,7 @@ import { Page } from '../../../../../client/components/basic/Page';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../../../client/contexts/RouterContext';
 import { useMediaQuery } from '../../../../ui/client/views/app/components/hooks';
-import { EditRoom } from '../rooms/edit/EditRoom';
+import { EditRoomContextBar } from '../rooms/edit/EditRoom';
 
 export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) {
 	const t = useTranslation();
@@ -26,7 +26,7 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 			<Page.Header title={t('Users_and_rooms')}>
 				{ tab === 'users' && <ButtonGroup>
 					<Button small onClick={handleNew} aria-label={t('New')}>
-						<Icon name='plus' />
+						<Icon name='plus'/>
 					</Button>
 				</ButtonGroup>
 				}
@@ -45,7 +45,7 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 					router.push({});
 				}}/></Page.VerticalBar.Header>
 				<Page.VerticalBar.Content>
-					<EditRoom roomId={id}/>
+					<EditRoomContextBar rid={id}/>
 				</Page.VerticalBar.Content>
 			</Page.VerticalBar>}
 	</Page>;
