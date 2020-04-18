@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 
 import { callbacks } from '../../app/callbacks';
 import { Subscriptions } from '../../app/models';
+import { Notification } from '../../app/notification-queue/server/NotificationQueue';
 
 Meteor.methods({
 	readMessages(rid) {
@@ -28,6 +29,8 @@ Meteor.methods({
 		}
 
 		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
+
+		Notification.clearQueueForUser(userId);
 
 		Meteor.defer(() => {
 			callbacks.run('afterReadMessages', rid, { userId, lastSeen: userSubscription.ls });

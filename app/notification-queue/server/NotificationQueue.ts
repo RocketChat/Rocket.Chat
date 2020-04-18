@@ -104,35 +104,14 @@ class NotificationClass {
 	}
 
 	async worker(counter = 0): Promise<void> {
-		const notification = (await this.collection.findOneAndUpdate({
-			sending: { $exists: false },
-			$or: [
-				{ schedule: { $exists: false } },
-				{ schedule: { $lte: new Date() } },
-			],
-		}, {
-			$set: {
-				sending: new Date(),
-			},
-		}, {
-			sort: {
-				ts: 1,
-			},
-		})).value;
+		const notification = await this.getNextNotification();
 
 		if (!notification) {
 			return this.executeWorkerLater();
 		}
 
 		// Once we start notifying the user we anticipate all the schedules
-		this.collection.updateMany({
-			uid: notification.uid,
-			schedule: { $exists: true },
-		}, {
-			$unset: {
-				schedule: 1,
-			},
-		});
+		this.flushQueueForUser(notification.uid);
 
 		console.log('processing', notification._id);
 
@@ -142,9 +121,9 @@ class NotificationClass {
 					case 'push':
 						this.push(item);
 						break;
-					// case 'email':
-					// 	this.email(item);
-					// 	break;
+					case 'email':
+						this.email(item);
+						break;
 				}
 			}
 
@@ -166,6 +145,35 @@ class NotificationClass {
 			return this.executeWorkerLater();
 		}
 		this.worker(counter++);
+	}
+
+	async flushQueueForUser(userId: string): Promise<void> {
+		await this.collection.updateMany({
+			uid: userId,
+			schedule: { $exists: true },
+		}, {
+			$unset: {
+				schedule: 1,
+			},
+		});
+	}
+
+	async getNextNotification(): Promise<INotification | undefined> {
+		return (await this.collection.findOneAndUpdate({
+			sending: { $exists: false },
+			$or: [
+				{ schedule: { $exists: false } },
+				{ schedule: { $lte: new Date() } },
+			],
+		}, {
+			$set: {
+				sending: new Date(),
+			},
+		}, {
+			sort: {
+				ts: 1,
+			},
+		})).value;
 	}
 
 	push(item: INotificationItemPush): void {
@@ -215,6 +223,14 @@ class NotificationClass {
 			schedule,
 			items,
 		});
+	}
+
+	async clearQueueForUser(userId: string): Promise<number | undefined> {
+		const op = await this.collection.deleteMany({
+			uid: userId,
+		});
+
+		return op.deletedCount;
 	}
 }
 

@@ -324,7 +324,6 @@ export async function sendAllNotifications(message, room) {
 		return message;
 	}
 	// skips this callback if the message was edited
-	// TODO: Since we are queueing we could change the message on the queue
 	if (message.editedAt) {
 		return message;
 	}
