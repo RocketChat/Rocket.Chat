@@ -12,7 +12,7 @@ import moment from 'moment';
 
 import { logger } from '../logger';
 import { processWebhookMessage } from '../../../lib';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api';
+import { API, APIClass } from '../../../api';
 import * as Models from '../../../models';
 import { settings } from '../../../settings/server';
 
@@ -321,19 +321,30 @@ class WebHookAPI extends APIClass {
 	/* Webhooks are not versioned, so we must not validate we know a version before adding a rate limiter */
 	shouldAddRateLimitToRoute(options) {
 		const { rateLimiterOptions } = options;
-		return (typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
+		return (typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) && !process.env.TEST_MODE;
 	}
 
 	shouldVerifyRateLimit(/* route */) {
-		return settings.get('API_Enable_Rate_Limiter') === true
-			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true);
+		if (process.env.TEST_MODE) {
+			return false;
+		}
+
+		if (process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true) {
+			return false;
+		}
+
+		return settings.get('API_Rate_Limit_IP_Enabled')
+			|| settings.get('API_Rate_Limit_User_Enabled')
+			|| settings.get('API_Rate_Limit_Connection_Enabled')
+			|| settings.get('API_Rate_Limit_User_By_Endpoint_Enabled')
+			|| settings.get('API_Rate_Limit_Connection_By_Endpoint_Enabled');
 	}
 
 	/*
 	There is only one generic route propagated to Restivus which has URL-path-parameters for the integration and the token.
 	Since the rate-limiter operates on absolute routes, we need to add a limiter to the absolute url before we can validate it
 	*/
-	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
+	enforceRateLimit(request, response, userId, token) {
 		const { method, url } = request;
 		const route = url.replace(`/${ this.apiPath }`, '');
 		const nameRoute = this.getFullRouteName(route, [method.toLowerCase()]);
@@ -343,18 +354,14 @@ class WebHookAPI extends APIClass {
 		if (!this.getRateLimiter(nameRoute)) {
 			this.addRateLimiterRuleForRoutes({
 				routes: [route],
-				rateLimiterOptions: defaultRateLimiterOptions,
+				rateLimiterOptions: {},
 				endpoints: {
 					post: executeIntegrationRest,
 					get: executeIntegrationRest,
 				},
 			});
 		}
-
-		const integrationForRateLimitMatch = objectForRateLimitMatch;
-		integrationForRateLimitMatch.route = nameRoute;
-
-		super.enforceRateLimit(integrationForRateLimitMatch, request, response, userId);
+		super.enforceRateLimit(request, response, userId, token);
 	}
 }
 
@@ -450,3 +457,11 @@ Api.addRoute('remove/:integrationId/:userId/:token', { authRequired: true }, {
 Api.addRoute('remove/:integrationId/:token', { authRequired: true }, {
 	post: removeIntegrationRest,
 });
+
+if (!process.env.TEST_MODE) {
+	settings.get(/^API_Rate_Limit_IP_.+/, () => Api.reloadRoutesToRefreshRateLimiter());
+	settings.get(/^API_Rate_Limit_User_[^B].+/, () => Api.reloadRoutesToRefreshRateLimiter());
+	settings.get(/^API_Rate_Limit_Connection_[^B].+/, () => Api.reloadRoutesToRefreshRateLimiter());
+	settings.get(/^API_Rate_Limit_User_By_Endpoint_.+/, () => Api.reloadRoutesToRefreshRateLimiter());
+	settings.get(/^API_Rate_Limit_Connection_By_Endpoint.+/, () => Api.reloadRoutesToRefreshRateLimiter());
+}
