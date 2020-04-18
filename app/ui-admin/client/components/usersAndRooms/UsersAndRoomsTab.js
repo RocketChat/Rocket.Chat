@@ -5,12 +5,8 @@ import { Page } from '../../../../../client/components/basic/Page';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../../../client/contexts/RouterContext';
 import { useMediaQuery } from '../../../../ui/client/views/app/components/hooks';
-<<<<<<< HEAD
 import { EditRoomContextBar } from '../rooms/edit/EditRoom';
-=======
-import { EditRoom } from '../rooms/edit/EditRoom';
 import { UserInfo } from '../users/info/UserInfo';
->>>>>>> 8f38a0dee3e10d66af36b5f8e43f0ea1c041bff1
 
 export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) {
 	const t = useTranslation();
@@ -50,7 +46,7 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 					router.push({});
 				}}/></Page.VerticalBar.Header>
 				<Page.VerticalBar.Content>
-					{ tab === 'rooms' && <EditRoom rid={id}/> }
+					{ tab === 'rooms' && <EditRoomContextBar rid={id}/> }
 					{ tab === 'users' && <UserInfo uid={id}/> }
 				</Page.VerticalBar.Content>
 			</Page.VerticalBar>}
