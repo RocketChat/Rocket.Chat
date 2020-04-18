@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
+import { NotAuthorizedPage } from '../NotAuthorizedPage';
 import { useSwitchTab } from '../usersAndRooms/hooks';
 import { UsersAndRoomsTab } from '../usersAndRooms/UsersAndRoomsTab';
 import { AdminUsers } from './AdminUsers';
