@@ -1,8 +1,10 @@
-import { Collection } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 
-import { NotificationQueue } from '../../models/server/raw';
+import { NotificationQueue, Subscriptions } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
+
+const SubscriptionsCollection: Collection = Subscriptions.col;
 
 interface INotificationItemPush {
 	type: 'push';
@@ -51,7 +53,7 @@ interface INotification {
 	rid: string;
 	sid: string;
 	ts: Date;
-	sending: Date;
+	sending?: Date;
 	items: NotificationItem[];
 }
 
@@ -159,6 +161,45 @@ class NotificationClass {
 
 	email(item: INotificationItemEmail): void {
 		sendEmailFromData(item.data);
+	}
+
+	async scheduleItem({ uid, rid, sid, items }: {uid: string; rid: string; sid: string; items: NotificationItem[]}): Promise<void> {
+		// TODO: ls only changes when the channel is marked as read or when using ESC
+		// need to find another way
+		const sub = await SubscriptionsCollection.findOne({
+			'u._id': uid,
+		}, {
+			projection: {
+				ls: 1,
+			},
+			sort: {
+				ls: -1,
+			},
+		});
+
+		const delay = 120;
+
+		const ts = new Date();
+
+		if (sub?.ls) {
+			const elapsedSeconds = Math.floor((Date.now() - sub.ls) / 1000);
+			if (elapsedSeconds < delay) {
+				console.log(delay - elapsedSeconds);
+				ts.setSeconds(ts.getSeconds() + delay - elapsedSeconds);
+			}
+		} else {
+			console.log(delay);
+			ts.setSeconds(ts.getSeconds() + delay);
+		}
+
+		await this.collection.insertOne({
+			_id: new ObjectId().toString(),
+			uid,
+			rid,
+			sid,
+			ts,
+			items,
+		});
 	}
 }
 

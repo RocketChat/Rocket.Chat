@@ -166,11 +166,10 @@ export const sendNotification = async ({
 	}
 
 	if (queueItems.length) {
-		Notification.collection.insert({
+		Notification.scheduleItem({
 			uid: subscription.u._id,
 			rid: room._id,
 			sid: subscription._id,
-			ts: new Date(),
 			items: queueItems,
 		});
 	}
