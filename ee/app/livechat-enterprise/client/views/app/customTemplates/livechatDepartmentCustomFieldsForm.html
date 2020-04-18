@@ -36,7 +36,7 @@
 			endpoint='livechat/department.autocomplete'
 			field='name'
 			sort='name'
-			label="Department"
+			label="List_of_departments_for_forward"
 			placeholder="Enter_a_department_name"
 			name="department"
 			icon="queue"
@@ -49,5 +49,8 @@
 			exceptions=exceptionsDepartments
 		}}
 		<input type="hidden" class="customFormField" name="departmentsAllowedToForward" value="{{selectedDepartmentsIds}}" />
+		<div>
+			<small class="secondary-font-color">{{{_ "List_of_departments_for_forward_description"}}}</small>
+		</div>
 	</div>
 </template>

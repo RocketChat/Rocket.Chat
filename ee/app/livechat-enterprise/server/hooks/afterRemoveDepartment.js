@@ -3,7 +3,8 @@ import { LivechatDepartment } from '../../../../../app/models/server';
 
 callbacks.add('livechat.afterRemoveDepartment', (department) => {
 	if (!department) {
-		return;
+		return department;
 	}
 	LivechatDepartment.removeDepartmentFromForwardListById(department._id);
+	return department;
 }, callbacks.priority.HIGH, 'livechat-after-remove-department');
