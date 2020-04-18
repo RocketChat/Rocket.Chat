@@ -125,7 +125,6 @@ export const sendNotification = async ({
 		isHighlighted,
 		hasMentionToUser,
 		hasReplyToThread,
-		statusConnection: receiver.statusConnection,
 		roomType,
 	})) {
 		queueItems.push({
@@ -144,7 +143,6 @@ export const sendNotification = async ({
 
 	if (receiver.emails && shouldNotifyEmail({
 		disableAllMessageNotifications,
-		statusConnection: receiver.statusConnection,
 		emailNotifications,
 		isHighlighted,
 		hasMentionToUser,

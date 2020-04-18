@@ -8,11 +8,6 @@ import { PushNotification } from '../../../../push-notifications/server';
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 
-// let alwaysNotifyMobileBoolean;
-// settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
-// 	alwaysNotifyMobileBoolean = value;
-// });
-
 let SubscriptionRaw;
 Meteor.startup(() => {
 	SubscriptionRaw = Subscriptions.model.rawCollection();
@@ -85,7 +80,6 @@ export function shouldNotifyMobile({
 	isHighlighted,
 	hasMentionToUser,
 	hasReplyToThread,
-	// statusConnection,
 	roomType,
 }) {
 	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
@@ -95,10 +89,6 @@ export function shouldNotifyMobile({
 	if (mobilePushNotifications === 'nothing') {
 		return false;
 	}
-
-	// if (!alwaysNotifyMobileBoolean && statusConnection === 'online') {
-	// 	return false;
-	// }
 
 	if (!mobilePushNotifications) {
 		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all') {
