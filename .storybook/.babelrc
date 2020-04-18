@@ -6,13 +6,14 @@
         "shippedProposals": true,
         "useBuiltIns": "usage",
         "corejs": "3",
-        "modules": "commonjs",
+        "modules": "commonjs"
       }
     ],
     "@babel/preset-react",
     "@babel/preset-flow"
   ],
   "plugins": [
-    "@babel/plugin-proposal-class-properties"
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-optional-chaining"
   ]
 }

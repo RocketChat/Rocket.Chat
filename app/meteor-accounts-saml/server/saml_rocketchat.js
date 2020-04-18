@@ -62,6 +62,19 @@ Meteor.methods({
 			multiline: true,
 			i18nLabel: 'SAML_Custom_Public_Cert',
 		});
+		settings.add(`SAML_Custom_${ name }_signature_validation_type`, 'All', {
+			type: 'select',
+			values: [
+				{ key: 'Response', i18nLabel: 'SAML_Custom_signature_validation_response' },
+				{ key: 'Assertion', i18nLabel: 'SAML_Custom_signature_validation_assertion' },
+				{ key: 'Either', i18nLabel: 'SAML_Custom_signature_validation_either' },
+				{ key: 'All', i18nLabel: 'SAML_Custom_signature_validation_all' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_signature_validation_type',
+			i18nDescription: 'SAML_Custom_signature_validation_type_description',
+		});
 		settings.add(`SAML_Custom_${ name }_private_key`, '', {
 			type: 'string',
 			group: 'SAML',
@@ -147,6 +160,7 @@ Meteor.methods({
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Custom_Authn_Context',
+			i18nDescription: 'SAML_Custom_Authn_Context_description',
 		});
 		settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "cn": "name"}', {
 			type: 'string',
@@ -182,6 +196,22 @@ Meteor.methods({
 			i18nLabel: 'SAML_Role_Attribute_Name',
 			i18nDescription: 'SAML_Role_Attribute_Name_Description',
 		});
+
+		settings.add(`SAML_Custom_${ name }_role_attribute_sync`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Role_Attribute_Sync',
+			i18nDescription: 'SAML_Role_Attribute_Sync_Description',
+		});
+
+		settings.add(`SAML_Custom_${ name }_allowed_clock_drift`, 0, {
+			type: 'int',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Allowed_Clock_Drift',
+			i18nDescription: 'SAML_Allowed_Clock_Drift_Description',
+		});
 	},
 });
 
@@ -215,13 +245,16 @@ const getSamlConfigs = function(service) {
 		authnContextComparison: settings.get(`${ service.key }_authn_context_comparison`),
 		defaultUserRole: settings.get(`${ service.key }_default_user_role`),
 		roleAttributeName: settings.get(`${ service.key }_role_attribute_name`),
+		roleAttributeSync: settings.get(`${ service.key }_role_attribute_sync`),
 		secret: {
 			privateKey: settings.get(`${ service.key }_private_key`),
 			publicCert: settings.get(`${ service.key }_public_cert`),
 			// People often overlook the instruction to remove the header and footer of the certificate on this specific setting, so let's do it for them.
 			cert: normalizeCert(settings.get(`${ service.key }_cert`)),
 		},
+		signatureValidationType: settings.get(`${ service.key }_signature_validation_type`),
 		userDataFieldMap: settings.get(`${ service.key }_user_data_fieldmap`),
+		allowedClockDrift: settings.get(`${ service.key }_allowed_clock_drift`),
 	};
 };
 
@@ -256,6 +289,7 @@ const configureSamlService = function(samlConfigs) {
 	Accounts.saml.settings.debug = samlConfigs.debug;
 	Accounts.saml.settings.defaultUserRole = samlConfigs.defaultUserRole;
 	Accounts.saml.settings.roleAttributeName = samlConfigs.roleAttributeName;
+	Accounts.saml.settings.roleAttributeSync = samlConfigs.roleAttributeSync;
 
 	return {
 		provider: samlConfigs.clientConfig.provider,
@@ -269,6 +303,9 @@ const configureSamlService = function(samlConfigs) {
 		authnContextComparison: samlConfigs.authnContextComparison,
 		defaultUserRole: samlConfigs.defaultUserRole,
 		roleAttributeName: samlConfigs.roleAttributeName,
+		roleAttributeSync: samlConfigs.roleAttributeSync,
+		allowedClockDrift: samlConfigs.allowedClockDrift,
+		signatureValidationType: samlConfigs.signatureValidationType,
 	};
 };
 
