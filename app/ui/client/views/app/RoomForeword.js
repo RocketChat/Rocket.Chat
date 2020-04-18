@@ -5,6 +5,7 @@ import { Rooms } from '../../../../models';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { useReactiveValue } from '../../../../../client/hooks/useReactiveValue';
 import { useUser } from '../../../../../client/contexts/UserContext';
+import { roomTypes } from '../../../../utils/client';
 
 const RoomForeword = ({ _id: rid }) => {
 	const t = useTranslation();
@@ -25,7 +26,11 @@ const RoomForeword = ({ _id: rid }) => {
 		<Flex.Item grow={1}>
 			<Margins block='x24'>
 				<Avatar.Stack>
-					{users.map((username, index) => <Avatar size='x48' title={username} url={username} key={index} data-username={username} />)}
+					{users.map(
+						(username, index) => {
+							const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: username, type: 'd' });
+							return <Avatar size='x48' title={username} url={avatarUrl} key={index} data-username={username} />;
+						})}
 				</Avatar.Stack>
 			</Margins>
 		</Flex.Item>

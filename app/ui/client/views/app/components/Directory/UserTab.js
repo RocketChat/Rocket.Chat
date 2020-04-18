@@ -9,6 +9,7 @@ import { useTranslation } from '../../../../../../../client/contexts/Translation
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
 import { useQuery, useFormatDate } from '../hooks';
+import { roomTypes } from '../../../../../../utils/client';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -70,34 +71,38 @@ export function UserTab({
 
 	const formatDate = useFormatDate();
 
-	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
-		<Table.Cell>
-			<Flex.Container>
-				<Box>
-					<Flex.Item>
-						<Avatar size='x40' title={username} url={username} />
-					</Flex.Item>
-					<Box style={style} grow={1} mi='x8'>
-						<Box display='flex'>
-							<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box> <Box mi='x4'/> <Box textStyle='p1' textColor='hint' style={style}>{username}</Box>
+	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio }) => {
+		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: username || name, type: 'd', _id });
+
+		return <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
+			<Table.Cell>
+				<Flex.Container>
+					<Box>
+						<Flex.Item>
+							<Avatar size='x40' title={username} url={avatarUrl} />
+						</Flex.Item>
+						<Box style={style} grow={1} mi='x8'>
+							<Box display='flex'>
+								<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box> <Box mi='x4'/> <Box textStyle='p1' textColor='hint' style={style}>{username}</Box>
+							</Box>
+							<Box textStyle='p1' textColor='hint' style={style}> {bio} </Box>
 						</Box>
-						<Box textStyle='p1' textColor='hint' style={style}> {bio} </Box>
 					</Box>
-				</Box>
-			</Flex.Container>
-		</Table.Cell>
-		{mediaQuery && canViewFullOtherUserInfo
+				</Flex.Container>
+			</Table.Cell>
+			{mediaQuery && canViewFullOtherUserInfo
 			&& <Table.Cell style={style} >
 				{emails && emails[0].address}
 			</Table.Cell>}
-		{federation
+			{federation
 		&& <Table.Cell style={style}>
 			{domain}
 		</Table.Cell>}
-		{mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
-			{formatDate(createdAt)}
-		</Table.Cell>}
-	</Table.Row>, [mediaQuery, federation, canViewFullOtherUserInfo]);
+			{mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
+				{formatDate(createdAt)}
+			</Table.Cell>}
+		</Table.Row>;
+	}, [mediaQuery, federation, canViewFullOtherUserInfo]);
 
 	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
 }

@@ -73,28 +73,32 @@ export function ChannelsTab() {
 	}, [channelRoute]);
 
 	const formatDate = useFormatDate();
-	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
-		<Table.Cell>
-			<Box display='flex'>
-				<Avatar size='x40' title={fname || name} url={`%40${ fname || name }`} flexGrow={0} />
-				<Box grow={1} mi='x8' style={style}>
-					<Box display='flex' alignItems='center'>
-						<Icon name={roomTypes.getIcon(room)} textColor='hint' /> <Box textStyle='p2' textColor='default' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
+	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => {
+		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: name || fname, type: 'd', _id });
+
+		return <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
+			<Table.Cell>
+				<Box display='flex'>
+					<Avatar size='x40' title={fname || name} url={avatarUrl} flexGrow={0} />
+					<Box grow={1} mi='x8' style={style}>
+						<Box display='flex' alignItems='center'>
+							<Icon name={roomTypes.getIcon(room)} textColor='hint' /> <Box textStyle='p2' textColor='default' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
+						</Box>
+						{topic && <Markdown textStyle='p1' textColor='hint' style={style}>{topic}</Markdown> }
 					</Box>
-					{topic && <Markdown textStyle='p1' textColor='hint' style={style}>{topic}</Markdown> }
 				</Box>
-			</Box>
-		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={style}>
-			{usersCount}
-		</Table.Cell>
-		{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
-			{formatDate(ts)}
-		</Table.Cell>}
-		{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
-			{lastMessage && formatDate(lastMessage.ts)}
-		</Table.Cell>}
-	</Table.Row>
+			</Table.Cell>
+			<Table.Cell textStyle='p1' textColor='hint' style={style}>
+				{usersCount}
+			</Table.Cell>
+			{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
+				{formatDate(ts)}
+			</Table.Cell>}
+			{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
+				{lastMessage && formatDate(lastMessage.ts)}
+			</Table.Cell>}
+		</Table.Row>;
+	}
 	, [mediaQuery]);
 
 	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;

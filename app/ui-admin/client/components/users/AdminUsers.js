@@ -4,6 +4,7 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { GenericTable, Th } from '../../../../ui/client/components/GenericTable';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { roomTypes } from '../../../../utils/client';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -41,26 +42,29 @@ export function AdminUsers({
 		<Th key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x100'>{t('Status')}</Th>,
 	].filter(Boolean), [sort, mediaQuery]);
 
-	const renderRow = useCallback(({ emails, _id, username, name, roles, status }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
-		<Table.Cell style={style}>
+	const renderRow = useCallback(({ emails, _id, username, name, roles, status, ...args }) => {
+		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: username || name, type: 'd', _id, ...args });
 
-			<Box display='flex' alignItems='center'>
-				<Avatar size={mediaQuery ? 'x28' : 'x40'} title={username} url={username} />
-				<Box display='flex' style={style} mi='x8'>
-					<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
-						<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box>
-						{!mediaQuery && name && <Box textStyle='p1' textColor='hint' style={style}> {`@${ username }`} </Box>}
+		return <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
+			<Table.Cell style={style}>
+				<Box display='flex' alignItems='center'>
+					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={username} url={avatarUrl} />
+					<Box display='flex' style={style} mi='x8'>
+						<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
+							<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box>
+							{!mediaQuery && name && <Box textStyle='p1' textColor='hint' style={style}> {`@${ username }`} </Box>}
+						</Box>
 					</Box>
 				</Box>
-			</Box>
-		</Table.Cell>
-		{mediaQuery && <Table.Cell>
-			<Box textStyle='p2' style={style} textColor='hint'>{ username }</Box> <Box mi='x4'/>
-		</Table.Cell>}
-		<Table.Cell style={style}>{emails && emails[0].address}</Table.Cell>
-		{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
-		<Table.Cell textStyle='p1' textColor='hint' style={style}>{status}</Table.Cell>
-	</Table.Row>, [mediaQuery]);
+			</Table.Cell>
+			{mediaQuery && <Table.Cell>
+				<Box textStyle='p2' style={style} textColor='hint'>{ username }</Box> <Box mi='x4'/>
+			</Table.Cell>}
+			<Table.Cell style={style}>{emails && emails[0].address}</Table.Cell>
+			{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
+			<Table.Cell textStyle='p1' textColor='hint' style={style}>{status}</Table.Cell>
+		</Table.Row>;
+	}, [mediaQuery]);
 
 	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.users} total={data.total} setParams={setParams} params={params} />;
 }

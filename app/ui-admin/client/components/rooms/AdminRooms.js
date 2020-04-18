@@ -97,7 +97,7 @@ export function AdminRooms({
 	const renderRow = useCallback(({ _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, ...args }) => {
 		const icon = roomTypes.getIcon({ t: type, usernames, ...args });
 		const roomName = type === 'd' ? usernames.join(' x ') : roomTypes.getRoomName(type, { name, type, _id, ...args });
-		const avatarUrl = roomTypes.getConfig(type).getAvatarPath({ name, type, _id, ...args });
+		const avatarUrl = roomTypes.getConfig(type).getAvatarPath({ roomName, type, _id, ...args });
 		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action>
 			<Table.Cell style={style}>
 				<Box display='flex' alignContent='center'>
