@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
-import { Box, Headline, Button, Margins, TextInput, Skeleton, Field, ToggleSwitch, Divider } from '@rocket.chat/fuselage';
+import { Box, Headline, Button, Margins, TextInput, Skeleton, Field, ToggleSwitch, Divider, Icon } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
@@ -170,6 +170,13 @@ export function EditRoom({ roomId }) {
 							<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !changeArchivation} onClick={handleSave}>{t('Save')}</Button>
 						</Margins>
 					</Box>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<Button primary danger onClick={handleSave} display='flex' alignItems='center' justifyContent='center' flexGrow={1}>
+						<Icon name='trash' size='x16' />{t('Delete')}
+					</Button>
 				</Field.Row>
 			</Field>
 		</Margins>
