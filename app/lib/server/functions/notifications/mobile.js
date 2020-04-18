@@ -8,10 +8,10 @@ import { PushNotification } from '../../../../push-notifications/server';
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 
-let alwaysNotifyMobileBoolean;
-settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
-	alwaysNotifyMobileBoolean = value;
-});
+// let alwaysNotifyMobileBoolean;
+// settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
+// 	alwaysNotifyMobileBoolean = value;
+// });
 
 let SubscriptionRaw;
 Meteor.startup(() => {
@@ -46,13 +46,13 @@ function enableNotificationReplyButton(room, username) {
 	return !room.muted.includes(username);
 }
 
-export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
+export async function getPushData({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
 	let username = '';
 	if (settings.get('Push_show_username_room')) {
 		username = settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
 	}
 
-	PushNotification.send({
+	return {
 		roomId: message.rid,
 		payload: {
 			host: Meteor.absoluteUrl(),
@@ -71,7 +71,11 @@ export async function sendSinglePush({ room, message, userId, receiverUsername, 
 			userId,
 		},
 		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
-	});
+	};
+}
+
+export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
+	PushNotification.send(getPushData({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }));
 }
 
 export function shouldNotifyMobile({
@@ -81,7 +85,7 @@ export function shouldNotifyMobile({
 	isHighlighted,
 	hasMentionToUser,
 	hasReplyToThread,
-	statusConnection,
+	// statusConnection,
 	roomType,
 }) {
 	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
@@ -92,9 +96,9 @@ export function shouldNotifyMobile({
 		return false;
 	}
 
-	if (!alwaysNotifyMobileBoolean && statusConnection === 'online') {
-		return false;
-	}
+	// if (!alwaysNotifyMobileBoolean && statusConnection === 'online') {
+	// 	return false;
+	// }
 
 	if (!mobilePushNotifications) {
 		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all') {

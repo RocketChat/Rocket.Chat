@@ -7,10 +7,11 @@ import { callbacks } from '../../../callbacks/server';
 import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
-import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
-import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';
+import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
+import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
+import { Notification } from '../../../notification-queue/server/NotificationQueue';
 
 let TroubleshootDisableNotifications;
 
@@ -115,6 +116,8 @@ export const sendNotification = async ({
 		});
 	}
 
+	const queueItems = [];
+
 	if (shouldNotifyMobile({
 		disableAllMessageNotifications,
 		mobilePushNotifications,
@@ -125,14 +128,17 @@ export const sendNotification = async ({
 		statusConnection: receiver.statusConnection,
 		roomType,
 	})) {
-		sendSinglePush({
-			notificationMessage,
-			room,
-			message,
-			userId: subscription.u._id,
-			senderUsername: sender.username,
-			senderName: sender.name,
-			receiverUsername: receiver.username,
+		queueItems.push({
+			type: 'push',
+			data: await getPushData({
+				notificationMessage,
+				room,
+				message,
+				userId: subscription.u._id,
+				senderUsername: sender.username,
+				senderName: sender.name,
+				receiverUsername: receiver.username,
+			}),
 		});
 	}
 
@@ -148,11 +154,24 @@ export const sendNotification = async ({
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
-				sendEmail({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser });
+				queueItems.push({
+					type: 'email',
+					data: getEmailData({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser }),
+				});
 
 				return true;
 			}
 			return false;
+		});
+	}
+
+	if (queueItems.length) {
+		Notification.collection.insert({
+			uid: subscription.u._id,
+			rid: room._id,
+			sid: subscription._id,
+			ts: new Date(),
+			items: queueItems,
 		});
 	}
 };
@@ -306,6 +325,7 @@ export async function sendAllNotifications(message, room) {
 		return message;
 	}
 	// skips this callback if the message was edited
+	// TODO: Since we are queueing we could change the message on the queue
 	if (message.editedAt) {
 		return message;
 	}

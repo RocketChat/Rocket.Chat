@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 export class BaseRaw {
 	constructor(col) {
 		this.col = col;
@@ -19,8 +21,11 @@ export class BaseRaw {
 		return this.col.find(...args);
 	}
 
-	insert(...args) {
-		return this.col.insert(...args);
+	insert(docs, options) {
+		if (!Array.isArray(docs) && !docs._id) {
+			docs._id = new ObjectId().toString();
+		}
+		return this.col.insert(docs, options);
 	}
 
 	update(...args) {
