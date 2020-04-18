@@ -4,7 +4,6 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
-import { notificationsCollection } from '../../../push/server';
 import {
 	Sessions,
 	Settings,
@@ -22,6 +21,7 @@ import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
+import { Notification } from '../../../notification-queue/server/NotificationQueue';
 
 const wizardFields = [
 	'Organization_Type',
@@ -166,7 +166,7 @@ export const statistics = {
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
 
-		statistics.pushQueue = notificationsCollection.find().count();
+		statistics.pushQueue = Promise.await(Notification.collection.estimatedDocumentCount());
 
 		return statistics;
 	},

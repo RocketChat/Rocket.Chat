@@ -1,4 +1,3 @@
-import { notificationsCollection } from '../../../app/push/server';
 import { Migrations } from '../../../app/migrations/server';
 import { Settings } from '../../../app/models/server';
 
@@ -12,6 +11,6 @@ Migrations.add({
 		date.setHours(date.getHours() - 2); // 2 hours ago;
 
 		// Remove all records older than 2h
-		notificationsCollection.rawCollection().removeMany({ createdAt: { $lt: date } });
+		// notificationsCollection.rawCollection().removeMany({ createdAt: { $lt: date } });
 	},
 });

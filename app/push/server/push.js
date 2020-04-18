@@ -10,14 +10,9 @@ import { sendGCM } from './gcm';
 import { logger, LoggerManager } from './logger';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
-export const notificationsCollection = new Mongo.Collection('_raix_push_notifications');
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
 
 appTokensCollection._ensureIndex({ userId: 1 });
-notificationsCollection._ensureIndex({ createdAt: 1 });
-notificationsCollection._ensureIndex({ sent: 1 });
-notificationsCollection._ensureIndex({ sending: 1 });
-notificationsCollection._ensureIndex({ delayUntil: 1 });
 
 export class PushClass {
 	options = {}
@@ -53,116 +48,28 @@ export class PushClass {
 		if (this.options.apn) {
 			initAPN({ options: this.options, _removeToken: this._removeToken, absoluteUrl: Meteor.absoluteUrl() });
 		}
+	}
 
-		// This interval will allow only one notification to be sent at a time, it
-		// will check for new notifications at every `options.sendInterval`
-		// (default interval is 15000 ms)
-		//
-		// It looks in notifications collection to see if theres any pending
-		// notifications, if so it will try to reserve the pending notification.
-		// If successfully reserved the send is started.
-		//
-		// If notification.query is type string, it's assumed to be a json string
-		// version of the query selector. Making it able to carry `$` properties in
-		// the mongo collection.
-		//
-		// Pr. default notifications are removed from the collection after send have
-		// completed. Setting `options.keepNotifications` will update and keep the
-		// notification eg. if needed for historical reasons.
-		//
-		// After the send have completed a "send" event will be emitted with a
-		// status object containing notification id and the send result object.
-		//
-		let isSendingNotification = false;
+	// If notification.query is type string, it's assumed to be a json string
+	// version of the query selector. Making it able to carry `$` properties in
+	// the mongo collection.
+	sendNotification(notification) {
+		logger.debug('Sending notification', notification);
 
-		const sendNotification = (notification) => {
-			logger.debug('Sending notification', notification);
-
-			// Reserve notification
-			const now = Date.now();
-			const timeoutAt = now + this.options.sendTimeout;
-			const reserved = notificationsCollection.update({
-				_id: notification._id,
-				sent: false, // xxx: need to make sure this is set on create
-				sending: { $lt: now },
-			}, {
-				$set: {
-					sending: timeoutAt,
-				},
-			});
-
-			// Make sure we only handle notifications reserved by this instance
-			if (reserved) {
-				// Check if query is set and is type String
-				if (notification.query && notification.query === String(notification.query)) {
-					try {
-						// The query is in string json format - we need to parse it
-						notification.query = JSON.parse(notification.query);
-					} catch (err) {
-						// Did the user tamper with this??
-						throw new Error(`Error while parsing query string, Error: ${ err.message }`);
-					}
-				}
-
-				// Send the notification
-				const result = this.serverSend(notification, this.options);
-
-				if (!this.options.keepNotifications) {
-					// Pr. Default we will remove notifications
-					notificationsCollection.remove({ _id: notification._id });
-				} else {
-					// Update the notification
-					notificationsCollection.update({ _id: notification._id }, {
-						$set: {
-							// Mark as sent
-							sent: true,
-							// Set the sent date
-							sentAt: new Date(),
-							// Count
-							count: result,
-							// Not being sent anymore
-							sending: 0,
-						},
-					});
-				}
-			}
-		};
-
-		this.sendWorker(() => {
-			if (isSendingNotification) {
-				return;
-			}
-
+		// TODO: change to use token directly
+		// Check if query is set and is type String
+		if (notification.query && notification.query === String(notification.query)) {
 			try {
-				// Set send fence
-				isSendingNotification = true;
-
-				const batchSize = this.options.sendBatchSize || 1;
-
-				// Find notifications that are not being or already sent
-				notificationsCollection.find({
-					sent: false,
-					sending: { $lt: Date.now() },
-					$or: [
-						{ delayUntil: { $exists: false } },
-						{ delayUntil: { $lte: new Date() } },
-					],
-				}, {
-					sort: { createdAt: 1 },
-					limit: batchSize,
-				}).forEach((notification) => {
-					try {
-						sendNotification(notification);
-					} catch (error) {
-						logger.debug(`Could not send notification id: "${ notification._id }", Error: ${ error.message }`);
-						logger.debug(error.stack);
-					}
-				});
-			} finally {
-				// Remove the send fence
-				isSendingNotification = false;
+				// The query is in string json format - we need to parse it
+				notification.query = JSON.parse(notification.query);
+			} catch (err) {
+				// Did the user tamper with this??
+				throw new Error(`Error while parsing query string, Error: ${ err.message }`);
 			}
-		}, this.options.sendInterval || 15000); // Default every 15th sec
+		}
+
+		// Send the notification
+		return this.serverSend(notification, this.options);
 	}
 
 	sendWorker(task, interval) {
@@ -438,8 +345,12 @@ export class PushClass {
 		// Validate the notification
 		this._validateDocument(notification);
 
-		// Try to add the notification to send, we return an id to keep track
-		return notificationsCollection.insert(notification);
+		try {
+			this.sendNotification(notification);
+		} catch (error) {
+			logger.debug(`Could not send notification id: "${ notification._id }", Error: ${ error.message }`);
+			logger.debug(error.stack);
+		}
 	}
 }
 
