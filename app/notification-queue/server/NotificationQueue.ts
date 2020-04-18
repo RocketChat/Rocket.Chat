@@ -1,10 +1,10 @@
 import { Collection, ObjectId } from 'mongodb';
 
-import { NotificationQueue, Subscriptions } from '../../models/server/raw';
+import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
 
-const SubscriptionsCollection: Collection = Subscriptions.col;
+const UsersCollection: Collection = Users.col;
 
 interface INotificationItemPush {
 	type: 'push';
@@ -53,6 +53,7 @@ interface INotification {
 	rid: string;
 	sid: string;
 	ts: Date;
+	schedule?: Date;
 	sending?: Date;
 	items: NotificationItem[];
 }
@@ -103,23 +104,35 @@ class NotificationClass {
 	}
 
 	async worker(counter = 0): Promise<void> {
-		console.log('working');
 		const notification = (await this.collection.findOneAndUpdate({
 			sending: { $exists: false },
-			ts: { $lt: new Date() },
+			$or: [
+				{ schedule: { $exists: false } },
+				{ schedule: { $lte: new Date() } },
+			],
 		}, {
 			$set: {
 				sending: new Date(),
 			},
 		}, {
 			sort: {
-				ts: -1,
+				ts: 1,
 			},
 		})).value;
 
 		if (!notification) {
 			return this.executeWorkerLater();
 		}
+
+		// Once we start notifying the user we anticipate all the schedules
+		this.collection.updateMany({
+			uid: notification.uid,
+			schedule: { $exists: true },
+		}, {
+			$unset: {
+				schedule: 1,
+			},
+		});
 
 		console.log('processing', notification._id);
 
@@ -164,32 +177,33 @@ class NotificationClass {
 	}
 
 	async scheduleItem({ uid, rid, sid, items }: {uid: string; rid: string; sid: string; items: NotificationItem[]}): Promise<void> {
-		// TODO: ls only changes when the channel is marked as read or when using ESC
-		// need to find another way
-		const sub = await SubscriptionsCollection.findOne({
-			'u._id': uid,
+		const user = await UsersCollection.findOne({
+			_id: uid,
 		}, {
 			projection: {
-				ls: 1,
-			},
-			sort: {
-				ls: -1,
+				statusConnection: 1,
+				_updatedAt: 1,
 			},
 		});
 
+		if (!user) {
+			return;
+		}
+
+		// TODO: Make it configurable
 		const delay = 120;
 
-		const ts = new Date();
+		let schedule: Date | undefined;
 
-		if (sub?.ls) {
-			const elapsedSeconds = Math.floor((Date.now() - sub.ls) / 1000);
+		if (user.statusConnection === 'online') {
+			schedule = new Date();
+			schedule.setSeconds(schedule.getSeconds() + delay);
+		} else if (user.statusConnection === 'away') {
+			const elapsedSeconds = Math.floor((Date.now() - user._updatedAt) / 1000);
 			if (elapsedSeconds < delay) {
-				console.log(delay - elapsedSeconds);
-				ts.setSeconds(ts.getSeconds() + delay - elapsedSeconds);
+				schedule = new Date();
+				schedule.setSeconds(schedule.getSeconds() + delay - elapsedSeconds);
 			}
-		} else {
-			console.log(delay);
-			ts.setSeconds(ts.getSeconds() + delay);
 		}
 
 		await this.collection.insertOne({
@@ -197,7 +211,8 @@ class NotificationClass {
 			uid,
 			rid,
 			sid,
-			ts,
+			ts: new Date(),
+			schedule,
 			items,
 		});
 	}
