@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Tabs, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
+import { Tabs, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 
 import { Page } from '../../../../../client/components/basic/Page';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
