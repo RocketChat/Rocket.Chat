@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { NotAuthorizedPage } from './NotAuthorizedPage';
+import NotAuthorizedPage from './NotAuthorizedPage';
 
 export default {
-	title: 'admin/settings/NotAuthorizedPage',
+	title: 'admin/NotAuthorizedPage',
 	component: NotAuthorizedPage,
 };
 
