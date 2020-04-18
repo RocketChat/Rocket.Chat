@@ -5,7 +5,7 @@ import { usePermission } from '../../../../../client/contexts/AuthorizationConte
 import { useMethod } from '../../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import { Mailer } from './Mailer';
-import { NotAuthorizedPage } from '../settings/NotAuthorizedPage';
+import NotAuthorizedPage from '../NotAuthorizedPage';
 
 
 const useSendMail = () => {
@@ -33,5 +33,9 @@ export default function MailerRoute(props) {
 	const canAccessMailer = usePermission('access-mailer');
 	const sendMail = useSendMail();
 
-	return canAccessMailer ? <Mailer sendMail={sendMail} {...props} /> : <NotAuthorizedPage/>;
+	if (!canAccessMailer) {
+		return <NotAuthorizedPage/>;
+	}
+
+	return <Mailer sendMail={sendMail} {...props} />;
 }
