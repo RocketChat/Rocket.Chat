@@ -62,9 +62,7 @@ export async function getPushData({ room, message, userId, receiverUsername, sen
 		username,
 		message: settings.get('Push_show_message') ? notificationMessage : ' ',
 		badge: await getBadgeCount(userId),
-		usersTo: {
-			userId,
-		},
+		userId,
 		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	};
 }

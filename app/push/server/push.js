@@ -50,28 +50,6 @@ export class PushClass {
 		}
 	}
 
-	// If notification.query is type string, it's assumed to be a json string
-	// version of the query selector. Making it able to carry `$` properties in
-	// the mongo collection.
-	sendNotification(notification) {
-		logger.debug('Sending notification', notification);
-
-		// TODO: change to use token directly
-		// Check if query is set and is type String
-		if (notification.query && notification.query === String(notification.query)) {
-			try {
-				// The query is in string json format - we need to parse it
-				notification.query = JSON.parse(notification.query);
-			} catch (err) {
-				// Did the user tamper with this??
-				throw new Error(`Error while parsing query string, Error: ${ err.message }`);
-			}
-		}
-
-		// Send the notification
-		return this.serverSend(notification, this.options);
-	}
-
 	sendWorker(task, interval) {
 		logger.debug(`Send worker started, using interval: ${ interval }`);
 
@@ -92,7 +70,7 @@ export class PushClass {
 		appTokensCollection.rawCollection().updateMany({ token }, { $unset: { token: true } });
 	}
 
-	serverSendNative(app, notification, countApn, countGcm) {
+	sendNotificationNative(app, notification, countApn, countGcm) {
 		logger.debug('send to token', app.token);
 
 		notification.payload = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
@@ -162,7 +140,7 @@ export class PushClass {
 		});
 	}
 
-	serverSendGateway(app, notification, countApn, countGcm) {
+	sendNotificationGateway(app, notification, countApn, countGcm) {
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
 
@@ -179,7 +157,9 @@ export class PushClass {
 		}
 	}
 
-	serverSend(notification = { badge: 0 }) {
+	sendNotification(notification = { badge: 0 }) {
+		logger.debug('Sending notification', notification);
+
 		const countApn = [];
 		const countGcm = [];
 
@@ -196,27 +176,21 @@ export class PushClass {
 		logger.debug(`send message "${ notification.title }" via query`, notification.query);
 
 		const query = {
-			$and: [notification.query, {
-				$or: [{
-					'token.apn': {
-						$exists: true,
-					},
-				}, {
-					'token.gcm': {
-						$exists: true,
-					},
-				}],
-			}],
+			userId: notification.userId,
+			$or: [
+				{ 'token.apn': { $exists: true } },
+				{ 'token.gcm': { $exists: true } },
+			],
 		};
 
 		appTokensCollection.find(query).forEach((app) => {
 			logger.debug('send to token', app.token);
 
 			if (this.options.gateways) {
-				return this.serverSendGateway(app, notification, countApn, countGcm);
+				return this.sendNotificationGateway(app, notification, countApn, countGcm);
 			}
 
-			return this.serverSendNative(app, notification, countApn, countGcm);
+			return this.sendNotificationNative(app, notification, countApn, countGcm);
 		});
 
 		if (LoggerManager.logLevel === 2) {

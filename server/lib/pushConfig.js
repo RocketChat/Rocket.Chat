@@ -61,9 +61,7 @@ Meteor.methods({
 				text: `@${ user.username }:\n${ TAPi18n.__('This_is_a_push_test_messsage') }`,
 			},
 			sound: 'default',
-			query: {
-				userId: user._id,
-			},
+			userId: user._id,
 		});
 
 		return {
