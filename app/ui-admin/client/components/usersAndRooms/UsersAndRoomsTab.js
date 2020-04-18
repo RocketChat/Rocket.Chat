@@ -6,6 +6,7 @@ import { useTranslation } from '../../../../../client/contexts/TranslationContex
 import { useRouteParameter, useRoute } from '../../../../../client/contexts/RouterContext';
 import { useMediaQuery } from '../../../../ui/client/views/app/components/hooks';
 import { EditRoom } from '../rooms/edit/EditRoom';
+import { UserInfo } from '../users/info/UserInfo';
 
 export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) {
 	const t = useTranslation();
@@ -45,7 +46,8 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 					router.push({});
 				}}/></Page.VerticalBar.Header>
 				<Page.VerticalBar.Content>
-					<EditRoom roomId={id}/>
+					{/* <EditRoom roomId={id}/> */}
+					<UserInfo roomId={id}/>
 				</Page.VerticalBar.Content>
 			</Page.VerticalBar>}
 	</Page>;
