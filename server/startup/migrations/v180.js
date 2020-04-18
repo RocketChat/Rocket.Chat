@@ -1,37 +1,20 @@
-import { Migrations } from '../../../app/migrations';
-import { LivechatDepartmentAgents, LivechatDepartment } from '../../../app/models/server';
-
-const updateEnabledProperty = (departmentIds) => {
-	LivechatDepartment
-		.find({ _id: { $in: departmentIds } })
-		.forEach((department) => {
-			LivechatDepartmentAgents.update({ departmentId: department._id },
-				{
-					$set: { departmentEnabled: department.enabled },
-				},
-				{
-					multi: true,
-				});
-		});
-};
-
-const removeOrphanedDepartmentAgents = (departmentIds) => {
-	departmentIds.forEach((departmentId) => {
-		if (!LivechatDepartment.findOneById(departmentId)) {
-			LivechatDepartmentAgents.removeByDepartmentId(departmentId);
-		}
-	});
-};
+import { Migrations } from '../../../app/migrations/server';
+import { LivechatRooms, LivechatInquiry } from '../../../app/models/server';
 
 Migrations.add({
 	version: 180,
 	up() {
-		const departmentIds = [...new Set(LivechatDepartmentAgents
-			.find({}, { fields: { departmentId: 1 } })
-			.fetch()
-			.map((departmentAgent) => departmentAgent.departmentId))];
+		// Remove Old Omnichannel Inquiries related to rooms already closed
+		LivechatInquiry.find().forEach((inquiry) => {
+			const { rid, status } = inquiry;
+			if (status === 'closed') {
+				return LivechatInquiry.removeByRoomId(rid);
+			}
 
-		updateEnabledProperty(departmentIds);
-		removeOrphanedDepartmentAgents(departmentIds);
+			const room = LivechatRooms.findOneById(rid, { closedAt: 1 });
+			if (!room || room.closedAt) {
+				LivechatInquiry.removeByRoomId(rid);
+			}
+		});
 	},
 });

@@ -91,6 +91,7 @@ export class AppRoomsConverter {
 			closedAt: room.closedAt,
 			lm: room.lastModifiedAt,
 			customFields: room.customFields,
+			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
 		};
 
 		return Object.assign(newRoom, room._unmappedProperties_);
@@ -195,7 +196,17 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(responseBy._id);
 			},
+			parentRoom: (room) => {
+				const { prid } = room;
 
+				if (!prid) {
+					return undefined;
+				}
+
+				delete room.prid;
+
+				return this.orch.getConverters().get('rooms').convertById(prid);
+			},
 		};
 
 		return transformMappedData(room, map);

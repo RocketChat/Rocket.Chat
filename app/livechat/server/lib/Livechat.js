@@ -72,6 +72,7 @@ export const Livechat = {
 
 	getAgents(department) {
 		if (department) {
+			// TODO: This and all others should get the user's info as well
 			return LivechatDepartmentAgents.findByDepartmentId(department);
 		}
 		return Users.findAgents();

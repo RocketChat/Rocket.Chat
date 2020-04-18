@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
@@ -12,6 +13,7 @@ import { Messages } from '../../../models';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
+import { getUserPreference } from '../../../utils';
 
 const sort = { ts: 1 };
 
@@ -75,6 +77,9 @@ Template.thread.helpers({
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
 			onKeyDown: (...args) => instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args),
 		};
+	},
+	hideUsername() {
+		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
 });
 

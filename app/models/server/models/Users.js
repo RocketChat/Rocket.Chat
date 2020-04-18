@@ -30,12 +30,14 @@ export class Users extends Base {
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ bio: 1 });
 		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
 		this.tryEnsureIndex({ statusText: 1 });
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ appId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
@@ -134,6 +136,15 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
+	findOneAgentById(_id, options) {
+		const query = {
+			_id,
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findAgents() {
 		const query = {
 			roles: 'livechat-agent',
@@ -208,20 +219,6 @@ export class Users extends Base {
 			};
 		}
 		return null;
-	}
-
-	setLastRoutingTime(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				lastRoutingTime: new Date(),
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setLivechatStatus(userId, status) {
@@ -617,40 +614,6 @@ export class Users extends Base {
 		}, options);
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (conditions == null) { conditions = {}; }
-		if (options == null) { options = {}; }
-		if (!_.isArray(exceptions)) {
-			exceptions = [exceptions];
-		}
-
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
-		const query = {
-			$or: [{
-				username: termRegex,
-			}, {
-				name: termRegex,
-			}],
-			active: true,
-			type: {
-				$in: ['user', 'bot'],
-			},
-			$and: [{
-				username: {
-					$exists: true,
-				},
-			}, {
-				username: {
-					$nin: exceptions,
-				},
-			}],
-			...conditions,
-		};
-
-		return this.find(query, options);
-	}
-
 	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
@@ -681,14 +644,13 @@ export class Users extends Base {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
+
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: orStmt,
-				},
-				{
 					username: { $exists: true, $nin: exceptions },
+					$or: orStmt,
 				},
 				...extraQuery,
 			],
@@ -1104,6 +1066,21 @@ export class Users extends Base {
 			},
 		};
 
+		return this.update(_id, update);
+	}
+
+	setBio(_id, bio = '') {
+		const update = {
+			...bio.trim() ? {
+				$set: {
+					bio,
+				},
+			} : {
+				$unset: {
+					bio: 1,
+				},
+			},
+		};
 		return this.update(_id, update);
 	}
 
