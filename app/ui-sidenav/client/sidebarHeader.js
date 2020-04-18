@@ -4,40 +4,19 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
-import { t, getUserPreference, handleError } from '../../utils';
+import { t } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { userStatus } from '../../user-status';
 import { hasPermission } from '../../authorization/client';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
 
 const setStatus = (status, statusText) => {
 	AccountBox.setStatus(status, statusText);
 	callbacks.run('userStatusManuallySet', status);
 	popover.close();
-};
-
-const viewModeIcon = {
-	extended: 'th-list',
-	medium: 'list',
-	condensed: 'list-alt',
-};
-
-const extendedViewOption = (user) => {
-	if (settings.get('Store_Last_Message')) {
-		return {
-			icon: viewModeIcon.extended,
-			name: t('Extended'),
-			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
-			action: () => {
-				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
-					if (error) {
-						return handleError(error);
-					}
-				});
-			},
-		};
-	}
 };
 
 const showToolbar = new ReactiveVar(false);
@@ -57,7 +36,7 @@ export const toolbarSearch = {
 	},
 };
 
-const toolbarButtons = (user) => [{
+const toolbarButtons = (/* user */) => [{
 	name: t('Home'),
 	icon: 'home',
 	condition: () => settings.get('Layout_Show_Home_Button'),
@@ -81,77 +60,13 @@ const toolbarButtons = (user) => [{
 	},
 },
 {
-	name: t('View_mode'),
-	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'condensed'],
-	hasPopup: true,
-	action: (e) => {
-		const hideAvatarSetting = getUserPreference(user, 'sidebarHideAvatar');
-		const config = {
-			columns: [
-				{
-					groups: [
-						{
-							items: [
-								extendedViewOption(user),
-								{
-									icon: viewModeIcon.medium,
-									name: t('Medium'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarViewMode: 'medium' }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-								{
-									icon: viewModeIcon.condensed,
-									name: t('Condensed'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarViewMode: 'condensed' }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-							],
-						},
-						{
-							items: [
-								{
-									icon: 'user-rounded',
-									name: hideAvatarSetting ? t('Show_Avatars') : t('Hide_Avatars'),
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarHideAvatar: !hideAvatarSetting }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-							],
-						},
-					],
-				},
-			],
-			currentTarget: e.currentTarget,
-			offsetVertical: e.currentTarget.clientHeight + 10,
-		};
-
-		popover.open(config);
-	},
-},
-{
 	name: t('Sort'),
 	icon: 'sort',
 	hasPopup: true,
-	action: (e) => {
+	action: async (e) => {
 		const options = [];
 		const config = {
-			template: 'sortlist',
+			template: createTemplateForComponent('SortList', () => import('./SortList')),
 			currentTarget: e.currentTarget,
 			data: {
 				options,
@@ -312,7 +227,7 @@ Template.sidebarHeader.helpers({
 		} });
 	},
 	toolbarButtons() {
-		return toolbarButtons(Meteor.userId()).filter((button) => !button.condition || button.condition());
+		return toolbarButtons(/* Meteor.userId() */).filter((button) => !button.condition || button.condition());
 	},
 	showToolbar() {
 		return showToolbar.get();

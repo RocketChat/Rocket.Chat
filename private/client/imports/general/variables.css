@@ -51,6 +51,7 @@
 	--rc-color-alert-message-warning: #d52d24;
 	--rc-color-alert-message-warning-background: #fff3f3;
 	--rc-color-primary: var(--color-dark);
+	--rc-color-primary-background: var(--color-dark);
 	--rc-color-primary-darkest: var(--color-darkest);
 	--rc-color-primary-dark: var(--color-dark-medium);
 	--rc-color-primary-light: var(--color-gray);
