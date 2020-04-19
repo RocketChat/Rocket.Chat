@@ -55,14 +55,14 @@ export function UserInfo({ username, ...props }) {
 		</Box>
 
 		<Box display='flex' flexDirection='column' w='full' style={{ backgroundColor: '#F4F6F9' }} p='x16'>
-			<Box textStyle='micro' textColor='hint'>{t('Email')}</Box>
-			<Margins block='x8'>
+			<Margins block='x4'>
+				<Box textStyle='micro' textColor='hint' mbs='none'>{t('Email')}</Box>
 				<Box textStyle='s1'>{data.emails[0].address}</Box>
 				<Box textStyle='micro' textColor='hint'>{t('Created_at')}</Box>
 				<Box textStyle='s1'>{createdAt}</Box>
 				<Box textStyle='micro' textColor='hint'>{t('Last_login')}</Box>
+				<Box textStyle='s1' mbe='none'>{lastLogin}</Box>
 			</Margins>
-			<Box textStyle='s1'>{lastLogin}</Box>
 		</Box>
 
 	</Box>;
