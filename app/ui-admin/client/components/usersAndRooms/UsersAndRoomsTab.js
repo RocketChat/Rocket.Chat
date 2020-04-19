@@ -7,6 +7,7 @@ import { useRouteParameter, useRoute } from '../../../../../client/contexts/Rout
 import { useMediaQuery } from '../../../../ui/client/views/app/components/hooks';
 import { EditRoomContextBar } from '../rooms/edit/EditRoom';
 import { UserInfoWithData } from '../users/info/UserInfo';
+import { EditUser } from '../users/edit/EditUser';
 
 export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) {
 	const t = useTranslation();
@@ -47,7 +48,8 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 				}}/></Page.VerticalBar.Header>
 				<Page.VerticalBar.Content>
 					{ tab === 'rooms' && <EditRoomContextBar rid={id}/> }
-					{ tab === 'users' && <UserInfoWithData username={id}/> }
+					{ tab === 'users' && context === 'info' && <UserInfoWithData username={id}/> }
+					{ tab === 'users' && context === 'edit' && <EditUser username={id}/> }
 				</Page.VerticalBar.Content>
 			</Page.VerticalBar>}
 	</Page>;

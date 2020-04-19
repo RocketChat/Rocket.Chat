@@ -55,9 +55,14 @@ export function UserInfo({ data, ...props }) {
 	const t = useTranslation();
 
 	const directRoute = useRoute('direct');
+	const userRoute = useRoute('admin-users');
 
-	const directMessageClick = (username) => () => directRoute.push({
-		rid: username,
+	const directMessageClick = () => directRoute.push({
+		rid: data.username,
+	});
+	const editUserClick = () => userRoute.push({
+		context: 'edit',
+		id: data.username,
 	});
 
 	const createdAt = DateFormat.formatDateAndTime(data.createdAt);
@@ -75,8 +80,8 @@ export function UserInfo({ data, ...props }) {
 
 		<Box display='flex' flexDirection='row' mb='x20'>
 			<ButtonGroup>
-				<Button ghost onClick={directMessageClick(data.username)}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
-				<Button ghost><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button>
+				<Button ghost onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
+				<Button ghost onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button>
 			</ButtonGroup>
 		</Box>
 
@@ -89,7 +94,7 @@ export function UserInfo({ data, ...props }) {
 					<Box textStyle='micro' textColor='hint' mbs='none'>{t('Roles')}</Box>
 					<Box display='flex' flexDirection='row'>
 						<Margins inlineEnd='x4'>
-							{data.roles.map((val) => <Chip pi='x4'>{val}</Chip>)}
+							{data.roles.map((val) => <Chip pi='x4' key={val}>{val}</Chip>)}
 						</Margins>
 					</Box>
 				</>}
@@ -97,6 +102,7 @@ export function UserInfo({ data, ...props }) {
 				<Box textStyle='micro' textColor='hint'>{t('Email')}</Box>
 				<Box display='flex' flexDirection='row'>
 					<Box textStyle='s1'>{data.emails[0].address}</Box>
+					<Icon name={data.emails[0].verified ? 'check' : 'cross'} title={data.emails[0].verified ? t('Verified') : t('Not_verified')}/>
 				</Box>
 
 				<Box textStyle='micro' textColor='hint'>{t('Created_at')}</Box>

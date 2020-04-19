@@ -45,7 +45,7 @@ export default function AdminUsersRoute({ props }) {
 	const router = useRoute(routeName);
 
 	const onClick = (username) => () => router.push({
-		context: 'edit',
+		context: 'info',
 		id: username,
 	});
 
