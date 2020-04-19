@@ -1,24 +1,36 @@
-import React, { useMemo } from 'react';
-import { Box, Avatar, Button, ButtonGroup, Icon, Margins, Headline, Skeleton } from '@rocket.chat/fuselage';
+import React, { useMemo, useState, useEffect } from 'react';
+import { Box, Avatar, Button, ButtonGroup, Icon, Margins, Headline, Skeleton, Chip } from '@rocket.chat/fuselage';
+import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { roomTypes } from '../../../../../utils/client';
 import { DateFormat } from '../../../../../lib';
 import { useRoute } from '../../../../../../client/contexts/RouterContext';
+import { Markdown } from '../../../../../ui/client/components/GenericTable';
 
+const useTimezoneClock = (utcOffset = 0, updateInterval) => {
+	const [time, setTime] = useState();
+	useEffect(() => {
+		const updateTime = () => setTime(DateFormat.formatTime(moment().get().utcOffset(utcOffset)));
+		const interval = setInterval(() => updateTime(), updateInterval);
+		updateTime();
 
-export function UserInfo({ username, ...props }) {
+		return () => clearInterval(interval);
+	}, [utcOffset, updateInterval]);
+
+	return time;
+};
+
+const UTCClock = ({ utcOffset, ...props }) => {
+	const time = useTimezoneClock(utcOffset, 10000);
+	return <Box {...props}>{time} UTC {utcOffset}</Box>;
+};
+
+export function UserInfoWithData({ username, ...props }) {
 	const t = useTranslation();
-	const { data: endpointData = { user: {} }, state, error } = useEndpointDataExperimental('GET', 'users.info', useMemo(() => ({ username }), [username]));
 
-	console.log('userData', endpointData);
-
-	const directRoute = useRoute('direct/');
-
-	const directMessageClick = (id) => () => directRoute.push({
-		rid: id,
-	});
+	const { data, state, error } = useEndpointDataExperimental('GET', 'users.info', useMemo(() => ({ username }), [username]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24'>
@@ -35,18 +47,34 @@ export function UserInfo({ username, ...props }) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
-	const data = endpointData.user;
+	return <UserInfo data={data.user} {...props} />;
+}
+
+
+export function UserInfo({ data, ...props }) {
+	console.count('update');
+	const t = useTranslation();
+
+	console.log('userData', data);
+
+	const directRoute = useRoute('direct/');
+
+	const directMessageClick = (id) => () => directRoute.push({
+		rid: id,
+	});
 
 	const createdAt = DateFormat.formatDateAndTime(data.createdAt);
 	const lastLogin = data.lastLogin ? DateFormat.formatDateAndTime(data.lastLogin) : '';
 
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
-	return <Box display='flex' flexDirection='column' alignItems='center' w='full' h='full' pb='x24'>
+	return <Box display='flex' flexDirection='column' alignItems='center' w='full' h='full' pb='x24' {...props}>
+
 		<Avatar size={'x120'} title={data.username} url={avatarUrl} mb='x20'/>
 		<Box textStyle='h1'>{data.name || data.username}</Box>
 		{!!data.name && <Box textStyle='p1' textColor='hint'>@{data.username}</Box>}
 		<Box textStyle='p1' textColor='hint'>{data.status}</Box>
+
 		<Box display='flex' flexDirection='row' mb='x20'>
 			<ButtonGroup>
 				<Button ghost><Icon name='chat' size='x16' mie='x8' onClick={directMessageClick(data._id)}/>{t('Direct_Message')}</Button>
@@ -56,12 +84,33 @@ export function UserInfo({ username, ...props }) {
 
 		<Box display='flex' flexDirection='column' w='full' style={{ backgroundColor: '#F4F6F9' }} p='x16'>
 			<Margins block='x4'>
-				<Box textStyle='micro' textColor='hint' mbs='none'>{t('Email')}</Box>
-				<Box textStyle='s1'>{data.emails[0].address}</Box>
+
+				{data.bio && data.bio.trim().length > 0 && <Markdown textStyle='s1' mbe='x8'>{data.bio}</Markdown>}
+
+				{data.roles && <>
+					<Box textStyle='micro' textColor='hint' mbs='none'>{t('Roles')}</Box>
+					<Box display='flex' flexDirection='row'>
+						<Margins inlineEnd='x4'>
+							{data.roles.map((val) => <Chip pi='x4'>{val}</Chip>)}
+						</Margins>
+					</Box>
+				</>}
+
+				<Box textStyle='micro' textColor='hint'>{t('Email')}</Box>
+				<Box display='flex' flexDirection='row'>
+					<Box textStyle='s1'>{data.emails[0].address}</Box>
+				</Box>
+
 				<Box textStyle='micro' textColor='hint'>{t('Created_at')}</Box>
 				<Box textStyle='s1'>{createdAt}</Box>
+
 				<Box textStyle='micro' textColor='hint'>{t('Last_login')}</Box>
-				<Box textStyle='s1' mbe='none'>{lastLogin}</Box>
+				<Box textStyle='s1' >{lastLogin || t('Never')}</Box>
+
+				{!!data.utcOffset && <>
+					<Box textStyle='micro' textColor='hint'>{t('Timezone')}</Box>
+					<UTCClock utcOffset={data.utcOffset} mbe='none' textStyle='s1' />
+				</>}
 			</Margins>
 		</Box>
 
