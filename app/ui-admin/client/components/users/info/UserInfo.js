@@ -52,18 +52,16 @@ export function UserInfoWithData({ username, ...props }) {
 
 
 export function UserInfo({ data, ...props }) {
-	console.count('update');
 	const t = useTranslation();
 
-	console.log('userData', data);
+	const directRoute = useRoute('direct');
 
-	const directRoute = useRoute('direct/');
-
-	const directMessageClick = (id) => () => directRoute.push({
-		rid: id,
+	const directMessageClick = (username) => () => directRoute.push({
+		rid: username,
 	});
 
 	const createdAt = DateFormat.formatDateAndTime(data.createdAt);
+
 	const lastLogin = data.lastLogin ? DateFormat.formatDateAndTime(data.lastLogin) : '';
 
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
@@ -77,7 +75,7 @@ export function UserInfo({ data, ...props }) {
 
 		<Box display='flex' flexDirection='row' mb='x20'>
 			<ButtonGroup>
-				<Button ghost><Icon name='chat' size='x16' mie='x8' onClick={directMessageClick(data._id)}/>{t('Direct_Message')}</Button>
+				<Button ghost onClick={directMessageClick(data.username)}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
 				<Button ghost><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button>
 			</ButtonGroup>
 		</Box>
