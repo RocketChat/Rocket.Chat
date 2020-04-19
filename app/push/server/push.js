@@ -51,7 +51,7 @@ export class PushClass {
 		logger.debug('Configure', this.options);
 
 		if (this.options.apn) {
-			initAPN({ options: this.options, _removeToken: this._removeToken, absoluteUrl: Meteor.absoluteUrl() });
+			initAPN({ options: this.options, absoluteUrl: Meteor.absoluteUrl() });
 		}
 
 		// This interval will allow only one notification to be sent at a time, it
@@ -182,7 +182,7 @@ export class PushClass {
 	}
 
 	_removeToken(token) {
-		appTokensCollection.rawCollection().updateMany({ token }, { $unset: { token: true } });
+		appTokensCollection.rawCollection().deleteOne({ token });
 	}
 
 	serverSendNative(app, notification, countApn, countGcm) {
@@ -195,7 +195,7 @@ export class PushClass {
 			// Send to APN
 			if (this.options.apn) {
 				notification.topic = app.appName;
-				sendAPN(app.token.apn, notification);
+				sendAPN({ userToken: app.token.apn, notification, _removeToken: this._removeToken });
 			}
 		} else if (app.token.gcm) {
 			countGcm.push(app._id);
@@ -228,7 +228,7 @@ export class PushClass {
 
 		return HTTP.post(`${ gateway }/push/${ service }/send`, data, (error, response) => {
 			if (response && response.statusCode === 406) {
-				console.log('removing push token', token);
+				logger.info('removing push token', token);
 				appTokensCollection.remove({
 					$or: [{
 						'token.apn': token,
