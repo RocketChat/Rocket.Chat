@@ -25,9 +25,7 @@ interface INotificationItemPush {
 		username: string;
 		message: string;
 		badge: number;
-		usersTo: {
-			userId: string;
-		};
+		userId: string;
 		category: string;
 	};
 }
@@ -67,32 +65,13 @@ class NotificationClass {
 
 	private maxBatchSize = 5;
 
-	private resetPendingInterval?: NodeJS.Timer;
-
-	private resetPendingDelay = 5 * 60 * 1000;
-
 	initWorker(): void {
 		this.running = true;
 		this.executeWorkerLater();
-
-		this.resetPendingInterval = setInterval(() => {
-			const date = new Date();
-			date.setMinutes(date.getMinutes() - 5);
-			this.collection.updateMany({
-				sending: { $lt: date },
-			}, {
-				$unset: {
-					sending: 1,
-				},
-			});
-		}, this.resetPendingDelay);
 	}
 
 	stopWorker(): void {
 		this.running = false;
-		if (this.resetPendingInterval) {
-			clearInterval(this.resetPendingInterval);
-		}
 	}
 
 	executeWorkerLater(): void {
@@ -159,15 +138,25 @@ class NotificationClass {
 	}
 
 	async getNextNotification(): Promise<INotification | undefined> {
+		const now = new Date();
+		const expired = new Date();
+		expired.setMinutes(expired.getMinutes() - 5);
+
 		return (await this.collection.findOneAndUpdate({
-			sending: { $exists: false },
-			$or: [
-				{ schedule: { $exists: false } },
-				{ schedule: { $lte: new Date() } },
-			],
+			$and: [{
+				$or: [
+					{ sending: { $exists: false } },
+					{ sending: { $lte: expired } },
+				],
+			}, {
+				$or: [
+					{ schedule: { $exists: false } },
+					{ schedule: { $lte: now } },
+				],
+			}],
 		}, {
 			$set: {
-				sending: new Date(),
+				sending: now,
 			},
 		}, {
 			sort: {
