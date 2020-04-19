@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Collection, ObjectId } from 'mongodb';
 
 import { NotificationQueue, Users } from '../../models/server/raw';
@@ -224,4 +225,7 @@ class NotificationClass {
 }
 
 export const Notification = new NotificationClass();
-Notification.initWorker();
+
+Meteor.startup(() => {
+	Notification.initWorker();
+});

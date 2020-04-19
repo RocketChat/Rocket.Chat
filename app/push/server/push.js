@@ -173,7 +173,7 @@ export class PushClass {
 			throw new Error('Push.send: option "text" not a string');
 		}
 
-		logger.debug(`send message "${ notification.title }" via query`, notification.query);
+		logger.debug(`send message "${ notification.title }" to userId`, notification.userId);
 
 		const query = {
 			userId: notification.userId,
@@ -257,23 +257,15 @@ export class PushClass {
 				notId: Match.Optional(Match.Integer),
 			}),
 			android_channel_id: Match.Optional(String),
-			query: Match.Optional(String),
-			token: Match.Optional(_matchToken),
-			tokens: Match.Optional([_matchToken]),
+			userId: String,
 			payload: Match.Optional(Object),
 			delayUntil: Match.Optional(Date),
 			createdAt: Date,
 			createdBy: Match.OneOf(String, null),
 		});
 
-		// Make sure a token selector or query have been set
-		if (!notification.token && !notification.tokens && !notification.query) {
-			throw new Error('No token selector or query found');
-		}
-
-		// If tokens array is set it should not be empty
-		if (notification.tokens && !notification.tokens.length) {
-			throw new Error('No tokens in array');
+		if (!notification.userId) {
+			throw new Error('No userId found');
 		}
 	}
 
@@ -290,7 +282,7 @@ export class PushClass {
 			createdBy: currentUser,
 			sent: false,
 			sending: 0,
-		}, _.pick(options, 'from', 'title', 'text'));
+		}, _.pick(options, 'from', 'title', 'text', 'userId'));
 
 		// Add extra
 		Object.assign(notification, _.pick(options, 'payload', 'badge', 'sound', 'notId', 'delayUntil', 'android_channel_id'));
@@ -301,11 +293,6 @@ export class PushClass {
 
 		if (Match.test(options.gcm, Object)) {
 			notification.gcm = _.pick(options.gcm, 'image', 'style', 'summaryText', 'picture', 'from', 'title', 'text', 'badge', 'sound', 'notId', 'actions', 'android_channel_id');
-		}
-
-		// Set one token selector, this can be token, array of tokens or query
-		if (options.query) {
-			notification.query = JSON.stringify(options.query);
 		}
 
 		if (options.contentAvailable != null) {
