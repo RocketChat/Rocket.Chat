@@ -4,7 +4,7 @@ import { logger } from './logger';
 
 let apnConnection;
 
-export const sendAPN = (userToken, notification) => {
+export const sendAPN = ({ userToken, notification, _removeToken }) => {
 	if (typeof notification.apn === 'object') {
 		notification = Object.assign({}, notification, notification.apn);
 	}
@@ -44,10 +44,21 @@ export const sendAPN = (userToken, notification) => {
 	note.topic = notification.topic;
 	note.mutableContent = 1;
 
-	apnConnection.send(note, userToken);
+	apnConnection.send(note, userToken).then((response) => {
+		response.failed.forEach((failure) => {
+			logger.debug(`Got error code ${ failure.status } for token ${ userToken }`);
+
+			if (['400', '410'].includes(failure.status)) {
+				logger.debug(`Removing token ${ userToken }`);
+				_removeToken({
+					apn: userToken,
+				});
+			}
+		});
+	});
 };
 
-export const initAPN = ({ options, _removeToken, absoluteUrl }) => {
+export const initAPN = ({ options, absoluteUrl }) => {
 	logger.debug('APN configured');
 
 	// Allow production to be a general option for push notifications
@@ -101,16 +112,4 @@ export const initAPN = ({ options, _removeToken, absoluteUrl }) => {
 
 	// Rig apn connection
 	apnConnection = new apn.Provider(options.apn);
-
-	// Listen to transmission errors - should handle the same way as feedback.
-	apnConnection.on('transmissionError', (errCode, notification/* , recipient*/) => {
-		logger.debug('Got error code %d for token %s', errCode, notification.token);
-
-		if ([2, 5, 8].indexOf(errCode) >= 0) {
-			// Invalid token errors...
-			_removeToken({
-				apn: notification.token,
-			});
-		}
-	});
 };
