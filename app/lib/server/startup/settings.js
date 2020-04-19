@@ -1177,33 +1177,7 @@ settings.addGroup('Push', function() {
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
 	});
-	this.add('Push_debug', false, {
-		type: 'boolean',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
-	this.add('Push_send_interval', 2000, {
-		type: 'int',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
-	this.add('Push_send_batch_size', 100, {
-		type: 'int',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
+
 	this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',
