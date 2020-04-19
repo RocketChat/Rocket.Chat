@@ -100,9 +100,9 @@ export function UserInfo({ data, ...props }) {
 				</>}
 
 				<Box textStyle='micro' textColor='hint'>{t('Email')}</Box>
-				<Box display='flex' flexDirection='row'>
+				<Box display='flex' flexDirection='row' alignItems='center'>
 					<Box textStyle='s1'>{data.emails[0].address}</Box>
-					<Icon name={data.emails[0].verified ? 'check' : 'cross'} title={data.emails[0].verified ? t('Verified') : t('Not_verified')}/>
+					<Icon size='x20' mis='x4' name={data.emails[0].verified ? 'check' : 'cross'} title={data.emails[0].verified ? t('Verified') : t('Not_verified')}/>
 				</Box>
 
 				<Box textStyle='micro' textColor='hint'>{t('Created_at')}</Box>
