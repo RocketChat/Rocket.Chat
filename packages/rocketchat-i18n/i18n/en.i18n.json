@@ -3601,6 +3601,7 @@
   "Verification_email_sent": "Verification email sent",
   "Verification_Email_Subject": "[Site_Name] - Email address verification",
   "Verified": "Verified",
+  "Not_verified": "Not verified",
   "Verify": "Verify",
   "Verify_your_email": "Verify your email",
   "Verify_your_email_for_the_code_we_sent": "Verify your email for the code we sent",
