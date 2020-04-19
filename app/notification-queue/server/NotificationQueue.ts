@@ -62,9 +62,11 @@ class NotificationClass {
 
 	private running = false;
 
-	private delay = 2000;
+	private cyclePause = 2000;
 
-	private maxBatchSize = 5;
+	private maxBatchSize = 100;
+
+	private maxScheduleDelaySeconds = 120
 
 	initWorker(): void {
 		this.running = true;
@@ -80,7 +82,7 @@ class NotificationClass {
 			return;
 		}
 
-		setTimeout(this.worker.bind(this), this.delay);
+		setTimeout(this.worker.bind(this), this.cyclePause);
 	}
 
 	async worker(counter = 0): Promise<void> {
@@ -188,8 +190,7 @@ class NotificationClass {
 			return;
 		}
 
-		// TODO: Make it configurable
-		const delay = 120;
+		const delay = this.maxScheduleDelaySeconds;
 
 		let schedule: Date | undefined;
 
