@@ -7,6 +7,7 @@ Migrations.add({
 		Settings.remove({ _id: 'Push_send_interval' });
 		Settings.remove({ _id: 'Push_send_batch_size' });
 		Settings.remove({ _id: 'Push_debug' });
+		Settings.remove({ _id: 'Notifications_Always_Notify_Mobile' });
 
 		// const date = new Date();
 		// date.setHours(date.getHours() - 2); // 2 hours ago;
