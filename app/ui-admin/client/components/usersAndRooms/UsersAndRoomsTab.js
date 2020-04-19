@@ -47,7 +47,7 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 				}}/></Page.VerticalBar.Header>
 				<Page.VerticalBar.Content>
 					{ tab === 'rooms' && <EditRoomContextBar rid={id}/> }
-					{ tab === 'users' && <UserInfo uid={id}/> }
+					{ tab === 'users' && <UserInfo username={id}/> }
 				</Page.VerticalBar.Content>
 			</Page.VerticalBar>}
 	</Page>;
