@@ -18,6 +18,7 @@ function ImportOperationSummary({
 	status,
 	file,
 	user,
+	small,
 	count: {
 		users = 0,
 		channels = 0,
@@ -85,25 +86,27 @@ function ImportOperationSummary({
 	return <Table.Row {...props}>
 		<Table.Cell>{type}</Table.Cell>
 		<Table.Cell>{formatDateAndTime(_updatedAt)}</Table.Cell>
-		<Table.Cell>{status && t(status.replace('importer_', 'importer_status_'))}</Table.Cell>
-		<Table.Cell>{fileName}</Table.Cell>
-		<Table.Cell align='center'>{users}</Table.Cell>
-		<Table.Cell align='center'>{channels}</Table.Cell>
-		<Table.Cell align='center'>{messages}</Table.Cell>
-		<Table.Cell align='center'>{total}</Table.Cell>
+		{!small && <><Table.Cell>{status && t(status.replace('importer_', 'importer_status_'))}</Table.Cell>
+			<Table.Cell>{fileName}</Table.Cell>
+			<Table.Cell align='center'>{users}</Table.Cell>
+			<Table.Cell align='center'>{channels}</Table.Cell>
+			<Table.Cell align='center'>{messages}</Table.Cell>
+			<Table.Cell align='center'>{total}</Table.Cell>
+		</>}
 	</Table.Row>;
 }
 
-function ImportOperationSummarySkeleton() {
+function ImportOperationSummarySkeleton({ small }) {
 	return <Table.Row>
 		<Table.Cell><Skeleton /></Table.Cell>
 		<Table.Cell><Skeleton /></Table.Cell>
-		<Table.Cell><Skeleton /></Table.Cell>
-		<Table.Cell><Skeleton /></Table.Cell>
-		<Table.Cell><Skeleton /></Table.Cell>
-		<Table.Cell><Skeleton /></Table.Cell>
-		<Table.Cell><Skeleton /></Table.Cell>
-		<Table.Cell><Skeleton /></Table.Cell>
+		{!small && <><Table.Cell><Skeleton /></Table.Cell>
+			<Table.Cell><Skeleton /></Table.Cell>
+			<Table.Cell><Skeleton /></Table.Cell>
+			<Table.Cell><Skeleton /></Table.Cell>
+			<Table.Cell><Skeleton /></Table.Cell>
+			<Table.Cell><Skeleton /></Table.Cell>
+		</>}
 	</Table.Row>;
 }
 
