@@ -54,7 +54,6 @@ Template.visitorForward.helpers({
 	},
 	departmentConditions() {
 		const departmentForwardRestrictions = Template.instance().departmentForwardRestrictions.get();
-		console.log(departmentForwardRestrictions);
 		return { enabled: true, numAgents: { $gt: 0 }, ...departmentForwardRestrictions };
 	},
 });
@@ -65,7 +64,7 @@ Template.visitorForward.onCreated(async function() {
 	this.departments = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
 	this.selectedDepartments = new ReactiveVar([]);
-	this.departmentForwardRestrictions = new ReactiveVar();
+	this.departmentForwardRestrictions = new ReactiveVar({});
 
 	this.onSelectDepartments = ({ item: department }) => {
 		department.text = department.name;

@@ -5,7 +5,7 @@ callbacks.add('livechat.onLoadForwardDepartmentRestrictions', (departmentId) => 
 	if (!departmentId) {
 		return {};
 	}
-	const department = LivechatDepartment.findOneById(departmentId);
+	const department = LivechatDepartment.findOneById(departmentId, { fields: { departmentsAllowedToForward: 1 } });
 	if (!department) {
 		return {};
 	}
