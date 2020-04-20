@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ChatMessage } from '../../app/models/client';
+import { ChatMessage, CachedChatMessage } from '../../app/models/client';
 import { canDeleteMessage } from '../../app/utils/client';
 
 Meteor.methods({
@@ -23,6 +23,6 @@ Meteor.methods({
 		ChatMessage.remove({
 			_id: message._id,
 			'u._id': Meteor.userId(),
-		});
+		}, CachedChatMessage.save);
 	},
 });

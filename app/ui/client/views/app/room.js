@@ -13,7 +13,7 @@ import { Template } from 'meteor/templating';
 
 import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
-import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
+import { ChatMessage, CachedChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
 	fireGlobalEvent,
 	RoomHistoryManager,
@@ -942,8 +942,8 @@ Template.room.events({
 
 	'click .image-to-download'(event) {
 		const { msg } = messageArgs(this);
-		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
-		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
+		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } }, null, CachedChatMessage.save);
+		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } }, null, CachedChatMessage.save);
 	},
 	'load .gallery-item'(e, template) {
 		template.sendToBottomIfNecessaryDebounced();
@@ -1179,19 +1179,19 @@ Template.room.onCreated(function() {
 			if (!role.u || !role.u._id) {
 				return;
 			}
-			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
+			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true }, CachedChatMessage.save);
 		}, // Update message to re-render DOM
 		changed: (role) => {
 			if (!role.u || !role.u._id) {
 				return;
 			}
-			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
+			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true }, CachedChatMessage.save);
 		}, // Update message to re-render DOM
 		removed: (role) => {
 			if (!role.u || !role.u._id) {
 				return;
 			}
-			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
+			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true }, CachedChatMessage.save);
 		},
 	});
 

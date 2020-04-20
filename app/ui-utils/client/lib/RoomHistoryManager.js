@@ -273,7 +273,7 @@ export const RoomHistoryManager = new class {
 			if (!result || !result.messages) {
 				return;
 			}
-			ChatMessage.remove({ rid: message.rid });
+			ChatMessage.remove({ rid: message.rid }, CachedChatMessage.save);
 			for (const msg of Array.from(result.messages)) {
 				if (msg.t !== 'command') {
 					upsertMessage({ msg, subscription });
@@ -341,11 +341,10 @@ export const RoomHistoryManager = new class {
 			limit: 50,
 		};
 		const retain = ChatMessage.find(query, options).fetch();
-		ChatMessage.remove({ rid });
+		ChatMessage.remove({ rid }, CachedChatMessage.save);
 		retain.forEach((message) => {
-			ChatMessage.insert(message);
+			ChatMessage.insert(message, CachedChatMessage.save);
 		});
-		CachedChatMessage.save();
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);
