@@ -51,7 +51,8 @@ class Zenvia {
 		};
 		returnData.media = [];
 
-		if(data.message.contents.length>0){
+		const { contents = [] } = data.message;
+		if (contents.length > 0) {
 			for (let contentIndex = 0; contentIndex < (data.message.contents.length); contentIndex++) {
 				if(data.message.contents[contentIndex].type == 'text'){
 					returnData.body += data.message.contents[contentIndex].text;
