@@ -75,6 +75,64 @@ Meteor.startup(function() {
 					-moz-osx-font-smoothing: grayscale;
 					font-variant-numeric: tabular-nums;
 				}
+
+
+
+
+				.rcx-button {
+					display: inline-block;
+					text-align: center;
+					vertical-align: middle;
+					white-space: nowrap;
+					text-decoration: none;
+					cursor: pointer;
+					outline: 0;
+					letter-spacing: 0rem;
+					letter-spacing: var(--rcx-text-styles-p2-letter-spacing, 0rem);
+					font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Helvetica Neue, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Meiryo UI, Arial, sans-serif;
+					font-family: var(--rcx-text-styles-p2-font-family, Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Helvetica Neue, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Meiryo UI, Arial, sans-serif);
+					font-size: 0.875rem;
+					font-size: var(--rcx-text-styles-p2-font-size, 0.875rem);
+					font-weight: 500;
+					font-weight: var(--rcx-text-styles-p2-font-weight, 500);
+					line-height: 1.25rem;
+					line-height: var(--rcx-text-styles-p2-line-height, 1.25rem);
+					overflow: hidden;
+					text-overflow: ellipsis;
+					padding: calc((2.5rem - 1.25rem) / 2 - 0.125rem) calc(1rem - 0.125rem);
+					padding: calc((var(--rcx-sizes-x40, 2.5rem) - var(--rcx-text-styles-p1-line-height, 1.25rem)) / 2 - var(--rcx-borders-width-x2, 0.125rem)) calc(var(--rcx-spaces-x16, 1rem) - var(--rcx-borders-width-x2, 0.125rem));
+					padding-top: calc((2.5rem - 1.25rem) / 2 - 0.125rem);
+					padding-bottom: calc((2.5rem - 1.25rem) / 2 - 0.125rem);
+					padding-block: calc((2.5rem - 1.25rem) / 2 - 0.125rem);
+					padding-top: calc((var(--rcx-sizes-x40, 2.5rem) - var(--rcx-text-styles-p1-line-height, 1.25rem)) / 2 - var(--rcx-borders-width-x2, 0.125rem));
+					padding-bottom: calc((var(--rcx-sizes-x40, 2.5rem) - var(--rcx-text-styles-p1-line-height, 1.25rem)) / 2 - var(--rcx-borders-width-x2, 0.125rem));
+					padding-block: calc((var(--rcx-sizes-x40, 2.5rem) - var(--rcx-text-styles-p1-line-height, 1.25rem)) / 2 - var(--rcx-borders-width-x2, 0.125rem));
+					padding-left: calc(1rem - 0.125rem);
+					padding-right: calc(1rem - 0.125rem);
+					padding-inline: calc(1rem - 0.125rem);
+					padding-left: calc(var(--rcx-spaces-x16, 1rem) - var(--rcx-borders-width-x2, 0.125rem));
+					padding-right: calc(var(--rcx-spaces-x16, 1rem) - var(--rcx-borders-width-x2, 0.125rem));
+					padding-inline: calc(var(--rcx-spaces-x16, 1rem) - var(--rcx-borders-width-x2, 0.125rem));
+				}
+
+				.rcx-button--primary {
+					color: #ffffff;
+					color: var(--rcx-button-colors-primary-color, #ffffff);
+					border-width: 0.125rem;
+					border-width: var(--rcx-borders-width-x2, 0.125rem);
+					border-style: solid;
+					border-color: #1d74f5;
+					border-color: var(--rcx-button-colors-primary-border-color, #1d74f5);
+					border-radius: 0.125rem;
+					border-radius: var(--rcx-borders-radius-x2, 0.125rem);
+					background-color: #1d74f5;
+					background-color: var(--rcx-button-colors-primary-background-color, #1d74f5);
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					appearance: none;
+				}
+
+
 				.rcx-box--text-color-primary {
 					color: #1d74f5;
 					color: var(--rcx-text-colors-primary, #1d74f5);
@@ -85,7 +143,7 @@ Meteor.startup(function() {
 				<section class="rcx-box not-supported-browser rcx-@1kgm1vs rcx-@1qvl0ud">
 					<div class="rcx-box">
 						<div class="rcx-box rcx-box--text-color-alternative not-supported-browser__text rcx-@s6mi60">Browser Not Supported</div>
-						<a class="rcx-box rcx-box--text-style-headline rcx-box--text-color-primary" href="https://rocket.chat/docs/getting-support/#supported-browser-versions" target="_blank">https://rocket.chat/docs/getting-support/#supported-browser-versions</a>
+						<a class="rcx-box rcx-button rcx-button--primary" href="https://rocket.chat/docs/getting-support/#supported-browser-versions" target="_blank">Check the Documentation</a>
 					</div>
 				</section>
 			`);
