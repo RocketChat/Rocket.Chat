@@ -1,0 +1,12 @@
+{
+  "error-canned-response-not-found": "Zakonzervovaná odpoveď sa nenašla",
+  "error-max-number-simultaneous-chats-reached": "Bol dosiahnutý maximálny počet súbežných konverzácií na operátora.",
+  "Add_monitor": "Pridať vedúceho",
+  "Available_departments": "Dostupné oddelenia",
+  "Canned Responses": "Zakonzervované odpovede",
+  "Canned_Response_Removed": "Zakonzervované odpovede odstránené",
+  "Canned_Responses_Enable": "Povoliť zakonzervované odpovede",
+  "Edit_Tag": "Upraviť štítok",
+  "Edit_Unit": "Upraviť skupinu",
+  "Enterprise_License": "Enterprise licencia"
+}

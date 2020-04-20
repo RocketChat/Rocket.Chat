@@ -75,6 +75,8 @@
 
 		padding: 0 0.5rem;
 
+		cursor: pointer;
+
 		align-items: center;
 
 		&-action {
@@ -412,10 +414,6 @@
 
 @media (width <= 500px) {
 	.rc-header {
-		&__visual-status {
-			display: none;
-		}
-
 		&__block {
 			margin: 0 0.25rem;
 		}

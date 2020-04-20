@@ -24,10 +24,29 @@ export const login = (username, password) => new Promise((resolve) => {
 		});
 });
 
+export const deleteUser = (user) => new Promise((resolve) => {
+	request.post(api('users.delete'))
+		.set(credentials)
+		.send({
+			userId: user._id,
+		})
+		.end(resolve);
+});
+
 export const getUserByUsername = (username) => new Promise((resolve) => {
 	request.get(api(`users.info?username=${ username }`))
 		.set(credentials)
 		.end((err, res) => {
 			resolve(res.body.user);
+		});
+});
+
+export const getUserStatus = (userId) => new Promise((resolve) => {
+	request.get(api(`users.getStatus?userId=${ userId }`))
+		.set(credentials)
+		.expect('Content-Type', 'application/json')
+		.expect(200)
+		.end((end, res) => {
+			resolve(res.body);
 		});
 });

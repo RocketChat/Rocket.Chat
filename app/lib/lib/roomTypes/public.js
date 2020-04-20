@@ -113,6 +113,10 @@ export class PublicRoomType extends RoomTypeConfig {
 		}
 	}
 
+	allowMemberAction(/* room, action */) {
+		return true;
+	}
+
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
@@ -128,5 +132,9 @@ export class PublicRoomType extends RoomTypeConfig {
 		// TODO: change to always get avatar from _id when rooms have avatars
 
 		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+	}
+
+	getDiscussionType() {
+		return 'c';
 	}
 }

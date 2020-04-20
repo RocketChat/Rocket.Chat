@@ -33,8 +33,8 @@ Meteor.startup(function() {
 			condition({ subscription }) {
 				return Boolean(subscription);
 			},
-			order: 1,
-			group: 'message',
+			order: -1,
+			group: ['message', 'menu'],
 		});
 	});
 });

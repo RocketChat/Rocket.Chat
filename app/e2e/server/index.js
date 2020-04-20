@@ -2,6 +2,7 @@ import { callbacks } from '../../callbacks';
 import { Notifications } from '../../notifications';
 
 import './settings';
+import './beforeCreateRoom';
 import './methods/setUserPublicAndPrivateKeys';
 import './methods/getUsersOfRoomWithoutKey';
 import './methods/updateGroupKey';
