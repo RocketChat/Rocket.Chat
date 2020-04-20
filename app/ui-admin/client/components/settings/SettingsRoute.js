@@ -3,7 +3,7 @@ import React from 'react';
 import { useAtLeastOnePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter } from '../../../../../client/contexts/RouterContext';
 import { GroupSelector } from './GroupSelector';
-import { NotAuthorizedPage } from './NotAuthorizedPage';
+import NotAuthorizedPage from '../NotAuthorizedPage';
 import { SettingsState } from './SettingsState';
 
 export function SettingsRoute() {
