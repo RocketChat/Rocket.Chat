@@ -631,8 +631,7 @@ export const Livechat = {
 			try {
 				const customFields = JSON.parse(settings.get('Accounts_CustomFields'));
 				return Object.keys(customFields)
-					.filter((customFieldKey) => customFields[customFieldKey].sendToIntegrations === true)
-					.map((field) => field);
+					.filter((customFieldKey) => customFields[customFieldKey].sendToIntegrations === true);
 			} catch (error) {
 				return [];
 			}
@@ -665,7 +664,7 @@ export const Livechat = {
 		};
 
 		if (agent) {
-			const { customFields: agentCustomFields } = agent;
+			const { customFields: agentCustomFields = {} } = agent;
 			const externalCF = externalCustomFields();
 			const customFields = Object.keys(agentCustomFields).reduce((newObj, key) => (externalCF.includes(key) ? { ...newObj, [key]: agentCustomFields[key] } : newObj), null);
 
