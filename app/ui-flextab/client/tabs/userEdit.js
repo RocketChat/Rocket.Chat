@@ -205,6 +205,7 @@ Template.userEdit.onCreated(function() {
 		userData.name = s.trim(this.$('#name').val());
 		userData.username = s.trim(this.$('#username').val());
 		userData.statusText = s.trim(this.$('#status').val());
+		userData.bio = s.trim(this.$('#bio').val());
 		userData.email = s.trim(this.$('#email').val());
 		userData.verified = this.$('#verified:checked').length > 0;
 		userData.password = s.trim(this.$('#password').val());

@@ -11,14 +11,14 @@ export function PageNotFound() {
 	useWipeInitialPageLoading();
 
 	const t = useTranslation();
-	const goToHome = useRoute('home');
+	const homeRoute = useRoute('home');
 
 	const handleGoToPreviousPageClick = () => {
 		window.history.back();
 	};
 
 	const handleGoHomeClick = () => {
-		goToHome();
+		homeRoute.push();
 	};
 
 	return <>
@@ -27,7 +27,7 @@ export function PageNotFound() {
 			<Box is='section' componentClassName='PageNotFound'>
 				<Flex.Item>
 					<Box>
-						<Margins all='12'>
+						<Margins all='x12'>
 							<Box componentClassName='PageNotFound__404' textColor='alternative'>404</Box>
 
 							<Box textStyle='h1' textColor='alternative'>
@@ -39,7 +39,7 @@ export function PageNotFound() {
 							</Box>
 						</Margins>
 
-						<Margins all='32'>
+						<Margins all='x32'>
 							<ButtonGroup align='center'>
 								<Button type='button' primary onClick={handleGoToPreviousPageClick}>{t('Return_to_previous_page')}</Button>
 								<Button type='button' primary onClick={handleGoHomeClick}>{t('Return_to_home')}</Button>
@@ -51,3 +51,5 @@ export function PageNotFound() {
 		</Flex.Container>
 	</>;
 }
+
+export default PageNotFound;
