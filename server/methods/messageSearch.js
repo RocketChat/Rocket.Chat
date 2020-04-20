@@ -118,7 +118,7 @@ Meteor.methods({
 		}
 
 		function filterTitle(_, tag) {
-			query['attachments.0.title'] = new RegExp(s.escapeRegExp(tag), 'i');
+			query['attachments.title'] = new RegExp(s.escapeRegExp(tag), 'i');
 			return '';
 		}
 
@@ -182,9 +182,9 @@ Meteor.methods({
 		// Filter image tags
 		text = text.replace(/label:(\w+)/g, filterLabel);
 		// Filter on description of messages.
-		text = text.replace(/desc:(\w+)/g, filterDescription);
+		text = text.replace(/file-desc:(\w+)/g, filterDescription);
 		// Filter on title of messages.
-		text = text.replace(/title:(\w+)/g, filterTitle);
+		text = text.replace(/file-title:(\w+)/g, filterTitle);
 		// Filtering before/after/on a date
 		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by before:, after: and on: respectively.
 		// Example: before:15/09/2016 after: 10-08-2016
