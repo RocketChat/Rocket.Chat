@@ -8,6 +8,7 @@ import { useMediaQuery } from '../../../../ui/client/views/app/components/hooks'
 import { EditRoomContextBar } from '../rooms/edit/EditRoom';
 import { UserInfoWithData } from '../users/info/UserInfo';
 import { EditUserWithData } from '../users/edit/EditUser';
+import { AddUser } from '../users/add/AddUser';
 
 export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) {
 	const t = useTranslation();
@@ -43,13 +44,19 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 		</Page>
 		{ context
 			&& <Page.VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
-				<Page.VerticalBar.Header>{t('Room_Info')} <Page.VerticalBar.Close onClick={() => {
-					router.push({});
-				}}/></Page.VerticalBar.Header>
+				<Page.VerticalBar.Header>
+					{tab === 'rooms' && t('Room_Info')}
+					{tab === 'users' && context === 'info' && t('User_Info')}
+					{tab === 'users' && context === 'edit' && t('Edit_User')}
+					{tab === 'users' && context === 'new' && t('Add_User')}
+					<Page.VerticalBar.Close onClick={() => {
+						router.push({});
+					}}/></Page.VerticalBar.Header>
 				<Page.VerticalBar.Content>
 					{ tab === 'rooms' && <EditRoomContextBar rid={id}/> }
-					{ tab === 'users' && context === 'info' && <UserInfoWithData username={id}/> }
-					{ tab === 'users' && context === 'edit' && <EditUserWithData username={id}/> }
+					{ tab === 'users' && context === 'info' && <UserInfoWithData userId={id}/> }
+					{ tab === 'users' && context === 'edit' && <EditUserWithData userId={id}/> }
+					{ tab === 'users' && context === 'new' && <AddUser/> }
 				</Page.VerticalBar.Content>
 			</Page.VerticalBar>}
 	</Page>;

@@ -1,12 +1,16 @@
 import React, { useMemo, useState } from 'react';
-import { Field, TextInput, Box, Headline, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins } from '@rocket.chat/fuselage';
+import { Field, TextInput, Box, Headline, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointDataExperimental, useEndpointData, ENDPOINT_STATES } from '../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointAction } from '../../usersAndRooms/hooks';
+import { isEmail } from '../../../../../utils/lib/isEmail.js';
+import { useRoute } from '../../../../../../client/contexts/RouterContext';
 
-export function EditUserWithData({ username, ...props }) {
+export function EditUserWithData({ userId, ...props }) {
 	const t = useTranslation();
-	const { data, state, error } = useEndpointDataExperimental('GET', 'users.info', useMemo(() => ({ username }), [username]));
+	const roleData = useEndpointData('GET', 'roles.list', '') || {};
+	const { data, state, error } = useEndpointDataExperimental('GET', 'users.info', useMemo(() => ({ userId }), [userId]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
@@ -22,19 +26,53 @@ export function EditUserWithData({ username, ...props }) {
 	if (error) {
 		return <Box mbs='x16' {...props}>{t('User_not_found')}</Box>;
 	}
-
-	return <EditUser data={data.user} {...props}/>;
+	console.log(roleData);
+	return <EditUser data={data.user} roles={roleData.roles} {...props}/>;
 }
 
-export function EditUser({ data }) {
+export function EditUser({ data, roles, ...props }) {
 	const t = useTranslation();
 
 	const [newData, setNewData] = useState({});
+	const hasUnsavedChanges = useMemo(() => Object.values(newData).filter((current) => current === null).length < Object.keys(newData).length, [JSON.stringify(newData)]);
 
-	const areEqual = (a, b) => a === b || !(a || b);
-	const handleChange = (field, currentValue, getValue = (e) => e.currentTarget.value) => (e) => setNewData({ ...newData, [field]: areEqual(getValue(e), currentValue) ? null : getValue(e) });
+	const router = useRoute('admin-users');
 
-	const { roles } = data;
+	const goToUser = (username) => router.push({
+		context: 'info',
+		id: username,
+	});
+
+	const saveQuery = useMemo(() => ({
+		userId: data._id,
+		data: Object.fromEntries(Object.entries(newData).filter(([, value]) => value !== null)),
+	}), [data._id, JSON.stringify(newData)]);
+
+	const saveAction = useEndpointAction('POST', 'users.update', saveQuery, t('User_updated_successfully'));
+
+	const handleSave = async () => {
+		if (hasUnsavedChanges) {
+			const result = await saveAction();
+			if (result.success) {
+				goToUser(newData.username ?? data.username);
+			}
+		}
+	};
+
+	const rolesAreEqual = (a, b) => {
+		if (a.length !== b.length) { return false; }
+		const result = a.reduce((acc, aValue) => {
+			const onlyOneMatches = b.reduce((acc, bValue) => (aValue === bValue ? acc + 1 : acc + 0), 0) === 1;
+			return onlyOneMatches ? acc + 1 : acc + 0;
+		}, 0);
+		return result === a.length;
+	};
+
+	const testEqual = (a, b) => a === b || !(a || b);
+	const handleChange = (field, currentValue, getValue = (e) => e.currentTarget.value, areEqual = testEqual) => (e) => setNewData({ ...newData, [field]: areEqual(getValue(e), currentValue) ? null : getValue(e) });
+
+	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
+	const selectedRoles = newData.roles ?? data.roles;
 	const name = newData.name ?? data.name ?? '';
 	const username = newData.username ?? data.username;
 	const status = newData.status ?? data.status;
@@ -42,7 +80,7 @@ export function EditUser({ data }) {
 	const email = newData.email ?? data.emails[0].address;
 	const emailVerified = newData.verified ?? data.emails[0].verified;
 	const requirePasswordChange = newData.requirePasswordChange || false;
-	const availableRoles = ['teste, teste2, teste4'];
+
 	return <Box mbs='x24'>
 		<Margins blockEnd='x16'>
 			<Field>
@@ -60,16 +98,16 @@ export function EditUser({ data }) {
 			<Field>
 				<Field.Label>{t('Email')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={email} onChange={handleChange('email', data.emails[0].address)} addon={<Icon name='mail' size='x20'/>}/>
+					<TextInput flexGrow={1} value={email} error={!isEmail(email) ? 'error' : undefined} onChange={handleChange('email', data.emails[0].address)} addon={<Icon name='mail' size='x20'/>}/>
 				</Field.Row>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>
-						<Box>{t('Verified')}</Box><ToggleSwitch checked={emailVerified} onChange={handleChange('verified', data.emails[0].verified)} />
+						<Box>{t('Verified')}</Box><ToggleSwitch checked={emailVerified} onChange={handleChange('verified', data.emails[0].verified, () => !emailVerified)} />
 					</Box>
 				</Field.Row>
 			</Field>
 			<Field>
-				<Field.Label>{t('Status_message')}</Field.Label>
+				<Field.Label>{t('StatusMessage')}</Field.Label>
 				<Field.Row>
 					<TextInput flexGrow={1} value={status} onChange={handleChange('status', data.status)} addon={<Icon name='edit' size='x20'/>}/>
 				</Field.Row>
@@ -77,26 +115,36 @@ export function EditUser({ data }) {
 			<Field>
 				<Field.Label>{t('Bio')}</Field.Label>
 				<Field.Row>
-					<TextAreaInput flexGrow={1} value={bio} onChange={handleChange('bio', data.bio)} addon={<Icon name='edit' size='x20'/>}/>
+					<TextAreaInput rows={3} flexGrow={1} value={bio} onChange={handleChange('bio', data.bio)} addon={<Icon name='edit' size='x20' alignSelf='center'/>}/>
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Password')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={bio} onChange={handleChange('password', '')} addon={<Icon name='edit' size='x20'/>}/>
+					<TextInput flexGrow={1} value={newData.password || ''} onChange={handleChange('password', '')} addon={<Icon name='key' size='x20'/>}/>
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-						<Box>{t('Require_password_change')}</Box><ToggleSwitch checked={requirePasswordChange} onChange={handleChange('requirePasswordChange', false)} />
+						<Box>{t('Require_password_change')}</Box><ToggleSwitch checked={requirePasswordChange} onChange={handleChange('requirePasswordChange', false, () => !requirePasswordChange)} />
 					</Box>
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Roles')}</Field.Label>
 				<Field.Row>
-					<MultiSelectFiltered placeholder={t('Select_a_role')} options={availableRoles} value={[1, 2]} />
+					<MultiSelectFiltered options={availableRoles} value={selectedRoles} onChange={handleChange('roles', data.roles, (value) => value, rolesAreEqual)} placeholder={t('Select_role')} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+						<Margins inlineEnd='x4'>
+							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={() => setNewData({})}>{t('Reset')}</Button>
+							<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
+						</Margins>
+					</Box>
 				</Field.Row>
 			</Field>
 		</Margins>

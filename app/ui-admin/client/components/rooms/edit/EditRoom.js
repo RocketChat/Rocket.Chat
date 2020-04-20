@@ -4,32 +4,10 @@ import { Box, Headline, Button, Margins, TextInput, Skeleton, Field, ToggleSwitc
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { roomTypes } from '../../../../../utils/client';
-import { useEndpoint, useMethod } from '../../../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../../client/contexts/ToastMessagesContext';
+import { useMethod } from '../../../../../../client/contexts/ServerContext';
 import { usePermission } from '../../../../../../client/contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../NotAuthorizedPage';
-
-export const useEndpointAction = (httpMethod, endpoint, params = {}, successMessage) => {
-	const sendData = useEndpoint(httpMethod, endpoint);
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	return useCallback(async () => {
-		try {
-			const data = await sendData(params);
-
-			if (!data.success) {
-				throw new Error(data.status);
-			}
-
-			dispatchToastMessage({ type: 'success', message: successMessage });
-
-			return data;
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-			return { success: false };
-		}
-	}, [JSON.stringify(params)]);
-};
+import { useEndpointAction } from '../../usersAndRooms/hooks';
 
 export function EditRoomContextBar({ rid }) {
 	const canViewRoomAdministration = usePermission('view-room-administration');

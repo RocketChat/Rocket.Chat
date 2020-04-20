@@ -27,10 +27,10 @@ const UTCClock = ({ utcOffset, ...props }) => {
 	return <Box {...props}>{time} UTC {utcOffset}</Box>;
 };
 
-export function UserInfoWithData({ username, ...props }) {
+export function UserInfoWithData({ userId, ...props }) {
 	const t = useTranslation();
 
-	const { data, state, error } = useEndpointDataExperimental('GET', 'users.info', useMemo(() => ({ username }), [username]));
+	const { data, state, error } = useEndpointDataExperimental('GET', 'users.info', useMemo(() => ({ userId }), [userId]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24'>
@@ -62,7 +62,7 @@ export function UserInfo({ data, ...props }) {
 	});
 	const editUserClick = () => userRoute.push({
 		context: 'edit',
-		id: data.username,
+		id: data._id,
 	});
 
 	const createdAt = DateFormat.formatDateAndTime(data.createdAt);
