@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { Field, TextInput, Box, Headline, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental, useEndpointData, ENDPOINT_STATES } from '../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { useEndpointAction } from '../../usersAndRooms/hooks';
-import { isEmail } from '../../../../../utils/lib/isEmail.js';
-import { useRoute } from '../../../../../../client/contexts/RouterContext';
-import { Page } from '../../../../../../client/components/basic/Page';
+import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { useEndpointDataExperimental, useEndpointData, ENDPOINT_STATES } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointAction } from '../usersAndRooms/hooks';
+import { isEmail } from '../../../../utils/lib/isEmail.js';
+import { useRoute } from '../../../../../client/contexts/RouterContext';
+import { Page } from '../../../../../client/components/basic/Page';
 
 export function EditUserWithData({ userId, ...props }) {
 	const t = useTranslation();
@@ -39,9 +39,9 @@ export function EditUser({ data, roles, ...props }) {
 
 	const router = useRoute('admin-users');
 
-	const goToUser = (username) => router.push({
+	const goToUser = (id) => router.push({
 		context: 'info',
-		id: username,
+		id,
 	});
 
 	const saveQuery = useMemo(() => ({
@@ -55,7 +55,7 @@ export function EditUser({ data, roles, ...props }) {
 		if (hasUnsavedChanges) {
 			const result = await saveAction();
 			if (result.success) {
-				goToUser(newData.username ?? data.username);
+				goToUser(data._id);
 			}
 		}
 	};
@@ -78,11 +78,11 @@ export function EditUser({ data, roles, ...props }) {
 	const username = newData.username ?? data.username;
 	const status = newData.status ?? data.status;
 	const bio = newData.bio ?? data.bio ?? '';
-	const email = newData.email ?? data.emails[0].address;
-	const emailVerified = newData.verified ?? data.emails[0].verified;
+	const email = newData.email ?? (data.emails && data.emails[0].address);
+	const emailVerified = newData.verified ?? (data.emails && data.emails[0].verified);
 	const requirePasswordChange = newData.requirePasswordChange || false;
 
-	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form'>
+	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
@@ -99,11 +99,11 @@ export function EditUser({ data, roles, ...props }) {
 			<Field>
 				<Field.Label>{t('Email')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={email} error={!isEmail(email) ? 'error' : undefined} onChange={handleChange('email', data.emails[0].address)} addon={<Icon name='mail' size='x20'/>}/>
+					<TextInput flexGrow={1} value={email} error={!isEmail(email) ? 'error' : undefined} onChange={handleChange('email', data.emails && data.emails[0].address)} addon={<Icon name='mail' size='x20'/>}/>
 				</Field.Row>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>
-						<Box>{t('Verified')}</Box><ToggleSwitch checked={emailVerified} onChange={handleChange('verified', data.emails[0].verified, () => !emailVerified)} />
+						<Box>{t('Verified')}</Box><ToggleSwitch checked={emailVerified} onChange={handleChange('verified', data.emails && data.emails[0].verified, () => !emailVerified)} />
 					</Box>
 				</Field.Row>
 			</Field>

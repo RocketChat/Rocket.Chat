@@ -6,9 +6,9 @@ import { useTranslation } from '../../../../../client/contexts/TranslationContex
 import { useRouteParameter, useRoute } from '../../../../../client/contexts/RouterContext';
 import { useMediaQuery } from '../../../../ui/client/views/app/components/hooks';
 import { EditRoomContextBar } from '../rooms/edit/EditRoom';
-import { UserInfoWithData } from '../users/info/UserInfo';
-import { EditUserWithData } from '../users/edit/EditUser';
-import { AddUser } from '../users/add/AddUser';
+import { UserInfoWithData } from '../users/UserInfo';
+import { EditUserWithData } from '../users/EditUser';
+import { AddUser } from '../users/AddUser';
 
 export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) {
 	const t = useTranslation();

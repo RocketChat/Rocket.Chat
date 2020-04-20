@@ -39,13 +39,13 @@ export function PageContentShadowScroll({ onScrollContent, ...props }) {
 }
 
 export function PageContent({ ...props }) {
-	return <Box pi='x24' display='flex' flexDirection='column' style={{ overflow: 'hidden', height: '100%' }} {...props} />;
+	return <Box pi='x24' display='flex' flexDirection='column' style={{ overflowY: 'hidden', height: '100%' }} {...props} />;
 }
 
 
 export function PageContentScrolable({ onScrollContent, ...props }) {
 	return <Scrollable onScrollContent={onScrollContent} >
-		<PageContent {...props} style={{ overflow: 'auto', height: '100%' }}/>
+		<PageContent {...props} style={{ overflowY: 'auto', height: '100%' }}/>
 	</Scrollable>;
 }
 

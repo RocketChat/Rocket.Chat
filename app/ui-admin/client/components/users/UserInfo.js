@@ -2,13 +2,13 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Box, Avatar, Button, ButtonGroup, Icon, Margins, Headline, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { roomTypes } from '../../../../../utils/client';
-import { DateFormat } from '../../../../../lib';
-import { useRoute } from '../../../../../../client/contexts/RouterContext';
-import { Markdown } from '../../../../../ui/client/components/GenericTable';
-import { Page } from '../../../../../../client/components/basic/Page';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { roomTypes } from '../../../../utils/client';
+import { DateFormat } from '../../../../lib';
+import { useRoute } from '../../../../../client/contexts/RouterContext';
+import { Markdown } from '../../../../ui/client/components/GenericTable';
+import { Page } from '../../../../../client/components/basic/Page';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();
@@ -74,8 +74,8 @@ export function UserInfo({ data, ...props }) {
 
 	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' {...props}>
 		<Margins block='x8'>
-			<Box display='flex' flexDirection='column'>
-				<Margins block='x4'>
+			<Box display='flex' flexDirection='column' alignItems='center'>
+				<Margins block='x2'>
 					<Avatar size={'x120'} title={data.username} url={avatarUrl}/>
 					<Box textStyle='h1'>{data.name || data.username}</Box>
 					{!!data.name && <Box textStyle='p1' textColor='hint'>@{data.username}</Box>}
@@ -85,8 +85,8 @@ export function UserInfo({ data, ...props }) {
 
 			<Box display='flex' flexDirection='row'>
 				<ButtonGroup flexGrow={1} justifyContent='center'>
-					<Button ghost onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
-					<Button ghost onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button>
+					<Button secondary onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
+					<Button secondary onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button>
 				</ButtonGroup>
 			</Box>
 

@@ -98,7 +98,8 @@ export function AdminRooms({
 		const icon = roomTypes.getIcon({ t: type, usernames, ...args });
 		const roomName = type === 'd' ? usernames.join(' x ') : roomTypes.getRoomName(type, { name, type, _id, ...args });
 		const avatarUrl = roomTypes.getConfig(type).getAvatarPath({ roomName, type, _id, ...args });
-		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action>
+
+		return <Table.Row action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link'qa-room-id={_id}>
 			<Table.Cell style={style}>
 				<Box display='flex' alignContent='center'>
 					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={avatarUrl} url={avatarUrl} />

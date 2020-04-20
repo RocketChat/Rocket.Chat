@@ -7,7 +7,6 @@ import { UserTab } from './UserTab';
 import { ChannelsTab } from './ChannelsTab';
 import { useRoute, useRouteParameter } from '../../../../../../../client/contexts/RouterContext';
 import { useSetting } from '../../../../../../../client/contexts/SettingsContext';
-import './Table.css';
 
 export function DirectoryPage() {
 	const t = useTranslation();

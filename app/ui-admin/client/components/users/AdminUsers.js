@@ -45,7 +45,7 @@ export function AdminUsers({
 	const renderRow = useCallback(({ emails, _id, username, name, roles, status, ...args }) => {
 		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: username || name, type: 'd', _id, ...args });
 
-		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action>
+		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
 			<Table.Cell style={style}>
 				<Box display='flex' alignItems='center'>
 					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={username} url={avatarUrl} />

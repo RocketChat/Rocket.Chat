@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { useEndpointAction } from '../../usersAndRooms/hooks';
-import { isEmail } from '../../../../../utils/lib/isEmail.js';
-import { useRoute } from '../../../../../../client/contexts/RouterContext';
-import { Page } from '../../../../../../client/components/basic/Page';
+import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointAction } from '../usersAndRooms/hooks';
+import { isEmail } from '../../../../utils/lib/isEmail.js';
+import { useRoute } from '../../../../../client/contexts/RouterContext';
+import { Page } from '../../../../../client/components/basic/Page';
 
 export function AddUser({ roles, ...props }) {
 	const t = useTranslation();
@@ -25,8 +25,6 @@ export function AddUser({ roles, ...props }) {
 	const saveQuery = useMemo(() => ({
 		...Object.fromEntries(Object.entries(newData).filter(([, value]) => value !== null)),
 	}), [JSON.stringify(newData)]);
-
-	console.log(saveQuery);
 
 	const saveAction = useEndpointAction('POST', 'users.create', saveQuery, t('User_created_successfully'));
 
@@ -53,9 +51,8 @@ export function AddUser({ roles, ...props }) {
 		sendWelcomeEmail = false,
 		joinDefaultChannels = false,
 	} = newData;
-	const availableRoles = roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : [];
 
-	console.log();
+	const availableRoles = roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : [];
 
 	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' { ...props }>
 		<Margins blockEnd='x16'>
