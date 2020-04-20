@@ -350,6 +350,10 @@ SAML.prototype.validateSignatureChildren = function(xml, cert, parent) {
 		signature = sign;
 	}
 
+	if (!signature) {
+		return false;
+	}
+
 	return this.validateSignature(xml, cert, signature);
 };
 
@@ -567,19 +571,43 @@ SAML.prototype.verifySignatures = function(response, assertion, xml) {
 		return;
 	}
 
-	debugLog('Verify Document Signature');
-	if (!this.validateResponseSignature(xml, this.options.cert, response)) {
-		debugLog('Document Signature WRONG');
-		throw new Error('Invalid Signature');
-	}
-	debugLog('Document Signature OK');
+	const signatureType = this.options.signatureValidationType;
 
-	debugLog('Verify Assertion Signature');
-	if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
-		debugLog('Assertion Signature WRONG');
-		throw new Error('Invalid Assertion signature');
+	const checkEither = signatureType === 'Either';
+	const checkResponse = signatureType === 'Response' || signatureType === 'All' || checkEither;
+	const checkAssertion = signatureType === 'Assertion' || signatureType === 'All' || checkEither;
+	let anyValidSignature = false;
+
+	if (checkResponse) {
+		debugLog('Verify Document Signature');
+		if (!this.validateResponseSignature(xml, this.options.cert, response)) {
+			if (!checkEither) {
+				debugLog('Document Signature WRONG');
+				throw new Error('Invalid Signature');
+			}
+		} else {
+			anyValidSignature = true;
+		}
+		debugLog('Document Signature OK');
 	}
-	debugLog('Assertion Signature OK');
+
+	if (checkAssertion) {
+		debugLog('Verify Assertion Signature');
+		if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
+			if (!checkEither) {
+				debugLog('Assertion Signature WRONG');
+				throw new Error('Invalid Assertion signature');
+			}
+		} else {
+			anyValidSignature = true;
+		}
+		debugLog('Assertion Signature OK');
+	}
+
+	if (checkEither && !anyValidSignature) {
+		debugLog('No Valid Signature');
+		throw new Error('No valid SAML Signature found');
+	}
 };
 
 SAML.prototype.getSubject = function(assertion) {
