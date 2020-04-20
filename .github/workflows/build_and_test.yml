@@ -253,9 +253,16 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && env.GITHUB_HEAD_REF == ''
 
     steps:
+    - name: DEBUG
+      run: |
+        echo "env"
+        echo $GITHUB_HEAD_REF
+        echo "expression"
+        echo ${{ github.head_ref }}
+
     - uses: actions/checkout@v2
 
     - name: Cache node modules
@@ -331,7 +338,6 @@ jobs:
         meteor build --server-only --directory /tmp/build-pr
 
     - name: Build Docker image for PRs
-      if: env.GITHUB_HEAD_REF == ''
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VERSION: pr-${{ github.event.number }}
