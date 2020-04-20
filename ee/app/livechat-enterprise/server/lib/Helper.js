@@ -179,7 +179,7 @@ export const updateRoomPriorityHistory = (rid, user, priority) => {
 };
 
 export const updateInquiryQueuePriority = (roomId, priority) => {
-	const inquiry = LivechatInquiry.findOneByRoomId(roomId);
+	const inquiry = LivechatInquiry.findOneByRoomId(roomId, { fields: { rid: 1, ts: 1 } });
 	if (!inquiry) {
 		return;
 	}

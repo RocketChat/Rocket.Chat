@@ -1,6 +1,5 @@
-import _ from 'underscore';
-
 import { Base } from '../../../../../app/models';
+
 /**
  * Livechat Priority model
  */
@@ -45,7 +44,7 @@ export class LivechatPriority extends Base {
 			_id = this.insert(record);
 		}
 
-		return _.extend(record, { _id });
+		return Object.assign(record, { _id });
 	}
 
 	// REMOVE
