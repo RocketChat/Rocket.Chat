@@ -33,8 +33,7 @@ Meteor.methods({
 		}
 		message = callbacks.run('beforeSaveMessage', message);
 		promises.run('onClientMessageReceived', message).then(function(message) {
-			ChatMessage.insert(message);
-			CachedChatMessage.save();
+			ChatMessage.insert(message, CachedChatMessage.save);
 			ChatRoom.setLastMessage(message.rid, message);
 			ChatSubscription.setLastMessage(message.rid, message);
 			return callbacks.run('afterSaveMessage', message);

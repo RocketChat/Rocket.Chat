@@ -80,8 +80,7 @@ Meteor.methods({
 			ChatMessage.update({
 				_id: message._id,
 				'u._id': Meteor.userId(),
-			}, { $set: messageObject });
-			CachedChatMessage.save();
+			}, { $set: messageObject }, null, CachedChatMessage.save);
 		});
 	},
 });
