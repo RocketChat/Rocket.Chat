@@ -186,8 +186,18 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 		if (!user) {
 			return API.v1.failure('User not found.');
 		}
+		if (!fields.userRooms) {
+			return API.v1.success({
+				user,
+			});
+		}
 		const myself = user._id === this.userId;
-		if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
+		if (!myself && !hasPermission(this.userId, 'view-other-user-channels')) {
+			return API.v1.success({
+				user,
+			});
+		}
+		if (fields.includeUnreadInfo === 1) {
 			user.rooms = Promise.await(Subscriptions.findByUserIdWithUnreadMessagesCount(user._id, {
 				fields: {
 					rid: 1,
@@ -202,8 +212,22 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 					name: 1,
 				},
 			}));
+		} else {
+			user.rooms = Subscriptions.findByUserId(user._id, {
+				fields: {
+					rid: 1,
+					bio: 1,
+					name: 1,
+					t: 1,
+					roles: 1,
+					ls: 1,
+				},
+				sort: {
+					t: 1,
+					name: 1,
+				},
+			}).fetch();
 		}
-
 		return API.v1.success({
 			user,
 		});

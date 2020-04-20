@@ -36,12 +36,19 @@ export class Subscriptions extends Base {
 	async findByUserIdWithUnreadMessagesCount(userId, options = {}) {
 		return this.model.rawCollection().aggregate([
 			{ $match: { 'u._id': userId } },
-			...(options.sort ? [{ $sort: options.sort }] : []),
+			...options.sort ? [{ $sort: options.sort }] : [],
 			{
 				$lookup: {
 					from: 'rocketchat_room',
-					localField: 'rid',
-					foreignField: '_id',
+					let: { id: '$rid' },
+					pipeline: [
+						{
+							$match: {
+								$expr: { $eq: ['$_id', '$$id'] },
+							},
+						},
+						{ $project: { lm: 1, _updatedAt: 1 } },
+					],
 					as: 'room',
 				},
 			},
@@ -49,8 +56,21 @@ export class Subscriptions extends Base {
 			{
 				$lookup: {
 					from: 'rocketchat_message',
-					localField: 'rid',
-					foreignField: 'rid',
+					let: { id: '$rid', room: '$room', ls: '$ls' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [
+										{ $eq: ['$rid', '$$room._id'] },
+										{ $gte: ['$ts', '$$ls'] },
+										{ $or: [{ $lte: ['$ts', '$$room.lm'] }, { $lte: ['$ts', '$$room._updatedAt'] }] },
+										{ $ne: ['$_hidden', true] },
+									],
+								},
+							},
+						},
+					],
 					as: 'unreads',
 				},
 			},
@@ -58,20 +78,7 @@ export class Subscriptions extends Base {
 				$project: {
 					...options.fields,
 					unreads: {
-						$size: {
-							$filter: {
-								input: '$unreads',
-								as: 'unread',
-								cond: {
-									$and: [
-										{ $eq: ['$$unread.rid', '$room._id'] },
-										{ $gte: ['$$unread.ts', '$ls'] },
-										{ $or: [{ $lte: ['$$unread.ts', '$room.lm'] }, { $lte: ['$$unread.ts', '$room._updatedAt'] }] },
-										{ $ne: ['$$unread._hidden', true] },
-									],
-								},
-							},
-						},
+						$size: '$unreads',
 					},
 				},
 			},
@@ -528,7 +535,7 @@ export class Subscriptions extends Base {
 
 	// FIND
 	findByUserId(userId, options) {
-		const query =			{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		return this.find(query, options);
 	}
@@ -594,7 +601,7 @@ export class Subscriptions extends Base {
 	}
 
 	findByRoomId(roomId, options) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		return this.find(query, options);
 	}
@@ -704,7 +711,7 @@ export class Subscriptions extends Base {
 
 	// UPDATE
 	archiveByRoomId(roomId) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -718,7 +725,7 @@ export class Subscriptions extends Base {
 	}
 
 	unarchiveByRoomId(roomId) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -829,7 +836,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateNameAndAlertByRoomId(roomId, name, fname) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -843,7 +850,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateDisplayNameByRoomId(roomId, fname) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -881,7 +888,7 @@ export class Subscriptions extends Base {
 	}
 
 	setUserUsernameByUserId(userId, username) {
-		const query =			{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		const update = {
 			$set: {
@@ -1105,7 +1112,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateTypeByRoomId(roomId, type) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -1117,7 +1124,7 @@ export class Subscriptions extends Base {
 	}
 
 	addRoleById(_id, role) {
-		const query =			{ _id };
+		const query = { _id };
 
 		const update = {
 			$addToSet: {
@@ -1129,7 +1136,7 @@ export class Subscriptions extends Base {
 	}
 
 	removeRoleById(_id, role) {
-		const query =			{ _id };
+		const query = { _id };
 
 		const update = {
 			$pull: {
