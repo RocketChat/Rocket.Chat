@@ -45,7 +45,7 @@ export function PageContent({ ...props }) {
 
 export function PageContentScrolable({ onScrollContent, ...props }) {
 	return <Scrollable onScrollContent={onScrollContent} >
-		<PageContent {...props} />
+		<PageContent {...props} style={{ overflow: 'auto', height: '100%' }}/>
 	</Scrollable>;
 }
 

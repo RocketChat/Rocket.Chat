@@ -4,7 +4,7 @@ import React from 'react';
 import './VerticalBar.css';
 
 export function VerticalBar({ children, ...props }) {
-	return <Box componentClassName='rcx-vertical-bar'{...props} display='flex'><Tile flexGrow={1} padding={0} m={0} children={children} /></Box>;
+	return <Box componentClassName='rcx-vertical-bar' {...props} display='flex'><Tile display='flex' flexDirection='column' flexGrow={1} padding={0} m={0} children={children} /></Box>;
 }
 
 export function VerticalBarHeader({ ...props }) {

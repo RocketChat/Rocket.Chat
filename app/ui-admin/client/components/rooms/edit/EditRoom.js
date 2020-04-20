@@ -8,6 +8,7 @@ import { useMethod } from '../../../../../../client/contexts/ServerContext';
 import { usePermission } from '../../../../../../client/contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../NotAuthorizedPage';
 import { useEndpointAction } from '../../usersAndRooms/hooks';
+import { Page } from '../../../../../../client/components/basic/Page';
 
 export function EditRoomContextBar({ rid }) {
 	const canViewRoomAdministration = usePermission('view-room-administration');
@@ -80,8 +81,8 @@ function EditRoom({ room, onChange }) {
 	const isFavorite = newData.favorite ?? !!room.favorite;
 	const isFeatured = newData.featured ?? !!room.featured;
 
-	return <Box w='full' h='full' pb='x24' is='form'>
-		<Margins blockEnd='x12'>
+	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form'>
+		<Margins blockEnd='x16'>
 
 			{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
 
@@ -189,5 +190,5 @@ function EditRoom({ room, onChange }) {
 				</Field.Row>
 			</Field>
 		</Margins>
-	</Box>;
+	</Page.ContentScrolable>;
 }

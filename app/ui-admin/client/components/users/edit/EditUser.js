@@ -6,6 +6,7 @@ import { useEndpointDataExperimental, useEndpointData, ENDPOINT_STATES } from '.
 import { useEndpointAction } from '../../usersAndRooms/hooks';
 import { isEmail } from '../../../../../utils/lib/isEmail.js';
 import { useRoute } from '../../../../../../client/contexts/RouterContext';
+import { Page } from '../../../../../../client/components/basic/Page';
 
 export function EditUserWithData({ userId, ...props }) {
 	const t = useTranslation();
@@ -81,8 +82,8 @@ export function EditUser({ data, roles, ...props }) {
 	const emailVerified = newData.verified ?? data.emails[0].verified;
 	const requirePasswordChange = newData.requirePasswordChange || false;
 
-	return <Box mbs='x24'>
-		<Margins blockEnd='x16'>
+	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form'>
+		<Margins block='x16'>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
@@ -148,5 +149,5 @@ export function EditUser({ data, roles, ...props }) {
 				</Field.Row>
 			</Field>
 		</Margins>
-	</Box>;
+	</Page.ContentScrolable>;
 }
