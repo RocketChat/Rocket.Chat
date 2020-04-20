@@ -1,10 +1,10 @@
 import os from 'os';
 
 import _ from 'underscore';
-import { Push } from 'meteor/rocketchat:push';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
+import { notificationsCollection } from '../../../push/server';
 import {
 	Sessions,
 	Settings,
@@ -166,7 +166,7 @@ export const statistics = {
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
 
-		statistics.pushQueue = Push.notifications.find().count();
+		statistics.pushQueue = notificationsCollection.find().count();
 
 		return statistics;
 	},
