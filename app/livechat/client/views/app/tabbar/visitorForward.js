@@ -8,7 +8,6 @@ import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import './visitorForward.html';
 import { APIClient } from '../../../../../utils/client';
-import { getCustomFormTemplate } from '../customTemplates/register';
 
 Template.visitorForward.helpers({
 	visitor() {
@@ -54,16 +53,9 @@ Template.visitorForward.helpers({
 		return Template.instance().onSelectDepartments;
 	},
 	departmentConditions() {
-		return { enabled: true, numAgents: { $gt: 0 } };
-	},
-	customFieldsTemplate() {
-		return getCustomFormTemplate('visitorForward');
-	},
-	showDefaultDepartmentForm() {
-		return !getCustomFormTemplate('visitorForward') && Template.instance().departments.get().filter((department) => department.enabled === true).length > 0;
-	},
-	data() {
-		return Template.instance().room;
+		const departmentForwardRestrictions = Template.instance().departmentForwardRestrictions.get();
+		console.log(departmentForwardRestrictions);
+		return { enabled: true, numAgents: { $gt: 0 }, ...departmentForwardRestrictions };
 	},
 });
 
@@ -73,6 +65,7 @@ Template.visitorForward.onCreated(async function() {
 	this.departments = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
 	this.selectedDepartments = new ReactiveVar([]);
+	this.departmentForwardRestrictions = new ReactiveVar();
 
 	this.onSelectDepartments = ({ item: department }) => {
 		department.text = department.name;
@@ -99,6 +92,12 @@ Template.visitorForward.onCreated(async function() {
 
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().roomId }));
+		const { departmentId } = this.room.get();
+		if (departmentId) {
+			Meteor.call('livechat:getDepartmentForwardRestrictions', departmentId, (err, result) => {
+				this.departmentForwardRestrictions.set(result);
+			});
+		}
 	});
 
 	const { departments } = await APIClient.v1.get('livechat/department');
@@ -121,12 +120,6 @@ Template.visitorForward.events({
 			const [department] = instance.selectedDepartments.get();
 			transferData.departmentId = department && department._id;
 		}
-
-		instance.$('.customFormField').each((i, el) => {
-			const elField = instance.$(el);
-			const name = elField.attr('name');
-			transferData[name] = elField.val();
-		});
 
 		if (!transferData.userId && !transferData.departmentId) {
 			return;
