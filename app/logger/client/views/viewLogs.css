@@ -1,11 +1,6 @@
 .view-logs {
 	&__terminal {
 		overflow-y: scroll;
-		flex: 1;
-
-		margin: 0;
-		margin-bottom: 0 !important;
-		padding: 8px 10px !important;
 
 		color: var(--color-white);
 		border: none !important;
@@ -20,10 +15,6 @@
 
 		&-time {
 			color: #7f7f7f;
-		}
-
-		.rtl & {
-			direction: ltr;
 		}
 	}
 }
