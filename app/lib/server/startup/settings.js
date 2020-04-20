@@ -97,9 +97,8 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_SearchFields', '', {
+	this.add('Accounts_SearchFields', 'username, name, bio', {
 		type: 'string',
-		public: true,
 	});
 	this.add('Accounts_Directory_DefaultView', 'channels', {
 		type: 'select',

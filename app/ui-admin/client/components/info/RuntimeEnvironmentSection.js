@@ -2,12 +2,14 @@ import { Skeleton, Subtitle } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { useFormatMemorySize } from '../../../../ui/client/views/app/components/hooks';
 import { DescriptionList } from './DescriptionList';
-import { formatMemorySize, formatHumanReadableTime, formatCPULoad } from './formatters';
+import { formatHumanReadableTime, formatCPULoad } from './formatters';
 
 export function RuntimeEnvironmentSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
 	const t = useTranslation();
+	const formatMemorySize = useFormatMemorySize();
 
 	return <>
 		<Subtitle data-qa='runtime-env-title'>{t('Runtime_Environment')}</Subtitle>

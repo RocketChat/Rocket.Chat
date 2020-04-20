@@ -263,6 +263,10 @@ export const saveUser = function(userId, userData) {
 			_sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
 		}
 
+		if (sendPassword) {
+			_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
+		}
+
 		userData._id = _id;
 
 		if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
