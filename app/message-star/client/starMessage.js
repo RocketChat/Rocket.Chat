@@ -3,7 +3,7 @@ import toastr from 'toastr';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings';
-import { ChatMessage, Subscriptions } from '../../models';
+import { ChatMessage, CachedChatMessage, Subscriptions } from '../../models';
 
 Meteor.methods({
 	starMessage(message) {
@@ -30,6 +30,6 @@ Meteor.methods({
 			$set: {
 				starred: !!message.starred,
 			},
-		});
+		}, null, CachedChatMessage.save);
 	},
 });

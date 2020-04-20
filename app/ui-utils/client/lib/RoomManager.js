@@ -13,7 +13,7 @@ import { menu } from './menu';
 import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
+import { CachedChatRoom, ChatMessage, CachedChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
@@ -24,10 +24,10 @@ import { call } from '..';
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
 const onDeleteMessageStream = (msg) => {
-	ChatMessage.remove({ _id: msg._id });
+	ChatMessage.remove({ _id: msg._id }, CachedChatMessage.save);
 
 	// remove thread refenrece from deleted message
-	ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
+	ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true }, CachedChatMessage.save);
 };
 const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
 	const query = { rid, ts };
@@ -40,7 +40,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 	if (users && users.length) {
 		query['u.username'] = { $in: users };
 	}
-	ChatMessage.remove(query);
+	ChatMessage.remove(query, CachedChatMessage.save);
 };
 
 export const RoomManager = new function() {
@@ -324,12 +324,12 @@ Meteor.startup(() => {
 			if (RoomManager.getOpenedRoomByRid(record.rid) != null) {
 				const recordBefore = ChatMessage.findOne({ ts: { $lt: record.ts } }, { sort: { ts: -1 } });
 				if (recordBefore != null) {
-					ChatMessage.update({ _id: recordBefore._id }, { $set: { tick: new Date() } });
+					ChatMessage.update({ _id: recordBefore._id }, { $set: { tick: new Date() } }, null, CachedChatMessage.save);
 				}
 
 				const recordAfter = ChatMessage.findOne({ ts: { $gt: record.ts } }, { sort: { ts: 1 } });
 				if (recordAfter != null) {
-					return ChatMessage.update({ _id: recordAfter._id }, { $set: { tick: new Date() } });
+					return ChatMessage.update({ _id: recordAfter._id }, { $set: { tick: new Date() } }, null, CachedChatMessage.save);
 				}
 			}
 		},
@@ -353,9 +353,9 @@ CachedCollectionManager.onLogin(() => {
 	Notifications.onUser('subscriptions-changed', (action, sub) => {
 		const ignored = sub && sub.ignored ? { $nin: sub.ignored } : { $exists: true };
 
-		ChatMessage.update({ rid: sub.rid, ignored }, { $unset: { ignored: true } }, { multi: true });
+		ChatMessage.update({ rid: sub.rid, ignored }, { $unset: { ignored: true } }, { multi: true }, CachedChatMessage.save);
 		if (sub && sub.ignored) {
-			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in: sub.ignored } }, { $set: { ignored: true } }, { multi: true });
+			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in: sub.ignored } }, { $set: { ignored: true } }, { multi: true }, CachedChatMessage.save);
 		}
 	});
 });

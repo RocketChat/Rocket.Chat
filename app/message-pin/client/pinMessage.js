@@ -3,7 +3,7 @@ import toastr from 'toastr';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings';
-import { ChatMessage, Subscriptions } from '../../models';
+import { ChatMessage, CachedChatMessage, Subscriptions } from '../../models';
 
 Meteor.methods({
 	pinMessage(message) {
@@ -26,7 +26,7 @@ Meteor.methods({
 			$set: {
 				pinned: true,
 			},
-		});
+		}, null, CachedChatMessage.save);
 	},
 	unpinMessage(message) {
 		if (!Meteor.userId()) {
@@ -48,6 +48,6 @@ Meteor.methods({
 			$set: {
 				pinned: false,
 			},
-		});
+		}, null, CachedChatMessage.save);
 	},
 });

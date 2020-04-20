@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
-import { ChatMessage, Subscriptions } from '../../models';
+import { ChatMessage, CachedChatMessage, Subscriptions } from '../../models';
 
 Meteor.methods({
 	snippetMessage(message) {
@@ -25,6 +25,6 @@ Meteor.methods({
 			$set: {
 				snippeted: true,
 			},
-		});
+		}, null, CachedChatMessage.save);
 	},
 });
