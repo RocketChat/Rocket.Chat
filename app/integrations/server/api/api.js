@@ -333,7 +333,7 @@ class WebHookAPI extends APIClass {
 	There is only one generic route propagated to Restivus which has URL-path-parameters for the integration and the token.
 	Since the rate-limiter operates on absolute routes, we need to add a limiter to the absolute url before we can validate it
 	*/
-	enforceRateLimit(objectForRateLimitMatch, request, response) {
+	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
 		const { method, url } = request;
 		const route = url.replace(`/${ this.apiPath }`, '');
 		const nameRoute = this.getFullRouteName(route, [method.toLowerCase()]);
@@ -354,7 +354,7 @@ class WebHookAPI extends APIClass {
 		const integrationForRateLimitMatch = objectForRateLimitMatch;
 		integrationForRateLimitMatch.route = nameRoute;
 
-		super.enforceRateLimit(integrationForRateLimitMatch, request, response);
+		super.enforceRateLimit(integrationForRateLimitMatch, request, response, userId);
 	}
 }
 

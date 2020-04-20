@@ -689,6 +689,9 @@ export class Subscriptions extends Base {
 	getMinimumLastSeenByRoomId(rid) {
 		return this.db.findOne({
 			rid,
+			ls: {
+				$exists: true,
+			},
 		}, {
 			sort: {
 				ls: 1,
@@ -864,6 +867,19 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	updateNameAndFnameById(_id, name, fname) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				name,
+				fname,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	setUserUsernameByUserId(userId, username) {
 		const query =			{ 'u._id': userId };
 
@@ -885,6 +901,22 @@ export class Subscriptions extends Base {
 		const update = {
 			$set: {
 				name,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateDirectNameAndFnameByName(name, newName, newFname) {
+		const query = {
+			name,
+			t: 'd',
+		};
+
+		const update = {
+			$set: {
+				...newName && { name: newName },
+				...newFname && { fname: newFname },
 			},
 		};
 
@@ -1309,7 +1341,7 @@ export class Subscriptions extends Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			Rooms.incUsersCountByIds(roomIds, -1);
+			Rooms.incUsersCountNotDMsByIds(roomIds, -1);
 		}
 
 		return result;
@@ -1342,6 +1374,10 @@ export class Subscriptions extends Base {
 		}
 
 		return result;
+	}
+
+	removeByRoomIds(rids) {
+		return this.remove({ rid: { $in: rids } });
 	}
 
 	// //////////////////////////////////////////////////////////////////

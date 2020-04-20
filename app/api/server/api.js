@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
@@ -11,6 +12,7 @@ import { settings } from '../../settings';
 import { metrics } from '../../metrics';
 import { hasPermission, hasAllPermission } from '../../authorization';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
+import { checkCodeForUser } from '../../2fa/server/code';
 
 
 const logger = new Logger('API', {});
@@ -19,6 +21,7 @@ export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
+let prometheusAPIUserAgent = false;
 
 export let API = {};
 
@@ -109,7 +112,7 @@ export class APIClass extends Restivus {
 		return result;
 	}
 
-	failure(result, errorType, stack) {
+	failure(result, errorType, stack, error) {
 		if (_.isObject(result)) {
 			result.success = false;
 		} else {
@@ -121,6 +124,14 @@ export class APIClass extends Restivus {
 
 			if (errorType) {
 				result.errorType = errorType;
+			}
+
+			if (error && error.details) {
+				try {
+					result.details = JSON.parse(error.details);
+				} catch (e) {
+					result.details = error.details;
+				}
 			}
 		}
 
@@ -178,15 +189,15 @@ export class APIClass extends Restivus {
 		return rateLimiterDictionary[route];
 	}
 
-	shouldVerifyRateLimit(route) {
+	shouldVerifyRateLimit(route, userId) {
 		return rateLimiterDictionary.hasOwnProperty(route)
 			&& settings.get('API_Enable_Rate_Limiter') === true
 			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
-			&& !(this.userId && hasPermission(this.userId, 'api-bypass-rate-limit'));
+			&& !(userId && hasPermission(userId, 'api-bypass-rate-limit'));
 	}
 
-	enforceRateLimit(objectForRateLimitMatch, request, response) {
-		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route)) {
+	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
+		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId)) {
 			return;
 		}
 
@@ -242,6 +253,15 @@ export class APIClass extends Restivus {
 		routes
 			.map((route) => this.namedRoutes(route, endpoints, apiVersion))
 			.map(addRateLimitRuleToEveryRoute);
+	}
+
+	processTwoFactor({ userId, request, invocation, options, connection }) {
+		const code = request.headers['x-2fa-code'];
+		const method = request.headers['x-2fa-method'];
+
+		checkCodeForUser({ user: userId, code, method, options, connection });
+
+		invocation.twoFactorChecked = true;
 	}
 
 	getFullRouteName(route, method, apiVersion = null) {
@@ -301,19 +321,28 @@ export class APIClass extends Restivus {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
-						user_agent: this.request.headers['user-agent'],
-						entrypoint: route,
+						...prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] },
+						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
-					const requestIp = getRequestIP(this.request);
+					this.requestIp = getRequestIP(this.request);
 					const objectForRateLimitMatch = {
-						IPAddr: requestIp,
+						IPAddr: this.requestIp,
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
 					let result;
+
+					const connection = {
+						id: Random.id(),
+						close() {},
+						token: this.token,
+						httpHeaders: this.request.headers,
+						clientAddress: this.requestIp,
+					};
+
 					try {
-						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response);
+						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
 						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, options.permissionsRequired))) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
@@ -321,7 +350,22 @@ export class APIClass extends Restivus {
 							});
 						}
 
-						result = originalAction.apply(this);
+						const invocation = new DDPCommon.MethodInvocation({
+							connection,
+							isSimulation: false,
+							userId: this.userId,
+						});
+
+						Accounts._accountData[connection.id] = {
+							connection,
+						};
+						Accounts._setAccountData(connection.id, 'loginToken', this.token);
+
+						if (options.twoFactorRequired) {
+							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: options.twoFactorOptions, connection });
+						}
+
+						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 
@@ -330,7 +374,9 @@ export class APIClass extends Restivus {
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
-						result = API.v1[apiMethod](e.message, e.error);
+						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, undefined, e);
+					} finally {
+						delete Accounts._accountData[connection.id];
 					}
 
 					result = result || API.v1.success();
@@ -357,9 +403,9 @@ export class APIClass extends Restivus {
 	}
 
 	_initAuth() {
-		const loginCompatibility = (bodyParams) => {
+		const loginCompatibility = (bodyParams, request) => {
 			// Grab the username or email that the user is logging in with
-			const { user, username, email, password, code } = bodyParams;
+			const { user, username, email, password, code: bodyCode } = bodyParams;
 
 			if (password == null) {
 				return bodyParams;
@@ -368,6 +414,8 @@ export class APIClass extends Restivus {
 			if (_.without(Object.keys(bodyParams), 'user', 'username', 'email', 'password', 'code').length > 0) {
 				return bodyParams;
 			}
+
+			const code = bodyCode || request.headers['x-2fa-code'];
 
 			const auth = {
 				password,
@@ -408,7 +456,7 @@ export class APIClass extends Restivus {
 
 		this.addRoute('login', { authRequired: false }, {
 			post() {
-				const args = loginCompatibility(this.bodyParams);
+				const args = loginCompatibility(this.bodyParams, this.request);
 				const getUserInfo = self.getHelperMethod('getUserInfo');
 
 				const invocation = new DDPCommon.MethodInvocation({
@@ -434,6 +482,7 @@ export class APIClass extends Restivus {
 						body: {
 							status: 'error',
 							error: e.error,
+							details: e.details,
 							message: e.reason || e.message,
 						},
 					};
@@ -545,6 +594,8 @@ const getUserAuth = function _getUserAuth(...args) {
 				token = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
 			}
 
+			this.token = token;
+
 			return {
 				userId: this.request.headers['x-user-id'],
 				token,
@@ -577,37 +628,50 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 	this.done();
 };
 
-const createApi = function _createApi(enableCors) {
-	if (!API.v1 || API.v1._config.enableCors !== enableCors) {
-		API.v1 = new APIClass({
-			version: 'v1',
-			apiPath: 'api/',
-			useDefaultAuth: true,
-			prettyJson: process.env.NODE_ENV === 'development',
-			enableCors,
-			defaultOptionsEndpoint,
-			auth: getUserAuth(),
-		});
+const createApi = function _createApi(_api, options = {}) {
+	_api = _api || new APIClass(Object.assign({
+		apiPath: 'api/',
+		useDefaultAuth: true,
+		prettyJson: process.env.NODE_ENV === 'development',
+		defaultOptionsEndpoint,
+		auth: getUserAuth(),
+	}, options));
+
+	delete _api._config.defaultHeaders['Access-Control-Allow-Origin'];
+	delete _api._config.defaultHeaders['Access-Control-Allow-Headers'];
+	delete _api._config.defaultHeaders.Vary;
+
+	if (settings.get('API_Enable_CORS')) {
+		const origin = settings.get('API_CORS_Origin');
+
+		if (origin) {
+			_api._config.defaultHeaders['Access-Control-Allow-Origin'] = origin;
+
+			if (origin !== '*') {
+				_api._config.defaultHeaders.Vary = 'Origin';
+			}
+		}
+
+		_api._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
 	}
 
-	if (!API.default || API.default._config.enableCors !== enableCors) {
-		API.default = new APIClass({
-			apiPath: 'api/',
-			useDefaultAuth: true,
-			prettyJson: process.env.NODE_ENV === 'development',
-			enableCors,
-			defaultOptionsEndpoint,
-			auth: getUserAuth(),
-		});
-	}
+	return _api;
+};
+
+const createApis = function _createApis() {
+	API.v1 = createApi(API.v1, {
+		version: 'v1',
+	});
+
+	API.default = createApi(API.default);
 };
 
 // also create the API immediately
-createApi(!!settings.get('API_Enable_CORS'));
+createApis();
 
 // register the API to be re-created once the CORS-setting changes.
-settings.get('API_Enable_CORS', (key, value) => {
-	createApi(value);
+settings.get(/^(API_Enable_CORS|API_CORS_Origin)$/, () => {
+	createApis();
 });
 
 settings.get('Accounts_CustomFields', (key, value) => {
@@ -631,4 +695,8 @@ settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
 settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
+});
+
+settings.get('Prometheus_API_User_Agent', (key, value) => {
+	prometheusAPIUserAgent = value;
 });

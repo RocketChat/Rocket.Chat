@@ -16,9 +16,11 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
-import { getFullUserData } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserData, getFullUserDataById } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
+import { findUsersToAutocomplete } from '../lib/users';
+import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -31,6 +33,7 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			roles: Match.Maybe(Array),
 			joinDefaultChannels: Match.Maybe(Boolean),
 			requirePasswordChange: Match.Maybe(Boolean),
+			setRandomPassword: Match.Maybe(Boolean),
 			sendWelcomeEmail: Match.Maybe(Boolean),
 			verified: Match.Maybe(Boolean),
 			customFields: Match.Maybe(Object),
@@ -130,6 +133,30 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('users.deactivateIdle', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			daysIdle: Match.Integer,
+			role: Match.Optional(String),
+		});
+
+		if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
+			return API.v1.unauthorized();
+		}
+
+		const { daysIdle, role = 'user' } = this.bodyParams;
+
+		const lastLoggedIn = new Date();
+		lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
+
+		const count = Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
+
+		return API.v1.success({
+			count,
+		});
+	},
+});
+
 API.v1.addRoute('users.getPresence', { authRequired: true }, {
 	get() {
 		if (this.isUserFromParams()) {
@@ -151,16 +178,20 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const { username } = this.getUserFromParams();
+		const { username, userId } = this.requestParams();
 		const { fields } = this.parseJsonQuery();
-
-		const result = getFullUserData({
+		const params = {
 			userId: this.userId,
 			filter: username,
 			limit: 1,
-		});
+		};
+
+		const result = userId
+			? getFullUserDataById({ userId: this.userId, filterId: userId })
+			: getFullUserData(params);
+
 		if (!result || result.count() !== 1) {
-			return API.v1.failure(`Failed to get the user data for the userId of "${ this.userId }".`);
+			return API.v1.failure('User not found.');
 		}
 
 		const [user] = result.fetch();
@@ -169,6 +200,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 			user.rooms = Promise.await(Subscriptions.findByUserIdWithUnreadMessagesCount(user._id, {
 				fields: {
 					rid: 1,
+					bio: 1,
 					name: 1,
 					t: 1,
 					roles: 1,
@@ -336,6 +368,7 @@ API.v1.addRoute('users.getStatus', { authRequired: true }, {
 		if (this.isUserFromParams()) {
 			const user = Users.findOneById(this.userId);
 			return API.v1.success({
+				_id: user._id,
 				message: user.statusText,
 				connectionStatus: user.statusConnection,
 				status: user.status,
@@ -345,6 +378,7 @@ API.v1.addRoute('users.getStatus', { authRequired: true }, {
 		const user = this.getUserFromParams();
 
 		return API.v1.success({
+			_id: user._id,
 			message: user.statusText,
 			status: user.status,
 		});
@@ -374,13 +408,13 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(user._id, () => {
-			if (this.bodyParams.message || this.bodyParams.message.length === 0) {
+			if (this.bodyParams.message || this.bodyParams.message === '') {
 				setStatusText(user._id, this.bodyParams.message);
 			}
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
-					Meteor.users.update(this.userId, {
+					Meteor.users.update(user._id, {
 						$set: {
 							status: this.bodyParams.status,
 							statusDefault: this.bodyParams.status,
@@ -398,7 +432,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.update', { authRequired: true }, {
+API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		check(this.bodyParams, {
 			userId: String,
@@ -513,13 +547,13 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
 				desktopNotificationDuration: Match.Maybe(Number),
+				desktopNotificationRequireInteraction: Match.Maybe(Boolean),
 				messageViewMode: Match.Maybe(Number),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
 				hideAvatars: Match.Maybe(Boolean),
 				hideFlexTab: Match.Maybe(Boolean),
 				sendOnEnter: Match.Maybe(String),
-				roomCounterSidebar: Match.Maybe(Boolean),
 				language: Match.Maybe(String),
 				sidebarShowFavorites: Match.Optional(Boolean),
 				sidebarShowUnread: Match.Optional(Boolean),
@@ -583,19 +617,19 @@ API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true }, {
+API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
-		const { tokenName } = this.bodyParams;
+		const { tokenName, bypassTwoFactor } = this.bodyParams;
 		if (!tokenName) {
 			return API.v1.failure('The \'tokenName\' param is required');
 		}
-		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName }));
+		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor }));
 
 		return API.v1.success({ token });
 	},
 });
 
-API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired: true }, {
+API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		const { tokenName } = this.bodyParams;
 		if (!tokenName) {
@@ -619,6 +653,7 @@ API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
 				name: loginToken.name,
 				createdAt: loginToken.createdAt,
 				lastTokenPart: loginToken.lastTokenPart,
+				bypassTwoFactor: loginToken.bypassTwoFactor,
 			}));
 
 		return API.v1.success({
@@ -627,7 +662,7 @@ API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
+API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		const { tokenName } = this.bodyParams;
 		if (!tokenName) {
@@ -641,9 +676,44 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('users.2fa.enableEmail', { authRequired: true }, {
+	post() {
+		Users.enableEmail2FAByUserId(this.userId);
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.2fa.disableEmail', { authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } }, {
+	post() {
+		Users.disableEmail2FAByUserId(this.userId);
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.2fa.sendEmailCode', {
+	post() {
+		const { emailOrUsername } = this.bodyParams;
+
+		if (!emailOrUsername) {
+			throw new Meteor.Error('error-parameter-required', 'emailOrUsername is required');
+		}
+
+		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
+		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
+
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
+		return API.v1.success(emailCheck.sendEmailCode(getUserForCheck(userId)));
+	},
+});
+
 API.v1.addRoute('users.presence', { authRequired: true }, {
 	get() {
-		const { from } = this.queryParams;
+		const { from, ids } = this.queryParams;
 
 		const options = {
 			fields: {
@@ -654,6 +724,13 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 				statusText: 1,
 			},
 		};
+
+		if (ids) {
+			return API.v1.success({
+				users: Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).fetch(),
+				full: false,
+			});
+		}
 
 		if (from) {
 			const ts = new Date(from);
@@ -671,5 +748,37 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 			users: Users.findUsersNotOffline(options).fetch(),
 			full: true,
 		});
+	},
+});
+
+API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
+	get() {
+		const { fullExport = false } = this.queryParams;
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('requestDataDownload', { fullExport: fullExport === 'true' }));
+
+		return API.v1.success({
+			requested: result.requested,
+			exportOperation: result.exportOperation,
+		});
+	},
+});
+
+API.v1.addRoute('users.autocomplete', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findUsersToAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+		})));
+	},
+});
+
+API.v1.addRoute('users.removeOtherTokens', { authRequired: true }, {
+	post() {
+		API.v1.success(Meteor.call('removeOtherTokens'));
 	},
 });

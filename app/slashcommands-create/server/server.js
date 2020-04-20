@@ -58,4 +58,5 @@ function Create(command, params, item) {
 slashCommands.add('create', Create, {
 	description: 'Create_A_New_Channel',
 	params: '#channel',
+	permission: ['create-c', 'create-p'],
 });

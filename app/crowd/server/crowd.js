@@ -151,7 +151,7 @@ export class CROWD {
 			crowd_username: crowdUser.crowd_username,
 			emails: [{
 				address: crowdUser.email,
-				verified: true,
+				verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 			}],
 			active: crowdUser.active,
 			crowd: true,
@@ -322,7 +322,6 @@ const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounce
 				crowd.sync();
 			},
 		});
-		SyncedCron.start();
 	}
 }), 500);
 

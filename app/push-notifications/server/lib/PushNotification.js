@@ -1,5 +1,4 @@
-import { Push } from 'meteor/rocketchat:push';
-
+import { Push } from '../../../push/server';
 import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
 import { RocketChatAssets } from '../../../assets';
@@ -33,6 +32,7 @@ export class PushNotification {
 			from: 'push',
 			badge,
 			sound: 'default',
+			priority: 10,
 			title,
 			text: message,
 			payload,

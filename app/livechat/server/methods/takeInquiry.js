@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Users } from '../../../models/server';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { Users, LivechatInquiry } from '../../../models/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
 Meteor.methods({
@@ -18,6 +17,10 @@ Meteor.methods({
 		}
 
 		const user = Users.findOneById(Meteor.userId());
+		const { status, statusLivechat } = user;
+		if (status === 'offline' || statusLivechat !== 'available') {
+			throw new Meteor.Error('error-agent-offline', 'Agent offline', { method: 'livechat:takeInquiry' });
+		}
 
 		const agent = {
 			agentId: user._id,

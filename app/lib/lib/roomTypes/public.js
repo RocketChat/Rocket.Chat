@@ -73,6 +73,10 @@ export class PublicRoomType extends RoomTypeConfig {
 		return true;
 	}
 
+	includeInDashboard() {
+		return true;
+	}
+
 	canAddUser(room) {
 		return hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id);
 	}
@@ -109,6 +113,10 @@ export class PublicRoomType extends RoomTypeConfig {
 		}
 	}
 
+	allowMemberAction(/* room, action */) {
+		return true;
+	}
+
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
@@ -124,5 +132,9 @@ export class PublicRoomType extends RoomTypeConfig {
 		// TODO: change to always get avatar from _id when rooms have avatars
 
 		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+	}
+
+	getDiscussionType() {
+		return 'c';
 	}
 }

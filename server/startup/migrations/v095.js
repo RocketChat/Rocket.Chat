@@ -13,14 +13,14 @@ Migrations.add({
 			if (!startWithHTML) {
 				Settings.update(
 					{ _id: 'Email_Header' },
-					{ $set: { value: `<html>${ emailHeader.value }` } }
+					{ $set: { value: `<html>${ emailHeader.value }` } },
 				);
 			}
 
 			if (!endsWithHTML) {
 				Settings.update(
 					{ _id: 'Email_Footer' },
-					{ $set: { value: `${ emailFooter.value }</html>` } }
+					{ $set: { value: `${ emailFooter.value }</html>` } },
 				);
 			}
 		}

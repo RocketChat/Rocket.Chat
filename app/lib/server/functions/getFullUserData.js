@@ -22,6 +22,7 @@ const fullFields = {
 	emails: 1,
 	phone: 1,
 	statusConnection: 1,
+	bio: 1,
 	createdAt: 1,
 	lastLogin: 1,
 	services: 1,
@@ -55,25 +56,45 @@ settings.get('Accounts_CustomFields', (key, value) => {
 	}
 });
 
+const getCustomFields = (canViewAllInfo) => (canViewAllInfo ? customFields : publicCustomFields);
+
+const getFields = (canViewAllInfo) => ({
+	...defaultFields,
+	...canViewAllInfo && fullFields,
+	...getCustomFields(canViewAllInfo),
+});
+
+export function getFullUserDataById({ userId, filterId }) {
+	const canViewAllInfo = userId === filterId || hasPermission(userId, 'view-full-other-user-info');
+
+	const fields = getFields(canViewAllInfo);
+
+	const options = {
+		fields,
+	};
+
+	return Users.findById(filterId, options);
+}
+
 export const getFullUserData = function({ userId, filter, limit: l }) {
 	const username = s.trim(filter);
-	const userToRetrieveFullUserData = Users.findOneByUsername(username, { fields: { username: 1 } });
+	const userToRetrieveFullUserData = username && Users.findOneByUsername(username, { fields: { username: 1 } });
+	if (!userToRetrieveFullUserData) {
+		return;
+	}
 
 	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
 	const viewFullOtherUserInfo = hasPermission(userId, 'view-full-other-user-info');
+
+	const canViewAllInfo = isMyOwnInfo || viewFullOtherUserInfo;
+
 	const limit = !viewFullOtherUserInfo ? 1 : l;
 
 	if (!username && limit <= 1) {
 		return undefined;
 	}
 
-	const _customFields = isMyOwnInfo || viewFullOtherUserInfo
-		? customFields
-		: publicCustomFields;
-
-	const fields = isMyOwnInfo || viewFullOtherUserInfo
-		? { ...defaultFields, ...fullFields, ..._customFields }
-		: { ...defaultFields, ..._customFields };
+	const fields = getFields(canViewAllInfo);
 
 	const options = {
 		fields,
