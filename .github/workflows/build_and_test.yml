@@ -331,7 +331,7 @@ jobs:
         meteor build --server-only --directory /tmp/build-pr
 
     - name: Build Docker image for PRs
-      if: Null(env.GITHUB_HEAD_REF) == ''
+      if: env.GITHUB_HEAD_REF == ''
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VERSION: pr-${{ github.event.number }}
