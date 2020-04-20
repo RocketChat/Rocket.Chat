@@ -549,6 +549,18 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByIdOrUsername(idOrUsername, options) {
+		const query = {
+			$or: [{
+				_id: idOrUsername,
+			}, {
+				username: idOrUsername,
+			}],
+		};
+
+		return this.findOne(query, options);
+	}
+
 	// FIND
 	findByIds(users, options) {
 		const query = { _id: { $in: users } };
