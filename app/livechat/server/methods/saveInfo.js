@@ -8,7 +8,9 @@ import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:saveInfo'(guestData, roomData) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
+		const userId = Meteor.userId();
+
+		if (!userId || !hasPermission(userId, 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
 		}
 
@@ -32,7 +34,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:saveInfo' });
 		}
 
-		if ((!room.servedBy || room.servedBy._id !== Meteor.userId()) && !hasPermission(Meteor.userId(), 'save-others-livechat-room-info')) {
+		if ((!room.servedBy || room.servedBy._id !== userId) && !hasPermission(userId, 'save-others-livechat-room-info')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
 		}
 
@@ -41,9 +43,11 @@ Meteor.methods({
 		}
 
 		const ret = Livechat.saveGuest(guestData) && Livechat.saveRoomInfo(roomData, guestData);
-		const { _id, username } = Meteor.user();
+
+		const user = Meteor.users.findOne({ _id: userId }, { fields: { username: 1 } });
+
 		Meteor.defer(() => {
-			callbacks.run('livechat.saveInfo', LivechatRooms.findOneById(roomData._id), { user: { _id, username }, oldRoom: room });
+			callbacks.run('livechat.saveInfo', LivechatRooms.findOneById(roomData._id), { user, oldRoom: room });
 		});
 
 		return ret;

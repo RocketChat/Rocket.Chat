@@ -69,5 +69,14 @@ LivechatRooms.prototype.unsetPriorityById = function(priorityId) {
 	});
 };
 
+LivechatRooms.prototype.findOpenByPriorityId = function(priorityId, options) {
+	const query = {
+		t: 'l',
+		open: true,
+		priorityId,
+	};
+
+	return this.find(query, options);
+};
 
 export default LivechatRooms;

@@ -199,7 +199,7 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 };
 
 export const removePriorityFromRooms = (priorityId) => {
-	LivechatRooms.find({ t: 'l', open: true, priorityId }).forEach((room) => {
+	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
 		updateInquiryQueuePriority(room._id);
 	});
 
@@ -212,7 +212,7 @@ export const updatePriorityInquiries = (priority) => {
 	}
 
 	const { _id: priorityId } = priority;
-	LivechatRooms.find({ t: 'l', open: true, priorityId }).forEach((room) => {
+	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
 		updateInquiryQueuePriority(room._id, priority);
 	});
 };
