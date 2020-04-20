@@ -34,7 +34,15 @@ jobs:
       with:
         node-version: "12.16.1"
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     - name: check package-lock
       run: |
@@ -199,7 +207,7 @@ jobs:
         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
         docker exec mongo mongo --eval 'rs.status()'
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: Cache cypress
       id: cache-cypress
@@ -248,7 +256,7 @@ jobs:
     if: github.event_name == 'pull_request'
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: Cache node modules
       id: cache-nodemodules
@@ -323,6 +331,7 @@ jobs:
         meteor build --server-only --directory /tmp/build-pr
 
     - name: Build Docker image for PRs
+      if: Null(env.GITHUB_HEAD_REF) == ''
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VERSION: pr-${{ github.event.number }}
@@ -348,7 +357,7 @@ jobs:
     needs: test
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: Restore build
       uses: actions/download-artifact@v1
@@ -400,7 +409,7 @@ jobs:
       IMAGE: "rocketchat/rocket.chat"
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: Restore build
       uses: actions/download-artifact@v1
