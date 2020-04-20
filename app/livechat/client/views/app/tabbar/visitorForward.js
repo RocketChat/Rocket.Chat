@@ -112,6 +112,7 @@ Template.visitorForward.events({
 
 		const transferData = {
 			roomId: instance.room.get()._id,
+			comment: event.target.comment.value,
 		};
 
 		const [user] = instance.selectedAgents.get();

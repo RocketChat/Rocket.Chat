@@ -40,7 +40,6 @@
 				{{else}}
 					{{> Template.dynamic template=customFieldsTemplate data=data }}
 				{{/if}}
-
 				<div class="input-line">
 					<label for="agent">{{_ "Forward_to_user"}}</label>
 					<div class="form-group">
@@ -61,6 +60,12 @@
 							modifier=agentModifier
 							conditions=agentConditions
 						}}
+					</div>
+				</div>
+				<div class="input-line">
+					<label>{{_ "Leave_a_comment"}} ({{_ "optional"}})</label>
+					<div class="form-group">
+						<textarea name="comment" class="rc-input__element" rows="6"></textarea>
 					</div>
 				</div>
 				<div class="rc-user-info__flex rc-user-info__row">
