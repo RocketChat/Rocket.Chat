@@ -261,9 +261,6 @@ Template.visitorInfo.events({
 			content: 'closeRoom',
 			data: {
 				rid: this.rid,
-				onCreate() {
-					modal.close();
-				},
 			},
 			confirmOnEnter: false,
 			showConfirmButton: false,

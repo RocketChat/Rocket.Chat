@@ -14,7 +14,7 @@ const validateRoomComment = (comment) => {
 		return true;
 	}
 
-	return comment && comment.length > 0;
+	return comment?.length > 0;
 };
 
 const validateRoomTags = (tagsRequired, tags) => {
@@ -22,7 +22,15 @@ const validateRoomTags = (tagsRequired, tags) => {
 		return true;
 	}
 
-	return tags && tags.length > 0;
+	return tags?.length > 0;
+};
+
+const checkUserTagPermission = (availableUserTags = [], tag) => {
+	if (hasRole(Meteor.userId(), ['admin', 'livechat-manager'])) {
+		return true;
+	}
+
+	return availableUserTags.includes(tag);
 };
 
 Template.closeRoom.helpers({
@@ -49,10 +57,10 @@ Template.closeRoom.helpers({
 	},
 	hasAvailableTags() {
 		const tags = Template.instance().availableTags.get();
-		return tags && tags.length > 0;
+		return tags?.length > 0;
 	},
 	canRemoveTag(availableUserTags, tag) {
-		return hasRole(Meteor.userId(), ['admin', 'livechat-manager']) || (Array.isArray(availableUserTags) && (availableUserTags.length === 0 || availableUserTags.indexOf(tag) > -1));
+		return checkUserTagPermission(availableUserTags, tag);
 	},
 });
 
@@ -96,11 +104,12 @@ Template.closeRoom.events({
 
 		const tag = this.valueOf();
 		const availableTags = instance.availableTags.get();
-		const hasAvailableTags = availableTags && availableTags.length > 0;
+		const hasAvailableTags = availableTags?.length > 0;
 		const availableUserTags = instance.availableUserTags.get();
-		if (!hasRole(Meteor.userId(), ['admin', 'livechat-manager']) && hasAvailableTags && (!availableUserTags || availableUserTags.indexOf(tag) === -1)) {
+		if (hasAvailableTags && !checkUserTagPermission(availableUserTags, tag)) {
 			return;
 		}
+
 		let tags = instance.tags.get();
 		tags = tags.filter((el) => el !== tag);
 		instance.tags.set(tags);
@@ -115,7 +124,7 @@ Template.closeRoom.events({
 
 		const tags = [...instance.tags.get()];
 		const tagVal = $('#tagSelect').val();
-		if (tagVal === '' || tags.indexOf(tagVal) > -1) {
+		if (tagVal === '' || tags.includes(tagVal)) {
 			return;
 		}
 
@@ -130,7 +139,7 @@ Template.closeRoom.events({
 
 			const tags = [...instance.tags.get()];
 			const tagVal = $('#tagInput').val();
-			if (tagVal === '' || tags.indexOf(tagVal) > -1) {
+			if (tagVal === '' || tags.includes(tagVal)) {
 				return;
 			}
 
@@ -158,11 +167,11 @@ Template.closeRoom.onCreated(async function() {
 
 	const { rid } = Template.currentData();
 	const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
-	this.tags.set((room && room.tags) || []);
+	this.tags.set(room?.tags || []);
 
-	if (room && room.departmentId) {
+	if (room?.departmentId) {
 		const { department } = await APIClient.v1.get(`livechat/department/${ room.departmentId }?includeAgents=false`);
-		this.tagsRequired.set(department && department.requestTagBeforeClosingChat);
+		this.tagsRequired.set(department?.requestTagBeforeClosingChat);
 	}
 
 	const uid = Meteor.userId();
@@ -174,7 +183,7 @@ Template.closeRoom.onCreated(async function() {
 		this.availableTags.set(tagsList);
 		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
 		const availableTags = tagsList
-			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
+			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.includes(i))))
 			.map(({ name }) => name);
 		this.availableUserTags.set(availableTags);
 	});
