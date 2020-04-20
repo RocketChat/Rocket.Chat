@@ -1,0 +1,30 @@
+<template name="visitorForwardCustomFieldsForm" args="deptId">
+	<div class="input-line">
+        <label for="name">{{_ "Forward_to_department"}}</label>
+        <div class="form-group">
+            {{> livechatAutocompleteUser
+                onClickTag=onClickTagDepartment
+                list=selectedDepartments
+                onSelect=onSelectDepartments
+                collection='CachedDepartmentList'
+                endpoint='livechat/department.autocomplete'
+                field='name'
+                sort='name'
+                icon="queue"
+                label="Enter_a_department_name"
+                placeholder="Enter_a_department_name"
+                name="department"
+                noMatchTemplate="userSearchEmpty"
+                templateItem="popupList_item_channel"
+                template="roomSearch"
+                noMatchTemplate="roomSearchEmpty"
+                modifier=departmentModifier
+                conditions=departmentConditions
+            }}
+        </div>
+        <input type="hidden" class="customFormField" name="departmentId" value="{{selectedDepartmentsId}}" />
+    </div>
+    <div class="form-divisor">
+        <span>{{_ "or"}}</span>
+    </div>
+</template>

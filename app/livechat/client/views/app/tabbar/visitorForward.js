@@ -8,13 +8,11 @@ import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import './visitorForward.html';
 import { APIClient } from '../../../../../utils/client';
+import { getCustomFormTemplate } from '../customTemplates/register';
 
 Template.visitorForward.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
-	},
-	hasDepartments() {
-		return Template.instance().departments.get().filter((department) => department.enabled === true).length > 0;
 	},
 	agentName() {
 		return this.name || this.username;
@@ -57,6 +55,15 @@ Template.visitorForward.helpers({
 	},
 	departmentConditions() {
 		return { enabled: true, numAgents: { $gt: 0 } };
+	},
+	customFieldsTemplate() {
+		return getCustomFormTemplate('visitorForward');
+	},
+	showDefaultDepartmentForm() {
+		return !getCustomFormTemplate('visitorForward') && Template.instance().departments.get().filter((department) => department.enabled === true).length > 0;
+	},
+	data() {
+		return Template.instance().room;
 	},
 });
 
@@ -114,6 +121,12 @@ Template.visitorForward.events({
 			const [department] = instance.selectedDepartments.get();
 			transferData.departmentId = department && department._id;
 		}
+
+		instance.$('.customFormField').each((i, el) => {
+			const elField = instance.$(el);
+			const name = elField.attr('name');
+			transferData[name] = elField.val();
+		});
 
 		if (!transferData.userId && !transferData.departmentId) {
 			return;

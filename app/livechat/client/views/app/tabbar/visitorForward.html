@@ -9,7 +9,7 @@
 				</div>
 			{{/with}}
 			<form>
-				{{#if hasDepartments}}
+				{{#if showDefaultDepartmentForm}}
 					<div class="input-line">
 						<label for="name">{{_ "Forward_to_department"}}</label>
 						<div class="form-group">
@@ -37,6 +37,8 @@
 					<div class="form-divisor">
 						<span>{{_ "or"}}</span>
 					</div>
+				{{else}}
+					{{> Template.dynamic template=customFieldsTemplate data=data }}
 				{{/if}}
 
 				<div class="input-line">
