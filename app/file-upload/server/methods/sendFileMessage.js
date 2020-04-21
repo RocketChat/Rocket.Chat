@@ -20,6 +20,7 @@ Meteor.methods({
 		}
 
 		check(msgData, {
+			id: Match.Optional(String),
 			avatar: Match.Optional(String),
 			emoji: Match.Optional(String),
 			alias: Match.Optional(String),
@@ -67,7 +68,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 		let msg = Object.assign({
-			_id: Random.id(),
+			_id: msgData.id || Random.id(),
 			rid: roomId,
 			ts: new Date(),
 			msg: '',

@@ -5,8 +5,10 @@ import { Handlebars } from 'meteor/ui';
 import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings/client';
-import { t, fileUploadIsValidContentType, APIClient } from '../../../utils';
+import { ChatMessage } from '../../../models/client';
+import { t, fileUploadIsValidContentType, APIClient, SWCache } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
+import { sendOfflineFileMessage } from './sendOfflineFileMessage';
 
 
 const readAsDataURL = (file, callback) => {
@@ -16,43 +18,56 @@ const readAsDataURL = (file, callback) => {
 	return reader.readAsDataURL(file);
 };
 
-export const uploadFileWithMessage = async (rid, tmid, { description, fileName, msg, file }) => {
+export const uploadFileWithMessage = async (rid, tmid, { id, description, fileName, msg, file }) => {
+	let offlineFile;
 	const data = new FormData();
+	id = id || Random.id();
 	description	&& data.append('description', description);
+	console.log(id);
+	id && data.append('id', id);
 	msg	&& data.append('msg', msg);
 	tmid && data.append('tmid', tmid);
 	data.append('file', file.file, fileName);
 
-	const uploads = Session.get('uploading') || [];
+	// const uploads = Session.get('uploading') || [];
 
 	const upload = {
-		id: Random.id(),
+		id: file.file._id,
 		name: fileName,
 		percentage: 0,
 	};
 
-	uploads.push(upload);
-	Session.set('uploading', uploads);
+	// uploads.push(upload);
+	// Session.set('uploading', uploads);
+
+	sendOfflineFileMessage(rid, {id, msg, tmid}, file.file, { name: fileName, description }, (file) => {
+		offlineFile = file;
+	});
 
 	const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
 		progress(progress) {
-			const uploads = Session.get('uploading') || [];
+			// const uploads = Session.get('uploading') || [];
 
 			if (progress === 100) {
 				return;
 			}
-			uploads.filter((u) => u.id === upload.id).forEach((u) => {
-				u.percentage = Math.round(progress) || 0;
-			});
-			Session.set('uploading', uploads);
+
+			const uploads = upload;
+			uploads.percentage = Math.round(progress * 100) || 0;
+			ChatMessage.setProgress(id, uploads);
+			// uploads.filter((u) => u.id === upload.id).forEach((u) => {
+			// 	u.percentage = Math.round(progress) || 0;
+			// });
+			// Session.set('uploading', uploads);
 		},
 		error(error) {
-			const uploads = Session.get('uploading') || [];
-			uploads.filter((u) => u.id === upload.id).forEach((u) => {
-				u.error = error.message;
-				u.percentage = 0;
-			});
-			Session.set('uploading', uploads);
+			ChatMessage.setProgress(id, upload);
+			// const uploads = Session.get('uploading') || [];
+			// uploads.filter((u) => u.id === upload.id).forEach((u) => {
+			// 	u.error = error.message;
+			// 	u.percentage = 0;
+			// });
+			// Session.set('uploading', uploads);
 		},
 	});
 
@@ -66,21 +81,27 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 
 		xhr.abort();
 
-		const uploads = Session.get('uploading') || {};
-		Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+		// const uploads = Session.get('uploading') || {};
+		// Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
 	});
 
 	try {
 		await promise;
-		const uploads = Session.get('uploading') || [];
-		return Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+		offlineFile && SWCache.removeFromCache(offlineFile);
+		// const uploads = Session.get('uploading') || [];
+		// return Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
 	} catch (error) {
-		const uploads = Session.get('uploading') || [];
-		uploads.filter((u) => u.id === upload.id).forEach((u) => {
-			u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
-			u.percentage = 0;
-		});
-		Session.set('uploading', uploads);
+		// const uploads = Session.get('uploading') || [];
+		// uploads.filter((u) => u.id === upload.id).forEach((u) => {
+		// 	u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+		// 	u.percentage = 0;
+		// });
+		// Session.set('uploading', uploads);
+		const uploads = upload;
+		uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+		uploads.percentage = 0;
+		ChatMessage.setProgress(id, uploads);
+
 	}
 };
 
