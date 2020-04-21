@@ -1,3 +1,3 @@
 import './methods';
 
-export { Push, appTokensCollection, notificationsCollection } from './push';
+export { Push, appTokensCollection } from './push';
