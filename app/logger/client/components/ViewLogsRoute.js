@@ -5,9 +5,9 @@ import { usePermission } from '../../../../client/contexts/AuthorizationContext'
 import ViewLogs from './ViewLogs';
 
 export default function ViewLogsRoute() {
-	const canAccessMailer = usePermission('view-logs');
+	const canViewLogs = usePermission('view-logs');
 
-	if (!canAccessMailer) {
+	if (!canViewLogs) {
 		return <NotAuthorizedPage />;
 	}
 
