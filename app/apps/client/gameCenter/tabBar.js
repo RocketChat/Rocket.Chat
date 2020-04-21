@@ -12,9 +12,7 @@ Meteor.startup(function() {
 		if (!settings.get('Apps_Game_Center_enabled')) {
 			return TabBar.removeButton('gameCenter');
 		}
-		console.log('first');
 		const { externalComponents } = await APIClient.get('apps/externalComponents');
-		console.log(externalComponents);
 		if (!externalComponents.length) {
 			return TabBar.removeButton('gameCenter');
 		}

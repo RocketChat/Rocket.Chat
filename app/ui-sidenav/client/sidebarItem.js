@@ -183,21 +183,24 @@ Template.sidebarItem.onCreated(function() {
 			return;
 		}
 
-		setLastMessageTs(this, currentData.lastMessage.ts);
+		if (currentData.lastMessage && currentData.lastMessage.ts) {
+			setLastMessageTs(this, currentData.lastMessage.ts);
+		}
 
-		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
+		if (currentData.lastMessage && currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
 			this.renderedMessage = '******';
 			return;
 		}
 
-		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
-		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
-		const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
-
-		if (!currentData.isGroupChat && Meteor.userId() !== currentData.lastMessage.u._id) {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
-		} else {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
+		if (currentData.lastMessage) {
+			const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
+			const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
+			const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
+			if (!currentData.isGroupChat && Meteor.userId() !== currentData.lastMessage.u._id) {
+				this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
+			} else {
+				this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
+			}
 		}
 	});
 });
