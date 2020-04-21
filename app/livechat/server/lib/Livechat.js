@@ -320,7 +320,8 @@ export const Livechat = {
 			return false;
 		}
 
-		const extraData = callbacks.run('livechat.beforeCloseRoom', { room, options });
+		const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
+		const { extraData } = params;
 
 		const now = new Date();
 		const { _id: rid, servedBy } = room;
