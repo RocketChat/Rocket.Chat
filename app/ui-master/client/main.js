@@ -236,6 +236,10 @@ Template.main.events({
 Template.main.onRendered(function() {
 	$('#initial-page-loading').remove();
 
+	Meteor.defer(() => {
+		callbacks.run('afterMainReady', Meteor.user());
+	});
+
 	return Tracker.autorun(function() {
 		const userId = Meteor.userId();
 		const Show_Setup_Wizard = settings.get('Show_Setup_Wizard');
