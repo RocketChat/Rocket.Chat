@@ -1,4 +1,48 @@
 
+# 3.1.1
+`2020-04-14  ·  8 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+
+- SAML assertion signature enforcement ([#17278](https://github.com/RocketChat/Rocket.Chat/pull/17278))
+
+- User search on directory not working correctly ([#17299](https://github.com/RocketChat/Rocket.Chat/pull/17299))
+
+- 404 error when clicking an username ([#17275](https://github.com/RocketChat/Rocket.Chat/pull/17275))
+
+- Avatar on sidebar when showing real names ([#17286](https://github.com/RocketChat/Rocket.Chat/pull/17286))
+
+- Directory default tab ([#17283](https://github.com/RocketChat/Rocket.Chat/pull/17283))
+
+- Discussions created from inside DMs were not working and some errors accessing recently created rooms ([#17282](https://github.com/RocketChat/Rocket.Chat/pull/17282))
+
+- Omnichannel SMS / WhatsApp integration errors due to missing location data ([#17288](https://github.com/RocketChat/Rocket.Chat/pull/17288))
+
+- LDAP users lose session on refresh ([#17302](https://github.com/RocketChat/Rocket.Chat/pull/17302))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Update Apps-Engine to stable version ([#17287](https://github.com/RocketChat/Rocket.Chat/pull/17287))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.1.0
 `2020-04-09  ·  23 🎉  ·  22 🚀  ·  71 🐛  ·  86 🔍  ·  41 👩‍💻👨‍💻`
 

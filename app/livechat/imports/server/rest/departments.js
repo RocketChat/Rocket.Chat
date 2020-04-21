@@ -4,7 +4,7 @@ import { API } from '../../../../api';
 import { hasPermission } from '../../../../authorization';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
-import { findDepartments, findDepartmentById, findDepartmentsToAutocomplete } from '../../../server/api/lib/departments';
+import { findDepartments, findDepartmentById, findDepartmentsToAutocomplete, findDepartmentsBetweenIds } from '../../../server/api/lib/departments';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
@@ -144,6 +144,25 @@ API.v1.addRoute('livechat/department.autocomplete', { authRequired: true }, {
 		return API.v1.success(Promise.await(findDepartmentsToAutocomplete({
 			uid: this.userId,
 			selector: JSON.parse(selector),
+		})));
+	},
+});
+
+API.v1.addRoute('livechat/department.listByIds', { authRequired: true }, {
+	get() {
+		const { ids } = this.queryParams;
+		const { fields } = this.parseJsonQuery();
+		if (!ids) {
+			return API.v1.failure('The \'ids\' param is required');
+		}
+		if (!Array.isArray(ids)) {
+			return API.v1.failure('The \'ids\' param must be an array');
+		}
+
+		return API.v1.success(Promise.await(findDepartmentsBetweenIds({
+			uid: this.userId,
+			ids,
+			fields,
 		})));
 	},
 });

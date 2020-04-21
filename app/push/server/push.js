@@ -10,14 +10,9 @@ import { sendGCM } from './gcm';
 import { logger, LoggerManager } from './logger';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
-export const notificationsCollection = new Mongo.Collection('_raix_push_notifications');
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
 
 appTokensCollection._ensureIndex({ userId: 1 });
-notificationsCollection._ensureIndex({ createdAt: 1 });
-notificationsCollection._ensureIndex({ sent: 1 });
-notificationsCollection._ensureIndex({ sending: 1 });
-notificationsCollection._ensureIndex({ delayUntil: 1 });
 
 export class PushClass {
 	options = {}
@@ -53,116 +48,6 @@ export class PushClass {
 		if (this.options.apn) {
 			initAPN({ options: this.options, absoluteUrl: Meteor.absoluteUrl() });
 		}
-
-		// This interval will allow only one notification to be sent at a time, it
-		// will check for new notifications at every `options.sendInterval`
-		// (default interval is 15000 ms)
-		//
-		// It looks in notifications collection to see if theres any pending
-		// notifications, if so it will try to reserve the pending notification.
-		// If successfully reserved the send is started.
-		//
-		// If notification.query is type string, it's assumed to be a json string
-		// version of the query selector. Making it able to carry `$` properties in
-		// the mongo collection.
-		//
-		// Pr. default notifications are removed from the collection after send have
-		// completed. Setting `options.keepNotifications` will update and keep the
-		// notification eg. if needed for historical reasons.
-		//
-		// After the send have completed a "send" event will be emitted with a
-		// status object containing notification id and the send result object.
-		//
-		let isSendingNotification = false;
-
-		const sendNotification = (notification) => {
-			logger.debug('Sending notification', notification);
-
-			// Reserve notification
-			const now = Date.now();
-			const timeoutAt = now + this.options.sendTimeout;
-			const reserved = notificationsCollection.update({
-				_id: notification._id,
-				sent: false, // xxx: need to make sure this is set on create
-				sending: { $lt: now },
-			}, {
-				$set: {
-					sending: timeoutAt,
-				},
-			});
-
-			// Make sure we only handle notifications reserved by this instance
-			if (reserved) {
-				// Check if query is set and is type String
-				if (notification.query && notification.query === String(notification.query)) {
-					try {
-						// The query is in string json format - we need to parse it
-						notification.query = JSON.parse(notification.query);
-					} catch (err) {
-						// Did the user tamper with this??
-						throw new Error(`Error while parsing query string, Error: ${ err.message }`);
-					}
-				}
-
-				// Send the notification
-				const result = this.serverSend(notification, this.options);
-
-				if (!this.options.keepNotifications) {
-					// Pr. Default we will remove notifications
-					notificationsCollection.remove({ _id: notification._id });
-				} else {
-					// Update the notification
-					notificationsCollection.update({ _id: notification._id }, {
-						$set: {
-							// Mark as sent
-							sent: true,
-							// Set the sent date
-							sentAt: new Date(),
-							// Count
-							count: result,
-							// Not being sent anymore
-							sending: 0,
-						},
-					});
-				}
-			}
-		};
-
-		this.sendWorker(() => {
-			if (isSendingNotification) {
-				return;
-			}
-
-			try {
-				// Set send fence
-				isSendingNotification = true;
-
-				const batchSize = this.options.sendBatchSize || 1;
-
-				// Find notifications that are not being or already sent
-				notificationsCollection.find({
-					sent: false,
-					sending: { $lt: Date.now() },
-					$or: [
-						{ delayUntil: { $exists: false } },
-						{ delayUntil: { $lte: new Date() } },
-					],
-				}, {
-					sort: { createdAt: 1 },
-					limit: batchSize,
-				}).forEach((notification) => {
-					try {
-						sendNotification(notification);
-					} catch (error) {
-						logger.debug(`Could not send notification id: "${ notification._id }", Error: ${ error.message }`);
-						logger.debug(error.stack);
-					}
-				});
-			} finally {
-				// Remove the send fence
-				isSendingNotification = false;
-			}
-		}, this.options.sendInterval || 15000); // Default every 15th sec
 	}
 
 	sendWorker(task, interval) {
@@ -185,7 +70,7 @@ export class PushClass {
 		appTokensCollection.rawCollection().deleteOne({ token });
 	}
 
-	serverSendNative(app, notification, countApn, countGcm) {
+	sendNotificationNative(app, notification, countApn, countGcm) {
 		logger.debug('send to token', app.token);
 
 		notification.payload = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
@@ -255,7 +140,7 @@ export class PushClass {
 		});
 	}
 
-	serverSendGateway(app, notification, countApn, countGcm) {
+	sendNotificationGateway(app, notification, countApn, countGcm) {
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
 
@@ -272,7 +157,9 @@ export class PushClass {
 		}
 	}
 
-	serverSend(notification = { badge: 0 }) {
+	sendNotification(notification = { badge: 0 }) {
+		logger.debug('Sending notification', notification);
+
 		const countApn = [];
 		const countGcm = [];
 
@@ -286,30 +173,24 @@ export class PushClass {
 			throw new Error('Push.send: option "text" not a string');
 		}
 
-		logger.debug(`send message "${ notification.title }" via query`, notification.query);
+		logger.debug(`send message "${ notification.title }" to userId`, notification.userId);
 
 		const query = {
-			$and: [notification.query, {
-				$or: [{
-					'token.apn': {
-						$exists: true,
-					},
-				}, {
-					'token.gcm': {
-						$exists: true,
-					},
-				}],
-			}],
+			userId: notification.userId,
+			$or: [
+				{ 'token.apn': { $exists: true } },
+				{ 'token.gcm': { $exists: true } },
+			],
 		};
 
 		appTokensCollection.find(query).forEach((app) => {
 			logger.debug('send to token', app.token);
 
 			if (this.options.gateways) {
-				return this.serverSendGateway(app, notification, countApn, countGcm);
+				return this.sendNotificationGateway(app, notification, countApn, countGcm);
 			}
 
-			return this.serverSendNative(app, notification, countApn, countGcm);
+			return this.sendNotificationNative(app, notification, countApn, countGcm);
 		});
 
 		if (LoggerManager.logLevel === 2) {
@@ -376,23 +257,15 @@ export class PushClass {
 				notId: Match.Optional(Match.Integer),
 			}),
 			android_channel_id: Match.Optional(String),
-			query: Match.Optional(String),
-			token: Match.Optional(_matchToken),
-			tokens: Match.Optional([_matchToken]),
+			userId: String,
 			payload: Match.Optional(Object),
 			delayUntil: Match.Optional(Date),
 			createdAt: Date,
 			createdBy: Match.OneOf(String, null),
 		});
 
-		// Make sure a token selector or query have been set
-		if (!notification.token && !notification.tokens && !notification.query) {
-			throw new Error('No token selector or query found');
-		}
-
-		// If tokens array is set it should not be empty
-		if (notification.tokens && !notification.tokens.length) {
-			throw new Error('No tokens in array');
+		if (!notification.userId) {
+			throw new Error('No userId found');
 		}
 	}
 
@@ -409,7 +282,7 @@ export class PushClass {
 			createdBy: currentUser,
 			sent: false,
 			sending: 0,
-		}, _.pick(options, 'from', 'title', 'text'));
+		}, _.pick(options, 'from', 'title', 'text', 'userId'));
 
 		// Add extra
 		Object.assign(notification, _.pick(options, 'payload', 'badge', 'sound', 'notId', 'delayUntil', 'android_channel_id'));
@@ -420,11 +293,6 @@ export class PushClass {
 
 		if (Match.test(options.gcm, Object)) {
 			notification.gcm = _.pick(options.gcm, 'image', 'style', 'summaryText', 'picture', 'from', 'title', 'text', 'badge', 'sound', 'notId', 'actions', 'android_channel_id');
-		}
-
-		// Set one token selector, this can be token, array of tokens or query
-		if (options.query) {
-			notification.query = JSON.stringify(options.query);
 		}
 
 		if (options.contentAvailable != null) {
@@ -438,8 +306,12 @@ export class PushClass {
 		// Validate the notification
 		this._validateDocument(notification);
 
-		// Try to add the notification to send, we return an id to keep track
-		return notificationsCollection.insert(notification);
+		try {
+			this.sendNotification(notification);
+		} catch (error) {
+			logger.debug(`Could not send notification id: "${ notification._id }", Error: ${ error.message }`);
+			logger.debug(error.stack);
+		}
 	}
 }
 
