@@ -2,7 +2,7 @@ import { Mongo } from 'meteor/mongo';
 
 import { Migrations } from '../../../app/migrations/server';
 import { Settings } from '../../../app/models/server';
-import { Notification } from '../../../app/notification-queue/server/NotificationQueue';
+import { NotificationQueue } from '../../../app/models/server/raw';
 
 function convertNotification(notification) {
 	try {
@@ -16,17 +16,16 @@ function convertNotification(notification) {
 			_id: notification._id,
 			uid: userId,
 			rid: notification.payload.rid,
+			mid: notification.payload.messageId,
 			ts: notification.createdAt,
 			items: [{
 				type: 'push',
 				data: {
-					roomId: notification.payload.rid,
 					payload: notification.payload,
 					roomName,
 					username,
 					message,
 					badge: notification.badge,
-					userId,
 					category: notification.apn?.category,
 				},
 			}],
@@ -36,30 +35,32 @@ function convertNotification(notification) {
 	}
 }
 
+async function migrateNotifications() {
+	const notificationsCollection = new Mongo.Collection('_raix_push_notifications');
+
+	const date = new Date();
+	date.setHours(date.getHours() - 2); // 2 hours ago;
+
+	const cursor = notificationsCollection.rawCollection().find({
+		createdAt: { $gte: date },
+	});
+	for await (const notification of cursor) {
+		const newNotification = convertNotification(notification);
+		if (newNotification) {
+			await NotificationQueue.insertOne(newNotification);
+		}
+	}
+	return notificationsCollection.rawCollection().drop();
+}
+
 Migrations.add({
 	version: 187,
-	async up() {
+	up() {
 		Settings.remove({ _id: 'Push_send_interval' });
 		Settings.remove({ _id: 'Push_send_batch_size' });
 		Settings.remove({ _id: 'Push_debug' });
 		Settings.remove({ _id: 'Notifications_Always_Notify_Mobile' });
 
-		const notificationsCollection = new Mongo.Collection('_raix_push_notifications');
-
-		const date = new Date();
-		date.setHours(date.getHours() - 2); // 2 hours ago;
-
-		const cursor = notificationsCollection.rawCollection().find({
-			createdAt: { $gte: date },
-		});
-
-		for await (const notification of cursor) {
-			const newNotification = convertNotification(notification);
-			if (newNotification) {
-				await Notification.collection.insertOne(newNotification);
-			}
-		}
-
-		notificationsCollection.rawCollection().drop();
+		Promise.await(migrateNotifications());
 	},
 });
