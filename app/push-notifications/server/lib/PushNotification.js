@@ -20,7 +20,7 @@ export class PushNotification {
 		return hash;
 	}
 
-	send({ roomName, roomId, username, message, userId, payload, badge = 1, category }) {
+	send({ rid, uid, mid, roomName, username, message, payload, badge = 1, category }) {
 		let title;
 		if (roomName && roomName !== '') {
 			title = `${ roomName }`;
@@ -28,6 +28,7 @@ export class PushNotification {
 		} else {
 			title = `${ username }`;
 		}
+
 		const config = {
 			from: 'push',
 			badge,
@@ -35,9 +36,13 @@ export class PushNotification {
 			priority: 10,
 			title,
 			text: message,
-			payload,
-			userId,
-			notId: this.getNotificationId(roomId),
+			payload: {
+				rid,
+				messageId: mid,
+				...payload,
+			},
+			userId: uid,
+			notId: this.getNotificationId(rid),
 			gcm: {
 				style: 'inbox',
 				summaryText: '%n% new messages',

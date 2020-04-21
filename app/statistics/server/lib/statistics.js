@@ -21,7 +21,7 @@ import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { Notification } from '../../../notification-queue/server/NotificationQueue';
+import { NotificationQueue } from '../../../models/server/raw';
 
 const wizardFields = [
 	'Organization_Type',
@@ -166,7 +166,7 @@ export const statistics = {
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
 
-		statistics.pushQueue = Promise.await(Notification.collection.estimatedDocumentCount());
+		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
 
 		return statistics;
 	},

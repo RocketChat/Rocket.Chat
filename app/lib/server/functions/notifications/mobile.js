@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../../settings';
 import { Subscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';
-import { PushNotification } from '../../../../push-notifications/server';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
@@ -48,27 +47,19 @@ export async function getPushData({ room, message, userId, receiverUsername, sen
 	}
 
 	return {
-		roomId: message.rid,
 		payload: {
 			host: Meteor.absoluteUrl(),
-			rid: message.rid,
 			sender: message.u,
 			type: room.t,
 			name: room.name,
 			messageType: message.t,
-			messageId: message._id,
 		},
 		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
 		username,
 		message: settings.get('Push_show_message') ? notificationMessage : ' ',
 		badge: await getBadgeCount(userId),
-		userId,
 		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	};
-}
-
-export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
-	PushNotification.send(getPushData({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }));
 }
 
 export function shouldNotifyMobile({

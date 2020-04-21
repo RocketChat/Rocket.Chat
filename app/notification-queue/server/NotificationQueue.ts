@@ -1,65 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { Collection, ObjectId } from 'mongodb';
 
+import { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem } from '../../../definition/INotification';
 import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
 
-const UsersCollection: Collection = Users.col;
-
-interface INotificationItemPush {
-	type: 'push';
-	data: {
-		roomId: string;
-		payload: {
-			host: string;
-			rid: string;
-			sender: {
-				_id: string;
-				username: string;
-				name?: string;
-			};
-			type: string;
-			messageId: string;
-		};
-		roomName: string;
-		username: string;
-		message: string;
-		badge: number;
-		userId: string;
-		category: string;
-	};
-}
-
-interface INotificationItemEmail {
-	type: 'email';
-	data: {
-		to: string;
-		subject: string;
-		html: string;
-		data: {
-			room_path: string;
-		};
-		from: string;
-	};
-}
-
-type NotificationItem = INotificationItemPush | INotificationItemEmail;
-
-interface INotification {
-	_id: string;
-	uid: string;
-	rid: string;
-	sid: string;
-	ts: Date;
-	schedule?: Date;
-	sending?: Date;
-	items: NotificationItem[];
-}
-
 class NotificationClass {
-	public readonly collection: Collection<INotification> = NotificationQueue.col
-
 	private running = false;
 
 	private cyclePause = 2000;
@@ -93,7 +39,13 @@ class NotificationClass {
 		}
 
 		// Once we start notifying the user we anticipate all the schedules
-		this.flushQueueForUser(notification.uid);
+		const flush = await NotificationQueue.clearScheduleByUserId(notification.uid);
+
+		// start worker again it queue flushed
+		if (flush.modifiedCount) {
+			await NotificationQueue.unsetSendingById(notification._id);
+			return this.worker(counter);
+		}
 
 		console.log('processing', notification._id);
 
@@ -101,7 +53,7 @@ class NotificationClass {
 			for (const item of notification.items) {
 				switch (item.type) {
 					case 'push':
-						this.push(item);
+						this.push(notification, item);
 						break;
 					case 'email':
 						this.email(item);
@@ -109,18 +61,10 @@ class NotificationClass {
 				}
 			}
 
-			this.collection.deleteOne({
-				_id: notification._id,
-			});
+			NotificationQueue.removeById(notification._id);
 		} catch (e) {
 			console.error(e);
-			this.collection.updateOne({
-				_id: notification._id,
-			}, {
-				$unset: {
-					sending: 1,
-				},
-			});
+			await NotificationQueue.unsetSendingById(notification._id);
 		}
 
 		if (counter >= this.maxBatchSize) {
@@ -129,57 +73,28 @@ class NotificationClass {
 		this.worker(counter++);
 	}
 
-	async flushQueueForUser(userId: string): Promise<void> {
-		await this.collection.updateMany({
-			uid: userId,
-			schedule: { $exists: true },
-		}, {
-			$unset: {
-				schedule: 1,
-			},
-		});
-	}
-
-	async getNextNotification(): Promise<INotification | undefined> {
-		const now = new Date();
+	getNextNotification(): Promise<INotification | undefined> {
 		const expired = new Date();
 		expired.setMinutes(expired.getMinutes() - 5);
 
-		return (await this.collection.findOneAndUpdate({
-			$and: [{
-				$or: [
-					{ sending: { $exists: false } },
-					{ sending: { $lte: expired } },
-				],
-			}, {
-				$or: [
-					{ schedule: { $exists: false } },
-					{ schedule: { $lte: now } },
-				],
-			}],
-		}, {
-			$set: {
-				sending: now,
-			},
-		}, {
-			sort: {
-				ts: 1,
-			},
-		})).value;
+		return NotificationQueue.findNextInQueueOrExpired(expired);
 	}
 
-	push(item: INotificationItemPush): void {
-		PushNotification.send(item.data);
+	push({ uid, rid, mid }: INotification, item: INotificationItemPush): void {
+		PushNotification.send({
+			rid,
+			uid,
+			mid,
+			...item.data,
+		});
 	}
 
 	email(item: INotificationItemEmail): void {
 		sendEmailFromData(item.data);
 	}
 
-	async scheduleItem({ uid, rid, sid, items }: {uid: string; rid: string; sid: string; items: NotificationItem[]}): Promise<void> {
-		const user = await UsersCollection.findOne({
-			_id: uid,
-		}, {
+	async scheduleItem({ uid, rid, sid, mid, items }: {uid: string; rid: string; sid: string; mid: string; items: NotificationItem[]}): Promise<void> {
+		const user = await Users.findOneById(uid, {
 			projection: {
 				statusConnection: 1,
 				_updatedAt: 1,
@@ -205,23 +120,15 @@ class NotificationClass {
 			}
 		}
 
-		await this.collection.insertOne({
-			_id: new ObjectId().toString(),
+		await NotificationQueue.insertOne({
 			uid,
 			rid,
 			sid,
+			mid,
 			ts: new Date(),
 			schedule,
 			items,
 		});
-	}
-
-	async clearQueueForUser(userId: string): Promise<number | undefined> {
-		const op = await this.collection.deleteMany({
-			uid: userId,
-		});
-
-		return op.deletedCount;
 	}
 }
 
