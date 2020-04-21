@@ -9,6 +9,7 @@ import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import ImportOperationSummary from './ImportOperationSummary';
 import { useSafely } from '../../../../client/hooks/useSafely';
+import { useMediaQuery } from '../../../ui/client/views/app/components/hooks';
 
 function ImportHistoryPage() {
 	const t = useTranslation();
@@ -76,6 +77,8 @@ function ImportHistoryPage() {
 		}
 	};
 
+	const small = useMediaQuery('(max-width: 768px)');
+
 	return <Page>
 		<Page.Header title={t('Import')}>
 			<ButtonGroup>
@@ -90,26 +93,26 @@ function ImportHistoryPage() {
 					<Table.Row>
 						<Table.Cell is='th' rowSpan={2} width='x140'>{t('Import_Type')}</Table.Cell>
 						<Table.Cell is='th' rowSpan={2}>{t('Last_Updated')}</Table.Cell>
-						<Table.Cell is='th' rowSpan={2}>{t('Last_Status')}</Table.Cell>
-						<Table.Cell is='th' rowSpan={2}>{t('File')}</Table.Cell>
-						<Table.Cell is='th' align='center' colSpan={4} width='x320'>{t('Counters')}</Table.Cell>
+						{!small && <><Table.Cell is='th' rowSpan={2}>{t('Last_Status')}</Table.Cell>
+							<Table.Cell is='th' rowSpan={2}>{t('File')}</Table.Cell>
+							<Table.Cell is='th' align='center' colSpan={4} width='x320'>{t('Counters')}</Table.Cell></>}
 					</Table.Row>
-					<Table.Row>
+					{!small && <Table.Row>
 						<Table.Cell is='th' align='center'>{t('Users')}</Table.Cell>
 						<Table.Cell is='th' align='center'>{t('Channels')}</Table.Cell>
 						<Table.Cell is='th' align='center'>{t('Messages')}</Table.Cell>
 						<Table.Cell is='th' align='center'>{t('Total')}</Table.Cell>
-					</Table.Row>
+					</Table.Row>}
 				</Table.Head>
 				<Table.Body>
 					{isLoading
-						? Array.from({ length: 20 }, (_, i) => <ImportOperationSummary.Skeleton key={i} />)
+						? Array.from({ length: 20 }, (_, i) => <ImportOperationSummary.Skeleton small={small} key={i} />)
 						: <>
-							{currentOperation?.valid && <ImportOperationSummary {...currentOperation} />}
+							{currentOperation?.valid && <ImportOperationSummary {...currentOperation} small={small}/>}
 							{latestOperations
 								?.filter(({ _id }) => currentOperation?._id !== _id || !currentOperation?.valid)
 								// Forcing valid=false as the current API only accept preparation/progress over currentOperation
-								?.map((operation) => <ImportOperationSummary key={operation._id} {...operation} valid={false} />)}
+								?.map((operation) => <ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />)}
 						</>}
 				</Table.Body>
 			</Table>
