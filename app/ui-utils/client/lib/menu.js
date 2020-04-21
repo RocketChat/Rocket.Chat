@@ -1,3 +1,4 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
@@ -116,11 +117,16 @@ export const menu = new class extends EventEmitter {
 		if (diff === undefined) {
 			diff = this.isRtl ? -1 * sideNavW : sideNavW;
 		}
-		this.sidebarWrap.css('width', '100%');
+
 		this.wrapper.css('overflow', 'hidden');
+
+		this.sidebarWrap.css('width', '100%');
+		this.sidebarWrap.css('z-index', '1');
 		this.sidebarWrap.css('background-color', '#000');
-		this.sidebarWrap.css('opacity', map(Math.abs(diff) / width, 0, 1, -0.1, 0.8).toFixed(2));
-		this.isRtl ? this.sidebar.css('transform', `translate3d(${ (sideNavW + diff).toFixed(3) }px, 0 , 0)`) : this.sidebar.css('transform', `translate3d(${ (diff - sideNavW).toFixed(3) }px, 0 , 0)`);
+		this.sidebarWrap.css('opacity', map(Math.abs(diff) / width, 0, 1, 0.8, -0.1).toFixed(2));
+
+		// Translate main content
+		this.isRtl ? this.mainContent.css('transform', `translate3d(${ - diff.toFixed(3) }px, 0 , 0)`) : this.mainContent.css('transform', `translate3d(${ diff.toFixed(3) }px, 0 , 0)`);
 	}
 
 	touchend() {
@@ -154,6 +160,8 @@ export const menu = new class extends EventEmitter {
 		this.sidebar = this.menu;
 		this.sidebarWrap = $('.sidebar-wrap');
 		this.wrapper = $('.messages-box > .wrapper');
+		this.mainContent = $('.main-content');
+
 		const ignore = (fn) => (event) => document.body.clientWidth <= 780 && fn(event);
 
 		document.body.addEventListener('touchstart', ignore((e) => this.touchstart(e)));
@@ -163,21 +171,20 @@ export const menu = new class extends EventEmitter {
 			e.target === this.sidebarWrap[0] && this.isOpen() && this.emit('clickOut', e);
 		}));
 		this.on('close', () => {
-			this.sidebarWrap.css('width', '');
-			// this.sidebarWrap.css('z-index', '');
-			this.sidebarWrap.css('background-color', '');
-			this.sidebar.css('transform', '');
-			this.sidebar.css('box-shadow', '');
-			this.sidebar.css('transition', '');
-			this.sidebarWrap.css('transition', '');
-			this.wrapper && this.wrapper.css('overflow', '');
+			// Open main content
+			this.mainContent.css('transform', 'translate3d( 0, 0 , 0)');
 		});
 		this.on('open', ignore(() => {
-			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
-			// this.sidebarWrap.css('z-index', '9998');
-			this.translate();
+			this.sidebarWrap.css('width', '');
+			this.sidebarWrap.css('z-index', '');
+			this.sidebarWrap.css('background-color', '');
+
+			// Close main content
+			this.mainContent.css('transform', 'translate3d( 100%, 0 , 0)');
+			FlowRouter.withReplaceState(function() {
+				FlowRouter.go('/home');
+			});
 		}));
-		this.mainContent = $('.main-content');
 
 		this.list = $('.rooms-list');
 		this._open = false;
