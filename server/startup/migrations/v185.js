@@ -1,19 +1,21 @@
-import { Migrations } from '../../../app/migrations/server';
-import { LivechatInquiry } from '../../../app/models/server/raw';
+import {
+	Migrations,
+} from '../../../app/migrations/server';
+import {
+	Settings,
+} from '../../../app/models/server';
 
 Migrations.add({
 	version: 185,
 	up() {
-		LivechatInquiry.find({}, { fields: { _id: 1, ts: 1 } }).forEach((inquiry) => {
-			const { _id, ts } = inquiry;
-
-			LivechatInquiry.update({ _id }, {
+		const setting = Settings.findOne({ _id: 'Message_SetNameToAliasEnabled' });
+		if (setting.value) {
+			Settings.update({ _id: 'UI_Use_Real_Name' }, {
 				$set: {
-					queueOrder: 1,
-					estimatedWaitingTimeQueue: 0,
-					estimatedServiceTimeAt: ts,
+					value: true,
 				},
 			});
-		});
+		}
+		Settings.remove({ _id: 'Message_SetNameToAliasEnabled' });
 	},
 });
