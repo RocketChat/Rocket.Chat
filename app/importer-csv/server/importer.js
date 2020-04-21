@@ -140,9 +140,7 @@ export class CsvImporter extends Base {
 		});
 
 		this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
-		super.addCountToTotal(tempUsers.length);
-
-		super.addCountToTotal(messagesCount);
+		super.addCountToTotal(messagesCount + tempUsers.length);
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 
 		if (hasDirectMessages) {
