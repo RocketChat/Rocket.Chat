@@ -5,14 +5,20 @@ import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
 
+const {
+	NOTIFICATIONS_WORKER_TIMEOUT = '2000',
+	NOTIFICATIONS_BATCH_SIZE = '100',
+	NOTIFICATIONS_SCHEDULE_DELAY = '120',
+} = process.env;
+
 class NotificationClass {
 	private running = false;
 
-	private cyclePause = 2000;
+	private cyclePause = parseInt(NOTIFICATIONS_WORKER_TIMEOUT);
 
-	private maxBatchSize = 100;
+	private maxBatchSize = parseInt(NOTIFICATIONS_BATCH_SIZE);
 
-	private maxScheduleDelaySeconds = 120
+	private maxScheduleDelaySeconds = parseInt(NOTIFICATIONS_SCHEDULE_DELAY);
 
 	initWorker(): void {
 		this.running = true;
