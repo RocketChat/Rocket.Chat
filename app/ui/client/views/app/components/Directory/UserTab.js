@@ -44,7 +44,10 @@ export function UserTab({
 
 	const directRoute = useRoute('direct');
 
-	const data = useEndpointData('GET', 'directory', query) || {};
+	const canViewOutsideRoom = usePermission('view-outside-room');
+	const canViewDM = usePermission('view-d-room');
+
+	const data = (canViewOutsideRoom && canViewDM && useEndpointData('GET', 'directory', query)) || { result: [] };
 
 	const onClick = useMemo(() => (username) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {

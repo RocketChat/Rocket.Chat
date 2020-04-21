@@ -16,7 +16,7 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
-import { getFullUserData, getFullUserDataById } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
@@ -180,20 +180,12 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
 		const { username, userId } = this.requestParams();
 		const { fields } = this.parseJsonQuery();
-		const params = {
-			userId: this.userId,
-			filter: username,
-			limit: 1,
-		};
 
-		const result = userId
-			? getFullUserDataById({ userId: this.userId, filterId: userId })
-			: getFullUserData(params);
+		const user = getFullUserDataByIdOrUsername({ userId: this.userId, filterId: userId, filterUsername: username });
 
-		if (!result || result.count() !== 1) {
+		if (!user) {
 			return API.v1.failure('User not found.');
 		}
-		const [user] = result.fetch();
 		const myself = user._id === this.userId;
 		if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
 			user.rooms = Subscriptions.findByUserId(user._id, {

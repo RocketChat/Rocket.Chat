@@ -51,7 +51,6 @@ export function executeSendMessage(uid, message) {
 		fields: {
 			username: 1,
 			type: 1,
-			...!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 },
 		},
 	});
 	let { rid } = message;
@@ -69,9 +68,6 @@ export function executeSendMessage(uid, message) {
 
 	try {
 		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
-		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
-			message.alias = user.name;
-		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);

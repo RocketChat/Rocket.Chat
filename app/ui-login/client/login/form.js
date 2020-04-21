@@ -192,6 +192,14 @@ Template.loginForm.onCreated(function() {
 	} else {
 		this.state = new ReactiveVar('login');
 	}
+
+	Tracker.autorun(() => {
+		const registrationForm = settings.get('Accounts_RegistrationForm');
+		if (registrationForm === 'Disabled' && this.state.get() === 'register') {
+			this.state.set('login');
+		}
+	});
+
 	this.validSecretURL = new ReactiveVar(false);
 	const validateCustomFields = function(formObj, validationObj) {
 		const customFields = instance.customFields.get();
