@@ -97,8 +97,8 @@ export function UserInfo({ data, ...props }) {
 
 					{data.roles && <>
 						<Box textStyle='micro' textColor='hint' mbs='none'>{t('Roles')}</Box>
-						<Box display='flex' flexDirection='row'>
-							<Margins inlineEnd='x4'>
+						<Box display='flex' flexDirection='row' flexWrap='wrap'>
+							<Margins inlineEnd='x4' blockEnd='x4'>
 								{data.roles.map((val) => <Chip pi='x4' key={val}>{val}</Chip>)}
 							</Margins>
 						</Box>
