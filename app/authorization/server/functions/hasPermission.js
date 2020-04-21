@@ -5,7 +5,7 @@ import { Permissions, Users, Subscriptions } from '../../../models/server/raw';
 const rolesHasPermission = mem(async (permission, roles) => {
 	const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } });
 	return !!result;
-});
+}, process.env.TEST_MODE === 'true' ? { maxAge: 0 } : undefined);
 
 const getRoles = mem(async (uid, scope) => {
 	const { roles: userRoles = [] } = await Users.findOne({ _id: uid });
