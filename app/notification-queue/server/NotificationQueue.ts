@@ -6,19 +6,19 @@ import { sendEmailFromData } from '../../lib/server/functions/notifications/emai
 import { PushNotification } from '../../push-notifications/server';
 
 const {
-	NOTIFICATIONS_WORKER_TIMEOUT = '2000',
-	NOTIFICATIONS_BATCH_SIZE = '100',
-	NOTIFICATIONS_SCHEDULE_DELAY = '120',
+	NOTIFICATIONS_WORKER_TIMEOUT = 2000,
+	NOTIFICATIONS_BATCH_SIZE = 100,
+	NOTIFICATIONS_SCHEDULE_DELAY = 120,
 } = process.env;
 
 class NotificationClass {
 	private running = false;
 
-	private cyclePause = parseInt(NOTIFICATIONS_WORKER_TIMEOUT);
+	private cyclePause = Number(NOTIFICATIONS_WORKER_TIMEOUT);
 
-	private maxBatchSize = parseInt(NOTIFICATIONS_BATCH_SIZE);
+	private maxBatchSize = Number(NOTIFICATIONS_BATCH_SIZE);
 
-	private maxScheduleDelaySeconds = parseInt(NOTIFICATIONS_SCHEDULE_DELAY);
+	private maxScheduleDelaySeconds = Number(NOTIFICATIONS_SCHEDULE_DELAY);
 
 	initWorker(): void {
 		this.running = true;
