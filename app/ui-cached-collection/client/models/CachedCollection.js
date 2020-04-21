@@ -129,7 +129,7 @@ export class CachedCollection extends EventEmitter {
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
-		version = 9,
+		version = 10,
 		maxCacheTime = 60 * 60 * 24 * 30,
 		onSyncData = (/* action, record */) => {},
 	}) {

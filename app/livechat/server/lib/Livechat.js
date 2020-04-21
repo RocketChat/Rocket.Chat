@@ -108,7 +108,7 @@ export const Livechat = {
 		});
 	},
 
-	async getRoom(guest, message, roomInfo, agent) {
+	async getRoom(guest, message, roomInfo, agent, extraData) {
 		let room = LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
 
@@ -128,7 +128,7 @@ export const Livechat = {
 			}
 
 			// delegate room creation to QueueManager
-			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent });
+			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent, extraData });
 			newRoom = true;
 		}
 
@@ -320,7 +320,8 @@ export const Livechat = {
 			return false;
 		}
 
-		const extraData = callbacks.run('livechat.beforeCloseRoom', { room, options });
+		const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
+		const { extraData } = params;
 
 		const now = new Date();
 		const { _id: rid, servedBy } = room;
@@ -888,7 +889,13 @@ export const Livechat = {
 			throw new Meteor.Error('department-not-found', 'Department not found', { method: 'livechat:removeDepartment' });
 		}
 
-		return LivechatDepartment.removeById(_id);
+		const ret = LivechatDepartment.removeById(_id);
+		if (ret) {
+			Meteor.defer(() => {
+				callbacks.run('livechat.afterRemoveDepartment', department);
+			});
+		}
+		return ret;
 	},
 
 	showConnecting() {
