@@ -18,23 +18,6 @@ export function useDebounce(value, delay) {
 	return debouncedValue;
 }
 
-export function useMediaQuery(query) {
-	const [matches, setQuery] = useState(window.matchMedia(query).matches);
-
-	useEffect(() => {
-		const resizeObserver = new ResizeObserver(() => {
-			setQuery(window.matchMedia(query).matches);
-		});
-		resizeObserver.observe(document.body);
-
-		return () => {
-			resizeObserver.unobserve(document.body);
-		};
-	}, [query]);
-
-	return matches;
-}
-
 export function useQuery(params, sort, type, workspace = 'local') {
 	return useMemo(() => ({
 		query: JSON.stringify({
