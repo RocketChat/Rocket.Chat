@@ -224,7 +224,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (!room || !room.open) {
 		return false;
 	}
-
+	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
