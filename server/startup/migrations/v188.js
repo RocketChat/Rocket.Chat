@@ -13,7 +13,4 @@ Migrations.add({
 	up() {
 		Permissions.update({ _id: { $in: newRolePermissions } }, { $addToSet: { roles: roleName } }, { multi: true });
 	},
-	down() {
-		Permissions.update({ _id: { $in: newRolePermissions } }, { $pull: { roles: roleName } }, { multi: true });
-	},
 });
