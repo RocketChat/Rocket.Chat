@@ -618,15 +618,26 @@ export class Users extends Base {
 		}, options);
 	}
 
-	findActiveGuests(options = {}) {
-		return this.find({
+	findActiveLocalGuests(idExceptions = [], options = {}) {
+		const query = {
 			active: true,
 			type: { $nin: ['app'] },
 			roles: {
 				$eq: 'guest',
 				$size: 1,
 			},
-		}, options);
+			isRemote: { $ne: true },
+		};
+
+		if (idExceptions) {
+			if (!_.isArray(idExceptions)) {
+				idExceptions = [idExceptions];
+			}
+
+			query._id = { $nin: idExceptions };
+		}
+
+		return this.find(query, options);
 	}
 
 	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
@@ -827,17 +838,6 @@ export class Users extends Base {
 				{ roles: { $ne: 'guest' } },
 				{ $where: 'this.roles.length > 1' },
 			],
-		}, options);
-	}
-
-	findActiveRemoteGuests(options = {}) {
-		return this.find({
-			active: true,
-			isRemote: true,
-			roles: {
-				$eq: 'guest',
-				$size: 1,
-			},
 		}, options);
 	}
 
@@ -1376,8 +1376,8 @@ Find users to send a message by email if:
 		return this.findActive().count() - this.findActiveRemote().count();
 	}
 
-	getActiveLocalGuestCount() {
-		return this.findActiveGuests().count() - this.findActiveRemoteGuests().count();
+	getActiveLocalGuestCount(idExceptions = []) {
+		return this.findActiveLocalGuests(idExceptions).count();
 	}
 
 	removeOlderResumeTokensByUserId(userId, fromDate) {

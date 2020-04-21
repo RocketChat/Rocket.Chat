@@ -20,6 +20,8 @@ export interface IValidLicense {
 	license: ILicense;
 }
 
+let maxGuestUsers = 0;
+
 class LicenseClass {
 	private url: string|null = null;
 
@@ -65,10 +67,6 @@ class LicenseClass {
 
 	_hasValidNumberOfActiveUsers(maxActiveUsers: number): boolean {
 		return Users.getActiveLocalUserCount() <= maxActiveUsers;
-	}
-
-	_hasValidNumberOfGuests(maxGuestUsers: number): boolean {
-		return Users.getActiveLocalGuestCount() <= maxGuestUsers;
 	}
 
 	addLicense(license: ILicense): void {
@@ -125,10 +123,8 @@ class LicenseClass {
 				return item;
 			}
 
-			if (license.maxGuestUsers && !this._hasValidNumberOfGuests(license.maxGuestUsers)) {
-				item.valid = false;
-				this._invalidModules(license.modules);
-				return item;
+			if (license.maxGuestUsers > maxGuestUsers) {
+				maxGuestUsers = license.maxGuestUsers;
 			}
 
 			this._validModules(license.modules);
@@ -205,6 +201,10 @@ export function hasLicense(feature: string): boolean {
 
 export function isEnterprise(): boolean {
 	return License.hasAnyValidLicense();
+}
+
+export function getMaxGuestUsers(): number {
+	return maxGuestUsers;
 }
 
 export function getModules(): string[] {
