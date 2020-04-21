@@ -339,10 +339,6 @@ Template.room.helpers({
 		return `chat-window-${ this._id }`;
 	},
 
-	uploading() {
-		return Session.get('uploading');
-	},
-
 	roomLeader() {
 		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
 		if (roles) {

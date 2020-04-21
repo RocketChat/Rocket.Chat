@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
@@ -28,20 +27,7 @@ export function executeSendMessage(uid, message) {
 		});
 	}
 
-	if (message.ts) {
-		const tsDiff = Math.abs(moment(message.ts).diff());
-		if (tsDiff > 60000) {
-			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
-				method: 'sendMessage',
-				message_ts: message.ts,
-				server_ts: new Date().getTime(),
-			});
-		} else if (tsDiff > 10000) {
-			message.ts = new Date();
-		}
-	} else {
-		message.ts = new Date();
-	}
+	message.ts = new Date();
 
 	if (message.msg) {
 		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
