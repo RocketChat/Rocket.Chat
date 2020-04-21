@@ -37,7 +37,7 @@ function convertNotification(notification) {
 }
 
 Migrations.add({
-	version: 185,
+	version: 187,
 	async up() {
 		Settings.remove({ _id: 'Push_send_interval' });
 		Settings.remove({ _id: 'Push_send_batch_size' });
