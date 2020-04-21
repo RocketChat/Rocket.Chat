@@ -1,16 +1,17 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
-import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
-import { Roles } from '../../../models';
+import { Roles } from '../../../models/client';
 import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';
 import { t } from '../../../utils/client';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 import { CONSTANTS } from '../../lib';
+import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
 import { hasAtLeastOnePermission } from '..';
 
@@ -178,6 +179,10 @@ Template.permissionsTable.helpers({
 
 	permissionDescription(permission) {
 		return t(`${ permission._id }_description`);
+	},
+
+	disabled(role) {
+		return AuthorizationUtils.isRoleReadOnly(role._id);
 	},
 });
 
