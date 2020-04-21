@@ -888,7 +888,13 @@ export const Livechat = {
 			throw new Meteor.Error('department-not-found', 'Department not found', { method: 'livechat:removeDepartment' });
 		}
 
-		return LivechatDepartment.removeById(_id);
+		const ret = LivechatDepartment.removeById(_id);
+		if (ret) {
+			Meteor.defer(() => {
+				callbacks.run('livechat.afterRemoveDepartment', department);
+			});
+		}
+		return ret;
 	},
 
 	showConnecting() {

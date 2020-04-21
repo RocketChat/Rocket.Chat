@@ -3,6 +3,7 @@ import s from 'underscore.string';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { settings } from '../../settings';
 import { menu, SideNav, Layout } from '../../ui-utils/client';
@@ -69,6 +70,9 @@ Template.adminFlex.helpers({
 		return getSidebarItems();
 	},
 	menuItem(name, icon, section, group) {
+		const routeParam = FlowRouter.getParam('group');
+		const routeName = FlowRouter.getRouteName();
+
 		return {
 			name: t(name),
 			icon,
@@ -76,6 +80,7 @@ Template.adminFlex.helpers({
 			pathGroup: group,
 			darken: true,
 			isLightSidebar: true,
+			active: (routeParam && routeParam === group) || (routeName !== 'admin' && routeName === section),
 		};
 	},
 	embeddedVersion() {
