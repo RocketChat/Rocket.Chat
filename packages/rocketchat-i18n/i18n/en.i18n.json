@@ -1240,6 +1240,7 @@
   "E2E_password_request_text": "To access your encrypted private groups and direct messages, enter your encryption password. <br/>You need to enter this password to encode/decode your messages on every client you use, since the key is not stored on the server.",
   "E2E_Reset_Key_Explanation": "This option will remove your current E2E key and log you out. <BR/>When you login again, Rocket.Chat will generate you a new key and restore your access to any encrypted room that has one or more members online.<BR/>Due to the nature of the E2E encryption, Rocket.Chat will not be able to restore access to any encrypted room that has no member online.",
   "Edit": "Edit",
+  "Edit_User": "Edit User",
   "Edit_Invite": "Edit Invite",
   "Edit_Status": "Edit Status",
   "edit-message": "Edit Message",
