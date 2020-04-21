@@ -1,19 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Push } from 'meteor/rocketchat:push';
 
-import { SystemLogger } from '../../app/logger';
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { hasRole } from '../../app/authorization';
 import { settings } from '../../app/settings';
+import { appTokensCollection, Push } from '../../app/push/server';
 
 
 Meteor.methods({
-	// log() {
-	// 	return console.log(...arguments);
-	// },
-
 	push_test() {
 		const user = Meteor.user();
 
@@ -29,7 +23,7 @@ Meteor.methods({
 			});
 		}
 
-		if (Push.enabled !== true) {
+		if (settings.get('Push_enable') !== true) {
 			throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
 				method: 'push_test',
 			});
@@ -51,7 +45,7 @@ Meteor.methods({
 			}],
 		};
 
-		const tokens = Push.appCollection.find(query).count();
+		const tokens = appTokensCollection.find(query).count();
 
 		if (tokens === 0) {
 			throw new Meteor.Error('error-no-tokens-for-this-user', 'There are no tokens for this user', {
@@ -67,9 +61,7 @@ Meteor.methods({
 				text: `@${ user.username }:\n${ TAPi18n.__('This_is_a_push_test_messsage') }`,
 			},
 			sound: 'default',
-			query: {
-				userId: user._id,
-			},
+			userId: user._id,
 		});
 
 		return {
@@ -79,66 +71,8 @@ Meteor.methods({
 	},
 });
 
-function sendPush(gateway, service, token, options, tries = 0) {
-	options.uniqueId = settings.get('uniqueID');
-
-	const data = {
-		data: {
-			token,
-			options,
-		},
-		headers: {},
-	};
-
-	const workspaceAccesstoken = getWorkspaceAccessToken();
-	if (token) {
-		data.headers.Authorization = `Bearer ${ workspaceAccesstoken }`;
-	}
-
-	return HTTP.post(`${ gateway }/push/${ service }/send`, data, function(error, response) {
-		if (response && response.statusCode === 406) {
-			console.log('removing push token', token);
-			Push.appCollection.remove({
-				$or: [{
-					'token.apn': token,
-				}, {
-					'token.gcm': token,
-				}],
-			});
-			return;
-		}
-
-		if (!error) {
-			return;
-		}
-
-		SystemLogger.error(`Error sending push to gateway (${ tries } try) ->`, error);
-
-		if (tries <= 6) {
-			const milli = Math.pow(10, tries + 2);
-
-			SystemLogger.log('Trying sending push to gateway again in', milli, 'milliseconds');
-
-			return Meteor.setTimeout(function() {
-				return sendPush(gateway, service, token, options, tries + 1);
-			}, milli);
-		}
-	});
-}
-
 function configurePush() {
-	if (settings.get('Push_debug')) {
-		Push.debug = true;
-		console.log('Push: configuring...');
-	}
-
 	if (settings.get('Push_enable') === true) {
-		Push.allow({
-			send(userId/* , notification*/) {
-				return hasRole(userId, 'admin');
-			},
-		});
-
 		let apn;
 		let gcm;
 
@@ -150,20 +84,20 @@ function configurePush() {
 
 			apn = {
 				passphrase: settings.get('Push_apn_passphrase'),
-				keyData: settings.get('Push_apn_key'),
-				certData: settings.get('Push_apn_cert'),
+				key: settings.get('Push_apn_key'),
+				cert: settings.get('Push_apn_cert'),
 			};
 
 			if (settings.get('Push_production') !== true) {
 				apn = {
 					passphrase: settings.get('Push_apn_dev_passphrase'),
-					keyData: settings.get('Push_apn_dev_key'),
-					certData: settings.get('Push_apn_dev_cert'),
+					key: settings.get('Push_apn_dev_key'),
+					cert: settings.get('Push_apn_dev_cert'),
 					gateway: 'gateway.sandbox.push.apple.com',
 				};
 			}
 
-			if (!apn.keyData || apn.keyData.trim() === '' || !apn.certData || apn.certData.trim() === '') {
+			if (!apn.key || apn.key.trim() === '' || !apn.cert || apn.cert.trim() === '') {
 				apn = undefined;
 			}
 
@@ -172,65 +106,16 @@ function configurePush() {
 			}
 		}
 
-		Push.Configure({
+		Push.configure({
 			apn,
 			gcm,
 			production: settings.get('Push_production'),
-			sendInterval: settings.get('Push_send_interval'),
-			sendBatchSize: settings.get('Push_send_batch_size'),
+			gateways: settings.get('Push_enable_gateway') === true ? settings.get('Push_gateway').split('\n') : undefined,
+			uniqueId: settings.get('uniqueID'),
+			getAuthorization() {
+				return `Bearer ${ getWorkspaceAccessToken() }`;
+			},
 		});
-
-		if (settings.get('Push_enable_gateway') === true) {
-			Push.serverSend = function(options = { badge: 0 }) {
-				const gateways = settings.get('Push_gateway').split('\n');
-
-				for (const gateway of gateways) {
-					if (options.from !== String(options.from)) {
-						throw new Error('Push.send: option "from" not a string');
-					}
-					if (options.title !== String(options.title)) {
-						throw new Error('Push.send: option "title" not a string');
-					}
-					if (options.text !== String(options.text)) {
-						throw new Error('Push.send: option "text" not a string');
-					}
-					if (settings.get('Push_debug')) {
-						console.log(`Push: send message "${ options.title }" via query`, options.query);
-					}
-
-					const query = {
-						$and: [options.query, {
-							$or: [{
-								'token.apn': {
-									$exists: true,
-								},
-							}, {
-								'token.gcm': {
-									$exists: true,
-								},
-							}],
-						}],
-					};
-
-					Push.appCollection.find(query).forEach((app) => {
-						if (settings.get('Push_debug')) {
-							console.log('Push: send to token', app.token);
-						}
-
-						if (app.token.apn) {
-							options.topic = app.appName;
-							return sendPush(gateway, 'apn', app.token.apn, options);
-						}
-
-						if (app.token.gcm) {
-							return sendPush(gateway, 'gcm', app.token.gcm, options);
-						}
-					});
-				}
-			};
-		}
-
-		Push.enabled = true;
 	}
 }
 

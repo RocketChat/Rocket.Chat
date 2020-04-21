@@ -57,4 +57,26 @@ LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
 	});
 };
 
+LivechatRooms.prototype.unsetPriorityById = function(priorityId) {
+	return this.update({
+		open: true,
+		t: 'l',
+		priorityId,
+	}, {
+		$unset: { priorityId: 1 },
+	}, {
+		multi: true,
+	});
+};
+
+LivechatRooms.prototype.findOpenByPriorityId = function(priorityId, options) {
+	const query = {
+		t: 'l',
+		open: true,
+		priorityId,
+	};
+
+	return this.find(query, options);
+};
+
 export default LivechatRooms;
