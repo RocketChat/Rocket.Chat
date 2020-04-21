@@ -201,12 +201,7 @@ API.v1.addRoute('directory', { authRequired: true }, {
 		}));
 
 		if (!result) {
-			return API.v1.success({
-				result: [],
-				count: 0,
-				offset,
-				total: 0,
-			});
+			return API.v1.failure('Please verify the parameters');
 		}
 
 		return API.v1.success({
