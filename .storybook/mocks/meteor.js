@@ -64,6 +64,9 @@ export const check = () => {};
 
 export const FlowRouter = {
 	route: () => {},
+	group: () => ({
+		route: () => {},
+	}),
 };
 
 export const BlazeLayout = {};

@@ -47,9 +47,6 @@ Template.message.helpers({
 		const { msg, settings } = this;
 		return Tracker.nonreactive(() => renderBody(msg, settings));
 	},
-	and(a, b) {
-		return a && b;
-	},
 	i18nReplyCounter() {
 		const { msg } = this;
 		return `<span class='reply-counter'>${ msg.tcount }</span>`;
