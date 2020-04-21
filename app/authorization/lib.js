@@ -6,9 +6,3 @@ export const getSettingPermissionId = function(settingId) {
 export const CONSTANTS = {
 	SETTINGS_LEVEL: 'settings',
 };
-
-export const AuthorizationUtils = class {
-	static isRoleReadOnly(/* roleId */) {
-		return false;
-	}
-};
