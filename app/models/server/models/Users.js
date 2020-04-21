@@ -623,7 +623,30 @@ export class Users extends Base {
 		return this.find({
 			active: true,
 			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
 		}, options);
+	}
+
+	findActiveLocalGuests(idExceptions = [], options = {}) {
+		const query = {
+			active: true,
+			type: { $nin: ['app'] },
+			roles: {
+				$eq: 'guest',
+				$size: 1,
+			},
+			isRemote: { $ne: true },
+		};
+
+		if (idExceptions) {
+			if (!_.isArray(idExceptions)) {
+				idExceptions = [idExceptions];
+			}
+
+			query._id = { $nin: idExceptions };
+		}
+
+		return this.find(query, options);
 	}
 
 	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
@@ -817,7 +840,11 @@ export class Users extends Base {
 	}
 
 	findActiveRemote(options = {}) {
-		return this.find({ active: true, isRemote: true }, options);
+		return this.find({
+			active: true,
+			isRemote: true,
+			roles: { $ne: ['guest'] },
+		}, options);
 	}
 
 	getSAMLByIdAndSAMLProvider(_id, provider) {
@@ -1353,6 +1380,10 @@ Find users to send a message by email if:
 
 	getActiveLocalUserCount() {
 		return this.findActive().count() - this.findActiveRemote().count();
+	}
+
+	getActiveLocalGuestCount(idExceptions = []) {
+		return this.findActiveLocalGuests(idExceptions).count();
 	}
 
 	removeOlderResumeTokensByUserId(userId, fromDate) {
