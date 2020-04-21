@@ -156,13 +156,6 @@ Template.permissions.onCreated(function() {
 	});
 });
 
-Template.permissions.onRendered(() => {
-	Tracker.afterFlush(() => {
-		SideNav.setFlex('adminFlex');
-		SideNav.openFlex();
-	});
-});
-
 Template.permissionsTable.helpers({
 	granted(roles, role) {
 		return (roles && ~roles.indexOf(role._id) && 'checked') || null;
@@ -203,4 +196,11 @@ Template.permissionsTable.events({
 
 		return Meteor.call(action, permissionId, role);
 	},
+});
+
+Template.permissions.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });
