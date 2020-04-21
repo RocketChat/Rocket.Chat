@@ -58,13 +58,13 @@ export class AppListenerBridge {
 
 	async livechatEvent(inte, data) {
 		switch (inte) {
-			case AppInterface.ILivechatRoomStartedHandler:
-			case AppInterface.ILivechatRoomClosedHandler:
+			case AppInterface.IPostLivechatRoomStarted:
+			case AppInterface.IPostLivechatRoomClosed:
 				const room = this.orch.getConverters().get('rooms').convertRoom(data);
 
 				return this.orch.getManager().getListenerManager().executeListener(inte, room);
-			case AppInterface.ILivechatAssignAgentHandler:
-			case AppInterface.ILivechatUnassignAgentHandler:
+			case AppInterface.IPostLivechatAgentAssigned:
+			case AppInterface.IPostLivechatAgentUnassigned:
 				return this.orch.getManager().getListenerManager().executeListener(inte, {
 					room: this.orch.getConverters().get('rooms').convertRoom(data.room),
 					agent: this.orch.getConverters().get('users').convertToApp(data.user),

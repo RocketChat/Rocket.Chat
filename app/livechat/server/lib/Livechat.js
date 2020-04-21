@@ -368,7 +368,7 @@ export const Livechat = {
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
-			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomClosedHandler, room);
+			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatRoomClosed, room);
 			callbacks.run('livechat.closeRoom', room);
 		});
 

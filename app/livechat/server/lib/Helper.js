@@ -45,7 +45,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 
 	const roomId = Rooms.insert(room);
 
-	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomStartedHandler, room);
+	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatRoomStarted, room);
 	callbacks.run('livechat.newRoom', room);
 	return roomId;
 };
@@ -167,7 +167,7 @@ export const removeAgentFromSubscription = (rid, { _id, username }) => {
 	Subscriptions.removeByRoomIdAndUserId(rid, _id);
 	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
 
-	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatUnassignAgentHandler, { room, user });
+	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatAgentUnassigned, { room, user });
 };
 
 export const normalizeAgent = (agentId) => {

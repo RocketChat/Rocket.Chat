@@ -81,7 +81,7 @@ export const RoutingManager = {
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
 		dispatchAgentDelegated(rid, agent.agentId);
 
-		Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatAssignAgentHandler, { room, user });
+		Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
 	},
 
