@@ -17,6 +17,7 @@ import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
 import { DateFormat } from '../../../../../lib/client';
+import { getCustomFormTemplate } from '../customTemplates/register';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -226,6 +227,16 @@ Template.visitorInfo.helpers({
 
 		const closerLabel = closer.charAt(0).toUpperCase() + closer.slice(1);
 		return t(`${ closerLabel }`);
+	},
+
+	customInfoTemplate() {
+		return getCustomFormTemplate('livechatVisitorInfo');
+	},
+
+	roomDataContext() {
+		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
+		// because only the dynamic template data will be reloaded
+		return Template.instance().room;
 	},
 });
 
