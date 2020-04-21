@@ -611,10 +611,7 @@ export class Users extends Base {
 		return this.find({
 			active: true,
 			type: { $nin: ['app'] },
-			$or: [
-				{ roles: { $ne: 'guest' } },
-				{ $where: 'this.roles.length > 1' },
-			],
+			roles: { $ne: ['guest'] },
 		}, options);
 	}
 

@@ -32,9 +32,5 @@ export async function hasLicense(feature: string): Promise<boolean> {
 }
 
 export function isEnterprise(): boolean {
-	try {
-		return isEnterpriseServer;
-	} catch (e) {
-		return false;
-	}
+	return isEnterpriseServer;
 }
