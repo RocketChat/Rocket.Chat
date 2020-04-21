@@ -2,7 +2,6 @@ export interface INotificationItemPush {
 	type: 'push';
 	data: {
 		payload: {
-			host: string;
 			sender: {
 				_id: string;
 				username: string;

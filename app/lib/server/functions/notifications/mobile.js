@@ -48,7 +48,6 @@ export async function getPushData({ room, message, userId, receiverUsername, sen
 
 	return {
 		payload: {
-			host: Meteor.absoluteUrl(),
 			sender: message.u,
 			type: room.t,
 			name: room.name,
