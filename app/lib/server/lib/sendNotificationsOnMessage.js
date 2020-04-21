@@ -167,7 +167,6 @@ export const sendNotification = async ({
 		Notification.scheduleItem({
 			uid: subscription.u._id,
 			rid: room._id,
-			sid: subscription._id,
 			mid: message._id,
 			items: queueItems,
 		});

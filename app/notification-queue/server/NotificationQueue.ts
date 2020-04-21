@@ -93,7 +93,7 @@ class NotificationClass {
 		sendEmailFromData(item.data);
 	}
 
-	async scheduleItem({ uid, rid, sid, mid, items }: {uid: string; rid: string; sid: string; mid: string; items: NotificationItem[]}): Promise<void> {
+	async scheduleItem({ uid, rid, mid, items }: {uid: string; rid: string; mid: string; items: NotificationItem[]}): Promise<void> {
 		const user = await Users.findOneById(uid, {
 			projection: {
 				statusConnection: 1,
@@ -123,7 +123,6 @@ class NotificationClass {
 		await NotificationQueue.insertOne({
 			uid,
 			rid,
-			sid,
 			mid,
 			ts: new Date(),
 			schedule,

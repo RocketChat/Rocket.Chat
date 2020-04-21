@@ -36,7 +36,6 @@ export interface INotification {
 	_id: string;
 	uid: string;
 	rid: string;
-	sid: string;
 	mid: string;
 	ts: Date;
 	schedule?: Date;
