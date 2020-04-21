@@ -18,17 +18,15 @@ export const ChatMessage = CachedChatMessage.collection;
 let timeout;
 
 ChatMessage.setReactions = function(messageId, reactions, tempActions) {
-	this.update({ _id: messageId }, { $set: { temp: true, tempActions, reactions } });
-	return CachedChatMessage.save();
+	return this.update({ _id: messageId }, { $set: { temp: true, tempActions, reactions } }, null, CachedChatMessage.save);
 };
 
 ChatMessage.unsetReactions = function(messageId, tempActions) {
-	this.update({ _id: messageId }, { $unset: { reactions: 1 }, $set: { temp: true, tempActions } });
-	return CachedChatMessage.save();
+	return this.update({ _id: messageId }, { $unset: { reactions: 1 }, $set: { temp: true, tempActions } }, null, CachedChatMessage.save);
 };
 
 ChatMessage.setProgress = function(messageId, upload) {
-	return this.update({ _id: messageId }, { $set: { uploads: upload } });
+	return this.update({ _id: messageId }, { $set: { uploads: upload } }, null, CachedChatMessage.save);
 };
 
 const normalizeThreadMessage = (message) => {
@@ -90,12 +88,14 @@ function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
 
 const messagePreFetch = () => {
 	let messagesFetched = false;
+	if (Meteor.status().status !== 'connected') {
+		clearTimeout(timeout);
+		timeout = setTimeout(cleanMessagesAtStartup, 3000);
+	}
 	Tracker.autorun(() => {
 		if (!messagesFetched && CachedChatSubscription.ready.get()) {
 			const status = Meteor.status();
 			if (status.status !== 'connected') {
-				clearTimeout(timeout);
-				timeout = setTimeout(cleanMessagesAtStartup, 3000);
 				return;
 			}
 			messagesFetched = true;
