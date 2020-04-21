@@ -11,6 +11,8 @@ export interface ILicense {
 	expiry: string;
 	maxActiveUsers: number;
 	modules: string[];
+	maxGuestUsers: number;
+	maxRoomsPerGuest: number;
 }
 
 export interface IValidLicense {
@@ -65,6 +67,10 @@ class LicenseClass {
 		return Users.getActiveLocalUserCount() <= maxActiveUsers;
 	}
 
+	_hasValidNumberOfGuests(maxGuestUsers: number): boolean {
+		return Users.getActiveLocalGuestCount() <= maxGuestUsers;
+	}
+
 	addLicense(license: ILicense): void {
 		this.licenses.push({
 			valid: undefined,
@@ -76,6 +82,10 @@ class LicenseClass {
 
 	hasModule(module: string): boolean {
 		return this.modules.has(module);
+	}
+
+	hasAnyValidLicense(): boolean {
+		return this.licenses.some((item) => item.valid);
 	}
 
 	getModules(): string[] {
@@ -115,6 +125,12 @@ class LicenseClass {
 				return item;
 			}
 
+			if (license.maxGuestUsers && !this._hasValidNumberOfGuests(license.maxGuestUsers)) {
+				item.valid = false;
+				this._invalidModules(license.modules);
+				return item;
+			}
+
 			this._validModules(license.modules);
 
 			console.log('#### License validated:', license.modules.join(', '));
@@ -137,10 +153,12 @@ class LicenseClass {
 				const { license } = item;
 
 				console.log('---- License enabled ----');
-				console.log('            url ->', license.url);
-				console.log('         expiry ->', license.expiry);
-				console.log(' maxActiveUsers ->', license.maxActiveUsers);
-				console.log('        modules ->', license.modules.join(', '));
+				console.log('              url ->', license.url);
+				console.log('           expiry ->', license.expiry);
+				console.log('   maxActiveUsers ->', license.maxActiveUsers);
+				console.log('    maxGuestUsers ->', license.maxGuestUsers);
+				console.log(' maxRoomsPerGuest ->', license.maxRoomsPerGuest);
+				console.log('          modules ->', license.modules.join(', '));
 				console.log('-------------------------');
 			});
 	}
@@ -183,6 +201,10 @@ export function setURL(url: string): void {
 
 export function hasLicense(feature: string): boolean {
 	return License.hasModule(feature);
+}
+
+export function isEnterprise(): boolean {
+	return License.hasAnyValidLicense();
 }
 
 export function getModules(): string[] {
