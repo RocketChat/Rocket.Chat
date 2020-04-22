@@ -1226,15 +1226,18 @@ export class Messages extends Base {
 				},
 			},
 			{
-				$replaceRoot: {
-					newRoot: {
-						$mergeObjects: [
-							'$_id.subscription',
-							{ unreads: '$unreads' },
-						],
-					},
+				$project: {
+					subscription: '$_id.subscription',
+					_id: 0,
+					unreads: 1,
 				},
 			},
+			{
+				$addFields: {
+					'subscription.unreads': '$unreads',
+				},
+			},
+			{ $replaceRoot: { newRoot: '$subscription' } },
 			{
 				$project: {
 					...options.fields,
