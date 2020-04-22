@@ -1,37 +1,21 @@
-import { Migrations } from '../../../app/migrations';
-import { LivechatDepartmentAgents, LivechatDepartment } from '../../../app/models/server';
-
-const updateEnabledProperty = (departmentIds) => {
-	LivechatDepartment
-		.find({ _id: { $in: departmentIds } })
-		.forEach((department) => {
-			LivechatDepartmentAgents.update({ departmentId: department._id },
-				{
-					$set: { departmentEnabled: department.enabled },
-				},
-				{
-					multi: true,
-				});
-		});
-};
-
-const removeOrphanedDepartmentAgents = (departmentIds) => {
-	departmentIds.forEach((departmentId) => {
-		if (!LivechatDepartment.findOneById(departmentId)) {
-			LivechatDepartmentAgents.removeByDepartmentId(departmentId);
-		}
-	});
-};
+import {
+	Migrations,
+} from '../../../app/migrations/server';
+import {
+	Settings,
+} from '../../../app/models/server';
 
 Migrations.add({
 	version: 185,
 	up() {
-		const departmentIds = [...new Set(LivechatDepartmentAgents
-			.find({}, { fields: { departmentId: 1 } })
-			.fetch()
-			.map((departmentAgent) => departmentAgent.departmentId))];
-
-		updateEnabledProperty(departmentIds);
-		removeOrphanedDepartmentAgents(departmentIds);
+		const setting = Settings.findOne({ _id: 'Message_SetNameToAliasEnabled' });
+		if (setting.value) {
+			Settings.update({ _id: 'UI_Use_Real_Name' }, {
+				$set: {
+					value: true,
+				},
+			});
+		}
+		Settings.remove({ _id: 'Message_SetNameToAliasEnabled' });
 	},
 });

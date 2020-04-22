@@ -90,3 +90,12 @@ export async function findDepartmentAgents({ userId, departmentId, pagination: {
 		total,
 	};
 }
+
+export async function findDepartmentsBetweenIds({ uid, ids, fields }) {
+	if (!await hasPermissionAsync(uid, 'view-livechat-departments') && !await hasPermissionAsync(uid, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+
+	const departments = await LivechatDepartment.findInIds(ids, fields).toArray();
+	return { departments };
+}
