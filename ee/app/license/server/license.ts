@@ -11,12 +11,16 @@ export interface ILicense {
 	expiry: string;
 	maxActiveUsers: number;
 	modules: string[];
+	maxGuestUsers: number;
+	maxRoomsPerGuest: number;
 }
 
 export interface IValidLicense {
 	valid?: boolean;
 	license: ILicense;
 }
+
+let maxGuestUsers = 0;
 
 class LicenseClass {
 	private url: string|null = null;
@@ -78,6 +82,10 @@ class LicenseClass {
 		return this.modules.has(module);
 	}
 
+	hasAnyValidLicense(): boolean {
+		return this.licenses.some((item) => item.valid);
+	}
+
 	getModules(): string[] {
 		return [...this.modules];
 	}
@@ -115,6 +123,10 @@ class LicenseClass {
 				return item;
 			}
 
+			if (license.maxGuestUsers > maxGuestUsers) {
+				maxGuestUsers = license.maxGuestUsers;
+			}
+
 			this._validModules(license.modules);
 
 			console.log('#### License validated:', license.modules.join(', '));
@@ -137,10 +149,12 @@ class LicenseClass {
 				const { license } = item;
 
 				console.log('---- License enabled ----');
-				console.log('            url ->', license.url);
-				console.log('         expiry ->', license.expiry);
-				console.log(' maxActiveUsers ->', license.maxActiveUsers);
-				console.log('        modules ->', license.modules.join(', '));
+				console.log('              url ->', license.url);
+				console.log('           expiry ->', license.expiry);
+				console.log('   maxActiveUsers ->', license.maxActiveUsers);
+				console.log('    maxGuestUsers ->', license.maxGuestUsers);
+				console.log(' maxRoomsPerGuest ->', license.maxRoomsPerGuest);
+				console.log('          modules ->', license.modules.join(', '));
 				console.log('-------------------------');
 			});
 	}
@@ -183,6 +197,14 @@ export function setURL(url: string): void {
 
 export function hasLicense(feature: string): boolean {
 	return License.hasModule(feature);
+}
+
+export function isEnterprise(): boolean {
+	return License.hasAnyValidLicense();
+}
+
+export function getMaxGuestUsers(): number {
+	return maxGuestUsers;
 }
 
 export function getModules(): string[] {

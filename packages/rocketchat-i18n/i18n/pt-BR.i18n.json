@@ -670,6 +670,7 @@
   "close-others-livechat-room": "Sala de Omnichannel fechada",
   "Cloud_workspace_connected_without_account": "Seu workspace está agora conectado ao Rocket.Chat Cloud. Se desejar, você pode fazer o login no Rocket.Chat Cloud e associar seu workspace à sua conta do Cloud.",
   "close-others-livechat-room_description": "Permissão para fechar outras salas de  Omnichannel",
+  "Close_room_description" : "Você está prestes a fechar este bate-papo. Você tem certeza que quer continuar?",
   "Closed": "Fechado",
   "Closed_At": "Encerrado em",
   "Closed_by_visitor": "Encerrado pelo visitante",
