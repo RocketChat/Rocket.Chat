@@ -253,7 +253,7 @@ function addToInput(text) {
 
 callbacks.add('enter-room', wipeFailedUploads);
 
-const ignoreReplies = getConfig('ignoreReplies') === 'true';
+const ignoreReplies = getConfig('ignoreReplies') !== 'false';
 
 export const dropzoneHelpers = {
 	dragAndDrop() {
