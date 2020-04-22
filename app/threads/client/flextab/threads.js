@@ -2,6 +2,7 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
 import { call } from '../../../ui-utils';
@@ -10,18 +11,26 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { getConfig } from '../../../ui-utils/client/config';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
+import { Rooms } from '../../../models/client';
 
 import './threads.html';
+import '../threads.css';
 
 const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 50;
 
 const sort = { tlm: -1 };
 
 Template.threads.events({
-	'click .js-open-thread'(e, instance) {
-		const { msg, jump } = messageArgs(this);
-		instance.state.set('mid', msg._id);
-		instance.state.set('jump', jump);
+	'click .js-open-thread'(e) {
+		const { msg /* , jump */ } = messageArgs(this);
+
+		FlowRouter.go(FlowRouter.getRouteName(), {
+			tab: 'thread',
+			context: msg._id,
+			rid: msg.rid,
+			name: Rooms.findOne({ _id: msg.rid }).name,
+		});
+
 		e.preventDefault();
 		e.stopPropagation();
 		return false;

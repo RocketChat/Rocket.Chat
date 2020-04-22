@@ -540,6 +540,29 @@ Template.room.helpers({
 		return moment.duration(roomMaxAge(room) * 1000 * 60 * 60 * 24).humanize();
 	},
 	messageContext,
+	openedThread() {
+		const tab = FlowRouter.getParam('tab');
+		const mid = FlowRouter.getParam('context');
+		const rid = Template.instance().data._id;
+
+		if (tab !== 'thread' || !mid) {
+			return;
+		}
+		const room = Rooms.findOne({ _id: rid }, {
+			fields: {
+				t: 1,
+				usernames: 1,
+				uids: 1,
+				name: 1,
+			},
+		});
+
+		return {
+			rid,
+			mid,
+			room,
+		};
+	},
 });
 
 let isSocialSharingOpen = false;
@@ -649,23 +672,15 @@ Template.room.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { tabBar, subscription } = Template.instance();
+		const { msg: { rid, _id } } = messageArgs(this);
+		const room = Rooms.findOne({ _id: rid });
 
-		const { msg, msg: { rid, _id, tmid } } = messageArgs(this);
-		const $flexTab = $('.flex-tab-container .flex-tab');
-		$flexTab.attr('template', 'thread');
-
-		tabBar.setData({
-			subscription: subscription.get(),
-			msg,
+		FlowRouter.go(FlowRouter.getRouteName(), {
 			rid,
-			jump: tmid && tmid !== _id && _id,
-			mid: tmid || _id,
-			label: 'Threads',
-			icon: 'thread',
+			name: room.name,
+			tab: 'thread',
+			context: _id,
 		});
-
-		tabBar.open('thread');
 	},
 	'click .js-reply-broadcast'() {
 		const { msg } = messageArgs(this);

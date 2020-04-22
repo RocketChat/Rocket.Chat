@@ -1,16 +1,4 @@
 <template name="thread">
-	<header class="contextual-bar__header">
-		<div class="contextual-bar__header-data">
-			{{> icon block="contextual-bar__header-icon" icon='thread'}}
-			<h2 class="contextual-bar__header-title">
-				<span class="message-body--unstyled">{{{threadTitle}}}</span>
-				{{!-- <sub class="contextual-bar__header-description">{{room.fname}}</sub> --}}
-			</h2>
-		</div>
-		<button class="contextual-bar__header-close js-close" aria-label="{{_ "Close"}}">
-			{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
-		</button>
-	</header>
 	<section class="contextual-bar__content flex-tab threads dropzone {{dragAndDrop}} {{hideUsername}}">
 		<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 		<div class="thread-list js-scroll-thread">

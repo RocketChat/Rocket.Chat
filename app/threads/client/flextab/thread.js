@@ -2,6 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
+import { HTML } from 'meteor/htmljs';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 
@@ -11,11 +12,17 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
 import { getUserPreference } from '../../../utils';
 
 const sort = { ts: 1 };
+
+createTemplateForComponent('ThreadComponent', () => import('./ThreadComponent'), {
+	// eslint-disable-next-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'test', style: 'display: flex; height: 100%;' }),
+});
 
 Template.thread.events({
 	...dropzoneEvents,
