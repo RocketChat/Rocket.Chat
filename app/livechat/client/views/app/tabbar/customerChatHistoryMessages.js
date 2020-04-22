@@ -19,7 +19,6 @@ Template.customerChatHistoryMessages.helpers({
 		return len = len.length-1;
 	},
 })
-
 Template.customerChatHistoryMessages.onCreated(function() {
     this.historyResult = new ReactiveVar([]);
     var id = Session.get('FetchID');

@@ -67,7 +67,6 @@ Template.customerChatHistory.onCreated(function() {
 			this.visitorId.set(room.v._id);
 		}
 	});
-
 	this.autorun(async () => {
 		
 		if (!this.visitorId.get() || !currentData || !currentData.rid) {
