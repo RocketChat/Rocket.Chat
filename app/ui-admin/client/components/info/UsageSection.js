@@ -2,7 +2,7 @@ import { Subtitle, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { useFormatMemorySize } from '../../../../ui/client/views/app/components/hooks';
+import { useFormatMemorySize } from '../../../../../client/hooks/useFormatMemorySize';
 import { DescriptionList } from './DescriptionList';
 
 export function UsageSection({ statistics, isLoading }) {

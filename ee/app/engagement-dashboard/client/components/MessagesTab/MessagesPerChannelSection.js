@@ -4,8 +4,8 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { LegendSymbol } from '../data/LegendSymbol';
-import { useEndpointData } from '../../hooks/useEndpointData';
 import { Section } from '../Section';
 
 export function MessagesPerChannelSection() {
@@ -48,8 +48,8 @@ export function MessagesPerChannelSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const pieData = useEndpointData('GET', 'engagement-dashboard/messages/origin', params);
-	const tableData = useEndpointData('GET', 'engagement-dashboard/messages/top-five-popular-channels', params);
+	const pieData = useEndpointData('engagement-dashboard/messages/origin', params);
+	const tableData = useEndpointData('engagement-dashboard/messages/top-five-popular-channels', params);
 
 	const [pie, table] = useMemo(() => {
 		if (!pieData || !tableData) {
