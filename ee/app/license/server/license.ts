@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 
 import { Users } from '../../../../app/models/server';
+import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 import decrypt from './decrypt';
 import { getBundleModules, isBundle } from './bundles';
 
@@ -76,6 +77,10 @@ class LicenseClass {
 		});
 
 		this.validate();
+
+		if (this.hasAnyValidLicense()) {
+			resetEnterprisePermissions();
+		}
 	}
 
 	hasModule(module: string): boolean {
