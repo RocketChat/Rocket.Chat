@@ -2,7 +2,7 @@ import { Box, Flex, Margins, Scrollable } from '@rocket.chat/fuselage';
 import React, { useMemo, createContext, useContext, useState } from 'react';
 
 import { BurgerMenuButton } from './BurgerMenuButton';
-import { VerticalBar, VerticalBarHeader, VerticalBarClose } from './VerticalBar';
+import { VerticalBar, VerticalBarHeader, VerticalBarClose, VerticalBarButton } from './VerticalBar';
 
 const PageContext = createContext();
 export function Page(props) {
@@ -38,11 +38,11 @@ export function PageContentShadowScroll({ onScrollContent, ...props }) {
 	return <PageContent onScrollContent={({ top, ...args }) => { setBorder(!top); onScrollContent && onScrollContent({ top, ...args }); }} { ...props } ></PageContent>;
 }
 
-export function PageContent({ onScrollContent, ...props }) {
+export const PageContent = React.forwardRef(function PageContent({ onScrollContent, ...props }, ref) {
 	return <Scrollable onScrollContent={onScrollContent} >
-		<Box style={useMemo(() => ({ padding: '1rem' }), [])} {...props} />
+		<Box ref={ref} style={useMemo(() => ({ padding: '1rem' }), [])} {...props} />
 	</Scrollable>;
-}
+});
 
 Page.Header = PageHeader;
 Page.Content = PageContent;
@@ -52,3 +52,4 @@ Page.VerticalBar = VerticalBar;
 Page.VerticalBar.Header = VerticalBarHeader;
 Page.VerticalBar.Content = PageContent;
 Page.VerticalBar.Close = VerticalBarClose;
+Page.VerticalBar.Button = VerticalBarButton;
