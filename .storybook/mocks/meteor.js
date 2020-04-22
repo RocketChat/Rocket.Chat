@@ -4,7 +4,10 @@ export const Meteor = {
 	_localStorage: window.localStorage,
 	absoluteUrl: () => {},
 	userId: () => {},
-	Streamer: () => {},
+	Streamer: () => ({
+		on: () => {},
+		removeListener: () => {},
+	}),
 	startup: () => {},
 	methods: () => {},
 	call: () => {},
