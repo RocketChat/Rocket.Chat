@@ -2,10 +2,10 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Table, Flex, Avatar } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
+import { useEndpointData } from '../../../../../../../client/hooks/useEndpointData';
 import { useFormatDate } from '../../../../../../../client/hooks/useFormatDate';
 import { useQuery } from '../hooks';
 import { DirectoryTable, Th } from './DirectoryTable';
@@ -48,7 +48,7 @@ export function UserTab({
 	const canViewOutsideRoom = usePermission('view-outside-room');
 	const canViewDM = usePermission('view-d-room');
 
-	const data = (canViewOutsideRoom && canViewDM && useEndpointData('GET', 'directory', query)) || { result: [] };
+	const data = (canViewOutsideRoom && canViewDM && useEndpointData('directory', query)) || { result: [] };
 
 	const onClick = useMemo(() => (username) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {
