@@ -4,18 +4,13 @@
 		{{_ "Loading..."}}
 	</h2>
 	{{else}}
-   
     <div class="chatHistory">
         <div class='msgcount'>
-            
             <p><span>{{len}} messages</span></p>
-            
         </div>
-        <ul class='chatHistoryul'>
-
+        <ul>
             {{#each historyResult}}
             {{#unless t}}
-            
             <li>
                 <div class="history-main">
                     <div class="history-img">
@@ -57,6 +52,5 @@
             {{/each}}
         </ul>
     </div>
-    
 	{{/if}}	
 </template>

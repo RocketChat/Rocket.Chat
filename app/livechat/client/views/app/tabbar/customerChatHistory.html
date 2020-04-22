@@ -9,49 +9,10 @@
 		</div>
             {{#if isAllChat}}
 			<div class="vistior-history-block">
-        
 				<ul id='allist'>
-					{{#each previousChats}}
-					<li class='list-chat' id='{{_id}}' aria='{{v.token}}'>
-					
-						<div class="history-div">
-							<div class="visitor-img">
-								<img src="/avatar/{{responseBy.username}}" alt="">
-							</div>
-							<div class="visitor-history-details">
-								<div class="visitor-details">
-									<h1>{{responseBy.username}}</h1>
-									{{#if open}}
-										<p class='open'>Open</p>
-										{{else}}
-									<p>Close at time {{time}}</p>
-									{{/if}}
-								</div>
-								<div class="total-messages">
-									<p>{{count}} messages</p>
-								</div>
-								<div class="agent-comment">
-									<p class="comment-heading">Agent comment:</p>
-									<p class="comment-text">"{{lastMessage.msg}}"</p>
-								</div>
-								
-							</div>
-						</div>
-						
-					</li>
-					{{/each}}
-				</ul>      
-			</div>
-			{{else}}
-			{{#if isChatClicked}}
-				{{> customerChatHistoryMessages}}
-			{{else}}
-			<div class='visitor-history-block'>
-				{{#if isfound }}
-				<ul class='searchresults' id='searchresul'>
-					
+				{{#if isSearching}}
+					{{#if isfound }}
 					{{#each searchResults}} 
-					
 					<li class='search-li'>
 						<div class="history-main">
 							<div class="history-img">
@@ -67,23 +28,46 @@
 								</div>
 							</div>
 						</div>
-					
 					</li>
 					{{/each}}
-					
-				</ul>
+					{{else}}
+					<h1 class='noresult'>No result found</h1> 
+					{{/if}}
 				{{else}}
-				<h1 class='noresult'>No result found</h1> 
+					{{#each previousChats}}
+					<li class='list-chat' id='{{_id}}' aria='{{v.token}}' >
+						<div class="history-div">
+							<div class="visitor-img">
+								<img src="/avatar/{{responseBy.username}}" alt="">
+							</div>
+							<div class="visitor-history-details">
+								<div class="visitor-details">
+									<h1>{{responseBy.username}}</h1>
+									{{#if open}}
+										<p class='open'>Open</p>
+										{{else}}
+									<p>Close at time {{time}}</p>
+									{{/if}}
+								</div>
+								<div class="total-messages">
+									<p>{{room.msgs}} messages</p>
+								</div>
+								<div class="agent-comment">
+									<p class="comment-heading">Agent comment:</p>
+									<p class="comment-text">"{{lastMessage.msg}}"</p>
+								</div>
+							</div>
+						</div>
+					</li>
+					{{/each}}
 				{{/if}}
+				</ul>      
 			</div>
-		
+		{{else}}
+			{{#if isChatClicked}}
+				{{> customerChatHistoryMessages}}
 			{{/if}}
-       
-            {{/if}}
-		
+		{{/if}}
 		</div>
 	</div>
-	
-		
-	
 </template>
