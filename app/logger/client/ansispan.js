@@ -9,8 +9,8 @@ const foregroundColors = {
 	37: 'white',
 };
 
-export const ansispan = (str: string) => {
-	str =		str
+export const ansispan = (str) => {
+	str =	str
 		.replace(/\s/g, '&nbsp;')
 		.replace(/(\\n|\n)/g, '<br>')
 		.replace(/>/g, '&gt;')
