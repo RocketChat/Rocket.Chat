@@ -3,11 +3,12 @@ import { Box, Table, Flex, Avatar } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { DirectoryTable, Th } from './DirectoryTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
-import { useQuery, useFormatDate } from '../hooks';
+import { useFormatDate } from '../../../../../../../client/hooks/useFormatDate';
+import { useQuery } from '../hooks';
+import { DirectoryTable, Th } from './DirectoryTable';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 

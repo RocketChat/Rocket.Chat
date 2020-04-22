@@ -6,9 +6,10 @@ import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboar
 import { DirectoryTable, Th, Markdown } from './DirectoryTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
-import { useQuery, useFormatDate } from '../hooks';
+import { useQuery } from '../hooks';
 import { roomTypes } from '../../../../../../utils/client';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
+import { useFormatDate } from '../../../../../../../client/hooks/useFormatDate';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 

@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Box, Icon, Pagination, Skeleton, Table, Flex, TextInput, Tile } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
-import { useDebounce } from '../hooks';
 import { Markdown as mrkd } from '../../../../../../markdown/client';
 
 function SortIcon({ direction }) {
@@ -59,7 +59,7 @@ export function DirectoryTable({
 
 	const [current, setCurrent] = useState(0);
 
-	const term = useDebounce(text, 500);
+	const term = useDebouncedValue(text, 500);
 
 	useEffect(() => {
 		setParams({ term, current, itemsPerPage });
