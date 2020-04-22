@@ -13,7 +13,7 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'direct',
-			path: '/direct/:rid',
+			path: '/direct/:rid/:tab?/:context?',
 		});
 	}
 
