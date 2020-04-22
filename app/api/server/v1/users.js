@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
-import { Users, Subscriptions } from '../../../models/server';
+import { Users, Subscriptions, Messages } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -198,7 +198,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 			});
 		}
 		if (fields.includeUnreadInfo === 1) {
-			user.rooms = Promise.await(Subscriptions.findByUserIdWithUnreadMessagesCount(user._id, {
+			user.rooms = Promise.await(Messages.findByUserIdWithUnreadMessagesCount(user._id, {
 				fields: {
 					rid: 1,
 					bio: 1,
