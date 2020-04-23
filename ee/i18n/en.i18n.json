@@ -10,6 +10,7 @@
   "Canned Responses": "Canned Responses",
   "Canned_Response_Removed": "Canned Response Removed",
   "Canned_Responses_Enable": "Enable Canned Responses",
+  "Click_here_for_more_details_or_contact_sales_for_a_new_license": "<a target=\"_blank\" href=\"__url__\">Click here</a> for more details or contact <strong>__email__</strong> for a new license.",
   "Closed_automatically": "Closed automatically by the system",
   "Edit_Tag": "Edit Tag",
   "Edit_Unit": "Edit Unit",
@@ -38,6 +39,7 @@
   "Livechat_monitors": "Livechat monitors",
   "Max_number_of_chats_per_agent": "Max. number of simultaneous chats",
   "Max_number_of_chats_per_agent_description": "The max. number of simultaneous chats that the agents can attend",
+  "Maximum_number_of_guests_reached": "Maximum number of guests reached",
   "Me": "Me",
   "Message_auditing": "Message auditing",
   "Message_auditing_log": "Message auditing log",
@@ -77,5 +79,6 @@
   "Waiting_queue": "Waiting queue",
   "Waiting_queue_message": "Waiting queue message",
   "Waiting_queue_message_description": "Message that will be displayed to the visitors when they get in the queue",
-  "Without_priority": "Without priority"
+  "Without_priority": "Without priority",
+  "You_reached_the_maximum_number_of_guest_users_allowed_by_your_license": "You reached the maximum number of guest users allowed by your license."
 }

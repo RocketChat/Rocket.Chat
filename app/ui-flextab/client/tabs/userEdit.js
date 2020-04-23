@@ -12,6 +12,7 @@ import { Notifications } from '../../../notifications';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
+import { handleEnterpriseError } from '../../../../ee/app/utils/client/handleEnterpriseError';
 
 Template.userEdit.helpers({
 
@@ -290,6 +291,10 @@ Template.userEdit.onCreated(function() {
 
 		Meteor.call('insertOrUpdateUser', userData, (error) => {
 			if (error) {
+				if (handleEnterpriseError(error)) {
+					return;
+				}
+
 				return handleError(error);
 			}
 			toastr.success(userData._id ? t('User_updated_successfully') : t('User_added_successfully'));
