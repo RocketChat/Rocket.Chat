@@ -1,1 +1,1 @@
-import './AuthorizationUtils';
+import './addRoleRestrictions';

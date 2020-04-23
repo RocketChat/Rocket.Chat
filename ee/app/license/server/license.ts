@@ -2,8 +2,10 @@ import EventEmitter from 'events';
 
 import { Users } from '../../../../app/models/server';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
+import { addRoleRestrictions } from '../../authorization/server/addRoleRestrictions';
 import decrypt from './decrypt';
 import { getBundleModules, isBundle } from './bundles';
+import { refreshEnterpriseState } from '../lib/isEnterprise';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -79,6 +81,8 @@ class LicenseClass {
 		this.validate();
 
 		if (this.hasAnyValidLicense()) {
+			refreshEnterpriseState();
+			addRoleRestrictions();
 			resetEnterprisePermissions();
 		}
 	}
