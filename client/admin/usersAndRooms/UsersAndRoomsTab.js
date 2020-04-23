@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { Tabs, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 
-import { Page } from '../../../../../client/components/basic/Page';
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { useRouteParameter, useRoute } from '../../../../../client/contexts/RouterContext';
-import { useMediaQuery } from '../../../../ui/client/views/app/components/hooks';
+import { Page } from '../../components/basic/Page';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
+import { useMediaQuery } from '../../../app/ui/client/views/app/components/hooks';
 import { EditRoomContextBar } from '../rooms/edit/EditRoom';
 import { UserInfoWithData } from '../users/UserInfo';
 import { EditUserWithData } from '../users/EditUser';

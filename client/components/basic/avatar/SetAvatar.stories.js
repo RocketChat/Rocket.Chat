@@ -1,5 +1,4 @@
 import React from 'react';
-import { TextInput, Box, Icon } from '@rocket.chat/fuselage';
 
 import { SetAvatar } from './SetAvatar';
 

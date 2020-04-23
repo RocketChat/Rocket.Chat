@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from 'react';
 
-import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
-import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { NotAuthorizedPage } from '../NotAuthorizedPage';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import { useEndpointData } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
 import { useSwitchTab } from '../usersAndRooms/hooks';
 import { UsersAndRoomsTab } from '../usersAndRooms/UsersAndRoomsTab';
 import { AdminUsers } from './AdminUsers';
-import { useRoute } from '../../../../../client/contexts/RouterContext';
-import { useDebounce } from '../../../../ui/client/views/app/components/hooks';
+import { useRoute } from '../../contexts/RouterContext';
+import { useDebounce } from '../../../app/ui/client/views/app/components/hooks';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 

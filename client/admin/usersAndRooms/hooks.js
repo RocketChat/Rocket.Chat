@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 
-import { useRoute } from '../../../../../client/contexts/RouterContext';
-import { useEndpoint } from '../../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../client/contexts/ToastMessagesContext';
+import { useRoute } from '../../contexts/RouterContext';
+import { useEndpoint } from '../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
 const useRoomsTab = (path) => {
 	const route = useRoute('admin-rooms');

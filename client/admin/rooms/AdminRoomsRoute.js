@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from 'react';
 
-import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
-import { useEndpointData } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { NotAuthorizedPage } from '../NotAuthorizedPage';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import { useEndpointData } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
 import { UsersAndRoomsTab } from '../usersAndRooms/UsersAndRoomsTab';
-import { useRoute } from '../../../../../client/contexts/RouterContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useSwitchTab } from '../usersAndRooms/hooks';
-import { useDebounce } from '../../../../ui/client/views/app/components/hooks';
-import { roomTypes } from '../../../../utils/client';
+import { useDebounce } from '../../../app/ui/client/views/app/components/hooks';
+import { roomTypes } from '../../../app/utils/client';
 import { AdminRooms, DEFAULT_TYPES } from './AdminRooms';
 
 const useQuery = (params, sort) => useMemo(() => ({

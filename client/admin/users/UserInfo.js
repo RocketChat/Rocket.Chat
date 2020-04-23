@@ -2,13 +2,13 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Box, Avatar, Button, ButtonGroup, Icon, Margins, Headline, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { roomTypes } from '../../../../utils/client';
-import { DateFormat } from '../../../../lib';
-import { useRoute } from '../../../../../client/contexts/RouterContext';
-import { Markdown } from '../../../../ui/client/components/GenericTable';
-import { Page } from '../../../../../client/components/basic/Page';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { roomTypes } from '../../../app/utils/client';
+import { DateFormat } from '../../../app/lib';
+import { useRoute } from '../../contexts/RouterContext';
+import { Markdown } from '../../../app/ui/client/components/GenericTable';
+import { Page } from '../../components/basic/Page';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { UsersAndRoomsTab } from './UsersAndRoomsTab';
-import { ServerContext } from '../../../../../client/contexts/ServerContext';
+import { ServerContext } from '../../contexts/ServerContext';
 
 
 export default {

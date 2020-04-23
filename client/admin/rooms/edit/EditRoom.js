@@ -1,14 +1,14 @@
 import React, { useCallback, useState, useMemo } from 'react';
 import { Box, Headline, Button, Margins, TextInput, Skeleton, Field, ToggleSwitch, Divider, Icon, Callout } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { roomTypes } from '../../../../../utils/client';
-import { useMethod } from '../../../../../../client/contexts/ServerContext';
-import { usePermission } from '../../../../../../client/contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../NotAuthorizedPage';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { roomTypes } from '../../../../app/utils/client';
+import { useMethod } from '../../../contexts/ServerContext';
+import { usePermission } from '../../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../../../app/ui-admin/client/components/NotAuthorizedPage';
 import { useEndpointAction } from '../../usersAndRooms/hooks';
-import { Page } from '../../../../../../client/components/basic/Page';
+import { Page } from '../../../components/basic/Page';
 
 export function EditRoomContextBar({ rid }) {
 	const canViewRoomAdministration = usePermission('view-room-administration');

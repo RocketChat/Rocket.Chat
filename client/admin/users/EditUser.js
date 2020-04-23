@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { Field, TextInput, Box, Headline, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental, useEndpointData, ENDPOINT_STATES } from '../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useEndpointDataExperimental, useEndpointData, ENDPOINT_STATES } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { useEndpointAction } from '../usersAndRooms/hooks';
-import { isEmail } from '../../../../utils/lib/isEmail.js';
-import { useRoute } from '../../../../../client/contexts/RouterContext';
-import { Page } from '../../../../../client/components/basic/Page';
-import { SetAvatar } from '../../../../../client/components/basic/avatar/SetAvatar';
+import { isEmail } from '../../../app/utils/lib/isEmail.js';
+import { useRoute } from '../../contexts/RouterContext';
+import { Page } from '../../components/basic/Page';
+import { SetAvatar } from '../../components/basic/avatar/SetAvatar';
 
 export function EditUserWithData({ userId, ...props }) {
 	const t = useTranslation();

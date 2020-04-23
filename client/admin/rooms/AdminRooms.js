@@ -2,10 +2,10 @@ import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Box, Table, Icon, TextInput, Field, CheckBox, Margins } from '@rocket.chat/fuselage';
 import { useMediaQuery, useUniqueId } from '@rocket.chat/fuselage-hooks';
 
-import { GenericTable, Th } from '../../../../ui/client/components/GenericTable';
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { RoomAvatar } from '../../../../../client/components/basic/avatar/Avatar';
-import { roomTypes } from '../../../../utils/client';
+import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { RoomAvatar } from '../../components/basic/avatar/Avatar';
+import { roomTypes } from '../../../app/utils/client';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
