@@ -9,6 +9,7 @@ import { EditRoomContextBar } from '../rooms/edit/EditRoom';
 import { UserInfoWithData } from '../users/UserInfo';
 import { EditUserWithData } from '../users/EditUser';
 import { AddUser } from '../users/AddUser';
+import { InviteUsers } from '../users/InviteUsers';
 
 export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) {
 	const t = useTranslation();
@@ -49,6 +50,7 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 					{tab === 'users' && context === 'info' && t('User_Info')}
 					{tab === 'users' && context === 'edit' && t('Edit_User')}
 					{tab === 'users' && context === 'new' && t('Add_User')}
+					{tab === 'users' && context === 'invite' && t('Invite_Users')}
 					<Page.VerticalBar.Close onClick={() => {
 						router.push({});
 					}}/></Page.VerticalBar.Header>
@@ -57,6 +59,7 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 					{ tab === 'users' && context === 'info' && <UserInfoWithData userId={id}/> }
 					{ tab === 'users' && context === 'edit' && <EditUserWithData userId={id}/> }
 					{ tab === 'users' && context === 'new' && <AddUser/> }
+					{ tab === 'users' && context === 'invite' && <InviteUsers/> }
 				</Page.VerticalBar.Content>
 			</Page.VerticalBar>}
 	</Page>;
