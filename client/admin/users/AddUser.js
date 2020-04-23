@@ -71,7 +71,7 @@ export function AddUser({ roles, ...props }) {
 			<Field>
 				<Field.Label>{t('Email')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={email} error={!isEmail(email) ? 'error' : undefined} onChange={handleChange('email')} addon={<Icon name='mail' size='x20'/>}/>
+					<TextInput flexGrow={1} value={email} error={!isEmail(email) && email.length > 0 ? 'error' : undefined} onChange={handleChange('email')} addon={<Icon name='mail' size='x20'/>}/>
 				</Field.Row>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>

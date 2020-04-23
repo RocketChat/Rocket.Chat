@@ -21,16 +21,19 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 	const small = useMediaQuery('(max-width: 780px)');
 
 	const router = useRoute(route);
-	const handleNew = useCallback(() => router.push({
-		context: 'new',
+	const handleHeaderButtonClick = useCallback((context) => () => router.push({
+		context,
 	}), [router]);
 
 	return <Page {...props} flexDirection='row'>
 		<Page name='admin-user-and-room'>
 			<Page.Header title={t('Users_and_rooms')}>
 				{ tab === 'users' && <ButtonGroup>
-					<Button small onClick={handleNew} aria-label={t('New')}>
+					<Button small onClick={handleHeaderButtonClick('new')} aria-label={t('New')}>
 						<Icon name='plus'/>
+					</Button>
+					<Button small onClick={handleHeaderButtonClick('invite')} aria-label={t('Invite')}>
+						<Icon name='send'/>
 					</Button>
 				</ButtonGroup>
 				}

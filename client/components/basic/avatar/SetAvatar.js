@@ -48,18 +48,16 @@ export function SetAvatar({ username, setAvatarObj }) {
 		{t('Profile_picture')}
 		<Box display='flex' flexDirection='row' mbs='x4'>
 			<UserAvatar size='x120' url={url} username={username} style={{ objectFit: 'contain' }} mie='x4'/>
-			<Box display='flex' flexDirection='column' flexGrow='1'>
-				<Margins block ='x4' inline='x4'>
-					<Box display='flex' flexDirection='row' mbs='none'>
-						<Margins inline='x4'>
-							<Button square large mis='none' onClick={clickReset}><UserAvatar size='x36' username={`%40${ username }`} mie='x4'/></Button>
-							<Button square large onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
-							<Button square large mie='none' onClick={clickUrl}><Icon name='permalink' size='x20'/></Button>
-						</Margins>
-					</Box>
-					<Box>{t('Use_url_for_avatar')}</Box>
-					<TextInput placehloder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={(e) => { setAvatarFromUrl(e.currentTarget.value); }}/>
-				</Margins>
+			<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
+				<Box display='flex' flexDirection='row' mbs='none'>
+					<Margins inline='x4'>
+						<Button square mis='none' onClick={clickReset}><UserAvatar size='x36' username={`%40${ username }`} mie='x4'/></Button>
+						<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
+						<Button square mie='none' onClick={clickUrl}><Icon name='permalink' size='x20'/></Button>
+					</Margins>
+				</Box>
+				<Box>{t('Use_url_for_avatar')}</Box>
+				<TextInput flexGrow={0} placehloder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={(e) => { setAvatarFromUrl(e.currentTarget.value); }}/>
 			</Box>
 		</Box>
 	</Box>;

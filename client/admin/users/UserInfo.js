@@ -85,8 +85,8 @@ export function UserInfo({ data, ...props }) {
 
 			<Box display='flex' flexDirection='row'>
 				<ButtonGroup flexGrow={1} justifyContent='center'>
-					<Button secondary onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
-					<Button secondary onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button>
+					<Button onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
+					<Button onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button>
 				</ButtonGroup>
 			</Box>
 
