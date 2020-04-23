@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { addRoleRestrictions } from './addRoleRestrictions';
+import { addRoleRestrictions } from '../lib/addRoleRestrictions';
 
 Meteor.startup(() => {
 	Meteor.call('license:isEnterprise', (err, result) => {

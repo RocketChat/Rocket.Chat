@@ -1,1 +1,1 @@
-import './addRoleRestrictions';
+import '../lib/addRoleRestrictions';
