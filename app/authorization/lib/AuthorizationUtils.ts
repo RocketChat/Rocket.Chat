@@ -24,17 +24,12 @@ export const AuthorizationUtils = class {
 			throw new Meteor.Error('invalid-param');
 		}
 
-		if (!restrictedRolePermissions[roleId]) {
+		const rules = restrictedRolePermissions[roleId];
+		if (!rules || !rules.whitelist || !rules.whitelist.length) {
 			return false;
 		}
 
-		const rules = restrictedRolePermissions[roleId];
-
-		if (rules.whitelist.length) {
-			return !rules.whitelist.includes(permissionId);
-		}
-
-		return false;
+		return !rules.whitelist.includes(permissionId);
 	}
 
 	static isPermissionRestrictedForRoleList(permissionId: string, roleList: [string]) {
