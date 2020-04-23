@@ -6,11 +6,11 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
 import { finalStep } from './SetupWizardState';
-import { FinalStep } from './steps/FinalStep';
-import { SideBar } from './SideBar';
-import { AdminUserInformationStep } from './steps/AdminUserInformationStep';
-import { SettingsBasedStep } from './steps/SettingsBasedStep';
-import { RegisterServerStep } from './steps/RegisterServerStep';
+import FinalStep from './steps/FinalStep';
+import SideBar from './SideBar';
+import AdminUserInformationStep from './steps/AdminUserInformationStep';
+import SettingsBasedStep from './steps/SettingsBasedStep';
+import RegisterServerStep from './steps/RegisterServerStep';
 
 function SetupWizardPage({ currentStep = 1 }) {
 	useWipeInitialPageLoading();
