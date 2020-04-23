@@ -13,8 +13,6 @@ export function AddUser({ roles, ...props }) {
 	const t = useTranslation();
 
 	const [newData, setNewData] = useState({});
-	const [avatarObj, setAvatarObj] = useState();
-	const [userId, setUserId] = useState('');
 
 	const router = useRoute('admin-users');
 
@@ -29,29 +27,13 @@ export function AddUser({ roles, ...props }) {
 		...Object.fromEntries(Object.entries(newData).filter(([, value]) => value !== null)),
 	}), [JSON.stringify(newData)]);
 
-	const saveAvatarQuery = useMemo(() => ({
-		userId,
-		avatarUrl: avatarObj && avatarObj.avatarUrl,
-	}), userId, [JSON.stringify(avatarObj)]);
-
-	const saveAvatarAction = useEndpointAction('UPLOAD', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
-
-	useEffect(async () => {
-		if (userId) {
-			if (avatarObj) {
-				await saveAvatarAction(avatarObj);
-			}
-			goToUser(userId);
-		}
-	}, [userId]);
-
 	const saveAction = useEndpointAction('POST', 'users.create', saveQuery, t('User_created_successfully'));
 
 	const handleSave = async () => {
 		if (Object.keys(newData).length) {
 			const result = await saveAction();
 			if (result.success) {
-				setUserId(result.user._id);
+				goToUser(result.user._id);
 			}
 		}
 	};
@@ -65,8 +47,10 @@ export function AddUser({ roles, ...props }) {
 		statusText = '',
 		bio = '',
 		email = '',
+		password = '',
 		verified = false,
 		requirePasswordChange = false,
+		setRandomPassword = false,
 		sendWelcomeEmail = true,
 		joinDefaultChannels = true,
 	} = newData;
@@ -75,7 +59,6 @@ export function AddUser({ roles, ...props }) {
 
 	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' { ...props }>
 		<Margins blockEnd='x16'>
-			<SetAvatar setAvatarObj={setAvatarObj} username={username || 'a'}/>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
@@ -114,13 +97,20 @@ export function AddUser({ roles, ...props }) {
 			<Field>
 				<Field.Label>{t('Password')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={newData.password || ''} onChange={handleChange('password')} addon={<Icon name='key' size='x20'/>}/>
+					<TextInput flexGrow={1} value={password} onChange={handleChange('password')} addon={<Icon name='key' size='x20'/>}/>
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-						<Box>{t('Require_password_change')}</Box><ToggleSwitch checked={requirePasswordChange} onChange={handleChange('requirePasswordChange', () => !requirePasswordChange)} />
+						<Box>{t('Require_password_change')}</Box><ToggleSwitch disabled={setRandomPassword} checked={setRandomPassword || requirePasswordChange} onChange={handleChange('requirePasswordChange', () => !requirePasswordChange)} />
+					</Box>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
+						<Box>{t('Set_random_password_and_send_by_email')}</Box><ToggleSwitch checked={setRandomPassword} onChange={handleChange('setRandomPassword', () => !setRandomPassword)} />
 					</Box>
 				</Field.Row>
 			</Field>
