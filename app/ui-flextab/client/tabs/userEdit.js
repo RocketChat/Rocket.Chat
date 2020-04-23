@@ -12,7 +12,7 @@ import { Notifications } from '../../../notifications';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { handleEnterpriseError } from '../../../../ee/app/utils/client/handleEnterpriseError';
+import { modal } from '../../../ui-utils';
 
 Template.userEdit.helpers({
 
@@ -291,8 +291,20 @@ Template.userEdit.onCreated(function() {
 
 		Meteor.call('insertOrUpdateUser', userData, (error) => {
 			if (error) {
-				if (handleEnterpriseError(error)) {
-					return;
+				if (error.error === 'error-max-guests-number-reached') {
+					const message = TAPi18n.__('You_reached_the_maximum_number_of_guest_users_allowed_by_your_license.');
+					const url = 'https://go.rocket.chat/i/guest-limit-exceeded';
+					const email = 'sales@rocket.chat';
+					const linkText = TAPi18n.__('Click_here_for_more_details_or_contact_sales_for_a_new_license', { url, email });
+
+					modal.open({
+						type: 'error',
+						title: TAPi18n.__('Maximum_number_of_guests_reached'),
+						text: `${ message } ${ linkText }`,
+						html: true,
+					});
+
+					return true;
 				}
 
 				return handleError(error);
