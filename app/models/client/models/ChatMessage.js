@@ -6,7 +6,7 @@ import { CachedCollection } from '../../../ui-cached-collection';
 import { CachedChatSubscription } from './CachedChatSubscription';
 import { ChatSubscription } from './ChatSubscription';
 import { getConfig } from '../../../ui-utils/client/config';
-import { cleanMessagesAtStartup } from '../../../utils';
+import { cleanMessagesAtStartup, triggerOfflineMsgs } from '../../../utils';
 import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
@@ -105,6 +105,8 @@ const messagePreFetch = () => {
 			if (status.status !== 'connected') {
 				return;
 			}
+			clearTimeout(timeout);
+			triggerOfflineMsgs();
 			messagesFetched = true;
 			const roomLimit = settings.get('Message_AllowPrefetch_PrefetchRoomLimit');
 			const subscriptions = ChatSubscription.find(
@@ -134,8 +136,6 @@ const messagePreFetch = () => {
 					});
 				});
 			});
-			clearTimeout(timeout);
-			cleanMessagesAtStartup(false);
 		}
 	});
 };

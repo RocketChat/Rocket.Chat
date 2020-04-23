@@ -22,14 +22,12 @@ export const uploadFileWithMessage = async (rid, tmid, { id, description, fileNa
 	let offlineFile;
 	const data = new FormData();
 	id = id || Random.id();
+
 	description	&& data.append('description', description);
-	console.log(id);
 	id && data.append('id', id);
 	msg	&& data.append('msg', msg);
 	tmid && data.append('tmid', tmid);
 	data.append('file', file.file, fileName);
-
-	// const uploads = Session.get('uploading') || [];
 
 	const upload = {
 		id: file.file._id,
@@ -37,37 +35,25 @@ export const uploadFileWithMessage = async (rid, tmid, { id, description, fileNa
 		percentage: 0,
 	};
 
-	// uploads.push(upload);
-	// Session.set('uploading', uploads);
-
-	sendOfflineFileMessage(rid, {id, msg, tmid}, file.file, { name: fileName, description }, (file) => {
+	sendOfflineFileMessage(rid, { id, msg, tmid }, file.file, { name: fileName, description }, (file) => {
 		offlineFile = file;
 	});
 
 	const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
 		progress(progress) {
-			// const uploads = Session.get('uploading') || [];
-
 			if (progress === 100) {
 				return;
 			}
 
 			const uploads = upload;
-			uploads.percentage = Math.round(progress * 100) || 0;
+			uploads.percentage = Math.round(progress) || 0;
 			ChatMessage.setProgress(id, uploads);
-			// uploads.filter((u) => u.id === upload.id).forEach((u) => {
-			// 	u.percentage = Math.round(progress) || 0;
-			// });
-			// Session.set('uploading', uploads);
 		},
 		error(error) {
-			ChatMessage.setProgress(id, upload);
-			// const uploads = Session.get('uploading') || [];
-			// uploads.filter((u) => u.id === upload.id).forEach((u) => {
-			// 	u.error = error.message;
-			// 	u.percentage = 0;
-			// });
-			// Session.set('uploading', uploads);
+			const uploads = upload;
+			uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+			uploads.percentage = 0;
+			ChatMessage.setProgress(id, uploads);
 		},
 	});
 
@@ -80,28 +66,17 @@ export const uploadFileWithMessage = async (rid, tmid, { id, description, fileNa
 		Session.delete(`uploading-cancel-${ upload.id }`);
 
 		xhr.abort();
-
-		// const uploads = Session.get('uploading') || {};
-		// Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
 	});
 
 	try {
-		await promise;
-		offlineFile && SWCache.removeFromCache(offlineFile);
-		// const uploads = Session.get('uploading') || [];
-		// return Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+		const res = await promise;
+
+		if (typeof res === 'object' && res.success && offlineFile) { SWCache.removeFromCache(offlineFile); }
 	} catch (error) {
-		// const uploads = Session.get('uploading') || [];
-		// uploads.filter((u) => u.id === upload.id).forEach((u) => {
-		// 	u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
-		// 	u.percentage = 0;
-		// });
-		// Session.set('uploading', uploads);
 		const uploads = upload;
 		uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
 		uploads.percentage = 0;
 		ChatMessage.setProgress(id, uploads);
-
 	}
 };
 

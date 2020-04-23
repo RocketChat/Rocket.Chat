@@ -5,8 +5,8 @@ import { ChatMessage } from '../../app/models/client';
 import { canDeleteMessage, SWCache } from '../../app/utils/client';
 
 Meteor.methods({
-	deleteMessage(msg) {
-		if (!Meteor.userId()) {
+	deleteMessage(msg, offlineTriggered = false) {
+		if (!Meteor.userId() || offlineTriggered) {
 			return false;
 		}
 

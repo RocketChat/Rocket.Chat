@@ -7,9 +7,13 @@ import { emoji } from '../../../emoji';
 import { roomTypes } from '../../../utils/client';
 
 Meteor.methods({
-	setReaction(reaction, messageId) {
+	setReaction(reaction, messageId, shouldReact, offlineTrigerred = false) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error(203, 'User_logged_out');
+		}
+
+		if (offlineTrigerred) {
+			return;
 		}
 
 		const user = Meteor.user();
