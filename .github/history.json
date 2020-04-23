@@ -43290,6 +43290,35 @@
           ]
         }
       ]
+    },
+    "3.2.0-rc.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17391",
+          "title": "Regression: Fix mem usage with more than one argument",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17378",
+          "title": "[FIX] 2FA not showing codes for Spanish translation",
+          "userLogin": "RavenSystem",
+          "milestone": "3.2.0",
+          "contributors": [
+            "RavenSystem",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
