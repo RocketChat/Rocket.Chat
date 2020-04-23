@@ -40,18 +40,20 @@ const action = {
 		msg.msg && data.append('msg', msg.msg);
 		msg.tmid && data.append('tmid', msg.tmid);
 		data.append('file', file, msg.file.name);
-
 		const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ msg.rid }`, {}, data, {
 			progress(progress) {
 				if (progress === 100) {
 					return;
 				}
 				const uploads = upload;
-				uploads.percentage = Math.round(progress * 100) || 0;
+				uploads.percentage = Math.round(progress) || 0;
 				ChatMessage.setProgress(msg._id, uploads);
 			},
-			error() {
-				ChatMessage.setProgress(msg._id, upload);
+			error(error) {
+				const uploads = upload;
+				uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+				uploads.percentage = 0;
+				ChatMessage.setProgress(msg._id, uploads);
 			},
 		});
 
@@ -68,8 +70,9 @@ const action = {
 		});
 
 		try {
-			await promise;
-			SWCache.removeFromCache(msg.file);
+			const res = await promise;
+
+			if (typeof res === 'object' && res.success) { SWCache.removeFromCache(msg.file); }
 		} catch (error) {
 			const uploads = upload;
 			uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
@@ -80,14 +83,14 @@ const action = {
 
 	update: (msg) => {
 		msg.editedAt = new Date();
-		call('updateMessage', msg);
+		call('updateMessage', msg, true);
 	},
 
 	react: ({ _id }, reaction) => {
-		call('setReaction', reaction, _id);
+		call('setReaction', reaction, _id, undefined, true);
 	},
 
-	delete: ({ _id }) => call('deleteMessage', { _id }),
+	delete: ({ _id }) => call('deleteMessage', { _id }, true),
 };
 
 function trigger(msg) {
@@ -115,10 +118,14 @@ function trigger(msg) {
 	}
 }
 
-function triggerOfflineMsgs(messages) {
-	const tempMsgs = messages.filter((msg) => msg.temp);
-	tempMsgs.forEach((msg) => trigger(msg));
-}
+export const triggerOfflineMsgs = () => {
+	localforage.getItem('chatMessage').then((value) => {
+		if (value && value.records) {
+			const tempMsgs = value.records.filter((msg) => msg.temp);
+			tempMsgs.forEach((msg) => trigger(msg));
+		}
+	});
+};
 
 const retainMessages = (rid, messages) => {
 	const roomMsgs = messages.filter((msg) => rid === msg.rid);
@@ -138,14 +145,13 @@ function clearOldMessages({ records: messages, ...value }) {
 	value.updatedAt = new Date();
 	localforage.setItem('chatMessage', value).then(() => {
 		CachedChatMessage.loadFromCache();
-		triggerOfflineMsgs(retain);
 	});
 }
 
-export const cleanMessagesAtStartup = (offline = true) => {
+export const cleanMessagesAtStartup = () => {
 	localforage.getItem('chatMessage').then((value) => {
 		if (value && value.records) {
-			offline ? clearOldMessages(value) : triggerOfflineMsgs(value.records);
+			clearOldMessages(value);
 		}
 	});
 };

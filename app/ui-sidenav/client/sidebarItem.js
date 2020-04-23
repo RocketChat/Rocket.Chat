@@ -28,11 +28,11 @@ Template.sidebarItem.helpers({
 		return this.lastMessage && Template.instance().lastMessageTs.get();
 	},
 	lastMessageDelivered() {
-        return this.lastMessage && !this.lastMessage.temp;
-    },
-    lastMessageSentByUser() {
-        return this.lastMessage && this.lastMessage.u && (this.lastMessage.u._id === Meteor.userId());
-    },
+		return this.lastMessage && !this.lastMessage.temp;
+	},
+	lastMessageSentByUser() {
+		return this.lastMessage && this.lastMessage.u && (this.lastMessage.u._id === Meteor.userId());
+	},
 	mySelf() {
 		return this.t === 'd' && this.name === Template.instance().user.username;
 	},

@@ -20,6 +20,6 @@ export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient, mountArrayQueryParameters } from './lib/RestApiClient';
 export { canDeleteMessage } from './lib/canDeleteMessage';
 export { SWCache } from './lib/swCache';
-export { cleanMessagesAtStartup } from './lib/offlineMessages';
+export { cleanMessagesAtStartup, triggerOfflineMsgs } from './lib/offlineMessages';
 export { mime } from '../lib/mimeTypes';
 export { secondsToHHMMSS } from '../lib/timeConverter';
