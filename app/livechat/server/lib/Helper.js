@@ -7,6 +7,7 @@ import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
+import { hasRole } from '../../../authorization';
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
@@ -303,4 +304,18 @@ export const checkServiceStatus = ({ guest, agent }) => {
 	}
 
 	return Livechat.online(guest.department);
+};
+
+export const userCanTakeInquiry = (user) => {
+	check(user, Match.ObjectIncluding({
+		status: String,
+		statusLivechat: String,
+	}));
+
+	const { status, statusLivechat } = user;
+	if ((status === 'offline' || statusLivechat !== 'available') && !hasRole(user._id, 'bot')) {
+		return false;
+	}
+
+	return true;
 };
