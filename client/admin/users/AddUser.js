@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -7,7 +7,6 @@ import { useEndpointAction } from '../usersAndRooms/hooks';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
 import { Page } from '../../components/basic/Page';
-import { SetAvatar } from '../../components/basic/avatar/SetAvatar';
 
 export function AddUser({ roles, ...props }) {
 	const t = useTranslation();
