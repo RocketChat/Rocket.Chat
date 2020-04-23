@@ -53,7 +53,7 @@ export function EditUser({ data, roles, ...props }) {
 
 	const saveAvatarQuery = useMemo(() => ({
 		userId: data._id,
-		...avatarObj,
+		avatarUrl: avatarObj && avatarObj.avatarUrl,
 	}), [data._id, JSON.stringify(avatarObj)]);
 
 	const resetAvatarQuery = useMemo(() => ({
@@ -61,14 +61,14 @@ export function EditUser({ data, roles, ...props }) {
 	}), [data._id]);
 
 	const saveAction = useEndpointAction('POST', 'users.update', saveQuery, t('User_updated_successfully'));
-	const saveAvatarAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const saveAvatarAction = useEndpointAction('UPLOAD', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
 	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
 
 	const updateAvatar = async () => {
 		if (avatarObj === 'reset') {
 			return resetAvatarAction();
 		}
-		return saveAvatarAction();
+		return saveAvatarAction(avatarObj);
 	};
 
 	const handleSave = async () => {
@@ -103,7 +103,8 @@ export function EditUser({ data, roles, ...props }) {
 	const bio = newData.bio ?? data.bio ?? '';
 	const email = newData.email ?? (data.emails && data.emails[0].address);
 	const emailVerified = newData.verified ?? (data.emails && data.emails[0].verified);
-	const requirePasswordChange = newData.requirePasswordChange || false;
+	const setRandomPassword = newData.setRandomPassword || false;
+	const requirePasswordChange = setRandomPassword || newData.requirePasswordChange || false;
 
 	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
@@ -152,7 +153,14 @@ export function EditUser({ data, roles, ...props }) {
 			<Field>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-						<Box>{t('Require_password_change')}</Box><ToggleSwitch checked={requirePasswordChange} onChange={handleChange('requirePasswordChange', false, () => !requirePasswordChange)} />
+						<Box>{t('Require_password_change')}</Box><ToggleSwitch checked={requirePasswordChange} disabled={setRandomPassword} onChange={handleChange('requirePasswordChange', false, () => !requirePasswordChange)} />
+					</Box>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
+						<Box>{t('Set_random_password_and_send_by_email')}</Box><ToggleSwitch checked={setRandomPassword} onChange={handleChange('setRandomPassword', false, () => !setRandomPassword)} />
 					</Box>
 				</Field.Row>
 			</Field>

@@ -3502,6 +3502,7 @@
   "User": "User",
   "Users_and_rooms": "Users and Rooms",
   "User Search": "User Search",
+  "User_created_successfully!": "User create successfully!",
   "User Search (Group Validation)": "User Search (Group Validation)",
   "user-generate-access-token": "User Generate Access Token",
   "user-generate-access-token_description": "Permission for users to generate access tokens",

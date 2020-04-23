@@ -8,11 +8,15 @@ export function useFileInput(onSetFile) {
 	const [openInput, setOpenInput] = useState();
 	useEffect(() => {
 		const fileInput = document.createElement('input');
+		const formData = new FormData();
 		fileInput.setAttribute('type', 'file');
 		fileInput.setAttribute('style', 'display: none');
 		document.body.appendChild(fileInput);
 
-		const handleFiles = function() { onSetFile(this.files[0]); };
+		const handleFiles = function() {
+			formData.append('image', this.files[0]);
+			onSetFile(this.files[0], formData);
+		};
 		fileInput.addEventListener('change', handleFiles, false);
 		setOpenInput(() => () => fileInput.click());
 		return () => {
@@ -24,11 +28,11 @@ export function useFileInput(onSetFile) {
 
 export function SetAvatar({ username, setAvatarObj }) {
 	const t = useTranslation();
-	const [avatarFromUrl, setAvatarFromUrl] = useState();
+	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
 
-	const setUploadedPreview = useCallback((file) => {
-		setAvatarObj({ image: file });
+	const setUploadedPreview = useCallback(async (file, formData) => {
+		setAvatarObj(formData);
 		setNewAvatarSource(URL.createObjectURL(file));
 	}, [setAvatarObj]);
 

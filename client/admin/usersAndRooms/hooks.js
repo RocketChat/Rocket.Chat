@@ -23,9 +23,11 @@ export const useEndpointAction = (httpMethod, endpoint, params = {}, successMess
 	const sendData = useEndpoint(httpMethod, endpoint);
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return useCallback(async () => {
+	return useCallback(async (...args) => {
 		try {
-			const data = await sendData(params);
+			let data = sendData(params, ...args);
+
+			data = data.promise ? await data.promise : await data;
 
 			if (!data.success) {
 				throw new Error(data.status);

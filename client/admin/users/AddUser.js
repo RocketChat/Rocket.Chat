@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -7,11 +7,14 @@ import { useEndpointAction } from '../usersAndRooms/hooks';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
 import { Page } from '../../components/basic/Page';
+import { SetAvatar } from '../../components/basic/avatar/SetAvatar';
 
 export function AddUser({ roles, ...props }) {
 	const t = useTranslation();
 
 	const [newData, setNewData] = useState({});
+	const [avatarObj, setAvatarObj] = useState();
+	const [userId, setUserId] = useState('');
 
 	const router = useRoute('admin-users');
 
@@ -26,13 +29,29 @@ export function AddUser({ roles, ...props }) {
 		...Object.fromEntries(Object.entries(newData).filter(([, value]) => value !== null)),
 	}), [JSON.stringify(newData)]);
 
+	const saveAvatarQuery = useMemo(() => ({
+		userId,
+		avatarUrl: avatarObj && avatarObj.avatarUrl,
+	}), userId, [JSON.stringify(avatarObj)]);
+
+	const saveAvatarAction = useEndpointAction('UPLOAD', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+
+	useEffect(async () => {
+		if (userId) {
+			if (avatarObj) {
+				await saveAvatarAction(avatarObj);
+			}
+			goToUser(userId);
+		}
+	}, [userId]);
+
 	const saveAction = useEndpointAction('POST', 'users.create', saveQuery, t('User_created_successfully'));
 
 	const handleSave = async () => {
 		if (Object.keys(newData).length) {
 			const result = await saveAction();
 			if (result.success) {
-				goToUser(result.user._id);
+				setUserId(result.user._id);
 			}
 		}
 	};
@@ -43,19 +62,20 @@ export function AddUser({ roles, ...props }) {
 		roles: selectedRoles = [],
 		name = '',
 		username = '',
-		status = '',
+		statusText = '',
 		bio = '',
 		email = '',
 		verified = false,
 		requirePasswordChange = false,
-		sendWelcomeEmail = false,
-		joinDefaultChannels = false,
+		sendWelcomeEmail = true,
+		joinDefaultChannels = true,
 	} = newData;
 
 	const availableRoles = roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : [];
 
 	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' { ...props }>
 		<Margins blockEnd='x16'>
+			<SetAvatar setAvatarObj={setAvatarObj} username={username || 'a'}/>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
@@ -82,7 +102,7 @@ export function AddUser({ roles, ...props }) {
 			<Field>
 				<Field.Label>{t('StatusMessage')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={status} onChange={handleChange('status')} addon={<Icon name='edit' size='x20'/>}/>
+					<TextInput flexGrow={1} value={statusText} onChange={handleChange('statusText')} addon={<Icon name='edit' size='x20'/>}/>
 				</Field.Row>
 			</Field>
 			<Field>
