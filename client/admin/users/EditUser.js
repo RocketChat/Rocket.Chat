@@ -28,7 +28,7 @@ export function EditUserWithData({ userId, ...props }) {
 	if (error) {
 		return <Box mbs='x16' {...props}>{t('User_not_found')}</Box>;
 	}
-	console.log(roleData);
+
 	return <EditUser data={data.user} roles={roleData.roles} {...props}/>;
 }
 
