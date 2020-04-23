@@ -7,6 +7,7 @@ import { useEndpointAction } from '../usersAndRooms/hooks';
 import { isEmail } from '../../../../utils/lib/isEmail.js';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
 import { Page } from '../../../../../client/components/basic/Page';
+import { SetAvatar } from '../../../../../client/components/basic/avatar/SetAvatar';
 
 export function EditUserWithData({ userId, ...props }) {
 	const t = useTranslation();
@@ -35,7 +36,8 @@ export function EditUser({ data, roles, ...props }) {
 	const t = useTranslation();
 
 	const [newData, setNewData] = useState({});
-	const hasUnsavedChanges = useMemo(() => Object.values(newData).filter((current) => current === null).length < Object.keys(newData).length, [JSON.stringify(newData)]);
+	const [avatarObj, setAvatarObj] = useState();
+	const hasUnsavedChanges = useMemo(() => Object.values(newData).filter((current) => current === null).length < Object.keys(newData).length, [JSON.stringify(newData)]) || avatarObj;
 
 	const router = useRoute('admin-users');
 
@@ -49,12 +51,33 @@ export function EditUser({ data, roles, ...props }) {
 		data: Object.fromEntries(Object.entries(newData).filter(([, value]) => value !== null)),
 	}), [data._id, JSON.stringify(newData)]);
 
+	const saveAvatarQuery = useMemo(() => ({
+		userId: data._id,
+		...avatarObj,
+	}), [data._id, JSON.stringify(avatarObj)]);
+
+	const resetAvatarQuery = useMemo(() => ({
+		userId: data._id,
+	}), [data._id]);
+
 	const saveAction = useEndpointAction('POST', 'users.update', saveQuery, t('User_updated_successfully'));
+	const saveAvatarAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
+
+	const updateAvatar = async () => {
+		if (avatarObj === 'reset') {
+			return resetAvatarAction();
+		}
+		return saveAvatarAction();
+	};
 
 	const handleSave = async () => {
 		if (hasUnsavedChanges) {
 			const result = await saveAction();
 			if (result.success) {
+				if (avatarObj) {
+					await updateAvatar();
+				}
 				goToUser(data._id);
 			}
 		}
@@ -84,6 +107,7 @@ export function EditUser({ data, roles, ...props }) {
 
 	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
+			<SetAvatar username={data.username} setAvatarObj={setAvatarObj}/>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>

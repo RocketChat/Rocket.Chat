@@ -1,9 +1,10 @@
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
-import { Box, Table, Avatar, Icon, TextInput, Field, CheckBox, Margins } from '@rocket.chat/fuselage';
+import { Box, Table, Icon, TextInput, Field, CheckBox, Margins } from '@rocket.chat/fuselage';
 import { useMediaQuery, useUniqueId } from '@rocket.chat/fuselage-hooks';
 
 import { GenericTable, Th } from '../../../../ui/client/components/GenericTable';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { RoomAvatar } from '../../../../../client/components/basic/avatar/Avatar';
 import { roomTypes } from '../../../../utils/client';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -97,12 +98,11 @@ export function AdminRooms({
 	const renderRow = useCallback(({ _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, ...args }) => {
 		const icon = roomTypes.getIcon({ t: type, usernames, ...args });
 		const roomName = type === 'd' ? usernames.join(' x ') : roomTypes.getRoomName(type, { name, type, _id, ...args });
-		const avatarUrl = roomTypes.getConfig(type).getAvatarPath({ roomName, type, _id, ...args });
 
 		return <Table.Row action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link'qa-room-id={_id}>
 			<Table.Cell style={style}>
 				<Box display='flex' alignContent='center'>
-					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={avatarUrl} url={avatarUrl} />
+					<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 					<Box display='flex' style={style} mi='x8'>
 						<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
 							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} textStyle='p2' textColor='hint'/><Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
