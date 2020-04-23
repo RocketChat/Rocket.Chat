@@ -14,8 +14,9 @@ function benchmark(message) {
 }
 
 module.exports.getMasterProcess = () => ({
-	async start(workers) {
+	async start(workers, onAllProcessesFinishedCallback) {
 		this.workers = workers;
+		this.onAllProcessesFinishedCallback = onAllProcessesFinishedCallback;
 
 		// Setup database
 		this.db = await MongoClient.connect(config.get('MONGO_URL'), { native_parser: true });
@@ -63,6 +64,8 @@ module.exports.getMasterProcess = () => ({
 		console.log('All workers have closed');
 
 		this.onAllWorkersExitCallback && this.onAllWorkersExitCallback();
+
+		this.onAllProcessesFinishedCallback && this.onAllProcessesFinishedCallback();
 	},
 
 	//

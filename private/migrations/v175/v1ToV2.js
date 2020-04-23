@@ -31,7 +31,9 @@ async function run() {
 			workers.push(worker);
 		}
 
-		await masterProcess.start(workers);
+		await masterProcess.start(workers, () => {
+			process.exit(0);
+		});
 	} else {
 		const workerProcess = getWorkerProcess();
 

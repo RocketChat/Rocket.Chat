@@ -77,8 +77,7 @@ module.exports.getWorkerProcess = () => ({
 	//
 	// Messages
 	async buildMessages({ rid }) {
-		// const count = await this.Messages.find({ rid }).count();
-		const count = 0;
+		const count = await this.Messages.find({ rid }).count();
 
 		if (count === 0) {
 			console.log(`Messages - Room ${ rid } has no messages`);

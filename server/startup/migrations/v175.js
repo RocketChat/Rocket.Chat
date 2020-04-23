@@ -16,7 +16,7 @@ Migrations.add({
 				},
 			});
 
-			prc.on('close', function(code) {
+			prc.on('exit', function(code) {
 				console.log(`process exit code ${ code }`);
 
 				if (code === 0) {
