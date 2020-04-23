@@ -1,6 +1,30 @@
 
 # 3.2.0 (Under Release Candidate Process)
 
+## 3.2.0-rc.1
+`2020-04-22  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- 2FA not showing codes for Spanish translation ([#17378](https://github.com/RocketChat/Rocket.Chat/pull/17378) by [@RavenSystem](https://github.com/RavenSystem))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix mem usage with more than one argument ([#17391](https://github.com/RocketChat/Rocket.Chat/pull/17391))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@RavenSystem](https://github.com/RavenSystem)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.2.0-rc.0
 `2020-04-21  ·  19 🎉  ·  10 🚀  ·  36 🐛  ·  15 🔍  ·  31 👩‍💻👨‍💻`
 
@@ -1846,7 +1870,6 @@
 ### Engine versions
 - Node: `8.15.1`
 - NPM: `6.9.0`
-- MongoDB: ``
 
 ### 🐛 Bug fixes
 
