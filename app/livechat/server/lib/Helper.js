@@ -7,7 +7,6 @@ import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
-import { hasRole } from '../../../authorization';
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
@@ -310,10 +309,12 @@ export const userCanTakeInquiry = (user) => {
 	check(user, Match.ObjectIncluding({
 		status: String,
 		statusLivechat: String,
+		roles: [String],
 	}));
 
-	const { status, statusLivechat } = user;
-	if ((status === 'offline' || statusLivechat !== 'available') && !hasRole(user._id, 'bot')) {
+	const { roles, status, statusLivechat } = user;
+	// TODO: hasRole when the user has already been fetched from DB
+	if ((status === 'offline' || statusLivechat !== 'available') && !roles.includes('bot')) {
 		return false;
 	}
 
