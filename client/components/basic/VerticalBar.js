@@ -1,4 +1,4 @@
-import { Box, Tile, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Tile, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import './VerticalBar.css';
@@ -12,12 +12,21 @@ export function VerticalBarHeader({ ...props }) {
 }
 
 export function VerticalBarButton(props) {
-	return <Button small flexShrink={0} ghost {...props}/>;
+	return <Button small square flexShrink={0} ghost {...props}/>;
 }
-
 
 export function VerticalBarClose(props) {
 	return <VerticalBarButton {...props}>
 		<Icon name='cross' size='x20' />
 	</VerticalBarButton>;
+}
+
+export function VerticalBarSkeleton(props) {
+	return <VerticalBar { ...props }>
+		<VerticalBarHeader><Skeleton width='100%'/></VerticalBarHeader>
+		<Box p='x24'>
+			<Skeleton width='32px' height='32px' variant='rect'/> <Skeleton />
+			{Array(5).fill().map((_, index) => <Skeleton key={index}/>)}
+		</Box>
+	</VerticalBar>;
 }
