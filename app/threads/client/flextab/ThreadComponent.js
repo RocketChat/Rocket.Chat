@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { Modal, Icon, Box, Skeleton } from '@rocket.chat/fuselage';
+import { Modal, Icon, Box } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
