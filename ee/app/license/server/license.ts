@@ -5,7 +5,6 @@ import { resetEnterprisePermissions } from '../../authorization/server/resetEnte
 import { addRoleRestrictions } from '../../authorization/lib/addRoleRestrictions';
 import decrypt from './decrypt';
 import { getBundleModules, isBundle } from './bundles';
-import { refreshEnterpriseState } from '../lib/isEnterprise';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -81,7 +80,6 @@ class LicenseClass {
 		this.validate();
 
 		if (this.hasAnyValidLicense()) {
-			refreshEnterpriseState();
 			addRoleRestrictions();
 			resetEnterprisePermissions();
 		}
