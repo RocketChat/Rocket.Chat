@@ -2,12 +2,14 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-import { DirectoryTable, Th, Markdown } from './DirectoryTable';
-import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
+import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
-import { useQuery, useFormatDate } from '../hooks';
+import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../../../client/hooks/useEndpointData';
+import { useFormatDate } from '../../../../../../../client/hooks/useFormatDate';
 import { roomTypes } from '../../../../../../utils/client';
+import { useQuery } from '../hooks';
+import { DirectoryTable, Th, Markdown } from './DirectoryTable';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -49,7 +51,9 @@ export function ChannelsTab() {
 
 	const channelRoute = useRoute('channel');
 
-	const data = useEndpointData('GET', 'directory', query) || {};
+	const canViewPublicRooms = usePermission('view-c-room');
+
+	const data = (canViewPublicRooms && useEndpointData('directory', query)) || { result: [] };
 
 	const onClick = useMemo(() => (name) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {

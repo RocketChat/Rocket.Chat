@@ -1,4 +1,3 @@
-import './adminFlex.html';
 import './adminFlex';
 
 export { registerAdminRoute } from './routes';

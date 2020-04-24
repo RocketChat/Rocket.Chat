@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useFormatDateAndTime } from '../../../ui/client/views/app/components/hooks';
+import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
 import {
 	ImportWaitingStates,
 	ImportFileReadyStates,
