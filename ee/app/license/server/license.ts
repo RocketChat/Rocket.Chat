@@ -23,6 +23,7 @@ export interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let addedRoleRestrictions = false;
 
 class LicenseClass {
 	private url: string|null = null;
@@ -79,9 +80,10 @@ class LicenseClass {
 
 		this.validate();
 
-		if (this.hasAnyValidLicense()) {
+		if (!addedRoleRestrictions && this.hasAnyValidLicense()) {
 			addRoleRestrictions();
 			resetEnterprisePermissions();
+			addedRoleRestrictions = true;
 		}
 	}
 
