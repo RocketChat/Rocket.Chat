@@ -314,9 +314,5 @@ export const userCanTakeInquiry = (user) => {
 
 	const { roles, status, statusLivechat } = user;
 	// TODO: hasRole when the user has already been fetched from DB
-	if ((status === 'offline' || statusLivechat !== 'available') && !roles.includes('bot')) {
-		return false;
-	}
-
-	return true;
+	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
 };
