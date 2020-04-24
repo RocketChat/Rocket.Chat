@@ -16,6 +16,13 @@ import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
 import { getUserPreference } from '../../../utils';
+import { settings } from '../../../settings/client';
+
+createTemplateForComponent('Checkbox', () => import('../components/CheckBoxComponent'), {
+	// eslint-disable-next-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'rcx-checkbox', style: 'display: flex;' }),
+});
+
 
 const sort = { ts: 1 };
 
@@ -23,6 +30,12 @@ createTemplateForComponent('ThreadComponent', () => import('./ThreadComponent'),
 	// eslint-disable-next-line new-cap
 	renderContainerView: () => HTML.DIV({ class: 'test', style: 'display: flex; height: 100%;' }),
 });
+
+createTemplateForComponent('ThreadsComponent', () => import('./ThreadsComponent'), {
+	// eslint-disable-next-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'test', style: 'display: flex; height: 100%;' }),
+});
+
 
 Template.thread.events({
 	...dropzoneEvents,
@@ -76,7 +89,10 @@ Template.thread.helpers({
 		const instance = Template.instance();
 		const { mainMessage: { rid, _id: tmid }, subscription } = this;
 
+		const showFormattingTips = settings.get('Message_ShowFormattingTips');
+
 		return {
+			showFormattingTips,
 			subscription,
 			rid,
 			tmid,
@@ -87,6 +103,14 @@ Template.thread.helpers({
 	},
 	hideUsername() {
 		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
+	},
+	checkboxData() {
+		const instance = Template.instance();
+		const checked = instance.state.get('sendToChannel');
+		return {
+			checked,
+			onChange: () => instance.state.set('sendToChannel', !checked),
+		};
 	},
 });
 
@@ -182,6 +206,7 @@ Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
 
 	this.state = new ReactiveDict({
+		sendToChannel: false,
 	});
 
 	this.loadMore = _.debounce(async () => {

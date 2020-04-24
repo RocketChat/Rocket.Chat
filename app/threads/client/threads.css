@@ -31,7 +31,24 @@
 	overflow: auto;
 
 	word-wrap: break-word;
+	flex-grow: 1;
 	flex-shrink: 1;
+}
+
+.thread-footer {
+	display: flex;
+
+	padding: 0 1.5rem 1rem;
+
+	align-items: center;
+}
+
+.thread-footer__text {
+	color: var(--color-gray);
+
+	font-size: 12px;
+
+	margin-inline-start: 0.5rem;
 }
 
 .message {
