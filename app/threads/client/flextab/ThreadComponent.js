@@ -58,6 +58,14 @@ export default function ThreadComponent({ mid, rid, room, ...props }) {
 		return () => view && Blaze.remove(view);
 	}, [ref.current, mainMessage.rid, mainMessage.mid, mainMessage.msg]);
 
+
+	if (!mainMessage.rid) {
+		return <>
+			<Modal.Backdrop onClick={handleClose}/>
+			<Page.VerticalBar.Skeleton style={style}/>
+		</>;
+	}
+
 	return <>
 		<Modal.Backdrop onClick={handleClose}/>
 		<Page.VerticalBar style={style} display='flex' flexDirection='column'>
@@ -66,7 +74,7 @@ export default function ThreadComponent({ mid, rid, room, ...props }) {
 				<Box mi='x4'flexShrink={1} flexGrow={1} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{headerTitle}</Box>
 				<Page.VerticalBar.Button onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></Page.VerticalBar.Button><Page.VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
 			</Page.VerticalBar.Header>
-			{ !mainMessage.rid ? <Skeleton/> : <Page.VerticalBar.Content p={0} flexShrink={1} flexGrow={1} ref={ref}/> }
+			<Page.VerticalBar.Content p={0} flexShrink={1} flexGrow={1} ref={ref}/>
 		</Page.VerticalBar>
 	</>;
 }
