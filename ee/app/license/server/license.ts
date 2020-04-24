@@ -5,7 +5,6 @@ import { resetEnterprisePermissions } from '../../authorization/server/resetEnte
 import { addRoleRestrictions } from '../../authorization/lib/addRoleRestrictions';
 import decrypt from './decrypt';
 import { getBundleModules, isBundle } from './bundles';
-import { refreshEnterpriseState } from '../lib/isEnterprise';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -24,6 +23,7 @@ export interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let addedRoleRestrictions = false;
 
 class LicenseClass {
 	private url: string|null = null;
@@ -80,10 +80,10 @@ class LicenseClass {
 
 		this.validate();
 
-		if (this.hasAnyValidLicense()) {
-			refreshEnterpriseState();
+		if (!addedRoleRestrictions && this.hasAnyValidLicense()) {
 			addRoleRestrictions();
 			resetEnterprisePermissions();
+			addedRoleRestrictions = true;
 		}
 	}
 

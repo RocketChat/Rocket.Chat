@@ -10,9 +10,9 @@ import { t, handleError } from '../../../utils';
 import { Roles } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
-import { modal } from '../../../ui-utils';
+import { settings } from '../../../settings/client';
+import { callbacks } from '../../../callbacks/client';
+import { modal } from '../../../ui-utils/client';
 
 Template.userEdit.helpers({
 
