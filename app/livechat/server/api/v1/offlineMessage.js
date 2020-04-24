@@ -12,7 +12,7 @@ API.v1.addRoute('livechat/offline.message', {
 				email: String,
 				message: String,
 				department: Match.Maybe(String),
-				host: Match.Maybe(String),
+				host: String,
 			});
 
 			const { name, email, message, department, host } = this.bodyParams;
