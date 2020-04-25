@@ -46,7 +46,7 @@ const action = {
 					return;
 				}
 				const uploads = upload;
-				uploads.percentage = Math.round(progress * 100) || 0;
+				uploads.percentage = Math.round(progress) || 0;
 				ChatMessage.setProgress(msg._id, uploads);
 			},
 			error(error) {

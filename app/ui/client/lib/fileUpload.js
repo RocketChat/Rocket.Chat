@@ -236,7 +236,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					}
 
 					const uploads = upload;
-					uploads.percentage = Math.round(progress * 100) || 0;
+					uploads.percentage = Math.round(progress) || 0;
 					ChatMessage.setProgress(msgData.id, uploads);
 				},
 				error(error) {
