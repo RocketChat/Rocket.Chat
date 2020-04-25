@@ -41,6 +41,7 @@
 						{{#if topic}}<li><strong>{{_ "Topic"}}</strong>: {{{RocketChatMarkdown topic}}}</li>{{/if}}
 						{{#if tags}}<li><strong>{{_ "Tags"}}</strong>: {{joinTags}}</li>{{/if}}
 						{{#if closedAt}}<li><strong>{{_ "Closed_At"}}</strong>: {{roomClosedDateTime}} <strong>{{_ "by"}}:</strong> {{roomClosedBy}}</li>{{/if}}
+						{{> Template.dynamic template=customInfoTemplate data=roomDataContext}}
 					{{/with}}
 					{{#with department}}
 						{{#if name}}<li><strong>{{_ "Department"}}</strong>: {{name}}</li>{{/if}}

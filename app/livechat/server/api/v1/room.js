@@ -6,35 +6,39 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api';
-import { findGuest, findRoom, getRoom, settings, findAgent } from '../lib/livechat';
+import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 
 API.v1.addRoute('livechat/room', {
 	get() {
-		try {
-			check(this.queryParams, {
-				token: String,
-				rid: Match.Maybe(String),
-				agentId: Match.Maybe(String),
-			});
+		const defaultCheckParams = {
+			token: String,
+			rid: Match.Maybe(String),
+			agentId: Match.Maybe(String),
+		};
 
-			const { token } = this.queryParams;
+		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
+
+		try {
+			check(this.queryParams, extraCheckParams);
+
+			const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
+
 			const guest = findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
 
 			let agent;
-			const { agentId } = this.queryParams;
 			const agentObj = agentId && findAgent(agentId);
 			if (agentObj) {
 				const { username } = agentObj;
 				agent = Object.assign({}, { agentId, username });
 			}
 
-			const rid = this.queryParams.rid || Random.id();
-			const room = Promise.await(getRoom({ guest, rid, agent }));
+			const rid = roomId || Random.id();
+			const room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
 			return API.v1.success(room);
 		} catch (e) {
 			return API.v1.failure(e);

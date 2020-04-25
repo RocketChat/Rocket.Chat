@@ -526,13 +526,4 @@ Meteor.startup(function() {
 		i18nLabel: 'How_long_to_wait_to_consider_visitor_abandonment',
 		i18nDescription: 'Time_in_seconds',
 	});
-
-	settings.add('Livechat_enable_inquiry_fetch_by_stream', true, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		section: 'Routing',
-		public: true,
-		i18nLabel: 'Enable_inquiry_fetch_by_stream',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Manual_Selection' },
-	});
 });

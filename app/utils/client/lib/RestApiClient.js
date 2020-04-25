@@ -4,6 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { baseURI } from './baseuri';
 import { process2faReturn } from '../../../2fa/client/callWithTwoFactorRequired';
 
+export const mountArrayQueryParameters = (label, array) => array.reduce((acc, item) => {
+	acc += `${ label }[]=${ item }&`;
+	return acc;
+}, '');
+
 export const APIClient = {
 	delete(endpoint, params) {
 		return APIClient._jqueryCall('DELETE', endpoint, params);
@@ -31,6 +36,13 @@ export const APIClient = {
 		return APIClient._jqueryFormDataCall(endpoint, params, formData, xhrOptions);
 	},
 
+	getCredentials() {
+		return {
+			'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
+			'X-Auth-Token': Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY),
+		};
+	},
+
 	_generateQueryFromParams(params) {
 		let query = '';
 		if (params && typeof params === 'object') {
@@ -53,8 +65,7 @@ export const APIClient = {
 				url: `${ baseURI }api/${ endpoint }${ query }`,
 				headers: Object.assign({
 					'Content-Type': 'application/json',
-					'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
-					'X-Auth-Token': Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY),
+					...APIClient.getCredentials(),
 				}, headers),
 				data: JSON.stringify(body),
 				success: function _rlGetSuccess(result) {
@@ -103,10 +114,7 @@ export const APIClient = {
 					return xhr;
 				},
 				url: `${ baseURI }api/${ endpoint }${ query }`,
-				headers: {
-					'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
-					'X-Auth-Token': Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY),
-				},
+				headers: APIClient.getCredentials(),
 				data: formData,
 				processData: false,
 				contentType: false,

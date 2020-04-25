@@ -1,0 +1,36 @@
+import { CachedCollectionManager } from '../../../../app/ui-cached-collection';
+import { callMethod } from '../../../../app/ui-utils/client/lib/callMethod';
+
+const allModules = new Promise<Set<string>>((resolve, reject) => {
+	CachedCollectionManager.onLogin(async () => {
+		try {
+			const features: string[] = await callMethod('license:getModules');
+			resolve(new Set(features));
+		} catch (e) {
+			console.error('Error getting modules', e);
+			reject(e);
+		}
+	});
+});
+
+let isEnterpriseServer = false;
+CachedCollectionManager.onLogin(async () => {
+	try {
+		isEnterpriseServer = await callMethod('license:isEnterprise');
+	} catch (e) {
+		console.error('Error checking if server is Enterprise', e);
+	}
+});
+
+export async function hasLicense(feature: string): Promise<boolean> {
+	try {
+		const features = await allModules;
+		return features.has(feature);
+	} catch (e) {
+		return false;
+	}
+}
+
+export function isEnterprise(): boolean {
+	return isEnterpriseServer;
+}
