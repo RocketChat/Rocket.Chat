@@ -11,7 +11,7 @@ import EventEmitter from 'wolfy87-eventemitter';
 import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../ui-utils/client/config';
-
+import { callMethod } from '../../../ui-utils/client/lib/callMethod';
 
 const fromEntries = Object.fromEntries || function fromEntries(iterable) {
 	return [...iterable].reduce((obj, { 0: key, 1: val }) => Object.assign(obj, { [key]: val }), {});
@@ -25,8 +25,6 @@ const wrap = (fn) => (...args) => new Promise((resolve, reject) => {
 		return resolve(result);
 	});
 });
-
-const call = wrap(Meteor.call);
 
 const localforageGetItem = wrap(localforage.getItem);
 
@@ -131,7 +129,7 @@ export class CachedCollection extends EventEmitter {
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
-		version = 8,
+		version = 10,
 		maxCacheTime = 60 * 60 * 24 * 30,
 		onSyncData = (/* action, record */) => {},
 	}) {
@@ -219,7 +217,7 @@ export class CachedCollection extends EventEmitter {
 	async loadFromServer() {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
-		const data = await call(this.methodName);
+		const data = await callMethod(this.methodName);
 		this.log(`${ data.length } records loaded from server`);
 		data.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromServer-${ this.name }`, record, 'changed');
@@ -316,7 +314,7 @@ export class CachedCollection extends EventEmitter {
 
 		this.log(`syncing from ${ this.updatedAt }`);
 
-		const data = await call(this.syncMethodName, this.updatedAt);
+		const data = await callMethod(this.syncMethodName, this.updatedAt);
 		let changes = [];
 
 		if (data.update && data.update.length > 0) {

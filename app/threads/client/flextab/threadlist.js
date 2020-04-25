@@ -17,6 +17,6 @@ Meteor.startup(function() {
 				return subscription.tunread && subscription.tunread.length && { body: subscription.tunread.length > 99 ? '99+' : subscription.tunread.length };
 			}
 		},
-		order: 0,
+		order: 2,
 	});
 });
