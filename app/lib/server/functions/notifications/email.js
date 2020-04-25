@@ -110,7 +110,7 @@ const getButtonUrl = (room, subscription, message) => {
 	});
 };
 
-export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
+export function getEmailData({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
@@ -152,12 +152,20 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 	}
 
 	metrics.notificationsSent.inc({ notification_type: 'email' });
-	return Mailer.send(email);
+	return email;
+}
+
+export function sendEmailFromData(data) {
+	metrics.notificationsSent.inc({ notification_type: 'email' });
+	return Mailer.send(data);
+}
+
+export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
+	return sendEmailFromData(getEmailData({ message, user, subscription, room, emailAddress, hasMentionToUser }));
 }
 
 export function shouldNotifyEmail({
 	disableAllMessageNotifications,
-	statusConnection,
 	emailNotifications,
 	isHighlighted,
 	hasMentionToUser,
@@ -167,11 +175,6 @@ export function shouldNotifyEmail({
 }) {
 	// email notifications are disabled globally
 	if (!settings.get('Accounts_AllowEmailNotifications')) {
-		return false;
-	}
-
-	// use connected (don't need to send him an email)
-	if (statusConnection === 'online') {
 		return false;
 	}
 

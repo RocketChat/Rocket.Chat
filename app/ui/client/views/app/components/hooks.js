@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import moment from 'moment';
+import s from 'underscore.string';
 
 import { useUserPreference } from '../../../../../../client/contexts/UserContext';
 import { useSetting } from '../../../../../../client/contexts/SettingsContext';
@@ -82,3 +83,24 @@ export function useFormatDate() {
 	const format = useSetting('Message_DateFormat');
 	return useCallback((time) => moment(time).format(format), [format]);
 }
+
+export const useFormatMemorySize = () => useCallback((memorySize) => {
+	if (typeof memorySize !== 'number') {
+		return null;
+	}
+
+	const units = ['bytes', 'kB', 'MB', 'GB'];
+
+	let order;
+	for (order = 0; order < units.length - 1; ++order) {
+		const upperLimit = Math.pow(1024, order + 1);
+
+		if (memorySize < upperLimit) {
+			break;
+		}
+	}
+
+	const divider = Math.pow(1024, order);
+	const decimalDigits = order === 0 ? 0 : 2;
+	return `${ s.numberFormat(memorySize / divider, decimalDigits) } ${ units[order] }`;
+}, []);
