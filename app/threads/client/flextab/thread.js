@@ -41,11 +41,7 @@ Template.thread.events({
 	},
 	'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }, i) => {
 		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
-	}, 50),
-	'load img'() {
-		const { atBottom } = this;
-		atBottom && this.sendToBottom();
-	},
+	}, 150),
 	'click .toggle-hidden'(e) {
 		const id = e.currentTarget.dataset.message;
 		document.querySelector(`#thread-${ id }`).classList.toggle('message--ignored');
@@ -90,7 +86,10 @@ Template.thread.helpers({
 			subscription,
 			rid,
 			tmid,
-			onSend: (...args) => instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args),
+			onSend: (...args) => {
+				instance.sendToBottom();
+				return instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args);
+			},
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
 			onKeyDown: (...args) => instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args),
 		};
@@ -119,10 +118,15 @@ Template.thread.onRendered(function() {
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 
 	this.sendToBottom = _.throttle(() => {
-		this.atBottom && (this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight);
+		this.atBottom = true;
+		this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
 	}, 300);
 
-	const observer = new ResizeObserver(this.sendToBottom);
+	this.sendToBottomIfNecessary = () => {
+		this.atBottom && this.sendToBottom();
+	};
+
+	const observer = new ResizeObserver(this.sendToBottomIfNecessary);
 	observer.observe(this.firstNode.querySelector('.js-scroll-thread ul'));
 
 	this.onFile = (filesToUpload) => {
