@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { Tabs, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { Page } from '../../components/basic/Page';
+import VerticalBar from '../../components/basic/VerticalBar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import { EditRoomContextBar } from '../rooms/edit/EditRoom';
@@ -17,13 +17,14 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const mobile = useMediaQuery('(max-width: 420px)');
-	const small = useMediaQuery('(max-width: 780px)');
-
 	const router = useRoute(route);
 	const handleHeaderButtonClick = useCallback((context) => () => router.push({
 		context,
 	}), [router]);
+
+	const handleVerticalBarCloseButtonClick = () => {
+		router.push({});
+	};
 
 	return <Page {...props} flexDirection='row'>
 		<Page name='admin-user-and-room'>
@@ -47,23 +48,22 @@ export function UsersAndRoomsTab({ route, tab, children, switchTab, ...props }) 
 			</Page.Content>
 		</Page>
 		{ context
-			&& <Page.VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
-				<Page.VerticalBar.Header>
+			&& <VerticalBar>
+				<VerticalBar.Header>
 					{tab === 'rooms' && t('Room_Info')}
 					{tab === 'users' && context === 'info' && t('User_Info')}
 					{tab === 'users' && context === 'edit' && t('Edit_User')}
 					{tab === 'users' && context === 'new' && t('Add_User')}
 					{tab === 'users' && context === 'invite' && t('Invite_Users')}
-					<Page.VerticalBar.Close onClick={() => {
-						router.push({});
-					}}/></Page.VerticalBar.Header>
-				<Page.VerticalBar.Content>
+					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
+				</VerticalBar.Header>
+				<VerticalBar.Content>
 					{ tab === 'rooms' && <EditRoomContextBar rid={id}/> }
 					{ tab === 'users' && context === 'info' && <UserInfoWithData userId={id}/> }
 					{ tab === 'users' && context === 'edit' && <EditUserWithData userId={id}/> }
 					{ tab === 'users' && context === 'new' && <AddUser/> }
 					{ tab === 'users' && context === 'invite' && <InviteUsers/> }
-				</Page.VerticalBar.Content>
-			</Page.VerticalBar>}
+				</VerticalBar.Content>
+			</VerticalBar>}
 	</Page>;
 }
