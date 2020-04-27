@@ -43319,6 +43319,91 @@
           ]
         }
       ]
+    },
+    "3.2.0-rc.2": {
+      "pull_requests": [
+        {
+          "pr": "17453",
+          "title": "[FIX] LDAP error when trying to add room with spaces in the name",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17393",
+          "title": "Complement Guest role restrictions for Enterprise",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17430",
+          "title": "Regression: Add missing cacheKey to mem",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17428",
+          "title": "Remove `@typescript-eslint/explicit-function-return-type` rule",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17422",
+          "title": "[FIX] Empty Incoming webhook script field ",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17417",
+          "title": "[FIX] LDAP Sync error",
+          "userLogin": "fastrde",
+          "milestone": "3.1.2",
+          "contributors": [
+            "fastrde"
+          ]
+        },
+        {
+          "pr": "17404",
+          "title": "[FIX] Bot Agents not being able to get Omnichannel Inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17406",
+          "title": "[FIX] Allowing blocking a user on channels",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17297",
+          "title": "Fix moving-to-a-single-codebase link in README",
+          "userLogin": "Krinkle",
+          "contributors": [
+            "Krinkle",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
