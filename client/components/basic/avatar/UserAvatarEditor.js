@@ -1,30 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Box, Button, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useFileInput } from '../../../hooks/useFileInput';
 import UserAvatar from './UserAvatar';
-
-export function useFileInput(onSetFile) {
-	const [openInput, setOpenInput] = useState();
-	useEffect(() => {
-		const fileInput = document.createElement('input');
-		const formData = new FormData();
-		fileInput.setAttribute('type', 'file');
-		fileInput.setAttribute('style', 'display: none');
-		document.body.appendChild(fileInput);
-
-		const handleFiles = function() {
-			formData.append('image', this.files[0]);
-			onSetFile(this.files[0], formData);
-		};
-		fileInput.addEventListener('change', handleFiles, false);
-		setOpenInput(() => () => fileInput.click());
-		return () => {
-			fileInput.parentNode.removeChild(fileInput);
-		};
-	}, [onSetFile]);
-	return openInput;
-}
 
 export function UserAvatarEditor({ username, setAvatarObj }) {
 	const t = useTranslation();
@@ -37,6 +16,7 @@ export function UserAvatarEditor({ username, setAvatarObj }) {
 	}, [setAvatarObj]);
 
 	const clickUpload = useFileInput(setUploadedPreview);
+
 	const clickUrl = () => {
 		setNewAvatarSource(avatarFromUrl);
 		setAvatarObj({ avatarUrl: avatarFromUrl });
