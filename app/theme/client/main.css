@@ -64,12 +64,12 @@
 	position: relative;
             left: 24px;
 
-	        width: 345px;
-                height: 40px;
+                    width: 345px;
+                    height: 40px;
 
-            box-sizing: border-box;
-            
-            border: 2px solid #cbced1;
+                    box-sizing: border-box;
+                
+                border: 2px solid #cbced1;
 
         background: #ffffff;
 
@@ -96,9 +96,9 @@
     display: block;
         
         padding-bottom: 3%;
-    position: relative;
+        position: relative;
 
-        height: 65px;
+            height: 65px;
     
     background-color: #ffffff;
 }
@@ -114,7 +114,7 @@
 }
 
 .closed-div-p {
-                background: #f5455c;
+                 background: #f5455c;
     border-radius: 2px;
     width: 100%;
     text-align: center;
@@ -126,7 +126,7 @@
 
 .closed-div-p span {
             width: 101px;
-    height: 12px;
+        height: 12px;
         
             right: 138px;
     top: 3px;
@@ -142,12 +142,12 @@
 }
 
 .closed-h1 h1 {
-            color: #6c727a !important;
-        
-            font-size: 14px !important;
-        font-weight: 600px !important;
+                    color: #6c727a !important;
+            
+                    font-size: 14px !important;
+            font-weight: 600px !important;
 
-            line-height: 20px !important;
+                line-height: 20px !important;
           
     font-style: italic !important;
     
@@ -156,11 +156,11 @@
 
 .closed-p p {
             color: #9ea2a8 !important;
-    font-weight: 500 !important;
+        font-weight: 500 !important;
         
-        font-style: italic !important;
-    
-        top: 25px !important;
+            font-style: italic !important;
+        
+            top: 25px !important;
 }
 
 .belldiv {
@@ -174,37 +174,38 @@
 }
 
 .belldiv i {
-    position: relative;
+        position: relative;
         top: 15.79%;
         left: 22.31%;    
+
 }
 
 .history-main {
-    display: flex;
-    position: relative;
+        display: flex;
+        position: relative;
+            
+            width: 100%;
+            height: 68px;
         
-        width: 100%;
-        height: 68px;
-    
-        left: 2px;
-    
-        background: #ffffff;
+            left: 2px;
+        
+            background: #ffffff;
 }
 
 .history-img img {
     position: absolute;
 
-        width: 36px;
-    height: 36px;
-    top: 12px;
-    left: 24px;
+            width: 36px;
+        height: 36px;
+        top: 12px;
+        left: 24px;
 }
 
 .history-detail-main {
-    display: inline-block;
-    position: relative;
-    left: 68px;
-    top: 8px;
+        display: inline-block;
+        position: relative;
+        left: 68px;
+        top: 8px;
 
 }
 
