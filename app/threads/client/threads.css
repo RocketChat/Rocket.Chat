@@ -1,8 +1,6 @@
 .message.thread-main {
 	padding-top: var(--default-padding);
 	padding-bottom: var(--default-padding);
-
-	border-bottom: 1px solid var(--color-gray-light);
 }
 
 .message.sequential[data-tmid] > .thread-replied > .thumb,
@@ -43,6 +41,13 @@
 	align-items: center;
 }
 
+@media (width < 500px) {
+	.thread-footer {
+		padding-right: var(--default-small-padding);
+		padding-left: var(--default-small-padding);
+	}
+}
+
 .thread-footer__text {
 	color: var(--color-gray);
 
@@ -76,13 +81,10 @@
 		width: 20px;
 
 		&--thread {
-			position: absolute;
 			left: 40px;
 
 			width: 20px;
 			height: 20px;
-
-			color: var(--rc-color-alert-message-primary);
 		}
 
 		&--bell,
@@ -95,7 +97,7 @@
 		}
 	}
 
-	& > .thread-quote {
+	& .thread-quote {
 
 		display: flex;
 
@@ -114,11 +116,13 @@
 		white-space: nowrap;
 		text-overflow: ellipsis;
 
-		color: var(--rc-color-alert-message-primary);
-
 		align-items: center;
 
-		> .message-body--unstyled {
+		color: var(--rc-color-alert-message-primary);
+
+		margin: 0 0.25rem;
+
+		& > .message-body--unstyled {
 			overflow: hidden;
 
 			text-overflow: ellipsis;
