@@ -31,12 +31,6 @@ createTemplateForComponent('ThreadComponent', () => import('./ThreadComponent'),
 	renderContainerView: () => HTML.DIV({ class: 'test', style: 'display: flex; height: 100%;' }),
 });
 
-createTemplateForComponent('ThreadsComponent', () => import('./ThreadsComponent'), {
-	// eslint-disable-next-line new-cap
-	renderContainerView: () => HTML.DIV({ class: 'test', style: 'display: flex; height: 100%;' }),
-});
-
-
 Template.thread.events({
 	...dropzoneEvents,
 	'click .js-close'(e) {
@@ -90,7 +84,6 @@ Template.thread.helpers({
 		const { mainMessage: { rid, _id: tmid }, subscription } = this;
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
-
 		return {
 			showFormattingTips,
 			tshow: instance.state.get('sendToChannel'),
@@ -119,18 +112,23 @@ Template.thread.helpers({
 Template.thread.onRendered(function() {
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
+	this.atBottom = true;
 
 	this.chatMessages = new ChatMessages();
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 
+	this.sendToBottom = _.throttle(() => {
+		this.atBottom && (this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight);
+	}, 300);
+
+	const observer = new ResizeObserver(this.sendToBottom);
+	observer.observe(this.firstNode.querySelector('.js-scroll-thread ul'));
+
 	this.onFile = (filesToUpload) => {
 		fileUpload(filesToUpload, this.chatMessages.input, { rid: this.state.get('rid'), tmid: this.state.get('tmid') });
 	};
 
-	this.sendToBottom = _.throttle(() => {
-		this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
-	}, 300);
 
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
