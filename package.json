@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "3.1.1",
+	"version": "3.1.2",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -193,7 +193,7 @@
 		"lru-cache": "^5.1.1",
 		"mailparser": "^2.4.3",
 		"marked": "^0.6.1",
-		"mem": "4.1.0",
+		"mem": "^6.1.0",
 		"meteor-node-stubs": "^1.0.0",
 		"mime-db": "^1.40.0",
 		"mime-type": "^3.0.7",
