@@ -1,6 +1,48 @@
 
 # 3.2.0 (Under Release Candidate Process)
 
+## 3.2.0-rc.2
+`2020-04-27  ·  5 🐛  ·  4 🔍  ·  6 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- LDAP error when trying to add room with spaces in the name ([#17453](https://github.com/RocketChat/Rocket.Chat/pull/17453))
+
+- Empty Incoming webhook script field  ([#17422](https://github.com/RocketChat/Rocket.Chat/pull/17422))
+
+- LDAP Sync error ([#17417](https://github.com/RocketChat/Rocket.Chat/pull/17417) by [@fastrde](https://github.com/fastrde))
+
+- Bot Agents not being able to get Omnichannel Inquiries ([#17404](https://github.com/RocketChat/Rocket.Chat/pull/17404))
+
+- Allowing blocking a user on channels ([#17406](https://github.com/RocketChat/Rocket.Chat/pull/17406))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Complement Guest role restrictions for Enterprise ([#17393](https://github.com/RocketChat/Rocket.Chat/pull/17393))
+
+- Regression: Add missing cacheKey to mem ([#17430](https://github.com/RocketChat/Rocket.Chat/pull/17430))
+
+- Remove `@typescript-eslint/explicit-function-return-type` rule ([#17428](https://github.com/RocketChat/Rocket.Chat/pull/17428))
+
+- Fix moving-to-a-single-codebase link in README ([#17297](https://github.com/RocketChat/Rocket.Chat/pull/17297) by [@Krinkle](https://github.com/Krinkle))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Krinkle](https://github.com/Krinkle)
+- [@fastrde](https://github.com/fastrde)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.2.0-rc.1
 `2020-04-22  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
@@ -31,29 +73,33 @@
 ### 🎉 New features
 
 
-- [ENTERPRISE] Restrict the permissions configuration for guest users  ([#17333](https://github.com/RocketChat/Rocket.Chat/pull/17333))
-  The **Guest*  * role is blocked for edition on the EE version. This will allow the EE customers to receive licenses with extra seats for Guests for free. The CE version continues to have the Guest role configurable.
+- **ENTERPRISE:** Restrict the permissions configuration for guest users  ([#17333](https://github.com/RocketChat/Rocket.Chat/pull/17333))
+
+  The **Guest** role is blocked for edition on the EE version. This will allow the EE customers to receive licenses with extra seats for Guests for free. The CE version continues to have the Guest role configurable.
+
+- **ENTERPRISE:** Omnichannel queue priorities ([#17141](https://github.com/RocketChat/Rocket.Chat/pull/17141))
+
+- **ENTERPRISE:** Allows to set a group of departments accepted for forwarding chats ([#17335](https://github.com/RocketChat/Rocket.Chat/pull/17335))
+
+- **ENTERPRISE:** Auto close abandoned Omnichannel rooms ([#17055](https://github.com/RocketChat/Rocket.Chat/pull/17055))
 
 - Federation event for when users left rooms ([#17091](https://github.com/RocketChat/Rocket.Chat/pull/17091))
 
 - Better Push and Email Notification logic ([#17357](https://github.com/RocketChat/Rocket.Chat/pull/17357))
-  We are still using the same logic to define which notifications every new message will generate, it takes some servers' settings, users's preferences and subscriptions' settings in consideration to determine who will receive each notification type (desktop, audio, email and mobile push), but now it doesn't check the user's status (online, away, offline) for email and mobile push notifications but send those notifications to a new queue with the following rules:
 
-  - When the user is online the notification is scheduled to be sent in 120 seconds
-  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away
-  - When the user is offline the notification is scheduled to be sent right away
-  - When the user reads a channel all the notifications for that user are removed (clear queue)
+  We are still using the same logic to define which notifications every new message will generate, it takes some servers' settings, users's preferences and subscriptions' settings in consideration to determine who will receive each notification type (desktop, audio, email and mobile push), but now it doesn't check the user's status (online, away, offline) for email and mobile push notifications but send those notifications to a new queue with the following rules:
+  
+  - When the user is online the notification is scheduled to be sent in 120 seconds  
+  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away  
+  - When the user is offline the notification is scheduled to be sent right away  
+  - When the user reads a channel all the notifications for that user are removed (clear queue)  
   - When a notification is processed to be sent to a user and there are other scheduled notifications:
     - All the scheduled notifications for that user are rescheduled to now
     - The current notification goes back to the queue to be processed ordered by creation date
 
 - Error page when browser is not supported ([#17372](https://github.com/RocketChat/Rocket.Chat/pull/17372))
 
-- [ENTERPRISE] Omnichannel queue priorities ([#17141](https://github.com/RocketChat/Rocket.Chat/pull/17141))
-
 - Add ability to set tags in the Omnichannel room closing dialog ([#17254](https://github.com/RocketChat/Rocket.Chat/pull/17254))
-
-- [ENTERPRISE] Allows to set a group of departments accepted for forwarding chats ([#17335](https://github.com/RocketChat/Rocket.Chat/pull/17335))
 
 - Allow to send Agent custom fields through the Omnichannel CRM integration ([#16286](https://github.com/RocketChat/Rocket.Chat/pull/16286))
 
@@ -66,8 +112,6 @@
 - Feature/custom oauth mail field and interpolation for mapped fields ([#15690](https://github.com/RocketChat/Rocket.Chat/pull/15690) by [@benkroeger](https://github.com/benkroeger))
 
 - Add MMS support to Voxtelesys ([#17217](https://github.com/RocketChat/Rocket.Chat/pull/17217) by [@john08burke](https://github.com/john08burke))
-
-- [ENTERPRISE] Auto close abandoned Omnichannel rooms ([#17055](https://github.com/RocketChat/Rocket.Chat/pull/17055))
 
 - Default favorite channels ([#16025](https://github.com/RocketChat/Rocket.Chat/pull/16025))
 
@@ -305,11 +349,11 @@
 ### 🎉 New features
 
 
+- **ENTERPRISE:** Engagement Dashboard ([#16960](https://github.com/RocketChat/Rocket.Chat/pull/16960))
+
 - Sort channel directory listing by latest message ([#16604](https://github.com/RocketChat/Rocket.Chat/pull/16604) by [@subham103](https://github.com/subham103))
 
 - Direct message between multiple users ([#16761](https://github.com/RocketChat/Rocket.Chat/pull/16761))
-
-- [ENTERPRISE] Engagement Dashboard ([#16960](https://github.com/RocketChat/Rocket.Chat/pull/16960))
 
 - Synchronize saml roles to local user (#16152) ([#16158](https://github.com/RocketChat/Rocket.Chat/pull/16158) by [@col-panic](https://github.com/col-panic))
 
@@ -328,6 +372,7 @@
 - Two Factor authentication via email ([#15949](https://github.com/RocketChat/Rocket.Chat/pull/15949))
 
 - Translation via MS translate ([#16363](https://github.com/RocketChat/Rocket.Chat/pull/16363) by [@mrsimpson](https://github.com/mrsimpson))
+
   Adds Microsoft's translation service (https://translator.microsoft.com/) as a provider for translation of messages.
   In addition to implementing the interface (similar to google and DeepL), a small change has been done in order to display the translation provider on the UI.
 
@@ -350,6 +395,7 @@
 - Directory page refactored, new user's bio field ([#17043](https://github.com/RocketChat/Rocket.Chat/pull/17043))
 
 - Merge Sort List and View Mode menus and improve its UI/UX ([#17103](https://github.com/RocketChat/Rocket.Chat/pull/17103))
+
   ![image](https://user-images.githubusercontent.com/5263975/78036622-e8db2a80-7340-11ea-91d0-65728eabdcb6.png)
 
 - Add omnichannel external frame feature ([#17038](https://github.com/RocketChat/Rocket.Chat/pull/17038))
@@ -467,6 +513,7 @@
 - Slackbridge-import command doesn't work ([#16645](https://github.com/RocketChat/Rocket.Chat/pull/16645) by [@antkaz](https://github.com/antkaz))
 
 - Language country has been ignored on translation load ([#16757](https://github.com/RocketChat/Rocket.Chat/pull/16757))
+
   Languages including country variations like `pt-BR` were ignoring the country party because the user's preference has been saved in lowercase `pt-br` causing the language to not match the available languages. Now we enforce the uppercase of the country part when loading the language.
 
 - Cannot edit Profile when Full Name is empty and not required ([#16744](https://github.com/RocketChat/Rocket.Chat/pull/16744))
@@ -6461,9 +6508,9 @@
 ### ⚠️ BREAKING CHANGES
 
 
-- Update the default port of the Prometheus exporter ([#11351](https://github.com/RocketChat/Rocket.Chat/pull/11351) by [@thaiphv](https://github.com/thaiphv))
+- **IMPROVE:** New emails design ([#12009](https://github.com/RocketChat/Rocket.Chat/pull/12009))
 
-- [IMPROVE] New emails design ([#12009](https://github.com/RocketChat/Rocket.Chat/pull/12009))
+- Update the default port of the Prometheus exporter ([#11351](https://github.com/RocketChat/Rocket.Chat/pull/11351) by [@thaiphv](https://github.com/thaiphv))
 
 ### 🎉 New features
 
@@ -8996,7 +9043,7 @@
 ### 🐛 Bug fixes
 
 
-- [i18n] add room type translation support for room-changed-privacy message ([#9369](https://github.com/RocketChat/Rocket.Chat/pull/9369) by [@cyclops24](https://github.com/cyclops24))
+- **i18n:** add room type translation support for room-changed-privacy message ([#9369](https://github.com/RocketChat/Rocket.Chat/pull/9369) by [@cyclops24](https://github.com/cyclops24))
 
 - Fix livechat register form ([#9452](https://github.com/RocketChat/Rocket.Chat/pull/9452))
 
@@ -9407,6 +9454,10 @@
 ### 🐛 Bug fixes
 
 
+- **i18n:** My Profile & README.md links ([#8270](https://github.com/RocketChat/Rocket.Chat/pull/8270) by [@Rzeszow](https://github.com/Rzeszow))
+
+- **PL:** Polish translation ([#7989](https://github.com/RocketChat/Rocket.Chat/pull/7989) by [@Rzeszow](https://github.com/Rzeszow))
+
 - Can't react on Read Only rooms even when enabled ([#8925](https://github.com/RocketChat/Rocket.Chat/pull/8925) by [@karlprieb](https://github.com/karlprieb))
 
 - CAS does not share secrets when operating multiple server instances ([#8654](https://github.com/RocketChat/Rocket.Chat/pull/8654) by [@AmShaegar13](https://github.com/AmShaegar13))
@@ -9595,8 +9646,6 @@
 
 - Attachment icons alignment in LTR and RTL ([#8271](https://github.com/RocketChat/Rocket.Chat/pull/8271) by [@cyclops24](https://github.com/cyclops24))
 
-- [i18n] My Profile & README.md links ([#8270](https://github.com/RocketChat/Rocket.Chat/pull/8270) by [@Rzeszow](https://github.com/Rzeszow))
-
 - Incorrect URL for login terms when using prefix ([#8211](https://github.com/RocketChat/Rocket.Chat/pull/8211) by [@Darkneon](https://github.com/Darkneon))
 
 - Scrollbar not using new style ([#8190](https://github.com/RocketChat/Rocket.Chat/pull/8190))
@@ -9640,8 +9689,6 @@
 - copy to clipboard and update clipboard.js library ([#8039](https://github.com/RocketChat/Rocket.Chat/pull/8039) by [@karlprieb](https://github.com/karlprieb))
 
 - Recent emojis not updated when adding via text ([#7998](https://github.com/RocketChat/Rocket.Chat/pull/7998))
-
-- [PL] Polish translation ([#7989](https://github.com/RocketChat/Rocket.Chat/pull/7989) by [@Rzeszow](https://github.com/Rzeszow))
 
 - Chat box no longer auto-focuses when typing ([#7984](https://github.com/RocketChat/Rocket.Chat/pull/7984))
 
@@ -10267,6 +10314,10 @@
 ### 🐛 Bug fixes
 
 
+- **PL:** Polish translation ([#7989](https://github.com/RocketChat/Rocket.Chat/pull/7989) by [@Rzeszow](https://github.com/Rzeszow))
+
+- **i18n:** My Profile & README.md links ([#8270](https://github.com/RocketChat/Rocket.Chat/pull/8270) by [@Rzeszow](https://github.com/Rzeszow))
+
 - File upload on multi-instances using a path prefix ([#7855](https://github.com/RocketChat/Rocket.Chat/pull/7855) by [@Darkneon](https://github.com/Darkneon))
 
 - Fix migration 100 ([#7863](https://github.com/RocketChat/Rocket.Chat/pull/7863))
@@ -10397,8 +10448,6 @@
 
 - Recent emojis not updated when adding via text ([#7998](https://github.com/RocketChat/Rocket.Chat/pull/7998))
 
-- [PL] Polish translation ([#7989](https://github.com/RocketChat/Rocket.Chat/pull/7989) by [@Rzeszow](https://github.com/Rzeszow))
-
 - Fix email on mention ([#7754](https://github.com/RocketChat/Rocket.Chat/pull/7754))
 
 - RTL ([#8112](https://github.com/RocketChat/Rocket.Chat/pull/8112))
@@ -10472,8 +10521,6 @@
 - "Cancel button" on modal in RTL in Firefox 55 ([#8278](https://github.com/RocketChat/Rocket.Chat/pull/8278) by [@cyclops24](https://github.com/cyclops24))
 
 - Attachment icons alignment in LTR and RTL ([#8271](https://github.com/RocketChat/Rocket.Chat/pull/8271) by [@cyclops24](https://github.com/cyclops24))
-
-- [i18n] My Profile & README.md links ([#8270](https://github.com/RocketChat/Rocket.Chat/pull/8270) by [@Rzeszow](https://github.com/Rzeszow))
 
 - some placeholder and phrase traslation fix ([#8269](https://github.com/RocketChat/Rocket.Chat/pull/8269) by [@cyclops24](https://github.com/cyclops24))
 
