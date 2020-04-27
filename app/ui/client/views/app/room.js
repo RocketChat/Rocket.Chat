@@ -28,7 +28,6 @@ import {
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { renderMessageBody } from '../../../../ui-utils/client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
-import { getConfig } from '../../../../ui-utils/client/config';
 import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
@@ -253,8 +252,6 @@ function addToInput(text) {
 
 callbacks.add('enter-room', wipeFailedUploads);
 
-const ignoreReplies = getConfig('ignoreReplies') !== 'false';
-
 export const dropzoneHelpers = {
 	dragAndDrop() {
 		return settings.get('FileUpload_Enabled') && 'dropzone--disabled';
@@ -300,13 +297,13 @@ Template.room.helpers({
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
 		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
 		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
-
-		const modes = ['', 'cozy', 'compact'];
-		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
+			$or: [
+				{ tmid: { $exists: 0 } },
+				{ tshow: { $eq: true } },
+			],
 		};
 
 		if (hideMessagesOfType.size) {

@@ -93,6 +93,7 @@ Template.thread.helpers({
 
 		return {
 			showFormattingTips,
+			tshow: instance.state.get('sendToChannel'),
 			subscription,
 			rid,
 			tmid,

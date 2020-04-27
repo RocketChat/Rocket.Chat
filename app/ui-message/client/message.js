@@ -474,12 +474,12 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 		return false;
 	}
 
-	if (shouldCollapseReplies && currentDataset.tmid) {
-		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
+	if (!shouldCollapseReplies && currentDataset.tmid) {
+		return false;
 	}
 
 	if (previousDataset.tmid && !currentDataset.tmid) {
-		return false;
+		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
 	}
 
 	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {

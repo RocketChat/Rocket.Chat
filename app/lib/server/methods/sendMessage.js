@@ -16,6 +16,12 @@ import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
 
 export function executeSendMessage(uid, message) {
+	if (message.tshow && !message.tmid) {
+		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
+			method: 'sendMessage',
+		});
+	}
+
 	if (message.tmid && !settings.get('Threads_enabled')) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', {
 			method: 'sendMessage',

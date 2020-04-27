@@ -134,6 +134,8 @@ const validateMessage = (message) => {
 		text: String,
 		alias: String,
 		emoji: String,
+		tmid: String,
+		tshow: Boolean,
 		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
 		blocks: [Match.Any],
@@ -154,6 +156,11 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (!message.ts) {
 		message.ts = new Date();
 	}
+
+	if (message.tshow !== true) {
+		delete message.tshow;
+	}
+
 	const { _id, username, name } = user;
 	message.u = {
 		_id,
