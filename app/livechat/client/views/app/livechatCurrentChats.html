@@ -127,24 +127,24 @@
 			{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 				<thead>
 					<tr>
-						<th width="25%">
-							<div class="table-fake-th">{{_ "Name"}}</div>
+						<th class="js-sort {{#if sortBy 'fname'}}is-sorting{{/if}}" data-sort="fname" width="25%">
+							<div class="table-fake-th">{{_ "Name"}}{{> icon icon=(sortIcon 'fname')}}</div>
 						</th>
-						<th width="15%">
-							<div class="table-fake-th">{{_ "Department"}}</div>
+						<th class="js-sort {{#if sortBy 'departmentId'}}is-sorting{{/if}}" data-sort="departmentId" width="15%">
+							<div class="table-fake-th">{{_ "Department"}}{{> icon icon=(sortIcon 'departmentId')}}</div>
 						</th>
-						<th width="15%">
-							<div class="table-fake-th">{{_ "Served_By"}}</div>
+						<th class="js-sort {{#if sortBy 'servedBy.username'}}is-sorting{{/if}}" data-sort="servedBy.username" width="15%">
+							<div class="table-fake-th">{{_ "Served_By"}}{{> icon icon=(sortIcon 'servedBy.username')}}</div>
 						</th>
-						<th width="15%">
-							<div class="table-fake-th">{{_ "Started_At"}}</div>
+						<th class="js-sort {{#if sortBy 'ts'}}is-sorting{{/if}}" data-sort="ts" width="15%">
+							<div class="table-fake-th">{{_ "Started_At"}}{{> icon icon=(sortIcon 'ts')}}</div>
 						</th>
 
-						<th width="15%">
-							<div class="table-fake-th">{{_ "Last_Message_At"}}</div>
+						<th class="js-sort {{#if sortBy 'lm'}}is-sorting{{/if}}" data-sort="lm" width="15%">
+							<div class="table-fake-th">{{_ "Last_Message_At"}}{{> icon icon=(sortIcon 'lm')}}</div>
 						</th>
-						<th width="10%">
-							<div class="table-fake-th">{{_ "Status"}}</div>
+						<th class="js-sort {{#if sortBy 'open'}}is-sorting{{/if}}" data-sort="open" width="10%">
+							<div class="table-fake-th">{{_ "Status"}}{{> icon icon=(sortIcon 'open')}}</div>
 						</th>
 
 						<th width="5%"><div class="table-fake-th">&nbsp;</div></th>

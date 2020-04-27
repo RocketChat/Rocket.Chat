@@ -8,7 +8,7 @@ export function Page(props) {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
 		<Flex.Container direction='column'>
-			<Box is='section' style={useMemo(() => ({ height: '100%' }), [])} {...props} />
+			<Box is='section' style={useMemo(() => ({ overflow: 'hidden', flex: '1 1 auto', height: '100%' }), [])} {...props} />
 		</Flex.Container>
 	</PageContext.Provider>;
 }

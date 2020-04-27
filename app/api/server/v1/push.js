@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Push } from 'meteor/rocketchat:push';
 
+import { appTokensCollection } from '../../../push/server';
 import { API } from '../api';
 
 API.v1.addRoute('push.token', { authRequired: true }, {
@@ -47,7 +47,7 @@ API.v1.addRoute('push.token', { authRequired: true }, {
 			throw new Meteor.Error('error-token-param-not-valid', 'The required "token" body param is missing or invalid.');
 		}
 
-		const affectedRecords = Push.appCollection.remove({
+		const affectedRecords = appTokensCollection.remove({
 			$or: [{
 				'token.apn': token,
 			}, {
