@@ -1,74 +1,6 @@
 
-# 3.2.0 (Under Release Candidate Process)
-
-## 3.2.0-rc.2
-`2020-04-27  ·  5 🐛  ·  4 🔍  ·  6 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- LDAP error when trying to add room with spaces in the name ([#17453](https://github.com/RocketChat/Rocket.Chat/pull/17453))
-
-- Empty Incoming webhook script field  ([#17422](https://github.com/RocketChat/Rocket.Chat/pull/17422))
-
-- LDAP Sync error ([#17417](https://github.com/RocketChat/Rocket.Chat/pull/17417) by [@fastrde](https://github.com/fastrde))
-
-- Bot Agents not being able to get Omnichannel Inquiries ([#17404](https://github.com/RocketChat/Rocket.Chat/pull/17404))
-
-- Allowing blocking a user on channels ([#17406](https://github.com/RocketChat/Rocket.Chat/pull/17406))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Complement Guest role restrictions for Enterprise ([#17393](https://github.com/RocketChat/Rocket.Chat/pull/17393))
-
-- Regression: Add missing cacheKey to mem ([#17430](https://github.com/RocketChat/Rocket.Chat/pull/17430))
-
-- Remove `@typescript-eslint/explicit-function-return-type` rule ([#17428](https://github.com/RocketChat/Rocket.Chat/pull/17428))
-
-- Fix moving-to-a-single-codebase link in README ([#17297](https://github.com/RocketChat/Rocket.Chat/pull/17297) by [@Krinkle](https://github.com/Krinkle))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@Krinkle](https://github.com/Krinkle)
-- [@fastrde](https://github.com/fastrde)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.2.0-rc.1
-`2020-04-22  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- 2FA not showing codes for Spanish translation ([#17378](https://github.com/RocketChat/Rocket.Chat/pull/17378) by [@RavenSystem](https://github.com/RavenSystem))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix mem usage with more than one argument ([#17391](https://github.com/RocketChat/Rocket.Chat/pull/17391))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@RavenSystem](https://github.com/RavenSystem)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.2.0-rc.0
-`2020-04-21  ·  19 🎉  ·  10 🚀  ·  36 🐛  ·  15 🔍  ·  31 👩‍💻👨‍💻`
+# 3.2.0
+`2020-04-27  ·  19 🎉  ·  10 🚀  ·  34 🐛  ·  19 🔍  ·  34 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -88,16 +20,11 @@
 - Better Push and Email Notification logic ([#17357](https://github.com/RocketChat/Rocket.Chat/pull/17357))
 
   We are still using the same logic to define which notifications every new message will generate, it takes some servers' settings, users's preferences and subscriptions' settings in consideration to determine who will receive each notification type (desktop, audio, email and mobile push), but now it doesn't check the user's status (online, away, offline) for email and mobile push notifications but send those notifications to a new queue with the following rules:
-
-
-  - When the user is online the notification is scheduled to be sent in 120 seconds
-
-  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away
-
-  - When the user is offline the notification is scheduled to be sent right away
-
-  - When the user reads a channel all the notifications for that user are removed (clear queue)
-
+  
+  - When the user is online the notification is scheduled to be sent in 120 seconds  
+  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away  
+  - When the user is offline the notification is scheduled to be sent right away  
+  - When the user reads a channel all the notifications for that user are removed (clear queue)  
   - When a notification is processed to be sent to a user and there are other scheduled notifications:
     - All the scheduled notifications for that user are rescheduled to now
     - The current notification goes back to the queue to be processed ordered by creation date
@@ -170,12 +97,6 @@
 
 - Allow Screensharing in BBB Iframe ([#17290](https://github.com/RocketChat/Rocket.Chat/pull/17290) by [@wolbernd](https://github.com/wolbernd))
 
-- Web Client memory leak caused by the Emoji rendering ([#17320](https://github.com/RocketChat/Rocket.Chat/pull/17320))
-
-- Omnichannel room info panel opening whenever a message is sent ([#17348](https://github.com/RocketChat/Rocket.Chat/pull/17348))
-
-- New user added by admin doesn't receive random password email ([#17249](https://github.com/RocketChat/Rocket.Chat/pull/17249))
-
 - "Invalid Invite" message when registration is disabled ([#17226](https://github.com/RocketChat/Rocket.Chat/pull/17226))
 
 - Red color error outline is not removed after password update on profile details ([#16536](https://github.com/RocketChat/Rocket.Chat/pull/16536) by [@ashwaniYDV](https://github.com/ashwaniYDV))
@@ -226,9 +147,13 @@
 
 - Unsafe React portals mount/unmount  ([#17265](https://github.com/RocketChat/Rocket.Chat/pull/17265))
 
+- 2FA not showing codes for Spanish translation ([#17378](https://github.com/RocketChat/Rocket.Chat/pull/17378) by [@RavenSystem](https://github.com/RavenSystem))
+
 <details>
 <summary>🔍 Minor changes</summary>
 
+
+- Release 3.1.2 ([#17454](https://github.com/RocketChat/Rocket.Chat/pull/17454) by [@fastrde](https://github.com/fastrde))
 
 - Remove set as alias setting ([#16343](https://github.com/RocketChat/Rocket.Chat/pull/16343))
 
@@ -260,18 +185,27 @@
 
 - Merge master into develop & Set version to 3.2.0-develop ([#17241](https://github.com/RocketChat/Rocket.Chat/pull/17241) by [@1rV1N-git](https://github.com/1rV1N-git))
 
+- Complement Guest role restrictions for Enterprise ([#17393](https://github.com/RocketChat/Rocket.Chat/pull/17393))
+
+- Remove `@typescript-eslint/explicit-function-return-type` rule ([#17428](https://github.com/RocketChat/Rocket.Chat/pull/17428))
+
+- Fix moving-to-a-single-codebase link in README ([#17297](https://github.com/RocketChat/Rocket.Chat/pull/17297) by [@Krinkle](https://github.com/Krinkle))
+
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@1rV1N-git](https://github.com/1rV1N-git)
 - [@CC007](https://github.com/CC007)
+- [@Krinkle](https://github.com/Krinkle)
 - [@Nikhil713](https://github.com/Nikhil713)
+- [@RavenSystem](https://github.com/RavenSystem)
 - [@aKn1ghtOut](https://github.com/aKn1ghtOut)
 - [@ashwaniYDV](https://github.com/ashwaniYDV)
 - [@benkroeger](https://github.com/benkroeger)
 - [@c0dzilla](https://github.com/c0dzilla)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@fastrde](https://github.com/fastrde)
 - [@fcrespo82](https://github.com/fcrespo82)
 - [@felipecrp](https://github.com/felipecrp)
 - [@ffauvel](https://github.com/ffauvel)
@@ -298,6 +232,51 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 3.1.2
+`2020-04-27  ·  8 🐛  ·  3 🔍  ·  5 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- LDAP error when trying to add room with spaces in the name ([#17453](https://github.com/RocketChat/Rocket.Chat/pull/17453))
+
+- Empty Incoming webhook script field  ([#17422](https://github.com/RocketChat/Rocket.Chat/pull/17422))
+
+- LDAP Sync error ([#17417](https://github.com/RocketChat/Rocket.Chat/pull/17417) by [@fastrde](https://github.com/fastrde))
+
+- Bot Agents not being able to get Omnichannel Inquiries ([#17404](https://github.com/RocketChat/Rocket.Chat/pull/17404))
+
+- Allowing blocking a user on channels ([#17406](https://github.com/RocketChat/Rocket.Chat/pull/17406))
+
+- Web Client memory leak caused by the Emoji rendering ([#17320](https://github.com/RocketChat/Rocket.Chat/pull/17320))
+
+- Omnichannel room info panel opening whenever a message is sent ([#17348](https://github.com/RocketChat/Rocket.Chat/pull/17348))
+
+- New user added by admin doesn't receive random password email ([#17249](https://github.com/RocketChat/Rocket.Chat/pull/17249))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.1.2 ([#17454](https://github.com/RocketChat/Rocket.Chat/pull/17454) by [@fastrde](https://github.com/fastrde))
+
+- Regression: Add missing cacheKey to mem ([#17430](https://github.com/RocketChat/Rocket.Chat/pull/17430))
+
+- Regression: Fix mem usage with more than one argument ([#17391](https://github.com/RocketChat/Rocket.Chat/pull/17391))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@fastrde](https://github.com/fastrde)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.1.1
 `2020-04-14  ·  8 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
