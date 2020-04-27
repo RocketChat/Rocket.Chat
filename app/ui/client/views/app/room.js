@@ -541,6 +541,7 @@ Template.room.helpers({
 		const tab = FlowRouter.getParam('tab');
 		const mid = FlowRouter.getParam('context');
 		const rid = Template.instance().data._id;
+		const jump = FlowRouter.getQueryParam('jump');
 
 		if (tab !== 'thread' || !mid) {
 			return;
@@ -558,6 +559,7 @@ Template.room.helpers({
 			rid,
 			mid,
 			room,
+			jump,
 		};
 	},
 });
@@ -669,14 +671,16 @@ Template.room.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { msg: { rid, _id } } = messageArgs(this);
+		const { msg: { rid, _id, tmid } } = messageArgs(this);
 		const room = Rooms.findOne({ _id: rid });
 
 		FlowRouter.go(FlowRouter.getRouteName(), {
 			rid,
 			name: room.name,
 			tab: 'thread',
-			context: _id,
+			context: tmid || _id,
+		}, {
+			jump: tmid && tmid !== _id && _id && _id,
 		});
 	},
 	'click .js-reply-broadcast'() {

@@ -8,7 +8,7 @@ import { Tracker } from 'meteor/tracker';
 import { Page } from '../../../../client/components/basic/Page';
 import { ChatMessage } from '../../../models/client';
 import { useRoute } from '../../../../client/contexts/RouterContext';
-import { roomTypes } from '../../../utils/client';
+import { roomTypes, APIClient } from '../../../utils/client';
 import { call } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
@@ -25,7 +25,7 @@ const style = {
 	zIndex: 100,
 };
 
-export default function ThreadComponent({ mid, rid, room, ...props }) {
+export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	const t = useTranslation();
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 	const [mainMessage, setMainMessage] = useState({});
@@ -43,8 +43,8 @@ export default function ThreadComponent({ mid, rid, room, ...props }) {
 	}, [channelRoute, room.t, room.name]);
 
 	useEffect(() => {
-		const tracker = Tracker.autorun(() => {
-			const msg = ChatMessage.findOne({ _id: mid }, { fields: { replies: 1, rid: 1, mid: 1, u: 1, msg: 1 } });
+		const tracker = Tracker.autorun(async () => {
+			const msg = ChatMessage.findOne({ _id: mid }, { fields: { replies: 1, rid: 1, mid: 1, u: 1, msg: 1 } }) || (await APIClient.v1.get('chat.getMessage', { msgId: mid })).message;
 			if (!msg) {
 				return;
 			}
@@ -54,7 +54,7 @@ export default function ThreadComponent({ mid, rid, room, ...props }) {
 	}, [mid]);
 
 	useEffect(() => {
-		const view = mainMessage.rid && ref.current && Blaze.renderWithData(Template.thread, { mainMessage, ...props }, ref.current);
+		const view = mainMessage.rid && ref.current && Blaze.renderWithData(Template.thread, { mainMessage, jump, ...props }, ref.current);
 		return () => view && Blaze.remove(view);
 	}, [ref.current, mainMessage.rid, mainMessage.mid, mainMessage.msg]);
 
