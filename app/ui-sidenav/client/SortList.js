@@ -129,3 +129,5 @@ function GroupingList() {
 		</ul>
 	</>;
 }
+
+export default SortList;

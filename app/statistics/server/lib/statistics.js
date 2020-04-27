@@ -1,7 +1,6 @@
 import os from 'os';
 
 import _ from 'underscore';
-import { Push } from 'meteor/rocketchat:push';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
@@ -22,6 +21,7 @@ import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
+import { NotificationQueue } from '../../../models/server/raw';
 
 const wizardFields = [
 	'Organization_Type',
@@ -62,6 +62,7 @@ export const statistics = {
 		// User statistics
 		statistics.totalUsers = Users.find().count();
 		statistics.activeUsers = Users.getActiveLocalUserCount();
+		statistics.activeGuests = Users.getActiveLocalGuestCount();
 		statistics.nonActiveUsers = Users.find({ active: false }).count();
 		statistics.appUsers = Users.find({ type: 'app' }).count();
 		statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
@@ -166,7 +167,7 @@ export const statistics = {
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
 
-		statistics.pushQueue = Push.notifications.find().count();
+		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
 
 		return statistics;
 	},
