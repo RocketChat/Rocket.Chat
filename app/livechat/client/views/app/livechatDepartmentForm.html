@@ -49,6 +49,12 @@
 										</div>
 									</div>
 									<div class="input-line">
+										<label>{{_ "Livechat_DepartmentOfflineMessageToChannel"}}</label>
+										<div>
+											<input type="text" class="rc-input__element" name="offlineMessageChannelName" value="{{department.offlineMessageChannelName}}" placeholder="{{_ "Channel_name"}}" />
+										</div>
+									</div>
+									<div class="input-line">
 										<label>{{_ "Request_tag_before_closing_chat"}}</label>
 										<div>
 											<label><input type="radio" name="requestTagBeforeClosingChat" value="1" checked="{{$eq requestTagBeforeClosingChat true}}" /> {{_ "Yes"}}</label>

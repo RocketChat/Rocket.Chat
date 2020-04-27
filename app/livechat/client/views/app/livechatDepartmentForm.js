@@ -111,6 +111,7 @@ Template.livechatDepartmentForm.events({
 			const showOnOfflineForm = instance.$('input[name=showOnOfflineForm]:checked').val();
 			const requestTagBeforeClosingChat = instance.$('input[name=requestTagBeforeClosingChat]:checked').val();
 			const chatClosingTags = instance.chatClosingTags.get();
+			const offlineMessageChannelName = instance.$('input[name=offlineMessageChannelName]').val();
 			if (enabled !== '1' && enabled !== '0') {
 				return toastr.error(t('Please_select_enabled_yes_or_no'));
 			}
@@ -132,6 +133,7 @@ Template.livechatDepartmentForm.events({
 				requestTagBeforeClosingChat: requestTagBeforeClosingChat === '1',
 				email: email.trim(),
 				chatClosingTags,
+				offlineMessageChannelName,
 			};
 		}
 
