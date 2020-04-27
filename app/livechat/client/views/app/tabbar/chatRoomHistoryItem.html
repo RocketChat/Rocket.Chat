@@ -1,0 +1,26 @@
+<template name='chatRoomHistoryItem'>
+	<li class='list-chat' id='{{_id}}' aria='{{v.token}}' >
+		<div class="history-div">
+			<div class="visitor-img">
+				<img src="/avatar/{{responseBy.username}}" alt="">
+			</div>
+			<div class="visitor-history-details">
+				<div class="visitor-details">
+					<h1>{{responseBy.username}}</h1>
+						{{#if open}}
+							<p class='open'>Open</p>
+						{{else}}
+							<p>Close at time {{time}}</p>
+						{{/if}}
+				</div>
+				<div class="total-messages">
+					<p>{{room.msgs}} messages</p>
+				</div>
+				<div class="agent-comment">
+					<p class="comment-heading">Agent comment:</p>
+					<p class="comment-text">"{{lastMessage.msg}}"</p>
+				</div>
+			</div>
+		</div>
+	</li>
+</template>

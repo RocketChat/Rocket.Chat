@@ -2,15 +2,19 @@ import { Template } from 'meteor/templating';
 import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 import './customerChatHistory.html';
+import './chatRoomHistoryItem.html';
 import { APIClient, t } from '../../../../../utils/client';
 import { Session } from 'meteor/session';
-
+import _ from 'underscore';
 const ITEMS_COUNT = 50;
-let  historyResult 
-let len, msgs
-let allHistoryChat ;
+let isChanged;
 Template.customerChatHistory.helpers({
-	isSearching(){
+	
+	hasChatHistory() {
+		// will return if user has any chatHistory or not
+		return Template.instance().hasHistory.get()
+	},
+	isSearching() {
 		return Template.instance().isSearching.get()
 	},
 	isAllChat() {
@@ -27,19 +31,11 @@ Template.customerChatHistory.helpers({
 	},
 	searchResults(){
 		// will return search result
-		var r = Session.get('searchResult');
 		return 	Template.instance().searchResult.get();
 	},
 	previousChats() {
 		// will return pervious chats list
-		let history = Template.instance().history.get();
-		let newHisTory = []
-		for(i=1; i<history.length; i++){
-			history[i].time = moment(history[i].ts).format('LT');
-			history[i].count = history[i].msgs-3;
-			newHisTory.push(history[i]);
-		}
-		return newHisTory;
+		return addTime(Template.instance().history.get(),'true');
 	},
 	title() {
 		
@@ -52,8 +48,12 @@ Template.customerChatHistory.helpers({
 	},
 });
 
+const DEBOUNCE_TIME_FOR_SEARCH_DEPARTMENTS_IN_MS = 300;
 Template.customerChatHistory.onCreated(function() {
+	isChanged = false;
 	const currentData = Template.currentData();
+	this.filter = new ReactiveVar('');
+	this.hasHistory = new ReactiveVar(false);
 	this.visitorId = new ReactiveVar();
 	this.history = new ReactiveVar([]);
 	this.offset = new ReactiveVar(0);
@@ -68,12 +68,21 @@ Template.customerChatHistory.onCreated(function() {
 		}
 	});
 	this.autorun(async () => {
-		
+		const filter = this.filter.get()
 		if (!this.visitorId.get() || !currentData || !currentData.rid) {
 			return;
 		}
 		const offset = this.offset.get();
-		const { history, total } = await APIClient.v1.get(`livechat/visitors.chatHistory/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ ITEMS_COUNT }&offset=${ offset }`);
+		const searchText='null';
+		let baseUrl = `livechat/visitors.chatHistory/room/${ currentData.rid}/visitor/${ this.visitorId.get() }?searchText=${searchText}&count=${ ITEMS_COUNT }&offset=${ offset }`
+		const { history, total,resultArray } = await APIClient.v1.get(baseUrl);
+		if(history.length > 0){
+			for(var i=0 ;i<history.length; i++){
+				if(!history[i].open){
+					this.hasHistory.set(true);
+				}
+			}
+		}
 		this.total.set(total);
 		this.history.set(this.history.get().concat(history));	
 	});	
@@ -89,33 +98,24 @@ Template.customerChatHistory.events({
 			return instance.offset.set(instance.offset.get() + ITEMS_COUNT);
 		}
 	}, 200),
-	'keyup #searchInput': async function(event,template){ 
+	'keyup #searchInput':  async function(event,template){ 
+		const offset = template.offset.get();
 		template.isSearching.set(true);
-		searchResults = [];
-		let text = event.target.value;
 		template.isChatClicked.set(false);
 		template.isAllChat.set(true);
 		Session.set('found',false);
 		if(event.target.value == ''){
 			template.isSearching.set(false);
 		}else{
-			
-			Template.instance().searchResult = new ReactiveVar([]);
-			let history = Template.instance().history.get();
-			let array = [];
-			for(var j=0; j<history.length; j++){
-				var rid = history[j]._id;
-				const search  =  await APIClient.v1.get(`chat.search?roomId=${rid}&searchText=${text}`);
-				for(k=0; k<search.messages.length; k++){
-					search.messages[k].time = moment(search.messages[k].ts).format('LT');
-					array.push(search.messages[k]);
-				}
-			}
-			if(array.length >0){
+				Template.instance().searchResult = new ReactiveVar([]);	
+				var result = loadRoom(event.target.value ,Template.currentData().rid,template.visitorId.get(),offset)
+				result.then(function(v){
+					if(v != null){
 					Session.set('found',true); 
-					Session.set('searchResult',array);
-					template.searchResult.set(array)
-				}	
+					Session.set('searchResult',v);
+					template.searchResult.set(v);
+					}
+				})	
 	}},
 	'click .list-chat': async function(event,template){
 		event.preventDefault();
@@ -136,3 +136,26 @@ Template.customerChatHistory.onDestroyed(function(){
 		header[0].className = 'contextual-bar__header-title';
 	}
 })
+
+loadRoom = async (searchTerm,rid,visitorId,offset) =>{
+	let baseUrl = `livechat/visitors.chatHistory/room/${ rid}/visitor/${ visitorId }?searchText=${searchTerm}&count=${ ITEMS_COUNT }&offset=${ offset }`
+		const { resultArray } = await APIClient.v1.get(baseUrl);
+		if(resultArray.length==0){
+			return null;
+		}else{
+			return  addTime(resultArray);
+		}
+}
+
+addTime = (array,value='false') => {
+	if(value=='true'){
+		if(!isChanged){
+			array.shift();
+			isChanged = true;
+		}
+	}
+	for(var i=0; i<array.length;i++){
+			array[i].time = moment(array[i].ts).format('LT');
+	};
+	return array;
+}

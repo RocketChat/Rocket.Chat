@@ -1,6 +1,7 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/server/raw';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
+import { Meteor } from 'meteor/meteor';
 
 export async function findVisitorInfo({ userId, visitorId }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
@@ -30,7 +31,7 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 		skip: offset,
 		limit: count,
 	});
-
+	
 	const total = await cursor.count();
 
 	const pages = await cursor.toArray();
@@ -43,7 +44,7 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	};
 }
 
-export async function findChatHistory({ userId, roomId, visitorId, pagination: { offset, count, sort } }) {
+export async function findChatHistory({ userId, roomId, visitorId,text, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
@@ -62,13 +63,40 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 	});
 
 	const total = await cursor.count();
-
 	const history = await cursor.toArray();
-
-	return {
-		history,
-		count: history.length,
-		offset,
-		total,
-	};
+	if(text == 'null'){
+		return {
+			history,
+			count: history.length,
+			offset,
+			total,
+			
+		};
+		
+	}else{
+		let resultArray=[];
+		Meteor.runAsUser(userId,()=>{
+			for(var i=0; i<history.length; i++){
+				var roomid = history[i]._id;
+				var count = 1000;
+				var result = Meteor.call('messageSearch',text,roomid,count).message.docs;
+				if(result.length>0){
+					for(var j=0; j<result.length; j++){
+						resultArray.push(result[j])
+					}	
+				}
+			}
+		})
+		
+		return {
+			history,
+			count: history.length,
+			offset,
+			total,
+			resultArray,
+			
+		};
+		
+	}
+	
 }

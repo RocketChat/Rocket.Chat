@@ -2,72 +2,54 @@
 	<div class="content">
 		<div class="list-view">
 			<div>
-			<div class="active-pink-4 mb-4 inner-addon right-addon">
-				<i class="glyphicon glyphicon-search icon-search"></i>
-				<input type="text" id="searchInput" class="" placeholder="Search" aria-label="Search">
+				<div class="active-pink-4 mb-4 inner-addon right-addon">
+					<i class="glyphicon glyphicon-search icon-search"></i>
+					<input type="text" id="searchInput"  class="" placeholder="Search" aria-label="Search">
+				</div>
 			</div>
-		</div>
-            {{#if isAllChat}}
-			<div class="vistior-history-block">
-				<ul id='allist'>
-				{{#if isSearching}}
-					{{#if isfound }}
-					{{#each searchResults}} 
-					<li class='search-li'>
-						<div class="history-main">
-							<div class="history-img">
-								<img src="/avatar/{{u.username}}" >
-							</div>
-							<div class="history-detail-main">
-								<div class="detail-main-upper">
-									<h1>{{u.name}}</h1>
-									<p>{{time}}</p>
-								</div>
-								<div class="detail-main-lower">
-									<p>{{msg}}</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					{{/each}}
+			{{#if hasChatHistory}}
+				{{#if isAllChat}}
+				<div class="vistior-history-block">
+					<ul id='allist'>
+					{{#if isSearching}}
+						{{#if isfound }}
+							{{#each searchResults}} 
+								<li class='search-li'>
+									<div class="history-main">
+										<div class="history-img">
+											<img src="/avatar/{{u.username}}" >
+										</div>
+										<div class="history-detail-main">
+											<div class="detail-main-upper">
+												<h1>{{u.name}}</h1>
+												<p>{{time}}</p>
+											</div>
+											<div class="detail-main-lower">
+												<p>{{msg}}</p>
+											</div>
+										</div>
+									</div>
+								</li>
+							{{/each}}
+						{{else}}
+							<h1 class='noresult'>No result found</h1> 
+						{{/if}}
 					{{else}}
-						<h1 class='noresult'>No result found</h1> 
+						{{#each room in previousChats}}
+							{{> chatRoomHistoryItem room}}
+						{{/each}}
 					{{/if}}
+					</ul>      
+				</div>
 				{{else}}
-					{{#each previousChats}}
-					<li class='list-chat' id='{{_id}}' aria='{{v.token}}' >
-						<div class="history-div">
-							<div class="visitor-img">
-								<img src="/avatar/{{responseBy.username}}" alt="">
-							</div>
-							<div class="visitor-history-details">
-								<div class="visitor-details">
-									<h1>{{responseBy.username}}</h1>
-									{{#if open}}
-										<p class='open'>Open</p>
-										{{else}}
-									<p>Close at time {{time}}</p>
-									{{/if}}
-								</div>
-								<div class="total-messages">
-									<p>{{room.msgs}} messages</p>
-								</div>
-								<div class="agent-comment">
-									<p class="comment-heading">Agent comment:</p>
-									<p class="comment-text">"{{lastMessage.msg}}"</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					{{/each}}
+					{{#if isChatClicked}}
+						{{> customerChatHistoryMessages}}
+					{{/if}}
 				{{/if}}
-				</ul>      
-			</div>
-		{{else}}
-			{{#if isChatClicked}}
-				{{> customerChatHistoryMessages}}
+			{{else}}
+				<h1 class='noresult'>No Previous Chats found</h1> 
 			{{/if}}
-		{{/if}}
 		</div>
 	</div>
 </template>
+
