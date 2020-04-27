@@ -5,6 +5,6 @@ const { addRolePermissionWhiteList: oldAddRolePermissionWhiteList } = Authorizat
 
 // Extends the method to also clear the server permission cache when a new role restriction is added
 AuthorizationUtils.addRolePermissionWhiteList = function(...args): void {
-	oldAddRolePermissionWhiteList.call(this, ...args);
+	oldAddRolePermissionWhiteList.apply(this, args);
 	clearCache();
 };
