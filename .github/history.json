@@ -42492,6 +42492,101 @@
           ]
         }
       ]
+    },
+    "3.1.2": {
+      "pull_requests": [
+        {
+          "pr": "17453",
+          "title": "[FIX] LDAP error when trying to add room with spaces in the name",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17430",
+          "title": "Regression: Add missing cacheKey to mem",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17422",
+          "title": "[FIX] Empty Incoming webhook script field ",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17417",
+          "title": "[FIX] LDAP Sync error",
+          "userLogin": "fastrde",
+          "milestone": "3.1.2",
+          "contributors": [
+            "fastrde"
+          ]
+        },
+        {
+          "pr": "17404",
+          "title": "[FIX] Bot Agents not being able to get Omnichannel Inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17406",
+          "title": "[FIX] Allowing blocking a user on channels",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17391",
+          "title": "Regression: Fix mem usage with more than one argument",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17320",
+          "title": "[FIX] Web Client memory leak caused by the Emoji rendering",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17348",
+          "title": "[FIX] Omnichannel room info panel opening whenever a message is sent",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17249",
+          "title": "[FIX] New user added by admin doesn't receive random password email",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
