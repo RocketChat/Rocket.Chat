@@ -23,7 +23,6 @@ import './methods/removeUserFromRole';
 import './methods/saveRole';
 import './streamer/permissions';
 import './startup';
-import './lib/AuthorizationUtilsExtension';
 
 export {
 	getRoles,
