@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Button, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { UserAvatar } from './Avatar';
+import UserAvatar from './UserAvatar';
 
 export function useFileInput(onSetFile) {
 	const [openInput, setOpenInput] = useState();
