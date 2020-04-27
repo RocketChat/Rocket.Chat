@@ -17,6 +17,7 @@ import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/ro
 import './thread.html';
 import { getUserPreference } from '../../../utils';
 import { settings } from '../../../settings/client';
+import { callbacks } from '../../../callbacks/client';
 
 createTemplateForComponent('Checkbox', () => import('../components/CheckBoxComponent'), {
 	// eslint-disable-next-line new-cap
@@ -135,6 +136,25 @@ Template.thread.onRendered(function() {
 
 
 	this.autorun(() => {
+		const rid = this.state.get('rid');
+		const tmid = this.state.get('tmid');
+		if (!rid) {
+			return;
+		}
+		this.callbackRemove && this.callbackRemove();
+
+		this.callbackRemove = () => callbacks.remove('streamNewMessage', `thread${ this.rid }`);
+
+		callbacks.add('streamNewMessage', (msg) => {
+			if (rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
+				return;
+			}
+			Meteor.call('readThreads', tmid);
+		}, callbacks.priority.MEDIUM, `thread${ rid }`);
+	});
+
+
+	this.autorun(() => {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
@@ -146,14 +166,10 @@ Template.thread.onRendered(function() {
 			},
 		}).observe({
 			added: ({ _id, ...message }) => {
-				const { atBottom } = this;
 				this.Threads.upsert({ _id }, message);
-				atBottom && this.sendToBottom();
 			},
 			changed: ({ _id, ...message }) => {
-				const { atBottom } = this;
 				this.Threads.update({ _id }, message);
-				atBottom && this.sendToBottom();
 			},
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
@@ -232,7 +248,9 @@ Template.thread.onCreated(async function() {
 });
 
 Template.thread.onDestroyed(function() {
-	const { Threads, threadsObserve } = this;
+	const { Threads, threadsObserve, callbackRemove } = this;
 	Threads.remove({});
 	threadsObserve && threadsObserve.stop();
+
+	callbackRemove && callbackRemove();
 });

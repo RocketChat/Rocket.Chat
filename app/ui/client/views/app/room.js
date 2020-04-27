@@ -1197,6 +1197,8 @@ Template.room.onDestroyed(function() {
 
 	const chatMessage = chatMessages[this.data._id];
 	chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
+
+	callbacks.remove('streamNewMessage', this.data._id);
 });
 
 Template.room.onRendered(function() {
@@ -1376,7 +1378,7 @@ Template.room.onRendered(function() {
 		});
 	}
 	callbacks.add('streamNewMessage', (msg) => {
-		if (rid !== msg.rid || msg.editedAt) {
+		if (rid !== msg.rid || msg.editedAt || msg.tmid) {
 			return;
 		}
 
@@ -1387,7 +1389,7 @@ Template.room.onRendered(function() {
 		if (!template.isAtBottom()) {
 			newMessage.classList.remove('not');
 		}
-	});
+	}, callbacks.priority.MEDIUM, rid);
 
 	this.autorun(function() {
 		if (template.data._id !== RoomManager.openedRoom) {

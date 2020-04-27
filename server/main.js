@@ -47,6 +47,7 @@ import './methods/migrate';
 import './methods/muteUserInRoom';
 import './methods/openRoom';
 import './methods/readMessages';
+import './methods/readThreads';
 import './methods/registerUser';
 import './methods/removeRoomLeader';
 import './methods/removeRoomModerator';
