@@ -26,7 +26,7 @@ export function useFileInput(onSetFile) {
 	return openInput;
 }
 
-export function SetAvatar({ username, setAvatarObj }) {
+export function UserAvatarEditor({ username, setAvatarObj }) {
 	const t = useTranslation();
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
@@ -48,6 +48,10 @@ export function SetAvatar({ username, setAvatarObj }) {
 
 	const url = newAvatarSource || undefined;
 
+	const handleAvatarFromUrlChange = (event) => {
+		setAvatarFromUrl(event.currentTarget.value);
+	};
+
 	return <Box display='flex' flexDirection='column' textStyle='p2'>
 		{t('Profile_picture')}
 		<Box display='flex' flexDirection='row' mbs='x4'>
@@ -61,8 +65,10 @@ export function SetAvatar({ username, setAvatarObj }) {
 					</Margins>
 				</Box>
 				<Box>{t('Use_url_for_avatar')}</Box>
-				<TextInput flexGrow={0} placehloder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={(e) => { setAvatarFromUrl(e.currentTarget.value); }}/>
+				<TextInput flexGrow={0} placehloder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={handleAvatarFromUrlChange}/>
 			</Box>
 		</Box>
 	</Box>;
 }
+
+export default UserAvatarEditor;
