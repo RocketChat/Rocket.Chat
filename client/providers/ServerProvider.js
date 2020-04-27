@@ -19,7 +19,7 @@ const callMethod = (methodName, ...args) => new Promise((resolve, reject) => {
 });
 
 const callEndpoint = (httpMethod, endpoint, ...args) => {
-	const allowedHttpMethods = ['get', 'post', 'delete', 'upload'];
+	const allowedHttpMethods = ['get', 'post', 'delete'];
 	if (!httpMethod || !allowedHttpMethods.includes(httpMethod.toLowerCase())) {
 		throw new Error('Invalid http method provided to "useEndpoint"');
 	}
@@ -32,11 +32,14 @@ const callEndpoint = (httpMethod, endpoint, ...args) => {
 	return APIClient.v1[httpMethod.toLowerCase()](endpoint, ...args);
 };
 
+const upload = (endpoint, params, formData) => APIClient.v1.upload(endpoint, params, formData);
+
 const contextValue = {
 	info,
 	absoluteUrl,
 	callMethod,
 	callEndpoint,
+	upload,
 };
 
 export function ServerProvider({ children }) {
