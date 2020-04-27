@@ -10,8 +10,7 @@ import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';
 import { t } from '../../../utils/client';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
-import { CONSTANTS } from '../../lib';
-import { AuthorizationUtils } from '../lib/AuthorizationUtils';
+import { CONSTANTS, AuthorizationUtils } from '../../lib';
 
 import { hasAtLeastOnePermission } from '..';
 
@@ -181,8 +180,8 @@ Template.permissionsTable.helpers({
 		return t(`${ permission._id }_description`);
 	},
 
-	disabled(role) {
-		return AuthorizationUtils.isRoleReadOnly(role._id);
+	isRolePermissionEnabled(role, permission) {
+		return !AuthorizationUtils.isPermissionRestrictedForRole(permission._id, role._id);
 	},
 });
 

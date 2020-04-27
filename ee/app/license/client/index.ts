@@ -13,15 +13,6 @@ const allModules = new Promise<Set<string>>((resolve, reject) => {
 	});
 });
 
-let isEnterpriseServer = false;
-CachedCollectionManager.onLogin(async () => {
-	try {
-		isEnterpriseServer = await callMethod('license:isEnterprise');
-	} catch (e) {
-		console.error('Error checking if server is Enterprise', e);
-	}
-});
-
 export async function hasLicense(feature: string): Promise<boolean> {
 	try {
 		const features = await allModules;
@@ -29,8 +20,4 @@ export async function hasLicense(feature: string): Promise<boolean> {
 	} catch (e) {
 		return false;
 	}
-}
-
-export function isEnterprise(): boolean {
-	return isEnterpriseServer;
 }
