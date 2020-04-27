@@ -205,7 +205,7 @@
 	.message {
 		&:hover,
 		&.active {
-			background-color: #F7F8FA;
+			background-color: #f7f8fa;
 
 			& .message-actions {
 				display: flex;
