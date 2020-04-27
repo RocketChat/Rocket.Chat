@@ -254,7 +254,7 @@ Template.marketplace.helpers({
 
 Template.marketplace.events({
 	'click .js-cloud-login'() {
-		FlowRouter.go('cloud-config');
+		FlowRouter.go('cloud');
 	},
 	'submit .js-search-form'(event) {
 		event.stopPropagation();
