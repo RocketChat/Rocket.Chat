@@ -1,5 +1,5 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+// import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Meteor } from 'meteor/meteor';
 
 import { renderRouteComponent } from '../../../client/reactAdapters';
@@ -43,20 +43,16 @@ registerAdminRoute('/mailer', {
 	lazyRouteComponent: () => import('./components/mailer/MailerRoute'),
 });
 
-registerAdminRoute('/users', {
+registerAdminRoute('/users/:context?/:id?', {
 	name: 'admin-users',
-	action: async () => {
-		await import('./users/views');
-		BlazeLayout.render('main', { center: 'adminUsers' });
-	},
+	lazyRouteComponent: () => import('../../../client/admin/users/AdminUsersRoute'),
+	tab: 'users',
 });
 
-registerAdminRoute('/rooms', {
+registerAdminRoute('/rooms/:context?/:id?', {
 	name: 'admin-rooms',
-	action: async () => {
-		await import('./rooms/views');
-		BlazeLayout.render('main', { center: 'adminRooms' });
-	},
+	lazyRouteComponent: () => import('../../../client/admin/rooms/AdminRoomsRoute'),
+	tab: 'rooms',
 });
 
 Meteor.startup(() => {

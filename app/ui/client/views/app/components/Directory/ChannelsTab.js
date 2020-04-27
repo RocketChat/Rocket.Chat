@@ -1,15 +1,15 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import { Box, Margins, Table, Avatar, Tag, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
+import { GenericTable, Th, Markdown } from '../../../../components/GenericTable';
+import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
-import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../../client/hooks/useEndpointData';
 import { useFormatDate } from '../../../../../../../client/hooks/useFormatDate';
 import { roomTypes } from '../../../../../../utils/client';
 import { useQuery } from '../hooks';
-import { DirectoryTable, Th, Markdown } from './DirectoryTable';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -23,10 +23,24 @@ function RoomTags({ room }) {
 	</Box>;
 }
 
+const FilterByText = ({ setFilter, ...props }) => {
+	const t = useTranslation();
+	const [text, setText] = useState('');
+	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+
+	useEffect(() => {
+		setFilter({ text });
+	}, [text]);
+
+	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+		<TextInput placeholder={t('Search_Channels')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+	</Box>;
+};
+
 export function ChannelsTab() {
 	const t = useTranslation();
 	const [sort, setSort] = useState(['name', 'asc']);
-	const [params, setParams] = useState({});
+	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
@@ -62,29 +76,33 @@ export function ChannelsTab() {
 	}, [channelRoute]);
 
 	const formatDate = useFormatDate();
-	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
-		<Table.Cell>
-			<Box display='flex'>
-				<Avatar size='x40' title={fname || name} url={`%40${ fname || name }`} flexGrow={0} />
-				<Box grow={1} mi='x8' style={style}>
-					<Box display='flex' alignItems='center'>
-						<Icon name={roomTypes.getIcon(room)} textColor='hint' /> <Box textStyle='p2' textColor='default' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
+	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => {
+		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: name || fname, type: 'd', _id });
+
+		return <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
+			<Table.Cell>
+				<Box display='flex'>
+					<Avatar size='x40' title={fname || name} url={avatarUrl} flexGrow={0} />
+					<Box grow={1} mi='x8' style={style}>
+						<Box display='flex' alignItems='center'>
+							<Icon name={roomTypes.getIcon(room)} textColor='hint' /> <Box textStyle='p2' textColor='default' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
+						</Box>
+						{topic && <Markdown textStyle='p1' textColor='hint' style={style}>{topic}</Markdown> }
 					</Box>
-					{topic && <Markdown textStyle='p1' textColor='hint' style={style}>{topic}</Markdown> }
 				</Box>
-			</Box>
-		</Table.Cell>
-		<Table.Cell textStyle='p1' textColor='hint' style={style}>
-			{usersCount}
-		</Table.Cell>
-		{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
-			{formatDate(ts)}
-		</Table.Cell>}
-		{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
-			{lastMessage && formatDate(lastMessage.ts)}
-		</Table.Cell>}
-	</Table.Row>
+			</Table.Cell>
+			<Table.Cell textStyle='p1' textColor='hint' style={style}>
+				{usersCount}
+			</Table.Cell>
+			{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
+				{formatDate(ts)}
+			</Table.Cell>}
+			{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
+				{lastMessage && formatDate(lastMessage.ts)}
+			</Table.Cell>}
+		</Table.Row>;
+	}
 	, [mediaQuery]);
 
-	return <DirectoryTable searchPlaceholder={t('Search_Channels')} header={header} renderRow={renderRow} data={data} setParams={setParams} />;
+	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
 }

@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Box, Icon, Pagination, Skeleton, Table, Flex, TextInput, Tile } from '@rocket.chat/fuselage';
+import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
-import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
-import { Markdown as mrkd } from '../../../../../../markdown/client';
+import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { Markdown as mrkd } from '../../../markdown/client';
 
 function SortIcon({ direction }) {
 	return <Box is='svg' width='x16' height='x16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -42,33 +42,28 @@ const LoadingRow = ({ cols }) => <Table.Row>
 	</Table.Cell>)}
 </Table.Row>;
 
-const style = { minHeight: '40px' };
-
-export function DirectoryTable({
-	data = {},
+export function GenericTable({
+	results,
+	total,
 	renderRow,
 	header,
-	searchPlaceholder = 'placeholder',
 	setParams = () => { },
+	params: paramsDefault = '',
+	FilterComponent = () => null,
 }) {
 	const t = useTranslation();
 
-	const [text, setText] = useState('');
+	const [filter, setFilter] = useState(paramsDefault);
 
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 
 	const [current, setCurrent] = useState(0);
 
-	const term = useDebouncedValue(text, 500);
+	const params = useDebouncedValue(filter, 500);
 
 	useEffect(() => {
-		setParams({ term, current, itemsPerPage });
-	}, [term, current, itemsPerPage]);
-
-	const { result: channels, total } = data;
-
-
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+		setParams({ ...params, current, itemsPerPage });
+	}, [params, current, itemsPerPage]);
 
 	const Loading = useCallback(() => Array.from({ length: 10 }, (_, i) => <LoadingRow cols={header.length} key={i}/>), [header && header.length]);
 
@@ -77,40 +72,40 @@ export function DirectoryTable({
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
 
 	return <>
-		<Flex.Container direction='column'>
-			<Box>
-				<Box mb='x16' display='flex' flexDirection='column' style={style}>
-					<TextInput placeholder={searchPlaceholder} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-				</Box>
-				{channels && !channels.length
-					? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
-						{t('No_data_found')}
-					</Tile>
-					: <>
-						<Table fixed>
-							{ header && <Table.Head>
-								<Table.Row>
-									{header}
-								</Table.Row>
-							</Table.Head> }
-							<Table.Body>
-								{channels
-									? channels.map(renderRow)
-									:	<Loading/>}
-							</Table.Body>
-						</Table>
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							itemsPerPageLabel={itemsPerPageLabel}
-							showingResultsLabel={showingResultsLabel}
-							count={total || 0}
-							onSetItemsPerPage={setItemsPerPage}
-							onSetCurrent={setCurrent}
-						/>
-					</>
-				}
-			</Box>
-		</Flex.Container>
+		<>
+			<FilterComponent setFilter={setFilter}/>
+			{results && !results.length
+				? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
+					{t('No_data_found')}
+				</Tile>
+				: <>
+					<Scrollable>
+						<Box mi={'neg-x24'} pi={'x24'} flexGrow={1}>
+							<Table fixed>
+								{ header && <Table.Head>
+									<Table.Row>
+										{header}
+									</Table.Row>
+								</Table.Head> }
+								<Table.Body>
+									{results
+										? results.map(renderRow)
+										:	<Loading/>}
+								</Table.Body>
+							</Table>
+						</Box>
+					</Scrollable>
+					<Pagination
+						current={current}
+						itemsPerPage={itemsPerPage}
+						itemsPerPageLabel={itemsPerPageLabel}
+						showingResultsLabel={showingResultsLabel}
+						count={total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+					/>
+				</>
+			}
+		</>
 	</>;
 }
