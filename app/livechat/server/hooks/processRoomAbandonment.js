@@ -58,5 +58,5 @@ callbacks.add('livechat.closeRoom', (room) => {
 		return;
 	}
 	const secondsSinceLastAgentResponse = getSecondsSinceLastAgentResponse(room, agentLastMessage);
-	LivechatRooms.setVisitorInactivityInSecondsByRoomId(room._id, secondsSinceLastAgentResponse);
+	LivechatRooms.setVisitorInactivityInSecondsById(room._id, secondsSinceLastAgentResponse);
 }, callbacks.priority.HIGH, 'process-room-abandonment');

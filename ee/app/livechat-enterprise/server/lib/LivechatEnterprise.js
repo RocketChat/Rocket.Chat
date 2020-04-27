@@ -4,7 +4,9 @@ import { Match, check } from 'meteor/check';
 import { Users } from '../../../../../app/models';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
+import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
+import { removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 
 export const LivechatEnterprise = {
 	addMonitor(username) {
@@ -112,5 +114,50 @@ export const LivechatEnterprise = {
 		check(tagDepartments, [String]);
 
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
+	},
+
+	savePriority(_id, priorityData) {
+		check(_id, Match.Maybe(String));
+
+		check(priorityData, {
+			name: String,
+			description: Match.Optional(String),
+			dueTimeInMinutes: String,
+		});
+
+		const oldPriority = _id && LivechatPriority.findOneById(_id, { fields: { dueTimeInMinutes: 1 } });
+		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
+		if (!oldPriority) {
+			return priority;
+		}
+
+		const { dueTimeInMinutes: oldDueTimeInMinutes } = oldPriority;
+		const { dueTimeInMinutes } = priority;
+
+		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
+			updatePriorityInquiries(priority);
+		}
+
+		return priority;
+	},
+
+	removePriority(_id) {
+		check(_id, String);
+
+		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
+
+		if (!priority) {
+			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', { method: 'livechat:removePriority' });
+		}
+		const removed = LivechatPriority.removeById(_id);
+		if (removed) {
+			removePriorityFromRooms(_id);
+		}
+		return removed;
+	},
+
+	updateRoomPriority(roomId, user, priority) {
+		updateInquiryQueuePriority(roomId, priority);
+		updateRoomPriorityHistory(roomId, user, priority);
 	},
 };
