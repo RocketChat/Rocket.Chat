@@ -8,9 +8,15 @@ const PageContext = createContext();
 export function Page(props) {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
-		<Flex.Container direction='column'>
-			<Box flexGrow={1} componentClassName='rcx-page' qa-page-name={props.name} is='section' style={useMemo(() => ({ overflow: 'hidden', height: '100%' }), [])} {...props} />
-		</Flex.Container>
+		<Box
+			is='section'
+			display='flex'
+			flexDirection='column'
+			flexGrow={1}
+			flexShrink={1}
+			height='full'
+			style={useMemo(() => ({ overflow: 'hidden' }), [])} {...props}
+		/>
 	</PageContext.Provider>;
 }
 
@@ -45,7 +51,7 @@ export function PageContent({ ...props }) {
 
 export function PageContentScrolable({ onScrollContent, ...props }) {
 	return <Scrollable onScrollContent={onScrollContent} >
-		<PageContent {...props} style={{ overflowY: 'auto', height: '100%' }}/>
+		<Box padding='x16' flexGrow={1} {...props} />
 	</Scrollable>;
 }
 

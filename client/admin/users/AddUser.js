@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointData } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import { useEndpointAction } from '../usersAndRooms/hooks';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
@@ -15,7 +15,7 @@ export function AddUser({ roles, ...props }) {
 
 	const router = useRoute('admin-users');
 
-	const roleData = useEndpointData('GET', 'roles.list', '') || {};
+	const roleData = useEndpointData('roles.list', '') || {};
 
 	const goToUser = (id) => router.push({
 		context: 'info',

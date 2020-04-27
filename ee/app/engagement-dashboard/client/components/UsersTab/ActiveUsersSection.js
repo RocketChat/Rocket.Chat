@@ -4,9 +4,9 @@ import moment from 'moment';
 import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { CounterSet } from '../data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
-import { useEndpointData } from '../../hooks/useEndpointData';
 import { Section } from '../Section';
 
 export function ActiveUsersSection() {
@@ -22,7 +22,7 @@ export function ActiveUsersSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/users/active-users', params);
+	const data = useEndpointData('engagement-dashboard/users/active-users', params);
 
 	const [
 		countDailyActiveUsers,

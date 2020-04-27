@@ -2,7 +2,7 @@ import React, { useCallback, useState, useMemo } from 'react';
 import { Box, Headline, Button, Margins, TextInput, Skeleton, Field, ToggleSwitch, Divider, Icon, Callout } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { roomTypes } from '../../../../app/utils/client';
 import { useMethod } from '../../../contexts/ServerContext';
 import { usePermission } from '../../../contexts/AuthorizationContext';
@@ -18,7 +18,7 @@ export function EditRoomContextBar({ rid }) {
 function EditRoomWithData({ rid }) {
 	const [cache, setState] = useState();
 
-	const { data = {}, state, error } = useEndpointDataExperimental('GET', 'rooms.adminRooms.getRoom', useMemo(() => ({ rid }), [rid, cache]));
+	const { data = {}, state, error } = useEndpointDataExperimental('rooms.adminRooms.getRoom', useMemo(() => ({ rid }), [rid, cache]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24'>

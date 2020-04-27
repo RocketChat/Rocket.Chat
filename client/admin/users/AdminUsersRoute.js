@@ -1,13 +1,14 @@
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { useEndpointData } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
 import { useSwitchTab } from '../usersAndRooms/hooks';
 import { UsersAndRoomsTab } from '../usersAndRooms/UsersAndRoomsTab';
 import { AdminUsers } from './AdminUsers';
 import { useRoute } from '../../contexts/RouterContext';
-import { useDebounce } from '../../../app/ui/client/views/app/components/hooks';
+
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -33,14 +34,14 @@ export default function AdminUsersRoute({ props }) {
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 
-	const debouncedParams = useDebounce(params, 500);
-	const debouncedSort = useDebounce(sort, 500);
+	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedSort = useDebouncedValue(sort, 500);
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
 	const switchTab = useSwitchTab(routeName);
 
-	const data = useEndpointData('GET', 'users.list', query) || {};
+	const data = useEndpointData('users.list', query) || {};
 
 	const router = useRoute(routeName);
 

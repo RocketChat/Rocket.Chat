@@ -7,10 +7,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { settings } from '../../settings';
 import { menu, SideNav, Layout } from '../../ui-utils/client';
-import { t } from '../../utils';
+import { t } from '../../utils/client';
 import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
 import { hasAtLeastOnePermission } from '../../authorization/client';
 import { getSidebarItems } from './sidebarItems';
+import './adminFlex.html';
 
 Template.adminFlex.onCreated(function() {
 	this.isEmbedded = Layout.isEmbedded();

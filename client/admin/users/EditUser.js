@@ -2,7 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { Field, TextInput, Box, Headline, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental, useEndpointData, ENDPOINT_STATES } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../usersAndRooms/hooks';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
@@ -11,8 +12,8 @@ import { SetAvatar } from '../../components/basic/avatar/SetAvatar';
 
 export function EditUserWithData({ userId, ...props }) {
 	const t = useTranslation();
-	const roleData = useEndpointData('GET', 'roles.list', '') || {};
-	const { data, state, error } = useEndpointDataExperimental('GET', 'users.info', useMemo(() => ({ userId }), [userId]));
+	const roleData = useEndpointData('roles.list', '') || {};
+	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId }), [userId]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>

@@ -22,7 +22,7 @@ import { Pager } from '../Pager';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
 
-export function AdminUserInformationStep({ step, title, active }) {
+function AdminUserInformationStep({ step, title, active }) {
 	const loginWithPassword = useLoginWithPassword();
 	const registerUser = useMethod('registerUser');
 	const defineUsername = useMethod('setUsername');
@@ -132,11 +132,11 @@ export function AdminUserInformationStep({ step, title, active }) {
 						<TextInput
 							ref={autoFocusRef}
 							id={nameInputId}
-							addon={<Icon name='user' size='20' />}
+							addon={<Icon name='user' size='x20' />}
 							placeholder={t('Type_your_name')}
 							value={name}
 							onChange={({ currentTarget: { value } }) => setName(value)}
-							error={!isNameValid}
+							error={!isNameValid ? 'error' : ''}
 						/>
 					</Field.Row>
 				</Field>
@@ -145,11 +145,11 @@ export function AdminUserInformationStep({ step, title, active }) {
 					<Field.Row>
 						<TextInput
 							id={usernameInputId}
-							addon={<Icon name='at' size='20' />}
+							addon={<Icon name='at' size='x20' />}
 							placeholder={t('Type_your_username')}
 							value={username}
 							onChange={({ currentTarget: { value } }) => setUsername(value)}
-							error={!isUsernameValid}
+							error={!isUsernameValid ? 'error' : ''}
 						/>
 					</Field.Row>
 					{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
@@ -159,11 +159,11 @@ export function AdminUserInformationStep({ step, title, active }) {
 					<Field.Row>
 						<EmailInput
 							id={emailInputId}
-							addon={<Icon name='mail' size='20' />}
+							addon={<Icon name='mail' size='x20' />}
 							placeholder={t('Type_your_email')}
 							value={email}
 							onChange={({ currentTarget: { value } }) => setEmail(value)}
-							error={!isEmailValid}
+							error={!isEmailValid ? 'error' : ''}
 						/>
 					</Field.Row>
 					{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
@@ -173,11 +173,11 @@ export function AdminUserInformationStep({ step, title, active }) {
 					<Field.Row>
 						<PasswordInput
 							id={passwordInputId}
-							addon={<Icon name='key' size='20' />}
+							addon={<Icon name='key' size='x20' />}
 							placeholder={t('Type_your_password')}
 							value={password}
 							onChange={({ currentTarget: { value } }) => setPassword(value)}
-							error={!isPasswordValid}
+							error={!isPasswordValid ? 'error' : ''}
 						/>
 					</Field.Row>
 				</Field>
@@ -187,3 +187,5 @@ export function AdminUserInformationStep({ step, title, active }) {
 		<Pager disabled={commiting} isContinueEnabled={isContinueEnabled} />
 	</Step>;
 }
+
+export default AdminUserInformationStep;

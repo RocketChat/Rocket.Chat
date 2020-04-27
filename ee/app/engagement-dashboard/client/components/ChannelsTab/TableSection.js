@@ -3,9 +3,9 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Growth } from '../data/Growth';
 import { Section } from '../Section';
-import { useEndpointData } from '../../hooks/useEndpointData';
 
 export function TableSection() {
 	const t = useTranslation();
@@ -52,7 +52,7 @@ export function TableSection() {
 		count: itemsPerPage,
 	}), [period, current, itemsPerPage]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/channels/list', params);
+	const data = useEndpointData('engagement-dashboard/channels/list', params);
 
 	const channels = useMemo(() => {
 		if (!data) {

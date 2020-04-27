@@ -2,6 +2,7 @@ import {
 	Box,
 	CheckBox,
 	Field,
+	Icon,
 	Margins,
 	RadioButton,
 } from '@rocket.chat/fuselage';
@@ -13,24 +14,32 @@ import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFocus } from '../../../hooks/useFocus';
-import { Icon } from '../../basic/Icon';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
-import './RegisterServerStep.css';
 
 const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) => {
 	const innerRef = useRef();
 	const mergedRef = useMergedRefs(ref, innerRef);
 	const id = useUniqueId();
 
-	return <span
+	return <Box
 		className={[
 			'SetupWizard__RegisterServerStep-option',
 			selected && 'SetupWizard__RegisterServerStep-option--selected',
-			disabled && 'SetupWizard__RegisterServerStep-option--disabled',
 		].filter(Boolean).join(' ')}
+		display='block'
+		marginBlock='x8'
+		padding='x24'
+		textColor={selected ? 'primary' : 'disabled'}
+		style={{
+			borderColor: 'currentColor',
+			borderRadius: 2,
+			borderWidth: 2,
+			cursor: 'pointer',
+			...disabled && { opacity: 0.25 },
+		}}
 		onClick={() => {
 			innerRef.current.click();
 		}}
@@ -42,18 +51,37 @@ const Option = React.forwardRef(({ children, label, selected, disabled, ...props
 			</Field.Row>
 		</Field>
 		{children}
-	</span>;
+	</Box>;
 });
 
-const Items = (props) => <ul className='SetupWizard__RegisterServerStep-items' {...props} />;
+const Items = (props) => <Box is='ul' marginBlock='x16' {...props} />;
 
 const Item = ({ children, icon, ...props }) =>
-	<li className='SetupWizard__RegisterServerStep-item' {...props}>
-		<Icon block='SetupWizard__RegisterServerStep-item-icon' icon={icon} />
+	<Box
+		is='li'
+		marginBlockEnd='x8'
+		display='flex'
+		alignItems='center'
+		textColor='default'
+		{...props}
+	>
+		{icon === 'check' && <Icon
+			name='check'
+			size='x20'
+			marginInlineEnd='x8'
+			textColor='primary'
+		/>}
+		{icon === 'circle' && <Icon
+			name='circle'
+			size='x8'
+			marginInlineStart='x8'
+			marginInlineEnd='x12'
+			textColor='default'
+		/>}
 		{children}
-	</li>;
+	</Box>;
 
-export function RegisterServerStep({ step, title, active }) {
+function RegisterServerStep({ step, title, active }) {
 	const { canDeclineServerRegistration, goToPreviousStep, goToFinalStep } = useSetupWizardContext();
 
 	const [registerServer, setRegisterServer] = useState(true);
@@ -129,9 +157,9 @@ export function RegisterServerStep({ step, title, active }) {
 
 		<Margins blockEnd='x32'>
 			<Box>
-				<p className='SetupWizard__RegisterServerStep-text'>{t('Register_Server_Info')}</p>
+				<Box is='p' textStyle='s1' textColor='hint' marginBlockEnd='x16'>{t('Register_Server_Info')}</Box>
 
-				<div className='SetupWizard__RegisterServerStep-content'>
+				<Box display='flex' flexDirection='column'>
 					<Option
 						ref={autoFocusRef}
 						data-qa='register-server'
@@ -165,9 +193,6 @@ export function RegisterServerStep({ step, title, active }) {
 								<Field.Label htmlFor={optInMarketingEmailsId}>{t('Register_Server_Opt_In')}</Field.Label>
 							</Field.Row>
 						</Field>
-						<Field.Label text={t('Register_Server_Opt_In')} position='end' className='SetupWizard__RegisterServerStep__optIn'>
-
-						</Field.Label>
 					</Option>
 					<Option
 						data-qa='register-server-standalone'
@@ -208,10 +233,12 @@ export function RegisterServerStep({ step, title, active }) {
 							</Field.Row>
 						</Field>
 					</Margins>
-				</div>
+				</Box>
 			</Box>
 		</Margins>
 
 		<Pager disabled={commiting} onBackClick={handleBackClick} />
 	</Step>;
 }
+
+export default RegisterServerStep;

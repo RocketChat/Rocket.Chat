@@ -1,8 +1,8 @@
 import _ from 'underscore';
 
-const replaceWhitespaces = (whitespaces: string) => `${ '&nbsp;'.repeat(whitespaces.length - 1) } `;
+const replaceWhitespaces = (whitespaces) => `${ '&nbsp;'.repeat(whitespaces.length - 1) } `;
 
-export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLDivElement, callback: () => void) => {
+export const setupAutogrow = (textarea, shadow, callback) => {
 	const width = textarea.clientWidth;
 	const height = textarea.clientHeight;
 	const { font, lineHeight, maxHeight: maxHeightPx } = window.getComputedStyle(textarea);
