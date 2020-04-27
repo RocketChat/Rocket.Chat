@@ -26,6 +26,7 @@ export function messageContext({ rid } = Template.instance()) {
 				name: 1,
 				autoTranslate: 1,
 				rid: 1,
+				tunread: 1,
 			},
 		}),
 		settings: {

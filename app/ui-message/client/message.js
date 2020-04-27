@@ -17,6 +17,7 @@ import './message.html';
 import './messageThread.html';
 import { AutoTranslate } from '../../autotranslate/client';
 
+
 const renderBody = (msg, settings) => {
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
@@ -188,6 +189,15 @@ Template.message.helpers({
 			}
 			return 'system';
 		}
+	},
+	unread() {
+		const { msg, subscription } = this;
+
+		if (!subscription) {
+			return false;
+		}
+		console.log(subscription);
+		return subscription.tunread.includes(msg._id);
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
