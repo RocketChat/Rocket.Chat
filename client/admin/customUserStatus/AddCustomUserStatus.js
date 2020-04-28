@@ -4,6 +4,7 @@ import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select } from '@ro
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { userStatus } from '../../../app/user-status/client/lib/userStatus';
 
 export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 	const t = useTranslation();
@@ -27,12 +28,7 @@ export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 		}
 	}, [name, statusType]);
 
-	const presenceOptions = [
-		['away', t('Away')],
-		['online', t('Online')],
-		['busy', t('Busy')],
-		['offline', t('Offline')],
-	];
+	const presenceOptions = Object.entries(userStatus.list).map(([key, value]) => [key, value.name]);
 
 	return <Box display='flex' flexDirection='column' textStyle='p1' textColor='default' mbs='x20' {...props}>
 		<Margins block='x4'>

@@ -27,7 +27,6 @@ export function CustomUserStatus({
 	setParams,
 	params,
 }) {
-	console.log(data);
 	const t = useTranslation();
 
 	const header = useMemo(() => [
