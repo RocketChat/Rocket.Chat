@@ -17,3 +17,9 @@ registerAdminSidebarItem({
 	icon: 'user-plus',
 	permissionGranted: () => hasPermission('create-invite-links'),
 });
+registerAdminSidebarItem({
+	href: 'admin-view-logs',
+	i18nLabel: 'View_Logs',
+	icon: 'post',
+	permissionGranted: () => hasPermission('view-logs'),
+});

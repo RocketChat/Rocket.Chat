@@ -60,6 +60,11 @@ registerAdminRoute('/invites', {
 	lazyRouteComponent: () => import('../../../client/admin/invites/InvitesRoute'),
 });
 
+registerAdminRoute('/view-logs', {
+	name: 'admin-view-logs',
+	lazyRouteComponent: () => import('../../../client/admin/viewLogs/ViewLogsRoute'),
+});
+
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
 		name: 'admin',

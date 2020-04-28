@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Box, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useEndpoint } from '../../../../client/contexts/ServerContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { Page } from '../../../../client/components/basic/Page';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useEndpoint } from '../../contexts/ServerContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { Page } from '../../components/basic/Page';
 
 const foregroundColors = {
 	30: 'gray',
@@ -189,53 +189,50 @@ function ViewLogs() {
 			<Box
 				width='full'
 				height='full'
-				style={{ overflow: 'hidden', position: 'relative' }}
+				overflow='hidden'
+				position='relative'
 				display='flex'
-				// flexGrow={1}
+				marginBlock='x8'
 			>
 				<Scrollable vertical>
 					<Box
 						ref={wrapperRef}
-						margin='none'
-						paddingBlock='8px'
-						paddingInline='10px'
+						padding='x8'
 						flexGrow={1}
-						textStyle='mono'
-						textColor='alternative'
-						style={{ backgroundColor: '#444444' }}
+						fontFamily='mono'
+						color='alternative'
+						backgroundColor='neutral-800'
+						style={{ wordBreak: 'break-all' }}
 						onWheel={handleWheel}
 						onTouchStart={handleTouchStart}
 						onTouchEnd={handleTouchEnd}
 						onScroll={handleScroll}
 					>
 						{lines.sort((a, b) => a.ts - b.ts).map(({ string }, i) =>
-							<Box
-								key={i}
-								style={{ wordBreak: 'break-all' }}
-								dangerouslySetInnerHTML={{ __html: ansispan(string) }}
-							/>)}
+							<div key={i} dangerouslySetInnerHTML={{ __html: ansispan(string) }} />)}
 					</Box>
 				</Scrollable>
 				<Box
+					position='absolute'
+					insetBlockEnd='x8'
+					insetInlineStart='50%'
+					width='x132'
+					height='x32'
+					marginInline='neg-x64'
+					paddingBlock='x8'
+					fontScale='c1'
+					borderRadius='full'
+					color='primary-500'
+					backgroundColor='surface'
 					onClick={handleClick}
-					style={{ position: 'absolute',
-						bottom: '8px',
-						left: '50%',
-						width: '130px',
-						height: '30px',
-						margin: 'o -65px',
+					textAlign='center'
+					style={{
 						cursor: 'pointer',
 						transition: 'transform 0.3s ease-out',
 						transform: newLogsVisible ? 'translateY(0)' : 'translateY(150%)',
-						textAlign: 'center',
-						borderRadius: '20px',
-						fontSize: '0.8em',
-						lineHeight: '30px',
-						color: 'var(--color-blue)',
-						backgroundColor: '#FFF' }}
+					}}
 				>
-					<i className='icon-down-big' />
-					<span>{t('New_logs')}</span>
+					<Icon name='jump' size='x16' /> {t('New_logs')}
 				</Box>
 			</Box>
 		</Page.Content>
