@@ -2,14 +2,14 @@ import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect, useMemo } from 'react';
 
-import { Page } from '../../../../client/components/basic/Page';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useEndpoint } from '../../../../client/contexts/ServerContext';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { Page } from '../../components/basic/Page';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useRoute } from '../../contexts/RouterContext';
+import { useEndpoint } from '../../contexts/ServerContext';
+import { ProgressStep } from '../../../app/importer/lib/ImporterProgressStep';
 import ImportOperationSummary from './ImportOperationSummary';
-import { useSafely } from '../../../../client/hooks/useSafely';
+import { useSafely } from '../../hooks/useSafely';
 
 function ImportHistoryPage() {
 	const t = useTranslation();

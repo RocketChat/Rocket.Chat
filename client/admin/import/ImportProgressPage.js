@@ -1,19 +1,21 @@
 import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
+import { Meteor } from 'meteor/meteor';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { ProgressStep, ImportingStartedStates } from '../../lib/ImporterProgressStep';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { ImporterWebsocketReceiver } from '../ImporterWebsocketReceiver';
-import { useSafely } from '../../../../client/hooks/useSafely';
-import { useEndpoint } from '../../../../client/contexts/ServerContext';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { Page } from '../../../../client/components/basic/Page';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { ProgressStep, ImportingStartedStates } from '../../../app/importer/lib/ImporterProgressStep';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useSafely } from '../../hooks/useSafely';
+import { useEndpoint } from '../../contexts/ServerContext';
+import { useRoute } from '../../contexts/RouterContext';
+import { Page } from '../../components/basic/Page';
+import { useErrorHandler } from './useErrorHandler';
 
 function ImportProgressPage() {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const handleError = useErrorHandler();
 
 	const [importerKey, setImporterKey] = useSafely(useState(null));
 	const [step, setStep] = useSafely(useState('Loading...'));
@@ -45,7 +47,7 @@ function ImportProgressPage() {
 				setCompleted(operation.count.completed);
 				setTotal(operation.count.total);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error || t('Failed_To_Load_Import_Data') });
+				handleError(error, t('Failed_To_Load_Import_Data'));
 				importHistoryRoute.push();
 			}
 		};
@@ -71,7 +73,7 @@ function ImportProgressPage() {
 
 				case ProgressStep.ERROR:
 				case ProgressStep.CANCELLED:
-					dispatchToastMessage({ type: 'error', message: t(step[0].toUpperCase() + step.slice(1)) });
+					handleError(t(step[0].toUpperCase() + step.slice(1)));
 					importHistoryRoute.push();
 					return;
 
@@ -83,6 +85,8 @@ function ImportProgressPage() {
 			}
 		};
 
+		const streamer = new Meteor.Streamer('importers');
+
 		const loadImportProgress = async () => {
 			try {
 				const progress = await getImportProgress();
@@ -93,10 +97,10 @@ function ImportProgressPage() {
 					return;
 				}
 
-				ImporterWebsocketReceiver.registerCallback(handleProgressUpdated);
+				streamer.on('progress', handleProgressUpdated);
 				handleProgressUpdated(progress);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error || t('Failed_To_Load_Import_Data') });
+				handleError(error, t('Failed_To_Load_Import_Data'));
 				importHistoryRoute.push();
 			}
 		};
@@ -104,7 +108,7 @@ function ImportProgressPage() {
 		loadImportProgress();
 
 		return () => {
-			ImporterWebsocketReceiver.unregisterCallback(handleProgressUpdated);
+			streamer.removeListener('progress', handleProgressUpdated);
 		};
 	}, [importerKey]);
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { usePermission } from '../../../../client/contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../../../client/admin/NotAuthorizedPage';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../NotAuthorizedPage';
 import ImportHistoryPage from './ImportHistoryPage';
 import NewImportPage from './NewImportPage';
 import PrepareImportPage from './PrepareImportPage';

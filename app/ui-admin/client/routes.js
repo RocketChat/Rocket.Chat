@@ -38,6 +38,30 @@ registerAdminRoute('/info', {
 	lazyRouteComponent: () => import('../../../client/admin/info/InformationRoute'),
 });
 
+registerAdminRoute('/import', {
+	name: 'admin-import',
+	lazyRouteComponent: () => import('../../../client/admin/import/ImportRoute'),
+	props: { page: 'history' },
+});
+
+registerAdminRoute('/import/new/:importerKey?', {
+	name: 'admin-import-new',
+	lazyRouteComponent: () => import('../../../client/admin/import/ImportRoute'),
+	props: { page: 'new' },
+});
+
+registerAdminRoute('/import/prepare', {
+	name: 'admin-import-prepare',
+	lazyRouteComponent: () => import('../../../client/admin/import/ImportRoute'),
+	props: { page: 'prepare' },
+});
+
+registerAdminRoute('/import/progress', {
+	name: 'admin-import-progress',
+	lazyRouteComponent: () => import('../../../client/admin/import/ImportRoute'),
+	props: { page: 'progress' },
+});
+
 registerAdminRoute('/mailer', {
 	name: 'admin-mailer',
 	lazyRouteComponent: () => import('../../../client/admin/mailer/MailerRoute'),

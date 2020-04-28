@@ -16,20 +16,21 @@ import {
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo, useEffect } from 'react';
 
-import { Page } from '../../../../client/components/basic/Page';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useSetting } from '../../../../client/contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useRoute, useRouteParameter } from '../../../../client/contexts/RouterContext';
-import { showImporterException } from '../functions/showImporterException';
-import { useEndpoint } from '../../../../client/contexts/ServerContext';
-import { Importers } from '../index';
-import { useSafely } from '../../../../client/hooks/useSafely';
-import { useFormatMemorySize } from '../../../../client/hooks/useFormatMemorySize';
+import { Page } from '../../components/basic/Page';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useSetting } from '../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
+import { useErrorHandler } from './useErrorHandler';
+import { useEndpoint } from '../../contexts/ServerContext';
+import { Importers } from '../../../app/importer/client/index';
+import { useSafely } from '../../hooks/useSafely';
+import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 
 function NewImportPage() {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const handleError = useErrorHandler();
 
 	const [isLoading, setLoading] = useSafely(useState(false));
 	const [fileType, setFileType] = useSafely(useState('upload'));
@@ -100,7 +101,7 @@ function NewImportPage() {
 							});
 							dispatchToastMessage({ type: 'success', message: t('File_uploaded_successfully') });
 						} catch (error) {
-							showImporterException(error);
+							handleError(error, t('Failed_To_upload_Import_File'));
 						} finally {
 							resolve();
 						}
@@ -128,7 +129,7 @@ function NewImportPage() {
 			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
 			prepareImportRoute.push();
 		} catch (error) {
-			showImporterException(error);
+			handleError(error, t('Failed_To_upload_Import_File'));
 		} finally {
 			setLoading(false);
 		}
@@ -148,7 +149,7 @@ function NewImportPage() {
 			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
 			prepareImportRoute.push();
 		} catch (error) {
-			showImporterException(error);
+			handleError(error, t('Failed_To_upload_Import_File'));
 		} finally {
 			setLoading(false);
 		}

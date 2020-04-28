@@ -15,10 +15,10 @@ import {
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import s from 'underscore.string';
+import { Meteor } from 'meteor/meteor';
 
-import { Page } from '../../../../client/components/basic/Page';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { Page } from '../../components/basic/Page';
+import { useTranslation } from '../../contexts/TranslationContext';
 import {
 	ProgressStep,
 	ImportWaitingStates,
@@ -26,12 +26,11 @@ import {
 	ImportPreparingStartedStates,
 	ImportingStartedStates,
 	ImportingErrorStates,
-} from '../../lib/ImporterProgressStep';
-import { ImporterWebsocketReceiver } from '../ImporterWebsocketReceiver';
-import { showImporterException } from '../functions/showImporterException';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useSafely } from '../../../../client/hooks/useSafely';
-import { useEndpoint } from '../../../../client/contexts/ServerContext';
+} from '../../../app/importer/lib/ImporterProgressStep';
+import { useErrorHandler } from './useErrorHandler';
+import { useRoute } from '../../contexts/RouterContext';
+import { useSafely } from '../../hooks/useSafely';
+import { useEndpoint } from '../../contexts/ServerContext';
 
 const waitFor = (fn, predicate) => new Promise((resolve, reject) => {
 	const callPromise = () => {
@@ -182,7 +181,7 @@ function PrepareChannels({ channels, channelsCount, setChannels }) {
 
 function PrepareImportPage() {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
+	const handleError = useErrorHandler();
 
 	const [isPreparing, setPreparing] = useSafely(useState(true));
 	const [progressRate, setProgressRate] = useSafely(useState(null));
@@ -204,14 +203,16 @@ function PrepareImportPage() {
 	const startImport = useEndpoint('POST', 'startImport');
 
 	useEffect(() => {
+		const streamer = new Meteor.Streamer('importers');
+
 		const handleProgressUpdated = ({ rate }) => {
 			setProgressRate(rate);
 		};
 
-		ImporterWebsocketReceiver.registerCallback(handleProgressUpdated);
+		streamer.on('progress', handleProgressUpdated);
 
 		return () => {
-			ImporterWebsocketReceiver.unregisterCallback(handleProgressUpdated);
+			streamer.removeListener('progress', handleProgressUpdated);
 		};
 	}, []);
 
@@ -221,13 +222,13 @@ function PrepareImportPage() {
 				const data = await waitFor(getImportFileData, (data) => data && !data.waiting);
 
 				if (!data) {
-					dispatchToastMessage({ type: 'error', message: t('Importer_not_setup') });
+					handleError(t('Importer_not_setup'));
 					importHistoryRoute.push();
 					return;
 				}
 
 				if (data.step) {
-					dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Data') });
+					handleError(t('Failed_To_Load_Import_Data'));
 					importHistoryRoute.push();
 					return;
 				}
@@ -238,7 +239,7 @@ function PrepareImportPage() {
 				setPreparing(false);
 				setProgressRate(null);
 			} catch (error) {
-				showImporterException(error, 'Failed_To_Load_Import_Data');
+				handleError(error, t('Failed_To_Load_Import_Data'));
 				importHistoryRoute.push();
 			}
 		};
@@ -267,7 +268,7 @@ function PrepareImportPage() {
 				}
 
 				if (ImportingErrorStates.includes(operation.status)) {
-					dispatchToastMessage({ type: 'error', message: t('Import_Operation_Failed') });
+					handleError(t('Import_Operation_Failed'));
 					importHistoryRoute.push();
 					return;
 				}
@@ -277,10 +278,10 @@ function PrepareImportPage() {
 					return;
 				}
 
-				dispatchToastMessage({ type: 'error', message: t('Unknown_Import_State') });
+				handleError(t('Unknown_Import_State'));
 				importHistoryRoute.push();
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Data') });
+				handleError(t('Failed_To_Load_Import_Data'));
 				importHistoryRoute.push();
 			}
 		};
@@ -299,7 +300,7 @@ function PrepareImportPage() {
 			await startImport({ input: { users, channels } });
 			importProgressRoute.push();
 		} catch (error) {
-			showImporterException(error, 'Failed_To_Start_Import');
+			handleError(error, t('Failed_To_Start_Import'));
 			importHistoryRoute.push();
 		}
 	};

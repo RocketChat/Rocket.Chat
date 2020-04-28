@@ -1,16 +1,16 @@
 import { Skeleton, Table } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useRoute } from '../../contexts/RouterContext';
+import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import {
 	ImportWaitingStates,
 	ImportFileReadyStates,
 	ImportPreparingStartedStates,
 	ImportingStartedStates,
 	ProgressStep,
-} from '../../lib/ImporterProgressStep';
+} from '../../../app/importer/lib/ImporterProgressStep';
 
 function ImportOperationSummary({
 	type,
