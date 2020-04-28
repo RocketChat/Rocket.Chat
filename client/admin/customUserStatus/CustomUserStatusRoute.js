@@ -4,13 +4,13 @@ import { Button, Icon } from '@rocket.chat/fuselage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Page } from '../../components/basic/Page';
-import { useEndpointData } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
 import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
 import { CustomUserStatus } from './CustomUserStatus';
 import { EditCustomUserStatus } from './EditCustomUserStatus';
 import { AddCustomUserStatus } from './AddCustomUserStatus';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useDebounce, useMediaQuery } from '../../../app/ui/client/views/app/components/hooks';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
