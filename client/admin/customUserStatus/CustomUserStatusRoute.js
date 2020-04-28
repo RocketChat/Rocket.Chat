@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, createContext } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
