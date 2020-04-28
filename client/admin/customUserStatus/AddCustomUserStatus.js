@@ -28,7 +28,12 @@ export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 		}
 	}, [name, statusType]);
 
-	const presenceOptions = Object.entries(userStatus.list).map(([key, value]) => [key, value.name]);
+	const presenceOptions = [
+		['online', t('Online')],
+		['busy', t('Busy')],
+		['away', t('Away')],
+		['invisible', t('Invisible')],
+	];
 
 	return <Box display='flex' flexDirection='column' textStyle='p1' textColor='default' mbs='x20' {...props}>
 		<Margins block='x4'>
