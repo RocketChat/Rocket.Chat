@@ -31,7 +31,7 @@ export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 		['online', t('Online')],
 		['busy', t('Busy')],
 		['away', t('Away')],
-		['invisible', t('Invisible')],
+		['offline', t('Offline')],
 	];
 
 	return <Box display='flex' flexDirection='column' textStyle='p1' textColor='default' mbs='x20' {...props}>
