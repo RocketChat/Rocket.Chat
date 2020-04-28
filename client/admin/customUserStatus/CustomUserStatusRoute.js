@@ -7,7 +7,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { Page } from '../../components/basic/Page';
 import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
 import { CustomUserStatus } from './CustomUserStatus';
-import { EditCustomUserStatus } from './EditCustomUserStatus';
+import { EditCustomUserStatusWithData } from './EditCustomUserStatus';
 import { AddCustomUserStatus } from './AddCustomUserStatus';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
@@ -15,14 +15,12 @@ import { VerticalBar } from '../../components/basic/VerticalBar';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = (params, sort, cache) => useMemo(() => ({
+export const useQuery = (params, sort, cache) => useMemo(() => ({
 	query: JSON.stringify({ name: { $regex: params.text || '', $options: 'i' } }),
 	sort: JSON.stringify({ [sort[0]]: sortDir(sort[1]) }),
 	...params.itemsPerPage && { count: params.itemsPerPage },
 	...params.current && { offset: params.current },
 }), [JSON.stringify(params), JSON.stringify(sort), cache]);
-
-export const CurrentStatusContext = createContext();
 
 export default function CustomUserStatusRoute({ props }) {
 	const t = useTranslation();
@@ -34,17 +32,6 @@ export default function CustomUserStatusRoute({ props }) {
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [cache, setCache] = useState();
 	const [modal, setModal] = useState();
-
-
-	/*
-	*
-	*
-	*
-	*
-	*
-	* O GAZZOLIA VAI CRIAR O ENDPOINT PRA ACABAR COM ESSA ZOEIRA
-	* \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/ */
-	const [currentStatus, setCurrentStatus] = useState({});
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
@@ -59,14 +46,13 @@ export default function CustomUserStatusRoute({ props }) {
 	const small = useMediaQuery('(max-width: 780px)');
 
 	const context = useRouteParameter('context');
-	// const id = useRouteParameter('id');
+	const id = useRouteParameter('id');
 
-	const onClick = (_id, status) => () => {
+	const onClick = (_id) => () => {
 		router.push({
 			context: 'edit',
 			id: _id,
 		});
-		setCurrentStatus(status);
 	};
 
 	const onHeaderClick = (id) => {
@@ -81,7 +67,6 @@ export default function CustomUserStatusRoute({ props }) {
 
 	const handleHeaderButtonClick = useCallback((context) => () => {
 		router.push({ context });
-		setCurrentStatus({});
 	}, [router]);
 
 	const close = () => {
@@ -110,10 +95,8 @@ export default function CustomUserStatusRoute({ props }) {
 					{ context === 'new' && t('Custom_User_Status_Add') }
 					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
 				<VerticalBar.Content>
-					<CurrentStatusContext.Provider value={{ currentStatus, setCurrentStatus }}>
-						{context === 'edit' && <EditCustomUserStatus close={close} setCache={setCache} setModal={setModal}/>}
-						{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} setCache={setCache}/>}
-					</CurrentStatusContext.Provider>
+					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} setCache={setCache} cache={cache} setModal={setModal}/>}
+					{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} setCache={setCache}/>}
 				</VerticalBar.Content>
 			</VerticalBar>}
 		{ modal && modal }

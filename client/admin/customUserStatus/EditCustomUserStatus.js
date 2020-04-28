@@ -1,16 +1,16 @@
-import React, { useCallback, useState, useMemo, useContext, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select, Icon, Modal, ModalBackdrop } from '@rocket.chat/fuselage';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select, Icon, Modal, ModalBackdrop, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { CurrentStatusContext } from './CustomUserStatusRoute';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 
-const style = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.3)' };
+const backdropProps = { display: 'flex', justifyContent: 'center', alignItems: 'center' };
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
-	return <ModalBackdrop style={style}><Modal {...props}>
+	return <ModalBackdrop {...backdropProps}><Modal {...props}>
 		<Modal.Header>
 			<Icon textColor='danger' name='modal-warning' size={20}/>
 			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
@@ -30,7 +30,7 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 
 const SuccessModal = ({ onClose, ...props }) => {
 	const t = useTranslation();
-	return <><ModalBackdrop style={style}><Modal {...props}>
+	return <><ModalBackdrop {...backdropProps}><Modal {...props}>
 		<Modal.Header>
 			<Icon textColor='success' name='checkmark-circled' size={20}/>
 			<Modal.Title>{t('Deleted')}</Modal.Title>
@@ -47,11 +47,42 @@ const SuccessModal = ({ onClose, ...props }) => {
 	</Modal></ModalBackdrop></>;
 };
 
-export function EditCustomUserStatus({ close, setCache, setModal, ...props }) {
+export function EditCustomUserStatusWithData({ _id, cache, ...props }) {
+	const t = useTranslation();
+	const query = useMemo(() => ({
+		query: JSON.stringify({ _id }),
+	}), [_id, cache]);
+
+	const { data, state, error } = useEndpointDataExperimental('custom-user-status.list', query);
+
+	if (state === ENDPOINT_STATES.LOADING) {
+		return <Box pb='x20'>
+			<Skeleton mbs='x8'/>
+			<InputBox.Skeleton w='full'/>
+			<Skeleton mbs='x8'/>
+			<InputBox.Skeleton w='full'/>
+			<ButtonGroup stretch w='full' mbs='x8'>
+				<Button disabled><Throbber inheritColor/></Button>
+				<Button primary disabled><Throbber inheritColor/></Button>
+			</ButtonGroup>
+			<ButtonGroup stretch w='full' mbs='x8'>
+				<Button primary danger disabled><Throbber inheritColor/></Button>
+			</ButtonGroup>
+		</Box>;
+	}
+
+	if (error || !data || data.statuses.length < 1) {
+		return <Box textStyle='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
+	}
+
+	return <EditCustomUserStatus data={data.statuses[0]} {...props}/>;
+}
+
+export function EditCustomUserStatus({ close, setCache, setModal, data, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { currentStatus } = useContext(CurrentStatusContext);
-	const { _id, name: previousName, statusType: previousStatusType } = currentStatus;
+
+	const { _id, name: previousName, statusType: previousStatusType } = data || {};
 
 	const [name, setName] = useState('');
 	const [statusType, setStatusType] = useState('');
