@@ -4,7 +4,7 @@ import { openRoom } from '../../../ui-utils';
 import { ChatRoom, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions } from '../../../utils';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
@@ -113,8 +113,13 @@ export class PublicRoomType extends RoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(/* room, action */) {
-		return true;
+	allowMemberAction(room, action) {
+		switch (action) {
+			case RoomMemberActions.BLOCK:
+				return false;
+			default:
+				return true;
+		}
 	}
 
 	getUiText(context) {
@@ -132,5 +137,9 @@ export class PublicRoomType extends RoomTypeConfig {
 		// TODO: change to always get avatar from _id when rooms have avatars
 
 		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+	}
+
+	getDiscussionType() {
+		return 'c';
 	}
 }

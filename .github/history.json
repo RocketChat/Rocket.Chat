@@ -42397,6 +42397,196 @@
           ]
         }
       ]
+    },
+    "3.1.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17278",
+          "title": "[FIX] SAML assertion signature enforcement",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17299",
+          "title": "[FIX] User search on directory not working correctly",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17275",
+          "title": "[FIX] 404 error when clicking an username",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17287",
+          "title": "Update Apps-Engine to stable version",
+          "userLogin": "d-gubert",
+          "milestone": "3.1.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17286",
+          "title": "[FIX] Avatar on sidebar when showing real names",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17283",
+          "title": "[FIX] Directory default tab",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17282",
+          "title": "[FIX] Discussions created from inside DMs were not working and some errors accessing recently created rooms",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17288",
+          "title": " [FIX] Omnichannel SMS / WhatsApp integration errors due to missing location data",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.1",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17302",
+          "title": "[FIX] LDAP users lose session on refresh",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "3.1.2": {
+      "pull_requests": [
+        {
+          "pr": "17453",
+          "title": "[FIX] LDAP error when trying to add room with spaces in the name",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17430",
+          "title": "Regression: Add missing cacheKey to mem",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17422",
+          "title": "[FIX] Empty Incoming webhook script field ",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17417",
+          "title": "[FIX] LDAP Sync error",
+          "userLogin": "fastrde",
+          "milestone": "3.1.2",
+          "contributors": [
+            "fastrde"
+          ]
+        },
+        {
+          "pr": "17404",
+          "title": "[FIX] Bot Agents not being able to get Omnichannel Inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17406",
+          "title": "[FIX] Allowing blocking a user on channels",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17391",
+          "title": "Regression: Fix mem usage with more than one argument",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17320",
+          "title": "[FIX] Web Client memory leak caused by the Emoji rendering",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17348",
+          "title": "[FIX] Omnichannel room info panel opening whenever a message is sent",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17249",
+          "title": "[FIX] New user added by admin doesn't receive random password email",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }

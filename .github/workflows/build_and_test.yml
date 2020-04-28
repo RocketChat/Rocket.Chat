@@ -250,6 +250,14 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+
     - name: Cache node modules
       id: cache-nodemodules
       uses: actions/cache@v1
