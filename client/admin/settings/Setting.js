@@ -1,8 +1,8 @@
 import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/fuselage';
 import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 
-import { MarkdownText } from '../../components/basic/MarkdownText';
-import { RawText } from '../../components/basic/RawText';
+import MarkdownText from '../../components/basic/MarkdownText';
+import RawText from '../../components/basic/RawText';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';

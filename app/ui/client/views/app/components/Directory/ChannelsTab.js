@@ -2,7 +2,8 @@ import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { Box, Margins, Table, Avatar, Tag, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { GenericTable, Th, Markdown } from '../../../../components/GenericTable';
+import { GenericTable, Th } from '../../../../components/GenericTable';
+import MarkdownText from '../../../../../../../client/components/basic/MarkdownText';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
@@ -87,7 +88,9 @@ export function ChannelsTab() {
 						<Box display='flex' alignItems='center'>
 							<Icon name={roomTypes.getIcon(room)} textColor='hint' /> <Box textStyle='p2' textColor='default' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
 						</Box>
-						{topic && <Markdown textStyle='p1' textColor='hint' style={style}>{topic}</Markdown> }
+						{topic && <Box fontScale='p1' color='hint' style={style}>
+							<MarkdownText>{topic}</MarkdownText>
+						</Box>}
 					</Box>
 				</Box>
 			</Table.Cell>

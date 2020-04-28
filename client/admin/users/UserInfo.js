@@ -3,11 +3,11 @@ import { Box, Avatar, Button, ButtonGroup, Icon, Margins, Headline, Skeleton, Ch
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import MarkdownText from '../../components/basic/MarkdownText';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { roomTypes } from '../../../app/utils/client';
 import { DateFormat } from '../../../app/lib';
 import { useRoute } from '../../contexts/RouterContext';
-import { Markdown } from '../../../app/ui/client/components/GenericTable';
 import { Page } from '../../components/basic/Page';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
@@ -93,7 +93,9 @@ export function UserInfo({ data, ...props }) {
 			<Box display='flex' flexDirection='column' w='full' style={{ backgroundColor: '#F4F6F9' }} p='x16'>
 				<Margins blockEnd='x4'>
 
-					{data.bio && data.bio.trim().length > 0 && <Markdown textStyle='s1' mbe='x8'>{data.bio}</Markdown>}
+					{data.bio && data.bio.trim().length > 0 && <Box fontScale='s1' marginBlockEnd='x8'>
+						<MarkdownText>{data.bio}</MarkdownText>
+					</Box>}
 
 					{data.roles && <>
 						<Box textStyle='micro' textColor='hint' mbs='none'>{t('Roles')}</Box>

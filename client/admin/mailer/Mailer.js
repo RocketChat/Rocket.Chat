@@ -5,6 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { Page } from '../../components/basic/Page';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { isJSON } from '../../../app/utils/lib/isJSON.js';
+import RawText from '../../components/basic/RawText';
 
 export function Mailer({ sendMail = () => {}, ...props }) {
 	const t = useTranslation();
@@ -16,7 +17,13 @@ export function Mailer({ sendMail = () => {}, ...props }) {
 	const [emailBody, setEmailBody] = useState('');
 
 	return <Page _id='mailer' {...props}>
-		<Page.Header title={t('Mailer')}></Page.Header>
+		<Page.Header title={t('Mailer')}>
+			<ButtonGroup align='end'>
+				<Button primary onClick={() => { sendMail({ fromEmail, dryRun, query, subject, emailBody }); }}>
+					<Icon name='send' size='x20' mie='x8'/>{t('Send_email')}
+				</Button>
+			</ButtonGroup>
+		</Page.Header>
 		<Page.ScrollableContentWithShadow alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
 			<FieldGroup maxWidth='x600' is='form' method='post'>
 				<Field>
@@ -88,11 +95,10 @@ export function Mailer({ sendMail = () => {}, ...props }) {
 							onChange={(e) => setEmailBody(e.currentTarget.value)}
 						/>
 					</Field.Row>
-					<Field.Hint dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }}></Field.Hint>
+					<Field.Hint>
+						<RawText>{t('Mailer_body_tags')}</RawText>
+					</Field.Hint>
 				</Field>
-				<ButtonGroup align='end'>
-					<Button primary onClick={() => { sendMail({ fromEmail, dryRun, query, subject, emailBody }); }}><Icon name='send' size='x20' mie='x8'/>{t('Send_email')}</Button>
-				</ButtonGroup>
 			</FieldGroup>
 		</Page.ScrollableContentWithShadow>
 	</Page>;

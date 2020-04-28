@@ -2,7 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import React from 'react';
 import s from 'underscore.string';
 
-import { RawText } from '../../../components/basic/RawText';
+import RawText from '../../../components/basic/RawText';
 import { useAbsoluteUrl, useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';

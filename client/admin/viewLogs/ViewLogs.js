@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 
+import { Page } from '../../components/basic/Page';
+import RawText from '../../components/basic/RawText';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { Page } from '../../components/basic/Page';
 
 const foregroundColors = {
 	30: 'gray',
@@ -197,6 +198,8 @@ function ViewLogs() {
 				<Scrollable vertical>
 					<Box
 						ref={wrapperRef}
+						display='flex'
+						flexDirection='column'
 						padding='x8'
 						flexGrow={1}
 						fontFamily='mono'
@@ -209,7 +212,7 @@ function ViewLogs() {
 						onScroll={handleScroll}
 					>
 						{lines.sort((a, b) => a.ts - b.ts).map(({ string }, i) =>
-							<div key={i} dangerouslySetInnerHTML={{ __html: ansispan(string) }} />)}
+							<RawText key={i}>{ansispan(string)}</RawText>)}
 					</Box>
 				</Scrollable>
 				<Box
