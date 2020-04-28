@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useCallback, createContext } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -9,8 +10,8 @@ import { CustomUserStatus } from './CustomUserStatus';
 import { EditCustomUserStatus } from './EditCustomUserStatus';
 import { AddCustomUserStatus } from './AddCustomUserStatus';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import { useDebounce, useMediaQuery } from '../../../app/ui/client/views/app/components/hooks';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { VerticalBar } from '../../components/basic/VerticalBar';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -45,12 +46,12 @@ export default function CustomUserStatusRoute({ props }) {
 	* \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/ */
 	const [currentStatus, setCurrentStatus] = useState({});
 
-	const debouncedParams = useDebounce(params, 500);
-	const debouncedSort = useDebounce(sort, 500);
+	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedSort = useDebouncedValue(sort, 500);
 
 	const query = useQuery(debouncedParams, debouncedSort, cache);
 
-	const data = useEndpointData('GET', 'custom-user-status.list', query) || {};
+	const data = useEndpointData('custom-user-status.list', query) || {};
 
 	const router = useRoute(routeName);
 
@@ -103,18 +104,18 @@ export default function CustomUserStatusRoute({ props }) {
 			</Page.Content>
 		</Page>
 		{ context
-			&& <Page.VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
-				<Page.VerticalBar.Header>
+			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+				<VerticalBar.Header>
 					{ context === 'edit' && t('Custom_User_Status_Edit') }
 					{ context === 'new' && t('Custom_User_Status_Add') }
-					<Page.VerticalBar.Close onClick={close}/></Page.VerticalBar.Header>
-				<Page.VerticalBar.Content>
+					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
+				<VerticalBar.Content>
 					<CurrentStatusContext.Provider value={{ currentStatus, setCurrentStatus }}>
 						{context === 'edit' && <EditCustomUserStatus close={close} setCache={setCache} setModal={setModal}/>}
 						{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} setCache={setCache}/>}
 					</CurrentStatusContext.Provider>
-				</Page.VerticalBar.Content>
-			</Page.VerticalBar>}
+				</VerticalBar.Content>
+			</VerticalBar>}
 		{ modal && modal }
 	</Page>;
 }

@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo, useContext, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select, Icon, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select, Icon, Modal, ModalBackdrop } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -8,20 +8,16 @@ import { CurrentStatusContext } from './CustomUserStatusRoute';
 
 const style = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.3)' };
 
-const ShadowOverlay = ({ children }) => <Box children={children} style={style} display='flex' justifyContent='center' alignItems='center'/>;
-
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
-	return <ShadowOverlay><Modal {...props}>
+	return <ModalBackdrop style={style}><Modal {...props}>
 		<Modal.Header>
+			<Icon textColor='danger' name='modal-warning' size={20}/>
 			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
-		<Modal.Content>
-			<Box display='flex' flexDirection='column' alignItems='center' justifyContent='space-between'>
-				<Icon size='x80' name='warning' textColor='warning'/>
-				{t('Custom_User_Status_Delete_Warning')}
-			</Box>
+		<Modal.Content textStyle='p1'>
+			{t('Custom_User_Status_Delete_Warning')}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -29,24 +25,26 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
-	</Modal></ShadowOverlay>;
+	</Modal></ModalBackdrop>;
 };
 
 const SuccessModal = ({ onClose, ...props }) => {
 	const t = useTranslation();
-	return <ShadowOverlay><Modal {...props}>
+	return <><ModalBackdrop style={style}><Modal {...props}>
 		<Modal.Header>
+			<Icon textColor='success' name='checkmark-circled' size={20}/>
 			<Modal.Title>{t('Deleted')}</Modal.Title>
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
-		<Modal.Content>
-			<Box display='flex' flexDirection='column' alignItems='center' justifyContent='space-between'>
-				<Icon size='x80' name='checkmark-circled' textColor='success'/>
-				{t('Custom_User_Status_Has_Been_Deleted')}
-			</Box>
+		<Modal.Content textStyle='p1'>
+			{t('Custom_User_Status_Has_Been_Deleted')}
 		</Modal.Content>
-		<Modal.Footer></Modal.Footer>
-	</Modal></ShadowOverlay>;
+		<Modal.Footer>
+			<ButtonGroup align='end'>
+				<Button primary onClick={onClose}>{t('Ok')}</Button>
+			</ButtonGroup>
+		</Modal.Footer>
+	</Modal></ModalBackdrop></>;
 };
 
 export function EditCustomUserStatus({ close, setCache, setModal, ...props }) {
