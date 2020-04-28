@@ -4,7 +4,6 @@ import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select } from '@ro
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { userStatus } from '../../../app/user-status/client/lib/userStatus';
 
 export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 	const t = useTranslation();
@@ -52,7 +51,7 @@ export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 			<Field>
 				<Field.Row>
 					<ButtonGroup stretch w='full'>
-						<Button primary danger mie='x4' onClick={close}>{t('Cancel')}</Button>
+						<Button mie='x4' onClick={close}>{t('Cancel')}</Button>
 						<Button primary onClick={handleSave} disabled={name === ''}>{t('Save')}</Button>
 					</ButtonGroup>
 				</Field.Row>

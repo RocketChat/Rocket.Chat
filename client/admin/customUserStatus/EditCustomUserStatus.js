@@ -5,7 +5,6 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { CurrentStatusContext } from './CustomUserStatusRoute';
-import { userStatus } from '../../../app/user-status/client/lib/userStatus';
 
 const style = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.3)' };
 
@@ -121,7 +120,7 @@ export function EditCustomUserStatus({ close, setCache, setModal, ...props }) {
 			<Field>
 				<Field.Row>
 					<ButtonGroup stretch w='full'>
-						<Button primary danger onClick={close}>{t('Cancel')}</Button>
+						<Button onClick={close}>{t('Cancel')}</Button>
 						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
 					</ButtonGroup>
 				</Field.Row>
