@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useDebounce } from '../views/app/components/hooks';
 import { Markdown as mrkd } from '../../../markdown/client';
 
 function SortIcon({ direction }) {
@@ -59,7 +59,7 @@ export function GenericTable({
 
 	const [current, setCurrent] = useState(0);
 
-	const params = useDebounce(filter, 500);
+	const params = useDebouncedValue(filter, 500);
 
 	useEffect(() => {
 		setParams({ ...params, current, itemsPerPage });

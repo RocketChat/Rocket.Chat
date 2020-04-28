@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Box, Avatar, Button, ButtonGroup, Icon, Margins, Headline, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { roomTypes } from '../../../app/utils/client';
 import { DateFormat } from '../../../app/lib';
@@ -31,7 +31,7 @@ const UTCClock = ({ utcOffset, ...props }) => {
 export function UserInfoWithData({ userId, ...props }) {
 	const t = useTranslation();
 
-	const { data, state, error } = useEndpointDataExperimental('GET', 'users.info', useMemo(() => ({ userId }), [userId]));
+	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId }), [userId]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24'>

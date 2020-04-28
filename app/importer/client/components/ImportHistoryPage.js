@@ -1,4 +1,5 @@
 import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect, useMemo } from 'react';
 
 import { Page } from '../../../../client/components/basic/Page';
@@ -9,7 +10,6 @@ import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import ImportOperationSummary from './ImportOperationSummary';
 import { useSafely } from '../../../../client/hooks/useSafely';
-import { useMediaQuery } from '../../../ui/client/views/app/components/hooks';
 
 function ImportHistoryPage() {
 	const t = useTranslation();

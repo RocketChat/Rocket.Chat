@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { useEndpoint } from '../../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../client/contexts/ToastMessagesContext';
+import { useEndpoint } from '../contexts/ServerContext';
+import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
-export const useEndpointData = (httpMethod, endpoint, params = {}) => {
+export const useEndpointData = (endpoint, params = {}) => {
 	const [data, setData] = useState(null);
 
-	const getData = useEndpoint(httpMethod, endpoint);
+	const getData = useEndpoint('GET', endpoint);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	useEffect(() => {

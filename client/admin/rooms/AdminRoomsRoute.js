@@ -1,12 +1,12 @@
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { useEndpointData } from '../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
 import { UsersAndRoomsTab } from '../usersAndRooms/UsersAndRoomsTab';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSwitchTab } from '../usersAndRooms/hooks';
-import { useDebounce } from '../../../app/ui/client/views/app/components/hooks';
 import { roomTypes } from '../../../app/utils/client';
 import { AdminRooms, DEFAULT_TYPES } from './AdminRooms';
 
@@ -26,12 +26,12 @@ export default function AdminRoomsRoute({ props }) {
 
 	const routeName = 'admin-rooms';
 
-	const debouncedParams = useDebounce(params, 500);
-	const debouncedSort = useDebounce(sort, 500);
+	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedSort = useDebouncedValue(sort, 500);
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const data = useEndpointData('GET', 'rooms.adminRooms', query) || {};
+	const data = useEndpointData('rooms.adminRooms', query) || {};
 
 	const switchTab = useSwitchTab(routeName);
 

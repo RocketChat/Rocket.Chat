@@ -2,14 +2,14 @@ import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { Box, Table, Flex, Avatar, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { useEndpointData } from '../../../../../../../ee/app/engagement-dashboard/client/hooks/useEndpointData';
-// import { DirectoryTable, Th } from './DirectoryTable';
 import { GenericTable, Th } from '../../../../components/GenericTable';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
-import { useQuery, useFormatDate } from '../hooks';
+import { useQuery } from '../hooks';
 import { roomTypes } from '../../../../../../utils/client';
+import { useEndpointData } from '../../../../../../../client/hooks/useEndpointData';
+import { useFormatDate } from '../../../../../../../client/hooks/useFormatDate';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -63,7 +63,7 @@ export function UserTab({
 	const canViewOutsideRoom = usePermission('view-outside-room');
 	const canViewDM = usePermission('view-d-room');
 
-	const data = (canViewOutsideRoom && canViewDM && useEndpointData('GET', 'directory', query)) || { result: [] };
+	const data = (canViewOutsideRoom && canViewDM && useEndpointData('directory', query)) || { result: [] };
 
 	const onClick = useMemo(() => (username) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {

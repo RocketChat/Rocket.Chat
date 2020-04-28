@@ -4,7 +4,7 @@ import { useMediaQuery, useUniqueId } from '@rocket.chat/fuselage-hooks';
 
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { RoomAvatar } from '../../components/basic/avatar/Avatar';
+import RoomAvatar from '../../components/basic/avatar/RoomAvatar';
 import { roomTypes } from '../../../app/utils/client';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
