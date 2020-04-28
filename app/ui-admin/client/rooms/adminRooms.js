@@ -100,12 +100,28 @@ Template.adminRooms.onCreated(function() {
 		i18nTitle: 'Room_Info',
 		icon: 'info-circled',
 		template: 'adminRoomInfo',
-		order: 1,
+		order: 7,
 	});
+
 	ChannelSettings.addOption({
 		group: ['admin-room'],
 		id: 'make-default',
 		template: 'channelSettingsDefault',
+		data() {
+			return {
+				room: instance.tabBarData.get().room,
+				onSuccess: instance.tabBarData.get().onSuccess,
+			};
+		},
+		validation() {
+			return hasAllPermission('view-room-administration');
+		},
+	});
+
+	ChannelSettings.addOption({
+		group: ['admin-room'],
+		id: 'make-default',
+		template: 'channelSettingsFeatured',
 		data() {
 			return {
 				room: instance.tabBarData.get().room,

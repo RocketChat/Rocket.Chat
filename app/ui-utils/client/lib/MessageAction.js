@@ -99,7 +99,7 @@ export const MessageAction = new class {
 	})
 
 	_getButtonsByGroup = mem(function(group) {
-		return this._getButtons().filter((button) => button.group === group);
+		return this._getButtons().filter((button) => (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 	})
 
 	getButtons(message, context, group) {
@@ -176,12 +176,12 @@ Meteor.startup(async function() {
 			if (subscription == null) {
 				return false;
 			}
-			if (room.t === 'd') {
+			if (room.t === 'd' || room.t === 'l') {
 				return false;
 			}
 			return true;
 		},
-		order: 2,
+		order: 0,
 		group: 'menu',
 	});
 

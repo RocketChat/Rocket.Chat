@@ -62,11 +62,7 @@
 					{{else}}
 						{{title}}
 					{{/if}}
-					{{#if collapsed}}
-						<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-					{{else}}
-						<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-					{{/if}}
+					{{> collapseArrow collapsedMedia=collapsedMediaVar}}
 				</div>
 			{{/if}}
 
@@ -105,8 +101,10 @@
 						</figure>
 					{{else}}
 						<div class="image-to-download" data-url="{{image_url}}">
-							<i class="icon-picture"></i>
+
+							<i class="icon-picture rc-input__wrapper"></i>
 							<div>{{_ "Click_to_load"}}</div>
+
 						</div>
 					{{/if}}
 					</div>

@@ -58,8 +58,12 @@ Meteor.logoutWithSaml = function(options/* , callback*/) {
 			MeteorLogout.apply(Meteor);
 			return;
 		}
+
+		// Remove the userId from the client to prevent calls to the server while the logout is processed.
+		// If the logout fails, the userId will be reloaded on the resume call
+		Meteor._localStorage.removeItem(Accounts.USER_ID_KEY);
+
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-		// window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
 		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${ options.provider }/?redirect=${ encodeURIComponent(result) }`));
 	});
 };

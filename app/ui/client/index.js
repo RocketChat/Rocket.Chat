@@ -1,3 +1,5 @@
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
 import './lib/accounts';
 import './lib/collections';
 import './lib/customEventPolyfill';
@@ -33,10 +35,10 @@ import './views/cmsPage';
 import './views/404/roomNotFound';
 import './views/app/burger';
 import './views/app/createChannel';
+import './views/app/CreateDirectMessage';
 import './views/app/editStatus';
 import './views/app/fullModal';
 import './views/app/home';
-import './views/app/directory';
 import './views/app/roomSearch';
 import './views/app/secretURL';
 import './views/app/invite';
@@ -67,3 +69,5 @@ export { Login, animationSupport, animeBack, Button, preLoadImgs } from './lib/r
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 export { chatMessages } from './views/app/room';
+
+createTemplateForComponent('RoomForeword', () => import('./views/app/RoomForeword'));

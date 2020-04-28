@@ -51,6 +51,13 @@ Meteor.startup(() => {
 		`);
 	}
 
+	settings.get('API_Use_REST_For_DDP_Calls', (key, value) => {
+		if (!value) {
+			return injectIntoHead(key, '');
+		}
+		injectIntoHead(key, '<script>window.USE_REST_FOR_DDP_CALLS = true;</script>');
+	});
+
 	settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 		const standardFavicons = `
 			<link rel="icon" sizes="16x16" type="image/png" href="assets/favicon_16.png" />

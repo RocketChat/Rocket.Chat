@@ -87,7 +87,7 @@ const eventHandlers = {
 	//
 	// ROOM_ADD_USER
 	//
-	async [eventTypes.ROOM_ADD_USER0](event) {
+	async [eventTypes.ROOM_ADD_USER](event) {
 		const eventResult = await FederationRoomEvents.addEvent(event.context, event);
 
 		// If the event was successfully added, handle the event locally
