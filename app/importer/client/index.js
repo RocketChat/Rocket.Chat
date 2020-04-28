@@ -1,19 +1,6 @@
-import { ImporterWebsocketReceiver } from './ImporterWebsocketReceiver';
-import { Importers } from '../lib/Importers';
-import { ImporterInfo } from '../lib/ImporterInfo';
-import { ProgressStep } from '../lib/ImporterProgressStep';
-import './admin/adminImport.html';
-import './admin/adminImport';
-import './admin/adminImportHistory.html';
-import './admin/adminImportHistory';
-import './admin/adminImportPrepare.html';
-import './admin/adminImportPrepare';
-import './admin/adminImportProgress.html';
-import './admin/adminImportProgress';
+import './routes';
 
-export {
-	Importers,
-	ImporterInfo,
-	ImporterWebsocketReceiver,
-	ProgressStep,
-};
+export { Importers } from '../lib/Importers';
+export { ImporterInfo } from '../lib/ImporterInfo';
+export { ProgressStep } from '../lib/ImporterProgressStep';
+export { ImporterWebsocketReceiver } from './ImporterWebsocketReceiver';

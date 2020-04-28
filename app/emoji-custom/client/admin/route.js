@@ -1,13 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-FlowRouter.route('/admin/emoji-custom', {
+import { registerAdminRoute } from '../../../ui-admin/client';
+
+registerAdminRoute('/emoji-custom', {
 	name: 'emoji-custom',
-	subscriptions(/* params, queryParams*/) {
-		this.register('EmojiCustom', Meteor.subscribe('EmojiCustom'));
-	},
-	action(/* params*/) {
+	async action(/* params*/) {
+		await import('./views');
 		BlazeLayout.render('main', { center: 'adminEmoji' });
 	},
 });

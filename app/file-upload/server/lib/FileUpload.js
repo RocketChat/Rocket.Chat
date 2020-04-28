@@ -64,7 +64,7 @@ export const FileUpload = {
 		const user = file.userId ? Meteor.users.findOne(file.userId) : null;
 
 		const room = Rooms.findOneById(file.rid);
-		const directMessageAllow = settings.get('FileUpload_Enabled_Direct');
+		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
 		if (canAccessRoom(room, user, file) !== true) {
 			return false;
@@ -75,7 +75,7 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-upload-disabled', reason);
 		}
 
-		if (!directMessageAllow && room.t === 'd') {
+		if (!directMessageAllowed && room.t === 'd') {
 			const reason = TAPi18n.__('File_not_allowed_direct_messages', language);
 			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
 		}
@@ -162,43 +162,42 @@ export const FileUpload = {
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
 		const height = settings.get('Accounts_AvatarSize');
+		const width = height;
 		const future = new Future();
 
 		const s = sharp(tempFilePath);
 		s.rotate();
-		// Get metadata to resize the image the first time to keep "inside" the dimensions
-		// then resize again to create the canvas around
 
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
 			if (!metadata) {
 				metadata = {};
 			}
 
-			s.flatten({ background: '#FFFFFF' })
-				.jpeg()
-				.resize({
-					width: Math.min(height || 0, metadata.width || Infinity),
-					height: Math.min(height || 0, metadata.height || Infinity),
-					fit: sharp.fit.cover,
-				})
-				.pipe(sharp()
-					.resize({
-						height,
-						width: height,
-						fit: sharp.fit.contain,
-						background: '#FFFFFF',
-					})
-				)
+			s.resize({
+				width,
+				height,
+				fit: metadata.hasAlpha ? sharp.fit.contain : sharp.fit.cover,
+				background: { r: 255, g: 255, b: 255, alpha: metadata.hasAlpha ? 0 : 1 },
+			})
 				// Use buffer to get the result in memory then replace the existing file
 				// There is no option to override a file using this library
-				.toBuffer()
-				.then(Meteor.bindEnvironment((outputBuffer) => {
-					fs.writeFile(tempFilePath, outputBuffer, Meteor.bindEnvironment((err) => {
+				//
+				// BY THE SHARP DOCUMENTATION:
+				// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
+				// By default, the format will match the input image, except GIF and SVG input which become PNG output.
+				.toBuffer({ resolveWithObject: true })
+				.then(Meteor.bindEnvironment(({ data, info }) => {
+					fs.writeFile(tempFilePath, data, Meteor.bindEnvironment((err) => {
 						if (err != null) {
 							console.error(err);
 						}
-						const { size } = fs.lstatSync(tempFilePath);
-						this.getCollection().direct.update({ _id: file._id }, { $set: { size } });
+
+						this.getCollection().direct.update({ _id: file._id }, {
+							$set: {
+								size: info.size,
+								...['gif', 'svg'].includes(metadata.format) ? { type: 'image/png' } : {},
+							},
+						});
 						future.return();
 					}));
 				}));
@@ -406,6 +405,9 @@ export const FileUpload = {
 	},
 
 	removeFilesByRoomId(rid) {
+		if (typeof rid !== 'string' || rid.trim().length === 0) {
+			return;
+		}
 		Messages.find({
 			rid,
 			'file._id': {
@@ -436,6 +438,8 @@ export class FileUploadClass {
 		}
 
 		FileUpload.handlers[name] = this;
+
+		this.insertSync = Meteor.wrapAsync(this.insert, this);
 	}
 
 	getStore() {
@@ -495,15 +499,7 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	insert(fileData, streamOrBuffer, cb) {
-		fileData.size = parseInt(fileData.size) || 0;
-
-		// Check if the fileData matches store filter
-		const filter = this.store.getFilter();
-		if (filter && filter.check) {
-			filter.check(fileData);
-		}
-
+	_doInsert(fileData, streamOrBuffer, cb) {
 		const fileId = this.store.create(fileData);
 		const token = this.store.createToken(fileId);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
@@ -531,5 +527,17 @@ export class FileUploadClass {
 				throw e;
 			}
 		}
+	}
+
+	insert(fileData, streamOrBuffer, cb) {
+		fileData.size = parseInt(fileData.size) || 0;
+
+		// Check if the fileData matches store filter
+		const filter = this.store.getFilter();
+		if (filter && filter.check) {
+			filter.check(fileData);
+		}
+
+		return this._doInsert(fileData, streamOrBuffer, cb);
 	}
 }

@@ -7,10 +7,10 @@ import { createLivechatSubscription,
 	forwardRoomToAgent,
 	forwardRoomToDepartment,
 	removeAgentFromSubscription,
+	updateChatDepartment,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Users } from '../../../models/server';
-import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
 
 export const RoutingManager = {
 	methodName: null,
@@ -88,8 +88,11 @@ export const RoutingManager = {
 		}
 
 		if (departmentId && departmentId !== department) {
-			LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
-			LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
+			updateChatDepartment({
+				rid,
+				newDepartmentId: departmentId,
+				oldDepartmentId: department,
+			});
 			// Fake the department to delegate the inquiry;
 			inquiry.department = departmentId;
 		}
@@ -130,7 +133,7 @@ export const RoutingManager = {
 
 		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', agent, inquiry);
 		if (!agent) {
-			return room;
+			return null;
 		}
 
 		LivechatInquiry.takeInquiry(_id);
@@ -142,13 +145,12 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		const { userId, departmentId } = transferData;
-		if (userId) {
-			return forwardRoomToAgent(room, userId);
+		if (transferData.userId) {
+			return forwardRoomToAgent(room, transferData);
 		}
 
-		if (departmentId) {
-			return forwardRoomToDepartment(room, guest, departmentId);
+		if (transferData.departmentId) {
+			return forwardRoomToDepartment(room, guest, transferData);
 		}
 
 		return false;

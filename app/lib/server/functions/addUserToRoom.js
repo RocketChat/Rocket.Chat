@@ -2,10 +2,16 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Subscriptions, Messages } from '../../../models';
 import { callbacks } from '../../../callbacks';
+import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
 	const room = Rooms.findOneById(rid);
+
+	const roomConfig = roomTypes.getConfig(room.t);
+	if (!roomConfig.allowMemberAction(room, RoomMemberActions.JOIN) && !roomConfig.allowMemberAction(room, RoomMemberActions.INVITE)) {
+		return;
+	}
 
 	// Check if user is already in room
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);

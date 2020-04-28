@@ -1,12 +1,14 @@
 import { Meteor } from 'meteor/meteor';
+import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import toastr from 'toastr';
 
 import { AppWebsocketReceiver } from './communication';
 import { APIClient } from '../../utils';
-import { AdminBox } from '../../ui-utils';
+import { registerAdminSidebarItem } from '../../ui-admin/client';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { handleI18nResources } from './i18n';
+import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
 const createDeferredValue = () => {
 	let resolve;
@@ -21,6 +23,8 @@ const createDeferredValue = () => {
 
 class AppClientOrchestrator {
 	constructor() {
+		this._appClientUIHost = new RealAppsEngineUIHost();
+		this._manager = new AppClientManager(this._appClientUIHost);
 		this.isLoaded = false;
 		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
 	}
@@ -42,17 +46,19 @@ class AppClientOrchestrator {
 		this.setEnabled(isEnabled);
 	}
 
-	getWsListener = () => this.ws
+	getWsListener = () => this.ws;
+
+	getAppClientManager = () => this._manager;
 
 	registerAdminMenuItems = () => {
-		AdminBox.addOption({
+		registerAdminSidebarItem({
 			icon: 'cube',
 			href: 'apps',
 			i18nLabel: 'Apps',
 			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
 		});
 
-		AdminBox.addOption({
+		registerAdminSidebarItem({
 			icon: 'cube',
 			href: 'marketplace',
 			i18nLabel: 'Marketplace',
@@ -145,6 +151,15 @@ class AppClientOrchestrator {
 		return app;
 	}
 
+	updateApp = async (appId, version) => {
+		const { app } = await APIClient.post(`apps/${ appId }`, {
+			appId,
+			marketplace: true,
+			version,
+		});
+		return app;
+	}
+
 	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`)
 
 	syncApp = (appId) => APIClient.post(`apps/${ appId }/sync`)
@@ -170,6 +185,8 @@ class AppClientOrchestrator {
 		const categories = await APIClient.get('apps', { categories: 'true' });
 		return categories;
 	}
+
+	getUIHost = () => this._appClientUIHost;
 }
 
 export const Apps = new AppClientOrchestrator();
@@ -182,6 +199,7 @@ Meteor.startup(() => {
 				return;
 			}
 
+			Apps.getAppClientManager().initialize();
 			Apps.load(isEnabled);
 		});
 	});

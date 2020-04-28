@@ -82,7 +82,6 @@ Template.messageBox.onCreated(function() {
 		autogrow.update();
 	};
 
-	let isSending = false;
 
 	this.send = (event) => {
 		const { input } = this;
@@ -95,15 +94,13 @@ Template.messageBox.onCreated(function() {
 		const { value } = input;
 		this.set('');
 
-		if (!onSend || isSending) {
+		if (!onSend) {
 			return;
 		}
 
-		isSending = true;
 		onSend.call(this.data, event, { rid, tmid, value }, () => {
 			autogrow.update();
 			input.focus();
-			isSending = false;
 		});
 	};
 });
@@ -141,7 +138,7 @@ Template.messageBox.onRendered(function() {
 	});
 
 	this.autorun(() => {
-		const { rid, onInputChanged, onResize } = Template.currentData();
+		const { rid, tmid, onInputChanged, onResize } = Template.currentData();
 
 		Tracker.afterFlush(() => {
 			const input = this.find('.js-input-message');
@@ -156,6 +153,7 @@ Template.messageBox.onRendered(function() {
 			if (input && rid) {
 				this.popupConfig.set({
 					rid,
+					tmid,
 					getInput: () => input,
 				});
 			} else {
@@ -248,6 +246,10 @@ Template.messageBox.helpers({
 	},
 	isBlockedOrBlocker() {
 		return Template.instance().state.get('isBlockedOrBlocker');
+	},
+	isSubscribed() {
+		const { subscription } = Template.currentData();
+		return !!subscription;
 	},
 });
 
@@ -374,7 +376,13 @@ Template.messageBox.events({
 			return;
 		}
 
-		const files = [...event.originalEvent.clipboardData.items]
+		const items = [...event.originalEvent.clipboardData.items];
+
+		if (items.some(({ kind, type }) => kind === 'string' && type === 'text/plain')) {
+			return;
+		}
+
+		const files = items
 			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
 			.map((item) => ({
 				file: item.getAsFile(),

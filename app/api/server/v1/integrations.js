@@ -5,6 +5,7 @@ import { hasAtLeastOnePermission } from '../../../authorization/server';
 import { IntegrationHistory, Integrations } from '../../../models';
 import { API } from '../api';
 import { mountIntegrationHistoryQueryBasedOnPermissions, mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
+import { findOneIntegration } from '../lib/integrations';
 
 API.v1.addRoute('integrations.create', { authRequired: true }, {
 	post() {
@@ -170,5 +171,22 @@ API.v1.addRoute('integrations.remove', { authRequired: true }, {
 			default:
 				return API.v1.failure('Invalid integration type.');
 		}
+	},
+});
+
+API.v1.addRoute('integrations.get', { authRequired: true }, {
+	get() {
+		const { integrationId, createdBy } = this.queryParams;
+		if (!integrationId) {
+			return API.v1.failure('The query parameter "integrationId" is required.');
+		}
+
+		return API.v1.success({
+			integration: Promise.await(findOneIntegration({
+				userId: this.userId,
+				integrationId,
+				createdBy,
+			})),
+		});
 	},
 });

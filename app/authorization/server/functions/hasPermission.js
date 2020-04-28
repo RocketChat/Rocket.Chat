@@ -1,63 +1,36 @@
 import mem from 'mem';
 
-import { Permissions, Roles, Users, Subscriptions } from '../../../models/server/raw';
-
-
-const getRole = mem((role) => Roles.findOne({ _id: role }));
+import { Permissions, Users, Subscriptions } from '../../../models/server/raw';
+import { AuthorizationUtils } from '../../lib/AuthorizationUtils';
 
 const rolesHasPermission = mem(async (permission, roles) => {
-	const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } });
-	return !!result;
-});
-
-const subscriptionHasPermission = mem(async (uid, permission, roles, rid) => {
-	if (rid == null) {
-		return;
+	if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
+		return false;
 	}
 
-	const query = {
-		'u._id': uid,
-		rid,
-		roles: { $in: roles },
-	};
+	const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
+	return !!result;
+}, {
+	cacheKey: JSON.stringify,
+	...process.env.TEST_MODE === 'true' && { maxAge: 0 },
+});
 
-	return !!await Subscriptions.findOne(query, { fields: { roles: 1 } });
-}, { maxAge: 5000 });
+const getRoles = mem(async (uid, scope) => {
+	const { roles: userRoles = [] } = await Users.findOne({ _id: uid }, { projection: { roles: 1 } });
+	const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
+	return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
+}, { maxAge: 1000, cacheKey: JSON.stringify });
 
 export const clearCache = () => {
-	mem.clear(getRole);
+	mem.clear(getRoles);
 	mem.clear(rolesHasPermission);
-	mem.clear(subscriptionHasPermission);
 };
 
-const groupRolesByScope = async (sortedUserRoles) => (await Promise.all(sortedUserRoles.map(getRole))).reduce((roles, role) => {
-	roles[role.scope || 'Users'] = roles[role.scope || 'Users'] ? roles[role.scope || 'Users'].concat([role._id]) : [].concat([role._id]);
-	return roles;
-}, {});
-
 async function atLeastOne(uid, permissions = [], scope) {
-	const { roles: userRoles } = await Users.findOne({ _id: uid });
-
-	const sortedUserRoles = userRoles.sort((a, b) => a.localeCompare(b));
-
-	const roles = await groupRolesByScope(sortedUserRoles);
-	const keys = Object.keys(roles);
-	for (let index = 0; index < keys.length; index++) {
-		const key = keys[index];
-		switch (key) {
-			case 'Users':
-				for (const permission of permissions) {
-					if (await rolesHasPermission(permission, roles[key])) { // eslint-disable-line
-						return true;
-					}
-				}
-				break;
-			case 'Subscriptions':
-				const found = await subscriptionHasPermission(uid, roles[key], scope);// eslint-disable-line
-				if (found) {
-					return true;
-				}
-				break;
+	const sortedRoles = await getRoles(uid, scope);
+	for (const permission of permissions) {
+		if (await rolesHasPermission(permission, sortedRoles)) { // eslint-disable-line
+			return true;
 		}
 	}
 
@@ -65,31 +38,10 @@ async function atLeastOne(uid, permissions = [], scope) {
 }
 
 async function all(uid, permissions = [], scope) {
-	const { roles: userRoles } = await Users.findOne({ _id: uid });
-
-	const sortedUserRoles = userRoles.sort((a, b) => a.localeCompare(b));
-
-	const roles = await groupRolesByScope(sortedUserRoles);
-
-	const keys = Object.keys(roles);
-
-	for (let index = 0; index < keys.length; index++) {
-		const key = keys[index];
-		switch (key) {
-			case 'Users':
-				for (const permission of permissions) {
-					if (!await rolesHasPermission(permission, roles[key])) { // eslint-disable-line
-						return false;
-					}
-				}
-				break;
-			default:
-			case 'Subscriptions':
-				const found = await subscriptionHasPermission(uid, roles[key], scope);// eslint-disable-line
-				if (!found) {
-					return false;
-				}
-				break;
+	const sortedRoles = await getRoles(uid, scope);
+	for (const permission of permissions) {
+		if (!await rolesHasPermission(permission, sortedRoles)) { // eslint-disable-line
+			return false;
 		}
 	}
 
