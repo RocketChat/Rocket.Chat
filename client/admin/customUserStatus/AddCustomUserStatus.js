@@ -21,7 +21,7 @@ export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 			});
 			dispatchToastMessage({ type: 'success', message: t('Custom_User_Status_Updated_Successfully') });
 			setCache(new Date());
-			goToNew(result, { name, statusType, _id: result })();
+			goToNew(result)();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -31,7 +31,7 @@ export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 		['online', t('Online')],
 		['busy', t('Busy')],
 		['away', t('Away')],
-		['invisible', t('Invisible')],
+		['offline', t('Offline')],
 	];
 
 	return <Box display='flex' flexDirection='column' textStyle='p1' textColor='default' mbs='x20' {...props}>
