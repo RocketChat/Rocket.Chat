@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Tabs, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 import VerticalBar from '../../components/basic/VerticalBar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';

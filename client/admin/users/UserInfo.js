@@ -8,7 +8,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { roomTypes } from '../../../app/utils/client';
 import { DateFormat } from '../../../app/lib';
 import { useRoute } from '../../contexts/RouterContext';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();
@@ -90,7 +90,7 @@ export function UserInfo({ data, ...props }) {
 				</ButtonGroup>
 			</Box>
 
-			<Box display='flex' flexDirection='column' w='full' style={{ backgroundColor: '#F4F6F9' }} p='x16'>
+			<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16'>
 				<Margins blockEnd='x4'>
 
 					{data.bio && data.bio.trim().length > 0 && <Box fontScale='s1' marginBlockEnd='x8'>

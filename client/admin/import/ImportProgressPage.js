@@ -9,7 +9,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useSafely } from '../../hooks/useSafely';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 import { useErrorHandler } from './useErrorHandler';
 
 function ImportProgressPage() {

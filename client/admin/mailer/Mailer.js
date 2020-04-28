@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { isJSON } from '../../../app/utils/lib/isJSON.js';
 import RawText from '../../components/basic/RawText';

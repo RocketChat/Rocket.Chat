@@ -5,7 +5,7 @@ import { BurgerMenuButton } from './BurgerMenuButton';
 
 const PageContext = createContext();
 
-export function Page(props) {
+function Page(props) {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
 		<Box

@@ -7,7 +7,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { useEndpointAction } from '../usersAndRooms/hooks';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 import UserAvatarEditor from '../../components/basic/avatar/UserAvatarEditor';
 
 export function EditUserWithData({ userId, ...props }) {

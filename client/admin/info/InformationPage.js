@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/fusela
 import React from 'react';
 
 import { Link } from '../../components/basic/Link';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { RocketChatSection } from './RocketChatSection';
 import { CommitSection } from './CommitSection';

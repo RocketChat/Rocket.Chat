@@ -6,7 +6,7 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 import { useEndpointAction } from '../usersAndRooms/hooks';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 
 export function AddUser({ roles, ...props }) {
 	const t = useTranslation();

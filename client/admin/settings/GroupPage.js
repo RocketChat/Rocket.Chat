@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Section } from './Section';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 
 export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabel, i18nDescription, changed }) {
 	const t = useTranslation();
