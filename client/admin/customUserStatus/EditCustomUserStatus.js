@@ -1,16 +1,15 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select, Icon, Modal, ModalBackdrop, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { Modal } from '../../components/basic/Modal';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
-
-const backdropProps = { display: 'flex', justifyContent: 'center', alignItems: 'center' };
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
-	return <ModalBackdrop {...backdropProps}><Modal {...props}>
+	return <Modal {...props}>
 		<Modal.Header>
 			<Icon textColor='danger' name='modal-warning' size={20}/>
 			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
@@ -25,12 +24,12 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
-	</Modal></ModalBackdrop>;
+	</Modal>;
 };
 
 const SuccessModal = ({ onClose, ...props }) => {
 	const t = useTranslation();
-	return <><ModalBackdrop {...backdropProps}><Modal {...props}>
+	return <Modal {...props}>
 		<Modal.Header>
 			<Icon textColor='success' name='checkmark-circled' size={20}/>
 			<Modal.Title>{t('Deleted')}</Modal.Title>
@@ -44,7 +43,7 @@ const SuccessModal = ({ onClose, ...props }) => {
 				<Button primary onClick={onClose}>{t('Ok')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
-	</Modal></ModalBackdrop></>;
+	</Modal>;
 };
 
 export function EditCustomUserStatusWithData({ _id, cache, ...props }) {
