@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../../ui-admin/client/components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../../../client/admin/NotAuthorizedPage';
 import InvitesPage from './InvitesPage';
 
 function InvitesRoute() {

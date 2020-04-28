@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
+import { NotAuthorizedPage } from '../NotAuthorizedPage';
 import { UsersAndRoomsTab } from '../usersAndRooms/UsersAndRoomsTab';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSwitchTab } from '../usersAndRooms/hooks';

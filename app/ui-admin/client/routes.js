@@ -18,7 +18,7 @@ export const registerAdminRoute = (path, { lazyRouteComponent, props, action, ..
 				return;
 			}
 
-			renderRouteComponent(() => import('./components/AdministrationRouter'), {
+			renderRouteComponent(() => import('../../../client/admin/AdministrationRouter'), {
 				template: 'main',
 				region: 'center',
 				propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams, ...props }),
@@ -35,12 +35,12 @@ registerAdminRoute('/', {
 
 registerAdminRoute('/info', {
 	name: 'admin-info',
-	lazyRouteComponent: () => import('./components/info/InformationRoute'),
+	lazyRouteComponent: () => import('../../../client/admin/info/InformationRoute'),
 });
 
 registerAdminRoute('/mailer', {
 	name: 'admin-mailer',
-	lazyRouteComponent: () => import('./components/mailer/MailerRoute'),
+	lazyRouteComponent: () => import('../../../client/admin/mailer/MailerRoute'),
 });
 
 registerAdminRoute('/users/:context?/:id?', {
@@ -58,6 +58,6 @@ registerAdminRoute('/rooms/:context?/:id?', {
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
 		name: 'admin',
-		lazyRouteComponent: () => import('./components/settings/SettingsRoute'),
+		lazyRouteComponent: () => import('../../../client/admin/settings/SettingsRoute'),
 	});
 });

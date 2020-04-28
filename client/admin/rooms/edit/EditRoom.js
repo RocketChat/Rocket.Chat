@@ -6,7 +6,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/use
 import { roomTypes } from '../../../../app/utils/client';
 import { useMethod } from '../../../contexts/ServerContext';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../../../app/ui-admin/client/components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../NotAuthorizedPage';
 import { useEndpointAction } from '../../usersAndRooms/hooks';
 import { Page } from '../../../components/basic/Page';
 
