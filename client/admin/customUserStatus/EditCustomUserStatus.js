@@ -50,7 +50,7 @@ export function EditCustomUserStatusWithData({ _id, cache, ...props }) {
 	const t = useTranslation();
 	const query = useMemo(() => ({
 		query: JSON.stringify({ _id }),
-	}), [_id, cache]);
+	}), [_id]);
 
 	const { data, state, error } = useEndpointDataExperimental('custom-user-status.list', query);
 
@@ -77,7 +77,7 @@ export function EditCustomUserStatusWithData({ _id, cache, ...props }) {
 	return <EditCustomUserStatus data={data.statuses[0]} {...props}/>;
 }
 
-export function EditCustomUserStatus({ close, setCache, data, ...props }) {
+export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -106,7 +106,7 @@ export function EditCustomUserStatus({ close, setCache, data, ...props }) {
 				statusType,
 			});
 			dispatchToastMessage({ type: 'success', message: t('Custom_User_Status_Updated_Successfully') });
-			setCache(new Date());
+			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -115,10 +115,10 @@ export function EditCustomUserStatus({ close, setCache, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteStatus(_id);
-			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); setCache(new Date()); }}/>);
+			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
-			setCache(new Date());
+			onChange();
 		}
 	}, [_id]);
 
@@ -163,6 +163,6 @@ export function EditCustomUserStatus({ close, setCache, data, ...props }) {
 				</Field>
 			</Margins>
 		</Box>
-		{ modal && modal }
+		{ modal }
 	</>;
 }

@@ -76,6 +76,10 @@ export default function CustomUserStatusRoute({ props }) {
 		return <NotAuthorizedPage />;
 	}
 
+	const onChange = useCallback(() => {
+		setCache(new Date());
+	}, []);
+
 	return <Page {...props} flexDirection='row'>
 		<Page name='admin-custom-user-status'>
 			<Page.Header title={t('Custom_User_Status')}>
@@ -94,8 +98,8 @@ export default function CustomUserStatusRoute({ props }) {
 					{ context === 'new' && t('Custom_User_Status_Add') }
 					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
 				<VerticalBar.Content>
-					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} setCache={setCache} cache={cache}/>}
-					{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} setCache={setCache}/>}
+					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
+					{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} onChange={onChange}/>}
 				</VerticalBar.Content>
 			</VerticalBar>}
 	</Page>;

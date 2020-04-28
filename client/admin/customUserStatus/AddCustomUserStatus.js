@@ -5,7 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
-export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
+export function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -20,8 +20,8 @@ export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 				statusType,
 			});
 			dispatchToastMessage({ type: 'success', message: t('Custom_User_Status_Updated_Successfully') });
-			setCache(new Date());
 			goToNew(result)();
+			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
