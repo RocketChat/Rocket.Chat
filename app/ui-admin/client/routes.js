@@ -55,6 +55,11 @@ registerAdminRoute('/rooms/:context?/:id?', {
 	tab: 'rooms',
 });
 
+registerAdminRoute('/invites', {
+	name: 'invites',
+	lazyRouteComponent: () => import('../../../client/admin/invites/InvitesRoute'),
+});
+
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
 		name: 'admin',

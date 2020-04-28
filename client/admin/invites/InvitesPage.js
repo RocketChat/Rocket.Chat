@@ -8,13 +8,13 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
-import { Page } from '../../../../client/components/basic/Page';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpoint } from '../../../../client/contexts/ServerContext';
-import { useModal } from '../../../../client/hooks/useModal';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { GenericTable } from '../../../ui/client/components/GenericTable';
-import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
+import { Page } from '../../components/basic/Page';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useEndpoint } from '../../contexts/ServerContext';
+import { useModal } from '../../hooks/useModal';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { GenericTable } from '../../../app/ui/client/components/GenericTable';
+import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 
 
 function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
