@@ -27,11 +27,12 @@ export default function CustomUserStatusRoute({ props }) {
 	const t = useTranslation();
 	const canManageUserStatus = usePermission('manage-user-status');
 
-	const routeName = 'user-status-custom';
+	const routeName = 'custom-user-status';
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [cache, setCache] = useState();
+	const [modal, setModal] = useState();
 
 
 	/*
@@ -109,10 +110,11 @@ export default function CustomUserStatusRoute({ props }) {
 					<Page.VerticalBar.Close onClick={close}/></Page.VerticalBar.Header>
 				<Page.VerticalBar.Content>
 					<CurrentStatusContext.Provider value={{ currentStatus, setCurrentStatus }}>
-						{context === 'edit' && <EditCustomUserStatus close={close} setCache={setCache}/>}
+						{context === 'edit' && <EditCustomUserStatus close={close} setCache={setCache} setModal={setModal}/>}
 						{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} setCache={setCache}/>}
 					</CurrentStatusContext.Provider>
 				</Page.VerticalBar.Content>
 			</Page.VerticalBar>}
+		{ modal && modal }
 	</Page>;
 }

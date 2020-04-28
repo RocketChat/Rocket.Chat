@@ -1,28 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-
-const ConfirmDeleteModal = () => {
-	const t = useTranslation();
-	<Modal>
-		<Modal.Header>
-			<Modal.Title>{t('')}</Modal.Title>
-			<Modal.Close />
-		</Modal.Header>
-		<Modal.Content>
-			{t('Custom_User_Status_Delete_Warning')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button>Cancel</Button>
-				<Button primary>Submit</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>
-}
 
 export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 	const t = useTranslation();

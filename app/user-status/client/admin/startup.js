@@ -2,7 +2,7 @@ import { hasAtLeastOnePermission } from '../../../authorization';
 import { registerAdminSidebarItem } from '../../../ui-admin/client';
 
 registerAdminSidebarItem({
-	href: 'user-status-custom',
+	href: 'custom-user-status',
 	i18nLabel: 'Custom_User_Status',
 	icon: 'user',
 	permissionGranted() {
