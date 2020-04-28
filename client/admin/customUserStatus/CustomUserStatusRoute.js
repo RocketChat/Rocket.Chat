@@ -31,7 +31,6 @@ export default function CustomUserStatusRoute({ props }) {
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [cache, setCache] = useState();
-	const [modal, setModal] = useState();
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
@@ -95,10 +94,9 @@ export default function CustomUserStatusRoute({ props }) {
 					{ context === 'new' && t('Custom_User_Status_Add') }
 					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
 				<VerticalBar.Content>
-					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} setCache={setCache} cache={cache} setModal={setModal}/>}
+					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} setCache={setCache} cache={cache}/>}
 					{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} setCache={setCache}/>}
 				</VerticalBar.Content>
 			</VerticalBar>}
-		{ modal && modal }
 	</Page>;
 }

@@ -37,8 +37,8 @@ export function CustomUserStatus({
 	const renderRow = (status) => {
 		const { _id, name, statusType } = status;
 		return <Table.Row key={_id} onKeyDown={onClick(_id, status)} onClick={onClick(_id, status)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<Table.Cell textStyle='p1' textColor='default' style={style}>{name}</Table.Cell>
-			<Table.Cell textStyle='p1' textColor='default' style={style}>{statusType}</Table.Cell>
+			<Table.Cell fontScale='p1' color='default' style={style}>{name}</Table.Cell>
+			<Table.Cell fontScale='p1' color='default' style={style}>{statusType}</Table.Cell>
 		</Table.Row>;
 	};
 

@@ -34,7 +34,7 @@ export function AddCustomUserStatus({ goToNew, close, setCache, ...props }) {
 		['offline', t('Offline')],
 	];
 
-	return <Box display='flex' flexDirection='column' textStyle='p1' textColor='default' mbs='x20' {...props}>
+	return <Box display='flex' flexDirection='column' fontScale='p1' color='default' mbs='x20' {...props}>
 		<Margins block='x4'>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>

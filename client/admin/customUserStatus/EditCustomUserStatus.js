@@ -11,11 +11,11 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
 	return <Modal {...props}>
 		<Modal.Header>
-			<Icon textColor='danger' name='modal-warning' size={20}/>
+			<Icon color='danger' name='modal-warning' size={20}/>
 			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
-		<Modal.Content textStyle='p1'>
+		<Modal.Content fontScale='p1'>
 			{t('Custom_User_Status_Delete_Warning')}
 		</Modal.Content>
 		<Modal.Footer>
@@ -31,11 +31,11 @@ const SuccessModal = ({ onClose, ...props }) => {
 	const t = useTranslation();
 	return <Modal {...props}>
 		<Modal.Header>
-			<Icon textColor='success' name='checkmark-circled' size={20}/>
+			<Icon color='success' name='checkmark-circled' size={20}/>
 			<Modal.Title>{t('Deleted')}</Modal.Title>
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
-		<Modal.Content textStyle='p1'>
+		<Modal.Content fontScale='p1'>
 			{t('Custom_User_Status_Has_Been_Deleted')}
 		</Modal.Content>
 		<Modal.Footer>
@@ -71,13 +71,13 @@ export function EditCustomUserStatusWithData({ _id, cache, ...props }) {
 	}
 
 	if (error || !data || data.statuses.length < 1) {
-		return <Box textStyle='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
+		return <Box fontScale='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
 	}
 
 	return <EditCustomUserStatus data={data.statuses[0]} {...props}/>;
 }
 
-export function EditCustomUserStatus({ close, setCache, setModal, data, ...props }) {
+export function EditCustomUserStatus({ close, setCache, data, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -85,6 +85,7 @@ export function EditCustomUserStatus({ close, setCache, setModal, data, ...props
 
 	const [name, setName] = useState('');
 	const [statusType, setStatusType] = useState('');
+	const [modal, setModal] = useState();
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -114,11 +115,10 @@ export function EditCustomUserStatus({ close, setCache, setModal, data, ...props
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteStatus(_id);
-			setModal(() => <SuccessModal onClose={() => setModal(undefined)}/>);
-			setCache(new Date());
-			close();
+			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); setCache(new Date()); }}/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+			setCache(new Date());
 		}
 	}, [_id]);
 
@@ -131,35 +131,38 @@ export function EditCustomUserStatus({ close, setCache, setModal, data, ...props
 		['offline', t('Offline')],
 	];
 
-	return <Box display='flex' flexDirection='column' textStyle='p1' textColor='default' mbs='x20' {...props}>
-		<Margins block='x4'>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Presence')}</Field.Label>
-				<Field.Row>
-					<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions}/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button onClick={close}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-		</Margins>
-	</Box>;
+	return <>
+		<Box display='flex' flexDirection='column' fontScale='p1' color='default' mbs='x20' {...props}>
+			<Margins block='x4'>
+				<Field>
+					<Field.Label>{t('Name')}</Field.Label>
+					<Field.Row>
+						<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label>{t('Presence')}</Field.Label>
+					<Field.Row>
+						<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions}/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Row>
+						<ButtonGroup stretch w='full'>
+							<Button onClick={close}>{t('Cancel')}</Button>
+							<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
+						</ButtonGroup>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Row>
+						<ButtonGroup stretch w='full'>
+							<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
+						</ButtonGroup>
+					</Field.Row>
+				</Field>
+			</Margins>
+		</Box>
+		{ modal && modal }
+	</>;
 }
