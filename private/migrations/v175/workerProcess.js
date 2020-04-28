@@ -46,7 +46,6 @@ module.exports.getWorkerProcess = () => ({
 			...contextQuery,
 			t,
 			d,
-			hasChildren: false,
 		};
 
 		event._id = Events.createEventId(contextQuery, event);
@@ -114,6 +113,11 @@ module.exports.getWorkerProcess = () => ({
 
 				messageEvents.push(event);
 			}
+		}
+
+		// Add the has_children flag
+		if (messageEvents.length > 0) {
+			messageEvents[messageEvents.length - 1].has_children = false;
 		}
 
 		console.log(`Messages - Room ${ rid }, persisting ${ messageEvents.length }`);
