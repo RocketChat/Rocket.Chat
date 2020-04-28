@@ -1,14 +1,14 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Box, Avatar, Button, ButtonGroup, Icon, Margins, Headline, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
+import { Box, Avatar, Margins, Headline, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { roomTypes } from '../../../app/utils/client';
 import { DateFormat } from '../../../app/lib';
-import { useRoute } from '../../contexts/RouterContext';
 import { Markdown } from '../../../app/ui/client/components/GenericTable';
 import { Page } from '../../components/basic/Page';
+import { UserInfoActions } from './UserInfoActions';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();
@@ -55,17 +55,6 @@ export function UserInfoWithData({ userId, ...props }) {
 export function UserInfo({ data, ...props }) {
 	const t = useTranslation();
 
-	const directRoute = useRoute('direct');
-	const userRoute = useRoute('admin-users');
-
-	const directMessageClick = () => directRoute.push({
-		rid: data.username,
-	});
-	const editUserClick = () => userRoute.push({
-		context: 'edit',
-		id: data._id,
-	});
-
 	const createdAt = DateFormat.formatDateAndTime(data.createdAt);
 
 	const lastLogin = data.lastLogin ? DateFormat.formatDateAndTime(data.lastLogin) : '';
@@ -83,12 +72,7 @@ export function UserInfo({ data, ...props }) {
 				</Margins>
 			</Box>
 
-			<Box display='flex' flexDirection='row'>
-				<ButtonGroup flexGrow={1} justifyContent='center'>
-					<Button onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
-					<Button onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button>
-				</ButtonGroup>
-			</Box>
+			<UserInfoActions isActive={data.active} isAdmin={data.roles.includes('admin')} _id={data._id} username={data.username}/>
 
 			<Box display='flex' flexDirection='column' w='full' style={{ backgroundColor: '#F4F6F9' }} p='x16'>
 				<Margins blockEnd='x4'>
