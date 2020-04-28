@@ -10,5 +10,7 @@ import './app/tabbar/visitorEdit';
 import './app/tabbar/visitorForward';
 import './app/tabbar/customerChatHistory';
 import './app/tabbar/customerChatHistoryMessages';
+import './app/tabbar/chatRoomHistoryItem';
+import './app/tabbar/chatRoomSearchItem';
 import './app/tabbar/visitorInfo';
 import './app/tabbar/visitorNavigation';

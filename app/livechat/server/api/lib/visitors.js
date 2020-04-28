@@ -1,7 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/server/raw';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
-import { Meteor } from 'meteor/meteor';
 
 export async function findVisitorInfo({ userId, visitorId }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
@@ -31,7 +32,7 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 		skip: offset,
 		limit: count,
 	});
-	
+
 	const total = await cursor.count();
 
 	const pages = await cursor.toArray();
@@ -44,7 +45,7 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	};
 }
 
-export async function findChatHistory({ userId, roomId, visitorId,text, pagination: { offset, count, sort } }) {
+export async function findChatHistory({ userId, roomId, visitorId, text, closedChatsOnly, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
@@ -61,42 +62,36 @@ export async function findChatHistory({ userId, roomId, visitorId,text, paginati
 		skip: offset,
 		limit: count,
 	});
-
 	const total = await cursor.count();
 	const history = await cursor.toArray();
-	if(text == 'null'){
-		return {
-			history,
-			count: history.length,
-			offset,
-			total,
-			
-		};
-		
-	}else{
-		let resultArray=[];
-		Meteor.runAsUser(userId,()=>{
-			for(var i=0; i<history.length; i++){
-				var roomid = history[i]._id;
-				var count = 1000;
-				var result = Meteor.call('messageSearch',text,roomid,count).message.docs;
-				if(result.length>0){
-					for(var j=0; j<result.length; j++){
-						resultArray.push(result[j])
-					}	
+
+	const resultArray = [];
+	if (text !== undefined) {
+		Meteor.runAsUser(userId, () => {
+			history.map(function(val) {
+				const roomId = val._id;
+				const count = 1;
+				const result = Meteor.call('messageSearch', text, roomId, count).message.docs;
+				if (result.length > 0) {
+					result.map(function(e) {
+						resultArray.push(e);
+					});
 				}
-			}
-		})
-		
-		return {
-			history,
-			count: history.length,
-			offset,
-			total,
-			resultArray,
-			
-		};
-		
+			});
+		});
 	}
-	
+	if (closedChatsOnly) {
+		history.map(function(e, index) {
+			if (e.open) {
+				history.splice(index, 1);
+			}
+		});
+	}
+	return {
+		history,
+		count: history.length,
+		offset,
+		total,
+		resultArray,
+	};
 }
