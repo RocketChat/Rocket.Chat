@@ -17,7 +17,7 @@ export function Mailer({ sendMail = () => {}, ...props }) {
 
 	return <Page _id='mailer' {...props}>
 		<Page.Header title={t('Mailer')}></Page.Header>
-		<Page.ContentShadowScroll alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
+		<Page.ScrollableContentWithShadow alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
 			<FieldGroup maxWidth='x600' is='form' method='post'>
 				<Field>
 					<Field.Label>{t('From')}</Field.Label>
@@ -94,6 +94,6 @@ export function Mailer({ sendMail = () => {}, ...props }) {
 					<Button primary onClick={() => { sendMail({ fromEmail, dryRun, query, subject, emailBody }); }}><Icon name='send' size='x20' mie='x8'/>{t('Send_email')}</Button>
 				</ButtonGroup>
 			</FieldGroup>
-		</Page.ContentShadowScroll>
+		</Page.ScrollableContentWithShadow>
 	</Page>;
 }

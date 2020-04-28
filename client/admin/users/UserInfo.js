@@ -72,7 +72,7 @@ export function UserInfo({ data, ...props }) {
 
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
-	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' {...props}>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' {...props}>
 		<Margins block='x8'>
 			<Box display='flex' flexDirection='column' alignItems='center'>
 				<Margins block='x2'>
@@ -128,5 +128,5 @@ export function UserInfo({ data, ...props }) {
 			</Box>
 		</Margins>
 
-	</Page.ContentScrolable>;
+	</Page.ScrollableContent>;
 }

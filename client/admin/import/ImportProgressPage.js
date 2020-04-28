@@ -123,7 +123,7 @@ function ImportProgressPage() {
 	return <Page>
 		<Page.Header title={t('Importing_Data')} />
 
-		<Page.ContentShadowScroll>
+		<Page.ScrollableContentWithShadow>
 			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 				<Margins block='x24'>
 					<Box is='p' textStyle='p1' textColor='default'>{t(step[0].toUpperCase() + step.slice(1))}</Box>
@@ -135,7 +135,7 @@ function ImportProgressPage() {
 						: <Throbber justifyContent='center' />}
 				</Margins>
 			</Box>
-		</Page.ContentShadowScroll>
+		</Page.ScrollableContentWithShadow>
 	</Page>;
 }
 

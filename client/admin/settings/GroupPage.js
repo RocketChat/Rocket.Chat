@@ -46,7 +46,7 @@ export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabe
 			</ButtonGroup>
 		</Page.Header>
 
-		<Page.ContentShadowScroll>
+		<Page.ScrollableContentWithShadow>
 			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
 				{t.has(i18nDescription) && <Box is='p' textColor='hint' textStyle='p1'>{t(i18nDescription)}</Box>}
 
@@ -54,7 +54,7 @@ export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabe
 					{children}
 				</Accordion>
 			</Box>
-		</Page.ContentShadowScroll>
+		</Page.ScrollableContentWithShadow>
 	</Page>;
 }
 

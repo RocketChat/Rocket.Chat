@@ -1,9 +1,10 @@
 import { Box, Flex, Margins, Scrollable } from '@rocket.chat/fuselage';
-import React, { useMemo, createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 import { BurgerMenuButton } from './BurgerMenuButton';
 
 const PageContext = createContext();
+
 export function Page(props) {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
@@ -14,14 +15,18 @@ export function Page(props) {
 			flexGrow={1}
 			flexShrink={1}
 			height='full'
-			style={useMemo(() => ({ overflow: 'hidden' }), [])} {...props}
+			overflow='hidden'
+			{...props}
 		/>
 	</PageContext.Provider>;
 }
 
-export function PageHeader({ children, title, ...props }) {
+function PageHeader({ children, title, ...props }) {
 	const [border] = useContext(PageContext);
-	return <Box style={{ borderBlockEndColor: border ? 'var(--color-gray-lightest)' : 'transparent', transition: 'border-block-end-color 0.3s', borderBlockEnd: '2px solid transparent' }}>
+	return <Box
+		borderBlockEndWidth='x2'
+		borderBlockEndColor={border ? 'neutral-200' : 'transparent'}
+	>
 		<Margins block='x16' inline='x24'>
 			<Flex.Container wrap='no-wrap' alignItems='center' direction='row'>
 				<Box {...props}>
@@ -29,7 +34,7 @@ export function PageHeader({ children, title, ...props }) {
 						<BurgerMenuButton />
 					</Margins>
 					<Flex.Item grow={1}>
-						<Box is='h1' textStyle='h1' textColor='default'>{title}</Box>
+						<Box is='h1' fontScale='h1'>{title}</Box>
 					</Flex.Item>
 					{children}
 				</Box>
@@ -38,22 +43,37 @@ export function PageHeader({ children, title, ...props }) {
 	</Box>;
 }
 
-export function PageContentShadowScroll({ onScrollContent, ...props }) {
-	const [, setBorder] = useContext(PageContext);
-	return <PageContentScrolable onScrollContent={({ top, ...args }) => { setBorder(!top); onScrollContent && onScrollContent({ top, ...args }); }} { ...props } />;
+function PageContent(props) {
+	return <Box
+		paddingInline='x24'
+		display='flex'
+		flexDirection='column'
+		overflowY='hidden'
+		height='full'
+		{...props}
+	/>;
 }
 
-export function PageContent({ ...props }) {
-	return <Box pi='x24' display='flex' flexDirection='column' style={{ overflowY: 'hidden', height: '100%' }} {...props} />;
-}
-
-export function PageContentScrolable({ onScrollContent, ...props }) {
+function PageScrollableContent({ onScrollContent, ...props }) {
 	return <Scrollable onScrollContent={onScrollContent} >
 		<Box padding='x16' flexGrow={1} {...props} />
 	</Scrollable>;
 }
 
+function PageScrollableContentWithShadow({ onScrollContent, ...props }) {
+	const [, setBorder] = useContext(PageContext);
+	return <PageScrollableContent
+		onScrollContent={({ top, ...args }) => {
+			setBorder(!top);
+			onScrollContent && onScrollContent({ top, ...args });
+		}}
+		{ ...props }
+	/>;
+}
+
 Page.Header = PageHeader;
 Page.Content = PageContent;
-Page.ContentScrolable = PageContentScrolable;
-Page.ContentShadowScroll = PageContentShadowScroll;
+Page.ScrollableContent = PageScrollableContent;
+Page.ScrollableContentWithShadow = PageScrollableContentWithShadow;
+
+export default Page;

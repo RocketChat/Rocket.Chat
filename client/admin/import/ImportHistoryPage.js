@@ -87,7 +87,7 @@ function ImportHistoryPage() {
 					&& <Button disabled={isLoading} onClick={handleDownloadPendingFilesClick}>{t('Download_Pending_Files')}</Button>}
 			</ButtonGroup>
 		</Page.Header>
-		<Page.ContentShadowScroll>
+		<Page.ScrollableContentWithShadow>
 			<Table fixed>
 				<Table.Head>
 					<Table.Row>
@@ -116,7 +116,7 @@ function ImportHistoryPage() {
 						</>}
 				</Table.Body>
 			</Table>
-		</Page.ContentShadowScroll>
+		</Page.ScrollableContentWithShadow>
 	</Page>;
 }
 

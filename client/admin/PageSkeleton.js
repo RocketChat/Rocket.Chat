@@ -5,10 +5,10 @@ import { Page } from '../components/basic/Page';
 
 function PageSkeleton() {
 	return <Page>
-		<Page.Header title={<Skeleton width='20rem' />}>
+		<Page.Header title={<Skeleton width='x320' maxWidth='full' />}>
 			<ButtonGroup>
 				<Button
-					children={<Skeleton width='5rem' />}
+					children={<Skeleton width='x80' />}
 					disabled
 					primary
 				/>
@@ -16,8 +16,8 @@ function PageSkeleton() {
 		</Page.Header>
 
 		<Page.Content>
-			<Box mb='0' mi='auto' width='full' maxWidth='590px'>
-				<Box is='p' textColor='hint' textStyle='p1'>
+			<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
+				<Box is='p' color='hint' fontScale='p1'>
 					<Skeleton />
 					<Skeleton />
 					<Skeleton width='75%' />

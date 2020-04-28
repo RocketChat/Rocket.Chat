@@ -81,7 +81,7 @@ function EditRoom({ room, onChange }) {
 	const isFavorite = newData.favorite ?? !!room.favorite;
 	const isFeatured = newData.featured ?? !!room.featured;
 
-	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form'>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form'>
 		<Margins blockEnd='x16'>
 
 			{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
@@ -190,5 +190,5 @@ function EditRoom({ room, onChange }) {
 				</Field.Row>
 			</Field>
 		</Margins>
-	</Page.ContentScrolable>;
+	</Page.ScrollableContent>;
 }

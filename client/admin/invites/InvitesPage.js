@@ -134,7 +134,7 @@ function InvitesPage() {
 
 	return <Page>
 		<Page.Header title={t('Invites')} />
-		<Page.ContentShadowScroll>
+		<Page.ScrollableContentWithShadow>
 			<GenericTable
 				results={invites}
 				header={
@@ -151,7 +151,7 @@ function InvitesPage() {
 				}
 				renderRow={(invite) => <InviteRow key={invite._id} {...invite} onRemove={handleInviteRemove} />}
 			/>
-		</Page.ContentShadowScroll>
+		</Page.ScrollableContentWithShadow>
 	</Page>;
 }
 

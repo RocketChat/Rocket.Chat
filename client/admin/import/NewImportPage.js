@@ -173,7 +173,7 @@ function NewImportPage() {
 				</Button>}
 			</ButtonGroup>
 		</Page.Header>
-		<Page.ContentShadowScroll>
+		<Page.ScrollableContentWithShadow>
 			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 				<Margins block='x24'>
 					<Field>
@@ -241,7 +241,7 @@ function NewImportPage() {
 					</>}
 				</Margins>
 			</Box>
-		</Page.ContentShadowScroll>
+		</Page.ScrollableContentWithShadow>
 	</Page>;
 }
 
