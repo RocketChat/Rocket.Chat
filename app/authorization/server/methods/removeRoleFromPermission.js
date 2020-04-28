@@ -2,18 +2,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { Permissions } from '../../../models/server';
 import { hasPermission } from '../functions/hasPermission';
-import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 import { CONSTANTS } from '../../lib';
 
 Meteor.methods({
 	'authorization:removeRoleFromPermission'(permissionId, role) {
-		if (AuthorizationUtils.isRoleReadOnly(role)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Role is readonly', {
-				method: 'authorization:removeRoleFromPermission',
-				action: 'Removing_permission',
-			});
-		}
-
 		const uid = Meteor.userId();
 		const permission = Permissions.findOneById(permissionId);
 
