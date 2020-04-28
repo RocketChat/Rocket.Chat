@@ -229,7 +229,6 @@ Template.message.helpers({
 		if (!subscription) {
 			return false;
 		}
-		console.log(subscription);
 		return subscription.tunread.includes(msg._id);
 	},
 	showTranslated() {
