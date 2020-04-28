@@ -2,17 +2,20 @@ import {
 	Button,
 	Icon,
 	Table,
+	Box,
 } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
 import { Page } from '../../../../client/components/basic/Page';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useFormatDateAndTime } from '../../../ui/client/views/app/components/hooks';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { useModal } from '../../../../client/hooks/useModal';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { GenericTable } from '../../../ui/client/components/GenericTable';
+import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
+
 
 function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
 	const t = useTranslation();
@@ -49,7 +52,7 @@ function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
 	const handleRemoveButtonClick = async (event) => {
 		event.stopPropagation();
 
-		modal.open({
+		modal.open({ // TODO REFACTOR
 			text: t('Are_you_sure_you_want_to_delete_this_record'),
 			type: 'warning',
 			showCancelButton: true,
@@ -72,24 +75,28 @@ function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
 		});
 	};
 
+	const notSmall = useMediaQuery('(min-width: 768px)');
+
 	return <Table.Row>
 		<Table.Cell>
-			{_id}
+			<Box textStyle='p1' textColor='hint'>{_id}</Box>
 		</Table.Cell>
+		{notSmall && <>
+			<Table.Cell>
+				{formatDateAndTime(createdAt)}
+			</Table.Cell>
+			<Table.Cell>
+				{daysToExpire({ expires, days })}
+			</Table.Cell>
+			<Table.Cell>
+				{uses}
+			</Table.Cell>
+			<Table.Cell>
+				{maxUsesLeft({ maxUses, uses })}
+			</Table.Cell>
+		</>}
 		<Table.Cell>
-			{formatDateAndTime(createdAt)}
-		</Table.Cell>
-		<Table.Cell>
-			{daysToExpire({ expires, days })}
-		</Table.Cell>
-		<Table.Cell>
-			{uses}
-		</Table.Cell>
-		<Table.Cell>
-			{maxUsesLeft({ maxUses, uses })}
-		</Table.Cell>
-		<Table.Cell>
-			<Button ghost danger square onClick={handleRemoveButtonClick}>
+			<Button ghost danger small square onClick={handleRemoveButtonClick}>
 				<Icon name='cross' size='x20' />
 			</Button>
 		</Table.Cell>
@@ -123,6 +130,8 @@ function InvitesPage() {
 		setInvites((invites = []) => invites.filter((invite) => invite._id !== _id));
 	};
 
+	const notSmall = useMediaQuery('(min-width: 768px)');
+
 	return <Page>
 		<Page.Header title={t('Invites')} />
 		<Page.ContentShadowScroll>
@@ -130,11 +139,13 @@ function InvitesPage() {
 				results={invites}
 				header={
 					<>
-						<Table.Cell is='th' width='20%'>{t('Token')}</Table.Cell>
-						<Table.Cell is='th' width='35%'>{t('Created_at')}</Table.Cell>
-						<Table.Cell is='th' width='20%'>{t('Expiration')}</Table.Cell>
-						<Table.Cell is='th' width='10%'>{t('Uses')}</Table.Cell>
-						<Table.Cell is='th' width='10%'>{t('Uses_left')}</Table.Cell>
+						<Table.Cell is='th' width={notSmall ? '20%' : '80%'}>{t('Token')}</Table.Cell>
+						{ notSmall && <>
+							<Table.Cell is='th' width='35%'>{t('Created_at')}</Table.Cell>
+							<Table.Cell is='th' width='20%'>{t('Expiration')}</Table.Cell>
+							<Table.Cell is='th' width='10%'>{t('Uses')}</Table.Cell>
+							<Table.Cell is='th' width='10%'>{t('Uses_left')}</Table.Cell>
+						</>}
 						<Table.Cell is='th' />
 					</>
 				}
