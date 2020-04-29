@@ -148,7 +148,6 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 	return <>
 		<Box display='flex' flexDirection='row' {...props}>
 			<ButtonGroup flexGrow={1} justifyContent='center'>
-				{console.log(menuOptions)}
 				{ actions && actions.map((action, index) => (<Button key={index} onClick={action.action}>{action.label}</Button>))}
 				{ moreActions && <Menu options={moreActions} placement='bottom left'/> }
 			</ButtonGroup>
