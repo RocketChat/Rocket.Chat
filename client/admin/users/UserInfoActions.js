@@ -61,6 +61,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 	const userRoute = useRoute('admin-users');
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const canDirectMessage = usePermission('create-d');
 	const canEditOtherUserInfo = usePermission('edit-other-user-info');
 	const canAssignAdminRole = usePermission('assign-admin-role');
 	const canEditOtherUserActiveStatus = usePermission('edit-other-user-active-status');
@@ -100,26 +101,6 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 	const changeActiveStatusMessage = isActive ? 'User_has_been_deactivated' : 'User_has_been_activated';
 	const changeActiveStatus = useEndpointAction('POST', 'users.setActiveStatus', activeStatusQuery, t(changeActiveStatusMessage));
 
-
-	const menuOptions = useMemo(() => ({
-		...canAssignAdminRole && { makeAdmin: {
-			label: <Box display='flex' alignItems='center'><Icon mie='x4' name='key' size='x16'/>{ isAdmin ? t('Remove_Admin') : t('Make_admin')}</Box>,
-			action: changeAdminStatus,
-		} },
-		...canDeleteUser && { delete: {
-			label: <Box display='flex' alignItems='center' color='danger'><Icon mie='x4' name='trash' size='x16'/>{t('Delete')}</Box>,
-			action: confirmDeleteUser,
-		} },
-		...canEditOtherUserActiveStatus && { changeActiveStatus: {
-			label: <Box display='flex' alignItems='center'><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Activate') : t('Deactivate')}</Box>,
-			action: async () => {
-				const result = await changeActiveStatus();
-				result.success ? onchange() : undefined;
-			},
-		} },
-	}), [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus]);
-
-
 	const directMessageClick = () => directRoute.push({
 		rid: username,
 	});
@@ -129,12 +110,47 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		id: _id,
 	});
 
+	const menuOptions = useMemo(() => ({
+		...canDirectMessage && { directMessage: {
+			label: <><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</>,
+			action: directMessageClick,
+		} },
+		...canEditOtherUserInfo && { editUser: {
+			label: <><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</>,
+			action: editUserClick,
+		} },
+		...canAssignAdminRole && { makeAdmin: {
+			label: <><Icon mie='x4' name='key' size='x16'/>{ isAdmin ? t('Remove_Admin') : t('Make_Admin')}</>,
+			action: changeAdminStatus,
+		} },
+		...canDeleteUser && { delete: {
+			label: <Box color='danger'><Icon mie='x4' name='trash' size='x16'/>{t('Delete')}</Box>,
+			action: confirmDeleteUser,
+		} },
+		...canEditOtherUserActiveStatus && { changeActiveStatus: {
+			label: <><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Activate') : t('Deactivate')}</>,
+			action: async () => {
+				const result = await changeActiveStatus();
+				result.success ? onchange() : undefined;
+			},
+		} },
+	}), [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus, canEditOtherUserInfo, canDirectMessage]);
+
+	const [actions, moreActions] = useMemo(() => {
+		const keys = Object.keys(menuOptions);
+
+		const firstHalf = keys.slice(0, 2);
+		const secondHalf = keys.slice(2, keys.length);
+
+		return [firstHalf.length && firstHalf.map((key) => menuOptions[key]), secondHalf.length && Object.fromEntries(secondHalf.map((key) => [key, menuOptions[key]]))];
+	}, menuOptions);
+
 	return <>
 		<Box display='flex' flexDirection='row' {...props}>
 			<ButtonGroup flexGrow={1} justifyContent='center'>
-				<Button onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
-				{ canEditOtherUserInfo && <Button onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button> }
-				{ [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus].filter(Boolean).length && <Menu options={menuOptions} /> }
+				{console.log(menuOptions)}
+				{ actions && actions.map((action, index) => (<Button key={index} onClick={action.action}>{action.label}</Button>))}
+				{ moreActions && <Menu options={moreActions} placement='bottom left'/> }
 			</ButtonGroup>
 		</Box>
 		{ modal }
