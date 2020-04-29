@@ -128,7 +128,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 			action: confirmDeleteUser,
 		} },
 		...canEditOtherUserActiveStatus && { changeActiveStatus: {
-			label: <><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Activate') : t('Deactivate')}</>,
+			label: <><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Deactivate') : t('Activate')}</>,
 			action: async () => {
 				const result = await changeActiveStatus();
 				result.success ? onchange() : undefined;
