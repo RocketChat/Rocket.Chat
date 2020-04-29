@@ -101,7 +101,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 	const changeActiveStatus = useEndpointAction('POST', 'users.setActiveStatus', activeStatusQuery, t(changeActiveStatusMessage));
 
 
-	const menuOptions = {
+	const menuOptions = useMemo(() => ({
 		...canAssignAdminRole && { makeAdmin: {
 			label: <Box display='flex' alignItems='center'><Icon mie='x4' name='key' size='x16'/>{ isAdmin ? t('Remove_Admin') : t('Make_admin')}</Box>,
 			action: changeAdminStatus,
@@ -111,13 +111,13 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 			action: confirmDeleteUser,
 		} },
 		...canEditOtherUserActiveStatus && { changeActiveStatus: {
-			label: <Box display='flex' alignItems='center'><Icon mie='x4' name='twitter' size='x16'/>{ isActive ? t('Activate') : t('Deactivate')}</Box>,
+			label: <Box display='flex' alignItems='center'><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Activate') : t('Deactivate')}</Box>,
 			action: async () => {
 				const result = await changeActiveStatus();
 				result.success ? onchange() : undefined;
 			},
 		} },
-	};
+	}), [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus]);
 
 
 	const directMessageClick = () => directRoute.push({
@@ -134,7 +134,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 			<ButtonGroup flexGrow={1} justifyContent='center'>
 				<Button onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
 				{ canEditOtherUserInfo && <Button onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button> }
-				<Menu options={menuOptions}/>
+				{ [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus].filter(Boolean).length && <Menu options={menuOptions} /> }
 			</ButtonGroup>
 		</Box>
 		{ modal }
