@@ -5,11 +5,11 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { settings } from '../../settings';
-import { menu, SideNav, Layout } from '../../ui-utils/client';
-import { t } from '../../utils/client';
-import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
-import { hasAtLeastOnePermission } from '../../authorization/client';
+import { settings } from '../../app/settings';
+import { menu, SideNav, Layout } from '../../app/ui-utils/client';
+import { t } from '../../app/utils/client';
+import { PrivateSettingsCachedCollection } from './PrivateSettingsCachedCollection';
+import { hasAtLeastOnePermission } from '../../app/authorization/client';
 import { sidebarItems } from './sidebarItems';
 import './adminFlex.html';
 

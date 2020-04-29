@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { PrivateSettingsCachedCollection } from '../../../app/ui-admin/client/SettingsCachedCollection';
+import { PrivateSettingsCachedCollection } from '../PrivateSettingsCachedCollection';
 import { useBatchSettingsDispatch } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';

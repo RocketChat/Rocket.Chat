@@ -1,8 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-// import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Meteor } from 'meteor/meteor';
 
-import { renderRouteComponent } from '../../../client/reactAdapters';
+import { renderRouteComponent } from '../reactAdapters';
 
 const routeGroup = FlowRouter.group({
 	name: 'admin',
@@ -18,7 +17,7 @@ export const registerAdminRoute = (path, { lazyRouteComponent, props, action, ..
 				return;
 			}
 
-			renderRouteComponent(() => import('../../../client/admin/AdministrationRouter'), {
+			renderRouteComponent(() => import('./AdministrationRouter'), {
 				template: 'main',
 				region: 'center',
 				propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams, ...props }),
@@ -35,66 +34,66 @@ registerAdminRoute('/', {
 
 registerAdminRoute('/info', {
 	name: 'admin-info',
-	lazyRouteComponent: () => import('../../../client/admin/info/InformationRoute'),
+	lazyRouteComponent: () => import('./info/InformationRoute'),
 });
 
 registerAdminRoute('/import', {
 	name: 'admin-import',
-	lazyRouteComponent: () => import('../../../client/admin/import/ImportRoute'),
+	lazyRouteComponent: () => import('./import/ImportRoute'),
 	props: { page: 'history' },
 });
 
 registerAdminRoute('/import/new/:importerKey?', {
 	name: 'admin-import-new',
-	lazyRouteComponent: () => import('../../../client/admin/import/ImportRoute'),
+	lazyRouteComponent: () => import('./import/ImportRoute'),
 	props: { page: 'new' },
 });
 
 registerAdminRoute('/import/prepare', {
 	name: 'admin-import-prepare',
-	lazyRouteComponent: () => import('../../../client/admin/import/ImportRoute'),
+	lazyRouteComponent: () => import('./import/ImportRoute'),
 	props: { page: 'prepare' },
 });
 
 registerAdminRoute('/import/progress', {
 	name: 'admin-import-progress',
-	lazyRouteComponent: () => import('../../../client/admin/import/ImportRoute'),
+	lazyRouteComponent: () => import('./import/ImportRoute'),
 	props: { page: 'progress' },
 });
 
 registerAdminRoute('/mailer', {
 	name: 'admin-mailer',
-	lazyRouteComponent: () => import('../../../client/admin/mailer/MailerRoute'),
+	lazyRouteComponent: () => import('./mailer/MailerRoute'),
 });
 
 registerAdminRoute('/custom-user-status/:context?/:id?', {
 	name: 'custom-user-status',
-	lazyRouteComponent: () => import('../../../client/admin/customUserStatus/CustomUserStatusRoute'),
+	lazyRouteComponent: () => import('./customUserStatus/CustomUserStatusRoute'),
 });
 
 registerAdminRoute('/users/:context?/:id?', {
 	name: 'admin-users',
-	lazyRouteComponent: () => import('../../../client/admin/users/UsersRoute'),
+	lazyRouteComponent: () => import('./users/UsersRoute'),
 });
 
 registerAdminRoute('/rooms/:context?/:id?', {
 	name: 'admin-rooms',
-	lazyRouteComponent: () => import('../../../client/admin/rooms/RoomsRoute'),
+	lazyRouteComponent: () => import('./rooms/RoomsRoute'),
 });
 
 registerAdminRoute('/invites', {
 	name: 'invites',
-	lazyRouteComponent: () => import('../../../client/admin/invites/InvitesRoute'),
+	lazyRouteComponent: () => import('./invites/InvitesRoute'),
 });
 
 registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
-	lazyRouteComponent: () => import('../../../client/admin/viewLogs/ViewLogsRoute'),
+	lazyRouteComponent: () => import('./viewLogs/ViewLogsRoute'),
 });
 
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
 		name: 'admin',
-		lazyRouteComponent: () => import('../../../client/admin/settings/SettingsRoute'),
+		lazyRouteComponent: () => import('./settings/SettingsRoute'),
 	});
 });

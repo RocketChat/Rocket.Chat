@@ -1,6 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { hasPermission } from '../../authorization/client';
+import { hasPermission } from '../../app/authorization/client';
 
 export const sidebarItems = new ReactiveVar([]);
 
