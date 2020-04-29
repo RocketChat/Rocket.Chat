@@ -304,3 +304,15 @@ export const checkServiceStatus = ({ guest, agent }) => {
 
 	return Livechat.online(guest.department);
 };
+
+export const userCanTakeInquiry = (user) => {
+	check(user, Match.ObjectIncluding({
+		status: String,
+		statusLivechat: String,
+		roles: [String],
+	}));
+
+	const { roles, status, statusLivechat } = user;
+	// TODO: hasRole when the user has already been fetched from DB
+	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
+};
