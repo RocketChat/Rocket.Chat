@@ -53,7 +53,7 @@ const SuccessModal = ({ onClose, ...props }) => {
 };
 
 
-export const UserInfoActions = ({ username, _id, isActive, isAdmin, ...props }) => {
+export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ...props }) => {
 	const t = useTranslation();
 	const [modal, setModal] = useState();
 
@@ -72,9 +72,9 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, ...props }) 
 	const willDeleteUser = useCallback(async () => {
 		const result = await deleteUser();
 		if (result.success) {
-			setModal(<SuccessModal onClose={() => setModal(undefined)}/>);
+			setModal(<SuccessModal onClose={() => { setModal(); onChange(); }}/>);
 		} else {
-			setModal(undefined);
+			setModal();
 		}
 	}, [deleteUser]);
 	const confirmDeleteUser = useCallback(() => {
@@ -87,6 +87,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, ...props }) 
 			setAdminStatus(_id, !isAdmin);
 			const message = isAdmin ? 'User_is_no_longer_an_admin' : 'User_is_now_an_admin';
 			dispatchToastMessage({ type: 'success', message: t(message) });
+			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -101,18 +102,21 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, ...props }) 
 
 
 	const menuOptions = {
-		makeAdmin: canAssignAdminRole && {
+		...canAssignAdminRole && { makeAdmin: {
 			label: <Box display='flex' alignItems='center'><Icon mie='x4' name='key' size='x16'/>{ isAdmin ? t('Remove_Admin') : t('Make_admin')}</Box>,
 			action: changeAdminStatus,
-		},
-		delete: canDeleteUser && {
-			label: <Box display='flex' alignItems='center' textColor='danger'><Icon mie='x4' name='trash' size='x16'/>{t('Delete')}</Box>,
+		} },
+		...canDeleteUser && { delete: {
+			label: <Box display='flex' alignItems='center' color='danger'><Icon mie='x4' name='trash' size='x16'/>{t('Delete')}</Box>,
 			action: confirmDeleteUser,
-		},
-		changeActiveStatus: canEditOtherUserActiveStatus && {
+		} },
+		...canEditOtherUserActiveStatus && { changeActiveStatus: {
 			label: <Box display='flex' alignItems='center'><Icon mie='x4' name='twitter' size='x16'/>{ isActive ? t('Activate') : t('Deactivate')}</Box>,
-			action: changeActiveStatus,
-		},
+			action: async () => {
+				const result = await changeActiveStatus();
+				result.success ? onchange() : undefined;
+			},
+		} },
 	};
 
 
