@@ -1,16 +1,62 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Button, ButtonGroup, Icon, Menu } from '@rocket.chat/fuselage';
 
+import { Modal } from '../../components/basic/Modal';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpointAction } from '../usersAndRooms/hooks';
 import { useMethod } from '../../contexts/ServerContext';
+import { useSetting } from '../../contexts/SettingsContext';
+
+
+const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
+	const t = useTranslation();
+	const erasureType = useSetting('Message_ErasureType');
+
+	return <Modal {...props}>
+		<Modal.Header>
+			<Icon color='danger' name='modal-warning' size={20}/>
+			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
+			<Modal.Close onClick={onCancel}/>
+		</Modal.Header>
+		<Modal.Content fontScale='p1'>
+			{t(`Delete_User_Warning_${ erasureType }`)}
+		</Modal.Content>
+		<Modal.Footer>
+			<ButtonGroup align='end'>
+				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
+				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
+			</ButtonGroup>
+		</Modal.Footer>
+	</Modal>;
+};
+
+const SuccessModal = ({ onClose, ...props }) => {
+	const t = useTranslation();
+	return <Modal {...props}>
+		<Modal.Header>
+			<Icon color='success' name='checkmark-circled' size={20}/>
+			<Modal.Title>{t('Deleted')}</Modal.Title>
+			<Modal.Close onClick={onClose}/>
+		</Modal.Header>
+		<Modal.Content fontScale='p1'>
+			{t('User_has_been_deleted')}
+		</Modal.Content>
+		<Modal.Footer>
+			<ButtonGroup align='end'>
+				<Button primary onClick={onClose}>{t('Ok')}</Button>
+			</ButtonGroup>
+		</Modal.Footer>
+	</Modal>;
+};
 
 
 export const UserInfoActions = ({ username, _id, isActive, isAdmin, ...props }) => {
 	const t = useTranslation();
+	const [modal, setModal] = useState();
+
 	const directRoute = useRoute('direct');
 	const userRoute = useRoute('admin-users');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -21,7 +67,19 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, ...props }) 
 	const canDeleteUser = usePermission('delete-user');
 
 	const deleteUserQuery = useMemo(() => ({ userId: _id }), [_id]);
-	const deleteUser = useEndpointAction('POST', 'users.delete', deleteUserQuery, t('User_has_been_deleted'));
+	const deleteUser = useEndpointAction('POST', 'users.delete', deleteUserQuery);
+
+	const willDeleteUser = useCallback(async () => {
+		const result = await deleteUser();
+		if (result.success) {
+			setModal(<SuccessModal onClose={() => setModal(undefined)}/>);
+		} else {
+			setModal(undefined);
+		}
+	}, [deleteUser]);
+	const confirmDeleteUser = useCallback(() => {
+		setModal(<DeleteWarningModal onDelete={willDeleteUser} onCancel={() => setModal()}/>);
+	}, [deleteUser]);
 
 	const setAdminStatus = useMethod('setAdminStatus');
 	const changeAdminStatus = useCallback(() => {
@@ -49,10 +107,10 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, ...props }) 
 		},
 		delete: canDeleteUser && {
 			label: <Box display='flex' alignItems='center' textColor='danger'><Icon mie='x4' name='trash' size='x16'/>{t('Delete')}</Box>,
-			action: deleteUser,
+			action: confirmDeleteUser,
 		},
 		changeActiveStatus: canEditOtherUserActiveStatus && {
-			label: <Box display='flex' alignItems='center'><Icon mie='x4' name='twitter' size='x16'/>{ isActive ? t('User_has_been_activated') : t('User_has_been_deactivated')}</Box>,
+			label: <Box display='flex' alignItems='center'><Icon mie='x4' name='twitter' size='x16'/>{ isActive ? t('Activate') : t('Deactivate')}</Box>,
 			action: changeActiveStatus,
 		},
 	};
@@ -67,11 +125,14 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, ...props }) 
 		id: _id,
 	});
 
-	return <Box display='flex' flexDirection='row' {...props}>
-		<ButtonGroup flexGrow={1} justifyContent='center'>
-			<Button onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
-			{ canEditOtherUserInfo && <Button onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button> }
-			<Menu options={menuOptions}/>
-		</ButtonGroup>
-	</Box>;
+	return <>
+		<Box display='flex' flexDirection='row' {...props}>
+			<ButtonGroup flexGrow={1} justifyContent='center'>
+				<Button onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
+				{ canEditOtherUserInfo && <Button onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button> }
+				<Menu options={menuOptions}/>
+			</ButtonGroup>
+		</Box>
+		{ modal }
+	</>;
 };

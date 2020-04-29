@@ -33,7 +33,7 @@ export const useEndpointAction = (httpMethod, endpoint, params = {}, successMess
 				throw new Error(data.status);
 			}
 
-			dispatchToastMessage({ type: 'success', message: successMessage });
+			successMessage && dispatchToastMessage({ type: 'success', message: successMessage });
 
 			return data;
 		} catch (error) {
