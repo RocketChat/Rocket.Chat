@@ -1,14 +1,14 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Box, Avatar, Button, ButtonGroup, Icon, Margins, Headline, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
+import { Box, Avatar, Margins, Headline, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
-import MarkdownText from '../../components/basic/MarkdownText';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { roomTypes } from '../../../app/utils/client';
 import { DateFormat } from '../../../app/lib';
-import { useRoute } from '../../contexts/RouterContext';
+import { UserInfoActions } from './UserInfoActions';
 import Page from '../../components/basic/Page';
+import MarkdownText from '../../components/basic/MarkdownText';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();
@@ -30,8 +30,11 @@ const UTCClock = ({ utcOffset, ...props }) => {
 
 export function UserInfoWithData({ userId, ...props }) {
 	const t = useTranslation();
+	const [cache, setCache] = useState();
 
-	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId }), [userId]));
+	const onChange = () => setCache(new Date());
+
+	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId }), [userId, cache]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24'>
@@ -48,23 +51,12 @@ export function UserInfoWithData({ userId, ...props }) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
-	return <UserInfo data={data.user} {...props} />;
+	return <UserInfo data={data.user} onChange={onChange} {...props} />;
 }
 
 
-export function UserInfo({ data, ...props }) {
+export function UserInfo({ data, onChange, ...props }) {
 	const t = useTranslation();
-
-	const directRoute = useRoute('direct');
-	const userRoute = useRoute('admin-users');
-
-	const directMessageClick = () => directRoute.push({
-		rid: data.username,
-	});
-	const editUserClick = () => userRoute.push({
-		context: 'edit',
-		id: data._id,
-	});
 
 	const createdAt = DateFormat.formatDateAndTime(data.createdAt);
 
@@ -83,21 +75,12 @@ export function UserInfo({ data, ...props }) {
 				</Margins>
 			</Box>
 
-			<Box display='flex' flexDirection='row'>
-				<ButtonGroup flexGrow={1} justifyContent='center'>
-					<Button onClick={directMessageClick}><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</Button>
-					<Button onClick={editUserClick}><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</Button>
-				</ButtonGroup>
-			</Box>
-
+			<UserInfoActions isActive={data.active} isAdmin={data.roles.includes('admin')} _id={data._id} username={data.username} onChange={onChange}/>
+			{console.log(MarkdownText)}
 			<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16'>
 				<Margins blockEnd='x4'>
-
-					{data.bio && data.bio.trim().length > 0 && <Box fontScale='s1' marginBlockEnd='x8'>
-						<MarkdownText>{data.bio}</MarkdownText>
-					</Box>}
-
-					{data.roles && <>
+					{data.bio && data.bio.trim().length > 0 && <MarkdownText fontScale='s1'>{data.bio}</MarkdownText>}
+					{!!data.roles.length && <>
 						<Box fontScale='micro' color='hint' mbs='none'>{t('Roles')}</Box>
 						<Box display='flex' flexDirection='row' flexWrap='wrap'>
 							<Margins inlineEnd='x4' blockEnd='x4'>
