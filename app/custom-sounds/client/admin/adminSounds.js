@@ -1,179 +1,74 @@
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Template } from 'meteor/templating';
-import _ from 'underscore';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import { Box, Table, TextInput, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
-import { CustomSounds } from '../lib/CustomSounds';
-import { APIClient } from '../../../utils/client';
+import { NewSound } from './NewSound';
+import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
+import { Page } from '../../../../client/components/basic/Page';
+import { GenericTable, Th } from '../../../ui/client/components/GenericTable';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import VerticalBar from '../../../../client/components/basic/VerticalBar';
 
-const LIST_SIZE = 50;
-const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
+const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-Template.adminSounds.helpers({
-	searchText() {
-		const instance = Template.instance();
-		return instance.filter && instance.filter.get();
-	},
-	isPlaying(_id) {
-		return Template.instance().isPlayingId.get() === _id;
-	},
-	customsounds() {
-		return Template.instance().sounds.get();
-	},
-	isLoading() {
-		return Template.instance().isLoading.get();
-	},
-	flexData() {
-		return {
-			tabBar: Template.instance().tabBar,
-			data: Template.instance().tabBarData.get(),
-		};
-	},
+const FilterByText = ({ setFilter, ...props }) => {
+	const t = useTranslation();
+	const [text, setText] = useState('');
+	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
 
-	onTableScroll() {
-		const instance = Template.instance();
-		return function(currentTarget) {
-			if (currentTarget.offsetHeight + currentTarget.scrollTop < currentTarget.scrollHeight - 100) {
-				return;
-			}
-			const sounds = instance.sounds.get();
-			if (instance.total.get() > sounds.length) {
-				instance.offset.set(instance.offset.get() + LIST_SIZE);
-			}
-		};
-	},
-	onTableItemClick() {
-		const instance = Template.instance();
-		return function(item) {
-			instance.tabBarData.set({
-				sound: instance.sounds.get().find((sound) => sound._id === item._id),
-				onSuccess: instance.onSuccessCallback,
-			});
-			instance.tabBar.showGroup('custom-sounds-selected');
-			instance.tabBar.open('admin-sound-info');
-		};
-	},
-});
+	useEffect(() => {
+		setFilter({ text });
+	}, [text]);
+	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+		<TextInput placeholder={t('Search_Users')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+	</Box>;
+};
 
-Template.adminSounds.onCreated(function() {
-	const instance = this;
-	this.sounds = new ReactiveVar([]);
-	this.offset = new ReactiveVar(0);
-	this.total = new ReactiveVar(0);
-	this.query = new ReactiveVar({});
-	this.isLoading = new ReactiveVar(false);
-	this.filter = new ReactiveVar('');
-	this.isPlayingId = new ReactiveVar('');
-
-	this.tabBar = new RocketChatTabBar();
-	this.tabBar.showGroup(FlowRouter.current().route.name);
-	this.tabBarData = new ReactiveVar();
-
-	TabBar.addButton({
-		groups: ['custom-sounds', 'custom-sounds-selected'],
-		id: 'add-sound',
-		i18nTitle: 'Custom_Sound_Add',
-		icon: 'plus',
-		template: 'adminSoundEdit',
-		order: 1,
-	});
-
-	TabBar.addButton({
-		groups: ['custom-sounds-selected'],
-		id: 'admin-sound-info',
-		i18nTitle: 'Custom_Sound_Info',
-		icon: 'customize',
-		template: 'adminSoundInfo',
-		order: 2,
-	});
-
-	this.onSuccessCallback = () => {
-		this.offset.set(0);
-		return this.loadSounds(this.query.get(), this.offset.get());
+export function AdminSounds({
+	// workspace = 'local',
+	sort,
+	// onClick,
+	onHeaderClick,
+	route,
+	setParams,
+	params,
+}) {
+	// Router Handlers
+	const router = useRoute(route);
+	const context = useRouteParameter('context');
+	console.log(context, router);
+	const handleHeaderButtonClick = useCallback((context) => () => router.push({
+		context,
+	}), [router]);
+	const handleVerticalBarCloseButtonClick = () => {
+		router.push({});
 	};
 
-	this.tabBarData.set({
-		onSuccess: instance.onSuccessCallback,
-	});
+	const t = useTranslation();
+	const data = useEndpointData('custom-sounds.list', '') || {};
 
-	this.loadSounds = _.debounce(async (query, offset) => {
-		this.isLoading.set(true);
-		const { sounds, total } = await APIClient.v1.get(`custom-sounds.list?count=${ LIST_SIZE }&offset=${ offset }&query=${ JSON.stringify(query) }`);
-		this.total.set(total);
-		if (offset === 0) {
-			this.sounds.set(sounds);
-		} else {
-			this.sounds.set(this.sounds.get().concat(sounds));
-		}
-		this.isLoading.set(false);
-	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
+	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	this.autorun(() => {
-		const filter = this.filter.get() && this.filter.get().trim();
-		const offset = this.offset.get();
-		if (filter) {
-			const regex = { $regex: filter, $options: 'i' };
-			return this.loadSounds({ name: regex }, offset);
-		}
-		return this.loadSounds({}, offset);
-	});
-});
+	const header = useMemo(() => [
+		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
+		// <Th key={'action'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</Th>,
+	].filter(Boolean), [sort, mediaQuery]);
 
-Template.adminSounds.onRendered(() =>
-	Tracker.afterFlush(function() {
-		SideNav.setFlex('adminFlex');
-		SideNav.openFlex();
-	}),
-);
+	console.log('ADMIN SOUNDS');
 
-Template.adminSounds.events({
-	'keydown #sound-filter'(e) {
-		// stop enter key
-		if (e.which === 13) {
-			e.stopPropagation();
-			e.preventDefault();
-		}
-	},
-	'keyup #sound-filter'(e, t) {
-		e.stopPropagation();
-		e.preventDefault();
-		t.filter.set(e.currentTarget.value);
-		t.offset.set(0);
-	},
-	'click .icon-play-circled'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		CustomSounds.play(this._id);
-		const audio = document.getElementById(t.isPlayingId.get());
-		if (audio) {
-			audio.pause();
-		}
-		document.getElementById(this._id).onended = () => {
-			t.isPlayingId.set('');
-			this.onended = null;
-		};
-		t.isPlayingId.set(this._id);
-	},
-	'click .icon-pause-circled'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		const audio = document.getElementById(this._id);
-		if (audio && !audio.paused) {
-			audio.pause();
-		}
-		t.isPlayingId.set('');
-	},
-	'click .icon-reset-circled'(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		const audio = document.getElementById(this._id);
-		if (audio) {
-			audio.currentTime = 0;
-		}
-	},
-});
+	const renderRow = useCallback(({ _id, name }) => <Table.Row key={_id} tabIndex={0} role='link'>
+		<Table.Cell style={style}>
+			<Box display='flex' alignItems='center'>
+				<Box display='flex' style={style} mi='x8'>
+					<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
+						<Box textStyle='p2' style={style} textColor='default'>{name}</Box>
+					</Box>
+				</Box>
+			</Box>
+		</Table.Cell>
+		<Table.Cell style={style}></Table.Cell>
+	</Table.Row>, [mediaQuery]);
 
 	return <Page flexDirection='row'>
 		<Page _id='AdminSounds' name='admin-custom-sounds'>
