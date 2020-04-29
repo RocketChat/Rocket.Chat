@@ -1,7 +1,7 @@
 import './adminSoundEdit.html';
 import './adminSoundInfo.html';
 import './adminSounds.html';
-import './adminSounds';
+import './AdminSounds';
 import './soundEdit.html';
 import './soundEdit';
 import './soundInfo.html';

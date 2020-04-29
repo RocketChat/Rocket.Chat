@@ -70,17 +70,15 @@ export function AdminSounds({
 		<Table.Cell style={style}></Table.Cell>
 	</Table.Row>, [mediaQuery]);
 
-	return <Page flexDirection='row'>
-		<Page _id='AdminSounds' name='admin-custom-sounds'>
-			<Page.Header title={t('Custom_Sounds')}>
-				<ButtonGroup>
-					<Button small onClick={handleHeaderButtonClick('new')} aria-label={t('New')}>
-						<Icon name='plus'/>
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
-			<GenericTable FilterComponent={FilterByText} header={header} results={data.sounds} renderRow={renderRow} total={data.total} setParams={setParams} params={params} />
-		</Page>
+	return <Page _id='AdminSounds' name='admin-custom-sounds'>
+		<Page.Header title={t('Custom_Sounds')}>
+			<ButtonGroup>
+				<Button small onClick={handleHeaderButtonClick('new')} aria-label={t('New')}>
+					<Icon name='plus'/>
+				</Button>
+			</ButtonGroup>
+		</Page.Header>
+		<GenericTable FilterComponent={FilterByText} header={header} results={data.sounds} renderRow={renderRow} total={data.total} setParams={setParams} params={params} />
 		{ context
 			&& <VerticalBar>
 				<VerticalBar.Header>
