@@ -29,7 +29,7 @@ const useSendMail = () => {
 	};
 };
 
-export default function MailerRoute(props) {
+export default function MailerRoute() {
 	const canAccessMailer = usePermission('access-mailer');
 	const sendMail = useSendMail();
 
@@ -37,5 +37,5 @@ export default function MailerRoute(props) {
 		return <NotAuthorizedPage/>;
 	}
 
-	return <Mailer sendMail={sendMail} {...props} />;
+	return <Mailer sendMail={sendMail} />;
 }

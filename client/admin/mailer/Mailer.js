@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import Page from '../../components/basic/Page';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { isJSON } from '../../../app/utils/lib/isJSON.js';
+import Page from '../../components/basic/Page';
 import RawText from '../../components/basic/RawText';
+import { useTranslation } from '../../contexts/TranslationContext';
 
-export function Mailer({ sendMail = () => {}, ...props }) {
+export function Mailer({ sendMail = () => {} }) {
 	const t = useTranslation();
 
 	const [fromEmail, setFromEmail] = useState({ value: '', error: false });
@@ -16,7 +16,7 @@ export function Mailer({ sendMail = () => {}, ...props }) {
 	const [subject, setSubject] = useState('');
 	const [emailBody, setEmailBody] = useState('');
 
-	return <Page _id='mailer' {...props}>
+	return <Page>
 		<Page.Header title={t('Mailer')}>
 			<ButtonGroup align='end'>
 				<Button primary onClick={() => { sendMail({ fromEmail, dryRun, query, subject, emailBody }); }}>
