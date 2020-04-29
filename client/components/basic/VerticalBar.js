@@ -4,10 +4,7 @@ import React from 'react';
 
 import Page from './Page';
 
-function VerticalBar({
-	children,
-	...props
-}) {
+function VerticalBar({ children, ...props }) {
 	const mobile = useDebouncedValue(useMediaQuery('(max-width: 420px)'), 50);
 	const small = useDebouncedValue(useMediaQuery('(max-width: 780px)'), 50);
 

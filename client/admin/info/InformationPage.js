@@ -1,7 +1,6 @@
-import { Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { Link } from '../../components/basic/Link';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { RocketChatSection } from './RocketChatSection';
@@ -43,18 +42,26 @@ export function InformationPage({
 
 		<Page.ScrollableContentWithShadow>
 			{alertOplogForMultipleInstances
-				&& <Margins blockEnd='x16'>
-					<Callout type='danger' title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}>
+				&& <Callout
+					type='danger'
+					title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}
+					marginBlockEnd='x16'
+				>
+					<Box withRichContent>
 						<p>
 							{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}
 						</p>
 						<p>
-							<Link external href='https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-performance/#running-multiple-instances-per-host-to-improve-performance'>
+							<a
+								rel='noopener noreferrer'
+								target='_blank'
+								href={'https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-'
+							+ 'performance/#running-multiple-instances-per-host-to-improve-performance'}>
 								{t('Click_here_for_more_info')}
-							</Link>
+							</a>
 						</p>
-					</Callout>
-				</Margins>}
+					</Box>
+				</Callout>}
 
 			{canViewStatistics && <RocketChatSection info={info} statistics={statistics} isLoading={isLoading} />}
 			<CommitSection info={info} />
