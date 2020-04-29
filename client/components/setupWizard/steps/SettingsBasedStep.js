@@ -8,12 +8,12 @@ import {
 	Skeleton,
 	TextInput,
 } from '@rocket.chat/fuselage';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useReducer, useState } from 'react';
 
 import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation, useLanguages } from '../../../contexts/TranslationContext';
-import { useFocus } from '../../../hooks/useFocus';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
@@ -63,7 +63,7 @@ function SettingsBasedStep({ step, title, active }) {
 
 	const batchSetSettings = useBatchSettingsDispatch();
 
-	const autoFocusRef = useFocus(active);
+	const autoFocusRef = useAutoFocus(active);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

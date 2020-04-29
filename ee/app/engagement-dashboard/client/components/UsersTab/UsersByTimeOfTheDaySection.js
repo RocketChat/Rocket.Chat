@@ -152,7 +152,7 @@ export function UsersByTimeOfTheDaySection() {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 										{t('Value_users', { value })}
 									</Box>}
 								/>

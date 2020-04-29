@@ -6,9 +6,9 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useEndpointAction } from '../usersAndRooms/hooks';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {

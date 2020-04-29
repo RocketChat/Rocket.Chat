@@ -32,7 +32,7 @@ export function UserAvatarEditor({ username, setAvatarObj }) {
 		setAvatarFromUrl(event.currentTarget.value);
 	};
 
-	return <Box display='flex' flexDirection='column' textStyle='p2'>
+	return <Box display='flex' flexDirection='column' fontScale='p2'>
 		{t('Profile_picture')}
 		<Box display='flex' flexDirection='row' mbs='x4'>
 			<UserAvatar size='x120' url={url} username={username} style={{ objectFit: 'contain' }} mie='x4'/>

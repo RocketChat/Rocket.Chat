@@ -4,10 +4,10 @@ import { Field, TextInput, Box, Headline, Skeleton, ToggleSwitch, Icon, TextArea
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
-import { useEndpointAction } from '../usersAndRooms/hooks';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 import UserAvatarEditor from '../../components/basic/avatar/UserAvatarEditor';
 
 export function EditUserWithData({ userId, ...props }) {
@@ -107,7 +107,7 @@ export function EditUser({ data, roles, ...props }) {
 	const setRandomPassword = newData.setRandomPassword || false;
 	const requirePasswordChange = setRandomPassword || newData.requirePasswordChange || false;
 
-	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
 			<UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>
 			<Field>
@@ -182,5 +182,5 @@ export function EditUser({ data, roles, ...props }) {
 				</Field.Row>
 			</Field>
 		</Margins>
-	</Page.ContentScrolable>;
+	</Page.ScrollableContent>;
 }

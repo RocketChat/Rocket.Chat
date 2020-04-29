@@ -7,7 +7,7 @@ import {
 	PasswordInput,
 	TextInput,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
@@ -17,7 +17,6 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useLoginWithPassword } from '../../../contexts/UserContext';
 import { useCallbacks } from '../../../hooks/useCallbacks';
-import { useFocus } from '../../../hooks/useFocus';
 import { Pager } from '../Pager';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
@@ -86,7 +85,7 @@ function AdminUserInformationStep({ step, title, active }) {
 
 	const t = useTranslation();
 
-	const autoFocusRef = useFocus(active);
+	const autoFocusRef = useAutoFocus(active);
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();

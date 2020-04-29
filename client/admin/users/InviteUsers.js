@@ -24,7 +24,7 @@ export function InviteUsers({ data, ...props }) {
 	};
 	return <Box display='flex' flexDirection='column' pb='x24' {...props}>
 		<Headline mbs='x8'>{t('Send_invitation_email')}</Headline>
-		<Box textStyle='p1' mb='x8'>{t('Send_invitation_email_info')}</Box>
+		<Box fontScale='p1' mb='x8'>{t('Send_invitation_email_info')}</Box>
 		<TextAreaInput rows={5} onChange={(e) => setText(e.currentTarget.value)}/>
 		<Button primary onClick={handleClick} alignItems='stretch' mb='x8'>
 			<Icon name='send' size='x16'/>

@@ -6,9 +6,9 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/use
 import { roomTypes } from '../../../../app/utils/client';
 import { useMethod } from '../../../contexts/ServerContext';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../../../app/ui-admin/client/components/NotAuthorizedPage';
-import { useEndpointAction } from '../../usersAndRooms/hooks';
-import { Page } from '../../../components/basic/Page';
+import NotAuthorizedPage from '../../NotAuthorizedPage';
+import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import Page from '../../../components/basic/Page';
 
 export function EditRoomContextBar({ rid }) {
 	const canViewRoomAdministration = usePermission('view-room-administration');
@@ -81,7 +81,7 @@ function EditRoom({ room, onChange }) {
 	const isFavorite = newData.favorite ?? !!room.favorite;
 	const isFeatured = newData.featured ?? !!room.featured;
 
-	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form'>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form'>
 		<Margins blockEnd='x16'>
 
 			{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
@@ -96,7 +96,7 @@ function EditRoom({ room, onChange }) {
 				<Field>
 					<Field.Label>{t('Owner')}</Field.Label>
 					<Field.Row>
-						<Box textStyle='p1'>{room.u?.username}</Box>
+						<Box fontScale='p1'>{room.u?.username}</Box>
 					</Field.Row>
 				</Field>
 				<Field>
@@ -108,16 +108,16 @@ function EditRoom({ room, onChange }) {
 				<Field mbs='x20'>
 					<Field.Row>
 						<Box display='flex' flexDirection='row' alignItems='flex-start'>
-							<Box display='flex' flexDirection='column' alignItems='flex-end' flexGrow='1' textColor={roomType !== 'c' ? 'hint' : 'default'}>
-								<Box textStyle='s1'>{t('Public')}</Box>
-								<Box textStyle='p1' style={{ textAlign: 'end' }}>{t('All_users_in_the_channel_can_write_new_messages')}</Box>
+							<Box display='flex' flexDirection='column' alignItems='flex-end' flexGrow='1' color={roomType !== 'c' ? 'hint' : 'default'}>
+								<Box fontScale='s1'>{t('Public')}</Box>
+								<Box fontScale='p1' style={{ textAlign: 'end' }}>{t('All_users_in_the_channel_can_write_new_messages')}</Box>
 							</Box>
 							<Margins inline='x16'>
 								<ToggleSwitch disabled={deleted} checked={roomType === 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
 							</Margins>
-							<Box display='flex' flexDirection='column' alignItems='flex-start' flexGrow='1' textColor={roomType !== 'p' ? 'hint' : 'default'}>
-								<Box textStyle='s1'>{t('Private')}</Box>
-								<Box textStyle='p1' style={{ textAlign: 'start' }}>{t('Just_invited_people_can_access_this_channel')}</Box>
+							<Box display='flex' flexDirection='column' alignItems='flex-start' flexGrow='1' color={roomType !== 'p' ? 'hint' : 'default'}>
+								<Box fontScale='s1'>{t('Private')}</Box>
+								<Box fontScale='p1' style={{ textAlign: 'start' }}>{t('Just_invited_people_can_access_this_channel')}</Box>
 							</Box>
 						</Box>
 					</Field.Row>
@@ -126,16 +126,16 @@ function EditRoom({ room, onChange }) {
 				<Field mbs='x20'>
 					<Field.Row>
 						<Box display='flex' flexDirection='row' alignItems='flex-start'>
-							<Box display='flex' flexDirection='column' alignItems='flex-end' flexGrow='1' textColor={readOnly ? 'hint' : 'default'}>
-								<Box textStyle='s1'>{t('Collaborative')}</Box>
-								<Box textStyle='p1' style={{ textAlign: 'end' }}>{t('All_users_in_the_channel_can_write_new_messages')}</Box>
+							<Box display='flex' flexDirection='column' alignItems='flex-end' flexGrow='1' color={readOnly ? 'hint' : 'default'}>
+								<Box fontScale='s1'>{t('Collaborative')}</Box>
+								<Box fontScale='p1' style={{ textAlign: 'end' }}>{t('All_users_in_the_channel_can_write_new_messages')}</Box>
 							</Box>
 							<Margins inline='x16'>
 								<ToggleSwitch disabled={deleted} checked={readOnly} onChange={handleChange('readOnly', room.ro, () => !readOnly)}/>
 							</Margins>
-							<Box display='flex' flexDirection='column' alignItems='flex-start' flexGrow='1' textColor={!readOnly ? 'hint' : 'default'}>
-								<Box textStyle='s1'>{t('Read_only')}</Box>
-								<Box textStyle='p1' style={{ textAlign: 'start' }}>{t('Only_authorized_users_can_write_new_messages')}</Box>
+							<Box display='flex' flexDirection='column' alignItems='flex-start' flexGrow='1' color={!readOnly ? 'hint' : 'default'}>
+								<Box fontScale='s1'>{t('Read_only')}</Box>
+								<Box fontScale='p1' style={{ textAlign: 'start' }}>{t('Only_authorized_users_can_write_new_messages')}</Box>
 							</Box>
 						</Box>
 					</Field.Row>
@@ -190,5 +190,5 @@ function EditRoom({ room, onChange }) {
 				</Field.Row>
 			</Field>
 		</Margins>
-	</Page.ContentScrolable>;
+	</Page.ScrollableContent>;
 }

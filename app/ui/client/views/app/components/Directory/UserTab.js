@@ -86,9 +86,9 @@ export function UserTab({
 						</Flex.Item>
 						<Box style={style} grow={1} mi='x8'>
 							<Box display='flex'>
-								<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box> <Box mi='x4'/> <Box textStyle='p1' textColor='hint' style={style}>{username}</Box>
+								<Box fontScale='p2' style={style}>{name || username}</Box> <Box mi='x4'/> <Box fontScale='p1' color='hint' style={style}>{username}</Box>
 							</Box>
-							<Box textStyle='p1' textColor='hint' style={style}> {bio} </Box>
+							<Box fontScale='p1' color='hint' style={style}> {bio} </Box>
 						</Box>
 					</Box>
 				</Flex.Container>
@@ -101,7 +101,7 @@ export function UserTab({
 		&& <Table.Cell style={style}>
 			{domain}
 		</Table.Cell>}
-			{mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
+			{mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
 				{formatDate(createdAt)}
 			</Table.Cell>}
 		</Table.Row>;

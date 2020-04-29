@@ -6,9 +6,9 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { useTranslation } from '../../contexts/TranslationContext';
 import { roomTypes } from '../../../app/utils/client';
 import { DateFormat } from '../../../app/lib';
-import { Markdown } from '../../../app/ui/client/components/GenericTable';
-import { Page } from '../../components/basic/Page';
 import { UserInfoActions } from './UserInfoActions';
+import Page from '../../components/basic/Page';
+import MarkdownText from '../../components/basic/MarkdownText';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();
@@ -64,7 +64,7 @@ export function UserInfo({ data, onChange, ...props }) {
 
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
-	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' {...props}>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' {...props}>
 		<Margins block='x8'>
 			<Box display='flex' flexDirection='column' alignItems='center'>
 				<Margins block='x2'>
@@ -76,12 +76,10 @@ export function UserInfo({ data, onChange, ...props }) {
 			</Box>
 
 			<UserInfoActions isActive={data.active} isAdmin={data.roles.includes('admin')} _id={data._id} username={data.username} onChange={onChange}/>
-
-			<Box display='flex' flexDirection='column' w='full' style={{ backgroundColor: '#F4F6F9' }} p='x16'>
+			{console.log(MarkdownText)}
+			<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16'>
 				<Margins blockEnd='x4'>
-
-					{data.bio && data.bio.trim().length > 0 && <Markdown fontScale='s1' mbe='x8'>{data.bio}</Markdown>}
-
+					{data.bio && data.bio.trim().length > 0 && <MarkdownText fontScale='s1'>{data.bio}</MarkdownText>}
 					{data.roles && <>
 						<Box fontScale='micro' color='hint' mbs='none'>{t('Roles')}</Box>
 						<Box display='flex' flexDirection='row' flexWrap='wrap'>
@@ -115,5 +113,5 @@ export function UserInfo({ data, onChange, ...props }) {
 			</Box>
 		</Margins>
 
-	</Page.ContentScrolable>;
+	</Page.ScrollableContent>;
 }

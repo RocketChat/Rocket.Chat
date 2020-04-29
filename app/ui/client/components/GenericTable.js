@@ -3,7 +3,6 @@ import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocke
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { Markdown as mrkd } from '../../../markdown/client';
 
 function SortIcon({ direction }) {
 	return <Box is='svg' width='x16' height='x16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -17,12 +16,6 @@ export function Th({ children, active, direction, sort, onClick, align, ...props
 	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
 		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon mod-active={active} direction={active && direction} />}</Box>
 	</Table.Cell>;
-}
-
-export function Markdown({ children, ...props }) {
-	return React.Children.map(children, function(text, index) {
-		return <Box { ...props } key={index} dangerouslySetInnerHTML={{ __html: mrkd.parse(text) }}/>;
-	});
 }
 
 const LoadingRow = ({ cols }) => <Table.Row>
@@ -75,12 +68,12 @@ export function GenericTable({
 		<>
 			<FilterComponent setFilter={setFilter}/>
 			{results && !results.length
-				? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
+				? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
 					{t('No_data_found')}
 				</Tile>
 				: <>
 					<Scrollable>
-						<Box mi={'neg-x24'} pi={'x24'} flexGrow={1}>
+						<Box mi='neg-x24' pi='x24' flexGrow={1}>
 							<Table fixed>
 								{ header && <Table.Head>
 									<Table.Row>
