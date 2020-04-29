@@ -174,3 +174,27 @@ Template.adminSounds.events({
 		}
 	},
 });
+
+	return <Page flexDirection='row'>
+		<Page _id='AdminSounds' name='admin-custom-sounds'>
+			<Page.Header title={t('Custom_Sounds')}>
+				<ButtonGroup>
+					<Button small onClick={handleHeaderButtonClick('new')} aria-label={t('New')}>
+						<Icon name='plus'/>
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
+			<GenericTable FilterComponent={FilterByText} header={header} results={data.sounds} renderRow={renderRow} total={data.total} setParams={setParams} params={params} />
+		</Page>
+		{ context
+			&& <VerticalBar>
+				<VerticalBar.Header>
+					{context === 'new' && t('Custom_Sound_Add')}
+					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
+				</VerticalBar.Header>
+				<VerticalBar.Content>
+					{ context === 'new' && <NewSound/> }
+				</VerticalBar.Content>
+			</VerticalBar>}
+	</Page>;
+}
