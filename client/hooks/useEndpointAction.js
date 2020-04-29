@@ -1,23 +1,7 @@
 import { useCallback } from 'react';
 
-import { useRoute } from '../../contexts/RouterContext';
-import { useEndpoint } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-
-const useRoomsTab = (path) => {
-	const route = useRoute('admin-rooms');
-	return () => path !== 'admin-rooms' && route.push({});
-};
-
-const useUsersTab = (path) => {
-	const route = useRoute('admin-users');
-	return () => path !== 'admin-users' && route.push({});
-};
-
-export const useSwitchTab = (route) => ({
-	users: useUsersTab(route),
-	rooms: useRoomsTab(route),
-});
+import { useEndpoint } from '../contexts/ServerContext';
+import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
 export const useEndpointAction = (httpMethod, endpoint, params = {}, successMessage) => {
 	const sendData = useEndpoint(httpMethod, endpoint);

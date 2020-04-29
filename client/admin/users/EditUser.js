@@ -4,7 +4,7 @@ import { Field, TextInput, Box, Headline, Skeleton, ToggleSwitch, Icon, TextArea
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
-import { useEndpointAction } from '../usersAndRooms/hooks';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
 import Page from '../../components/basic/Page';

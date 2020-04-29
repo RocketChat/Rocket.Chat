@@ -7,7 +7,7 @@ import { roomTypes } from '../../../../app/utils/client';
 import { useMethod } from '../../../contexts/ServerContext';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../NotAuthorizedPage';
-import { useEndpointAction } from '../../usersAndRooms/hooks';
+import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import Page from '../../../components/basic/Page';
 
 export function EditRoomContextBar({ rid }) {

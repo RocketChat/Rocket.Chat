@@ -1,10 +1,12 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Box, Table, Avatar, TextInput, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { roomTypes } from '../../../app/utils/client';
+import { useRoute } from '../../contexts/RouterContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -21,16 +23,50 @@ const FilterByText = ({ setFilter, ...props }) => {
 	</Box>;
 };
 
-export function AdminUsers({
-	// workspace = 'local',
-	data,
-	sort,
-	onClick,
-	onHeaderClick,
-	setParams,
-	params,
-}) {
+const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
+
+const useQuery = (params, sort) => useMemo(() => ({
+	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1 }),
+	query: JSON.stringify({
+		$or: [
+			{ 'emails.address': { $regex: params.text || '', $options: 'i' } },
+			{ username: { $regex: params.text || '', $options: 'i' } },
+			{ name: { $regex: params.text || '', $options: 'i' } },
+		],
+	}),
+	sort: JSON.stringify({ [sort[0]]: sortDir(sort[1]), usernames: sort[0] === 'name' ? sortDir(sort[1]) : undefined }),
+	...params.itemsPerPage && { count: params.itemsPerPage },
+	...params.current && { offset: params.current },
+}), [JSON.stringify(params), JSON.stringify(sort)]);
+
+export function UsersTable() {
 	const t = useTranslation();
+
+	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
+	const [sort, setSort] = useState(['name', 'asc']);
+
+	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedSort = useDebouncedValue(sort, 500);
+	const query = useQuery(debouncedParams, debouncedSort);
+
+	const data = useEndpointData('users.list', query) || {};
+
+	const usersRoute = useRoute('admin-users');
+
+	const onClick = (username) => () => usersRoute.push({
+		context: 'info',
+		id: username,
+	});
+
+	const onHeaderClick = (id) => {
+		const [sortBy, sortDirection] = sort;
+
+		if (sortBy === id) {
+			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
+			return;
+		}
+		setSort([id, 'asc']);
+	};
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -68,3 +104,5 @@ export function AdminUsers({
 
 	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.users} total={data.total} setParams={setParams} params={params} />;
 }
+
+export default UsersTable;

@@ -22,17 +22,17 @@ registerAdminSidebarItem({
 });
 
 registerAdminSidebarItem({
-	href: 'admin-rooms',
-	i18nLabel: 'Rooms',
-	icon: 'hashtag',
-	permissionGranted: () => hasPermission('view-room-administration'),
-});
-
-registerAdminSidebarItem({
 	href: 'admin-users',
 	i18nLabel: 'Users',
 	icon: 'team',
 	permissionGranted: () => hasPermission('view-user-administration'),
+});
+
+registerAdminSidebarItem({
+	href: 'admin-rooms',
+	i18nLabel: 'Rooms',
+	icon: 'hashtag',
+	permissionGranted: () => hasPermission('view-room-administration'),
 });
 
 registerAdminSidebarItem({

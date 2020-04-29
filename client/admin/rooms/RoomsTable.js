@@ -1,11 +1,13 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Box, Table, Icon, TextInput, Field, CheckBox, Margins } from '@rocket.chat/fuselage';
-import { useMediaQuery, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useUniqueId, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import RoomAvatar from '../../components/basic/avatar/RoomAvatar';
 import { roomTypes } from '../../../app/utils/client';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import { useRoute } from '../../contexts/RouterContext';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -73,18 +75,57 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	</Box>;
 };
 
-export function AdminRooms({
-	sort,
-	data,
-	onHeaderClick,
-	onClick,
-	setParams,
-	params,
-}) {
+const useQuery = (params, sort) => useMemo(() => ({
+	filter: params.text || '',
+	types: params.types,
+	sort: JSON.stringify({ [sort[0]]: sort[1] === 'asc' ? 1 : -1 }),
+	...params.itemsPerPage && { count: params.itemsPerPage },
+	...params.current && { offset: params.current },
+}), [JSON.stringify(params), JSON.stringify(sort)]);
+
+function RoomsTable() {
 	const t = useTranslation();
 
-
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+
+	const [params, setParams] = useState({ text: '', types: DEFAULT_TYPES, current: 0, itemsPerPage: 25 });
+	const [sort, setSort] = useState(['name', 'asc']);
+
+	const routeName = 'admin-rooms';
+
+	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedSort = useDebouncedValue(sort, 500);
+
+	const query = useQuery(debouncedParams, debouncedSort);
+
+	const data = useEndpointData('rooms.adminRooms', query) || {};
+
+	const router = useRoute(routeName);
+
+	const onClick = (rid) => () => router.push({
+		context: 'edit',
+		id: rid,
+	});
+
+	const onHeaderClick = (id) => {
+		const [sortBy, sortDirection] = sort;
+
+		if (sortBy === id) {
+			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
+			return;
+		}
+		setSort([id, 'asc']);
+	};
+
+	if (sort[0] === 'name' && data.rooms) {
+		data.rooms = data.rooms.sort((a, b) => {
+			const aName = a.type === 'd' ? a.usernames.join(' x ') : roomTypes.getRoomName(a.t, a);
+			const bName = b.type === 'd' ? b.usernames.join(' x ') : roomTypes.getRoomName(b.t, b);
+			if (aName === bName) { return 0; }
+			const result = aName < bName ? -1 : 1;
+			return sort[1] === 'asc' ? result : result * -1;
+		});
+	}
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
@@ -105,7 +146,7 @@ export function AdminRooms({
 					<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 					<Box display='flex' style={style} mi='x8'>
 						<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} textStyle='p2' textColor='hint'/><Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
+							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2' color='hint'/><Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
 						</Box>
 					</Box>
 				</Box>
@@ -122,3 +163,5 @@ export function AdminRooms({
 
 	return <GenericTable FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data.rooms} total={data.total} setParams={setParams} params={params}/>;
 }
+
+export default RoomsTable;

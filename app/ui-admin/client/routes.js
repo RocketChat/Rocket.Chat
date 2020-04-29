@@ -69,14 +69,12 @@ registerAdminRoute('/mailer', {
 
 registerAdminRoute('/users/:context?/:id?', {
 	name: 'admin-users',
-	lazyRouteComponent: () => import('../../../client/admin/users/AdminUsersRoute'),
-	tab: 'users',
+	lazyRouteComponent: () => import('../../../client/admin/users/UsersRoute'),
 });
 
 registerAdminRoute('/rooms/:context?/:id?', {
 	name: 'admin-rooms',
-	lazyRouteComponent: () => import('../../../client/admin/rooms/AdminRoomsRoute'),
-	tab: 'rooms',
+	lazyRouteComponent: () => import('../../../client/admin/rooms/RoomsRoute'),
 });
 
 registerAdminRoute('/invites', {

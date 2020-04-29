@@ -3,7 +3,7 @@ import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, MultiSelectFi
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import { useEndpointAction } from '../usersAndRooms/hooks';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
 import Page from '../../components/basic/Page';
