@@ -6,14 +6,13 @@ import {
 	Margins,
 	RadioButton,
 } from '@rocket.chat/fuselage';
-import { useMergedRefs, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus, useMergedRefs, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
 import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useFocus } from '../../../hooks/useFocus';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
@@ -147,7 +146,7 @@ function RegisterServerStep({ step, title, active }) {
 		}
 	};
 
-	const autoFocusRef = useFocus(active);
+	const autoFocusRef = useAutoFocus(active);
 
 	const agreeTermsAndPrivacyId = useUniqueId();
 	const optInMarketingEmailsId = useUniqueId();

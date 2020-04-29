@@ -1,4 +1,5 @@
 import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
@@ -6,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { ProgressStep, ImportingStartedStates } from '../../../app/importer/lib/ImporterProgressStep';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useSafely } from '../../hooks/useSafely';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useRoute } from '../../contexts/RouterContext';
 import Page from '../../components/basic/Page';

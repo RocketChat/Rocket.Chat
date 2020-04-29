@@ -13,7 +13,7 @@ import {
 	Throbber,
 	UrlInput,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo, useEffect } from 'react';
 
 import Page from '../../components/basic/Page';
@@ -24,7 +24,6 @@ import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useErrorHandler } from './useErrorHandler';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { Importers } from '../../../app/importer/client/index';
-import { useSafely } from '../../hooks/useSafely';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 
 function NewImportPage() {

@@ -1,4 +1,4 @@
-import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
@@ -6,7 +6,6 @@ import React, { createContext, useCallback, useContext, useEffect, useLayoutEffe
 import { PrivateSettingsCachedCollection } from '../../../app/ui-admin/client/SettingsCachedCollection';
 import { useBatchSettingsDispatch } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useEventCallback } from '../../hooks/useEventCallback';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useTranslation, useLoadLanguage } from '../../contexts/TranslationContext';
 import { useUser } from '../../contexts/UserContext';
@@ -220,13 +219,13 @@ const useSelector = (selector, equalityFunction = (a, b) => a === b) => {
 	const { subscribers, stateRef } = useContext(SettingsContext);
 	const [value, setValue] = useState(() => selector(stateRef.current));
 
-	const handleUpdate = useEventCallback((selector, equalityFunction, value, state) => {
+	const handleUpdate = useMutableCallback((state) => {
 		const newValue = selector(state);
 
 		if (!equalityFunction(newValue, value)) {
 			setValue(newValue);
 		}
-	}, selector, equalityFunction, value);
+	});
 
 	useEffect(() => {
 		subscribers.add(handleUpdate);
@@ -259,7 +258,8 @@ export const useGroup = (groupId) => {
 	const loadLanguage = useLoadLanguage();
 	const user = useUser();
 
-	const save = useEventCallback(async (filterSettings, { current: state }, batchSetSettings, user) => {
+	const save = useMutableCallback(async () => {
+		const state = stateRef.current;
 		const settings = filterSettings(state.settings);
 
 		const changes = settings.filter(({ changed }) => changed)
@@ -290,9 +290,10 @@ export const useGroup = (groupId) => {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, filterSettings, stateRef, batchSetSettings, user);
+	});
 
-	const cancel = useEventCallback((filterSettings, { current: state }, hydrate) => {
+	const cancel = useMutableCallback(() => {
+		const state = stateRef.current;
 		const settings = filterSettings(state.settings);
 		const persistedSettings = filterSettings(state.persistedSettings);
 
@@ -303,7 +304,7 @@ export const useGroup = (groupId) => {
 			});
 
 		hydrate(changes);
-	}, filterSettings, stateRef, hydrate);
+	});
 
 	return group && { ...group, sections, changed, save, cancel };
 };
@@ -319,7 +320,8 @@ export const useSection = (groupId, sectionName) => {
 
 	const { stateRef, hydrate, isDisabled } = useContext(SettingsContext);
 
-	const reset = useEventCallback((filterSettings, { current: state }, hydrate) => {
+	const reset = useMutableCallback(() => {
+		const state = stateRef.current;
 		const settings = filterSettings(state.settings)
 			.filter((setting) => Tracker.nonreactive(() => !isDisabled(setting))); // Ignore disabled settings
 		const persistedSettings = filterSettings(state.persistedSettings);
@@ -335,7 +337,7 @@ export const useSection = (groupId, sectionName) => {
 		});
 
 		hydrate(changes);
-	}, filterSettings, stateRef, hydrate);
+	});
 
 	return {
 		name: sectionName,

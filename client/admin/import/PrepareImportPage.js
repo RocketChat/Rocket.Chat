@@ -12,7 +12,7 @@ import {
 	Pagination,
 	Tabs,
 } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
@@ -29,7 +29,6 @@ import {
 } from '../../../app/importer/lib/ImporterProgressStep';
 import { useErrorHandler } from './useErrorHandler';
 import { useRoute } from '../../contexts/RouterContext';
-import { useSafely } from '../../hooks/useSafely';
 import { useEndpoint } from '../../contexts/ServerContext';
 
 const waitFor = (fn, predicate) => new Promise((resolve, reject) => {
