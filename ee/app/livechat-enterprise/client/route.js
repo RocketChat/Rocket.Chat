@@ -56,3 +56,27 @@ AccountBox.addRoute({
 	i18nPageTitle: 'New_Tag',
 	pageTemplate: 'livechatTagForm',
 }, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-priorities',
+	path: '/priorities',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Priorities',
+	pageTemplate: 'livechatPriorities',
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-priority-edit',
+	path: '/priorities/:_id/edit',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Edit_Priority',
+	pageTemplate: 'livechatPriorityForm',
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-priority-new',
+	path: '/priorities/new',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'New_Priority',
+	pageTemplate: 'livechatPriorityForm',
+}, livechatManagerRoutes);

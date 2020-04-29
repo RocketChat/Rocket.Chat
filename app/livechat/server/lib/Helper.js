@@ -8,7 +8,7 @@ import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
 
-export const createLivechatRoom = (rid, name, guest, extraData) => {
+export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -18,6 +18,7 @@ export const createLivechatRoom = (rid, name, guest, extraData) => {
 		department: Match.Maybe(String),
 	}));
 
+	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 
 	const room = Object.assign({
@@ -38,14 +39,14 @@ export const createLivechatRoom = (rid, name, guest, extraData) => {
 		cl: false,
 		open: true,
 		waitingResponse: true,
-	}, extraData);
+	}, extraRoomInfo);
 
 	const roomId = Rooms.insert(room);
 	callbacks.run('livechat.newRoom', room);
 	return roomId;
 };
 
-export const createLivechatInquiry = (rid, name, guest, message, initialStatus) => {
+export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus, extraData = {} }) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -58,13 +59,16 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus) 
 		msg: String,
 	}));
 
+	const extraInquiryInfo = callbacks.run('livechat.beforeInquiry', extraData);
+
 	const { _id, username, token, department, status = 'online' } = guest;
 	const { msg } = message;
+	const ts = new Date();
 
-	const inquiry = {
+	const inquiry = Object.assign({
 		rid,
 		name,
-		ts: new Date(),
+		ts,
 		department,
 		message: msg,
 		status: initialStatus || 'ready',
@@ -75,7 +79,11 @@ export const createLivechatInquiry = (rid, name, guest, message, initialStatus) 
 			status,
 		},
 		t: 'l',
-	};
+		queueOrder: 1,
+		estimatedWaitingTimeQueue: 0,
+		estimatedServiceTimeAt: ts,
+	}, extraInquiryInfo);
+
 	return LivechatInquiry.insert(inquiry);
 };
 
@@ -224,7 +232,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (!room || !room.open) {
 		return false;
 	}
-
+	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
@@ -295,4 +303,16 @@ export const checkServiceStatus = ({ guest, agent }) => {
 	}
 
 	return Livechat.online(guest.department);
+};
+
+export const userCanTakeInquiry = (user) => {
+	check(user, Match.ObjectIncluding({
+		status: String,
+		statusLivechat: String,
+		roles: [String],
+	}));
+
+	const { roles, status, statusLivechat } = user;
+	// TODO: hasRole when the user has already been fetched from DB
+	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
 };
