@@ -1,4 +1,4 @@
-import { Box, Flex, Margins, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Scrollable } from '@rocket.chat/fuselage';
 import React, { createContext, useContext, useState } from 'react';
 
 import { BurgerMenuButton } from './BurgerMenuButton';
@@ -23,23 +23,21 @@ function Page(props) {
 
 function PageHeader({ children, title, ...props }) {
 	const [border] = useContext(PageContext);
-	return <Box
-		borderBlockEndWidth='x2'
-		borderBlockEndColor={border ? 'neutral-200' : 'transparent'}
-	>
-		<Margins block='x16' inline='x24'>
-			<Flex.Container wrap='no-wrap' alignItems='center' direction='row'>
-				<Box {...props}>
-					<Margins inlineEnd='x8'>
-						<BurgerMenuButton />
-					</Margins>
-					<Flex.Item grow={1}>
-						<Box is='h1' fontScale='h1'>{title}</Box>
-					</Flex.Item>
-					{children}
-				</Box>
-			</Flex.Container>
-		</Margins>
+	return <Box borderBlockEndWidth='x2' borderBlockEndColor={border ? 'neutral-200' : 'transparent'}>
+		<Box
+			marginBlock='x16'
+			marginInline='x24'
+			minHeight='x40'
+			display='flex'
+			flexDirection='row'
+			flexWrap='nowrap'
+			alignItems='center'
+			{...props}
+		>
+			<BurgerMenuButton marginInlineEnd='x8' />
+			<Box is='h1' fontScale='h1' flexGrow={1}>{title}</Box>
+			{children}
+		</Box>
 	</Box>;
 }
 

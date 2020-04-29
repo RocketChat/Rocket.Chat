@@ -1,10 +1,13 @@
-import React, { lazy, useMemo, Suspense } from 'react';
+import React, { lazy, useMemo, Suspense, useEffect } from 'react';
 
-import { useAdminSideNav } from './hooks/useAdminSideNav';
+import { SideNav } from '../../app/ui-utils/client';
 import PageSkeleton from './PageSkeleton';
 
 function AdministrationRouter({ lazyRouteComponent, ...props }) {
-	useAdminSideNav();
+	useEffect(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	}, []);
 
 	const LazyRouteComponent = useMemo(() => lazy(lazyRouteComponent), [lazyRouteComponent]);
 
