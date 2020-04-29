@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { AdminSounds } from './AdminSounds';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
-import { NotAuthorizedPage } from '../../../ui-admin/client/components/NotAuthorizedPage';
+import { NotAuthorizedPage } from '../../../../client/admin/NotAuthorizedPage';
 // import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 
