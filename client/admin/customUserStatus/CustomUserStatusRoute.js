@@ -5,13 +5,13 @@ import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Page } from '../../components/basic/Page';
-import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
 import { CustomUserStatus } from './CustomUserStatus';
 import { EditCustomUserStatusWithData } from './EditCustomUserStatus';
 import { AddCustomUserStatus } from './AddCustomUserStatus';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { VerticalBar } from '../../components/basic/VerticalBar';
+import NotAuthorizedPage from '../NotAuthorizedPage';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
