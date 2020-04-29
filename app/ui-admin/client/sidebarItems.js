@@ -1,15 +1,39 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 
 import { hasPermission } from '../../authorization/client';
 
-const items = new ReactiveVar([]);
+export const sidebarItems = new ReactiveVar([]);
 
 export const registerAdminSidebarItem = (itemOptions) => {
-	Tracker.nonreactive(() => items.set([...items.get(), itemOptions]));
+	sidebarItems.set([...sidebarItems.get(), itemOptions]);
 };
 
-export const getSidebarItems = () => items.get().filter((option) => !option.permissionGranted || option.permissionGranted());
+registerAdminSidebarItem({
+	href: 'admin-info',
+	i18nLabel: 'Info',
+	icon: 'info-circled',
+});
+
+registerAdminSidebarItem({
+	href: 'admin-import',
+	i18nLabel: 'Import',
+	icon: 'import',
+	permissionGranted: () => hasPermission('run-import'),
+});
+
+registerAdminSidebarItem({
+	href: 'admin-rooms',
+	i18nLabel: 'Rooms',
+	icon: 'hashtag',
+	permissionGranted: () => hasPermission('view-room-administration'),
+});
+
+registerAdminSidebarItem({
+	href: 'admin-users',
+	i18nLabel: 'Users',
+	icon: 'team',
+	permissionGranted: () => hasPermission('view-user-administration'),
+});
 
 registerAdminSidebarItem({
 	href: 'invites',
@@ -17,6 +41,7 @@ registerAdminSidebarItem({
 	icon: 'user-plus',
 	permissionGranted: () => hasPermission('create-invite-links'),
 });
+
 registerAdminSidebarItem({
 	href: 'admin-view-logs',
 	i18nLabel: 'View_Logs',

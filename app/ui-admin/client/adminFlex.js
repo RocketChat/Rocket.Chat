@@ -10,11 +10,10 @@ import { menu, SideNav, Layout } from '../../ui-utils/client';
 import { t } from '../../utils/client';
 import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
 import { hasAtLeastOnePermission } from '../../authorization/client';
-import { getSidebarItems } from './sidebarItems';
+import { sidebarItems } from './sidebarItems';
 import './adminFlex.html';
 
 Template.adminFlex.onCreated(function() {
-	this.isEmbedded = Layout.isEmbedded();
 	this.settingsFilter = new ReactiveVar('');
 	if (settings.cachedCollectionPrivate == null) {
 		settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection();
@@ -23,16 +22,21 @@ Template.adminFlex.onCreated(function() {
 	}
 });
 
-const label = function() {
-	return TAPi18n.__(this.i18nLabel || this._id);
-};
-
 Template.adminFlex.helpers({
-	hasSettingPermission() {
-		return hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
-	},
-
-	groups() {
+	isEmbedded: () => Layout.isEmbedded(),
+	sidebarItems: () => sidebarItems.get()
+		.filter((sidebarItem) => !sidebarItem.permissionGranted || sidebarItem.permissionGranted())
+		.map(({ _id, i18nLabel, icon, href }) => ({
+			name: t(i18nLabel || _id),
+			icon,
+			pathSection: href,
+			darken: true,
+			isLightSidebar: true,
+			active: href === FlowRouter.getRouteName(),
+		})),
+	hasSettingPermission: () =>
+		hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
+	groups: () => {
 		const filter = Template.instance().settingsFilter.get();
 		const query = {
 			type: 'group',
@@ -53,45 +57,29 @@ Template.adminFlex.helpers({
 				};
 			}
 		}
-		if (filter && groups.length === 0) {
-			return 0;
-		}
-		return settings.collectionPrivate.find(query).fetch().map(function(el) {
-			el.label = label.apply(el);
-			return el;
-		}).sort(function(a, b) {
-			if (a.label.toLowerCase() >= b.label.toLowerCase()) {
-				return 1;
-			}
-			return -1;
-		});
-	},
-	label,
-	adminBoxOptions() {
-		return getSidebarItems();
-	},
-	menuItem(name, icon, section, group) {
-		const routeParam = FlowRouter.getParam('group');
-		const routeName = FlowRouter.getRouteName();
 
-		return {
-			name: t(name),
-			icon,
-			pathSection: section,
-			pathGroup: group,
-			darken: true,
-			isLightSidebar: true,
-			active: (routeParam && routeParam === group) || (routeName !== 'admin' && routeName === section),
-		};
-	},
-	embeddedVersion() {
-		return this.isEmbedded;
+		if (filter && groups.length === 0) {
+			return [];
+		}
+
+		return settings.collectionPrivate.find(query)
+			.fetch()
+			.map((item) => ({ ...item, name: t(item.i18nLabel || item._id) }))
+			.sort(({ name: a }, { name: b }) => (a.toLowerCase() >= b.toLowerCase() ? 1 : -1))
+			.map(({ _id, name }) => ({
+				name,
+				pathSection: 'admin',
+				pathGroup: _id,
+				darken: true,
+				isLightSidebar: true,
+				active: _id === FlowRouter.getParam('group'),
+			}));
 	},
 });
 
 Template.adminFlex.events({
-	'click [data-action="close"]'(e, instance) {
-		if (instance.isEmbedded) {
+	'click [data-action="close"]'() {
+		if (Layout.isEmbedded()) {
 			menu.close();
 			return;
 		}
