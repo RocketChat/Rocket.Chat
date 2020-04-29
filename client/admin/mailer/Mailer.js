@@ -10,9 +10,9 @@ import { useTranslation } from '../../contexts/TranslationContext';
 export function Mailer({ sendMail = () => {} }) {
 	const t = useTranslation();
 
-	const [fromEmail, setFromEmail] = useState({ value: '', error: false });
+	const [fromEmail, setFromEmail] = useState({ value: '' });
 	const [dryRun, setDryRun] = useState(false);
-	const [query, setQuery] = useState({ value: '', error: false });
+	const [query, setQuery] = useState({ value: '' });
 	const [subject, setSubject] = useState('');
 	const [emailBody, setEmailBody] = useState('');
 
@@ -37,7 +37,7 @@ export function Mailer({ sendMail = () => {} }) {
 							onChange={(e) => {
 								setFromEmail({
 									value: e.currentTarget.value,
-									error: !isEmail(e.currentTarget.value),
+									error: !isEmail(e.currentTarget.value) ? t('Invalid_Email') : undefined,
 								});
 							}}
 						/>
@@ -65,7 +65,7 @@ export function Mailer({ sendMail = () => {} }) {
 							onChange={(e) => {
 								setQuery({
 									value: e.currentTarget.value,
-									error: e.currentTarget.value && !isJSON(e.currentTarget.value),
+									error: e.currentTarget.value && !isJSON(e.currentTarget.value) ? t('Invalid_JSON') : undefined,
 								});
 							}}
 						/>
