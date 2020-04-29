@@ -27,6 +27,33 @@ export function NewSound({ roles, ...props }) {
 		return soundData;
 	};
 
+	// const validate = (soundData) => {
+	// 	const errors = [];
+	// 	if (!soundData.name) {
+	// 		errors.push('Name');
+	// 	}
+
+	// 	if (!soundData._id) {
+	// 		if (!this.soundFile) {
+	// 			errors.push('Sound_File_mp3');
+	// 		}
+	// 	}
+
+	// 	for (const error of errors) {
+	// 		toastr.error(TAPi18n.__('error-the-field-is-required', { field: TAPi18n.__(error) }));
+	// 	}
+
+	// 	if (this.soundFile) {
+	// 		if (!/audio\/mp3/.test(this.soundFile.type) && !/audio\/mpeg/.test(this.soundFile.type) && !/audio\/x-mpeg/.test(this.soundFile.type)) {
+	// 			errors.push('FileType');
+	// 			toastr.error(TAPi18n.__('error-invalid-file-type'));
+	// 		}
+	// 	}
+
+	// 	return errors.length === 0;
+	// };
+
+
 	const saveAction = async (newData) => {
 		const soundData = createSoundData(newData.name);
 		let soundId;
