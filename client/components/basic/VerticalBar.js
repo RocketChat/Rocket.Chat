@@ -29,7 +29,7 @@ export function VerticalBar({
 }
 
 export function VerticalBarHeader(props) {
-	return <Box style={{ background: '#F4F6F9' }} textStyle='s2' pb='x32' pi='x24' display='flex' alignItems='center' justifyContent='space-between' {...props} />;
+	return <Box backgroundColor='neutral-100' fontScale='s2' pb='x32' pi='x24' display='flex' alignItems='center' justifyContent='space-between' {...props} />;
 }
 
 export function VerticalBarClose(props) {
