@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { Tabs } from '@rocket.chat/fuselage';
 
-import { Page } from '../../../../../../../client/components/basic/Page';
+import Page from '../../../../../../../client/components/basic/Page';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { UserTab } from './UserTab';
 import { ChannelsTab } from './ChannelsTab';

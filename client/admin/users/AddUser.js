@@ -3,10 +3,10 @@ import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, MultiSelectFi
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import { useEndpointAction } from '../usersAndRooms/hooks';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 
 export function AddUser({ roles, ...props }) {
 	const t = useTranslation();
@@ -56,7 +56,7 @@ export function AddUser({ roles, ...props }) {
 
 	const availableRoles = roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : [];
 
-	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' { ...props }>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' { ...props }>
 		<Margins blockEnd='x16'>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
@@ -144,5 +144,5 @@ export function AddUser({ roles, ...props }) {
 				</Field.Row>
 			</Field>
 		</Margins>
-	</Page.ContentScrolable>;
+	</Page.ScrollableContent>;
 }

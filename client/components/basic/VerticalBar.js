@@ -2,12 +2,9 @@ import { Box, Tile, Button, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import { Page } from './Page';
+import Page from './Page';
 
-export function VerticalBar({
-	children,
-	...props
-}) {
+function VerticalBar({ children, ...props }) {
 	const mobile = useDebouncedValue(useMediaQuery('(max-width: 420px)'), 50);
 	const small = useDebouncedValue(useMediaQuery('(max-width: 780px)'), 50);
 
@@ -16,23 +13,36 @@ export function VerticalBar({
 		flexShrink={0}
 		width={mobile ? 'full' : 'x380'}
 		height='full'
-		style={{
-			...small && {
-				position: 'absolute',
-				right: '0',
-			},
-		}}
+		position={small ? 'absolute' : undefined}
+		insetInlineEnd={small ? 'none' : undefined}
 		{...props}
 	>
-		<Tile display='flex' flexDirection='column' flexGrow={1} padding={0} m={0} children={children} />
+		<Tile
+			margin='none'
+			padding='none'
+			display='flex'
+			flexDirection='column'
+			flexGrow={1}
+		>
+			{children}
+		</Tile>
 	</Box>;
 }
 
-export function VerticalBarHeader(props) {
-	return <Box backgroundColor='neutral-100' fontScale='s2' pb='x32' pi='x24' display='flex' alignItems='center' justifyContent='space-between' {...props} />;
+function VerticalBarHeader(props) {
+	return <Box
+		paddingBlock='x32'
+		paddingInline='x24'
+		display='flex'
+		alignItems='center'
+		justifyContent='space-between'
+		backgroundColor='neutral-200'
+		fontScale='s2'
+		{...props}
+	/>;
 }
 
-export function VerticalBarClose(props) {
+function VerticalBarClose(props) {
 	return <Button small flexShrink={0} ghost square {...props}>
 		<Icon name='cross' size='x20' />
 	</Button>;

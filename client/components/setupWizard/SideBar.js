@@ -47,8 +47,8 @@ function SideBar({
 				margin='x4'
 				paddingBlock='x4'
 				paddingInline='x8'
-				textColor='alternative'
-				textStyle='micro'
+				color='alternative'
+				fontScale='micro'
 				style={{
 					whiteSpace: 'nowrap',
 					textTransform: 'uppercase',
@@ -67,8 +67,8 @@ function SideBar({
 				paddingInline='x32'
 			>
 				<Margins blockEnd='x16'>
-					<Box is='h2' textStyle='h1' textColor='default'>{t('Setup_Wizard')}</Box>
-					<Box is='p' textColor='hint' textStyle='p1'>{t('Setup_Wizard_Info')}</Box>
+					<Box is='h2' fontScale='h1' color='default'>{t('Setup_Wizard')}</Box>
+					<Box is='p' color='hint' fontScale='p1'>{t('Setup_Wizard_Info')}</Box>
 				</Margins>
 
 				<Box is='ol'>
@@ -85,8 +85,8 @@ function SideBar({
 							marginInline='neg-x8'
 							display='flex'
 							alignItems='center'
-							textStyle='p2'
-							textColor={(step === currentStep && 'primary')
+							fontScale='p2'
+							color={(step === currentStep && 'primary')
 							|| (step < currentStep && 'default')
 							|| 'disabled'}
 							style={{ position: 'relative' }}

@@ -3,12 +3,12 @@ import { Box, Avatar, Button, ButtonGroup, Icon, Margins, Headline, Skeleton, Ch
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import MarkdownText from '../../components/basic/MarkdownText';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { roomTypes } from '../../../app/utils/client';
 import { DateFormat } from '../../../app/lib';
 import { useRoute } from '../../contexts/RouterContext';
-import { Markdown } from '../../../app/ui/client/components/GenericTable';
-import { Page } from '../../components/basic/Page';
+import Page from '../../components/basic/Page';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();
@@ -72,14 +72,14 @@ export function UserInfo({ data, ...props }) {
 
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
-	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' {...props}>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' {...props}>
 		<Margins block='x8'>
 			<Box display='flex' flexDirection='column' alignItems='center'>
 				<Margins block='x2'>
 					<Avatar size={'x120'} title={data.username} url={avatarUrl}/>
-					<Box textStyle='h1'>{data.name || data.username}</Box>
-					{!!data.name && <Box textStyle='p1' textColor='hint'>@{data.username}</Box>}
-					<Box textStyle='p1' textColor='hint'>{data.status}</Box>
+					<Box fontScale='h1'>{data.name || data.username}</Box>
+					{!!data.name && <Box fontScale='p1' color='hint'>@{data.username}</Box>}
+					<Box fontScale='p1' color='hint'>{data.status}</Box>
 				</Margins>
 			</Box>
 
@@ -90,13 +90,15 @@ export function UserInfo({ data, ...props }) {
 				</ButtonGroup>
 			</Box>
 
-			<Box display='flex' flexDirection='column' w='full' style={{ backgroundColor: '#F4F6F9' }} p='x16'>
+			<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16'>
 				<Margins blockEnd='x4'>
 
-					{data.bio && data.bio.trim().length > 0 && <Markdown textStyle='s1' mbe='x8'>{data.bio}</Markdown>}
+					{data.bio && data.bio.trim().length > 0 && <Box fontScale='s1' marginBlockEnd='x8'>
+						<MarkdownText>{data.bio}</MarkdownText>
+					</Box>}
 
 					{data.roles && <>
-						<Box textStyle='micro' textColor='hint' mbs='none'>{t('Roles')}</Box>
+						<Box fontScale='micro' color='hint' mbs='none'>{t('Roles')}</Box>
 						<Box display='flex' flexDirection='row' flexWrap='wrap'>
 							<Margins inlineEnd='x4' blockEnd='x4'>
 								{data.roles.map((val) => <Chip pi='x4' key={val}>{val}</Chip>)}
@@ -104,9 +106,9 @@ export function UserInfo({ data, ...props }) {
 						</Box>
 					</>}
 
-					{data.emails && <> <Box textStyle='micro' textColor='hint'>{t('Email')}</Box>
+					{data.emails && <> <Box fontScale='micro' color='hint'>{t('Email')}</Box>
 						<Box display='flex' flexDirection='row' alignItems='center'>
-							<Box textStyle='s1'>{data.emails[0].address}</Box>
+							<Box fontScale='s1'>{data.emails[0].address}</Box>
 							<Margins inline='x4'>
 								{data.emails[0].verified && <Tag variant='primary'>{t('Verified')}</Tag>}
 								{data.emails[0].verified || <Tag disabled>{t('Not_verified')}</Tag>}
@@ -114,19 +116,19 @@ export function UserInfo({ data, ...props }) {
 						</Box>
 					</>}
 
-					<Box textStyle='micro' textColor='hint'>{t('Created_at')}</Box>
-					<Box textStyle='s1'>{createdAt}</Box>
+					<Box fontScale='micro' color='hint'>{t('Created_at')}</Box>
+					<Box fontScale='s1'>{createdAt}</Box>
 
-					<Box textStyle='micro' textColor='hint'>{t('Last_login')}</Box>
-					<Box textStyle='s1' >{lastLogin || t('Never')}</Box>
+					<Box fontScale='micro' color='hint'>{t('Last_login')}</Box>
+					<Box fontScale='s1' >{lastLogin || t('Never')}</Box>
 
 					{!!data.utcOffset && <>
-						<Box textStyle='micro' textColor='hint'>{t('Timezone')}</Box>
-						<UTCClock utcOffset={data.utcOffset} mbe='none' textStyle='s1' />
+						<Box fontScale='micro' color='hint'>{t('Timezone')}</Box>
+						<UTCClock utcOffset={data.utcOffset} mbe='none' fontScale='s1' />
 					</>}
 				</Margins>
 			</Box>
 		</Margins>
 
-	</Page.ContentScrolable>;
+	</Page.ScrollableContent>;
 }
