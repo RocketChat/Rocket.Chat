@@ -131,10 +131,10 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 			label: <><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Deactivate') : t('Activate')}</>,
 			action: async () => {
 				const result = await changeActiveStatus();
-				result.success ? onchange() : undefined;
+				result.success ? onChange() : undefined;
 			},
 		} },
-	}), [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus, canEditOtherUserInfo, canDirectMessage]);
+	}), [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus, canEditOtherUserInfo, canDirectMessage, isActive, isAdmin]);
 
 	const [actions, moreActions] = useMemo(() => {
 		const keys = Object.keys(menuOptions);

@@ -80,7 +80,7 @@ export function UserInfo({ data, onChange, ...props }) {
 			<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16'>
 				<Margins blockEnd='x4'>
 					{data.bio && data.bio.trim().length > 0 && <MarkdownText fontScale='s1'>{data.bio}</MarkdownText>}
-					{data.roles && <>
+					{!!data.roles.length && <>
 						<Box fontScale='micro' color='hint' mbs='none'>{t('Roles')}</Box>
 						<Box display='flex' flexDirection='row' flexWrap='wrap'>
 							<Margins inlineEnd='x4' blockEnd='x4'>
