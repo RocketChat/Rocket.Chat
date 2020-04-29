@@ -20,7 +20,7 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		noncollapsible={solo || !section.name}
 		title={section.name && t(section.name)}
 	>
-		{help && <Box is='p' textColor='hint' textStyle='p1'>{help}</Box>}
+		{help && <Box is='p' color='hint' fontScale='p1'>{help}</Box>}
 
 		<FieldGroup>
 			{section.settings.map((settingId) => <Setting key={settingId} settingId={settingId} sectionChanged={changed} />)}
@@ -40,7 +40,7 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 
 export function SectionSkeleton() {
 	return <Accordion.Item noncollapsible title={<Skeleton />}>
-		<Box is='p' textColor='hint' textStyle='p1'>
+		<Box is='p' color='hint' fontScale='p1'>
 			<Skeleton />
 		</Box>
 

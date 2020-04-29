@@ -75,7 +75,7 @@ export function TableSection() {
 
 	return <Section filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}>
 		<Box>
-			{channels && !channels.length && <Tile textStyle='p1' textColor='info' style={{ textAlign: 'center' }}>
+			{channels && !channels.length && <Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
 				{t('No_data_found')}
 			</Tile>}
 			{(!channels || channels.length)

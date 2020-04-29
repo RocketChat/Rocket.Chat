@@ -34,13 +34,13 @@ const RoomForeword = ({ _id: rid }) => {
 				</Avatar.Stack>
 			</Margins>
 		</Flex.Item>
-		<Box textColor='default' textStyle='headline' flexGrow={1}>{ t('Direct_message_you_have_joined') }</Box>
+		<Box fontScale='h1' flexGrow={1}>{ t('Direct_message_you_have_joined') }</Box>
 		<Box is='div' mb='x8' flexGrow={1}>
 			{users.map((username, index) => <Margins inline='x4' key={index}>
 				<Tag
 					is='a'
-					textStyle='p2'
-					href={ `/direct/${ username }` }
+					fontScale='p2'
+					href={`/direct/${ username }`}
 					data-username={username}
 					className='mention-link mention-link--user'
 				>{username}</Tag>

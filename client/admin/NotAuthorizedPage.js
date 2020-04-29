@@ -9,7 +9,7 @@ function NotAuthorizedPage() {
 
 	return <Page>
 		<Page.Content>
-			<Box is='p' textColor='default' textStyle='p1'>{t('You_are_not_authorized_to_view_this_page')}</Box>
+			<Box is='p' fontScale='p1'>{t('You_are_not_authorized_to_view_this_page')}</Box>
 		</Page.Content>
 	</Page>;
 }

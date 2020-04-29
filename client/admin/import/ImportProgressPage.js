@@ -126,11 +126,11 @@ function ImportProgressPage() {
 		<Page.ScrollableContentWithShadow>
 			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 				<Margins block='x24'>
-					<Box is='p' textStyle='p1' textColor='default'>{t(step[0].toUpperCase() + step.slice(1))}</Box>
+					<Box is='p' fontScale='p1'>{t(step[0].toUpperCase() + step.slice(1))}</Box>
 					{progressRate
-						? <Box display='flex' justifyContent='center' textStyle='p1' textColor='default'>
+						? <Box display='flex' justifyContent='center'>
 							<Box is='progress' value={completed} max={total} marginInlineEnd='x24' />
-							<Box is='span'>{completed}/{total} ({s.numberFormat(progressRate, 0) }%)</Box>
+							<Box is='span' fontScale='p1'>{completed}/{total} ({s.numberFormat(progressRate, 0) }%)</Box>
 						</Box>
 						: <Throbber justifyContent='center' />}
 				</Margins>

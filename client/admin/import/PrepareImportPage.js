@@ -323,7 +323,7 @@ function PrepareImportPage() {
 
 		<Page.Content>
 			<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
-				<Box is='h2' textStyle='p2' textColor='default'>{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}</Box>
+				<Box is='h2' fontScale='p2'>{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}</Box>
 				{!isPreparing && <Tabs flexShrink={0} >
 					<Tabs.Item disabled={usersCount === 0} selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')} <Badge is='span'>{usersCount}</Badge></Tabs.Item>
 					<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')} <Badge is='span'>{channelsCount}</Badge></Tabs.Item>
@@ -332,7 +332,7 @@ function PrepareImportPage() {
 				<Margins block='x24'>
 					{isPreparing && <>
 						{progressRate
-							? <Box display='flex' justifyContent='center' textStyle='p1' textColor='default'>
+							? <Box display='flex' justifyContent='center' fontScale='p1'>
 								<Box is='progress' value={(progressRate * 10).toFixed(0)} max='1000' marginInlineEnd='x24' />
 								<Box is='span'>{s.numberFormat(progressRate, 0) }%</Box>
 							</Box>

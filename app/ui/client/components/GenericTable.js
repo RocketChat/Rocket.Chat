@@ -68,12 +68,12 @@ export function GenericTable({
 		<>
 			<FilterComponent setFilter={setFilter}/>
 			{results && !results.length
-				? <Tile textStyle='p1' elevation='0' textColor='info' style={{ textAlign: 'center' }}>
+				? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
 					{t('No_data_found')}
 				</Tile>
 				: <>
 					<Scrollable>
-						<Box mi={'neg-x24'} pi={'x24'} flexGrow={1}>
+						<Box mi='neg-x24' pi='x24' flexGrow={1}>
 							<Table fixed>
 								{ header && <Table.Head>
 									<Table.Row>

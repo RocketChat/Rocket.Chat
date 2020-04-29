@@ -146,13 +146,14 @@ function RoomsTable() {
 					<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 					<Box display='flex' style={style} mi='x8'>
 						<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2' color='hint'/><Box textStyle='p2' style={style} textColor='default'>{roomName}</Box>
+							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2' color='hint'/><Box fontScale='p2' style={style}>{roomName}</Box>
 						</Box>
 					</Box>
 				</Box>
 			</Table.Cell>
 			<Table.Cell>
-				<Box textStyle='p2' style={style} textColor='hint'>{ t(roomTypeI18nMap[type]) }</Box> <Box mi='x4'/>
+				<Box color='hint' fontScale='p2' style={style}>{ t(roomTypeI18nMap[type]) }</Box>
+				<Box mi='x4'/>
 			</Table.Cell>
 			<Table.Cell style={style}>{usersCount}</Table.Cell>
 			{mediaQuery && <Table.Cell style={style}>{msgs}</Table.Cell>}

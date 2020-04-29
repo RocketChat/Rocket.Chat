@@ -48,7 +48,7 @@ export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabe
 
 		<Page.ScrollableContentWithShadow>
 			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
-				{t.has(i18nDescription) && <Box is='p' textColor='hint' textStyle='p1'>{t(i18nDescription)}</Box>}
+				{t.has(i18nDescription) && <Box is='p' color='hint' fontScale='p1'>{t(i18nDescription)}</Box>}
 
 				<Accordion className='page-settings'>
 					{children}
@@ -74,7 +74,7 @@ export function GroupPageSkeleton() {
 
 		<Page.Content>
 			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
-				<Box is='p' textColor='hint' textStyle='p1'>
+				<Box is='p' color='hint' fontScale='p1'>
 					<Skeleton />
 					<Skeleton />
 					<Skeleton width='75%' />

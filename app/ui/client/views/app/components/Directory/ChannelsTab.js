@@ -86,7 +86,7 @@ export function ChannelsTab() {
 					<Avatar size='x40' title={fname || name} url={avatarUrl} flexGrow={0} />
 					<Box grow={1} mi='x8' style={style}>
 						<Box display='flex' alignItems='center'>
-							<Icon name={roomTypes.getIcon(room)} textColor='hint' /> <Box textStyle='p2' textColor='default' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
+							<Icon name={roomTypes.getIcon(room)} color='hint' /> <Box fontScale='p2' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
 						</Box>
 						{topic && <Box fontScale='p1' color='hint' style={style}>
 							<MarkdownText>{topic}</MarkdownText>
@@ -94,13 +94,13 @@ export function ChannelsTab() {
 					</Box>
 				</Box>
 			</Table.Cell>
-			<Table.Cell textStyle='p1' textColor='hint' style={style}>
+			<Table.Cell fontScale='p1' color='hint' style={style}>
 				{usersCount}
 			</Table.Cell>
-			{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
+			{ mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
 				{formatDate(ts)}
 			</Table.Cell>}
-			{ mediaQuery && <Table.Cell textStyle='p1' textColor='hint' style={style}>
+			{ mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
 				{lastMessage && formatDate(lastMessage.ts)}
 			</Table.Cell>}
 		</Table.Row>;

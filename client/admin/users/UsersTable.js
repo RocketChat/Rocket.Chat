@@ -87,18 +87,18 @@ export function UsersTable() {
 					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={username} url={avatarUrl} />
 					<Box display='flex' style={style} mi='x8'>
 						<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
-							<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box>
-							{!mediaQuery && name && <Box textStyle='p1' textColor='hint' style={style}> {`@${ username }`} </Box>}
+							<Box fontScale='p2' style={style} color='default'>{name || username}</Box>
+							{!mediaQuery && name && <Box fontScale='p1' color='hint' style={style}> {`@${ username }`} </Box>}
 						</Box>
 					</Box>
 				</Box>
 			</Table.Cell>
 			{mediaQuery && <Table.Cell>
-				<Box textStyle='p2' style={style} textColor='hint'>{ username }</Box> <Box mi='x4'/>
+				<Box fontScale='p2' style={style} color='hint'>{ username }</Box> <Box mi='x4'/>
 			</Table.Cell>}
 			<Table.Cell style={style}>{emails && emails[0].address}</Table.Cell>
 			{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
-			<Table.Cell textStyle='p1' textColor='hint' style={style}>{status}</Table.Cell>
+			<Table.Cell fontScale='p1' color='hint' style={style}>{status}</Table.Cell>
 		</Table.Row>;
 	}, [mediaQuery]);
 
