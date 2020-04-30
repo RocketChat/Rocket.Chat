@@ -1,7 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+
+import { callbacks } from '../../../callbacks/server';
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/lib/settings';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
-import { callbacks } from '../../../callbacks/server';
+import { Apps } from '../../../apps/server';
 
 const generateSubscription = (fname, name, user, extra) => ({
 	alert: false,
@@ -40,7 +43,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	const isNewRoom = !room;
 
-	const rid = room?._id || Rooms.insert({
+	let roomInfo = {
 		...uids.length === 2 && { _id: uids.join('') }, // Deprecated: using users' _id to compose the room _id is deprecated
 		t: 'd',
 		usernames,
@@ -49,7 +52,28 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 		ts: new Date(),
 		uids,
 		...roomExtraData,
-	});
+	};
+
+	if (isNewRoom) {
+		roomInfo._USERNAMES = usernames;
+
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', roomInfo));
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
+		}
+
+		let result;
+		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateExtend', roomInfo));
+		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateModify', result));
+
+		if (typeof result === 'object') {
+			roomInfo = Object.assign(roomInfo, result);
+		}
+
+		delete roomInfo.usernames;
+	}
+
+	const rid = room?._id || Rooms.insert(roomInfo);
 
 	if (members.length === 1) { // dm to yourself
 		Subscriptions.upsert({ rid, 'u._id': members[0]._id }, {
