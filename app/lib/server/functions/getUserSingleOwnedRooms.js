@@ -1,5 +1,5 @@
-import { hasRole, getUsersInRole } from '../../../authorization';
-import { Users, Subscriptions, Rooms } from '../../../models';
+import { hasRole, getUsersInRole } from '../../../authorization/server';
+import { Users, Subscriptions, Rooms } from '../../../models/server';
 
 export const getUserSingleOwnedRooms = function(userId) {
 	const roomsThatWillChangeOwner = [];
