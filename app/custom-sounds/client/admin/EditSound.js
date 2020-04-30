@@ -8,7 +8,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import Page from '../../../../client/components/basic/Page';
 
-export function NewSound({ roles, ...props }) {
+export function EditSound({ roles, ...props }) {
 	const t = useTranslation();
 
 	const uploadCustomSound = useMethod('uploadCustomSound');
