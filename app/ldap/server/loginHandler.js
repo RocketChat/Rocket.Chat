@@ -143,7 +143,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	// Create new user
-	const result = addLdapUser(ldapUser, username, loginRequest.ldapPass);
+	const result = addLdapUser(ldapUser, username, loginRequest.ldapPass, ldap);
 
 	if (result instanceof Error) {
 		throw result;
@@ -158,7 +158,7 @@ callbacks.add('beforeValidateLogin', (login) => {
 		return login;
 	}
 
-	if (login.type === 'ldap') {
+	if (login.type === 'ldap' || login.type === 'resume') {
 		return login;
 	}
 

@@ -5,6 +5,7 @@ import connect from 'connect';
 import _ from 'underscore';
 import gcStats from 'prometheus-gc-stats';
 import { Meteor } from 'meteor/meteor';
+import { Facts } from 'meteor/facts-base';
 
 import { Info, getOplogInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations';
@@ -75,6 +76,8 @@ metrics.oplog = new client.Counter({
 	labelNames: ['collection', 'op'],
 });
 
+metrics.pushQueue = new client.Gauge({ name: 'rocketchat_push_queue', labelNames: ['queue'], help: 'push queue' });
+
 // User statistics
 metrics.totalUsers = new client.Gauge({ name: 'rocketchat_users_total', help: 'total of users' });
 metrics.activeUsers = new client.Gauge({ name: 'rocketchat_users_active', help: 'total of active users' });
@@ -96,6 +99,13 @@ metrics.totalChannelMessages = new client.Gauge({ name: 'rocketchat_channel_mess
 metrics.totalPrivateGroupMessages = new client.Gauge({ name: 'rocketchat_private_group_messages_total', help: 'total of messages in private rooms' });
 metrics.totalDirectMessages = new client.Gauge({ name: 'rocketchat_direct_messages_total', help: 'total of messages in direct rooms' });
 metrics.totalLivechatMessages = new client.Gauge({ name: 'rocketchat_livechat_messages_total', help: 'total of messages in livechat rooms' });
+
+// Meteor Facts
+metrics.meteorFacts = new client.Gauge({ name: 'rocketchat_meteor_facts', labelNames: ['pkg', 'fact'], help: 'internal meteor facts' });
+
+Facts.incrementServerFact = function(pkg, fact, increment) {
+	metrics.meteorFacts.inc({ pkg, fact }, increment);
+};
 
 const setPrometheusData = async () => {
 	metrics.info.set({
@@ -144,6 +154,8 @@ const setPrometheusData = async () => {
 
 	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
 	metrics.oplogQueue.set(oplogQueue);
+
+	metrics.pushQueue.set(statistics.pushQueue || 0);
 };
 
 const app = connect();
