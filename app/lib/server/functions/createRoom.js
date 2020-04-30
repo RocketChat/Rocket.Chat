@@ -63,6 +63,8 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 	};
 
 	if (Apps && Apps.isLoaded()) {
+		room._USERNAMES = members;
+
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
@@ -75,6 +77,8 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 		if (typeof result === 'object') {
 			room = Object.assign(room, result);
 		}
+
+		delete room._USERNAMES;
 	}
 
 	if (type === 'c') {
