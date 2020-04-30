@@ -69,7 +69,7 @@
   "Accounts_Email_Deactivated": "[name]<br/><br/><p>Your account was deactivated.</p>",
   "Accounts_Enrollment_Email_Default": "<h1>Welcome to <strong>[Site_Name]</strong></h1><p>Go to <a href=\"[Site_URL]\">[Site_URL]</a> and try the best open source chat solution available today!</p>",
   "Accounts_Email_Deactivated_Subject": "Account deactivated",
-  "Accounts_EmailVerification": "Email Verification",
+  "Accounts_EmailVerification": "Only allow verified users to login",
   "Accounts_EmailVerification_Description": "Make sure you have correct SMTP settings to use this feature",
   "Accounts_Enrollment_Email_Subject_Default": "Welcome to [Site_Name]",
   "Accounts_Enrollment_Email": "Enrollment Email",
