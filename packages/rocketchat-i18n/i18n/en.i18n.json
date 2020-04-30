@@ -1872,6 +1872,8 @@
   "InternalHubot_ScriptsToLoad": "Scripts to Load",
   "InternalHubot_ScriptsToLoad_Description": "Please enter a comma separated list of scripts to load from your custom folder",
   "InternalHubot_Username_Description": "This must be a valid username of a bot registered on your server.",
+  "Interval_to_fetch_rooms": "Interval to fetch more rooms from the queue (in seconds)",
+  "Interval_to_fetch_rooms_description": "How often more rooms should be loaded from the queue (in seconds)",
   "Invalid_confirm_pass": "The password confirmation does not match password",
   "Invalid_email": "The email entered is invalid",
   "Invalid_username": "The username entered is invalid",

@@ -1,36 +1,57 @@
+import moment from 'moment';
+
 import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { inquiryDataStream } from './inquiry';
 import { hasRole } from '../../../../authorization/client';
 import { call } from '../../../../ui-utils/client';
+import { settings } from '../../../../settings/client';
 
 let agentDepartments = [];
+const queueDetails = {
+	loadedFrom: undefined,
+	serverLastInquiryTimestamp: new Date(),
+	streamActionsToApply: [],
+	isLoadingFromServer: false,
+};
+
+const actions = {
+	remove: (inquiry) => LivechatInquiry.remove(inquiry._id),
+	upsert: (inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, inquiry),
+};
+
+const applyDataToQueue = (action) => {
+	if (queueDetails.isLoadingFromServer) {
+		queueDetails.streamActionsToApply.push(action);
+		return;
+	}
+	return actions[action.action](action.inquiry);
+};
 
 const events = {
 	added: (inquiry) => {
-		delete inquiry.type;
-		LivechatInquiry.insert(inquiry);
+		queueDetails.serverLastInquiryTimestamp = inquiry.queueUpdatedAt;
 	},
 	changed: (inquiry) => {
-		if (inquiry.status !== 'queued' || (inquiry.department && !agentDepartments.includes(inquiry.department))) {
-			return LivechatInquiry.remove(inquiry._id);
+		const mustDelete = inquiry.status !== 'queued' || (inquiry.department && !agentDepartments.includes(inquiry.department));
+		if (mustDelete) {
+			applyDataToQueue({ action: 'remove', inquiry });
 		}
 		delete inquiry.type;
-		LivechatInquiry.upsert({ _id: inquiry._id }, inquiry);
+		applyDataToQueue({ action: 'upsert', inquiry });
 	},
-	removed: (inquiry) => LivechatInquiry.remove(inquiry._id),
+	removed: (inquiry) => {
+		applyDataToQueue({ action: 'remove', inquiry });
+	},
 };
 
 const updateCollection = (inquiry) => { events[inquiry.type](inquiry); };
 const appendListenerToDepartment = (departmentId) => inquiryDataStream.on(`department/${ departmentId }`, updateCollection);
 const removeListenerOfDepartment = (departmentId) => inquiryDataStream.removeListener(`department/${ departmentId }`, updateCollection);
 
-const getInquiriesFromAPI = async (url) => {
-	const { inquiries } = await APIClient.v1.get(url);
-	return inquiries;
-};
+const getInquiriesFromAPI = async (url) => APIClient.v1.get(url);
 
-const updateInquiries = async (inquiries) => {
+const updateInquiries = (inquiries) => {
 	(inquiries || []).forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, inquiry));
 };
 
@@ -53,7 +74,42 @@ const removeGlobalListener = () => {
 	inquiryDataStream.removeListener('public', updateCollection);
 };
 
-export const initializeLivechatInquiryStream = async (userId) => {
+const updateQueueDetails = (inquiries = [], count, total) => {
+	if (total <= count) {
+		queueDetails.loadedFrom = new Date();
+		return;
+	}
+	const newestInquiry = inquiries[inquiries.length - 1];
+	queueDetails.loadedFrom = newestInquiry && newestInquiry.ts;
+};
+
+const applyDataFromStream = () => {
+	queueDetails.streamActionsToApply.forEach((action) => actions[action.action](action.inquiry));
+	queueDetails.streamActionsToApply = [];
+};
+
+const loadInquiriesFromTheServer = async (maxNumberOfLivechats) => {
+	if (queueDetails.loadedFrom && moment(queueDetails.loadedFrom).isAfter(queueDetails.serverLastInquiryTimestamp)) {
+		return;
+	}
+	const from = queueDetails.loadedFrom ? `?from=${ moment(queueDetails.loadedFrom).utc().format('YYYY-MM-DDTHH:mm:ss.SSS') }Z` : '';
+	const roomsCount = maxNumberOfLivechats ? `${ from ? '&' : '?' }count=${ maxNumberOfLivechats }` : '';
+	queueDetails.isLoadingFromServer = true;
+	const { inquiries, count, total } = await getInquiriesFromAPI(`livechat/inquiries.queued${ from }${ roomsCount }`);
+	updateQueueDetails(inquiries, count, total);
+	updateInquiries(inquiries);
+	queueDetails.isLoadingFromServer = false;
+	applyDataFromStream();
+};
+
+const poolingServerForInquiryList = async (maxNumberOfLivechats) => {
+	const intervalToFetchInSeconds = (settings.get('Livechat_guest_pool_interval_to_fetch_rooms_in_seconds') * 1000) || 5000;
+	setInterval(() => {
+		loadInquiriesFromTheServer(maxNumberOfLivechats);
+	}, intervalToFetchInSeconds);
+};
+
+export const initializeLivechatInquiryStream = async (userId, maxNumberOfLivechats) => {
 	LivechatInquiry.remove({});
 
 	if (agentDepartments.length) {
@@ -65,12 +121,11 @@ export const initializeLivechatInquiryStream = async (userId) => {
 	if (config && config.autoAssignAgent) {
 		return;
 	}
-
-	await updateInquiries(await getInquiriesFromAPI('livechat/inquiries.queued?sort={"ts": 1}'));
-
 	agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
 	await addListenerForeachDepartment(userId, agentDepartments);
 	if (agentDepartments.length === 0 || hasRole(userId, 'livechat-manager')) {
 		inquiryDataStream.on('public', updateCollection);
 	}
+	poolingServerForInquiryList(maxNumberOfLivechats);
+	loadInquiriesFromTheServer(maxNumberOfLivechats);
 };

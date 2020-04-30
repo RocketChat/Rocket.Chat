@@ -1740,6 +1740,8 @@
   "InternalHubot_ScriptsToLoad": "Scripts para carregar",
   "InternalHubot_ScriptsToLoad_Description": "Por favor insira uma lista separada por vírgula de scripts para carregar a partir de https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Este deve ser um nome de usuário válido de um bot registrado em seu servidor.",
+  "Interval_to_fetch_rooms": "Intervalo para carregar mais salas da fila (em segundos)",
+  "Interval_to_fetch_rooms_description": "Com que frequência mais salas devem ser carregadas da fila (em segundos)",
   "Invalid_confirm_pass": "A confirmação de senha não é igual à senha",
   "Invalid_email": "O e-mail informado é inválido",
   "Invalid_username": "O nome de usuário inserido é inválido",

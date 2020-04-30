@@ -28,7 +28,7 @@ const applyDepartmentRestrictions = async (userId, filterDepartment) => {
 	return { $exists: false };
 };
 
-export async function findInquiries({ userId, department: filterDepartment, status, pagination: { offset, count, sort } }) {
+export async function findInquiries({ userId, department: filterDepartment, from, status, pagination: { offset, count } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
@@ -37,11 +37,17 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 
 	const options = {
 		limit: count,
-		sort: sort || { ts: -1 },
+		sort: {
+			queueOrder: 1,
+			estimatedWaitingTimeQueue: 1,
+			estimatedServiceTimeAt: 1,
+			ts: 1,
+		},
 		skip: offset,
 	};
 
 	const filter = {
+		...from && { ts: { $gt: from } },
 		...status && { status },
 		...department && { department },
 	};

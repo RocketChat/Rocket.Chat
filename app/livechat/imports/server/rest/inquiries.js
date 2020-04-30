@@ -71,17 +71,20 @@ API.v1.addRoute('livechat/inquiries.take', { authRequired: true }, {
 API.v1.addRoute('livechat/inquiries.queued', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
-		const { department } = this.requestParams();
+		const { department, from } = this.requestParams();
+
+		if (from && isNaN(Date.parse(from))) {
+			return API.v1.failure('The "from" query parameter must be a valid date.');
+		}
 
 		return API.v1.success(Promise.await(findInquiries({
 			userId: this.userId,
 			department,
+			from: new Date(from),
 			status: 'queued',
 			pagination: {
 				offset,
 				count,
-				sort,
 			},
 		})));
 	},

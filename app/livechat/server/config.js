@@ -432,6 +432,16 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Manual_Selection' },
 	});
 
+	settings.add('Livechat_guest_pool_interval_to_fetch_rooms_in_seconds', 5, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Routing',
+		public: true,
+		i18nLabel: 'Interval_to_fetch_rooms',
+		i18nDescription: 'Interval_to_fetch_rooms_description',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Manual_Selection' },
+	});
+
 	settings.add('Livechat_show_queue_list_link', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
