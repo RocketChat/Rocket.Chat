@@ -56,7 +56,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 
 			// Check if the number of domains is allowed
 			if (!checkRoomDomainsLength(domainsAfterAdd)) {
-				throw new Error('Cannot federate rooms with more than 10 domains');
+				throw new Error(`Cannot federate rooms with more than ${process.env.FEDERATED_DOMAINS_LENGTH || 10} domains`);
 			}
 
 			//
