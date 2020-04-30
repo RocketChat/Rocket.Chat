@@ -192,11 +192,39 @@ Meteor.startup(function() {
 		secret: true,
 	});
 
+	settings.add('Livechat_webhook_on_start', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_chat_start',
+	});
+
 	settings.add('Livechat_webhook_on_close', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_chat_close',
+	});
+
+	settings.add('Livechat_webhook_on_chat_taken', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_chat_taken',
+	});
+
+	settings.add('Livechat_webhook_on_chat_queued', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_chat_queued',
+	});
+
+	settings.add('Livechat_webhook_on_forward', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_forward',
 	});
 
 	settings.add('Livechat_webhook_on_offline_msg', false, {
