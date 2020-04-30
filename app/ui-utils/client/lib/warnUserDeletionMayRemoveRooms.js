@@ -1,7 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { t } from '../../../utils';
-import { APIClient } from '../../../utils/client';
+import { t, APIClient } from '../../../utils/client';
 import { modal } from './modal';
 
 export const warnUserDeletionMayRemoveRooms = function(userId, callbackFn, { warningKey, confirmButtonKey, closeOnConfirm = false, skipModalIfEmpty = false }) {
