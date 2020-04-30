@@ -126,7 +126,7 @@ export default function CustomSoundsRoute({ props }) {
 // 	const routeName = 'custom-sounds';
 
 // 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	// const [sort, setSort] = useState(['name', 'asc']);
+// const [sort, setSort] = useState(['name', 'asc']);
 
 // 	const router = useRoute(routeName);
 
