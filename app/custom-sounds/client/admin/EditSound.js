@@ -55,6 +55,7 @@ export function EditSound({ _id, cache, ...props }) {
 
 	const { data, state, error } = useEndpointDataExperimental('custom-sounds.list', query);
 
+
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
@@ -82,10 +83,11 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { _id, name: previousName, sound: previousSound } = data || {};
+	const { _id, name: previousName } = data || {};
+	const previousSound = data || {};
 
 	const [name, setName] = useState('');
-	const [sound, setSound] = useState('');
+	const [sound, setSound] = useState();
 	const [modal, setModal] = useState();
 
 	useEffect(() => {
@@ -101,13 +103,14 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 
 	const getSoundData = (soundFile) => {
 		const soundData = {};
-		if (soundFile.sound != null) {
-			soundData._id = soundFile.sound._id;
-			soundData.previousName = soundFile.sound.name;
-			soundData.extension = soundFile.sound.extension;
-			soundData.previousExtension = soundFile.sound.extension;
-		}
+
+		soundData._id = _id;
+		soundData.previousName = previousName;
+		soundData.extension = soundFile.name.split('.').pop();
+		soundData.previousExtension = previousSound.extension;
+		soundData.name = name;
 		soundData.newFile = false;
+		console.log(soundData);
 		return soundData;
 	};
 
@@ -128,9 +131,9 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 			errors.push('Name');
 		}
 
-		errors.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', t(error)) }));
-
-		if (soundFile) {
+		errors.forEach((error) => dispatchToastMessage({ type: 'error', message: error }));
+		debugger
+		if (soundFile !== previousSound) {
 			if (!/audio\/mp3/.test(soundFile.type) && !/audio\/mpeg/.test(soundFile.type) && !/audio\/x-mpeg/.test(soundFile.type)) {
 				errors.push('FileType');
 				dispatchToastMessage({ type: 'error', message: t('error-invalid-file-type') });
@@ -142,7 +145,7 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 
 	const saveAction = async (sound) => {
 		const soundData = getSoundData(sound);
-		if (validate(soundData, sound.soundFile)) {
+		if (validate(soundData, sound)) {
 			let soundId;
 			try {
 				soundId = await insertOrUpdateSound(soundData);
@@ -153,7 +156,7 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 			soundData._id = soundId;
 			soundData.random = Math.round(Math.random() * 1000);
 
-			if (soundId) {
+			if (sound && sound !== previousSound) {
 				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 				const reader = new FileReader();
@@ -189,7 +192,7 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
 
 
-	const clickUpload = useFileInput(handleChangeFile);
+	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
 
 
 	return <>
