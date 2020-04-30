@@ -3030,7 +3030,7 @@
   "Send_request_on_chat_queued": "Send request on Chat Queued",
   "Send_request_on_chat_start": "Send Request on Chat Start",
   "Send_request_on_chat_taken": "Send Request on Chat Taken",
-  "Send_request_on_forward": "Send Request on Forward",
+  "Send_request_on_forwarding": "Send Request on Forwarding",
   "Send_request_on_lead_capture": "Send request on lead capture",
   "Send_request_on_offline_messages": "Send Request on Offline Messages",
   "Send_request_on_visitor_message": "Send Request on Visitor Messages",

@@ -224,7 +224,7 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'CRM_Integration',
-		i18nLabel: 'Send_request_on_forward',
+		i18nLabel: 'Send_request_on_forwarding',
 	});
 
 	settings.add('Livechat_webhook_on_offline_msg', false, {

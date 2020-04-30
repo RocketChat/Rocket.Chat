@@ -2757,7 +2757,7 @@
   "Send_request_on_chat_queued": "Enviar requisição ao enfileirar conversa",
   "Send_request_on_chat_start": "Enviar requisição ao iniciar conversa",
   "Send_request_on_chat_taken": "Enviar requisição ao atribuir conversa para agente",
-  "Send_request_on_forward": "Enviar requisição ao encaminhar conversa",
+  "Send_request_on_forwarding": "Enviar requisição ao encaminhar conversa",
   "Send_request_on_lead_capture": "Enviar solicitação sobre a captura de chumbo",
   "Send_request_on_offline_messages": "Enviar requisição para mensagens off-line",
   "Send_request_on_visitor_message": "Enviar requisição para mensagens do Visitante",
