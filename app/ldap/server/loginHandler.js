@@ -126,6 +126,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		if (settings.get('LDAP_Login_Fallback') === true && typeof loginRequest.ldapPass === 'string' && loginRequest.ldapPass.trim() !== '') {
 			Accounts.setPassword(user._id, loginRequest.ldapPass, { logout: false });
 		}
+		logger.info('running afterLDAPLogin');
 		callbacks.run('afterLDAPLogin', { user, ldapUser, ldap });
 		return {
 			userId: user._id,
