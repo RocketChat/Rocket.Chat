@@ -7,8 +7,8 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { Page } from '../../components/basic/Page';
 import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
 import { CustomEmoji } from './CustomEmoji';
-// import { EditCustomUserStatusWithData } from './EditCustomUserStatus';
-// import { AddCustomUserStatus } from './AddCustomUserStatus';
+import { EditCustomUserStatusWithData } from './EditCustomEmoji';
+import { AddCustomEmojis } from './AddCustomEmoji';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { VerticalBar } from '../../components/basic/VerticalBar';
@@ -37,7 +37,7 @@ export default function CustomEmojiRoute({ props }) {
 
 	const query = useQuery(debouncedParams, debouncedSort, cache);
 
-	const data = useEndpointData('emoji-custom.list', query) || {emojis:{}};
+	const data = useEndpointData('emoji-custom.list', query) || { emojis: { } };
 
 	const router = useRoute(routeName);
 
@@ -81,8 +81,8 @@ export default function CustomEmojiRoute({ props }) {
 	}, []);
 
 	return <Page {...props} flexDirection='row'>
-		<Page name='admin-custom-user-status'>
-			<Page.Header title={t('Custom_User_Status')}>
+		<Page name='admin-emoji-custom'>
+			<Page.Header title={t('Custom_Emoji')}>
 				<Button small onClick={handleHeaderButtonClick('new')} aria-label={t('New')}>
 					<Icon name='plus'/>
 				</Button>
@@ -91,16 +91,16 @@ export default function CustomEmojiRoute({ props }) {
 				<CustomEmoji setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data.emojis} onClick={onClick} sort={sort}/>
 			</Page.Content>
 		</Page>
-		{/* { context
-			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+		{ context
+			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-emoji-custom-${ context }`} flexShrink={0}>
 				<VerticalBar.Header>
-					{ context === 'edit' && t('Custom_User_Status_Edit') }
-					{ context === 'new' && t('Custom_User_Status_Add') }
+					{ context === 'edit' && t('Custom_Emoji_Info') }
+					{ context === 'new' && t('Custom_Emoji_Add') }
 					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
 				<VerticalBar.Content>
 					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
-					{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} onChange={onChange}/>}
+					{context === 'new' && <AddCustomEmojis goToNew={onClick} close={close} onChange={onChange}/>}
 				</VerticalBar.Content>
-			</VerticalBar>} */}
+			</VerticalBar>}
 	</Page>;
 }
