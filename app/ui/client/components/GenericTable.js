@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
 import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
@@ -35,7 +35,7 @@ const LoadingRow = ({ cols }) => <Table.Row>
 	</Table.Cell>)}
 </Table.Row>;
 
-export function GenericTable({
+export const GenericTable = forwardRef(function GenericTable({
 	results,
 	total,
 	renderRow,
@@ -43,7 +43,7 @@ export function GenericTable({
 	setParams = () => { },
 	params: paramsDefault = '',
 	FilterComponent = () => null,
-}) {
+}, ref) {
 	const t = useTranslation();
 
 	const [filter, setFilter] = useState(paramsDefault);
@@ -65,8 +65,8 @@ export function GenericTable({
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
 
 	return <>
-		<>
-			<FilterComponent flexShrink={0} setFilter={setFilter}/>
+		<Box ref={ref}>
+			<FilterComponent setFilter={setFilter}/>
 			{results && !results.length
 				? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
 					{t('No_data_found')}
@@ -99,6 +99,6 @@ export function GenericTable({
 					/>
 				</>
 			}
-		</>
+		</Box>
 	</>;
-}
+});
