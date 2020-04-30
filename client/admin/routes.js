@@ -72,6 +72,11 @@ registerAdminRoute('/mailer', {
 	lazyRouteComponent: () => import('./mailer/MailerRoute'),
 });
 
+registerAdminRoute('/integrations/:context?/:id?', {
+	name: 'admin-integrations',
+	lazyRouteComponent: () => import('./integrations/IntegrationsRoute'),
+});
+
 registerAdminRoute('/custom-user-status/:context?/:id?', {
 	name: 'custom-user-status',
 	lazyRouteComponent: () => import('./customUserStatus/CustomUserStatusRoute'),
