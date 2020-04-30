@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import qs from 'querystring';
 
 import { disabled } from '../functions/errors';
@@ -55,6 +56,8 @@ export function dispatchEvents(domains, events) {
 		throw disabled('client.dispatchEvents');
 	}
 
+	domains = _.uniq(domains);
+
 	logger.client.debug(() => `dispatchEvents => domains=${ domains.join(', ') } events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
 
 	const uri = '/api/v1/federation.events.dispatch';
@@ -65,7 +68,11 @@ export function dispatchEvents(domains, events) {
 }
 
 export function dispatchEvent(domains, event) {
-	dispatchEvents(domains, [event]);
+
+	//Ensure the domain list is distinct to avoid excessive events
+	const distinctDomains = _.uniq(domains).filter(domain => event.origin);
+
+	dispatchEvents(distinctDomains, [event]);
 }
 
 export function getUpload(domain, fileId) {

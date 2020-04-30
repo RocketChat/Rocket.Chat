@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 import { getNameAndDomain, isFullyQualified } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 
@@ -77,6 +79,8 @@ const normalizeRoom = (originalResource, users) => {
 			resource.unmuted = resource.unmuted.map((u) => (!isFullyQualified(u) ? `${ u }@${ getFederationDomain() }` : u));
 		}
 	}
+
+	domains = _.uniq(domains);
 
 	// Federation
 	resource.federation = resource.federation || {

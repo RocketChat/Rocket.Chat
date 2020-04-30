@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 import { FederationRoomEvents } from '../../../models/server';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
 import { logger } from '../lib/logger';
@@ -21,7 +23,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 	try {
 		// Get the domains after removal
-		const domainsAfterRemoval = users.map((u) => u.federation.origin);
+		const domainsAfterRemoval = _.uniq(users.map((u) => u.federation.origin));
 
 		//
 		// Normalize the room's federation status
@@ -30,7 +32,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		usersBeforeRemoval.push(removedUser);
 
 		// Get the users domains
-		const domainsBeforeRemoval = usersBeforeRemoval.map((u) => u.federation.origin);
+		const domainsBeforeRemoval = _.uniq(usersBeforeRemoval.map((u) => u.federation.origin));
 
 		//
 		// Create the user remove event

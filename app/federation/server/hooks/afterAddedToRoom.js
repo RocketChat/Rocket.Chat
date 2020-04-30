@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 import { logger } from '../lib/logger';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
 import { FederationRoomEvents, Subscriptions } from '../../../models/server';
@@ -45,10 +47,15 @@ async function afterAddedToRoom(involvedUsers, room) {
 			//
 
 			// Get the users domains
-			const domainsAfterAdd = users.map((u) => u.federation.origin);
+			let domainsAfterAdd = [];
+			users.forEach(user => {
+				if(user.hasOwnProperty("federation") && !domainsAfterAdd.includes(user.federation.origin)) {
+					domainsAfterAdd.push(user.federation.origin);
+				}
+			});
 
 			// Check if the number of domains is allowed
-			if (!checkRoomDomainsLength(room.federation.domains)) {
+			if (!checkRoomDomainsLength(domainsAfterAdd)) {
 				throw new Error('Cannot federate rooms with more than 10 domains');
 			}
 

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 import { FederationRoomEvents } from '../../../models/server';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
 import { logger } from '../lib/logger';
@@ -19,7 +21,7 @@ async function afterLeaveRoom(user, room) {
 
 	try {
 		// Get the domains after leave
-		const domainsAfterLeave = users.map((u) => u.federation.origin);
+		const domainsAfterLeave = _.uniq(users.map((u) => u.federation.origin));
 
 		//
 		// Normalize the room's federation status
@@ -28,7 +30,7 @@ async function afterLeaveRoom(user, room) {
 		usersBeforeLeave.push(user);
 
 		// Get the users domains
-		const domainsBeforeLeft = usersBeforeLeave.map((u) => u.federation.origin);
+		const domainsBeforeLeft = _.uniq(usersBeforeLeave.map((u) => u.federation.origin));
 
 		//
 		// Create the user left event
