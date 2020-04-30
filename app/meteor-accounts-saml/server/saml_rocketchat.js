@@ -47,6 +47,12 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Issuer',
 		});
+		settings.add(`SAML_Custom_${ name }_identifierFormat`, '', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_IdentifierFormat',
+		});
 		settings.add(`SAML_Custom_${ name }_cert`, '', {
 			type: 'string',
 			group: 'SAML',
@@ -160,7 +166,6 @@ Meteor.methods({
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Custom_Authn_Context',
-			i18nDescription: 'SAML_Custom_Authn_Context_description',
 		});
 		settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "cn": "name"}', {
 			type: 'string',
@@ -240,6 +245,7 @@ const getSamlConfigs = function(service) {
 		nameOverwrite: settings.get(`${ service.key }_name_overwrite`),
 		mailOverwrite: settings.get(`${ service.key }_mail_overwrite`),
 		issuer: settings.get(`${ service.key }_issuer`),
+		identifierFormat: settings.get(`${ service.key }_identifierFormat`),
 		logoutBehaviour: settings.get(`${ service.key }_logout_behaviour`),
 		customAuthnContext: settings.get(`${ service.key }_custom_authn_context`),
 		authnContextComparison: settings.get(`${ service.key }_authn_context_comparison`),
@@ -296,6 +302,7 @@ const configureSamlService = function(samlConfigs) {
 		entryPoint: samlConfigs.entryPoint,
 		idpSLORedirectURL: samlConfigs.idpSLORedirectURL,
 		issuer: samlConfigs.issuer,
+		identifierFormat: samlConfigs.identifierFormat,
 		cert: samlConfigs.secret.cert,
 		privateCert,
 		privateKey,
