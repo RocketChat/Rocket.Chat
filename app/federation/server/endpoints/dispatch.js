@@ -21,6 +21,8 @@ import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { getUpload, requestEventsFromLatest } from '../handler';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
+import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
+import { processDeleteInThread } from '../../../threads/server/hooks/afterdeletemessage';
 
 const eventHandlers = {
 	//
@@ -233,11 +235,17 @@ const eventHandlers = {
 				}
 
 				// Create the message
-				Messages.insert(denormalizedMessage);
+				try {
+					await Messages.insert(denormalizedMessage);
 
-				// Notify users
-				notifyUsersOnMessage(denormalizedMessage, room);
-				sendAllNotifications(denormalizedMessage, room);
+					processThreads(denormalizedMessage, room);
+
+					// Notify users
+					notifyUsersOnMessage(denormalizedMessage, room);
+					sendAllNotifications(denormalizedMessage, room);
+				} catch(err) {
+					logger.server.debug("Error on creating message: " + message._id);
+				}
 			}
 		}
 
@@ -278,6 +286,11 @@ const eventHandlers = {
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
 			const { data: { roomId, messageId } } = event;
+
+			const message = Messages.findOne({ _id: messageId });
+			if (message) {
+				processDeleteInThread(message)
+			}
 
 			// Remove the message
 			Messages.removeById(messageId);
