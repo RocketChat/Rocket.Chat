@@ -5,8 +5,8 @@ import s from 'underscore.string';
 
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { Page } from '../../../../client/components/basic/Page';
 import { useMethod } from '../../../../client/contexts/ServerContext';
+import Page from '../../../../client/components/basic/Page';
 
 export function NewSound({ roles, ...props }) {
 	const t = useTranslation();
@@ -127,7 +127,7 @@ export function NewSound({ roles, ...props }) {
 		name = '',
 	} = newData;
 
-	return <Page.ContentScrolable pb='x24' mi='neg-x24' is='form' { ...props }>
+	return <Page.ScrollableContent pi='x24' pb='x24' mi='neg-x24' is='form' { ...props }>
 		<Margins blockEnd='x16'>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
@@ -154,5 +154,5 @@ export function NewSound({ roles, ...props }) {
 				</Field.Row>
 			</Field>
 		</Margins>
-	</Page.ContentScrolable>;
+	</Page.ScrollableContent>;
 }

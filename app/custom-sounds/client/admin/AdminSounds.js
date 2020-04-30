@@ -4,11 +4,11 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { NewSound } from './NewSound';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
-import { Page } from '../../../../client/components/basic/Page';
 import { GenericTable, Th } from '../../../ui/client/components/GenericTable';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
+import Page from '../../../../client/components/basic/Page';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -79,7 +79,9 @@ export function AdminSounds({
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
-			<GenericTable FilterComponent={FilterByText} header={header} results={data.sounds} renderRow={renderRow} total={data.total} setParams={setParams} params={params} />
+			<Page.Content>
+				<GenericTable FilterComponent={FilterByText} header={header} results={data.sounds} renderRow={renderRow} total={data.total} setParams={setParams} params={params} />
+			</Page.Content>
 		</Page>
 		{ context
 			&& <VerticalBar>
