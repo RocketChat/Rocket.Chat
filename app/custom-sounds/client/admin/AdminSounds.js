@@ -34,7 +34,7 @@ export function AdminSounds({
 	].filter(Boolean), [sort]);
 
 	const renderRow = (sound) => {
-		const { _id, name} = sound;
+		const { _id, name } = sound;
 		return <Table.Row key={_id} onKeyDown={onClick(_id, sound)} onClick={onClick(_id, sound)} tabIndex={0} role='link' action qa-user-id={_id}>
 			<Table.Cell fontScale='p1' color='default' style={style}>{name}</Table.Cell>
 		</Table.Row>;
@@ -42,10 +42,6 @@ export function AdminSounds({
 
 	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.sounds} total={data.total} setParams={setParams} params={params} />;
 }
-
-
-
-
 
 // import React, { useMemo, useCallback, useState, useEffect } from 'react';
 // import { Box, Table, TextInput, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';

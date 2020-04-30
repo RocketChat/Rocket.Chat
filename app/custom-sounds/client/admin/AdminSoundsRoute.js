@@ -1,3 +1,5 @@
+// eslint-disable
+
 import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
@@ -107,24 +109,6 @@ export default function CustomSoundsRoute({ props }) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useState } from 'react';
 // // import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
@@ -142,7 +126,7 @@ export default function CustomSoundsRoute({ props }) {
 // 	const routeName = 'custom-sounds';
 
 // 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-// 	const [sort, setSort] = useState(['name', 'asc']);
+	// const [sort, setSort] = useState(['name', 'asc']);
 
 // 	const router = useRoute(routeName);
 
