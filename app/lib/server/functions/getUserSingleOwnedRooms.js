@@ -24,7 +24,7 @@ export const getUserSingleOwnedRooms = function(userId) {
 			// If it's only one, then this user is the only owner.
 			if (numOwners === 1) {
 				// Let's check how many subscribers the room has.
-				const options = { sort: { ts: 1 } };
+				const options = { fields: { 'u._id': 1 }, sort: { ts: 1 } };
 				const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
 				roomData.subscribers = subscribersCursor.count();
 
