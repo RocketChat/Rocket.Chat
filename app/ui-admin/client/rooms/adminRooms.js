@@ -42,6 +42,9 @@ Template.adminRooms.helpers({
 	type() {
 		return TAPi18n.__(roomTypes.getConfig(this.t).label);
 	},
+	avatarUrl() {
+		return roomTypes.getConfig(this.t).getAvatarPath(this);
+	},
 	'default'() {
 		if (this.default) {
 			return t('True');

@@ -50,6 +50,12 @@ if (!window._paq || window.ga) {
 		}
 	}, callbacks.priority.MEDIUM, 'analytics-after-create-channel');
 
+	callbacks.add('roomAvatarChanged', (room) => {
+		if (settings.get('Analytics_features_rooms')) {
+			trackEvent('Room', 'Changed Avatar', `${ room.name } (${ room._id })`);
+		}
+	}, callbacks.priority.MEDIUM, 'analytics-room-avatar-changed');
+
 	callbacks.add('roomNameChanged', (room) => {
 		if (settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Changed Name', `${ room.name } (${ room._id })`);

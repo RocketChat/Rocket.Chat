@@ -8,8 +8,9 @@ import { addUserRoles } from '../../../authorization';
 import { getValidRoomName } from '../../../utils';
 import { Apps } from '../../../apps/server';
 import { createDirectRoom } from './createDirectRoom';
+import { setRoomAvatar } from './setRoomAvatar';
 
-export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}) {
+export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}, avatar = null) {
 	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
 
 	if (type === 'd') {
@@ -105,6 +106,11 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 	}
 
 	addUserRoles(owner._id, ['owner'], room._id);
+
+	if (avatar) {
+		const { blob, contentType, service } = avatar;
+		setRoomAvatar(room, blob, contentType, service);
+	}
 
 	if (type === 'c') {
 		Meteor.defer(() => {

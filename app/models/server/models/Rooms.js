@@ -859,6 +859,26 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setAvatarOrigin(_id, origin) {
+		const update = {
+			$set: {
+				avatarOrigin: origin,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	unsetAvatarOrigin(_id) {
+		const update = {
+			$unset: {
+				avatarOrigin: 1,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
 	muteUsernameByRoomId(_id, username) {
 		const query = { _id };
 
@@ -1022,6 +1042,7 @@ export class Rooms extends Base {
 				_id: user._id,
 				username: user.username,
 			},
+			avatarOrigin: 'none',
 		};
 
 		_.extend(room, extraData);
@@ -1039,6 +1060,7 @@ export class Rooms extends Base {
 			usernames: [],
 			msgs: 0,
 			usersCount: 0,
+			avatarOrigin: 'none',
 		};
 
 		_.extend(room, extraData);
@@ -1109,6 +1131,7 @@ export class Rooms extends Base {
 	countDiscussions() {
 		return this.find({ prid: { $exists: true } }).count();
 	}
+
 }
 
 export default new Rooms('room', true);

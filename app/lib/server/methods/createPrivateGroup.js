@@ -5,7 +5,7 @@ import { hasPermission } from '../../../authorization';
 import { createRoom } from '../functions';
 
 Meteor.methods({
-	createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
+	createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}, avatar = null) {
 		check(name, String);
 		check(members, Match.Optional([String]));
 
@@ -28,6 +28,6 @@ Meteor.methods({
 			}),
 		}));
 
-		return createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
+		return createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData }, {}, avatar);
 	},
 });

@@ -32,3 +32,4 @@ export { unarchiveRoom } from './unarchiveRoom';
 export { updateMessage } from './updateMessage';
 export { validateCustomFields } from './validateCustomFields';
 export { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
+export { setRoomAvatar } from './setRoomAvatar';

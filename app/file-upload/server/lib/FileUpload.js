@@ -125,7 +125,8 @@ export const FileUpload = {
 			// 	onCheck: FileUpload.validateFileUpload
 			// }),
 			getPath(file) {
-				return `${ settings.get('uniqueID') }/avatars/${ file.userId }`;
+				const fileId = file.userId || file.roomId;
+				return `${ settings.get('uniqueID') }/avatars/${ fileId }`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
 			onFinishUpload: FileUpload.avatarsOnFinishUpload,
@@ -155,7 +156,7 @@ export const FileUpload = {
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
-		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
+		if (file.userId && Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
@@ -276,16 +277,24 @@ export const FileUpload = {
 	},
 
 	avatarsOnFinishUpload(file) {
-		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+		let avatarName = null;
+
+		if (file.userId) {
+			if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
+				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+			}
+			// update file record to match user's username
+			const user = Users.findOneById(file.userId);
+			avatarName = user.username;
+		} else if (file.roomId) {
+			avatarName = file.roomId;
 		}
-		// update file record to match user's username
-		const user = Users.findOneById(file.userId);
-		const oldAvatar = Avatars.findOneByName(user.username);
+
+		const oldAvatar = Avatars.findOneByName(avatarName);
 		if (oldAvatar) {
 			Avatars.deleteFile(oldAvatar._id);
 		}
-		Avatars.updateFileNameById(file._id, user.username);
+		Avatars.updateFileNameById(file._id, avatarName);
 		// console.log('upload finished ->', file);
 	},
 

@@ -11,6 +11,7 @@ if (Meteor.isServer) {
 }
 
 export const RoomSettingsEnum = {
+	AVATAR: 'roomAvatar',
 	TYPE: 'type',
 	NAME: 'roomName',
 	TOPIC: 'roomTopic',
