@@ -984,12 +984,15 @@ export const Livechat = {
 		const { message, name, email, department, host } = data;
 		const emailMessage = `${ message }`.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 
-		const html = `
-			<h1>New livechat message</h1>
-			<p><strong>Sent from:</strong><a href='${ host }'> ${ host }</a></p>
+		let html = '<h1>New livechat message</h1>';
+		if (host && host !== '') {
+			html = html.concat(`<p><strong>Sent from:</strong><a href='${ host }'> ${ host }</a></p>`);
+		}
+		html = html.concat(`
 			<p><strong>Visitor name:</strong> ${ name }</p>
 			<p><strong>Visitor email:</strong> ${ email }</p>
-			<p><strong>Message:</strong><br>${ emailMessage }</p>`;
+			<p><strong>Message:</strong><br>${ emailMessage }</p>`,
+		);
 
 		let fromEmail = settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 
