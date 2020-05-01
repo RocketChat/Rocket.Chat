@@ -155,6 +155,14 @@ class AppServerOrchestrator {
 		return this._manager.updateAppsMarketplaceInfo(apps)
 			.then(() => this._manager.get());
 	}
+
+	async triggerEvent(event, ...payload) {
+		if (!this.isLoaded()) {
+			return;
+		}
+
+		return this.getBridges().getListenerBridge().handleEvent(event, ...payload);
+	}
 }
 
 export const Apps = new AppServerOrchestrator();

@@ -5,6 +5,48 @@ export class AppListenerBridge {
 		this.orch = orch;
 	}
 
+	async handleEvent(event, ...payload) {
+		const method = (() => {
+			switch (event) {
+				case AppInterface.IPreMessageSentPrevent:
+				case AppInterface.IPreMessageSentExtend:
+				case AppInterface.IPreMessageSentModify:
+				case AppInterface.IPostMessageSent:
+				case AppInterface.IPreMessageDeletePrevent:
+				case AppInterface.IPostMessageDeleted:
+				case AppInterface.IPreMessageUpdatedPrevent:
+				case AppInterface.IPreMessageUpdatedExtend:
+				case AppInterface.IPreMessageUpdatedModify:
+				case AppInterface.IPostMessageUpdated:
+					return 'messageEvent';
+				case AppInterface.IPreRoomCreatePrevent:
+				case AppInterface.IPreRoomCreateExtend:
+				case AppInterface.IPreRoomCreateModify:
+				case AppInterface.IPostRoomCreate:
+				case AppInterface.IPreRoomDeletePrevent:
+				case AppInterface.IPostRoomDeleted:
+				case AppInterface.IPreRoomUserJoined:
+					return 'roomEvent';
+				case AppInterface.IPostExternalComponentOpened:
+				case AppInterface.IPostExternalComponentClosed:
+					return 'externalComponentEvent';
+				/**
+				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
+				 */
+				case AppInterface.ILivechatRoomClosedHandler:
+				case AppInterface.IPostLivechatRoomStarted:
+				case AppInterface.IPostLivechatRoomClosed:
+				case AppInterface.IPostLivechatAgentAssigned:
+				case AppInterface.IPostLivechatAgentUnassigned:
+					return 'livechatEvent';
+				case AppInterface.IUIKitInteractionHandler:
+					return 'uiKitInteractionEvent';
+			}
+		})();
+
+		return this[method](event, ...payload);
+	}
+
 	async messageEvent(inte, message) {
 		const msg = this.orch.getConverters().get('messages').convertMessage(message);
 		const result = await this.orch.getManager().getListenerManager().executeListener(inte, msg);
@@ -47,13 +89,6 @@ export class AppListenerBridge {
 
 	async uiKitInteractionEvent(inte, action) {
 		return this.orch.getManager().getListenerManager().executeListener(inte, action);
-
-		// try {
-
-		// } catch (e) {
-		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
-		// 	this.orch.debugLog(e.stack);
-		// }
 	}
 
 	async livechatEvent(inte, data) {

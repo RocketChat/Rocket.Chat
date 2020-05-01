@@ -62,24 +62,22 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 		ro: readOnly === true,
 	};
 
-	if (Apps && Apps.isLoaded()) {
-		room._USERNAMES = members;
+	room._USERNAMES = members;
 
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));
-		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
-		}
-
-		let result;
-		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateExtend', room));
-		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateModify', result));
-
-		if (typeof result === 'object') {
-			room = Object.assign(room, result);
-		}
-
-		delete room._USERNAMES;
+	const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', room));
+	if (prevent) {
+		throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
 	}
+
+	let result;
+	result = Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', room));
+	result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', result));
+
+	if (typeof result === 'object') {
+		Object.assign(room, result);
+	}
+
+	delete room._USERNAMES;
 
 	if (type === 'c') {
 		callbacks.run('beforeCreateChannel', owner, room);

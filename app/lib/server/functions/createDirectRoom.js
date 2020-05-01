@@ -43,7 +43,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	const isNewRoom = !room;
 
-	let roomInfo = {
+	const roomInfo = {
 		...uids.length === 2 && { _id: uids.join('') }, // Deprecated: using users' _id to compose the room _id is deprecated
 		t: 'd',
 		usernames,
@@ -57,20 +57,20 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 	if (isNewRoom) {
 		roomInfo._USERNAMES = usernames;
 
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', roomInfo));
+		const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', roomInfo));
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
 		}
 
 		let result;
-		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateExtend', roomInfo));
-		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateModify', result));
+		result = Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', roomInfo));
+		result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', result));
 
 		if (typeof result === 'object') {
-			roomInfo = Object.assign(roomInfo, result);
+			Object.assign(roomInfo, result);
 		}
 
-		delete roomInfo.usernames;
+		delete roomInfo._USERNAMES;
 	}
 
 	const rid = room?._id || Rooms.insert(roomInfo);
