@@ -44,6 +44,28 @@ export class Rooms extends Base {
 
 		return roomId;
 	}
+
+	upsert(...args) {
+		const result = super.upsert(...args);
+
+		const { insertedId } = result;
+
+		// If the room was inserted, we need to create the genesis event
+		if (insertedId) {
+			let [, { $setOnInsert: room }] = args;
+
+			room = {
+				_id: insertedId,
+				...room,
+			};
+
+			const event = Promise.await(RoomEvents.createRoomGenesisEvent(getFederationDomain(), room));
+
+			Promise.await(this.dispatchEvent(event));
+		}
+
+		return result;
+	}
 	//
 	// ^^^
 	//
