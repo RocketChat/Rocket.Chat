@@ -1,8 +1,10 @@
+import { AppsEngineError } from '@rocket.chat/apps-engine/definition/errors';
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Subscriptions, Messages } from '../../../models';
+import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../callbacks';
-import { roomTypes, RoomMemberActions } from '../../../utils/server';
+import { Messages, Rooms, Subscriptions } from '../../../models';
+import { RoomMemberActions, roomTypes } from '../../../utils/server';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
@@ -25,6 +27,16 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 
 		// Keep the current event
 		callbacks.run('beforeJoinRoom', user, room);
+	}
+
+	try {
+		Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter));
+	} catch (error) {
+		if (error instanceof AppsEngineError) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
 	}
 
 	Subscriptions.createWithRoomAndUser(room, user, {

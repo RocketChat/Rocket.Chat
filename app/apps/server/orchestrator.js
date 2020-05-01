@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 
 import { Logger } from '../../logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel, Permissions } from '../../models';
@@ -165,6 +166,7 @@ class AppServerOrchestrator {
 	}
 }
 
+export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
 settings.addGroup('General', function() {

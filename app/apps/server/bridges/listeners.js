@@ -55,36 +55,35 @@ export class AppListenerBridge {
 			return result;
 		}
 		return this.orch.getConverters().get('messages').convertAppMessage(result);
-
-		// try {
-
-		// } catch (e) {
-		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
-		// 	this.orch.debugLog(e.stack);
-		// }
 	}
 
-	async roomEvent(inte, room) {
+	async roomEvent(inte, room, ...payload) {
 		const rm = this.orch.getConverters().get('rooms').convertRoom(room);
-		const result = await this.orch.getManager().getListenerManager().executeListener(inte, rm);
+
+		const params = (() => {
+			switch (inte) {
+				case AppInterface.IPreRoomUserJoined:
+					const [joiningUser, invitingUser] = payload;
+					return {
+						room: rm,
+						joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser),
+						invitingUser: this.orch.getConverters().get('users').convertToApp(invitingUser),
+					};
+				default:
+					return rm;
+			}
+		})();
+
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, params);
 
 		if (typeof result === 'boolean') {
 			return result;
 		}
 		return this.orch.getConverters().get('rooms').convertAppRoom(result);
-
-		// try {
-
-		// } catch (e) {
-		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
-		// 	this.orch.debugLog(e.stack);
-		// }
 	}
 
 	async externalComponentEvent(inte, externalComponent) {
-		const result = await this.orch.getManager().getListenerManager().executeListener(inte, externalComponent);
-
-		return result;
+		return this.orch.getManager().getListenerManager().executeListener(inte, externalComponent);
 	}
 
 	async uiKitInteractionEvent(inte, action) {
@@ -93,11 +92,6 @@ export class AppListenerBridge {
 
 	async livechatEvent(inte, data) {
 		switch (inte) {
-			case AppInterface.IPostLivechatRoomStarted:
-			case AppInterface.IPostLivechatRoomClosed:
-				const room = this.orch.getConverters().get('rooms').convertRoom(data);
-
-				return this.orch.getManager().getListenerManager().executeListener(inte, room);
 			case AppInterface.IPostLivechatAgentAssigned:
 			case AppInterface.IPostLivechatAgentUnassigned:
 				return this.orch.getManager().getListenerManager().executeListener(inte, {
@@ -105,7 +99,9 @@ export class AppListenerBridge {
 					agent: this.orch.getConverters().get('users').convertToApp(data.user),
 				});
 			default:
-				break;
+				const room = this.orch.getConverters().get('rooms').convertRoom(data);
+
+				return this.orch.getManager().getListenerManager().executeListener(inte, room);
 		}
 	}
 }
