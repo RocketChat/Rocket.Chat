@@ -43618,6 +43618,19 @@
           ]
         }
       ]
+    },
+    "3.2.1": {
+      "pull_requests": [
+        {
+          "pr": "17497",
+          "title": "[FIX] LDAP login error on Enterprise version",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
