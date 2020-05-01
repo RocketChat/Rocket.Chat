@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 import { logger } from '../lib/logger';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
 import { FederationRoomEvents, Subscriptions } from '../../../models/server';
