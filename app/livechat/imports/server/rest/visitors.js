@@ -3,7 +3,6 @@ import { check } from 'meteor/check';
 
 import { API } from '../../../../api';
 import { findVisitorInfo, findVisitedPages, findChatHistory } from '../../../server/api/lib/visitors';
-import { normalizeMessagesForUser } from '/app/utils/server/lib/normalizeMessagesForUser';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
 	get() {

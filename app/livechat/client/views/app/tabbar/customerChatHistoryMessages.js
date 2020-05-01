@@ -7,7 +7,6 @@ import { APIClient } from '../../../../../utils/client';
 
 Template.customerChatHistoryMessages.helpers({
 	historyResult() {
-		// will return all the messages in history room
 		return Template.instance().historyResult.get();
 	},
 });
@@ -23,11 +22,7 @@ Template.customerChatHistoryMessages.onCreated(function() {
 		const { messages } = await APIClient.v1.get(`livechat/messages.history/${ id }?token=${ token }`);
 		// will return pervious chats list
 		this.history.set(messages);
-		const allMessages = [];
-		for (let j = messages.length - 2; j >= 1; j--) {
-			messages[j].time = moment(messages[j].ts).format('LT');
-			allMessages.push(messages[j]);
-		}
+		const allMessages = this.history.get().reverse();
 		const header = document.getElementsByClassName('contextual-bar__header-title');
 		if (allMessages.length !== 0) {
 			const len = allMessages.length - 1;

@@ -7,19 +7,17 @@
 			<div class="visitor-history-details">
 				<div class="visitor-details">
 					<h1>{{responseBy.username}}</h1>
-						{{#if open}}
-							<p class='open'>Open</p>
-						{{else}}
-							<p>Close at time {{time}}</p>
-						{{/if}}
+						<p>Close at time {{closedAt}}</p>
 				</div>
 				<div class="total-messages">
-					<p>{{room.msgs}} messages</p>
+					<p>{{msgs}} messages</p>
 				</div>
+			{{#if hasClosingRoomMessage }}
 				<div class="agent-comment">
 					<p class="comment-heading">Agent comment:</p>
-					<p class="comment-text">"{{lastMessage.msg}}"</p>
+					<p class="comment-text">"{{closingRoomMessage}}"</p>
 				</div>
+			{{/if}}
 			</div>
 		</div>
 	</li>

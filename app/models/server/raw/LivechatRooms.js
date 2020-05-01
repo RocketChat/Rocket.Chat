@@ -834,7 +834,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 			t: 'l',
 			'v._id': visitorId,
 		};
+		return this.find(query, options);
+	}
 
+	findClosedByVisitorId(visitorId, options) {
+		const query = {
+			t: 'l',
+			'v._id': visitorId,
+			closedAt: {
+				$exists: true,
+			},
+		};
 		return this.find(query, options);
 	}
 

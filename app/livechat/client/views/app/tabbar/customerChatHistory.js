@@ -12,30 +12,24 @@ const ITEMS_COUNT = 50;
 Template.customerChatHistory.helpers({
 
 	hasChatHistory() {
-		// will return if user has any chatHistory or not
 		return Template.instance().hasHistory.get();
 	},
 	isSearching() {
 		return Template.instance().isSearching.get();
 	},
 	isAllChat() {
-		// will return is have to load all chat
 		return Template.instance().isAllChat.get();
 	},
 	isChatClicked() {
-		// will return that if you have clicked in a single chatHistory
 		return Template.instance().isChatClicked.get();
 	},
 	isfound() {
-		// will return if find any search result
 		return Template.instance().isFound.get();
 	},
 	searchResults() {
-		// will return search result
 		return 	Template.instance().searchResult.get();
 	},
 	previousChats() {
-		// will return pervious chats list
 		return Template.instance().history.get();
 	},
 	clickRid() {
@@ -58,7 +52,6 @@ const DEBOUNCE_TIME_FOR_SEARCH_DEPARTMENTS_IN_MS = 300;
 Template.customerChatHistory.onCreated(function() {
 	const currentData = Template.currentData();
 	this.rid = new ReactiveVar(currentData.rid);
-	this.filter = new ReactiveVar('');
 	this.isKeyUp = new ReactiveVar(false);
 	this.hasHistory = new ReactiveVar(false);
 	this.isFound = new ReactiveVar();
