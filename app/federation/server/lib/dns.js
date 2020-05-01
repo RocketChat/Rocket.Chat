@@ -1,7 +1,7 @@
 import dnsResolver from 'dns';
-import mem from 'mem';
 
 import { Meteor } from 'meteor/meteor';
+import mem from 'mem';
 
 import * as federationErrors from '../functions/errors';
 import { logger } from './logger';
@@ -12,8 +12,8 @@ const dnsResolveSRV = Meteor.wrapAsync(dnsResolver.resolveSrv);
 const dnsResolveTXT = Meteor.wrapAsync(dnsResolver.resolveTxt);
 
 const cacheMaxAge = 3600000; // one hour
-const memoizedDnsResolveSRV = mem(dnsResolveSRV, {maxAge: cacheMaxAge});
-const memoizedDnsResolveTXT = mem(dnsResolveTXT, {maxAge: cacheMaxAge});
+const memoizedDnsResolveSRV = mem(dnsResolveSRV, { maxAge: cacheMaxAge });
+const memoizedDnsResolveTXT = mem(dnsResolveTXT, { maxAge: cacheMaxAge });
 
 const hubUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://hub.rocket.chat';
 

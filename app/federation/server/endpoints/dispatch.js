@@ -104,7 +104,7 @@ const eventHandlers = {
 
 			if (persistedUser) {
 				// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed)
-				if(!persistedUser.federation) {
+				if (!persistedUser.federation) {
 					Users.update({ _id: persistedUser._id }, { $set: { federation: user.federation } });
 					federationAltered = true;
 				}
@@ -123,7 +123,7 @@ const eventHandlers = {
 			try {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
-					if(!persistedSubscription.federation) {
+					if (!persistedSubscription.federation) {
 						Subscriptions.update({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
 						federationAltered = true;
 					}
@@ -135,12 +135,12 @@ const eventHandlers = {
 					Subscriptions.insert(denormalizedSubscription);
 					federationAltered = true;
 				}
-			} catch(ex) {
-				logger.server.debug("unable to create subscription for user (" + user._id + ") in room (" + roomId + ") for federation ("+subscription.federation.origin+")");
+			} catch (ex) {
+				logger.server.debug(`unable to create subscription for user ( ${ user._id } ) in room (${ roomId })`);
 			}
 
 			// Refresh the servers list
-			if(federationAltered) {
+			if (federationAltered) {
 				FederationServers.refreshServers();
 
 				// Update the room's federation property
@@ -212,7 +212,7 @@ const eventHandlers = {
 
 			if (persistedMessage) {
 				// Update the federation
-				if(!persistedMessage.federation) {
+				if (!persistedMessage.federation) {
 					Messages.update({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
 				}
 			} else {
@@ -262,8 +262,8 @@ const eventHandlers = {
 					// Notify users
 					notifyUsersOnMessage(denormalizedMessage, room);
 					sendAllNotifications(denormalizedMessage, room);
-				} catch(err) {
-					logger.server.debug("Error on creating message: " + message._id);
+				} catch (err) {
+					logger.server.debug(`Error on creating message: ${ message._id }`);
 				}
 			}
 		}
@@ -308,7 +308,7 @@ const eventHandlers = {
 
 			const message = Messages.findOne({ _id: messageId });
 			if (message) {
-				processDeleteInThread(message)
+				processDeleteInThread(message);
 			}
 
 			// Remove the message
