@@ -27,8 +27,29 @@ class RoomEventsModel extends EventsModel {
 	constructor() {
 		super('message');
 
-		// this.tryEnsureIndex({ 'context.roomId': 1 });
+		this.tryEnsureIndex({ rid: 1, ts: 1 });
+		this.tryEnsureIndex({ ts: 1 });
+		this.tryEnsureIndex({ 'd.u._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ rid: 1, t: 1, 'd.u._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'd.expireAt': 1 }, { expireAfterSeconds: 0 });
 		this.tryEnsureIndex({ 'd.msg': 'text' }, { sparse: true });
+		this.tryEnsureIndex({ 'd.file._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'd.mentions.username': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'd.pinned': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'd.snippeted': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'd.location': '2dsphere' });
+		this.tryEnsureIndex({ 'd.unread': 1 }, { sparse: true });
+
+		// slack bridge
+		this.tryEnsureIndex({ 'd.slackBotId': 1, 'd.slackTs': 1 }, { sparse: true });
+
+		// discussions
+		this.tryEnsureIndex({ 'd.drid': 1 }, { sparse: true });
+		// threads
+		this.tryEnsureIndex({ 'd.tmid': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'd.tcount': 1, tlm: 1 }, { sparse: true });
+		// livechat
+		this.tryEnsureIndex({ 'd.navigation.token': 1 }, { sparse: true });
 	}
 
 	public ensureSrc(src: string) {
