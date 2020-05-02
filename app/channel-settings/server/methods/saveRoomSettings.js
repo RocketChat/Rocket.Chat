@@ -15,8 +15,9 @@ import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
+import { RoomSettingsEnum, roomTypes } from '../../../utils';
 
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
+const fields = ['featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
@@ -78,6 +79,12 @@ Meteor.methods({
 					action: 'Viewing_room_administration',
 				});
 			}
+			if (settings === 'featured' && !hasPermission(userId, 'view-room-administration')) {
+				throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
+					method: 'saveRoomSettings',
+					action: 'Viewing_room_administration',
+				});
+			}
 			if (setting === 'roomType' && value !== room.t && value === 'c' && !hasPermission(userId, 'create-c')) {
 				throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 					method: 'saveRoomSettings',
@@ -90,7 +97,7 @@ Meteor.methods({
 					action: 'Change_Room_Type',
 				});
 			}
-			if (setting === 'encrypted' && value !== room.encrypted && (room.t !== 'd' && room.t !== 'p')) {
+			if (setting === 'encrypted' && value !== room.encrypted && !roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
@@ -183,7 +190,7 @@ Meteor.methods({
 					}
 					break;
 				case 'systemMessages':
-					if (value !== room.sysMes) {
+					if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
 						saveRoomSystemMessages(rid, value, user);
 					}
 					break;
@@ -192,6 +199,9 @@ Meteor.methods({
 					break;
 				case 'default':
 					Rooms.saveDefaultById(rid, value);
+					break;
+				case 'featured':
+					Rooms.saveFeaturedById(rid, value);
 					break;
 				case 'retentionEnabled':
 					Rooms.saveRetentionEnabledById(rid, value);
@@ -210,6 +220,9 @@ Meteor.methods({
 					break;
 				case 'encrypted':
 					Rooms.saveEncryptedById(rid, value);
+					break;
+				case 'favorite':
+					Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 					break;
 			}
 		});

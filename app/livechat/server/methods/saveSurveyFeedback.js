@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
-import { Rooms, LivechatVisitors } from '../../../models';
+import { LivechatRooms, LivechatVisitors } from '../../../models';
 
 Meteor.methods({
 	'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {
@@ -11,7 +11,7 @@ Meteor.methods({
 		check(formData, [Match.ObjectIncluding({ name: String, value: String })]);
 
 		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
-		const room = Rooms.findOneById(visitorRoom);
+		const room = LivechatRooms.findOneById(visitorRoom);
 
 		if (visitor !== undefined && room !== undefined && room.v !== undefined && room.v.token === visitor.token) {
 			const updateData = {};
@@ -23,7 +23,7 @@ Meteor.methods({
 				}
 			}
 			if (!_.isEmpty(updateData)) {
-				return Rooms.updateSurveyFeedbackById(room._id, updateData);
+				return LivechatRooms.updateSurveyFeedbackById(room._id, updateData);
 			}
 		}
 	},

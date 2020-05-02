@@ -1,3 +1,5 @@
+import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
+
 export class AppListenerBridge {
 	constructor(orch) {
 		this.orch = orch;
@@ -35,5 +37,40 @@ export class AppListenerBridge {
 		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
 		// 	this.orch.debugLog(e.stack);
 		// }
+	}
+
+	async externalComponentEvent(inte, externalComponent) {
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, externalComponent);
+
+		return result;
+	}
+
+	async uiKitInteractionEvent(inte, action) {
+		return this.orch.getManager().getListenerManager().executeListener(inte, action);
+
+		// try {
+
+		// } catch (e) {
+		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
+		// 	this.orch.debugLog(e.stack);
+		// }
+	}
+
+	async livechatEvent(inte, data) {
+		switch (inte) {
+			case AppInterface.IPostLivechatRoomStarted:
+			case AppInterface.IPostLivechatRoomClosed:
+				const room = this.orch.getConverters().get('rooms').convertRoom(data);
+
+				return this.orch.getManager().getListenerManager().executeListener(inte, room);
+			case AppInterface.IPostLivechatAgentAssigned:
+			case AppInterface.IPostLivechatAgentUnassigned:
+				return this.orch.getManager().getListenerManager().executeListener(inte, {
+					room: this.orch.getConverters().get('rooms').convertRoom(data.room),
+					agent: this.orch.getConverters().get('users').convertToApp(data.user),
+				});
+			default:
+				break;
+		}
 	}
 }

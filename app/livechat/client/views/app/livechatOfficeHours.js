@@ -1,18 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 
-import { t, handleError } from '../../../../utils';
+import { t, handleError, APIClient } from '../../../../utils/client';
 import { settings } from '../../../../settings';
-import { LivechatOfficeHour } from '../../collections/livechatOfficeHour';
 import './livechatOfficeHours.html';
 
 Template.livechatOfficeHours.helpers({
 	days() {
-		return LivechatOfficeHour.find({}, { sort: { code: 1 } });
+		return Template.instance().officeHours.get();
 	},
 	startName(day) {
 		return `${ day.day }_start`;
@@ -42,6 +41,16 @@ Template.livechatOfficeHours.helpers({
 	},
 	enableOfficeHoursFalseChecked() {
 		if (!Template.instance().enableOfficeHours.get()) {
+			return 'checked';
+		}
+	},
+	allowAgentsOnlineOutOfficeHoursTrueChecked() {
+		if (Template.instance().allowAgentsOnlineOutOfficeHours.get()) {
+			return 'checked';
+		}
+	},
+	allowAgentsOnlineOutOfficeHoursFalseChecked() {
+		if (!Template.instance().allowAgentsOnlineOutOfficeHours.get()) {
 			return 'checked';
 		}
 	},
@@ -97,6 +106,8 @@ Template.livechatOfficeHours.events({
 			}
 		}
 
+		settings.set('Livechat_allow_online_agents_outside_office_hours', instance.allowAgentsOnlineOutOfficeHours.get());
+
 		settings.set('Livechat_enable_office_hours', instance.enableOfficeHours.get(), (err/* , success*/) => {
 			if (err) {
 				return handleError(err);
@@ -106,7 +117,7 @@ Template.livechatOfficeHours.events({
 	},
 });
 
-Template.livechatOfficeHours.onCreated(function() {
+Template.livechatOfficeHours.onCreated(async function() {
 	this.dayVars = {
 		Monday: {
 			start: new ReactiveVar('08:00'),
@@ -144,22 +155,20 @@ Template.livechatOfficeHours.onCreated(function() {
 			open: new ReactiveVar(false),
 		},
 	};
+	this.officeHours = new ReactiveVar([]);
+	this.enableOfficeHours = new ReactiveVar();
+	this.allowAgentsOnlineOutOfficeHours = new ReactiveVar();
 
-	this.autorun(() => {
-		this.subscribe('livechat:officeHour');
-
-		if (this.subscriptionsReady()) {
-			LivechatOfficeHour.find().forEach(function(d) {
-				Template.instance().dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
-				Template.instance().dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
-				Template.instance().dayVars[d.day].open.set(d.open);
-			});
-		}
+	const { officeHours } = await APIClient.v1.get('livechat/office-hours');
+	this.officeHours.set(officeHours);
+	officeHours.forEach((d) => {
+		this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
+		this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
+		this.dayVars[d.day].open.set(d.open);
 	});
-
-	this.enableOfficeHours = new ReactiveVar(null);
 
 	this.autorun(() => {
 		this.enableOfficeHours.set(settings.get('Livechat_enable_office_hours'));
+		this.allowAgentsOnlineOutOfficeHours.set(settings.get('Livechat_allow_online_agents_outside_office_hours'));
 	});
 });

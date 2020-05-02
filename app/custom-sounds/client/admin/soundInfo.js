@@ -25,6 +25,7 @@ Template.soundInfo.helpers({
 			tabBar: instance.data.tabBar,
 			data: instance.data.data,
 			sound: instance.sound.get(),
+			onSuccess: instance.onSuccess,
 			back(name) {
 				instance.editingSound.set();
 
@@ -68,7 +69,7 @@ Template.soundInfo.events({
 							timer: 2000,
 							showConfirmButton: false,
 						});
-
+						instance.onSuccess();
 						instance.data.tabBar.showGroup('custom-sounds');
 						instance.data.tabBar.close();
 					}
@@ -91,6 +92,7 @@ Template.soundInfo.onCreated(function() {
 	this.editingSound = new ReactiveVar();
 
 	this.loadedName = new ReactiveVar();
+	this.onSuccess = Template.currentData().onSuccess;
 
 	this.autorun(() => {
 		const data = Template.currentData();
@@ -100,7 +102,7 @@ Template.soundInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const data = Template.currentData();
+		const data = Template.currentData().sound;
 		const sound = this.sound.get();
 		if (sound && sound.name != null) {
 			this.loadedName.set(sound.name);
@@ -110,7 +112,7 @@ Template.soundInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		const data = Template.currentData();
+		const data = Template.currentData().sound;
 		this.sound.set(data);
 	});
 });

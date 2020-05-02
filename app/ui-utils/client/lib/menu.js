@@ -1,8 +1,8 @@
 import { Session } from 'meteor/session';
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import { lazyloadtick } from '../../../lazy-load';
 import { isRtl } from '../../../utils';
 
 const sideNavW = 280;
@@ -42,7 +42,7 @@ export const menu = new class extends EventEmitter {
 	}
 
 	get isRtl() {
-		return isRtl(localStorage.getItem('userLanguage'));
+		return isRtl(Meteor._localStorage.getItem('userLanguage'));
 	}
 
 	touchstart(e) {
@@ -63,7 +63,6 @@ export const menu = new class extends EventEmitter {
 		if (this.touchstartX == null) {
 			return;
 		}
-		lazyloadtick();
 		const [touch] = e.touches;
 		const diffX = touch.clientX - this.touchstartX;
 		const diffY = touch.clientY - this.touchstartY;

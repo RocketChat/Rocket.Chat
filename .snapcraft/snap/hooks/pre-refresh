@@ -1,0 +1,25 @@
+#!/bin/bash
+
+export PATH="$SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/lib/x86_64-linux-gnu:$SNAP/usr/lib/x86_64-linux-gnu"
+export LD_LIBRARY_PATH=$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
+
+TIMESTAMP=$(date +"%Y%m%d.%H%M")
+
+# stop rocketchat
+snapctl set snap-refreshing=true
+
+rocketchatpid=$(pgrep -f "node $SNAP/main.js")
+kill -9 $rocketchatpid
+if ! [ $? == 0 ]; then
+    echo "Failed to stop rocketchat service" > $SNAP_COMMON/refresh_${TIMESTAMP}.log
+fi
+
+backup="$(snapctl get backup-on-refresh)"
+if [ $backup == "enable" ]; then
+    backupdb
+    if ! [ $? == 0 ]; then
+        echo "Failed rocketchat database backup before refresh" >> $SNAP_COMMON/refresh_${TIMESTAMP}.log
+    fi
+fi
+

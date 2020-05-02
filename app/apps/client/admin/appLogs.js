@@ -1,7 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 import hljs from 'highlight.js';
@@ -96,8 +96,8 @@ Template.appLogs.events({
 		$(e.currentTarget).find('.button-down').removeClass('arrow-up');
 	},
 
-	'click .js-cancel': (e, t) => {
-		FlowRouter.go('app-manage', { appId: t.app.get().id }, { version: FlowRouter.getQueryParam('version') });
+	'click .js-cancel': () => {
+		FlowRouter.go('apps');
 	},
 
 	'click .js-refresh': (e, t) => {

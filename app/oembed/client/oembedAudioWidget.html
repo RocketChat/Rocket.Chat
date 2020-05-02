@@ -1,9 +1,8 @@
 <template name="oembedAudioWidget">
 	<a href="{{url}}" rel="noopener noreferrer" target="_blank">
 		{{#if parsedUrl}}
-			{{#if collapsed}}
-				<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-			{{else}}
+			{{> collapseArrow collapsedMedia=collapsedMediaVar}}
+			{{#unless collapsed}}
 				<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
 				<blockquote class="message-oembed background-transparent-darker-before">
 					<audio controls>
@@ -11,7 +10,7 @@
 						Your browser does not support the audio element.
 					</audio>
 				</blockquote>
-			{{/if}}
+			{{/unless}}
 		{{/if}}
 	</a>
 </template>

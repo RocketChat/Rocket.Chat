@@ -44,9 +44,24 @@ WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 	});
 }));
 
+let Support_Cordova_App = false;
+settings.get('Support_Cordova_App', (key, value) => {
+	Support_Cordova_App = value;
+});
+
 WebApp.rawConnectHandlers.use(function(req, res, next) {
+	// XSS Protection for old browsers (IE)
+	res.setHeader('X-XSS-Protection', '1');
+
+	if (Support_Cordova_App !== true) {
+		return next();
+	}
+
 	if (/^\/(api|_timesync|sockjs|tap-i18n)(\/|$)/.test(req.url)) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
+	}
+	if (settings.get('Iframe_Restrict_Access')) {
+		res.setHeader('X-Frame-Options', settings.get('Iframe_X_Frame_Options'));
 	}
 
 	const { setHeader } = res;
@@ -56,6 +71,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 		}
 		return setHeader.apply(this, [key, val, ...args]);
 	};
+
 	return next();
 });
 

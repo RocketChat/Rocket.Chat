@@ -1,5 +1,5 @@
 <template name="livechatCustomFieldForm">
-	{{#requiresPermission 'view-livechat-manager'}}
+	{{#requiresPermission 'view-livechat-customfields'}}
 		<form id="customField-form" data-id="{{customField._id}}">
 			<div class="rocket-form">
 				{{#if Template.subscriptionsReady}}
@@ -32,6 +32,12 @@
 									<option value="visible" selected="{{$eq customField.visibility 'visible'}}">{{_ "Visible"}}</option>
 									<option value="hidden" selected="{{$eq customField.visibility 'hidden'}}">{{_ "Hidden"}}</option>
 								</select>
+							</div>
+						</div>
+						<div class="input-line">
+							<label>{{_ "Regexp_validation"}}</label>
+							<div>
+								<input type="text" class="rc-input__element" name="regexp" value="{{customField.regexp}}" placeholder="{{_ "Regexp_validation"}}" />
 							</div>
 						</div>
 					</fieldset>

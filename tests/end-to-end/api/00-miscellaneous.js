@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
 
@@ -125,17 +127,17 @@ describe('miscellaneous', function() {
 					'enableAutoAway',
 					// 'highlights',
 					'desktopNotificationDuration',
+					'desktopNotificationRequireInteraction',
 					'messageViewMode',
 					'hideUsernames',
 					'hideRoles',
 					'hideAvatars',
 					'hideFlexTab',
 					'sendOnEnter',
-					'roomCounterSidebar',
 					'idleTimeLimit',
 					'sidebarShowFavorites',
 					'sidebarShowUnread',
-					// 'sidebarSortby',
+					'sidebarSortby',
 					'sidebarViewMode',
 					'sidebarHideAvatar',
 					'sidebarGroupByType',

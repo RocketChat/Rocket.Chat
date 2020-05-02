@@ -1,7 +1,7 @@
 <template name="room">
 	<div class="main-content-flex">
 		<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
-			{{# unless embeddedVersion}}
+			{{# if showTopNavbar}}
 				{{# headerRoom}}
 					{{#with flexData}}
 						<div class="rc-header__block rc-header__block-action">
@@ -9,14 +9,14 @@
 						</div>
 					{{/with}}
 				{{/headerRoom}}
-			{{/unless}}
+			{{/if}}
 			<div class="messages-container-wrapper">
-				<div class="messages-container-main dropzone">
-					<div class="dropzone-overlay background-transparent-darkest color-content-background-color">{{_ "Drop_to_upload_file"}}</div>
+				<div class="messages-container-main dropzone {{dragAndDrop}}">
+					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 					{{#unless embeddedVersion}}
-						{{#if showAnnouncement}}
-						<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline roomAnnouncement}}">
-							<p>{{{RocketChatMarkdownInline roomAnnouncement}}}</p>
+						{{#if announcement}}
+						<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline announcement}}">
+							<p>{{{RocketChatMarkdownInline announcement}}}</p>
 						</div>
 						{{/if}}
 					{{/unless}}
@@ -87,7 +87,7 @@
 								<div class="leader-name">{{name}}</div>
 								<div class="leader-status userStatus">
 									<span class="color-ball status-bg-{{status}}"></span>
-									<span class="status-text leader-status-text">{{_ statusDisplay}}</span>
+									<span class="status-text leader-status-text">{{statusDisplay}}</span>
 								</div>
 								<a class="chat-now" href="{{chatNowLink}}">{{_ "Chat_Now"}}</a>
 							</div>
@@ -121,20 +121,15 @@
 													{{/unless}}
 												</div>
 											{{/if}}
-											{{_ "Start_of_conversation"}}
+
+											{{> RoomForeword }}
 										</li>
 									{{/if}}
 								{{/if}}
 
-								{{# if useNrr}}
-									{{# with messageContext}}
-										{{#each msg in messagesHistory}}{{> nrr nrrargs 'message' shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
-									{{/with}}
-								{{else}}
-									{{# with messageContext}}
-										{{#each msg in messagesHistory}}{{> message shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
-									{{/with}}
-								{{/if}}
+								{{# with messageContext}}
+									{{#each msg in messagesHistory}}{{> message index=@index shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+								{{/with}}
 
 								{{#if hasMoreNext}}
 									<li class="load-more">
@@ -144,13 +139,6 @@
 									</li>
 								{{/if}}
 							</ul>
-							{{#if hasMoreNext}}
-							<li class="load-more">
-								{{#if isLoading}}
-								{{> loading}}
-								{{/if}}
-							</li>
-							{{/if}}
 						</div>
 					</div>
 					<footer class="footer border-component-color">
