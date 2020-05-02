@@ -10,7 +10,8 @@ RUN set -x \
  && npm cache clear --force \
  && chown -R rocketchat:rocketchat /app
 
-USER rocketchat
+# user rocketchat
+USER 65533
 
 VOLUME /app/uploads
 
