@@ -29,6 +29,7 @@ export const fields = {
 	lastMessage: 1,
 	retention: 1,
 	prid: 1,
+	usersCount: 1,
 
 	// @TODO create an API to register this fields based on room type
 	livechatData: 1,
@@ -51,6 +52,11 @@ export const fields = {
 	e2eKeyId: 1,
 	departmentId: 1,
 	servedBy: 1,
+	priorityId: 1,
+
+	// fields used by DMs
+	usernames: 1,
+	uids: 1,
 };
 
 const roomMap = (record) => {
@@ -90,7 +96,7 @@ Meteor.methods({
 
 		const roomFind = roomTypes.getRoomFind(type);
 
-		const room = roomFind ? roomFind.call(this, name) : Rooms.findByTypeAndName(type, name);
+		const room = roomFind ? roomFind.call(this, name) : Rooms.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });

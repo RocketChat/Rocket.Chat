@@ -6,6 +6,8 @@ import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
+import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
+import { FileUpload } from '../../../file-upload/server';
 
 /**
  * IMPORTANT
@@ -16,8 +18,26 @@ import { Markdown } from '../../../markdown/server';
  * is going to be rendered in the href attribute of a
  * link.
  */
-const ValidHref = Match.Where((value) => {
+const ValidFullURLParam = Match.Where((value) => {
 	check(value, String);
+
+	if (!isURL(value) && !value.startsWith(FileUpload.getPath())) {
+		throw new Error('Invalid href value provided');
+	}
+
+	if (/^javascript:/i.test(value)) {
+		throw new Error('Invalid href value provided');
+	}
+
+	return true;
+});
+
+const ValidPartialURLParam = Match.Where((value) => {
+	check(value, String);
+
+	if (!isRelativeURL(value) && !isURL(value) && !value.startsWith(FileUpload.getPath())) {
+		throw new Error('Invalid href value provided');
+	}
 
 	if (/^javascript:/i.test(value)) {
 		throw new Error('Invalid href value provided');
@@ -45,7 +65,7 @@ const validateAttachmentsFields = (attachmentField) => {
 	check(attachmentField, objectMaybeIncluding({
 		short: Boolean,
 		title: String,
-		value: Match.OneOf(String, Match.Integer, Boolean),
+		value: Match.OneOf(String, Number, Boolean),
 	}));
 
 	if (typeof attachmentField.value !== 'undefined') {
@@ -57,8 +77,8 @@ const validateAttachmentsActions = (attachmentActions) => {
 	check(attachmentActions, objectMaybeIncluding({
 		type: String,
 		text: String,
-		url: ValidHref,
-		image_url: String,
+		url: ValidFullURLParam,
+		image_url: ValidFullURLParam,
 		is_webview: Boolean,
 		webview_height_ratio: String,
 		msg: String,
@@ -70,27 +90,27 @@ const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
-		ts: Match.OneOf(String, Match.Integer),
-		thumb_url: String,
+		ts: Match.OneOf(String, Number),
+		thumb_url: ValidFullURLParam,
 		button_alignment: String,
 		actions: [Match.Any],
-		message_link: ValidHref,
+		message_link: ValidFullURLParam,
 		collapsed: Boolean,
 		author_name: String,
-		author_link: ValidHref,
-		author_icon: String,
+		author_link: ValidFullURLParam,
+		author_icon: ValidFullURLParam,
 		title: String,
-		title_link: ValidHref,
+		title_link: ValidFullURLParam,
 		title_link_download: Boolean,
 		image_dimensions: Object,
-		image_url: String,
+		image_url: ValidFullURLParam,
 		image_preview: String,
 		image_type: String,
 		image_size: Number,
-		audio_url: String,
+		audio_url: ValidFullURLParam,
 		audio_type: String,
 		audio_size: Number,
-		video_url: String,
+		video_url: ValidFullURLParam,
 		video_type: String,
 		video_size: Number,
 		fields: [Match.Any],
@@ -114,8 +134,9 @@ const validateMessage = (message) => {
 		text: String,
 		alias: String,
 		emoji: String,
-		avatar: String,
+		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
+		blocks: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -157,7 +178,11 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
+			if (settings.get('Apps_Framework_Development_Mode')) {
+				console.log('A Rocket.Chat App prevented the message sending.', message);
+			}
+
+			return;
 		}
 
 		let result;
@@ -198,6 +223,10 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			}, message);
 			message._id = _id;
 		} else {
+			const messageAlreadyExists = message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
+			if (messageAlreadyExists) {
+				return;
+			}
 			message._id = Messages.insert(message);
 		}
 

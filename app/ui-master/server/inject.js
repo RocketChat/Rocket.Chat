@@ -51,6 +51,13 @@ Meteor.startup(() => {
 		`);
 	}
 
+	settings.get('API_Use_REST_For_DDP_Calls', (key, value) => {
+		if (!value) {
+			return injectIntoHead(key, '');
+		}
+		injectIntoHead(key, '<script>window.USE_REST_FOR_DDP_CALLS = true;</script>');
+	});
+
 	settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 		const standardFavicons = `
 			<link rel="icon" sizes="16x16" type="image/png" href="assets/favicon_16.png" />
@@ -170,13 +177,19 @@ settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
 	if (value) {
 		Inject.rawModHtml(key, (html) => {
 			const script = `
-				<script>
-					if (Meteor._localStorage._data === undefined && window.sessionStorage) {
-						Meteor._localStorage = window.sessionStorage;
-					}
-				</script>
+<script>
+	window.addEventListener('load', function() {
+		if (window.localStorage) {
+			Object.keys(window.localStorage).forEach(function(key) {
+				window.sessionStorage.setItem(key, window.localStorage.getItem(key));
+			});
+			window.localStorage.clear();
+			Meteor._localStorage = window.sessionStorage;
+		}
+	});
+</script>
 			`;
-			return html.replace(/<\/body>/, `${ script }\n</body>`);
+			return html + script;
 		});
 	} else {
 		Inject.rawModHtml(key, (html) => html);

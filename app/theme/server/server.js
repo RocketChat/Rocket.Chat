@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 import _ from 'underscore';
 import less from 'less';
-import Autoprefixer from 'less-plugin-autoprefix';
+import Autoprefixer from 'less-plugin-autoprefixer';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
@@ -106,6 +106,7 @@ export const theme = new class {
 		this.variables[name] = {
 			type,
 			value,
+			editor,
 		};
 		if (persist) {
 			const config = {

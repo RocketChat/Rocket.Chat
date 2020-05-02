@@ -1,8 +1,15 @@
 <template name="tabs">
 	<div class="tabs">
-		<div class="tabs-wrapper">
-			{{#each tabs}}
-				<div class="tab {{#if isActive value}}active{{/if}}" data-value={{value}}>{{label}}</div>
+		<div class="tabs-wrapper" role="tablist">
+			{{#each tab in tabs}}
+				<button
+					class="tab {{#if isActive tab.value}}active{{/if}}"
+					data-value={{tab.value}}
+					{{ariaSelected tab.value}}
+					role="tab"
+				>
+					<span tabindex="-1">{{tab.label}}</span>
+				</button>
 			{{/each}}
 		</div>
 	</div>

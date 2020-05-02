@@ -4,7 +4,8 @@ import _ from 'underscore';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { SystemLogger } from '../../../logger';
-import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
+import { LivechatExternalMessage } from '../../../models/server';
+import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 let knowledgeEnabled = false;
 let apiaiKey = '';
@@ -31,6 +32,10 @@ callbacks.add('afterSaveMessage', function(message, room) {
 
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
 		return message;
+	}
+
+	if (message.file) {
+		message = normalizeMessageFileUpload(message);
 	}
 
 	// if the message hasn't a token, it was not sent by the visitor, so ignore it

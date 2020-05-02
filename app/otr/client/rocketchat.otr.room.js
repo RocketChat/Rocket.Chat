@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
 import toastr from 'toastr';
@@ -12,12 +12,13 @@ import toastr from 'toastr';
 import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
 import { modal } from '../../ui-utils';
+import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
 		this.userId = userId;
 		this.roomId = roomId;
-		this.peerId = roomId.replace(userId, '');
+		this.peerId = getUidDirectMessage(roomId);
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 
@@ -260,6 +261,7 @@ OTR.Room = class {
 						title: TAPi18n.__('OTR'),
 						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
 						html: true,
+						confirmButtonText: TAPi18n.__('Ok'),
 					});
 				}
 				break;

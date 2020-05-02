@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { slashCommands } from '../../utils';
 import { Users, Subscriptions } from '../../models';
@@ -55,4 +55,5 @@ slashCommands.add('mute', function Mute(command, params, item) {
 }, {
 	description: 'Mute_someone_in_room',
 	params: '@username',
+	permission: 'mute-user',
 });

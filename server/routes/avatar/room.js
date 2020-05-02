@@ -14,7 +14,7 @@ const getRoom = (roomId) => {
 	const room = Rooms.findOneById(roomId, { fields: { t: 1, prid: 1, name: 1, fname: 1 } });
 
 	// if it is a discussion, returns the parent room
-	if (room.prid) {
+	if (room && room.prid) {
 		return Rooms.findOneById(room.prid, { fields: { t: 1, name: 1, fname: 1 } });
 	}
 	return room;
@@ -23,6 +23,12 @@ const getRoom = (roomId) => {
 export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 	const roomId = req.url.substr(1);
 	const room = getRoom(roomId);
+
+	if (!room) {
+		res.writeHead(404);
+		res.end();
+		return;
+	}
 
 	const roomName = roomTypes.getConfig(room.t).roomName(room);
 

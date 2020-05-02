@@ -6,7 +6,7 @@ import { Rooms } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { EmojiPicker } from '../../emoji';
-import { tooltip } from '../../tooltip';
+import { tooltip } from '../../ui/client/components/tooltip';
 
 Template.room.events({
 	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
@@ -57,7 +57,7 @@ Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'reaction-message',
 		icon: 'add-reaction',
-		label: 'Reactions',
+		label: 'Add_Reaction',
 		context: [
 			'message',
 			'message-mobile',
@@ -93,7 +93,7 @@ Meteor.startup(function() {
 
 			return true;
 		},
-		order: 22,
-		group: 'message',
+		order: -2,
+		group: ['message', 'menu'],
 	});
 });

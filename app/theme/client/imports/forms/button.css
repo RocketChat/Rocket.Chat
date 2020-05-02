@@ -20,6 +20,8 @@
 
 	height: 40px;
 
+	min-height: 40px;
+
 	padding: 0 1.5rem;
 
 	cursor: pointer;
@@ -54,17 +56,6 @@
 
 	&:active::before {
 		top: -2px;
-	}
-
-	&::before {
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-
-		content: "";
-		cursor: pointer;
 	}
 
 	&:disabled {
@@ -128,6 +119,7 @@
 
 	&--small {
 		height: var(--button-height-small);
+		min-height: var(--button-height-small);
 		padding: var(--button-padding-small);
 
 		font-size: var(--button-text-size-small);
@@ -190,6 +182,8 @@
 		flex-direction: row;
 
 		margin: 10px -5px;
+
+		justify-content: flex-end;
 
 		& > .rc-button {
 			margin: 0 5px;

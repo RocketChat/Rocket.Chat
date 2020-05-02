@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import hljs from 'highlight.js';
@@ -10,58 +10,73 @@ import moment from 'moment';
 import toastr from 'toastr';
 
 import { handleError } from '../../../utils';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
-import { ChatIntegrations, ChatIntegrationHistory } from '../collections';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import { integrations } from '../../lib/rocketchat';
 import { SideNav } from '../../../ui-utils/client';
+import { APIClient } from '../../../utils/client';
+import { getIntegration } from '../getIntegration';
+import { integrationHistoryStreamer } from '../streamer';
 
-Template.integrationsOutgoingHistory.onCreated(function _integrationsOutgoingHistoryOnCreated() {
-	this.hasMore = new ReactiveVar(false);
-	this.limit = new ReactiveVar(25);
-	this.autorun(() => {
-		const id = this.data && this.data.params && this.data.params().id;
+const HISTORY_COUNT = 25;
 
-		if (id) {
-			const sub = this.subscribe('integrations');
-			if (sub.ready()) {
-				let intRecord;
+Template.integrationsOutgoingHistory.onCreated(async function _integrationsOutgoingHistoryOnCreated() {
+	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
+	this.isLoading = new ReactiveVar(false);
+	this.history = new ReactiveVar([]);
+	this.offset = new ReactiveVar(0);
+	this.total = new ReactiveVar(0);
 
-				if (hasAllPermission('manage-integrations')) {
-					intRecord = ChatIntegrations.findOne({ _id: id });
-				} else if (hasAllPermission('manage-own-integrations')) {
-					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
-				}
+	if (params && params.id) {
+		integrationHistoryStreamer.on(params.id, ({ type, id, diff, data }) => {
+			const histories = this.history.get();
 
-				if (!intRecord) {
-					toastr.error(TAPi18n.__('No_integration_found'));
-					FlowRouter.go('admin-integrations');
-				}
-
-				const historySub = this.subscribe('integrationHistory', intRecord._id, this.limit.get());
-				if (historySub.ready()) {
-					if (ChatIntegrationHistory.find().count() > this.limit.get()) {
-						this.hasMore.set(true);
-					}
-				}
+			if (type === 'inserted') {
+				this.history.set([{ ...data }].concat(histories));
+				return;
 			}
-		} else {
+
+			if (type === 'updated') {
+				const history = histories.find(({ _id }) => _id === id);
+				Object.assign(history, diff);
+				this.history.set(histories);
+				return;
+			}
+
+			if (type === 'removed') {
+				this.history.set([]);
+			}
+		});
+
+		const integration = await getIntegration(params.id, Meteor.userId());
+
+		if (!integration) {
 			toastr.error(TAPi18n.__('No_integration_found'));
-			FlowRouter.go('admin-integrations');
+			return FlowRouter.go('admin-integrations');
 		}
-	});
+		this.autorun(async () => {
+			this.isLoading.set(true);
+			const { history, total } = await APIClient.v1.get(`integrations.history?id=${ integration._id }&count=${ HISTORY_COUNT }&offset=${ this.offset.get() }`);
+			this.history.set(this.history.get().concat(history));
+			this.total.set(total);
+			this.isLoading.set(false);
+		});
+	} else {
+		toastr.error(TAPi18n.__('No_integration_found'));
+		FlowRouter.go('admin-integrations');
+	}
 });
 
 Template.integrationsOutgoingHistory.helpers({
 	hasPermission() {
-		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission(['manage-outgoing-integrations', 'manage-own-outgoing-integrations']);
 	},
 
-	hasMore() {
-		return Template.instance().hasMore.get();
+	isLoading() {
+		return Template.instance().isLoading.get();
 	},
 
 	histories() {
-		return ChatIntegrationHistory.find().fetch().sort((a, b) => {
+		return Template.instance().history.get().sort((a, b) => {
 			if (+a._updatedAt < +b._updatedAt) {
 				return 1;
 			}
@@ -155,12 +170,15 @@ Template.integrationsOutgoingHistory.events({
 			}
 
 			toastr.success(TAPi18n.__('Integration_History_Cleared'));
+
+			t.history.set([]);
 		});
 	},
 
 	'scroll .content': _.throttle((e, instance) => {
-		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
-			instance.limit.set(instance.limit.get() + 25);
+		const history = instance.history.get();
+		if ((e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) && instance.total.get() > history.length) {
+			instance.offset.set(instance.offset.get() + HISTORY_COUNT);
 		}
 	}, 200),
 });

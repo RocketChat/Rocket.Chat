@@ -36,4 +36,31 @@ export class AppListenerBridge {
 		// 	this.orch.debugLog(e.stack);
 		// }
 	}
+
+	async externalComponentEvent(inte, externalComponent) {
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, externalComponent);
+
+		return result;
+	}
+
+	async uiKitInteractionEvent(inte, action) {
+		return this.orch.getManager().getListenerManager().executeListener(inte, action);
+
+		// try {
+
+		// } catch (e) {
+		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
+		// 	this.orch.debugLog(e.stack);
+		// }
+	}
+
+	async livechatEvent(inte, room) {
+		const rm = this.orch.getConverters().get('rooms').convertRoom(room);
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, rm);
+
+		if (typeof result === 'boolean') {
+			return result;
+		}
+		return this.orch.getConverters().get('rooms').convertAppRoom(result);
+	}
 }

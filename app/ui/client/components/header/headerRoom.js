@@ -1,5 +1,6 @@
 import toastr from 'toastr';
 import { Meteor } from 'meteor/meteor';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -12,15 +13,9 @@ import { settings } from '../../../../settings';
 import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';
+import { getUidDirectMessage } from '../../../../ui-utils/client/lib/getUidDirectMessage';
 
-const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
-
-const favoritesEnabled = () => settings.get('Favorite_Rooms');
-
-const isDiscussion = ({ _id }) => {
-	const room = ChatRoom.findOne({ _id });
-	return !!(room && room.prid);
-};
+import './headerRoom.html';
 
 const getUserStatus = (id) => {
 	const roomData = Session.get(`roomData${ id }`);
@@ -33,43 +28,35 @@ const getUserStatusText = (id) => {
 };
 
 Template.headerRoom.helpers({
+	isDiscussion: () => Template.instance().state.get('discussion'),
+	hasPresence() {
+		const room = Rooms.findOne(this._id);
+		return !roomTypes.getConfig(room.t).isGroupChat(room);
+	},
+	isDirect() { return Rooms.findOne(this._id).t === 'd'; },
+	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
+	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
+	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
+	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
+	uid() {
+		return getUidDirectMessage(this._id);
+	},
 	back() {
 		return Template.instance().data.back;
 	},
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return roomTypes.getSecondaryRoomName(roomData.t, roomData) || roomTypes.getRoomName(roomData.t, roomData);
+		return roomTypes.getConfig(roomData.t).getAvatarPath(roomData);
 	},
 	buttons() {
 		return TabBar.getButtons();
-	},
-
-	isDiscussion() {
-		return isDiscussion(Template.instance().data);
 	},
 
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
-
-	state() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return ' favorite-room'; }
-		return 'empty';
-	},
-
-	favoriteLabel() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return 'Unfavorite'; }
-		return 'Favorite';
-	},
-
-	isDirect() {
-		return Rooms.findOne(this._id).t === 'd';
-	},
-
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -137,10 +124,6 @@ Template.headerRoom.helpers({
 		return t('offline');
 	},
 
-	showToggleFavorite() {
-		return !isDiscussion(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
-	},
-
 	fixedHeight() {
 		return Template.instance().data.fixedHeight;
 	},
@@ -165,14 +148,16 @@ Template.headerRoom.events({
 		return false;
 	},
 
-	'click .rc-header__toggle-favorite'(event) {
+	'click .js-favorite'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();
+		event.currentTarget.blur();
+
 		return Meteor.call(
 			'toggleFavorite',
 			this._id,
-			!$(event.currentTarget).hasClass('favorite-room'),
-			(err) => err && handleError(err)
+			!instance.state.get('favorite'),
+			(err) => err && handleError(err),
 		);
 	},
 
@@ -188,9 +173,34 @@ Template.headerRoom.events({
 		if (hasAllPermission('edit-room', this._id)) {
 			call('saveRoomSettings', this._id, 'encrypted', !(room && room.encrypted)).then(() => {
 				toastr.success(
-					t('Encrypted_setting_changed_successfully')
+					t('Encrypted_setting_changed_successfully'),
 				);
 			});
+		}
+	},
+	'click .rc-header__content.rc-header__block'(event, instance) {
+		const { tabBar } = instance.parentTemplate();
+		const $flexTab = $('.flex-tab-container .flex-tab');
+
+		if (tabBar.getState() === 'opened' && (tabBar.getTemplate() === 'channelSettings' || tabBar.getTemplate() === 'membersList')) {
+			$flexTab.attr('template', '');
+			return tabBar.close();
+		}
+
+		if (instance.currentChannel.t !== 'd') {
+			$flexTab.attr('template', 'channelSettings');
+			tabBar.setData({
+				label: 'Room_Info',
+				icon: 'info-circled',
+			});
+			tabBar.open(TabBar.getButton('channel-settings'));
+		} else {
+			$flexTab.attr('template', 'membersList');
+			tabBar.setData({
+				label: 'User_Info',
+				icon: 'info-user',
+			});
+			tabBar.open(TabBar.getButton('user-info'));
 		}
 	},
 });
@@ -208,7 +218,7 @@ const loadUserStatusText = () => {
 		return;
 	}
 
-	const userId = id.replace(Meteor.userId(), '');
+	const userId = getUidDirectMessage(id);
 
 	// If the user is already on the local collection, the method call is not necessary
 	const found = Meteor.users.findOne(userId, { fields: { _id: 1 } });
@@ -224,6 +234,31 @@ const loadUserStatusText = () => {
 };
 
 Template.headerRoom.onCreated(function() {
+	this.state = new ReactiveDict();
+
+	const isFavoritesEnabled = () => settings.get('Favorite_Rooms');
+
+	const isDiscussion = (rid) => {
+		const room = ChatRoom.findOne({ _id: rid });
+		return !!(room && room.prid);
+	};
+
+	this.autorun(() => {
+		const { _id: rid } = Template.currentData();
+
+		this.state.set({
+			rid,
+			discussion: isDiscussion(rid),
+		});
+
+		if (!this.state.get('discussion') && isFavoritesEnabled()) {
+			const subscription = ChatSubscription.findOne({ rid }, { fields: { f: 1 } });
+			this.state.set('favorite', !!(subscription && subscription.f));
+		} else {
+			this.state.set('favorite', null);
+		}
+	});
+
 	this.currentChannel = (this.data && this.data._id && Rooms.findOne(this.data._id)) || undefined;
 
 	this.hasTokenpass = new ReactiveVar(false);

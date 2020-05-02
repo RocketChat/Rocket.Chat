@@ -6,7 +6,7 @@ import { settings } from '../../../settings';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:startVideoCall'(roomId) {
+	async 'livechat:startVideoCall'(roomId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeByVisitor' });
 		}
@@ -20,7 +20,7 @@ Meteor.methods({
 			ts: new Date(),
 		};
 
-		const { room } = Livechat.getRoom(guest, message, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
+		const room = await Livechat.getRoom(guest, message, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
 		message.rid = room._id;
 
 		Messages.createWithTypeRoomIdMessageAndUser('livechat_video_call', room._id, '', guest, {
