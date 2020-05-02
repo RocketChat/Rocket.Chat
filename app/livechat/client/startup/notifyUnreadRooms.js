@@ -4,34 +4,20 @@ import { Tracker } from 'meteor/tracker';
 import { settings } from '../../../settings';
 import { getUserPreference } from '../../../utils';
 import { Subscriptions, Users } from '../../../models';
+import { CustomSounds } from '../../../custom-sounds/client';
 
 let audio = null;
 
-const stop = (audio) => {
-	if (!audio) {
-		return;
-	}
-	audio.loop = false;
-	return audio.pause && audio.pause();
-};
-const play = (audio) => {
-	if (!audio) {
-		return;
-	}
-	audio.loop = true;
-	return audio.play && audio.play();
-};
-
-Meteor.startup(function() {
-	Tracker.autorun(function() {
+Meteor.startup(() => {
+	Tracker.autorun(() => {
 		if (!settings.get('Livechat_continuous_sound_notification_new_livechat_room')) {
-			stop(audio);
+			audio && audio.pause();
 			return;
 		}
 
 		const subs = Subscriptions.find({ t: 'l', ls: { $exists: 0 }, open: true }).count();
 		if (subs === 0) {
-			stop(audio);
+			audio && audio.pause();
 			return;
 		}
 
@@ -43,7 +29,6 @@ Meteor.startup(function() {
 
 		const newRoomNotification = getUserPreference(user, 'newRoomNotification');
 
-		[audio] = $(`#${ newRoomNotification }`);
-		play(audio);
+		audio = CustomSounds.play(newRoomNotification, { loop: true });
 	});
 });

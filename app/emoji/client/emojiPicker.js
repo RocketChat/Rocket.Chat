@@ -7,6 +7,11 @@ import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
 
+import './emojiPicker.html';
+import '../../theme/client/imports/components/emojiPicker.css';
+
+const ESCAPE = 27;
+
 const emojiListByCategory = new ReactiveDict('emojiList');
 
 const getEmojiElement = (emoji, image) => image && `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
@@ -53,9 +58,10 @@ function getEmojisBySearchTerm(searchTerm) {
 
 		if (searchRegExp.test(current)) {
 			const emojiObject = emoji.list[current];
-			const { emojiPackage } = emojiObject;
+			const { emojiPackage, shortnames } = emojiObject;
 			let tone = '';
 			current = current.replace(/:/g, '');
+			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
 
 			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
 				tone = `_tone${ actualTone }`;
@@ -66,7 +72,8 @@ function getEmojisBySearchTerm(searchTerm) {
 			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
 				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
-					if (contents.indexOf(current) !== -1) {
+					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
+					if (contents.indexOf(current) !== -1 || (searchValArray !== undefined && searchValArray.includes(searchTerm))) {
 						emojiFound = true;
 						break;
 					}
@@ -226,6 +233,13 @@ Template.emojiPicker.events({
 		EmojiPicker.pickEmoji(_emoji + tone);
 	},
 	'keyup .js-emojipicker-search, change .js-emojipicker-search'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (event.keyCode === ESCAPE) {
+			return EmojiPicker.close();
+		}
+
 		const value = event.target.value.trim();
 		const cst = instance.currentSearchTerm;
 		if (value === cst.get()) {

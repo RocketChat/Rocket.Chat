@@ -27,4 +27,5 @@ function Topic(command, params, item) {
 slashCommands.add('topic', Topic, {
 	description: 'Slash_Topic_Description',
 	params: 'Slash_Topic_Params',
+	permission: 'edit-room',
 });

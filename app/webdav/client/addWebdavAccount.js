@@ -17,23 +17,23 @@ Template.addWebdavAccount.helpers({
 });
 
 Template.addWebdavAccount.events({
-	'submit #add-webdav'(event, instance) {
+	async 'submit #add-webdav'(event, instance) {
 		event.preventDefault();
 		const formData = instance.validate();
-		instance.loading.set(true);
 		if (!formData) {
-			return instance.loading.set(false);
+			return;
 		}
-		Meteor.call('addWebdavAccount', formData, function(error, response) {
+		instance.loading.set(true);
+		Meteor.call('addWebdavAccount', formData, function(error, success) {
+			modal.close();
+			instance.loading.set(false);
 			if (error) {
 				return toastr.error(t(error.error));
 			}
-			if (!response.success) {
-				return toastr.error(t(response.message));
+			if (!success) {
+				return toastr.error(t('Error'));
 			}
-			toastr.success(t(response.message));
-			instance.loading.set(false);
-			modal.close();
+			toastr.success(t('webdav-account-saved'));
 		});
 	},
 });

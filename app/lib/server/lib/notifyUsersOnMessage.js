@@ -84,7 +84,7 @@ export function updateUsersSubscriptions(message, room, users) {
 	Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id);
 }
 
-function notifyUsersOnMessage(message, room) {
+export function notifyUsersOnMessage(message, room) {
 	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (message.editedAt && Math.abs(moment(message.editedAt).diff()) > 60000) {
 		// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback

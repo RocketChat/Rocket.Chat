@@ -2,7 +2,7 @@ import toastr from 'toastr';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { t, handleError } from '../../../utils';
 
@@ -56,6 +56,7 @@ Template.userStatusEdit.onCreated(function() {
 	}
 
 	this.tabBar = Template.currentData().tabBar;
+	this.onSuccess = Template.currentData().onSuccess;
 
 	this.cancel = (form, name) => {
 		form.reset();
@@ -102,7 +103,7 @@ Template.userStatusEdit.onCreated(function() {
 					} else {
 						toastr.success(t('Custom_User_Status_Added_Successfully'));
 					}
-
+					this.onSuccess();
 					this.cancel(form, userStatusData.name);
 				}
 

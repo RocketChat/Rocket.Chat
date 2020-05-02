@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Messages, Rooms, Subscriptions, EmojiCustom } from '../../../models';
+import { Messages, Rooms, Subscriptions } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { emoji } from '../../../emoji';
 
@@ -34,7 +34,7 @@ Meteor.methods({
 			return false;
 		}
 
-		if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
+		if (!emoji.list[reaction]) {
 			return false;
 		}
 

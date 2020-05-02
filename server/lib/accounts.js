@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -9,6 +9,7 @@ import * as Mailer from '../../app/mailer';
 import { settings } from '../../app/settings';
 import { callbacks } from '../../app/callbacks';
 import { Roles, Users, Settings } from '../../app/models';
+import { Users as UsersRaw } from '../../app/models/server/raw';
 import { addUserRoles } from '../../app/authorization';
 import { getAvatarSuggestionForUser } from '../../app/lib/server/functions';
 
@@ -97,6 +98,29 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 	});
 };
 
+const getLinkedInName = ({ firstName, lastName }) => {
+	const { preferredLocale, localized: firstNameLocalized } = firstName;
+	const { localized: lastNameLocalized } = lastName;
+
+	// LinkedIn new format
+	if (preferredLocale && firstNameLocalized && preferredLocale.language && preferredLocale.country) {
+		const locale = `${ preferredLocale.language }_${ preferredLocale.country }`;
+
+		if (firstNameLocalized[locale] && lastNameLocalized[locale]) {
+			return `${ firstNameLocalized[locale] } ${ lastNameLocalized[locale] }`;
+		}
+		if (firstNameLocalized[locale]) {
+			return firstNameLocalized[locale];
+		}
+	}
+
+	// LinkedIn old format
+	if (!lastName) {
+		return firstName;
+	}
+	return `${ firstName } ${ lastName }`;
+};
+
 Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
@@ -107,17 +131,16 @@ Accounts.onCreateUser(function(options, user = {}) {
 		if (options.profile) {
 			if (options.profile.name) {
 				user.name = options.profile.name;
-			} else if (options.profile.firstName && options.profile.lastName) {
-				// LinkedIn format
-				user.name = `${ options.profile.firstName } ${ options.profile.lastName }`;
 			} else if (options.profile.firstName) {
 				// LinkedIn format
-				user.name = options.profile.firstName;
+				user.name = getLinkedInName(options.profile);
 			}
 		}
 	}
 
 	if (user.services) {
+		const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+
 		for (const service of Object.values(user.services)) {
 			if (!user.name) {
 				user.name = service.name || service.username;
@@ -126,7 +149,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 			if (!user.emails && service.email) {
 				user.emails = [{
 					address: service.email,
-					verified: true,
+					verified,
 				}];
 			}
 		}
@@ -174,6 +197,14 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	if (!user.type) {
 		user.type = 'user';
+	}
+
+	if (settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')) {
+		user.services = user.services || {};
+		user.services.email2fa = {
+			enabled: true,
+			changedAt: new Date(),
+		};
 	}
 
 	const _id = insertUserDoc.call(Accounts, options, user);
@@ -246,6 +277,12 @@ Accounts.validateLoginAttempt(function(login) {
 		return true;
 	}
 
+	if (login.user.type === 'app') {
+		throw new Meteor.Error('error-app-user-is-not-allowed-to-login', 'App user is not allowed to login', {
+			function: 'Accounts.validateLoginAttempt',
+		});
+	}
+
 	if (!!login.user.active !== true) {
 		throw new Meteor.Error('error-user-is-not-activated', 'User is not activated', {
 			function: 'Accounts.validateLoginAttempt',
@@ -309,4 +346,20 @@ Accounts.validateNewUser(function(user) {
 	}
 
 	return true;
+});
+
+export const MAX_RESUME_LOGIN_TOKENS = parseInt(process.env.MAX_RESUME_LOGIN_TOKENS) || 50;
+
+Accounts.onLogin(async ({ user }) => {
+	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens) {
+		return;
+	}
+	if (user.services.resume.loginTokens.length < MAX_RESUME_LOGIN_TOKENS) {
+		return;
+	}
+	const { tokens } = (await UsersRaw.findAllResumeTokensByUserId(user._id))[0];
+	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
+		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
+		Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
+	}
 });
