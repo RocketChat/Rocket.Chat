@@ -49,6 +49,24 @@
 										</div>
 									</div>
 									<div class="input-line">
+										{{> livechatAutocompleteUser
+											onClickTag=onClickTagOfflineMessageChannel
+											list=selectedOfflineMessageChannel
+											onSelect=onSelectOfflineMessageChannel
+											collection='CachedChannelList'
+											endpoint='rooms.autocomplete.channelAndPrivate'
+											field='name'
+											sort='name'
+											label="Livechat_DepartmentOfflineMessageToChannel"
+											placeholder="Channel_name"
+											name="offlineMessageChannelName"
+											noMatchTemplate="roomSearchEmpty"
+											templateItem="popupList_item_channel"
+											modifier=offlineMessageChannelModifier
+											showLabel=true
+										}}
+									</div>
+									<div class="input-line">
 										<label>{{_ "Request_tag_before_closing_chat"}}</label>
 										<div>
 											<label><input type="radio" name="requestTagBeforeClosingChat" value="1" checked="{{$eq requestTagBeforeClosingChat true}}" /> {{_ "Yes"}}</label>
