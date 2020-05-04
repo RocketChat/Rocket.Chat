@@ -7,21 +7,15 @@ export type SettingValue = string | boolean | number | SettingValueMultiSelect |
 export type SettingComposedValue = {key: string; value: SettingValue};
 export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
 
-interface ISettingCallbacks {
-	[key: string]: SettingCallback[];
-}
-
 interface ISettingRegexCallbacks {
-	[key: string]: {
-		regex: RegExp;
-		callbacks: SettingCallback[];
-	};
+	regex: RegExp;
+	callbacks: SettingCallback[];
 }
 
 export class SettingsBase {
-	private callbacks: ISettingCallbacks = {}
+	private callbacks = new Map<string, SettingCallback[]>();
 
-	private regexCallbacks: ISettingRegexCallbacks = {}
+	private regexCallbacks = new Map<string, ISettingRegexCallbacks>();
 
 	// private ts = new Date()
 
@@ -80,13 +74,14 @@ export class SettingsBase {
 
 	load(key: string, value: SettingValue, initialLoad: boolean): void {
 		['*', key].forEach((item) => {
-			if (this.callbacks[item]) {
-				this.callbacks[item].forEach((callback) => callback(key, value, initialLoad));
+			const callbacks = this.callbacks.get(item);
+			if (callbacks) {
+				callbacks.forEach((callback) => callback(key, value, initialLoad));
 			}
 		});
 		Object.keys(this.regexCallbacks).forEach((cbKey) => {
-			const cbValue = this.regexCallbacks[cbKey];
-			if (!cbValue.regex.test(key)) {
+			const cbValue = this.regexCallbacks.get(cbKey);
+			if (!cbValue?.regex.test(key)) {
 				return;
 			}
 			cbValue.callbacks.forEach((callback) => callback(key, value, initialLoad));
@@ -102,14 +97,18 @@ export class SettingsBase {
 		const keys: Array<string | RegExp> = Array.isArray(key) ? key : [key];
 		keys.forEach((k) => {
 			if (_.isRegExp(k)) {
-				this.regexCallbacks[k.source] = this.regexCallbacks[k.source] || {
-					regex: k,
-					callbacks: [],
-				};
-				this.regexCallbacks[k.source].callbacks.push(callback);
+				if (!this.regexCallbacks.has(k.source)) {
+					this.regexCallbacks.set(k.source, {
+						regex: k,
+						callbacks: [],
+					});
+				}
+				this.regexCallbacks.get(k.source)?.callbacks.push(callback);
 			} else {
-				this.callbacks[k] = this.callbacks[k] || [];
-				this.callbacks[k].push(callback);
+				if (!this.callbacks.has(k)) {
+					this.callbacks.set(k, []);
+				}
+				this.callbacks.get(k)?.push(callback);
 			}
 		});
 	}

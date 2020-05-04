@@ -16,7 +16,7 @@ if (process.env.SETTINGS_HIDDEN) {
 }
 
 const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddOptions): SettingValue => {
-	const envValue = process?.env?.[_id];
+	const envValue = process.env[_id];
 	if (envValue) {
 		if (envValue.toLowerCase() === 'true') {
 			value = true;
@@ -27,7 +27,7 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 		}
 		options.processEnvValue = value;
 		options.valueSource = 'processEnvValue';
-	} else if (typeof Meteor.settings?.[_id] !== 'undefined') {
+	} else if (typeof Meteor.settings[_id] !== 'undefined') {
 		if (Meteor.settings[_id] == null) {
 			return false;
 		}
@@ -37,7 +37,7 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 		options.valueSource = 'meteorSettingsValue';
 	}
 
-	const overwriteValue = process?.env?.[`OVERWRITE_SETTING_${ _id }`];
+	const overwriteValue = process.env[`OVERWRITE_SETTING_${ _id }`];
 	if (overwriteValue) {
 		if (overwriteValue.toLowerCase() === 'true') {
 			value = true;
