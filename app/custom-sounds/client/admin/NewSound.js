@@ -54,7 +54,6 @@ export function NewSound({ goToNew, close, onChange, ...props }) {
 	};
 
 	const saveAction = async (name, soundFile) => {
-		debugger
 		const soundData = createSoundData(name);
 		if (validate(soundData, soundFile)) {
 			let soundId;
