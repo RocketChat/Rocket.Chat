@@ -49,10 +49,22 @@
 										</div>
 									</div>
 									<div class="input-line">
-										<label>{{_ "Livechat_DepartmentOfflineMessageToChannel"}}</label>
-										<div>
-											<input type="text" class="rc-input__element" name="offlineMessageChannelName" value="{{department.offlineMessageChannelName}}" placeholder="{{_ "Channel_name"}}" />
-										</div>
+										{{> livechatAutocompleteUser
+											onClickTag=onClickTagOfflineMessageChannel
+											list=selectedOfflineMessageChannel
+											onSelect=onSelectOfflineMessageChannel
+											collection='CachedChannelList'
+											endpoint='rooms.autocomplete.channelAndPrivate'
+											field='name'
+											sort='name'
+											label="Livechat_DepartmentOfflineMessageToChannel"
+											placeholder="Channel_name"
+											name="offlineMessageChannelName"
+											noMatchTemplate="roomSearchEmpty"
+											templateItem="popupList_item_channel"
+											modifier=offlineMessageChannelModifier
+											showLabel=true
+										}}
 									</div>
 									<div class="input-line">
 										<label>{{_ "Request_tag_before_closing_chat"}}</label>

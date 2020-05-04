@@ -1,3 +1,5 @@
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import { sendMessage } from '../../../lib';
@@ -33,13 +35,15 @@ callbacks.add('livechat.offlineMessage', (data) => {
 		return data;
 	}
 
-	let msg = 'A new Livechat Offline Message has been sent: \n';
-	msg = msg.concat(`Visitor Name: ${ name } \n`);
-	msg = msg.concat(`Visitor Email: ${ email } \n`);
+	const lng = settings.get('Language') || 'en';
+
+	let msg = `${ TAPi18n.__('New_Livechat_offline_message_has_been_sent', { lng }) }: \n`;
+	msg = msg.concat(`${ TAPi18n.__('Visitor_Name', { lng }) }: ${ name } \n`);
+	msg = msg.concat(`${ TAPi18n.__('Visitor_Email', { lng }) }: ${ email } \n`);
 	if (departmentName) {
-		msg = msg.concat(`Department: ${ departmentName } \n`);
+		msg = msg.concat(`${ TAPi18n.__('Department', { lng }) }: ${ departmentName } \n`);
 	}
-	msg = msg.concat(`Message: ${ text } \n`);
+	msg = msg.concat(`${ TAPi18n.__('Message', { lng }) }: ${ text } \n`);
 
 	const message = {
 		rid: room._id,
