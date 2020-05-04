@@ -1,5 +1,5 @@
 import { Rooms, Subscriptions } from '../../../models/server';
-import { settings } from '../../../settings/lib/settings';
+import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
 import { callbacks } from '../../../callbacks/server';
 
