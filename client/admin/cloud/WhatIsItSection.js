@@ -7,7 +7,6 @@ import Subtitle from '../../components/basic/Subtitle';
 function WhatIsItSection(props) {
 	const t = useTranslation();
 
-
 	return <Box is='section' {...props}>
 		<Subtitle>{t('Cloud_what_is_it')}</Subtitle>
 

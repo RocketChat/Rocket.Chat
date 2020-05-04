@@ -3,32 +3,14 @@ import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import Subtitle from '../../components/basic/Subtitle';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useMethod } from '../../contexts/ServerContext';
 
 const statusPageUrl = 'https://status.rocket.chat';
 
-function TroubleshootingSection({ onActionPerformed, ...props }) {
+function TroubleshootingSection({
+	onSyncButtonClick,
+	...props
+}) {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const syncWorkspace = useMethod('cloud:syncWorkspace');
-
-	const handleSyncButtonClick = async () => {
-		try {
-			const isSynced = await syncWorkspace();
-
-			if (!isSynced) {
-				throw Error(t('An error occured syncing'));
-			}
-
-			dispatchToastMessage({ type: 'success', message: t('Sync Complete') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			onActionPerformed && onActionPerformed();
-		}
-	};
 
 	return <Box is='section' {...props}>
 		<Subtitle>{t('Cloud_troubleshooting')}</Subtitle>
@@ -38,7 +20,7 @@ function TroubleshootingSection({ onActionPerformed, ...props }) {
 		</Box>
 
 		<ButtonGroup>
-			<Button onClick={handleSyncButtonClick}>
+			<Button onClick={onSyncButtonClick}>
 				{t('Sync')}
 			</Button>
 		</ButtonGroup>

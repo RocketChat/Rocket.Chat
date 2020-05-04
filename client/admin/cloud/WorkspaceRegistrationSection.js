@@ -8,9 +8,9 @@ import { useMethod } from '../../contexts/ServerContext';
 
 const supportEmailAddress = 'support@rocket.chat';
 
-function ConnectionSection({
+function WorkspaceRegistrationSection({
 	registerStatus,
-	onActionPerformed,
+	onRegisterStatusChange,
 	...props
 }) {
 	const t = useTranslation();
@@ -72,7 +72,7 @@ function ConnectionSection({
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			onActionPerformed && onActionPerformed();
+			onRegisterStatusChange && onRegisterStatusChange();
 		}
 	};
 
@@ -113,4 +113,4 @@ function ConnectionSection({
 	</Box>;
 }
 
-export default ConnectionSection;
+export default WorkspaceRegistrationSection;

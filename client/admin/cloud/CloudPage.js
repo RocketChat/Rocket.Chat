@@ -14,9 +14,10 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useQueryStringParameter } from '../../contexts/RouterContext';
 import { useModal } from '../../hooks/useModal';
 import WhatIsItSection from './WhatIsItSection';
-import RegistrationSection from './RegistrationSection';
+import ConnectToCloudSection from './ConnectToCloudSection';
 import TroubleshootingSection from './TroubleshootingSection';
-import ConnectionSection from './ConnectionSection';
+import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
+import WorkspaceLoginSection from './WorkspaceLoginSection';
 
 function CloudPage() {
 	const t = useTranslation();
@@ -120,67 +121,90 @@ function CloudPage() {
 		}
 	};
 
-	return <div className='main-content-flex'>
-		<Page>
-			<Page.Header title={t('Connectivity_Services')}>
-				<ButtonGroup>
-					{!registerStatus?.workspaceRegistered && <Button onClick={handleCloudRegisterManuallyButtonClick}>
-						{t('Cloud_Register_manually')}
-					</Button>}
-					<Button is='a' primary href='https://cloud.rocket.chat' target='_blank' rel='noopener noreferrer'>
-						{t('Cloud_console')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow className='page-settings'>
-				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
-					<Margins block='x24'>
-						<WhatIsItSection />
+	const syncWorkspace = useMethod('cloud:syncWorkspace');
 
-						<Box is='section'>
-							{registerStatus?.connectToCloud
-								? <>
-									{registerStatus?.workspaceRegistered ? <>
-										<div className='section-content border-component-color'>
-											<p>{t('Cloud_workspace_connected')}</p>
-											<div className='input-line double-col'>
-												{isLoggedIn
-													? <>
-														<label className='setting-label' title=''></label>
-														<div className='setting-field'>
-															<button type='button' className='rc-button rc-button--primary action logout-btn' onClick={handleLogoutButtonClick}>{t('Cloud_logout')}</button>
-														</div>
-													</>
-													: <>
-														<label className='setting-label' title=''></label>
-														<div className='setting-field'>
-															<button type='button' className='rc-button rc-button--primary action login-btn' onClick={handleLoginButtonClick}>{t('Cloud_login_to_cloud')}</button>
-														</div>
-													</>}
-											</div>
-										</div>
+	const handleSyncButtonClick = async () => {
+		try {
+			const isSynced = await syncWorkspace();
 
-										<div className='section-content border-component-color'>
-											<p>{t('Cloud_workspace_disconnect')}</p>
-											<div className='input-line double-col'>
-												<label className='setting-label' title=''></label>
-												<div className='setting-field'>
-													<button type='button' className='rc-button rc-button--danger action disconnect-btn' onClick={handleDisconnectButtonClick}>{t('Disconnect')}</button>
-												</div>
-											</div>
-										</div>
-									</>
-										: <ConnectionSection registerStatus={registerStatus} onActionPerformed={loadRegisterStatus} />}
-								</>
-								: <RegistrationSection onActionPerformed={loadRegisterStatus} />}
-						</Box>
+			if (!isSynced) {
+				throw Error(t('An error occured syncing'));
+			}
 
-						{registerStatus?.connectToCloud && <TroubleshootingSection onActionPerformed={loadRegisterStatus} />}
-					</Margins>
-				</Box>
-			</Page.ScrollableContentWithShadow>
-		</Page>
-	</div>;
+			dispatchToastMessage({ type: 'success', message: t('Sync Complete') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			await loadRegisterStatus();
+		}
+	};
+
+	const registerWorkspace = useMethod('cloud:registerWorkspace');
+
+	const handleRegisterButtonClick = async () => {
+		try {
+			const isRegistered = await registerWorkspace();
+
+			if (!isRegistered) {
+				throw Error(t('An error occured'));
+			}
+
+			// TODO: sync on register?
+			const isSynced = await syncWorkspace();
+
+			if (!isSynced) {
+				throw Error(t('An error occured syncing'));
+			}
+
+			dispatchToastMessage({ type: 'success', message: t('Sync Complete') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			await loadRegisterStatus();
+		}
+	};
+
+	return <Page>
+		<Page.Header title={t('Connectivity_Services')}>
+			<ButtonGroup>
+				{!registerStatus?.workspaceRegistered && <Button onClick={handleCloudRegisterManuallyButtonClick}>
+					{t('Cloud_Register_manually')}
+				</Button>}
+				<Button is='a' primary href='https://cloud.rocket.chat' target='_blank' rel='noopener noreferrer'>
+					{t('Cloud_console')}
+				</Button>
+			</ButtonGroup>
+		</Page.Header>
+		<Page.ScrollableContentWithShadow className='page-settings'>
+			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
+				<Margins block='x24'>
+					<WhatIsItSection />
+
+					{registerStatus?.connectToCloud && <>
+						{registerStatus?.workspaceRegistered && <WorkspaceLoginSection
+							isLoggedIn={isLoggedIn}
+							onLoginButtonClick={handleLoginButtonClick}
+							onLogoutButtonClick={handleLogoutButtonClick}
+							onDisconnectButtonClick={handleDisconnectButtonClick}
+						/>}
+
+						{!registerStatus?.workspaceRegistered && <WorkspaceRegistrationSection
+							registerStatus={registerStatus}
+							onRegisterStatusChange={loadRegisterStatus}
+						/>}
+
+						<TroubleshootingSection
+							onSyncButtonClick={handleSyncButtonClick}
+						/>
+					</>}
+
+					{!registerStatus?.connectToCloud && <ConnectToCloudSection
+						onRegisterButtonClick={handleRegisterButtonClick}
+					/>}
+				</Margins>
+			</Box>
+		</Page.ScrollableContentWithShadow>
+	</Page>;
 }
 
 export default CloudPage;
