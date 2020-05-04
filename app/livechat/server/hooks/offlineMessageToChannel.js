@@ -12,7 +12,7 @@ callbacks.add('livechat.offlineMessage', (data) => {
 
 	let channelName = settings.get('Livechat_OfflineMessageToChannel_channel_name');
 	let departmentName;
-	const { name, email, department, message: text } = data;
+	const { name, email, department, message: text, host } = data;
 	if (department && department !== '') {
 		const dept = LivechatDepartment.findOneById(department, { fields: { name: 1, offlineMessageChannelName: 1 } });
 		departmentName = dept?.name;
@@ -38,6 +38,9 @@ callbacks.add('livechat.offlineMessage', (data) => {
 	const lng = settings.get('Language') || 'en';
 
 	let msg = `${ TAPi18n.__('New_Livechat_offline_message_has_been_sent', { lng }) }: \n`;
+	if (host && host !== '') {
+		msg = msg.concat(`${ TAPi18n.__('Sent_from', { lng }) }: ${ host } \n`);
+	}
 	msg = msg.concat(`${ TAPi18n.__('Visitor_Name', { lng }) }: ${ name } \n`);
 	msg = msg.concat(`${ TAPi18n.__('Visitor_Email', { lng }) }: ${ email } \n`);
 	if (departmentName) {
