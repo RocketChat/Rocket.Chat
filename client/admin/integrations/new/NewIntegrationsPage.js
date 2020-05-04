@@ -1,4 +1,4 @@
-import { Tabs, Box } from '@rocket.chat/fuselage';
+import { Tabs, Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import Page from '../../../components/basic/Page';
@@ -17,10 +17,20 @@ export default function NewIntegrationsPage({ ...props }) {
 		router.push({ context: 'new', tab });
 	};
 
+	const handleClickReturn = () => {
+		router.push({ });
+	};
+
 	const tab = useRouteParameter('tab');
 
 	return <Page flexDirection='column' {...props}>
-		<Page.Header title={t('Integrations')} />
+		<Page.Header title={t('Integrations')} >
+			<ButtonGroup>
+				<Button onClick={handleClickReturn}>
+					<Icon name='back' size='x16'/> {t('Back')}
+				</Button>
+			</ButtonGroup>
+		</Page.Header>
 		<Page.ScrollableContentWithShadow>
 			<Tabs>
 				<Tabs.Item
