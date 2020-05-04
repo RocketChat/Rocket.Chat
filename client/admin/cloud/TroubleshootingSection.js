@@ -1,26 +1,21 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import Subtitle from '../../components/basic/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
+import Subtitle from '../../components/basic/Subtitle';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
 
-function WorkspaceRegistrationSection({ onActionPerformed, ...props }) {
+const statusPageUrl = 'https://status.rocket.chat';
+
+function TroubleshootingSection({ onActionPerformed, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const syncWorkspace = useMethod('cloud:syncWorkspace');
-	const registerWorkspace = useMethod('cloud:registerWorkspace');
 
-	const handleRegisterButtonClick = async () => {
+	const handleSyncButtonClick = async () => {
 		try {
-			const isRegistered = await registerWorkspace();
-
-			if (!isRegistered) {
-				throw Error(t('An error occured'));
-			}
-
 			const isSynced = await syncWorkspace();
 
 			if (!isSynced) {
@@ -36,16 +31,25 @@ function WorkspaceRegistrationSection({ onActionPerformed, ...props }) {
 	};
 
 	return <Box is='section' {...props}>
-		<Subtitle>{t('Cloud_registration_required')}</Subtitle>
+		<Subtitle>{t('Cloud_troubleshooting')}</Subtitle>
+
 		<Box withRichContent>
-			<p>{t('Cloud_registration_required_description')}</p>
+			<p>{t('Cloud_workspace_support')}</p>
 		</Box>
+
 		<ButtonGroup>
-			<Button primary onClick={handleRegisterButtonClick}>
-				{t('Cloud_registration_requried_link_text')}
+			<Button onClick={handleSyncButtonClick}>
+				{t('Sync')}
 			</Button>
 		</ButtonGroup>
+
+		<Box withRichContent>
+			<p>
+				{t('Cloud_status_page_description')}:{' '}
+				<a href={statusPageUrl} target='_blank' rel='noopener noreferrer'>{statusPageUrl}</a>
+			</p>
+		</Box>
 	</Box>;
 }
 
-export default WorkspaceRegistrationSection;
+export default TroubleshootingSection;

@@ -14,7 +14,9 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useQueryStringParameter } from '../../contexts/RouterContext';
 import { useModal } from '../../hooks/useModal';
 import WhatIsItSection from './WhatIsItSection';
-import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
+import RegistrationSection from './RegistrationSection';
+import TroubleshootingSection from './TroubleshootingSection';
+import ConnectionSection from './ConnectionSection';
 
 function CloudPage() {
 	const t = useTranslation();
@@ -30,8 +32,6 @@ function CloudPage() {
 	const logout = useMethod('cloud:logout');
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
 	const disconnectWorkspace = useMethod('cloud:disconnectWorkspace');
-	const syncWorkspace = useMethod('cloud:syncWorkspace');
-	const updateEmail = useMethod('cloud:updateEmail');
 
 	const token = useQueryStringParameter('token');
 
@@ -120,64 +120,6 @@ function CloudPage() {
 		}
 	};
 
-	const handleEmailChange = ({ currentTarget: { value } }) => {
-		setRegisterStatus((info) => ({ ...info, email: value }));
-	};
-
-	const handleUpdateEmailButtonClick = async () => {
-		try {
-			await updateEmail(registerStatus.email, false);
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
-
-	const handleResendEmailButtonClick = async () => {
-		try {
-			await updateEmail(registerStatus.email, true);
-			dispatchToastMessage({ type: 'success', message: t('Requested') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
-
-	const handleTokenChange = ({ currentTarget: { value } }) => {
-		setRegisterStatus((info) => ({ ...info, token: value }));
-	};
-
-	const handleConnectButtonClick = async () => {
-		try {
-			const isConnected = await connectWorkspace(registerStatus.token);
-
-			if (!isConnected) {
-				throw Error(t('An error occured connecting'));
-			}
-
-			dispatchToastMessage({ type: 'success', message: t('Connected') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			await loadRegisterStatus();
-		}
-	};
-
-	const handleSyncButtonClick = async () => {
-		try {
-			const isSynced = await syncWorkspace();
-
-			if (!isSynced) {
-				throw Error(t('An error occured syncing'));
-			}
-
-			dispatchToastMessage({ type: 'success', message: t('Sync Complete') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			await loadRegisterStatus();
-		}
-	};
-
 	return <div className='main-content-flex'>
 		<Page>
 			<Page.Header title={t('Connectivity_Services')}>
@@ -228,64 +170,12 @@ function CloudPage() {
 											</div>
 										</div>
 									</>
-										: <>
-											<div className='section-content border-component-color'>
-												<div className='input-line double-col'>
-													<label className='setting-label' title='cloudEmail'>{t('Email')}</label>
-													<div className='setting-field'>
-														<input className='input-monitor rc-input__element' type='text' name='cloudEmail' value={registerStatus?.email} onChange={handleEmailChange} />
-														<div className='settings-description secondary-font-color'>{t('Cloud_address_to_send_registration_to')}</div>
-													</div>
-												</div>
-												<div className='input-line double-col'>
-													<label className='setting-label' title=''></label>
-													<div className='setting-field'>
-														<button type='button' className='rc-button rc-button--primary action update-email-btn' onClick={handleUpdateEmailButtonClick} style={{ float: 'left' }}>{t('Cloud_update_email')}</button>
-														<button type='button' className='rc-button rc-button--primary action resend-email-btn' onClick={handleResendEmailButtonClick} style={{ float: 'left', marginLeft: 5 }}>{t('Cloud_resend_email')}</button>
-													</div>
-												</div>
-
-												<div className='input-line double-col'>
-													<label className='setting-label' title='cloudToken'>{t('Token')}</label>
-													<div className='setting-field'>
-														<input className='input-monitor rc-input__element' type='text' name='cloudToken' value={registerStatus?.token} onChange={handleTokenChange} />
-														<div className='settings-description secondary-font-color'>{t('Cloud_manually_input_token')}</div>
-													</div>
-												</div>
-												<div className='input-line double-col'>
-													<label className='setting-label' title=''></label>
-													<div className='setting-field'>
-														<button type='button' className='rc-button rc-button--primary action connect-btn' onClick={handleConnectButtonClick}>{t('Connect')}</button>
-													</div>
-												</div>
-
-												<p>{t('Cloud_connect_support')}: <a href={`mailto:support@rocket.chat?subject=[Self Hosted Registration]&body=WorkspaceId: ${ registerStatus?.workspaceId }%0D%0ADeployment Id: ${ registerStatus?.uniqueId }%0D%0AIssue: <please describe your issue here>`}>support@rocket.chat</a></p>
-											</div>
-										</>}
+										: <ConnectionSection registerStatus={registerStatus} onActionPerformed={loadRegisterStatus} />}
 								</>
-								: <WorkspaceRegistrationSection onActionPerformed={loadRegisterStatus} />}
+								: <RegistrationSection onActionPerformed={loadRegisterStatus} />}
 						</Box>
-						{registerStatus?.connectToCloud && <Box is='section'>
-							<div className='section-title'>
-								<div className='section-title-text'>
-									{t('Cloud_troubleshooting')}
-								</div>
-							</div>
 
-							<div className='section-content border-component-color'>
-								<p>{t('Cloud_workspace_support')}</p>
-								<div className='input-line double-col'>
-									<label className='setting-label' title=''></label>
-									<div className='setting-field'>
-										<button type='button' className='rc-button rc-button--danger action sync-btn' onClick={handleSyncButtonClick}>{t('Sync')}</button>
-									</div>
-								</div>
-							</div>
-
-							<div className='section-content'>
-								{t('Cloud_status_page_description')}: <a href='https://status.rocket.chat' target='_blank'>status.rocket.chat</a>
-							</div>
-						</Box>}
+						{registerStatus?.connectToCloud && <TroubleshootingSection onActionPerformed={loadRegisterStatus} />}
 					</Margins>
 				</Box>
 			</Page.ScrollableContentWithShadow>
