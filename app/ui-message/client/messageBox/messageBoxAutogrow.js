@@ -34,9 +34,9 @@ export const setupAutogrow = (textarea, shadow, callback) => {
 			return true;
 		}
 
-		const shadowText = text.replace(/</g, '&lt;')
+		const shadowText = text.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
 			.replace(/>/g, '&gt;')
-			.replace(/&/g, '&amp;')
 			.replace(/\n$/, '<br/>&nbsp;')
 			.replace(/\n/g, '<br/>')
 			.replace(/ {2,}/g, replaceWhitespaces);

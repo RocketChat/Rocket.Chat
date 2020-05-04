@@ -4339,29 +4339,6 @@ rc-old select,
 	}
 }
 
-.rc-old .statistics-table {
-	width: 100%;
-	margin-bottom: 30px;
-
-	& th,
-	& td {
-		padding: 6px 8px;
-
-		text-align: left;
-		word-break: break-word;
-	}
-
-	& th {
-		width: 30%;
-
-		text-align: right;
-	}
-
-	& td {
-		width: 70%;
-	}
-}
-
 .rc-old .rocket-team {
 	display: block;
 

@@ -6,14 +6,13 @@ import {
 	Margins,
 	RadioButton,
 } from '@rocket.chat/fuselage';
-import { useMergedRefs, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus, useMergedRefs, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
 import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useFocus } from '../../../hooks/useFocus';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
@@ -32,7 +31,7 @@ const Option = React.forwardRef(({ children, label, selected, disabled, ...props
 		display='block'
 		marginBlock='x8'
 		padding='x24'
-		textColor={selected ? 'primary' : 'disabled'}
+		color={selected ? 'primary' : 'disabled'}
 		style={{
 			borderColor: 'currentColor',
 			borderRadius: 2,
@@ -62,21 +61,21 @@ const Item = ({ children, icon, ...props }) =>
 		marginBlockEnd='x8'
 		display='flex'
 		alignItems='center'
-		textColor='default'
+		color='default'
 		{...props}
 	>
 		{icon === 'check' && <Icon
 			name='check'
 			size='x20'
 			marginInlineEnd='x8'
-			textColor='primary'
+			color='primary'
 		/>}
 		{icon === 'circle' && <Icon
 			name='circle'
 			size='x8'
 			marginInlineStart='x8'
 			marginInlineEnd='x12'
-			textColor='default'
+			color='default'
 		/>}
 		{children}
 	</Box>;
@@ -147,7 +146,7 @@ function RegisterServerStep({ step, title, active }) {
 		}
 	};
 
-	const autoFocusRef = useFocus(active);
+	const autoFocusRef = useAutoFocus(active);
 
 	const agreeTermsAndPrivacyId = useUniqueId();
 	const optInMarketingEmailsId = useUniqueId();
@@ -157,7 +156,7 @@ function RegisterServerStep({ step, title, active }) {
 
 		<Margins blockEnd='x32'>
 			<Box>
-				<Box is='p' textStyle='s1' textColor='hint' marginBlockEnd='x16'>{t('Register_Server_Info')}</Box>
+				<Box is='p' fontScale='s1' color='hint' marginBlockEnd='x16'>{t('Register_Server_Info')}</Box>
 
 				<Box display='flex' flexDirection='column'>
 					<Option

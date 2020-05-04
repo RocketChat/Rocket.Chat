@@ -206,7 +206,7 @@ export function ActiveUsersSection() {
 									enableSlices='x'
 									sliceTooltip={({ slice: { points } }) => <Tile elevation='2'>
 										{points.map(({ serieId, data: { y: activeUsers } }) =>
-											<Box key={serieId} textStyle='p2'>
+											<Box key={serieId} fontScale='p2'>
 												{(serieId === 'dau' && t('DAU_value', { value: activeUsers }))
 										|| (serieId === 'wau' && t('WAU_value', { value: activeUsers }))
 										|| (serieId === 'mau' && t('MAU_value', { value: activeUsers }))}
