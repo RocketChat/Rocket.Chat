@@ -1,29 +1,28 @@
-import React, { useState } from 'react';
-import { Field, TextInput, Box, Icon, Margins, Button } from '@rocket.chat/fuselage';
+import React, { useState, useCallback } from 'react';
+import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import s from 'underscore.string';
 
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useFileInput } from '../../../../client/hooks/useFileInput';
-import Page from '../../../../client/components/basic/Page';
 
-export function NewSound({ roles, ...props }) {
+export function NewSound({ goToNew, close, onChange, ...props }) {
 	const t = useTranslation();
-
-	const uploadCustomSound = useMethod('uploadCustomSound');
-	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
-
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [newData, setNewData] = useState({});
+	const [name, setName] = useState('');
+	const [sound, setSound] = useState();
 
-	const createSoundData = (name) => {
-		const soundData = {};
-		soundData.name = s.trim(name);
-		soundData.newFile = true;
-		return soundData;
+	const uploadCustomSound = useMethod('uploadCustomSound');
+
+	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
+
+	const handleChangeFile = (soundFile) => {
+		setSound(soundFile);
 	};
+
+	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
 
 	const validate = (soundData, soundFile) => {
 		const errors = [];
@@ -35,7 +34,6 @@ export function NewSound({ roles, ...props }) {
 		if (!soundFile) {
 			errors.push('Sound_File_mp3');
 		}
-
 		errors.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', t(error)) }));
 
 		if (soundFile) {
@@ -48,10 +46,17 @@ export function NewSound({ roles, ...props }) {
 		return errors.length === 0;
 	};
 
+	const createSoundData = (name) => {
+		const soundData = {};
+		soundData.name = s.trim(name);
+		soundData.newFile = true;
+		return soundData;
+	};
 
-	const saveAction = async (newData) => {
-		const soundData = createSoundData(newData.name);
-		if (validate(soundData, newData.soundFile)) {
+	const saveAction = async (name, soundFile) => {
+		debugger
+		const soundData = createSoundData(name);
+		if (validate(soundData, soundFile)) {
 			let soundId;
 			try {
 				soundId = await insertOrUpdateSound(soundData);
@@ -66,47 +71,44 @@ export function NewSound({ roles, ...props }) {
 				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 				const reader = new FileReader();
-				reader.readAsBinaryString(newData.soundFile);
+				reader.readAsBinaryString(soundFile);
 				reader.onloadend = () => {
-					console.log(reader.result, newData.soundFile.type, soundData);
+					console.log(reader.result, soundFile.type, soundData);
 
 					try {
-						uploadCustomSound(reader.result, newData.soundFile.type, soundData);
+						uploadCustomSound(reader.result, soundFile.type, soundData);
 						dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 					} catch (error) {
 						dispatchToastMessage({ type: 'error', message: error });
 					}
 				};
 			}
+			return soundId;
 		}
 	};
 
-	const handleSave = async () => {
-		if (Object.keys(newData).length) {
-			await saveAction(newData);
-			setNewData({});
+	const handleSave = useCallback(async () => {
+		try {
+			const result = await saveAction(
+				name,
+				sound,
+			);
+			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Updated_Successfully') });
+			goToNew(result)();
+			onChange();
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
-	};
+	}, [name, sound]);
 
-	const handleChangeFile = (soundFile) => {
-		setNewData({ ...newData, soundFile });
-	};
-	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) => setNewData({ ...newData, [field]: getValue(e) });
-
-	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
-	const {
-		name = '',
-	} = newData;
-
-	return <Page.ScrollableContent pi='x24' pb='x24' mi='neg-x24' is='form' { ...props }>
-		<Margins blockEnd='x16'>
+	return <Box display='flex' flexDirection='column' fontScale='p1' color='default' mbs='x20' {...props}>
+		<Margins block='x4'>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={name} onChange={handleChange('name')}/>
+					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
 				</Field.Row>
 			</Field>
-
 			<Field>
 				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
 				<Box display='flex' flexDirection='row' mbs='none'>
@@ -115,17 +117,14 @@ export function NewSound({ roles, ...props }) {
 					</Margins>
 				</Box>
 			</Field>
-
 			<Field>
 				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-						<Margins inlineEnd='x4'>
-							<Button flexGrow={1} onClick={() => setNewData({})}>{t('Cancel')}</Button>
-							<Button mie='none' flexGrow={1} onClick={handleSave}>{t('Save')}</Button>
-						</Margins>
-					</Box>
+					<ButtonGroup stretch w='full'>
+						<Button mie='x4' onClick={close}>{t('Cancel')}</Button>
+						<Button primary onClick={handleSave} disabled={name === ''}>{t('Save')}</Button>
+					</ButtonGroup>
 				</Field.Row>
 			</Field>
 		</Margins>
-	</Page.ScrollableContent>;
+	</Box>;
 }

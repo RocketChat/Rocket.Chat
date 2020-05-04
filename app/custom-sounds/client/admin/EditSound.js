@@ -176,6 +176,7 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 
 	const handleSave = useCallback(async () => {
 		saveAction(sound);
+		onChange();
 	}, [name, _id, sound]);
 
 	const onDeleteConfirm = useCallback(async () => {
