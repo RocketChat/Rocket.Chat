@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import s from 'underscore.string';
 
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useFileInput } from '../../../../client/hooks/useFileInput';
+import { validate, createSoundData } from './hooks';
 
 export function NewSound({ goToNew, close, onChange, ...props }) {
 	const t = useTranslation();
@@ -24,38 +24,10 @@ export function NewSound({ goToNew, close, onChange, ...props }) {
 
 	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
 
-	const validate = (soundData, soundFile) => {
-		const errors = [];
-		if (!soundData.name) {
-			errors.push('Name');
-		}
-
-
-		if (!soundFile) {
-			errors.push('Sound_File_mp3');
-		}
-		errors.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', t(error)) }));
-
-		if (soundFile) {
-			if (!/audio\/mp3/.test(soundFile.type) && !/audio\/mpeg/.test(soundFile.type) && !/audio\/x-mpeg/.test(soundFile.type)) {
-				errors.push('FileType');
-				dispatchToastMessage({ type: 'error', message: t('error-invalid-file-type') });
-			}
-		}
-
-		return errors.length === 0;
-	};
-
-	const createSoundData = (name) => {
-		const soundData = {};
-		soundData.name = s.trim(name);
-		soundData.newFile = true;
-		return soundData;
-	};
-
 	const saveAction = async (name, soundFile) => {
-		const soundData = createSoundData(name);
-		if (validate(soundData, soundFile)) {
+		const soundData = createSoundData(name, soundFile);
+		const validation = validate(soundData, sound);
+		if (validation.length === 0) {
 			let soundId;
 			try {
 				soundId = await insertOrUpdateSound(soundData);
@@ -84,6 +56,7 @@ export function NewSound({ goToNew, close, onChange, ...props }) {
 			}
 			return soundId;
 		}
+		validation.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', t(error)) }));
 	};
 
 	const handleSave = useCallback(async () => {

@@ -7,6 +7,7 @@ import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessag
 import { Modal } from '../../../../client/components/basic/Modal';
 import { useFileInput } from '../../../../client/hooks/useFileInput';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
+import { validate, createSoundData } from './hooks';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
@@ -96,23 +97,8 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 	}, [previousName, previousSound, _id]);
 
 	const deleteCustomSound = useMethod('deleteCustomSound');
-
 	const uploadCustomSound = useMethod('uploadCustomSound');
-	// const deleteCustomSound = useMethod('deleteCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
-
-	const getSoundData = (soundFile) => {
-		const soundData = {};
-
-		soundData._id = _id;
-		soundData.previousName = previousName;
-		soundData.extension = soundFile.name.split('.').pop();
-		soundData.previousExtension = previousSound.extension;
-		soundData.name = name;
-		soundData.newFile = false;
-		console.log(soundData);
-		return soundData;
-	};
 
 	const handleChangeFile = (soundFile) => {
 		setSound(soundFile);
@@ -120,31 +106,10 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, sound]);
 
-	const validate = (soundData, soundFile) => {
-		const errors = [];
-
-		if (!soundData._id) {
-			errors.push('_id');
-		}
-
-		if (!soundData.name) {
-			errors.push('Name');
-		}
-
-		errors.forEach((error) => dispatchToastMessage({ type: 'error', message: error }));
-		if (soundFile !== previousSound) {
-			if (!/audio\/mp3/.test(soundFile.type) && !/audio\/mpeg/.test(soundFile.type) && !/audio\/x-mpeg/.test(soundFile.type)) {
-				errors.push('FileType');
-				dispatchToastMessage({ type: 'error', message: t('error-invalid-file-type') });
-			}
-		}
-
-		return errors.length === 0;
-	};
-
 	const saveAction = async (sound) => {
-		const soundData = getSoundData(sound);
-		if (validate(soundData, sound)) {
+		const soundData = createSoundData(sound, name, { previousName, previousSound, _id });
+		const validation = validate(soundData, sound);
+		if (validation.length === 0) {
 			let soundId;
 			try {
 				soundId = await insertOrUpdateSound(soundData);
@@ -159,19 +124,21 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 				const reader = new FileReader();
-				reader.readAsBinaryString(sound.soundFile);
+				reader.readAsBinaryString(sound);
 				reader.onloadend = () => {
-					console.log(reader.result, sound.soundFile.type, soundData);
+					console.log(!!reader.result, sound.type, soundData);
 
 					try {
-						uploadCustomSound(reader.result, sound.soundFile.type, soundData);
+						uploadCustomSound(reader.result, sound.type, soundData);
+						return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 					} catch (error) {
 						dispatchToastMessage({ type: 'error', message: error });
 					}
 				};
 			}
-			return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 		}
+
+		validation.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', { field: t(error) }) }));
 	};
 
 	const handleSave = useCallback(async () => {
