@@ -105,12 +105,16 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 
 	setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
 
-	const { type: interactionType, ...data } = await APIClient.post(
+	let responses = await APIClient.post(
 		`apps/ui.interaction/${ appId }`,
 		{ type, actionId, payload, container, mid, rid, triggerId, viewId },
 	);
 
-	return resolve(handlePayloadUserInteraction(interactionType, data));
+	if (!Array.isArray(responses)) {
+		responses = [responses];
+	}
+
+	return resolve(responses.forEach(({ type: interactionType, ...data }) => handlePayloadUserInteraction(interactionType, data)));
 });
 
 export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
