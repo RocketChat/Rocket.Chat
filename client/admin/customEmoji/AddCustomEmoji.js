@@ -30,28 +30,28 @@ export function AddCustomEmojis({ goToNew, close, onChange, ...props }) {
 	};
 
 	const saveAction = async (newData) => {
-		const soundData = createEmojiData(newData.name);
-		let soundId;
+		const emojiData = createEmojiData(newData.name);
+		let emojiId;
 
 		try {
-			soundId = await saveEmoji(soundData);
+			emojiId = await saveEmoji(emojiData);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 
-		soundData._id = soundId;
-		soundData.random = Math.round(Math.random() * 1000);
+		emojiData._id = emojiId;
+		emojiData.random = Math.round(Math.random() * 1000);
 
-		if (soundId) {
+		if (emojiId) {
 			dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 			const reader = new FileReader();
 			reader.readAsBinaryString(newData.soundFile);
 			reader.onloadend = () => {
-				console.log(reader.result, newData.soundFile.type, soundData);
+				console.log(reader.result, newData.soundFile.type, emojiData);
 
 				try {
-					uploadCustomEmoji(reader.result, newData.soundFile.type, soundData);
+					uploadCustomEmoji(reader.result, newData.soundFile.type, emojiData);
 					dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
@@ -125,7 +125,7 @@ export function AddCustomEmojis({ goToNew, close, onChange, ...props }) {
 			<Field>
 				<Field.Label alignSelf='stretch' htmlFor={fileSourceInputId}>{t('Emoji')}</Field.Label>
 				<Field.Row>
-					<InputBox type='file' id={fileSourceInputId} onChange={handleChangeFile('soundFile')} />
+					<InputBox type='file' id={fileSourceInputId} onChange={handleChangeFile('emojiFile')} />
 				</Field.Row>
 			</Field>
 			<Field>
