@@ -211,6 +211,7 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Margins inline='x4'>
 							<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
+							{(sound && sound.name) || 'none'}
 						</Margins>
 					</Box>
 				</Field>
