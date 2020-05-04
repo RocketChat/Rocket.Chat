@@ -97,9 +97,8 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_SearchFields', '', {
+	this.add('Accounts_SearchFields', 'username, name, bio', {
 		type: 'string',
-		public: true,
 	});
 	this.add('Accounts_Directory_DefaultView', 'channels', {
 		type: 'select',
@@ -926,12 +925,6 @@ settings.addGroup('General', function() {
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description',
 		});
-
-		this.add('Notifications_Always_Notify_Mobile', false, {
-			type: 'boolean',
-			public: true,
-			i18nDescription: 'Notifications_Always_Notify_Mobile_Description',
-		});
 	});
 	this.section('REST API', function() {
 		return this.add('API_User_Limit', 500, {
@@ -1063,11 +1056,6 @@ settings.addGroup('Message', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_SetNameToAliasEnabled', false, {
-		type: 'boolean',
-		public: false,
-		i18nDescription: 'Message_SetNameToAliasEnabled_Description',
-	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,
@@ -1184,33 +1172,7 @@ settings.addGroup('Push', function() {
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
 	});
-	this.add('Push_debug', false, {
-		type: 'boolean',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
-	this.add('Push_send_interval', 2000, {
-		type: 'int',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
-	this.add('Push_send_batch_size', 100, {
-		type: 'int',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
+
 	this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',

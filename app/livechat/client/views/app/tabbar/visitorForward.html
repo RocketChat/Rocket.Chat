@@ -9,35 +9,33 @@
 				</div>
 			{{/with}}
 			<form>
-				{{#if hasDepartments}}
-					<div class="input-line">
-						<label for="name">{{_ "Forward_to_department"}}</label>
-						<div class="form-group">
-							{{> livechatAutocompleteUser
-								onClickTag=onClickTagDepartment
-								list=selectedDepartments
-								onSelect=onSelectDepartments
-								collection='CachedDepartmentList'
-								endpoint='livechat/department.autocomplete'
-								field='name'
-								sort='name'
-								icon="queue"
-								label="Enter_a_department_name"
-								placeholder="Enter_a_department_name"
-								name="department"
-								noMatchTemplate="userSearchEmpty"
-								templateItem="popupList_item_channel"
-								template="roomSearch"
-								noMatchTemplate="roomSearchEmpty"
-								modifier=departmentModifier
-								conditions=departmentConditions
-							}}
-						</div>
+				<div class="input-line">
+					<label for="name">{{_ "Forward_to_department"}}</label>
+					<div class="form-group">
+						{{> livechatAutocompleteUser
+							onClickTag=onClickTagDepartment
+							list=selectedDepartments
+							onSelect=onSelectDepartments
+							collection='CachedDepartmentList'
+							endpoint='livechat/department.autocomplete'
+							field='name'
+							sort='name'
+							icon="queue"
+							label="Enter_a_department_name"
+							placeholder="Enter_a_department_name"
+							name="department"
+							noMatchTemplate="userSearchEmpty"
+							templateItem="popupList_item_channel"
+							template="roomSearch"
+							noMatchTemplate="roomSearchEmpty"
+							modifier=departmentModifier
+							conditions=departmentConditions
+						}}
 					</div>
-					<div class="form-divisor">
-						<span>{{_ "or"}}</span>
-					</div>
-				{{/if}}
+				</div>
+				<div class="form-divisor">
+					<span>{{_ "or"}}</span>
+				</div>
 
 				<div class="input-line">
 					<label for="agent">{{_ "Forward_to_user"}}</label>
@@ -59,6 +57,12 @@
 							modifier=agentModifier
 							conditions=agentConditions
 						}}
+					</div>
+				</div>
+				<div class="input-line">
+					<label>{{_ "Leave_a_comment"}} ({{_ "optional"}})</label>
+					<div class="form-group">
+						<textarea name="comment" class="rc-input__element" rows="6"></textarea>
 					</div>
 				</div>
 				<div class="rc-user-info__flex rc-user-info__row">

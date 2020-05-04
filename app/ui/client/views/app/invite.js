@@ -11,9 +11,9 @@ import { t, APIClient } from '../../../../utils';
 import './invite.html';
 
 Template.invite.helpers({
-	isEnabledAndValid() {
+	isValidInvite() {
 		const { inviteIsValid } = Template.instance();
-		return settings.get('Accounts_RegistrationForm') !== 'Disabled' && inviteIsValid && inviteIsValid.get();
+		return inviteIsValid && inviteIsValid.get();
 	},
 	ready() {
 		const instance = Template.instance();
@@ -35,7 +35,11 @@ Template.invite.onCreated(function() {
 			return this.inviteIsValid.set(false);
 		}
 
-		Session.set('loginDefaultState', 'register');
+		if (settings.get('Accounts_RegistrationForm') !== 'Disabled') {
+			Session.set('loginDefaultState', 'register');
+		} else {
+			Session.set('loginDefaultState', 'login');
+		}
 		return this.inviteIsValid.set(result.valid);
 	}).catch(() => {
 		toastr.error(t('Failed_to_validate_invite_token'));
