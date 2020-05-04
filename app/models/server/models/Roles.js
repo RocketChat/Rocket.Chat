@@ -30,17 +30,21 @@ export class Roles extends Base {
 	}
 
 	createOrUpdate(name, scope = 'Users', description = '', protectedRole = true, mandatory2fa = false) {
-		const updateData = {
+		const queryData = {
 			name,
 			scope,
-			description,
 			protected: protectedRole,
+		};
+
+		const updateData = {
+			...queryData,
+			description,
 			mandatory2fa,
 		};
 
 		const exists = this.findOne({
 			_id: name,
-			...updateData,
+			...queryData,
 		}, { fields: { _id: 1 } });
 
 		if (exists) {
