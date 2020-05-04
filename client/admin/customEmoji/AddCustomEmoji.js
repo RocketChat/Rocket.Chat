@@ -1,141 +1,141 @@
 import React, { useState } from 'react';
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, InputBox } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { Box, Button, Icon, Margins, TextInput, Field } from '@rocket.chat/fuselage';
 import s from 'underscore.string';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useFileInput } from '../../hooks/useFileInput';
+import { Page } from '../../components/basic/Page';
+// import { emoji } from '/app/emoji/client';
 
-export function AddCustomEmojis({ goToNew, close, onChange, ...props }) {
+export function AddCustomEmojis({ roles, ...props }) {
 	const t = useTranslation();
+
+	const uploadEmojiCustom = useMethod('uploadEmojiCustom');
+	const insertOrUpdateEmoji = useMethod('insertOrUpdateEmoji');
+
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	// const [name, setName] = useState('');
-	const [aliases, setAliases] = useState('');
-
-	const uploadCustomEmoji = useMethod('uploadCustomEmoji');
-
-	const saveEmoji = useMethod('insertOrUpdateUserStatus');
 
 	const [newData, setNewData] = useState({});
 
-	const fileSourceInputId = useUniqueId();
-
-	const createEmojiData = (name) => {
-		const soundEmoji = {};
-		soundEmoji.name = s.trim(name);
-		soundEmoji.newFile = true;
-		return soundEmoji;
+	const createEmojiData = (name, aliases) => {
+		const emojiData = {};
+		emojiData.name = s.trim(name);
+		emojiData.aliases = s.trim(aliases);
+		emojiData.newFile = true;
+		return emojiData;
 	};
 
-	const saveAction = async (newData) => {
-		const emojiData = createEmojiData(newData.name);
-		let emojiId;
-
-		try {
-			emojiId = await saveEmoji(emojiData);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+	const validate = (emojiData, emojiFile) => {
+		const errors = [];
+		if (!emojiData.name) {
+			errors.push('Name');
 		}
 
-		emojiData._id = emojiId;
-		emojiData.random = Math.round(Math.random() * 1000);
+		if (!emojiData.aliases) {
+			errors.push('Aliases');
+		}
 
-		if (emojiId) {
-			dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
+		if (!emojiFile) {
+			errors.push('Emoji');
+		}
 
-			const reader = new FileReader();
-			reader.readAsBinaryString(newData.soundFile);
-			reader.onloadend = () => {
-				console.log(reader.result, newData.soundFile.type, emojiData);
+		errors.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', t(error)) }));
 
-				try {
-					uploadCustomEmoji(reader.result, newData.soundFile.type, emojiData);
-					dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-			};
+		if (emojiFile) {
+			if (!/image\/jpg/.test(emojiFile.type) && !/image\/png/.test(emojiFile.type)) {
+				errors.push('FileType');
+				dispatchToastMessage({ type: 'error', message: t('error-invalid-file-type') });
+			}
+		}
+
+		return errors.length === 0;
+	};
+
+
+	const saveAction = async (newData) => {
+		const emojiData = createEmojiData(newData.name, newData.aliases);
+		if (validate(emojiData, newData.emojiFile)) {
+			let emojiId;
+			try {
+				emojiId = await insertOrUpdateEmoji(emojiData);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+
+			emojiData._id = emojiId;
+			emojiData.random = Math.round(Math.random() * 1000);
+
+			if (emojiId) {
+				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
+
+				const reader = new FileReader();
+				reader.readAsBinaryString(newData.emojiFile);
+				reader.onloadend = () => {
+					console.log(reader.result, newData.emojiFile.type, emojiData);
+
+					try {
+						uploadEmojiCustom(reader.result, newData.emojiFile.type, emojiData);
+						dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
+					} catch (error) {
+						dispatchToastMessage({ type: 'error', message: error });
+					}
+				};
+			}
 		}
 	};
 
 	const handleSave = async () => {
 		if (Object.keys(newData).length) {
 			await saveAction(newData);
+			setNewData({});
 		}
 	};
 
-	// const handleSave = useCallback(async () => {
-	// 	try {
-	// 		const result = await saveEmoji({
-	// 			name,
-	// 			aliases,
-	// 		});
-	// 		dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Added_Successfully') });
-	// 		goToNew(result)();
-	// 		onChange();
-	// 	} catch (error) {
-	// 		dispatchToastMessage({ type: 'error', message: 'Custom_Emoji_Error_Name_Or_Alias_Already_In_Use' });
-	// 	}
-	// }, [name, aliases]);
-
+	const handleChangeFile = (emojiFile) => {
+		setNewData({ ...newData, emojiFile });
+	};
 	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) => setNewData({ ...newData, [field]: getValue(e) });
 
-	const handleChangeFile = (field, getFile = (e) => {
-		let { files } = e.target;
-		let soundFile;
-		if (e.target.files == null || files.length === 0) {
-			if (e.dataTransfer.files != null) {
-				files = e.dataTransfer.files;
-			} else {
-				files = [];
-			}
-		}
-		for (const file in files) {
-			if (files.hasOwnProperty(file)) {
-				soundFile = files[file];
-			}
-		}
-
-		return soundFile;
-	}) => (e) => {
-		setNewData({ ...newData, [field]: getFile(e) });
-	};
-
+	const clickUpload = useFileInput(handleChangeFile, 'image/jpg');
 	const {
 		name = '',
+		aliases = '',
 	} = newData;
 
-
-	return <Box display='flex' flexDirection='column' fontScale='p1' color='default' mbs='x20' {...props}>
+	return <Page.ScrollableContent display='flex' flexDirection='column' fontScale='p1' color='default' mbs='x20' {...props}>
 		<Margins block='x4'>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput value={name} onChange={handleChange('name') } />
+					<TextInput flexGrow={1} value={name} onChange={handleChange('name')}/>
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Aliases')}</Field.Label>
 				<Field.Row>
-					<TextInput value={aliases} onChange={(e) => setAliases(e.currentTarget.value)} placeholder={t('Aliases')}/>
+					<TextInput value={aliases} onChange={handleChange('aliases')}/>
 				</Field.Row>
 			</Field>
 			<Field>
-				<Field.Label alignSelf='stretch' htmlFor={fileSourceInputId}>{t('Emoji')}</Field.Label>
-				<Field.Row>
-					<InputBox type='file' id={fileSourceInputId} onChange={handleChangeFile('emojiFile')} />
-				</Field.Row>
+				<Field.Label alignSelf='stretch'>{t('Emoji')}</Field.Label>
+				<Box display='flex' flexDirection='row' mbs='none'>
+					<Margins inline='x4'>
+						<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
+					</Margins>
+				</Box>
 			</Field>
 			<Field>
 				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button mie='x4' onClick={close}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSave} disabled={name === ''}>{t('Save')}</Button>
-					</ButtonGroup>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+						<Margins inlineEnd='x4'>
+							<Button flexGrow={1} onClick={() => setNewData({})}>{t('Cancel')}</Button>
+							<Button mie='none' flexGrow={1} onClick={handleSave}>{t('Save')}</Button>
+						</Margins>
+					</Box>
 				</Field.Row>
 			</Field>
 		</Margins>
-	</Box>;
+	</Page.ScrollableContent>;
 }

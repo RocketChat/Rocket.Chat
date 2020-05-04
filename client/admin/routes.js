@@ -71,6 +71,11 @@ registerAdminRoute('/custom-user-status/:context?/:id?', {
 	lazyRouteComponent: () => import('./customUserStatus/CustomUserStatusRoute'),
 });
 
+registerAdminRoute('/emoji-custom/:context?/:id?', {
+	name: 'emoji-custom',
+	lazyRouteComponent: () => import('./customEmoji/CustomEmojiRoute'),
+});
+
 registerAdminRoute('/users/:context?/:id?', {
 	name: 'admin-users',
 	lazyRouteComponent: () => import('./users/UsersRoute'),

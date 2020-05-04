@@ -4,14 +4,14 @@ import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { Page } from '../../components/basic/Page';
-import { NotAuthorizedPage } from '../../../app/ui-admin/client/components/NotAuthorizedPage';
+import Page from '../../components/basic/Page';
+import NotAuthorizedPage from '../NotAuthorizedPage';
 import { CustomEmoji } from './CustomEmoji';
-import { EditCustomUserStatusWithData } from './EditCustomEmoji';
+import { EditCustomEmojiWithData } from './EditCustomEmoji';
 import { AddCustomEmojis } from './AddCustomEmoji';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import { VerticalBar } from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/basic/VerticalBar';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -88,17 +88,17 @@ export default function CustomEmojiRoute({ props }) {
 				</Button>
 			</Page.Header>
 			<Page.Content>
-				<CustomEmoji setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data.emojis} onClick={onClick} sort={sort}/>
+				<CustomEmoji setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
 			</Page.Content>
 		</Page>
 		{ context
-			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-emoji-custom-${ context }`} flexShrink={0}>
+			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
 				<VerticalBar.Header>
 					{ context === 'edit' && t('Custom_Emoji_Info') }
 					{ context === 'new' && t('Custom_Emoji_Add') }
 					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
 				<VerticalBar.Content>
-					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
+					{context === 'edit' && <EditCustomEmojiWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
 					{context === 'new' && <AddCustomEmojis goToNew={onClick} close={close} onChange={onChange}/>}
 				</VerticalBar.Content>
 			</VerticalBar>}

@@ -30,17 +30,17 @@ export function CustomEmoji({
 	const t = useTranslation();
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th key={'aliases'} direction={sort[1]} active={sort[0] === 'aliases'} onClick={onHeaderClick} sort='aliases'>{t('Aliases')}</Th>,
+		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
+		<Th key={'aliases'} w='x200'>{t('Aliases')}</Th>,
 	].filter(Boolean), [sort]);
 
 	const renderRow = (emojis) => {
 		const { _id, name, aliases } = emojis;
-		return <Table.Row key={_id} onKeyDown={onClick(_id, status)} onClick={onClick(_id, status)} tabIndex={0} role='link' action qa-user-id={_id}>
+		return <Table.Row key={_id} onKeyDown={onClick(_id, emojis)} onClick={onClick(_id, emojis)} tabIndex={0} role='link' action qa-user-id={_id}>
 			<Table.Cell fontScale='p1' color='default' style={style}>{name}</Table.Cell>
 			<Table.Cell fontScale='p1' color='default' style={style}>{aliases}</Table.Cell>
 		</Table.Row>;
 	};
 
-	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.update} total={data.total} setParams={setParams} params={params} />;
+	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.emojis.update} total={data.total} setParams={setParams} params={params} />;
 }
