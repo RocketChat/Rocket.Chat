@@ -29,7 +29,6 @@
 		},
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
-		"types": ["node"],
 		"esModuleInterop": true,
 		"preserveSymlinks": true,
 
