@@ -46,15 +46,14 @@ const SuccessModal = ({ onClose, ...props }) => {
 	</Modal>;
 };
 
-export function EditCustomEmojiWithData({ _id, cache, ...props }) {
+export function EditCustomEmojiWithData({ _id, cache, onChange, ...props }) {
 	const t = useTranslation();
 	const query = useMemo(() => ({
 		query: JSON.stringify({ _id }),
-	}), [_id]);
+	}), [_id, cache]);
 
-	const { data, state, error } = useEndpointDataExperimental('emoji-custom.list', query) || { emojis: { } };
+	const { data = { emojis: {} }, state, error } = useEndpointDataExperimental('emoji-custom.list', query);
 
-	console.log(data);
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
@@ -75,7 +74,7 @@ export function EditCustomEmojiWithData({ _id, cache, ...props }) {
 		return <Box fontScale='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
 	}
 
-	return <EditCustomEmoji data={data.emojis.update[0]} {...props}/>;
+	return <EditCustomEmoji data={data.emojis.update[0]} onChange={onChange} {...props}/>;
 }
 
 export function EditCustomEmoji({ close, onChange, data, ...props }) {
@@ -102,7 +101,7 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 
 	const hasUnsavedChanges = useMemo(() => previousName !== name || aliases !== previousAliases.join(', ') || !!emojiFile, [name, aliases, emojiFile]);
 
-	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.update', {}, ' TROCAR emoji updated');
+	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		const formData = new FormData();
@@ -110,10 +109,13 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 		formData.append('_id', _id);
 		formData.append('name', name);
 		formData.append('aliases', aliases);
-		saveAction(formData);
+		const result = await saveAction(formData);
+		if (result.success) {
+			onChange();
+		}
 	}, [name, _id, aliases, emojiFile]);
 
-	const deleteAction = useEndpointAction('POST', 'emoji-custom.delete', useMemo(() => ({ emojiId: _id }), [_id]), 'TROCAR APAGADO COM SUCESSO');
+	const deleteAction = useEndpointAction('POST', 'emoji-custom.delete', useMemo(() => ({ emojiId: _id }), [_id]));
 
 	const onDeleteConfirm = useCallback(async () => {
 		const result = await deleteAction();

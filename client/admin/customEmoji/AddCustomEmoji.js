@@ -18,7 +18,7 @@ export function AddCustomEmoji({ close, onChange, ...props }) {
 		setNewEmojiPreview(URL.createObjectURL(file));
 	}, [setEmojiFile]);
 
-	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.create', {}, ' TROCAR emoji updated');
+	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.create', {}, t('Custom_Emoji_Added_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		const formData = new FormData();

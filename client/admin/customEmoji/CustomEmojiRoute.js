@@ -72,13 +72,13 @@ export default function CustomEmojiRoute({ props }) {
 		router.push({});
 	};
 
-	if (!canManageEmoji) {
-		return <NotAuthorizedPage />;
-	}
-
 	const onChange = useCallback(() => {
 		setCache(new Date());
 	}, []);
+
+	if (!canManageEmoji) {
+		return <NotAuthorizedPage />;
+	}
 
 	return <Page {...props} flexDirection='row'>
 		<Page name='admin-emoji-custom'>
@@ -99,7 +99,7 @@ export default function CustomEmojiRoute({ props }) {
 					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
 				<VerticalBar.Content>
 					{context === 'edit' && <EditCustomEmojiWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
-					{context === 'new' && <AddCustomEmoji goToNew={onClick} close={close} onChange={onChange}/>}
+					{context === 'new' && <AddCustomEmoji close={close} onChange={onChange}/>}
 				</VerticalBar.Content>
 			</VerticalBar>}
 	</Page>;
