@@ -13,7 +13,8 @@ import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useQueryStringParameter } from '../../contexts/RouterContext';
 import { useModal } from '../../hooks/useModal';
-import Subtitle from '../../components/basic/Subtitle';
+import WhatIsItSection from './WhatIsItSection';
+import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
 
 function CloudPage() {
 	const t = useTranslation();
@@ -30,7 +31,6 @@ function CloudPage() {
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
 	const disconnectWorkspace = useMethod('cloud:disconnectWorkspace');
 	const syncWorkspace = useMethod('cloud:syncWorkspace');
-	const registerWorkspace = useMethod('cloud:registerWorkspace');
 	const updateEmail = useMethod('cloud:updateEmail');
 
 	const token = useQueryStringParameter('token');
@@ -162,28 +162,6 @@ function CloudPage() {
 		}
 	};
 
-	const handleRegisterButtonClick = async () => {
-		try {
-			const isRegistered = await registerWorkspace();
-
-			if (!isRegistered) {
-				throw Error(t('An error occured'));
-			}
-
-			const isSynced = await syncWorkspace();
-
-			if (!isSynced) {
-				throw Error(t('An error occured syncing'));
-			}
-
-			dispatchToastMessage({ type: 'success', message: t('Sync Complete') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			await loadRegisterStatus();
-		}
-	};
-
 	const handleSyncButtonClick = async () => {
 		try {
 			const isSynced = await syncWorkspace();
@@ -215,26 +193,7 @@ function CloudPage() {
 			<Page.ScrollableContentWithShadow className='page-settings'>
 				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 					<Margins block='x24'>
-						<Box is='section'>
-							<Subtitle>{t('Cloud_what_is_it')}</Subtitle>
-
-							<Box withRichContent>
-								<p>{t('Cloud_what_is_it_description')}</p>
-
-								<details>
-									<p>{t('Cloud_what_is_it_services_like')}</p>
-
-									<ul>
-										<li>{t('Register_Server_Registered_Push_Notifications')}</li>
-										<li>{t('Register_Server_Registered_Livechat')}</li>
-										<li>{t('Register_Server_Registered_OAuth')}</li>
-										<li>{t('Register_Server_Registered_Marketplace')}</li>
-									</ul>
-
-									<p>{t('Cloud_what_is_it_additional')}</p>
-								</details>
-							</Box>
-						</Box>
+						<WhatIsItSection />
 
 						<Box is='section'>
 							{registerStatus?.connectToCloud
@@ -304,17 +263,7 @@ function CloudPage() {
 											</div>
 										</>}
 								</>
-								: <>
-									<div className='section-title'>
-										<div className='section-title-text'>
-											{t('Cloud_registration_required')}
-										</div>
-									</div>
-									<div className='section-content border-component-color'>
-										<p>{t('Cloud_registration_required_description')}</p>
-										<button type='button' className='rc-button rc-button--primary action register-btn' onClick={handleRegisterButtonClick}>{t('Cloud_registration_requried_link_text')}</button>
-									</div>
-								</>}
+								: <WorkspaceRegistrationSection onActionPerformed={loadRegisterStatus} />}
 						</Box>
 						{registerStatus?.connectToCloud && <Box is='section'>
 							<div className='section-title'>
