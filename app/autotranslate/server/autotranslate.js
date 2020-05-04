@@ -156,7 +156,7 @@ export class AutoTranslate {
 		message = Markdown.parseMessageNotEscaped(message);
 
 		// Some parsers (e. g. Marked) wrap the complete message in a <p> - this is unnecessary and should be ignored with respect to translations
-		const regexWrappedParagraph = new RegExp('^\s*<p>|<\/p>\s*$', 'gm');
+		const regexWrappedParagraph = new RegExp('^\\s*<p>|</p>\\s*$', 'gm');
 		message.msg = message.msg.replace(regexWrappedParagraph, '');
 
 		for (const tokenIndex in message.tokens) {
