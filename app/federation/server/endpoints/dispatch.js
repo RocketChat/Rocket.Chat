@@ -255,7 +255,7 @@ const eventHandlers = {
 
 				// Create the message
 				try {
-					await Messages.insert(denormalizedMessage);
+					Messages.insert(denormalizedMessage);
 
 					processThreads(denormalizedMessage, room);
 
