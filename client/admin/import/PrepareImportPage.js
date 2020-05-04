@@ -321,7 +321,7 @@ function PrepareImportPage() {
 			</ButtonGroup>
 		</Page.Header>
 
-		<Page.ContentShadowScroll>
+		<Page.ScrollableContentWithShadow>
 			<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
 				<Box is='h2' fontScale='p2'>{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}</Box>
 				{!isPreparing && <Tabs flexShrink={0} >
@@ -342,7 +342,7 @@ function PrepareImportPage() {
 					{!isPreparing && tab === 'channels' && <PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels}/>}
 				</Margins>
 			</Box>
-		</Page.ContentShadowScroll>
+		</Page.ScrollableContentWithShadow>
 	</Page>;
 }
 
