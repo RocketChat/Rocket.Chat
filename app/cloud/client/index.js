@@ -1,33 +1,14 @@
 import './admin/callback';
-import './admin/cloud';
 import './admin/cloudRegisterManually';
 
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { registerAdminRoute, registerAdminSidebarItem } from '../../../client/admin';
-import { hasAtLeastOnePermission } from '../../authorization';
-
-registerAdminRoute('/cloud', {
-	name: 'cloud',
-	async action() {
-		await import('./admin');
-		BlazeLayout.render('main', { center: 'cloud', old: true });
-	},
-});
+import { registerAdminRoute } from '../../../client/admin';
 
 registerAdminRoute('/cloud/oauth-callback', {
 	name: 'cloud-oauth-callback',
-	async action() {
+	action: async () => {
 		await import('./admin');
 		BlazeLayout.render('main', { center: 'cloudCallback', old: true });
-	},
-});
-
-registerAdminSidebarItem({
-	icon: 'cloud-plus',
-	href: 'cloud',
-	i18nLabel: 'Connectivity_Services',
-	permissionGranted() {
-		return hasAtLeastOnePermission(['manage-cloud']);
 	},
 });

@@ -27,7 +27,7 @@ Template.cloudCallback.onCreated(function() {
 				return;
 			}
 
-			FlowRouter.go('/admin/cloud');
+			FlowRouter.go('cloud');
 		});
 	}
 });
