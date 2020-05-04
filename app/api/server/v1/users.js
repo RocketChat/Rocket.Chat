@@ -184,7 +184,7 @@ API.v1.addRoute('users.getSingleOwnedRooms', { authRequired: true }, {
 
 		const user = this.getUserFromParams();
 
-		const rooms = Meteor.runAsUser(this.userId, () => getUserSingleOwnedRooms(user._id));
+		const rooms = getUserSingleOwnedRooms(user._id);
 
 		return API.v1.success({
 			rooms,
