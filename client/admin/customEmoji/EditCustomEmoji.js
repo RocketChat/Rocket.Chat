@@ -113,7 +113,7 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 		saveAction(formData);
 	}, [name, _id, aliases, emojiFile]);
 
-	const deleteAction = useEndpointAction('POST', 'emooji-custom.delete', useMemo(() => ({ _id }), [_id]), 'TROCAR APAGADO COM SUCESSO');
+	const deleteAction = useEndpointAction('POST', 'emoji-custom.delete', useMemo(() => ({ emojiId: _id }), [_id]), 'TROCAR APAGADO COM SUCESSO');
 
 	const onDeleteConfirm = useCallback(async () => {
 		const result = await deleteAction();

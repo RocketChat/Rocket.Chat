@@ -8,7 +8,7 @@ import Page from '../../components/basic/Page';
 import NotAuthorizedPage from '../NotAuthorizedPage';
 import { CustomEmoji } from './CustomEmoji';
 import { EditCustomEmojiWithData } from './EditCustomEmoji';
-import { AddCustomEmojis } from './AddCustomEmoji';
+import { AddCustomEmoji } from './AddCustomEmoji';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import VerticalBar from '../../components/basic/VerticalBar';
@@ -99,7 +99,7 @@ export default function CustomEmojiRoute({ props }) {
 					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
 				<VerticalBar.Content>
 					{context === 'edit' && <EditCustomEmojiWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
-					{context === 'new' && <AddCustomEmojis goToNew={onClick} close={close} onChange={onChange}/>}
+					{context === 'new' && <AddCustomEmoji goToNew={onClick} close={close} onChange={onChange}/>}
 				</VerticalBar.Content>
 			</VerticalBar>}
 	</Page>;
