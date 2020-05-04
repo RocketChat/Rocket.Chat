@@ -17,7 +17,7 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t('Custom_User_Status_Delete_Warning')}
+			{t('Custom_Sound_Status_Delete_Warning')}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -37,7 +37,7 @@ const SuccessModal = ({ onClose, ...props }) => {
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t('Custom_User_Status_Has_Been_Deleted')}
+			{t('Custom_Sound_Has_Been_Deleted')}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -95,7 +95,7 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 		setSound(previousSound || '');
 	}, [previousName, previousSound, _id]);
 
-	const deleteStatus = useMethod('deleteCustomUserStatus');
+	const deleteCustomSound = useMethod('deleteCustomSound');
 
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	// const deleteCustomSound = useMethod('deleteCustomSound');
@@ -132,7 +132,6 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 		}
 
 		errors.forEach((error) => dispatchToastMessage({ type: 'error', message: error }));
-		debugger
 		if (soundFile !== previousSound) {
 			if (!/audio\/mp3/.test(soundFile.type) && !/audio\/mpeg/.test(soundFile.type) && !/audio\/x-mpeg/.test(soundFile.type)) {
 				errors.push('FileType');
@@ -166,12 +165,12 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 
 					try {
 						uploadCustomSound(reader.result, sound.soundFile.type, soundData);
-						dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 					} catch (error) {
 						dispatchToastMessage({ type: 'error', message: error });
 					}
 				};
 			}
+			return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 		}
 	};
 
@@ -181,7 +180,8 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 
 	const onDeleteConfirm = useCallback(async () => {
 		try {
-			await deleteStatus(_id);
+			await deleteCustomSound(_id);
+			console.log();
 			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

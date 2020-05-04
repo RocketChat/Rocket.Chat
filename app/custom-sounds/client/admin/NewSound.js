@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Field, TextInput, Box, InputBox, Margins, Button } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { Field, TextInput, Box, Icon, Margins, Button } from '@rocket.chat/fuselage';
 import s from 'underscore.string';
 
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
+import { useFileInput } from '../../../../client/hooks/useFileInput';
 import Page from '../../../../client/components/basic/Page';
 
 export function NewSound({ roles, ...props }) {
@@ -17,8 +17,6 @@ export function NewSound({ roles, ...props }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [newData, setNewData] = useState({});
-
-	const fileSourceInputId = useUniqueId();
 
 	const createSoundData = (name) => {
 		const soundData = {};
@@ -90,29 +88,12 @@ export function NewSound({ roles, ...props }) {
 		}
 	};
 
+	const handleChangeFile = (soundFile) => {
+		setNewData({ ...newData, soundFile });
+	};
 	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) => setNewData({ ...newData, [field]: getValue(e) });
 
-	const handleChangeFile = (field, getFile = (e) => {
-		let { files } = e.target;
-		let soundFile;
-		if (e.target.files == null || files.length === 0) {
-			if (e.dataTransfer.files != null) {
-				files = e.dataTransfer.files;
-			} else {
-				files = [];
-			}
-		}
-		for (const file in files) {
-			if (files.hasOwnProperty(file)) {
-				soundFile = files[file];
-			}
-		}
-
-		return soundFile;
-	}) => (e) => {
-		setNewData({ ...newData, [field]: getFile(e) });
-	};
-
+	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
 	const {
 		name = '',
 	} = newData;
@@ -127,10 +108,12 @@ export function NewSound({ roles, ...props }) {
 			</Field>
 
 			<Field>
-				<Field.Label alignSelf='stretch' htmlFor={fileSourceInputId}>{t('Sound_File_mp3')}</Field.Label>
-				<Field.Row>
-					<InputBox type='file' id={fileSourceInputId} onChange={handleChangeFile('soundFile')} />
-				</Field.Row>
+				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+				<Box display='flex' flexDirection='row' mbs='none'>
+					<Margins inline='x4'>
+						<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
+					</Margins>
+				</Box>
 			</Field>
 
 			<Field>
