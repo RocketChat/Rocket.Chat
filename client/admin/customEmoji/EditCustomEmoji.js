@@ -2,9 +2,6 @@ import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useMethod } from '../../contexts/ServerContext';
-import { useSession } from '../../contexts/SessionContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { Modal } from '../../components/basic/Modal';
 import { useFileInput } from '../../hooks/useFileInput';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -83,7 +80,6 @@ export function EditCustomEmojiWithData({ _id, cache, ...props }) {
 
 export function EditCustomEmoji({ close, onChange, data, ...props }) {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { _id, name: previousName, aliases: previousAliases, extension: previousExtension } = data || {};
 	const previousEmoji = data || {};
@@ -99,91 +95,36 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 		setAliases((previousAliases && previousAliases.join(', ')) || '');
 	}, [previousName, previousAliases, previousEmoji, _id]);
 
-	// const deleteEmojiCustom = useMethod('deleteEmojiCustom');
-
-	// const uploadEmojiCustom = useMethod('uploadEmojiCustom');
-
-	// const insertOrUpdateEmoji = useMethod('insertOrUpdateEmoji');
-
-	const setEmojiPreview = useCallback(async (file, formData) => {
-		setEmojiFile(formData);
+	const setEmojiPreview = useCallback(async (file) => {
+		setEmojiFile(file);
 		setNewEmojiPreview(URL.createObjectURL(file));
 	}, [setEmojiFile]);
 
-	const getEmojiData = (emojiFile) => {
-		const emojiData = {};
+	const hasUnsavedChanges = useMemo(() => previousName !== name || aliases !== previousAliases.join(', ') || !!emojiFile, [name, aliases, emojiFile]);
 
-		emojiData._id = _id;
-		emojiData.previousName = previousName;
-		emojiData.previousAliases = previousAliases;
-		emojiData.extension = emojiFile.name.split('.').pop();
-		emojiData.previousExtension = previousEmoji.extension;
-		emojiData.name = name;
-		emojiData.aliases = aliases;
-		emojiData.newFile = false;
-		console.log(emojiData);
-		return emojiData;
-	};
-
-	const handleChangeFile = (emojiFile) => {
-		setEmojiFile(emojiFile);
-	};
-
-	const hasUnsavedChanges = useMemo(() => previousName !== name);
-
-	const validate = (emojiData, emojiFile) => {
-		const errors = [];
-
-		if (!emojiData._id) {
-			errors.push('_id');
-		}
-
-		if (!emojiData.name) {
-			errors.push('Name');
-		}
-
-		if (!emojiData.aliases) {
-			errors.push('Aliases');
-		}
-
-		errors.forEach((error) => dispatchToastMessage({ type: 'error', message: error }));
-		if (emojiData !== previousEmoji) {
-			if (!/image\/jpg/.test(emojiFile.type) && !/image\/png/.test(emojiFile.type)) {
-				errors.push('FileType');
-				dispatchToastMessage({ type: 'error', message: t('error-invalid-file-type') });
-			}
-		}
-		return errors.length === 0;
-	};
-
-	const saveQuery = useMemo(() => ({
-		_id,
-		name,
-		aliases,
-	}), [_id, name, JSON.stringify(aliases)]);
-
-	console.log(saveQuery);
-	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.update', saveQuery, ' TROCAR emoji updated');
+	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.update', {}, ' TROCAR emoji updated');
 
 	const handleSave = useCallback(async () => {
-		saveAction(emojiFile);
-	}, [name, _id, emojiFile]);
+		const formData = new FormData();
+		formData.append('emoji', emojiFile);
+		formData.append('_id', _id);
+		formData.append('name', name);
+		formData.append('aliases', aliases);
+		saveAction(formData);
+	}, [name, _id, aliases, emojiFile]);
+
+	const deleteAction = useEndpointAction('POST', 'emooji-custom.delete', useMemo(() => ({ _id }), [_id]), 'TROCAR APAGADO COM SUCESSO');
 
 	const onDeleteConfirm = useCallback(async () => {
-		try {
-			await deleteEmojiCustom(_id);
-			console.log();
+		const result = await deleteAction();
+		if (result.success) {
 			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-			onChange();
 		}
 	}, [_id]);
 
 	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
 
-	// const clickUpload = useFileInput(handleChangeFile, 'image.jpg');
-	const clickUpload = useFileInput(setEmojiPreview);
+	const clickUpload = useFileInput(setEmojiPreview, 'emoji');
 
 	return <>
 		<Box display='flex' flexDirection='column' fontScale='p1' color='default' mbs='x20' {...props}>

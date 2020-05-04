@@ -4,7 +4,7 @@ import { useEndpoint, useUpload } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
 export const useEndpointAction = (httpMethod, endpoint, params = {}, successMessage) => {
-	const sendData = httpMethod !== 'upload' ? useEndpoint(httpMethod, endpoint) : useUpload(endpoint);
+	const sendData = httpMethod !== 'UPLOAD' ? useEndpoint(httpMethod, endpoint) : useUpload(endpoint);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useCallback(async (...args) => {
