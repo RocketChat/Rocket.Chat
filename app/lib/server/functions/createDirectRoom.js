@@ -104,6 +104,8 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 		const insertedRoom = Rooms.findOneById(rid);
 
 		callbacks.run('afterCreateDirectRoom', insertedRoom, { members });
+
+		Apps.triggerEvent('IPostRoomCreate', insertedRoom);
 	}
 
 	return {

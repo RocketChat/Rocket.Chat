@@ -121,11 +121,7 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 		callbacks.run('afterCreateRoom', owner, room);
 	});
 
-	if (Apps && Apps.isLoaded()) {
-		// This returns a promise, but it won't mutate anything about the message
-		// so, we don't really care if it is successful or fails
-		Apps.getBridges().getListenerBridge().roomEvent('IPostRoomCreate', room);
-	}
+	Apps.triggerEvent('IPostRoomCreate', room);
 
 	return {
 		rid: room._id, // backwards compatible
