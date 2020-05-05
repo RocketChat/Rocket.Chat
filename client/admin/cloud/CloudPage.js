@@ -171,7 +171,7 @@ function CloudPage() {
 			</ButtonGroup>
 		</Page.Header>
 		{modal}
-		<Page.ScrollableContentWithShadow className='page-settings'>
+		<Page.ScrollableContentWithShadow>
 			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 				<Margins block='x24'>
 					<WhatIsItSection />

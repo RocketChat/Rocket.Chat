@@ -79,7 +79,7 @@ function WorkspaceRegistrationSection({
 	const emailInputId = useUniqueId();
 	const tokenInputId = useUniqueId();
 
-	return <Box className='section-content border-component-color' marginBlock='neg-x24' {...props}>
+	return <Box marginBlock='neg-x24' {...props}>
 		<Margins block='x24'>
 			<Field>
 				<Field.Label htmlFor={emailInputId}>{t('Email')}</Field.Label>
