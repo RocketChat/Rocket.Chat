@@ -50,12 +50,12 @@ export const relinquishRoomOwnerships = function(userId, removeDirectMessages = 
 					return false;
 				});
 
-				// If there's no subscriber available to be the new owner, we can remove this room.
-				if (!changedOwner) {
+				// If there's no subscriber available to be the new owner and it's not a public room, we can remove it.
+				if (!changedOwner && roomData.t !== 'c') {
 					roomData.remove = true;
 				}
 			}
-		} else {
+		} else if (roomData.t !== 'c') {
 			// If the user is not an owner, remove the room if the user is the only subscriber
 			roomData.remove = Subscriptions.findByRoomId(roomData.rid).count() === 1;
 		}

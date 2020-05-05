@@ -37,15 +37,15 @@ export const getUserSingleOwnedRooms = function(userId) {
 					return false;
 				});
 
-				// If there's no subscriber available to be the new owner, we can remove this room.
-				if (!changedOwner) {
-					roomsThatWillBeRemoved.push(roomData.rid);
-				} else {
+				if (changedOwner) {
 					roomsThatWillChangeOwner.push(roomData.rid);
+				} else if (roomData.t !== 'c') {
+					// If there's no subscriber available to be the new owner and it's not a public room, we can remove it.
+					roomsThatWillBeRemoved.push(roomData.rid);
 				}
 			}
-		} else if (Subscriptions.findByRoomId(roomData.rid).count() === 1) {
-			// If the user is not an owner, remove the room if the user is the only subscriber
+		} else if (roomData.t !== 'c' && Subscriptions.findByRoomId(roomData.rid).count() === 1) {
+			// If the user is not an owner and the room is not public, remove the room if the user is the only subscriber
 			roomsThatWillBeRemoved.push(roomData.rid);
 		}
 	});
