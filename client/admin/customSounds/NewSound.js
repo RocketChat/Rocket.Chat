@@ -54,8 +54,7 @@ export function NewSound({ goToNew, close, onChange, ...props }) {
 			}
 			return soundId;
 		}
-		validation.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', t(error)) }));
-		throw new Error (t('error-the-field-is-required'));
+		validation.forEach((error) => { throw new Error({ type: 'error', message: t('error-the-field-is-required', { field: t(error) }) }); });
 	};
 
 	const handleSave = useCallback(async () => {

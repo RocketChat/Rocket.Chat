@@ -2,7 +2,6 @@ import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Box, Table, TextInput, Icon, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { CustomSounds } from '../../../app/custom-sounds/client/lib/CustomSounds';
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
 import { useCustomSound } from '../../contexts/CustomSoundContext';
 
