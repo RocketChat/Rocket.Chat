@@ -89,6 +89,7 @@ registerAdminRoute('/invites', {
 registerAdminRoute('/cloud', {
 	name: 'cloud',
 	lazyRouteComponent: () => import('./cloud/CloudRoute'),
+	props: { page: 'configuration' },
 });
 
 registerAdminRoute('/view-logs', {

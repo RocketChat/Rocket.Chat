@@ -4,14 +4,18 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../NotAuthorizedPage';
 import CloudPage from './CloudPage';
 
-function CloudRoute() {
+function CloudRoute({ page = 'configuration' }) {
 	const canManageCloud = usePermission('manage-cloud');
 
 	if (!canManageCloud) {
 		return <NotAuthorizedPage />;
 	}
 
-	return <CloudPage />;
+	if (page === 'configuration') {
+		return <CloudPage />;
+	}
+
+	return null;
 }
 
 export default CloudRoute;

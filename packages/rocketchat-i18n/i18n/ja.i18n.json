@@ -695,7 +695,6 @@
   "Closing_chat": "閉じるチャット",
   "Cloud": "クラウド",
   "Cloud_Register_manually": "手動で登録する",
-  "Cloud_click_here": "テキストをコピーしたら、クラウドコンソールに移動します。 [ここをクリック]()",
   "Cloud_register_offline_finish_helper": "Cloud Consoleで登録プロセスを完了すると、テキストが表示されます。ここに貼り付けて登録を完了してください。",
   "Cloud_register_offline_helper": "エアギャップまたはネットワークアクセスが制限されている場合、ワークスペースを手動で登録できます。以下のテキストをコピーし、クラウドコンソールに移動してプロセスを完了します。",
   "Cloud_register_success": "ワークスペースが正常に登録されました！",

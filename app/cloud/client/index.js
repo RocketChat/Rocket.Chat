@@ -1,5 +1,3 @@
-import './admin/cloudRegisterManually';
-
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { registerAdminRoute } from '../../../client/admin';

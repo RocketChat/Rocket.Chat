@@ -12,20 +12,20 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useQueryStringParameter } from '../../contexts/RouterContext';
-import { useModal } from '../../hooks/useModal';
 import WhatIsItSection from './WhatIsItSection';
 import ConnectToCloudSection from './ConnectToCloudSection';
 import TroubleshootingSection from './TroubleshootingSection';
 import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
 import WorkspaceLoginSection from './WorkspaceLoginSection';
+import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';
 
 function CloudPage() {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const modal = useModal();
 
 	const [registerStatus, setRegisterStatus] = useSafely(useState());
 	const [isLoggedIn, setLoggedIn] = useSafely(useState(false));
+	const [modal, setModal] = useState(null);
 
 	const checkRegisterStatus = useMethod('cloud:checkRegisterStatus');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
@@ -75,15 +75,10 @@ function CloudPage() {
 	}, [token]);
 
 	const handleCloudRegisterManuallyButtonClick = () => {
-		modal.open({
-			template: 'cloudRegisterManually',
-			showCancelButton: false,
-			showConfirmButton: false,
-			showFooter: false,
-			closeOnCancel: true,
-			html: true,
-			confirmOnEnter: false,
-		});
+		const handleModalClose = () => {
+			setModal(null);
+		};
+		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
 	const handleLogoutButtonClick = async () => {
@@ -175,6 +170,7 @@ function CloudPage() {
 				</Button>
 			</ButtonGroup>
 		</Page.Header>
+		{modal}
 		<Page.ScrollableContentWithShadow className='page-settings'>
 			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 				<Margins block='x24'>
