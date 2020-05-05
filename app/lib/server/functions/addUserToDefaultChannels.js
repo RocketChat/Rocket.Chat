@@ -14,6 +14,7 @@ export const addUserToDefaultChannels = function(user, silenced) {
 				unread: 1,
 				userMentions: 1,
 				groupMentions: 0,
+				...room.favorite && { f: true },
 			});
 
 			// Insert user joined message

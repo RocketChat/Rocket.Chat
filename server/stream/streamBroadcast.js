@@ -10,7 +10,7 @@ import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
-import { Users } from '../../app/models/server/models/Users';
+import { Users } from '../../app/models/server';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -189,6 +189,7 @@ function startStreamCastBroadcast(value) {
 
 	connections[instance] = connection;
 	connection.instanceId = instance;
+	connection.instanceRecord = {};
 	connection.onReconnect = function() {
 		return authorizeConnection(instance);
 	};
@@ -218,7 +219,7 @@ function startStreamCastBroadcast(value) {
 			const scope = {};
 			return instance.emitWithScope(eventName, scope, args);
 		}
-		return instance.emitWithoutBroadcast(eventName, args);
+		return instance._emit(eventName, args);
 	});
 
 	return connection.subscribe('stream');
@@ -286,8 +287,20 @@ function startStreamBroadcast() {
 		return results;
 	}
 
-	return Meteor.StreamerCentral.on('broadcast', function(streamName, eventName, args) {
+	const onBroadcast = function(streamName, eventName, args) {
 		return broadcast(streamName, eventName, args);
+	};
+
+	let TroubleshootDisableInstanceBroadcast;
+	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+		if (TroubleshootDisableInstanceBroadcast === value) { return; }
+		TroubleshootDisableInstanceBroadcast = value;
+
+		if (value) {
+			return Meteor.StreamerCentral.removeListener('broadcast', onBroadcast);
+		}
+
+		Meteor.StreamerCentral.on('broadcast', onBroadcast);
 	});
 }
 
