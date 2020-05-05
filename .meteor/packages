@@ -44,7 +44,6 @@ rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
 
-konecty:change-case
 konecty:delayed-task
 konecty:mongo-counter
 konecty:multiple-instances-status
