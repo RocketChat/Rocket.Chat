@@ -122,7 +122,12 @@ const mergeCssFiles = async (files) => {
 
 	map.sourcesContent = map.sources.map((filename) => mapFilenameToFile[filename].getContentsAsString());
 
-	const newMap = SourceMapGenerator.fromSourceMap(new SourceMapConsumer(map));
+	// yes, this await is needed
+	const consumer = await new SourceMapConsumer(map);
+
+	const newMap = SourceMapGenerator.fromSourceMap(consumer);
+
+	consumer.destroy();
 
 	files.filter((file) => file.getSourceMap())
 		.forEach((file) => {
