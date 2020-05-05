@@ -26,6 +26,7 @@ export class AppListenerBridge {
 				case AppInterface.IPreRoomDeletePrevent:
 				case AppInterface.IPostRoomDeleted:
 				case AppInterface.IPreRoomUserJoined:
+				case AppInterface.IPostRoomUserJoined:
 					return 'roomEvent';
 				case AppInterface.IPostExternalComponentOpened:
 				case AppInterface.IPostExternalComponentClosed:
@@ -63,6 +64,7 @@ export class AppListenerBridge {
 		const params = (() => {
 			switch (inte) {
 				case AppInterface.IPreRoomUserJoined:
+				case AppInterface.IPostRoomUserJoined:
 					const [joiningUser, invitingUser] = payload;
 					return {
 						room: rm,
