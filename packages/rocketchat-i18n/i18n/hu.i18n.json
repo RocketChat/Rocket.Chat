@@ -669,7 +669,7 @@
   "Cloud_manually_input_token": "Add meg kézzel a tokent, ami a Felhő regisztrációs e-mailben szerepel.",
   "Cloud_registration_required": "Regisztráció szükséges",
   "Cloud_registration_required_description": "Úgy tűnik, a beállítás során nem választottad a munkaterület regisztrációját.",
-  "Cloud_registration_requried_link_text": "Kattints ide a munkahely regisztrálásához.",
+  "Cloud_registration_required_link_text": "Kattints ide a munkahely regisztrálásához.",
   "Cloud_error_in_authenticating": "Hiba a hitelesítés során:",
   "Cloud_error_code": "Kód: __errorCode__",
   "Cloud_troubleshooting": "Hibakeresés",

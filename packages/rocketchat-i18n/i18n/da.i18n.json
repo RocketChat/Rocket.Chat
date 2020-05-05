@@ -689,7 +689,7 @@
   "Cloud_manually_input_token": "Indtast manuelt den token, der fulgte med Cloud-tilmeldingen.",
   "Cloud_registration_required": "Tilmelding påkrævet",
   "Cloud_registration_required_description": "Under konfigurationen valgte du tilsyneladende ikke at tilmelde din instans.",
-  "Cloud_registration_requried_link_text": "Tryk her for at tilmelde din instans.",
+  "Cloud_registration_required_link_text": "Tryk her for at tilmelde din instans.",
   "Cloud_error_in_authenticating": "Fejl i forbindelse med godkendelse",
   "Cloud_error_code": "Kode: __errorCode__",
   "Collaborative": "Samarbejde",

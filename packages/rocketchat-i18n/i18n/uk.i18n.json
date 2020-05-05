@@ -696,7 +696,7 @@
   "Cloud_manually_input_token": "Вучну ввести токен, отриманий з електонної пошти при реєстрації у хмарі.",
   "Cloud_registration_required": "Потрібна реєстрація",
   "Cloud_registration_required_description": "Схоже, що під час налаштування ви не вибрали реєстрацію робочої області.",
-  "Cloud_registration_requried_link_text": "Натисніть тут, щоб зареєструвати робочу область.",
+  "Cloud_registration_required_link_text": "Натисніть тут, щоб зареєструвати робочу область.",
   "Cloud_error_in_authenticating": "Отримана помилка  під час авторизації",
   "Cloud_error_code": "Код: __errorCode__",
   "Cloud_status_page_description": "Якщо у певної хмарної служби є проблеми, ви можете перевірити відомі проблеми на нашій сторінці статусу за адресою",

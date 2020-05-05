@@ -722,7 +722,7 @@
   "Cloud_manually_input_token": "手動輸入在雲端註冊的電子郵件來收 token 郵件。",
   "Cloud_registration_required": "必須註冊",
   "Cloud_registration_required_description": "看起來安裝過程中您沒有選擇您的工作區域。",
-  "Cloud_registration_requried_link_text": "點擊這裡來註冊您的工作區域。",
+  "Cloud_registration_required_link_text": "點擊這裡來註冊您的工作區域。",
   "Cloud_error_in_authenticating": "當驗證時收到錯誤",
   "Cloud_error_code": "代碼: __errorCode__",
   "Cloud_status_page_description": "假如特定的雲端服務有問題，您可以檢查在我們的狀態頁面找到已知問題",

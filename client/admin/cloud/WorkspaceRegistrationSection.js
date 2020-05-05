@@ -1,12 +1,11 @@
 import { Box, Button, ButtonGroup, EmailInput, Field, Margins, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
-
-const supportEmailAddress = 'support@rocket.chat';
+import { supportEmailAddress } from './constants';
 
 function WorkspaceRegistrationSection({
 	email: initialEmail,
@@ -22,6 +21,7 @@ function WorkspaceRegistrationSection({
 	const updateEmail = useMethod('cloud:updateEmail');
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
 
+	const [isProcessing, setProcessing] = useSafely(useState(false));
 	const [email, setEmail] = useState(initialEmail);
 	const [token, setToken] = useState(initialToken);
 
@@ -44,24 +44,34 @@ function WorkspaceRegistrationSection({
 	};
 
 	const handleUpdateEmailButtonClick = async () => {
+		setProcessing(true);
+
 		try {
 			await updateEmail(email, false);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			setProcessing(false);
 		}
 	};
 
 	const handleResendEmailButtonClick = async () => {
+		setProcessing(true);
+
 		try {
 			await updateEmail(email, true);
 			dispatchToastMessage({ type: 'success', message: t('Requested') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			setProcessing(false);
 		}
 	};
 
 	const handleConnectButtonClick = async () => {
+		setProcessing(true);
+
 		try {
 			const isConnected = await connectWorkspace(token);
 
@@ -74,6 +84,7 @@ function WorkspaceRegistrationSection({
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			await (onRegisterStatusChange && onRegisterStatusChange());
+			setProcessing(false);
 		}
 	};
 
@@ -85,26 +96,26 @@ function WorkspaceRegistrationSection({
 			<Field>
 				<Field.Label htmlFor={emailInputId}>{t('Email')}</Field.Label>
 				<Field.Row>
-					<EmailInput id={emailInputId} value={email} onChange={handleEmailChange} />
+					<EmailInput id={emailInputId} disabled={isProcessing} value={email} onChange={handleEmailChange} />
 				</Field.Row>
 				<Field.Hint>{t('Cloud_address_to_send_registration_to')}</Field.Hint>
 			</Field>
 
 			<ButtonGroup>
-				<Button onClick={handleUpdateEmailButtonClick}>{t('Cloud_update_email')}</Button>
-				<Button onClick={handleResendEmailButtonClick}>{t('Cloud_resend_email')}</Button>
+				<Button disabled={isProcessing} onClick={handleUpdateEmailButtonClick}>{t('Cloud_update_email')}</Button>
+				<Button disabled={isProcessing} onClick={handleResendEmailButtonClick}>{t('Cloud_resend_email')}</Button>
 			</ButtonGroup>
 
 			<Field>
 				<Field.Label htmlFor={tokenInputId}>{t('Token')}</Field.Label>
 				<Field.Row>
-					<TextInput id={tokenInputId} value={token} onChange={handleTokenChange} />
+					<TextInput id={tokenInputId} disabled={isProcessing} value={token} onChange={handleTokenChange} />
 				</Field.Row>
 				<Field.Hint>{t('Cloud_manually_input_token')}</Field.Hint>
 			</Field>
 
 			<ButtonGroup>
-				<Button primary onClick={handleConnectButtonClick}>{t('Connect')}</Button>
+				<Button primary disabled={isProcessing} onClick={handleConnectButtonClick}>{t('Connect')}</Button>
 			</ButtonGroup>
 
 			<Box withRichContent>

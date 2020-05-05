@@ -712,7 +712,7 @@
   "Cloud_manually_input_token": "Ručně zadejte token přijatý z e-mailu pro registraci do Cloudu.",
   "Cloud_registration_required": "Povinná registrace",
   "Cloud_registration_required_description": "Vypadá to, že jste se nevybral/a zaregistraci svého pracovního prostoru během instalace .",
-  "Cloud_registration_requried_link_text": "Klikněte zde pro registraci svého pracovního prostoru.",
+  "Cloud_registration_required_link_text": "Klikněte zde pro registraci svého pracovního prostoru.",
   "Cloud_error_in_authenticating": "Při ověřování došlo k chybě",
   "Cloud_error_code": "Kód: __errorCode__",
   "Cloud_status_page_description": "Pokud má konkrétní cloudová služba problémy, můžete zkontrolovat známé problémy na naší stavové stránce na adrese",

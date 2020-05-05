@@ -649,7 +649,7 @@
   "Cloud_manually_input_token": "Cloud Kayıt E-Postasından alınan belirteci elle girin.",
   "Cloud_registration_required": "Kayıt Gerekli",
   "Cloud_registration_required_description": "Görünen o ki kurulum sırasında çalışma alanınızı kaydetmeyi seçmediniz.",
-  "Cloud_registration_requried_link_text": "Çalışma alanınızı kaydetmek için buraya tıklayın.",
+  "Cloud_registration_required_link_text": "Çalışma alanınızı kaydetmek için buraya tıklayın.",
   "Cloud_error_in_authenticating": "Doğrulama sırasında hata alındı",
   "Cloud_error_code": "Kod: __errorCode__",
   "Cloud_troubleshooting": "Sorun Giderme",

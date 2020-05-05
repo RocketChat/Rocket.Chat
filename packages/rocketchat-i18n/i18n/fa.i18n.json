@@ -682,7 +682,7 @@
   "Cloud_manually_input_token": "نشانه دریافت شده از ایمیل ثبت نام Cloud را به صورت دستی وارد کنید.",
   "Cloud_registration_required": "نیاز به ثبت نام",
   "Cloud_registration_required_description": "به نظر می رسد در هنگام راه اندازی شما تصمیم به ثبت نام فضای کاری خود ندارید.",
-  "Cloud_registration_requried_link_text": "برای ثبت فضای کاری خود اینجا را کلیک کنید.",
+  "Cloud_registration_required_link_text": "برای ثبت فضای کاری خود اینجا را کلیک کنید.",
   "Cloud_error_in_authenticating": "هنگام تأیید اعتبار ، خطایی رخ داده",
   "Cloud_error_code": "کد: __errorCode__",
   "Cloud_status_page_description": "اگر سرویس ویژه Cloud مشکلی دارد ، می توانید موارد شناخته شده را در صفحه وضعیت ما در اینجا بررسی کنید",

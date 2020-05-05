@@ -695,7 +695,7 @@
   "Cloud_manually_input_token": "Wpisz ręcznie swój token otrzymany z wiadomości rejestrującej w Chmurze.",
   "Cloud_registration_required": "Rejestracja wymagana",
   "Cloud_registration_required_description": "Wygląda na to że podczas instalacji nie wybrałeś opcji rejestracji przestrzeni roboczej.",
-  "Cloud_registration_requried_link_text": "Kliknij tutaj, aby zarejestrować swoją przestrzeń roboczą.",
+  "Cloud_registration_required_link_text": "Kliknij tutaj, aby zarejestrować swoją przestrzeń roboczą.",
   "Cloud_error_in_authenticating": "Błąd podczas uwierzytelniania",
   "Cloud_error_code": "Kod: __errorCode__",
   "Cloud_troubleshooting": "Rozwiązywanie problemów",

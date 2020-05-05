@@ -705,7 +705,7 @@
   "Cloud_manually_input_token": "Introduzca manualmente el token recibido en el correo electrónico de registro en la nube.",
   "Cloud_registration_required": "Se requiere registro",
   "Cloud_registration_required_description": "Parece que durante la configuración no eligió registrar su espacio de trabajo.",
-  "Cloud_registration_requried_link_text": "Haga clic aquí para registrar su espacio de trabajo.",
+  "Cloud_registration_required_link_text": "Haga clic aquí para registrar su espacio de trabajo.",
   "Cloud_error_in_authenticating": "Error durante la autentificación",
   "Cloud_error_code": "Código: __errorCode__",
   "Cloud_status_page_description": "Si está teniendo problemas con un servicio en particular de la nube, puede comprobar los problemas conocidos en nuestra página de estado en",

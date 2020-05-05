@@ -1,12 +1,12 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Box, Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
+import React, { useState } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import Subtitle from '../../components/basic/Subtitle';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-
-const statusPageUrl = 'https://status.rocket.chat';
+import { statusPageUrl } from './constants';
 
 function TroubleshootingSection({
 	onRegisterStatusChange,
@@ -15,9 +15,13 @@ function TroubleshootingSection({
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const [isSyncing, setSyncing] = useSafely(useState(false));
+
 	const syncWorkspace = useMethod('cloud:syncWorkspace');
 
 	const handleSyncButtonClick = async () => {
+		setSyncing(true);
+
 		try {
 			const isSynced = await syncWorkspace();
 
@@ -30,6 +34,7 @@ function TroubleshootingSection({
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			await (onRegisterStatusChange && onRegisterStatusChange());
+			setSyncing(false);
 		}
 	};
 
@@ -41,8 +46,8 @@ function TroubleshootingSection({
 		</Box>
 
 		<ButtonGroup>
-			<Button onClick={handleSyncButtonClick}>
-				{t('Sync')}
+			<Button disabled={isSyncing} minHeight='x40' onClick={handleSyncButtonClick}>
+				{isSyncing ? <Throbber is='span' inheritColor /> : t('Sync')}
 			</Button>
 		</ButtonGroup>
 

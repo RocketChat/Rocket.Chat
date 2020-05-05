@@ -684,7 +684,7 @@
   "Cloud_manually_input_token": "Вручную введите токен, полученный из электронного письма регистрации в облаке.",
   "Cloud_registration_required": "Требуется регистрация",
   "Cloud_registration_required_description": "Похоже, что во время установки вы не решили регистрировать свое рабочее пространство.",
-  "Cloud_registration_requried_link_text": "Нажмите здесь, чтобы зарегистрировать ваше рабочее пространство.",
+  "Cloud_registration_required_link_text": "Нажмите здесь, чтобы зарегистрировать ваше рабочее пространство.",
   "Cloud_error_in_authenticating": "Ошибка при аутентификации",
   "Cloud_error_code": "Код: __errorCode__",
   "Cloud_status_page_description": "Если у конкретной облачной службы возникают проблемы, вы можете проверить ее на нашей странице состояния по адресу",

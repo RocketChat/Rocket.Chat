@@ -608,7 +608,7 @@
   "Cloud_manually_input_token": "Ručno unesite token primljen iz e-pošte za registraciju u Cloudu.",
   "Cloud_registration_required": "Potrebna je registracija",
   "Cloud_registration_required_description": "Izgleda da tijekom postavljanja niste odabrali registrirati svoj radni prostor.",
-  "Cloud_registration_requried_link_text": "Kliknite ovdje da biste registrirali svoj radni prostor.",
+  "Cloud_registration_required_link_text": "Kliknite ovdje da biste registrirali svoj radni prostor.",
   "Cloud_error_in_authenticating": "Pri provjeri autentičnosti primljena je pogreška",
   "Cloud_error_code": "Kod: __errorCode__",
   "Collaborative": "Kolaborativni",

@@ -22,25 +22,35 @@ function WorkspaceLoginSection({
 	const [isLoading, setLoading] = useSafely(useState(true));
 
 	const handleLoginButtonClick = async () => {
+		setLoading(true);
+
 		try {
 			const url = await getOAuthAuthorizationUrl();
 			window.location.href = url;
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	const handleLogoutButtonClick = async () => {
+		setLoading(true);
+
 		try {
 			await logout();
 			const isLoggedIn = await checkUserLoggedIn();
 			setLoggedIn(isLoggedIn);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	const handleDisconnectButtonClick = async () => {
+		setLoading(true);
+
 		try {
 			const success = await disconnectWorkspace();
 
@@ -53,6 +63,7 @@ function WorkspaceLoginSection({
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			await (onRegisterStatusChange && onRegisterStatusChange());
+			setLoading(false);
 		}
 	};
 

@@ -723,7 +723,7 @@
   "Cloud_manually_input_token": "Manually enter the token received from the Cloud Registration Email.",
   "Cloud_registration_required": "Registration Required",
   "Cloud_registration_required_description": "Looks like during setup you didn't chose to register your workspace.",
-  "Cloud_registration_requried_link_text": "Click here to register your workspace.",
+  "Cloud_registration_required_link_text": "Click here to register your workspace.",
   "Cloud_error_in_authenticating": "Error received while authenticating",
   "Cloud_error_code": "Code:  __errorCode__",
   "Cloud_status_page_description": "If a particular Cloud Service is having issues you can check for known issues on our status page at",

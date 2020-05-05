@@ -682,7 +682,7 @@
   "Cloud_manually_input_token": "手动输入在 Cloud 注册邮件中包含的令牌。",
   "Cloud_registration_required": "要求注册",
   "Cloud_registration_required_description": "在安装过程中，您似乎没有选择注册工作区。",
-  "Cloud_registration_requried_link_text": "点击此处注册您的工作区。",
+  "Cloud_registration_required_link_text": "点击此处注册您的工作区。",
   "Cloud_error_in_authenticating": "验证出错",
   "Cloud_error_code": "代码: __errorCode__",
   "Cloud_status_page_description": "如果某项云服务有问题您可以查看我们的状态页面于",

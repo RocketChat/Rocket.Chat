@@ -720,7 +720,7 @@
   "Cloud_manually_input_token": "クラウド登録メールに記載されたトークンを手動で入力してください。",
   "Cloud_registration_required": "登録が必要です",
   "Cloud_registration_required_description": "セットアップ中にワークスペースを登録しない選択をしたようです。",
-  "Cloud_registration_requried_link_text": "ワークスペースを登録するにはここをクリック。",
+  "Cloud_registration_required_link_text": "ワークスペースを登録するにはここをクリック。",
   "Cloud_error_in_authenticating": "認証中にエラーが発生",
   "Cloud_error_code": "コード: __errorCode__",
   "Cloud_status_page_description": "特定のクラウドサービスに問題がある場合は、Googleのステータスページで既知の問題を確認できます。",

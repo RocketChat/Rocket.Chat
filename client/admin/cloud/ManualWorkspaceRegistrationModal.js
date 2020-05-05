@@ -7,6 +7,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import MarkdownText from '../../components/basic/MarkdownText';
+import { cloudConsoleUrl } from './constants';
 
 function CopyStep({ onNextButtonClick }) {
 	const t = useTranslation();
@@ -68,7 +69,7 @@ function CopyStep({ onNextButtonClick }) {
 			</Box>
 			<Box withRichContent>
 				<p>
-					<MarkdownText>{t('Cloud_click_here', { cloudConsoleUrl: 'https://cloud.rocket.chat' })}</MarkdownText>
+					<MarkdownText>{t('Cloud_click_here', { cloudConsoleUrl })}</MarkdownText>
 				</p>
 			</Box>
 		</Modal.Content>
@@ -144,7 +145,7 @@ function PasteStep({ onBackButtonClick, onFinish }) {
 			<ButtonGroup>
 				<Button disabled={isLoading} onClick={onBackButtonClick}>{t('Back')}</Button>
 				<Button primary disabled={isLoading || !cloudKey.trim()} marginInlineStart='auto' onClick={handleFinishButtonClick}>
-					{isLoading ? <Throbber /> : t('Finish Registration')}
+					{isLoading ? <Throbber inheritColor /> : t('Finish Registration')}
 				</Button>
 			</ButtonGroup>
 		</Modal.Footer>
