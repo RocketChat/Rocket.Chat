@@ -53,9 +53,10 @@ export function IntegrationsTable() {
 
 	const router = useRoute('admin-integrations');
 
-	const onClick = (_id) => () => router.push({
+	const onClick = (_id, type) => () => router.push({
 		context: 'edit',
-		integrationId: _id,
+		type: type === 'webhook-incoming' ? 'incoming' : 'outgoing',
+		id: _id,
 	});
 
 	const onHeaderClick = (id) => {
@@ -76,8 +77,8 @@ export function IntegrationsTable() {
 		<Th key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Created_as')}</Th>,
 	].filter(Boolean), [sort, isBig]);
 
-	const renderRow = useCallback(({ name, _id, username, _createdAt, _createdBy: { username: createdBy }, channel }) =>
-		<Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
+	const renderRow = useCallback(({ name, _id, type, username, _createdAt, _createdBy: { username: createdBy }, channel }) =>
+		<Table.Row key={_id} onKeyDown={onClick(_id, type)} onClick={onClick(_id, type)} tabIndex={0} role='link' action qa-user-id={_id}>
 			<Table.Cell style={style}>{name}</Table.Cell>
 			<Table.Cell style={style}>{channel.join(', ')}</Table.Cell>
 			<Table.Cell style={style}>{createdBy}</Table.Cell>

@@ -5,6 +5,7 @@ import { useRouteParameter } from '../../contexts/RouterContext';
 import NotAuthorizedPage from '../NotAuthorizedPage';
 import IntegrationsPage from './IntegrationsPage';
 import NewIntegrationsPage from './new/NewIntegrationsPage';
+import EditIntegrationsPage from './edit/EditIntegrationsPage';
 
 function IntegrationsRoute() {
 	const canViewIntegrationsPage = useAtLeastOnePermission([
@@ -23,6 +24,10 @@ function IntegrationsRoute() {
 
 	if (context === 'new') {
 		return <NewIntegrationsPage />;
+	}
+
+	if (context === 'edit') {
+		return <EditIntegrationsPage />;
 	}
 
 	return <IntegrationsPage />;

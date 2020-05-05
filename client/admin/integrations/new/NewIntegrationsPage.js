@@ -1,8 +1,8 @@
 import { Tabs, Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { useState } from 'react';
 
 import Page from '../../../components/basic/Page';
-// import WebHookIntegrations from './WebHookIntegrations';
+import NewIncomingWebhook from './NewIncomingWebhook';
 import NewZapier from './NewZapier';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
@@ -12,16 +12,17 @@ export default function NewIntegrationsPage({ ...props }) {
 	const t = useTranslation();
 
 	const router = useRoute('admin-integrations');
+	const [disabledTabs, setDisabledTabs] = useState(false);
 
-	const handleClickTab = (tab) => () => {
-		router.push({ context: 'new', tab });
+	const handleClickTab = (type) => () => {
+		router.push({ context: 'new', type });
 	};
 
 	const handleClickReturn = () => {
 		router.push({ });
 	};
 
-	const tab = useRouteParameter('tab');
+	const tab = useRouteParameter('type');
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={t('Integrations')} >
@@ -34,26 +35,29 @@ export default function NewIntegrationsPage({ ...props }) {
 		<Page.ScrollableContentWithShadow>
 			<Tabs>
 				<Tabs.Item
-					selected={tab === 'webhooks'}
-					onClick={handleClickTab('webhooks')}
+					selected={tab === 'incoming'}
+					onClick={handleClickTab('incoming')}
+					disabled={disabledTabs}
 				>
-					{t('Webhooks')}
+					{t('Incoming')}
 				</Tabs.Item>
 				<Tabs.Item
 					selected={tab === 'zapier'}
 					onClick={handleClickTab('zapier')}
+					disabled={disabledTabs}
 				>
 					{t('Zapier')}
 				</Tabs.Item>
 				<Tabs.Item
 					selected={tab === 'bots'}
 					onClick={handleClickTab('bots')}
+					disabled={disabledTabs}
 				>
 					{t('Bots')}
 				</Tabs.Item>
 			</Tabs>
 			{[
-				// tab === 'webhooks' && <WebHookTab />,
+				tab === 'incoming' && <NewIncomingWebhook setDisabledTabs={setDisabledTabs} key='incoming'/>,
 				tab === 'bots' && <Box pb='x20' fontScale='s1' key='bots' dangerouslySetInnerHTML={{ __html: t('additional_integrations_Bots') }}/>,
 				tab === 'zapier' && <NewZapier key='zapier'/>,
 			].filter(Boolean)}
