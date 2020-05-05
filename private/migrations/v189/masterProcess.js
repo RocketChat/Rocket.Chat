@@ -1,7 +1,6 @@
-const moduleRequire = require('./moduleRequire');
-const config = require('./config');
+const { MongoClient } = require('mongodb');
 
-const { MongoClient } = moduleRequire('mongodb');
+const config = require('./config');
 
 function benchmark(message) {
 	const startTime = new Date();
@@ -19,7 +18,13 @@ module.exports.getMasterProcess = () => ({
 		this.onAllProcessesFinishedCallback = onAllProcessesFinishedCallback;
 
 		// Setup database
-		this.db = await MongoClient.connect(config.get('MONGO_URL'), { native_parser: true });
+		const databaseName = config.get('MONGO_URL').split('/')[3].split('?')[0];
+
+		this.client = new MongoClient(config.get('MONGO_URL'), { useNewUrlParser: true, useUnifiedTopology: true });
+
+		await this.client.connect();
+
+		this.db = this.client.db(databaseName);
 
 		// Rename messages collection
 		try {
@@ -66,6 +71,8 @@ module.exports.getMasterProcess = () => ({
 		this.onAllWorkersExitCallback && this.onAllWorkersExitCallback();
 
 		this.onAllProcessesFinishedCallback && this.onAllProcessesFinishedCallback();
+
+		this.client.close();
 	},
 
 	//

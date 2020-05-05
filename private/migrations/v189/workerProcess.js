@@ -1,13 +1,18 @@
-const moduleRequire = require('./moduleRequire');
+const { MongoClient } = require('mongodb');
+
 const config = require('./config');
 const { Events, RoomEvents } = require('./modelExtractions');
-
-const { MongoClient } = moduleRequire('mongodb');
 
 module.exports.getWorkerProcess = () => ({
 	async start() {
 		try {
-			this.db = await MongoClient.connect(config.get('MONGO_URL'), { native_parser: true });
+			const databaseName = config.get('MONGO_URL').split('/')[3].split('?')[0];
+
+			this.client = new MongoClient(config.get('MONGO_URL'), { useNewUrlParser: true, useUnifiedTopology: true });
+
+			await this.client.connect();
+
+			this.db = this.client.db(databaseName);
 
 			// Models
 			this.Rooms = this.db.collection('rocketchat_room');
@@ -30,7 +35,7 @@ module.exports.getWorkerProcess = () => ({
 	},
 
 	async close() {
-		this.db.close();
+		this.client.close();
 
 		process.exit(0);
 	},
