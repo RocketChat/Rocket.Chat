@@ -37,7 +37,7 @@ Template.livechatIntegrationWebhook.helpers({
 		return setting && setting.value;
 	},
 	sendOnChatQueuedChecked() {
-		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_queued');
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_chat_queued');
 		return setting && setting.value;
 	},
 	sendOnForwardChecked() {

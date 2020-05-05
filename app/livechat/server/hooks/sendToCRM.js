@@ -160,7 +160,7 @@ callbacks.add('livechat.afterForwardChatToAgent', (params) => {
 	const room = Object.assign(originalRoom, { oldServedBy });
 	sendToCRM('LivechatSessionForwarded', room);
 	return params;
-}, callbacks.priority.MEDIUM, 'livechat-send-crm-room-forwarded');
+}, callbacks.priority.MEDIUM, 'livechat-send-crm-room-forwarded-to-agent');
 
 callbacks.add('livechat.afterForwardChatToDepartment', (params) => {
 	const { rid, oldDepartmentId } = params;
@@ -172,7 +172,7 @@ callbacks.add('livechat.afterForwardChatToDepartment', (params) => {
 	const room = Object.assign(originalRoom, { oldDepartmentId });
 	sendToCRM('LivechatSessionForwarded', room);
 	return params;
-}, callbacks.priority.MEDIUM, 'livechat-send-crm-room-forwarded');
+}, callbacks.priority.MEDIUM, 'livechat-send-crm-room-forwarded-to-department');
 
 callbacks.add('livechat.saveInfo', (room) => {
 	// Do not send to CRM if the chat is still open
