@@ -63,6 +63,9 @@ export const deleteMessage = function(message, user) {
 		}
 	}
 
+	// decrease message count
+	Rooms.decreaseMessageCountById(message.rid, 1);
+
 	if (showDeletedStatus) {
 		Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {

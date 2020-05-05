@@ -308,8 +308,8 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
 	}
 
-	addTranslations(messageId, translations) {
-		const updateObj = {};
+	addTranslations(messageId, translations, providerName) {
+		const updateObj = { translationProvider: providerName };
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
 			updateObj[`translations.${ key }`] = translation;
@@ -1096,6 +1096,10 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
+	removeByRoomIds(rids) {
+		return this.remove({ rid: { $in: rids } });
+	}
+
 	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = []) {
 		const query = {
 			rid,
@@ -1115,7 +1119,12 @@ export class Messages extends Base {
 		}
 
 		if (!limit) {
-			return this.remove(query);
+			const count = this.remove(query);
+
+			// decrease message count
+			Rooms.decreaseMessageCountById(rid, count);
+
+			return count;
 		}
 
 		const messagesToDelete = this.find(query, {
@@ -1125,11 +1134,16 @@ export class Messages extends Base {
 			limit,
 		}).map(({ _id }) => _id);
 
-		return this.remove({
+		const count = this.remove({
 			_id: {
 				$in: messagesToDelete,
 			},
 		});
+
+		// decrease message count
+		Rooms.decreaseMessageCountById(rid, count);
+
+		return count;
 	}
 
 	removeByUserId(userId) {

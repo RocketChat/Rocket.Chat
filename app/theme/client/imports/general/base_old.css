@@ -1521,6 +1521,7 @@ rc-old select,
 		}
 
 		.setting-action {
+			height: auto;
 			margin: 0 4px;
 		}
 
@@ -4847,7 +4848,7 @@ rc-old select,
 	display: block;
 }
 
-.rc-old .hide-usernames .message .user.user-card-message {
+.rc-old .hide-usernames .message .user.user-card-message .message-alias {
 	display: none;
 }
 
