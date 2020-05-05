@@ -1,4 +1,4 @@
-import { getUsersInRole, subscriptionHasRole } from '../../../authorization/server';
+import { subscriptionHasRole } from '../../../authorization/server';
 import { Users, Subscriptions, Rooms } from '../../../models/server';
 
 export const getUserSingleOwnedRooms = function(userId) {
@@ -14,7 +14,8 @@ export const getUserSingleOwnedRooms = function(userId) {
 
 		if (subscriptionHasRole(subscription, 'owner')) {
 			// Fetch the number of owners
-			const numOwners = getUsersInRole('owner', subscription.rid).fetch().length;
+			const numOwners = Subscriptions.findByRoomIdAndRoles(subscription.rid, ['owner']).count();
+
 			// If it's only one, then this user is the only owner.
 			if (numOwners === 1) {
 				// Let's check how many subscribers the room has.
@@ -25,16 +26,15 @@ export const getUserSingleOwnedRooms = function(userId) {
 
 				subscribersCursor.forEach((subscriber) => {
 					if (changedOwner || subscriber.u._id === userId) {
-						return false;
+						return;
 					}
 
-					const newOwner = Users.findOneById(subscriber.u._id);
-					if (!newOwner || !newOwner.active) {
-						return true;
+					const newOwner = Users.findOneActiveById(subscriber.u._id, { fields: { _id: 1 } });
+					if (!newOwner) {
+						return;
 					}
 
 					changedOwner = true;
-					return false;
 				});
 
 				if (changedOwner) {

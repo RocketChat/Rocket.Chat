@@ -36,18 +36,18 @@ export const relinquishRoomOwnerships = function(userId, removeDirectMessages = 
 				let changedOwner = false;
 
 				subscribersCursor.forEach((subscriber) => {
+					// If we already changed the owner or this subscription is for the user we are removing, then don't try to give it ownership
 					if (changedOwner || subscriber.u._id === userId) {
-						return false;
+						return;
 					}
 
-					const newOwner = Users.findOneById(subscriber.u._id);
-					if (!newOwner || !newOwner.active) {
-						return true;
+					const newOwner = Users.findOneActiveById(subscriber.u._id, { fields: { _id: 1 } });
+					if (!newOwner) {
+						return;
 					}
 
 					addUserRoles(subscriber.u._id, 'owner', subscriber.rid);
 					changedOwner = true;
-					return false;
 				});
 
 				// If there's no subscriber available to be the new owner and it's not a public room, we can remove it.
