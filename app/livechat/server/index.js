@@ -11,6 +11,7 @@ import './hooks/externalMessage';
 import './hooks/leadCapture';
 import './hooks/markRoomResponded';
 import './hooks/offlineMessage';
+import './hooks/offlineMessageToChannel';
 import './hooks/RDStation';
 import './hooks/saveAnalyticsData';
 import './hooks/sendToCRM';
