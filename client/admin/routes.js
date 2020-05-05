@@ -92,6 +92,13 @@ registerAdminRoute('/cloud', {
 	props: { page: 'configuration' },
 });
 
+registerAdminRoute('/cloud/oauth-callback', {
+	name: 'cloud-oauth-callback',
+	lazyRouteComponent: () => import('./cloud/CloudRoute'),
+	props: { page: 'oauth-callback' },
+});
+
+
 registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
 	lazyRouteComponent: () => import('./viewLogs/ViewLogsRoute'),
