@@ -126,8 +126,6 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 				const reader = new FileReader();
 				reader.readAsBinaryString(sound);
 				reader.onloadend = () => {
-					console.log(!!reader.result, sound.type, soundData);
-
 					try {
 						uploadCustomSound(reader.result, sound.type, soundData);
 						return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
@@ -149,7 +147,6 @@ export function EditCustomSound({ close, onChange, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteCustomSound(_id);
-			console.log();
 			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

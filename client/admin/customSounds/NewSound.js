@@ -44,8 +44,6 @@ export function NewSound({ goToNew, close, onChange, ...props }) {
 				const reader = new FileReader();
 				reader.readAsBinaryString(soundFile);
 				reader.onloadend = () => {
-					console.log(reader.result, soundFile.type, soundData);
-
 					try {
 						uploadCustomSound(reader.result, soundFile.type, soundData);
 						dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
@@ -57,6 +55,7 @@ export function NewSound({ goToNew, close, onChange, ...props }) {
 			return soundId;
 		}
 		validation.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', t(error)) }));
+		throw new Error (t('error-the-field-is-required'));
 	};
 
 	const handleSave = useCallback(async () => {
