@@ -114,7 +114,7 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 		responses = [responses];
 	}
 
-	return resolve(responses.forEach(({ type: interactionType, ...data }) => handlePayloadUserInteraction(interactionType, data)));
+	return resolve(responses.map(({ type: interactionType, ...data }) => handlePayloadUserInteraction(interactionType, data)));
 });
 
 export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
@@ -130,7 +130,7 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 
 	try {
 		const result = await triggerAction({ type: UIKitIncomingInteractionType.VIEW_SUBMIT, viewId, ...options });
-		if (!result || UIKitInteractionType.MODAL_CLOSE === result) {
+		if (result.includes(undefined) || result.includes(UIKitInteractionType.MODAL_CLOSE)) {
 			close();
 		}
 	} catch {
