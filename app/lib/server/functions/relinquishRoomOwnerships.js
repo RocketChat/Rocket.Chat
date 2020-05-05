@@ -17,12 +17,7 @@ export const relinquishRoomOwnerships = function(userId, removeDirectMessages = 
 	const roomCache = [];
 
 	// Iterate through all the rooms the user is subscribed to, to check if they are the last owner of any of them.
-	Subscriptions.db.findByUserId(userId).forEach((subscription) => {
-		// DMs don't have owners
-		if (subscription.t === 'd') {
-			return;
-		}
-
+	Subscriptions.findByUserIdExceptType(userId, 'd').forEach((subscription) => {
 		const roomData = {
 			rid: subscription.rid,
 			t: subscription.t,
