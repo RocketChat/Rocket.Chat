@@ -74,7 +74,7 @@ export function GenericTable({
 				: <>
 					<Scrollable>
 						<Box mi='neg-x24' pi='x24' flexGrow={1}>
-							<Table fixed>
+							<Table fixed sticky>
 								{ header && <Table.Head>
 									<Table.Row>
 										{header}
