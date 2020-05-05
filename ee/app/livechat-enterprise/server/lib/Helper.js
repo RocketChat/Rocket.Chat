@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import moment from 'moment';
 
 import { hasRole } from '../../../../../app/authorization';
-import { LivechatDepartment, Users, LivechatInquiry } from '../../../../../app/models/server';
+import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms, Messages } from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
@@ -64,7 +65,7 @@ export const normalizeQueueInfo = async ({ position, queueInfo, department }) =>
 		queueInfo = await getQueueInfo(department);
 	}
 
-	const { message, numberMostRecentChats, statistics: { avgChatDuration } = { } } = queueInfo;
+	const { message, numberMostRecentChats, statistics: { avgChatDuration } = {} } = queueInfo;
 	const spot = position + 1;
 	const estimatedWaitTimeSeconds = getSpotEstimatedWaitTime(spot, numberMostRecentChats, avgChatDuration);
 	return { spot, message, estimatedWaitTimeSeconds };
@@ -136,4 +137,82 @@ export const allowAgentSkipQueue = (agent) => {
 	}));
 
 	return settings.get('Livechat_assign_new_conversation_to_bot') && hasRole(agent.agentId, 'bot');
+};
+
+export const setPredictedVisitorAbandonmentTime = (room) => {
+	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_auto_close_abandoned_rooms')) {
+		return;
+	}
+
+	let secondsToAdd = settings.get('Livechat_visitor_inactivity_timeout');
+
+	const department = room.departmentId && LivechatDepartment.findOneById(room.departmentId);
+	if (department && department.visitorInactivityTimeoutInSeconds) {
+		secondsToAdd = department.visitorInactivityTimeoutInSeconds;
+	}
+
+	if (secondsToAdd <= 0) {
+		return;
+	}
+
+	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
+	LivechatRooms.setPredictedVisitorAbandonment(room._id, willBeAbandonedAt);
+};
+
+export const updatePredictedVisitorAbandonment = () => {
+	if (settings.get('Livechat_auto_close_abandoned_rooms')) {
+		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
+	} else {
+		LivechatRooms.unsetPredictedVisitorAbandonment();
+	}
+};
+
+export const updateRoomPriorityHistory = (rid, user, priority) => {
+	const history = {
+		priorityData: {
+			definedBy: user,
+			priority: priority || {},
+		},
+	};
+
+	Messages.createPriorityHistoryWithRoomIdMessageAndUser(rid, '', user, history);
+};
+
+export const updateInquiryQueuePriority = (roomId, priority) => {
+	const inquiry = LivechatInquiry.findOneByRoomId(roomId, { fields: { rid: 1, ts: 1 } });
+	if (!inquiry) {
+		return;
+	}
+
+	let { ts: estimatedServiceTimeAt } = inquiry;
+	let queueOrder = 1;
+	let estimatedWaitingTimeQueue = 0;
+
+	if (priority) {
+		const { dueTimeInMinutes } = priority;
+		queueOrder = 0;
+		estimatedWaitingTimeQueue = dueTimeInMinutes;
+		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
+	}
+
+	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, { queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
+};
+
+export const removePriorityFromRooms = (priorityId) => {
+	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
+		updateInquiryQueuePriority(room._id);
+	});
+
+	LivechatRooms.unsetPriorityById(priorityId);
+};
+
+export const updatePriorityInquiries = (priority) => {
+	if (!priority) {
+		return;
+	}
+
+	const { _id: priorityId } = priority;
+	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
+		updateInquiryQueuePriority(room._id, priority);
+	});
 };

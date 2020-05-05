@@ -4848,7 +4848,7 @@ rc-old select,
 	display: block;
 }
 
-.rc-old .hide-usernames .message .user.user-card-message {
+.rc-old .hide-usernames .message .user.user-card-message .message-alias {
 	display: none;
 }
 

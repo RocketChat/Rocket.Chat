@@ -2,4 +2,4 @@ import './settings';
 import './methods';
 import './startup';
 
-export { onLicense, overwriteClassOnLicense } from './license';
+export { onLicense, overwriteClassOnLicense, isEnterprise, getMaxGuestUsers } from './license';
