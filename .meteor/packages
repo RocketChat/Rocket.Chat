@@ -44,8 +44,6 @@ rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
 
-konecty:delayed-task
-konecty:mongo-counter
 konecty:multiple-instances-status
 konecty:user-presence
 
@@ -56,7 +54,6 @@ jalik:ufs-gridfs@1.0.2
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
-keepnox:perfect-scrollbar
 mizzao:timesync
 mrt:reactive-store
 mystor:device-detection
