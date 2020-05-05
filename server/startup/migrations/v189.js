@@ -5,10 +5,10 @@ import { getLocalSrc } from '../../../app/events/server/lib/getLocalSrc';
 import { getFederationDomain } from '../../../app/federation/server/lib/getFederationDomain';
 
 Migrations.add({
-	version: 175,
+	version: 189,
 	up() {
 		Promise.await(new Promise((resolve, reject) => {
-			const prc = fork(Assets.absoluteFilePath('migrations/v175/v1ToV2.js'), {
+			const prc = fork(Assets.absoluteFilePath('migrations/v189/v1ToV2.js'), {
 				env: {
 					LOCAL_SRC: getLocalSrc(),
 					FEDERATION_DOMAIN: getFederationDomain(),
