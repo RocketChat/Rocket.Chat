@@ -72,6 +72,10 @@ module.exports.getWorkerProcess = () => ({
 
 		if (count === 0) {
 			console.log(`Messages - Room ${ rid } has no messages`);
+
+			// If there are no messages, set the isLeaf true
+			await this.RoomEvents.updateOne({ rid }, { $set: { isLeaf: true } });
+
 			return { success: true };
 		}
 
@@ -99,7 +103,7 @@ module.exports.getWorkerProcess = () => ({
 				// Generate message hash
 				v2Data._msgSha = v2Data.msg ? Events.SHA256(v2Data.msg) : null;
 
-				const event = Events.buildEvent(config.get('LOCAL_SRC'), message.rid, 'msg', v2Data, [lastEventId], false);
+				const event = Events.buildEvent(config.get('LOCAL_SRC'), message.rid, 'msg', v2Data, [lastEventId]);
 
 				lastEventId = event._id;
 

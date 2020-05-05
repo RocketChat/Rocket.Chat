@@ -45,7 +45,7 @@ function createEventId(contextQuery, event) {
 	return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ JSON.stringify(data) }`);
 }
 
-function buildEvent(src, rid, t, d, _pids = [], addIsLeaf = true) {
+function buildEvent(src, rid, t, d, _pids = [], addIsLeaf = false) {
 	const contextQuery = { rid };
 
 	const event = {

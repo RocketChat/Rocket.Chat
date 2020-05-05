@@ -73,7 +73,7 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 			...contextQuery,
 			t: stub.t,
 			d: stub.d,
-			isLeaf: false,
+			isLeaf: true,
 		};
 
 		event._id = this.getEventHash(contextQuery, event);
