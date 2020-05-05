@@ -64,11 +64,15 @@ export function EditUser({ data, roles, ...props }) {
 
 	const saveAction = useEndpointAction('POST', 'users.update', saveQuery, t('User_updated_successfully'));
 	const saveAvatarAction = useEndpointUpload('users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const saveAvatarUrlAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
 	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
 
 	const updateAvatar = async () => {
 		if (avatarObj === 'reset') {
 			return resetAvatarAction();
+		}
+		if (avatarObj.avatarUrl) {
+			return saveAvatarUrlAction();
 		}
 		return saveAvatarAction(avatarObj);
 	};
