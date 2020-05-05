@@ -125,7 +125,7 @@
 		"@nivo/line": "^0.61.1",
 		"@nivo/pie": "^0.61.1",
 		"@rocket.chat/apps-engine": "^1.15.0-beta.3262",
-		"@rocket.chat/fuselage": "^0.6.3-dev.35",
+		"@rocket.chat/fuselage": "^0.6.3-dev.37",
 		"@rocket.chat/fuselage-hooks": "^0.6.3-dev.35",
 		"@rocket.chat/fuselage-polyfills": "^0.6.3-dev.23",
 		"@rocket.chat/fuselage-ui-kit": "^0.6.3-dev.35",
