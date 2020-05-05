@@ -4,8 +4,8 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
-import { useEndpointData } from '../../hooks/useEndpointData';
 
 export function UsersByTimeOfTheDaySection() {
 	const t = useTranslation();
@@ -47,7 +47,7 @@ export function UsersByTimeOfTheDaySection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/users/users-by-time-of-the-day-in-a-week', params);
+	const data = useEndpointData('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', params);
 
 	const [
 		dates,
@@ -152,7 +152,7 @@ export function UsersByTimeOfTheDaySection() {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 										{t('Value_users', { value })}
 									</Box>}
 								/>

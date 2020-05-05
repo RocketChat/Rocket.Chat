@@ -1,5 +1,5 @@
 import { hasAllPermission } from '../../../../app/authorization';
-import { registerAdminRoute, registerAdminSidebarItem } from '../../../../app/ui-admin/client';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../../../client/admin';
 import { renderRouteComponent } from '../../../../client/reactAdapters';
 import { hasLicense } from '../../license/client';
 
