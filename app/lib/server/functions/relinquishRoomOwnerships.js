@@ -46,7 +46,7 @@ export const relinquishRoomOwnerships = function(userId, removeDirectMessages = 
 						return;
 					}
 
-					addUserRoles(subscriber.u._id, 'owner', subscriber.rid);
+					Roles.addUserRoles(subscriber.u._id, ['owner'], subscriber.rid);
 					changedOwner = true;
 				});
 
