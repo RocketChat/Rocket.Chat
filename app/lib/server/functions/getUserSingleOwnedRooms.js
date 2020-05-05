@@ -1,4 +1,4 @@
-import { hasRole, getUsersInRole } from '../../../authorization/server';
+import { getUsersInRole, subscriptionHasRole } from '../../../authorization/server';
 import { Users, Subscriptions, Rooms } from '../../../models/server';
 
 export const getUserSingleOwnedRooms = function(userId) {
@@ -12,7 +12,7 @@ export const getUserSingleOwnedRooms = function(userId) {
 			t: subscription.t,
 		};
 
-		if (hasRole(userId, 'owner', subscription.rid)) {
+		if (subscriptionHasRole(subscription, 'owner')) {
 			// Fetch the number of owners
 			const numOwners = getUsersInRole('owner', subscription.rid).fetch().length;
 			// If it's only one, then this user is the only owner.

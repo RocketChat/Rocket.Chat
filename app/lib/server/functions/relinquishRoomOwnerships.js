@@ -1,4 +1,4 @@
-import { hasRole, getUsersInRole, addUserRoles } from '../../../authorization';
+import { subscriptionHasRole, getUsersInRole, addUserRoles } from '../../../authorization';
 import { FileUpload } from '../../../file-upload';
 import { Users, Subscriptions, Messages, Rooms } from '../../../models';
 
@@ -24,7 +24,7 @@ export const relinquishRoomOwnerships = function(userId, removeDirectMessages = 
 			subscribers: null,
 		};
 
-		if (hasRole(userId, 'owner', subscription.rid)) {
+		if (subscriptionHasRole(subscription, 'owner')) {
 			// Fetch the number of owners
 			const numOwners = getUsersInRole('owner', subscription.rid).fetch().length;
 			// If it's only one, then this user is the only owner.
