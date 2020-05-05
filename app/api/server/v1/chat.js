@@ -125,7 +125,23 @@ API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 
 API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post() {
-		const messageReturn = processWebhookMessage(this.bodyParams, this.user, undefined, true)[0];
+		// WIDECHAT only
+		let messageReturn;
+		if (this.user.username === 'viasat.notification.service') {
+			const { hostname_id } = this.requestParams();
+			if (!hostname_id) {
+				throw new Meteor.Error('error-hostname-id-not-provided', 'Body param "hostname_id" is required');
+			}
+			const hostuser = Users.findOneById(hostname_id);
+			messageReturn = processWebhookMessage(this.bodyParams, hostuser, undefined, true)[0];
+		} else {
+			messageReturn = processWebhookMessage(this.bodyParams, this.user, undefined, true)[0];
+		}
+		//
+
+		// RC code
+		// messageReturn = processWebhookMessage(this.bodyParams, this.user, undefined, true)[0];
+
 
 		if (!messageReturn) {
 			return API.v1.failure('unknown-error');
