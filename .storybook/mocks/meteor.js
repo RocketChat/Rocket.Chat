@@ -34,10 +34,13 @@ export const Mongo = {
 	}),
 };
 
-export const ReactiveVar = () => ({
-	get: () => {},
-	set: () => {},
-});
+export const ReactiveVar = (val) => {
+	let currentVal = val;
+	return {
+		get: () => currentVal,
+		set: (val) => { currentVal = val; },
+	};
+};
 
 export const ReactiveDict = () => ({
 	get: () => {},

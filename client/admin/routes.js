@@ -32,6 +32,12 @@ registerAdminRoute('/', {
 	}],
 });
 
+registerAdminRoute('/custom-sounds/:context?/:id?', {
+	name: 'custom-sounds',
+	lazyRouteComponent: () => import('./customSounds/AdminSoundsRoute'),
+});
+
+
 registerAdminRoute('/info', {
 	name: 'admin-info',
 	lazyRouteComponent: () => import('./info/InformationRoute'),
@@ -69,6 +75,11 @@ registerAdminRoute('/mailer', {
 registerAdminRoute('/custom-user-status/:context?/:id?', {
 	name: 'custom-user-status',
 	lazyRouteComponent: () => import('./customUserStatus/CustomUserStatusRoute'),
+});
+
+registerAdminRoute('/emoji-custom/:context?/:id?', {
+	name: 'emoji-custom',
+	lazyRouteComponent: () => import('./customEmoji/CustomEmojiRoute'),
 });
 
 registerAdminRoute('/users/:context?/:id?', {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export const useFileInput = (onSetFile) => {
+export const useFileInput = (onSetFile, fileType = 'image') => {
 	const [openInput, setOpenInput] = useState();
 
 	useEffect(() => {
@@ -11,7 +11,7 @@ export const useFileInput = (onSetFile) => {
 		document.body.appendChild(fileInput);
 
 		const handleFiles = function() {
-			formData.append('image', this.files[0]);
+			formData.append(fileType, this.files[0]);
 			onSetFile(this.files[0], formData);
 		};
 		fileInput.addEventListener('change', handleFiles, false);
