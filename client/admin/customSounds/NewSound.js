@@ -25,7 +25,7 @@ export function NewSound({ goToNew, close, onChange, ...props }) {
 	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = async (name, soundFile) => {
-		const soundData = createSoundData(name, soundFile);
+		const soundData = createSoundData(soundFile, name);
 		const validation = validate(soundData, sound);
 		if (validation.length === 0) {
 			let soundId;
