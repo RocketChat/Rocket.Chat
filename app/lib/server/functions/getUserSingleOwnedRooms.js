@@ -20,7 +20,6 @@ export const getUserSingleOwnedRooms = function(userId) {
 				// Let's check how many subscribers the room has.
 				const options = { fields: { 'u._id': 1 }, sort: { ts: 1 } };
 				const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
-				roomData.subscribers = subscribersCursor.count();
 
 				let changedOwner = false;
 

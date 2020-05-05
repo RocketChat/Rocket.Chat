@@ -32,7 +32,6 @@ export const relinquishRoomOwnerships = function(userId, removeDirectMessages = 
 				// Let's check how many subscribers the room has.
 				const options = { sort: { ts: 1 } };
 				const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
-				roomData.subscribers = subscribersCursor.count();
 
 				let changedOwner = false;
 
