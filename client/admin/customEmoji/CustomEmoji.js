@@ -40,5 +40,5 @@ export function CustomEmoji({
 		</Table.Row>;
 	};
 
-	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.emojis.update} total={data.total} setParams={setParams} params={params} />;
+	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.emojis} total={data.total} setParams={setParams} params={params} />;
 }

@@ -37,7 +37,7 @@ export default function CustomEmojiRoute({ props }) {
 
 	const query = useQuery(debouncedParams, debouncedSort, cache);
 
-	const data = useEndpointData('emoji-custom.list', query) || { emojis: { } };
+	const data = useEndpointData('emoji-custom.all', query) || { emojis: { } };
 
 	const router = useRoute(routeName);
 
