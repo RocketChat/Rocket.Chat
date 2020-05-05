@@ -250,31 +250,6 @@ Meteor.startup(function() {
 		i18nLabel: 'Lead_capture_phone_regex',
 	});
 
-	settings.add('Livechat_Knowledge_Enabled', false, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		section: 'Knowledge_Base',
-		public: true,
-		i18nLabel: 'Enabled',
-	});
-
-	settings.add('Livechat_Knowledge_Apiai_Key', '', {
-		type: 'string',
-		group: 'Omnichannel',
-		section: 'Knowledge_Base',
-		public: true,
-		i18nLabel: 'Apiai_Key',
-		secret: true,
-	});
-
-	settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
-		type: 'string',
-		group: 'Omnichannel',
-		section: 'Knowledge_Base',
-		public: true,
-		i18nLabel: 'Apiai_Language',
-	});
-
 	settings.add('Livechat_history_monitor_type', 'url', {
 		type: 'select',
 		group: 'Omnichannel',
