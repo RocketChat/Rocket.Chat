@@ -17,16 +17,22 @@ export const ChatMessage = CachedChatMessage.collection;
 
 let timeout;
 
+ChatMessage.find().observe({
+	added: CachedChatMessage.save,
+	changed: CachedChatMessage.save,
+	removed: CachedChatMessage.save,
+});
+
 ChatMessage.setReactions = function(messageId, reactions, tempActions) {
-	return this.update({ _id: messageId }, { $set: { temp: true, tempActions, reactions } }, null, CachedChatMessage.save);
+	return this.update({ _id: messageId }, { $set: { temp: true, tempActions, reactions } });
 };
 
 ChatMessage.unsetReactions = function(messageId, tempActions) {
-	return this.update({ _id: messageId }, { $unset: { reactions: 1 }, $set: { temp: true, tempActions } }, null, CachedChatMessage.save);
+	return this.update({ _id: messageId }, { $unset: { reactions: 1 }, $set: { temp: true, tempActions } });
 };
 
 ChatMessage.setProgress = function(messageId, upload) {
-	return this.update({ _id: messageId }, { $set: { uploads: upload } }, null, CachedChatMessage.save);
+	return this.update({ _id: messageId }, { $set: { uploads: upload } });
 };
 
 const normalizeThreadMessage = (message) => {
