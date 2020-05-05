@@ -229,7 +229,7 @@ Template.message.helpers({
 		if (!subscription) {
 			return false;
 		}
-		return subscription.tunread.includes(msg._id);
+		return subscription.tunread?.includes(msg._id);
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;

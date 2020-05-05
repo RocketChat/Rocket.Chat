@@ -5,19 +5,18 @@ import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { Tracker } from 'meteor/tracker';
 
-import { Page } from '../../../../client/components/basic/Page';
 import { ChatMessage } from '../../../models/client';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { roomTypes, APIClient } from '../../../utils/client';
 import { call } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
+import VerticalBar from '../../../../client/components/basic/VerticalBar';
 
 const style = {
 	position: 'absolute',
 	top: 0,
 	right: 0,
-	width: '100%',
 	maxWidth: '855px',
 	borderRadius: '8px',
 	overflow: 'hidden',
@@ -62,19 +61,19 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	if (!mainMessage.rid) {
 		return <>
 			<Modal.Backdrop onClick={handleClose}/>
-			<Page.VerticalBar.Skeleton style={style}/>
+			<VerticalBar.Skeleton style={style}/>
 		</>;
 	}
 
 	return <>
 		<Modal.Backdrop onClick={handleClose}/>
-		<Page.VerticalBar style={style} display='flex' flexDirection='column'>
-			<Page.VerticalBar.Header pb='x24'>
+		<VerticalBar width='full' style={style} display='flex' flexDirection='column'>
+			<VerticalBar.Header pb='x24'>
 				<Icon name='thread' size='x20'/>
 				<Box mi='x4'flexShrink={1} flexGrow={1} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{headerTitle}</Box>
-				<Page.VerticalBar.Button onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></Page.VerticalBar.Button><Page.VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
-			</Page.VerticalBar.Header>
-			<Page.VerticalBar.Content p={0} flexShrink={1} flexGrow={1} ref={ref}/>
-		</Page.VerticalBar>
+				<VerticalBar.Button onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></VerticalBar.Button><VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
+			</VerticalBar.Header>
+			<VerticalBar.Content paddingInline={0} flexShrink={1} flexGrow={1} ref={ref}/>
+		</VerticalBar>
 	</>;
 }
