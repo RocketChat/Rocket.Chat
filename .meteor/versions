@@ -68,7 +68,7 @@ kadira:flow-router@2.12.1
 konecty:multiple-instances-status@1.1.0
 konecty:user-presence@2.6.3
 launch-screen@1.2.0
-less@2.8.0
+less@3.0.1
 littledata:synced-cron@1.5.1
 livedata@1.0.18
 localstorage@1.2.0
