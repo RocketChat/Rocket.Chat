@@ -91,8 +91,43 @@ Template.messageBox.onCreated(function() {
 		}
 
 		const { autogrow, data: { rid, tmid, onSend } } = this;
-		const { value } = input;
+		let { value } = input;
 		this.set('');
+
+		function replaceStringUsingRegexFilter(item) {
+			if (item.regexCode && item.customSlug) {
+				value = value.replace(new RegExp(item.regexCode), item.customSlug);
+			} else if (!item.customSlug) {
+				value = value.replace(new RegExp(item.regexCode), '****');
+			}
+		}
+
+		if (settings.get('Message_Custom_Regex_Filters_Allowed') !== false) {
+			const customRegexCodeList = settings.get('Message_Custom_Regex_Filters');
+
+			if (typeof customRegexCodeList === 'string' && customRegexCodeList.trim() !== '') {
+				try {
+					const escapedRegexCodeList = customRegexCodeList
+						.replace(/"\//g, '"')
+						.replace(/\/"/g, '"')
+						.replace(/\\/g, '\\\\')
+						.replace(/\\n/g, '\\n')
+						.replace(/\\'/g, "\\'")
+						.replace(/\\"/g, '\\"')
+						.replace(/\\&/g, '\\&')
+						.replace(/\\r/g, '\\r')
+						.replace(/\\t/g, '\\t')
+						.replace(/\\b/g, '\\b')
+						.replace(/\\f/g, '\\f')
+						.replace(/\,(?!\s*?[\{\[\"\'\w])/g, '');
+
+					const parsedRegexCodeList = JSON.parse(escapedRegexCodeList);
+					parsedRegexCodeList.forEach(replaceStringUsingRegexFilter);
+				} catch (e) {
+					console.error('Invalid Custom Regex Filter JSON Code', e);
+				}
+			}
+		}
 
 		if (!onSend) {
 			return;

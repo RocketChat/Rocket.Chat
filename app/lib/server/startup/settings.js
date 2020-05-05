@@ -991,6 +991,20 @@ settings.addGroup('Message', function() {
 			public: true,
 		});
 	});
+	this.section('Custom Regex Filters', function() {
+		this.add('Message_Custom_Regex_Filters_Allowed', false, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('Message_Custom_Regex_Filters', '', {
+			type: 'code',
+			public: true,
+			enableQuery: {
+				_id: 'Message_Custom_Regex_Filters_Allowed',
+				value: true,
+			},
+		});
+	});
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		public: true,
