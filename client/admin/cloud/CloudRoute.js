@@ -3,11 +3,8 @@ import React from 'react';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../NotAuthorizedPage';
 import CloudPage from './CloudPage';
-import { useOAuthCallback } from './useOAuthCallback';
 
 function CloudRoute() {
-	useOAuthCallback();
-
 	const canManageCloud = usePermission('manage-cloud');
 
 	if (!canManageCloud) {

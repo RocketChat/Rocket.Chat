@@ -9,7 +9,10 @@ import { useMethod } from '../../contexts/ServerContext';
 const supportEmailAddress = 'support@rocket.chat';
 
 function WorkspaceRegistrationSection({
-	registerStatus,
+	email: initialEmail,
+	token: initialToken,
+	workspaceId,
+	uniqueId,
 	onRegisterStatusChange,
 	...props
 }) {
@@ -19,12 +22,10 @@ function WorkspaceRegistrationSection({
 	const updateEmail = useMethod('cloud:updateEmail');
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
 
-	const [email, setEmail] = useState(registerStatus?.email);
-	const [token, setToken] = useState(registerStatus?.token);
+	const [email, setEmail] = useState(initialEmail);
+	const [token, setToken] = useState(initialToken);
 
 	const supportMailtoUrl = useMemo(() => {
-		const workspaceId = registerStatus?.workspaceId;
-		const uniqueId = registerStatus?.uniqueId;
 		const subject = encodeURIComponent('Self Hosted Registration');
 		const body = encodeURIComponent([
 			`WorkspaceId: ${ workspaceId }`,
@@ -32,7 +33,7 @@ function WorkspaceRegistrationSection({
 			'Issue: <please describe your issue here>',
 		].join('\r\n'));
 		return `mailto:${ supportEmailAddress }?subject=${ subject }&body=${ body }`;
-	}, [registerStatus]);
+	}, [workspaceId, uniqueId]);
 
 	const handleEmailChange = ({ currentTarget: { value } }) => {
 		setEmail(value);
@@ -72,7 +73,7 @@ function WorkspaceRegistrationSection({
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			onRegisterStatusChange && onRegisterStatusChange();
+			await (onRegisterStatusChange && onRegisterStatusChange());
 		}
 	};
 

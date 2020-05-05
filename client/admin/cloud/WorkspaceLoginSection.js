@@ -1,16 +1,77 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import React from 'react';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
+import React, { useState, useEffect } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
 function WorkspaceLoginSection({
-	isLoggedIn,
-	onLoginButtonClick,
-	onLogoutButtonClick,
-	onDisconnectButtonClick,
+	onRegisterStatusChange,
 	...props
 }) {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+	const getOAuthAuthorizationUrl = useMethod('cloud:getOAuthAuthorizationUrl');
+	const logout = useMethod('cloud:logout');
+	const disconnectWorkspace = useMethod('cloud:disconnectWorkspace');
+
+	const [isLoggedIn, setLoggedIn] = useSafely(useState(false));
+	const [isLoading, setLoading] = useSafely(useState(true));
+
+	const handleLoginButtonClick = async () => {
+		try {
+			const url = await getOAuthAuthorizationUrl();
+			window.location.href = url;
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	};
+
+	const handleLogoutButtonClick = async () => {
+		try {
+			await logout();
+			const isLoggedIn = await checkUserLoggedIn();
+			setLoggedIn(isLoggedIn);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	};
+
+	const handleDisconnectButtonClick = async () => {
+		try {
+			const success = await disconnectWorkspace();
+
+			if (!success) {
+				throw Error(t('An error occured disconnecting'));
+			}
+
+			dispatchToastMessage({ type: 'success', message: t('Disconnected') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			await (onRegisterStatusChange && onRegisterStatusChange());
+		}
+	};
+
+	useEffect(() => {
+		const checkLoginState = async () => {
+			setLoading(true);
+
+			try {
+				const isLoggedIn = await checkUserLoggedIn();
+				setLoggedIn(isLoggedIn);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		checkLoginState();
+	}, []);
 
 	return <Box is='section' {...props}>
 		<Box withRichContent>
@@ -19,8 +80,8 @@ function WorkspaceLoginSection({
 
 		<ButtonGroup>
 			{isLoggedIn
-				? <Button primary danger onClick={onLogoutButtonClick}>{t('Cloud_logout')}</Button>
-				: <Button primary onClick={onLoginButtonClick}>{t('Cloud_login_to_cloud')}</Button>}
+				? <Button primary danger disabled={isLoading} onClick={handleLogoutButtonClick}>{t('Cloud_logout')}</Button>
+				: <Button primary disabled={isLoading} onClick={handleLoginButtonClick}>{t('Cloud_login_to_cloud')}</Button>}
 		</ButtonGroup>
 
 		<Box withRichContent>
@@ -28,7 +89,7 @@ function WorkspaceLoginSection({
 		</Box>
 
 		<ButtonGroup>
-			<Button primary danger onClick={onDisconnectButtonClick}>{t('Disconnect')}</Button>
+			<Button primary danger disabled={isLoading} onClick={handleDisconnectButtonClick}>{t('Disconnect')}</Button>
 		</ButtonGroup>
 	</Box>;
 }

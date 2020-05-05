@@ -11,7 +11,7 @@ import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useQueryStringParameter } from '../../contexts/RouterContext';
+import { useQueryStringParameter, useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import WhatIsItSection from './WhatIsItSection';
 import ConnectToCloudSection from './ConnectToCloudSection';
 import TroubleshootingSection from './TroubleshootingSection';
@@ -23,16 +23,48 @@ function CloudPage() {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [registerStatus, setRegisterStatus] = useSafely(useState());
-	const [isLoggedIn, setLoggedIn] = useSafely(useState(false));
-	const [modal, setModal] = useState(null);
+	const page = useRouteParameter('page');
+
+	const errorCode = useQueryStringParameter('error_code');
+	const code = useQueryStringParameter('code');
+	const state = useQueryStringParameter('state');
+
+	const finishOAuthAuthorization = useMethod('cloud:finishOAuthAuthorization');
+	const cloudRoute = useRoute('cloud');
+
+	useEffect(() => {
+		const acceptOAuthAuthorization = async () => {
+			if (page !== 'oauth-callback') {
+				return;
+			}
+
+			if (errorCode) {
+				dispatchToastMessage({
+					type: 'error',
+					title: t('Cloud_error_in_authenticating'),
+					message: t('Cloud_error_code', { errorCode }),
+				});
+				cloudRoute.push();
+				return;
+			}
+
+			try {
+				await finishOAuthAuthorization(code, state);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				cloudRoute.push();
+			}
+		};
+
+		acceptOAuthAuthorization();
+	}, [errorCode, code, state]);
 
 	const checkRegisterStatus = useMethod('cloud:checkRegisterStatus');
-	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
-	const getOAuthAuthorizationUrl = useMethod('cloud:getOAuthAuthorizationUrl');
-	const logout = useMethod('cloud:logout');
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
-	const disconnectWorkspace = useMethod('cloud:disconnectWorkspace');
+
+	const [registerStatus, setRegisterStatus] = useSafely(useState());
+	const [modal, setModal] = useState(null);
 
 	const token = useQueryStringParameter('token');
 
@@ -62,13 +94,6 @@ function CloudPage() {
 			} finally {
 				await loadRegisterStatus();
 			}
-
-			try {
-				const isLoggedIn = await checkUserLoggedIn();
-				setLoggedIn(isLoggedIn);
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
 		};
 
 		initialize();
@@ -81,83 +106,8 @@ function CloudPage() {
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
-	const handleLogoutButtonClick = async () => {
-		try {
-			await logout();
-			const isLoggedIn = await checkUserLoggedIn();
-			setLoggedIn(isLoggedIn);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
-
-	const handleLoginButtonClick = async () => {
-		try {
-			const url = await getOAuthAuthorizationUrl();
-			window.location.href = url;
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
-
-	const handleDisconnectButtonClick = async () => {
-		try {
-			const success = await disconnectWorkspace();
-
-			if (!success) {
-				throw Error(t('An error occured disconnecting'));
-			}
-
-			dispatchToastMessage({ type: 'success', message: t('Disconnected') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			await loadRegisterStatus();
-		}
-	};
-
-	const syncWorkspace = useMethod('cloud:syncWorkspace');
-
-	const handleSyncButtonClick = async () => {
-		try {
-			const isSynced = await syncWorkspace();
-
-			if (!isSynced) {
-				throw Error(t('An error occured syncing'));
-			}
-
-			dispatchToastMessage({ type: 'success', message: t('Sync Complete') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			await loadRegisterStatus();
-		}
-	};
-
-	const registerWorkspace = useMethod('cloud:registerWorkspace');
-
-	const handleRegisterButtonClick = async () => {
-		try {
-			const isRegistered = await registerWorkspace();
-
-			if (!isRegistered) {
-				throw Error(t('An error occured'));
-			}
-
-			// TODO: sync on register?
-			const isSynced = await syncWorkspace();
-
-			if (!isSynced) {
-				throw Error(t('An error occured syncing'));
-			}
-
-			dispatchToastMessage({ type: 'success', message: t('Sync Complete') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			await loadRegisterStatus();
-		}
-	};
+	const isConnectedToCloud = registerStatus?.connectToCloud;
+	const isWorkspaceRegistered = registerStatus?.workspaceRegistered;
 
 	return <Page>
 		<Page.Header title={t('Connectivity_Services')}>
@@ -176,27 +126,21 @@ function CloudPage() {
 				<Margins block='x24'>
 					<WhatIsItSection />
 
-					{registerStatus?.connectToCloud && <>
-						{registerStatus?.workspaceRegistered && <WorkspaceLoginSection
-							isLoggedIn={isLoggedIn}
-							onLoginButtonClick={handleLoginButtonClick}
-							onLogoutButtonClick={handleLogoutButtonClick}
-							onDisconnectButtonClick={handleDisconnectButtonClick}
-						/>}
+					{isConnectedToCloud && <>
+						{isWorkspaceRegistered
+							? <WorkspaceLoginSection onRegisterStatusChange={loadRegisterStatus} />
+							: <WorkspaceRegistrationSection
+								email={registerStatus?.email}
+								token={registerStatus?.token}
+								workspaceId={registerStatus?.workspaceId}
+								uniqueId={registerStatus?.uniqueId}
+								onRegisterStatusChange={loadRegisterStatus}
+							/>}
 
-						{!registerStatus?.workspaceRegistered && <WorkspaceRegistrationSection
-							registerStatus={registerStatus}
-							onRegisterStatusChange={loadRegisterStatus}
-						/>}
-
-						<TroubleshootingSection
-							onSyncButtonClick={handleSyncButtonClick}
-						/>
+						<TroubleshootingSection onRegisterStatusChange={loadRegisterStatus} />
 					</>}
 
-					{!registerStatus?.connectToCloud && <ConnectToCloudSection
-						onRegisterButtonClick={handleRegisterButtonClick}
-					/>}
+					{!isConnectedToCloud && <ConnectToCloudSection onRegisterStatusChange={loadRegisterStatus} />}
 				</Margins>
 			</Box>
 		</Page.ScrollableContentWithShadow>
