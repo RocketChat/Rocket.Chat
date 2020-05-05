@@ -6,16 +6,6 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"mocha": {
-		"tests": [
-			"app/**/*.tests.js"
-		],
-		"files": [
-			"app/**/*.mocks.js",
-			"app/**/*.js",
-			"!app/**/*.tests.js"
-		]
-	},
 	"keywords": [
 		"rocketchat",
 		"rocket",
@@ -32,11 +22,11 @@
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"postinstall": "node .scripts/npm-postinstall.js",
-		"testunit-watch": "mocha --watch --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
-		"coverage": "nyc -r html mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
+		"coverage": "nyc -r html mocha --opts ./mocha.opts",
 		"test": "node .scripts/start.js",
 		"testui": "cypress run --project tests",
-		"testunit": "mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
+		"testunit": "mocha --opts ./mocha.opts",
+		"testunit-watch": "mocha --watch --opts ./mocha.opts",
 		"testapi": "mocha --opts ./mocha_api.opts",
 		"testapps": "mocha --opts ./mocha_apps.opts",
 		"testci": "npm run testapi && npm run testapps && npm run testui",
@@ -73,7 +63,10 @@
 		"@storybook/addons": "^5.2.8",
 		"@storybook/react": "^5.2.8",
 		"@types/bcrypt": "^3.0.0",
+		"@types/chai": "^4.2.11",
 		"@types/meteor": "^1.4.37",
+		"@types/mocha": "^7.0.2",
+		"@types/mock-require": "^2.0.0",
 		"@types/mongodb": "^3.5.8",
 		"@typescript-eslint/eslint-plugin": "^2.11.0",
 		"@typescript-eslint/parser": "^2.11.0",
@@ -116,6 +109,7 @@
 		"stylelint": "^9.9.0",
 		"stylelint-order": "^2.0.0",
 		"supertest": "^3.3.0",
+		"ts-node": "^8.8.2",
 		"typescript": "^3.7.3",
 		"webpack": "^4.29.3"
 	},

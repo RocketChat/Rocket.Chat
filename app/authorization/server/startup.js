@@ -1,7 +1,7 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
 
-import { Roles, Permissions, Settings } from '../../models';
+import { Roles, Permissions, Settings } from '../../models/server';
 import { settings } from '../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../lib';
 import { clearCache } from './functions/hasPermission';
@@ -114,9 +114,7 @@ Meteor.startup(function() {
 	];
 
 	for (const permission of permissions) {
-		if (!Permissions.findOneById(permission._id)) {
-			Permissions.upsert(permission._id, { $set: permission });
-		}
+		Permissions.create(permission._id, permission.roles);
 	}
 
 	const defaultRoles = [
@@ -134,7 +132,7 @@ Meteor.startup(function() {
 	];
 
 	for (const role of defaultRoles) {
-		Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true, mandatory2fa: false } });
+		Roles.createOrUpdate(role.name, role.scope, role.description, true, false);
 	}
 
 	const getPreviousPermissions = function(settingId) {
@@ -155,19 +153,17 @@ Meteor.startup(function() {
 	const createSettingPermission = function(setting, previousSettingPermissions) {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission = {
-			_id: permissionId,
 			level: CONSTANTS.SETTINGS_LEVEL,
 			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
 			group: setting.group,
 			section: setting.section,
 			sorter: setting.sorter,
+			roles: [],
 		};
 		// copy previously assigned roles if available
 		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
 			permission.roles = previousSettingPermissions[permissionId].roles;
-		} else {
-			permission.roles = [];
 		}
 		if (setting.group) {
 			permission.groupPermissionId = getSettingPermissionId(setting.group);
@@ -175,7 +171,16 @@ Meteor.startup(function() {
 		if (setting.section) {
 			permission.sectionPermissionId = getSettingPermissionId(setting.section);
 		}
-		Permissions.upsert(permission._id, { $set: permission });
+
+		const existent = Permissions.findOne({
+			_id: permissionId,
+			...permission,
+		}, { fields: { _id: 1 } });
+
+		if (!existent) {
+			Permissions.upsert({ _id: permissionId }, { $set: permission });
+		}
+
 		delete previousSettingPermissions[permissionId];
 	};
 
