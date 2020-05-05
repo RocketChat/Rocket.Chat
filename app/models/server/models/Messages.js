@@ -13,7 +13,7 @@ import { EventTypeDescriptor } from '../../../events/definitions/IEvent';
 
 export class Messages extends Base {
 	constructor() {
-		super('message_old');
+		super('message');
 
 		this.tryEnsureIndex({ rid: 1, ts: 1 });
 		this.tryEnsureIndex({ ts: 1 });

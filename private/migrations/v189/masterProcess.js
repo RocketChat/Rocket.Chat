@@ -26,16 +26,9 @@ module.exports.getMasterProcess = () => ({
 
 		this.db = this.client.db(databaseName);
 
-		// Rename messages collection
-		try {
-			await this.db.collection('rocketchat_message').rename('rocketchat_message_old');
-		} catch (err) {
-			// Ignore error, this catch is for development purposes, to avoid errors when renaming to an existing collection
-		}
-
 		// Models
 		this.Rooms = this.db.collection('rocketchat_room');
-		this.RoomEvents = this.db.collection('rocketchat_message');
+		this.RoomEvents = this.db.collection('rocketchat_room_event');
 
 		// Set message handler
 		for (const worker of this.workers) {
