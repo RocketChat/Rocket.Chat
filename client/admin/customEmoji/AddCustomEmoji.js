@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rock
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
+import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import VerticalBar from '../../components/basic/VerticalBar';
 
 export function AddCustomEmoji({ close, onChange, ...props }) {
@@ -19,7 +19,7 @@ export function AddCustomEmoji({ close, onChange, ...props }) {
 		setNewEmojiPreview(URL.createObjectURL(file));
 	}, [setEmojiFile]);
 
-	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.create', {}, t('Custom_Emoji_Added_Successfully'));
+	const saveAction = useEndpointUpload('emoji-custom.create', {}, t('Custom_Emoji_Added_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		const formData = new FormData();
