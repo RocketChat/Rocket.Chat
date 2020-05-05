@@ -4,8 +4,6 @@ import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
-
 const FilterByText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
@@ -32,13 +30,13 @@ export function CustomEmoji({
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
 		<Th key={'aliases'} w='x200'>{t('Aliases')}</Th>,
-	].filter(Boolean), [sort]);
+	], [sort]);
 
 	const renderRow = (emojis) => {
 		const { _id, name, aliases } = emojis;
 		return <Table.Row key={_id} onKeyDown={onClick(_id, emojis)} onClick={onClick(_id, emojis)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<Table.Cell fontScale='p1' color='default' style={style}>{name}</Table.Cell>
-			<Table.Cell fontScale='p1' color='default' style={style}>{aliases}</Table.Cell>
+			<Table.Cell fontScale='p1' color='default'><Box withTruncatedText>{name}</Box></Table.Cell>
+			<Table.Cell fontScale='p1' color='default'><Box withTruncatedText>{aliases}</Box></Table.Cell>
 		</Table.Row>;
 	};
 

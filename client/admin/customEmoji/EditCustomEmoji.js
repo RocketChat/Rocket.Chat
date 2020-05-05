@@ -124,7 +124,9 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 		}
 	}, [_id]);
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
+	const openConfirmDelete = useCallback(() => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>), [onDeleteConfirm, setModal]);
+
+	const handleAliasesChange = useCallback((e) => setAliases(e.currentTarget.value, []));
 
 	const clickUpload = useFileInput(setEmojiPreview, 'emoji');
 
@@ -140,7 +142,7 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 				<Field>
 					<Field.Label>{t('Aliases')}</Field.Label>
 					<Field.Row>
-						<TextInput value={aliases} onChange={(e) => setAliases(e.currentTarget.value)} placeholder={t('Aliases')} />
+						<TextInput value={aliases} onChange={handleAliasesChange} placeholder={t('Aliases')} />
 					</Field.Row>
 				</Field>
 				<Field>
