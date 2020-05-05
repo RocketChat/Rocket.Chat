@@ -146,7 +146,7 @@ function RoomsTable() {
 					<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 					<Box display='flex' style={style} mi='x8'>
 						<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2' color='hint'/><Box fontScale='p2' style={style}>{roomName}</Box>
+							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2' color='hint'/><Box fontScale='p2' style={style} color='default'>{roomName}</Box>
 						</Box>
 					</Box>
 				</Box>

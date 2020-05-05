@@ -8,8 +8,8 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/basic/Page';
 import { AdminSounds } from './AdminSounds';
-import { NewSound } from './NewSound';
-import { EditSound } from './EditSound';
+import { AddCustomSound } from './AddCustomSound';
+import { EditCustomSound } from './EditCustomSound';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import VerticalBar from '../../components/basic/VerticalBar';
@@ -101,8 +101,8 @@ export default function CustomSoundsRoute({ props }) {
 					{ context === 'new' && t('Custom_Sound_Add') }
 					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
 				<VerticalBar.Content>
-					{context === 'edit' && <EditSound _id={id} close={close} onChange={onChange} cache={cache}/>}
-					{context === 'new' && <NewSound goToNew={onClick} close={close} onChange={onChange}/>}
+					{context === 'edit' && <EditCustomSound _id={id} close={close} onChange={onChange} cache={cache}/>}
+					{context === 'new' && <AddCustomSound goToNew={onClick} close={close} onChange={onChange}/>}
 				</VerticalBar.Content>
 			</VerticalBar>}
 	</Page>;

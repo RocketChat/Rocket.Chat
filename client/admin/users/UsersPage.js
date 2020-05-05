@@ -43,9 +43,9 @@ function UsersPage() {
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+			<Page.Content>
 				<UsersTable />
-			</Page.ScrollableContentWithShadow>
+			</Page.Content>
 		</Page>
 		{context && <VerticalBar>
 			<VerticalBar.Header>
