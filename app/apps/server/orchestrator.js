@@ -24,7 +24,7 @@ class AppServerOrchestrator {
 
 	initialize() {
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
-		Permissions.createOrUpdate('manage-apps', ['admin']);
+		Permissions.create('manage-apps', ['admin']);
 
 		this._marketplaceUrl = 'https://marketplace.rocket.chat';
 

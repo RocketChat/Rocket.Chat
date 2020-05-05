@@ -39,8 +39,8 @@ export const createPermissions = () => {
 
 	permissions.map((p) => Permissions.addRole(p, livechatMonitorRole));
 
-	Permissions.createOrUpdate('manage-livechat-units', [adminRole, livechatManagerRole]);
-	Permissions.createOrUpdate('manage-livechat-monitors', [adminRole, livechatManagerRole]);
-	Permissions.createOrUpdate('manage-livechat-tags', [adminRole, livechatManagerRole]);
-	Permissions.createOrUpdate('manage-livechat-priorities', [adminRole, livechatManagerRole]);
+	Permissions.create('manage-livechat-units', [adminRole, livechatManagerRole]);
+	Permissions.create('manage-livechat-monitors', [adminRole, livechatManagerRole]);
+	Permissions.create('manage-livechat-tags', [adminRole, livechatManagerRole]);
+	Permissions.create('manage-livechat-priorities', [adminRole, livechatManagerRole]);
 };
