@@ -1,6 +1,6 @@
-import { subscriptionHasRole, getUsersInRole, addUserRoles } from '../../../authorization';
+import { subscriptionHasRole, getUsersInRole } from '../../../authorization';
 import { FileUpload } from '../../../file-upload';
-import { Users, Subscriptions, Messages, Rooms } from '../../../models';
+import { Users, Subscriptions, Messages, Rooms, Roles } from '../../../models';
 
 const bulkRoomCleanUp = (rids) => {
 	// no bulk deletion for files
