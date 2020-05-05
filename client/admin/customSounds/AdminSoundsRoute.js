@@ -4,16 +4,16 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { usePermission } from '../../../../client/contexts/AuthorizationContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import Page from '../../../../client/components/basic/Page';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import Page from '../../components/basic/Page';
 import { AdminSounds } from './AdminSounds';
 import { NewSound } from './NewSound';
 import { EditSound } from './EditSound';
-import { useRoute, useRouteParameter } from '../../../../client/contexts/RouterContext';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { NotAuthorizedPage } from '../../../../client/admin/NotAuthorizedPage';
+import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import VerticalBar from '../../components/basic/VerticalBar';
+import NotAuthorizedPage from '../NotAuthorizedPage';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 

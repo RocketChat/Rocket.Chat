@@ -1,5 +1,3 @@
-import s from 'underscore.string';
-
 // Here previousData will define if it is an update or a new entry
 export function validate(soundData, soundFile) {
 	const errors = [];
@@ -19,13 +17,11 @@ export function validate(soundData, soundFile) {
 			}
 		}
 	}
-	console.log(soundData, soundFile);
-
 
 	return errors;
 }
 
-export function createSoundData(soundFile, name, previousData) {
+export function createSoundData(soundFile, name = '', previousData) {
 	const soundData = {};
 
 	if (previousData) {
@@ -37,7 +33,7 @@ export function createSoundData(soundFile, name, previousData) {
 		soundData.name = name;
 		soundData.newFile = false;
 	} else {
-		soundData.name = s.trim(name);
+		soundData.name = name.trim();
 		soundData.newFile = true;
 	}
 

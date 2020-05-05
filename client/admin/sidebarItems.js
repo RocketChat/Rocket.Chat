@@ -48,3 +48,12 @@ registerAdminSidebarItem({
 	icon: 'post',
 	permissionGranted: () => hasPermission('view-logs'),
 });
+
+registerAdminSidebarItem({
+	href: 'custom-sounds',
+	i18nLabel: 'Custom_Sounds',
+	icon: 'volume',
+	permissionGranted() {
+		return hasPermission(['manage-sounds']);
+	},
+});

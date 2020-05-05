@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
 
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useFileInput } from '../../../../client/hooks/useFileInput';
-import { validate, createSoundData } from './hooks';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { useFileInput } from '../../hooks/useFileInput';
+import { validate, createSoundData } from './lib';
 
 export function NewSound({ goToNew, close, onChange, ...props }) {
 	const t = useTranslation();

@@ -1,10 +1,10 @@
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
-import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Box, Table, TextInput, Icon, Button } from '@rocket.chat/fuselage';
 
-import { GenericTable, Th } from '../../../ui/client/components/GenericTable';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+import { useTranslation } from '../../contexts/TranslationContext';
+import { CustomSounds } from '../../../app/custom-sounds/client/lib/CustomSounds';
+import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { useCustomSound } from '../../contexts/CustomSoundContext';
 
 const FilterByText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
@@ -30,13 +30,26 @@ export function AdminSounds({
 	const t = useTranslation();
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
-	].filter(Boolean), [sort]);
+		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
+		<Th w='x40' key='action'></Th>,
+	], [sort]);
+
+	const customSound = useCustomSound();
+
+	const handlePlay = useCallback((sound) => {
+		customSound.play(sound);
+	}, []);
 
 	const renderRow = (sound) => {
 		const { _id, name } = sound;
+
 		return <Table.Row key={_id} onKeyDown={onClick(_id, sound)} onClick={onClick(_id, sound)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<Table.Cell fontScale='p1' color='default' style={style}>{name}</Table.Cell>
+			<Table.Cell fontScale='p1' color='default'><Box withTruncatedText>{name}</Box></Table.Cell>
+			<Table.Cell alignItems={'end'}>
+				<Button ghost small square aria-label={t('Play')} onClick={(e) => e.preventDefault() & e.stopPropagation() & handlePlay(_id)}>
+					<Icon name='play' size='x20' />
+				</Button>
+			</Table.Cell>
 		</Table.Row>;
 	};
 

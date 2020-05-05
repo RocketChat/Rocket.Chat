@@ -1,13 +1,13 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { Modal } from '../../../../client/components/basic/Modal';
-import { useFileInput } from '../../../../client/hooks/useFileInput';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
-import { validate, createSoundData } from './hooks';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { Modal } from '../../components/basic/Modal';
+import { useFileInput } from '../../hooks/useFileInput';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { validate, createSoundData } from './lib';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
