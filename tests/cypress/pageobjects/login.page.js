@@ -35,12 +35,18 @@ class LoginPage extends Page {
 
 	get registrationSucceededCard() { return browser.element('#login-card h2'); }
 
-	open() {
-		super.open('');
+	get warningAlert() { return browser.element('.alert-warning'); }
+
+	open(options = {}) {
+		super.open('', options);
 	}
 
 	gotToRegister() {
 		this.registerButton.click();
+	}
+
+	gotBackToLogin() {
+		this.backToLoginButton.click();
 	}
 
 	gotToForgotPassword() {

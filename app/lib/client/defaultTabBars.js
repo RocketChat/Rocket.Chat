@@ -4,6 +4,7 @@ import { TabBar, popover } from '../../ui-utils';
 import { share, isShareAvailable } from '../../utils';
 import { Rooms } from '../../models';
 import { hasAllPermission } from '../../authorization';
+import { roomTypes } from '../../utils/client';
 
 TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
@@ -11,7 +12,7 @@ TabBar.addButton({
 	i18nTitle: 'Search_Messages',
 	icon: 'magnifier',
 	template: 'RocketSearch',
-	order: 2,
+	order: 4,
 });
 
 TabBar.addButton({
@@ -20,16 +21,41 @@ TabBar.addButton({
 	i18nTitle: 'User_Info',
 	icon: 'user',
 	template: 'membersList',
-	order: 2,
+	order: 5,
+	condition() {
+		const rid = Session.get('openedRoom');
+		const room = Rooms.findOne({
+			_id: rid,
+		});
+
+		return room && !roomTypes.getConfig(room.t).isGroupChat(room);
+	},
+});
+
+TabBar.addButton({
+	groups: ['direct'],
+	id: 'user-info-group',
+	i18nTitle: 'Members',
+	icon: 'team',
+	template: 'membersList',
+	order: 5,
+	condition() {
+		const rid = Session.get('openedRoom');
+		const room = Rooms.findOne({
+			_id: rid,
+		});
+
+		return room && roomTypes.getConfig(room.t).isGroupChat(room);
+	},
 });
 
 TabBar.addButton({
 	groups: ['channel', 'group'],
 	id: 'members-list',
-	i18nTitle: 'Members_List',
+	i18nTitle: 'Members',
 	icon: 'team',
 	template: 'membersList',
-	order: 2,
+	order: 5,
 	condition() {
 		const rid = Session.get('openedRoom');
 		const room = Rooms.findOne({
@@ -45,31 +71,12 @@ TabBar.addButton({
 });
 
 TabBar.addButton({
-	groups: ['channel', 'group'],
-	id: 'addUsers',
-	i18nTitle: 'Add_users',
-	icon: 'user-plus',
-	template: 'inviteUsers',
-	order: 2,
-});
-
-TabBar.addButton({
-	groups: ['channel', 'group'],
-	id: 'createInviteLink',
-	i18nTitle: 'Invite_Users',
-	icon: 'user-plus',
-	template: 'createInviteLink',
-	order: 2,
-});
-
-
-TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
 	id: 'uploaded-files-list',
-	i18nTitle: 'Room_uploaded_file_list',
+	i18nTitle: 'Files',
 	icon: 'clip',
 	template: 'uploadedFilesList',
-	order: 3,
+	order: 6,
 });
 
 TabBar.addButton({
@@ -78,7 +85,7 @@ TabBar.addButton({
 	i18nTitle: 'Keyboard_Shortcuts_Title',
 	icon: 'keyboard',
 	template: 'keyboardShortcuts',
-	order: 4,
+	order: 99,
 });
 
 // Add Share button in Room

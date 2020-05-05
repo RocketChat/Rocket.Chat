@@ -9,34 +9,14 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { userStatus } from '../../user-status';
+import { hasPermission } from '../../authorization/client';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
 
 const setStatus = (status, statusText) => {
 	AccountBox.setStatus(status, statusText);
 	callbacks.run('userStatusManuallySet', status);
 	popover.close();
-};
-
-const viewModeIcon = {
-	extended: 'th-list',
-	medium: 'list',
-	condensed: 'list-alt',
-};
-
-const extendedViewOption = (user) => {
-	if (settings.get('Store_Last_Message')) {
-		return {
-			icon: viewModeIcon.extended,
-			name: t('Extended'),
-			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
-			action: () => {
-				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
-					if (error) {
-						return handleError(error);
-					}
-				});
-			},
-		};
-	}
 };
 
 const showToolbar = new ReactiveVar(false);
@@ -69,7 +49,38 @@ export const toolbarSearch = {
 	},
 };
 
+const viewModeIcon = {
+	extended: 'th-list',
+	medium: 'list',
+	condensed: 'list-alt',
+};
+
+const extendedViewOption = (user) => {
+	if (settings.get('Store_Last_Message')) {
+		return {
+			icon: viewModeIcon.extended,
+			name: t('Extended'),
+			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
+			action: () => {
+				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
+					if (error) {
+						return handleError(error);
+					}
+				});
+			},
+		};
+	}
+};
+
 const toolbarButtons = (user) => [{
+	name: t('Home'),
+	icon: 'home',
+	condition: () => !isMobile() && settings.get('Layout_Show_Home_Button'),
+	action: () => {
+		FlowRouter.go('home');
+	},
+},
+{
 	name: t('Search'),
 	icon: 'magnifier',
 	condition: () => !isMobile(),
@@ -165,10 +176,10 @@ const toolbarButtons = (user) => [{
 	icon: 'sort',
 	condition: () => !isMobile(),
 	hasPopup: true,
-	action: (e) => {
+	action: async (e) => {
 		const options = [];
 		const config = {
-			template: 'sortlist',
+			template: createTemplateForComponent('SortList', () => import('./SortList')),
 			currentTarget: e.currentTarget,
 			data: {
 				options,
@@ -181,14 +192,14 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Create_A_New_Channel'),
 	icon: 'edit-rounded',
-	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
+	condition: () => hasAtLeastOnePermission(['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user']),
 	hasPopup: true,
 	action: (e) => {
-		const createChannel = (e) => {
+		const action = (title, content) => (e) => {
 			e.preventDefault();
 			modal.open({
-				title: t('Create_A_New_Channel'),
-				content: 'createChannel',
+				title: t(title),
+				content,
 				data: {
 					onCreate() {
 						modal.close();
@@ -201,42 +212,42 @@ const toolbarButtons = (user) => [{
 			});
 		};
 
-		const discussionEnabled = settings.get('Discussion_enabled');
-		if (!discussionEnabled) {
-			return createChannel(e);
+		const createChannel = action('Create_A_New_Channel', 'createChannel');
+		const createDirectMessage = action('Direct_Messages', 'CreateDirectMessage');
+		const createDiscussion = action('Discussion_title', 'CreateDiscussion');
+
+
+		const items = [
+			hasAtLeastOnePermission(['create-c', 'create-p'])
+			&& {
+				icon: 'hashtag',
+				name: t('Channel'),
+				action: createChannel,
+			},
+			hasPermission('create-d')
+			&& {
+				icon: 'team',
+				name: t('Direct_Messages'),
+				action: createDirectMessage,
+			},
+			settings.get('Discussion_enabled') && hasAtLeastOnePermission(['start-discussion', 'start-discussion-other-user'])
+			&& {
+				icon: 'discussion',
+				name: t('Discussion'),
+				action: createDiscussion,
+			},
+		].filter(Boolean);
+
+		if (items.length === 1) {
+			return items[0].action(e);
 		}
+
 		const config = {
 			columns: [
 				{
 					groups: [
 						{
-							items: [
-								{
-									icon: 'hashtag',
-									name: t('Channel'),
-									action: createChannel,
-								},
-								{
-									icon: 'discussion',
-									name: t('Discussion'),
-									action: (e) => {
-										e.preventDefault();
-										modal.open({
-											title: t('Discussion_title'),
-											content: 'CreateDiscussion',
-											data: {
-												onCreate() {
-													modal.close();
-												},
-											},
-											modifier: 'modal',
-											showConfirmButton: false,
-											showCancelButton: false,
-											confirmOnEnter: false,
-										});
-									},
-								},
-							],
+							items,
 						},
 					],
 				},
@@ -250,7 +261,6 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Options'),
 	icon: 'menu',
-	condition: () => AccountBox.getItems().length || hasAtLeastOnePermission(['manage-emoji', 'manage-oauth-apps', 'manage-outgoing-integrations', 'manage-incoming-integrations', 'manage-own-outgoing-integrations', 'manage-own-incoming-integrations', 'manage-selected-settings', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration', 'access-setting-permissions']),
 	hasPopup: true,
 	action: (e) => {
 		let adminOption;
@@ -275,12 +285,6 @@ const toolbarButtons = (user) => [{
 			name: t('Sort'),
 			icon: 'sort',
 			type: 'sort-action',
-		};
-
-		const viewModeOption = {
-			name: t('View_mode'),
-			icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'extended'],
-			type: 'view-mode-action',
 		};
 
 		const shareOption = {
@@ -331,7 +335,7 @@ const toolbarButtons = (user) => [{
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		if (isMobile()) {
-			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([viewModeOption, sortOption]);
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
 		}
 		config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([shareOption]);
 
@@ -354,7 +358,7 @@ Template.sidebarHeader.helpers({
 		});
 	},
 	toolbarButtons() {
-		return toolbarButtons(Meteor.userId()).filter((button) => !button.condition || button.condition());
+		return toolbarButtons(/* Meteor.userId() */).filter((button) => !button.condition || button.condition());
 	},
 	showToolbar() {
 		return showToolbar.get();

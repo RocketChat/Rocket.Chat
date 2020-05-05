@@ -838,7 +838,9 @@ Template.room.events({
 
 	'click .new-message'(event, instance) {
 		instance.atBottom = true;
-		chatMessages[RoomManager.openedRoom].input.focus();
+		if (!isMobile()) {
+			chatMessages[RoomManager.openedRoom].input.focus();
+		}
 	},
 	'click .message-actions__menu'(e, i) {
 		const messageContext = messageArgs(this);
@@ -878,13 +880,18 @@ Template.room.events({
 
 		popover.open(config);
 	},
-	'click .time a'(e) {
+	'click .time-link'(e) {
 		e.preventDefault();
 		const { msg } = messageArgs(this);
-		const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
-		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
+		const link = msg.attachments ? msg.attachments[0].message_link : this.message_link;
+		const repliedMessageId = link.split('?msg=')[1];
+		const { pathname } = new URL(link);
+		FlowRouter.go(pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
+		e.stopPropagation();
+		e.preventDefault();
+
 		if (!Meteor.userId()) {
 			return;
 		}
@@ -900,8 +907,6 @@ Template.room.events({
 		}
 
 		if (group) {
-			e.stopPropagation();
-			e.preventDefault();
 			openMembersListTab(instance, group);
 			return;
 		}
@@ -1026,10 +1031,32 @@ Template.room.onCreated(function() {
 
 	this.subscription = new ReactiveVar();
 	this.state = new ReactiveDict();
+	this.userDetail = new ReactiveVar('');
+	const user = Meteor.user();
+	this.autorun((c) => {
+		const room = Rooms.findOne({ _id: rid }, {
+			fields: {
+				t: 1,
+				usernames: 1,
+				uids: 1,
+			},
+		});
+
+		if (room.t !== 'd') {
+			return c.stop();
+		}
+
+		if (roomTypes.getConfig(room.t).isGroupChat(room)) {
+			return;
+		}
+
+		this.userDetail.set(room.usernames.filter((username) => username !== user.username)[0]);
+	});
 
 	this.autorun(() => {
 		const rid = Template.currentData()._id;
-		this.state.set('announcement', Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } }).announcement);
+		const room = Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } });
+		this.state.set('announcement', room.announcement);
 	});
 
 	this.autorun(() => {
@@ -1053,7 +1080,6 @@ Template.room.onCreated(function() {
 
 	this.flexTemplate = new ReactiveVar();
 
-	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
 	this.groupDetail = new ReactiveVar();
 
 	this.tabBar = new RocketChatTabBar();
@@ -1279,6 +1305,14 @@ Template.room.onRendered(function() {
 	}, 500);
 
 	this.autorun(() => {
+		if (!Object.values(roomTypes.roomTypes).map(({ route }) => route && route.name).filter(Boolean).includes(FlowRouter.getRouteName())) {
+			return;
+		}
+
+		if (rid !== Session.get('openedRoom')) {
+			return;
+		}
+
 		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
 		read();
 		return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
@@ -1356,11 +1390,14 @@ Template.room.onRendered(function() {
 
 		const room = Rooms.findOne({ _id: template.data._id });
 		if (!room) {
-			FlowRouter.go('home');
+			return FlowRouter.go('home');
 		}
 
 		callbacks.run('onRenderRoom', template, room);
 	});
+
+	const observer = new ResizeObserver(template.sendToBottomIfNecessary);
+	observer.observe(this.firstNode.querySelector('.wrapper ul'));
 });
 
 callbacks.add('enter-room', (sub) => {

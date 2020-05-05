@@ -3,7 +3,7 @@ import sideNav from '../pageobjects/side-nav.page';
 import Global from '../pageobjects/global';
 import { username, email, password } from '../../data/user.js';
 import { publicChannelName, privateChannelName } from '../../data/channel.js';
-import { targetUser, imgURL } from '../../data/interactions.js';
+import { targetUser, fileName } from '../../data/interactions.js';
 import { checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated } from '../../data/checks';
 
 
@@ -18,6 +18,7 @@ function messagingTest(currentTest) {
 
 		it('it should show the last message', () => {
 			mainContent.lastMessage.should('be.visible');
+			mainContent.lastMessage.should('contain', message);
 		});
 
 		if (currentTest !== 'direct') {
@@ -33,11 +34,11 @@ function messagingTest(currentTest) {
 		}
 	});
 
-	describe.skip('fileUpload:', () => {
+	describe('fileUpload:', () => {
 		after(() => {
 		});
 		it('it should send a attachment', () => {
-			mainContent.fileUpload(imgURL);
+			mainContent.fileUpload(fileName);
 		});
 
 		it('it should show the confirm button', () => {
@@ -68,22 +69,20 @@ function messagingTest(currentTest) {
 			Global.modalFileName.type('File Name');
 		});
 
-		it('it should show the file name input', () => {
+		it('it should show the file description input', () => {
 			Global.modalFileDescription.should('be.visible');
 		});
 
-		it('it should fill the file name input', () => {
+		it('it should fill the file description input', () => {
 			Global.modalFileDescription.type('File Description');
 		});
 
 		it('it should click the confirm', () => {
 			Global.modalConfirm.click();
-			Global.modalConfirm.waitForVisible(5000, true);
 		});
 
 		it('it should show the file in the message', () => {
-			mainContent.lastMessageDesc.waitForVisible(10000);
-			mainContent.lastMessageDesc.getText().should.equal('File Description');
+			mainContent.lastMessageDesc.invoke('text').should('contain', 'File Description');
 		});
 	});
 }

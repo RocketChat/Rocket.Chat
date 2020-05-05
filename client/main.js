@@ -1,13 +1,16 @@
+import '@rocket.chat/fuselage-polyfills';
 import 'url-polyfill';
 
 import './importServiceWorker';
 
+import './lib/meteorCallWrapper';
 import './importsCss';
 import './importPackages';
 import '../imports/startup/client';
 
 import '../lib/RegExp';
 
+import '../ee/client';
 import './lib/toastr';
 import './templateHelpers';
 import './methods/deleteMessage';
@@ -24,7 +27,6 @@ import './routes';
 import './startup/emailVerification';
 import './startup/i18n';
 import './startup/loginViaQuery';
-import './startup/offlineMessages';
 import './startup/roomObserve';
 import './startup/startup';
 import './startup/unread';
