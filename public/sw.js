@@ -17,7 +17,7 @@ function hasSameHash(firstUrl, secondUrl) {
 
 const fetchFromNetwork = (event) => {
 	const requestToFetch = event.request.clone();
-	return fetch(requestToFetch, { cache: 'no-cache' }).then((response) => {
+	return fetch(requestToFetch, { cache: 'reload' }).then((response) => {
 		const clonedResponse = response.clone();
 		const contentType = clonedResponse.headers.get('content-type');
 
