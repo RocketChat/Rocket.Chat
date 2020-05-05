@@ -30,7 +30,7 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 	constructor(nameOrModel: string) {
 		super(nameOrModel);
 
-		this.tryEnsureIndex({ hasChildren: 1 }, { sparse: true });
+		this.tryEnsureIndex({ isLeaf: 1 }, { sparse: true });
 		this.tryEnsureIndex({ ts: 1 });
 	}
 
@@ -53,7 +53,7 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 		if (stub.t !== EventTypeDescriptor.ROOM) {
 			const previousEvents = await this.model
 				.rawCollection()
-				.find({ ...contextQuery, hasChildren: false })
+				.find({ ...contextQuery, isLeaf: true })
 				.toArray();
 
 			_pids = previousEvents.map((e: IEvent<any>) => e._id);
@@ -73,7 +73,7 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 			...contextQuery,
 			t: stub.t,
 			d: stub.d,
-			hasChildren: false,
+			isLeaf: false,
 		};
 
 		event._id = this.getEventHash(contextQuery, event);
@@ -125,8 +125,8 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 				};
 			}
 
-			// Clear the "hasChildren" of the parent events
-			await this.update({ _id: { $in: _pids } }, { $unset: { hasChildren: '' } }, { multi: 1 });
+			// Clear the "isLeaf" of the parent events
+			await this.update({ _id: { $in: _pids } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
 
 			this.insert(event);
 		}

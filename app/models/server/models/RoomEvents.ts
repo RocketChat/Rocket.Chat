@@ -39,9 +39,6 @@ class RoomEventsModel extends EventsModel {
 		this.tryEnsureIndex({ 'd.location': '2dsphere' });
 		this.tryEnsureIndex({ 'd.unread': 1 }, { sparse: true });
 
-		// chaining
-		this.tryEnsureIndex({ hasChildren: 1 }, { sparse: true });
-
 		// slack bridge
 		this.tryEnsureIndex({ 'd.slackBotId': 1, 'd.slackTs': 1 }, { sparse: true });
 

@@ -45,7 +45,7 @@ export class FederationEventsModel extends Base {
 	constructor(nameOrModel) {
 		super(nameOrModel);
 
-		this.tryEnsureIndex({ hasChildren: 1 }, { sparse: true });
+		this.tryEnsureIndex({ isLeaf: 1 }, { sparse: true });
 		this.tryEnsureIndex({ timestamp: 1 });
 	}
 
@@ -60,7 +60,7 @@ export class FederationEventsModel extends Base {
 		if (type !== eventTypes.GENESIS) {
 			const previousEvents = await this.model
 				.rawCollection()
-				.find({ context: contextQuery, hasChildren: false })
+				.find({ context: contextQuery, isLeaf: true })
 				.toArray();
 
 			// if (!previousEvents.length) {
@@ -77,15 +77,13 @@ export class FederationEventsModel extends Base {
 			type,
 			timestamp: new Date(),
 			data,
-			hasChildren: false,
+			isLeaf: true,
 		};
 
 		event._id = this.getEventHash(contextQuery, event);
 
-		// this.insert(event);
-
-		// Clear the "hasChildren" of those events
-		await this.update({ _id: { $in: previousEventsIds } }, { $unset: { hasChildren: '' } }, { multi: 1 });
+		// Clear the "isLeaf" of those events
+		await this.update({ _id: { $in: previousEventsIds } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
 
 		return event;
 	}
@@ -129,8 +127,8 @@ export class FederationEventsModel extends Base {
 				};
 			}
 
-			// Clear the "hasChildren" of the parent events
-			await this.update({ _id: { $in: parentIds } }, { $unset: { hasChildren: '' } }, { multi: 1 });
+			// Clear the "isLeaf" of the parent events
+			await this.update({ _id: { $in: parentIds } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
 
 			this.insert(event);
 		}

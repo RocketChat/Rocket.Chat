@@ -45,24 +45,6 @@ module.exports.getWorkerProcess = () => ({
 		process.exit(0);
 	},
 
-	buildEvent(src, rid, t, d, _pids = []) {
-		const contextQuery = { rid };
-
-		const event = {
-			_pids,
-			v: 2,
-			ts: new Date(),
-			src,
-			...contextQuery,
-			t,
-			d,
-		};
-
-		event._id = Events.createEventId(contextQuery, event);
-
-		return event;
-	},
-
 	//
 	// Rooms
 	async buildRooms({ batchIndex }) {
@@ -117,7 +99,7 @@ module.exports.getWorkerProcess = () => ({
 				// Generate message hash
 				v2Data._msgSha = v2Data.msg ? Events.SHA256(v2Data.msg) : null;
 
-				const event = this.buildEvent(config.get('LOCAL_SRC'), message.rid, 'msg', v2Data, [lastEventId]);
+				const event = Events.buildEvent(config.get('LOCAL_SRC'), message.rid, 'msg', v2Data, [lastEventId], false);
 
 				lastEventId = event._id;
 
@@ -125,9 +107,9 @@ module.exports.getWorkerProcess = () => ({
 			}
 		}
 
-		// Add the hasChildren flag
+		// Add the isLeaf flag
 		if (messageEvents.length > 0) {
-			messageEvents[messageEvents.length - 1].hasChildren = false;
+			messageEvents[messageEvents.length - 1].isLeaf = true;
 		}
 
 		console.log(`Messages - Room ${ rid }, persisting ${ messageEvents.length }`);
