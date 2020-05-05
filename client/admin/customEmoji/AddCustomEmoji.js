@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rock
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
+import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import VerticalBar from '../../components/basic/VerticalBar';
 
 export function AddCustomEmoji({ close, onChange, ...props }) {
@@ -19,7 +19,7 @@ export function AddCustomEmoji({ close, onChange, ...props }) {
 		setNewEmojiPreview(URL.createObjectURL(file));
 	}, [setEmojiFile]);
 
-	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.create', {}, t('Custom_Emoji_Added_Successfully'));
+	const saveAction = useEndpointUpload('emoji-custom.create', {}, t('Custom_Emoji_Added_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		const formData = new FormData();
@@ -50,13 +50,15 @@ export function AddCustomEmoji({ close, onChange, ...props }) {
 			</Field.Row>
 		</Field>
 		<Field>
-			<Field.Label alignSelf='stretch'>{t('Custom_Emoji')}</Field.Label>
-			<Box display='flex' flexDirection='row' mi='neg-x4'>
+			<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
+				{t('Custom_Emoji')}
+				<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
+			</Field.Label>
+			{ newEmojiPreview && <Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
 				<Margins inline='x4'>
-					<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
-					{ newEmojiPreview && <Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview}/>}
+					<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview}/>
 				</Margins>
-			</Box>
+			</Box> }
 		</Field>
 		<Field>
 			<Field.Row>

@@ -5,6 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { Modal } from '../../components/basic/Modal';
 import { useFileInput } from '../../hooks/useFileInput';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import VerticalBar from '../../components/basic/VerticalBar';
 
@@ -102,7 +103,7 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 
 	const hasUnsavedChanges = useMemo(() => previousName !== name || aliases !== previousAliases.join(', ') || !!emojiFile, [name, aliases, emojiFile]);
 
-	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
+	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		const formData = new FormData();
@@ -146,13 +147,15 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 				</Field.Row>
 			</Field>
 			<Field>
-				<Field.Label alignSelf='stretch'>{t('Custom_Emoji')}</Field.Label>
-				<Box display='flex' flexDirection='row' mbs='none'>
+				<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
+					{t('Custom_Emoji')}
+					<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
+				</Field.Label>
+				{ newEmojiPreview && <Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
 					<Margins inline='x4'>
-						<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
 						<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview}/>
 					</Margins>
-				</Box>
+				</Box> }
 			</Field>
 			<Field>
 				<Field.Row>

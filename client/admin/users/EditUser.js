@@ -5,6 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
+import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
 import UserAvatarEditor from '../../components/basic/avatar/UserAvatarEditor';
@@ -62,12 +63,16 @@ export function EditUser({ data, roles, ...props }) {
 	}), [data._id]);
 
 	const saveAction = useEndpointAction('POST', 'users.update', saveQuery, t('User_updated_successfully'));
-	const saveAvatarAction = useEndpointAction('UPLOAD', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const saveAvatarAction = useEndpointUpload('users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const saveAvatarUrlAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
 	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
 
 	const updateAvatar = async () => {
 		if (avatarObj === 'reset') {
 			return resetAvatarAction();
+		}
+		if (avatarObj.avatarUrl) {
+			return saveAvatarUrlAction();
 		}
 		return saveAvatarAction(avatarObj);
 	};
