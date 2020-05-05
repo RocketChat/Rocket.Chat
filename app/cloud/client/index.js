@@ -4,7 +4,7 @@ import './admin/cloudRegisterManually';
 
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { registerAdminRoute, registerAdminSidebarItem } from '../../ui-admin/client';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../../client/admin';
 import { hasAtLeastOnePermission } from '../../authorization';
 
 registerAdminRoute('/cloud', {
