@@ -45,7 +45,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const idDiscussions = useUniqueId();
 
 	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
-		<TextInput placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+		<TextInput flexShrink={0} placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 		<Field>
 			<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mbs='x8' mi='neg-x8'>
 				<Margins inline='x8'>
@@ -146,7 +146,7 @@ function RoomsTable() {
 					<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 					<Box display='flex' style={style} mi='x8'>
 						<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2' color='hint'/><Box fontScale='p2' style={style}>{roomName}</Box>
+							<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2' color='hint'/><Box fontScale='p2' style={style} color='default'>{roomName}</Box>
 						</Box>
 					</Box>
 				</Box>

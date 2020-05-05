@@ -4,7 +4,7 @@ import Page from '../../components/basic/Page';
 import VerticalBar from '../../components/basic/VerticalBar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
-import { EditRoomContextBar } from './edit/EditRoom';
+import { EditRoomContextBar } from './EditRoom';
 import RoomsTable from './RoomsTable';
 
 export function RoomsPage() {
@@ -22,9 +22,9 @@ export function RoomsPage() {
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={t('Rooms')} />
-			<Page.ScrollableContentWithShadow>
+			<Page.Content>
 				<RoomsTable />
-			</Page.ScrollableContentWithShadow>
+			</Page.Content>
 		</Page>
 		{context && <VerticalBar>
 			<VerticalBar.Header>

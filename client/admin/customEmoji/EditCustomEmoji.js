@@ -5,7 +5,9 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { Modal } from '../../components/basic/Modal';
 import { useFileInput } from '../../hooks/useFileInput';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
+import VerticalBar from '../../components/basic/VerticalBar';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
@@ -101,7 +103,7 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 
 	const hasUnsavedChanges = useMemo(() => previousName !== name || aliases !== previousAliases.join(', ') || !!emojiFile, [name, aliases, emojiFile]);
 
-	const saveAction = useEndpointAction('UPLOAD', 'emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
+	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		const formData = new FormData();
@@ -131,46 +133,46 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 	const clickUpload = useFileInput(setEmojiPreview, 'emoji');
 
 	return <>
-		<Box display='flex' flexDirection='column' fontScale='p1' color='default' mbs='x20' {...props}>
-			<Margins block='x4'>
-				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
-						<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label>{t('Aliases')}</Field.Label>
-					<Field.Row>
-						<TextInput value={aliases} onChange={handleAliasesChange} placeholder={t('Aliases')} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label alignSelf='stretch'>{t('Custom_Emoji')}</Field.Label>
-					<Box display='flex' flexDirection='row' mbs='none'>
-						<Margins inline='x4'>
-							<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
-							<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview}/>
-						</Margins>
-					</Box>
-				</Field>
-				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
-							<Button onClick={close}>{t('Cancel')}</Button>
-							<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
-						</ButtonGroup>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
-							<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
-						</ButtonGroup>
-					</Field.Row>
-				</Field>
-			</Margins>
-		</Box>
+		<VerticalBar.ScrollableContent {...props}>
+			<Field>
+				<Field.Label>{t('Name')}</Field.Label>
+				<Field.Row>
+					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Aliases')}</Field.Label>
+				<Field.Row>
+					<TextInput value={aliases} onChange={handleAliasesChange} placeholder={t('Aliases')} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
+					{t('Custom_Emoji')}
+					<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
+				</Field.Label>
+				{ newEmojiPreview && <Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
+					<Margins inline='x4'>
+						<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview}/>
+					</Margins>
+				</Box> }
+			</Field>
+			<Field>
+				<Field.Row>
+					<ButtonGroup stretch w='full'>
+						<Button onClick={close}>{t('Cancel')}</Button>
+						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
+					</ButtonGroup>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<ButtonGroup stretch w='full'>
+						<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
+					</ButtonGroup>
+				</Field.Row>
+			</Field>
+		</VerticalBar.ScrollableContent>
 		{ modal }
 	</>;
 }

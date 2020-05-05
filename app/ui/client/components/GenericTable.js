@@ -66,7 +66,7 @@ export function GenericTable({
 
 	return <>
 		<>
-			<FilterComponent setFilter={setFilter}/>
+			<FilterComponent flexShrink={0} setFilter={setFilter}/>
 			{results && !results.length
 				? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
 					{t('No_data_found')}

@@ -1,11 +1,12 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Select, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, TextInput, Field, Select, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { Modal } from '../../components/basic/Modal';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import VerticalBar from '../../components/basic/VerticalBar';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
@@ -132,37 +133,35 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	];
 
 	return <>
-		<Box display='flex' flexDirection='column' fontScale='p1' color='default' mbs='x20' {...props}>
-			<Margins block='x4'>
-				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
-						<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label>{t('Presence')}</Field.Label>
-					<Field.Row>
-						<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions}/>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
-							<Button onClick={close}>{t('Cancel')}</Button>
-							<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
-						</ButtonGroup>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
-							<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
-						</ButtonGroup>
-					</Field.Row>
-				</Field>
-			</Margins>
-		</Box>
+		<VerticalBar.ScrollableContent {...props}>
+			<Field>
+				<Field.Label>{t('Name')}</Field.Label>
+				<Field.Row>
+					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Presence')}</Field.Label>
+				<Field.Row>
+					<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions}/>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<ButtonGroup stretch w='full'>
+						<Button onClick={close}>{t('Cancel')}</Button>
+						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
+					</ButtonGroup>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<ButtonGroup stretch w='full'>
+						<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
+					</ButtonGroup>
+				</Field.Row>
+			</Field>
+		</VerticalBar.ScrollableContent>
 		{ modal }
 	</>;
 }
