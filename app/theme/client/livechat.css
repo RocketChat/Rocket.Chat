@@ -1,13 +1,15 @@
 /* customerChat History CSS */
 .inner-addon {
-    position: relative;
-    left: 24px;
-    width: 345px;
-    height: 40px;
-    box-sizing: border-box;
-    border: 2px solid #cbced1;
-    background: #ffffff;
-    border-radius: 2px;
+        position: relative;
+        left: 24px;
+
+        width: 345px;
+        box-sizing: border-box;
+        height: 40px;
+        
+        border: 2px solid #cbced1;
+        border-radius: 2px;
+        background: #ffffff;
 }
 
 .inner-addon .glyphicon {
