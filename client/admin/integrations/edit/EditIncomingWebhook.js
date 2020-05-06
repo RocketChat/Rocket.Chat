@@ -74,9 +74,9 @@ export function EditIncomingWebhook({ data, setData, ...props }) {
 					<Field.Label>{t('Enabled')}</Field.Label>
 					<Field.Row>
 						<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-							<Box mie='x8' textColor={ enabled ? 'hint' : 'default' }>{t('False')}</Box>
+							<Box mie='x8' color={ enabled ? 'hint' : 'default' }>{t('False')}</Box>
 							<ToggleSwitch checked={enabled} onChange={handleChange('enabled', data.enabled, () => !enabled)} />
-							<Box mis='x8' textColor={ enabled ? 'default' : 'hint' }>{t('True')}</Box>
+							<Box mis='x8' color={ enabled ? 'default' : 'hint' }>{t('True')}</Box>
 						</Box>
 					</Field.Row>
 				</Field>
@@ -130,9 +130,9 @@ export function EditIncomingWebhook({ data, setData, ...props }) {
 					<Field.Label>{t('Script_Enabled')}</Field.Label>
 					<Field.Row>
 						<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-							<Box mie='x8' textColor={ scriptEnabled ? 'hint' : 'default' }>{t('False')}</Box>
+							<Box mie='x8' color={ scriptEnabled ? 'hint' : 'default' }>{t('False')}</Box>
 							<ToggleSwitch checked={scriptEnabled} onChange={handleChange('scriptEnabled', data.scriptEnabled, () => !scriptEnabled)} />
-							<Box mis='x8' textColor={ scriptEnabled ? 'default' : 'hint' }>{t('True')}</Box>
+							<Box mis='x8' color={ scriptEnabled ? 'default' : 'hint' }>{t('True')}</Box>
 						</Box>
 					</Field.Row>
 				</Field>
