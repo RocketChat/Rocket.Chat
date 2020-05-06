@@ -1,9 +1,10 @@
 /* customerChat History CSS */
 .inner-addon {
-            position: relative;
-            left: 24px;
-            box-sizing: border-box;
-        
+                position: relative;
+                left: 24px;
+                
+                box-sizing: border-box;
+
         width: 345px;
         height: 40px;
 
