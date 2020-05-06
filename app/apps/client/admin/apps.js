@@ -240,7 +240,7 @@ Template.apps.events({
 		instance.startAppWorking(app.id);
 
 		try {
-			const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+			const { status } = await Apps.updateApp(app.id, app.marketplaceVersion);
 			warnStatusChange(app.name, status);
 		} catch (error) {
 			handleAPIError(error);
