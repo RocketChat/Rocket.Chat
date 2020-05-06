@@ -251,7 +251,22 @@ export class Messages extends Base {
 			_hidden: {
 				$ne: true,
 			},
+			rid: roomId,
+		};
 
+		if (Match.test(types, [String]) && (types.length > 0)) {
+			query.t = { $nin: types };
+		}
+
+		return this.find(query, options);
+	}
+
+	findVisibleByRoomIdWithClosingMessages(roomId, types, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			t: 'livechat-close',
 			rid: roomId,
 		};
 

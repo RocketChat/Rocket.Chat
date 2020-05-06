@@ -1,5 +1,5 @@
 <template name='customerChatHistory'>
-	<div class="content">
+	<div class="content" id='conten'>
 		<div class="list-view">
 			<div>
 				<div class="active-pink-4 mb-4 inner-addon right-addon">
@@ -11,10 +11,10 @@
 				{{#if isAllChat}}
 				<div class="vistior-history-block">
 					<ul id='allist'>
-					{{#if isSearching}}
-						{{#if isfound }}
-							{{#each room in searchResults}} 
-								{{> chatRoomSearchItem room}}
+					{{#if isSearchingRoom}}
+						{{#if isfoundRoom }}
+							{{#each room in searchResultsRoom}} 
+								{{> chatRoomHistoryItem room}}
 							{{/each}}
 						{{else}}
 							<h1 class='noresult'>{{_ "No_results_found"}}</h1> 
@@ -28,7 +28,17 @@
 				</div>
 				{{else}}
 					{{#if isChatClicked}}
-						{{> customerChatHistoryMessages clickRid=clickRid clickToken=clickToken}}
+						{{#if isSearching}}
+							{{#if isfound }}
+								{{#each room in searchResults}} 
+									{{> customerChatHistoryMessages room}}
+								{{/each}}
+							{{else}}
+								<h1 class='noresult'>{{_ "No_results_found"}}</h1> 
+							{{/if}}
+						{{else}}
+							{{> customerChatHistoryMessages clickRid=clickRid clickToken=clickToken}}
+						{{/if}}
 					{{/if}}
 				{{/if}}
 			{{else}}

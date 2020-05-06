@@ -66,6 +66,7 @@ export async function findChatHistory({ userId, roomId, visitorId, text, closedC
 	const total = await cursor.count();
 	const history = await cursor.toArray();
 	const resultArray = [];
+	const searchResultRooms = [];
 	if (text !== undefined) {
 		Meteor.runAsUser(userId, () => {
 			history.map((val) => {
@@ -76,6 +77,7 @@ export async function findChatHistory({ userId, roomId, visitorId, text, closedC
 					result.map((e) => {
 						resultArray.push(e);
 					});
+					searchResultRooms.push(val);
 				}
 			});
 		});
@@ -86,5 +88,6 @@ export async function findChatHistory({ userId, roomId, visitorId, text, closedC
 		offset,
 		total,
 		resultArray,
+		searchResultRooms,
 	};
 }

@@ -5,14 +5,22 @@
         </h2>
     {{else}}
         <div class="chatHistory">
-            <div class='msgcount'>
-                <p><span>{{historyResult.length}} messages</span></p>
-            </div>
-            <ul>
-                {{#each room in historyResult}}
-                  {{>customerChatHistoryMessagesItem room}} 
-                {{/each}}
-            </ul>
+            {{#if isSearchResults}}
+                <ul>
+                    {{#each room in searchResult}}
+                        {{>customerChatHistoryMessagesItem room}} 
+                    {{/each}}
+                </ul>
+            {{else}}
+                <div class='msgcount'>
+                    <p><span>{{historyResult.length}} messages</span></p>
+                </div>
+                <ul>
+                    {{#each room in historyResult}}
+                    {{>customerChatHistoryMessagesItem room}} 
+                    {{/each}}
+                </ul>
+            {{/if}}
         </div>
     {{/if}}	
 </template>

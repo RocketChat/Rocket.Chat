@@ -2,17 +2,21 @@ import { Template } from 'meteor/templating';
 import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 import './customerChatHistory.html';
-import './chatRoomHistoryItem.html';
-import './chatRoomSearchItem.html';
+import './customerChatRoomHistoryItem.html';
 import _ from 'underscore';
 
 import { APIClient } from '../../../../../utils/client';
 
+let roomId;
+let roomToken;
 const ITEMS_COUNT = 50;
 Template.customerChatHistory.helpers({
 
 	hasChatHistory() {
 		return Template.instance().hasHistory.get();
+	},
+	isSearchingRoom() {
+		return Template.instance().isSearchingRoom.get();
 	},
 	isSearching() {
 		return Template.instance().isSearching.get();
@@ -23,8 +27,14 @@ Template.customerChatHistory.helpers({
 	isChatClicked() {
 		return Template.instance().isChatClicked.get();
 	},
+	isfoundRoom() {
+		return Template.instance().isFoundRoom.get();
+	},
 	isfound() {
 		return Template.instance().isFound.get();
+	},
+	searchResultsRoom() {
+		return 	Template.instance().searchResultRoom.get();
 	},
 	searchResults() {
 		return 	Template.instance().searchResult.get();
@@ -33,10 +43,10 @@ Template.customerChatHistory.helpers({
 		return Template.instance().history.get();
 	},
 	clickRid() {
-		return Template.instance().clickRid.get();
+		return roomId;
 	},
 	clickToken() {
-		return Template.instance().clickToken.get();
+		return roomToken;
 	},
 	title() {
 		let title = moment(this.ts).format('L LTS');
@@ -48,22 +58,22 @@ Template.customerChatHistory.helpers({
 	},
 });
 
-const DEBOUNCE_TIME_FOR_SEARCH_DEPARTMENTS_IN_MS = 300;
+const DEBOUNCE_TIME_FOR_SEARCH_CHATS_IN_MS = 300;
 Template.customerChatHistory.onCreated(function() {
 	const currentData = Template.currentData();
 	this.rid = new ReactiveVar(currentData.rid);
 	this.isKeyUp = new ReactiveVar(false);
 	this.hasHistory = new ReactiveVar(false);
-	this.isFound = new ReactiveVar();
+	this.isFoundRoom = new ReactiveVar(false);
+	this.isFound = new ReactiveVar(false);
 	this.visitorId = new ReactiveVar();
 	this.history = new ReactiveVar([]);
 	this.offset = new ReactiveVar(0);
 	this.total = new ReactiveVar(0);
 	this.isAllChat = new ReactiveVar(true);
+	this.isSearchingRoom = new ReactiveVar(false);
 	this.isSearching = new ReactiveVar(false);
 	this.isChatClicked = new ReactiveVar(true);
-	this.clickRid = new ReactiveVar();
-	this.clickToken = new ReactiveVar();
 	this.autorun(async () => {
 		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ currentData.rid }`);
 		if (room && room.v) {
@@ -76,8 +86,8 @@ Template.customerChatHistory.onCreated(function() {
 			return;
 		}
 		const offset = this.offset.get();
-		let result;
 		const closedChatsOnly = true;
+		this.searchResultRoom = new ReactiveVar([]);
 		this.searchResult = new ReactiveVar([]);
 		const visitorId = this.visitorId.get();
 		const rid = this.rid.get();
@@ -85,7 +95,7 @@ Template.customerChatHistory.onCreated(function() {
 		if (searchTerm) {
 			baseUrl += `&searchText=${ searchTerm }`;
 		}
-		const { history, total, resultArray } = await APIClient.v1.get(baseUrl);
+		const { history, total, resultArray, searchResultRooms } = await APIClient.v1.get(baseUrl);
 		this.total.set(total);
 		this.history.set(history);
 		if (!this.isKeyUp.get()) {
@@ -94,14 +104,25 @@ Template.customerChatHistory.onCreated(function() {
 			}
 		} else {
 			if (searchTerm === '') {
-				this.isFound.set(false);
-				this.isSearching.set(false);
+				if (this.isAllChat.get()) {
+					this.isFoundRoom.set(false);
+					this.isSearchingRoom.set(false);
+				} else {
+					this.isFound.set(false);
+					this.isSearching.set(false);
+				}
 				return;
 			}
 			if (resultArray.length !== 0) {
-				result = resultArray;
-				this.isFound.set(true);
-				this.searchResult.set(result);
+				if (this.isAllChat.get()) {
+					this.isSearchingRoom.set(true);
+					this.isFoundRoom.set(true);
+					this.searchResultRoom.set(searchResultRooms);
+				} else {
+					this.isSearching.set(true);
+					this.isFound.set(true);
+					this.searchResult.set(resultArray);
+				}
 			}
 		}
 	};
@@ -120,21 +141,22 @@ Template.customerChatHistory.events({
 	'keyup #searchInput': _.debounce((event, template) => {
 		event.preventDefault();
 		event.stopPropagation();
-		template.isSearching.set(true);
-		template.isChatClicked.set(false);
-		template.isAllChat.set(true);
-		template.isFound.set(false);
 		template.isKeyUp.set(true);
+		if (template.isAllChat.get()) {
+			template.isSearchingRoom.set(true);
+			template.isFoundRoom.set(false);
+		} else {
+			template.isSearching.set(true);
+			template.isFound.set(false);
+		}
 		template.loadRoom(event.target.value);
-	}, DEBOUNCE_TIME_FOR_SEARCH_DEPARTMENTS_IN_MS),
+	}, DEBOUNCE_TIME_FOR_SEARCH_CHATS_IN_MS),
 	async 'click .list-chat'(event, template) {
 		event.preventDefault();
 		template.isAllChat.set(false);
 		template.isChatClicked.set(true);
-		const { id } = event.currentTarget;
-		const token = event.currentTarget.attributes.aria.value;
-		template.clickRid.set(id);
-		template.clickToken.set(token);
+		roomId = event.currentTarget.id;
+		roomToken = event.currentTarget.attributes.aria.value;
 	},
 
 });
