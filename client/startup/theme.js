@@ -1,24 +1,70 @@
 import { Meteor } from 'meteor/meteor';
+import createLess from 'less/browser';
 import _ from 'underscore';
 
 import { settings } from '../../app/settings/client';
 
 const variables = new Map();
+const lessExpressions = new Map();
 
-const updateCssVariables = _.debounce(() => {
+const less = createLess(window, {});
+
+const compileLess = async () => {
+	if (lessExpressions.size === 0) {
+		return '';
+	}
+
+	const lessCode = [
+		...Array.from(variables.entries(), ([name, value]) => `@${ name }: ${ value };`),
+		'@default-action-color: darken(@secondary-background-color, 15%);',
+		'@default-action-contrast: contrast(@default-action-color, #444444);',
+		'@primary-background-contrast: contrast(@primary-background-color, #444444);',
+		'@primary-action-contrast: contrast(@primary-action-color, #444444);',
+		'@secondary-background-contrast: contrast(@secondary-background-color, #444444);',
+		'@secondary-action-contrast: contrast(@secondary-action-color, #444444);',
+		'@selection-background: lighten(@selection-color, 30%);',
+		'@success-background: lighten(@success-color, 45%);',
+		'@success-border: lighten(@success-color, 30%);',
+		'@error-background: lighten(@error-color, 45%);',
+		'@error-border: lighten(@error-color, 30%);',
+		'@error-contrast: contrast(@error-color);',
+		'@pending-background: lighten(@pending-color, 45%);',
+		'@pending-border: lighten(@pending-color, 30%);',
+		'@transparent-darkest: rgba(17, 12, 12, 0.5);',
+		'@transparent-darker: rgba(0, 0, 0, 0.15);',
+		'@transparent-dark: rgba(15, 34, 0, 0.05);',
+		'@transparent-light: rgba(255, 255, 255, 0.1);',
+		'@transparent-lighter: rgba(255, 255, 255, 0.3);',
+		'@transparent-lightest: rgba(255, 255, 255, 0.6);',
+		':root {',
+		...Array.from(lessExpressions.entries(), ([name, expression]) => `--${ name }: ${ expression };`),
+		'}',
+	].join('\n');
+
+	try {
+		const { css } = await less.render(lessCode);
+		return css;
+	} catch (error) {
+		console.error(error);
+		return '';
+	}
+};
+
+const updateCssVariables = _.debounce(async () => {
 	document.querySelector('#css-variables').innerHTML = [
 		':root {',
-		...Array.from(variables.entries()).map(([name, value]) => `--${ name }: ${ value };`),
+		...Array.from(variables.entries(), ([name, value]) => `--${ name }: ${ value };`),
 		'}',
+		await compileLess(),
 	].join('\n');
 
 	window.cssVarPoly.init();
 }, 50);
 
-const handleThemeColorChanged = ({ _id, value, editor }) => {
+const handleThemeColorChanged = async ({ _id, value, editor }) => {
 	try {
 		const name = /^theme-color-(.*)$/.exec(_id)[1];
-		const legacy = name.slice(3) !== 'rc-';
+		const legacy = name.slice(0, 3) !== 'rc-';
 
 		if (editor === 'color') {
 			variables.set(name, value);
@@ -26,6 +72,7 @@ const handleThemeColorChanged = ({ _id, value, editor }) => {
 		}
 
 		if (legacy) {
+			lessExpressions.set(name, value);
 			return;
 		}
 
