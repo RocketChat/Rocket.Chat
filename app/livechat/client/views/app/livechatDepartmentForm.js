@@ -304,7 +304,7 @@ Template.livechatDepartmentForm.onCreated(async function() {
 
 	this.autorun(async () => {
 		const department = this.department.get();
-		let offlineChannel;
+		let offlineChannel = [];
 		if (department?.offlineMessageChannelName) {
 			const { room } = await APIClient.v1.get(`rooms.info?roomName=${ department?.offlineMessageChannelName }`);
 			if (room) {
