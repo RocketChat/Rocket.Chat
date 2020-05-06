@@ -120,11 +120,11 @@ const log = (...args) => console.log(`CachedCollection ${ this.name } =>`, ...ar
 
 export class CachedCollection extends EventEmitter {
 	constructor({
-		collection,
+		collection = new Mongo.Collection(null),
 		name,
-		methodName,
-		syncMethodName,
-		eventName,
+		methodName = `${ name }/get`,
+		syncMethodName = `${ name }/get`,
+		eventName = `${ name }-changed`,
 		eventType = 'onUser',
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
@@ -134,13 +134,13 @@ export class CachedCollection extends EventEmitter {
 		onSyncData = (/* action, record */) => {},
 	}) {
 		super();
-		this.collection = collection || new Mongo.Collection(null);
+		this.collection = collection;
 
 		this.ready = new ReactiveVar(false);
 		this.name = name;
-		this.methodName = methodName || `${ name }/get`;
-		this.syncMethodName = syncMethodName || `${ name }/get`;
-		this.eventName = eventName || `${ name }-changed`;
+		this.methodName = methodName;
+		this.syncMethodName = syncMethodName;
+		this.eventName = eventName;
 		this.eventType = eventType;
 		this.useSync = useSync;
 		this.listenChangesForLoggedUsersOnly = listenChangesForLoggedUsersOnly;
