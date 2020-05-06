@@ -419,23 +419,23 @@
 	.rc-header {
 		&__block {
 			margin: 0 0.2em;
- 
-            padding: 0 0.1em;
-        }
- 
-        &__section {
-            display: flex;
- 
-            margin: 0 0.5rem;
- 
-            padding: 0 0.5rem;
- 
-            align-items: center;
-        }
- 
-        &__first-icon {
-            width: 2.25em;
-            padding: 0;
+
+			padding: 0 0.1em;
+		}
+
+		&__section {
+			display: flex;
+
+			margin: 0 0.5rem;
+
+			padding: 0 0.5rem;
+
+			align-items: center;
+		}
+
+		&__first-icon {
+			width: 2.25em;
+			padding: 0;
 		}
 
 		&__block-action {
@@ -449,6 +449,7 @@
 					border-left: 0;
 				}
 			}
+
 			.rc-room-actions {
 				&__action {
 					.rc-room-actions__button {
@@ -460,12 +461,12 @@
 			}
 		}
 
-        &__search-button {
-            &__action {
-                &__icon {
-                    height: 1.2em;
-                }
-            }
+		&__search-button {
+			&__action {
+				&__icon {
+					height: 1.2em;
+				}
+			}
 		}
 
 		&__data {
@@ -490,31 +491,31 @@
 			padding: 0;
 		}
 	}
-	
+
 	.rc-channel {
-        &--room {
-            background: var(--rc-color-primary);
-        }
- 
-        &__wrap {
-            color: var(--color-white);
-            background: var(--rc-color-primary);
-        }
- 
-        &__name {
-            color: var(--color-white);
- 
-            font-size: 1.3rem;
- 
-            & > .rc-header__icon {
-                display: none;
-            }
-        }
- 
-        .burger i {
-            background-color: var(--color-white);
-        }
-    }
+		&--room {
+			background: var(--rc-color-primary);
+		}
+
+		&__wrap {
+			color: var(--color-white);
+			background: var(--rc-color-primary);
+		}
+
+		&__name {
+			color: var(--color-white);
+
+			font-size: 1.3rem;
+
+			& > .rc-header__icon {
+				display: none;
+			}
+		}
+
+		.burger i {
+			background-color: var(--color-white);
+		}
+	}
 }
 
 .embedded-view .room-container .rc-header--burger {

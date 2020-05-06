@@ -94,8 +94,8 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 };
 
 const showMessageActions = (e, outerContext) => {
-    const { msg } = messageArgs(outerContext);
-    return e.target && e.target.nodeName === 'DIV' && !msg.private && !MessageTypes.isSystemMessage(msg);
+	const { msg } = messageArgs(outerContext);
+	return e.target && e.target.nodeName === 'DIV' && !msg.private && !MessageTypes.isSystemMessage(msg);
 };
 
 const mountPopover = (e, i, outerContext) => {
@@ -106,7 +106,7 @@ const mountPopover = (e, i, outerContext) => {
 
 	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
+	const menuItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
 		icon: item.icon,
 		name: t(item.label),
 		type: 'message-action',
@@ -271,12 +271,12 @@ Template.room.helpers({
 	...dropzoneHelpers,
 
 	openSearchPage() {
-        if (!isMobile()) {
-            return false;
-        }
-        return Session.get('openSearchPage');
+		if (!isMobile()) {
+			return false;
+		}
+		return Session.get('openSearchPage');
 	},
-	
+
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -775,8 +775,8 @@ Template.room.events({
 
 			window.open(e.target.href);
 		} else if (isMobile() && !touchMoved && showMessageActions(e, this)) {
-            mountPopover(e, t, this);
-        }
+			mountPopover(e, t, this);
+		}
 	},
 
 	'touchmove .message'(e, t) {
@@ -871,8 +871,8 @@ Template.room.events({
 	'click .new-message'(event, instance) {
 		instance.atBottom = true;
 		if (!isMobile()) {
-            chatMessages[RoomManager.openedRoom].input.focus();
-        }
+			chatMessages[RoomManager.openedRoom].input.focus();
+		}
 	},
 	'click .message-actions__menu'(e, i) {
 		const messageContext = messageArgs(this);
@@ -916,9 +916,9 @@ Template.room.events({
 		e.preventDefault();
 		const { msg } = messageArgs(this);
 		const link = msg.attachments ? msg.attachments[0].message_link : this.message_link;
-        const repliedMessageId = link.split('?msg=')[1];
-        const { pathname } = new URL(link);
-        FlowRouter.go(pathname, null, { msg: repliedMessageId, hash: Random.id() });
+		const repliedMessageId = link.split('?msg=')[1];
+		const { pathname } = new URL(link);
+		FlowRouter.go(pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
 		e.stopPropagation();

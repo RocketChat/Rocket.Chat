@@ -39,24 +39,24 @@ Template.headerRoom.helpers({
 	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
 	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
-    showSearchButton: () => isMobile(),
-    openSearchPage() {
-        if (!isMobile()) {
-            return;
-        }
-        return Session.get('openSearchPage');
-    },
+	showSearchButton: () => isMobile(),
+	openSearchPage() {
+		if (!isMobile()) {
+			return;
+		}
+		return Session.get('openSearchPage');
+	},
 	uid() {
 		return getUidDirectMessage(this._id);
 	},
 	back() {
 		return Template.instance().data.back;
 	},
-    getSearchButton() {
-        return TabBar.getButtons().filter(function(item) {
-            return item.id === 'rocket-search';
-        })[0];
-    },
+	getSearchButton() {
+		return TabBar.getButtons().filter(function(item) {
+			return item.id === 'rocket-search';
+		})[0];
+	},
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -155,13 +155,13 @@ Template.headerRoom.helpers({
 });
 
 Template.headerRoom.events({
-    'click .js-open-search'() {
-        if (!Session.get('openSearchPage')) {
-            Session.set('openSearchPage', true);
-        } else {
-            Session.set('openSearchPage', false);
-        }
-    },
+	'click .js-open-search'() {
+		if (!Session.get('openSearchPage')) {
+			Session.set('openSearchPage', true);
+		} else {
+			Session.set('openSearchPage', false);
+		}
+	},
 	'click .iframe-toolbar .js-iframe-action'(e) {
 		fireGlobalEvent('click-toolbar-button', { id: this.id });
 		e.currentTarget.querySelector('button').blur();
