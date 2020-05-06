@@ -315,71 +315,6 @@ textarea {
 	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
 }
 
-.toolbar-search__input {
-	&:focus {
-		border-color: fade(@primary-background-contrast, 50%);
-	}
-
-	&::placeholder {
-		color: @transparent-lighter;
-	}
-}
-
-.toolbar-search__buttons i:hover {
-	color: fade(@primary-background-contrast, 50%);
-}
-
-// .flex-nav {
-// 	input,
-// 	select,
-// 	textarea {
-// 		color: @primary-background-contrast;
-// 		background-color: transparent;
-// 		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-// 		border-style: solid;
-
-// 		&::placeholder {
-// 			color: mix(@primary-background-contrast, @transparent-lighter, 75%);
-// 		}
-
-// 		&[disabled] {
-// 			background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-// 		}
-// 	}
-
-// 	.disabled label,
-// 	[disabled] label {
-// 		color: mix(@primary-background-contrast, @transparent-lighter, 75%);
-// 	}
-
-// 	.-autocomplete-container {
-// 		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-// 	}
-
-// 	.-autocomplete-item.selected {
-// 		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 20%);
-// 	}
-
-// 	input[type="button"],
-// 	input[type="submit"] {
-// 		color: @primary-background-contrast;
-// 		background: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-// 		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-// 	}
-
-// 	input {
-// 		&:focus {
-// 			border-color: fade(@primary-background-contrast, 50%);
-// 		}
-// 	}
-
-// 	.input.checkbox.toggle {
-// 		input:checked + label::before {
-// 			background-color: @primary-action-color;
-// 		}
-// 	}
-// }
-
 .input-line {
 	&.setting-changed > label {
 		color: @selection-color;
@@ -524,22 +459,6 @@ input:-webkit-autofill {
 .messages-container {
 	.footer {
 		background: @content-background-color;
-	}
-}
-
-.message-form {
-	.message-buttons {
-		.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
-
-		&:hover {
-			background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
-		}
-	}
-
-	.message-form-text {
-		&.editing {
-			background-color: lighten(@pending-color, 40%);
-		}
 	}
 }
 
