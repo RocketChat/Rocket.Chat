@@ -42,18 +42,17 @@
 		},
 		findCSS: function findCSS() {
 			var styleBlocks = Array.prototype.concat.apply([], document.querySelectorAll('#css-variables, link[type="text/css"].__meteor-css__'));
-			var counter = 1;
-			styleBlocks.map(function (block) {
+			styleBlocks.forEach(function (block, counter) {
 				if (block.nodeName === 'STYLE') {
 					var theCSS = block.innerHTML;
 					cssVarPoly.findSetters(theCSS, counter);
-					cssVarPoly.oldCSS[counter++] = theCSS;
+					cssVarPoly.oldCSS[counter] = theCSS;
 				} else if (block.nodeName === 'LINK') {
 					var url = block.getAttribute('href');
 					cssVarPoly.oldCSS[counter] = '';
 					cssVarPoly.getLink(url, counter, function (counter, request) {
 						cssVarPoly.findSetters(request.responseText, counter);
-						cssVarPoly.oldCSS[counter++] = request.responseText;
+						cssVarPoly.oldCSS[counter] = request.responseText;
 						cssVarPoly.updateCSS();
 					});
 				}
@@ -129,59 +128,13 @@
 			request.send();
 		}
 	};
+
+	window.cssVarPoly = cssVarPoly;
+
 	var stateCheck = setInterval(function () {
 		if (document.readyState === 'complete' && typeof Meteor !== 'undefined') {
 			clearInterval(stateCheck);
 			cssVarPoly.init();
 		}
 	}, 100);
-
-	var DynamicCss = {};
-
-	window.DynamicCss = DynamicCss;
-
-	DynamicCss.test = function () {
-		return window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)');
-	};
-
-	DynamicCss.run = debounce(function () {
-		var replace = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-		var settings = arguments.length && arguments[1];
-
-		if (replace && !settings) {
-			console.error('You must provide settings to the "run" function in DynamicCss');
-		}
-
-		if (replace) {
-			var colors = settings.collection.find({
-				_id: /theme-color-rc/i
-			}, {
-				fields: {
-					value: 1,
-					editor: 1
-				}
-			}).fetch().filter(function (color) {
-				return color && color.value;
-			});
-
-			if (!colors) {
-				return;
-			}
-
-			var css = colors.map(function (_ref) {
-				var _id = _ref._id,
-						value = _ref.value,
-						editor = _ref.editor;
-
-				if (editor === 'expression') {
-					return '--' + _id.replace('theme-color-', '') + ': var(--' + value + ');';
-				}
-
-				return '--' + _id.replace('theme-color-', '') + ': ' + value + ';';
-			}).join('\n');
-			document.querySelector('#css-variables').innerHTML = ':root {' + css + '}';
-		}
-
-		cssVarPoly.init();
-	}, 1000);
 })();

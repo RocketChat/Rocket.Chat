@@ -1162,10 +1162,19 @@
 	text-align: center;
 
 	color: var(--rc-color-content);
+	background-color: var(--primary-background-color);
 
 	font-size: 1.2em;
 	line-height: 40px;
 	flex-flow: row nowrap;
+
+	&.warning {
+		background-color: var(--rc-color-alert);
+	}
+
+	&.error {
+		background-color: var(--rc-color-alert-message-warning);
+	}
 
 	& ~ .container-bars {
 		top: 45px;
