@@ -188,7 +188,7 @@ export const RoomHistoryManager = new class {
 			return;
 		}
 
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
+		const instance = Blaze.getView($('.messages-box .wrapper')[0]).parentView.templateInstance();
 		instance.atBottom = false;
 
 		room.isLoading.set(true);
@@ -235,7 +235,7 @@ export const RoomHistoryManager = new class {
 			return;
 		}
 
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
+		const instance = Blaze.getView($('.messages-box .wrapper')[0]).parentView.templateInstance();
 
 		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
 			const wrapper = $('.messages-box .wrapper');
