@@ -4,6 +4,8 @@ import _ from 'underscore';
 
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 
+const getCustomSoundId = (sound) => `custom-sound-${ sound }`;
+
 class CustomSoundsClass {
 	constructor() {
 		this.list = new ReactiveVar({});
@@ -19,7 +21,7 @@ class CustomSoundsClass {
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
-		const audio = $('<audio />', { id: sound._id, preload: true }).append(
+		const audio = $('<audio />', { id: getCustomSoundId(sound._id), preload: true }).append(
 			$('<source />', { src: sound.src }),
 		);
 		const list = this.list.get();
@@ -59,7 +61,7 @@ class CustomSoundsClass {
 	}
 
 	play = (sound, { volume = 1, loop = false } = {}) => {
-		const audio = document.querySelector(`audio#${ sound }`);
+		const audio = document.querySelector(`#${ getCustomSoundId(sound) }`);
 		if (!audio || !audio.play) {
 			return;
 		}
