@@ -4116,10 +4116,6 @@
 	}
 }
 
-.sweet-alert .sa-input-error {
-	top: 19px;
-}
-
 .rc-old .collapse-switch {
 	cursor: pointer;
 }
@@ -4245,10 +4241,6 @@
 	.rc-old.main-content {
 		transform: translateX(0) !important;
 	}
-
-	.sweet-alert {
-		margin-left: -239px !important;
-	}
 }
 
 @media (width <= 780px) {
@@ -4269,20 +4261,6 @@
 
 		& .messages-box {
 			padding: 0 10px;
-		}
-	}
-
-	.rc-old .sweet-alert {
-		& h2 {
-			margin: 10px 0;
-
-			font-size: 20px;
-			line-height: 30px;
-		}
-
-		& button {
-			margin-top: 6px;
-			padding: 10px 22px;
 		}
 	}
 
