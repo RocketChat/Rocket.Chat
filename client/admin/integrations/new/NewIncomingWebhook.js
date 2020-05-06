@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import Page from '../../../components/basic/Page';
 
@@ -19,6 +20,7 @@ const initialState = {
 
 export default function NewIncomingWebhook({ data, setData, ...props }) {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [newData, setNewData] = useState(initialState);
 
@@ -29,9 +31,10 @@ export default function NewIncomingWebhook({ data, setData, ...props }) {
 	const handleSave = async () => {
 		try {
 			await saveAction();
+			dispatchToastMessage({ type: 'success', message: t('Integration_added') });
 			setNewData(initialState);
 		} catch (e) {
-			console.log(e);
+			dispatchToastMessage({ type: 'error', message: e });
 		}
 	};
 
@@ -126,6 +129,19 @@ export default function NewIncomingWebhook({ data, setData, ...props }) {
 					<Field.Label>{t('Script')}</Field.Label>
 					<Field.Row>
 						<TextAreaInput rows={20} flexGrow={1} value={script} onChange={handleChange('script')} addon={<Icon name='code' size='x20' alignSelf='center'/>}/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label>{t('Webhook_URL')}</Field.Label>
+					<Field.Row>
+						<TextInput flexGrow={1} value={t('Will_be_available_here_after_saving')} addon={<Icon name='permalink' size='x20'/>} disabled/>
+					</Field.Row>
+					<Field.Hint>{t('Send_your_JSON_payloads_to_this_URL')}</Field.Hint>
+				</Field>
+				<Field>
+					<Field.Label>{t('Token')}</Field.Label>
+					<Field.Row>
+						<TextInput flexGrow={1} value={t('Will_be_available_here_after_saving')} addon={<Icon name='key' size='x20'/>} disabled/>
 					</Field.Row>
 				</Field>
 				<Field>

@@ -1,8 +1,6 @@
-export default function useExampleData({ emoji, alias, avatar, url }) {
+export function useExampleData({ aditionalFields, url }) {
 	const exampleData = {
-		...alias && { username: alias },
-		...emoji && { icon_emoji: emoji },
-		...avatar && { icon_url: avatar },
+		...aditionalFields && aditionalFields,
 		text: 'Example message',
 		attachments: [{
 			title: 'Rocket.Chat',
@@ -14,7 +12,7 @@ export default function useExampleData({ emoji, alias, avatar, url }) {
 	};
 
 	return [
-		JSON.stringify(exampleData),
+		exampleData,
 		`curl -X POST -H 'Content-Type: application/json' --data '${ JSON.stringify(exampleData) }' ${ url }`,
 	];
 }

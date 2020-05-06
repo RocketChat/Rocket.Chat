@@ -3,7 +3,10 @@ import { Field, TextInput, Box, Headline, Skeleton, ToggleSwitch, Icon, TextArea
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
-import { useMethod } from '../../../contexts/ServerContext';
+import { useMethod, useAbsoluteUrl } from '../../../contexts/ServerContext';
+import { useHilightedCode } from '../../../hooks/useHilightedCode';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useExampleData } from '../exampleIncomingData';
 import Page from '../../../components/basic/Page';
 
 export default function EditIncomingWebhookWithData({ integrationId, ...props }) {
@@ -32,8 +35,9 @@ export default function EditIncomingWebhookWithData({ integrationId, ...props })
 	return <EditIncomingWebhook data={data.integration} onChange={onChange} {...props}/>;
 }
 
-export function EditIncomingWebhook({ data, setData, ...props }) {
+function EditIncomingWebhook({ data, setData, onChange, ...props }) {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [newData, setNewData] = useState({});
 
@@ -41,12 +45,18 @@ export function EditIncomingWebhook({ data, setData, ...props }) {
 
 	const saveIntegration = useMethod('updateIncomingIntegration');
 
+	const absoluteUrl = useAbsoluteUrl();
+
+	const url = absoluteUrl(`hooks/${ data._id }/${ data.token }`);
+
 	const handleSave = async () => {
 		try {
 			await saveIntegration(data._id, { ...newData, channel: newData.channel ?? data.channel.join(', ') });
+			dispatchToastMessage({ type: 'success', message: t('Integration_updated') });
+			onChange();
 			setNewData({});
 		} catch (e) {
-			console.log(e);
+			dispatchToastMessage({ type: 'error', message: e });
 		}
 	};
 
@@ -66,6 +76,17 @@ export function EditIncomingWebhook({ data, setData, ...props }) {
 	const emoji = newData.emoji ?? data.emoji ?? '';
 	const scriptEnabled = newData.scriptEnabled ?? data.scriptEnabled;
 	const script = newData.script ?? data.script;
+
+	const [exampleData, curlData] = useExampleData({
+		aditionalFields: {
+			...alias && { alias },
+			...emoji && { emoji },
+			...avatarUrl && { avatar: avatarUrl },
+		},
+		url,
+	});
+
+	const hilightedExampleJson = useHilightedCode('json', JSON.stringify(exampleData, null, 2));
 
 	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
@@ -139,7 +160,34 @@ export function EditIncomingWebhook({ data, setData, ...props }) {
 				<Field>
 					<Field.Label>{t('Script')}</Field.Label>
 					<Field.Row>
-						<TextAreaInput rows={20} flexGrow={1} value={script} onChange={handleChange('script', data.script)} addon={<Icon name='code' size='x20' alignSelf='center'/>}/>
+						<TextAreaInput rows={10} flexGrow={1} value={script} onChange={handleChange('script', data.script)} addon={<Icon name='code' size='x20' alignSelf='center'/>}/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label>{t('Webhook_URL')}</Field.Label>
+					<Field.Row>
+						<TextInput flexGrow={1} value={url} addon={<Icon name='permalink' size='x20'/>}/>
+					</Field.Row>
+					<Field.Hint>{t('Send_your_JSON_payloads_to_this_URL')}</Field.Hint>
+				</Field>
+				<Field>
+					<Field.Label>{t('Token')}</Field.Label>
+					<Field.Row>
+						<TextInput flexGrow={1} value={`${ data._id }/${ data.token }`} addon={<Icon name='key' size='x20'/>}/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label>{t('Example_payload')}</Field.Label>
+					<Field.Row>
+						<Box fontScale='p1' withRichContent flexGrow={1}>
+							<pre><code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code></pre>
+						</Box>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label>{t('Curl')}</Field.Label>
+					<Field.Row>
+						<TextInput flexGrow={1} value={curlData} addon={<Icon name='code' size='x20'/>}/>
 					</Field.Row>
 				</Field>
 				<Field>
