@@ -79,8 +79,7 @@ export class SettingsBase {
 				callbacks.forEach((callback) => callback(key, value, initialLoad));
 			}
 		});
-		Object.keys(this.regexCallbacks).forEach((cbKey) => {
-			const cbValue = this.regexCallbacks.get(cbKey);
+		this.regexCallbacks.forEach((cbValue) => {
 			if (!cbValue?.regex.test(key)) {
 				return;
 			}
