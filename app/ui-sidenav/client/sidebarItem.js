@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, getUserPreference, roomTypes } from '../../utils';
+import { t, getUserPreference, roomTypes, isMobile } from '../../utils';
 import { popover, renderMessageBody, menu } from '../../ui-utils';
 import { Users, ChatSubscription } from '../../models/client';
 import { settings } from '../../settings';
@@ -19,7 +19,7 @@ Template.sidebarItem.helpers({
 		return this.rid || this._id;
 	},
 	isExtendedViewMode() {
-		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
+		return isMobile() || getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
 	},
 	lastMessage() {
 		return this.lastMessage && Template.instance().renderedMessage;
@@ -83,6 +83,91 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
+const getConfig = function(e) {
+    const canLeave = () => {
+        const roomData = Session.get(`roomData${ this.rid }`);
+ 
+        if (!roomData) { return false; }
+ 
+        if (roomData.t === 'c' && !hasAtLeastOnePermission('leave-c')) { return false; }
+        if (roomData.t === 'p' && !hasAtLeastOnePermission('leave-p')) { return false; }
+ 
+        return !(((roomData.cl != null) && !roomData.cl) || ['d', 'l'].includes(roomData.t));
+    };
+ 
+    const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
+    const isFavorite = () => {
+        const sub = ChatSubscription.findOne({ rid: this.rid }, { fields: { f: 1 } });
+        if (((sub != null ? sub.f : undefined) != null) && sub.f) {
+            return true;
+        }
+        return false;
+    };
+ 
+    const items = [{
+        icon: 'eye-off',
+        name: t('Hide_room'),
+        type: 'sidebar-item',
+        id: 'hide',
+    }];
+ 
+    if (this.alert) {
+        items.push({
+            icon: 'flag',
+            name: t('Mark_read'),
+            type: 'sidebar-item',
+            id: 'read',
+        });
+    } else {
+        items.push({
+            icon: 'flag',
+            name: t('Mark_unread'),
+            type: 'sidebar-item',
+            id: 'unread',
+        });
+    }
+ 
+    if (canFavorite) {
+        items.push({
+            icon: 'star',
+            name: t(isFavorite() ? 'Unfavorite' : 'Favorite'),
+            modifier: isFavorite() ? 'star-filled' : 'star',
+            type: 'sidebar-item',
+            id: 'favorite',
+        });
+    }
+ 
+    if (canLeave()) {
+        items.push({
+            icon: 'sign-out',
+            name: t('Leave_room'),
+            type: 'sidebar-item',
+            id: 'leave',
+            modifier: 'error',
+        });
+    }
+ 
+    return {
+        popoverClass: 'sidebar-item',
+        columns: [
+            {
+                groups: [
+                    {
+                        items,
+                    },
+                ],
+            },
+        ],
+        data: {
+            template: this.t,
+            rid: this.rid,
+            name: this.name,
+        },
+        currentTarget: e.currentTarget,
+        offsetHorizontal: -e.currentTarget.clientWidth,
+    };
+};
+
 Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
 
@@ -92,7 +177,9 @@ Template.sidebarItem.onCreated(function() {
 		const currentData = Template.currentData();
 
 		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
-			return clearInterval(this.timeAgoInterval);
+			if (!isMobile()) {
+                return clearInterval(this.timeAgoInterval);
+            }
 		}
 
 		if (!currentData.lastMessage._id) {
@@ -123,93 +210,26 @@ Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'() {
 		return menu.close();
 	},
+	'touchstart .sidebar-item__link'(e, t) {
+        if (e.originalEvent.touches.length !== 1) {
+            return;
+		}
+		const config = getConfig.call(this, e);
+
+        const doLongTouch = () => {
+			popover.open(config);
+		};
+			clearTimeout(t.touchtime);
+			t.touchtime = setTimeout(doLongTouch, 500);
+	},
+	'touchend .sidebar-item__link, touchcancel .sidebar-item__link, touchmove .sidebar-item__link'(e, t) {
+        clearTimeout(t.touchtime);
+    },
 	'click .sidebar-item__menu'(e) {
 		e.stopPropagation(); // to not close the menu
 		e.preventDefault();
 
-		const canLeave = () => {
-			const roomData = Session.get(`roomData${ this.rid }`);
-
-			if (!roomData) { return false; }
-
-			if (roomData.t === 'c' && !hasAtLeastOnePermission('leave-c')) { return false; }
-			if (roomData.t === 'p' && !hasAtLeastOnePermission('leave-p')) { return false; }
-
-			return !(((roomData.cl != null) && !roomData.cl) || ['d', 'l'].includes(roomData.t));
-		};
-
-		const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
-		const isFavorite = () => {
-			const sub = ChatSubscription.findOne({ rid: this.rid }, { fields: { f: 1 } });
-			if (((sub != null ? sub.f : undefined) != null) && sub.f) {
-				return true;
-			}
-			return false;
-		};
-
-		const items = [{
-			icon: 'eye-off',
-			name: t('Hide_room'),
-			type: 'sidebar-item',
-			id: 'hide',
-		}];
-
-		if (this.alert) {
-			items.push({
-				icon: 'flag',
-				name: t('Mark_read'),
-				type: 'sidebar-item',
-				id: 'read',
-			});
-		} else {
-			items.push({
-				icon: 'flag',
-				name: t('Mark_unread'),
-				type: 'sidebar-item',
-				id: 'unread',
-			});
-		}
-
-		if (canFavorite) {
-			items.push({
-				icon: 'star',
-				name: t(isFavorite() ? 'Unfavorite' : 'Favorite'),
-				modifier: isFavorite() ? 'star-filled' : 'star',
-				type: 'sidebar-item',
-				id: 'favorite',
-			});
-		}
-
-		if (canLeave()) {
-			items.push({
-				icon: 'sign-out',
-				name: t('Leave_room'),
-				type: 'sidebar-item',
-				id: 'leave',
-				modifier: 'error',
-			});
-		}
-
-		const config = {
-			popoverClass: 'sidebar-item',
-			columns: [
-				{
-					groups: [
-						{
-							items,
-						},
-					],
-				},
-			],
-			data: {
-				template: this.t,
-				rid: this.rid,
-				name: this.name,
-			},
-			currentTarget: e.currentTarget,
-			offsetHorizontal: -e.currentTarget.clientWidth,
-		};
-
+		const config = getConfig.call(this, e);
 		popover.open(config);
 	},
 });
