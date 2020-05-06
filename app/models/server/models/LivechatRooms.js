@@ -351,31 +351,33 @@ export class LivechatRooms extends Base {
 		}, update);
 	}
 
-	getTotalConversationsBetweenDate(t, date) {
+	getTotalConversationsBetweenDate(t, date, { departmentId } = {}) {
 		const query = {
 			t,
 			ts: {
 				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 				$lt: new Date(date.lt),	// ISODate, ts < date.lt
 			},
+			...departmentId && departmentId !== 'undefined' && { departmentId },
 		};
 
 		return this.find(query).count();
 	}
 
-	getAnalyticsMetricsBetweenDate(t, date) {
+	getAnalyticsMetricsBetweenDate(t, date, { departmentId } = {}) {
 		const query = {
 			t,
 			ts: {
 				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 				$lt: new Date(date.lt),	// ISODate, ts < date.lt
 			},
+			...departmentId && departmentId !== 'undefined' && { departmentId },
 		};
 
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
-	getAnalyticsBetweenDate(date) {
+	getAnalyticsBetweenDate(date, { departmentId } = {}) {
 		return this.model.rawCollection().aggregate([
 			{
 				$match: {
@@ -384,6 +386,7 @@ export class LivechatRooms extends Base {
 						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 						$lt: new Date(date.lt),	// ISODate, ts < date.lt
 					},
+					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
 			{

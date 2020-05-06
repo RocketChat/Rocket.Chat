@@ -1,4 +1,6 @@
 {
+  "error-forwarding-department-target-not-allowed": "O encaminhamento para o departamento selecionado não é permitido.",
+  "error-invalid-priority": "Prioridade inválida",
   "error-max-number-simultaneous-chats-reached": "O número máximo de bate-papos simultâneos por agente foi atingido.",
   "Add_monitor": "Adicionar Monitor",
   "Available_departments": "Departamentos disponíveis",
@@ -10,8 +12,6 @@
   "Enter_a_custom_message": "Digite uma mensagem customizada",
   "Enterprise_License": "Licença Enterprise",
   "Enterprise_License_Description": "Se você registrou seu workspace e a licença foi fornecida pelo Rocket.Chat Cloud você não precisa atualizar a licença manualmente aqui.",
-  "error-forwarding-department-target-not-allowed": "O encaminhamento para o departamento selecionado não é permitido.",
-  "error-invalid-priority": "Prioridade inválida",
   "Estimated_due_time": "Tempo estimado(tempo em minutos)",
   "Invalid_Department": "Departamento inválido",
   "LDAP_Default_Role_To_User": "Papel padrão para o usuário",

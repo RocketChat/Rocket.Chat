@@ -185,4 +185,5 @@ import './v185';
 import './v186';
 import './v187';
 import './v188';
+import './v189';
 import './xrun';
