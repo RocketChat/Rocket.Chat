@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { ChatMessage, CachedChatMessage, ChatRoom, ChatSubscription } from '../../../models';
+import { ChatMessage, ChatRoom, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises/client';
@@ -34,7 +34,6 @@ Meteor.methods({
 		message = callbacks.run('beforeSaveMessage', message);
 		promises.run('onClientMessageReceived', message).then(function(message) {
 			ChatMessage.insert(message);
-			CachedChatMessage.save();
 			ChatRoom.setLastMessage(message.rid, message);
 			ChatSubscription.setLastMessage(message.rid, message);
 			return callbacks.run('afterSaveMessage', message);

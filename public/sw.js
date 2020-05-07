@@ -38,6 +38,10 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+	if (event.request.method === 'POST') {
+		return;
+	}
+
 	const requestToFetch = event.request.clone();
 	event.respondWith(
 		caches.match(event.request.clone()).then((cached) => {

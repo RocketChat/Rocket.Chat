@@ -305,11 +305,14 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					}
 
 					const uploads = upload;
-					uploads.percentage = Math.round(progress * 100) || 0;
+					uploads.percentage = Math.round(progress) || 0;
 					ChatMessage.setProgress(msgData.id, uploads);
 				},
-				error() {
-					ChatMessage.setProgress(msgData.id, upload);
+				error(error) {
+					const uploads = upload;
+					uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+					uploads.percentage = 0;
+					ChatMessage.setProgress(msg._id, uploads);
 				},
 			});
 
@@ -325,8 +328,9 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			});
 
 			try {
-				await promise;
-				offlineFile && SWCache.removeFromCache(offlineFile);
+				const res = await promise;
+
+				if (typeof res === 'object' && res.success && offlineFile) { SWCache.removeFromCache(offlineFile); }
 			} catch (error) {
 				const uploads = upload;
 				uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;

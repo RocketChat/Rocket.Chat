@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { ChatMessage, CachedChatMessage } from '../../app/models/client';
+import { ChatMessage } from '../../app/models/client';
 import { canDeleteMessage, SWCache } from '../../app/utils/client';
 
 Meteor.methods({
-	deleteMessage(msg) {
-		if (!Meteor.userId()) {
+	deleteMessage(msg, offlineTriggered = false) {
+		if (!Meteor.userId() || offlineTriggered) {
 			return false;
 		}
 
@@ -26,7 +26,6 @@ Meteor.methods({
 				_id: message._id,
 				'u._id': Meteor.userId(),
 			});
-			CachedChatMessage.save();
 			if (message.file) {
 				SWCache.removeFromCache(message.file);
 				Session.set(`uploading-cancel-${ message.file._id }`, true);
@@ -38,7 +37,6 @@ Meteor.methods({
 				_id: message._id,
 				'u._id': Meteor.userId(),
 			}, { $set: messageObject, $unset: { reactions: 1, file: 1, attachments: 1 } });
-			CachedChatMessage.save();
 		}
 	},
 });
