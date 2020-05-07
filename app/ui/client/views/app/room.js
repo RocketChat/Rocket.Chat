@@ -538,6 +538,7 @@ Template.room.helpers({
 	},
 	messageContext,
 	openedThread() {
+		FlowRouter.watchPathChange();
 		const tab = FlowRouter.getParam('tab');
 		const mid = FlowRouter.getParam('context');
 		const rid = Template.instance().data._id;

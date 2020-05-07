@@ -200,7 +200,9 @@ Template.thread.onRendered(function() {
 
 
 	this.autorun(() => {
-		const { mainMessage, jump } = Template.currentData();
+		FlowRouter.watchPathChange();
+		const jump = FlowRouter.getQueryParam('jump');
+		const { mainMessage } = Template.currentData();
 		this.state.set({
 			tmid: mainMessage._id,
 			rid: mainMessage.rid,

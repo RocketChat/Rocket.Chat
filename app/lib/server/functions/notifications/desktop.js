@@ -30,6 +30,7 @@ export function notifyDesktopUser({
 		payload: {
 			_id: message._id,
 			rid: message.rid,
+			tmid: message.tmid,
 			sender: message.u,
 			type: room.t,
 			name: room.name,
