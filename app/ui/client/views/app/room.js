@@ -295,7 +295,7 @@ Template.room.helpers({
 		return state.get('subscribed');
 	},
 	messagesHistory() {
-		const { rid } = Template.instance();
+		const rid = Template.instance().state.get('rid');
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
 		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
@@ -323,19 +323,19 @@ Template.room.helpers({
 	},
 
 	hasMore() {
-		return RoomHistoryManager.hasMore(this._id);
+		return RoomHistoryManager.hasMore(this._id());
 	},
 
 	hasMoreNext() {
-		return RoomHistoryManager.hasMoreNext(this._id);
+		return RoomHistoryManager.hasMoreNext(this._id());
 	},
 
 	isLoading() {
-		return RoomHistoryManager.isLoading(this._id);
+		return RoomHistoryManager.isLoading(this._id());
 	},
 
 	windowId() {
-		return `chat-window-${ this._id }`;
+		return `chat-window-${ Template.instance().state.get('rid') }`;
 	},
 
 	uploading() {
@@ -343,7 +343,8 @@ Template.room.helpers({
 	},
 
 	roomLeader() {
-		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
+		const rid = Template.instance().state.get('rid');
+		const roles = RoomRoles.findOne({ rid, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
 		if (roles) {
 			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1, statusText: 1 } }) || {};
 
@@ -365,8 +366,8 @@ Template.room.helpers({
 	},
 
 	messageboxData() {
-		const { sendToBottomIfNecessaryDebounced, subscription } = Template.instance();
-		const { _id: rid } = this;
+		const { sendToBottomIfNecessaryDebounced, subscription, state } = Template.instance();
+		const rid = state.get('rid');
 		const isEmbedded = Layout.isEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 
@@ -416,7 +417,7 @@ Template.room.helpers({
 	unreadData() {
 		const data = { count: Template.instance().state.get('count') };
 
-		const room = RoomManager.getOpenedRoomByRid(this._id);
+		const room = RoomManager.getOpenedRoomByRid(this._id());
 		if (room) {
 			data.since = room.unreadSince.get();
 		}
@@ -552,7 +553,7 @@ export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
 
-		if (types != null && types.length > 0 && _.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) && userCanDrop(this._id)) {
+		if (types != null && types.length > 0 && _.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) && userCanDrop(this._id())) {
 			e.currentTarget.classList.add('over');
 		}
 		e.stopPropagation();
@@ -586,7 +587,7 @@ export const dropzoneEvents = {
 		e.stopPropagation();
 		e.preventDefault();
 
-		if (!userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
+		if (!userCanDrop(this._id()) || !settings.get('FileUpload_Enabled')) {
 			return false;
 		}
 
@@ -807,6 +808,7 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
+		const rid = this._id();
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
 			if (e.target.scrollTop < lastScrollTop) {
@@ -817,15 +819,15 @@ Template.room.events({
 		}
 		lastScrollTop = e.target.scrollTop;
 		const height = e.target.clientHeight;
-		const isLoading = RoomHistoryManager.isLoading(this._id);
-		const hasMore = RoomHistoryManager.hasMore(this._id);
-		const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
+		const isLoading = RoomHistoryManager.isLoading(rid);
+		const hasMore = RoomHistoryManager.hasMore(rid);
+		const hasMoreNext = RoomHistoryManager.hasMoreNext(rid);
 
 		if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
 			if (hasMore === true && lastScrollTop <= height / 3) {
-				RoomHistoryManager.getMore(this._id);
+				RoomHistoryManager.getMore(rid);
 			} else if (hasMoreNext === true && Math.ceil(lastScrollTop) >= e.target.scrollHeight - height) {
-				RoomHistoryManager.getMoreNext(this._id);
+				RoomHistoryManager.getMoreNext(rid);
 			}
 		}
 	}, 100),
@@ -951,10 +953,10 @@ Template.room.events({
 		}
 	},
 	'click .announcement'() {
-		const roomData = Session.get(`roomData${ this._id }`);
+		const roomData = Session.get(`roomData${ this._id() }`);
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
-			return callbacks.run(roomData.announcementDetails.callback, this._id);
+			return callbacks.run(roomData.announcementDetails.callback, this._id());
 		}
 
 		modal.open({
@@ -1008,8 +1010,11 @@ Template.room.events({
 
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
-	// this.typing = new msgTyping this.data._id
-	const rid = this.data._id;
+	// this.typing = new msgTyping this.data._id()
+	const { _id: rid } = this.data;
+	this.state = new ReactiveDict();
+
+	this.autorun(() => this.state.set('rid', Template.currentData()._id()));
 
 	this.onFile = (filesToUpload) => {
 		fileUpload(filesToUpload, chatMessages[rid].input, { rid });
@@ -1018,36 +1023,40 @@ Template.room.onCreated(function() {
 	this.rid = rid;
 
 	this.subscription = new ReactiveVar();
-	this.state = new ReactiveDict();
 	this.userDetail = new ReactiveVar('');
 	const user = Meteor.user();
-	this.autorun((c) => {
-		const room = Rooms.findOne({ _id: rid }, {
-			fields: {
-				t: 1,
-				usernames: 1,
-				uids: 1,
-			},
+
+	this.autorun(() => {
+		const rid = this.state.get('rid');
+		this.autorun((c) => {
+			const room = Rooms.findOne({ _id: rid }, {
+				fields: {
+					t: 1,
+					usernames: 1,
+					uids: 1,
+				},
+			});
+
+			if (room.t !== 'd') {
+				return c.stop();
+			}
+
+			if (roomTypes.getConfig(room.t).isGroupChat(room)) {
+				return;
+			}
+
+			this.userDetail.set(room.usernames.filter((username) => username !== user.username)[0]);
 		});
-
-		if (room.t !== 'd') {
-			return c.stop();
-		}
-
-		if (roomTypes.getConfig(room.t).isGroupChat(room)) {
-			return;
-		}
-
-		this.userDetail.set(room.usernames.filter((username) => username !== user.username)[0]);
 	});
 
 	this.autorun(() => {
-		const rid = Template.currentData()._id;
+		const rid = this.state.get('rid');
 		const room = Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } });
 		this.state.set('announcement', room.announcement);
 	});
 
 	this.autorun(() => {
+		const rid = this.state.get('rid');
 		const subscription = Subscriptions.findOne({ rid });
 		this.subscription.set(subscription);
 		this.state.set({
@@ -1057,7 +1066,6 @@ Template.room.onCreated(function() {
 		});
 	});
 
-	this.showUsersOffline = new ReactiveVar(false);
 	this.atBottom = !FlowRouter.getQueryParam('msg');
 	this.unreadCount = new ReactiveVar(0);
 
@@ -1071,10 +1079,48 @@ Template.room.onCreated(function() {
 	this.groupDetail = new ReactiveVar();
 
 	this.tabBar = new RocketChatTabBar();
-	this.tabBar.showGroup(FlowRouter.current().route.name);
-	callbacks.run('onCreateRoomTabBar', {
-		tabBar: this.tabBar,
-		room: Rooms.findOne(rid, { fields: { t: 1 } }),
+
+	this.autorun(() => {
+		const rid = this.state.get('rid');
+
+		this.tabBar.showGroup(FlowRouter.current().route.name);
+
+		Meteor.call('getRoomRoles', rid, function(error, results) {
+			if (error) {
+				handleError(error);
+			}
+
+			return Array.from(results).forEach((record) => {
+				delete record._id;
+				RoomRoles.upsert({ rid: record.rid, 'u._id': record.u._id }, record);
+			});
+		});
+
+		this.rolesObserve = RoomRoles.find({ rid }).observe({
+			added: (role) => {
+				if (!role.u || !role.u._id) {
+					return;
+				}
+				ChatMessage.update({ rid: this.data._id(), 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
+			}, // Update message to re-render DOM
+			changed: (role) => {
+				if (!role.u || !role.u._id) {
+					return;
+				}
+				ChatMessage.update({ rid: this.data._id(), 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
+			}, // Update message to re-render DOM
+			removed: (role) => {
+				if (!role.u || !role.u._id) {
+					return;
+				}
+				ChatMessage.update({ rid: this.data._id(), 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
+			},
+		});
+
+		callbacks.run('onCreateRoomTabBar', {
+			tabBar: this.tabBar,
+			room: Rooms.findOne(rid, { fields: { t: 1 } }),
+		});
 	});
 
 	this.hideLeaderHeader = new ReactiveVar(false);
@@ -1129,38 +1175,6 @@ Template.room.onCreated(function() {
 		this.userDetail.set(null);
 	};
 
-	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
-		if (error) {
-			handleError(error);
-		}
-
-		return Array.from(results).forEach((record) => {
-			delete record._id;
-			RoomRoles.upsert({ rid: record.rid, 'u._id': record.u._id }, record);
-		});
-	});
-
-	this.rolesObserve = RoomRoles.find({ rid: this.data._id }).observe({
-		added: (role) => {
-			if (!role.u || !role.u._id) {
-				return;
-			}
-			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
-		}, // Update message to re-render DOM
-		changed: (role) => {
-			if (!role.u || !role.u._id) {
-				return;
-			}
-			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
-		}, // Update message to re-render DOM
-		removed: (role) => {
-			if (!role.u || !role.u._id) {
-				return;
-			}
-			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
-		},
-	});
-
 	this.sendToBottomIfNecessary = () => {
 		if (this.atBottom === true) {
 			this.sendToBottom();
@@ -1173,27 +1187,33 @@ Template.room.onDestroyed(function() {
 		this.rolesObserve.stop();
 	}
 
-	readMessage.off(this.data._id);
+	readMessage.off(this.data._id());
 
 	window.removeEventListener('resize', this.onWindowResize);
 
 	this.observer && this.observer.disconnect();
 
-	const chatMessage = chatMessages[this.data._id];
-	chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id);
+	const chatMessage = chatMessages[this.data._id()];
+	chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id());
+
+	callbacks.remove('streamNewMessage', this.data._id());
 });
 
 Template.room.onRendered(function() {
-	const { _id: rid } = this.data;
-
-	if (!chatMessages[rid]) {
-		chatMessages[rid] = new ChatMessages();
-	}
-	chatMessages[rid].initializeWrapper(this.find('.wrapper'));
-	chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
+	this.autorun(() => {
+		const rid = this.state.get('rid');
+		if (!chatMessages[rid]) {
+			chatMessages[rid] = new ChatMessages();
+		}
+		chatMessages[rid].initializeWrapper(this.find('.wrapper'));
+		chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
+		Tracker.afterFlush(() => {
+			console.log(chatMessages[rid].wrapper, rid, RoomManager.room, RoomManager.room.oldScrollTop);
+			chatMessages[rid].wrapper.scrollTop = RoomManager.room.oldScrollTop;
+		});
+	});
 
 	const wrapper = this.find('.wrapper');
-	const wrapperUl = this.find('.wrapper > ul');
 	const newMessage = this.find('.new-message');
 
 	const template = this;
@@ -1218,14 +1238,6 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 150);
-
-	if (window.MutationObserver) {
-		template.observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
-
-		template.observer.observe(wrapperUl, { childList: true });
-	} else {
-		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
-	}
 
 	template.onWindowResize = () => template.sendToBottomIfNecessaryDebounced();
 
@@ -1287,19 +1299,12 @@ Template.room.onRendered(function() {
 		});
 	}, 300);
 
-	const read = _.debounce(function() {
-		if (rid !== Session.get('openedRoom')) {
-			return;
-		}
-		readMessage.read(rid);
-	}, 500);
+	const read = _.debounce(() => readMessage.read(this.state.get('rid')), 1000);
 
 	this.autorun(() => {
-		if (!Object.values(roomTypes.roomTypes).map(({ route }) => route && route.name).filter(Boolean).includes(FlowRouter.getRouteName())) {
-			return;
-		}
+		const rid = this.state.get('rid');
 
-		if (rid !== Session.get('openedRoom')) {
+		if (!Object.values(roomTypes.roomTypes).map(({ route }) => route && route.name).filter(Boolean).includes(FlowRouter.getRouteName())) {
 			return;
 		}
 
@@ -1309,6 +1314,8 @@ Template.room.onRendered(function() {
 	});
 
 	this.autorun(() => {
+		const rid = this.state.get('rid');
+
 		const lastMessage = this.state.get('lastMessage');
 
 		const subscription = Subscriptions.findOne({ rid }, { fields: { ls: 1 } });
@@ -1324,12 +1331,15 @@ Template.room.onRendered(function() {
 
 
 	this.autorun(() => {
+		const rid = this.state.get('rid');
 		const count = RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() + this.unreadCount.get();
 		this.state.set('count', count);
 	});
 
 
 	this.autorun(() => {
+		const rid = this.state.get('rid');
+
 		Rooms.findOne(rid);
 		const count = this.state.get('count');
 		if (count === 0) {
@@ -1338,7 +1348,11 @@ Template.room.onRendered(function() {
 		readMessage.refreshUnreadMark(rid);
 	});
 
-	readMessage.on(template.data._id, () => this.unreadCount.set(0));
+
+	this.autorun(() => {
+		const rid = this.state.get('rid');
+		readMessage.on(rid, () => this.unreadCount.set(0));
+	});
 
 	wrapper.addEventListener('scroll', updateUnreadCount);
 	// salva a data da renderização para exibir alertas de novas mensagens
@@ -1360,6 +1374,8 @@ Template.room.onRendered(function() {
 		});
 	}
 	callbacks.add('streamNewMessage', (msg) => {
+		const rid = this.state.get('rid');
+
 		if (rid !== msg.rid || msg.editedAt) {
 			return;
 		}
@@ -1373,12 +1389,10 @@ Template.room.onRendered(function() {
 		}
 	});
 
-	this.autorun(function() {
-		if (template.data._id !== RoomManager.openedRoom) {
-			return;
-		}
+	this.autorun(() => {
+		const rid = this.state.get('rid');
 
-		const room = Rooms.findOne({ _id: template.data._id });
+		const room = Rooms.findOne({ _id: rid });
 		if (!room) {
 			return FlowRouter.go('home');
 		}

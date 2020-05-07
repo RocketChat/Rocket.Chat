@@ -1,9 +1,14 @@
+import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { callbacks } from '../../callbacks';
 
 export const roomExit = function() {
+	if (Meteor.isServer) {
+		return;
+	}
+
+	const { RoomManager } = require('../../ui-utils/client');
 	// 7370 - Close flex-tab when opening a room on mobile UI
 	if (window.matchMedia('(max-width: 500px)').matches) {
 		const flex = document.querySelector('.flex-tab');
@@ -12,32 +17,17 @@ export const roomExit = function() {
 			templateData && templateData.tabBar && templateData.tabBar.close();
 		}
 	}
+
 	callbacks.run('roomExit');
-	BlazeLayout.render('main', {
-		center: 'none',
-	});
 
 	if (typeof window.currentTracker !== 'undefined') {
 		window.currentTracker.stop();
 	}
-	const mainNode = document.querySelector('.main-content');
-	if (mainNode == null) {
+
+	const wrapper = document.querySelector(`#chat-window-${ RoomManager.openedRoom } .messages-box > .wrapper`);
+
+	if (!wrapper) {
 		return;
 	}
-	return Array.from(mainNode.children).forEach((child) => {
-		if (child == null) {
-			return;
-		}
-		if (child.classList.contains('room-container')) {
-			const wrapper = child.querySelector('.messages-box > .wrapper');
-			if (wrapper) {
-				if (wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight) {
-					child.oldScrollTop = 10e10;
-				} else {
-					child.oldScrollTop = wrapper.scrollTop;
-				}
-			}
-		}
-		mainNode.removeChild(child);
-	});
+	RoomManager.room.oldScrollTop = wrapper.scrollTop;
 };
