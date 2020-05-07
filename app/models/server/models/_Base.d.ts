@@ -5,6 +5,8 @@ export declare class Base<T> {
 
 	tryEnsureIndex(...args: any[]): any;
 
+	find(...args: any[]): any;
+
 	findOne(...args: any[]): T;
 
 	insert(item: T): string;
