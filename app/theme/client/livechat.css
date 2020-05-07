@@ -1,15 +1,12 @@
-.inner-addon {
+.inner-addon {  
     position: relative;
     left: 24px;
-
     box-sizing: border-box;
-
     width: 345px;
     height: 40px;
-
-            border: 2px solid #cbced1;
-            border-radius: 2px;
-            background: #ffffff;
+    border: 2px solid #cbced1;
+    border-radius: 2px;
+    background: #ffffff;
 }
 
 .inner-addon .glyphicon {
