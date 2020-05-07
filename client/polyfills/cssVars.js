@@ -6,20 +6,21 @@ const findDeclarations = (code) => (code.match(/(--[^:; ]+:..*?;)/g) ?? [])
 		return [
 			name,
 			value.indexOf('var(') >= 0
-				? (variables) => value.replace(/var\((--.*?)\)/gm, (_, name) => variables[name](variables))
+				? (variables) => value.replace(/var\((--.*?)\)/gm, (_, name) => variables[name]?.call(null, variables))
 				: () => value,
 		];
 	});
 
-const replaceReferences = (code, variables) => code.replace(/var\((--.*?)\)/gm, (_, name) => variables[name](variables));
+const replaceReferences = (code, variables) =>
+	code.replace(/var\((--.*?)\)/gm, (_, name) => variables[name]?.call(null, variables));
 
-let cssVariablesElement = null;
+let cssVariablesElement;
 const originalCodes = new Map();
 
 const update = _.debounce(() => {
 	const declarations = [].concat(
-		findDeclarations(cssVariablesElement.innerHTML),
 		...Array.from(originalCodes.values(), findDeclarations),
+		findDeclarations(cssVariablesElement.innerHTML),
 	);
 
 	const variables = Object.fromEntries(declarations);
