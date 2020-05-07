@@ -226,7 +226,7 @@ Template.apps.events({
 		} = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
 		FlowRouter.go('app-manage', { appId }, { version });
 	},
-	async 'click .js-install, click .js-update'(event, instance) {
+	async 'click .js-update'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
