@@ -1,7 +1,8 @@
-const { MongoClient } = require('mongodb');
-
+const moduleRequire = require('./moduleRequire');
 const config = require('./config');
 const { Events, RoomEvents } = require('./modelExtractions');
+
+const { MongoClient } = moduleRequire('mongodb');
 
 module.exports.getWorkerProcess = () => ({
 	async start() {

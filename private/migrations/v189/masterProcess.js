@@ -1,6 +1,7 @@
-const { MongoClient } = require('mongodb');
-
+const moduleRequire = require('./moduleRequire');
 const config = require('./config');
+
+const { MongoClient } = moduleRequire('mongodb');
 
 function benchmark(message) {
 	const startTime = new Date();
