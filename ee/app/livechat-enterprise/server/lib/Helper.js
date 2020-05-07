@@ -3,7 +3,14 @@ import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
 import { hasRole } from '../../../../../app/authorization';
-import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms, Messages } from '../../../../../app/models/server';
+import {
+	LivechatDepartment,
+	Users,
+	LivechatInquiry,
+	LivechatRooms,
+	Messages,
+	LivechatCustomField,
+} from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
@@ -215,4 +222,56 @@ export const updatePriorityInquiries = (priority) => {
 	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
 		updateInquiryQueuePriority(room._id, priority);
 	});
+};
+
+export const getLivechatCustomFields = () => {
+	const script = settings.get('Livechat_Registration_Form_Custom_Fields');
+	if (!script) {
+		return;
+	}
+
+	let customFields;
+	try {
+		const scriptFields = JSON.parse(script);
+		const acceptedFields = LivechatCustomField.find({ visibility: 'visible' }, { fields: { _id: 1, label: 1, scope: 1 } }).fetch();
+		const fieldKeys = Object.keys(scriptFields);
+
+		return acceptedFields
+			.filter((field) => fieldKeys.includes(field._id))
+			.map((field) => Object.assign(field, scriptFields[field._id]));
+	} catch (error) {
+		console.warn('Invalid Livechat Custom Fields', error);
+	}
+	return customFields;
+};
+
+export const getLivechatQueueInfo = async (room) => {
+	if (!room) {
+		return null;
+	}
+
+	if (!settings.get('Livechat_waiting_queue')) {
+		return null;
+	}
+
+	const { _id: rid } = room;
+	const inquiry = LivechatInquiry.findOneByRoomId(rid, { fields: { _id: 1, status: 1 } });
+	if (!inquiry) {
+		return null;
+	}
+
+	const { _id, status } = inquiry;
+	if (status !== 'queued') {
+		return null;
+	}
+
+	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id });
+
+	let queueInfo;
+	if (inq) {
+		const { position, department } = inq;
+		queueInfo = await normalizeQueueInfo({ position, department });
+	}
+
+	return queueInfo;
 };
