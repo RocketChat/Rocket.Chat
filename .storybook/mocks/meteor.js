@@ -4,7 +4,10 @@ export const Meteor = {
 	_localStorage: window.localStorage,
 	absoluteUrl: () => {},
 	userId: () => {},
-	Streamer: () => {},
+	Streamer: () => ({
+		on: () => {},
+		removeListener: () => {},
+	}),
 	startup: () => {},
 	methods: () => {},
 	call: () => {},
@@ -31,10 +34,13 @@ export const Mongo = {
 	}),
 };
 
-export const ReactiveVar = () => ({
-	get: () => {},
-	set: () => {},
-});
+export const ReactiveVar = (val) => {
+	let currentVal = val;
+	return {
+		get: () => currentVal,
+		set: (val) => { currentVal = val; },
+	};
+};
 
 export const ReactiveDict = () => ({
 	get: () => {},
@@ -64,6 +70,9 @@ export const check = () => {};
 
 export const FlowRouter = {
 	route: () => {},
+	group: () => ({
+		route: () => {},
+	}),
 };
 
 export const BlazeLayout = {};

@@ -140,6 +140,10 @@ export class AnalyticsRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params).toArray();
 	}
+
+	findByTypeBeforeDate({ type, date }) {
+		return this.find({ type, date: { $lte: date } });
+	}
 }
 
 export default new AnalyticsRaw(Analytics.model.rawCollection());

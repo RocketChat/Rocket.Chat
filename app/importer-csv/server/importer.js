@@ -86,9 +86,7 @@ export class CsvImporter extends Base {
 				const parsedUsers = this.csvParser(entry.getData().toString());
 				tempUsers = parsedUsers.map((u) => ({ id: Random.id(), username: u[0].trim(), email: u[1].trim(), name: u[2].trim() }));
 
-				this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
 				super.updateRecord({ 'count.users': tempUsers.length });
-				super.addCountToTotal(tempUsers.length);
 
 				return increaseCount();
 			}
@@ -141,7 +139,8 @@ export class CsvImporter extends Base {
 			increaseCount();
 		});
 
-		super.addCountToTotal(messagesCount);
+		this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
+		super.addCountToTotal(messagesCount + tempUsers.length);
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 
 		if (hasDirectMessages) {

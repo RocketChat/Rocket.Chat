@@ -45,15 +45,6 @@ TabBar.addGroup('uploaded-files-list', ['live']);
 TabBar.addGroup('push-notifications', ['live']);
 TabBar.addGroup('video', ['live']);
 
-TabBar.addButton({
-	groups: ['live'],
-	id: 'external-search',
-	i18nTitle: 'Knowledge_Base',
-	icon: 'book',
-	template: 'externalSearch',
-	order: 10,
-});
-
 MessageTypes.registerType({
 	id: 'livechat-close',
 	system: true,

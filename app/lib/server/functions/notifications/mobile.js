@@ -3,15 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../../settings';
 import { Subscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';
-import { PushNotification } from '../../../../push-notifications/server';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
-
-let alwaysNotifyMobileBoolean;
-settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
-	alwaysNotifyMobileBoolean = value;
-});
 
 let SubscriptionRaw;
 Meteor.startup(() => {
@@ -46,32 +40,25 @@ function enableNotificationReplyButton(room, username) {
 	return !room.muted.includes(username);
 }
 
-export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
+export async function getPushData({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
 	let username = '';
 	if (settings.get('Push_show_username_room')) {
 		username = settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
 	}
 
-	PushNotification.send({
-		roomId: message.rid,
+	return {
 		payload: {
-			host: Meteor.absoluteUrl(),
-			rid: message.rid,
 			sender: message.u,
 			type: room.t,
 			name: room.name,
 			messageType: message.t,
-			messageId: message._id,
 		},
 		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
 		username,
 		message: settings.get('Push_show_message') ? notificationMessage : ' ',
 		badge: await getBadgeCount(userId),
-		usersTo: {
-			userId,
-		},
 		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
-	});
+	};
 }
 
 export function shouldNotifyMobile({
@@ -81,7 +68,6 @@ export function shouldNotifyMobile({
 	isHighlighted,
 	hasMentionToUser,
 	hasReplyToThread,
-	statusConnection,
 	roomType,
 }) {
 	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
@@ -89,10 +75,6 @@ export function shouldNotifyMobile({
 	}
 
 	if (mobilePushNotifications === 'nothing') {
-		return false;
-	}
-
-	if (!alwaysNotifyMobileBoolean && statusConnection === 'online') {
 		return false;
 	}
 
