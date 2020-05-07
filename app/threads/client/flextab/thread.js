@@ -89,6 +89,7 @@ Template.thread.helpers({
 			tmid,
 			onSend: (...args) => {
 				instance.sendToBottom();
+				instance.state.set('sendToChannel', false);
 				return instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args);
 			},
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
