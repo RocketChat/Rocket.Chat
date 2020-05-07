@@ -3,6 +3,7 @@ import React from 'react';
 
 import Page from '../../../components/basic/Page';
 import EditIncomingWebhookWithData from './EditIncomingWebhook';
+import EditOutgoingWebhookWithData from './EditOutgoingWebhook';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 
@@ -29,7 +30,7 @@ export default function NewIntegrationsPage({ ...props }) {
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
 			{[
-				// type === 'outgoing' && <EditOutgoingWebhook key='outgoing'/>,
+				type === 'outgoing' && <EditOutgoingWebhookWithData integrationId={integrationId} key='outgoing'/>,
 				type === 'incoming' && <EditIncomingWebhookWithData integrationId={integrationId} key='incoming'/>,
 			].filter(Boolean)}
 		</Page.ScrollableContentWithShadow>
