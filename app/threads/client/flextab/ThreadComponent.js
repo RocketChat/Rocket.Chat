@@ -43,7 +43,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 
 	useEffect(() => {
 		const tracker = Tracker.autorun(async () => {
-			const msg = ChatMessage.findOne({ _id: mid }, { fields: { replies: 1, rid: 1, mid: 1, u: 1, msg: 1 } }) || (await APIClient.v1.get('chat.getMessage', { msgId: mid })).message;
+			const msg = ChatMessage.findOne({ _id: mid }, { fields: { replies: 1, rid: 1, mid: 1, u: 1, msg: 1, ts: 1 } }) || (await APIClient.v1.get('chat.getMessage', { msgId: mid })).message;
 			if (!msg) {
 				return;
 			}
