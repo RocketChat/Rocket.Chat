@@ -95,9 +95,10 @@ const handleThemeColorChanged = ({ _id, value, editor }) => {
 	}
 };
 
-const handleThemeFontChanged = ({ value }) => {
+const handleThemeFontChanged = ({ _id, value }) => {
 	try {
-		variables.set('body-font-family', value);
+		const name = /^theme-font-(.*)$/.exec(_id)[1];
+		variables.set(name, value);
 	} finally {
 		updateCssVariables();
 	}
@@ -109,7 +110,7 @@ Meteor.startup(() => {
 		changed: handleThemeColorChanged,
 	});
 
-	settings.collection.find({ _id: 'theme-font-body-font-family' }, { fields: { value: 1 } }).observe({
+	settings.collection.find({ _id: /^theme-font-/i }, { fields: { value: 1 } }).observe({
 		added: handleThemeFontChanged,
 		changed: handleThemeFontChanged,
 	});
