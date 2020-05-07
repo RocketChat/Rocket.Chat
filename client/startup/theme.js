@@ -70,8 +70,6 @@ const updateCssVariables = _.debounce(async () => {
 		'}',
 		await compileLess(),
 	].join('\n');
-
-	window.cssVarPoly.init();
 }, 50);
 
 const handleThemeColorChanged = ({ _id, value, editor }) => {
