@@ -1,7 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { registerAdminRoute } from '../../ui-admin/client';
+import { registerAdminRoute } from '../../../client/admin';
 import { Apps } from './orchestrator';
 
 registerAdminRoute('/apps/what-is-it', {

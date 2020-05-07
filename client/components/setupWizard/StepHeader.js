@@ -8,7 +8,7 @@ export function StepHeader({ number, title }) {
 
 	return <Margins blockEnd='32'>
 		<Box is='header' className='SetupWizard__StepHeader'>
-			<Box is='p' textStyle='c1' textColor='hint'>
+			<Box is='p' fontScale='c1' color='hint'>
 				{t('Step')} {number}
 			</Box>
 			<Headline is='h2'>{title}</Headline>

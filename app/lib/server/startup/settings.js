@@ -1166,6 +1166,13 @@ settings.addGroup('Meta', function() {
 	});
 });
 
+settings.addGroup('Mobile', function() {
+	this.section('Screen_Lock', function() {
+		this.add('Force_Screen_Lock', false, { type: 'boolean', i18nDescription: 'Force_Screen_Lock_description', public: true });
+		this.add('Force_Screen_Lock_After', 1800, { type: 'int', i18nDescription: 'Force_Screen_Lock_After_description', enableQuery: { _id: 'Force_Screen_Lock', value: true }, public: true });
+	});
+});
+
 settings.addGroup('Push', function() {
 	this.add('Push_enable', true, {
 		type: 'boolean',
@@ -2756,7 +2763,7 @@ settings.addGroup('Setup_Wizard', function() {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
+		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(0), {
 			type: 'date',
 			hidden: true,
 			readonly: true,
