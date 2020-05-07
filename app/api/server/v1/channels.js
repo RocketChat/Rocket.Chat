@@ -7,6 +7,7 @@ import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/s
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { settings } from '../../../settings';
+import {check, Match} from "meteor/check";
 
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -1048,5 +1049,44 @@ API.v1.addRoute('channels.anonymousread', { authRequired: false }, {
 			offset,
 			total,
 		});
+	},
+});
+
+// 修改频道头像api
+API.v1.addRoute('channels.setRoomAvatar', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, Match.ObjectIncluding({
+			blob: Match.Maybe(String),
+			contentType: Match.Maybe(String),
+			service: Match.Maybe(String),
+		}));
+		// service :initials| upload | Url | rest
+
+		/*
+
+		{ service: 'initials', contentType: '', blob: '@我的频道' }
+		//上传base64图片.
+		{
+		  service: 'upload',
+		  contentType: 'image/png',
+		  blob: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAn4AAAIuCAYAAAAhXgWXAAAKDmlDQ1BJQ0M
+		 }
+
+		 {
+		  service: 'url',
+		  blob: 'http://cdn-icare.qingtime.cn/0.jpg?imageMogr2/auto-orient/thumbnail/50x50/format/jpg',
+		  contentType: ''
+		 }
+
+		 */
+
+		const findResult = findChannelByIdOrName({ params: this.bodyParams});
+
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'roomAvatar', this.bodyParams);
+		});
+
+		return API.v1.success();
 	},
 });

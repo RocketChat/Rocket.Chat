@@ -64,7 +64,7 @@ export function ChannelsTab() {
 	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
 		<Table.Cell>
 			<Box display='flex'>
-				<Avatar size='x40' title={fname || name} url={`%40${ fname || name }`} flexGrow={0} />
+				<Avatar size='x40' title={fname || name} url={`room/${ _id }`} flexGrow={0} />
 				<Box grow={1} mi='x8' style={style}>
 					<Box display='flex' alignItems='center'>
 						<Icon name={roomTypes.getIcon(room)} textColor='hint' /> <Box textStyle='p2' textColor='default' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
