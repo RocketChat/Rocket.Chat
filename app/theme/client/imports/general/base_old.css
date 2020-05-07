@@ -1246,7 +1246,7 @@ rc-old select,
 }
 
 .rc-old .new-room-highlight a {
-	animation: highlight 2s infinite;
+	animation: highlight 6s infinite;
 }
 
 .rc-old .fixed-title {
@@ -2649,7 +2649,7 @@ rc-old select,
 	}
 
 	&.highlight {
-		animation: highlight 3s;
+		animation: highlight 6s;
 	}
 
 	&:nth-child(1) {
@@ -4339,29 +4339,6 @@ rc-old select,
 	}
 }
 
-.rc-old .statistics-table {
-	width: 100%;
-	margin-bottom: 30px;
-
-	& th,
-	& td {
-		padding: 6px 8px;
-
-		text-align: left;
-		word-break: break-word;
-	}
-
-	& th {
-		width: 30%;
-
-		text-align: right;
-	}
-
-	& td {
-		width: 70%;
-	}
-}
-
 .rc-old .rocket-team {
 	display: block;
 
@@ -4702,30 +4679,6 @@ rc-old select,
 	color: #333333;
 	border-color: #cccccc;
 	background-color: #f8f8f8;
-}
-
-.rc-old .new-logs {
-	position: absolute;
-	bottom: 8px;
-	left: 50%;
-
-	width: 130px;
-	height: 30px;
-	margin: 0 -65px;
-
-	cursor: pointer;
-	transition: transform 0.3s ease-out;
-	transform: translateY(0);
-	text-align: center;
-
-	border-radius: 20px;
-
-	font-size: 0.8em;
-	line-height: 30px;
-
-	&.not {
-		transform: translateY(150%);
-	}
 }
 
 .rc-old .powered-by {
