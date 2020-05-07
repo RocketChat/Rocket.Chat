@@ -116,7 +116,7 @@
 	"dependencies": {
 		"@accounts/mongo": "0.0.12",
 		"@accounts/server": "0.0.18",
-		"@babel/runtime": "^7.7.6",
+		"@babel/runtime": "^7.9.6",
 		"@google-cloud/language": "^3.7.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^1.8.0",
@@ -149,6 +149,7 @@
 		"busboy": "^0.2.14",
 		"bytebuffer": "5.0.1",
 		"cas": "https://github.com/kcbanner/node-cas/tarball/fcd27dad333223b3b75a048bce27973fb3ca0f62",
+		"change-case": "^4.1.1",
 		"chart.js": "^2.7.3",
 		"clipboard": "^2.0.4",
 		"codemirror": "^5.42.0",
