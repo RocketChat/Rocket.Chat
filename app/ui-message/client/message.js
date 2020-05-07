@@ -123,6 +123,14 @@ Template.message.helpers({
 			return msg.avatar.replace(/^@/, '');
 		}
 	},
+	customAvatarUsername() {
+		const { msg } = this;
+
+		if (msg.alias && msg.u && msg.u.name) {
+			return msg.u.name;
+		}
+		return msg.u.username;
+	},
 	getName() {
 		const { msg, settings } = this;
 		if (msg.alias) {
