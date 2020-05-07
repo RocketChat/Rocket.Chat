@@ -12,6 +12,10 @@ import { timeAgo } from '../../lib/client/lib/formatDate';
 import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 
 Template.sidebarItem.helpers({
+	alt() {
+		const { name } = this;
+		return t('Avatar_of', { name });
+	},
 	streaming() {
 		return this.streamingOptions && Object.keys(this.streamingOptions).length;
 	},

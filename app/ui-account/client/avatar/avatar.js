@@ -37,6 +37,6 @@ Template.avatar.helpers({
 	},
 
 	alt() {
-		return getUsername(this);
+		return Template.instance().data.alt || getUsername(this);
 	},
 });

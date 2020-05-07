@@ -1202,7 +1202,8 @@ Template.room.onRendered(function() {
 
 	template.isAtBottom = function(scrollThreshold = 0) {
 		if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
-			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
+			newMessage.className = 'new-message background-primary-action-color color-content-background-color';
+			newMessage.classList.add('new-message--hidden');
 			return true;
 		}
 		return false;
@@ -1210,7 +1211,8 @@ Template.room.onRendered(function() {
 
 	template.sendToBottom = function() {
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
-		newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
+		newMessage.className = 'new-message background-primary-action-color color-content-background-color';
+		newMessage.classList.add('new-message--hidden');
 	};
 
 	template.checkIfScrollIsAtBottom = function() {
@@ -1369,7 +1371,7 @@ Template.room.onRendered(function() {
 		}
 
 		if (!template.isAtBottom()) {
-			newMessage.classList.remove('not');
+			newMessage.classList.remove('new-message--hidden');
 		}
 	});
 

@@ -49,6 +49,10 @@
 		&-icon {
 			font-size: 1rem;
 			fill: currentColor;
+
+			&:focus {
+				border: 1px solid var(--sidebar-item-text-color);
+			}
 		}
 	}
 
@@ -67,6 +71,10 @@
 			color: var(--message-box-user-typing-user-color);
 
 			font-weight: bold;
+		}
+
+		&:focus {
+			border: 1px solid var(--sidebar-item-text-color);
 		}
 
 		&::after {
@@ -136,6 +144,10 @@
 		cursor: pointer;
 		align-items: center;
 		justify-content: center;
+
+		&:focus {
+			border: 1px solid var(--sidebar-item-text-color);
+		}
 
 		& .rc-input__icon-svg {
 			font-size: 1.4rem;

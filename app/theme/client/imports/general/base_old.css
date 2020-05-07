@@ -151,6 +151,21 @@
 	justify-content: center;
 }
 
+.visually-hidden {
+	position: absolute;
+
+	overflow: hidden;
+
+	clip: rect(1px 1px 1px 1px);
+	clip: rect(1px, 1px, 1px, 1px);
+
+	width: 1px;
+
+	height: 1px;
+
+	white-space: nowrap;
+}
+
 .connection-status > .alert {
 	position: absolute;
 	z-index: 1000000;
@@ -2496,6 +2511,7 @@ rc-old select,
 .messages-box {
 	position: relative;
 
+	display: flex;
 	overflow: hidden;
 	flex-grow: 1;
 
@@ -2543,7 +2559,7 @@ rc-old select,
 		font-size: 0.8em;
 		line-height: 30px;
 
-		&.not {
+		&--hidden {
 			transform: translateY(150%);
 		}
 	}

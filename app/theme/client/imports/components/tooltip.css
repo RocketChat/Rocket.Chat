@@ -17,6 +17,10 @@
 		opacity: 0;
 	}
 
+	&:focus {
+		border: 1px solid var(--sidebar-item-text-color);
+	}
+
 	&::after {
 
 		bottom: 100%;

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
@@ -18,7 +19,8 @@ Template.sideNav.helpers({
 	},
 
 	footer() {
-		return String(settings.get('Layout_Sidenav_Footer')).trim();
+		return String(settings.get('Layout_Sidenav_Footer')).trim().replace('$Back_home', TAPi18n.__('Back_to_home'),
+		);
 	},
 
 	roomType() {

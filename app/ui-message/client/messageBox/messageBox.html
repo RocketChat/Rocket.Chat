@@ -20,21 +20,21 @@
 				{{/if}}
 
 				<label class="rc-message-box__container">
-					<span class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnabled}}emoji-picker-icon--disabled{{/unless}} js-emoji-picker" aria-haspopup="true">
+					<span class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnabled}}emoji-picker-icon--disabled{{/unless}} js-emoji-picker" aria-haspopup="true" tabindex="0" aria-label="Emoji Picker">
 						{{> icon block="rc-input__icon-svg" icon="emoji"}}
 					</span>
-					<textarea aria-label="{{_ 'Message'}}" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message"></textarea>
+					<textarea aria-label="{{_ 'Message'}}" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message" tabindex="0"></textarea>
 					<div class="js-input-message-shadow"></div>
 					{{#if isSendIconVisible}}
-						<span class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
+						<span class="rc-message-box__icon rc-message-box__send js-send" data-desktop tabindex="0" aria-label="Send message">
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</span>
 					{{else}}
 						{{#if canSend}}
 							{{> messageBoxAudioMessage rid=rid tmid=tmid}}
-							<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true">
-								{{#if actions}}
-									<span class="rc-message-box__icon">
+							<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true" aria-label="Insert">
+								{{#if actions}} 
+									<span class="rc-message-box__icon" tabindex="0">
 										{{> icon block="rc-input__icon-svg" icon="plus"}}
 									</span>
 								{{/if}}
@@ -63,7 +63,7 @@
 					<div class="rc-message-box__toolbar-formatting">
 						{{#each formattingButton in formattingButtons}}
 							{{#if formattingButton.icon}}
-								<button class="rc-message-box__toolbar-formatting-item rc-tooltip js-format" data-id="{{formattingButton.label}}" aria-label="{{_ formattingButton.label}}">
+								<button class="rc-message-box__toolbar-formatting-item rc-tooltip js-format" data-id="{{formattingButton.label}}" aria-label="{{_ formattingButton.label}}" aria-pressed="false"> <!-- aria-pressed = true  voiceOver lê 'bold, selected, toggle button' / aria-pressed = true deve ter o mesmo estilo-->
 									{{> icon block="rc-message-box__toolbar-formatting-icon" icon=formattingButton.icon }}
 								</button>
 							{{else}}
