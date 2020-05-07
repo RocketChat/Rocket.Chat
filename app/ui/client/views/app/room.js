@@ -838,7 +838,9 @@ Template.room.events({
 
 	'click .new-message'(event, instance) {
 		instance.atBottom = true;
-		chatMessages[RoomManager.openedRoom].input.focus();
+		if (!isMobile()) {
+			chatMessages[RoomManager.openedRoom].input.focus();
+		}
 	},
 	'click .message-actions__menu'(e, i) {
 		const messageContext = messageArgs(this);

@@ -6,7 +6,7 @@ import { CachedCollection } from '../../../ui-cached-collection';
 import { CachedChatSubscription } from './CachedChatSubscription';
 import { ChatSubscription } from './ChatSubscription';
 import { getConfig } from '../../../ui-utils/client/config';
-import { cleanMessagesAtStartup } from '../../../utils';
+import { cleanMessagesAtStartup, triggerOfflineMsgs } from '../../../utils';
 import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
@@ -17,14 +17,18 @@ export const ChatMessage = CachedChatMessage.collection;
 
 let timeout;
 
+ChatMessage.find().observe({
+	added: CachedChatMessage.save,
+	changed: CachedChatMessage.save,
+	removed: CachedChatMessage.save,
+});
+
 ChatMessage.setReactions = function(messageId, reactions, tempActions) {
-	this.update({ _id: messageId }, { $set: { temp: true, tempActions, reactions } });
-	return CachedChatMessage.save();
+	return this.update({ _id: messageId }, { $set: { temp: true, tempActions, reactions } });
 };
 
 ChatMessage.unsetReactions = function(messageId, tempActions) {
-	this.update({ _id: messageId }, { $unset: { reactions: 1 }, $set: { temp: true, tempActions } });
-	return CachedChatMessage.save();
+	return this.update({ _id: messageId }, { $unset: { reactions: 1 }, $set: { temp: true, tempActions } });
 };
 
 ChatMessage.setProgress = function(messageId, upload) {
@@ -90,14 +94,18 @@ function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
 
 const messagePreFetch = () => {
 	let messagesFetched = false;
+	if (Meteor.status().status !== 'connected') {
+		clearTimeout(timeout);
+		timeout = setTimeout(cleanMessagesAtStartup, 3000);
+	}
 	Tracker.autorun(() => {
 		if (!messagesFetched && CachedChatSubscription.ready.get()) {
 			const status = Meteor.status();
 			if (status.status !== 'connected') {
-				clearTimeout(timeout);
-				timeout = setTimeout(cleanMessagesAtStartup, 3000);
 				return;
 			}
+			clearTimeout(timeout);
+			triggerOfflineMsgs();
 			messagesFetched = true;
 			const subscriptions = ChatSubscription.find(
 				{
@@ -125,8 +133,6 @@ const messagePreFetch = () => {
 					});
 				});
 			});
-			clearTimeout(timeout);
-			cleanMessagesAtStartup(false);
 		}
 	});
 };
