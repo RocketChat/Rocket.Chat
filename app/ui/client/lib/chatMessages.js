@@ -127,7 +127,9 @@ export class ChatMessages {
 	}
 
 	clearCurrentDraft() {
+		const hasValue = this.records[this.editing.id];
 		delete this.records[this.editing.id];
+		return !!hasValue;
 	}
 
 	resetToDraft(id) {
@@ -510,13 +512,15 @@ export class ChatMessages {
 		const { currentTarget: input, which: keyCode } = event;
 
 		if (keyCode === keyCodes.ESCAPE && this.editing.element) {
+			event.preventDefault();
+			event.stopPropagation();
+
 			if (!this.resetToDraft(this.editing.id)) {
 				this.clearCurrentDraft();
 				this.clearEditing();
+				return true;
 			}
 
-			event.preventDefault();
-			event.stopPropagation();
 			return;
 		}
 

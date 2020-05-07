@@ -5,9 +5,10 @@ import { Template } from 'meteor/templating';
 import { HTML } from 'meteor/htmljs';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { chatMessages, ChatMessages } from '../../../ui';
-import { normalizeThreadMessage, call } from '../../../ui-utils/client';
+import { normalizeThreadMessage, call, keyCodes } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
@@ -93,7 +94,17 @@ Template.thread.helpers({
 				return instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args);
 			},
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
-			onKeyDown: (...args) => instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args),
+			onKeyDown: (...args) => {
+				const result = instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args);
+				const [event] = args;
+
+				const { which: keyCode } = event;
+
+				if (keyCode === keyCodes.ESCAPE && !result && !event.target.value.trim()) {
+					const { route: { name }, params: { context, tab, ...params } } = FlowRouter.current();
+					FlowRouter.go(name, params);
+				}
+			},
 		};
 	},
 	hideUsername() {
