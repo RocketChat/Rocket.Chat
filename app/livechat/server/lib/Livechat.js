@@ -31,7 +31,7 @@ import {
 	LivechatInquiry,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { addUserRoles, hasRole, removeUserFromRoles } from '../../../authorization';
+import { addUserRoles, hasPermission, hasRole, removeUserFromRoles } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -412,8 +412,10 @@ export const Livechat = {
 			}
 		}
 
-		if (customField.scope === 'room') {
-			return LivechatRooms.updateDataByToken(token, key, value, overwrite);
+		if (!hasPermission()) {
+			if (customField.scope === 'room') {
+				return LivechatRooms.updateDataByToken(token, key, value, overwrite);
+			}
 		}
 		return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 	},
@@ -461,25 +463,27 @@ export const Livechat = {
 		return rcSettings;
 	},
 
-	saveRoomInfo(roomData, guestData) {
+	saveRoomInfo(roomData, guestData, userId) {
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		const fields = LivechatCustomField.find({ scope: 'room' });
-		fields.forEach((field) => {
-			if (!livechatData.hasOwnProperty(field._id)) {
-				return;
-			}
-			const value = s.trim(livechatData[field._id]);
-			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
-				const regexp = new RegExp(field.regexp);
-				if (!regexp.test(value)) {
-					throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+		if (userId && hasPermission(userId, 'edit-livechat-room-customfields')) {
+			const fields = LivechatCustomField.find({ scope: 'room' });
+			fields.forEach((field) => {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					return;
 				}
-			}
-			customFields[field._id] = value;
-		});
-		roomData.livechatData = customFields;
+				const value = s.trim(livechatData[field._id]);
+				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+					const regexp = new RegExp(field.regexp);
+					if (!regexp.test(value)) {
+						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+					}
+				}
+				customFields[field._id] = value;
+			});
+			roomData.livechatData = customFields;
+		}
 
 		if (!LivechatRooms.saveRoomById(roomData)) {
 			return false;
