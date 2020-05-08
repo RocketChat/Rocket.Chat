@@ -3654,6 +3654,8 @@
   "view-l-room": "View Omnichannel Rooms",
   "view-l-room_description": "Permission to view Omnichannel rooms",
   "view-livechat-analytics": "View Omnichannel Analytics",
+  "view-livechat-closed-room-by-another-agent": "View Omnichannel Closed Rooms by another agent",
+  "view-livechat-closed-room-same-department": "View Omnichannel Closed Rooms from the same department",
   "view-livechat-departments": "View Omnichannel Departments",
   "view-livechat-manager": "View Omnichannel Manager",
   "view-livechat-manager_description": "Permission to view other Omnichannel managers",
