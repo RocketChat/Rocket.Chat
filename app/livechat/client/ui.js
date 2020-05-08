@@ -5,7 +5,7 @@ import { hasAllPermission } from '../../authorization';
 import { AccountBox, TabBar, MessageTypes } from '../../ui-utils';
 
 Tracker.autorun((c) => {
-	// import livechat tabbar templates right away if livechat enabled
+	// import omnichannel tabbar templates right away if omnichannel enabled
 	if (!settings.get('Livechat_enabled')) {
 		return;
 	}
@@ -14,8 +14,8 @@ Tracker.autorun((c) => {
 });
 
 AccountBox.addItem({
-	name: 'Livechat',
-	icon: 'livechat',
+	name: 'Omnichannel',
+	icon: 'omnichannel',
 	href: 'livechat-current-chats',
 	sideNav: 'livechatFlex',
 	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
@@ -34,7 +34,7 @@ TabBar.addButton({
 	groups: ['live'],
 	id: 'visitor-history',
 	i18nTitle: 'Past_Chats',
-	icon: 'chat',
+	icon: 'clock',
 	template: 'visitorHistory',
 	order: 11,
 });
@@ -44,15 +44,6 @@ TabBar.addGroup('starred-messages', ['live']);
 TabBar.addGroup('uploaded-files-list', ['live']);
 TabBar.addGroup('push-notifications', ['live']);
 TabBar.addGroup('video', ['live']);
-
-TabBar.addButton({
-	groups: ['live'],
-	id: 'external-search',
-	i18nTitle: 'Knowledge_Base',
-	icon: 'book',
-	template: 'externalSearch',
-	order: 10,
-});
 
 MessageTypes.registerType({
 	id: 'livechat-close',

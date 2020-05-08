@@ -1,5 +1,4 @@
-import './styles.css';
-import './Blocks.js';
-import './ModalBlock';
-import './TextBlock';
-import './ButtonElement.html';
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
+
+createTemplateForComponent('ModalBlock', () => import('./ModalBlock'));
+createTemplateForComponent('Blocks', () => import('./MessageBlock'));
