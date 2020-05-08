@@ -1,14 +1,14 @@
 import { Subscriptions as SubscriptionsRaw } from '../../../models/server/raw';
-import { Subscriptions } from '../../../models';
 
 export class AppRoomSubscriptionBridge {
 	constructor(orch) {
 		this.orch = orch;
+		this.testingIt();
 	}
 
 	async testingIt() {
 		console.log('awaited inside of for loop');
-		for (const thing of await this.getByRoomId('GENERAL', 'fake3')) {
+		for await (const thing of await this.getByRoomId('GENERAL', 'fake3')) {
 			console.log('thing', thing);
 		}
 	}
@@ -19,14 +19,14 @@ export class AppRoomSubscriptionBridge {
 		const totalCount = await SubscriptionsRaw.countByRoomId(roomId);
 
 		return {
-			[Symbol.iterator]: function getSubscriptionsByRoomIdIterator() {
+			[Symbol.asyncIterator]: function getSubscriptionsByRoomIdIterator() {
 				let exhausted = false;
 				let currentIndex = 0;
 
 				console.log('inside of the iterator function with a count of:', totalCount);
 
 				return {
-					next() {
+					async next() {
 						console.log('inside the iterator\'s next() function');
 						// currentIndex will always be 0 based whereas count is always 1 based.
 						// so we check if it is equal to or greater than the total count
@@ -41,12 +41,9 @@ export class AppRoomSubscriptionBridge {
 						// We skip the current index because if it is the first time, then we skip zero
 						// if it is the second time then we skip one, and so on and so forth
 						const options = { limit: 1, sort: { ts: 1 }, skip: currentIndex };
+						const result = await SubscriptionsRaw.findByRoomId(roomId, options).toArray();
 
-						console.log('running the query');
-						const result = Subscriptions.findByRoomId(roomId, options).fetch();
-
-						console.log('got the result', result);
-						if (!result || result.length !== 1) {
+						if (result.length !== 1) {
 							return {
 								value: undefined,
 								done: true,
@@ -59,15 +56,14 @@ export class AppRoomSubscriptionBridge {
 							done: false,
 						};
 					},
-					throw(e) {
+					async throw(e) {
 						console.log('oops something is wrong');
 						throw e;
 					},
-					return() {
+					async return() {
 						exhausted = true;
 						console.log('I have been released !!!');
 						return {
-							value: undefined,
 							done: true,
 						};
 					},
@@ -82,15 +78,16 @@ export class AppRoomSubscriptionBridge {
 		const totalCount = await SubscriptionsRaw.countByUserId(userId);
 
 		return {
-			[Symbol.iterator]: function getSubscriptionsByUserIdIterator() {
+			[Symbol.asyncIterator]: function getSubscriptionsByUserIdIterator() {
+				let exhausted = false;
 				let currentIndex = 0;
 
 				return {
-					next() {
+					async next() {
 						// currentIndex will always be 0 based whereas count is always 1 based.
 						// so we check if it is equal to or greater than the total count
 						// and if so, then we are done with this iteration
-						if (currentIndex >= totalCount) {
+						if (currentIndex >= totalCount || exhausted) {
 							return {
 								value: undefined,
 								done: true,
@@ -100,7 +97,7 @@ export class AppRoomSubscriptionBridge {
 						// We skip the current index because if it is the first time, then we skip zero
 						// if it is the second time then we skip one, and so on and so forth
 						const options = { limit: 1, sort: { ts: 1 }, skip: currentIndex };
-						const result = Subscriptions.findByUserId(userId, options).fetch();
+						const result = await SubscriptionsRaw.findByUserId(userId, options).toArray();
 
 						// We only expect one result, so let's error on the safe side if another count comes back
 						if (result.length !== 1) {
@@ -114,6 +111,18 @@ export class AppRoomSubscriptionBridge {
 						return {
 							value: orcha.getConverters().get('roomSubscriptions').convertSubscriptionToApp(result[0]),
 							done: false,
+						};
+					},
+					async throw(e) {
+						console.log('oops something is wrong');
+						throw e;
+					},
+					async return() {
+						exhausted = true;
+						console.log('I have been released !!!');
+						return {
+							value: undefined,
+							done: true,
 						};
 					},
 				};
