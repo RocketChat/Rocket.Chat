@@ -27,11 +27,7 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 		}
 		options.processEnvValue = value;
 		options.valueSource = 'processEnvValue';
-	} else if (typeof Meteor.settings[_id] !== 'undefined') {
-		if (Meteor.settings[_id] == null) {
-			return false;
-		}
-
+	} else if (Meteor.settings[_id] != null && Meteor.settings[_id] !== value) {
 		value = Meteor.settings[_id];
 		options.meteorSettingsValue = value;
 		options.valueSource = 'meteorSettingsValue';
@@ -291,7 +287,7 @@ class Settings extends SettingsBase {
 	/*
 	* Update a setting by id
 	*/
-	updateById(_id: string, value: SettingValue, editor: string): boolean {
+	updateById(_id: string, value: SettingValue, editor?: string): boolean {
 		if (!_id || value == null) {
 			return false;
 		}
