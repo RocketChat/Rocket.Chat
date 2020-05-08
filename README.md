@@ -23,7 +23,6 @@
    * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
    * [Yunohost.org](#yunohostorg)
-   * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio)
@@ -126,12 +125,6 @@ Painless SSL. Automatically scale your server cluster based on usage demand.
 Host your own Rocket.Chat server in a few seconds.
 
 [![Install RocketChat with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=rocketchat)
-
-## DPlatform
-
-The easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS.
-
-[![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/images/logo.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
 ## IndieHosters
 Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
