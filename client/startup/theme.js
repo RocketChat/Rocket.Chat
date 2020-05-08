@@ -26,9 +26,6 @@ const lessExpressions = new Map([
 	['transparent-light', 'rgba(255, 255, 255, 0.1)'],
 	['transparent-lighter', 'rgba(255, 255, 255, 0.3)'],
 	['transparent-lightest', 'rgba(255, 255, 255, 0.6)'],
-	['content-disabled-background-color', 'mix(contrast(@content-background-color), @content-background-color, 10%)'],
-	['content-disabled-foreground-color', 'mix(@primary-font-color, @content-background-color, 75%)'],
-	['content-disabled-highlight-color', 'mix(contrast(@content-background-color), @content-background-color, 20%)'],
 ]);
 
 const less = createLess(window, {});

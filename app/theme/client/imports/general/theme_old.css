@@ -200,29 +200,29 @@ select,
 textarea {
 	color: var(--primary-font-color);
 	border-style: solid;
-	border-color: var(--content-disabled-background-color);
+	border-color: var(--input-border-color);
 	background-color: transparent;
 
 	&::placeholder {
-		color: var(--content-disabled-foreground-color);
+		color: var(--input-placeholder-color);
 	}
 
 	&[disabled] {
-		background-color: var(--content-disabled-background-color);
+		background-color: var(--button-disabled-background);
 	}
 }
 
 .disabled label,
 [disabled] label {
-	color: var(--content-disabled-foreground-color);
+	color: var(--input-placeholder-color);
 }
 
 .-autocomplete-container {
-	background-color: var(--content-disabled-background-color);
+	background-color: var(--popup-list-background);
 }
 
 .-autocomplete-item.selected {
-	background-color: var(--content-disabled-highlight-color);
+	background-color: var(--popup-list-selected-background);
 }
 
 .rc-old input[type="button"],
