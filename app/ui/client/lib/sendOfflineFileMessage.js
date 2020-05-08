@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import toastr from 'toastr';
 
-import { ChatMessage, CachedChatMessage } from '../../../models';
+import { ChatMessage } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises/client';
@@ -98,7 +98,6 @@ export const sendOfflineFileMessage = (roomId, msgData, file, meta, callback) =>
 		message = callbacks.run('beforeSaveMessage', message);
 		promises.run('onClientMessageReceived', message).then(function(message) {
 			ChatMessage.insert(message);
-			CachedChatMessage.save();
 			return callbacks.run('afterSaveMessage', message);
 		});
 	});
