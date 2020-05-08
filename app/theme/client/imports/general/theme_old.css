@@ -1,7 +1,3 @@
-.global-font-family {
-	font-family: var(--body-font-family);
-}
-
 .content-background-color {
 	background-color: var(--content-background-color);
 }
