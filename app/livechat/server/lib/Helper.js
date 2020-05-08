@@ -227,6 +227,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
 	}
 
+	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
 	return true;
 };
 

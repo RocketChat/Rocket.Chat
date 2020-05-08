@@ -9,7 +9,7 @@ export function Growth({ children, ...props }) {
 		return null;
 	}
 
-	return <Box is='span' textColor={children < 0 ? 'danger' : 'success'} {...props}>
+	return <Box is='span' color={children < 0 ? 'danger' : 'success'} {...props}>
 		{children < 0 ? <NegativeGrowthSymbol /> : <PositiveGrowthSymbol />}
 		{String(Math.abs(children))}
 	</Box>;
