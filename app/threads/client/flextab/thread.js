@@ -79,9 +79,9 @@ Template.thread.helpers({
 		const instance = Template.instance();
 		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
 
-		const { replies } = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
+		const thread = Messages.findOne({ _id: tmid }, { fields: { replies: 1 } });
 
-		const following = replies.includes(Meteor.userId());
+		const following = thread?.replies?.includes(Meteor.userId());
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		return {
