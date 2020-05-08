@@ -2,10 +2,6 @@ import { settings } from '../../../../app/settings';
 import { getLdapRolesByUsername, getRocketChatRolesByLdapRoles, updateUserUsingMappedLdapRoles } from './ldapEnterprise';
 
 export const onLdapLogin = ({ user, ldapUser, ldap }) => {
-	if (!settings.get('LDAP_Enable_LDAP_Roles_To_RC_Roles')) {
-		return;
-	}
-
 	const validateLdapRolesForEachLogin = settings.get('LDAP_Validate_Roles_For_Each_Login');
 	const userExists = user._id;
 	const userId = userExists ? user._id : user.userId;
