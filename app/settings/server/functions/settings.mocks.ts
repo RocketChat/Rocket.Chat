@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import mock from 'mock-require';
 
 type Dictionary = {
@@ -24,7 +25,24 @@ class SettingsClass {
 
 		// console.log(query, data);
 		this.data.set(query._id, data);
+		Meteor.settings[query._id] = data.value;
+
+		// Can't import before the mock command on end of this file!
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const { settings } = require('./settings');
+		settings.load(query._id, data.value, !existent);
+
 		this.upsertCalls++;
+	}
+
+	updateValueById(id: string, value: any): void {
+		this.data.set(id, { ...this.data.get(id), value });
+
+		// Can't import before the mock command on end of this file!
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const { settings } = require('./settings');
+		Meteor.settings[id] = value;
+		settings.load(id, value, false);
 	}
 }
 

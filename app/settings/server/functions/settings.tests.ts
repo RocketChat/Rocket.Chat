@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-env mocha */
 import { Meteor } from 'meteor/meteor';
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
+import spies from 'chai-spies';
 
 import { Settings } from './settings.mocks';
 import { settings } from './settings';
+
+chai.use(spies);
 
 describe('Settings', () => {
 	beforeEach(() => {
@@ -70,7 +73,7 @@ describe('Settings', () => {
 		expect(Settings.findOne({ _id: 'my_setting2' }).value).to.be.equal(false);
 	});
 
-	it('should respect override via environment', () => {
+	it('should respect override via environment as int', () => {
 		process.env.OVERWRITE_SETTING_my_setting = '1';
 
 		settings.addGroup('group', function() {
@@ -120,6 +123,111 @@ describe('Settings', () => {
 		expect(Settings.data.size).to.be.equal(2);
 		expect(Settings.upsertCalls).to.be.equal(3);
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+	});
+
+	it('should respect override via environment as boolean', () => {
+		process.env.OVERWRITE_SETTING_my_setting_bool = 'true';
+
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('my_setting_bool', false, {
+					type: 'boolean',
+					sorter: 0,
+				});
+			});
+		});
+
+		const expectedSetting = {
+			value: true,
+			processEnvValue: true,
+			valueSource: 'processEnvValue',
+			type: 'boolean',
+			sorter: 0,
+			group: 'group',
+			section: 'section',
+			packageValue: false,
+			hidden: false,
+			blocked: false,
+			secret: false,
+			i18nLabel: 'my_setting_bool',
+			i18nDescription: 'my_setting_bool_Description',
+			autocomplete: true,
+		};
+
+		expect(Settings.data.size).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.findOne({ _id: 'my_setting_bool' })).to.include(expectedSetting);
+
+		process.env.OVERWRITE_SETTING_my_setting_bool = 'false';
+
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('my_setting_bool', false, {
+					type: 'boolean',
+					sorter: 0,
+				});
+			});
+		});
+
+		expectedSetting.value = false;
+		expectedSetting.processEnvValue = false;
+
+		expect(Settings.data.size).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(3);
+		expect(Settings.findOne({ _id: 'my_setting_bool' })).to.include(expectedSetting);
+	});
+
+	it('should respect override via environment as string', () => {
+		process.env.OVERWRITE_SETTING_my_setting_str = 'hey';
+
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('my_setting_str', '', {
+					type: 'string',
+					sorter: 0,
+				});
+			});
+		});
+
+		const expectedSetting = {
+			value: 'hey',
+			processEnvValue: 'hey',
+			valueSource: 'processEnvValue',
+			type: 'string',
+			sorter: 0,
+			group: 'group',
+			section: 'section',
+			packageValue: '',
+			hidden: false,
+			blocked: false,
+			secret: false,
+			i18nLabel: 'my_setting_str',
+			i18nDescription: 'my_setting_str_Description',
+			autocomplete: true,
+		};
+
+		expect(Settings.data.size).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.findOne({ _id: 'my_setting_str' })).to.include(expectedSetting);
+
+		process.env.OVERWRITE_SETTING_my_setting_str = 'hey ho';
+
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('my_setting_str', 'hey', {
+					type: 'string',
+					sorter: 0,
+				});
+			});
+		});
+
+		expectedSetting.value = 'hey ho';
+		expectedSetting.processEnvValue = 'hey ho';
+		expectedSetting.packageValue = 'hey';
+
+		expect(Settings.data.size).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(3);
+		expect(Settings.findOne({ _id: 'my_setting_str' })).to.include(expectedSetting);
 	});
 
 	it('should respect initial value via environment', () => {
@@ -254,20 +362,21 @@ describe('Settings', () => {
 		expect(Settings.upsertCalls).to.be.equal(2);
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
 
-		settings.addGroup('group', function() {
-			this.section('section', function() {
-				this.add('my_setting', 1, {
-					type: 'int',
-					sorter: 0,
-				});
-			});
-		});
+		// Can't reset setting because the Meteor.setting will have the first value and will act to enforce his value
+		// settings.addGroup('group', function() {
+		// 	this.section('section', function() {
+		// 		this.add('my_setting', 1, {
+		// 			type: 'int',
+		// 			sorter: 0,
+		// 		});
+		// 	});
+		// });
 
-		expectedSetting.packageValue = 1;
+		// expectedSetting.packageValue = 1;
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(3);
-		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+		// expect(Settings.data.size).to.be.equal(2);
+		// expect(Settings.upsertCalls).to.be.equal(3);
+		// expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
 	});
 
 	it('should change group and section', () => {
@@ -315,5 +424,42 @@ describe('Settings', () => {
 		expect(Settings.data.size).to.be.equal(3);
 		expect(Settings.upsertCalls).to.be.equal(4);
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+	});
+
+	it('should call `settings.get` callback on setting added', () => {
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('setting_callback', 'value1', {
+					type: 'string',
+				});
+			});
+		});
+
+		const spy = chai.spy();
+		settings.get('setting_callback', spy);
+		settings.get(/setting_callback/, spy);
+
+		expect(spy).to.have.been.called.exactly(2);
+		expect(spy).to.have.been.called.always.with('setting_callback', 'value1');
+	});
+
+	it('should call `settings.get` callback on setting changed', () => {
+		const spy = chai.spy();
+		settings.get('setting_callback', spy);
+		settings.get(/setting_callback/, spy);
+
+		settings.addGroup('group', function() {
+			this.section('section', function() {
+				this.add('setting_callback', 'value2', {
+					type: 'string',
+				});
+			});
+		});
+
+		settings.updateById('setting_callback', 'value3');
+
+		expect(spy).to.have.been.called.exactly(4);
+		expect(spy).to.have.been.called.with('setting_callback', 'value2');
+		expect(spy).to.have.been.called.with('setting_callback', 'value3');
 	});
 });
