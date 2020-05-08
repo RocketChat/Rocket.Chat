@@ -177,7 +177,7 @@
 		"image-size": "^0.6.3",
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.0.2",
-		"jquery": "^3.3.1",
+		"jquery": "^3.5.0",
 		"jschardet": "^1.6.0",
 		"jsrsasign": "^8.0.12",
 		"juice": "^5.2.0",
