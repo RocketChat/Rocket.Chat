@@ -450,8 +450,7 @@ i.status-online {
 .account-box .status-online .thumb::after,
 .account-box .status.online::after,
 .popup-user-status-online,
-.status-online::after,
-.user-image.status-online .avatar::after {
+.status-online::after {
 	border-color: var(--status-online-darken-10);
 	background-color: var(--status-online);
 }
@@ -473,8 +472,7 @@ i.status-away {
 .account-box .status.away::after,
 .popup-user-status-away,
 .status-away::after,
-.status-pending::after,
-.user-image.status-away .avatar::after {
+.status-pending::after {
 	border-color: var(--status-away-darken-10);
 	background-color: var(--status-away);
 }
@@ -490,8 +488,7 @@ i.status-busy {
 .account-box .status-busy .thumb::after,
 .account-box .status.busy::after,
 .popup-user-status-busy,
-.status-busy::after,
-.user-image.status-busy .avatar::after {
+.status-busy::after {
 	border-color: var(--status-busy-darken-10);
 	background-color: var(--status-busy);
 }
@@ -505,8 +502,7 @@ i.status-offline {
 }
 
 .popup-user-status-offline,
-.status-offline::after,
-.user-image.status-offline .avatar::after {
+.status-offline::after {
 	border-color: var(--status-offline-darken-10);
 	background-color: var(--status-offline);
 }

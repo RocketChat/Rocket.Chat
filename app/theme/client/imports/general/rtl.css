@@ -215,24 +215,6 @@
 		}
 	}
 
-	& .user-image .avatar::after {
-		right: -12px;
-		left: auto;
-	}
-
-	& .lines .user-image {
-		& button > div {
-			float: right;
-		}
-
-		& p {
-			float: right;
-
-			padding-right: 10px;
-			padding-left: auto;
-		}
-	}
-
 	& .user-view {
 		& nav {
 			margin-right: -4px;
@@ -416,13 +398,6 @@
 	& .page-list .list {
 		& a .info ul {
 			margin-right: 3px;
-			margin-left: auto;
-		}
-
-		& .user-image {
-			float: left;
-
-			margin-right: 12px;
 			margin-left: auto;
 		}
 

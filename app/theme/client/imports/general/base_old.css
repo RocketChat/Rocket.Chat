@@ -1559,12 +1559,6 @@
 				margin-bottom: 5px;
 			}
 		}
-
-		& .user-image {
-			float: right;
-
-			margin-left: 12px;
-		}
 	}
 }
 
@@ -3202,108 +3196,6 @@
 		& > span {
 			padding: 0 1em;
 		}
-	}
-}
-
-.rc-old .user-image {
-	position: relative;
-
-	display: inline-block;
-
-	width: var(--user-image-square);
-	height: var(--user-image-square);
-	margin: 4px;
-
-	cursor: pointer;
-
-	font-size: 12px;
-
-	&:hover,
-	&.selected .avatar::after {
-		transform: scaleX(1);
-	}
-
-	& .avatar {
-		overflow: visible;
-
-		&::before {
-			font-size: 10px;
-		}
-
-		&::after {
-			position: absolute;
-			z-index: 1;
-			top: 8px;
-			left: -12px;
-
-			width: 6px;
-			height: 6px;
-
-			content: " ";
-
-			border-radius: 3px;
-		}
-	}
-
-	& p {
-		display: none;
-	}
-
-	& button {
-		display: block;
-
-		width: 100%;
-		height: 100%;
-	}
-}
-
-.rc-old .lines .user-image {
-	width: 100%;
-	margin: 0;
-
-	&::after {
-		display: none;
-	}
-
-	& button {
-		display: block;
-		clear: both;
-
-		height: 30px;
-		padding: 5px 0;
-
-		&::after {
-			display: table;
-			clear: both;
-
-			content: "";
-		}
-
-		& > div {
-			float: left;
-
-			width: var(--user-image-square);
-			height: var(--user-image-square);
-
-			margin-left: 1rem;
-		}
-	}
-
-	& p {
-		position: relative;
-
-		display: block;
-		float: left;
-		overflow: hidden;
-
-		width: calc(100% - 45px);
-		padding-left: 10px;
-
-		text-overflow: ellipsis;
-
-		font-size: 15px;
-		font-weight: 400;
-		line-height: var(--user-image-square);
 	}
 }
 
