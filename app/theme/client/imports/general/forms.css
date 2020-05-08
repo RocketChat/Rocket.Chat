@@ -197,7 +197,7 @@
 .rc-button-group {
 	display: flex;
 
-	margin: 0 calc(- var(--default-small-padding) / 2);
+	margin: 0 calc(var(--default-small-padding) / -2);
 
 	& .rc-button {
 		margin: 0 calc(var(--default-small-padding) / 2);
@@ -276,6 +276,15 @@
 		flex: 1;
 
 		width: 100%;
+	}
+
+	&__title {
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+
+	&__alert {
+		margin-bottom: 20px;
 	}
 }
 

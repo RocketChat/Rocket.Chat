@@ -41,6 +41,7 @@ export const KonchatNotification = {
 					tag: notification.payload._id,
 					silent: true,
 					canReply: true,
+					requireInteraction: getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction'),
 				});
 
 				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
@@ -55,7 +56,7 @@ export const KonchatNotification = {
 								_id: Random.id(),
 								rid: notification.payload.rid,
 								msg: response,
-							})
+							}),
 						);
 					}
 
@@ -64,7 +65,7 @@ export const KonchatNotification = {
 						window.focus();
 						switch (notification.payload.type) {
 							case 'd':
-								return FlowRouter.go('direct', { username: notification.payload.sender.username }, FlowRouter.current().queryParams);
+								return FlowRouter.go('direct', { rid: notification.payload.rid }, FlowRouter.current().queryParams);
 							case 'c':
 								return FlowRouter.go('channel', { name: notification.payload.name }, FlowRouter.current().queryParams);
 							case 'p':
@@ -107,7 +108,7 @@ export const KonchatNotification = {
 			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
 			if (sub && sub.audioNotificationValue !== 'none') {
-				if (sub && sub.audioNotificationValue) {
+				if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
 					CustomSounds.play(sub.audioNotificationValue, {
 						volume: Number((audioVolume / 100).toPrecision(2)),
 					});

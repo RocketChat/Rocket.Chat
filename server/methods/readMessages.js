@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { callbacks } from '../../app/callbacks';
-import { Subscriptions } from '../../app/models';
+import { callbacks } from '../../app/callbacks/server';
+import { Subscriptions } from '../../app/models/server';
+import { NotificationQueue } from '../../app/models/server/raw';
 
 Meteor.methods({
 	readMessages(rid) {
@@ -19,8 +20,17 @@ Meteor.methods({
 		callbacks.run('beforeReadMessages', rid, userId);
 
 		// TODO: move this calls to an exported function
-		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
 		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { ls: 1 } });
+
+		if (!userSubscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+				method: 'readMessages',
+			});
+		}
+
+		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
+
+		NotificationQueue.clearQueueByUserId(userId);
 
 		Meteor.defer(() => {
 			callbacks.run('afterReadMessages', rid, { userId, lastSeen: userSubscription.ls });

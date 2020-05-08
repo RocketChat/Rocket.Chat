@@ -7,7 +7,5 @@ Meteor.startup(function() {
 		_id: 'mail-messages',
 		roles: ['admin'],
 	};
-	return Permissions.upsert(permission._id, {
-		$setOnInsert: permission,
-	});
+	return Permissions.create(permission._id, permission.roles);
 });

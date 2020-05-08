@@ -18,11 +18,22 @@ export class SubscriptionsRaw extends BaseRaw {
 		return this.col.count(query);
 	}
 
-	// find
-	findOneByRoomIdAndUserId(rid, uid, options) {
+	countByRoomIdAndUserId(roomId, userId) {
 		const query = {
-			rid,
-			'u._id': uid,
+			rid: roomId,
+			'u._id': userId,
+		};
+
+		const cursor = this.col.find(query);
+
+		return cursor.count();
+	}
+
+	// find
+	findOneByRoomIdAndUserId(roomId, userId, options) {
+		const query = {
+			rid: roomId,
+			'u._id': userId,
 		};
 
 		return this.col.findOne(query, options);
