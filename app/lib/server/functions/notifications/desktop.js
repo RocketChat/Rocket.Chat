@@ -53,6 +53,7 @@ export function shouldNotifyDesktop({
 	hasMentionToUser,
 	hasReplyToThread,
 	roomType,
+	isThread,
 }) {
 	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
@@ -63,7 +64,7 @@ export function shouldNotifyDesktop({
 	}
 
 	if (!desktopNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all') {
+		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all' && (!isThread || hasReplyToThread)) {
 			return true;
 		}
 		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
@@ -71,5 +72,5 @@ export function shouldNotifyDesktop({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser || hasReplyToThread;
+	return (roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
 }

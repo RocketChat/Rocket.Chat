@@ -80,21 +80,31 @@ export function updateUsersSubscriptions(message, room, users) {
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
 	// We now set alert and open properties in two separate update commands. This proved to be more efficient on MongoDB - because it uses a more efficient index.
+
+	if (users) {
+		Subscriptions.setAlertForRoomIdAndUserIds(message.rid, users);
+		Subscriptions.setOpenForRoomIdAndUserIds(message.rid, users);
+		return;
+	}
+
 	Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
 	Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id);
 }
 
 export function notifyUsersOnMessage(message, room) {
 	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
-	if (message.editedAt && Math.abs(moment(message.editedAt).diff()) > 60000) {
-		// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
-		Rooms.incMsgCountById(message.rid, 1);
-		return message;
-	} if (message.editedAt) {
+	if (message.editedAt) {
+		if (Math.abs(moment(message.editedAt).diff()) > 60000) {
+			// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
+			Rooms.incMsgCountById(message.rid, 1);
+			return message;
+		}
+
 		// only updates last message if it was edited (skip rest of callback)
-		if (settings.get('Store_Last_Message') && (!room.lastMessage || room.lastMessage._id === message._id)) {
+		if (settings.get('Store_Last_Message') && (!message.tmid || message.tshow) && (!room.lastMessage || room.lastMessage._id === message._id)) {
 			Rooms.setLastMessageById(message.rid, message);
 		}
+
 		return message;
 	}
 
@@ -103,12 +113,13 @@ export function notifyUsersOnMessage(message, room) {
 		return message;
 	}
 
-	// Update all the room activity tracker fields
-	Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
-
-	if (message.tmid) {
+	// if message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
+	if (message.tmid && !message.tshow) {
 		return message;
 	}
+
+	// Update all the room activity tracker fields
+	Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
 
 	updateUsersSubscriptions(message, room);
 
