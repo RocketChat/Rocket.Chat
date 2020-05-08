@@ -37,6 +37,14 @@ const lessExpressions = new Map([
 	['primary-font-color-lighten-13', 'lighten(@primary-font-color, 13%)'],
 	['link-font-color-darken-10', 'darken(@link-font-color, 10%)'],
 	['primary-background-color-lighten-2-5', 'lighten(@primary-background-color, 2.5%)'],
+	['status-online-darken-10', 'darken(@status-online, 10%)'],
+	['status-away-darken-10', 'darken(@status-away, 10%)'],
+	['status-busy-darken-10', 'darken(@status-busy, 10%)'],
+	['status-offline-darken-10', 'darken(@status-offline, 10%)'],
+	['pending-color-darken-25', 'darken(@pending-color, 25%)'],
+	['success-color-darken-30', 'darken(@success-color, 30%)'],
+	['success-color-darken-10', 'darken(@success-color, 10%)'],
+	['tertiary-background-color-lighten-50', 'lighten(@tertiary-background-color, 50%)'],
 ]);
 
 const less = createLess(window, {});
