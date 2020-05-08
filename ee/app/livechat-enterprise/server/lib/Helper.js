@@ -233,10 +233,10 @@ export const getLivechatCustomFields = () => {
 	let customFields;
 	try {
 		const scriptFields = JSON.parse(script);
-		const acceptedFields = LivechatCustomField.find({ visibility: 'visible' }, { fields: { _id: 1, label: 1, scope: 1 } }).fetch();
+		const acceptedFields = LivechatCustomField.find({ visibility: 'visible', scope: 'visitor' }, { fields: { _id: 1, label: 1, scope: 1, regexp: 1 } }).fetch();
 		const fieldKeys = Object.keys(scriptFields);
 
-		return acceptedFields
+		customFields = acceptedFields
 			.filter((field) => fieldKeys.includes(field._id))
 			.map((field) => Object.assign(field, scriptFields[field._id]));
 	} catch (error) {
