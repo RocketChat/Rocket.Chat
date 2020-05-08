@@ -27,7 +27,7 @@ function VerticalBar({ children, ...props }) {
 
 function VerticalBarHeader(props) {
 	return <Box
-		paddingBlock='x32'
+		pb='x32'
 		paddingInline='x24'
 		display='flex'
 		alignItems='center'
