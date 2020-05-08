@@ -63,8 +63,14 @@ const compileLess = async () => {
 	}
 };
 
+let cssVariablesElement;
+
 const updateCssVariables = _.debounce(async () => {
-	document.querySelector('#css-variables').innerHTML = [
+	if (!cssVariablesElement) {
+		cssVariablesElement = document.querySelector('#css-variables');
+	}
+
+	cssVariablesElement.innerHTML = [
 		':root {',
 		...Array.from(variables.entries(), ([name, value]) => `--${ name }: ${ value };`),
 		'}',
