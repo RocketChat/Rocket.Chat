@@ -1920,55 +1920,6 @@
 	box-shadow:
 		0 -1px 10px 0 rgba(0, 0, 0, 0.2),
 		0 1px 1px rgba(0, 0, 0, 0.16);
-
-	&.search-results-list {
-		top: 0;
-
-		overflow-y: auto;
-
-		height: calc(100vh - calc(var(--header-min-height) + calc(var(--toolbar-height) + var(--footer-min-height))));
-		padding: 25px 0 0 8px;
-
-		text-align: left;
-
-		border-radius: 0;
-		box-shadow: none;
-		direction: rtl;
-
-		& .popup-item {
-			position: relative;
-
-			overflow: hidden;
-
-			height: 30px;
-			padding-left: 6px;
-
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			direction: ltr;
-
-			& i::before {
-				margin-right: 0;
-			}
-		}
-
-		& .room-title {
-			font-size: 15px;
-			line-height: 30px;
-		}
-
-		& .bold {
-			font-weight: 700;
-		}
-
-		& .unread {
-			top: 8px;
-		}
-
-		& .loading-animation {
-			position: relative;
-		}
-	}
 }
 
 .rc-old .message-popup-title {

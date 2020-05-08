@@ -441,17 +441,6 @@
 		left: 12px;
 	}
 
-	& .message-popup.search-results-list {
-		padding: 25px 8px 0 0;
-
-		text-align: right;
-		direction: ltr;
-
-		& .popup-item {
-			direction: rtl;
-		}
-	}
-
 	@media (width <= 1100px) {
 		& #rocket-chat .flex-opened {
 			left: 0;

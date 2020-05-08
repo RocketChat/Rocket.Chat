@@ -227,46 +227,33 @@ textarea {
 
 .rc-old input[type="button"],
 .rc-old input[type="submit"] {
-	color: var(--primary-font-color);
-	border-color: var(--content-disabled-background-color);
-	background: var(--content-disabled-background-color);
+	color: var(--button-secondary-text-color);
+	border-color: var(--button-secondary-background);
+	background: var(--button-secondary-background);
 }
 
 .input {
-	&.radio {
-		label {
-			&::before {
-				border-color: var(--secondary-background-contrast-lighten-30);
-				background-color: var(--content-background-color);
-			}
-
-			&::after {
-				background-color: var(--secondary-background-contrast);
-			}
-		}
-	}
-
 	&.checkbox.toggle {
 		input:checked + label::before {
-			background-color: var(--secondary-background-contrast);
+			background-color: var(--button-primary-background);
 		}
 
 		input:disabled + label::before {
-			background-color: var(--secondary-background-contrast-lighten-50) !important;
+			background-color: var(--button-disabled-background) !important;
 		}
 
 		label {
 			&::before {
-				background-color: var(--secondary-background-contrast-lighten-30);
+				background-color: var(--button-secondary-background);
 			}
 
 			&::after {
-				background-color: var(--content-background-color);
+				background-color: var(--button-primary-text-color);
 			}
 
 			&:hover {
 				&::before {
-					background-color: var(--secondary-background-contrast-lighten-20);
+					opacity: 0.6;
 				}
 			}
 		}
@@ -280,7 +267,7 @@ textarea {
 		color: var(--primary-font-color);
 
 		&:hover {
-			color: var(--primary-font-color-darken-10);
+			opacity: 0.6;
 		}
 	}
 }
@@ -348,7 +335,7 @@ textarea {
 }
 
 .message.editing {
-	background-color: var(--pending-color-lighten-40);
+	background-color: var(--message-box-editing-color);
 }
 
 .rc-old {
@@ -375,19 +362,11 @@ textarea {
 		border-color: var(--component-color);
 	}
 
-	.options-menu {
-		color: var(--primary-font-color-lighten-13);
-
-		ul li:hover {
-			background-color: var(--tertiary-background-color);
-		}
-	}
-
 	a {
 		color: var(--link-font-color);
 
 		&:hover {
-			color: var(--link-font-color-darken-10);
+			opacity: 0.6;
 		}
 	}
 
@@ -401,16 +380,8 @@ textarea {
 		color: var(--link-font-color);
 
 		&:hover {
-			color: var(--link-font-color-darken-10);
+			opacity: 0.6;
 		}
-	}
-}
-
-.message-popup.search-results-list {
-	background-color: var(--primary-background-color-lighten-2-5);
-
-	.popup-item.selected {
-		background-color: var(--transparent-darker);
 	}
 }
 
@@ -508,15 +479,16 @@ i.status-offline {
 }
 
 .alert-warning {
-	color: var(--pending-color-darken-25);
-	background-color: var(--pending-background);
+	color: var(--primary-font-color);
+	border-color: var(--rc-color-alert);
+	background-color: var(--message-box-editing-color);
 }
 
 .alert-link {
 	color: var(--link-font-color);
 
 	&:hover {
-		color: var(--link-font-color-darken-10);
+		opacity: 0.6;
 	}
 }
 
@@ -546,40 +518,40 @@ label.required::after {
 }
 
 .range-slider-range::-webkit-slider-thumb {
-	background-color: var(--primary-background-color);
+	background-color: var(--button-primary-background);
 }
 
 .range-slider-range::-webkit-slider-thumb:hover {
-	background-color: var(--success-color-darken-30);
+	opacity: 0.6;
 }
 
 .range-slider-range:active::-webkit-slider-thumb {
-	background-color: var(--success-color-darken-10);
+	opacity: 0.9;
 }
 
 .range-slider-range::-moz-range-thumb {
-	background-color: var(--primary-background-color);
+	background-color: var(--button-primary-background);
 }
 
 .range-slider-range::-moz-range-thumb:hover {
-	background-color: var(--success-color-darken-30);
+	opacity: 0.6;
 }
 
 .range-slider-range:active::-moz-range-thumb {
-	background-color: var(--success-color-darken-10);
-}
-
-.range-slider-value {
-	color: var(--tertiary-background-color-lighten-50);
-	background-color: var(--primary-background-color);
-}
-
-.range-slider-value::after {
-	border-top-color: transparent;
-	border-right-color: var(--primary-background-color);
-	border-bottom-color: transparent;
+	opacity: 0.9;
 }
 
 .range-slider-range::-moz-range-track {
 	background-color: var(--tertiary-background-color);
+}
+
+.range-slider-value {
+	color: var(--button-primary-text-color);
+	background-color: var(--button-primary-background);
+}
+
+.range-slider-value::after {
+	border-top-color: transparent;
+	border-right-color: var(--rc-color-button-primary);
+	border-bottom-color: transparent;
 }
