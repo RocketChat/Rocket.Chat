@@ -18,6 +18,12 @@ settings.addGroup('FileUpload', function() {
 		i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
 	});
 
+	this.add('FileUpload_MediaTypeBlackList', '', {
+		type: 'string',
+		public: true,
+		i18nDescription: 'FileUpload_MediaTypeBlackListDescription',
+	});
+
 	this.add('FileUpload_ProtectFiles', true, {
 		type: 'boolean',
 		public: true,

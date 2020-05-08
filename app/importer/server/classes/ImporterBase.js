@@ -233,6 +233,9 @@ export class Base {
 				this.oldSettings.FileUpload_MediaTypeWhiteList = Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
 
+				this.oldSettings.FileUpload_MediaTypeBlackList = Settings.findOneById('FileUpload_MediaTypeBlackList').value;
+				Settings.updateValueById('FileUpload_MediaTypeBlackList', '');
+
 				this.oldSettings.UI_Allow_room_names_with_special_chars = Settings.findOneById('UI_Allow_room_names_with_special_chars').value;
 				Settings.updateValueById('UI_Allow_room_names_with_special_chars', true);
 				break;
@@ -243,6 +246,7 @@ export class Base {
 				Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
 				Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
+				Settings.updateValueById('FileUpload_MediaTypeBlackList', this.oldSettings.FileUpload_MediaTypeBlackList);
 				Settings.updateValueById('UI_Allow_room_names_with_special_chars', this.oldSettings.UI_Allow_room_names_with_special_chars);
 				break;
 		}
