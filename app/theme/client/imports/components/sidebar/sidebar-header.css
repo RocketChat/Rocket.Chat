@@ -148,7 +148,7 @@
 @media (width <= 500px) {
 	.sidebar__header {
 		padding: var(--sidebar-small-default-padding);
-		
+
 		&-thumb {
 			flex: 0 0 var(--sidebar-account-thumb-size-mobile);
 

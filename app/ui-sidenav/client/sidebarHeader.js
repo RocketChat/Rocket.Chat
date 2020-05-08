@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
-import { t, getUserPreference, handleError, isMobile } from '../../utils';
+import { t, isMobile } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
