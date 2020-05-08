@@ -34,7 +34,7 @@ Meteor.startup(function() {
 			case 'updated':
 				let message = data || RoomEvents.findOne({ _id: id, t: EventTypeDescriptor.MESSAGE });
 
-				if (!message || message.t === 'emsg') {
+				if (!message || message.t !== 'msg') {
 					break;
 				}
 
