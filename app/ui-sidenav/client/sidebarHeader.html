@@ -7,14 +7,18 @@
 			</div>
 			<div class="sidebar__toolbar">
 				{{#each toolbarButtons}}
-					<button class="sidebar__toolbar-button js-button" title="{{name}}" aria-haspopup="{{hasPopup}}">
-						{{> icon block="sidebar__toolbar-button-icon" icon=icon }}
-					</button>
+					{{#if searchBar}}
+						{{> toolbarSearchBar}}
+					{{else}}
+						<button class="sidebar__toolbar-button js-button" title="{{name}}" aria-haspopup="{{hasPopup}}">
+							{{> icon block="sidebar__toolbar-button-icon" icon=icon }}
+						</button>
+					{{/if}}
 				{{/each}}
 			</div>
 		{{/with}}
 		{{#if showToolbar}}
-			{{> toolbar }}
+			{{> toolbar header=hideHeader}}
 		{{/if}}
 	</header>
 </template>
