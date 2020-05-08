@@ -21,29 +21,29 @@ for (let matches = regionRegex.exec(variablesContent); matches; matches = region
 		const [, name, value] = matches;
 
 		if (type === 'fonts') {
-			theme.addPublicFont(name, value);
+			theme.addVariable('font', name, value, 'Fonts', true);
 			return;
 		}
 
 		if (type === 'colors') {
 			if (/var/.test(value)) {
 				const [, variableName] = value.match(/var\(--(.*?)\)/i);
-				theme.addPublicColor(name, variableName, section, 'expression');
+				theme.addVariable('color', name, variableName, section, true, 'expression', ['color', 'expression']);
 				return;
 			}
 
-			theme.addPublicColor(name, value, section);
+			theme.addVariable('color', name, value, section, true, 'color', ['color', 'expression']);
 			return;
 		}
 
 		if (type === 'less-colors') {
 			if (/var/.test(value)) {
 				const [, variableName] = value.match(/var\(--(.*?)\)/i);
-				theme.addPublicColor(name, `@${ variableName }`, section, 'expression');
+				theme.addVariable('color', name, `@${ variableName }`, section, true, 'expression', ['color', 'expression']);
 				return;
 			}
 
-			theme.addPublicColor(name, value, section);
+			theme.addVariable('color', name, value, section, true, 'color', ['color', 'expression']);
 		}
 	});
 }

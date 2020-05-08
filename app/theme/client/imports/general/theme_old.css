@@ -417,3 +417,177 @@ textarea {
 		background-color: var(--transparent-darker);
 	}
 }
+
+.flex-tab-bar {
+	.tab-button {
+		&:hover {
+			background-color: var(--secondary-background-color);
+		}
+
+		&.active {
+			border-right-color: var(--selection-color);
+			background-color: var(--secondary-background-color);
+		}
+
+		&.attention {
+			animation-name: blink;
+			animation-duration: 1000ms;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;
+		}
+	}
+
+	.counter {
+		color: white;
+		background: var(--secondary-font-color);
+	}
+}
+
+i.status-online {
+	color: var(--status-online);
+}
+
+.status-bg-online {
+	background-color: var(--status-online);
+}
+
+.account-box .status-online .thumb::after,
+.account-box .status.online::after,
+.popup-user-status-online,
+.status-online::after,
+.user-image.status-online .avatar::after {
+	border-color: var(--status-online-darken-10);
+	background-color: var(--status-online);
+}
+
+.account-box .status-offline .thumb::after,
+.account-box .status.offline::after {
+	background-color: var(--transparent-lighter);
+}
+
+i.status-away {
+	color: var(--status-away);
+}
+
+.status-bg-away {
+	background-color: var(--status-away);
+}
+
+.account-box .status-away .thumb::after,
+.account-box .status.away::after,
+.popup-user-status-away,
+.status-away::after,
+.status-pending::after,
+.user-image.status-away .avatar::after {
+	border-color: var(--status-away-darken-10);
+	background-color: var(--status-away);
+}
+
+i.status-busy {
+	color: var(--status-busy);
+}
+
+.status-bg-busy {
+	background-color: var(--status-busy);
+}
+
+.account-box .status-busy .thumb::after,
+.account-box .status.busy::after,
+.popup-user-status-busy,
+.status-busy::after,
+.user-image.status-busy .avatar::after {
+	border-color: var(--status-busy-darken-10);
+	background-color: var(--status-busy);
+}
+
+i.status-offline {
+	color: var(--status-offline);
+}
+
+.status-bg-offline {
+	background-color: var(--status-offline);
+}
+
+.popup-user-status-offline,
+.status-offline::after,
+.user-image.status-offline .avatar::after {
+	border-color: var(--status-offline-darken-10);
+	background-color: var(--status-offline);
+}
+
+.alert-warning {
+	color: var(--pending-color-darken-25);
+	background-color: var(--pending-background);
+}
+
+.alert-link {
+	color: var(--link-font-color);
+
+	&:hover {
+		color: var(--link-font-color-darken-10);
+	}
+}
+
+label.required::after {
+	color: var(--error-color);
+}
+
+.main-content,
+.flex-tab {
+	.loading-animation > .bounce {
+		background-color: var(--primary-font-color);
+	}
+}
+
+.loading-animation.loading-animation--primary > .bounce {
+	background-color: var(--primary-font-color);
+}
+
+@keyframes blink {
+	from {
+		color: var(--selection-color);
+	}
+
+	to {
+		opacity: inherit;
+	}
+}
+
+.range-slider-range::-webkit-slider-thumb {
+	background-color: var(--primary-background-color);
+}
+
+.range-slider-range::-webkit-slider-thumb:hover {
+	background-color: var(--success-color-darken-30);
+}
+
+.range-slider-range:active::-webkit-slider-thumb {
+	background-color: var(--success-color-darken-10);
+}
+
+.range-slider-range::-moz-range-thumb {
+	background-color: var(--primary-background-color);
+}
+
+.range-slider-range::-moz-range-thumb:hover {
+	background-color: var(--success-color-darken-30);
+}
+
+.range-slider-range:active::-moz-range-thumb {
+	background-color: var(--success-color-darken-10);
+}
+
+.range-slider-value {
+	color: var(--tertiary-background-color-lighten-50);
+	background-color: var(--primary-background-color);
+}
+
+.range-slider-value::after {
+	border-top-color: transparent;
+	border-right-color: var(--primary-background-color);
+	border-bottom-color: transparent;
+}
+
+.range-slider-range::-moz-range-track {
+	background-color: var(--tertiary-background-color);
+}
