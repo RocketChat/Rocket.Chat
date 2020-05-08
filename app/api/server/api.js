@@ -374,7 +374,7 @@ export class APIClass extends Restivus {
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
-						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, undefined, e);
+						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 					} finally {
 						delete Accounts._accountData[connection.id];
 					}

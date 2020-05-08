@@ -1,8 +1,6 @@
-import '@rocket.chat/fuselage-polyfills';
-import 'url-polyfill';
+import './polyfills';
 
 import './lib/meteorCallWrapper';
-import './importsCss';
 import './importPackages';
 import '../imports/startup/client';
 
@@ -30,3 +28,4 @@ import './startup/startup';
 import './startup/unread';
 import './startup/userSetUtcOffset';
 import './startup/usersObserve';
+import './admin';

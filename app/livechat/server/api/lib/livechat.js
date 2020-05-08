@@ -66,7 +66,7 @@ export function findOpenRoom(token, departmentId) {
 	return room;
 }
 
-export function getRoom({ guest, rid, roomInfo, agent }) {
+export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
 	const token = guest && guest.token;
 
 	const message = {
@@ -77,7 +77,7 @@ export function getRoom({ guest, rid, roomInfo, agent }) {
 		ts: new Date(),
 	};
 
-	return Livechat.getRoom(guest, message, roomInfo, agent);
+	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
 export function findAgent(agentId) {
@@ -147,4 +147,8 @@ export function settings() {
 
 export async function getExtraConfigInfo(room) {
 	return callbacks.run('livechat.onLoadConfigApi', room);
+}
+
+export function onCheckRoomParams(params) {
+	return callbacks.run('livechat.onCheckRoomApiParams', params);
 }

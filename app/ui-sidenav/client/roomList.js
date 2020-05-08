@@ -136,8 +136,8 @@ const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
 	return {
-		lowerCaseName: name.toLowerCase(),
-		lowerCaseFName: fname.toLowerCase(),
+		lowerCaseName: String(name).toLowerCase(),
+		lowerCaseFName: String(fname).toLowerCase(),
 	};
 };
 

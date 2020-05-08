@@ -126,6 +126,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		if (settings.get('LDAP_Login_Fallback') === true && typeof loginRequest.ldapPass === 'string' && loginRequest.ldapPass.trim() !== '') {
 			Accounts.setPassword(user._id, loginRequest.ldapPass, { logout: false });
 		}
+		logger.info('running afterLDAPLogin');
 		callbacks.run('afterLDAPLogin', { user, ldapUser, ldap });
 		return {
 			userId: user._id,
@@ -143,7 +144,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	// Create new user
-	const result = addLdapUser(ldapUser, username, loginRequest.ldapPass);
+	const result = addLdapUser(ldapUser, username, loginRequest.ldapPass, ldap);
 
 	if (result instanceof Error) {
 		throw result;
@@ -158,7 +159,7 @@ callbacks.add('beforeValidateLogin', (login) => {
 		return login;
 	}
 
-	if (login.type === 'ldap') {
+	if (login.type === 'ldap' || login.type === 'resume') {
 		return login;
 	}
 

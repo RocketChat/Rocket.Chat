@@ -5,7 +5,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
 		const match = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
 		const matchUsers = { $match: {} };
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		if (agentId) {
@@ -118,7 +118,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				abandonedRooms: 1,
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
@@ -176,7 +176,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
@@ -218,7 +218,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				averageChatDurationTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$chatsDuration', '$rooms'] }] } },
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
@@ -260,7 +260,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				averageWaitingTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$chatsFirstResponses', '$rooms'] }] } },
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
@@ -303,7 +303,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				rooms: 1,
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
@@ -347,7 +347,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				serviceTimeDuration: { $ceil: '$serviceTimeDuration' },
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
@@ -455,7 +455,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 		const firstParams = [match, departmentsLookup, departmentsUnwind];
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			firstParams.push({
 				$match: {
 					'departments._id': departmentId,
@@ -482,7 +482,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			servedBy: { $exists: true },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
 		return this.find(query).count();
@@ -497,7 +497,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			servedBy: { $exists: true },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
 		return this.find(query).count();
@@ -509,7 +509,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			servedBy: { $exists: false },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
 		return this.find(query).count();
@@ -530,7 +530,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				chats: { $sum: 1 },
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		return this.col.aggregate([match, group]).toArray();
@@ -552,7 +552,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				chats: { $sum: 1 },
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		return this.col.aggregate([match, group]).toArray();
@@ -597,7 +597,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				chats: 1,
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
@@ -643,7 +643,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				chats: 1,
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
@@ -689,7 +689,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				longest: '$maxFirstResponse',
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		return this.col.aggregate([match, group, project]).toArray();
@@ -734,7 +734,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				longest: '$maxFirstReaction',
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		return this.col.aggregate([match, group, project]).toArray();
@@ -780,7 +780,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				longest: '$maxChatDuration',
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		return this.col.aggregate([match, group, project]).toArray();
@@ -811,7 +811,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				averageServiceTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$allServiceTime', '$rooms'] }] } },
 			},
 		};
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
@@ -848,7 +848,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (roomName) {
 			query.fname = new RegExp(roomName, 'i');
 		}
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
 		if (open !== undefined) {

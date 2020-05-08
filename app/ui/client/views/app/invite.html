@@ -1,6 +1,6 @@
 <template name="invite">
 	{{#if ready}}
-		{{#if isEnabledAndValid}}
+		{{#if isValidInvite}}
 			{{> main center="home"}}
 		{{else}}
 			{{> logoLayout render="invalidInvite"}}

@@ -1,9 +1,9 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
+import { registerAdminRoute } from '../../../client/admin';
 import { t } from '../../utils/client';
 
-FlowRouter.route('/admin/permissions', {
+registerAdminRoute('/permissions', {
 	name: 'admin-permissions',
 	async action(/* params*/) {
 		await import('./views');
@@ -14,7 +14,7 @@ FlowRouter.route('/admin/permissions', {
 	},
 });
 
-FlowRouter.route('/admin/permissions/:name?/edit', {
+registerAdminRoute('/permissions/:name?/edit', {
 	name: 'admin-permissions-edit',
 	async action(/* params*/) {
 		await import('./views');
@@ -26,7 +26,7 @@ FlowRouter.route('/admin/permissions/:name?/edit', {
 	},
 });
 
-FlowRouter.route('/admin/permissions/new', {
+registerAdminRoute('/permissions/new', {
 	name: 'admin-permissions-new',
 	async action(/* params*/) {
 		await import('./views');

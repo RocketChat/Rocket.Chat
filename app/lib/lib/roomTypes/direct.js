@@ -73,7 +73,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			: Subscriptions.findOne({ rid: roomData._id });
 
 		if (subscription === undefined) {
-			return console.log('roomData', roomData);
+			return;
 		}
 
 		if (settings.get('UI_Use_Real_Name') && subscription.fname) {
@@ -186,16 +186,23 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData, subData) {
+		if (!roomData && !subData) {
+			return '';
+		}
+
 		if (this.isGroupChat(roomData)) {
 			return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
 		}
 
-		if (roomData) {
-			return getUserAvatarURL(roomData.name || this.roomName(roomData));
+		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+
+		if (sub && sub.name) {
+			return getUserAvatarURL(sub.name);
 		}
 
-		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
-		return getUserAvatarURL(sub.name || this.roomName(roomData));
+		if (roomData) {
+			return getUserAvatarURL(roomData.name || this.roomName(roomData)); // rooms should have no name for direct messages...
+		}
 	}
 
 	includeInDashboard() {
