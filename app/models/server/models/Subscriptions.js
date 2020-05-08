@@ -995,6 +995,36 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	setAlertForRoomIdAndUserIds(roomId, uids) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: uids },
+			alert: { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	setOpenForRoomIdAndUserIds(roomId, uids) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: uids },
+			open: { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				open: true,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
 	setBlockedByRoomId(rid, blocked, blocker) {
 		const query = {
 			rid,

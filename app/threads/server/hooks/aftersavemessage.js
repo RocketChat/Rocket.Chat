@@ -47,7 +47,7 @@ const processThreads = (message, room) => {
 	}
 
 	const replies = [
-		...parentMessage.replies || [],
+		...(!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || [],
 	].filter((userId) => userId !== message.u._id);
 
 	notifyUsersOnReply(message, replies, room);
