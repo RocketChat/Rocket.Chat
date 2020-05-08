@@ -8,7 +8,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { chatMessages, ChatMessages } from '../../../ui';
-import { normalizeThreadMessage, call, keyCodes } from '../../../ui-utils/client';
+import { call, keyCodes } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
@@ -19,6 +19,7 @@ import './thread.html';
 import { getUserPreference } from '../../../utils';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
+import './messageBoxFollow';
 
 createTemplateForComponent('Checkbox', () => import('../components/CheckBoxComponent'), {
 	// eslint-disable-next-line new-cap
@@ -52,9 +53,6 @@ Template.thread.events({
 
 Template.thread.helpers({
 	...dropzoneHelpers,
-	threadTitle() {
-		return normalizeThreadMessage(Template.currentData().mainMessage);
-	},
 	mainMessage() {
 		return Template.parentData().mainMessage;
 	},
@@ -79,13 +77,23 @@ Template.thread.helpers({
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid }, subscription } = this;
+		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
+
+		const { replies } = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
+
+		const following = replies.includes(Meteor.userId());
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		return {
 			showFormattingTips,
 			tshow: instance.state.get('sendToChannel'),
 			subscription,
+			...!following && {
+				customAction: {
+					template: 'messageBoxFollow',
+					data: { tmid },
+				},
+			},
 			rid,
 			tmid,
 			onSend: (...args) => {
@@ -170,7 +178,7 @@ Template.thread.onRendered(function() {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ tmid, _hidden: { $ne: true } }, {
+		this.threadsObserve = Messages.find({ $or: [{ tmid }, { _id: tmid }], _hidden: { $ne: true } }, {
 			fields: {
 				collapsed: 0,
 				threadMsg: 0,

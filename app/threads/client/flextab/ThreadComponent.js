@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { Modal, Icon, Box } from '@rocket.chat/fuselage';
+import { Modal, Icon, Box, Margins } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
@@ -31,9 +31,10 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 
 	const ref = useRef();
 	const uid = useMemo(() => Meteor.userId(), []);
-	const actionId = useMemo(() => (mainMessage.replies && mainMessage.replies.includes(uid) ? 'unfollow' : 'follow'), [uid, mainMessage && mainMessage.replies]);
-	const button = useMemo(() => (actionId === 'follow' ? 'bell' : 'bell-off'), [actionId]);
-	const actionLabel = t(actionId === 'follow' ? 'Follow_message' : 'Unfollow_message');
+	const following = mainMessage.replies && mainMessage.replies.includes(uid);
+	const actionId = useMemo(() => (following ? 'unfollow' : 'follow'), [uid, mainMessage && mainMessage.replies]);
+	const button = useMemo(() => (actionId === 'follow' ? 'bell-off' : 'bell'), [actionId]);
+	const actionLabel = t(actionId === 'follow' ? 'Not_Following' : 'Following');
 	const headerTitle = useMemo(() => mainMessage.msg && filterMarkdown(mainMessage.msg), [mainMessage.msg]);
 
 	const handleFollowButton = useCallback(() => call(actionId === 'follow' ? 'followMessage' : 'unfollowMessage', { mid }), [actionId]);
@@ -53,9 +54,9 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	}, [mid]);
 
 	useEffect(() => {
-		const view = mainMessage.rid && ref.current && Blaze.renderWithData(Template.thread, { mainMessage, jump, ...props }, ref.current);
+		const view = mainMessage.rid && ref.current && Blaze.renderWithData(Template.thread, { mainMessage, jump, following, ...props }, ref.current);
 		return () => view && Blaze.remove(view);
-	}, [ref.current, mainMessage.rid, mainMessage.mid, mainMessage.msg]);
+	}, [ref.current, mainMessage.rid, mainMessage.msg]);
 
 
 	if (!mainMessage.rid) {
@@ -69,9 +70,11 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 		<Modal.Backdrop onClick={handleClose}/>
 		<VerticalBar width='full' style={style} display='flex' flexDirection='column'>
 			<VerticalBar.Header pb='x24'>
-				<Icon name='thread' size='x20'/>
-				<Box mi='x4'flexShrink={1} flexGrow={1} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{headerTitle}</Box>
-				<VerticalBar.Button onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></VerticalBar.Button><VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
+				<Margins inline='x4'>
+					<Icon name='thread' size='x20'/>
+					<Box flexShrink={1} flexGrow={1} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{headerTitle}</Box>
+					<VerticalBar.Button onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></VerticalBar.Button><VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
+				</Margins>
 			</VerticalBar.Header>
 			<VerticalBar.Content paddingInline={0} flexShrink={1} flexGrow={1} ref={ref}/>
 		</VerticalBar>
