@@ -36,6 +36,7 @@
   "Livechat_abandoned_rooms_closed_custom_message": "Custom message when room is automatically closed by visitor inactivity",
   "Livechat_Monitors": "Monitors",
   "Livechat_monitors": "Livechat monitors",
+  "Livechat_Registration_Form_Custom_Fields_Description": "Should be a valid JSON where keys are the field names containing a dictionary of field settings. Example:<br/><code>{\n \"website\": {\n  \"type\": \"text\",\n  \"required\": true,\n},\n   \"area\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"Sales\",\n \"options\": [\"Human Resources\", \"Sales\", \"Marketing\", \"Supply\", \"Development\"],\n  \"required\": true,\n}</code> ",
   "Max_number_of_chats_per_agent": "Max. number of simultaneous chats",
   "Max_number_of_chats_per_agent_description": "The max. number of simultaneous chats that the agents can attend",
   "Me": "Me",

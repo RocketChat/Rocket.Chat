@@ -28,6 +28,7 @@
   "Livechat_abandoned_rooms_closed_custom_message": "Mensagem customizada para usar quando a sala for automaticamente fechada por abandono do visitante",
   "Livechat_Monitors": "Monitores",
   "Livechat_monitors": "Monitores de Livechat",
+  "Livechat_Registration_Form_Custom_Fields_Description": "Deve ser um JSON válido onde as chaves são os nomes de campos contendo um dicionário de configuração de campos. Exemplo:<br/><code>{\n \"website\": {\n  \"type\": \"text\",\n  \"required\": true,\n},\n   \"area\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"Sales\",\n \"options\": [\"Human Resources\", \"Sales\", \"Marketing\", \"Supply\", \"Development\"],\n  \"required\": true,\n}</code> ",
   "Max_number_of_chats_per_agent": "Número máximo de atendimentos simultâneos",
   "Max_number_of_chats_per_agent_description": "Número máximo de atendimentos simultâneos que um agente pode atender",
   "Message_auditing": "Auditoria",
