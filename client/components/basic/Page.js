@@ -54,7 +54,7 @@ function PageContent(props) {
 
 function PageScrollableContent({ onScrollContent, ...props }) {
 	return <Scrollable onScrollContent={onScrollContent} >
-		<Box padding='x16' flexGrow={1} {...props} />
+		<Box padding='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
 	</Scrollable>;
 }
 

@@ -13,7 +13,7 @@ export default {
 
 export const _default = () => {
 	const Search = () => <Box mb='x16' is='form' display='flex' flexDirection='column'>
-		<TextInput placeholder='Search...' addon={<Icon name='magnifier' size='x20'/>}/>
+		<TextInput flexShrink={0} placeholder='Search...' addon={<Icon name='magnifier' size='x20'/>}/>
 	</Box>;
 
 

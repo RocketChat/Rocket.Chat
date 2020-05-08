@@ -5,6 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import VerticalBar from '../../components/basic/VerticalBar';
 
 export function InviteUsers({ data, ...props }) {
 	const t = useTranslation();
@@ -22,13 +23,13 @@ export function InviteUsers({ data, ...props }) {
 			}
 		});
 	};
-	return <Box display='flex' flexDirection='column' pb='x24' {...props}>
+	return <VerticalBar.ScrollableContent {...props}>
 		<Headline mbs='x8'>{t('Send_invitation_email')}</Headline>
 		<Box fontScale='p1' mb='x8'>{t('Send_invitation_email_info')}</Box>
-		<TextAreaInput rows={5} onChange={(e) => setText(e.currentTarget.value)}/>
+		<TextAreaInput rows={5} flexGrow={0} onChange={(e) => setText(e.currentTarget.value)}/>
 		<Button primary onClick={handleClick} alignItems='stretch' mb='x8'>
 			<Icon name='send' size='x16'/>
 			{t('Send')}
 		</Button>
-	</Box>;
+	</VerticalBar.ScrollableContent>;
 }

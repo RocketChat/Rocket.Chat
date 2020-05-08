@@ -1246,7 +1246,7 @@ rc-old select,
 }
 
 .rc-old .new-room-highlight a {
-	animation: highlight 2s infinite;
+	animation: highlight 6s infinite;
 }
 
 .rc-old .fixed-title {
@@ -2649,7 +2649,7 @@ rc-old select,
 	}
 
 	&.highlight {
-		animation: highlight 3s;
+		animation: highlight 6s;
 	}
 
 	&:nth-child(1) {

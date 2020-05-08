@@ -1,11 +1,13 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { Box, Button, ButtonGroup, TextInput, Field, Select, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { Modal } from '../../components/basic/Modal';
+import { useFileInput } from '../../hooks/useFileInput';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { validate, createSoundData } from './lib';
 import VerticalBar from '../../components/basic/VerticalBar';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
@@ -17,7 +19,7 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t('Custom_User_Status_Delete_Warning')}
+			{t('Custom_Sound_Status_Delete_Warning')}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -37,7 +39,7 @@ const SuccessModal = ({ onClose, ...props }) => {
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t('Custom_User_Status_Has_Been_Deleted')}
+			{t('Custom_Sound_Has_Been_Deleted')}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -47,13 +49,14 @@ const SuccessModal = ({ onClose, ...props }) => {
 	</Modal>;
 };
 
-export function EditCustomUserStatusWithData({ _id, cache, ...props }) {
+export function EditSound({ _id, cache, ...props }) {
 	const t = useTranslation();
 	const query = useMemo(() => ({
 		query: JSON.stringify({ _id }),
 	}), [_id]);
 
-	const { data, state, error } = useEndpointDataExperimental('custom-user-status.list', query);
+	const { data, state, error } = useEndpointDataExperimental('custom-sounds.list', query);
+
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box pb='x20'>
@@ -71,51 +74,80 @@ export function EditCustomUserStatusWithData({ _id, cache, ...props }) {
 		</Box>;
 	}
 
-	if (error || !data || data.statuses.length < 1) {
+	if (error || !data || data.sounds.length < 1) {
 		return <Box fontScale='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
 	}
 
-	return <EditCustomUserStatus data={data.statuses[0]} {...props}/>;
+	return <EditCustomSound data={data.sounds[0]} {...props}/>;
 }
 
-export function EditCustomUserStatus({ close, onChange, data, ...props }) {
+export function EditCustomSound({ close, onChange, data, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { _id, name: previousName, statusType: previousStatusType } = data || {};
+	const { _id, name: previousName } = data || {};
+	const previousSound = data || {};
 
 	const [name, setName] = useState('');
-	const [statusType, setStatusType] = useState('');
+	const [sound, setSound] = useState();
 	const [modal, setModal] = useState();
 
 	useEffect(() => {
 		setName(previousName || '');
-		setStatusType(previousStatusType || '');
-	}, [previousName, previousStatusType, _id]);
+		setSound(previousSound || '');
+	}, [previousName, previousSound, _id]);
 
-	const saveStatus = useMethod('insertOrUpdateUserStatus');
-	const deleteStatus = useMethod('deleteCustomUserStatus');
+	const deleteCustomSound = useMethod('deleteCustomSound');
+	const uploadCustomSound = useMethod('uploadCustomSound');
+	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousStatusType !== statusType, [name, statusType]);
-	const handleSave = useCallback(async () => {
-		try {
-			await saveStatus({
-				_id,
-				previousName,
-				previousStatusType,
-				name,
-				statusType,
-			});
-			dispatchToastMessage({ type: 'success', message: t('Custom_User_Status_Updated_Successfully') });
-			onChange();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+	const handleChangeFile = (soundFile) => {
+		setSound(soundFile);
+	};
+
+	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, sound]);
+
+	const saveAction = async (sound) => {
+		const soundData = createSoundData(sound, name, { previousName, previousSound, _id });
+		const validation = validate(soundData, sound);
+		if (validation.length === 0) {
+			let soundId;
+			try {
+				soundId = await insertOrUpdateSound(soundData);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+
+			soundData._id = soundId;
+			soundData.random = Math.round(Math.random() * 1000);
+
+			if (sound && sound !== previousSound) {
+				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
+
+				const reader = new FileReader();
+				reader.readAsBinaryString(sound);
+				reader.onloadend = () => {
+					try {
+						uploadCustomSound(reader.result, sound.type, soundData);
+						return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
+					} catch (error) {
+						dispatchToastMessage({ type: 'error', message: error });
+					}
+				};
+			}
 		}
-	}, [name, statusType, _id]);
+
+		validation.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', { field: t(error) }) }));
+	};
+
+	const handleSave = useCallback(async () => {
+		saveAction(sound);
+		onChange();
+	}, [name, _id, sound]);
 
 	const onDeleteConfirm = useCallback(async () => {
 		try {
-			await deleteStatus(_id);
+			await deleteCustomSound(_id);
 			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -125,12 +157,9 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 
 	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
 
-	const presenceOptions = [
-		['online', t('Online')],
-		['busy', t('Busy')],
-		['away', t('Away')],
-		['offline', t('Offline')],
-	];
+
+	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
+
 
 	return <>
 		<VerticalBar.ScrollableContent {...props}>
@@ -140,12 +169,17 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
 				</Field.Row>
 			</Field>
+
 			<Field>
-				<Field.Label>{t('Presence')}</Field.Label>
-				<Field.Row>
-					<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions}/>
-				</Field.Row>
+				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+				<Box display='flex' flexDirection='row' mbs='none'>
+					<Margins inline='x4'>
+						<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
+						{(sound && sound.name) || 'none'}
+					</Margins>
+				</Box>
 			</Field>
+
 			<Field>
 				<Field.Row>
 					<ButtonGroup stretch w='full'>

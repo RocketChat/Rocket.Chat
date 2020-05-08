@@ -1,4 +1,4 @@
-import { Box, Tile, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Tile, Button, Icon, Margins } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
@@ -52,8 +52,15 @@ function VerticalBarContent(props) {
 	return <Page.Content {...props} />;
 }
 
+function VerticalBarScrollableContent({ children, props }) {
+	return <Page.ScrollableContent padding='x24' mi='neg-x24' {...props}>
+		<Margins blockEnd='x16'>{children}</Margins>
+	</Page.ScrollableContent>;
+}
+
 VerticalBar.Header = VerticalBarHeader;
 VerticalBar.Close = VerticalBarClose;
 VerticalBar.Content = VerticalBarContent;
+VerticalBar.ScrollableContent = VerticalBarScrollableContent;
 
 export default VerticalBar;

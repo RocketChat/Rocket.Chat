@@ -33,8 +33,8 @@ const FilterByText = ({ setFilter, ...props }) => {
 		setFilter({ text });
 	}, [text]);
 
-	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
-		<TextInput placeholder={t('Search_Channels')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+	return <Box flexShrink={0} mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+		<TextInput flexShrink={0} placeholder={t('Search_Channels')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 };
 

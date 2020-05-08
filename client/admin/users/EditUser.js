@@ -5,10 +5,11 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
+import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
-import Page from '../../components/basic/Page';
 import UserAvatarEditor from '../../components/basic/avatar/UserAvatarEditor';
+import VerticalBar from '../../components/basic/VerticalBar';
 
 export function EditUserWithData({ userId, ...props }) {
 	const t = useTranslation();
@@ -62,12 +63,16 @@ export function EditUser({ data, roles, ...props }) {
 	}), [data._id]);
 
 	const saveAction = useEndpointAction('POST', 'users.update', saveQuery, t('User_updated_successfully'));
-	const saveAvatarAction = useEndpointAction('UPLOAD', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const saveAvatarAction = useEndpointUpload('users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const saveAvatarUrlAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
 	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
 
 	const updateAvatar = async () => {
 		if (avatarObj === 'reset') {
 			return resetAvatarAction();
+		}
+		if (avatarObj.avatarUrl) {
+			return saveAvatarUrlAction();
 		}
 		return saveAvatarAction(avatarObj);
 	};
@@ -107,80 +112,78 @@ export function EditUser({ data, roles, ...props }) {
 	const setRandomPassword = newData.setRandomPassword || false;
 	const requirePasswordChange = setRandomPassword || newData.requirePasswordChange || false;
 
-	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
-		<Margins block='x16'>
-			<UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput flexGrow={1} value={name} onChange={handleChange('name', data.name)}/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Username')}</Field.Label>
-				<Field.Row>
-					<TextInput flexGrow={1} value={username} onChange={handleChange('username', data.username)} addon={<Icon name='at' size='x20'/>}/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Email')}</Field.Label>
-				<Field.Row>
-					<TextInput flexGrow={1} value={email} error={!isEmail(email) ? 'error' : undefined} onChange={handleChange('email', data.emails && data.emails[0].address)} addon={<Icon name='mail' size='x20'/>}/>
-				</Field.Row>
-				<Field.Row>
-					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>
-						<Box>{t('Verified')}</Box><ToggleSwitch checked={emailVerified} onChange={handleChange('verified', data.emails && data.emails[0].verified, () => !emailVerified)} />
-					</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('StatusMessage')}</Field.Label>
-				<Field.Row>
-					<TextInput flexGrow={1} value={status} onChange={handleChange('status', data.status)} addon={<Icon name='edit' size='x20'/>}/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Bio')}</Field.Label>
-				<Field.Row>
-					<TextAreaInput rows={3} flexGrow={1} value={bio} onChange={handleChange('bio', data.bio)} addon={<Icon name='edit' size='x20' alignSelf='center'/>}/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Password')}</Field.Label>
-				<Field.Row>
-					<TextInput flexGrow={1} value={newData.password || ''} onChange={handleChange('password', '')} addon={<Icon name='key' size='x20'/>}/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-						<Box>{t('Require_password_change')}</Box><ToggleSwitch checked={requirePasswordChange} disabled={setRandomPassword} onChange={handleChange('requirePasswordChange', false, () => !requirePasswordChange)} />
-					</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-						<Box>{t('Set_random_password_and_send_by_email')}</Box><ToggleSwitch checked={setRandomPassword} onChange={handleChange('setRandomPassword', false, () => !setRandomPassword)} />
-					</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Roles')}</Field.Label>
-				<Field.Row>
-					<MultiSelectFiltered options={availableRoles} value={selectedRoles} onChange={handleChange('roles', data.roles, (value) => value, rolesAreEqual)} placeholder={t('Select_role')} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-						<Margins inlineEnd='x4'>
-							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={() => setNewData({})}>{t('Reset')}</Button>
-							<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
-						</Margins>
-					</Box>
-				</Field.Row>
-			</Field>
-		</Margins>
-	</Page.ScrollableContent>;
+	return <VerticalBar.ScrollableContent is='form' qa-admin-user-edit='form' { ...props }>
+		<UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>
+		<Field>
+			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Row>
+				<TextInput flexGrow={1} value={name} onChange={handleChange('name', data.name)}/>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('Username')}</Field.Label>
+			<Field.Row>
+				<TextInput flexGrow={1} value={username} onChange={handleChange('username', data.username)} addon={<Icon name='at' size='x20'/>}/>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('Email')}</Field.Label>
+			<Field.Row>
+				<TextInput flexGrow={1} value={email} error={!isEmail(email) ? 'error' : undefined} onChange={handleChange('email', data.emails && data.emails[0].address)} addon={<Icon name='mail' size='x20'/>}/>
+			</Field.Row>
+			<Field.Row>
+				<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>
+					<Box>{t('Verified')}</Box><ToggleSwitch checked={emailVerified} onChange={handleChange('verified', data.emails && data.emails[0].verified, () => !emailVerified)} />
+				</Box>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('StatusMessage')}</Field.Label>
+			<Field.Row>
+				<TextInput flexGrow={1} value={status} onChange={handleChange('status', data.status)} addon={<Icon name='edit' size='x20'/>}/>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('Bio')}</Field.Label>
+			<Field.Row>
+				<TextAreaInput rows={3} flexGrow={1} value={bio} onChange={handleChange('bio', data.bio)} addon={<Icon name='edit' size='x20' alignSelf='center'/>}/>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('Password')}</Field.Label>
+			<Field.Row>
+				<TextInput flexGrow={1} value={newData.password || ''} onChange={handleChange('password', '')} addon={<Icon name='key' size='x20'/>}/>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Row>
+				<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
+					<Box>{t('Require_password_change')}</Box><ToggleSwitch checked={requirePasswordChange} disabled={setRandomPassword} onChange={handleChange('requirePasswordChange', false, () => !requirePasswordChange)} />
+				</Box>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Row>
+				<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
+					<Box>{t('Set_random_password_and_send_by_email')}</Box><ToggleSwitch checked={setRandomPassword} onChange={handleChange('setRandomPassword', false, () => !setRandomPassword)} />
+				</Box>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('Roles')}</Field.Label>
+			<Field.Row>
+				<MultiSelectFiltered options={availableRoles} value={selectedRoles} onChange={handleChange('roles', data.roles, (value) => value, rolesAreEqual)} placeholder={t('Select_role')} />
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Row>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+					<Margins inlineEnd='x4'>
+						<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={() => setNewData({})}>{t('Reset')}</Button>
+						<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
+					</Margins>
+				</Box>
+			</Field.Row>
+		</Field>
+	</VerticalBar.ScrollableContent>;
 }

@@ -604,9 +604,19 @@ export const Livechat = {
 		if (!inquiry) {
 			return false;
 		}
+
 		const transferredBy = normalizeTransferredByData(user, room);
 		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
-		return this.saveTransferHistory(room, transferData) && RoutingManager.unassignAgent(inquiry, departmentId);
+		try {
+			this.saveTransferHistory(room, transferData);
+			RoutingManager.unassignAgent(inquiry, departmentId);
+			Meteor.defer(() => callbacks.run('livechat.chatQueued', LivechatRooms.findOneById(rid)));
+		} catch (e) {
+			console.error(e);
+			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
+		}
+
+		return true;
 	},
 
 	sendRequest(postData, callback, trying = 1) {
