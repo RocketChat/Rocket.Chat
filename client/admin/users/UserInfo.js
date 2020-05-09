@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Box, Avatar, Margins, Headline, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
+import { Box, Avatar, Margins, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -38,11 +38,11 @@ export function UserInfoWithData({ userId, ...props }) {
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24'>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
 		</Box>;
 	}
