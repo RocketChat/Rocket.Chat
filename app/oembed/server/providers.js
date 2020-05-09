@@ -1,7 +1,7 @@
 import URL from 'url';
 import QueryString from 'querystring';
 
-import { changeCase } from 'meteor/konecty:change-case';
+import { camelCase } from 'change-case';
 import _ from 'underscore';
 
 import { callbacks } from '../../callbacks';
@@ -106,7 +106,7 @@ callbacks.add('oembed:afterParseContent', function(data) {
 						const metas = JSON.parse(data.content.body);
 						_.each(metas, function(value, key) {
 							if (_.isString(value)) {
-								data.meta[changeCase.camelCase(`oembed_${ key }`)] = value;
+								data.meta[camelCase(`oembed_${ key }`)] = value;
 							}
 						});
 						data.meta.oembedUrl = url;
