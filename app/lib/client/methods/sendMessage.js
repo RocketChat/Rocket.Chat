@@ -3,7 +3,7 @@ import { TimeSync } from 'meteor/mizzao:timesync';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { ChatMessage, CachedChatMessage } from '../../../models';
+import { ChatMessage } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises/client';
@@ -33,7 +33,7 @@ Meteor.methods({
 		}
 		message = callbacks.run('beforeSaveMessage', message);
 		promises.run('onClientMessageReceived', message).then(function(message) {
-			ChatMessage.insert(message, CachedChatMessage.save);
+			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);
 		});
 	},
