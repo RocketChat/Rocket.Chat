@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 
 import Page from '../../../components/basic/Page';
 import NewIncomingWebhook from './NewIncomingWebhook';
+import NewOutgoingWebhook from './NewOutgoingWebhook';
 import NewZapier from './NewZapier';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
@@ -12,7 +13,6 @@ export default function NewIntegrationsPage({ ...props }) {
 	const t = useTranslation();
 
 	const router = useRoute('admin-integrations');
-	const [disabledTabs, setDisabledTabs] = useState(false);
 
 	const handleClickTab = (type) => () => {
 		router.push({ context: 'new', type });
@@ -37,27 +37,31 @@ export default function NewIntegrationsPage({ ...props }) {
 				<Tabs.Item
 					selected={tab === 'incoming'}
 					onClick={handleClickTab('incoming')}
-					disabled={disabledTabs}
 				>
 					{t('Incoming')}
 				</Tabs.Item>
 				<Tabs.Item
+					selected={tab === 'outgoing'}
+					onClick={handleClickTab('outgoing')}
+				>
+					{t('Outgoing')}
+				</Tabs.Item>
+				<Tabs.Item
 					selected={tab === 'zapier'}
 					onClick={handleClickTab('zapier')}
-					disabled={disabledTabs}
 				>
 					{t('Zapier')}
 				</Tabs.Item>
 				<Tabs.Item
 					selected={tab === 'bots'}
 					onClick={handleClickTab('bots')}
-					disabled={disabledTabs}
 				>
 					{t('Bots')}
 				</Tabs.Item>
 			</Tabs>
 			{[
-				tab === 'incoming' && <NewIncomingWebhook setDisabledTabs={setDisabledTabs} key='incoming'/>,
+				tab === 'incoming' && <NewIncomingWebhook key='incoming'/>,
+				tab === 'outgoing' && <NewOutgoingWebhook key='outgoing'/>,
 				tab === 'bots' && <Box pb='x20' fontScale='s1' key='bots' dangerouslySetInnerHTML={{ __html: t('additional_integrations_Bots') }}/>,
 				tab === 'zapier' && <NewZapier key='zapier'/>,
 			].filter(Boolean)}

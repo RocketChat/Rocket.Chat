@@ -26,6 +26,7 @@ export default function NewIntegrationsPage({ ...props }) {
 				<Button onClick={handleClickReturn}>
 					<Icon name='back' size='x16'/> {t('Back')}
 				</Button>
+				{/* <Button onClick={handleClickHistory}>{t('History')}</Button> */}
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>

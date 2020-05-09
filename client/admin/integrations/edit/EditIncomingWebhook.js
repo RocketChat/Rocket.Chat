@@ -5,6 +5,8 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useMethod, useAbsoluteUrl } from '../../../contexts/ServerContext';
 import { useHilightedCode } from '../../../hooks/useHilightedCode';
+import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useExampleData } from '../exampleIncomingData';
 import Page from '../../../components/basic/Page';
@@ -43,7 +45,11 @@ function EditIncomingWebhook({ data, setData, onChange, ...props }) {
 
 	const hasUnsavedChanges = useMemo(() => Object.values(newData).filter((current) => current === null).length < Object.keys(newData).length, [JSON.stringify(newData)]);
 
+	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [data._id]);
+	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery, t('Your_entry_has_been_deleted'));
 	const saveIntegration = useMethod('updateIncomingIntegration');
+
+	const router = useRoute('admin-integrations');
 
 	const absoluteUrl = useAbsoluteUrl();
 
@@ -191,13 +197,14 @@ function EditIncomingWebhook({ data, setData, onChange, ...props }) {
 					</Field.Row>
 				</Field>
 				<Field>
-					<Field.Row>
+					<Field.Row display='flex' flexDirection='column'>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 							<Margins inlineEnd='x4'>
 								<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={() => setNewData({})}>{t('Reset')}</Button>
 								<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
 							</Margins>
 						</Box>
+						<Button mbs='x4' primary danger w='full' onClick={() => { deleteIntegration(); router.push({}); }}>{t('Delete')}</Button>
 					</Field.Row>
 				</Field>
 			</FieldGroup>

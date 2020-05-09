@@ -3,8 +3,6 @@ import {
 	Field,
 	TextInput,
 	Box,
-	Headline,
-	Skeleton,
 	ToggleSwitch,
 	Icon,
 	TextAreaInput,
@@ -14,86 +12,53 @@ import {
 	Select,
 	Accordion,
 } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useHilightedCode } from '../../../hooks/useHilightedCode';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useExampleData } from '../exampleIncomingData';
 import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
 import Page from '../../../components/basic/Page';
 
-export default function EditOutgoingWebhookWithData({ integrationId, ...props }) {
+export default function NewOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 	const t = useTranslation();
-	const [cache, setCache] = useState();
 
-	const { data, state, error } = useEndpointDataExperimental('integrations.get', useMemo(() => ({ integrationId }), [integrationId, cache]));
+	const newToken = useUniqueId();
+	const [newData, setNewData] = useState({
+		type: 'webhook-outgoing',
+		enabled: true,
+		impersonateUser: false,
+		event: 'sendMessage',
+		token: newToken,
+		urls: '',
+		triggerWords: '',
+		targetRoom: '',
+		channel: '',
+		username: '',
+		name: '',
+		alias: '',
+		avatar: '',
+		emoji: '',
+		scriptEnabled: false,
+		script: '',
+		retryFailedCalls: true,
+		retryCount: 6,
+		retryDelay: 'powers-of-ten',
+		triggerrWordAnywhere: false,
+		runOnEdits: true,
+	});
 
-	const onChange = () => setCache(new Date());
-
-	if (state === ENDPOINT_STATES.LOADING) {
-		return <Box w='full' pb='x24' {...props}>
-			<Headline.Skeleton mbe='x4'/>
-			<Skeleton mbe='x8' />
-			<Headline.Skeleton mbe='x4'/>
-			<Skeleton mbe='x8'/>
-			<Headline.Skeleton mbe='x4'/>
-			<Skeleton mbe='x8'/>
-		</Box>;
-	}
-
-	if (error) {
-		return <Box mbs='x16' {...props}>{t('User_not_found')}</Box>;
-	}
-
-	return <EditOutgoingWebhook data={data.integration} onChange={onChange} {...props}/>;
-}
-
-const getInitialValue = (data) => {
-	const initialValue = {
-		enabled: data.enabled ?? true,
-		impersonateUser: data.impersonateUser,
-		event: data.event,
-		token: data.token,
-		urls: data.urls.join('\n') ?? '',
-		triggerWords: data.triggerWords.join('; ') ?? '',
-		targetRoom: data.targetRoom ?? '',
-		channel: data.channel.join(', ') ?? '',
-		username: data.username ?? '',
-		name: data.name ?? '',
-		alias: data.alias ?? '',
-		avatarUrl: data.avatarUrl ?? '',
-		emoji: data.emoji ?? '',
-		scriptEnabled: data.scriptEnabled ?? false,
-		script: data.script ?? '',
-		retryFailedCalls: data.retryFailedCalls ?? true,
-		retryCount: data.retryCount ?? 5,
-		retryDelay: data.retryDelay ?? 'power-of-ten',
-		triggerrWordAnywhere: data.triggerrWordAnywhere ?? false,
-		runOnEdits: data.runOnEdits ?? true,
-	};
-	return initialValue;
-};
-
-function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
-	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const [newData, setNewData] = useState(getInitialValue(data));
-
-	const hasUnsavedChanges = useMemo(() => Object.values(newData).filter((current) => current === null).length < Object.keys(newData).length, [JSON.stringify(newData)]);
-
-	const saveIntegration = useMethod('updateOutgoingIntegration');
-
-	const router = useRoute('admin-integrations');
-
-	const deleteQuery = useMemo(() => ({ type: 'webhook-outgoing', integrationId: data._id }), [data._id]);
-	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery, t('Your_entry_has_been_deleted'));
+	const saveIntegration = useEndpointAction('POST', 'integrations.create', useMemo(() => ({
+		...newData,
+		urls: newData.urls.split('\n'),
+		triggerWords: newData.triggerWords.split(';'),
+	}), [JSON.stringify(newData)]), t('Integration_added'));
 
 	const { outgoingEvents } = eventList;
+
+	const router = useRoute('admin-integrations');
 
 	const eventOptions = useMemo(
 		() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]),
@@ -106,26 +71,17 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		['increments-of-two', t('increments-of-two')],
 	];
 
-	const handleSave = async () => {
-		try {
-			await saveIntegration(data._id, {
-				...newData,
-				triggerWords: newData.triggerWords.split(';'),
-				urls: newData.urls.split('\n'),
-			});
 
-			dispatchToastMessage({ type: 'success', message: t('Integration_updated') });
-			onChange();
-		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: e });
+	const handleSave = async () => {
+		const result = await saveIntegration();
+		if (result.success) {
+			router.push({ id: result.integration._id, context: 'edit', type: 'outgoing' });
 		}
 	};
-
-	const testEqual = (a, b) => a === b || !(a || b);
 	const getValue = (e) => e.currentTarget.value;
-	const handleChange = (field, currentValue, getNewValue = getValue, areEqual = testEqual) => (e) => setNewData({
+	const handleChange = (field, getNewValue = getValue) => (e) => setNewData({
 		...newData,
-		[field]: areEqual(getNewValue(e), currentValue) ? null : getNewValue(e),
+		[field]: getNewValue(e),
 	});
 
 	const boolTextColor = useCallback((isEnabled) => (isEnabled ? 'default' : 'hint'));
@@ -142,7 +98,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		username,
 		name,
 		alias,
-		avatarUrl,
+		avatar: avatarUrl,
 		emoji,
 		scriptEnabled,
 		script,
@@ -176,7 +132,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						<Field>
 							<Field.Label>{t('Event_Trigger')}</Field.Label>
 							<Field.Row>
-								<Select flexGrow={1} value={event} options={eventOptions} onChange={handleChange('event', data.event, (event) => event)}/>
+								<Select flexGrow={1} value={event} options={eventOptions} onChange={handleChange('event', (event) => event)}/>
 							</Field.Row>
 							<Field.Hint>{t('Event_Trigger_Description')}</Field.Hint>
 						</Field>
@@ -185,7 +141,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
 									<Box mie='x8' color={ boolTextColor(!enabled) }>{t('False')}</Box>
-									<ToggleSwitch checked={enabled} onChange={handleChange('enabled', data.enabled, () => !enabled)} />
+									<ToggleSwitch checked={enabled} onChange={handleChange('enabled', () => !enabled)} />
 									<Box mis='x8' color={ boolTextColor(enabled) }>{t('True')}</Box>
 								</Box>
 							</Field.Row>
@@ -193,14 +149,14 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						<Field>
 							<Field.Label>{t('Name_optional')}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={name} onChange={handleChange('name', data.name)}/>
+								<TextInput flexGrow={1} value={name} onChange={handleChange('name')}/>
 							</Field.Row>
 							<Field.Hint>{t('You_should_name_it_to_easily_manage_your_integrations')}</Field.Hint>
 						</Field>
 						{showChannel && <Field>
 							<Field.Label>{t('Channel')}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={channel} onChange={handleChange('channel', data.channel.join(', '))} addon={<Icon name='at' size='x20'/>}/>
+								<TextInput flexGrow={1} value={channel} onChange={handleChange('channel')} addon={<Icon name='at' size='x20'/>}/>
 							</Field.Row>
 							<Field.Hint>{t('Channel_to_listen_on')}</Field.Hint>
 							<Field.Hint dangerouslySetInnerHTML={{ __html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general') }} />
@@ -209,7 +165,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						{showTriggerWords && <Field>
 							<Field.Label>{t('Trigger_Words')}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={triggerWords} onChange={handleChange('triggerWords', data.triggerWords.join('; '))}/>
+								<TextInput flexGrow={1} value={triggerWords} onChange={handleChange('triggerWords')}/>
 							</Field.Row>
 							<Field.Hint>{t('When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below')}</Field.Hint>
 							<Field.Hint>{t('Separate_multiple_words_with_commas')}</Field.Hint>
@@ -217,7 +173,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						{showTargetRoom && <Field>
 							<Field.Label>{t('TargetRoom')}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={targetRoom} onChange={handleChange('targetRoom', data.targetRoom)}/>
+								<TextInput flexGrow={1} value={targetRoom} onChange={handleChange('targetRoom')}/>
 							</Field.Row>
 							<Field.Hint>{t('TargetRoom_Description')}</Field.Hint>
 							<Field.Hint dangerouslySetInnerHTML={{ __html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general') }} />
@@ -225,7 +181,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						<Field>
 							<Field.Label>{t('URLs')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput rows={10} flexGrow={1} value={urls} onChange={handleChange('urls', data.urls)} addon={<Icon name='permalink' size='x20'/>}/>
+								<TextAreaInput rows={10} flexGrow={1} value={urls} onChange={handleChange('urls')} addon={<Icon name='permalink' size='x20'/>}/>
 							</Field.Row>
 						</Field>
 						<Field>
@@ -233,7 +189,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
 									<Box mie='x8' color={ boolTextColor(!impersonateUser) }>{t('False')}</Box>
-									<ToggleSwitch checked={impersonateUser} onChange={handleChange('impersonateUser', data.impersonateUser, () => !impersonateUser)} />
+									<ToggleSwitch checked={impersonateUser} onChange={handleChange('impersonateUser', () => !impersonateUser)} />
 									<Box mis='x8' color={ boolTextColor(impersonateUser) }>{t('True')}</Box>
 								</Box>
 							</Field.Row>
@@ -241,7 +197,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						<Field>
 							<Field.Label>{t('Post_as')}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={username} onChange={handleChange('username', data.username)} addon={<Icon name='user' size='x20'/>}/>
+								<TextInput flexGrow={1} value={username} onChange={handleChange('username')} addon={<Icon name='user' size='x20'/>}/>
 							</Field.Row>
 							<Field.Hint>{t('Choose_the_username_that_this_integration_will_post_as')}</Field.Hint>
 							<Field.Hint>{t('Should_exists_a_user_with_this_username')}</Field.Hint>
@@ -249,14 +205,14 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						<Field>
 							<Field.Label>{`${ t('Alias') } (${ t('optional') })`}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={alias} onChange={handleChange('alias', data.alias)} addon={<Icon name='edit' size='x20'/>}/>
+								<TextInput flexGrow={1} value={alias} onChange={handleChange('alias')} addon={<Icon name='edit' size='x20'/>}/>
 							</Field.Row>
 							<Field.Hint>{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}</Field.Hint>
 						</Field>
 						<Field>
 							<Field.Label>{`${ t('Avatar_URL') } (${ t('optional') })`}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={avatarUrl} onChange={handleChange('avatarUrl', data.avatarUrl)} addon={<Icon name='user-rounded' size='x20' alignSelf='center'/>}/>
+								<TextInput flexGrow={1} value={avatarUrl} onChange={handleChange('avatarUrl')} addon={<Icon name='user-rounded' size='x20' alignSelf='center'/>}/>
 							</Field.Row>
 							<Field.Hint>{t('You_can_change_a_different_avatar_too')}</Field.Hint>
 							<Field.Hint>{t('Should_be_a_URL_of_an_image')}</Field.Hint>
@@ -264,7 +220,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						<Field>
 							<Field.Label>{`${ t('Emoji') } (${ t('optional') })`}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={emoji} onChange={handleChange('emoji', data.emoji)} addon={<Icon name='emoji' size='x20' alignSelf='center'/>}/>
+								<TextInput flexGrow={1} value={emoji} onChange={handleChange('emoji')} addon={<Icon name='emoji' size='x20' alignSelf='center'/>}/>
 							</Field.Row>
 							<Field.Hint>{t('You_can_use_an_emoji_as_avatar')}</Field.Hint>
 							<Field.Hint dangerouslySetInnerHTML={{ __html: t('Example_s', ':ghost:') }} />
@@ -272,7 +228,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						<Field>
 							<Field.Label>{`${ t('Token') } (${ t('Optional') })`}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={token} onChange={handleChange('token', data.token)} addon={<Icon name='key' size='x20'/>}/>
+								<TextInput flexGrow={1} value={token} onChange={handleChange('token')} addon={<Icon name='key' size='x20'/>}/>
 							</Field.Row>
 						</Field>
 						<Field>
@@ -280,7 +236,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
 									<Box mie='x8' color={ boolTextColor(!scriptEnabled) }>{t('False')}</Box>
-									<ToggleSwitch checked={scriptEnabled} onChange={handleChange('scriptEnabled', data.scriptEnabled, () => !scriptEnabled)} />
+									<ToggleSwitch checked={scriptEnabled} onChange={handleChange('scriptEnabled', () => !scriptEnabled)} />
 									<Box mis='x8' color={ boolTextColor(scriptEnabled) }>{t('True')}</Box>
 								</Box>
 							</Field.Row>
@@ -288,7 +244,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						<Field>
 							<Field.Label>{t('Script')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput rows={10} flexGrow={1} value={script} onChange={handleChange('script', data.script)} addon={<Icon name='code' size='x20' alignSelf='center'/>}/>
+								<TextAreaInput rows={10} flexGrow={1} value={script} onChange={handleChange('script')} addon={<Icon name='code' size='x20' alignSelf='center'/>}/>
 							</Field.Row>
 						</Field>
 						<Field>
@@ -310,7 +266,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
 									<Box mie='x8' color={ boolTextColor(!retryFailedCalls) }>{t('False')}</Box>
-									<ToggleSwitch checked={retryFailedCalls} onChange={handleChange('retryFailedCalls', data.retryFailedCalls, () => !retryFailedCalls)} />
+									<ToggleSwitch checked={retryFailedCalls} onChange={handleChange('retryFailedCalls', () => !retryFailedCalls)} />
 									<Box mis='x8' color={ boolTextColor(retryFailedCalls) }>{t('True')}</Box>
 								</Box>
 							</Field.Row>
@@ -319,14 +275,14 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 						<Field>
 							<Field.Label>{t('Retry_Count')}</Field.Label>
 							<Field.Row>
-								<TextInput flexGrow={1} value={retryCount} onChange={handleChange('retryCount', data.retryCount)}/>
+								<TextInput flexGrow={1} value={retryCount} onChange={handleChange('retryCount')}/>
 							</Field.Row>
 							<Field.Hint>{t('Integration_Retry_Count_Description')}</Field.Hint>
 						</Field>
 						<Field>
 							<Field.Label>{t('Integration_Retry_Delay')}</Field.Label>
 							<Field.Row>
-								<Select flexGrow={1} value={retryDelay} options={retryDelayOptions} onChange={handleChange('retryDelay', data.retryDelay, (event) => event)}/>
+								<Select flexGrow={1} value={retryDelay} options={retryDelayOptions} onChange={handleChange('retryDelay', (event) => event)}/>
 							</Field.Row>
 							<Field.Hint dangerouslySetInnerHTML={{ __html: t('Integration_Retry_Delay_Description') }}/>
 						</Field>
@@ -336,7 +292,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 								<Field.Row>
 									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
 										<Box mie='x8' color={ boolTextColor(!triggerrWordAnywhere) }>{t('False')}</Box>
-										<ToggleSwitch checked={triggerrWordAnywhere} onChange={handleChange('triggerrWordAnywhere', data.triggerrWordAnywhere, () => !triggerrWordAnywhere)} />
+										<ToggleSwitch checked={triggerrWordAnywhere} onChange={handleChange('triggerrWordAnywhere', () => !triggerrWordAnywhere)} />
 										<Box mis='x8' color={ boolTextColor(triggerrWordAnywhere) }>{t('True')}</Box>
 									</Box>
 								</Field.Row>
@@ -347,7 +303,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 								<Field.Row>
 									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
 										<Box mie='x8' color={ boolTextColor(!runOnEdits) }>{t('False')}</Box>
-										<ToggleSwitch checked={runOnEdits} onChange={handleChange('runOnEdits', data.runOnEdits, () => !runOnEdits)} />
+										<ToggleSwitch checked={runOnEdits} onChange={handleChange('runOnEdits', () => !runOnEdits)} />
 										<Box mis='x8' color={ boolTextColor(runOnEdits) }>{t('True')}</Box>
 									</Box>
 								</Field.Row>
@@ -357,14 +313,8 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 					</FieldGroup>
 				</Accordion.Item>
 				<Field>
-					<Field.Row display='flex' flexDirection='column'>
-						<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-							<Margins inlineEnd='x4'>
-								<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={() => setNewData(getInitialValue(data))}>{t('Reset')}</Button>
-								<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
-							</Margins>
-						</Box>
-						<Button mbs='x4' primary danger w='full' onClick={() => { deleteIntegration(); router.push({}); }}>{t('Delete')}</Button>
+					<Field.Row>
+						<Button w='full' mie='none' flexGrow={1} onClick={handleSave}>{t('Save')}</Button>
 					</Field.Row>
 				</Field>
 			</Accordion>

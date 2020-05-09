@@ -1842,6 +1842,7 @@
   "Integration_Incoming_WebHook": "Incoming WebHook Integration",
   "Integration_New": "New Integration",
   "Integration_Outgoing_WebHook": "Outgoing WebHook Integration",
+  "Webhook_Details": "WebHook Details",
   "Integration_Outgoing_WebHook_History": "Outgoing WebHook Integration History",
   "Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger": "Data Passed to Integration",
   "Integration_Outgoing_WebHook_History_Data_Passed_To_URL": "Data Passed to URL",
