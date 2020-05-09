@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { UserRoles, RoomRoles, ChatMessage, CachedChatMessage } from '../../../models';
+import { UserRoles, RoomRoles, ChatMessage } from '../../../models';
 import { handleError } from '../../../utils';
 import { Notifications } from '../../../notifications';
 
@@ -24,17 +24,17 @@ Meteor.startup(function() {
 						RoomRoles.upsert({ rid: role.scope, 'u._id': role.u._id }, { $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } });
 					} else {
 						UserRoles.upsert({ _id: role.u._id }, { $addToSet: { roles: role._id }, $set: { username: role.u.username } });
-						ChatMessage.update({ 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true }, CachedChatMessage.save);
+						ChatMessage.update({ 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
 					}
 				} else if (role.type === 'removed') {
 					if (role.scope) {
 						RoomRoles.update({ rid: role.scope, 'u._id': role.u._id }, { $pull: { roles: role._id } });
 					} else {
 						UserRoles.update({ _id: role.u._id }, { $pull: { roles: role._id } });
-						ChatMessage.update({ 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true }, CachedChatMessage.save);
+						ChatMessage.update({ 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 					}
 				} else if (role.type === 'changed') {
-					ChatMessage.update({ roles: role._id }, { $inc: { rerender: 1 } }, { multi: true }, CachedChatMessage.save);
+					ChatMessage.update({ roles: role._id }, { $inc: { rerender: 1 } }, { multi: true });
 				}
 			});
 		}

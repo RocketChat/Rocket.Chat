@@ -9,7 +9,7 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
-import { ChatMessage, ChatSubscription, ChatRoom, CachedChatMessage } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 
@@ -273,7 +273,7 @@ export const RoomHistoryManager = new class {
 			if (!result || !result.messages) {
 				return;
 			}
-			ChatMessage.remove({ rid: message.rid }, CachedChatMessage.save);
+			ChatMessage.remove({ rid: message.rid });
 			for (const msg of Array.from(result.messages)) {
 				if (msg.t !== 'command') {
 					upsertMessage({ msg, subscription });
@@ -341,9 +341,9 @@ export const RoomHistoryManager = new class {
 			limit: 50,
 		};
 		const retain = ChatMessage.find(query, options).fetch();
-		ChatMessage.remove({ rid }, CachedChatMessage.save);
+		ChatMessage.remove({ rid });
 		retain.forEach((message) => {
-			ChatMessage.insert(message, CachedChatMessage.save);
+			ChatMessage.insert(message);
 		});
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
