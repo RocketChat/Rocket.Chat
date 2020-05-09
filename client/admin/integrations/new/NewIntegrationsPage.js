@@ -1,5 +1,5 @@
 import { Tabs, Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import React, { useState } from 'react';
+import React from 'react';
 
 import Page from '../../../components/basic/Page';
 import NewIncomingWebhook from './NewIncomingWebhook';
