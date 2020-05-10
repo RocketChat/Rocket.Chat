@@ -36,7 +36,12 @@
 									{{/each}}
 								</select>
 							</div>
-							<button class="rc-button rc-button--cancel setting-action js-dont-ask-remove">{{_ "Remove"}}</button>
+							<button text="{{_ 'Remove'}}" class="rc-button rc-button--cancel setting-action js-dont-ask-remove">
+								<!-- will be displayed only if width < 780px -->
+								<i class="rc-button-icon icon-ccw color-error-contrast"></i>
+								<!-- will be displayed if width >= 780px -->
+								<div class="rc-button-text">{{_ "Remove"}}</div>
+							</button>
 						</div>
 					</div>
 				</div>
