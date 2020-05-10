@@ -2,7 +2,6 @@
     "name": "Viasat Connect",
     "short_name": "Viasat Connect",
     "background_color": "#0B6379",
-    "theme_color":"#0B6379",
     "icons": [
         {
             "src": "images/icons/icon-72x72.png",
@@ -46,5 +45,6 @@
         }
     ],
     "start_url": "/",
-    "display": "standalone"
+    "display": "standalone",
+    "gcm_sender_id": "784135847509"
 }
