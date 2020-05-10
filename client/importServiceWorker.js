@@ -35,9 +35,6 @@ Meteor.startup(() => {
 				scope: './',
 			})
 			.then(function(reg) {
-				console.log(
-					`Service worker has been registered for scope: ${reg.scope}`
-				);
 				reg.pushManager.getSubscription().then(function(sub) {
 					if (sub === null) {
 						// Update UI to ask user to register for Push
