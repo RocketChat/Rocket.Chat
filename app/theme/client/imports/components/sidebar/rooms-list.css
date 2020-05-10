@@ -54,6 +54,20 @@
 	}
 }
 
+@media (width <= 500px) {
+	.rooms-list {
+		&__type {
+			padding: 0 var(--sidebar-small-default-padding) 1rem var(--sidebar-small-default-padding);
+
+			font-size: var(--rooms-list-title-text-size-mobile);
+		}
+
+		&__empty-room {
+			font-size: var(--rooms-list-empty-text-size-mobile);
+		}
+	}
+}
+
 @media (width <= 400px) {
 	padding: 0 calc(var(--sidebar-small-default-padding) - 4px);
 

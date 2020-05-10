@@ -5,8 +5,8 @@
 }
 
 .read-receipt .rc-icon {
-	height: 0.8em;
-	width: 0.8em;
+	height: 1em;
+	width: 1em;
 }
 
 .message:hover .read-receipt, .message.active .read-receipt {
