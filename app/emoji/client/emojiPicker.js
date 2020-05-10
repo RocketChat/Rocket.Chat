@@ -58,7 +58,7 @@ function getEmojisBySearchTerm(searchTerm) {
 
 		if (searchRegExp.test(current)) {
 			const emojiObject = emoji.list[current];
-			const { emojiPackage, shortnames } = emojiObject;
+			const { emojiPackage, shortnames = [] } = emojiObject;
 			let tone = '';
 			current = current.replace(/:/g, '');
 			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
