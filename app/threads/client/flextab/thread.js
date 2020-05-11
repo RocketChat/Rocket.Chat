@@ -54,7 +54,9 @@ Template.thread.events({
 Template.thread.helpers({
 	...dropzoneHelpers,
 	mainMessage() {
-		return Template.parentData().mainMessage;
+		const { Threads, state } = Template.instance();
+		const tmid = state.get('tmid');
+		return Threads.findOne({ _id: tmid });
 	},
 	isLoading() {
 		return Template.instance().state.get('loading') !== false;
@@ -62,7 +64,7 @@ Template.thread.helpers({
 	messages() {
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
-		return Threads.find({ tmid }, { sort });
+		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
 	messageContext() {
 		const result = messageContext.call(this, { rid: this.mainMessage.rid });

@@ -56,7 +56,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	useEffect(() => {
 		const view = mainMessage.rid && ref.current && Blaze.renderWithData(Template.thread, { mainMessage, jump, following, ...props }, ref.current);
 		return () => view && Blaze.remove(view);
-	}, [ref.current, mainMessage.rid, mainMessage.msg]);
+	}, [ref.current, mainMessage.rid, mainMessage._id]);
 
 
 	if (!mainMessage.rid) {
