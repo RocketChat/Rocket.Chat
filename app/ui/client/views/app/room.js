@@ -295,7 +295,7 @@ Template.room.helpers({
 		return state.get('subscribed');
 	},
 	messagesHistory() {
-		const rid = Template.instance().state.get('rid');
+		const rid = Template.instance().state.get('debounced_rid');
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
 		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
@@ -1016,6 +1016,12 @@ Template.room.onCreated(function() {
 
 	this.autorun(() => this.state.set('rid', Template.currentData()._id()));
 
+
+	const debounced = _.debounce((rid) => Tracker.afterFlush(()=> this.state.set('debounced_rid', rid)), 100);
+
+	this.autorun(() => debounced(this.state.get('rid')));
+
+
 	this.onFile = (filesToUpload) => {
 		fileUpload(filesToUpload, chatMessages[rid].input, { rid });
 	};
@@ -1339,7 +1345,6 @@ Template.room.onRendered(function() {
 
 	this.autorun(() => {
 		const rid = this.state.get('rid');
-
 		Rooms.findOne(rid);
 		const count = this.state.get('count');
 		if (count === 0) {
