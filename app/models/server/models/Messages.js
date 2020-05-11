@@ -190,7 +190,7 @@ export class Messages extends Base {
 		const v2Data = RoomEvents.fromV1Data(message);
 
 		// Generate message hash
-		v2Data._msgSha = SHA256(v2Data.msg);
+		v2Data._msgSha = SHA256(v2Data.msg || '');
 
 		const event = Promise.await(RoomEvents.createMessageEvent(getLocalSrc(), message.rid, message._id, v2Data));
 
