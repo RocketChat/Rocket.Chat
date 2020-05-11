@@ -19,17 +19,7 @@ function allowAccessClosedRoomOfSameDepartment(room, user) {
 	if (!agentOfDepartment) {
 		return;
 	}
-	return hasPermission(user._id, 'view-livechat-closed-room-same-department');
-}
-
-function allowAccessToClosedRoomsByAnotherAgent(room, user) {
-	if (!room || !user || room.t !== 'l' || room.open) {
-		return;
-	}
-	const { _id: userId } = user;
-	const { servedBy: { _id: agentId } = {} } = room;
-
-	return userId !== agentId && hasPermission(user._id, 'view-livechat-closed-room-by-another-agent');
+	return hasPermission(user._id, 'view-livechat-room-closed-same-department');
 }
 
 Meteor.startup(() => {
@@ -45,7 +35,7 @@ Meteor.startup(() => {
 		}
 		const { _id: userId } = user;
 		const { servedBy: { _id: agentId } = {} } = room;
-		return userId === agentId;
+		return userId === agentId || (!room.open && hasPermission(user._id, 'view-livechat-closed-room-by-another-agent'));
 	});
 
 	addRoomAccessValidator(function(room, user, extraData) {
@@ -81,7 +71,6 @@ Meteor.startup(() => {
 	});
 
 	addRoomAccessValidator(allowAccessClosedRoomOfSameDepartment);
-	addRoomAccessValidator(allowAccessToClosedRoomsByAnotherAgent);
 
 	callbacks.add('beforeLeaveRoom', function(user, room) {
 		if (room.t !== 'l') {
