@@ -2,7 +2,6 @@ import url from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
@@ -11,8 +10,9 @@ import CAS from 'cas';
 
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings';
-import { Rooms, Subscriptions, CredentialTokens } from '../../models';
+import { Rooms, CredentialTokens } from '../../models/server';
 import { _setRealName } from '../../lib';
+import { createRoom } from '../../lib/server/functions/createRoom';
 
 RoutePolicy.declare('/_cas/', 'network');
 
@@ -125,6 +125,7 @@ Accounts.registerLoginHandler(function(options) {
 	const cas_version = parseFloat(settings.get('CAS_version'));
 	const sync_enabled = settings.get('CAS_Sync_User_Data_Enabled');
 	const trustUsername = settings.get('CAS_trust_username');
+	const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
 
 	// We have these
 	const ext_attrs = {
@@ -201,7 +202,7 @@ Accounts.registerLoginHandler(function(options) {
 
 			// Update email
 			if (int_attrs.email) {
-				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified: true }] } });
+				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified }] } });
 			}
 		}
 	} else {
@@ -220,6 +221,13 @@ Accounts.registerLoginHandler(function(options) {
 			},
 		};
 
+		// Add username
+		if (int_attrs.username) {
+			_.extend(newUser, {
+				username: int_attrs.username,
+			});
+		}
+
 		// Add User.name
 		if (int_attrs.name) {
 			_.extend(newUser, {
@@ -230,7 +238,7 @@ Accounts.registerLoginHandler(function(options) {
 		// Add email
 		if (int_attrs.email) {
 			_.extend(newUser, {
-				emails: [{ address: int_attrs.email, verified: true }],
+				emails: [{ address: int_attrs.email, verified }],
 			});
 		}
 
@@ -249,18 +257,7 @@ Accounts.registerLoginHandler(function(options) {
 				if (room_name) {
 					let room = Rooms.findOneByNameAndType(room_name, 'c');
 					if (!room) {
-						room = Rooms.createWithIdTypeAndName(Random.id(), 'c', room_name);
-					}
-
-					if (!Subscriptions.findOneByRoomIdAndUserId(room._id, userId)) {
-						Subscriptions.createWithRoomAndUser(room, user, {
-							ts: new Date(),
-							open: true,
-							alert: true,
-							unread: 1,
-							userMentions: 1,
-							groupMentions: 0,
-						});
+						room = createRoom('c', room_name, user.username);
 					}
 				}
 			});

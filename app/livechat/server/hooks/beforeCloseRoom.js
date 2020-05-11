@@ -3,20 +3,37 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../callbacks';
 import { LivechatDepartment } from '../../../models';
 
-callbacks.add('livechat.beforeCloseRoom', (room) => {
-	const { departmentId } = room;
+const concatUnique = (...arrays) => [...new Set([].concat(...arrays.filter(Array.isArray)))];
+
+const normalizeParams = (params, tags = []) => Object.assign(params, { extraData: { tags } });
+
+callbacks.add('livechat.beforeCloseRoom', (originalParams = {}) => {
+	const { room, options } = originalParams;
+	const { departmentId, tags: optionsTags } = room;
+	const { clientAction, tags: oldRoomTags } = options;
+	const roomTags = concatUnique(oldRoomTags, optionsTags);
+
 	if (!departmentId) {
-		return room;
+		return normalizeParams({ ...originalParams }, roomTags);
 	}
 
 	const department = LivechatDepartment.findOneById(departmentId);
-	if (!department || !department.requestTagBeforeClosingChat) {
-		return room;
+	if (!department) {
+		return normalizeParams({ ...originalParams }, roomTags);
 	}
 
-	if (room.tags && room.tags.length > 0) {
-		return room;
+	const { requestTagBeforeClosingChat, chatClosingTags } = department;
+	const extraRoomTags = concatUnique(roomTags, chatClosingTags);
+
+	if (!requestTagBeforeClosingChat) {
+		return normalizeParams({ ...originalParams }, extraRoomTags);
 	}
 
-	throw new Meteor.Error('error-tags-must-be-assigned-before-closing-chat', 'Tag(s) must be assigned before closing the chat', { method: 'livechat.beforeCloseRoom' });
+	const checkRoomTags = !clientAction || (roomTags && roomTags.length > 0);
+	const checkDepartmentTags = chatClosingTags && chatClosingTags.length > 0;
+	if (!checkRoomTags || !checkDepartmentTags) {
+		throw new Meteor.Error('error-tags-must-be-assigned-before-closing-chat', 'Tag(s) must be assigned before closing the chat', { method: 'livechat.beforeCloseRoom' });
+	}
+
+	return normalizeParams({ ...originalParams }, extraRoomTags);
 }, callbacks.priority.HIGH, 'livechat-before-close-Room');
