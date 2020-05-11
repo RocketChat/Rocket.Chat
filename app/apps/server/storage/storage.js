@@ -37,11 +37,12 @@ export class AppRealStorage extends AppStorage {
 	}
 
 	async update(item) {
-		return this.db.findAndModify({
-			query: { id: item.id },
-			update: item,
-			new: true,
-		});
+		return this.db.raw.findAndModify(
+			{ id: item.id },
+			null,
+			{ $set: item },
+			{ new: true },
+		).then(({ value }) => value);
 	}
 
 	async remove(id) {
