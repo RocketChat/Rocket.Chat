@@ -925,6 +925,9 @@ settings.addGroup('General', function() {
 			public: true,
 			i18nDescription: 'Notifications_Always_Notify_Mobile_Description',
 		});
+		this.add('Notification_Service_User_Username', 'viasat.notification.service', {
+			type: 'string',
+		});
 	});
 	this.section('REST API', function() {
 		return this.add('API_User_Limit', 500, {
