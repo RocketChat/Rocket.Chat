@@ -38399,6 +38399,26 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "2.4.12": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17578",
+          "title": "[FIX] Email configs not updating after setting changes",
+          "userLogin": "rodrigok",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }
