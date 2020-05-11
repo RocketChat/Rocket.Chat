@@ -93,8 +93,7 @@ Template.visitorInfo.helpers({
 
 	customVisitorFields() {
 		const customFields = Template.instance().customFields.get();
-		const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
-		if (!canViewCustomFields) {
+		if (!hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields'])) {
 			return;
 		}
 		if (!customFields || customFields.length === 0) {

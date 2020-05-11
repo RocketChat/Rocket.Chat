@@ -277,7 +277,7 @@ export const Livechat = {
 		return false;
 	},
 
-	saveGuest({ _id, name, email, phone, livechatData = {} }) {
+	saveGuest({ _id, name, email, phone, livechatData = {} }, userId) {
 		const updateData = {};
 
 		if (name) {
@@ -292,20 +292,23 @@ export const Livechat = {
 
 		const customFields = {};
 		const fields = LivechatCustomField.find({ scope: 'visitor' });
-		fields.forEach((field) => {
-			if (!livechatData.hasOwnProperty(field._id)) {
-				return;
-			}
-			const value = s.trim(livechatData[field._id]);
-			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
-				const regexp = new RegExp(field.regexp);
-				if (!regexp.test(value)) {
-					throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+
+		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
+			fields.forEach((field) => {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					return;
 				}
-			}
-			customFields[field._id] = value;
-		});
-		updateData.livechatData = customFields;
+				const value = s.trim(livechatData[field._id]);
+				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+					const regexp = new RegExp(field.regexp);
+					if (!regexp.test(value)) {
+						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+					}
+				}
+				customFields[field._id] = value;
+			});
+			updateData.livechatData = customFields;
+		}
 		const ret = LivechatVisitors.saveGuestById(_id, updateData);
 
 		Meteor.defer(() => {
@@ -412,10 +415,8 @@ export const Livechat = {
 			}
 		}
 
-		if (!hasPermission()) {
-			if (customField.scope === 'room') {
-				return LivechatRooms.updateDataByToken(token, key, value, overwrite);
-			}
+		if (customField.scope === 'room') {
+			return LivechatRooms.updateDataByToken(token, key, value, overwrite);
 		}
 		return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 	},
@@ -467,7 +468,7 @@ export const Livechat = {
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		if (userId && hasPermission(userId, 'edit-livechat-room-customfields')) {
+		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
 			const fields = LivechatCustomField.find({ scope: 'room' });
 			fields.forEach((field) => {
 				if (!livechatData.hasOwnProperty(field._id)) {
