@@ -167,12 +167,12 @@ Template.thread.onRendered(function() {
 
 		this.callbackRemove = () => callbacks.remove('streamNewMessage', `thread-${ rid }`);
 
-		callbacks.add('streamNewMessage', (msg) => {
+		callbacks.add('streamNewMessage', _.debounce((msg) => {
 			if (rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
 				return;
 			}
 			Meteor.call('readThreads', tmid);
-		}, callbacks.priority.MEDIUM, `thread-${ rid }`);
+		}, 1000), callbacks.priority.MEDIUM, `thread-${ rid }`);
 	});
 
 
