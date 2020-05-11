@@ -70,7 +70,7 @@ export function IntegrationsTable() {
 	};
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
+		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w={isBig ? 'x280' : 'x240'}>{t('Name')}</Th>,
 		<Th key={'channel'} direction={sort[1]} active={sort[0] === 'channel'} onClick={onHeaderClick} sort='channel'>{t('Post_to')}</Th>,
 		<Th key={'_createdBy'} direction={sort[1]} active={sort[0] === '_createdBy'} onClick={onHeaderClick} sort='_createdBy'>{t('Created_by')}</Th>,
 		isBig && <Th key={'_createdAt'} direction={sort[1]} active={sort[0] === '_createdAt'} onClick={onHeaderClick} sort='_createdAt'>{t('Created_at')}</Th>,
@@ -79,7 +79,7 @@ export function IntegrationsTable() {
 
 	const renderRow = useCallback(({ name, _id, type, username, _createdAt, _createdBy: { username: createdBy }, channel }) =>
 		<Table.Row key={_id} onKeyDown={onClick(_id, type)} onClick={onClick(_id, type)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<Table.Cell style={style}>{name}</Table.Cell>
+			<Table.Cell style={style}>{`${ type === 'webhook-incoming' ? t('Incoming_WebHook') : t('Outgoing_WebHook') } - ${ name }`}</Table.Cell>
 			<Table.Cell style={style}>{channel.join(', ')}</Table.Cell>
 			<Table.Cell style={style}>{createdBy}</Table.Cell>
 			{isBig && <Table.Cell style={style}>{formatDateAndTime(_createdAt)}</Table.Cell>}

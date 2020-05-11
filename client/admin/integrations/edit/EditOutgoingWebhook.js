@@ -318,7 +318,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 							</Field>
 						</FieldGroup>
 					</Accordion.Item>
-					<Accordion.Item title={t('Advanced_Settings')}>
+					<Accordion.Item title={t('Integration_Advanced_Settings')}>
 						<FieldGroup>
 							<Field>
 								<Field.Label>{t('Integration_Retry_Failed_Url_Calls')}</Field.Label>

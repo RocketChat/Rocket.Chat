@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import Page from '../../../components/basic/Page';
 
@@ -20,7 +20,8 @@ const initialState = {
 
 export default function NewIncomingWebhook({ data, setData, ...props }) {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
+
+	const router = useRoute('admin-integrations');
 
 	const [newData, setNewData] = useState(initialState);
 
@@ -29,12 +30,9 @@ export default function NewIncomingWebhook({ data, setData, ...props }) {
 	const saveAction = useEndpointAction('POST', 'integrations.create', useMemo(() => ({ ...newData, type: 'webhook-incoming' }), [JSON.stringify(newData)]), t('Integration_added'));
 
 	const handleSave = async () => {
-		try {
-			await saveAction();
-			dispatchToastMessage({ type: 'success', message: t('Integration_added') });
-			setNewData(initialState);
-		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: e });
+		const result = await saveAction();
+		if (result.success) {
+			router.push({ context: 'edit', type: 'incoming', id: result.integration._id });
 		}
 	};
 

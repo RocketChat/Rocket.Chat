@@ -12,7 +12,7 @@ function IntegrationsPage() {
 	const router = useRoute('admin-integrations');
 
 	const handleNewButtonClick = () => {
-		router.push({ context: 'new', tab: 'incoming' });
+		router.push({ context: 'new', type: 'incoming' });
 	};
 
 	return <Page flexDirection='column'>

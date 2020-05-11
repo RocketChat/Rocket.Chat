@@ -64,7 +64,7 @@ export default function NewIntegrationsPage({ ...props }) {
 	};
 
 	return <Page flexDirection='column' {...props}>
-		<Page.Header title={t('Integrations')} >
+		<Page.Header title={type === 'incoming' ? t('Integration_Incoming_WebHook') : t('Integration_Outgoing_WebHook')} >
 			<ButtonGroup>
 				<Button onClick={handleClickReturn}>
 					<Icon name='back' size='x16'/> {t('Back')}
