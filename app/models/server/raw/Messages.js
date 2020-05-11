@@ -1,6 +1,15 @@
 import { BaseRaw } from './BaseRaw';
 
 export class MessagesRaw extends BaseRaw {
+	findVisibleByRoomId(roomId, options) {
+		const query = {
+			_hidden: { $ne: true },
+			rid: roomId,
+		};
+
+		return this.find(query, options);
+	}
+
 	findVisibleByMentionAndRoomId(username, rid, options) {
 		const query = {
 			_hidden: { $ne: true },
@@ -172,4 +181,15 @@ export class MessagesRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params).toArray();
 	}
+
+	// #region counting methods
+	countVisibleByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			_hidden: { $ne: true },
+		};
+
+		return this.col.count(query);
+	}
+	// #endregion count methods
 }
