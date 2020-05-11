@@ -16,7 +16,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import { useHilightedCode } from '../../../hooks/useHilightedCode';
+import { useHilightCode } from '../../../hooks/useHilightCode';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useExampleData } from '../exampleIncomingData';
 import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
@@ -59,6 +59,8 @@ export default function NewOutgoingWebhook({ data, onChange, setSaveAction, ...p
 	const { outgoingEvents } = eventList;
 
 	const router = useRoute('admin-integrations');
+
+	const hilightCode = useHilightCode();
 
 	const eventOptions = useMemo(
 		() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]),
@@ -118,7 +120,7 @@ export default function NewOutgoingWebhook({ data, onChange, setSaveAction, ...p
 		url: null,
 	});
 
-	const hilightedExampleJson = useHilightedCode('json', JSON.stringify(exampleData, null, 2));
+	const hilightedExampleJson = hilightCode('json', JSON.stringify(exampleData, null, 2));
 
 	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
 	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);

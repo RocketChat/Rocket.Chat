@@ -21,7 +21,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/use
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useHilightedCode } from '../../../hooks/useHilightedCode';
+import { useHilightCode } from '../../../hooks/useHilightCode';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useExampleData } from '../exampleIncomingData';
 import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
@@ -47,7 +47,7 @@ export default function EditOutgoingWebhookWithData({ integrationId, ...props })
 	}
 
 	if (error) {
-		return <Box mbs='x16' {...props}>{t('User_not_found')}</Box>;
+		return <Box mbs='x16' {...props}>{t('Oops_page_not_found')}</Box>;
 	}
 
 	return <EditOutgoingWebhook data={data.integration} onChange={onChange} {...props}/>;
@@ -91,6 +91,8 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 	const saveIntegration = useMethod('updateOutgoingIntegration');
 
 	const router = useRoute('admin-integrations');
+
+	const hilightCode = useHilightCode();
 
 	const deleteQuery = useMemo(() => ({ type: 'webhook-outgoing', integrationId: data._id }), [data._id]);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
@@ -174,7 +176,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		url: null,
 	});
 
-	const hilightedExampleJson = useHilightedCode('json', JSON.stringify(exampleData, null, 2));
+	const hilightedExampleJson = hilightCode('json', JSON.stringify(exampleData, null, 2));
 
 	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
 	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);

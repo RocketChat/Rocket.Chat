@@ -6,6 +6,7 @@ import NotAuthorizedPage from '../NotAuthorizedPage';
 import IntegrationsPage from './IntegrationsPage';
 import NewIntegrationsPage from './new/NewIntegrationsPage';
 import EditIntegrationsPage from './edit/EditIntegrationsPage';
+import OutgoingWebhookHistoryPage from './edit/OutgoingWebhookHistoryPage';
 
 function IntegrationsRoute() {
 	const canViewIntegrationsPage = useAtLeastOnePermission([
@@ -28,6 +29,10 @@ function IntegrationsRoute() {
 
 	if (context === 'edit') {
 		return <EditIntegrationsPage />;
+	}
+
+	if (context === 'history') {
+		return <OutgoingWebhookHistoryPage />;
 	}
 
 	return <IntegrationsPage />;

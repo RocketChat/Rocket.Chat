@@ -52,12 +52,16 @@ export default function NewIntegrationsPage({ ...props }) {
 
 	const router = useRoute('admin-integrations');
 
+	const type = useRouteParameter('type');
+	const integrationId = useRouteParameter('id');
+
 	const handleClickReturn = () => {
 		router.push({ });
 	};
 
-	const type = useRouteParameter('type');
-	const integrationId = useRouteParameter('id');
+	const handleClickHistory = () => {
+		router.push({ context: 'history', type: 'outgoing', id: integrationId });
+	};
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={t('Integrations')} >
@@ -65,7 +69,7 @@ export default function NewIntegrationsPage({ ...props }) {
 				<Button onClick={handleClickReturn}>
 					<Icon name='back' size='x16'/> {t('Back')}
 				</Button>
-				{/* {type === 'outgoing' && <Button onClick={handleClickHistory}>{t('History')}</Button>} */}
+				{type === 'outgoing' && <Button onClick={handleClickHistory}>{t('History')}</Button>}
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>

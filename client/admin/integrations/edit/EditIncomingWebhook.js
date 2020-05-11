@@ -5,7 +5,7 @@ import { SuccessModal, DeleteWarningModal } from './EditIntegrationsPage';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useMethod, useAbsoluteUrl } from '../../../contexts/ServerContext';
-import { useHilightedCode } from '../../../hooks/useHilightedCode';
+import { useHilightCode } from '../../../hooks/useHilightCode';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -32,7 +32,7 @@ export default function EditIncomingWebhookWithData({ integrationId, ...props })
 	}
 
 	if (error) {
-		return <Box mbs='x16' {...props}>{t('User_not_found')}</Box>;
+		return <Box mbs='x16' {...props}>{t('Oops_page_not_found')}</Box>;
 	}
 
 	return <EditIncomingWebhook data={data.integration} onChange={onChange} {...props}/>;
@@ -52,6 +52,8 @@ function EditIncomingWebhook({ data, setData, onChange, ...props }) {
 	const saveIntegration = useMethod('updateIncomingIntegration');
 
 	const router = useRoute('admin-integrations');
+
+	const hilightCode = useHilightCode();
 
 	const handleDeleteIntegration = () => {
 		const closeModal = () => setModal();
@@ -104,7 +106,7 @@ function EditIncomingWebhook({ data, setData, onChange, ...props }) {
 		url,
 	});
 
-	const hilightedExampleJson = useHilightedCode('json', JSON.stringify(exampleData, null, 2));
+	const hilightedExampleJson = hilightCode('json', JSON.stringify(exampleData, null, 2));
 
 	return <>
 		<Page.ScrollableContent pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
