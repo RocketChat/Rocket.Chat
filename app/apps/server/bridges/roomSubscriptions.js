@@ -3,14 +3,6 @@ import { Subscriptions as SubscriptionsRaw } from '../../../models/server/raw';
 export class AppRoomSubscriptionBridge {
 	constructor(orch) {
 		this.orch = orch;
-		this.testingIt();
-	}
-
-	async testingIt() {
-		console.log('awaited inside of for loop');
-		for await (const thing of await this.getByRoomId('GENERAL', 'fake3')) {
-			console.log('thing', thing);
-		}
 	}
 
 	async getByRoomId(roomId, appId) {
@@ -23,11 +15,8 @@ export class AppRoomSubscriptionBridge {
 				let exhausted = false;
 				let currentIndex = 0;
 
-				console.log('inside of the iterator function with a count of:', totalCount);
-
 				return {
 					async next() {
-						console.log('inside the iterator\'s next() function');
 						// currentIndex will always be 0 based whereas count is always 1 based.
 						// so we check if it is equal to or greater than the total count
 						// and if so, then we are done with this iteration
@@ -114,12 +103,10 @@ export class AppRoomSubscriptionBridge {
 						};
 					},
 					async throw(e) {
-						console.log('oops something is wrong');
 						throw e;
 					},
 					async return() {
 						exhausted = true;
-						console.log('I have been released !!!');
 						return {
 							value: undefined,
 							done: true,

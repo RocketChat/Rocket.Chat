@@ -1,4 +1,5 @@
 import { Subscriptions } from '../../../models';
+import { transformMappedData } from '../../lib/misc/transformMappedData';
 
 export class AppRoomSubscriptionsConverter {
 	constructor(orch) {
@@ -14,28 +15,32 @@ export class AppRoomSubscriptionsConverter {
 			return undefined;
 		}
 
-		let user;
-		if (subscription.u && subscription.u._id) {
-			user = this.orch.getConverters().get('users').convertById(subscription.u._id);
-		}
-
-		let room;
-		if (subscription.rid) {
-			room = this.orch.getConverters().get('rooms').convertById(subscription.rid);
-		}
-
-		return {
-			id: subscription._id,
-			room,
-			user,
-			isHidden: !subscription.open,
-			hasAlert: subscription.alert,
-			unreadCount: subscription.unread,
-			userMentionsCount: subscription.userMentions,
-			groupMentionsCount: subscription.groupMentions,
-			createdAt: subscription.ts,
-			updatedAt: subscription._updatedAt,
-			lastSeenAt: subscription.ls,
+		const map = {
+			id: '_id',
+			hasAlert: 'alert',
+			unreadCount: 'unread',
+			userMentionsCount: 'userMentions',
+			groupMentionsCount: 'groupMentions',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			lastSeenAt: 'ls',
+			isHidden: (subscription) => {
+				const result = !subscription.open;
+				delete subscription.open;
+				return result;
+			},
+			user: (subscription) => {
+				const result = this.orch.getConverters().get('users').convertById(subscription.u._id);
+				delete subscription.u;
+				return result;
+			},
+			room: (subscription) => {
+				const result = this.orch.getConverters().get('rooms').convertById(subscription.rid);
+				delete subscription.rid;
+				return result;
+			},
 		};
+
+		return transformMappedData(subscription, map);
 	}
 }
