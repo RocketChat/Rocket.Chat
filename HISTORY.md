@@ -1,4 +1,21 @@
 
+# 3.0.13
+`2020-05-11  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.14.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+
+- Email configs not updating after setting changes ([#17578](https://github.com/RocketChat/Rocket.Chat/pull/17578))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+
 # 3.0.12
 `2020-04-03  ·  2 🔍  ·  1 👩‍💻👨‍💻`
 
@@ -1080,7 +1097,6 @@
 ### Engine versions
 - Node: `8.15.1`
 - NPM: `6.9.0`
-- MongoDB: ``
 
 ### 🐛 Bug fixes
 
@@ -5672,9 +5688,9 @@
 ### ⚠️ BREAKING CHANGES
 
 
-- Update the default port of the Prometheus exporter ([#11351](https://github.com/RocketChat/Rocket.Chat/pull/11351) by [@thaiphv](https://github.com/thaiphv))
+- **IMPROVE:** New emails design ([#12009](https://github.com/RocketChat/Rocket.Chat/pull/12009))
 
-- [IMPROVE] New emails design ([#12009](https://github.com/RocketChat/Rocket.Chat/pull/12009))
+- Update the default port of the Prometheus exporter ([#11351](https://github.com/RocketChat/Rocket.Chat/pull/11351) by [@thaiphv](https://github.com/thaiphv))
 
 ### 🎉 New features
 
@@ -8207,7 +8223,7 @@
 ### 🐛 Bug fixes
 
 
-- [i18n] add room type translation support for room-changed-privacy message ([#9369](https://github.com/RocketChat/Rocket.Chat/pull/9369) by [@cyclops24](https://github.com/cyclops24))
+- **i18n:** add room type translation support for room-changed-privacy message ([#9369](https://github.com/RocketChat/Rocket.Chat/pull/9369) by [@cyclops24](https://github.com/cyclops24))
 
 - Fix livechat register form ([#9452](https://github.com/RocketChat/Rocket.Chat/pull/9452))
 
@@ -8618,6 +8634,10 @@
 ### 🐛 Bug fixes
 
 
+- **i18n:** My Profile & README.md links ([#8270](https://github.com/RocketChat/Rocket.Chat/pull/8270) by [@Rzeszow](https://github.com/Rzeszow))
+
+- **PL:** Polish translation ([#7989](https://github.com/RocketChat/Rocket.Chat/pull/7989) by [@Rzeszow](https://github.com/Rzeszow))
+
 - Can't react on Read Only rooms even when enabled ([#8925](https://github.com/RocketChat/Rocket.Chat/pull/8925) by [@karlprieb](https://github.com/karlprieb))
 
 - CAS does not share secrets when operating multiple server instances ([#8654](https://github.com/RocketChat/Rocket.Chat/pull/8654) by [@AmShaegar13](https://github.com/AmShaegar13))
@@ -8806,8 +8826,6 @@
 
 - Attachment icons alignment in LTR and RTL ([#8271](https://github.com/RocketChat/Rocket.Chat/pull/8271) by [@cyclops24](https://github.com/cyclops24))
 
-- [i18n] My Profile & README.md links ([#8270](https://github.com/RocketChat/Rocket.Chat/pull/8270) by [@Rzeszow](https://github.com/Rzeszow))
-
 - Incorrect URL for login terms when using prefix ([#8211](https://github.com/RocketChat/Rocket.Chat/pull/8211) by [@Darkneon](https://github.com/Darkneon))
 
 - Scrollbar not using new style ([#8190](https://github.com/RocketChat/Rocket.Chat/pull/8190))
@@ -8851,8 +8869,6 @@
 - copy to clipboard and update clipboard.js library ([#8039](https://github.com/RocketChat/Rocket.Chat/pull/8039) by [@karlprieb](https://github.com/karlprieb))
 
 - Recent emojis not updated when adding via text ([#7998](https://github.com/RocketChat/Rocket.Chat/pull/7998))
-
-- [PL] Polish translation ([#7989](https://github.com/RocketChat/Rocket.Chat/pull/7989) by [@Rzeszow](https://github.com/Rzeszow))
 
 - Chat box no longer auto-focuses when typing ([#7984](https://github.com/RocketChat/Rocket.Chat/pull/7984))
 
@@ -9478,6 +9494,10 @@
 ### 🐛 Bug fixes
 
 
+- **PL:** Polish translation ([#7989](https://github.com/RocketChat/Rocket.Chat/pull/7989) by [@Rzeszow](https://github.com/Rzeszow))
+
+- **i18n:** My Profile & README.md links ([#8270](https://github.com/RocketChat/Rocket.Chat/pull/8270) by [@Rzeszow](https://github.com/Rzeszow))
+
 - File upload on multi-instances using a path prefix ([#7855](https://github.com/RocketChat/Rocket.Chat/pull/7855) by [@Darkneon](https://github.com/Darkneon))
 
 - Fix migration 100 ([#7863](https://github.com/RocketChat/Rocket.Chat/pull/7863))
@@ -9608,8 +9628,6 @@
 
 - Recent emojis not updated when adding via text ([#7998](https://github.com/RocketChat/Rocket.Chat/pull/7998))
 
-- [PL] Polish translation ([#7989](https://github.com/RocketChat/Rocket.Chat/pull/7989) by [@Rzeszow](https://github.com/Rzeszow))
-
 - Fix email on mention ([#7754](https://github.com/RocketChat/Rocket.Chat/pull/7754))
 
 - RTL ([#8112](https://github.com/RocketChat/Rocket.Chat/pull/8112))
@@ -9683,8 +9701,6 @@
 - "Cancel button" on modal in RTL in Firefox 55 ([#8278](https://github.com/RocketChat/Rocket.Chat/pull/8278) by [@cyclops24](https://github.com/cyclops24))
 
 - Attachment icons alignment in LTR and RTL ([#8271](https://github.com/RocketChat/Rocket.Chat/pull/8271) by [@cyclops24](https://github.com/cyclops24))
-
-- [i18n] My Profile & README.md links ([#8270](https://github.com/RocketChat/Rocket.Chat/pull/8270) by [@Rzeszow](https://github.com/Rzeszow))
 
 - some placeholder and phrase traslation fix ([#8269](https://github.com/RocketChat/Rocket.Chat/pull/8269) by [@cyclops24](https://github.com/cyclops24))
 
