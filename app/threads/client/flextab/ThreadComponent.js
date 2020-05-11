@@ -8,10 +8,10 @@ import { Tracker } from 'meteor/tracker';
 import { ChatMessage } from '../../../models/client';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { roomTypes, APIClient } from '../../../utils/client';
-import { call } from '../../../ui-utils/client';
+import { call, normalizeThreadMessage } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { filterMarkdown } from '../../../markdown/lib/markdown';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
+import RawText from '../../../../client/components/basic/RawText';
 
 const style = {
 	position: 'absolute',
@@ -35,7 +35,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	const actionId = useMemo(() => (following ? 'unfollow' : 'follow'), [uid, mainMessage && mainMessage.replies]);
 	const button = useMemo(() => (actionId === 'follow' ? 'bell-off' : 'bell'), [actionId]);
 	const actionLabel = t(actionId === 'follow' ? 'Not_Following' : 'Following');
-	const headerTitle = useMemo(() => mainMessage.msg && filterMarkdown(mainMessage.msg), [mainMessage.msg]);
+	const headerTitle = useMemo(() => normalizeThreadMessage(mainMessage), [mainMessage._updatedAt]);
 
 	const handleFollowButton = useCallback(() => call(actionId === 'follow' ? 'followMessage' : 'unfollowMessage', { mid }), [actionId]);
 	const handleClose = useCallback(() => {
@@ -44,7 +44,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 
 	useEffect(() => {
 		const tracker = Tracker.autorun(async () => {
-			const msg = ChatMessage.findOne({ _id: mid }, { fields: { replies: 1, rid: 1, mid: 1, u: 1, msg: 1, ts: 1 } }) || (await APIClient.v1.get('chat.getMessage', { msgId: mid })).message;
+			const msg = ChatMessage.findOne({ _id: mid }) || (await APIClient.v1.get('chat.getMessage', { msgId: mid })).message;
 			if (!msg) {
 				return;
 			}
@@ -72,7 +72,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 			<VerticalBar.Header pb='x24'>
 				<Margins inline='x4'>
 					<Icon name='thread' size='x20'/>
-					<Box flexShrink={1} flexGrow={1} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{headerTitle}</Box>
+					<Box flexShrink={1} flexGrow={1} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><RawText>{headerTitle}</RawText></Box>
 					<VerticalBar.Button onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></VerticalBar.Button><VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
 				</Margins>
 			</VerticalBar.Header>
