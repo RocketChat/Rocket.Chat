@@ -19,7 +19,7 @@ export class SettingsBase {
 
 	// private ts = new Date()
 
-	public get(_id: string, callback?: SettingCallback): SettingValue | SettingComposedValue[] | void {
+	public get(_id: string | RegExp, callback?: SettingCallback): SettingValue | SettingComposedValue[] | void {
 		if (callback != null) {
 			this.onload(_id, callback);
 			if (!Meteor.settings) {
@@ -41,7 +41,9 @@ export class SettingsBase {
 				});
 			}
 
-			return Meteor.settings[_id] != null && callback(_id, Meteor.settings[_id]);
+			if (typeof _id === 'string') {
+				return Meteor.settings[_id] != null && callback(_id, Meteor.settings[_id]);
+			}
 		}
 
 		if (!Meteor.settings) {
@@ -79,8 +81,7 @@ export class SettingsBase {
 				callbacks.forEach((callback) => callback(key, value, initialLoad));
 			}
 		});
-		Object.keys(this.regexCallbacks).forEach((cbKey) => {
-			const cbValue = this.regexCallbacks.get(cbKey);
+		this.regexCallbacks.forEach((cbValue) => {
 			if (!cbValue?.regex.test(key)) {
 				return;
 			}
