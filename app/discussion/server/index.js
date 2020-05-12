@@ -8,4 +8,4 @@ import './hooks/propagateDiscussionMetadata';
 import './methods/createDiscussion';
 
 // Lib
-import '../lib/discussionRoomType';
+import './discussionRoomType';

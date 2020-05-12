@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
-import { Favico } from '../../app/favico';
+import { Favico } from '../../app/favico/client';
 import { ChatSubscription, ChatRoom } from '../../app/models/client';
 import { menu, fireGlobalEvent } from '../../app/ui-utils';
 import { getUserPreference } from '../../app/utils';

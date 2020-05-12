@@ -9,7 +9,7 @@ import './createDiscussionMessageAction';
 import './discussionFromMessageBox';
 import './tabBar';
 
-import '../lib/discussionRoomType';
+import './discussionRoomType';
 
 // Style
 import './public/stylesheets/discussion.css';
