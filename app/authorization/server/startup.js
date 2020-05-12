@@ -1,9 +1,10 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
 
-import { Roles, Permissions, Settings } from '../../models';
+import { Roles, Permissions, Settings } from '../../models/server';
 import { settings } from '../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../lib';
+import { clearCache } from './functions/hasPermission';
 
 Meteor.startup(function() {
 	// Note:
@@ -17,15 +18,15 @@ Meteor.startup(function() {
 		{ _id: 'add-user-to-joined-room',       roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'add-user-to-any-c-room',        roles: ['admin'] },
 		{ _id: 'add-user-to-any-p-room',        roles: [] },
-		{ _id: 'api-bypass-rate-limit',         roles: ['admin', 'bot'] },
+		{ _id: 'api-bypass-rate-limit',         roles: ['admin', 'bot', 'app'] },
 		{ _id: 'archive-room',                  roles: ['admin', 'owner'] },
 		{ _id: 'assign-admin-role',             roles: ['admin'] },
 		{ _id: 'assign-roles',                  roles: ['admin'] },
 		{ _id: 'ban-user',                      roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'bulk-register-user',            roles: ['admin'] },
-		{ _id: 'create-c',                      roles: ['admin', 'user', 'bot'] },
-		{ _id: 'create-d',                      roles: ['admin', 'user', 'bot'] },
-		{ _id: 'create-p',                      roles: ['admin', 'user', 'bot'] },
+		{ _id: 'create-c',                      roles: ['admin', 'user', 'bot', 'app'] },
+		{ _id: 'create-d',                      roles: ['admin', 'user', 'bot', 'app'] },
+		{ _id: 'create-p',                      roles: ['admin', 'user', 'bot', 'app'] },
 		{ _id: 'create-personal-access-tokens', roles: ['admin', 'user'] },
 		{ _id: 'create-user',                   roles: ['admin'] },
 		{ _id: 'clean-channel-history',         roles: ['admin'] },
@@ -44,9 +45,9 @@ Meteor.startup(function() {
 		{ _id: 'edit-room',                     roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'edit-room-retention-policy',    roles: ['admin'] },
 		{ _id: 'force-delete-message',          roles: ['admin', 'owner'] },
-		{ _id: 'join-without-join-code',        roles: ['admin', 'bot'] },
-		{ _id: 'leave-c',                       roles: ['admin', 'user', 'bot', 'anonymous'] },
-		{ _id: 'leave-p',                       roles: ['admin', 'user', 'bot', 'anonymous'] },
+		{ _id: 'join-without-join-code',        roles: ['admin', 'bot', 'app'] },
+		{ _id: 'leave-c',                       roles: ['admin', 'user', 'bot', 'anonymous', 'app'] },
+		{ _id: 'leave-p',                       roles: ['admin', 'user', 'bot', 'anonymous', 'app'] },
 		{ _id: 'manage-assets',                 roles: ['admin'] },
 		{ _id: 'manage-emoji',                  roles: ['admin'] },
 		{ _id: 'manage-user-status',            roles: ['admin'] },
@@ -64,19 +65,19 @@ Meteor.startup(function() {
 		{ _id: 'run-migration',                 roles: ['admin'] },
 		{ _id: 'set-moderator',                 roles: ['admin', 'owner'] },
 		{ _id: 'set-owner',                     roles: ['admin', 'owner'] },
-		{ _id: 'send-many-messages',            roles: ['admin', 'bot'] },
+		{ _id: 'send-many-messages',            roles: ['admin', 'bot', 'app'] },
 		{ _id: 'set-leader',                    roles: ['admin', 'owner'] },
 		{ _id: 'unarchive-room',                roles: ['admin'] },
-		{ _id: 'view-c-room',                   roles: ['admin', 'user', 'bot', 'anonymous'] },
+		{ _id: 'view-c-room',                   roles: ['admin', 'user', 'bot', 'app', 'anonymous'] },
 		{ _id: 'user-generate-access-token',    roles: ['admin'] },
-		{ _id: 'view-d-room',                   roles: ['admin', 'user', 'bot'] },
+		{ _id: 'view-d-room',                   roles: ['admin', 'user', 'bot', 'app', 'guest'] },
 		{ _id: 'view-full-other-user-info',     roles: ['admin'] },
 		{ _id: 'view-history',                  roles: ['admin', 'user', 'anonymous'] },
-		{ _id: 'view-joined-room',              roles: ['guest', 'bot', 'anonymous'] },
+		{ _id: 'view-joined-room',              roles: ['guest', 'bot', 'app', 'anonymous'] },
 		{ _id: 'view-join-code',                roles: ['admin'] },
 		{ _id: 'view-logs',                     roles: ['admin'] },
 		{ _id: 'view-other-user-channels',      roles: ['admin'] },
-		{ _id: 'view-p-room',                   roles: ['admin', 'user', 'anonymous'] },
+		{ _id: 'view-p-room',                   roles: ['admin', 'user', 'anonymous', 'guest'] },
 		{ _id: 'view-privileged-setting',       roles: ['admin'] },
 		{ _id: 'view-room-administration',      roles: ['admin'] },
 		{ _id: 'view-statistics',               roles: ['admin'] },
@@ -113,9 +114,7 @@ Meteor.startup(function() {
 	];
 
 	for (const permission of permissions) {
-		if (!Permissions.findOneById(permission._id)) {
-			Permissions.upsert(permission._id, { $set: permission });
-		}
+		Permissions.create(permission._id, permission.roles);
 	}
 
 	const defaultRoles = [
@@ -125,6 +124,7 @@ Meteor.startup(function() {
 		{ name: 'owner',            scope: 'Subscriptions', description: 'Owner' },
 		{ name: 'user',             scope: 'Users',         description: '' },
 		{ name: 'bot',              scope: 'Users',         description: '' },
+		{ name: 'app',              scope: 'Users',         description: '' },
 		{ name: 'guest',            scope: 'Users',         description: '' },
 		{ name: 'anonymous',        scope: 'Users',         description: '' },
 		{ name: 'livechat-agent',   scope: 'Users',         description: 'Livechat Agent' },
@@ -132,7 +132,7 @@ Meteor.startup(function() {
 	];
 
 	for (const role of defaultRoles) {
-		Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true, mandatory2fa: false } });
+		Roles.createOrUpdate(role.name, role.scope, role.description, true, false);
 	}
 
 	const getPreviousPermissions = function(settingId) {
@@ -153,19 +153,17 @@ Meteor.startup(function() {
 	const createSettingPermission = function(setting, previousSettingPermissions) {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission = {
-			_id: permissionId,
 			level: CONSTANTS.SETTINGS_LEVEL,
 			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
 			group: setting.group,
 			section: setting.section,
 			sorter: setting.sorter,
+			roles: [],
 		};
 		// copy previously assigned roles if available
 		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
 			permission.roles = previousSettingPermissions[permissionId].roles;
-		} else {
-			permission.roles = [];
 		}
 		if (setting.group) {
 			permission.groupPermissionId = getSettingPermissionId(setting.group);
@@ -173,7 +171,16 @@ Meteor.startup(function() {
 		if (setting.section) {
 			permission.sectionPermissionId = getSettingPermissionId(setting.section);
 		}
-		Permissions.upsert(permission._id, { $set: permission });
+
+		const existent = Permissions.findOne({
+			_id: permissionId,
+			...permission,
+		}, { fields: { _id: 1 } });
+
+		if (!existent) {
+			Permissions.upsert({ _id: permissionId }, { $set: permission });
+		}
+
 		delete previousSettingPermissions[permissionId];
 	};
 
@@ -207,4 +214,12 @@ Meteor.startup(function() {
 	};
 
 	settings.onload('*', createPermissionForAddedSetting);
+
+	Roles.on('change', ({ diff }) => {
+		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
+			// avoid useless changes
+			return;
+		}
+		clearCache();
+	});
 });

@@ -38,6 +38,9 @@ class RoomStreamer extends Meteor.Streamer {
 					case 'inserted':
 						rooms.push({ rid });
 						this.on(rid, roomEvent);
+
+						// after a subscription is added need to emit the room again
+						roomEvent('inserted', Rooms.findOneById(rid));
 						break;
 
 					case 'removed':

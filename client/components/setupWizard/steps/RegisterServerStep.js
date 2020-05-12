@@ -1,55 +1,86 @@
 import {
 	Box,
 	CheckBox,
-	Label,
+	Field,
+	Icon,
 	Margins,
 	RadioButton,
 } from '@rocket.chat/fuselage';
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus, useMergedRefs, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
 import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useFocus } from '../../../hooks/useFocus';
-import { Icon } from '../../basic/Icon';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
-import './RegisterServerStep.css';
 
 const Option = React.forwardRef(({ children, label, selected, disabled, ...props }, ref) => {
 	const innerRef = useRef();
 	const mergedRef = useMergedRefs(ref, innerRef);
+	const id = useUniqueId();
 
-	return <span
+	return <Box
 		className={[
 			'SetupWizard__RegisterServerStep-option',
 			selected && 'SetupWizard__RegisterServerStep-option--selected',
-			disabled && 'SetupWizard__RegisterServerStep-option--disabled',
 		].filter(Boolean).join(' ')}
+		display='block'
+		marginBlock='x8'
+		padding='x24'
+		color={selected ? 'primary' : 'disabled'}
+		style={{
+			borderColor: 'currentColor',
+			borderRadius: 2,
+			borderWidth: 2,
+			cursor: 'pointer',
+			...disabled && { opacity: 0.25 },
+		}}
 		onClick={() => {
 			innerRef.current.click();
 		}}
 	>
-		<Label text={label} position='end'>
-			<RadioButton ref={mergedRef} checked={selected} disabled={disabled} {...props} />
-		</Label>
+		<Field>
+			<Field.Row>
+				<RadioButton ref={mergedRef} id={id} checked={selected} disabled={disabled} {...props} />
+				<Field.Label htmlFor={id}>{label}</Field.Label>
+			</Field.Row>
+		</Field>
 		{children}
-	</span>;
+	</Box>;
 });
 
-const Items = (props) => <ul className='SetupWizard__RegisterServerStep-items' {...props} />;
+const Items = (props) => <Box is='ul' marginBlock='x16' {...props} />;
 
 const Item = ({ children, icon, ...props }) =>
-	<li className='SetupWizard__RegisterServerStep-item' {...props}>
-		<Icon block='SetupWizard__RegisterServerStep-item-icon' icon={icon} />
+	<Box
+		is='li'
+		marginBlockEnd='x8'
+		display='flex'
+		alignItems='center'
+		color='default'
+		{...props}
+	>
+		{icon === 'check' && <Icon
+			name='check'
+			size='x20'
+			marginInlineEnd='x8'
+			color='primary'
+		/>}
+		{icon === 'circle' && <Icon
+			name='circle'
+			size='x8'
+			marginInlineStart='x8'
+			marginInlineEnd='x12'
+			color='default'
+		/>}
 		{children}
-	</li>;
+	</Box>;
 
-export function RegisterServerStep({ step, title, active }) {
+function RegisterServerStep({ step, title, active }) {
 	const { canDeclineServerRegistration, goToPreviousStep, goToFinalStep } = useSetupWizardContext();
 
 	const [registerServer, setRegisterServer] = useState(true);
@@ -115,16 +146,19 @@ export function RegisterServerStep({ step, title, active }) {
 		}
 	};
 
-	const autoFocusRef = useFocus(active);
+	const autoFocusRef = useAutoFocus(active);
+
+	const agreeTermsAndPrivacyId = useUniqueId();
+	const optInMarketingEmailsId = useUniqueId();
 
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
-		<Margins blockEnd='32'>
+		<Margins blockEnd='x32'>
 			<Box>
-				<p className='SetupWizard__RegisterServerStep-text'>{t('Register_Server_Info')}</p>
+				<Box is='p' fontScale='s1' color='hint' marginBlockEnd='x16'>{t('Register_Server_Info')}</Box>
 
-				<div className='SetupWizard__RegisterServerStep-content'>
+				<Box display='flex' flexDirection='column'>
 					<Option
 						ref={autoFocusRef}
 						data-qa='register-server'
@@ -143,17 +177,21 @@ export function RegisterServerStep({ step, title, active }) {
 							<Item icon='check'>{t('Register_Server_Registered_OAuth')}</Item>
 							<Item icon='check'>{t('Register_Server_Registered_Marketplace')}</Item>
 						</Items>
-						<Label text={t('Register_Server_Opt_In')} position='end' className='SetupWizard__RegisterServerStep__optIn'>
-							<CheckBox
-								name='optInMarketingEmails'
-								value='true'
-								disabled={!registerServer}
-								checked={optInMarketingEmails}
-								onChange={({ currentTarget: { checked } }) => {
-									setOptInMarketingEmails(checked);
-								}}
-							/>
-						</Label>
+						<Field>
+							<Field.Row>
+								<CheckBox
+									id={optInMarketingEmailsId}
+									name='optInMarketingEmails'
+									value='true'
+									disabled={!registerServer}
+									checked={optInMarketingEmails}
+									onChange={({ currentTarget: { checked } }) => {
+										setOptInMarketingEmails(checked);
+									}}
+								/>
+								<Field.Label htmlFor={optInMarketingEmailsId}>{t('Register_Server_Opt_In')}</Field.Label>
+							</Field.Row>
+						</Field>
 					</Option>
 					<Option
 						data-qa='register-server-standalone'
@@ -175,21 +213,31 @@ export function RegisterServerStep({ step, title, active }) {
 						</Items>
 					</Option>
 
-					<Label text={<>{t('Register_Server_Registered_I_Agree')} <a href='https://rocket.chat/terms'>{t('Terms')}</a> & <a href='https://rocket.chat/privacy'>{t('Privacy_Policy')}</a></>} position='end' className='SetupWizard__RegisterServerStep__PrivacyTerms'>
-						<CheckBox
-							name='agreeTermsAndPrivacy'
-							data-qa='agree-terms-and-privacy'
-							disabled={!registerServer}
-							checked={agreeTermsAndPrivacy}
-							onChange={({ currentTarget: { checked } }) => {
-								setAgreeTermsAndPrivacy(checked);
-							}}
-						/>
-					</Label>
-				</div>
+					<Margins all='x16'>
+						<Field>
+							<Field.Row>
+								<CheckBox
+									id={agreeTermsAndPrivacyId}
+									name='agreeTermsAndPrivacy'
+									data-qa='agree-terms-and-privacy'
+									disabled={!registerServer}
+									checked={agreeTermsAndPrivacy}
+									onChange={({ currentTarget: { checked } }) => {
+										setAgreeTermsAndPrivacy(checked);
+									}}
+								/>
+								<Field.Label htmlFor={agreeTermsAndPrivacyId}>
+									{t('Register_Server_Registered_I_Agree')} <a href='https://rocket.chat/terms'>{t('Terms')}</a> & <a href='https://rocket.chat/privacy'>{t('Privacy_Policy')}</a>
+								</Field.Label>
+							</Field.Row>
+						</Field>
+					</Margins>
+				</Box>
 			</Box>
 		</Margins>
 
 		<Pager disabled={commiting} onBackClick={handleBackClick} />
 	</Step>;
 }
+
+export default RegisterServerStep;

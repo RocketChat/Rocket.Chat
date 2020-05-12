@@ -9,6 +9,6 @@ Meteor.startup(function() {
 		i18nTitle: 'Mentions',
 		icon: 'at',
 		template: 'mentionsFlexTab',
-		order: 3,
+		order: 9,
 	});
 });
