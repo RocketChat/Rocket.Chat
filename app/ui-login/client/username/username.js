@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 import { settings } from '../../../settings';
-import { Button } from '../../../ui';
+import { Button } from '../../../ui/client';
 import { callbacks } from '../../../callbacks';
 
 Template.username.onCreated(function() {

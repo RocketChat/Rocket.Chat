@@ -202,7 +202,6 @@
 		"ejson": "^2.2.1",
 		"emailreplyparser": "^0.0.5",
 		"emojione": "^4.5.0",
-		"eslint-plugin-import": "^2.22.0",
 		"eventemitter3": "^4.0.7",
 		"exif-be-gone": "^1.2.0",
 		"express": "^4.17.1",

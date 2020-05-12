@@ -5,7 +5,7 @@ import {
 } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, MouseEvent, useCallback, useMemo, useState } from 'react';
 
-import { chatMessages } from '../../../../../../app/ui';
+import { chatMessages } from '../../../../../../app/ui/client';
 import { useSetModal } from '../../../../../../client/contexts/ModalContext';
 import { useCurrentRoute, useRoute } from '../../../../../../client/contexts/RouterContext';
 import { useRecordList } from '../../../../../../client/hooks/lists/useRecordList';

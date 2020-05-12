@@ -6,7 +6,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { t } from '../../utils/client';
-import { chatMessages } from '../../ui';
+import { chatMessages } from '../../ui/client';
 import { Layout, modal, popover, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { settings } from '../../settings';
 import { ChatSubscription } from '../../models';
