@@ -24,6 +24,8 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 			value = false;
 		} else if (options.type === 'int') {
 			value = parseInt(envValue);
+		} else {
+			value = envValue;
 		}
 		options.processEnvValue = value;
 		options.valueSource = 'processEnvValue';
@@ -41,6 +43,8 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 			value = false;
 		} else if (options.type === 'int') {
 			value = parseInt(overwriteValue);
+		} else {
+			value = overwriteValue;
 		}
 		options.value = value;
 		options.processEnvValue = value;
