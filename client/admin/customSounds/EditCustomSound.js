@@ -19,7 +19,7 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t('Custom_Sound_Status_Delete_Warning')}
+			{t('Custom_Sound_Delete_Warning')}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
