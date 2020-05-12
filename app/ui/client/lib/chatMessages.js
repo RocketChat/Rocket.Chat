@@ -269,6 +269,13 @@ export class ChatMessages {
 			}
 		}
 
+		// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
+		const originalMessage = ChatMessage.findOne({ _id: this.editing.id }, { fields: { tmid: 1 }, reactive: false });
+		if (originalMessage && tmid && !originalMessage.tmid) {
+			tmid = undefined;
+			tshow = undefined;
+		}
+
 		if (msg) {
 			readMessage.readNow(rid);
 			readMessage.refreshUnreadMark(rid);
