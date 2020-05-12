@@ -27,7 +27,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 		top: 0,
 		right: 0,
 		maxWidth: '855px',
-		...document.dir === 'rtl' ? { borderTopRightRadius: '4px', borderBottomRightRadius: '4px' } : { borderTopLeftRadius: '4px', borderBottomLeftRadius: '4px' },
+		...document.dir === 'rtl' ? { borderTopRightRadius: '4px' } : { borderTopLeftRadius: '4px' },
 		overflow: 'hidden',
 		bottom: 0,
 		zIndex: 100,
