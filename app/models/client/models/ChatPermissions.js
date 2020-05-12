@@ -1,4 +1,4 @@
-import { CachedCollection } from '../../../ui-cached-collection';
+import { CachedCollection } from '../../../ui-cached-collection/client';
 
 export const AuthzCachedCollection = new CachedCollection({
 	name: 'permissions',

@@ -5,14 +5,14 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getUserPreference } from '../../utils/client';
-import { mainReady, Layout, iframeLogin } from '../../ui-utils';
-import { settings } from '../../settings';
-import { CachedChatSubscription, Roles, Users } from '../../models';
-import { CachedCollectionManager } from '../../ui-cached-collection';
+import { mainReady, Layout, iframeLogin, fireGlobalEvent } from '../../ui-utils/client';
+import { settings } from '../../settings/client';
+import { CachedChatSubscription, Roles, Users } from '../../models/client';
+import { CachedCollectionManager } from '../../ui-cached-collection/client';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 import { isSyncReady } from '../../../client/lib/userData';
-import { fireGlobalEvent } from '../../ui-utils/client';
+
 
 import './main.html';
 

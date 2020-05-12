@@ -2,11 +2,11 @@ import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManag
 import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 
+import { AppWebsocketReceiver } from './communication';
+import { APIClient } from '../../utils/client';
+import { CachedCollectionManager } from '../../ui-cached-collection/client';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { settings } from '../../settings/client';
-import { CachedCollectionManager } from '../../ui-cached-collection';
-import { APIClient } from '../../utils';
-import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { slashCommands, APIClient } from '../../../utils';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
