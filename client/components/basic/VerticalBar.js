@@ -27,12 +27,15 @@ function VerticalBar({ children, ...props }) {
 
 function VerticalBarHeader(props) {
 	return <Box
-		pb='x32'
-		paddingInline='x24'
+		pb='x24'
+		pi='x24'
+		height='64px'
 		display='flex'
 		alignItems='center'
 		justifyContent='space-between'
-		backgroundColor='neutral-200'
+		backgroundColor='white'
+		borderBlockColor='neutral-200'
+		borderBlockEndWidth='x2'
 		fontScale='s2'
 		{...props}
 	/>;

@@ -57,8 +57,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	useEffect(() => {
 		const view = mainMessage.rid && ref.current && Blaze.renderWithData(Template.thread, { mainMessage, jump, following, ...props }, ref.current);
 		return () => view && Blaze.remove(view);
-	}, [ref.current, mainMessage.rid, mainMessage._id]);
-
+	}, [mainMessage.rid]);
 
 	if (!mainMessage.rid) {
 		return <>
@@ -70,7 +69,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	return <>
 		<Modal.Backdrop onClick={handleClose}/>
 		<VerticalBar width='full' style={style} display='flex' flexDirection='column'>
-			<VerticalBar.Header pb='x24' height='72px'>
+			<VerticalBar.Header>
 				<Margins inline='x4'>
 					<Icon name='thread' size='x20'/>
 					<Box flexShrink={1} flexGrow={1} withTruncatedText><RawText>{headerTitle}</RawText></Box>
