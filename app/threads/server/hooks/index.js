@@ -1,2 +1,1 @@
-import './afterdeletemessage';
 import './aftersavemessage';
