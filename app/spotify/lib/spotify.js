@@ -5,8 +5,6 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { callbacks } from '../../callbacks';
-
 const process = function(message, source, callback) {
 	if (s.trim(source)) {
 		// Separate text in code blocks and non code blocks
@@ -25,7 +23,8 @@ const process = function(message, source, callback) {
 		}
 	}
 };
-class Spotify {
+
+export class Spotify {
 	static transform(message) {
 		let urls = [];
 		if (Array.isArray(message.urls)) {
@@ -73,6 +72,3 @@ class Spotify {
 		return message;
 	}
 }
-
-callbacks.add('beforeSaveMessage', Spotify.transform, callbacks.priority.LOW, 'spotify-save');
-callbacks.add('renderMessage', Spotify.render, callbacks.priority.MEDIUM, 'spotify-render');

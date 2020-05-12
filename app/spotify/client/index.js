@@ -1,3 +1,3 @@
-import '../lib/client/widget';
-import '../lib/client/oembedSpotifyWidget.html';
-import '../lib/spotify';
+import './widget';
+import './oembedSpotifyWidget.html';
+import './callbacks';

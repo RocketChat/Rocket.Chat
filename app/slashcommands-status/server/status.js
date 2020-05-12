@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Random } from 'meteor/random';
 
-import { handleError, slashCommands } from '../../utils';
-import { Notifications } from '../../notifications';
+import { slashCommands } from '../../utils/server';
+import { Notifications } from '../../notifications/server';
 
 function Status(command, params, item) {
 	if (command === 'status') {
@@ -11,10 +11,6 @@ function Status(command, params, item) {
 
 		Meteor.call('setUserStatus', null, params, (err) => {
 			if (err) {
-				if (Meteor.isClient) {
-					return handleError(err);
-				}
-
 				if (err.error === 'error-not-allowed') {
 					Notifications.notifyUser(Meteor.userId(), 'message', {
 						_id: Random.id(),

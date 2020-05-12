@@ -66,6 +66,7 @@ import '../app/slashcommands-join/client';
 import '../app/slashcommands-kick/client';
 import '../app/slashcommands-open/client';
 import '../app/slashcommands-topic/client';
+import '../app/slashcommands-status/client';
 import '../app/slashcommands-unarchiveroom/client';
 import '../app/slider/client';
 import '../app/spotify/client';

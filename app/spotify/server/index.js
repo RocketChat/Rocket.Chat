@@ -1,1 +1,1 @@
-import '../lib/spotify';
+import './callbacks';

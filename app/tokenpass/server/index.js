@@ -1,4 +1,3 @@
-import '../lib/common';
 import './startup';
 import './functions/getProtectedTokenpassBalances';
 import './functions/getPublicTokenpassBalances';
