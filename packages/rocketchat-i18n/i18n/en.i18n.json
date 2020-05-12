@@ -1069,6 +1069,7 @@
   "Custom_Script_On_Logout_Description": "Custom Script that will run on execute logout flow  ONLY",
   "Custom_Sound_Add": "Add Custom Sound",
   "Custom_Sound_Delete_Warning": "Deleting a sound cannot be undone.",
+  "Custom_Sound_Edit": "Edit Custom Sound",
   "Custom_Sound_Error_Invalid_Sound": "Invalid sound",
   "Custom_Sound_Error_Name_Already_In_Use": "The custom sound name is already in use.",
   "Custom_Sound_Has_Been_Deleted": "The custom sound has been deleted.",
