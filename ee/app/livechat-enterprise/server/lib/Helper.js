@@ -225,24 +225,8 @@ export const updatePriorityInquiries = (priority) => {
 };
 
 export const getLivechatCustomFields = () => {
-	const script = settings.get('Livechat_Registration_Form_Custom_Fields');
-	if (!script) {
-		return;
-	}
-
-	let customFields;
-	try {
-		const scriptFields = JSON.parse(script);
-		const acceptedFields = LivechatCustomField.find({ visibility: 'visible', scope: 'visitor' }, { fields: { _id: 1, label: 1, scope: 1, regexp: 1 } }).fetch();
-		const fieldKeys = Object.keys(scriptFields);
-
-		customFields = acceptedFields
-			.filter((field) => fieldKeys.includes(field._id))
-			.map((field) => Object.assign(field, scriptFields[field._id]));
-	} catch (error) {
-		console.warn('Invalid Livechat Custom Fields', error);
-	}
-	return customFields;
+	const customFields = LivechatCustomField.find({ visibility: 'visible', scope: 'visitor', public: true }).fetch();
+	return customFields.map(({ _id, label, regexp, required = false, type, defaultValue = null, options }) => ({ _id, label, regexp, required, type, defaultValue, ...options && options !== '' && { options: options.split(',') } }));
 };
 
 export const getLivechatQueueInfo = async (room) => {

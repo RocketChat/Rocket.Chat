@@ -30,16 +30,8 @@
 						</div>
 					</label>
 				</div>
-
-				{{#each visitorCustomFields}}
-					<div class="rc-input rc-form-group rc-form-group--small">
-						<label class="rc-input__label">
-							<div class="rc-input__title">{{label}}</div>
-							<div class="rc-input__wrapper">
-								<input class="rc-input__element" type="text" name="{{name}}" autocomplete="off" data-visitorLivechatData="true" value="{{value}}">
-							</div>
-						</label>
-					</div>
+				{{#each field in visitorCustomFields}}
+					{{> visitorEditCustomField field }}
 				{{/each}}
 			{{/with}}
 
@@ -91,16 +83,8 @@
 						{{/each}}
 					</ul>
 				</div>
-
-				{{#each roomCustomFields}}
-					<div class="rc-input rc-form-group rc-form-group--small">
-						<label class="rc-input__label">
-							<div class="rc-input__title">{{label}}</div>
-							<div class="rc-input__wrapper">
-								<input class="rc-input__element" type="text" name="{{name}}" autocomplete="off" data-roomLivechatData="true" value="{{value}}">
-							</div>
-						</label>
-					</div>
+				{{#each field in roomCustomFields}}
+					{{> visitorEditCustomField field }}
 				{{/each}}
 			{{/with}}
 

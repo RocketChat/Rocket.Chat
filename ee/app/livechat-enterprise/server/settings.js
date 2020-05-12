@@ -51,15 +51,5 @@ export const createSettings = () => {
 		enableQuery: { _id: 'Livechat_auto_close_abandoned_rooms', value: true },
 	});
 
-	settings.add('Livechat_Registration_Form_Custom_Fields', '', {
-		type: 'code',
-		public: true,
-		i18nLabel: 'Custom_Fields',
-		group: 'Omnichannel',
-		section: 'Livechat',
-		multiline: true,
-		code: 'application/json',
-	});
-
 	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
 };
