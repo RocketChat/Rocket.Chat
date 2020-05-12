@@ -35,7 +35,7 @@
   "List_of_departments_for_forward": "List of departments allowed for forwarding (Optional)",
   "List_of_departments_for_forward_description": "Allow to set a restricted list of departments that can receive chats from this department",
   "Livechat_abandoned_rooms_closed_custom_message": "Custom message when room is automatically closed by visitor inactivity",
-  "Livechat_custom_fields_options_placeholder": "Comma-separated list used to select a pre-configured value. Espaces between elements are not accepted.",
+  "Livechat_custom_fields_options_placeholder": "Comma-separated list used to select a pre-configured value. Spaces between elements are not accepted.",
   "Livechat_custom_fields_public_description": "Public custom fields will be displayed in external applications, such as Livechat, etc.",
   "Livechat_Monitors": "Monitors",
   "Livechat_monitors": "Livechat monitors",

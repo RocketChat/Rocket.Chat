@@ -29,7 +29,7 @@ Template.livechatCustomFieldsAdditionalForm.events({
 
 	'blur [name="options"]'(e) {
 		const { currentTarget: { value } } = e;
-		if (value.trim() !== '' && !/[^,\s]+(,([^,\s])+){0,}/.test(value)) {
+		if (value.trim() !== '' && !/^([a-zA-Z0-9-_ ]+)(,\s*[a-zA-Z0-9-_ ]+)*$/i.test(value)) {
 			toastr.error(t('error-invalid-value'));
 			e.currentTarget.focus();
 		}

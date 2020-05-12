@@ -32,7 +32,7 @@
 	<div class="input-line">
 		<label>{{_ "Public"}}</label>
 		<div>
-			<select name="public" class="rc-input__element additional-field" disabled="{{$neq customField.visibility 'visible'}}">
+			<select name="public" class="rc-input__element additional-field" disabled="{{$eq customField.visibility 'hidden'}}">
 				<option value="false" selected="{{$eq customField.public false}}">{{_ "No"}}</option>
 				<option value="true" selected="{{$eq customField.public true}}">{{_ "Yes"}}</option>
 			</select>
