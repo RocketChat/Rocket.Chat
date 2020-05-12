@@ -76,7 +76,7 @@ import '../app/slashcommands-leave/server';
 import '../app/slashcommands-me/server';
 import '../app/slashcommands-msg/server';
 import '../app/slashcommands-mute/server';
-import '../app/slashcommands-status';
+import '../app/slashcommands-status/server';
 import '../app/slashcommands-topic/server';
 import '../app/slashcommands-unarchiveroom/server';
 import '../app/smarsh-connector/server';

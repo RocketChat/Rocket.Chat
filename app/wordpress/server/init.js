@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
-import { settings } from '../../settings';
-import { CustomOAuth } from '../../custom-oauth';
+import { settings } from '../../settings/server';
+import { CustomOAuth } from '../../custom-oauth/server';
 
 const config = {
 	serverURL: '',
@@ -70,32 +69,22 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 	}
 
 	const result = WordPress.configure(config);
-	if (Meteor.isServer) {
-		const enabled = settings.get('Accounts_OAuth_Wordpress');
-		if (enabled) {
-			ServiceConfiguration.configurations.upsert({
-				service: 'wordpress',
-			}, {
-				$set: config,
-			});
-		} else {
-			ServiceConfiguration.configurations.remove({
-				service: 'wordpress',
-			});
-		}
+	const enabled = settings.get('Accounts_OAuth_Wordpress');
+	if (enabled) {
+		ServiceConfiguration.configurations.upsert({
+			service: 'wordpress',
+		}, {
+			$set: config,
+		});
+	} else {
+		ServiceConfiguration.configurations.remove({
+			service: 'wordpress',
+		});
 	}
 
 	return result;
-}), Meteor.isServer ? 1000 : 100);
+}), 1000);
 
-if (Meteor.isServer) {
-	Meteor.startup(function() {
-		return settings.get(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
-	});
-} else {
-	Meteor.startup(function() {
-		return Tracker.autorun(function() {
-			return fillSettings();
-		});
-	});
-}
+Meteor.startup(function() {
+	return settings.get(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
+});

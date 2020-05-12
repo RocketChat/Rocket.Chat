@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { settings } from '../../settings/server';
+import { callbacks } from '../../callbacks/server';
 import { validateTokenAccess } from './roomAccessValidator.compatibility';
 import './roomAccessValidator.internalService';
 

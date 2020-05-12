@@ -1,2 +1,2 @@
-import '../lib/common';
+import './init';
 import './wordpress-login-button.css';
