@@ -8,7 +8,7 @@ import { t } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
-import { userStatus } from '../../user-status';
+import { userStatus } from '../../user-status/client';
 import { hasPermission } from '../../authorization/client';
 import { createTemplateForComponent } from '../../../client/reactAdapters';
 

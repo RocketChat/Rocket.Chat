@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 
 import { slashCommands } from '../../../utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { toolbarSearch } from '../../../ui-sidenav';
+import { toolbarSearch } from '../../../ui-sidenav/client';
 import './messagePopupSlashCommandPreview.html';
 
 const keys = {

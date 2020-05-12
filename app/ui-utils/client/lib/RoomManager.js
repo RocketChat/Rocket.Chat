@@ -13,7 +13,7 @@ import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getConfig } from '../config';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 

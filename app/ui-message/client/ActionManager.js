@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import EventEmitter from 'wolfy87-eventemitter';
 
 import Notifications from '../../notifications/client/lib/Notifications';
-import { CachedCollectionManager } from '../../ui-cached-collection';
+import { CachedCollectionManager } from '../../ui-cached-collection/client';
 import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient } from '../../utils';
 

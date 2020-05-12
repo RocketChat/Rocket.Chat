@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
-import { CachedCollection } from '../../../ui-cached-collection';
+import { CachedCollection } from '../../../ui-cached-collection/client';
 import { SettingsBase, SettingValue } from '../../lib/settings';
 
 const cachedCollection = new CachedCollection({

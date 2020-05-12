@@ -7,7 +7,7 @@ import { Subscriptions, Messages } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 
 let userLanguage = 'en';
 let username = '';

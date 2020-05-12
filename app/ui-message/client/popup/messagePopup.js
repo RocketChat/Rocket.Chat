@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { toolbarSearch } from '../../../ui-sidenav';
+import { toolbarSearch } from '../../../ui-sidenav/client';
 import './messagePopup.html';
 
 const keys = {
