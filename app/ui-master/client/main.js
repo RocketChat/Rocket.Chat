@@ -8,7 +8,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { t, getUserPreference } from '../../utils/client';
-import { chatMessages } from '../../ui';
+import { chatMessages } from '../../ui/client';
 import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav/client';
 import { settings } from '../../settings';

@@ -1,3 +1,4 @@
+import './config';
 import '../lib/FileUploadBase';
 import { FileUpload } from './lib/FileUpload';
 import './lib/proxy';

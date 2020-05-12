@@ -146,7 +146,7 @@ export const MessageAction = new class {
 }();
 
 Meteor.startup(async function() {
-	const { chatMessages } = await import('../../../ui');
+	const { chatMessages } = await import('../../../ui/client');
 
 	const getChatMessagesFrom = (msg) => {
 		const { rid, tmid } = msg;

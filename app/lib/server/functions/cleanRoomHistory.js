@@ -1,7 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { deleteRoom } from './deleteRoom';
-import { FileUpload } from '../../../file-upload';
+import { FileUpload } from '../../../file-upload/server';
 import { Messages, Rooms } from '../../../models';
 import { Notifications } from '../../../notifications';
 

@@ -12,7 +12,7 @@ import { Settings } from '../../models';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
-import { RocketChatFile } from '../../file';
+import { RocketChatFile } from '../../file/server';
 
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({

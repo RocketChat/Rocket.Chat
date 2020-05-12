@@ -9,7 +9,7 @@ import archiver from 'archiver';
 
 import { settings } from '../../settings';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models';
-import { FileUpload } from '../../file-upload';
+import { FileUpload } from '../../file-upload/server';
 import * as Mailer from '../../mailer';
 
 let zipFolder = '/tmp/zipFiles';

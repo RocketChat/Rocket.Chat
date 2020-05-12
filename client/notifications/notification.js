@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 
-import { KonchatNotification } from '../../app/ui';
+import { KonchatNotification } from '../../app/ui/client';
 import { CachedChatSubscription } from '../../app/models';
 import { fireGlobalEvent, readMessage, Layout } from '../../app/ui-utils';
 import { getUserPreference } from '../../app/utils';

@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 
 import { uploadFileWithMessage } from '../../../ui/client/lib/fileUpload';
 import { settings } from '../../../settings';
-import { AudioRecorder } from '../../../ui';
+import { AudioRecorder } from '../../../ui/client';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 

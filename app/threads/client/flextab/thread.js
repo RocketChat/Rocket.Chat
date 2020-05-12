@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 
-import { chatMessages, ChatMessages } from '../../../ui';
+import { chatMessages, ChatMessages } from '../../../ui/client';
 import { normalizeThreadMessage, call } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';

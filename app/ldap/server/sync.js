@@ -6,14 +6,14 @@ import _ from 'underscore';
 
 import LDAP from './ldap';
 import { callbacks } from '../../callbacks/server';
-import { RocketChatFile } from '../../file';
+import { RocketChatFile } from '../../file/server';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
 import { Users, Roles, Rooms, Subscriptions } from '../../models';
 import { Logger } from '../../logger';
 import { _setRealName, _setUsername } from '../../lib';
 import { templateVarHandler } from '../../utils';
-import { FileUpload } from '../../file-upload';
+import { FileUpload } from '../../file-upload/server';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
 
 

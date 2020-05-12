@@ -10,7 +10,7 @@ import toastr from 'toastr';
 
 import { t, handleError, getUserPreference } from '../../utils';
 import { modal, SideNav } from '../../ui-utils';
-import { KonchatNotification } from '../../ui';
+import { KonchatNotification } from '../../ui/client';
 import { settings } from '../../settings';
 import { CustomSounds } from '../../custom-sounds/client';
 

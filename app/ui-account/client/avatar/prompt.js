@@ -11,7 +11,7 @@ import { callbacks } from '../../../callbacks';
 import { SideNav } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { mime } from '../../../utils/lib/mimeTypes';
-import { fileUploadHandler } from '../../../file-upload';
+import { fileUploadHandler } from '../../../file-upload/client';
 
 Template.avatarPrompt.onCreated(function() {
 	const self = this;

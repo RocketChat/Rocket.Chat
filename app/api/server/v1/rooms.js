@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import Busboy from 'busboy';
 
-import { FileUpload } from '../../../file-upload';
+import { FileUpload } from '../../../file-upload/server';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
 import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom } from '../lib/rooms';

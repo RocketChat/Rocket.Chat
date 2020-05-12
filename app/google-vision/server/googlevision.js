@@ -6,7 +6,7 @@ import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Notifications } from '../../notifications';
 import { Uploads, Settings, Users, Messages } from '../../models';
-import { FileUpload } from '../../file-upload';
+import { FileUpload } from '../../file-upload/server';
 
 class GoogleVision {
 	constructor() {

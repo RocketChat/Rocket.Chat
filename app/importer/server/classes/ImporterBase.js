@@ -14,7 +14,7 @@ import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { Settings, Imports } from '../../../models';
 import { Logger } from '../../../logger';
-import { FileUpload } from '../../../file-upload';
+import { FileUpload } from '../../../file-upload/server';
 import { sendMessage } from '../../../lib';
 
 /**

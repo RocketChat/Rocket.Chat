@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 
-import { RocketChatFile } from '../../../file';
+import { RocketChatFile } from '../../../file/server';
 import { RocketChatImportFileInstance } from '../startup/store';
 import { hasPermission } from '../../../authorization';
 import { ProgressStep } from '../../lib/ImporterProgressStep';

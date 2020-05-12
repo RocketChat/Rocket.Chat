@@ -17,7 +17,7 @@ import { settings } from '../../../settings';
 import {
 	fileUpload,
 	KonchatNotification,
-} from '../../../ui';
+} from '../../../ui/client';
 import {
 	messageBox,
 	popover,

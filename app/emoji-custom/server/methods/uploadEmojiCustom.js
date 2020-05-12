@@ -3,7 +3,7 @@ import limax from 'limax';
 
 import { Notifications } from '../../../notifications';
 import { hasPermission } from '../../../authorization';
-import { RocketChatFile } from '../../../file';
+import { RocketChatFile } from '../../../file/server';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
 Meteor.methods({

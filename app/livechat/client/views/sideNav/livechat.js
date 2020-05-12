@@ -5,7 +5,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { ChatSubscription, Users } from '../../../../models';
-import { KonchatNotification } from '../../../../ui';
+import { KonchatNotification } from '../../../../ui/client';
 import { settings } from '../../../../settings';
 import { hasPermission } from '../../../../authorization';
 import { t, handleError, getUserPreference } from '../../../../utils';

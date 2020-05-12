@@ -5,7 +5,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { VRecDialog } from '../../../ui-vrecord/client';
 import { messageBox, modal } from '../../../ui-utils';
-import { fileUpload } from '../../../ui';
+import { fileUpload } from '../../../ui/client';
 import { settings } from '../../../settings';
 import { t } from '../../../utils';
 import { mime } from '../../../utils/lib/mimeTypes';
