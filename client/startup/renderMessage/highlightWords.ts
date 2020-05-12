@@ -21,15 +21,17 @@ Meteor.startup(() => {
 			wordsToHighlight: highlights?.filter((highlight) => highlight?.trim()),
 		};
 
-		import('../../../app/highlight-words').then(({ createHighlightWordsMessageRenderer }) => {
-			const renderMessage = createHighlightWordsMessageRenderer(options);
-			callbacks.remove('renderMessage', 'highlight-words');
-			callbacks.add(
-				'renderMessage',
-				renderMessage,
-				callbacks.priority.MEDIUM + 1,
-				'highlight-words',
-			);
-		});
+		import('../../../app/highlight-words/client').then(
+			({ createHighlightWordsMessageRenderer }) => {
+				const renderMessage = createHighlightWordsMessageRenderer(options);
+				callbacks.remove('renderMessage', 'highlight-words');
+				callbacks.add(
+					'renderMessage',
+					renderMessage,
+					callbacks.priority.MEDIUM + 1,
+					'highlight-words',
+				);
+			},
+		);
 	});
 });

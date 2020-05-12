@@ -19,7 +19,7 @@ import {
 	unarchiveRoom,
 	sendMessage,
 } from '../../lib';
-import { saveRoomName, saveRoomTopic } from '../../channel-settings';
+import { saveRoomName, saveRoomTopic } from '../../channel-settings/server';
 import { FileUpload } from '../../file-upload';
 
 export default class SlackAdapter {

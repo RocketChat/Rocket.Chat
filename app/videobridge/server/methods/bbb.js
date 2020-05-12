@@ -5,7 +5,7 @@ import xml2js from 'xml2js';
 import BigBlueButtonApi from '../../../bigbluebutton/server';
 import { settings } from '../../../settings';
 import { Rooms, Users } from '../../../models';
-import { saveStreamingOptions } from '../../../channel-settings';
+import { saveStreamingOptions } from '../../../channel-settings/server';
 import { API } from '../../../api/server';
 
 const parser = new xml2js.Parser({

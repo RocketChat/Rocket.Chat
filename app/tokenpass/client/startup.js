@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ChannelSettings } from '../../channel-settings';
+import { ChannelSettings } from '../../channel-settings/client';
 import { Rooms } from '../../models';
 
 Meteor.startup(function() {
