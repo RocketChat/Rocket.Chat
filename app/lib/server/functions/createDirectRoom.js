@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks/server';
 import { Rooms, Subscriptions } from '../../../models/server';
-import { settings } from '../../../settings/lib/settings';
+import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
 import { Apps } from '../../../apps/server';
 
