@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
 
-import * as Mailer from '../../app/mailer';
+import * as Mailer from '../../app/mailer/server';
 import { Users } from '../../app/models';
 import { settings } from '../../app/settings';
 import { saveCustomFields, validateEmailDomain, passwordPolicy } from '../../app/lib';

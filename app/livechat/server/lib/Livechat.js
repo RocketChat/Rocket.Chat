@@ -32,7 +32,7 @@ import {
 } from '../../../models';
 import { Logger } from '../../../logger';
 import { addUserRoles, hasRole, removeUserFromRoles } from '../../../authorization';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';

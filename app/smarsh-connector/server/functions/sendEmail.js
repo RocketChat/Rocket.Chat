@@ -7,7 +7,7 @@
 import _ from 'underscore';
 import { UploadFS } from 'meteor/jalik:ufs';
 
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server';
 import { Uploads } from '../../../models';
 import { settings } from '../../../settings';
 import { smarsh } from '../lib/rocketchat';

@@ -10,7 +10,7 @@ import archiver from 'archiver';
 import { settings } from '../../settings';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models';
 import { FileUpload } from '../../file-upload/server';
-import * as Mailer from '../../mailer';
+import * as Mailer from '../../mailer/server';
 
 let zipFolder = '/tmp/zipFiles';
 if (settings.get('UserData_FileSystemZipPath') != null) {
