@@ -27,7 +27,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 		top: 0,
 		right: 0,
 		maxWidth: '855px',
-		...document.dir === 'rtl' ? { borderTopRightRadius: '8px', borderBottomRightRadius: '8px' } : { borderTopLeftRadius: '8px', borderBottomLeftRadius: '8px' },
+		...document.dir === 'rtl' ? { borderTopRightRadius: '4px', borderBottomRightRadius: '4px' } : { borderTopLeftRadius: '4px', borderBottomLeftRadius: '4px' },
 		overflow: 'hidden',
 		bottom: 0,
 		zIndex: 100,
@@ -70,10 +70,10 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	return <>
 		<Modal.Backdrop onClick={handleClose}/>
 		<VerticalBar width='full' style={style} display='flex' flexDirection='column'>
-			<VerticalBar.Header pb='x24'>
+			<VerticalBar.Header pb='x24' height='72px'>
 				<Margins inline='x4'>
 					<Icon name='thread' size='x20'/>
-					<Box flexShrink={1} flexGrow={1} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><RawText>{headerTitle}</RawText></Box>
+					<Box flexShrink={1} flexGrow={1} withTruncatedTextß><RawText>{headerTitle}</RawText></Box>
 					<VerticalBar.Button onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></VerticalBar.Button><VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
 				</Margins>
 			</VerticalBar.Header>
