@@ -1,6 +1,7 @@
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
 import './lib/accounts';
 import './lib/collections';
-import './lib/customEventPolyfill';
 import './lib/iframeCommands';
 import './lib/menu';
 import './lib/Modernizr';
@@ -10,6 +11,7 @@ import './lib/textarea-cursor';
 import './views/cmsPage.html';
 import './views/404/roomNotFound.html';
 import './views/404/invalidSecretURL.html';
+import './views/404/invalidInvite.html';
 import './views/app/audioNotification.html';
 import './views/app/burger.html';
 import './views/app/createChannel.html';
@@ -32,12 +34,13 @@ import './views/cmsPage';
 import './views/404/roomNotFound';
 import './views/app/burger';
 import './views/app/createChannel';
+import './views/app/CreateDirectMessage';
 import './views/app/editStatus';
 import './views/app/fullModal';
 import './views/app/home';
-import './views/app/directory';
 import './views/app/roomSearch';
 import './views/app/secretURL';
+import './views/app/invite';
 import './views/app/videoCall/videoButtons';
 import './views/app/videoCall/videoCall';
 import './views/app/photoswipe';
@@ -64,3 +67,5 @@ export { Login, animationSupport, animeBack, Button, preLoadImgs } from './lib/r
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 export { chatMessages } from './views/app/room';
+
+createTemplateForComponent('RoomForeword', () => import('./views/app/RoomForeword'));

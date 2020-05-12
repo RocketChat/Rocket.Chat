@@ -90,7 +90,7 @@ const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
-		ts: Match.OneOf(String, Match.Integer),
+		ts: Match.OneOf(String, Number),
 		thumb_url: ValidFullURLParam,
 		button_alignment: String,
 		actions: [Match.Any],
@@ -136,6 +136,7 @@ const validateMessage = (message) => {
 		emoji: String,
 		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
+		blocks: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -177,7 +178,11 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
+			if (settings.get('Apps_Framework_Development_Mode')) {
+				console.log('A Rocket.Chat App prevented the message sending.', message);
+			}
+
+			return;
 		}
 
 		let result;

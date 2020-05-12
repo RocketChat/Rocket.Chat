@@ -1,18 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
+import { registerAdminRoute } from '../../../client/admin';
 import { t } from '../../utils';
 
-const dynamic = () => {
-	import('./views');
-};
+const dynamic = () => import('./views');
 
-FlowRouter.route('/admin/integrations', {
+registerAdminRoute('/integrations', {
 	name: 'admin-integrations',
-	subscriptions() {
-		this.register('integrations', Meteor.subscribe('integrations'));
-	},
 	async action() {
 		await dynamic();
 		return BlazeLayout.render('main', {
@@ -22,11 +16,8 @@ FlowRouter.route('/admin/integrations', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/new', {
+registerAdminRoute('/integrations/new', {
 	name: 'admin-integrations-new',
-	subscriptions() {
-		this.register('integrations', Meteor.subscribe('integrations'));
-	},
 	async action() {
 		await dynamic();
 		return BlazeLayout.render('main', {
@@ -36,11 +27,8 @@ FlowRouter.route('/admin/integrations/new', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/incoming/:id?', {
+registerAdminRoute('/integrations/incoming/:id?', {
 	name: 'admin-integrations-incoming',
-	subscriptions() {
-		this.register('integrations', Meteor.subscribe('integrations'));
-	},
 	async action(params) {
 		await dynamic();
 		return BlazeLayout.render('main', {
@@ -52,7 +40,7 @@ FlowRouter.route('/admin/integrations/incoming/:id?', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/outgoing/:id?', {
+registerAdminRoute('/integrations/outgoing/:id?', {
 	name: 'admin-integrations-outgoing',
 	async action(params) {
 		await dynamic();
@@ -64,7 +52,7 @@ FlowRouter.route('/admin/integrations/outgoing/:id?', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/outgoing/:id?/history', {
+registerAdminRoute('/integrations/outgoing/:id?/history', {
 	name: 'admin-integrations-outgoing-history',
 	async action(params) {
 		await dynamic();
@@ -76,7 +64,7 @@ FlowRouter.route('/admin/integrations/outgoing/:id?/history', {
 	},
 });
 
-FlowRouter.route('/admin/integrations/additional/zapier', {
+registerAdminRoute('/integrations/additional/zapier', {
 	name: 'admin-integrations-additional-zapier',
 	async action() {
 		await dynamic();

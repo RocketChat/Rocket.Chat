@@ -15,7 +15,7 @@ import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
-import { ROOM_DATA_STREAM_OBSERVER } from '../../../utils/stream/constants';
+import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 
 import { call } from '..';
 
@@ -45,7 +45,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 export const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
-	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM_OBSERVER);
+	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
 	const Cls = class {
@@ -68,7 +68,6 @@ export const RoomManager = new function() {
 					if (room != null) {
 						record.rid = room._id;
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
-
 						if (record.streamActive !== true) {
 							record.streamActive = true;
 							msgStream.on(record.rid, async (msg) => {
@@ -79,20 +78,25 @@ export const RoomManager = new function() {
 								// Do not load command messages into channel
 								if (msg.t !== 'command') {
 									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+									const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
 									upsertMessage({ msg, subscription });
+
 									msg.room = {
 										type,
 										name,
 									};
+									if (isNew) {
+										callbacks.run('streamNewMessage', msg);
+									}
 								}
+
 								msg.name = room.name;
-								RoomManager.updateMentionsMarksOfRoom(typeName);
+								Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 								callbacks.run('streamMessage', msg);
 
 								return fireGlobalEvent('new-message', msg);
 							});
-
 							Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 						}
@@ -137,7 +141,11 @@ export const RoomManager = new function() {
 				openedRooms[typeName].ready = false;
 				openedRooms[typeName].active = false;
 				if (openedRooms[typeName].template != null) {
-					Blaze.remove(openedRooms[typeName].template);
+					try {
+						Blaze.remove(openedRooms[typeName].template);
+					} catch (e) {
+						console.error('Error removing template from DOM', e);
+					}
 				}
 				delete openedRooms[typeName].dom;
 				delete openedRooms[typeName].template;

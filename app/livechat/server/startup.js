@@ -6,8 +6,7 @@ import { LivechatRooms } from '../../models';
 import { hasPermission, hasRole, addRoomAccessValidator } from '../../authorization';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
-import { LivechatInquiry } from '../lib/LivechatInquiry';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../models/server';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 import { createLivechatQueueView } from './lib/Helper';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
@@ -71,5 +70,17 @@ Meteor.startup(() => {
 
 	createLivechatQueueView();
 
-	new LivechatAgentActivityMonitor().start();
+	const monitor = new LivechatAgentActivityMonitor();
+
+	let TroubleshootDisableLivechatActivityMonitor;
+	settings.get('Troubleshoot_Disable_Livechat_Activity_Monitor', (key, value) => {
+		if (TroubleshootDisableLivechatActivityMonitor === value) { return; }
+		TroubleshootDisableLivechatActivityMonitor = value;
+
+		if (value) {
+			return monitor.stop();
+		}
+
+		monitor.start();
+	});
 });

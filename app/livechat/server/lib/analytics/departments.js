@@ -1,6 +1,6 @@
-import { LivechatDepartment } from '../../../../models/server/raw';
+import { LivechatRooms, Messages } from '../../../../models/server/raw';
 
-const findAllRoomsAsync = async ({
+export const findAllRoomsAsync = async ({
 	start,
 	end,
 	answered,
@@ -10,13 +10,14 @@ const findAllRoomsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	const total = await LivechatRooms.findAllRooms({ start, answered, end, departmentId, onlyCount: true }).toArray();
 	return {
-		departments: await LivechatDepartment.findAllRooms({ start, answered, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllRooms({ start, answered, end, departmentId })).length,
+		departments: await LivechatRooms.findAllRooms({ start, answered, end, departmentId, options }).toArray(),
+		total: total.length ? total[0].total : 0,
 	};
 };
 
-const findAllAverageServiceTimeAsync = async ({
+export const findAllAverageOfChatDurationTimeAsync = async ({
 	start,
 	end,
 	departmentId,
@@ -25,13 +26,14 @@ const findAllAverageServiceTimeAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	const total = await LivechatRooms.findAllAverageOfChatDurationTime({ start, end, departmentId, onlyCount: true }).toArray();
 	return {
-		departments: await LivechatDepartment.findAllAverageServiceTime({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllAverageServiceTime({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllAverageOfChatDurationTime({ start, end, departmentId, options }).toArray(),
+		total: total.length ? total[0].total : 0,
 	};
 };
 
-const findAllServiceTimeAsync = async ({
+export const findAllAverageServiceTimeAsync = async ({
 	start,
 	end,
 	departmentId,
@@ -40,13 +42,14 @@ const findAllServiceTimeAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	const total = await LivechatRooms.findAllAverageOfServiceTime({ start, end, departmentId, onlyCount: true }).toArray();
 	return {
-		departments: await LivechatDepartment.findAllServiceTime({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllServiceTime({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllAverageOfServiceTime({ start, end, departmentId, options }).toArray(),
+		total: total.length ? total[0].total : 0,
 	};
 };
 
-const findAllAverageWaitingTimeAsync = async ({
+export const findAllServiceTimeAsync = async ({
 	start,
 	end,
 	departmentId,
@@ -55,13 +58,14 @@ const findAllAverageWaitingTimeAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	const total = await LivechatRooms.findAllServiceTime({ start, end, departmentId, onlyCount: true }).toArray();
 	return {
-		departments: await LivechatDepartment.findAllAverageWaitingTime({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllAverageWaitingTime({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllServiceTime({ start, end, departmentId, options }).toArray(),
+		total: total.length ? total[0].total : 0,
 	};
 };
 
-const findAllNumberOfTransferredRoomsAsync = async ({
+export const findAllAverageWaitingTimeAsync = async ({
 	start,
 	end,
 	departmentId,
@@ -70,13 +74,14 @@ const findAllNumberOfTransferredRoomsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	const total = await LivechatRooms.findAllAverageWaitingTime({ start, end, departmentId, onlyCount: true }).toArray();
 	return {
-		departments: await LivechatDepartment.findAllNumberOfTransferredRooms({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllNumberOfTransferredRooms({ start, end, departmentId })).length,
+		departments: await LivechatRooms.findAllAverageWaitingTime({ start, end, departmentId, options }).toArray(),
+		total: total.length ? total[0].total : 0,
 	};
 };
 
-const findAllNumberOfAbandonedRoomsAsync = async ({
+export const findAllNumberOfTransferredRoomsAsync = async ({
 	start,
 	end,
 	departmentId,
@@ -85,13 +90,14 @@ const findAllNumberOfAbandonedRoomsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	const total = await Messages.findAllNumberOfTransferredRooms({ start, end, departmentId, onlyCount: true }).toArray();
 	return {
-		departments: await LivechatDepartment.findAllNumberOfAbandonedRooms({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findAllNumberOfAbandonedRooms({ start, end, departmentId })).length,
+		departments: await Messages.findAllNumberOfTransferredRooms({ start, end, departmentId, options }).toArray(),
+		total: total.length ? total[0].total : 0,
 	};
 };
 
-const findPercentageOfAbandonedRoomsAsync = async ({
+export const findAllNumberOfAbandonedRoomsAsync = async ({
 	start,
 	end,
 	departmentId,
@@ -100,12 +106,30 @@ const findPercentageOfAbandonedRoomsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	const total = await(await LivechatRooms.findAllNumberOfAbandonedRooms({ start, end, departmentId, onlyCount: true })).toArray();
 	return {
-		departments: await LivechatDepartment.findPercentageOfAbandonedRooms({ start, end, departmentId, options }),
-		total: (await LivechatDepartment.findPercentageOfAbandonedRooms({ start, end, departmentId })).length,
+		departments: await(await LivechatRooms.findAllNumberOfAbandonedRooms({ start, end, departmentId, options })).toArray(),
+		total: total.length ? total[0].total : 0,
 	};
 };
 
+export const findPercentageOfAbandonedRoomsAsync = async ({
+	start,
+	end,
+	departmentId,
+	options = {},
+}) => {
+	if (!start || !end) {
+		throw new Error('"start" and "end" must be provided');
+	}
+	const total = await (await LivechatRooms.findPercentageOfAbandonedRooms({ start, end, departmentId, onlyCount: true })).toArray();
+	return {
+		departments: await(await LivechatRooms.findPercentageOfAbandonedRooms({ start, end, departmentId, options })).toArray(),
+		total: total.length ? total[0].total : 0,
+	};
+};
+
+export const findAllAverageOfChatDurationTime = ({ start, end, departmentId, options }) => Promise.await(findAllAverageOfChatDurationTimeAsync({ start, end, departmentId, options }));
 export const findAllAverageServiceTime = ({ start, end, departmentId, options }) => Promise.await(findAllAverageServiceTimeAsync({ start, end, departmentId, options }));
 export const findAllRooms = ({ start, end, answered, departmentId, options }) => Promise.await(findAllRoomsAsync({ start, end, answered, departmentId, options }));
 export const findAllServiceTime = ({ start, end, departmentId, options }) => Promise.await(findAllServiceTimeAsync({ start, end, departmentId, options }));

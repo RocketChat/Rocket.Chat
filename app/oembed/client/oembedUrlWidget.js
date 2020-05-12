@@ -1,9 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-
-import { getUserPreference } from '../../utils';
 
 const getTitle = function(self) {
 	if (self.meta == null) {
@@ -58,11 +55,5 @@ Template.oembedUrlWidget.helpers({
 	},
 	show() {
 		return (getDescription(this) != null) || (getTitle(this) != null);
-	},
-	collapsed() {
-		if (this.collapsed != null) {
-			return this.collapsed;
-		}
-		return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 	},
 });

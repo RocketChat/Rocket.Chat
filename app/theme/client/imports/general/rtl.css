@@ -466,13 +466,6 @@
 		}
 	}
 
-	& .statistics-table {
-		& th,
-		& td {
-			text-align: right;
-		}
-	}
-
 	& .code-mirror-box {
 		direction: ltr;
 
