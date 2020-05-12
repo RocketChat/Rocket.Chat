@@ -34,7 +34,7 @@
 						{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}
 					</button>
 					{{#if getStatus}}
-						<button class="rc-tooltip rc-tooltip--up rc-tooltip--start" aria-label="{{getStatus}}">💬</button>
+						<button class="message-custom-status rc-tooltip rc-tooltip--up rc-tooltip--start" aria-label="{{getStatus}}">💬</button>
 					{{/if}}
 					<span class="info border-component-color color-info-font-color"></span>
 					{{#each role in roleTags}}
