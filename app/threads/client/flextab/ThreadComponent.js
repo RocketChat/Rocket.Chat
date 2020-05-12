@@ -13,17 +13,6 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import RawText from '../../../../client/components/basic/RawText';
 
-const style = {
-	position: 'absolute',
-	top: 0,
-	right: 0,
-	maxWidth: '855px',
-	borderRadius: '8px',
-	overflow: 'hidden',
-	bottom: 0,
-	zIndex: 100,
-};
-
 export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	const t = useTranslation();
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
@@ -31,6 +20,18 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 
 	const ref = useRef();
 	const uid = useMemo(() => Meteor.userId(), []);
+
+
+	const style = useMemo(() => ({
+		position: 'absolute',
+		top: 0,
+		right: 0,
+		maxWidth: '855px',
+		...document.dir === 'rtl' ? { borderTopRightRadius: '8px', borderBottomRightRadius: '8px' } : { borderTopLeftRadius: '8px', borderBottomLeftRadius: '8px' },
+		overflow: 'hidden',
+		bottom: 0,
+		zIndex: 100,
+	}), [document.dir]);
 	const following = mainMessage.replies && mainMessage.replies.includes(uid);
 	const actionId = useMemo(() => (following ? 'unfollow' : 'follow'), [uid, mainMessage && mainMessage.replies]);
 	const button = useMemo(() => (actionId === 'follow' ? 'bell-off' : 'bell'), [actionId]);
