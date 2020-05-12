@@ -1,0 +1,69 @@
+<template name="uploadedFilesList">
+	<div class="flex-tab__header">
+		<form class="search-form rc-member-list__search js-search-form" role="form">
+			<div class="rc-input">
+				<label class="rc-input__label">
+					<div class="rc-input__title">{{_ "Search_by_file_name"}}</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+						</div>
+						<input type="text" class="rc-input__element uploaded-files-list__search-input" name="file-search" placeholder={{_ "File_name_Placeholder"}} autocomplete="off" />
+					</div>
+				</label>
+			</div>
+			<div class="rc-select-wrapper">
+				<div class="rc-select">
+					<select class="rc-select__element js-type" name="status-type">
+						<option value="all">{{_ 'All'}}</option>
+						<option value="image">{{_ 'Images'}}</option>
+						<option value="video">{{_ 'Videos'}}</option>
+						<option value="audio">{{_ 'Audios'}}</option>
+						<option value="text">{{_ 'Texts'}}</option>
+						<option value="application">{{_ 'Files'}}</option>
+					</select>
+					{{> icon block="rc-select__arrow" icon="arrow-down" }}
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="flex-tab__result">
+		<ul class="attachments">
+			{{#each files}}
+				<li class="attachments__item">
+					<a href="{{url}}" title="{{name}}" data-description="{{description}}"
+						class="attachments__item-link {{fileTypeClass}}"
+						download rel="noopener noreferrer" target="_blank">
+						{{#with thumb}}
+							<span class="attachments__thumb" style="background-image: url('{{escapeCssUrl .}}');"></span>
+						{{else}}
+							{{#with fileTypeIcon}}
+							<span class="attachments__file attachments__file--{{type}}">
+								{{>icon icon=id}}
+								<div class="attachments__type">{{extension}}</div>
+							</span>
+							{{/with}}
+						{{/with}}
+
+						<span class="attachments__content">
+							<span class="attachments__name">{{name}}</span>
+							<span class="attachments__details attachments__bold">@{{user.username}}</span>
+							<span class="attachments__details">{{formatTimestamp uploadedAt}}</span>
+						</span>
+					</a>
+
+					{{> icon file=. block="attachments-menu js-action" icon="menu"}}
+				</li>
+			{{else}}
+				{{#if Template.subscriptionsReady}}
+					<h2>{{_ "Room_uploaded_file_list_empty"}}</h2>
+				{{/if}}
+			{{/each}}
+		</ul>
+		{{#if isLoading}}
+			<div class="load-more">
+				{{> loading}}
+			</div>
+		{{/if}}
+	</div>
+</template>
