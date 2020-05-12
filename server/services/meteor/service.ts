@@ -4,7 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
 
-import { metrics } from '../../../app/metrics';
+import { metrics } from '../../../app/metrics/server';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';

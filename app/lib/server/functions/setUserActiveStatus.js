@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
-import * as Mailer from '../../../mailer';
-import { Users, Subscriptions, Rooms } from '../../../models';
-import { settings } from '../../../settings';
+import * as Mailer from '../../../mailer/server';
+import { Users, Subscriptions, Rooms } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';

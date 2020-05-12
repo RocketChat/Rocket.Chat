@@ -13,7 +13,7 @@ import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
 import { FileUpload } from '../../file-upload/server';
 import { DataExport } from './DataExport';
-import * as Mailer from '../../mailer';
+import * as Mailer from '../../mailer/server';
 import { readSecondaryPreferred } from '../../../server/database/readSecondaryPreferred';
 import { joinPath } from '../../../server/lib/fileUtils';
 import { getURL } from '../../utils/lib/getURL';

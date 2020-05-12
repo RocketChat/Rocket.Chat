@@ -5,7 +5,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter, validateEmailDomain } from '../lib';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server';
 import { settings } from '../../../settings';
 import { checkEmailAvailability } from '.';
 

@@ -29,8 +29,8 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger';
-import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
-import * as Mailer from '../../../mailer';
+import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization/server';
+import * as Mailer from '../../../mailer/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';

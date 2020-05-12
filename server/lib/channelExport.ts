@@ -5,7 +5,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import mkdirp from 'mkdirp';
 
-import * as Mailer from '../../app/mailer';
+import * as Mailer from '../../app/mailer/server';
 import { Messages, Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { Message } from '../../app/ui-utils/server';

@@ -3,10 +3,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import * as Mailer from '../../../../mailer';
+import * as Mailer from '../../../../mailer/server';
 import { settings } from '../../../../settings';
 import { roomTypes } from '../../../../utils';
-import { metrics } from '../../../../metrics';
+import { metrics } from '../../../../metrics/server';
 import { callbacks } from '../../../../callbacks';
 import { getURL } from '../../../../utils/server';
 

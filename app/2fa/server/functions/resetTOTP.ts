@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server';
 import { Users } from '../../../models/server/raw/index';
 import { IUser } from '../../../../definition/IUser';
 
