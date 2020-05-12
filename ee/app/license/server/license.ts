@@ -1,20 +1,20 @@
 import EventEmitter from 'events';
 
 import { Users } from '../../../../app/models/server';
+import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
+import { addRoleRestrictions } from '../../authorization/lib/addRoleRestrictions';
 import decrypt from './decrypt';
 import { getBundleModules, isBundle } from './bundles';
 
 const EnterpriseLicenses = new EventEmitter();
-
-export interface IModules {
-	[key: string]: number;
-}
 
 export interface ILicense {
 	url: string;
 	expiry: string;
 	maxActiveUsers: number;
 	modules: string[];
+	maxGuestUsers: number;
+	maxRoomsPerGuest: number;
 }
 
 export interface IValidLicense {
@@ -22,12 +22,15 @@ export interface IValidLicense {
 	license: ILicense;
 }
 
+let maxGuestUsers = 0;
+let addedRoleRestrictions = false;
+
 class LicenseClass {
 	private url: string|null = null;
 
 	private licenses: IValidLicense[] = [];
 
-	private modules: IModules = {};
+	private modules = new Set<string>();
 
 	_validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
@@ -49,7 +52,7 @@ class LicenseClass {
 				: [licenseModule];
 
 			modules.forEach((module) => {
-				this.modules[module] = 1;
+				this.modules.add(module);
 				EnterpriseLicenses.emit(`valid:${ module }`);
 			});
 		});
@@ -76,10 +79,24 @@ class LicenseClass {
 		});
 
 		this.validate();
+
+		if (!addedRoleRestrictions && this.hasAnyValidLicense()) {
+			addRoleRestrictions();
+			resetEnterprisePermissions();
+			addedRoleRestrictions = true;
+		}
 	}
 
 	hasModule(module: string): boolean {
-		return typeof this.modules[module] !== 'undefined';
+		return this.modules.has(module);
+	}
+
+	hasAnyValidLicense(): boolean {
+		return this.licenses.some((item) => item.valid);
+	}
+
+	getModules(): string[] {
+		return [...this.modules];
 	}
 
 	setURL(url: string): void {
@@ -115,6 +132,10 @@ class LicenseClass {
 				return item;
 			}
 
+			if (license.maxGuestUsers > maxGuestUsers) {
+				maxGuestUsers = license.maxGuestUsers;
+			}
+
 			this._validModules(license.modules);
 
 			console.log('#### License validated:', license.modules.join(', '));
@@ -137,10 +158,12 @@ class LicenseClass {
 				const { license } = item;
 
 				console.log('---- License enabled ----');
-				console.log('            url ->', license.url);
-				console.log('         expiry ->', license.expiry);
-				console.log(' maxActiveUsers ->', license.maxActiveUsers);
-				console.log('        modules ->', license.modules.join(', '));
+				console.log('              url ->', license.url);
+				console.log('           expiry ->', license.expiry);
+				console.log('   maxActiveUsers ->', license.maxActiveUsers);
+				console.log('    maxGuestUsers ->', license.maxGuestUsers);
+				console.log(' maxRoomsPerGuest ->', license.maxRoomsPerGuest);
+				console.log('          modules ->', license.modules.join(', '));
 				console.log('-------------------------');
 			});
 	}
@@ -183,6 +206,18 @@ export function setURL(url: string): void {
 
 export function hasLicense(feature: string): boolean {
 	return License.hasModule(feature);
+}
+
+export function isEnterprise(): boolean {
+	return License.hasAnyValidLicense();
+}
+
+export function getMaxGuestUsers(): number {
+	return maxGuestUsers;
+}
+
+export function getModules(): string[] {
+	return License.getModules();
 }
 
 export function onLicense(feature: string, cb: (...args: any[]) => void): void {

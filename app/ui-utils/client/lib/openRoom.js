@@ -29,6 +29,8 @@ const getDomOfLoading = mem(function getDomOfLoading() {
 });
 
 function replaceCenterDomBy(dom) {
+	document.dispatchEvent(new CustomEvent('main-content-destroyed'));
+
 	const mainNode = document.querySelector('.main-content');
 	if (mainNode) {
 		for (const child of Array.from(mainNode.children)) {

@@ -15,10 +15,21 @@ export class LivechatAgentActivityMonitor {
 		this._handleMeteorConnection = this._handleMeteorConnection.bind(this);
 		this._handleAgentStatusChanged = this._handleAgentStatusChanged.bind(this);
 		this._handleUserStatusLivechatChanged = this._handleUserStatusLivechatChanged.bind(this);
+		this._name = 'Livechat Agent Activity Monitor';
 	}
 
 	start() {
 		this._setupListeners();
+	}
+
+	stop() {
+		if (!this.isRunning()) {
+			return;
+		}
+
+		SyncedCron.remove(this._name);
+
+		this._started = false;
 	}
 
 	isRunning() {
@@ -38,7 +49,7 @@ export class LivechatAgentActivityMonitor {
 
 	_startMonitoring() {
 		SyncedCron.add({
-			name: 'Livechat Agent Activity Monitor',
+			name: this._name,
 			schedule: (parser) => parser.cron('0 0 * * *'),
 			job: () => {
 				this._updateActiveSessions();
@@ -65,6 +76,10 @@ export class LivechatAgentActivityMonitor {
 	}
 
 	_handleMeteorConnection(connection) {
+		if (!this.isRunning()) {
+			return;
+		}
+
 		const session = Sessions.findOne({ sessionId: connection.id });
 		if (!session) {
 			return;
@@ -81,6 +96,10 @@ export class LivechatAgentActivityMonitor {
 	}
 
 	_handleAgentStatusChanged({ userId, status }) {
+		if (!this.isRunning()) {
+			return;
+		}
+
 		const user = Users.findOneById(userId);
 		if (!user || user.statusLivechat !== 'available') {
 			return;
@@ -94,6 +113,10 @@ export class LivechatAgentActivityMonitor {
 	}
 
 	_handleUserStatusLivechatChanged({ userId, status }) {
+		if (!this.isRunning()) {
+			return;
+		}
+
 		const user = Users.findOneById(userId);
 		if (user && user.status === 'offline') {
 			return;

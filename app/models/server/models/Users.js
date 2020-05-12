@@ -30,6 +30,7 @@ export class Users extends Base {
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ bio: 1 });
 		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
@@ -218,20 +219,6 @@ export class Users extends Base {
 			};
 		}
 		return null;
-	}
-
-	setLastRoutingTime(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				lastRoutingTime: new Date(),
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setLivechatStatus(userId, status) {
@@ -562,6 +549,18 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByIdOrUsername(idOrUsername, options) {
+		const query = {
+			$or: [{
+				_id: idOrUsername,
+			}, {
+				username: idOrUsername,
+			}],
+		};
+
+		return this.findOne(query, options);
+	}
+
 	// FIND
 	findByIds(users, options) {
 		const query = { _id: { $in: users } };
@@ -624,39 +623,28 @@ export class Users extends Base {
 		return this.find({
 			active: true,
 			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
 		}, options);
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (conditions == null) { conditions = {}; }
-		if (options == null) { options = {}; }
-		if (!_.isArray(exceptions)) {
-			exceptions = [exceptions];
-		}
-
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+	findActiveLocalGuests(idExceptions = [], options = {}) {
 		const query = {
-			$or: [{
-				username: termRegex,
-			}, {
-				name: termRegex,
-			}],
 			active: true,
-			type: {
-				$in: ['user', 'bot'],
+			type: { $nin: ['app'] },
+			roles: {
+				$eq: 'guest',
+				$size: 1,
 			},
-			$and: [{
-				username: {
-					$exists: true,
-				},
-			}, {
-				username: {
-					$nin: exceptions,
-				},
-			}],
-			...conditions,
+			isRemote: { $ne: true },
 		};
+
+		if (idExceptions) {
+			if (!_.isArray(idExceptions)) {
+				idExceptions = [idExceptions];
+			}
+
+			query._id = { $nin: idExceptions };
+		}
 
 		return this.find(query, options);
 	}
@@ -691,14 +679,13 @@ export class Users extends Base {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
+
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: orStmt,
-				},
-				{
 					username: { $exists: true, $nin: exceptions },
+					$or: orStmt,
 				},
 				...extraQuery,
 			],
@@ -853,7 +840,11 @@ export class Users extends Base {
 	}
 
 	findActiveRemote(options = {}) {
-		return this.find({ active: true, isRemote: true }, options);
+		return this.find({
+			active: true,
+			isRemote: true,
+			roles: { $ne: ['guest'] },
+		}, options);
 	}
 
 	getSAMLByIdAndSAMLProvider(_id, provider) {
@@ -1117,6 +1108,21 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	setBio(_id, bio = '') {
+		const update = {
+			...bio.trim() ? {
+				$set: {
+					bio,
+				},
+			} : {
+				$unset: {
+					bio: 1,
+				},
+			},
+		};
+		return this.update(_id, update);
+	}
+
 	clearSettings(_id) {
 		const update = {
 			$set: {
@@ -1374,6 +1380,10 @@ Find users to send a message by email if:
 
 	getActiveLocalUserCount() {
 		return this.findActive().count() - this.findActiveRemote().count();
+	}
+
+	getActiveLocalGuestCount(idExceptions = []) {
+		return this.findActiveLocalGuests(idExceptions).count();
 	}
 
 	removeOlderResumeTokensByUserId(userId, fromDate) {

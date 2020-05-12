@@ -17,7 +17,7 @@ export const negative = () => <Growth>{-3}</Growth>;
 
 export const withTextStyle = () =>
 	['h1', 's1', 'c1', 'micro']
-		.map((textStyle) => <Box key={textStyle}>
-			<Growth textStyle={textStyle}>{3}</Growth>
-			<Growth textStyle={textStyle}>{-3}</Growth>
+		.map((fontScale) => <Box key={fontScale}>
+			<Growth fontScale={fontScale}>{3}</Growth>
+			<Growth fontScale={fontScale}>{-3}</Growth>
 		</Box>);

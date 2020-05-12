@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import './email';
 import { MessageTypesValues } from '../../lib/MessageTypes';
 
@@ -97,9 +97,8 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_SearchFields', 'username, name', {
+	this.add('Accounts_SearchFields', 'username, name, bio', {
 		type: 'string',
-		public: true,
 	});
 	this.add('Accounts_Directory_DefaultView', 'channels', {
 		type: 'select',
@@ -381,11 +380,29 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_Avatars_Sidebar',
 		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Unread_on_top',
 		});
+
+		this.add('Accounts_Default_User_Preferences_sidebarSortby', 'activity', {
+			type: 'select',
+			values: [
+				{
+					key: 'activity',
+					i18nLabel: 'Activity',
+				},
+				{
+					key: 'alphabetical',
+					i18nLabel: 'Alphabetical',
+				},
+			],
+			public: true,
+			i18nLabel: 'Sort_By',
+		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
 			type: 'boolean',
 			public: true,
@@ -908,12 +925,6 @@ settings.addGroup('General', function() {
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description',
 		});
-
-		this.add('Notifications_Always_Notify_Mobile', false, {
-			type: 'boolean',
-			public: true,
-			i18nDescription: 'Notifications_Always_Notify_Mobile_Description',
-		});
 	});
 	this.section('REST API', function() {
 		return this.add('API_User_Limit', 500, {
@@ -1045,11 +1056,6 @@ settings.addGroup('Message', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_SetNameToAliasEnabled', false, {
-		type: 'boolean',
-		public: false,
-		i18nDescription: 'Message_SetNameToAliasEnabled_Description',
-	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,
@@ -1160,39 +1166,30 @@ settings.addGroup('Meta', function() {
 	});
 });
 
+settings.addGroup('Mobile', function() {
+	this.section('Screen_Lock', function() {
+		this.add('Force_Screen_Lock', false, { type: 'boolean', i18nDescription: 'Force_Screen_Lock_description', public: true });
+		this.add('Force_Screen_Lock_After', 1800, { type: 'int', i18nDescription: 'Force_Screen_Lock_After_description', enableQuery: { _id: 'Force_Screen_Lock', value: true }, public: true });
+	});
+});
+
+const pushEnabledWithoutGateway = [
+	{
+		_id: 'Push_enable',
+		value: true,
+	}, {
+		_id: 'Push_enable_gateway',
+		value: false,
+	},
+];
+
 settings.addGroup('Push', function() {
 	this.add('Push_enable', true, {
 		type: 'boolean',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
 	});
-	this.add('Push_debug', false, {
-		type: 'boolean',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
-	this.add('Push_send_interval', 5000, {
-		type: 'int',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
-	this.add('Push_send_batch_size', 10, {
-		type: 'int',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
+
 	this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',
@@ -1220,15 +1217,7 @@ settings.addGroup('Push', function() {
 		type: 'boolean',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: [
-			{
-				_id: 'Push_enable',
-				value: true,
-			}, {
-				_id: 'Push_enable_gateway',
-				value: false,
-			},
-		],
+		enableQuery: pushEnabledWithoutGateway,
 	});
 	this.add('Push_test_push', 'push_test', {
 		type: 'action',
@@ -1241,39 +1230,47 @@ settings.addGroup('Push', function() {
 	this.section('Certificates_and_Keys', function() {
 		this.add('Push_apn_passphrase', '', {
 			type: 'string',
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_key', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_cert', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_dev_passphrase', '', {
 			type: 'string',
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_dev_key', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_dev_cert', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			public: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 	});
@@ -1459,6 +1456,16 @@ settings.addGroup('Logs', function() {
 		this.add('Prometheus_Port', 9458, {
 			type: 'string',
 			i18nLabel: 'Port',
+		});
+		this.add('Prometheus_Reset_Interval', 0, {
+			type: 'int',
+		});
+		this.add('Prometheus_Garbage_Collector', false, {
+			type: 'boolean',
+			alert: 'Prometheus_Garbage_Collector_Alert',
+		});
+		this.add('Prometheus_API_User_Agent', false, {
+			type: 'boolean',
 		});
 	});
 });
@@ -2766,7 +2773,7 @@ settings.addGroup('Setup_Wizard', function() {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
+		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(0), {
 			type: 'date',
 			hidden: true,
 			readonly: true,
@@ -2818,6 +2825,41 @@ settings.addGroup('Rate Limiter', function() {
 		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+	});
+});
+
+settings.addGroup('Troubleshoot', function() {
+	this.add('Troubleshoot_Disable_Notifications', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Notifications_Alert',
+	});
+	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Sessions_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Sessions_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Statistics_Generator', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Statistics_Generator_Alert',
+	});
+	this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Workspace_Sync', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 	});
 });
 

@@ -11,6 +11,6 @@ export default {
 
 export const _default = () => <NegativeGrowthSymbol />;
 
-export const withColor = () => <Box textColor='danger'>
+export const withColor = () => <Box color='danger'>
 	<NegativeGrowthSymbol />
 </Box>;

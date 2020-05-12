@@ -26,11 +26,11 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 
 		const referer = url.parse(req.headers.referer);
 		if (!_.contains(domainWhiteList, referer.host)) {
-			res.setHeader('X-FRAME-OPTIONS', 'DENY');
+			res.setHeader('Content-Security-Policy', 'frame-ancestors \'none\'');
 			return next();
 		}
 
-		res.setHeader('X-FRAME-OPTIONS', `ALLOW-FROM ${ referer.protocol }//${ referer.host }`);
+		res.setHeader('Content-Security-Policy', `frame-ancestors ${ referer.protocol }//${ referer.host }`);
 	}
 
 	res.write(indexHtmlWithServerURL);

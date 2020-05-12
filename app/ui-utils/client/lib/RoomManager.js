@@ -16,7 +16,7 @@ import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
-import { ROOM_DATA_STREAM_OBSERVER } from '../../../utils/stream/constants';
+import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 
 import { call } from '..';
 
@@ -46,7 +46,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 export const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
-	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM_OBSERVER);
+	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
 	const Cls = class {
