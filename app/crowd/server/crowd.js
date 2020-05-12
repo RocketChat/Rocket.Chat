@@ -204,12 +204,12 @@ export class CROWD {
 				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
 				if (!response || response.users.length === 0) {
 					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
-					if(settings.get('CROWD_Remove_Orphaned_Users') === true){
-						logger.info("Removing user");
-						Meteor.defer(function(){
-							deleteUser(user._id)
+					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
+						logger.info('Removing user');
+						Meteor.defer(function() {
+							deleteUser(user._id);
 						});
-						logger.info("Removed");
+						logger.info('Removed');
 					}
 					return;
 				}
