@@ -127,7 +127,7 @@ API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post() {
 		// WIDECHAT only
 		let messageReturn;
-		if (this.user.username === 'viasat.notification.service') {
+		if (this.user.username === settings.get('Notification_Service_User_Username')) {
 			const { hostname_id } = this.requestParams();
 			if (!hostname_id) {
 				throw new Meteor.Error('error-hostname-id-not-provided', 'Body param "hostname_id" is required');
