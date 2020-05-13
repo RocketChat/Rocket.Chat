@@ -31,7 +31,7 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t('You_will_not_be_able_to_recover')}
+			{t('Application_delete_warning')}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -110,7 +110,7 @@ function EditOauthApp({ close, onChange, data, ...props }) {
 	});
 	const [modal, setModal] = useState();
 
-	const router = useRoute('oauth-admin-apps');
+	const router = useRoute('admin-oauth-apps');
 
 	const absoluteUrl = useAbsoluteUrl();
 	const authUrl = useMemo(() => absoluteUrl('oauth/authorize'));
