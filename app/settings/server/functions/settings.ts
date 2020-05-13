@@ -24,14 +24,12 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 			value = false;
 		} else if (options.type === 'int') {
 			value = parseInt(envValue);
+		} else {
+			value = envValue;
 		}
 		options.processEnvValue = value;
 		options.valueSource = 'processEnvValue';
-	} else if (typeof Meteor.settings[_id] !== 'undefined') {
-		if (Meteor.settings[_id] == null) {
-			return false;
-		}
-
+	} else if (Meteor.settings[_id] != null && Meteor.settings[_id] !== value) {
 		value = Meteor.settings[_id];
 		options.meteorSettingsValue = value;
 		options.valueSource = 'meteorSettingsValue';
@@ -45,6 +43,8 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 			value = false;
 		} else if (options.type === 'int') {
 			value = parseInt(overwriteValue);
+		} else {
+			value = overwriteValue;
 		}
 		options.value = value;
 		options.processEnvValue = value;
@@ -291,7 +291,7 @@ class Settings extends SettingsBase {
 	/*
 	* Update a setting by id
 	*/
-	updateById(_id: string, value: SettingValue, editor: string): boolean {
+	updateById(_id: string, value: SettingValue, editor?: string): boolean {
 		if (!_id || value == null) {
 			return false;
 		}
