@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
 	Field,
 	TextInput,
@@ -86,8 +86,6 @@ export default function NewOutgoingWebhook({ data, onChange, setSaveAction, ...p
 		[field]: getNewValue(e),
 	});
 
-	const boolTextColor = useCallback((isEnabled) => (isEnabled ? 'default' : 'hint'));
-
 	const {
 		enabled,
 		impersonateUser,
@@ -139,14 +137,10 @@ export default function NewOutgoingWebhook({ data, onChange, setSaveAction, ...p
 							<Field.Hint>{t('Event_Trigger_Description')}</Field.Hint>
 						</Field>
 						<Field>
-							<Field.Label>{t('Enabled')}</Field.Label>
-							<Field.Row>
-								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-									<Box mie='x8' color={ boolTextColor(!enabled) }>{t('False')}</Box>
-									<ToggleSwitch checked={enabled} onChange={handleChange('enabled', () => !enabled)} />
-									<Box mis='x8' color={ boolTextColor(enabled) }>{t('True')}</Box>
-								</Box>
-							</Field.Row>
+							<Field.Label display='flex' justifyContent='space-between' w='full'>
+								{t('Enabled')}
+								<ToggleSwitch checked={enabled} onChange={handleChange('enabled', () => !enabled)} />
+							</Field.Label>
 						</Field>
 						<Field>
 							<Field.Label>{t('Name_optional')}</Field.Label>
@@ -187,14 +181,10 @@ export default function NewOutgoingWebhook({ data, onChange, setSaveAction, ...p
 							</Field.Row>
 						</Field>
 						<Field>
-							<Field.Label>{t('Impersonate_user')}</Field.Label>
-							<Field.Row>
-								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-									<Box mie='x8' color={ boolTextColor(!impersonateUser) }>{t('False')}</Box>
-									<ToggleSwitch checked={impersonateUser} onChange={handleChange('impersonateUser', () => !impersonateUser)} />
-									<Box mis='x8' color={ boolTextColor(impersonateUser) }>{t('True')}</Box>
-								</Box>
-							</Field.Row>
+							<Field.Label display='flex' justifyContent='space-between' w='full'>
+								{t('Impersonate_user')}
+								<ToggleSwitch checked={impersonateUser} onChange={handleChange('impersonateUser', () => !impersonateUser)} />
+							</Field.Label>
 						</Field>
 						<Field>
 							<Field.Label>{t('Post_as')}</Field.Label>
@@ -234,14 +224,10 @@ export default function NewOutgoingWebhook({ data, onChange, setSaveAction, ...p
 							</Field.Row>
 						</Field>
 						<Field>
-							<Field.Label>{t('Script_Enabled')}</Field.Label>
-							<Field.Row>
-								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-									<Box mie='x8' color={ boolTextColor(!scriptEnabled) }>{t('False')}</Box>
-									<ToggleSwitch checked={scriptEnabled} onChange={handleChange('scriptEnabled', () => !scriptEnabled)} />
-									<Box mis='x8' color={ boolTextColor(scriptEnabled) }>{t('True')}</Box>
-								</Box>
-							</Field.Row>
+							<Field.Label display='flex' justifyContent='space-between' w='full'>
+								{t('Script_Enabled')}
+								<ToggleSwitch checked={scriptEnabled} onChange={handleChange('scriptEnabled', () => !scriptEnabled)} />
+							</Field.Label>
 						</Field>
 						<Field>
 							<Field.Label>{t('Script')}</Field.Label>
@@ -264,14 +250,10 @@ export default function NewOutgoingWebhook({ data, onChange, setSaveAction, ...p
 				<Accordion.Item title={t('Advanced_Settings')}>
 					<FieldGroup>
 						<Field>
-							<Field.Label>{t('Integration_Retry_Failed_Url_Calls')}</Field.Label>
-							<Field.Row>
-								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-									<Box mie='x8' color={ boolTextColor(!retryFailedCalls) }>{t('False')}</Box>
-									<ToggleSwitch checked={retryFailedCalls} onChange={handleChange('retryFailedCalls', () => !retryFailedCalls)} />
-									<Box mis='x8' color={ boolTextColor(retryFailedCalls) }>{t('True')}</Box>
-								</Box>
-							</Field.Row>
+							<Field.Label display='flex' justifyContent='space-between' w='full'>
+								{t('Integration_Retry_Failed_Url_Calls')}
+								<ToggleSwitch checked={retryFailedCalls} onChange={handleChange('retryFailedCalls', () => !retryFailedCalls)} />
+							</Field.Label>
 							<Field.Hint>{t('Integration_Retry_Failed_Url_Calls_Description')}</Field.Hint>
 						</Field>
 						<Field>
@@ -290,25 +272,17 @@ export default function NewOutgoingWebhook({ data, onChange, setSaveAction, ...p
 						</Field>
 						{event === 'sendMessage' && <FieldGroup>
 							<Field>
-								<Field.Label>{t('Integration_Word_Trigger_Placement')}</Field.Label>
-								<Field.Row>
-									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-										<Box mie='x8' color={ boolTextColor(!triggerrWordAnywhere) }>{t('False')}</Box>
-										<ToggleSwitch checked={triggerrWordAnywhere} onChange={handleChange('triggerrWordAnywhere', () => !triggerrWordAnywhere)} />
-										<Box mis='x8' color={ boolTextColor(triggerrWordAnywhere) }>{t('True')}</Box>
-									</Box>
-								</Field.Row>
+								<Field.Label display='flex' justifyContent='space-between' w='full'>
+									{t('Integration_Word_Trigger_Placement')}
+									<ToggleSwitch checked={triggerrWordAnywhere} onChange={handleChange('triggerrWordAnywhere', () => !triggerrWordAnywhere)} />
+								</Field.Label>
 								<Field.Hint>{t('Integration_Word_Trigger_Placement_Description')}</Field.Hint>
 							</Field>
 							<Field>
-								<Field.Label>{t('Integration_Word_Trigger_Placement')}</Field.Label>
-								<Field.Row>
-									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-										<Box mie='x8' color={ boolTextColor(!runOnEdits) }>{t('False')}</Box>
-										<ToggleSwitch checked={runOnEdits} onChange={handleChange('runOnEdits', () => !runOnEdits)} />
-										<Box mis='x8' color={ boolTextColor(runOnEdits) }>{t('True')}</Box>
-									</Box>
-								</Field.Row>
+								<Field.Label display='flex' justifyContent='space-between' w='full'>
+									{t('Integration_Word_Trigger_Placement')}
+									<ToggleSwitch checked={runOnEdits} onChange={handleChange('runOnEdits', () => !runOnEdits)} />
+								</Field.Label>
 								<Field.Hint>{t('Integration_Run_When_Message_Is_Edited_Description')}</Field.Hint>
 							</Field>
 						</FieldGroup>}

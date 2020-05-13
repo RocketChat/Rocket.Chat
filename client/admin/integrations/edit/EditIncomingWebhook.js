@@ -113,14 +113,10 @@ function EditIncomingWebhook({ data, setData, onChange, ...props }) {
 			<Margins block='x16'>
 				<FieldGroup width='x600' alignSelf='center'>
 					<Field>
-						<Field.Label>{t('Enabled')}</Field.Label>
-						<Field.Row>
-							<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-								<Box mie='x8' color={ enabled ? 'hint' : 'default' }>{t('False')}</Box>
-								<ToggleSwitch checked={enabled} onChange={handleChange('enabled', data.enabled, () => !enabled)} />
-								<Box mis='x8' color={ enabled ? 'default' : 'hint' }>{t('True')}</Box>
-							</Box>
-						</Field.Row>
+						<Field.Label display='flex' justifyContent='space-between' w='full'>
+							{t('Enabled')}
+							<ToggleSwitch checked={enabled} onChange={handleChange('enabled', data.enabled, () => !enabled)} />
+						</Field.Label>
 					</Field>
 					<Field>
 						<Field.Label>{t('Name_optional')}</Field.Label>
@@ -169,14 +165,10 @@ function EditIncomingWebhook({ data, setData, onChange, ...props }) {
 						<Field.Hint dangerouslySetInnerHTML={{ __html: t('Example_s', ':ghost:') }} />
 					</Field>
 					<Field>
-						<Field.Label>{t('Script_Enabled')}</Field.Label>
-						<Field.Row>
-							<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-								<Box mie='x8' color={ scriptEnabled ? 'hint' : 'default' }>{t('False')}</Box>
-								<ToggleSwitch checked={scriptEnabled} onChange={handleChange('scriptEnabled', data.scriptEnabled, () => !scriptEnabled)} />
-								<Box mis='x8' color={ scriptEnabled ? 'default' : 'hint' }>{t('True')}</Box>
-							</Box>
-						</Field.Row>
+						<Field.Label display='flex' justifyContent='space-between' w='full'>
+							{t('Script_Enabled')}
+							<ToggleSwitch checked={scriptEnabled} onChange={handleChange('scriptEnabled', data.scriptEnabled, () => !scriptEnabled)} />
+						</Field.Label>
 					</Field>
 					<Field>
 						<Field.Label>{t('Script')}</Field.Label>
