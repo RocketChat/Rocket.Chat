@@ -26,6 +26,8 @@
   "List_of_departments_for_forward": "Lista de departamentos permitidos para o encaminhamento(Opcional).",
   "List_of_departments_for_forward_description": "Permite definir uma lista restrita de departamentos que podem receber conversas desse departamento.",
   "Livechat_abandoned_rooms_closed_custom_message": "Mensagem customizada para usar quando a sala for automaticamente fechada por abandono do visitante",
+  "Livechat_last_chatted_agent_preferred": "Agente preferido pela última conversa",
+  "Livechat_last_chatted_agent_preferred_Description": "Agente preferido pela última conversa aloca bate-papos para o agente que interagiu anteriormente com o mesmo visitante, caso o agente esteja disponível quando o bate-papo for iniciado.",
   "Livechat_Monitors": "Monitores",
   "Livechat_monitors": "Monitores de Livechat",
   "Max_number_of_chats_per_agent": "Número máximo de atendimentos simultâneos",
