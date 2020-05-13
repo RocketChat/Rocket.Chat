@@ -1,10 +1,11 @@
-import { Tabs, Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Tabs, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import Page from '../../../components/basic/Page';
 import NewIncomingWebhook from './NewIncomingWebhook';
 import NewOutgoingWebhook from './NewOutgoingWebhook';
 import NewZapier from './NewZapier';
+import NewBot from './NewBot';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 
@@ -62,7 +63,7 @@ export default function NewIntegrationsPage({ ...props }) {
 			{[
 				tab === 'incoming' && <NewIncomingWebhook key='incoming'/>,
 				tab === 'outgoing' && <NewOutgoingWebhook key='outgoing'/>,
-				tab === 'bots' && <Box pb='x20' fontScale='s1' key='bots' dangerouslySetInnerHTML={{ __html: t('additional_integrations_Bots') }}/>,
+				tab === 'bots' && <NewBot key='bot' />,
 				tab === 'zapier' && <NewZapier key='zapier'/>,
 			].filter(Boolean)}
 		</Page.ScrollableContentWithShadow>

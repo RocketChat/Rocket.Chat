@@ -1,10 +1,10 @@
-import { Box, Table, TextInput, Icon, Tabs } from '@rocket.chat/fuselage';
+import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useRoute } from '../../contexts/RouterContext';
+import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 
@@ -12,22 +12,19 @@ const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidde
 
 const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
+
 	const [text, setText] = useState('');
-	const [type, setType] = useState('webhook-incoming');
+	const type = useRouteParameter('context');
+
 	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
 
 	useEffect(() => {
 		setFilter({ text, type });
 	}, [text, type]);
-	return <>
-		<Tabs>
-			<Tabs.Item selected={type === 'webhook-incoming'} onClick={() => setType('webhook-incoming')}>{t('Integration_Incoming_WebHook')}</Tabs.Item>
-			<Tabs.Item selected={type === 'webhook-outgoing'} onClick={() => setType('webhook-outgoing')}>{t('Integration_Outgoing_WebHook')}</Tabs.Item>
-		</Tabs>
-		<Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
-			<TextInput placeholder={t('Search_Integrations')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-		</Box>
-	</>;
+
+	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+		<TextInput placeholder={t('Search_Integrations')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+	</Box>;
 };
 
 const useQuery = (params, sort) => useMemo(() => ({
