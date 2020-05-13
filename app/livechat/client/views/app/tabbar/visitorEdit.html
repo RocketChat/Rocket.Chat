@@ -30,9 +30,11 @@
 						</div>
 					</label>
 				</div>
-				{{#each field in visitorCustomFields}}
-					{{> visitorEditCustomField field }}
-				{{/each}}
+				{{#if canViewCustomFields }}
+					{{#each field in visitorCustomFields}}
+						{{> visitorEditCustomField field }}
+					{{/each}}
+				{{/if}}
 			{{/with}}
 
 			{{#with room}}
@@ -83,9 +85,11 @@
 						{{/each}}
 					</ul>
 				</div>
-				{{#each field in roomCustomFields}}
-					{{> visitorEditCustomField field }}
-				{{/each}}
+				{{#if canViewCustomFields }}
+					{{#each field in roomCustomFields}}
+						{{> visitorEditCustomField field }}
+					{{/each}}
+				{{/if}}
 			{{/with}}
 
 			<div class="rc-user-info__flex rc-user-info__row">

@@ -12,7 +12,7 @@ Template.visitorEditCustomField.helpers({
 	},
 	selectedField(current) {
 		const { fieldData: { value } } = Template.instance();
-		return value === current;
+		return value.trim() === current.trim();
 	},
 });
 

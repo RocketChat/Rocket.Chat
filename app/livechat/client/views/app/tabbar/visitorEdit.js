@@ -4,24 +4,30 @@ import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
 import { t } from '../../../../../utils';
-import { hasRole } from '../../../../../authorization';
+import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../../authorization';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
 
 const CUSTOM_FIELDS_COUNT = 100;
 
-const getCustomFieldsByScope = (customFields = [], data = {}, filter) =>
+const getCustomFieldsByScope = (customFields = [], data = {}, filter, disabled) =>
 	customFields
 		.filter(({ visibility, scope }) => visibility !== 'hidden' && scope === filter)
 		.map(({ _id: name, scope, label, ...extraData }) => {
 			const value = data[name] ? data[name] : '';
-			return { name, label, scope, value, ...extraData };
+			return { name, label, scope, value, disabled, ...extraData };
 		});
+
+const isCustomFieldDisabled = () => hasPermission('view-livechat-room-customfields') && !hasPermission('edit-livechat-room-customfields');
 
 Template.visitorEdit.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
+	},
+
+	canViewCustomFields() {
+		return hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 	},
 
 	visitorCustomFields() {
@@ -33,7 +39,7 @@ Template.visitorEdit.helpers({
 		const visitor = Template.instance().visitor.get();
 		const { livechatData = {} } = visitor || {};
 
-		return getCustomFieldsByScope(customFields, livechatData, 'visitor');
+		return getCustomFieldsByScope(customFields, livechatData, 'visitor', isCustomFieldDisabled());
 	},
 
 	room() {
@@ -49,7 +55,7 @@ Template.visitorEdit.helpers({
 		const room = Template.instance().room.get();
 		const { livechatData = {} } = room || {};
 
-		return getCustomFieldsByScope(customFields, livechatData, 'room');
+		return getCustomFieldsByScope(customFields, livechatData, 'room', isCustomFieldDisabled());
 	},
 
 	email() {
