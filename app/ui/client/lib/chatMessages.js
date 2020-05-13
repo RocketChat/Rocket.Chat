@@ -269,7 +269,7 @@ export class ChatMessages {
 
 		if (msg) {
 			readMessage.readNow(rid);
-			$('.message.first-unread').removeClass('first-unread');
+			readMessage.refreshUnreadMark(rid);
 
 			const message = await promises.run('onClientBeforeSendMessage', {
 				_id: Random.id(),
@@ -388,8 +388,8 @@ export class ChatMessages {
 			return false;
 		}
 
-		await call('updateMessage', message);
 		this.clearEditing();
+		await call('updateMessage', message);
 		return true;
 	}
 
@@ -424,7 +424,7 @@ export class ChatMessages {
 						ts: new Date(),
 						msg: TAPi18n.__('No_such_command', { command: s.escapeHTML(match[1]) }),
 						u: {
-							username: settings.get('InternalHubot_Username'),
+							username: settings.get('InternalHubot_Username') || 'rocket.cat',
 						},
 						private: true,
 					};
@@ -472,6 +472,12 @@ export class ChatMessages {
 
 			this.deleteMsg(message);
 
+			this.$input.focus();
+			done();
+		}, () => {
+			if (this.editing.id === message._id) {
+				this.clearEditing();
+			}
 			this.$input.focus();
 			done();
 		});

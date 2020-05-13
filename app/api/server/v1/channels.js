@@ -758,7 +758,7 @@ API.v1.addRoute('channels.setDefault', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('saveRoomSettings', findResult._id, 'default', this.bodyParams.default.toString());
+			Meteor.call('saveRoomSettings', findResult._id, 'default', ['true', '1'].includes(this.bodyParams.default.toString().toLowerCase()));
 		});
 
 		return API.v1.success({
