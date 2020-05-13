@@ -1,4 +1,4 @@
-import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Box, Table, TextInput, Icon, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
@@ -10,21 +10,28 @@ import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-const FilterByText = ({ setFilter, ...props }) => {
+const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
+	const [type, setType] = useState('webhook-incoming');
 	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
 
 	useEffect(() => {
-		setFilter({ text });
-	}, [text]);
-	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
-		<TextInput placeholder={t('Search_Integrations')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
+		setFilter({ text, type });
+	}, [text, type]);
+	return <>
+		<Tabs>
+			<Tabs.Item selected={type === 'webhook-incoming'} onClick={() => setType('webhook-incoming')}>{t('Integration_Incoming_WebHook')}</Tabs.Item>
+			<Tabs.Item selected={type === 'webhook-outgoing'} onClick={() => setType('webhook-outgoing')}>{t('Integration_Outgoing_WebHook')}</Tabs.Item>
+		</Tabs>
+		<Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+			<TextInput placeholder={t('Search_Integrations')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+		</Box>
+	</>;
 };
 
 const useQuery = (params, sort) => useMemo(() => ({
-	query: JSON.stringify({ name: { $regex: params.text || '', $options: 'i' } }),
+	query: JSON.stringify({ name: { $regex: params.text || '', $options: 'i' }, type: params.type }),
 	sort: JSON.stringify({ [sort[0]]: sort[1] === 'asc' ? 1 : -1 }),
 	...params.itemsPerPage && { count: params.itemsPerPage },
 	...params.current && { offset: params.current },
@@ -42,12 +49,12 @@ export function IntegrationsTable() {
 	const formatDateAndTime = useFormatDateAndTime();
 	const [ref, isBig] = useResizeInlineBreakpoint([700], 200);
 
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
+	const [params, setParams] = useState({ text: '', type: 'webhook-incoming', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 
-	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedText = useDebouncedValue(params.text, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
+	const query = useQuery({ ...params, text: debouncedText }, debouncedSort);
 
 	const { data } = useEndpointDataExperimental('integrations.list', query);
 
@@ -79,14 +86,14 @@ export function IntegrationsTable() {
 
 	const renderRow = useCallback(({ name, _id, type, username, _createdAt, _createdBy: { username: createdBy }, channel }) =>
 		<Table.Row key={_id} onKeyDown={onClick(_id, type)} onClick={onClick(_id, type)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<Table.Cell style={style}>{`${ type === 'webhook-incoming' ? t('Incoming_WebHook') : t('Outgoing_WebHook') } - ${ name }`}</Table.Cell>
+			<Table.Cell style={style} color='default' fontScale='p2'>{name}</Table.Cell>
 			<Table.Cell style={style}>{channel.join(', ')}</Table.Cell>
 			<Table.Cell style={style}>{createdBy}</Table.Cell>
 			{isBig && <Table.Cell style={style}>{formatDateAndTime(_createdAt)}</Table.Cell>}
 			<Table.Cell style={style}>{username}</Table.Cell>
 		</Table.Row>);
 
-	return <GenericTable ref={ref} FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.integrations} total={data && data.total} setParams={setParams} params={params} />;
+	return <GenericTable ref={ref} FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data && data.integrations} total={data && data.total} setParams={setParams} params={params} />;
 }
 
 export default IntegrationsTable;

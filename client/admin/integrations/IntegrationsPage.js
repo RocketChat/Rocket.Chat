@@ -23,9 +23,9 @@ function IntegrationsPage() {
 				</Button>
 			</ButtonGroup>
 		</Page.Header>
-		<Page.ScrollableContentWithShadow>
+		<Page.Content>
 			<IntegrationsTable />
-		</Page.ScrollableContentWithShadow>
+		</Page.Content>
 	</Page>;
 }
 
