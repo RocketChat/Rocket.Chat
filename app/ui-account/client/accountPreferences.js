@@ -353,10 +353,10 @@ Template.accountPreferences.events({
 	'click .js-dont-ask-remove'(e) {
 		e.preventDefault();
 		const selectEl = document.getElementById('dont-ask');
-		const { options } = selectEl;
-		const selectedOption = selectEl.value;
-		const optionIndex = Array.from(options).findIndex((option) => option.value === selectedOption);
-
-		selectEl.remove(optionIndex);
+		for (let i = selectEl.options.length - 1; i >= 0; i--) {
+			if (selectEl.options[i].selected) {
+				selectEl.remove(i);
+			}
+		}
 	},
 });
