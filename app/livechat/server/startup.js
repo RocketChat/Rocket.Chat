@@ -35,7 +35,7 @@ Meteor.startup(() => {
 		}
 		const { _id: userId } = user;
 		const { servedBy: { _id: agentId } = {} } = room;
-		return userId === agentId || (!room.open && hasPermission(user._id, 'view-livechat-closed-room-by-another-agent'));
+		return userId === agentId || (!room.open && hasPermission(user._id, 'view-livechat-room-closed-by-another-agent'));
 	});
 
 	addRoomAccessValidator(function(room, user, extraData) {
