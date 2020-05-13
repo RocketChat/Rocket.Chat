@@ -240,9 +240,9 @@ Template.mailMessagesInstructions.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 	this.userFilter = new ReactiveVar('');
 
-	const filter = { exceptions: [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
+	const filter = { exceptions: this.selectedUsers.get().map((u) => u.username) };
 	Deps.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
+		filter.exceptions = this.selectedUsers.get().map((u) => u.username);
 	});
 
 	this.ac = new AutoComplete(
