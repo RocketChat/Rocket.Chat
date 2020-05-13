@@ -1,46 +1,40 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
-import { Box, Table, TextInput, Icon, Button } from '@rocket.chat/fuselage';
+import { Table } from '@rocket.chat/fuselage';
+import React, { useMemo, useCallback } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
-import { useCustomSound } from '../../contexts/CustomSoundContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useRoute } from '../../contexts/RouterContext';
+import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
+import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 
-const FilterByText = ({ setFilter, ...props }) => {
+export function OAuthAppsTable() {
 	const t = useTranslation();
-	const [text, setText] = useState('');
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+	const formatDateAndTime = useFormatDateAndTime();
 
-	useEffect(() => {
-		setFilter({ text });
-	}, [text]);
-	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
-		<TextInput flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-};
+	const { data } = useEndpointDataExperimental('oauth-apps.list', useMemo(() => ({}), []));
 
-export function OAuthAppsTable({
-	data,
-	sort,
-	onClick,
-	onHeaderClick,
-	setParams,
-	params,
-}) {
-	const t = useTranslation();
+	const router = useRoute('admin-oauth-apps');
+
+	const onClick = (_id) => () => router.push({
+		context: 'edit',
+		id: _id,
+	});
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th w='x40' key='action'></Th>,
-	], [sort]);
+		<Th key={'name'}>{t('Name')}</Th>,
+		<Th key={'_createdBy'}>{t('Created_by')}</Th>,
+		<Th key={'_createdAt'}>{t('Created_at')}</Th>,
+	]);
 
-	const renderRow = (app) => {
-		const { _id, name } = app;
+	const renderRow = useCallback(({ _id, name, _createdAt, _createdBy: { username: createdBy } }) =>
+		<Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-oauth-app-id={_id}>
+			<Table.Cell withTruncatedText color='default' fontScale='p2'>{name}</Table.Cell>
+			<Table.Cell withTruncatedText>{createdBy}</Table.Cell>
+			<Table.Cell withTruncatedText>{formatDateAndTime(_createdAt)}</Table.Cell>
+		</Table.Row>,
+	);
 
-		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<Table.Cell fontScale='p1' color='default'><Box withTruncatedText>{name}</Box></Table.Cell>
-			<Table.Cell ></Table.Cell>
-		</Table.Row>;
-	};
-
-	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.sounds} total={data.total} setParams={setParams} params={params} />;
+	return <GenericTable header={header} renderRow={renderRow} results={data && data.oauthApps} />;
 }
+
+export default OAuthAppsTable;

@@ -1,41 +1,39 @@
 import React from 'react';
+import { Button, Icon } from '@rocket.chat/fuselage';
 
 import Page from '../../components/basic/Page';
-import VerticalBar from '../../components/basic/VerticalBar';
+// import VerticalBar from '../../components/basic/VerticalBar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
+import OAuthAppsTable from './OAuthAppsTable';
+import OAuthEditAppWithData from './OAuthEditApp';
+import OAuthAddApp from './OAuthAddApp';
 
-export function RoomsPage() {
+export function OAuthAppsPage() {
 	const t = useTranslation();
 
 	const router = useRoute('admin-oauth-apps');
 
-	const [sort, setSort] = useState();
-
-	const onHeaderClick = (id) => {
-		const [sortBy, sortDirection] = sort;
-
-		if (sortBy === id) {
-			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
-			return;
-		}
-		setSort([id, 'asc']);
-	};
-
-	const onClick = (_id) => () => {
-		router.push({
-			id: _id,
-		});
-	};
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
 
 	return <Page flexDirection='row'>
 		<Page>
-			<Page.Header title={t('Rooms')} />
+			<Page.Header title={t('OAuth_Applications')}>
+				{context && <Button alignSelf='flex-end' onClick={() => router.push({})}>
+					<Icon name='back'/>{t('Back')}
+				</Button>}
+				{!context && <Button primary alignSelf='flex-end' onClick={() => router.push({ context: 'new' })}>
+					<Icon name='plus'/>{t('New_Application')}
+				</Button>}
+			</Page.Header>
 			<Page.Content>
-				<RoomsTable onHeaderClic={onHeaderClick}/>
+				{!context && <OAuthAppsTable />}
+				{context === 'edit' && <OAuthEditAppWithData _id={id}/>}
+				{context === 'new' && <OAuthAddApp />}
 			</Page.Content>
 		</Page>
 	</Page>;
 }
 
-export default RoomsPage;
+export default OAuthAppsPage;
