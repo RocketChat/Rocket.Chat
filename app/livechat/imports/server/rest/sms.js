@@ -40,7 +40,7 @@ const defineVisitor = (smsNumber) => {
 };
 
 const normalizeLocationSharing = (payload) => {
-	const { extra: { fromLatitude: latitude, fromLongitude: longitude } } = payload;
+	const { extra: { fromLatitude: latitude, fromLongitude: longitude } = { } } = payload;
 	if (!latitude || !longitude) {
 		return;
 	}

@@ -4,9 +4,9 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { CounterSet } from '../data/CounterSet';
 import { Section } from '../Section';
-import { useEndpointData } from '../../hooks/useEndpointData';
 
 export function MessagesSentSection() {
 	const t = useTranslation();
@@ -48,7 +48,7 @@ export function MessagesSentSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/messages/messages-sent', params);
+	const data = useEndpointData('engagement-dashboard/messages/messages-sent', params);
 
 	const [
 		countFromPeriod,
@@ -63,11 +63,13 @@ export function MessagesSentSection() {
 
 		const values = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => ({
 			date: moment(period.start).add(i, 'days').toISOString(),
-			newUsers: 0,
+			newMessages: 0,
 		}));
-		for (const { day, users } of data.days) {
+		for (const { day, messages } of data.days) {
 			const i = moment(day).diff(period.start, 'days');
-			values[i].newUsers += users;
+			if (i >= 0) {
+				values[i].newMessages += messages;
+			}
 		}
 
 		return [
@@ -106,7 +108,7 @@ export function MessagesSentSection() {
 								<ResponsiveBar
 									data={values}
 									indexBy='date'
-									keys={['newUsers']}
+									keys={['newMessages']}
 									groupMode='grouped'
 									padding={0.25}
 									margin={{
@@ -155,8 +157,8 @@ export function MessagesSentSection() {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
-										{t('Value_users', { value })}
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
+										{t('Value_messages', { value })}
 									</Box>}
 								/>
 							</Box>

@@ -1,8 +1,4 @@
-import s from 'underscore.string';
-
 import { BaseRaw } from './BaseRaw';
-
-import { Users } from '..';
 
 export class UsersRaw extends BaseRaw {
 	findUsersInRoles(roles, scope, options) {
@@ -54,10 +50,24 @@ export class UsersRaw extends BaseRaw {
 
 		const [agent] = await this.col.aggregate(aggregate).toArray();
 		if (agent) {
-			Users.setLastRoutingTime(agent.agentId);
+			await this.setLastRoutingTime(agent.agentId);
 		}
 
 		return agent;
+	}
+
+	setLastRoutingTime(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				lastRoutingTime: new Date(),
+			},
+		};
+
+		return this.col.updateOne(query, update);
 	}
 
 	async getAgentAndAmountOngoingChats(userId) {
@@ -97,7 +107,7 @@ export class UsersRaw extends BaseRaw {
 		]).toArray();
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(termRegex, exceptions, conditions, options) {
 		if (exceptions == null) { exceptions = []; }
 		if (conditions == null) { conditions = {}; }
 		if (options == null) { options = {}; }
@@ -105,7 +115,6 @@ export class UsersRaw extends BaseRaw {
 			exceptions = [exceptions];
 		}
 
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 		const query = {
 			$or: [{
 				username: termRegex,
@@ -206,12 +215,82 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 		const params = [match];
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			params.push(lookup);
 			params.push(unwind);
 			params.push(departmentsMatch);
 		}
 		params.push(group);
 		return this.col.aggregate(params).toArray();
+	}
+
+	getTotalOfRegisteredUsersByDate({ start, end, options = {} }) {
+		const params = [
+			{
+				$match: {
+					createdAt: { $gte: start, $lte: end },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						$concat: [
+							{ $substr: ['$createdAt', 0, 4] },
+							{ $substr: ['$createdAt', 5, 2] },
+							{ $substr: ['$createdAt', 8, 2] },
+						],
+					},
+					users: { $sum: 1 },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						$toInt: '$_id',
+					},
+					users: { $sum: '$users' },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					date: '$_id',
+					users: 1,
+					type: 'users',
+				},
+			},
+		];
+		if (options.sort) {
+			params.push({ $sort: options.sort });
+		}
+		if (options.count) {
+			params.push({ $limit: options.count });
+		}
+		return this.col.aggregate(params).toArray();
+	}
+
+	updateStatusText(_id, statusText) {
+		const update = {
+			$set: {
+				statusText,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	updateStatusByAppId(appId, status) {
+		const query = {
+			appId,
+			status: { $ne: status },
+		};
+
+		const update = {
+			$set: {
+				status,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 }

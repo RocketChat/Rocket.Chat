@@ -1,5 +1,5 @@
 import { Rooms, Subscriptions } from '../../../models/server';
-import { settings } from '../../../settings/lib/settings';
+import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
 import { callbacks } from '../../../callbacks/server';
 
@@ -34,14 +34,14 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 	const uids = members.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
-	const room = uids.length <= 2
+	const room = uids.length === 2
 		? Rooms.findOneById(uids.join(''), { fields: { _id: 1 } })
 		: Rooms.findOneDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
 
 	const isNewRoom = !room;
 
 	const rid = room?._id || Rooms.insert({
-		...uids.length <= 2 && { _id: uids.join('') }, // Deprecated: using users' _id to compose the room _id is deprecated
+		...uids.length === 2 && { _id: uids.join('') }, // Deprecated: using users' _id to compose the room _id is deprecated
 		t: 'd',
 		usernames,
 		usersCount: members.length,

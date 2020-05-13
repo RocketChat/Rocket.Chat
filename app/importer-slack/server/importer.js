@@ -13,8 +13,9 @@ import {
 } from '../../importer/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Users, Rooms, Messages } from '../../models';
-import { insertMessage } from '../../lib';
+import { insertMessage, createDirectRoom } from '../../lib';
 import { getValidRoomName } from '../../utils';
+import { settings } from '../../settings/lib/settings';
 
 export class SlackImporter extends Base {
 	constructor(info, importRecord) {
@@ -399,11 +400,14 @@ export class SlackImporter extends Base {
 						msg: file.url_private_download || '',
 						_importFile: this.convertSlackFileToPendingFile(file),
 					};
+					if (message.thread_ts && (message.thread_ts !== message.ts)) {
+						msgObj.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
+					}
 					insertMessage(fileUser, msgObj, room, this._anyExistingSlackMessage);
 				});
 			}
 
-			if (message.subtype) {
+			if (message.subtype && (message.subtype !== 'thread_broadcast')) {
 				this.processMessageSubType(message, room, msgDataDefaults, missedTypes);
 			} else {
 				const user = this.getRocketUserFromUserId(message.user);
@@ -418,6 +422,29 @@ export class SlackImporter extends Base {
 							username: user.username,
 						},
 					};
+
+					if (message.thread_ts) {
+						if (message.thread_ts === message.ts) {
+							if (message.reply_users) {
+								msgObj.replies = [];
+								message.reply_users.forEach(function(item) {
+									msgObj.replies.push(item);
+								});
+							} else if (message.replies) {
+								msgObj.replies = [];
+								message.replies.forEach(function(item) {
+									msgObj.replies.push(item.user);
+								});
+							} else {
+								this.logger.warn(`Failed to import the parent comment, message: ${ msgDataDefaults._id }. Missing replies/reply_users field`);
+							}
+
+							msgObj.tcount = message.reply_count;
+							msgObj.tlm = new Date(parseInt(message.latest_reply.split('.')[0]) * 1000);
+						} else {
+							msgObj.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
+						}
+					}
 
 					if (message.edited) {
 						msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
@@ -526,13 +553,17 @@ export class SlackImporter extends Base {
 		return existingRoom;
 	}
 
-	_getChannelUserList(channel) {
+	_getChannelUserList(channel, returnObject = false, includeCreator = false) {
 		return channel.members.reduce((ret, member) => {
-			if (member !== channel.creator) {
+			if (includeCreator || member !== channel.creator) {
 				const user = this.getRocketUserFromUserId(member);
 				// Don't add bots to the room's member list; Since they are all replaced with rocket.cat, it could cause duplicated subscriptions
 				if (user && user.username && user._id !== 'rocket.cat') {
-					ret.push(user.username);
+					if (returnObject) {
+						ret.push(user);
+					} else {
+						ret.push(user.username);
+					}
 				}
 			}
 			return ret;
@@ -599,7 +630,50 @@ export class SlackImporter extends Base {
 	}
 
 	_importMpims(startedByUserId, channelNames) {
-		this._importPrivateGroupList(startedByUserId, this.mpims, channelNames);
+		if (!this.mpims || !this.mpims.channels) {
+			return;
+		}
+
+		const maxUsers = settings.get('DirectMesssage_maxUsers') || 1;
+
+		this.mpims.channels.forEach((channel) => {
+			if (!channel.do_import) {
+				this.addCountCompleted(1);
+				return;
+			}
+
+			channelNames.push(channel.name);
+
+			Meteor.runAsUser(startedByUserId, () => {
+				const users = this._getChannelUserList(channel, true, true);
+				const existingRoom = Rooms.findOneDirectRoomContainingAllUserIDs(users, { fields: { _id: 1 } });
+
+				if (existingRoom) {
+					channel.rocketId = existingRoom._id;
+					Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
+				} else {
+					const userId = this.getImportedRocketUserIdFromSlackUserId(channel.creator) || startedByUserId;
+					Meteor.runAsUser(userId, () => {
+						// If there are too many users for a direct room, then create a private group instead
+						if (users.length > maxUsers) {
+							const usernames = users.map((user) => user.username);
+							const group = Meteor.call('createPrivateGroup', channel.name, usernames);
+							channel.rocketId = group.rid;
+							return;
+						}
+
+						const newRoom = createDirectRoom(users);
+						channel.rocketId = newRoom._id;
+					});
+
+					this._updateImportedChannelTopicAndDescription(channel);
+				}
+
+				this.addCountCompleted(1);
+			});
+		});
+
+		this.collection.update({ _id: this.mpims._id }, { $set: { channels: this.mpims.channels } });
 	}
 
 	_importDMs(startedByUserId, channelNames) {
@@ -616,33 +690,26 @@ export class SlackImporter extends Base {
 			}
 
 			Meteor.runAsUser(startedByUserId, () => {
-				const userId1 = this.getImportedRocketUserIdFromSlackUserId(channel.members[0]);
-				const userId2 = this.getImportedRocketUserIdFromSlackUserId(channel.members[1]);
+				const user1 = this.getRocketUserFromUserId(channel.members[0]);
+				const user2 = this.getRocketUserFromUserId(channel.members[1]);
 
-				const rid = [userId1, userId2].sort().join('');
-				const existingRoom = Rooms.findOneById(rid);
+				const existingRoom = Rooms.findOneDirectRoomContainingAllUserIDs([user1, user2], { fields: { _id: 1 } });
 
 				if (existingRoom) {
 					channel.rocketId = existingRoom._id;
 					Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
 				} else {
-					if (!userId1) {
+					if (!user1) {
 						this.logger.error(`DM creation: User not found for id ${ channel.members[0] } and channel id ${ channel.id }`);
 						return;
 					}
 
-					if (!userId2) {
+					if (!user2) {
 						this.logger.error(`DM creation: User not found for id ${ channel.members[1] } and channel id ${ channel.id }`);
 						return;
 					}
 
-					const user = this._getBasicUserData(userId2);
-
-					if (!user) {
-						return;
-					}
-
-					const roomInfo = Meteor.runAsUser(userId1, () => Meteor.call('createDirectMessage', user.username));
+					const roomInfo = Meteor.runAsUser(user1._id, () => Meteor.call('createDirectMessage', user2.username));
 					channel.rocketId = roomInfo.rid;
 					Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
 				}
@@ -765,6 +832,7 @@ export class SlackImporter extends Base {
 			try {
 				this._importUsers(startedByUserId);
 
+				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				this._importChannels(startedByUserId, channelNames);
 				this._importGroups(startedByUserId, channelNames);
 				this._importMpims(startedByUserId, channelNames);

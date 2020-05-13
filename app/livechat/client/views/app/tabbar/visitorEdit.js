@@ -4,15 +4,24 @@ import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
 import { t } from '../../../../../utils';
-import { hasRole } from '../../../../../authorization';
+import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../../authorization';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
+import { getCustomFormTemplate } from '../customTemplates/register';
 
 const CUSTOM_FIELDS_COUNT = 100;
 
 Template.visitorEdit.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
+	},
+
+	canViewCustomFields() {
+		return hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+	},
+
+	canOnlyViewCustomFields() {
+		return hasPermission('view-livechat-room-customfields') && !hasPermission('edit-livechat-room-customfields');
 	},
 
 	visitorCustomFields() {
@@ -94,6 +103,10 @@ Template.visitorEdit.helpers({
 		const room = Template.instance().room.get();
 		return !!(room && room.sms);
 	},
+
+	customFieldsTemplate() {
+		return getCustomFormTemplate('livechatVisitorEditForm');
+	},
 });
 
 Template.visitorEdit.onCreated(async function() {
@@ -166,6 +179,11 @@ Template.visitorEdit.events({
 		if (sms) {
 			delete userData.phone;
 		}
+		instance.$('.customFormField').each((i, el) => {
+			const elField = instance.$(el);
+			const name = elField.attr('name');
+			roomData[name] = elField.val();
+		});
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
