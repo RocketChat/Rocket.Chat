@@ -33,6 +33,7 @@ import './hooks/onLoadConfigApi';
 import './hooks/onSetUserStatusLivechat';
 import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
+import './hooks/saveDefaultAgentAfterTakeInquiry';
 import './lib/routing/LoadBalancing';
 import { onLicense } from '../../license/server';
 

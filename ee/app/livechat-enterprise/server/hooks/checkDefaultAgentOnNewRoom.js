@@ -1,25 +1,29 @@
-// import { Meteor } from 'meteor/meteor';
-
 import { callbacks } from '../../../../../app/callbacks';
-// import LivechatPriority from '../../../models/server/models/Li';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { settings } from '../../../../../app/settings';
+import { LivechatRooms, Users } from '../../../../../app/models/server';
 
 callbacks.add('livechat.checkDefaultAgentOnNewRoom', (agent, guest) => {
-	if (agent) {
+	if (agent || !guest) {
 		return agent;
 	}
 
-	/*
-	const { priority: searchTerm } = extraData;
-	if (!searchTerm) {
-		return roomInfo;
+	if (!RoutingManager.getConfig().autoAssignAgent) {
+		return agent;
 	}
 
-	const priority = LivechatPriority.findOneByIdOrName(searchTerm);
-	if (!priority) {
-		throw new Meteor.Error('error-invalid-priority', 'Invalid priority', { function: 'livechat.beforeRoom' });
+	if (!settings.get('Livechat_last_chatted_agent_routing')) {
+		return agent;
 	}
 
-	const { _id: priorityId } = priority;
-	return Object.assign({ ...roomInfo }, { priorityId });
-	*/
+	const { lastAgent: { username: usernameByVisitor } = {}, token } = guest;
+	const lastGuestAgent = usernameByVisitor && Users.findOneOnlineAgentByUsername(usernameByVisitor, { fields: { _id: 1, username: 1 } });
+	if (lastGuestAgent) {
+		return lastGuestAgent;
+	}
+
+	const room = LivechatRooms.findLastServedAndClosedByVisitorToken(token, { fields: { servedBy: 1 } });
+	const { servedBy: { username: usernameByRoom } } = room;
+	const lastRoomAgent = usernameByRoom && Users.findOneOnlineAgentByUsername(usernameByRoom, { fields: { _id: 1, username: 1 } });
+	return lastRoomAgent || agent;
 }, callbacks.priority.MEDIUM, 'livechat-check-default-agent-new-room');

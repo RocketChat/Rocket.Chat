@@ -164,6 +164,18 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			closedAt: { $exists: true },
+			servedBy: { $exists: true },
+		};
+
+		options.sort = { closedAt: -1 };
+		return this.findOne(query, options);
+	}
+
 	findOneByVisitorToken(visitorToken, fields) {
 		const options = {};
 
