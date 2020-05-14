@@ -565,16 +565,6 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	findByRoomAndUsersWithUserHighlights(roomId, users, options) {
-		const query = {
-			rid: roomId,
-			'u._id': { $in: users },
-			'userHighlights.0': { $exists: true },
-		};
-
-		return this.find(query, options);
-	}
-
 	findByRoomWithUserHighlights(roomId, options) {
 		const query = {
 			rid: roomId,
@@ -1020,6 +1010,20 @@ export class Subscriptions extends Base {
 		const update = {
 			$set: {
 				open: true,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	setLastReplyForRoomIdAndUserIds(roomId, uids, lr) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: uids },
+		};
+
+		const update = {
+			$set: {
+				lr,
 			},
 		};
 		return this.update(query, update, { multi: true });

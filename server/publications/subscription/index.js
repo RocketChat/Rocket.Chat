@@ -7,6 +7,7 @@ export const fields = {
 	t: 1,
 	ts: 1,
 	ls: 1,
+	lr: 1,
 	name: 1,
 	fname: 1,
 	rid: 1,

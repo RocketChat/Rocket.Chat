@@ -4,7 +4,7 @@ import { Messages } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
-import { updateUsersSubscriptions } from '../../../lib/server/lib/notifyUsersOnMessage';
+import { updateThreadUsersSubscriptions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 
 function notifyUsersOnReply(message, replies, room) {
@@ -13,7 +13,7 @@ function notifyUsersOnReply(message, replies, room) {
 		return message;
 	}
 
-	updateUsersSubscriptions(message, room, replies);
+	updateThreadUsersSubscriptions(message, room, replies);
 
 	return message;
 }

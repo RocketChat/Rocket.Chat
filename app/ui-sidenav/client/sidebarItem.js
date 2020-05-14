@@ -87,7 +87,7 @@ Template.sidebarItem.onCreated(function() {
 			return;
 		}
 
-		setLastMessageTs(this, currentData.lastMessage.ts);
+		setLastMessageTs(this, currentData.lm || currentData.lastMessage.ts);
 
 		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
 			this.renderedMessage = '******';
