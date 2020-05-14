@@ -959,7 +959,7 @@
   "CRM_Integration": "Integração de CRM",
   "CROWD_Allow_Custom_Username": "Permitir nome de usuário personalizado no Rocket.Chat",
   "CROWD_Reject_Unauthorized": "Rejeitar não autorizado",
-  "Croud_Remove_Orphaned_Users": "Remover usuários órfãos",
+  "Crowd_Remove_Orphaned_Users": "Remover usuários órfãos",
   "Crowd_sync_interval_Description": "O intervalo entre as sincronizações. Exemplo de \"todas as 24 horas\" ou \"no primeiro dia da semana\", mais exemplos em [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
   "Current_Chats": "Bate-papos atuais",
   "Current_File": "Arquivo atual",
