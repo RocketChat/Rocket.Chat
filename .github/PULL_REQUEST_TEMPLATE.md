@@ -37,7 +37,9 @@
 - [ ] Any dependent changes have been merged and published in downstream modules
 
 ## Changelog
-<!-- Enter brief text that would go up on the changelog on our releases page -->
+<!-- CHANGELOG -->
+<!-- Enter HERE a brief text that would go up on the changelog on our releases page -->
+<!-- END CHANGELOG -->
 
 ## Further comments
 <!-- If this is a relatively large or complex change, kick off the discussion by explaining why you chose the solution you did and what alternatives you considered, etc... -->
