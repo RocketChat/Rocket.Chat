@@ -103,17 +103,14 @@ export function updateUsersSubscriptions(message, room) {
 }
 
 export function updateThreadUsersSubscriptions(message, room, replies) {
-	const {
-		mentionIds,
-	} = getMentions(message);
-
 	const unreadCount = settings.get('Unread_Count');
 
-	incUserMentions(room._id, room.t, [...new Set([...mentionIds, ...replies])], unreadCount);
+	incUserMentions(room._id, room.t, replies, unreadCount);
 
-	const repliesPlusSender = [...new Set([message.u._id, ...mentionIds, ...replies])];
+	Subscriptions.setAlertForRoomIdAndUserIds(message.rid, replies);
 
-	Subscriptions.setAlertForRoomIdAndUserIds(message.rid, repliesPlusSender);
+	const repliesPlusSender = [...new Set([message.u._id, ...replies])];
+
 	Subscriptions.setOpenForRoomIdAndUserIds(message.rid, repliesPlusSender);
 
 	Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());

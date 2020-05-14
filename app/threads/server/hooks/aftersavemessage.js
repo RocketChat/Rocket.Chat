@@ -4,7 +4,7 @@ import { Messages } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
-import { updateThreadUsersSubscriptions } from '../../../lib/server/lib/notifyUsersOnMessage';
+import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 
 function notifyUsersOnReply(message, replies, room) {
@@ -46,8 +46,13 @@ const processThreads = (message, room) => {
 		return;
 	}
 
+	const { mentionIds } = getMentions(message);
+
 	const replies = [
-		...(!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || [],
+		...new Set([
+			...(!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || [],
+			...mentionIds,
+		]),
 	].filter((userId) => userId !== message.u._id);
 
 	notifyUsersOnReply(message, replies, room);
