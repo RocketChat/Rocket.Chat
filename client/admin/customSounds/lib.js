@@ -22,13 +22,14 @@ export function validate(soundData, soundFile) {
 }
 
 export function createSoundData(soundFile, name = '', previousData) {
-	const soundData = {};
+	const soundData = {
+		extension: soundFile.name.split('.').pop(),
+	};
 
 	if (previousData) {
 		soundData._id = previousData._id;
 		soundData.previousName = previousData.previousName;
 		soundData.previousSound = previousData.previousSound;
-		soundData.extension = soundFile.name.split('.').pop();
 		soundData.previousExtension = previousData.previousSound.extension;
 		soundData.name = name;
 		soundData.newFile = false;
