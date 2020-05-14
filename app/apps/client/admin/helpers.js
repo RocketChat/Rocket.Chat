@@ -368,7 +368,7 @@ export const formatPricingPlan = ({ strategy, price, tiers = [] }) => {
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',
-		tiers.length > 0 && 'startingAt',
+		Array.isArray(tiers) && tiers.length > 0 && 'startingAt',
 		strategy,
 		perUnit && 'perUser',
 	].filter(Boolean).join('_');
