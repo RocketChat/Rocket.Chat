@@ -299,4 +299,8 @@ export class RoomTypeConfig {
 	openCustomProfileTab() {
 		return false;
 	}
+
+	getDiscussionType() {
+		return 'p';
+	}
 }

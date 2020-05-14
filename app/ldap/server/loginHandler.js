@@ -126,6 +126,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		if (settings.get('LDAP_Login_Fallback') === true && typeof loginRequest.ldapPass === 'string' && loginRequest.ldapPass.trim() !== '') {
 			Accounts.setPassword(user._id, loginRequest.ldapPass, { logout: false });
 		}
+		logger.info('running afterLDAPLogin');
 		callbacks.run('afterLDAPLogin', { user, ldapUser, ldap });
 		return {
 			userId: user._id,
@@ -143,7 +144,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	// Create new user
-	const result = addLdapUser(ldapUser, username, loginRequest.ldapPass);
+	const result = addLdapUser(ldapUser, username, loginRequest.ldapPass, ldap);
 
 	if (result instanceof Error) {
 		throw result;
@@ -153,18 +154,31 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	return result;
 });
 
-callbacks.add('beforeValidateLogin', (login) => {
-	if (!login.allowed) {
+let LDAP_Enable;
+settings.get('LDAP_Enable', (key, value) => {
+	if (LDAP_Enable === value) {
+		return;
+	}
+	LDAP_Enable = value;
+
+	if (!value) {
+		return callbacks.remove('beforeValidateLogin', 'validateLdapLoginFallback');
+	}
+
+	callbacks.add('beforeValidateLogin', (login) => {
+		if (!login.allowed) {
+			return login;
+		}
+
+		// The fallback setting should only block password logins, so users that have other login services can continue using them
+		if (login.type !== 'password') {
+			return login;
+		}
+
+		if (login.user.services && login.user.services.ldap && login.user.services.ldap.id) {
+			login.allowed = !!settings.get('LDAP_Login_Fallback');
+		}
+
 		return login;
-	}
-
-	if (login.type === 'ldap') {
-		return login;
-	}
-
-	if (login.user.services && login.user.services.ldap && login.user.services.ldap.id) {
-		login.allowed = !!settings.get('LDAP_Login_Fallback');
-	}
-
-	return login;
+	}, callbacks.priority.MEDIUM, 'validateLdapLoginFallback');
 });

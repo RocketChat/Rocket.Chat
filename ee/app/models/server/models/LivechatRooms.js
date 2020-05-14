@@ -1,42 +1,82 @@
 import { LivechatRooms } from '../../../../../app/models/server/models/LivechatRooms';
 import { logger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../livechat-enterprise/server/lib/query.helper';
+import { overwriteClassOnLicense } from '../../../license/server';
 
-const _find = LivechatRooms.prototype.find;
-const _findOne = LivechatRooms.prototype.findOne;
-const _update = LivechatRooms.prototype.update;
-const _remove = LivechatRooms.prototype.remove;
-
-LivechatRooms.prototype.find = function(originalQuery, ...args) {
+const applyRestrictions = (method) => function(originalFn, originalQuery, ...args) {
 	const query = addQueryRestrictionsToRoomsModel(originalQuery);
-	logger.queries.debug('LivechatRooms.find', JSON.stringify(query));
-	return _find.call(this, query, ...args);
+	logger.queries.debug(() => `LivechatRooms.${ method } - ${ JSON.stringify(query) }`);
+	return originalFn.call(this, query, ...args);
 };
 
-LivechatRooms.prototype.findOne = function(originalQuery, ...args) {
-	const query = addQueryRestrictionsToRoomsModel(originalQuery);
-	logger.queries.debug('LivechatRooms.findOne', JSON.stringify(query));
-	return _findOne.call(this, query, ...args);
-};
+overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
+	find: applyRestrictions('find'),
+	findOne: applyRestrictions('findOne'),
+	update: applyRestrictions('update'),
+	remove: applyRestrictions('remove'),
+	updateDepartmentAncestorsById(originalFn, _id, departmentAncestors) {
+		const query = {
+			_id,
+		};
+		const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
+		return this.update(query, update);
+	},
+});
 
-LivechatRooms.prototype.update = function(originalQuery, ...args) {
-	const query = addQueryRestrictionsToRoomsModel(originalQuery);
-	logger.queries.debug('LivechatRooms.update', JSON.stringify(query));
-	return _update.call(this, query, ...args);
-};
 
-LivechatRooms.prototype.remove = function(originalQuery, ...args) {
-	const query = addQueryRestrictionsToRoomsModel(originalQuery);
-	logger.queries.debug('LivechatRooms.remove', JSON.stringify(query));
-	return _remove.call(this, query, ...args);
-};
-
-LivechatRooms.prototype.updateDepartmentAncestorsById = function(_id, departmentAncestors) {
+LivechatRooms.prototype.setPredictedVisitorAbandonment = function(roomId, willBeAbandonedAt) {
 	const query = {
-		_id,
+		_id: roomId,
 	};
-	const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
+	const update = {
+		$set: {
+			'omnichannel.predictedVisitorAbandonmentAt': willBeAbandonedAt,
+		},
+	};
+
 	return this.update(query, update);
+};
+
+LivechatRooms.prototype.findAbandonedOpenRooms = function(date) {
+	return this.find({
+		'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
+		waitingResponse: { $exists: false },
+		closedAt: { $exists: false },
+		open: true,
+	});
+};
+
+LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
+	return this.update({
+		open: true,
+		t: 'l',
+	}, {
+		$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
+	}, {
+		multi: true,
+	});
+};
+
+LivechatRooms.prototype.unsetPriorityById = function(priorityId) {
+	return this.update({
+		open: true,
+		t: 'l',
+		priorityId,
+	}, {
+		$unset: { priorityId: 1 },
+	}, {
+		multi: true,
+	});
+};
+
+LivechatRooms.prototype.findOpenByPriorityId = function(priorityId, options) {
+	const query = {
+		t: 'l',
+		open: true,
+		priorityId,
+	};
+
+	return this.find(query, options);
 };
 
 export default LivechatRooms;
