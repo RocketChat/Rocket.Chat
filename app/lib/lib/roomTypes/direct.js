@@ -73,7 +73,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			: Subscriptions.findOne({ rid: roomData._id });
 
 		if (subscription === undefined) {
-			return console.log('roomData', roomData);
+			return;
 		}
 
 		if (settings.get('UI_Use_Real_Name') && subscription.fname) {
