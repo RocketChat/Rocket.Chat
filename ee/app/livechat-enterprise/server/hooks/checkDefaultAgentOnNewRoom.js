@@ -23,7 +23,11 @@ callbacks.add('livechat.checkDefaultAgentOnNewRoom', (agent, guest) => {
 	}
 
 	const room = LivechatRooms.findLastServedAndClosedByVisitorToken(token, { fields: { servedBy: 1 } });
+	if (!room || !room.servedBy) {
+		return agent;
+	}
+
 	const { servedBy: { username: usernameByRoom } } = room;
-	const lastRoomAgent = usernameByRoom && Users.findOneOnlineAgentByUsername(usernameByRoom, { fields: { _id: 1, username: 1 } });
+	const lastRoomAgent = Users.findOneOnlineAgentByUsername(usernameByRoom, { fields: { _id: 1, username: 1 } });
 	return lastRoomAgent || agent;
 }, callbacks.priority.MEDIUM, 'livechat-check-default-agent-new-room');
