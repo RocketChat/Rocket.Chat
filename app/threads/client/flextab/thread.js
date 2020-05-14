@@ -124,6 +124,7 @@ Template.thread.helpers({
 		const instance = Template.instance();
 		const checked = instance.state.get('sendToChannel');
 		return {
+			id: 'sendAlso',
 			checked,
 			onChange: () => instance.state.set('sendToChannel', !checked),
 		};
