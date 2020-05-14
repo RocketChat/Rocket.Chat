@@ -18,7 +18,6 @@ function IntegrationsRoute() {
 
 	const context = useRouteParameter('context');
 
-
 	if (!canViewIntegrationsPage) {
 		return <NotAuthorizedPage />;
 	}

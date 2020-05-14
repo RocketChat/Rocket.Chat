@@ -1,4 +1,6 @@
-export function useExampleData({ aditionalFields, url }) {
+import { useMemo } from 'react';
+
+export function useExampleData({ aditionalFields, url }, dep) {
 	const exampleData = {
 		...aditionalFields && aditionalFields,
 		text: 'Example message',
@@ -11,8 +13,8 @@ export function useExampleData({ aditionalFields, url }) {
 		}],
 	};
 
-	return [
+	return useMemo(() => [
 		exampleData,
 		`curl -X POST -H 'Content-Type: application/json' --data '${ JSON.stringify(exampleData) }' ${ url }`,
-	];
+	], dep);
 }

@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import Page from '../../../components/basic/Page';
 import EditIncomingWebhookWithData from './EditIncomingWebhook';
@@ -55,13 +55,13 @@ export default function NewIntegrationsPage({ ...props }) {
 	const type = useRouteParameter('type');
 	const integrationId = useRouteParameter('id');
 
-	const handleClickReturn = () => {
+	const handleClickReturn = useCallback(() => {
 		router.push({ });
-	};
+	}, []);
 
-	const handleClickHistory = () => {
+	const handleClickHistory = useCallback(() => {
 		router.push({ context: 'history', type: 'outgoing', id: integrationId });
-	};
+	}, [integrationId]);
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={type === 'incoming' ? t('Integration_Incoming_WebHook') : t('Integration_Outgoing_WebHook')} >
@@ -73,10 +73,10 @@ export default function NewIntegrationsPage({ ...props }) {
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
-			{[
-				type === 'outgoing' && <EditOutgoingWebhookWithData integrationId={integrationId} key='outgoing'/>,
-				type === 'incoming' && <EditIncomingWebhookWithData integrationId={integrationId} key='incoming'/>,
-			].filter(Boolean)}
+			{
+				(type === 'outgoing' && <EditOutgoingWebhookWithData integrationId={integrationId} key='outgoing'/>)
+				|| (type === 'incoming' && <EditIncomingWebhookWithData integrationId={integrationId} key='incoming'/>)
+			}
 		</Page.ScrollableContentWithShadow>
 	</Page>;
 }

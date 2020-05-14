@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Icon, Tabs } from '@rocket.chat/fuselage';
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -13,10 +13,9 @@ function IntegrationsPage() {
 
 	const router = useRoute('admin-integrations');
 
-
-	const handleNewButtonClick = () => {
+	const handleNewButtonClick = useCallback(() => {
 		router.push({ context: 'new', type: 'incoming' });
-	};
+	}, []);
 
 	const context = useRouteParameter('context');
 	useEffect(() => {
@@ -25,7 +24,12 @@ function IntegrationsPage() {
 		}
 	}, [context]);
 
-	const showTable = context !== 'zapier' && context !== 'bots';
+	const showTable = !['zapier', 'bots'].includes(context);
+
+	const goToIncoming = useCallback(() => router.push({ context: 'webhook-incoming' }), []);
+	const goToOutgoing = useCallback(() => router.push({ context: 'webhook-outgoing' }), []);
+	const goToZapier = useCallback(() => router.push({ context: 'zapier' }), []);
+	const goToBots = useCallback(() => router.push({ context: 'bots' }), []);
 
 	return <Page flexDirection='column'>
 		<Page.Header title={t('Integrations')}>
@@ -35,16 +39,16 @@ function IntegrationsPage() {
 				</Button>
 			</ButtonGroup>
 		</Page.Header>
+		<Tabs>
+			<Tabs.Item selected={context === 'webhook-incoming'} onClick={goToIncoming}>{t('Incoming')}</Tabs.Item>
+			<Tabs.Item selected={context === 'webhook-outgoing'} onClick={goToOutgoing}>{t('Outgoing')}</Tabs.Item>
+			<Tabs.Item selected={context === 'zapier'} onClick={goToZapier}>{t('Zapier')}</Tabs.Item>
+			<Tabs.Item selected={context === 'bots'} onClick={goToBots}>{t('Bots')}</Tabs.Item>
+		</Tabs>
 		<Page.Content>
-			<Tabs>
-				<Tabs.Item selected={context === 'webhook-incoming'} onClick={() => router.push({ context: 'webhook-incoming' })}>{t('Incoming')}</Tabs.Item>
-				<Tabs.Item selected={context === 'webhook-outgoing'} onClick={() => router.push({ context: 'webhook-outgoing' })}>{t('Outgoing')}</Tabs.Item>
-				<Tabs.Item selected={context === 'zapier'} onClick={() => router.push({ context: 'zapier' })}>{t('Zapier')}</Tabs.Item>
-				<Tabs.Item selected={context === 'bots'} onClick={() => router.push({ context: 'bots' })}>{t('Bots')}</Tabs.Item>
-			</Tabs>
 			{context === 'zapier' && <NewZapier />}
 			{context === 'bots' && <NewBot />}
-			{showTable && <IntegrationsTable />}
+			{showTable && <IntegrationsTable type={context}/>}
 		</Page.Content>
 	</Page>;
 }

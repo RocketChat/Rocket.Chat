@@ -1,11 +1,9 @@
 import { Tabs, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import Page from '../../../components/basic/Page';
 import NewIncomingWebhook from './NewIncomingWebhook';
 import NewOutgoingWebhook from './NewOutgoingWebhook';
-import NewZapier from './NewZapier';
-import NewBot from './NewBot';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 
@@ -19,11 +17,14 @@ export default function NewIntegrationsPage({ ...props }) {
 		router.push({ context: 'new', type });
 	};
 
-	const handleClickReturn = () => {
+	const handleClickReturn = useCallback(() => {
 		router.push({ });
-	};
+	}, []);
 
 	const tab = useRouteParameter('type');
+
+	const handleIncomingTab = useCallback(handleClickTab('incoming'), []);
+	const handleOutgoingTab = useCallback(handleClickTab('outgoing'), []);
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={t('Integrations')} >
@@ -33,39 +34,25 @@ export default function NewIntegrationsPage({ ...props }) {
 				</Button>
 			</ButtonGroup>
 		</Page.Header>
+		<Tabs>
+			<Tabs.Item
+				selected={tab === 'incoming'}
+				onClick={handleIncomingTab}
+			>
+				{t('Incoming')}
+			</Tabs.Item>
+			<Tabs.Item
+				selected={tab === 'outgoing'}
+				onClick={handleOutgoingTab}
+			>
+				{t('Outgoing')}
+			</Tabs.Item>
+		</Tabs>
 		<Page.ScrollableContentWithShadow>
-			<Tabs>
-				<Tabs.Item
-					selected={tab === 'incoming'}
-					onClick={handleClickTab('incoming')}
-				>
-					{t('Incoming')}
-				</Tabs.Item>
-				<Tabs.Item
-					selected={tab === 'outgoing'}
-					onClick={handleClickTab('outgoing')}
-				>
-					{t('Outgoing')}
-				</Tabs.Item>
-				<Tabs.Item
-					selected={tab === 'zapier'}
-					onClick={handleClickTab('zapier')}
-				>
-					{t('Zapier')}
-				</Tabs.Item>
-				<Tabs.Item
-					selected={tab === 'bots'}
-					onClick={handleClickTab('bots')}
-				>
-					{t('Bots')}
-				</Tabs.Item>
-			</Tabs>
-			{[
-				tab === 'incoming' && <NewIncomingWebhook key='incoming'/>,
-				tab === 'outgoing' && <NewOutgoingWebhook key='outgoing'/>,
-				tab === 'bots' && <NewBot key='bot' />,
-				tab === 'zapier' && <NewZapier key='zapier'/>,
-			].filter(Boolean)}
+			{
+				(tab === 'incoming' && <NewIncomingWebhook key='incoming'/>)
+				|| (tab === 'outgoing' && <NewOutgoingWebhook key='outgoing'/>)
+			}
 		</Page.ScrollableContentWithShadow>
 	</Page>;
 }

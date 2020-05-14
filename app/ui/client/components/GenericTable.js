@@ -38,7 +38,7 @@ const LoadingRow = ({ cols }) => <Table.Row>
 export const GenericTable = forwardRef(function GenericTable({
 	results,
 	total,
-	renderRow,
+	renderRow: RenderRow,
 	header,
 	setParams = () => { },
 	params: paramsDefault = '',
@@ -65,40 +65,38 @@ export const GenericTable = forwardRef(function GenericTable({
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
 
 	return <>
-		<Box ref={ref}>
-			<FilterComponent setFilter={setFilter}/>
-			{results && !results.length
-				? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
-					{t('No_data_found')}
-				</Tile>
-				: <>
-					<Scrollable>
-						<Box mi='neg-x24' pi='x24' flexGrow={1}>
-							<Table fixed sticky>
-								{ header && <Table.Head>
-									<Table.Row>
-										{header}
-									</Table.Row>
-								</Table.Head> }
-								<Table.Body>
-									{results
-										? results.map(renderRow)
-										:	<Loading/>}
-								</Table.Body>
-							</Table>
-						</Box>
-					</Scrollable>
-					<Pagination
-						current={current}
-						itemsPerPage={itemsPerPage}
-						itemsPerPageLabel={itemsPerPageLabel}
-						showingResultsLabel={showingResultsLabel}
-						count={total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-					/>
-				</>
-			}
-		</Box>
+		<FilterComponent setFilter={setFilter} />
+		{results && !results.length
+			? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
+				{t('No_data_found')}
+			</Tile>
+			: <>
+				<Scrollable>
+					<Box mi='neg-x24' pi='x24' flexGrow={1} ref={ref}>
+						<Table fixed sticky>
+							{ header && <Table.Head>
+								<Table.Row>
+									{header}
+								</Table.Row>
+							</Table.Head> }
+							<Table.Body>
+								{results
+									? results.map((props, index) => <RenderRow key={props._id || index} { ...props }/>)
+									:	<Loading/>}
+							</Table.Body>
+						</Table>
+					</Box>
+				</Scrollable>
+				<Pagination
+					current={current}
+					itemsPerPage={itemsPerPage}
+					itemsPerPageLabel={itemsPerPageLabel}
+					showingResultsLabel={showingResultsLabel}
+					count={total || 0}
+					onSetItemsPerPage={setItemsPerPage}
+					onSetCurrent={setCurrent}
+				/>
+			</>
+		}
 	</>;
 });
