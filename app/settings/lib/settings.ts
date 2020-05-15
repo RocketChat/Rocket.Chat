@@ -12,12 +12,22 @@ interface ISettingRegexCallbacks {
 	callbacks: SettingCallback[];
 }
 
-export class SettingsBase {
+export interface ISettingsBase {
+	get(_id: string | RegExp, callback?: SettingCallback): SettingValue | SettingComposedValue[] | void;
+	set(_id: string, value: SettingValue, callback: () => void): void;
+	batchSet(settings: Array<{_id: string; value: SettingValue}>, callback: () => void): void;
+	load(key: string, value: SettingValue, initialLoad: boolean): void;
+	onload(key: string | string[] | RegExp | RegExp[], callback: SettingCallback): void;
+}
+
+export abstract class SettingsBase {
 	private callbacks = new Map<string, SettingCallback[]>();
 
 	private regexCallbacks = new Map<string, ISettingRegexCallbacks>();
 
 	// private ts = new Date()
+	protected constructor() {
+	}
 
 	public get(_id: string | RegExp, callback?: SettingCallback): SettingValue | SettingComposedValue[] | void {
 		if (callback != null) {

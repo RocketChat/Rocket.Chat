@@ -6,6 +6,7 @@ import s from 'underscore.string';
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
+import { IUsersRepository } from "../../lib";
 
 const queryStatusAgentOnline = (extraFilters = {}) => {
 	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
@@ -24,7 +25,8 @@ const queryStatusAgentOnline = (extraFilters = {}) => {
 
 	return query;
 };
-export class Users extends Base {
+
+export class Users extends Base implements IUsersRepository {
 	constructor(...args) {
 		super(...args);
 

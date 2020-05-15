@@ -10,7 +10,8 @@ import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';
 import { t } from '../../../utils/client';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
-import { CONSTANTS, AuthorizationUtils } from '../../lib';
+import { CONSTANTS } from '../../lib';
+import { AuthorizationUtils } from '../AuthorizationUtils';
 
 import { hasAtLeastOnePermission } from '..';
 

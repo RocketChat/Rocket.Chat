@@ -5,8 +5,9 @@ import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { getValidRoomName } from '../../../utils';
+import { IRoomsRepository } from '../../lib/IRoomsRepository';
 
-export class Rooms extends Base {
+export class Rooms extends Base implements IRoomsRepository {
 	constructor(...args) {
 		super(...args);
 

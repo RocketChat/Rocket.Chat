@@ -1,27 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { IOptions, IUsersRepository } from "../../lib";
 
-export const Users = {
-	findOneById(userId, options = {}) {
+export const Users: IUsersRepository = {
+	findOneById(userId: string, options: IOptions = {}) {
 		const query = {
 			_id: userId,
 		};
-
+		// @ts-ignore
 		return this.findOne(query, options);
 	},
 
-	isUserInRole(userId, roleName) {
+	isUserInRole(userId: string, roleName: string) {
 		const user = this.findOneById(userId, { fields: { roles: 1 } });
 		return user && Array.isArray(user.roles) && user.roles.includes(roleName);
 	},
 
-	findUsersInRoles(roles, scope, options) {
+	findUsersInRoles(roles: any, scope: string, options: IOptions) {
 		roles = [].concat(roles);
 
 		const query = {
 			roles: { $in: roles },
 		};
-
+		// @ts-ignore
 		return this.find(query, options);
 	},
 };
