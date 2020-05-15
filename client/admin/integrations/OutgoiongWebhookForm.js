@@ -10,7 +10,7 @@ import {
 	Select,
 	Accordion,
 } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import { useHilightCode } from '../../hooks/useHilightCode';
 import { useExampleData } from './exampleIncomingData';
@@ -95,7 +95,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 
 	const hilightedExampleJson = hilightCode('json', JSON.stringify(exampleData, null, 2));
 
-	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' onSubmit={(e) => e.preventDefault()} qa-admin-user-edit='form' { ...props }>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
 			<Accordion width='x600' alignSelf='center' >
 				<FieldGroup>

@@ -81,7 +81,7 @@ function EditRoom({ room, onChange }) {
 	const isFavorite = newData.favorite ?? !!room.favorite;
 	const isFeatured = newData.featured ?? !!room.featured;
 
-	return <VerticalBar.ScrollableContent is='form' onSubmit={(e) => e.preventDefault()}>
+	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])}>
 		{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
 
 		<Field>
