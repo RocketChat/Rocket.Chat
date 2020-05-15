@@ -71,13 +71,9 @@ OTR.Room = class {
 			if (this.established.get()) {
 				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
 					$title.prepend('<i class=\'otr-icon icon-key\'></i>');
-					$('.input-message-container').addClass('otr');
-					$('.inner-right-toolbar').prepend('<i class=\'otr-icon icon-key\'></i>');
 				}
 			} else if ($title.length) {
 				$('.otr-icon', $title).remove();
-				$('.input-message-container').removeClass('otr');
-				$('.inner-right-toolbar .otr-icon').remove();
 			}
 		});
 
