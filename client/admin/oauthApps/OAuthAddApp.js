@@ -30,12 +30,14 @@ export default function OAuthAddApp(props) {
 
 	const router = useRoute('admin-oauth-apps');
 
+	const close = useCallback(() => router.push({}), [router]);
+
 	const handleSave = useCallback(async () => {
 		try {
 			await saveApp(
 				newData,
 			);
-			router.push({ });
+			close();
 			dispatchToastMessage({ type: 'success', message: t('Application_added') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

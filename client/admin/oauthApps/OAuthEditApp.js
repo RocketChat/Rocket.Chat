@@ -99,7 +99,7 @@ export default function EditOauthAppWithData({ _id, ...props }) {
 	return <EditOauthApp data={data.oauthApp} onChange={onChange} {...props}/>;
 }
 
-function EditOauthApp({ close, onChange, data, ...props }) {
+function EditOauthApp({ onChange, data, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -111,6 +111,8 @@ function EditOauthApp({ close, onChange, data, ...props }) {
 	const [modal, setModal] = useState();
 
 	const router = useRoute('admin-oauth-apps');
+
+	const close = useCallback(() => router.push({}), [router]);
 
 	const absoluteUrl = useAbsoluteUrl();
 	const authUrl = useMemo(() => absoluteUrl('oauth/authorize'));
@@ -135,7 +137,7 @@ function EditOauthApp({ close, onChange, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteApp(data._id);
-			setModal(() => <SuccessModal onClose={() => { setModal(); router.push({ }); }}/>);
+			setModal(() => <SuccessModal onClose={() => { setModal(); close(); }}/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
