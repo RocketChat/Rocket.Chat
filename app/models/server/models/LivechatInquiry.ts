@@ -1,6 +1,7 @@
 import { Base } from './_Base';
+import { ILivechatInquiryRepository } from '../../lib/ILivechatInquiryRepository';
 
-export class LivechatInquiry extends Base {
+export class LivechatInquiry extends Base implements  ILivechatInquiryRepository {
 	constructor() {
 		super('livechat_inquiry');
 

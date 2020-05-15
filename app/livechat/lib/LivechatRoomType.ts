@@ -16,11 +16,7 @@ import { IUser } from '../../../definition/IUser';
 import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
-
-let LivechatInquiry;
-if (Meteor.isClient) {
-    ({ LivechatInquiry } = require('../client/collections/LivechatInquiry'));
-}
+import { ILivechatInquiryRepository } from '../../models/lib/ILivechatInquiryRepository';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
     private RoomCommonUtils: IRoomCommonUtils;
@@ -46,6 +42,7 @@ class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteCon
 
 export default class LivechatRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     private UsersCommonUtils: IUserCommonUtils;
+    private LivechatInquiry: ILivechatInquiryRepository;
     public notSubscribedTpl: string;
     public readOnlyTpl: string;
 
@@ -53,6 +50,7 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
                 Subscriptions: ISubscriptionRepository,
+                LivechatInquiry: ILivechatInquiryRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils,
                 RoomCommonUtils: IRoomCommonUtils) {
@@ -68,10 +66,10 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
             Rooms,
             Subscriptions,
             AuthorizationUtils);
-
         this.notSubscribedTpl = 'livechatNotSubscribed';
         this.readOnlyTpl = 'livechatReadOnly';
         this.UsersCommonUtils = UserCommonUtils;
+        this.LivechatInquiry = LivechatInquiry;
     }
 
     enableMembersListProfile(): boolean {
@@ -100,7 +98,7 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
         if (room) {
             return room.v && room.v.status;
         }
-        const inquiry = LivechatInquiry.findOne({ rid });
+        const inquiry = this.LivechatInquiry.findOne({ rid });
         return inquiry && inquiry.v && inquiry.v.status;
     }
 
@@ -130,7 +128,7 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
             return true;
         }
 
-        const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
+        const inquiry = this.LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
         if (inquiry && inquiry.status === 'queued') {
             return true;
         }

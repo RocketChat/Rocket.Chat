@@ -1,4 +1,4 @@
-import { LivechatRooms, LivechatVisitors, Subscriptions } from '../../models/server';
+import { LivechatInquiry, LivechatRooms, LivechatVisitors, Subscriptions } from '../../models/server';
 import { roomTypes } from '../../utils/server';
 import LivechatRoomType from '../lib/LivechatRoomType';
 import { ISettingsBase } from '../../settings/lib/settings';
@@ -12,6 +12,7 @@ import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
 import { roomCommonUtils, userCommonUtils } from '../../utils/server';
 import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
+import { ILivechatInquiryRepository } from '../../models/lib/ILivechatInquiryRepository';
 
 class LivechatRoomTypeServer extends LivechatRoomType {
 
@@ -19,10 +20,11 @@ class LivechatRoomTypeServer extends LivechatRoomType {
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
                 Subscriptions: ISubscriptionRepository,
+                LivechatInquiry: ILivechatInquiryRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils,
                 RoomCommonUtils: IRoomCommonUtils) {
-        super(settings, Users, Rooms, Subscriptions, AuthorizationUtils, UserCommonUtils, RoomCommonUtils);
+        super(settings, Users, Rooms, Subscriptions, LivechatInquiry, AuthorizationUtils, UserCommonUtils, RoomCommonUtils);
     }
 
     getMsgSender(senderId: string): string {
@@ -58,4 +60,4 @@ class LivechatRoomTypeServer extends LivechatRoomType {
     }
 }
 
-roomTypes.add(new LivechatRoomTypeServer(settings, Users, LivechatRooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils));
+roomTypes.add(new LivechatRoomTypeServer(settings, Users, LivechatRooms, Subscriptions, LivechatInquiry, AuthorizationUtils, userCommonUtils, roomCommonUtils));

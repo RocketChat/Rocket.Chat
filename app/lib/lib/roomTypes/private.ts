@@ -1,11 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
-import { RoomSettingsEnum, UiTextContext, roomTypes, RoomMemberActions } from '../../../utils';
+import { roomTypes } from '../../../utils';
 import {
     IRoomTypeConfig,
     IRoomTypeRouteConfig,
     RoomTypeRouteConfig,
     RoomTypeConfig,
+    RoomSettingsEnum,
+    UiTextContext,
+    RoomMemberActions
 } from '../../../utils/lib/RoomTypeConfig';
 import { ISettingsBase } from '../../../settings/lib/settings';
 import { IUsersRepository, IRoomsRepository } from '../../../models/lib';
