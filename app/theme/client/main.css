@@ -58,3 +58,6 @@
 
 /* RTL */
 @import 'imports/general/rtl.css';
+
+/* Legacy theming */
+@import 'imports/general/theme_old.css';
