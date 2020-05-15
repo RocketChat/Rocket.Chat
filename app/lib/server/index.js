@@ -9,7 +9,7 @@ import './startup/settingsOnLoadSMTP';
 import './startup/userDataStream';
 import '../lib/MessageTypes';
 import '../startup';
-import '../startup/defaultRoomTypes';
+import './startup/defaultRoomTypes';
 import './lib/bugsnag';
 import './lib/configLogger';
 import './lib/debug';
