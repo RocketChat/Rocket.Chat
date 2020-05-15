@@ -172,7 +172,7 @@ function HistoryContent({ data, state, onChange, ...props }) {
 		if (state === ENDPOINT_STATES.DONE) { setLoadedData(data); }
 	}, [state]);
 
-	if (!loadedData || (!loadedData && state === ENDPOINT_STATES.LOADING)) {
+	if (!loadedData || state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
 			<Headline.Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 export function useExampleData({ aditionalFields, url }, dep) {
 	const exampleData = {
-		...aditionalFields && aditionalFields,
+		...aditionalFields,
 		text: 'Example message',
 		attachments: [{
 			title: 'Rocket.Chat',

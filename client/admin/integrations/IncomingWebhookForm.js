@@ -47,7 +47,7 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 			...avatarUrl && { avatar: avatarUrl },
 		},
 		url,
-	});
+	}, [alias, emoji, avatarUrl]);
 
 	const hilightedExampleJson = hilightCode('json', JSON.stringify(exampleData, null, 2));
 

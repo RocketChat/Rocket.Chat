@@ -1,6 +1,6 @@
 import hljs from 'highlight.js';
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 
 export function useHilightCode() {
-	return useCallback((language, text) => hljs.highlight(language, text).value);
+	return (language, text) => useMemo(() => hljs.highlight(language, text).value, [language, text]);
 }

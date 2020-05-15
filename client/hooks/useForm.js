@@ -20,8 +20,9 @@ export const useForm = (obj) => {
 		return ret;
 	}, {});
 
-	ret.reset = useCallback(() => {
+	ret.reset = () => {
 		resetCallbacks.forEach((reset) => reset());
-	});
+	};
+
 	return ret;
 };
