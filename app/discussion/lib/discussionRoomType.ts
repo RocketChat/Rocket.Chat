@@ -5,6 +5,7 @@ import { ISettingsBase } from '../../settings/lib/settings';
 import { IRoomsRepository, IUsersRepository } from '../../models/lib';
 import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
+import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 
 export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     public customTemplate: string;
@@ -13,6 +14,7 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
     constructor(settings: ISettingsBase,
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
+                SubscriptionRepository: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils) {
         super({
@@ -23,6 +25,7 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
             settings,
             Users,
             Rooms,
+            SubscriptionRepository,
             AuthorizationUtils);
 
         // we need a custom template in order to have a custom query showing the subscriptions to discussions
