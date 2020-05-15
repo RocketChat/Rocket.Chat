@@ -9,6 +9,10 @@ import { settings } from '../../settings/client';
 import { Rooms, Subscriptions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../../authorization/client';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
+import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
+import { ICommonUtils } from '../../utils/lib/ICommonUtils';
+import { commonUtils, roomCommonUtils } from '../../utils/client/factory';
+import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
 
 class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     public customTemplate: string;
@@ -17,7 +21,10 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
                 Subscriptions: ISubscriptionRepository,
-                AuthorizationUtils: IAuthorization) {
+                AuthorizationUtils: IAuthorization,
+                RoomCommonUtils: IRoomCommonUtils,
+                CommonUtils: ICommonUtils,
+                RoomTypesCommon: IRoomTypes) {
         super({
                 identifier: 'tokenpass',
                 order: 1,
@@ -26,7 +33,10 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
             Users,
             Rooms,
             Subscriptions,
-            AuthorizationUtils);
+            AuthorizationUtils,
+            RoomCommonUtils,
+            CommonUtils,
+            RoomTypesCommon);
 
         this.customTemplate = 'tokenChannelsList';
     }
@@ -39,4 +49,4 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     }
 }
 
-roomTypes.add(new TokenPassRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils));
+roomTypes.add(new TokenPassRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, roomCommonUtils, commonUtils, roomTypes));

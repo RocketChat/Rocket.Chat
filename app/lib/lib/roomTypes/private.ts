@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 
-import { roomTypes } from '../../../utils';
 import {
     IRoomTypeConfig,
     IRoomTypeRouteConfig,
@@ -8,7 +7,7 @@ import {
     RoomTypeConfig,
     RoomSettingsEnum,
     UiTextContext,
-    RoomMemberActions
+    RoomMemberActions,
 } from '../../../utils/lib/RoomTypeConfig';
 import { ISettingsBase } from '../../../settings/lib/settings';
 import { IUsersRepository, IRoomsRepository } from '../../../models/lib';
@@ -16,9 +15,12 @@ import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
+import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
+import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
     private RoomCommonUtils: IRoomCommonUtils;
+
     constructor(RoomCommonUtils: IRoomCommonUtils) {
         super({
             name: 'group',
@@ -42,7 +44,9 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
                 Subscriptions: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils,
-                RoomCommonUtils: IRoomCommonUtils) {
+                RoomCommonUtils: IRoomCommonUtils,
+                CommonUtils: ICommonUtils,
+                RoomTypesCommon: IRoomTypes) {
         super({
                 identifier: 'p',
                 order: 40,
@@ -55,7 +59,9 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
             Rooms,
             Subscriptions,
             AuthorizationUtils,
-            RoomCommonUtils);
+            RoomCommonUtils,
+            CommonUtils,
+            RoomTypesCommon);
         this.UserCommonUtils = UserCommonUtils;
     }
 
@@ -147,20 +153,19 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 
     getAvatarPath(roomData: any): string {
         // TODO: change to always get avatar from _id when rooms have avatars
-
         // if room is not a discussion, returns the avatar for its name
         if (!roomData.prid) {
-            return this.UserCommonUtils.getUserAvatarURL(`@${ this.roomName(roomData) }`);
+            return this.CommonUtils.getAvatarURL({ username: `@${ this.roomName(roomData) }` });
         }
 
         // if discussion's parent room is known, get his avatar
-        let options: any = {};
+        const options: any = {};
         if (Meteor.isClient) {
             options.reactive = false;
         }
         const proom = this.Rooms.findOne({ _id: roomData.prid }, options);
         if (proom) {
-            return roomTypes.getConfig(proom.t).getAvatarPath(proom);
+            return this.RoomTypesCommon.getConfig(proom.t).getAvatarPath(proom);
         }
 
         // otherwise gets discussion's avatar via _id

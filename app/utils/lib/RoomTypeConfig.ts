@@ -1,11 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { ISettingsBase } from "/app/settings/lib/settings";
+
+import { ISettingsBase } from '/app/settings/lib/settings';
+
 import { IUsersRepository } from '../../models/lib';
 import { IUser } from '../../../definition/IUser';
 import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { IRoomsRepository } from '../../models/lib/IRoomsRepository';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 import { IRoomCommonUtils } from './IRoomCommonUtils';
+import { ICommonUtils } from './ICommonUtils';
+import { IRoomTypes } from './RoomTypesCommon';
 
 export enum RoomSettingsEnum {
     TYPE = 'type',
@@ -20,7 +24,7 @@ export enum RoomSettingsEnum {
     BROADCAST = 'broadcast',
     SYSTEM_MESSAGES = 'systemMessages',
     E2E = 'encrypted',
-};
+}
 
 export const RoomMemberActions = {
     ARCHIVE: 'archive',
@@ -46,7 +50,7 @@ export const UiTextContext = {
 interface IRoomTypeRouteConfigObject {
     name: string;
     path: string;
-};
+}
 
 interface IRoomTypeConfigObject {
     identifier: string;
@@ -67,7 +71,7 @@ export interface IRoomTypeConfig extends IRoomTypeConfigObject {
     canSendMessage(roomId: string): boolean;
     condition(): boolean;
     enableMembersListProfile(): boolean;
-    findRoom(identifier: string): any
+    findRoom(identifier: string): any;
     includeInDashboard(): boolean;
     includeInRoomSearch(): boolean;
     isEmitAllowed(): boolean;
@@ -98,6 +102,7 @@ export interface IRoomTypeRouteConfig extends IRoomTypeRouteConfigObject {
 
 export abstract class RoomTypeRouteConfig {
     protected _name: string;
+
     protected readonly _path: string;
 
     protected constructor({ name, path }: IRoomTypeRouteConfigObject) {
@@ -119,7 +124,7 @@ export abstract class RoomTypeConfig {
     protected _order: number;
     protected readonly _icon: string | undefined;
     protected readonly _header: string | undefined;
-    protected readonly _label:  string | undefined;
+    protected readonly _label: string | undefined;
     protected readonly _route: IRoomTypeRouteConfig | undefined;
     protected readonly settings: ISettingsBase;
     protected readonly Users: IUsersRepository;
@@ -127,6 +132,8 @@ export abstract class RoomTypeConfig {
     protected readonly Subscriptions: ISubscriptionRepository;
     protected readonly AuthorizationUtils: IAuthorization;
     protected readonly RoomCommonUtils: IRoomCommonUtils;
+    protected readonly CommonUtils: ICommonUtils;
+    protected readonly RoomTypesCommon: IRoomTypes;
 
     protected constructor({
                               identifier,
@@ -141,8 +148,9 @@ export abstract class RoomTypeConfig {
                           Rooms: IRoomsRepository,
                           Subscriptions: ISubscriptionRepository,
                           AuthorizationUtils: IAuthorization,
-                          RoomCommonUtils: IRoomCommonUtils) {
-
+                          RoomCommonUtils: IRoomCommonUtils,
+                          CommonUtils: ICommonUtils,
+                          RoomTypesCommon: IRoomTypes) {
         this._identifier = identifier;
         this._order = order;
         this._icon = icon;
@@ -155,6 +163,8 @@ export abstract class RoomTypeConfig {
         this.Subscriptions = Subscriptions;
         this.AuthorizationUtils = AuthorizationUtils;
         this.RoomCommonUtils = RoomCommonUtils;
+        this.CommonUtils = CommonUtils;
+        this.RoomTypesCommon = RoomTypesCommon;
 
         this.onRoomExit = this.onRoomExit.bind(this);
     }
@@ -206,7 +216,7 @@ export abstract class RoomTypeConfig {
     /**
      * The route config for this room type.
      */
-    get route(): IRoomTypeRouteConfig | undefined{
+    get route(): IRoomTypeRouteConfig | undefined {
         return this._route;
     }
 

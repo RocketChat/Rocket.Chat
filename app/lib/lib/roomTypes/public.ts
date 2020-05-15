@@ -15,6 +15,8 @@ import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
+import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
+import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
     private RoomCommonUtils: IRoomCommonUtils;
@@ -42,7 +44,9 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
                 Subscriptions: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils,
-                RoomCommonUtils: IRoomCommonUtils) {
+                RoomCommonUtils: IRoomCommonUtils,
+                CommonUtils: ICommonUtils,
+                RoomTypesCommon: IRoomTypes) {
         super({
                 identifier: 'c',
                 order: 30,
@@ -55,7 +59,9 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
             Rooms,
             Subscriptions,
             AuthorizationUtils,
-            RoomCommonUtils);
+            RoomCommonUtils,
+            CommonUtils,
+            RoomTypesCommon);
         this.UserCommonUtils = UserCommonUtils;
     }
 
@@ -164,7 +170,7 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     getAvatarPath(roomData: any): string {
         // TODO: change to always get avatar from _id when rooms have avatars
 
-        return this.UserCommonUtils.getUserAvatarURL(`@${ this.roomName(roomData) }`);
+        return this.CommonUtils.getAvatarURL({ username: `@${ this.roomName(roomData) }` });
     }
 
     getDiscussionType(): string {

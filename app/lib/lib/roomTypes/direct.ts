@@ -17,6 +17,8 @@ import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { IUser } from '../../../../definition/IUser';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
+import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
+import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
     private RoomCommonUtils: IRoomCommonUtils;
@@ -48,7 +50,9 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
                 Subscriptions: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils,
-                RoomCommonUtils: IRoomCommonUtils) {
+                RoomCommonUtils: IRoomCommonUtils,
+                CommonUtils: ICommonUtils,
+                RoomTypesCommon: IRoomTypes) {
         super({
                 identifier: 'd',
                 order: 50,
@@ -61,7 +65,9 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
             Rooms,
             Subscriptions,
             AuthorizationUtils,
-            RoomCommonUtils);
+            RoomCommonUtils,
+            CommonUtils,
+            RoomTypesCommon);
         this.UserCommonUtils = UserCommonUtils;
     }
 
@@ -219,7 +225,7 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
         }
 
         if (this.isGroupChat(roomData)) {
-            return this.UserCommonUtils.getUserAvatarURL(roomData.uids.length + roomData.usernames.join());
+            return this.CommonUtils.getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
         }
 
         const sub = subData || this.Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
@@ -241,5 +247,4 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
     isGroupChat(room?: any): boolean {
         return room && room.uids && room.uids.length > 2;
     }
-
 }

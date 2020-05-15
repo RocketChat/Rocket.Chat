@@ -1,8 +1,8 @@
-import { roomCommonUtils, roomTypes, userCommonUtils } from '../../utils/client';
+import { commonUtils, roomCommonUtils, roomTypes, userCommonUtils } from '../../utils/client';
 import { DiscussionRoomType } from '../lib/discussionRoomType';
 import { settings } from '../../settings/client';
 import { Rooms, Subscriptions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../../authorization/client';
 
 
-roomTypes.add(new DiscussionRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils));
+roomTypes.add(new DiscussionRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils, commonUtils, roomTypes));

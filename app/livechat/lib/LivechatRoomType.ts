@@ -7,7 +7,7 @@ import {
     RoomTypeConfig,
     RoomTypeRouteConfig,
     RoomSettingsEnum,
-    UiTextContext
+    UiTextContext,
 } from '../../utils/lib/RoomTypeConfig';
 import { ISettingsBase } from '../../settings/lib/settings';
 import { IRoomsRepository, IUsersRepository } from '../../models/lib';
@@ -17,9 +17,12 @@ import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 import { ILivechatInquiryRepository } from '../../models/lib/ILivechatInquiryRepository';
+import { ICommonUtils } from '../../utils/lib/ICommonUtils';
+import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
     private RoomCommonUtils: IRoomCommonUtils;
+
     constructor(RoomCommonUtils: IRoomCommonUtils) {
         super({
             name: 'live',
@@ -41,9 +44,10 @@ class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteCon
 }
 
 export default class LivechatRoomType extends RoomTypeConfig implements IRoomTypeConfig {
-    private UsersCommonUtils: IUserCommonUtils;
     private LivechatInquiry: ILivechatInquiryRepository;
+
     public notSubscribedTpl: string;
+
     public readOnlyTpl: string;
 
     constructor(settings: ISettingsBase,
@@ -52,8 +56,9 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
                 Subscriptions: ISubscriptionRepository,
                 LivechatInquiry: ILivechatInquiryRepository,
                 AuthorizationUtils: IAuthorization,
-                UserCommonUtils: IUserCommonUtils,
-                RoomCommonUtils: IRoomCommonUtils) {
+                RoomCommonUtils: IRoomCommonUtils,
+                CommonUtils: ICommonUtils,
+                RoomTypesCommon: IRoomTypes) {
         super({
                 identifier: 'l',
                 order: 5,
@@ -66,10 +71,11 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
             Rooms,
             Subscriptions,
             AuthorizationUtils,
-            RoomCommonUtils);
+            RoomCommonUtils,
+            CommonUtils,
+            RoomTypesCommon);
         this.notSubscribedTpl = 'livechatNotSubscribed';
         this.readOnlyTpl = 'livechatReadOnly';
-        this.UsersCommonUtils = UserCommonUtils;
         this.LivechatInquiry = LivechatInquiry;
     }
 
@@ -138,7 +144,7 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
     }
 
     getAvatarPath(roomData: any): string {
-        return this.UsersCommonUtils.getUserAvatarURL(`@${ this.roomName(roomData) }`);
+        return this.CommonUtils.getAvatarURL({ username: `@${ this.roomName(roomData) }` });
     }
 
     openCustomProfileTab(instance: any, room: any, username: string): boolean {

@@ -1,4 +1,4 @@
-import { commonUtils, userCommonUtils } from './factory';
+import { commonUtils, roomCommonUtils, userCommonUtils } from './factory';
 
 export { t, isRtl } from '../lib/tapi18n';
 export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
@@ -23,3 +23,5 @@ export * from './factory';
 export const getURL = commonUtils.getURL.bind(commonUtils);
 // export const getUserPreference = userCommonUtils.getUserPreference.bind(userCommonUtils);
 export const getUserAvatarURL = userCommonUtils.getUserAvatarURL.bind(userCommonUtils);
+export const getAvatarURL = commonUtils.getAvatarURL.bind(commonUtils);
+export const getRoomAvatarURL = roomCommonUtils.getRoomAvatarURL.bind(roomCommonUtils);

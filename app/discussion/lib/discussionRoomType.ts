@@ -7,9 +7,12 @@ import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
+import { ICommonUtils } from '../../utils/lib/ICommonUtils';
+import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
 
 export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     public customTemplate: string;
+
     private UserCommonUtils: IUserCommonUtils;
 
     constructor(settings: ISettingsBase,
@@ -18,7 +21,9 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
                 SubscriptionRepository: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils,
-                RoomCommonUtils: IRoomCommonUtils) {
+                RoomCommonUtils: IRoomCommonUtils,
+                CommonUtils: ICommonUtils,
+                RoomTypesCommon: IRoomTypes) {
         super({
                 identifier: 't',
                 order: 25,
@@ -29,7 +34,9 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
             Rooms,
             SubscriptionRepository,
             AuthorizationUtils,
-            RoomCommonUtils;
+            RoomCommonUtils,
+            CommonUtils,
+            RoomTypesCommon);
 
         // we need a custom template in order to have a custom query showing the subscriptions to discussions
         this.customTemplate = 'DiscussionList';
@@ -40,4 +47,3 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
         return this.UserCommonUtils.getUserPreference(Meteor.userId() as string, 'sidebarShowDiscussion');
     }
 }
-

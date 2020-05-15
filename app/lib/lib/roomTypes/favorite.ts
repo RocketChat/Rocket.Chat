@@ -7,6 +7,8 @@ import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
+import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
+import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
 
 export class FavoriteRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     private UserCommonUtils: IUserCommonUtils;
@@ -17,7 +19,9 @@ export class FavoriteRoomType extends RoomTypeConfig implements IRoomTypeConfig 
                 Subscriptions: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils,
-                RoomCommonUtils: IRoomCommonUtils) {
+                RoomCommonUtils: IRoomCommonUtils,
+                CommonUtils: ICommonUtils,
+                RoomTypesCommon: IRoomTypes) {
         super({
                 identifier: 'f',
                 order: 20,
@@ -30,7 +34,9 @@ export class FavoriteRoomType extends RoomTypeConfig implements IRoomTypeConfig 
             Rooms,
             Subscriptions,
             AuthorizationUtils,
-            RoomCommonUtils);
+            RoomCommonUtils,
+            CommonUtils,
+            RoomTypesCommon);
         this.UserCommonUtils = UserCommonUtils;
     }
 

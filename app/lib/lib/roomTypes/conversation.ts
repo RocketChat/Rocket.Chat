@@ -7,6 +7,8 @@ import { IRoomTypeConfig, RoomTypeConfig } from '../../../utils/lib/RoomTypeConf
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
+import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
+import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
 
 export class ConversationRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     private UserCommonUtils: IUserCommonUtils;
@@ -17,7 +19,9 @@ export class ConversationRoomType extends RoomTypeConfig implements IRoomTypeCon
                 Subscriptions: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils,
-                RoomCommonUtils: IRoomCommonUtils) {
+                RoomCommonUtils: IRoomCommonUtils,
+                CommonUtils: ICommonUtils,
+                RoomTypesCommon: IRoomTypes) {
         super({
                 identifier: 'merged',
                 order: 30,
@@ -28,7 +32,9 @@ export class ConversationRoomType extends RoomTypeConfig implements IRoomTypeCon
             Rooms,
             Subscriptions,
             AuthorizationUtils,
-            RoomCommonUtils);
+            RoomCommonUtils,
+            CommonUtils,
+            RoomTypesCommon);
         this.UserCommonUtils = UserCommonUtils;
     }
 
