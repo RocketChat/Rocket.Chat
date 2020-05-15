@@ -1358,6 +1358,7 @@
   "error-edit-permissions-not-allowed": "Editing permissions is not allowed",
   "error-email-domain-blacklisted": "The email domain is blacklisted",
   "error-email-send-failed": "Error trying to send email: __message__",
+  "error-essential-app-disabled": "Error: a Rocket.Chat App that is essential for this is disabled. Please contact your administrator",
   "error-field-unavailable": "<strong>__field__</strong> is already in use :(",
   "error-file-too-large": "File is too large",
   "error-forwarding-chat-same-department": "The selected department and the current room department are the same",
