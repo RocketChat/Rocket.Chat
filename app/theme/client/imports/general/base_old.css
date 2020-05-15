@@ -2126,6 +2126,9 @@
 	}
 
 	& .time {
+		padding-right: 2px;
+		padding-left: 2px;
+
 		white-space: nowrap;
 	}
 
@@ -2271,6 +2274,10 @@
 			display: none;
 		}
 
+		.message-custom-status {
+			display: none;
+		}
+
 		& .title {
 			position: absolute;
 			left: 5px;
@@ -2393,6 +2400,7 @@
 	}
 
 	& .message-alias {
+		padding-right: 2px;
 		padding-left: 2px;
 
 		font-weight: 400;
