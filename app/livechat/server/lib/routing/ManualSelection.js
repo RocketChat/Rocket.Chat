@@ -5,6 +5,7 @@ import { Livechat } from '../Livechat';
 import { RoutingManager } from '../RoutingManager';
 import { sendNotification } from '../../../../lib/server';
 import { LivechatRooms, LivechatInquiry, Users } from '../../../../models/server';
+import { callbacks } from '../../../../callbacks/server';
 
 /* Manual Selection Queuing Method:
 	*
@@ -81,6 +82,8 @@ class ManualSelection {
 				mentionIds: [],
 			});
 		});
+
+		Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
 
 		return agent;
 	}
