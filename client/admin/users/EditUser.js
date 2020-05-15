@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Field, TextInput, Box, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -112,7 +112,7 @@ export function EditUser({ data, roles, ...props }) {
 	const setRandomPassword = newData.setRandomPassword || false;
 	const requirePasswordChange = setRandomPassword || newData.requirePasswordChange || false;
 
-	return <VerticalBar.ScrollableContent is='form' qa-admin-user-edit='form' { ...props }>
+	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} qa-admin-user-edit='form' { ...props }>
 		<UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
