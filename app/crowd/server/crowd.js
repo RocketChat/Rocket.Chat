@@ -205,11 +205,11 @@ export class CROWD {
 				if (!response || response.users.length === 0) {
 					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
-						logger.info('Removing user');
+						logger.info('Removing user:', crowd_username);
 						Meteor.defer(function() {
 							deleteUser(user._id);
+							logger.info('User removed:', crowd_username);
 						});
-						logger.info('Removed');
 					}
 					return;
 				}
