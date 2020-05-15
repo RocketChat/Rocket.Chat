@@ -607,7 +607,7 @@
   "Cloud_resend_email": "Envoyer à nouveau l'e-mail",
   "Cloud_registration_required": "Inscription requise",
   "Cloud_registration_required_description": "On dirait que, lors de l'installation, vous n'avez pas choisi d'enregistrer votre espace de travail.",
-  "Cloud_registration_requried_link_text": "Cliquez ici pour enregistrer votre espace de travail.",
+  "Cloud_registration_required_link_text": "Cliquez ici pour enregistrer votre espace de travail.",
   "Cloud_troubleshooting": "Dépannage",
   "Collapse_Embedded_Media_By_Default": "Réduire tous les médias intégrés par défaut",
   "color": "Couleur",

@@ -97,6 +97,11 @@ registerAdminRoute('/invites', {
 	lazyRouteComponent: () => import('./invites/InvitesRoute'),
 });
 
+registerAdminRoute('/cloud/:page?', {
+	name: 'cloud',
+	lazyRouteComponent: () => import('./cloud/CloudRoute'),
+});
+
 registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
 	lazyRouteComponent: () => import('./viewLogs/ViewLogsRoute'),

@@ -130,7 +130,7 @@
 		"@rocket.chat/fuselage": "^0.6.3-dev.39",
 		"@rocket.chat/fuselage-hooks": "^0.6.3-dev.35",
 		"@rocket.chat/fuselage-polyfills": "^0.6.3-dev.23",
-		"@rocket.chat/fuselage-ui-kit": "^0.6.3-dev.35",
+		"@rocket.chat/fuselage-ui-kit": "^0.6.3-dev.39",
 		"@rocket.chat/icons": "^0.6.3-dev.23",
 		"@rocket.chat/ui-kit": "^0.6.3-dev.23",
 		"@slack/client": "^4.8.0",
