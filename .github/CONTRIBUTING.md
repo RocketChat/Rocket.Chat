@@ -20,13 +20,6 @@ It's important to always run the NPM commands using `meteor npm` to ensure that 
 
 ## Coding
 
-<!--
-* Define and describe folder structure
-* Define how singletons are declared and exported
-* When and how to use documenting comments
-* Standardize error codes/messages
- -->
-
 We provide a [.editorconfig](../.editorconfig) file that will help you to keep some standards in place.
 
 ### ECMAScript vs TypeScript
@@ -37,7 +30,9 @@ While we still have a lot of JavaScript files you should not create new ones. As
 
 ### Blaze vs React
 
-`<!-- TODO -->`
+We are currently adopting React over Blaze as our UI engine, the current codebase has being migrated and will continue for some time, so it's possible to find Blaze templates still and some changes or contributions may need to be made in Blaze while we are still evolving our components library.
+
+[Fuselage](https://github.com/RocketChat/Rocket.Chat.Fuselage) is our component library based on React, check it out when contributing to the Rocket.Chat UI and contribute new components or fixes for those components there.
 
 ### Standards
 
@@ -69,11 +64,11 @@ To check your files run:
 meteor npm run lint
 ```
 
-### Tests
+## Tests
 
 There are 2 types of tests we run on Rocket.Chat, **Unit** tests and **End to End** tests. Different from the Unit tests the End to End depends on a Rocket.Chat instance running to execute the API and UI checks.
 
-#### End to End Tests
+### End to End Tests
 
 First you need to run a Rocket.Chat server on **Test Mode** and on a **Empty Database**:
 ```shell
@@ -90,7 +85,7 @@ Now you can run the tests:
 meteor npm test
 ```
 
-#### Unit Tests
+### Unit Tests
 
 Unit tests are simple to run, the don't depends on a Rocket.Chat instance running, just execute:
 ```shell
@@ -102,7 +97,9 @@ It's possible to run on watch mode as well:
 meteor npm run testunit-watch
 ```
 
-### Before Push your code
+<!-- ### Storybook -->
+
+## Before Push your code
 
 It's important to run the lint and tests before push your code or submit a Pull Request, otherwise your contribution may fail quickly on the CI and the reviewers will need to request you to fix those errors delaying the review of your contribution.
 
@@ -129,26 +126,6 @@ Even it's being something new in the code the users already expect the filter to
 ## Choosing the right PR tag
 
 You can use several tags do describe your PR, i.e.: `[FIX]`, `[NEW]`, etc. You can use the descriptions below to better understand the meaning of each one, and decide which one you should use:
-
-### `[FIX]`
-
-<!-- #### When -->
-
-#### How
-
-Always describe what's being fixed and not *how* it was fixed.
-
-Exemple of a **bad** PR title:
-
-```
-[FIX] Add Content-Type for public files with JWT
-```
-
-Exemple of a **good** PR title:
-
-```
-[FIX] Missing Content-Type header for public files with JWT
-```
 
 ### `[NEW]`
 
@@ -178,10 +155,31 @@ Exemple of **good** PR titles:
 [NEW] Color variable to left sidebar
 ```
 
+### `[FIX]`
+
+#### When
+- When fixing something not working or behaving wrong from the end user perspective
+
+#### How
+
+Always describe what's being fixed and not *how* it was fixed.
+
+Exemple of a **bad** PR title:
+
+```
+[FIX] Add Content-Type for public files with JWT
+```
+
+Exemple of a **good** PR title:
+
+```
+[FIX] Missing Content-Type header for public files with JWT
+```
+
 ### `[IMPROVE]`
 
 #### When
-- When a change enhances a not buggy behavior
+- When a change enhances a not buggy behavior. When in doubt if it's a Improve or Fix prefer to use as fix.
 
 #### How
 Always describe what's being improved and not *how* it was improved.
@@ -204,12 +202,37 @@ Exemple of **good** PR title:
 ##### Front-End
 - When the change limits (format, size, etc) or removes the ability of read or change the data (when the limitation was not caused by the back-end)
 
+### Second tag e.g. `[NEW][ENTERPRISE]`
 
-<!-- Use can use a second tag to group entries on the change log. -->
+Use a second tag to group entries on the change log, we currently use it only for the Enterprise items but we are going to expand it's usage soon, please do not use it until we create a patter for it.
 
-## Storybook
+### Minor Changes
 
-`<!-- TODO -->`
+For those PRs that aren't important for the end user, we are working on a better pattern, but by now keep the same tags, but use them without the brackets and in camel case:
+
+```
+Fix: Missing Content-Type header for public files with JWT
+```
+
+All those PRs will be grouped under the `Minor changes` section which is collapsed, so users can expand it to check for those minor things but they are not visible directly on changelog.
+
+## Security Guidelines
+
+- Never expose unnecessary data to the APIs' responses
+- Always check for permissions or create new ones when need to expose sensitive data
+- Never provide new APIs without rate limiters
+- Always escape the user's input when rendering data
+- Always limit the user's input size on server side
+- Always execute the validations on the server side even when executing on the client side as well
+
+## Performance Guidelines
+
+- Inform the fields you want returned on a query for only those that are necessary
+- Limit the number of returner records to a reasonable value
+- Check if the query is using indexes, it it's not create new indexes
+- Prefer queues over long executions
+- Create new metrics to mesure things whenever possible
+- Cache data and returns whenever possible
 
 ## Contributor License Agreement
 
