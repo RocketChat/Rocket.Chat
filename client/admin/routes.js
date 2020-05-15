@@ -77,6 +77,11 @@ registerAdminRoute('/oauth-apps/:context?/:id?', {
 	lazyRouteComponent: () => import('./oauthApps/OAuthAppsRoute'),
 });
 
+registerAdminRoute('/integrations/:context?/:type?/:id?', {
+	name: 'admin-integrations',
+	lazyRouteComponent: () => import('./integrations/IntegrationsRoute'),
+});
+
 registerAdminRoute('/custom-user-status/:context?/:id?', {
 	name: 'custom-user-status',
 	lazyRouteComponent: () => import('./customUserStatus/CustomUserStatusRoute'),
@@ -100,6 +105,11 @@ registerAdminRoute('/rooms/:context?/:id?', {
 registerAdminRoute('/invites', {
 	name: 'invites',
 	lazyRouteComponent: () => import('./invites/InvitesRoute'),
+});
+
+registerAdminRoute('/cloud/:page?', {
+	name: 'cloud',
+	lazyRouteComponent: () => import('./cloud/CloudRoute'),
 });
 
 registerAdminRoute('/view-logs', {
