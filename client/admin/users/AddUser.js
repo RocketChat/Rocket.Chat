@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -57,7 +57,7 @@ export function AddUser({ roles, ...props }) {
 
 	const availableRoles = roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : [];
 
-	return <VerticalBar.ScrollableContent is='form' { ...props }>
+	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
 			<Field.Row>
