@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Field, TextInput, Box, Headline, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, Box, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
@@ -18,11 +18,11 @@ export function EditUserWithData({ userId, ...props }) {
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
 		</Box>;
 	}
