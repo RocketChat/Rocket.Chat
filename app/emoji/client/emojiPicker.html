@@ -44,6 +44,9 @@
 				{{/each}}
 			{{/if}}
 		</div>
-		<div class="emoji-footer">{{{_"Emoji_provided_by_JoyPixels"}}}</div>
+		<div class="emoji-footer">
+			{{#if hasPermission 'manage-emoji'}}<a class="add-custom" href="/admin/emoji-custom">{{_"Add_custom_emoji"}}</a>{{/if}}
+			{{{_"Emoji_provided_by_JoyPixels"}}}
+		</div>
 	</div>
 </template>
