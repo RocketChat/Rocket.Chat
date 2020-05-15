@@ -51,7 +51,7 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 
 	const hilightedExampleJson = hilightCode('json', JSON.stringify(exampleData, null, 2));
 
-	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' onSubmit={(e) => e.preventDefault()} qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
 			<FieldGroup width='x600' alignSelf='center'>
 				{useMemo(() => <Field>

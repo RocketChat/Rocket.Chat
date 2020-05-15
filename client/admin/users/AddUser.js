@@ -57,7 +57,7 @@ export function AddUser({ roles, ...props }) {
 
 	const availableRoles = roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : [];
 
-	return <VerticalBar.ScrollableContent is='form' { ...props }>
+	return <VerticalBar.ScrollableContent is='form' onSubmit={(e) => e.preventDefault()} { ...props }>
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
 			<Field.Row>

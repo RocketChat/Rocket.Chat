@@ -25,7 +25,7 @@ export function Mailer({ sendMail = () => {} }) {
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
-			<FieldGroup maxWidth='x600' is='form' method='post'>
+			<FieldGroup maxWidth='x600' is='form' onSubmit={(e) => e.preventDefault()} method='post'>
 				<Field>
 					<Field.Label>{t('From')}</Field.Label>
 					<Field.Row>

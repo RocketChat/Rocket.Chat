@@ -64,7 +64,7 @@ export function UserInfo({ data, onChange, ...props }) {
 
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
-	return <VerticalBar.ScrollableContent is='form' {...props}>
+	return <VerticalBar.ScrollableContent is='form' onSubmit={(e) => e.preventDefault()} {...props}>
 		<Box display='flex' flexDirection='column' alignItems='center'>
 			<Margins block='x2'>
 				<Avatar size={'x120'} title={data.username} url={avatarUrl}/>

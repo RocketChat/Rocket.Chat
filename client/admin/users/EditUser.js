@@ -112,7 +112,7 @@ export function EditUser({ data, roles, ...props }) {
 	const setRandomPassword = newData.setRandomPassword || false;
 	const requirePasswordChange = setRandomPassword || newData.requirePasswordChange || false;
 
-	return <VerticalBar.ScrollableContent is='form' qa-admin-user-edit='form' { ...props }>
+	return <VerticalBar.ScrollableContent is='form' onSubmit={(e) => e.preventDefault()} qa-admin-user-edit='form' { ...props }>
 		<UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
