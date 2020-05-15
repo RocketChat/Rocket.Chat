@@ -233,6 +233,7 @@
   "MAU_value": "MAU __value__",
   "Activity": "Activity",
   "Add": "Add",
+  "Add_custom_emoji": "Add custom emoji",
   "add-oauth-service": "Add Oauth Service",
   "add-oauth-service_description": "Permission to add a new Oauth service",
   "add-user": "Add User",
