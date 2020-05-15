@@ -5,6 +5,7 @@ import { ISettingsBase } from '../../../settings/lib/settings';
 import { IRoomsRepository, IUsersRepository } from '../../../models/lib';
 import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
+import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 
 export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     public unread: boolean;
@@ -13,6 +14,7 @@ export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     constructor(settings: ISettingsBase,
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
+                Subscriptions: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils) {
         super({
@@ -23,6 +25,7 @@ export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
             settings,
             Users,
             Rooms,
+            Subscriptions,
             AuthorizationUtils);
         this.UserCommonUtils = UserCommonUtils;
         this.unread = true;

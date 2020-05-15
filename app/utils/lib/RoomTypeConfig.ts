@@ -4,6 +4,7 @@ import { IUsersRepository } from '../../models/lib';
 import { IUser } from '../../../definition/IUser';
 import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { IRoomsRepository } from '../../models/lib/IRoomsRepository';
+import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 
 export enum RoomSettingsEnum {
     TYPE = 'type',
@@ -121,6 +122,7 @@ export abstract class RoomTypeConfig {
     protected readonly settings: ISettingsBase;
     protected readonly Users: IUsersRepository;
     protected readonly Rooms: IRoomsRepository;
+    protected readonly Subscriptions: ISubscriptionRepository;
     protected readonly AuthorizationUtils: IAuthorization;
 
     protected constructor({
@@ -134,6 +136,7 @@ export abstract class RoomTypeConfig {
                           settings: ISettingsBase,
                           Users: IUsersRepository,
                           Rooms: IRoomsRepository,
+                          Subscriptions: ISubscriptionRepository,
                           AuthorizationUtils: IAuthorization) {
 
         this._identifier = identifier;
@@ -145,6 +148,7 @@ export abstract class RoomTypeConfig {
         this.settings = settings;
         this.Users = Users;
         this.Rooms = Rooms;
+        this.Subscriptions = Subscriptions;
         this.AuthorizationUtils = AuthorizationUtils;
     }
 
@@ -228,8 +232,8 @@ export abstract class RoomTypeConfig {
         return this.AuthorizationUtils.hasPermission(Meteor.userId() as string, `delete-${ room.t }`, room._id);
     }
 
-    canSendMessage(roomId: string): boolean {
-        return false;
+    canSendMessage(rid: string): boolean {
+        return this.Subscriptions.find({ rid }).count() > 0;
     }
 
     enableMembersListProfile(): boolean {
@@ -240,7 +244,7 @@ export abstract class RoomTypeConfig {
         return this.Rooms.findOne({ _id: identifier });
     }
 
-    getAvatarPath(roomData: any): string {
+    getAvatarPath(roomData: any, subData: any): string {
         return '';
     }
 

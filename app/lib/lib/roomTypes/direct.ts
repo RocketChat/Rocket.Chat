@@ -1,19 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { openRoom } from '../../../ui-utils';
-import {
-    RoomSettingsEnum,
-    RoomMemberActions,
-    UiTextContext,
-} from '../../../utils';
-import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
-import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 import {
     IRoomTypeConfig,
     IRoomTypeRouteConfig,
     RoomTypeConfig,
     RoomTypeRouteConfig,
+    RoomSettingsEnum,
+    RoomMemberActions,
+    UiTextContext,
 } from '../../../utils/lib/RoomTypeConfig';
 import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 import { ISettingsBase } from '../../../settings/lib/settings';
@@ -21,17 +16,22 @@ import { IRoomsRepository, IUsersRepository } from '../../../models/lib';
 import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { IUser } from '../../../../definition/IUser';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
+import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
-    constructor() {
+    private RoomCommonUtils: IRoomCommonUtils;
+
+    constructor(RoomCommonUtils: IRoomCommonUtils) {
         super({
             name: 'direct',
             path: '/direct/:rid',
         });
+        this.action = this.action.bind(this);
+        this.RoomCommonUtils = RoomCommonUtils;
     }
 
     action(params: any): any {
-        return openRoom('d', params.rid);
+        return this.RoomCommonUtils.openRoom('d', params.rid);
     }
 
     link(sub: any): any {
@@ -40,27 +40,27 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig implements IRoom
 }
 
 export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeConfig {
-    private readonly Subscriptions: ISubscriptionRepository;
     private UserCommonUtils: IUserCommonUtils;
 
     constructor(settings: ISettingsBase,
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
-                AuthorizationUtils: IAuthorization,
                 Subscriptions: ISubscriptionRepository,
-                UserCommonUtils: IUserCommonUtils) {
+                AuthorizationUtils: IAuthorization,
+                UserCommonUtils: IUserCommonUtils,
+                RoomCommonUtils: IRoomCommonUtils) {
         super({
                 identifier: 'd',
                 order: 50,
                 icon: 'at',
                 label: 'Direct_Messages',
-                route: new DirectMessageRoomRoute(),
+                route: new DirectMessageRoomRoute(RoomCommonUtils),
             },
             settings,
             Users,
             Rooms,
+            Subscriptions,
             AuthorizationUtils);
-        this.Subscriptions = Subscriptions;
         this.UserCommonUtils = UserCommonUtils;
     }
 
@@ -218,17 +218,17 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
         }
 
         if (this.isGroupChat(roomData)) {
-            return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
+            return this.UserCommonUtils.getUserAvatarURL(roomData.uids.length + roomData.usernames.join());
         }
 
         const sub = subData || this.Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
 
         if (sub && sub.name) {
-            return getUserAvatarURL(sub.name);
+            return this.UserCommonUtils.getUserAvatarURL(sub.name);
         }
 
         if (roomData) {
-            return getUserAvatarURL(roomData.name || this.roomName(roomData)); // rooms should have no name for direct messages...
+            return this.UserCommonUtils.getUserAvatarURL(roomData.name || this.roomName(roomData)); // rooms should have no name for direct messages...
         }
     }
 

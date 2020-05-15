@@ -5,6 +5,7 @@ import { IRoomsRepository, IUsersRepository } from '../../../models/lib';
 import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { IRoomTypeConfig, RoomTypeConfig } from '../../../utils/lib/RoomTypeConfig';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
+import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 
 export class ConversationRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     private UserCommonUtils: IUserCommonUtils;
@@ -12,6 +13,7 @@ export class ConversationRoomType extends RoomTypeConfig implements IRoomTypeCon
     constructor(settings: ISettingsBase,
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
+                Subscriptions: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
                 UserCommonUtils: IUserCommonUtils) {
         super({
@@ -22,6 +24,7 @@ export class ConversationRoomType extends RoomTypeConfig implements IRoomTypeCon
             settings,
             Users,
             Rooms,
+            Subscriptions,
             AuthorizationUtils);
         this.UserCommonUtils = UserCommonUtils;
     }

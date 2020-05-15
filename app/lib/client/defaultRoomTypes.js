@@ -1,4 +1,4 @@
-import { roomTypes } from '../../utils/client';
+import { roomCommonUtils, roomTypes, userCommonUtils } from '../../utils/client';
 import {
 	ConversationRoomType,
 	DirectMessageRoomType,
@@ -10,11 +10,11 @@ import {
 import { settings } from '../../settings/client';
 import { Rooms, Subscriptions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../../authorization/client';
-import { userCommonUtils } from '../../utils/client';
 
-roomTypes.add(new UnreadRoomType(settings, Users, Rooms, AuthorizationUtils, userCommonUtils));
-roomTypes.add(new FavoriteRoomType(settings, Users, Rooms, AuthorizationUtils, userCommonUtils));
-roomTypes.add(new ConversationRoomType(settings, Users, Rooms, AuthorizationUtils, userCommonUtils));
-roomTypes.add(new PublicRoomType(settings, Users, Rooms, AuthorizationUtils, Subscriptions, userCommonUtils));
-roomTypes.add(new PrivateRoomType(settings, Users, Rooms, AuthorizationUtils, Subscriptions, userCommonUtils));
-roomTypes.add(new DirectMessageRoomType(settings, Users, Rooms, AuthorizationUtils, Subscriptions, userCommonUtils));
+
+roomTypes.add(new UnreadRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils));
+roomTypes.add(new FavoriteRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils));
+roomTypes.add(new ConversationRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils));
+roomTypes.add(new PublicRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils));
+roomTypes.add(new PrivateRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils));
+roomTypes.add(new DirectMessageRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils));
