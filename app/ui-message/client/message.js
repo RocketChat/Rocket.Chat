@@ -15,7 +15,7 @@ import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
 import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import './message.html';
-import './messageThread.html';
+import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
 
 
@@ -421,11 +421,7 @@ Template.message.helpers({
 		return collapsed ? 'icon-right-dir' : 'icon-down-dir';
 	},
 	parentMessage() {
-		const { msg: { tmid, threadMsg } } = this;
-		if (!threadMsg) {
-			findParentMessage(tmid);
-			return;
-		}
+		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
 });

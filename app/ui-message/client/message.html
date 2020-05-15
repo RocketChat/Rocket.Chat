@@ -84,7 +84,7 @@
 					</div>
 				{{else}}
 					{{#if isThreadReply}}
-						{{> messageThread parentMessage=parentMessage threadMessage=threadMessage following=msg.following avatar=msg.u.username msg=msg class=bodyClass}}
+						{{> messageThread parentMessage=parentMessage tmid=msg.tmid class=bodyClass}}
 					{{/if}}
 					{{{body}}}
 				{{/if}}
