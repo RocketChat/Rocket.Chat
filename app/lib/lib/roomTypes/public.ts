@@ -54,7 +54,8 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
             Users,
             Rooms,
             Subscriptions,
-            AuthorizationUtils);
+            AuthorizationUtils,
+            RoomCommonUtils);
         this.UserCommonUtils = UserCommonUtils;
     }
 

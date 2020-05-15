@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
 import { DiscussionRoomType } from '../lib/discussionRoomType';
-import { roomTypes, userCommonUtils } from '../../utils/server';
+import { roomCommonUtils, roomTypes, userCommonUtils } from '../../utils/server';
 import { Rooms, Subscriptions, Users } from '../../models/server';
 import { AuthorizationUtils } from '../../authorization/server';
 
@@ -42,4 +42,4 @@ Meteor.startup(() => {
 	});
 });
 
-roomTypes.add(new DiscussionRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils));
+roomTypes.add(new DiscussionRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils));

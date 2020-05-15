@@ -6,6 +6,7 @@ import { IRoomsRepository, IUsersRepository } from '../../../models/lib';
 import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
+import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 
 export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     public unread: boolean;
@@ -16,7 +17,8 @@ export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
                 Rooms: IRoomsRepository,
                 Subscriptions: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
-                UserCommonUtils: IUserCommonUtils) {
+                UserCommonUtils: IUserCommonUtils,
+                RoomCommonUtils: IRoomCommonUtils) {
         super({
                 identifier: 'unread',
                 order: 10,
@@ -26,7 +28,8 @@ export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
             Users,
             Rooms,
             Subscriptions,
-            AuthorizationUtils);
+            AuthorizationUtils,
+            RoomCommonUtils);
         this.UserCommonUtils = UserCommonUtils;
         this.unread = true;
     }
@@ -34,4 +37,5 @@ export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     condition(): boolean {
         return this.UserCommonUtils.getUserPreference(Meteor.userId() as string, 'sidebarShowUnread');
     }
+
 }

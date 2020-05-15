@@ -3,7 +3,6 @@ import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { IRoomTypeConfig } from './RoomTypeConfig';
-import { roomExit } from './roomExit';
 
 interface IRoomTypesDictionary {
     [key: string]: IRoomTypeConfig;
@@ -71,7 +70,7 @@ export abstract class RoomTypesCommon {
             };
 
             if (Meteor.isClient) {
-                routeConfig.triggersExit = [roomExit];
+                routeConfig.triggersExit = [roomConfig.onRoomExit];
             }
 
             return FlowRouter.route(roomConfig.route.path, routeConfig);

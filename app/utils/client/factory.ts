@@ -5,6 +5,7 @@ import { AbstractRoomCommonUtils, IRoomCommonUtils } from '../lib/IRoomCommonUti
 import { ISettingsBase } from '../../settings/lib/settings';
 import { openRoom } from '../../ui-utils/client/lib/openRoom';
 import { Users } from '../../models/client';
+import { roomExit } from './lib/roomExit';
 
 class RoomCommonUtils extends AbstractRoomCommonUtils implements IRoomCommonUtils {
 
@@ -14,6 +15,10 @@ class RoomCommonUtils extends AbstractRoomCommonUtils implements IRoomCommonUtil
 
     openRoom(type: string, name: string): Promise<any> {
          return openRoom(type, name);
+    }
+
+    roomExit(): void {
+        roomExit();
     }
 
 }

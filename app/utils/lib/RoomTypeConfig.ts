@@ -5,6 +5,7 @@ import { IUser } from '../../../definition/IUser';
 import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { IRoomsRepository } from '../../models/lib/IRoomsRepository';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
+import { IRoomCommonUtils } from './IRoomCommonUtils';
 
 export enum RoomSettingsEnum {
     TYPE = 'type',
@@ -80,6 +81,7 @@ export interface IRoomTypeConfig extends IRoomTypeConfigObject {
     getReadReceiptsExtraData(message: any): any;
     getUserStatus(roomId: string): string;
     getUserStatusText(roomId: string): string;
+    onRoomExit(): void;
     openCustomProfileTab(instance: any, room: any, username: string): boolean;
     preventRenaming(/* room */): boolean;
     roomName(room: any): string;
@@ -124,6 +126,7 @@ export abstract class RoomTypeConfig {
     protected readonly Rooms: IRoomsRepository;
     protected readonly Subscriptions: ISubscriptionRepository;
     protected readonly AuthorizationUtils: IAuthorization;
+    protected readonly RoomCommonUtils: IRoomCommonUtils;
 
     protected constructor({
                               identifier,
@@ -137,7 +140,8 @@ export abstract class RoomTypeConfig {
                           Users: IUsersRepository,
                           Rooms: IRoomsRepository,
                           Subscriptions: ISubscriptionRepository,
-                          AuthorizationUtils: IAuthorization) {
+                          AuthorizationUtils: IAuthorization,
+                          RoomCommonUtils: IRoomCommonUtils) {
 
         this._identifier = identifier;
         this._order = order;
@@ -150,6 +154,9 @@ export abstract class RoomTypeConfig {
         this.Rooms = Rooms;
         this.Subscriptions = Subscriptions;
         this.AuthorizationUtils = AuthorizationUtils;
+        this.RoomCommonUtils = RoomCommonUtils;
+
+        this.onRoomExit = this.onRoomExit.bind(this);
     }
 
     /**
@@ -324,6 +331,10 @@ export abstract class RoomTypeConfig {
 
     isEmitAllowed(): boolean {
         return false;
+    }
+
+    onRoomExit(): void {
+        this.RoomCommonUtils.roomExit();
     }
 
     openCustomProfileTab(instance: any, room: any, username: string): boolean {

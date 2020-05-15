@@ -6,6 +6,7 @@ import { IRoomsRepository, IUsersRepository } from '../../models/lib';
 import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
+import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 
 export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     public customTemplate: string;
@@ -16,7 +17,8 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
                 Rooms: IRoomsRepository,
                 SubscriptionRepository: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization,
-                UserCommonUtils: IUserCommonUtils) {
+                UserCommonUtils: IUserCommonUtils,
+                RoomCommonUtils: IRoomCommonUtils) {
         super({
                 identifier: 't',
                 order: 25,
@@ -26,7 +28,8 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
             Users,
             Rooms,
             SubscriptionRepository,
-            AuthorizationUtils);
+            AuthorizationUtils,
+            RoomCommonUtils;
 
         // we need a custom template in order to have a custom query showing the subscriptions to discussions
         this.customTemplate = 'DiscussionList';

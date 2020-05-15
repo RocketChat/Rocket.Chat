@@ -65,7 +65,8 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
             Users,
             Rooms,
             Subscriptions,
-            AuthorizationUtils);
+            AuthorizationUtils,
+            RoomCommonUtils);
         this.notSubscribedTpl = 'livechatNotSubscribed';
         this.readOnlyTpl = 'livechatReadOnly';
         this.UsersCommonUtils = UserCommonUtils;

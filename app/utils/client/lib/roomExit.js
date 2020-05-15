@@ -1,7 +1,7 @@
 import { Blaze } from 'meteor/blaze';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../callbacks/client';
 
 export const roomExit = function() {
 	// 7370 - Close flex-tab when opening a room on mobile UI

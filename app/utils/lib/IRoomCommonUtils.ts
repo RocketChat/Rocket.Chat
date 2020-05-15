@@ -4,6 +4,7 @@ import { ICommonUtils } from './ICommonUtils';
 export interface IRoomCommonUtils {
     getRoomAvatarURL(roomId: string): string;
     openRoom(type: string, name: string): Promise<any>;
+    roomExit(): void;
 }
 
 export abstract class AbstractRoomCommonUtils {
@@ -26,4 +27,7 @@ export abstract class AbstractRoomCommonUtils {
         return this.CommonUtils.getURL(`/avatar/room/${ encodeURIComponent(roomId) }`);
     }
 
+    roomExit(): void {
+
+    }
 }

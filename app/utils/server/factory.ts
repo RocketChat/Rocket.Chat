@@ -12,7 +12,7 @@ class RoomCommonUtils extends AbstractRoomCommonUtils implements IRoomCommonUtil
     }
 
     openRoom(type: string, name: string): Promise<any> {
-        return Promise.resolve()
+        return Promise.resolve();
     }
 
 }

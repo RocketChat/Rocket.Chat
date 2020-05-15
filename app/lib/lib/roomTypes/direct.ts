@@ -60,7 +60,8 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
             Users,
             Rooms,
             Subscriptions,
-            AuthorizationUtils);
+            AuthorizationUtils,
+            RoomCommonUtils);
         this.UserCommonUtils = UserCommonUtils;
     }
 
@@ -230,6 +231,7 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
         if (roomData) {
             return this.UserCommonUtils.getUserAvatarURL(roomData.name || this.roomName(roomData)); // rooms should have no name for direct messages...
         }
+        return '';
     }
 
     includeInDashboard(): boolean {
@@ -239,4 +241,5 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
     isGroupChat(room?: any): boolean {
         return room && room.uids && room.uids.length > 2;
     }
+
 }

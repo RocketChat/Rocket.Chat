@@ -35,7 +35,6 @@ export class PrivateRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRo
 
 export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     private UserCommonUtils: IUserCommonUtils;
-    private RoomCommonUtils: IRoomCommonUtils;
 
     constructor(settings: ISettingsBase,
                 Users: IUsersRepository,
@@ -55,9 +54,9 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
             Users,
             Rooms,
             Subscriptions,
-            AuthorizationUtils);
+            AuthorizationUtils,
+            RoomCommonUtils);
         this.UserCommonUtils = UserCommonUtils;
-        this.RoomCommonUtils = RoomCommonUtils;
     }
 
     getIcon(roomData: any): string | undefined {
