@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, Margins } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -51,7 +51,7 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 
 	const hilightedExampleJson = hilightCode('json', JSON.stringify(exampleData, null, 2));
 
-	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' qa-admin-user-edit='form' { ...props }>
+	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
 			<FieldGroup width='x600' alignSelf='center'>
 				{useMemo(() => <Field>
