@@ -165,14 +165,7 @@ Meteor.startup(() => {
 				}
 			});
 		} else {
-			const [room] = $(`audio#${ newRoomNotification }`);
-			if (!room) {
-				return;
-			}
-			if (room.pause) {
-				room.pause();
-				room.currentTime = 0;
-			}
+			CustomSounds.pause(newRoomNotification);
 		}
 	});
 });

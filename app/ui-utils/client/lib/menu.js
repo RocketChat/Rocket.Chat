@@ -20,7 +20,7 @@ export const menu = new class extends EventEmitter {
 			const listHeight = this.list.height();
 			let showTop = false;
 			let showBottom = false;
-			$('li.has-alert').each(function() {
+			$('li.sidebar-item--unread').each(function() {
 				if ($(this).offset().top < listOffset.top - $(this).height()) {
 					showTop = true;
 				}
