@@ -388,6 +388,7 @@
   "App_user_not_allowed_to_login": "App users are not allowed to log in directly.",
   "Appearance": "Appearance",
   "Application_added": "Application added",
+  "Application_delete_warning": "You will not be able to recover this Application!",
   "Application_Name": "Application Name",
   "Application_updated": "Application updated",
   "Apply": "Apply",
