@@ -5,8 +5,9 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Settings from './Settings';
+import { IRoomsRepository } from '../../lib';
 
-export class LivechatRooms extends Base {
+export class LivechatRooms extends Base implements IRoomsRepository {
 	constructor(...args) {
 		super(...args);
 

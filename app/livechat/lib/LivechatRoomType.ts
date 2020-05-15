@@ -1,19 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { openRoom } from '../../ui-utils';
-import { RoomSettingsEnum, UiTextContext } from '../../utils';
-import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 import {
     IRoomTypeConfig,
     IRoomTypeRouteConfig,
     RoomTypeConfig,
     RoomTypeRouteConfig,
+    RoomSettingsEnum,
+    UiTextContext
 } from '../../utils/lib/RoomTypeConfig';
 import { ISettingsBase } from '../../settings/lib/settings';
 import { IRoomsRepository, IUsersRepository } from '../../models/lib';
 import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { IUser } from '../../../definition/IUser';
+import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
+import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
+import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 
 let LivechatInquiry;
 if (Meteor.isClient) {
@@ -21,15 +23,18 @@ if (Meteor.isClient) {
 }
 
 class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
-    constructor() {
+    private RoomCommonUtils: IRoomCommonUtils;
+    constructor(RoomCommonUtils: IRoomCommonUtils) {
         super({
             name: 'live',
             path: '/live/:id',
         });
+        this.action = this.action.bind(this);
+        this.RoomCommonUtils = RoomCommonUtils;
     }
 
     action(params: any): any {
-        openRoom('l', params.id);
+        this.RoomCommonUtils.openRoom('l', params.id);
     }
 
     link(sub: any): any {
@@ -40,27 +45,33 @@ class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteCon
 }
 
 export default class LivechatRoomType extends RoomTypeConfig implements IRoomTypeConfig {
+    private UsersCommonUtils: IUserCommonUtils;
     public notSubscribedTpl: string;
     public readOnlyTpl: string;
 
     constructor(settings: ISettingsBase,
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
-                AuthorizationUtils: IAuthorization) {
+                Subscriptions: ISubscriptionRepository,
+                AuthorizationUtils: IAuthorization,
+                UserCommonUtils: IUserCommonUtils,
+                RoomCommonUtils: IRoomCommonUtils) {
         super({
                 identifier: 'l',
                 order: 5,
                 icon: 'omnichannel',
                 label: 'Omnichannel',
-                route: new LivechatRoomRoute(),
+                route: new LivechatRoomRoute(RoomCommonUtils),
             },
             settings,
             Users,
             Rooms,
+            Subscriptions,
             AuthorizationUtils);
 
         this.notSubscribedTpl = 'livechatNotSubscribed';
         this.readOnlyTpl = 'livechatReadOnly';
+        this.UsersCommonUtils = UserCommonUtils;
     }
 
     enableMembersListProfile(): boolean {
@@ -128,7 +139,7 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
     }
 
     getAvatarPath(roomData: any): string {
-        return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+        return this.UsersCommonUtils.getUserAvatarURL(`@${ this.roomName(roomData) }`);
     }
 
     openCustomProfileTab(instance: any, room: any, username: string): boolean {

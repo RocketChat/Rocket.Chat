@@ -6,8 +6,9 @@ import { ISettingsBase } from '../../settings/lib/settings';
 import { IRoomsRepository, IUsersRepository } from '../../models/lib';
 import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { settings } from '../../settings/client';
-import { Rooms, Users } from '../../models/client';
+import { Rooms, Subscriptions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../../authorization/client';
+import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 
 class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     public customTemplate: string;
@@ -15,6 +16,7 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     constructor(settings: ISettingsBase,
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
+                Subscriptions: ISubscriptionRepository,
                 AuthorizationUtils: IAuthorization) {
         super({
                 identifier: 'tokenpass',
@@ -23,6 +25,7 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
             settings,
             Users,
             Rooms,
+            Subscriptions,
             AuthorizationUtils);
 
         this.customTemplate = 'tokenChannelsList';
@@ -36,4 +39,4 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     }
 }
 
-roomTypes.add(new TokenPassRoomType(settings, Users, Rooms, AuthorizationUtils));
+roomTypes.add(new TokenPassRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils));

@@ -1,9 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { openRoom } from '../../../ui-utils';
 import { RoomSettingsEnum, UiTextContext, roomTypes, RoomMemberActions } from '../../../utils';
-import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
-import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 import {
     IRoomTypeConfig,
     IRoomTypeRouteConfig,
@@ -15,43 +12,49 @@ import { IUsersRepository, IRoomsRepository } from '../../../models/lib';
 import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
+import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
-    constructor() {
+    private RoomCommonUtils: IRoomCommonUtils;
+    constructor(RoomCommonUtils: IRoomCommonUtils) {
         super({
             name: 'group',
             path: '/group/:name',
         });
+        this.action = this.action.bind(this);
+        this.RoomCommonUtils = RoomCommonUtils;
     }
 
     async action(params: any): Promise<any> {
-        return openRoom('p', params.name);
+        return this.RoomCommonUtils.openRoom('p', params.name);
     }
 }
 
 export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     private UserCommonUtils: IUserCommonUtils;
-    private readonly Subscriptions: ISubscriptionRepository;
+    private RoomCommonUtils: IRoomCommonUtils;
 
     constructor(settings: ISettingsBase,
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
-                AuthorizationUtils: IAuthorization,
                 Subscriptions: ISubscriptionRepository,
-                UserCommonUtils: IUserCommonUtils) {
+                AuthorizationUtils: IAuthorization,
+                UserCommonUtils: IUserCommonUtils,
+                RoomCommonUtils: IRoomCommonUtils) {
         super({
                 identifier: 'p',
                 order: 40,
                 icon: 'lock',
                 label: 'Private_Groups',
-                route: new PrivateRoomRoute(),
+                route: new PrivateRoomRoute(RoomCommonUtils),
             },
             settings,
             Users,
             Rooms,
+            Subscriptions,
             AuthorizationUtils);
-        this.Subscriptions = Subscriptions;
         this.UserCommonUtils = UserCommonUtils;
+        this.RoomCommonUtils = RoomCommonUtils;
     }
 
     getIcon(roomData: any): string | undefined {
@@ -145,7 +148,7 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 
         // if room is not a discussion, returns the avatar for its name
         if (!roomData.prid) {
-            return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+            return this.UserCommonUtils.getUserAvatarURL(`@${ this.roomName(roomData) }`);
         }
 
         // if discussion's parent room is known, get his avatar
@@ -159,7 +162,7 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
         }
 
         // otherwise gets discussion's avatar via _id
-        return getRoomAvatarURL(roomData.prid);
+        return this.RoomCommonUtils.getRoomAvatarURL(roomData.prid);
     }
 
     includeInDashboard(): boolean {

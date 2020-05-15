@@ -8,13 +8,14 @@ import { Session } from 'meteor/session';
 import mem from 'mem';
 import _ from 'underscore';
 
-import { ChatSubscription, Rooms } from '../../../models';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
-import { roomTypes } from '../../../utils';
+import { ChatSubscription, Rooms } from '../../../models/client';
+import { settings } from '../../../settings/client';
+import { callbacks } from '../../../callbacks/client';
+import { roomTypes } from '../../../utils/client/lib/roomTypes';
 import { call, callMethod } from './callMethod';
-
-import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
+import { fireGlobalEvent } from './fireGlobalEvent';
+import { RoomHistoryManager } from './RoomHistoryManager';
+import { RoomManager } from './RoomManager';
 
 window.currentTracker = undefined;
 

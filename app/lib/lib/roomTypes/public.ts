@@ -1,55 +1,60 @@
 import { Meteor } from 'meteor/meteor';
 
-import { openRoom } from '../../../ui-utils';
-import { RoomSettingsEnum, UiTextContext, RoomMemberActions } from '../../../utils';
-import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 import {
     IRoomTypeConfig,
     IRoomTypeRouteConfig,
     RoomTypeConfig,
     RoomTypeRouteConfig,
+    RoomSettingsEnum,
+    UiTextContext,
+    RoomMemberActions,
 } from '../../../utils/lib/RoomTypeConfig';
 import { ISettingsBase } from '../../../settings/lib/settings';
 import { IRoomsRepository, IUsersRepository } from '../../../models/lib';
 import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
+import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
-    constructor() {
+    private RoomCommonUtils: IRoomCommonUtils;
+
+    constructor(RoomCommonUtils: IRoomCommonUtils) {
         super({
             name: 'channel',
             path: '/channel/:name',
         });
+        this.action = this.action.bind(this);
+        this.RoomCommonUtils = RoomCommonUtils;
     }
 
     action(params: any): any {
-        return openRoom('c', params.name);
+        return this.RoomCommonUtils.openRoom('c', params.name);
     }
 }
 
 export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
-    private readonly Subscriptions: ISubscriptionRepository;
     private UserCommonUtils: IUserCommonUtils;
 
     constructor(settings: ISettingsBase,
                 Users: IUsersRepository,
                 Rooms: IRoomsRepository,
-                AuthorizationUtils: IAuthorization,
                 Subscriptions: ISubscriptionRepository,
-                UserCommonUtils: IUserCommonUtils) {
+                AuthorizationUtils: IAuthorization,
+                UserCommonUtils: IUserCommonUtils,
+                RoomCommonUtils: IRoomCommonUtils) {
         super({
                 identifier: 'c',
                 order: 30,
                 icon: 'hashtag',
                 label: 'Channels',
-                route: new PublicRoomRoute(),
+                route: new PublicRoomRoute(RoomCommonUtils),
             },
             settings,
             Users,
             Rooms,
+            Subscriptions,
             AuthorizationUtils);
-        this.Subscriptions = Subscriptions;
         this.UserCommonUtils = UserCommonUtils;
     }
 
@@ -158,7 +163,7 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
     getAvatarPath(roomData: any): string {
         // TODO: change to always get avatar from _id when rooms have avatars
 
-        return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+        return this.UserCommonUtils.getUserAvatarURL(`@${ this.roomName(roomData) }`);
     }
 
     getDiscussionType(): string {

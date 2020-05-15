@@ -1,29 +1,51 @@
 import { IUsersRepository } from '../../models/lib';
 import { ISettingsBase } from '../../settings/lib/settings';
+import { Tracker } from "meteor/tracker";
+import { ICommonUtils } from './ICommonUtils';
+import { IUser } from '../../../definition/IUser';
 
 export interface IUserCommonUtils {
-    getUserPreference(userId: string, key: string, defaultValue?: any): any;
+    getUserPreference(user: IUser | string, key: string, defaultValue?: any): any;
+    getUserAvatarURL(username: string): string;
 }
 
-export class UserCommonUtils implements  IUserCommonUtils{
+export class UserCommonUtils implements IUserCommonUtils {
     private Users: IUsersRepository;
     private settings: ISettingsBase;
+    private CommonUtils: ICommonUtils;
 
-    constructor(Users: IUsersRepository, settings: ISettingsBase) {
+    constructor(Users: IUsersRepository, settings: ISettingsBase, CommonUtils: ICommonUtils) {
         this.Users = Users;
         this.settings = settings;
+        this.CommonUtils = CommonUtils;
     }
 
-    getUserPreference(userId: string, key: string, defaultValue: any): any {
+    getUserPreference(user: IUser | string, key: string, defaultValue: any): any {
         let preference;
-        const user = this.Users.findOneById(userId, { fields: { [`settings.preferences.${ key }`]: 1 } });
-        if (user && user.settings && user.settings.preferences
-            && user.settings.preferences.hasOwnProperty(key)) {
-            preference = user.settings.preferences[key];
+        let userFromDb: IUser = user as IUser;
+        if (typeof user === typeof '') {
+            userFromDb = this.Users.findOneById(user as string, { fields: { [`settings.preferences.${ key }`]: 1 } });
+        }
+        if (userFromDb && userFromDb.settings && userFromDb.settings.preferences
+            && userFromDb.settings.preferences.hasOwnProperty(key)) {
+            preference = userFromDb.settings.preferences[key];
         } else if (defaultValue === undefined) {
             preference = this.settings.get(`Accounts_Default_User_Preferences_${ key }`);
         }
-
         return preference ? preference : defaultValue;
+    }
+
+    getUserAvatarURL(username: string): string {
+        const externalSource = ((this.settings.get('Accounts_AvatarExternalProviderUrl') || '') as string).trim().replace(/\/$/, '');
+        if (externalSource !== '') {
+            return externalSource.replace('{username}', username);
+        }
+        if (username == null) {
+            return '';
+        }
+        const key = `avatar_random_${ username }`;
+        const cache: any = Tracker.nonreactive(() => Session && Session.get(key)); // there is no Session on server
+
+        return this.CommonUtils.getURL(`/avatar/${ encodeURIComponent(username) }${ cache ? `?_dc=${ cache }` : '' }`);
     }
 }

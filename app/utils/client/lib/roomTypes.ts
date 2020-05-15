@@ -2,8 +2,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
 import { IRoomTypes, RoomTypesCommon } from '../../lib/RoomTypesCommon';
-import { hasAtLeastOnePermission } from '../../../authorization';
-import { ChatRoom, ChatSubscription } from '../../../models';
+import { hasAtLeastOnePermission } from '../../../authorization/client/hasPermission';
+import { ChatRoom, ChatSubscription } from '../../../models/client';
 import { IRoomTypeConfig } from '../../lib/RoomTypeConfig';
 import { IUser } from '../../../../definition/IUser';
 
