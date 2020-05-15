@@ -1,0 +1,242 @@
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+
+import { openRoom } from '../../../ui-utils';
+import {
+    RoomSettingsEnum,
+    RoomMemberActions,
+    UiTextContext,
+} from '../../../utils';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
+import {
+    IRoomTypeConfig,
+    IRoomTypeRouteConfig,
+    RoomTypeConfig,
+    RoomTypeRouteConfig,
+} from '../../../utils/lib/RoomTypeConfig';
+import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
+import { ISettingsBase } from '../../../settings/lib/settings';
+import { IRoomsRepository, IUsersRepository } from '../../../models/lib';
+import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
+import { IUser } from '../../../../definition/IUser';
+import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
+
+export class DirectMessageRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
+    constructor() {
+        super({
+            name: 'direct',
+            path: '/direct/:rid',
+        });
+    }
+
+    action(params: any): any {
+        return openRoom('d', params.rid);
+    }
+
+    link(sub: any): any {
+        return { rid: sub.rid || sub.name };
+    }
+}
+
+export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeConfig {
+    private readonly Subscriptions: ISubscriptionRepository;
+    private UserCommonUtils: IUserCommonUtils;
+
+    constructor(settings: ISettingsBase,
+                Users: IUsersRepository,
+                Rooms: IRoomsRepository,
+                AuthorizationUtils: IAuthorization,
+                Subscriptions: ISubscriptionRepository,
+                UserCommonUtils: IUserCommonUtils) {
+        super({
+                identifier: 'd',
+                order: 50,
+                icon: 'at',
+                label: 'Direct_Messages',
+                route: new DirectMessageRoomRoute(),
+            },
+            settings,
+            Users,
+            Rooms,
+            AuthorizationUtils);
+        this.Subscriptions = Subscriptions;
+        this.UserCommonUtils = UserCommonUtils;
+    }
+
+    getIcon(roomData: any): string | undefined {
+        if (this.isGroupChat(roomData)) {
+            return 'team';
+        }
+        return this.icon;
+    }
+
+    findRoom(identifier: string): any {
+        if (!this.AuthorizationUtils.hasPermission(Meteor.userId() as string, 'view-d-room')) {
+            return null;
+        }
+
+        const query = {
+            t: 'd',
+            $or: [
+                { name: identifier },
+                { rid: identifier },
+            ],
+        };
+
+        const subscription = this.Subscriptions.findOne(query);
+        if (subscription && subscription.rid) {
+            return this.Rooms.findOne({ _id: subscription.rid });
+        }
+    }
+
+    roomName(roomData: any): string {
+        // this function can receive different types of data
+        // if it doesn't have fname and name properties, should be a Room object
+        // so, need to find the related subscription
+        const subscription = roomData && (roomData.fname || roomData.name)
+            ? roomData
+            : this.Subscriptions.findOne({ rid: roomData._id });
+
+        if (subscription === undefined) {
+            return '';
+        }
+
+        if (this.settings.get('UI_Use_Real_Name') && subscription.fname) {
+            return subscription.fname;
+        }
+
+        return subscription.name;
+    }
+
+    secondaryRoomName(roomData: any): string {
+        if (this.settings.get('UI_Use_Real_Name')) {
+            const subscription = this.Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+            return subscription && subscription.name;
+        }
+        return '';
+    }
+
+    condition(): boolean {
+        const groupByType = this.UserCommonUtils.getUserPreference(Meteor.userId() as string, 'sidebarGroupByType');
+        return groupByType && this.AuthorizationUtils.hasAtLeastOnePermission(Meteor.userId() as string, ['view-d-room', 'view-joined-room']);
+    }
+
+    getUserStatus(roomId: string): string {
+        const subscription = this.Subscriptions.findOne({ rid: roomId });
+        if (subscription == null) {
+            return '';
+        }
+
+        return Session.get(`user_${ subscription.name }_status`);
+    }
+
+    getUserStatusText(roomId: string): string {
+        const subscription = this.Subscriptions.findOne({ rid: roomId });
+        if (subscription == null) {
+            return '';
+        }
+
+        return Session.get(`user_${ subscription.name }_status_text`);
+    }
+
+    allowRoomSettingChange(room: any, setting: string): boolean {
+        switch (setting) {
+            case RoomSettingsEnum.TYPE:
+            case RoomSettingsEnum.NAME:
+            case RoomSettingsEnum.SYSTEM_MESSAGES:
+            case RoomSettingsEnum.DESCRIPTION:
+            case RoomSettingsEnum.READ_ONLY:
+            case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
+            case RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE:
+            case RoomSettingsEnum.JOIN_CODE:
+                return false;
+            case RoomSettingsEnum.E2E:
+                return this.settings.get('E2E_Enable') === true;
+            default:
+                return true;
+        }
+    }
+
+    allowMemberAction(room: any, action: string): boolean {
+        switch (action) {
+            case RoomMemberActions.BLOCK:
+                return !this.isGroupChat(room);
+            default:
+                return false;
+        }
+    }
+
+    enableMembersListProfile(): boolean {
+        return true;
+    }
+
+    userDetailShowAll(/* room */): boolean {
+        return true;
+    }
+
+    getUiText(context: string): string {
+        switch (context) {
+            case UiTextContext.HIDE_WARNING:
+                return 'Hide_Private_Warning';
+            case UiTextContext.LEAVE_WARNING:
+                return 'Leave_Private_Warning';
+            default:
+                return '';
+        }
+    }
+
+    /**
+     * Returns details to use on notifications
+     *
+     * @param {object} room
+     * @param {object} user
+     * @param {string} notificationMessage
+     * @return {object} Notification details
+     */
+    getNotificationDetails(room: any, user: IUser, notificationMessage: string): any {
+        if (!Meteor.isServer) {
+            return {};
+        }
+
+        if (this.isGroupChat(room)) {
+            return {
+                title: this.roomName(room),
+                text: `${ (this.settings.get('UI_Use_Real_Name') && user.name) || user.username }: ${ notificationMessage }`,
+            };
+        }
+
+        return {
+            title: (this.settings.get('UI_Use_Real_Name') && user.name) || user.username,
+            text: notificationMessage,
+        };
+    }
+
+    getAvatarPath(roomData: any, subData: any): string {
+        if (!roomData && !subData) {
+            return '';
+        }
+
+        if (this.isGroupChat(roomData)) {
+            return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
+        }
+
+        const sub = subData || this.Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+
+        if (sub && sub.name) {
+            return getUserAvatarURL(sub.name);
+        }
+
+        if (roomData) {
+            return getUserAvatarURL(roomData.name || this.roomName(roomData)); // rooms should have no name for direct messages...
+        }
+    }
+
+    includeInDashboard(): boolean {
+        return true;
+    }
+
+    isGroupChat(room?: any): boolean {
+        return room && room.uids && room.uids.length > 2;
+    }
+}

@@ -29,7 +29,7 @@ const common = {
 		});
 
 		const roomType = room && room.t;
-		return roomType && roomTypes.getConfig(roomType).canBeDeleted(hasPermission, room);
+		return roomType && roomTypes.getConfig(roomType).canBeDeleted(room);
 	},
 	canEditRoom() {
 		const { _id } = Template.instance().room;

@@ -10,6 +10,6 @@ import './lib/userRoles';
 import './methods/sendMessage';
 import './views/customFieldsForm.html';
 import './views/customFieldsForm';
-import '../startup/defaultRoomTypes';
+import './defaultRoomTypes';
 
 export * from './lib';

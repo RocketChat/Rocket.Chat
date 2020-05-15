@@ -42,6 +42,7 @@ export interface IUserServices {
 	google?: any;
 	facebook?: any;
 	github?: any;
+	tokenpass?: any,
 	totp?: {
 		enabled: boolean;
 		hashedBackup: string[];

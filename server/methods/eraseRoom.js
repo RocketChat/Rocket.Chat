@@ -25,7 +25,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!roomTypes.getConfig(room.t).canBeDeleted(hasPermission, room)) {
+		if (!roomTypes.getConfig(room.t).canBeDeleted(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'eraseRoom',
 			});
