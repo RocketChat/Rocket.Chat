@@ -3,10 +3,11 @@ import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
-import { roomTypes, getUserPreference } from '../../utils';
+import { roomTypes, getUserPreference, isMobile } from '../../utils';
 import { Users } from '../../models';
 
 Template.sideNav.helpers({
@@ -39,8 +40,11 @@ Template.sideNav.helpers({
 	},
 
 	sidebarViewMode() {
+		if (isMobile()) {
+			return 'extended';
+		}
 		const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
-		return viewMode || 'condensed';
+		return viewMode || 'extended';
 	},
 
 	sidebarHideAvatar() {
@@ -102,6 +106,17 @@ const redirectToDefaultChannelIfNeeded = () => {
 		c.stop();
 		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
 	});
+};
+
+const openMainContentIfNeeded = () => {
+	const currentRouteState = FlowRouter.current();
+	const defaults = ['/', '/home', '/account'];
+
+	if (defaults.includes(currentRouteState.path)) {
+		menu.open();
+	} else {
+		menu.close();
+	}
 };
 
 const openMainContentIfNeeded = () => {

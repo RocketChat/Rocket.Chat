@@ -77,7 +77,7 @@ const toolbarButtons = (/* user */) => [{
 	},
 },
 {
-	name: t('Create_new'),
+	name: t('Create_A_New_Channel'),
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user']),
 	hasPopup: true,

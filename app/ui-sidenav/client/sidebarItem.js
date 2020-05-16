@@ -27,6 +27,12 @@ Template.sidebarItem.helpers({
 	lastMessageTs() {
 		return this.lastMessage && Template.instance().lastMessageTs.get();
 	},
+	lastMessageDelivered() {
+		return this.lastMessage && !this.lastMessage.temp;
+	},
+	lastMessageSentByUser() {
+		return this.lastMessage && this.lastMessage.u && (this.lastMessage.u._id === Meteor.userId());
+	},
 	mySelf() {
 		return this.t === 'd' && this.name === Template.instance().user.username;
 	},
@@ -95,26 +101,29 @@ Template.sidebarItem.onCreated(function() {
 			return clearInterval(this.timeAgoInterval);
 		}
 
-		if (!currentData.lastMessage._id) {
+		if (currentData.lastMessage && !currentData.lastMessage._id) {
 			this.renderedMessage = currentData.lastMessage.msg;
 			return;
 		}
 
-		setLastMessageTs(this, currentData.lm || currentData.lastMessage.ts);
+		if (currentData.lastMessage && currentData.lastMessage.ts) {
+			setLastMessageTs(this, currentData.lastMessage.ts);
+		}
 
-		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
+		if (currentData.lastMessage && currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
 			this.renderedMessage = '******';
 			return;
 		}
 
-		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
-		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
-		const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
-
-		if (!currentData.isGroupChat && Meteor.userId() !== currentData.lastMessage.u._id) {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
-		} else {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
+		if (currentData.lastMessage) {
+			const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
+			const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
+			const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
+			if (!currentData.isGroupChat && Meteor.userId() !== currentData.lastMessage.u._id) {
+				this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
+			} else {
+				this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
+			}
 		}
 	});
 });
