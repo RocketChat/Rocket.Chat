@@ -6,7 +6,7 @@
 >
 > * Email us at marketing@rocket.chat to tell us how much you love the project
 > * Write about us in your blogs
-> * Fix some small typos in our [documentation](https://github.com/RocketChat/docs)
+> * Fix some small typos in our [documentation](https://docs.rocket.chat/contributing)
 > * Become our [GitHub sponsor](https://github.com/sponsors/RocketChat)
 > * Tell others about us and help us spread the word
 >
@@ -17,6 +17,8 @@ The following is a set of guidelines for contributing to Rocket.Chat, which are 
 __Note:__ If there's a feature you'd like, there's a bug you'd like to fix, or you'd just like to get involved please raise an issue and start a conversation. We'll help as much as we can so you can get contributing - although we may not always be able to respond right away :)
 
 ## Setup
+
+Your development workstation needs to have at least 8GB or RAM to be able to build the Rocket.Chat's source code.
 
 Rocket.Chat runs on top of [Meteor](https://www.meteor.com/). To run it on development mode you need to [install Meteor](https://www.meteor.com/install) and clone/download the Rocket.Chat's code, then just open the code folder and run:
 ```shell
@@ -34,19 +36,19 @@ We provide a [.editorconfig](../.editorconfig) file that will help you to keep s
 
 ### ECMAScript vs TypeScript
 
-We are currently adopting TypeScript as the default language on our projects, the current codebase will be migrated, along the time, from JavaScript to TypeScript.
+We are currently adopting TypeScript as the default language on our projects, the current codebase will be migrated incrementally from JavaScript to TypeScript.
 
 While we still have a lot of JavaScript files you should not create new ones. As much as possible new code contributions should be in **TypeScript**.
 
 ### Blaze vs React
 
-We are currently adopting React over Blaze as our UI engine, the current codebase has being migrated and will continue for some time, so it's possible to find Blaze templates still and some changes or contributions may need to be made in Blaze while we are still evolving our components library.
+We are currently adopting React over Blaze as our UI engine, the current codebase is under migration and will continue. You will still find Blaze templates in our code. Code changes or contributions may need to be made in Blaze while we continue to evolve our components library.
 
-[Fuselage](https://github.com/RocketChat/Rocket.Chat.Fuselage) is our component library based on React, check it out when contributing to the Rocket.Chat UI and contribute new components or fixes for those components there.
+[Fuselage](https://github.com/RocketChat/Rocket.Chat.Fuselage) is our component library based on React, check it out when contributing to the Rocket.Chat UI and feel free to contribute new components or fixes.
 
 ### Standards
 
-Most of the coding standards are covered by ESLint configured at [.eslintrc](../.eslintrc), and most os them came from our own [ESLint Config Package](https://github.com/RocketChat/eslint-config-rocketchat).
+Most of the coding standards are covered by ESLint configured at [.eslintrc](../.eslintrc), and most of them came from our own [ESLint Config Package](https://github.com/RocketChat/eslint-config-rocketchat).
 
 Things not covered by `eslint`:
 
@@ -76,7 +78,7 @@ meteor npm run lint
 
 ## Tests
 
-There are 2 types of tests we run on Rocket.Chat, **Unit** tests and **End to End** tests. Different from the Unit tests the End to End depends on a Rocket.Chat instance running to execute the API and UI checks.
+There are 2 types of tests we run on Rocket.Chat, **Unit** tests and **End to End** tests. The major difference is that End to End tests require a Rocket.Chat instance running to execute the API and UI checks.
 
 ### End to End Tests
 
@@ -97,7 +99,7 @@ meteor npm test
 
 ### Unit Tests
 
-Unit tests are simple to run, the don't depends on a Rocket.Chat instance running, just execute:
+Unit tests are simpler to setup and run. They do not require a working Rocket.Chat instance.
 ```shell
 meteor npm run testunit
 ```
@@ -111,17 +113,17 @@ meteor npm run testunit-watch
 
 ## Before Push your code
 
-It's important to run the lint and tests before push your code or submit a Pull Request, otherwise your contribution may fail quickly on the CI and the reviewers will need to request you to fix those errors delaying the review of your contribution.
+It's important to run the lint and tests before push your code or submit a Pull Request, otherwise your contribution may fail quickly on the CI. Reviewers are forced to demand fixes and the review of your contribution will be further delayed.
 
 Rocket.Chat uses [husky](https://www.npmjs.com/package/husky) to run the **lint** and **unit tests** before proceed to the code push process, so you may notice a delay when pushing your code to your repository.
 
 ## Choosing a good PR title
 
-We use PR titles to on our change log, so when writing the PR title bare in mind it should make sense to a person reading the a release's change log.
+It is very important to note that we use PR titles when creating our change log. Keep this in mind when you title your PR. Make sure the title makes sense to a person reading a releases' change log!
 
 Keep your PR's title as short and concise as possible, use PR's description section, which you can find in the PR's template, to provide more details into the changelog.
 
-Good PR's titles should be made thinking from the user's perspective, what is a new thing in the code may be a bug for the end users, example:
+Good titles require thinking from a user's point of view. Don't get technical and talk code or architecture. What is the actual user-facing feature or the bug fixed? For example:
 
 ```
 [NEW] Allow search permissions and settings by name instead of only ID
@@ -218,7 +220,7 @@ Use a second tag to group entries on the change log, we currently use it only fo
 
 ### Minor Changes
 
-For those PRs that aren't important for the end user, we are working on a better pattern, but by now keep the same tags, but use them without the brackets and in camel case:
+For those PRs that aren't important for the end user, we are working on a better pattern, but for now please use the same tags, use them without the brackets and in camel case:
 
 ```
 Fix: Missing Content-Type header for public files with JWT
@@ -226,19 +228,19 @@ Fix: Missing Content-Type header for public files with JWT
 
 All those PRs will be grouped under the `Minor changes` section which is collapsed, so users can expand it to check for those minor things but they are not visible directly on changelog.
 
-## Security Guidelines
+## Security Best Practices
 
 - Never expose unnecessary data to the APIs' responses
-- Always check for permissions or create new ones when need to expose sensitive data
+- Always check for permissions or create new ones when you must expose sensitive data
 - Never provide new APIs without rate limiters
 - Always escape the user's input when rendering data
 - Always limit the user's input size on server side
 - Always execute the validations on the server side even when executing on the client side as well
 
-## Performance Guidelines
+## Performance Best Practices
 
-- Inform the fields you want returned on a query for only those that are necessary
-- Limit the number of returner records to a reasonable value
+- Prefer inform the fields you want, and only the necessary ones, when querying data from database over query the full documents
+- Limit the number of returned records to a reasonable value
 - Check if the query is using indexes, it it's not create new indexes
 - Prefer queues over long executions
 - Create new metrics to mesure things whenever possible
