@@ -80,7 +80,7 @@ export function IntegrationsTable({ type }) {
 		<Th key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Post_as')}</Th>,
 	].filter(Boolean), [sort, isBig]);
 
-	const renderRow = useCallback(({ name, _id, type, username, _createdAt, _createdBy: { username: createdBy }, channel }) => {
+	const renderRow = useCallback(({ name, _id, type, username, _createdAt, _createdBy: { username: createdBy }, channel = [] }) => {
 		const handler = useMemo(() => onClick(_id, type), []);
 		return <Table.Row key={_id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action>
 			<Table.Cell style={style} color='default' fontScale='p2'>{name}</Table.Cell>
