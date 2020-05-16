@@ -79,32 +79,35 @@ Template.sideNav.events({
 	},
 });
 
-const redirectToDefaultChannelIfNeeded = (firstChannel) => {
-	let retryCount = 0;
-	const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
-	const currentRouteState = FlowRouter.current();
-	const needToBeRedirect = ['/', '/home'].includes(currentRouteState.path);
+const redirectToDefaultChannelIfNeeded = () => {
+	const needToBeRedirect = () => ['/', '/home'].includes(FlowRouter.current().path);
 
 	Tracker.autorun((c) => {
-		if (!firstChannelAfterLogin || !needToBeRedirect) { c.stop(); return; }
+		const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
 
-		firstChannel.set(roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId()));
-
-		if (firstChannel.get() && firstChannel.get()._id && needToBeRedirect) {
-			c.stop();
-			FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
+		if (!needToBeRedirect()) {
+			return c.stop();
 		}
 
-		if (retryCount > 3) { c.stop(); }
-		retryCount++;
+		if (!firstChannelAfterLogin) {
+			return c.stop();
+		}
+
+		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+
+		if (!room) {
+			return;
+		}
+
+		c.stop();
+		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
 	});
 };
 
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-	const firstChannel = new ReactiveVar();
-	redirectToDefaultChannelIfNeeded(firstChannel);
+	redirectToDefaultChannelIfNeeded();
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
