@@ -30,6 +30,7 @@ import './hooks/checkAgentBeforeTakeInquiry';
 import './hooks/checkDefaultAgentOnNewRoom';
 import './hooks/onCheckRoomParamsApi';
 import './hooks/onLoadConfigApi';
+import './hooks/onMaxNumberSimultaneousChatsReached';
 import './hooks/onSetUserStatusLivechat';
 import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
