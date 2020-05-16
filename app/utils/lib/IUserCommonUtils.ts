@@ -1,10 +1,10 @@
-import { Tracker } from "meteor/tracker";
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
+
 import { IUsersRepository } from '../../models/lib';
 import { ISettingsBase } from '../../settings/lib/settings';
 import { ICommonUtils } from './ICommonUtils';
 import { IUser } from '../../../definition/IUser';
-import { settings } from '../../settings/client';
-import { getAvatarURL } from './getAvatarURL';
 
 export interface IUserCommonUtils {
 	getUserPreference(user: IUser | string, key: string, defaultValue?: any): any;
@@ -40,7 +40,7 @@ export class UserCommonUtils implements IUserCommonUtils {
 	}
 
 	getUserAvatarURL(username: string): string {
-		const externalSource = (String(this.settings.get('Accounts_AvatarExternalProviderUrl') || '')).trim().replace(/\/$/, '');
+		const externalSource = String(this.settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
 		if (externalSource !== '') {
 			return externalSource.replace('{username}', username);
 		}

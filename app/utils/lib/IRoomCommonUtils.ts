@@ -18,7 +18,7 @@ export abstract class AbstractRoomCommonUtils {
 	}
 
 	getRoomAvatarURL(roomId: string): string {
-		const externalSource = String((this.settings.get('Accounts_AvatarExternalProviderUrl') || '')).trim().replace(/\/$/, '');
+		const externalSource = String(this.settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
 		if (externalSource !== '') {
 			return externalSource.replace('{roomId}', roomId);
 		}
@@ -26,9 +26,5 @@ export abstract class AbstractRoomCommonUtils {
 			return '';
 		}
 		return this.CommonUtils.getAvatarURL({ roomId });
-	}
-
-	roomExit(): void {
-
 	}
 }

@@ -8,19 +8,17 @@ import { Users } from '../../models/client';
 import { roomExit } from './lib/roomExit';
 
 class RoomCommonUtils extends AbstractRoomCommonUtils implements IRoomCommonUtils {
+	public constructor(settings: ISettingsBase, CommonUtils: ICommonUtils) {
+		super(settings, CommonUtils);
+	}
 
-    constructor(settings: ISettingsBase, CommonUtils: ICommonUtils) {
-        super(settings, CommonUtils);
-    }
+	openRoom(type: string, name: string): Promise<any> {
+		return openRoom(type, name);
+	}
 
-    openRoom(type: string, name: string): Promise<any> {
-         return openRoom(type, name);
-    }
-
-    roomExit(): void {
-        roomExit();
-    }
-
+	roomExit(): void {
+		roomExit();
+	}
 }
 
 export const commonUtils: ICommonUtils = new CommonUtils(settings);

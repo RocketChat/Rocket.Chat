@@ -85,7 +85,7 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].getUserStatusText(rid);
 	}
 
-	findRoom(roomType: string, identifier: string, user: IUser): any {
+	findRoom(roomType: string, identifier: string): any {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].findRoom(identifier);
 	}
 

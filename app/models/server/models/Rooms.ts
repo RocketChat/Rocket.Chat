@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import _ from 'underscore';
 import s from 'underscore.string';
 

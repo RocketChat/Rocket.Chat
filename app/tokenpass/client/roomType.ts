@@ -15,38 +15,38 @@ import { commonUtils, roomCommonUtils } from '../../utils/client/factory';
 import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
 
 class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
-    public customTemplate: string;
+	public customTemplate: string;
 
-    constructor(settings: ISettingsBase,
-                Users: IUsersRepository,
-                Rooms: IRoomsRepository,
-                Subscriptions: ISubscriptionRepository,
-                AuthorizationUtils: IAuthorization,
-                RoomCommonUtils: IRoomCommonUtils,
-                CommonUtils: ICommonUtils,
-                RoomTypesCommon: IRoomTypes) {
-        super({
-                identifier: 'tokenpass',
-                order: 1,
-            },
-            settings,
-            Users,
-            Rooms,
-            Subscriptions,
-            AuthorizationUtils,
-            RoomCommonUtils,
-            CommonUtils,
-            RoomTypesCommon);
+	constructor(settings: ISettingsBase,
+		Users: IUsersRepository,
+		Rooms: IRoomsRepository,
+		Subscriptions: ISubscriptionRepository,
+		AuthorizationUtils: IAuthorization,
+		RoomCommonUtils: IRoomCommonUtils,
+		CommonUtils: ICommonUtils,
+		RoomTypesCommon: IRoomTypes) {
+		super({
+			identifier: 'tokenpass',
+			order: 1,
+		},
+		settings,
+		Users,
+		Rooms,
+		Subscriptions,
+		AuthorizationUtils,
+		RoomCommonUtils,
+		CommonUtils,
+		RoomTypesCommon);
 
-        this.customTemplate = 'tokenChannelsList';
-    }
+		this.customTemplate = 'tokenChannelsList';
+	}
 
-    condition(): boolean {
-        const user = this.Users.findOneById(Meteor.userId() as string, { fields: { 'services.tokenpass': 1 } });
-        const hasTokenpass = !!(user && user.services && user.services.tokenpass);
+	condition(): boolean {
+		const user = this.Users.findOneById(Meteor.userId() as string, { fields: { 'services.tokenpass': 1 } });
+		const hasTokenpass = !!(user && user.services && user.services.tokenpass);
 
-        return hasTokenpass;
-    }
+		return hasTokenpass;
+	}
 }
 
 roomTypes.add(new TokenPassRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, roomCommonUtils, commonUtils, roomTypes));

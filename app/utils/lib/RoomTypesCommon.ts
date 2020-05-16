@@ -68,7 +68,7 @@ export abstract class RoomTypesCommon {
 			const routeConfig = {
 				name: roomConfig.route.name,
 				action: roomConfig.route.action,
-				triggersExit: [() => Session.set('openedRoom', '')],
+				triggersExit: [(): string => Session.set('openedRoom', '')],
 			};
 
 			if (Meteor.isClient) {

@@ -1,6 +1,8 @@
+/* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { IOptions, IUsersRepository } from "../../lib";
+
+import { IOptions, IUsersRepository } from '../../lib';
 
 export const Users: IUsersRepository = {
 	findOneById(userId: string, options: IOptions = {}) {

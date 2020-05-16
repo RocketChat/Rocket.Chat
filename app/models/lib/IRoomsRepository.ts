@@ -1,5 +1,5 @@
-import { IOptions } from "./IOptions";
+import { IOptions } from './IOptions';
 
 export interface IRoomsRepository {
-    findOne(filter: {[key: string]: any}, options?: IOptions): any;
+	findOne(filter: {[key: string]: any}, options?: IOptions): any;
 }

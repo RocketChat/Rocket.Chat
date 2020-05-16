@@ -1,6 +1,6 @@
-import { IUser } from "/definition/IUser";
-import { IOptions } from "/app/models/lib/IOptions";
+import { IOptions } from './IOptions';
+import { IUser } from '../../../definition/IUser';
 
 export interface IUsersRepository {
-    findOneById(userId: string, options?: IOptions): IUser;
+	findOneById(userId: string, options?: IOptions): IUser;
 }

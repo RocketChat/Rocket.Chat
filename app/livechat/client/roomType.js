@@ -1,4 +1,4 @@
-import { commonUtils, roomCommonUtils, roomTypes, userCommonUtils } from '../../utils/client';
+import { commonUtils, roomCommonUtils, roomTypes } from '../../utils/client';
 import LivechatRoomType from '../lib/LivechatRoomType';
 import { settings } from '../../settings/client';
 import { Rooms, Subscriptions, Users } from '../../models/client';

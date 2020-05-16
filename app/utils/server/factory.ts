@@ -6,15 +6,13 @@ import { AbstractRoomCommonUtils, IRoomCommonUtils } from '../lib/IRoomCommonUti
 import { ISettingsBase } from '../../settings/lib/settings';
 
 class RoomCommonUtils extends AbstractRoomCommonUtils implements IRoomCommonUtils {
+	public constructor(settings: ISettingsBase, CommonUtils: ICommonUtils) {
+		super(settings, CommonUtils);
+	}
 
-    constructor(settings: ISettingsBase, CommonUtils: ICommonUtils) {
-        super(settings, CommonUtils);
-    }
-
-    openRoom(type: string, name: string): Promise<any> {
-        return Promise.resolve();
-    }
-
+	openRoom(): Promise<any> {
+		return Promise.resolve();
+	}
 }
 
 export const commonUtils: ICommonUtils = new CommonUtils(settings);

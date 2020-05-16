@@ -2,18 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
 import {
-    IRoomTypeConfig,
-    IRoomTypeRouteConfig,
-    RoomTypeConfig,
-    RoomTypeRouteConfig,
-    RoomSettingsEnum,
-    UiTextContext,
+	IRoomTypeConfig,
+	IRoomTypeRouteConfig,
+	RoomTypeConfig,
+	RoomTypeRouteConfig,
+	RoomSettingsEnum,
+	UiTextContext,
 } from '../../utils/lib/RoomTypeConfig';
 import { ISettingsBase } from '../../settings/lib/settings';
 import { IRoomsRepository, IUsersRepository } from '../../models/lib';
 import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { IUser } from '../../../definition/IUser';
-import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 import { ILivechatInquiryRepository } from '../../models/lib/ILivechatInquiryRepository';
@@ -21,149 +20,149 @@ import { ICommonUtils } from '../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
-    private RoomCommonUtils: IRoomCommonUtils;
+	private RoomCommonUtils: IRoomCommonUtils;
 
-    constructor(RoomCommonUtils: IRoomCommonUtils) {
-        super({
-            name: 'live',
-            path: '/live/:id',
-        });
-        this.action = this.action.bind(this);
-        this.RoomCommonUtils = RoomCommonUtils;
-    }
+	constructor(RoomCommonUtils: IRoomCommonUtils) {
+		super({
+			name: 'live',
+			path: '/live/:id',
+		});
+		this.action = this.action.bind(this);
+		this.RoomCommonUtils = RoomCommonUtils;
+	}
 
-    action(params: any): any {
-        this.RoomCommonUtils.openRoom('l', params.id);
-    }
+	action(params: any): any {
+		this.RoomCommonUtils.openRoom('l', params.id);
+	}
 
-    link(sub: any): any {
-        return {
-            id: sub.rid,
-        };
-    }
+	link(sub: any): any {
+		return {
+			id: sub.rid,
+		};
+	}
 }
 
 export default class LivechatRoomType extends RoomTypeConfig implements IRoomTypeConfig {
-    private LivechatInquiry: ILivechatInquiryRepository;
+	private LivechatInquiry: ILivechatInquiryRepository;
 
-    public notSubscribedTpl: string;
+	public notSubscribedTpl: string;
 
-    public readOnlyTpl: string;
+	public readOnlyTpl: string;
 
-    constructor(settings: ISettingsBase,
-                Users: IUsersRepository,
-                Rooms: IRoomsRepository,
-                Subscriptions: ISubscriptionRepository,
-                LivechatInquiry: ILivechatInquiryRepository,
-                AuthorizationUtils: IAuthorization,
-                RoomCommonUtils: IRoomCommonUtils,
-                CommonUtils: ICommonUtils,
-                RoomTypesCommon: IRoomTypes) {
-        super({
-                identifier: 'l',
-                order: 5,
-                icon: 'omnichannel',
-                label: 'Omnichannel',
-                route: new LivechatRoomRoute(RoomCommonUtils),
-            },
-            settings,
-            Users,
-            Rooms,
-            Subscriptions,
-            AuthorizationUtils,
-            RoomCommonUtils,
-            CommonUtils,
-            RoomTypesCommon);
-        this.notSubscribedTpl = 'livechatNotSubscribed';
-        this.readOnlyTpl = 'livechatReadOnly';
-        this.LivechatInquiry = LivechatInquiry;
-    }
+	constructor(settings: ISettingsBase,
+		Users: IUsersRepository,
+		Rooms: IRoomsRepository,
+		Subscriptions: ISubscriptionRepository,
+		LivechatInquiry: ILivechatInquiryRepository,
+		AuthorizationUtils: IAuthorization,
+		RoomCommonUtils: IRoomCommonUtils,
+		CommonUtils: ICommonUtils,
+		RoomTypesCommon: IRoomTypes) {
+		super({
+			identifier: 'l',
+			order: 5,
+			icon: 'omnichannel',
+			label: 'Omnichannel',
+			route: new LivechatRoomRoute(RoomCommonUtils),
+		},
+		settings,
+		Users,
+		Rooms,
+		Subscriptions,
+		AuthorizationUtils,
+		RoomCommonUtils,
+		CommonUtils,
+		RoomTypesCommon);
+		this.notSubscribedTpl = 'livechatNotSubscribed';
+		this.readOnlyTpl = 'livechatReadOnly';
+		this.LivechatInquiry = LivechatInquiry;
+	}
 
-    enableMembersListProfile(): boolean {
-        return true;
-    }
+	enableMembersListProfile(): boolean {
+		return true;
+	}
 
-    findRoom(identifier: string): any {
-        return this.Rooms.findOne({ _id: identifier });
-    }
+	findRoom(identifier: string): any {
+		return this.Rooms.findOne({ _id: identifier });
+	}
 
-    roomName(roomData: any): string {
-        return roomData.name || roomData.fname || roomData.label;
-    }
+	roomName(roomData: any): string {
+		return roomData.name || roomData.fname || roomData.label;
+	}
 
-    condition(): boolean {
-        return Boolean(this.settings.get('Livechat_enabled') && this.AuthorizationUtils.hasPermission(Meteor.userId() as string, 'view-l-room'));
-    }
+	condition(): boolean {
+		return Boolean(this.settings.get('Livechat_enabled') && this.AuthorizationUtils.hasPermission(Meteor.userId() as string, 'view-l-room'));
+	}
 
-    canSendMessage(rid: string): boolean {
-        const room = this.Rooms.findOne({ _id: rid }, { fields: { open: 1 } });
-        return room && room.open === true;
-    }
+	canSendMessage(rid: string): boolean {
+		const room = this.Rooms.findOne({ _id: rid }, { fields: { open: 1 } });
+		return room && room.open === true;
+	}
 
-    getUserStatus(rid: string): string {
-        const room = Session.get(`roomData${ rid }`);
-        if (room) {
-            return room.v && room.v.status;
-        }
-        const inquiry = this.LivechatInquiry.findOne({ rid });
-        return inquiry && inquiry.v && inquiry.v.status;
-    }
+	getUserStatus(rid: string): string {
+		const room = Session.get(`roomData${ rid }`);
+		if (room) {
+			return room.v && room.v.status;
+		}
+		const inquiry = this.LivechatInquiry.findOne({ rid });
+		return inquiry && inquiry.v && inquiry.v.status;
+	}
 
-    allowRoomSettingChange(room: any, setting: string): boolean {
-        switch (setting) {
-            case RoomSettingsEnum.JOIN_CODE:
-                return false;
-            default:
-                return true;
-        }
-    }
+	allowRoomSettingChange(room: any, setting: string): boolean {
+		switch (setting) {
+			case RoomSettingsEnum.JOIN_CODE:
+				return false;
+			default:
+				return true;
+		}
+	}
 
-    getUiText(context: string): string {
-        switch (context) {
-            case UiTextContext.HIDE_WARNING:
-                return 'Hide_Livechat_Warning';
-            case UiTextContext.LEAVE_WARNING:
-                return 'Hide_Livechat_Warning';
-            default:
-                return '';
-        }
-    }
+	getUiText(context: string): string {
+		switch (context) {
+			case UiTextContext.HIDE_WARNING:
+				return 'Hide_Livechat_Warning';
+			case UiTextContext.LEAVE_WARNING:
+				return 'Hide_Livechat_Warning';
+			default:
+				return '';
+		}
+	}
 
-    readOnly(rid: string, user: IUser): boolean {
-        const room = this.Rooms.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
-        if (!room || !room.open) {
-            return true;
-        }
+	readOnly(rid: string, user: IUser): boolean {
+		const room = this.Rooms.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
+		if (!room || !room.open) {
+			return true;
+		}
 
-        const inquiry = this.LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
-        if (inquiry && inquiry.status === 'queued') {
-            return true;
-        }
+		const inquiry = this.LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
+		if (inquiry && inquiry.status === 'queued') {
+			return true;
+		}
 
-        return (!room.servedBy || room.servedBy._id !== user._id) && !this.AuthorizationUtils.hasPermission(Meteor.userId() as string, 'view-livechat-rooms');
-    }
+		return (!room.servedBy || room.servedBy._id !== user._id) && !this.AuthorizationUtils.hasPermission(Meteor.userId() as string, 'view-livechat-rooms');
+	}
 
-    getAvatarPath(roomData: any): string {
-        return this.CommonUtils.getAvatarURL({ username: `@${ this.roomName(roomData) }` });
-    }
+	getAvatarPath(roomData: any): string {
+		return this.CommonUtils.getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+	}
 
-    openCustomProfileTab(instance: any, room: any, username: string): boolean {
-        if (!room || !room.v || room.v.username !== username) {
-            return false;
-        }
-        const button = instance.tabBar.getButtons().find((button) => button.id === 'visitor-info');
-        if (!button) {
-            return false;
-        }
+	openCustomProfileTab(instance: any, room: any, username: string): boolean {
+		if (!room || !room.v || room.v.username !== username) {
+			return false;
+		}
+		const button = instance.tabBar.getButtons().find((button) => button.id === 'visitor-info');
+		if (!button) {
+			return false;
+		}
 
-        const { template, i18nTitle: label, icon } = button;
-        instance.tabBar.setTemplate(template);
-        instance.tabBar.setData({
-            label,
-            icon,
-        });
+		const { template, i18nTitle: label, icon } = button;
+		instance.tabBar.setTemplate(template);
+		instance.tabBar.setData({
+			label,
+			icon,
+		});
 
-        instance.tabBar.open();
-        return true;
-    }
+		instance.tabBar.open();
+		return true;
+	}
 }

@@ -11,39 +11,39 @@ import { ICommonUtils } from '../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
 
 export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfig {
-    public customTemplate: string;
+	public customTemplate: string;
 
-    private UserCommonUtils: IUserCommonUtils;
+	private UserCommonUtils: IUserCommonUtils;
 
-    constructor(settings: ISettingsBase,
-                Users: IUsersRepository,
-                Rooms: IRoomsRepository,
-                SubscriptionRepository: ISubscriptionRepository,
-                AuthorizationUtils: IAuthorization,
-                UserCommonUtils: IUserCommonUtils,
-                RoomCommonUtils: IRoomCommonUtils,
-                CommonUtils: ICommonUtils,
-                RoomTypesCommon: IRoomTypes) {
-        super({
-                identifier: 't',
-                order: 25,
-                label: 'Discussion',
-            },
-            settings,
-            Users,
-            Rooms,
-            SubscriptionRepository,
-            AuthorizationUtils,
-            RoomCommonUtils,
-            CommonUtils,
-            RoomTypesCommon);
+	constructor(settings: ISettingsBase,
+		Users: IUsersRepository,
+		Rooms: IRoomsRepository,
+		SubscriptionRepository: ISubscriptionRepository,
+		AuthorizationUtils: IAuthorization,
+		UserCommonUtils: IUserCommonUtils,
+		RoomCommonUtils: IRoomCommonUtils,
+		CommonUtils: ICommonUtils,
+		RoomTypesCommon: IRoomTypes) {
+		super({
+			identifier: 't',
+			order: 25,
+			label: 'Discussion',
+		},
+		settings,
+		Users,
+		Rooms,
+		SubscriptionRepository,
+		AuthorizationUtils,
+		RoomCommonUtils,
+		CommonUtils,
+		RoomTypesCommon);
 
-        // we need a custom template in order to have a custom query showing the subscriptions to discussions
-        this.customTemplate = 'DiscussionList';
-        this.UserCommonUtils = UserCommonUtils;
-    }
+		// we need a custom template in order to have a custom query showing the subscriptions to discussions
+		this.customTemplate = 'DiscussionList';
+		this.UserCommonUtils = UserCommonUtils;
+	}
 
-    condition(): boolean {
-        return this.UserCommonUtils.getUserPreference(Meteor.userId() as string, 'sidebarShowDiscussion');
-    }
+	condition(): boolean {
+		return this.UserCommonUtils.getUserPreference(Meteor.userId() as string, 'sidebarShowDiscussion');
+	}
 }

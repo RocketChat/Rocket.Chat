@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import { CachedChatRoom } from './CachedChatRoom';
 import { IRoomsRepository } from '../../lib/IRoomsRepository';
 

@@ -120,7 +120,7 @@ class Settings extends SettingsBase implements ISettingsBase {
 
 	private initialLoad = false;
 
-	constructor() {
+	public constructor() {
 		super();
 	}
 

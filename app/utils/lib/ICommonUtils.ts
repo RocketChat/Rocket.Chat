@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import s from 'underscore.string/index';
+
 import { isURL } from './isURL';
 import { ISettingsBase } from '../../settings/lib/settings';
 
@@ -10,7 +12,7 @@ interface IURLOptions {
 	cloud_params: any;
 }
 
-interface InternalURL extends IURLOptions {
+interface IInternalURL extends IURLOptions {
 	_cdn_prefix: string;
 	_root_url_path_prefix: string;
 	_site_url: string;
@@ -34,8 +36,8 @@ export class CommonUtils implements ICommonUtils {
 		this.settings = settings;
 	}
 
-	private getCloudUrl(path: string, _site_url: string, cloudRoute: string, cloudParams: any = {}) {
-		const cloudBaseUrl = (this.settings.get('DeepLink_Url') || '') as string.replace(/\/+$/, '');
+	private getCloudUrl(path: string, _site_url: string, cloudRoute: string, cloudParams: any = {}): string {
+		const cloudBaseUrl = String(this.settings.get('DeepLink_Url') || '').replace(/\/+$/, '');
 
 		const siteUrl = s.rtrim(_site_url, '/');
 
@@ -57,7 +59,7 @@ export class CommonUtils implements ICommonUtils {
 		return `${ cloudBaseUrl }/${ cloudRoute }?${ params }`;
 	}
 
-	private mountUrl(path: string, { cdn, full, cloud, cloud_route, cloud_params, _cdn_prefix, _root_url_path_prefix, _site_url }: InternalURL): string {
+	private mountUrl(path: string, { cdn, full, cloud, cloud_route, cloud_params, _cdn_prefix, _root_url_path_prefix, _site_url }: IInternalURL): string {
 		if (isURL(path)) {
 			return path;
 		}

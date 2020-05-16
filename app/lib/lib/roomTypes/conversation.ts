@@ -11,35 +11,35 @@ import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
 
 export class ConversationRoomType extends RoomTypeConfig implements IRoomTypeConfig {
-    private UserCommonUtils: IUserCommonUtils;
+	private UserCommonUtils: IUserCommonUtils;
 
-    constructor(settings: ISettingsBase,
-                Users: IUsersRepository,
-                Rooms: IRoomsRepository,
-                Subscriptions: ISubscriptionRepository,
-                AuthorizationUtils: IAuthorization,
-                UserCommonUtils: IUserCommonUtils,
-                RoomCommonUtils: IRoomCommonUtils,
-                CommonUtils: ICommonUtils,
-                RoomTypesCommon: IRoomTypes) {
-        super({
-                identifier: 'merged',
-                order: 30,
-                label: 'Conversations',
-            },
-            settings,
-            Users,
-            Rooms,
-            Subscriptions,
-            AuthorizationUtils,
-            RoomCommonUtils,
-            CommonUtils,
-            RoomTypesCommon);
-        this.UserCommonUtils = UserCommonUtils;
-    }
+	constructor(settings: ISettingsBase,
+		Users: IUsersRepository,
+		Rooms: IRoomsRepository,
+		Subscriptions: ISubscriptionRepository,
+		AuthorizationUtils: IAuthorization,
+		UserCommonUtils: IUserCommonUtils,
+		RoomCommonUtils: IRoomCommonUtils,
+		CommonUtils: ICommonUtils,
+		RoomTypesCommon: IRoomTypes) {
+		super({
+			identifier: 'merged',
+			order: 30,
+			label: 'Conversations',
+		},
+		settings,
+		Users,
+		Rooms,
+		Subscriptions,
+		AuthorizationUtils,
+		RoomCommonUtils,
+		CommonUtils,
+		RoomTypesCommon);
+		this.UserCommonUtils = UserCommonUtils;
+	}
 
-    condition(): boolean {
-        // returns true only if sidebarGroupByType is not set
-        return !this.UserCommonUtils.getUserPreference(Meteor.userId() as string, 'sidebarGroupByType');
-    }
+	condition(): boolean {
+		// returns true only if sidebarGroupByType is not set
+		return !this.UserCommonUtils.getUserPreference(Meteor.userId() as string, 'sidebarGroupByType');
+	}
 }

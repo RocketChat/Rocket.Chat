@@ -61,4 +61,4 @@ export abstract class AbstractAuthorizationUtils {
 
 		return false;
 	}
-};
+}

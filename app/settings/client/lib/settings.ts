@@ -18,10 +18,6 @@ class Settings extends SettingsBase {
 
 	dict = new ReactiveDict<any>('settings');
 
-	constructor() {
-		super();
-	}
-
 	get(_id: string): any {
 		return this.dict.get(_id);
 	}
