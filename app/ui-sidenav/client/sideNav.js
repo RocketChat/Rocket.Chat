@@ -118,6 +118,17 @@ const openMainContentIfNeeded = () => {
 	}
 };
 
+const openMainContentIfNeeded = () => {
+	const currentRouteState = FlowRouter.current();
+	const defaults = ['/', '/home', '/account'];
+
+	if (defaults.includes(currentRouteState.path)) {
+		menu.open();
+	} else {
+		menu.close();
+	}
+};
+
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
