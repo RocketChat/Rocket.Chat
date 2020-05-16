@@ -47,7 +47,7 @@
 					{{#if hasPresence}}
 					{{# userPresence uid=uid}}<span class="rc-header__status">
 						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>
-						<div class="rc-header__visual-status">{{userStatusText}}</div>
+						{{#if isNotMobile}} <div class="rc-header__visual-status">{{userStatusText}}</div> {{/if}}
 					</span>{{/userPresence}}
 					{{else}}
 					{{#if $and roomTopic isNotMobile}}<span class="rc-header__topic">{{{roomTopic}}}</span>{{/if}}

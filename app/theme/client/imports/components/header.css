@@ -251,6 +251,7 @@
 
 	&__toggle-favorite {
 
+		margin: 0 0.75rem;
 		padding: 0 0.25rem;
 
 		color: var(--header-toggle-favorite-color);
@@ -472,7 +473,7 @@
 		&__data {
 			display: flex;
 			flex-direction: row;
-			align-items: center;
+			justify-content: center;
 		}
 
 		&__status {
