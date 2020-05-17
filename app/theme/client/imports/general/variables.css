@@ -1,4 +1,66 @@
 :root {
+	/* #region colors Colors */
+	--rc-color-error: var(--color-red);
+	--rc-color-error-light: #e1364c;
+	--rc-color-alert: var(--color-yellow);
+	--rc-color-alert-light: var(--color-dark-yellow);
+	--rc-color-success: var(--color-green);
+	--rc-color-success-light: #25d198;
+	--rc-color-button-primary: var(--color-blue);
+	--rc-color-button-primary-light: var(--color-dark-blue);
+	--rc-color-alert-message-primary: var(--color-blue);
+	--rc-color-alert-message-primary-background: #f1f6ff;
+	--rc-color-alert-message-secondary: #7ca52b;
+	--rc-color-alert-message-secondary-background: #fafff1;
+	--rc-color-alert-message-warning: #d52d24;
+	--rc-color-alert-message-warning-background: #fff3f3;
+	--rc-color-primary: var(--color-dark);
+	--rc-color-primary-background: var(--color-dark);
+	--rc-color-primary-darkest: var(--color-darkest);
+	--rc-color-primary-dark: var(--color-dark-medium);
+	--rc-color-primary-light: var(--color-gray);
+	--rc-color-primary-light-medium: var(--color-gray-medium);
+	--rc-color-primary-lightest: var(--color-gray-lightest);
+	--rc-color-content: var(--color-white);
+	--rc-color-link-active: var(--rc-color-button-primary);
+
+	/* #endregion */
+
+	/* #region colors Old Colors */
+	--content-background-color: #ffffff;
+	--primary-background-color: #04436a;
+	--primary-font-color: #444444;
+	--primary-action-color: #1d74f5;
+	--secondary-background-color: #f4f4f4;
+	--secondary-font-color: #a0a0a0;
+	--secondary-action-color: #dddddd;
+	--component-color: #f2f3f5;
+	--success-color: #4dff4d;
+	--pending-color: #fcb316;
+	--error-color: #bc2031;
+	--selection-color: #02acec;
+	--attention-color: #9c27b0;
+
+	/* #endregion */
+
+	/* #region less-colors Old Colors (minor) */
+	--tertiary-background-color: var(--component-color);
+	--tertiary-font-color: var(--transparent-lightest);
+	--link-font-color: var(--primary-action-color);
+	--info-font-color: var(--secondary-font-color);
+	--custom-scrollbar-color: var(--transparent-darker);
+	--status-online: var(--success-color);
+	--status-away: var(--pending-color);
+	--status-busy: var(--error-color);
+	--status-offline: var(--transparent-darker);
+
+	/* #endregion */
+
+	/* #region fonts Fonts */
+	--body-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI', Arial, sans-serif;
+
+	/* #endregion */
+
 	/*
 	 * Color palette
 	 */
@@ -36,29 +98,6 @@
 	--color-gray-lightest: #f2f3f5;
 	--color-black: #000000;
 	--color-white: #ffffff;
-	--rc-color-error: var(--color-red);
-	--rc-color-error-light: #e1364c;
-	--rc-color-alert: var(--color-yellow);
-	--rc-color-alert-light: var(--color-dark-yellow);
-	--rc-color-success: var(--color-green);
-	--rc-color-success-light: #25d198;
-	--rc-color-button-primary: var(--color-blue);
-	--rc-color-button-primary-light: var(--color-dark-blue);
-	--rc-color-alert-message-primary: var(--color-blue);
-	--rc-color-alert-message-primary-background: #f1f6ff;
-	--rc-color-alert-message-secondary: #7ca52b;
-	--rc-color-alert-message-secondary-background: #fafff1;
-	--rc-color-alert-message-warning: #d52d24;
-	--rc-color-alert-message-warning-background: #fff3f3;
-	--rc-color-primary: var(--color-dark);
-	--rc-color-primary-background: var(--color-dark);
-	--rc-color-primary-darkest: var(--color-darkest);
-	--rc-color-primary-dark: var(--color-dark-medium);
-	--rc-color-primary-light: var(--color-gray);
-	--rc-color-primary-light-medium: var(--color-gray-medium);
-	--rc-color-primary-lightest: var(--color-gray-lightest);
-	--rc-color-content: var(--color-white);
-	--rc-color-link-active: var(--rc-color-button-primary);
 
 	/*
 	* General
@@ -71,7 +110,6 @@
 	--flex-tab-width: 400px;
 	--flex-tab-webrtc-width: 400px;
 	--flex-tab-webrtc-2-width: 850px;
-	--user-image-square: 20px;
 	--border: 2px;
 	--border-radius: 2px;
 	--status-online: var(--rc-color-success);
