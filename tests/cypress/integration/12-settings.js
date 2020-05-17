@@ -160,12 +160,6 @@ describe('[Api Settings Change]', () => {
 				.end(done);
 		});
 
-		it.skip('it should not show the video file button', () => {
-			// the page needs a refresh to show the changes in the client
-			mainContent.videoCamBtn.waitForVisible(10000, true);
-			mainContent.videoCamBtn.should('not.be.visible');
-		});
-
 		it('it should change the message video files via api', (done) => {
 			request.post(api('settings/Message_VideoRecorderEnabled'))
 				.set(credentials)

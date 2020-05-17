@@ -24,7 +24,7 @@ export const rocketChatDecorator = (fn) => {
 			}
 		`}</style>
 		<div dangerouslySetInnerHTML={{ __html: icons }} />
-		<div className='global-font-family color-primary-font-color'>
+		<div className='color-primary-font-color'>
 			{fn()}
 		</div>
 	</MeteorProviderMock>;
