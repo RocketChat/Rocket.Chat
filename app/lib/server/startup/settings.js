@@ -1305,6 +1305,14 @@ settings.addGroup('Push', function() {
 			multiline: true,
 			secret: true,
 		});
+		this.add('Vapid_public_key', '', {
+			type: 'string',
+			public: true,
+		});
+		this.add('Vapid_private_key', '', {
+			type: 'string',
+			secret: true,
+		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
 			secret: true,

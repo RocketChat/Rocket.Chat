@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../settings';
-import { Subscriptions } from '../../../../models';
+import { Subscriptions, PushNotificationSubscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';
 import { PushNotification } from '../../../../push-notifications/server';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
+const webpush = require('web-push');
 
 let alwaysNotifyMobileBoolean;
 settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
@@ -46,7 +47,15 @@ function enableNotificationReplyButton(room, username) {
 	return !room.muted.includes(username);
 }
 
-export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
+export async function sendSinglePush({
+	room,
+	message,
+	userId,
+	receiverUsername,
+	senderUsername,
+	senderName,
+	notificationMessage,
+}) {
 	let username = '';
 	if (settings.get('Push_show_username_room')) {
 		username = settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
@@ -63,14 +72,43 @@ export async function sendSinglePush({ room, message, userId, receiverUsername, 
 			messageType: message.t,
 			messageId: message._id,
 		},
-		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
+		roomName:
+			settings.get('Push_show_username_room') && room.t !== 'd'
+				? `#${ roomTypes.getRoomName(room.t, room) }`
+				: '',
 		username,
 		message: settings.get('Push_show_message') ? notificationMessage : ' ',
 		badge: await getBadgeCount(userId),
 		usersTo: {
 			userId,
 		},
-		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
+		category: enableNotificationReplyButton(room, receiverUsername)
+			? CATEGORY_MESSAGE
+			: CATEGORY_MESSAGE_NOREPLY,
+	});
+
+	const gcmKey = settings.get('Push_gcm_api_key');
+	const vapidPublic = settings.get('Vapid_public_key');
+	const vapidPrivate = settings.get('Vapid_private_key');
+
+	webpush.setGCMAPIKey(gcmKey);
+	webpush.setVapidDetails(
+		'https://www.viasat.com',
+		vapidPublic,
+		vapidPrivate,
+	);
+
+	const pushSubscriptions = PushNotificationSubscriptions.findByUserId(userId);
+	const options = {
+		TTL: 3600,
+	};
+
+	pushSubscriptions.forEach((pushSubscription) => {
+		try {
+			webpush.sendNotification(pushSubscription, 'ok', options);
+		} catch (e) {
+			console.log(e);
+		}
 	});
 }
 
