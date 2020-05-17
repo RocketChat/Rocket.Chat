@@ -10,10 +10,12 @@ Meteor.methods({
 		check(subscription.endpoint, String);
 
 		let user = Meteor.user();
-		user = {
-			_id: user._id,
-			username: user.username,
-		};
+		if (user) {
+			user = {
+				_id: user._id,
+				username: user.username,
+			};
+		}
 		PushNotificationSubscriptions.createWithUserAndSubscription(user, subscription);
 
 		return subscription;
