@@ -1,4 +1,4 @@
-import { AppsEngineError } from '@rocket.chat/apps-engine/definition/errors';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 
 import { AppEvents, Apps } from '../../../apps/server';
@@ -32,7 +32,7 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 	try {
 		Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter));
 	} catch (error) {
-		if (error instanceof AppsEngineError) {
+		if (error instanceof AppsEngineException) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
