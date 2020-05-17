@@ -6,14 +6,14 @@ import moment from 'moment';
 import toastr from 'toastr';
 
 import { t } from '../../app/utils';
-import { ChatMessage, CachedChatMessage } from '../../app/models';
+import { ChatMessage } from '../../app/models';
 import { hasAtLeastOnePermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
-	updateMessage(message) {
-		if (!Meteor.userId()) {
+	updateMessage(message, offlineTriggered = false) {
+		if (!Meteor.userId() || offlineTriggered) {
 			return false;
 		}
 
@@ -81,7 +81,6 @@ Meteor.methods({
 				_id: message._id,
 				'u._id': Meteor.userId(),
 			}, { $set: messageObject });
-			CachedChatMessage.save();
 		});
 	},
 });

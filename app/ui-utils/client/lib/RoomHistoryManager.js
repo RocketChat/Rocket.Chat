@@ -10,7 +10,7 @@ import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
 import { call } from './callMethod';
-import { ChatMessage, ChatSubscription, ChatRoom, CachedChatMessage } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 
 export const normalizeThreadMessage = (message) => {
 	if (message.msg) {
@@ -340,7 +340,6 @@ export const RoomHistoryManager = new class {
 		retain.forEach((message) => {
 			ChatMessage.insert(message);
 		});
-		CachedChatMessage.save();
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);

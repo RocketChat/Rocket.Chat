@@ -6,9 +6,13 @@ import { callbacks } from '../../../callbacks';
 import { emoji } from '../../../emoji';
 
 Meteor.methods({
-	setReaction(reaction, messageId) {
+	setReaction(reaction, messageId, shouldReact, offlineTrigerred = false) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error(203, 'User_logged_out');
+		}
+
+		if (offlineTrigerred) {
+			return;
 		}
 
 		const user = Meteor.user();
