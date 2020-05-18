@@ -359,8 +359,8 @@
 																	</div>
 																	{{> CodeMirror name=id options=getEditorOptions code=value }}
 																	<div class="buttons">
-																		<button class="button primary button-fullscreen">{{_ "Full_Screen"}}</button>
-																		<button class="button primary button-restore">{{_ "Exit_Full_Screen"}}</button>
+																		<button class="rc-button rc-button--primary button-fullscreen">{{_ "Full_Screen"}}</button>
+																		<button class="rc-button rc-button--primary button-restore">{{_ "Exit_Full_Screen"}}</button>
 																	</div>
 																</div>
 																{{/if}}
@@ -463,7 +463,7 @@
 															{{#if hasChanges section}}
 															<span style="line-height: 40px" class="secondary-font-color">{{_ "Save_to_enable_this_action"}}</span>
 															{{else}}
-															<button type="button" class="button primary action" data-setting="{{id}}" data-action="{{value}}">{{_ actionText}}</button>
+															<button type="button" class="rc-button rc-button--primary action" data-setting="{{id}}" data-action="{{value}}">{{_ actionText}}</button>
 															{{/if}}
 														{{/if}}
 
@@ -472,14 +472,14 @@
 															<div class="settings-file-preview">
 																<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
 																<div class="action">
-																	<button type="button" class="button danger delete-asset"><i class="icon-trash secondary-font-color"></i>{{_ 'Delete'}}</button>
+																	<button type="button" class="rc-button rc-button--danger delete-asset"><i class="icon-trash secondary-font-color"></i>{{_ 'Delete'}}</button>
 																</div>
 															</div>
 															{{else}}
 															<div class="settings-file-preview">
 																<div class="preview no-file background-transparent-light secondary-font-color"><i class="icon-upload secondary-font-color"></i></div>
 																<div class="action">
-																	<div class="button primary">{{_ 'Select_file'}}
+																	<div class="rc-button rc-button--primary">{{_ 'Select_file'}}
 																		<input type="file" accept="{{assetAccept fileConstraints}}" />
 																	</div>
 																</div>
