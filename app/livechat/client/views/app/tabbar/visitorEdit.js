@@ -19,7 +19,7 @@ const getCustomFieldsByScope = (customFields = [], data = {}, filter, disabled) 
 			return { name, label, scope, value, disabled, ...extraData };
 		});
 
-const isCustomFieldDisabled = () => hasPermission('view-livechat-room-customfields') && !hasPermission('edit-livechat-room-customfields');
+const isCustomFieldDisabled = () => !hasPermission('edit-livechat-room-customfields');
 
 Template.visitorEdit.helpers({
 	visitor() {

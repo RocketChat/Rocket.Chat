@@ -251,11 +251,9 @@ export const getLivechatQueueInfo = async (room) => {
 
 	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id });
 
-	let queueInfo;
-	if (inq) {
-		const { position, department } = inq;
-		queueInfo = await normalizeQueueInfo({ position, department });
+	if (!inq) {
+		return null;
 	}
 
-	return queueInfo;
+	return normalizeQueueInfo(inq);
 };

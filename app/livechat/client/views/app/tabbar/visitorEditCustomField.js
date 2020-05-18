@@ -11,11 +11,7 @@ Template.visitorEditCustomField.helpers({
 		return this.options.split(',');
 	},
 	selectedField(current) {
-		const { fieldData: { value } } = Template.instance();
+		const { fieldData: { value } } = Template.currentData();
 		return value.trim() === current.trim();
 	},
-});
-
-Template.visitorEditCustomField.onCreated(function() {
-	this.fieldData = Template.currentData() || {};
 });

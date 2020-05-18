@@ -12,5 +12,5 @@ callbacks.add('livechat.onLoadConfigApi', async (options = {}) => {
 		...customFields && { customFields },
 	};
 
-	return Object.assign({ config }, { ...options });
+	return Object.assign({ config }, options);
 }, callbacks.priority.MEDIUM, 'livechat-on-load-config-api');
