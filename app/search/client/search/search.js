@@ -17,6 +17,7 @@ Template.RocketSearch.onCreated(function() {
 	Meteor.call('rocketchatSearch.getProvider', (error, provider) => {
 		if (!error && provider) {
 			this.scope.settings = provider.settings;
+			this.scope.customParams = provider.customParams;
 			this.provider.set(provider);
 			this.isActive.set(true);
 		} else {
@@ -47,6 +48,7 @@ Template.RocketSearch.onCreated(function() {
 		result: new ReactiveVar(),
 		text: new ReactiveVar(),
 		settings: {},
+		customParams: {},
 		parentPayload: {},
 		payload: {},
 		search: _search,

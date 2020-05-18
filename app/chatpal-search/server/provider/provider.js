@@ -80,6 +80,7 @@ class ChatpalProvider extends SearchProvider {
 			values: [
 				{ key: 'All', i18nLabel: 'All' },
 				{ key: 'Messages', i18nLabel: 'Messages' },
+				{ key: 'Files', i18nLabel: 'Files' },
 			],
 			i18nLabel: 'Chatpal_Default_Result_Type',
 			i18nDescription: 'Chatpal_Default_Result_Type_Description',
@@ -139,7 +140,7 @@ class ChatpalProvider extends SearchProvider {
 			case 'message.save': return this.index.indexDoc('message', payload);
 			case 'user.save': return this.index.indexDoc('user', payload);
 			case 'room.save': return this.index.indexDoc('room', payload);
-			case 'message.delete': return this.index.removeDoc('message', value);
+			case 'message.delete': return this.index.removeDoc('message', value, payload);
 			case 'user.delete': return this.index.removeDoc('user', value);
 			case 'room.delete': return this.index.removeDoc('room', value);
 		}
@@ -192,11 +193,11 @@ class ChatpalProvider extends SearchProvider {
 	_ping(config, resolve, reject, timeout = 5000) {
 		const maxTimeout = 200000;
 
-		const stats = Index.ping(config);
+		const data = Index.ping(config);
 
-		if (stats) {
+		if (data.stats || data.api) {
 			ChatpalLogger.debug('ping was successfull');
-			resolve({ config, stats });
+			resolve(Object.assign({}, { config }, data));
 		} else {
 			ChatpalLogger.warn(`ping failed, retry in ${ timeout } ms`);
 
@@ -222,6 +223,7 @@ class ChatpalProvider extends SearchProvider {
 				config.language = this._settings.get('Main_Language');
 				config.searchpath = '/search/search';
 				config.updatepath = '/search/update';
+				config.fileupdatepath = '/search/update/extract';
 				config.pingpath = '/search/ping';
 				config.clearpath = '/search/clear';
 				config.suggestionpath = '/search/suggest';
@@ -235,6 +237,7 @@ class ChatpalProvider extends SearchProvider {
 				config.language = this._settings.get('Main_Language');
 				config.searchpath = '/chatpal/search';
 				config.updatepath = '/chatpal/update';
+				config.fileupdatepath = '/chatpal/update/extract';
 				config.pingpath = '/chatpal/ping';
 				config.clearpath = '/chatpal/clear';
 				config.suggestionpath = '/chatpal/suggest';
@@ -275,9 +278,15 @@ class ChatpalProvider extends SearchProvider {
 		ChatpalLogger.debug(`clear = ${ clear } with reason '${ reason }'`);
 
 		this._getIndexConfig().then((server) => {
-			this._indexConfig = server.config;
-
 			this._stats = server.stats;
+			this._indexConfig = server.config;
+			this._indexConfig.api = {};
+			this._customParams = {};
+			if (server.api) {
+				this._indexConfig.api = server.api;
+				this._indexConfig.api.supportsFileSearch = this._indexConfig.api.features.indexOf('FILE_SEARCH') > -1;
+				this._customParams.supportsFileSearch = this._indexConfig.api.supportsFileSearch;
+			}
 
 			ChatpalLogger.debug('config:', JSON.stringify(this._indexConfig, null, 2));
 			ChatpalLogger.debug('stats:', JSON.stringify(this._stats, null, 2));
@@ -298,13 +307,26 @@ class ChatpalProvider extends SearchProvider {
 	}
 
 	/**
+	 * returns a list of result types for result type name
+	 * @param resultTypeName
+	 * @private
+	 */
+	_getResultTypes(resultTypeName) {
+		switch (resultTypeName) {
+			case 'All': return ['message', 'user', 'room'].concat(this._indexConfig.api.supportsFileSearch ? ['file'] : []);
+			case 'Messages': return ['message'];
+			case 'Files': return ['file'];
+		}
+	}
+
+	/**
 	 * @inheritDoc
 	 * @returns {*}
 	 */
 	search(text, context, payload, callback) {
 		if (!this.index) { return callback({ msg: 'Chatpal_currently_not_active' }); }
 
-		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
+		const type = this._getResultTypes(payload.resultType);
 		const params = Object.assign({}, payload.custom);
 
 		this.index.query(
@@ -325,7 +347,7 @@ class ChatpalProvider extends SearchProvider {
 	suggest(text, context, payload, callback) {
 		if (!this.index) { return callback({ msg: 'Chatpal_currently_not_active' }); }
 
-		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
+		const type = this._getResultTypes(payload.resultType);
 
 		this.index.suggest(
 			text,

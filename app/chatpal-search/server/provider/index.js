@@ -3,7 +3,10 @@ import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
 
 import ChatpalLogger from '../utils/logger';
-import { Rooms, Messages } from '../../../models';
+import { Rooms, Messages, Uploads } from '../../../models';
+import { FileUpload } from '../../../file-upload';
+
+const getFileBuffer = Meteor.wrapAsync(FileUpload.getBuffer, FileUpload);
 
 /**
  * Enables HTTP functions on Chatpal Backend
@@ -36,6 +39,39 @@ class Backend {
 		} catch (e) {
 			// TODO how to deal with this
 			ChatpalLogger.error('indexing failed', JSON.stringify(e, null, 2));
+			return false;
+		}
+	}
+
+	/**
+	 * index a single file
+	 * @param docs
+	 * @returns {boolean}
+	 */
+	indexFile(fileObj) {
+		const options = Object.assign({
+			params: { language: this._options.language },
+			...this._options.httpOptions,
+		}, fileObj);
+
+		const logObj = Object.assign({}, options);
+		delete logObj.content;
+		ChatpalLogger.debug('file index options:', JSON.stringify(logObj, null, 2));
+
+		try {
+			const response = HTTP.call('POST', `${ this._options.baseurl }${ this._options.fileupdatepath }`, options);
+
+			if (response.statusCode >= 200 && response.statusCode < 300) {
+				ChatpalLogger.debug('indexed file', JSON.stringify(response.data, null, 2));
+			} else {
+				throw new Error(response);
+			}
+		} catch (e) {
+			if (e.response.statusCode === 404) {
+				ChatpalLogger.warn('Current Chatpal backend doesn\'t support file content extraction!');
+			} else {
+				ChatpalLogger.error('file indexing failed', JSON.stringify(e, null, 2));
+			}
 			return false;
 		}
 	}
@@ -162,7 +198,7 @@ class Backend {
 			const response = HTTP.call('GET', config.baseurl + config.pingpath, options);
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
-				return response.data.stats;
+				return response.data;
 			}
 			return false;
 		} catch (e) {
@@ -397,6 +433,64 @@ export default class Index {
 	}
 
 	indexDoc(type, doc, flush = true) {
+		// Detect messages with file attachment
+		if (type === 'message' && doc.file && doc.file._id) {
+			if (!this._options.api.supportsFileSearch) {
+				return false;
+			}
+
+			const file = Uploads.findOneById(doc.file._id);
+			if (file) {
+				file.mid = doc._id;
+				const attachment = doc.attachments.filter((a) => a.type === 'file')[0];
+				if (attachment) {
+					file.link = attachment.title_link;
+					// Attachment description can be edited, so we overwrite the original description
+					file.description = attachment.description;
+				}
+
+				ChatpalLogger.debug('Indexing file:', file);
+
+				try {
+					let data = '';
+					if (file.size >= this._options.api.config.maxFileSize) {
+						ChatpalLogger.warn(`File size (${ file.size }) exceeds maximum allowed size (${ this._options.api.config.maxFileSize }), skipping file content indexing.`);
+					} else {
+						data = getFileBuffer(file);
+					}
+
+					const fileIndexOptions = {
+						content: data || file.name, // use file name as placeholder, it will be ignored in the UI
+						params: {
+							'resource.name': file.name,
+							'literal.id': file._id,
+							'literal.rid': file.rid,
+							'literal.mid': file.mid,
+							'literal.user': file.userId,
+							'literal.uploaded': file.uploadedAt.toISOString(),
+							'literal.created': file.uploadedAt.toISOString(),
+							'literal.updated': file._updatedAt.toISOString(),
+							'literal.file_name': file.name,
+							'literal.file_desc': file.description,
+							'literal.file_type': file.type,
+							'literal.file_size': file.size,
+							'literal.file_store': file.store,
+							'literal.file_link': file.link,
+						},
+						headers: {
+							'Content-Type': data ? file.type : 'text/plain',
+						},
+					};
+					this._backend.indexFile(fileIndexOptions);
+				} catch (err) {
+					ChatpalLogger.error('Error while retrieving file content:', err);
+				}
+			}
+
+			// Skip message indexing
+			return true;
+		}
+
 		this._batchIndexer.add(this._getIndexDocument(type, doc));
 
 		if (flush) { this._batchIndexer.flush(); }
@@ -404,7 +498,10 @@ export default class Index {
 		return true;
 	}
 
-	removeDoc(type, id) {
+	removeDoc(type, id, doc) {
+		if (type === 'message' && doc && doc.file && doc.file._id) {
+			return this._backend.remove('file', doc.file._id);
+		}
 		return this._backend.remove(type, id);
 	}
 

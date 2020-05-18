@@ -13,6 +13,9 @@ const getDMUrl = (username) => getURL(`/direct/${ username }`);
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);
 	this.resultType = new ReactiveVar(this.data.settings.DefaultResultType);
+	if (this.resultType.get() === 'Files' && !this.data.customParams.supportsFileSearch) {
+		this.resultType.set('All');
+	}
 	this.data.parentPayload.resultType = this.resultType.get();
 });
 
@@ -31,8 +34,15 @@ Template.ChatpalSearchResultTemplate.events = {
 		t.data.payload.start = (t.data.payload.start || 0) + t.data.settings.PageSize;
 		t.data.search();
 	},
-	'click .chatpal-show-more-messages'(evt, t) {
+	'click .chatpal-show-more.more-messages'(evt, t) {
 		t.data.parentPayload.resultType = 'Messages';
+		t.data.payload.start = 0;
+		t.data.payload.rows = t.data.settings.PageSize;
+		t.resultType.set(t.data.parentPayload.resultType);
+		t.data.search();
+	},
+	'click .chatpal-show-more.more-files'(evt, t) {
+		t.data.parentPayload.resultType = 'Files';
 		t.data.payload.start = 0;
 		t.data.payload.rows = t.data.settings.PageSize;
 		t.resultType.set(t.data.parentPayload.resultType);
@@ -58,35 +68,40 @@ Template.ChatpalSearchResultTemplate.helpers({
 
 		if (!result) { return true; }
 
-		return result.message.numFound > 0 || result.user.numFound > 0 || result.room.numFound > 0;
+		return result.message.numFound > 0 || result.user.numFound > 0 || result.room.numFound > 0 || result.file.numFound > 0;
 	},
-	moreMessagesThanDisplayed() {
+	moreThanDisplayed(type) {
 		const result = Template.instance().data.result.get();
 
-		return result.message.docs.length < result.message.numFound;
+		return result[type].docs.length < result[type].numFound;
 	},
 	resultNumFound() {
+		const type = Template.instance().resultType.get() === 'Files' ? 'file' : 'message';
 		const result = Template.instance().data.result.get();
 		if (result) {
-			switch (result.message.numFound) {
+			switch (result[type].numFound) {
 				case 0:
 					return TAPi18n.__('Chatpal_no_search_results');
 				case 1:
 					return TAPi18n.__('Chatpal_one_search_result');
 				default:
-					return TAPi18n.__('Chatpal_search_results', result.message.numFound);
+					return TAPi18n.__('Chatpal_search_results', result[type].numFound);
 			}
 		}
 	},
 	resultPaging() {
+		const type = Template.instance().resultType.get() === 'Files' ? 'file' : 'message';
 		const result = Template.instance().data.result.get();
 		const pageSize = Template.instance().data.settings.PageSize;
 		if (result) {
 			return {
-				currentPage: 1 + result.message.start / pageSize,
-				numOfPages: Math.ceil(result.message.numFound / pageSize),
+				currentPage: 1 + result[type].start / pageSize,
+				numOfPages: Math.ceil(result[type].numFound / pageSize),
 			};
 		}
+	},
+	fileSearchSupported() {
+		return Template.instance().data.customParams.supportsFileSearch;
 	},
 });
 
@@ -118,6 +133,61 @@ Template.ChatpalSearchSingleMessage.helpers({
 	getAvatarUrl,
 });
 
+Template.ChatpalSearchSingleFile.helpers({
+	roomIcon() {
+		const room = Session.get(`roomData${ this.rid }`);
+		if (room && room.t === 'd') {
+			return 'at';
+		}
+		return roomTypes.getIcon(room);
+	},
+
+	roomLink() {
+		const subscription = Subscriptions.findOne({ rid: this.rid });
+		return roomTypes.getRouteLink(subscription.t, subscription);
+	},
+
+	roomName() {
+		const room = Session.get(`roomData${ this.rid }`);
+		return roomTypes.getRoomName(room.t, room);
+	},
+
+	sizes: {
+		b: 1,
+		kb: 1024,
+		mb: Math.pow(1024, 2),
+		gb: Math.pow(1024, 3),
+	},
+
+	fileSize() {
+		const bytes = this.file_size;
+		const sizes = Template.ChatpalSearchSingleFile.__helpers.get('sizes');
+		let unit = 'b';
+		if (bytes >= sizes.gb) {
+			unit = 'gb';
+		} else if (bytes >= sizes.mb) {
+			unit = 'mb';
+		} else if (bytes >= sizes.kb) {
+			unit = 'kb';
+		}
+
+		return `${ parseFloat((bytes / sizes[unit]).toFixed(2)) } ${ unit.toUpperCase() }`;
+	},
+
+	time() {
+		return DateFormat.formatTime(this.updated);
+	},
+	date() {
+		return DateFormat.formatDate(this.updated);
+	},
+	textMatchingFilename() {
+		const text = this.text instanceof Array ? this.text[0] : this.text;
+		const fname = this.file_name instanceof Array ? this.file_name[0] : this.file_name;
+		return text === fname;
+	},
+	getAvatarUrl,
+});
+
 Template.ChatpalSearchSingleRoom.helpers({
 	roomIcon() {
 		const room = Session.get(`roomData${ this._id }`);
@@ -134,7 +204,12 @@ Template.ChatpalSearchSingleRoom.helpers({
 
 Template.ChatpalSearchSingleUser.helpers({
 	cleanUsername() {
-		return this.user_username.replace(/<\/?em>/ig, '');
+		return (this.user_username instanceof Array ? this.user_username[0] : this.user_username).replace(/<\/?em>/ig, '');
+	},
+	nameMatchingUsername() {
+		const uname = this.user_username instanceof Array ? this.user_username[0] : this.user_username;
+		const name = this.user_name instanceof Array ? this.user_name[0] : this.user_name;
+		return uname === name;
 	},
 	getAvatarUrl,
 	getDMUrl,

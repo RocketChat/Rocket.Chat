@@ -27,7 +27,7 @@ callbacks.add('afterSaveMessage', function(m) {
 }, callbacks.priority.MEDIUM, 'search-events');
 
 callbacks.add('afterDeleteMessage', function(m) {
-	eventService.promoteEvent('message.delete', m._id);
+	eventService.promoteEvent('message.delete', m._id, m);
 }, callbacks.priority.MEDIUM, 'search-events-delete');
 
 /**
