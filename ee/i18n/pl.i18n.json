@@ -40,6 +40,7 @@
   "New_Priority": "Nowy priorytet",
   "Number_in_seconds": "Liczba w sekundach",
   "Number_of_most_recent_chats_estimate_wait_time": "Liczba ostatnich rozmów do szacowania czasu oczekiwania",
+  "Number_of_most_recent_chats_estimate_wait_time_description": "Liczba ta określa liczbę ostatnio obsługiwanych pokoi, która będzie wykorzystana do obliczenia czasu oczekiwania w kolejce.",
   "Others": "Inni",
   "Please_select_visibility": "Proszę wybrać widoczność",
   "Priorities": "Priorytety",
