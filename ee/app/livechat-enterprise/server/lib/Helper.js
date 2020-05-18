@@ -118,7 +118,7 @@ const processWaitingQueue = async (department) => {
 	await dispatchWaitingQueueStatus(departmentId);
 };
 
-export const checkWaitingQueue = (department) => {
+export const checkWaitingQueue = async (department) => {
 	if (!settings.get('Livechat_waiting_queue')) {
 		return;
 	}
@@ -128,7 +128,7 @@ export const checkWaitingQueue = (department) => {
 		return processWaitingQueue();
 	}
 
-	departments.forEach((department) => processWaitingQueue(department));
+	return Promise.all(departments.forEach((department) => processWaitingQueue(department)));
 };
 
 export const allowAgentSkipQueue = (agent) => {
