@@ -10,52 +10,47 @@ import { IUser } from '../../../../definition/IUser';
 interface IRoomTypesClient extends IRoomTypes {
 	archived(rid: string): boolean;
 	getIdentifiers(e: string): string[];
-	getNotSubscribedTpl(rid: string): string;
-	getReadOnlyTpl(rid: string): string;
-	getRoomName(roomType: string, roomData: any): string;
+	getNotSubscribedTpl(rid: string): string | undefined;
+	getReadOnlyTpl(rid: string): string | undefined;
+	getRoomName(roomType: string, roomData: any): string | undefined;
 	getRoomType(roomId: string): string | undefined;
-	getSecondaryRoomName(roomType: string, roomData: any): string;
-	getTypes(): IRoomTypeConfigClient[];
-	getUserStatusText(roomType: string, roomId: string): string;
-	readOnly(rid: string, user: IUser): boolean;
+	getSecondaryRoomName(roomType: string, roomData: any): string | undefined;
+	getTypes(): IRoomTypeConfig[];
+	getUserStatus(roomType: string, roomId: string): string | undefined;
+	getUserStatusText(roomType: string, roomId: string): string | undefined;
+	readOnly(rid: string, user: IUser): boolean | undefined;
 	verifyCanSendMessage(rid: string): boolean;
-	verifyShowJoinLink(rid: string): boolean;
+	verifyShowJoinLink(rid: string): boolean | undefined;
 	openRouteLink(roomType: string, subData: any, queryParams: any): void;
 }
 
-interface IRoomTypeConfigClient extends IRoomTypeConfig {
-	readOnly?: Function;
-	showJoinLink?: Function;
-	notSubscribedTpl?: string;
-	readOnlyTpl?: string;
-}
-
 class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
-	protected roomTypes: { [key: string]: IRoomTypeConfigClient };
+	protected roomTypes: Map<string, IRoomTypeConfig>;
 
 	constructor() {
 		super();
-		this.roomTypes = {};
+		this.roomTypes = new Map();
 	}
 
-	getTypes(): IRoomTypeConfigClient[] {
-		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]).filter((type) => !type.condition || type.condition());
+	getTypes(): IRoomTypeConfig[] {
+		return _.sortBy(this.roomTypesOrder, 'order')
+			.map((type) => this.roomTypes.get(type.identifier) as IRoomTypeConfig)
+			.filter((type) => !type.condition || type.condition());
 	}
 
-	getIcon(roomData: any): string {
-		if (!roomData || !roomData.t || !this.roomTypes[roomData.t]) {
+	getIcon(roomData: any): string | undefined {
+		if (!roomData || !roomData.t || !this.roomTypes.get(roomData.t)) {
 			return '';
 		}
-		// @ts-ignore
-		return (this.roomTypes[roomData.t].getIcon && this.roomTypes[roomData.t].getIcon(roomData)) || this.roomTypes[roomData.t].icon;
+		return this.roomTypes.get(roomData.t)?.getIcon(roomData);
 	}
 
-	getRoomName(roomType: string, roomData: any): string {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
+	getRoomName(roomType: string, roomData: any): string | undefined {
+		return this.roomTypes.get(roomType)?.roomName(roomData);
 	}
 
-	getSecondaryRoomName(roomType: string, roomData: any): string {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].secondaryRoomName(roomData);
+	getSecondaryRoomName(roomType: string, roomData: any): string | undefined {
+		return this.roomTypes.get(roomType)?.secondaryRoomName(roomData);
 	}
 
 	getIdentifiers(e: string): string[] {
@@ -65,8 +60,8 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		return _.map(list, (t) => t.identifier);
 	}
 
-	getUserStatus(roomType: string, rid: string): string {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].getUserStatus(rid);
+	getUserStatus(roomType: string, rid: string): string | undefined {
+		return this.roomTypes.get(roomType)?.getUserStatus(rid);
 	}
 
 	getRoomType(roomId: string): string | undefined {
@@ -81,19 +76,19 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		return room && room.t;
 	}
 
-	getUserStatusText(roomType: string, rid: string): string {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].getUserStatusText(rid);
+	getUserStatusText(roomType: string, rid: string): string | undefined {
+		return this.roomTypes.get(roomType)?.getUserStatusText(rid);
 	}
 
 	findRoom(roomType: string, identifier: string): any {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].findRoom(identifier);
+		return this.roomTypes.get(roomType)?.findRoom(identifier);
 	}
 
 	canSendMessage(rid: string): boolean {
 		return ChatSubscription.find({ rid }).count() > 0;
 	}
 
-	readOnly(rid: string, user: IUser): boolean {
+	readOnly(rid: string, user: IUser): boolean | undefined {
 		const fields: any = {
 			ro: 1,
 			t: 1,
@@ -109,9 +104,8 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		});
 
 		const roomType = room && room.t;
-		if (roomType && this.roomTypes[roomType] && this.roomTypes[roomType].readOnly) {
-			// @ts-ignore
-			return this.roomTypes[roomType].readOnly(rid, user);
+		if (roomType && this.roomTypes.get(roomType)?.readOnly) {
+			return this.roomTypes.get(roomType)?.readOnly?.(rid, user);
 		}
 
 		if (!user) {
@@ -151,65 +145,51 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		}
 
 		const roomType = room.t;
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].canSendMessage) {
-			// @ts-ignore
-			return this.roomTypes[roomType].canSendMessage(rid);
-		}
-		return this.canSendMessage(rid);
+		return Boolean(this.roomTypes.get(roomType)?.canSendMessage(rid));
 	}
 
-	verifyShowJoinLink(rid: string): boolean {
+	verifyShowJoinLink(rid: string): boolean | undefined {
 		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return false;
 		}
 		const roomType = room.t;
-		if (this.roomTypes[roomType] && !this.roomTypes[roomType].showJoinLink) {
-			return false;
-		}
-		// @ts-ignore
-		return this.roomTypes[roomType].showJoinLink(rid);
+		return this.roomTypes.get(roomType)?.showJoinLink(rid);
 	}
 
-	getNotSubscribedTpl(rid: string): string {
+	getNotSubscribedTpl(rid: string): string | undefined {
 		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return '';
 		}
 		const roomType = room.t;
-		if (this.roomTypes[roomType] && !this.roomTypes[roomType].notSubscribedTpl) {
-			return '';
-		}
-		// @ts-ignore
-		return this.roomTypes[roomType].notSubscribedTpl;
+		return this.roomTypes.get(roomType)?.notSubscribedTpl;
 	}
 
-	getReadOnlyTpl(rid: string): string {
+	getReadOnlyTpl(rid: string): string | undefined {
 		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return '';
 		}
 		const roomType = room.t;
-		// @ts-ignore
-		return this.roomTypes[roomType] && this.roomTypes[roomType].readOnlyTpl;
+		return this.roomTypes.get(roomType)?.readOnlyTpl;
 	}
 
 	openRouteLink(roomType: string, subData: any, queryParams: any): void {
-		if (!this.roomTypes[roomType]) {
+		if (!this.roomTypes.has(roomType)) {
 			return;
 		}
 
-		let routeData = {};
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
-			// @ts-ignore
-			routeData = this.roomTypes[roomType].route.link(subData);
+		let routeData: { [key: string]: string } | undefined = {};
+		if (this.roomTypes.get(roomType) && this.roomTypes.get(roomType)?.route && this.roomTypes.get(roomType)?.route?.link) {
+			routeData = this.roomTypes.get(roomType)?.route?.link?.(subData);
 		} else if (subData && subData.name) {
 			routeData = {
 				name: subData.name,
 			};
 		}
 
-		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
+		return FlowRouter.go(this.roomTypes.get(roomType)?.route?.name, routeData, queryParams);
 	}
 }
 

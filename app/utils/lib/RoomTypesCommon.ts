@@ -18,27 +18,27 @@ export interface IRoomTypes {
 	add(roomConfig: IRoomTypeConfig): void;
 	hasCustomLink(roomType: string): boolean;
 	getRouteLink(roomType: string, subData: any): string;
-	getConfig(roomType: string): IRoomTypeConfig;
+	getConfig(roomType: string): IRoomTypeConfig | undefined;
 	getURL(roomType: string, subData: any): string;
 	getRelativePath(roomType: string, subData: any): string;
 	getRouteData(roomType: string, subData: any): { [key: string]: string } | undefined;
 }
 
 export abstract class RoomTypesCommon {
-	protected roomTypes: IRoomTypesDictionary;
+	protected roomTypes: Map<string, IRoomTypeConfig>;
 
 	protected roomTypesOrder: IRoomTypeOrder[];
 
 	private mainOrder: number;
 
 	protected constructor() {
-		this.roomTypes = {};
+		this.roomTypes = new Map();
 		this.roomTypesOrder = [];
 		this.mainOrder = 1;
 	}
 
 	getTypesToShowOnDashboard(): string[] {
-		return Object.keys(this.roomTypes).filter((key) => this.roomTypes[key].includeInDashboard && this.roomTypes[key].includeInDashboard());
+		return Object.keys(this.roomTypes).filter((key) => this.roomTypes.get(key).includeInDashboard && this.roomTypes.get(key).includeInDashboard());
 	}
 
 	/**
@@ -48,7 +48,7 @@ export abstract class RoomTypesCommon {
      * @returns {void}
      */
 	add(roomConfig: IRoomTypeConfig): void {
-		if (this.roomTypes[roomConfig.identifier]) {
+		if (this.roomTypes.has(roomConfig.identifier)) {
 			return;
 		}
 
@@ -62,13 +62,13 @@ export abstract class RoomTypesCommon {
 			order: roomConfig.order,
 		});
 
-		this.roomTypes[roomConfig.identifier] = roomConfig;
+		this.roomTypes.set(roomConfig.identifier, roomConfig);
 
 		if (roomConfig.route && roomConfig.route.path && roomConfig.route.name && roomConfig.route.action) {
 			const routeConfig = {
 				name: roomConfig.route.name,
 				action: roomConfig.route.action,
-				triggersExit: [(): string => Session.set('openedRoom', '')],
+				triggersExit: [(): any => Session.set('openedRoom', '')],
 			};
 
 			if (Meteor.isClient) {
@@ -80,7 +80,7 @@ export abstract class RoomTypesCommon {
 	}
 
 	hasCustomLink(roomType: string): boolean {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link != null;
+		return this.roomTypes.get(roomType) && this.roomTypes.get(roomType).route && this.roomTypes.get(roomType).route.link != null;
 	}
 
 	/**
@@ -93,15 +93,15 @@ export abstract class RoomTypesCommon {
 			return '';
 		}
 
-		return FlowRouter.path(this.roomTypes[roomType].route.name, routeData);
+		return FlowRouter.path(this.roomTypes.get(roomType).route.name, routeData);
 	}
 
 	/**
      * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
      * @param {RoomTypeConfig} roomConfig room's type configuration
      */
-	getConfig(roomType: string): IRoomTypeConfig {
-		return this.roomTypes[roomType];
+	getConfig(roomType: string): IRoomTypeConfig | undefined {
+		return this.roomTypes.get(roomType);
 	}
 
 	/**
@@ -114,7 +114,7 @@ export abstract class RoomTypesCommon {
 			return '';
 		}
 
-		return FlowRouter.url(this.roomTypes[roomType].route.name, routeData);
+		return FlowRouter.url(this.roomTypes.get(roomType).route.name, routeData);
 	}
 
 	getRelativePath(roomType: string, subData: any): string {
@@ -122,12 +122,12 @@ export abstract class RoomTypesCommon {
 	}
 
 	getRouteData(roomType: string, subData: any): { [key: string]: string } | undefined {
-		if (!this.roomTypes[roomType]) {
+		if (!this.roomTypes.get(roomType)) {
 			return;
 		}
 
 		let routeData = {};
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
+		if (this.roomTypes.get(roomType) && this.roomTypes.get(roomType).route && this.roomTypes.get(roomType).route.link) {
 			// @ts-ignore
 			routeData = this.roomTypes[roomType].route.link(subData);
 		} else if (subData && subData.name) {

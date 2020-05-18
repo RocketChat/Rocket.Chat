@@ -58,6 +58,8 @@ interface IRoomTypeConfigObject {
 	route?: IRoomTypeRouteConfig;
 	icon?: string;
 	header?: string;
+	notSubscribedTpl?: string;
+	readOnlyTpl?: string;
 }
 
 export interface IRoomTypeConfig extends IRoomTypeConfigObject {
@@ -92,6 +94,8 @@ export interface IRoomTypeConfig extends IRoomTypeConfigObject {
 	supportMembersList(/* room */): boolean;
 	userDetailShowAdmin(/* room */): boolean;
 	userDetailShowAll(/* room */): boolean;
+	showJoinLink(roomId: string): boolean;
+	readOnly?(roomId: string, user: IUser): boolean;
 }
 
 export interface IRoomTypeRouteConfig extends IRoomTypeRouteConfigObject {
@@ -378,6 +382,10 @@ export abstract class RoomTypeConfig {
 
 	secondaryRoomName(room: any): string {
 		return room && (room.fname || room.name);
+	}
+
+	showJoinLink(): boolean {
+		return false;
 	}
 
 	supportMembersList(/* room */): boolean {

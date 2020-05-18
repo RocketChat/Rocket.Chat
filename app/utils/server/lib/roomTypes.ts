@@ -6,7 +6,7 @@ import { IRoomTypeConfig } from '../../lib/RoomTypeConfig';
 interface IRoomTypesServer extends IRoomTypes {
 	setRoomFind(roomType: string, callback: Function): void;
 	getRoomFind(roomType: string): Function | undefined;
-	getRoomName(roomType: string, roomData: any): string;
+	getRoomName(roomType: string, roomData: any): string | undefined;
 }
 
 interface IRoomTypeConfigServer extends IRoomTypeConfig {
@@ -14,29 +14,31 @@ interface IRoomTypeConfigServer extends IRoomTypeConfig {
 }
 
 class RoomTypesServer extends RoomTypesCommon implements IRoomTypesServer {
-	roomTypes: { [key: string]: IRoomTypeConfigServer };
+	roomTypes: Map<string, IRoomTypeConfigServer>;
 
 	constructor() {
 		super();
-		this.roomTypes = {};
+		this.roomTypes = new Map();
 	}
 
 	setRoomFind(roomType: string, callback: Function): void {
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].roomFind != null) {
+		if (this.roomTypes.get(roomType)?.roomFind) {
 			throw new Meteor.Error('room-find-exists', 'Room find for the given type already exists');
 		}
-		if (this.roomTypes[roomType] == null) {
-			this.roomTypes[roomType] = {} as IRoomTypeConfig;
+		if (!this.roomTypes.has(roomType)) {
+			this.roomTypes.set(roomType, {} as IRoomTypeConfigServer);
 		}
-		this.roomTypes[roomType].roomFind = callback;
+		const type: any = this.roomTypes.get(roomType);
+		type.roomFind = callback;
+		this.roomTypes.set(roomType, type as IRoomTypeConfigServer);
 	}
 
 	getRoomFind(roomType: string): Function | undefined {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].roomFind;
+		return this.roomTypes.get(roomType)?.roomFind;
 	}
 
-	getRoomName(roomType: string, roomData: any): string {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
+	getRoomName(roomType: string, roomData: any): string | undefined {
+		return this.roomTypes.get(roomType)?.roomName?.(roomData);
 	}
 }
 
