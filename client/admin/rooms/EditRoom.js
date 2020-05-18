@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import { Box, Headline, Button, Margins, TextInput, Skeleton, Field, ToggleSwitch, Divider, Icon, Callout } from '@rocket.chat/fuselage';
+import { Box, Button, Margins, TextInput, Skeleton, Field, ToggleSwitch, Divider, Icon, Callout } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -22,11 +22,11 @@ function EditRoomWithData({ rid }) {
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24'>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
 		</Box>;
 	}
@@ -81,7 +81,7 @@ function EditRoom({ room, onChange }) {
 	const isFavorite = newData.favorite ?? !!room.favorite;
 	const isFeatured = newData.featured ?? !!room.featured;
 
-	return <VerticalBar.ScrollableContent is='form'>
+	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])}>
 		{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
 
 		<Field>
