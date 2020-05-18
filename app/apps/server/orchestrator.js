@@ -1,6 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
+import { Meteor } from 'meteor/meteor';
 
 import { Logger } from '../../logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel, Permissions } from '../../models';
@@ -16,7 +17,6 @@ import { AppRealLogsStorage, AppRealStorage } from './storage';
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
-
 
 class AppServerOrchestrator {
 	constructor() {
@@ -162,7 +162,13 @@ class AppServerOrchestrator {
 			return;
 		}
 
-		return this.getBridges().getListenerBridge().handleEvent(event, ...payload);
+		return this.getBridges().getListenerBridge().handleEvent(event, ...payload).catch((error) => {
+			if (error instanceof EssentialAppDisabledException) {
+				throw new Meteor.Error('error-essential-app-disabled');
+			}
+
+			throw error;
+		});
 	}
 }
 

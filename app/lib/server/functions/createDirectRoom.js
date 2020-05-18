@@ -1,10 +1,12 @@
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 
+import { Apps } from '../../../apps/server';
 import { callbacks } from '../../../callbacks/server';
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
-import { Apps } from '../../../apps/server';
+
 
 const generateSubscription = (fname, name, user, extra) => ({
 	alert: false,
@@ -57,9 +59,15 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 	if (isNewRoom) {
 		roomInfo._USERNAMES = usernames;
 
-		const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', roomInfo));
+		const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', roomInfo).catch((error) => {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		}));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
+			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 		}
 
 		let result;

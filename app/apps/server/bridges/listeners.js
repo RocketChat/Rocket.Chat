@@ -1,4 +1,4 @@
-import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 export class AppListenerBridge {
 	constructor(orch) {
