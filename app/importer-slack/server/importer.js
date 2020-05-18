@@ -16,6 +16,7 @@ import { Users, Rooms, Messages } from '../../models';
 import { insertMessage, createDirectRoom } from '../../lib';
 import { getValidRoomName } from '../../utils';
 import { settings } from '../../settings/server';
+import { MentionsParser } from '../../mentions/lib/MentionsParser';
 
 export class SlackImporter extends Base {
 	constructor(info, importRecord) {
@@ -242,6 +243,27 @@ export class SlackImporter extends Base {
 		});
 	}
 
+	parseMentions(message){
+		let mentionsParser;
+		mentionsParser = new MentionsParser({
+			pattern: settings.get('UTF8_Names_Validation'),
+			useRealName: settings.get('UI_Use_Real_Name'),
+			me: () => 'me',
+		});
+
+		if(!message.mentions){
+			message.mentions=[];
+		}
+		message.mentions.push(...mentionsParser.getUserMentions(message.msg));
+
+		if(!message.channels){
+			message.channels=[];
+		}
+		message.channels.push(...mentionsParser.getChannelMentions(message.msg));
+
+		message.temp = message.msg;
+	}
+
 	processMessageSubType(message, room, msgDataDefaults, missedTypes) {
 		const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
 
@@ -274,6 +296,7 @@ export class SlackImporter extends Base {
 					...msgDataDefaults,
 					msg: `_${ this.convertSlackMessageToRocketChat(message.text) }_`,
 				};
+				this.parseMentions(msgObj);
 				insertMessage(rocketUser, msgObj, room, this._anyExistingSlackMessage);
 				break;
 			}
@@ -304,6 +327,7 @@ export class SlackImporter extends Base {
 				if (message.icons) {
 					msgObj.emoji = message.icons.emoji;
 				}
+				this.parseMentions(msgObj);
 				insertMessage(botUser, msgObj, room, this._anyExistingSlackMessage);
 				break;
 			}
@@ -457,6 +481,7 @@ export class SlackImporter extends Base {
 						}
 					}
 
+					this.parseMentions(msgObj);
 					try {
 						insertMessage(this.getRocketUserFromUserId(message.user), msgObj, room, this._anyExistingSlackMessage);
 					} catch (e) {
