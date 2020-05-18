@@ -35,7 +35,6 @@
   * [Raspberry Pi 2](#raspberry-pi-2)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
-  * [Hyper.sh](#hypersh)
   * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
   * [Syncloud.org](#syncloudorg)
@@ -195,9 +194,6 @@ Add Rocket.Chat to this world famous time tested small enterprise server today.
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/).
-
-## Hyper.sh
-Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/).
 
 ## WeDeploy
 Install Rocket.Chat on [WeDeploy](https://wedeploy.com):

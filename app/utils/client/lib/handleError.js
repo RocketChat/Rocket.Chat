@@ -22,11 +22,11 @@ export const handleError = function(error, useToastr = true) {
 		}
 		const details = Object.entries(error.details || {})
 			.reduce((obj, [key, value]) => ({ ...obj, [key]: s.escapeHTML(value) }), {});
-		const message = TAPi18n.__(error.error, details);
+		const message = TAPi18n.__(error.error || error.message, details);
 		const title = details.errorTitle && TAPi18n.__(details.errorTitle);
 
 		return toastr.error(message, title);
 	}
 
-	return s.escapeHTML(TAPi18n.__(error.error, error.details));
+	return s.escapeHTML(TAPi18n.__(error.error || error.message, error.details));
 };
