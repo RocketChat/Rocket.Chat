@@ -2,7 +2,7 @@ import { callbacks } from '../../../../../app/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings';
 import { LivechatInquiry } from '../../../../../app/models/server';
-import { processWaitingQueue } from '../lib/Helper';
+import { checkWaitingQueue } from '../lib/Helper';
 
 callbacks.add('livechat.onMaxNumberSimultaneousChatsReached', (inquiry, agent) => {
 	if (!inquiry || !inquiry.defaultAgent) {
@@ -25,7 +25,7 @@ callbacks.add('livechat.onMaxNumberSimultaneousChatsReached', (inquiry, agent) =
 	const { agentId } = agent;
 
 	if (defaultAgentId === agentId) {
-		processWaitingQueue(department);
+		checkWaitingQueue(department);
 	}
 
 	return LivechatInquiry.findOneById(_id);
