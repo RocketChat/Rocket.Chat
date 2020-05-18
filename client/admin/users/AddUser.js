@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button, Divider } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
@@ -7,6 +7,7 @@ import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
 import VerticalBar from '../../components/basic/VerticalBar';
+import CustomFieldsForm from './CustomFieldsForm';
 
 
 export function AddUser({ roles, ...props }) {
@@ -40,6 +41,10 @@ export function AddUser({ roles, ...props }) {
 
 	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) => setNewData({ ...newData, [field]: getValue(e) });
 
+	const setCustomFieldsData = useCallback((val) => {
+		setNewData({ ...newData, customFields: val });
+	}, [JSON.stringify(newData)]);
+
 	const {
 		roles: selectedRoles = [],
 		name = '',
@@ -53,6 +58,7 @@ export function AddUser({ roles, ...props }) {
 		setRandomPassword = false,
 		sendWelcomeEmail = true,
 		joinDefaultChannels = true,
+		customFields: customFieldsData = {},
 	} = newData;
 
 	const availableRoles = roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : [];
@@ -133,6 +139,9 @@ export function AddUser({ roles, ...props }) {
 				</Box>
 			</Field.Row>
 		</Field>
+		<Divider />
+		<Box fontScale='s2'>{t('Custom_Fields')}</Box>
+		<CustomFieldsForm customFieldsData={customFieldsData} setCustomFieldsData={setCustomFieldsData}/>
 		<Field>
 			<Field.Row>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>

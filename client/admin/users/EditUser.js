@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Field, TextInput, Box, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, Box, Skeleton, ToggleSwitch, Icon, TextAreaInput, MultiSelectFiltered, Margins, Button, Divider } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
@@ -8,6 +8,7 @@ import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
+import CustomFieldsForm from './CustomFieldsForm';
 import UserAvatarEditor from '../../components/basic/avatar/UserAvatarEditor';
 import VerticalBar from '../../components/basic/VerticalBar';
 
@@ -98,6 +99,10 @@ export function EditUser({ data, roles, ...props }) {
 		return result === a.length;
 	};
 
+	const setCustomFieldsData = useCallback((val) => {
+		setNewData({ ...newData, customFields: val });
+	}, JSON.stringify(newData));
+
 	const testEqual = (a, b) => a === b || !(a || b);
 	const handleChange = (field, currentValue, getValue = (e) => e.currentTarget.value, areEqual = testEqual) => (e) => setNewData({ ...newData, [field]: areEqual(getValue(e), currentValue) ? null : getValue(e) });
 
@@ -111,6 +116,7 @@ export function EditUser({ data, roles, ...props }) {
 	const emailVerified = newData.verified ?? (data.emails && data.emails[0].verified);
 	const setRandomPassword = newData.setRandomPassword || false;
 	const requirePasswordChange = setRandomPassword || newData.requirePasswordChange || false;
+	const customFieldsData = newData.customFields ?? data.customFields ?? {};
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} qa-admin-user-edit='form' { ...props }>
 		<UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>
@@ -175,6 +181,9 @@ export function EditUser({ data, roles, ...props }) {
 				<MultiSelectFiltered options={availableRoles} value={selectedRoles} onChange={handleChange('roles', data.roles, (value) => value, rolesAreEqual)} placeholder={t('Select_role')} />
 			</Field.Row>
 		</Field>
+		<Divider />
+		<Box fontScale='s2'>{t('Custom_Fields')}</Box>
+		<CustomFieldsForm customFieldsData={customFieldsData} setCustomFieldsData={setCustomFieldsData}/>
 		<Field>
 			<Field.Row>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
