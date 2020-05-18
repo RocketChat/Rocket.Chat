@@ -47,7 +47,7 @@ const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
-		ts: Match.OneOf(String, Match.Integer),
+		ts: Match.OneOf(String, Number),
 		thumb_url: String,
 		button_alignment: String,
 		actions: [Match.Any],

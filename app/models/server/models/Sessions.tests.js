@@ -245,21 +245,23 @@ describe('Sessions Aggregates', () => {
 		after(() => { mongoUnit.stop(); });
 	}
 
-	before(function() {
-		return MongoClient.connect(process.env.MONGO_URL)
-			.then((client) => { db = client.db('test'); });
-	});
+	before(async () => {
+		const client = await MongoClient.connect(process.env.MONGO_URL);
+		db = client.db('test');
 
-	before(() => db.dropDatabase().then(() => {
+		after(() => {
+			client.close();
+		});
+
+		await db.dropDatabase();
+
 		const sessions = db.collection('sessions');
 		const sessions_dates = db.collection('sessions_dates');
 		return Promise.all([
 			sessions.insertMany(DATA.sessions),
 			sessions_dates.insertMany(DATA.sessions_dates),
 		]);
-	}));
-
-	after(() => { db.close(); });
+	});
 
 	it('should have sessions_dates data saved', () => {
 		const collection = db.collection('sessions_dates');

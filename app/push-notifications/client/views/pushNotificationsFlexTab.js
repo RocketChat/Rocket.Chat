@@ -15,6 +15,18 @@ const notificationLabels = {
 	nothing: 'Nothing',
 };
 
+const getAudioAssetsArray = () => CustomSounds.getList().map((audio) => ({
+	id: `audioNotificationValue${ audio.name }`,
+	name: 'audioNotificationValue',
+	label: audio.name,
+	value: `${ audio._id } ${ audio.name }`,
+}));
+
+const getAudioAssetValue = (value) => {
+	const asset = CustomSounds.getList().find((audio) => audio._id === value);
+	return asset ? `${ asset._id } ${ asset.name }` : '0 Default';
+};
+
 const call = (method, ...params) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...params, (err, result) => {
 		if (err) {
@@ -128,9 +140,10 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotifications = 'default',
 		mobilePushNotifications = 'default',
 		emailNotifications = 'default',
-		audioNotificationValue = null,
 		muteGroupMentions = false,
 	} = sub;
+
+	const audioNotificationValue = sub.audioNotificationValue && getAudioAssetValue(sub.audioNotificationValue);
 
 	this.original = {
 		disableNotifications: new ReactiveVar(disableNotifications),
@@ -189,19 +202,22 @@ Template.pushNotificationsFlexTab.events({
 
 	'click [data-play]'(e) {
 		e.preventDefault();
-		const user = Meteor.userId();
 
-		const value = Template.instance().form.audioNotificationValue.get().split(' ');
-		if (value[0] === '0') {
-			value[0] = getUserPreference(user, 'newMessageNotification');
+		const uid = Meteor.userId();
+		const formValue = Template.instance().form.audioNotificationValue.get();
+
+		const value = formValue && formValue.split(' ')[0] && formValue.split(' ')[0] !== '0'
+			? formValue.split(' ')[0]
+			: getUserPreference(uid, 'newMessageNotification');
+
+		if (!value || value === 'none') {
+			return;
 		}
 
-		if (value && value[0] !== 'none') {
-			const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
-			CustomSounds.play(value[0], {
-				volume: Number((audioVolume / 100).toPrecision(2)),
-			});
-		}
+		const audioVolume = getUserPreference(uid, 'notificationsSoundVolume');
+		CustomSounds.play(value, {
+			volume: Number((audioVolume / 100).toPrecision(2)),
+		});
 	},
 
 	'change input[type=checkbox]'(e, instance) {
@@ -219,13 +235,7 @@ Template.pushNotificationsFlexTab.events({
 
 		switch (key) {
 			case 'audioNotificationValue':
-				const audioAssets = (CustomSounds && CustomSounds.getList && CustomSounds.getList()) || [];
-				const audioAssetsArray = audioAssets.map((audio) => ({
-					id: `audioNotificationValue${ audio.name }`,
-					name: 'audioNotificationValue',
-					label: audio.name,
-					value: `${ audio._id } ${ audio.name }`,
-				}));
+				const audioAssetsArray = getAudioAssetsArray();
 				options = [
 					{
 						id: 'audioNotificationValueNone',

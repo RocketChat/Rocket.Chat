@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Subscriptions, Users } from '../../../models';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { Rooms, Subscriptions, Users } from '../../../models/server';
 
 export class AppRoomBridge {
 	constructor(orch) {
@@ -38,8 +38,7 @@ export class AppRoomBridge {
 			delete extraData.customFields;
 			let info;
 			if (room.type === RoomType.DIRECT_MESSAGE) {
-				members.splice(members.indexOf(room.creator.username), 1);
-				info = Meteor.call(method, members[0]);
+				info = Meteor.call(method, ...members);
 			} else {
 				info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
 			}
@@ -120,5 +119,36 @@ export class AppRoomBridge {
 
 			addUserToRoom(rm._id, member);
 		}
+	}
+
+	async createDiscussion(room, parentMessage = null, reply = '', members = [], appId) {
+		this.orch.debugLog(`The App ${ appId } is creating a new discussion.`, room);
+
+		const rcRoom = this.orch.getConverters().get('rooms').convertAppRoom(room);
+
+		let rcMessage;
+		if (parentMessage) {
+			rcMessage = this.orch.getConverters().get('messages').convertAppMessage(parentMessage);
+		}
+
+		if (!rcRoom.prid || !Rooms.findOneById(rcRoom.prid)) {
+			throw new Error('There must be a parent room to create a discussion.');
+		}
+
+		const discussion = {
+			prid: rcRoom.prid,
+			t_name: rcRoom.fname,
+			pmid: rcMessage ? rcMessage._id : undefined,
+			reply: reply && reply.trim() !== '' ? reply : undefined,
+			users: members.length > 0 ? members : [],
+		};
+
+		let rid;
+		Meteor.runAsUser(room.creator.id, () => {
+			const info = Meteor.call('createDiscussion', discussion);
+			rid = info.rid;
+		});
+
+		return rid;
 	}
 }

@@ -23,6 +23,10 @@ export class LivechatDepartmentAgents extends Base {
 		return this.find({ agentId });
 	}
 
+	findOneByAgentIdAndDepartmentId(agentId, departmentId) {
+		return this.findOne({ agentId, departmentId });
+	}
+
 	saveAgent(agent) {
 		return this.upsert({
 			agentId: agent.agentId,
@@ -34,6 +38,10 @@ export class LivechatDepartmentAgents extends Base {
 				order: parseInt(agent.order),
 			},
 		});
+	}
+
+	removeByAgentId(agentId) {
+		this.remove({ agentId });
 	}
 
 	removeByDepartmentIdAndAgentId(departmentId, agentId) {

@@ -49,7 +49,7 @@ Template.accountPreferences.helpers({
 		const languages = TAPi18n.getLanguages();
 
 		const result = Object.entries(languages)
-			.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+			.map(([key, language]) => ({ ...language, key }))
 			.sort((a, b) => a.key - b.key);
 
 		result.unshift({
@@ -62,7 +62,7 @@ Template.accountPreferences.helpers({
 	},
 	isUserLanguage(key) {
 		const languageKey = Meteor.user().language;
-		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key.toLowerCase();
 	},
 	ifThenElse(condition, val, not = '') {
 		return condition ? val : not;
@@ -82,6 +82,13 @@ Template.accountPreferences.helpers({
 	},
 	desktopNotificationDisabled() {
 		return KonchatNotification.notificationStatus.get() === 'denied' || (window.Notification && Notification.permission === 'denied');
+	},
+	desktopNotificationRequireInteraction() {
+		const userPref = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction', 'undefined');
+		return userPref !== 'undefined' ? userPref : undefined;
+	},
+	defaultDesktopNotificationRequireInteraction() {
+		return settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction');
 	},
 	idleTimeLimit() {
 		return getUserPreference(Meteor.userId(), 'idleTimeLimit');
@@ -169,7 +176,6 @@ Template.accountPreferences.onCreated(function() {
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
 		data.sidebarShowDiscussion = JSON.parse($('#sidebarShowDiscussion').find('input:checked').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
-		data.roomCounterSidebar = JSON.parse($('#roomCounterSidebar').find('input:checked').val());
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
 			return s.trim(e);
 		}));
@@ -179,6 +185,12 @@ Template.accountPreferences.onCreated(function() {
 
 		if (settings.get('UI_DisplayRoles')) {
 			data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
+		}
+
+		if ($('input[name=desktopNotificationRequireInteraction]:checked').val() === undefined) {
+			data.desktopNotificationRequireInteraction = settings.get('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction');
+		} else {
+			data.desktopNotificationRequireInteraction = JSON.parse($('input[name=desktopNotificationRequireInteraction]:checked').val());
 		}
 
 		// if highlights changed we need page reload
@@ -332,10 +344,10 @@ Template.accountPreferences.events({
 	'click .js-dont-ask-remove'(e) {
 		e.preventDefault();
 		const selectEl = document.getElementById('dont-ask');
-		const { options } = selectEl;
-		const selectedOption = selectEl.value;
-		const optionIndex = Array.from(options).findIndex((option) => option.value === selectedOption);
-
-		selectEl.remove(optionIndex);
+		for (let i = selectEl.options.length - 1; i >= 0; i--) {
+			if (selectEl.options[i].selected) {
+				selectEl.remove(i);
+			}
+		}
 	},
 });

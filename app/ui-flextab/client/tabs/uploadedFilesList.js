@@ -32,6 +32,7 @@ const mountFileObject = (message) => ({
 
 const roomTypes = {
 	c: 'channels',
+	l: 'channels',
 	d: 'im',
 	p: 'groups',
 };
@@ -311,4 +312,8 @@ Template.uploadedFilesList.events({
 
 		popover.open(config);
 	},
+});
+
+Template.uploadedFilesList.onRendered(function() {
+	this.firstNode.querySelector('[name="file-search"]').focus();
 });

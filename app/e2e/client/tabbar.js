@@ -20,7 +20,7 @@ Meteor.startup(() => {
 					const room = ChatRoom.findOne(Session.get('openedRoom'));
 					call('saveRoomSettings', room._id, 'encrypted', !room.encrypted);
 				},
-				order: 10,
+				order: 13,
 				condition: () => hasAllPermission('edit-room', Session.get('openedRoom')),
 			});
 		} else {

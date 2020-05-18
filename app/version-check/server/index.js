@@ -19,8 +19,6 @@ SyncedCron.add({
 	},
 });
 
-SyncedCron.start();
-
 Meteor.startup(() => {
 	checkVersionUpdate();
 });
