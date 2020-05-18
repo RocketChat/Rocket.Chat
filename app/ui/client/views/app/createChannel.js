@@ -153,20 +153,10 @@ Template.createChannel.helpers({
 		};
 	},
 	roomTypesBeforeStandard() {
-		const orderLow = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
-		return roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order < orderLow,
-		).map(
-			(roomTypeOrder) => roomTypes.getConfig(roomTypeOrder.identifier),
-		).filter((roomType) => roomType.creationTemplate);
+		return roomTypes.roomTypesBeforeStandard();
 	},
 	roomTypesAfterStandard() {
-		const orderHigh = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
-		return roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order > orderHigh,
-		).map(
-			(roomTypeOrder) => roomTypes.getConfig(roomTypeOrder.identifier),
-		).filter((roomType) => roomType.creationTemplate);
+
 	},
 });
 

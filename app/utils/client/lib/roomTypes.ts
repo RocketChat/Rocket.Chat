@@ -22,6 +22,9 @@ interface IRoomTypesClient extends IRoomTypes {
 	verifyCanSendMessage(rid: string): boolean;
 	verifyShowJoinLink(rid: string): boolean | undefined;
 	openRouteLink(roomType: string, subData: any, queryParams: any): void;
+	isAValidRoomTypeRoute(routeName: string): boolean;
+	roomTypesBeforeStandard(): any[];
+	roomTypesAfterStandard(): any[];
 }
 
 class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
@@ -175,6 +178,13 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		return this.roomTypes.get(roomType)?.readOnlyTpl;
 	}
 
+	isAValidRoomTypeRoute(routeName: string): boolean {
+		return Array.from(this.roomTypes.values())
+			.map(({ route }) => route && route.name)
+			.filter(Boolean)
+			.includes(routeName);
+	}
+
 	openRouteLink(roomType: string, subData: any, queryParams: any): void {
 		if (!this.roomTypes.has(roomType)) {
 			return;
@@ -190,6 +200,22 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		}
 
 		return FlowRouter.go(this.roomTypes.get(roomType)?.route?.name, routeData, queryParams);
+	}
+
+	roomTypesBeforeStandard(): any[] {
+		const orderLow = this.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
+		return this.roomTypesOrder
+			.filter((roomTypeOrder) => roomTypeOrder.order < orderLow)
+			.map((roomTypeOrder) => this.getConfig(roomTypeOrder.identifier))
+			.filter((roomType) => roomType?.creationTemplate);
+	}
+
+	roomTypesAfterStandard(): any[] {
+		const orderHigh = this.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
+		return this.roomTypesOrder
+			.filter((roomTypeOrder) => roomTypeOrder.order > orderHigh)
+			.map((roomTypeOrder) => this.getConfig(roomTypeOrder.identifier))
+			.filter((roomType) => roomType?.creationTemplate);
 	}
 }
 

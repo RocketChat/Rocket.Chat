@@ -60,6 +60,7 @@ interface IRoomTypeConfigObject {
 	header?: string;
 	notSubscribedTpl?: string;
 	readOnlyTpl?: string;
+	creationTemplate?: any;
 }
 
 export interface IRoomTypeConfig extends IRoomTypeConfigObject {

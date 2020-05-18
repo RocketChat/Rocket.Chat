@@ -4,10 +4,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { IRoomTypeConfig } from './RoomTypeConfig';
 
-interface IRoomTypesDictionary {
-	[key: string]: IRoomTypeConfig;
-}
-
 interface IRoomTypeOrder {
 	identifier: string;
 	order: number;
@@ -38,7 +34,7 @@ export abstract class RoomTypesCommon {
 	}
 
 	getTypesToShowOnDashboard(): string[] {
-		return Object.keys(this.roomTypes).filter((key) => this.roomTypes.get(key).includeInDashboard && this.roomTypes.get(key).includeInDashboard());
+		return Object.keys(this.roomTypes).filter((key) => this.roomTypes.get(key)?.includeInDashboard());
 	}
 
 	/**
@@ -80,7 +76,7 @@ export abstract class RoomTypesCommon {
 	}
 
 	hasCustomLink(roomType: string): boolean {
-		return this.roomTypes.get(roomType) && this.roomTypes.get(roomType).route && this.roomTypes.get(roomType).route.link != null;
+		return this.roomTypes.get(roomType)?.route?.link != null;
 	}
 
 	/**
@@ -93,7 +89,7 @@ export abstract class RoomTypesCommon {
 			return '';
 		}
 
-		return FlowRouter.path(this.roomTypes.get(roomType).route.name, routeData);
+		return FlowRouter.path(this.roomTypes.get(roomType)?.route?.name, routeData);
 	}
 
 	/**
@@ -114,7 +110,7 @@ export abstract class RoomTypesCommon {
 			return '';
 		}
 
-		return FlowRouter.url(this.roomTypes.get(roomType).route.name, routeData);
+		return FlowRouter.url(this.roomTypes.get(roomType)?.route?.name, routeData);
 	}
 
 	getRelativePath(roomType: string, subData: any): string {
@@ -126,10 +122,9 @@ export abstract class RoomTypesCommon {
 			return;
 		}
 
-		let routeData = {};
-		if (this.roomTypes.get(roomType) && this.roomTypes.get(roomType).route && this.roomTypes.get(roomType).route.link) {
-			// @ts-ignore
-			routeData = this.roomTypes[roomType].route.link(subData);
+		let routeData: { [key: string]: string } | undefined = {};
+		if (this.roomTypes.get(roomType)?.route?.link) {
+			routeData = this.roomTypes.get(roomType)?.route?.link?.(subData);
 		} else if (subData && subData.name) {
 			routeData = {
 				rid: subData.rid || subData._id,

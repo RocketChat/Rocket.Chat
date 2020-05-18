@@ -76,9 +76,7 @@ Meteor.methods({
 			}
 
 			if (type.rooms === true && hasPermission(userId, 'view-c-room')) {
-				const searchableRoomTypes = Object.entries(roomTypes.roomTypes)
-					.filter((roomType) => roomType[1].includeInRoomSearch())
-					.map((roomType) => roomType[0]);
+				const searchableRoomTypes = roomTypes.getSearchableRoomsTypes();
 
 				const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypes, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				result.rooms = fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypes, roomIds, roomOptions).fetch());

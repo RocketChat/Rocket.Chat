@@ -7,6 +7,7 @@ interface IRoomTypesServer extends IRoomTypes {
 	setRoomFind(roomType: string, callback: Function): void;
 	getRoomFind(roomType: string): Function | undefined;
 	getRoomName(roomType: string, roomData: any): string | undefined;
+	getSearchableRoomsTypes(): string[];
 }
 
 interface IRoomTypeConfigServer extends IRoomTypeConfig {
@@ -39,6 +40,12 @@ class RoomTypesServer extends RoomTypesCommon implements IRoomTypesServer {
 
 	getRoomName(roomType: string, roomData: any): string | undefined {
 		return this.roomTypes.get(roomType)?.roomName?.(roomData);
+	}
+
+	getSearchableRoomsTypes(): string[] {
+		return Array.from(this.roomTypes.entries())
+			.filter((roomType) => roomType[1].includeInRoomSearch())
+			.map((roomType) => roomType[0]);
 	}
 }
 
