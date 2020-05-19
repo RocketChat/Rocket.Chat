@@ -6,7 +6,7 @@ import {
 	PrivateRoomType,
 	PublicRoomType,
 	UnreadRoomType,
-} from '../lib/roomTypes/index';
+} from '../lib/roomTypes';
 import { settings } from '../../settings/client';
 import { Rooms, Subscriptions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../../authorization/client';

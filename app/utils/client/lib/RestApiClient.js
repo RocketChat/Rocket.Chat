@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { baseURI } from './baseuri';
-import { process2faReturn } from '../../../2fa/client/callWithTwoFactorRequired';
 
 export const mountArrayQueryParameters = (label, array) => array.reduce((acc, item) => {
 	acc += `${ label }[]=${ item }&`;
@@ -142,16 +141,17 @@ export const APIClient = {
 		if (!xhr.responseJSON || !xhr.responseJSON.errorType) {
 			return originalCallback();
 		}
-
-		process2faReturn({
-			error: xhr.responseJSON,
-			originalCallback,
-			onCode(code, method) {
-				const headers = params[params.length - 1];
-				headers['x-2fa-code'] = code;
-				headers['x-2fa-method'] = method;
-				APIClient._jqueryCall(...params).then(resolve).catch(reject);
-			},
+		import('../../../2fa/client/callWithTwoFactorRequired').then(({ process2faReturn }) => {
+			process2faReturn({
+				error: xhr.responseJSON,
+				originalCallback,
+				onCode(code, method) {
+					const headers = params[params.length - 1];
+					headers['x-2fa-code'] = code;
+					headers['x-2fa-method'] = method;
+					APIClient._jqueryCall(...params).then(resolve).catch(reject);
+				},
+			});
 		});
 	},
 

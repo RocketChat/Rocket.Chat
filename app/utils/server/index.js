@@ -3,7 +3,6 @@ import { commonUtils, roomCommonUtils, userCommonUtils } from './factory';
 export { t, isRtl } from '../lib/tapi18n';
 export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 export { Info } from '../rocketchat.info';
-export { getUserPreference } from '../lib/getUserPreference';
 export { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
 export { roomTypes } from './lib/roomTypes';
 export { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../lib/RoomTypeConfig';
@@ -21,7 +20,7 @@ export { secondsToHHMMSS } from '../lib/timeConverter';
 export * from './factory';
 
 export const getURL = commonUtils.getURL.bind(commonUtils);
-// export const getUserPreference = userCommonUtils.getUserPreference.bind(userCommonUtils);
+export const getUserPreference = userCommonUtils.getUserPreference.bind(userCommonUtils);
 export const getUserAvatarURL = userCommonUtils.getUserAvatarURL.bind(userCommonUtils);
 export const getAvatarURL = commonUtils.getAvatarURL.bind(commonUtils);
 export const getRoomAvatarURL = roomCommonUtils.getRoomAvatarURL.bind(roomCommonUtils);

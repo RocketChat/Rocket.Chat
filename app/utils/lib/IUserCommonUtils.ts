@@ -26,17 +26,16 @@ export class UserCommonUtils implements IUserCommonUtils {
 
 	getUserPreference(user: IUser | string, key: string, defaultValue: any): any {
 		let preference;
-		let userFromDb: IUser = user as IUser;
 		if (typeof user === typeof '') {
-			userFromDb = this.Users.findOneById(user as string, { fields: { [`settings.preferences.${ key }`]: 1 } });
+			user = this.Users.findOneById(user as string, { fields: { [`settings.preferences.${ key }`]: 1 } });
 		}
-		if (userFromDb && userFromDb.settings && userFromDb.settings.preferences
-            && userFromDb.settings.preferences.hasOwnProperty(key)) {
-			preference = userFromDb.settings.preferences[key];
+		if ((user as IUser)?.settings?.preferences?.hasOwnProperty(key)) {
+			preference = (user as IUser)?.settings?.preferences[key];
 		} else if (defaultValue === undefined) {
 			preference = this.settings.get(`Accounts_Default_User_Preferences_${ key }`);
 		}
-		return preference || defaultValue;
+
+		return preference !== undefined ? preference : defaultValue;
 	}
 
 	getUserAvatarURL(username: string): string {
