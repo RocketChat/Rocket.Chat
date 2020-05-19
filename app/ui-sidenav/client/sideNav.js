@@ -104,10 +104,25 @@ const redirectToDefaultChannelIfNeeded = () => {
 	});
 };
 
+const openMainContentIfNeeded = () => {
+	const currentRouteState = FlowRouter.current();
+	const defaults = ['/', '/home', '/account'];
+
+	if (defaults.includes(currentRouteState.path)) {
+		menu.open();
+	} else {
+		menu.close();
+	}
+};
+
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
 	redirectToDefaultChannelIfNeeded();
+	Tracker.autorun(function() {
+		FlowRouter.watchPathChange();
+		openMainContentIfNeeded();
+	});
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
