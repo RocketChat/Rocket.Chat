@@ -1,11 +1,11 @@
 export enum RoomTypes {
+	CONVERSATION = 'merged',
 	DIRECT = 'd',
+	DISCUSSION = 't',
+	FAVORITE = 'f',
+	OMNICHANNEL = 'l',
 	PRIVATE = 'p',
 	PUBLIC = 'c',
-	OMNICHANNEL = 'l',
-	UNREAD = 'unread',
-	DISCUSSION = 't',
-	CONVERSATION = 'merged',
-	FAVORITE = 'favorite',
 	TOKENPASS = 'tokenpass',
+	UNREAD = 'unread',
 }
