@@ -257,7 +257,8 @@
 		"updateFiles": [
 			"package.json",
 			"package-lock.json",
-			".circleci/snap.sh",
+			".snapcraft/snap/snapcraft.yaml",
+			".snapcraft/resources/prepareRocketChat",
 			".circleci/update-releases.sh",
 			".docker/Dockerfile",
 			".docker/Dockerfile.rhel",
