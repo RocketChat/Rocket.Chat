@@ -37,6 +37,10 @@ registerAdminRoute('/custom-sounds/:context?/:id?', {
 	lazyRouteComponent: () => import('./customSounds/AdminSoundsRoute'),
 });
 
+registerAdminRoute('/appsNew/:context?/:id?', {
+	name: 'admin-apps',
+	lazyRouteComponent: () => import('./apps/AppsRoute'),
+});
 
 registerAdminRoute('/info', {
 	name: 'admin-info',
