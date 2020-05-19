@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { roomTypes } from '../../utils';
 import { LivechatRooms } from '../../models';
 import { hasPermission, hasRole, addRoomAccessValidator } from '../../authorization';
 import { callbacks } from '../../callbacks';
@@ -23,8 +22,6 @@ function allowAccessClosedRoomOfSameDepartment(room, user) {
 }
 
 Meteor.startup(() => {
-	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
-
 	addRoomAccessValidator(function(room, user) {
 		return room && room.t === 'l' && user && hasPermission(user._id, 'view-livechat-rooms');
 	});

@@ -56,14 +56,13 @@ export const RoomManager = new function() {
 			this.prototype.computation = Tracker.autorun(() => {
 				const ready = CachedChatRoom.ready.get() && mainReady.get();
 				if (ready !== true) { return; }
-				const user = Meteor.user();
 				Tracker.nonreactive(() => Object.entries(openedRooms).forEach(([typeName, record]) => {
 					if (record.active !== true || record.ready === true) { return; }
 
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
 
-					const room = roomTypes.findRoom(type, name, user);
+					const room = roomTypes.getConfig(type).findRoom(name);
 
 					if (room != null) {
 						record.rid = room._id;

@@ -45,7 +45,7 @@ function replaceCenterDomBy(dom) {
 
 const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
-		const room = roomTypes.findRoom(type, rid, Meteor.user());
+		const room = roomTypes.getConfig(type).findRoom(rid);
 		if (room) {
 			c.stop();
 			return resolve(room);
@@ -63,7 +63,7 @@ export const openRoom = async function(type, name) {
 		}
 
 		try {
-			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
+			const room = roomTypes.getConfig(type).findRoom(name) || await callMethod('getRoomByTypeAndName', type, name);
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (RoomManager.open(type + name).ready() !== true) {

@@ -93,7 +93,7 @@ const redirectToDefaultChannelIfNeeded = () => {
 			return c.stop();
 		}
 
-		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+		const room = roomTypes.getConfig('c').findRoom(firstChannelAfterLogin);
 
 		if (!room) {
 			return;

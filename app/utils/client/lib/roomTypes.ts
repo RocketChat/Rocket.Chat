@@ -12,7 +12,6 @@ interface IRoomTypesClient extends IRoomTypes {
 	getIdentifiers(e: string): string[];
 	getNotSubscribedTpl(rid: string): string | undefined;
 	getReadOnlyTpl(rid: string): string | undefined;
-	getRoomName(roomType: string, roomData: any): string | undefined;
 	getRoomType(roomId: string): string | undefined;
 	getSecondaryRoomName(roomType: string, roomData: any): string | undefined;
 	getTypes(): IRoomTypeConfig[];
@@ -81,10 +80,6 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 
 	getUserStatusText(roomType: string, rid: string): string | undefined {
 		return this.roomTypes.get(roomType)?.getUserStatusText(rid);
-	}
-
-	findRoom(roomType: string, identifier: string): any {
-		return this.roomTypes.get(roomType)?.findRoom(identifier);
 	}
 
 	canSendMessage(rid: string): boolean {

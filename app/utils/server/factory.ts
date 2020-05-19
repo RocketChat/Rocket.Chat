@@ -13,6 +13,11 @@ class RoomCommonUtils extends AbstractRoomCommonUtils implements IRoomCommonUtil
 	openRoom(): Promise<any> {
 		return Promise.resolve();
 	}
+
+	// eslint-disable-next-line
+	roomExit(): void {
+
+	}
 }
 
 export const commonUtils: ICommonUtils = new CommonUtils(settings);

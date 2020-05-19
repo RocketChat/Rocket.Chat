@@ -18,6 +18,7 @@ export interface IRoomTypes {
 	getURL(roomType: string, subData: any): string;
 	getRelativePath(roomType: string, subData: any): string;
 	getRouteData(roomType: string, subData: any): { [key: string]: string } | undefined;
+	getRoomName(roomType: string, roomData: any): string | undefined;
 }
 
 export abstract class RoomTypesCommon {
