@@ -21,17 +21,7 @@ export class LivechatVisitorsRaw extends BaseRaw {
 		}
 
 		const nameRegex = new RegExp(`^${ s.escapeRegExp(searchTerm).trim() }`, 'i');
-		/*
-		const query = {
-			name: nameRegex,
-			_id: {
-				$nin: exceptions,
-			},
-			...conditions,
-		};
 
-		return this.find(query, options);
-		*/
 		const match = {
 			$match: {
 				name: nameRegex,
