@@ -13,7 +13,7 @@ import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepositor
 import { ILivechatInquiryRepository } from '../../models/lib/ILivechatInquiryRepository';
 import { ICommonUtils } from '../../utils/lib/ICommonUtils';
 import { commonUtils } from '../../utils/server/factory';
-import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
+import { IRoomTypesCommon } from '../../utils/lib/RoomTypesCommon';
 
 class LivechatRoomTypeServer extends LivechatRoomType {
 	public constructor(settings: ISettingsBase,
@@ -24,7 +24,7 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 		AuthorizationUtils: IAuthorization,
 		RoomCommonUtils: IRoomCommonUtils,
 		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypes,
+		RoomTypesCommon: IRoomTypesCommon,
 	) {
 		super(settings, Users, Rooms, Subscriptions, LivechatInquiry, AuthorizationUtils, RoomCommonUtils, CommonUtils, RoomTypesCommon);
 	}

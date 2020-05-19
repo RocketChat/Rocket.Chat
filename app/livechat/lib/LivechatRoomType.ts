@@ -17,7 +17,7 @@ import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 import { ILivechatInquiryRepository } from '../../models/lib/ILivechatInquiryRepository';
 import { ICommonUtils } from '../../utils/lib/ICommonUtils';
-import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
+import { IRoomTypesCommon } from '../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../definition/IRoom';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
@@ -58,7 +58,7 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
 		AuthorizationUtils: IAuthorization,
 		RoomCommonUtils: IRoomCommonUtils,
 		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypes) {
+		RoomTypesCommon: IRoomTypesCommon) {
 		super({
 			identifier: RoomTypes.OMNICHANNEL,
 			order: 5,

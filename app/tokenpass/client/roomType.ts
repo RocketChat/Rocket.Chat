@@ -12,7 +12,7 @@ import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepositor
 import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../utils/lib/ICommonUtils';
 import { commonUtils, roomCommonUtils } from '../../utils/client/factory';
-import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
+import { IRoomTypesCommon } from '../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../definition/IRoom';
 
 class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
@@ -25,7 +25,7 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		AuthorizationUtils: IAuthorization,
 		RoomCommonUtils: IRoomCommonUtils,
 		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypes) {
+		RoomTypesCommon: IRoomTypesCommon) {
 		super({
 			identifier: RoomTypes.TOKENPASS,
 			order: 1,

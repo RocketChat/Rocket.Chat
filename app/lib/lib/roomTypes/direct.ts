@@ -18,7 +18,7 @@ import { IUser } from '../../../../definition/IUser';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
-import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
+import { IRoomTypesCommon } from '../../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../../definition/IRoom';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
@@ -53,7 +53,7 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
 		UserCommonUtils: IUserCommonUtils,
 		RoomCommonUtils: IRoomCommonUtils,
 		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypes) {
+		RoomTypesCommon: IRoomTypesCommon) {
 		super({
 			identifier: RoomTypes.DIRECT,
 			order: 50,

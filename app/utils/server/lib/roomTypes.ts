@@ -1,7 +1,7 @@
-import { IRoomTypes, RoomTypesCommon } from '../../lib/RoomTypesCommon';
+import { IRoomTypesCommon, RoomTypesCommon } from '../../lib/RoomTypesCommon';
 import { RoomTypes } from '../../../../definition/IRoom';
 
-interface IRoomTypesServer extends IRoomTypes {
+interface IRoomTypesServer extends IRoomTypesCommon {
 	getSearchableRoomsTypes(): string[];
 }
 

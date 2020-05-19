@@ -8,7 +8,7 @@ import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../utils/lib/ICommonUtils';
-import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
+import { IRoomTypesCommon } from '../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../definition/IRoom';
 
 export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfig {
@@ -24,7 +24,7 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
 		UserCommonUtils: IUserCommonUtils,
 		RoomCommonUtils: IRoomCommonUtils,
 		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypes) {
+		RoomTypesCommon: IRoomTypesCommon) {
 		super({
 			identifier: RoomTypes.DISCUSSION,
 			order: 25,

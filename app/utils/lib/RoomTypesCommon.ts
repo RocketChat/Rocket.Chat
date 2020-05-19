@@ -10,7 +10,7 @@ interface IRoomTypeOrder {
 	order: number;
 }
 
-export interface IRoomTypes {
+export interface IRoomTypesCommon {
 	getTypesToShowOnDashboard(): string[];
 	add(roomConfig: IRoomTypeConfig): void;
 	hasCustomLink(roomType: RoomTypes): boolean;

@@ -16,7 +16,7 @@ import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionReposi
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
-import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
+import { IRoomTypesCommon } from '../../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../../definition/IRoom';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
@@ -47,7 +47,7 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		UserCommonUtils: IUserCommonUtils,
 		RoomCommonUtils: IRoomCommonUtils,
 		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypes) {
+		RoomTypesCommon: IRoomTypesCommon) {
 		super({
 			identifier: RoomTypes.PUBLIC,
 			order: 30,
