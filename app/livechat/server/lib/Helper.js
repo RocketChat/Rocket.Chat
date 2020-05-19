@@ -170,12 +170,45 @@ export const removeAgentFromSubscription = (rid, { _id, username }) => {
 	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatAgentUnassigned, { room, user });
 };
 
+export const parseAgentCustomFields = (customFields) => {
+	if (!customFields) {
+		return;
+	}
+
+	const externalCustomFields = () => {
+		const accountCustomFields = settings.get('Accounts_CustomFields');
+		if (!accountCustomFields || accountCustomFields.trim() === '') {
+			return [];
+		}
+
+		try {
+			const parseCustomFields = JSON.parse(accountCustomFields);
+			return Object.keys(parseCustomFields)
+				.filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
+		} catch (error) {
+			console.error(error);
+			return [];
+		}
+	};
+
+	const externalCF = externalCustomFields();
+	return Object.keys(customFields).reduce((newObj, key) => (externalCF.includes(key) ? { ...newObj, [key]: customFields[key] } : newObj), null);
+};
+
 export const normalizeAgent = (agentId) => {
 	if (!agentId) {
 		return;
 	}
 
-	return settings.get('Livechat_show_agent_info') ? Users.getAgentInfo(agentId) : { hiddenInfo: true };
+	if (!settings.get('Livechat_show_agent_info')) {
+		return { hiddenInfo: true };
+	}
+
+	const agent = Users.getAgentInfo(agentId);
+	const { customFields: agentCustomFields, ...extraData } = agent;
+	const customFields = parseAgentCustomFields(agentCustomFields);
+
+	return Object.assign(extraData, { ...customFields && { customFields } });
 };
 
 export const dispatchAgentDelegated = (rid, agentId) => {
