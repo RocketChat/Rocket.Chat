@@ -13,10 +13,7 @@ interface IRoomTypesClient extends IRoomTypesCommon {
 	getNotSubscribedTpl(rid: string): string | undefined;
 	getReadOnlyTpl(rid: string): string | undefined;
 	getRoomType(roomId: string): string | undefined;
-	getSecondaryRoomName(roomType: RoomTypes, roomData: any): string | undefined;
 	getTypes(): IRoomTypeConfig[];
-	getUserStatus(roomType: RoomTypes, roomId: string): string | undefined;
-	getUserStatusText(roomType: RoomTypes, roomId: string): string | undefined;
 	readOnly(rid: string, user: IUser): boolean | undefined;
 	verifyCanSendMessage(rid: string): boolean;
 	verifyShowJoinLink(rid: string): boolean | undefined;
@@ -44,23 +41,11 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		return this.roomTypes.get(roomData.t)?.getIcon(roomData);
 	}
 
-	getRoomName(roomType: RoomTypes, roomData: any): string | undefined {
-		return this.roomTypes.get(roomType)?.roomName(roomData);
-	}
-
-	getSecondaryRoomName(roomType: RoomTypes, roomData: any): string | undefined {
-		return this.roomTypes.get(roomType)?.secondaryRoomName(roomData);
-	}
-
 	getIdentifiers(e?: string[]): string[] {
 		const initial: string[] = [];
 		const except = initial.concat(e || '');
 		const list = this.roomTypesOrder.filter((t) => !except.includes(t.identifier));
 		return list.map((t) => t.identifier);
-	}
-
-	getUserStatus(roomType: RoomTypes, rid: string): string | undefined {
-		return this.roomTypes.get(roomType)?.getUserStatus(rid);
 	}
 
 	getRoomType(roomId: string): string | undefined {
@@ -73,10 +58,6 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 			fields,
 		});
 		return room && room.t;
-	}
-
-	getUserStatusText(roomType: RoomTypes, rid: string): string | undefined {
-		return this.roomTypes.get(roomType)?.getUserStatusText(rid);
 	}
 
 	canSendMessage(rid: string): boolean {

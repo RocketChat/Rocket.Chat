@@ -97,6 +97,7 @@ export class CommonUtils implements ICommonUtils {
 		const { cdn = true, full = false, cloud = false, cloud_route = '', cloud_params = {} } = options || {} as IURLOptions;
 		return this.mountUrl(path, {
 			_cdn_prefix: this.settings.get('CDN_PREFIX') as string,
+			// @ts-ignore
 			_root_url_path_prefix: __meteor_runtime_config__.ROOT_URL_PATH_PREFIX,
 			_site_url: this.settings.get('Site_Url') as string,
 			cdn,

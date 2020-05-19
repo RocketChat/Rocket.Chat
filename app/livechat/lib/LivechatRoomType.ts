@@ -9,17 +9,10 @@ import {
 	RoomSettingsEnum,
 	UiTextContext, IRoomTypeConfigDependencies,
 } from '../../utils/lib/RoomTypeConfig';
-import { ISettingsBase } from '../../settings/lib/settings';
-import { IRoomsRepository, IUsersRepository } from '../../models/lib';
-import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
 import { IUser } from '../../../definition/IUser';
 import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
-import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 import { ILivechatInquiryRepository } from '../../models/lib/ILivechatInquiryRepository';
-import { ICommonUtils } from '../../utils/lib/ICommonUtils';
-import { IRoomTypesCommon } from '../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../definition/IRoom';
-import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
 	private RoomCommonUtils: IRoomCommonUtils;

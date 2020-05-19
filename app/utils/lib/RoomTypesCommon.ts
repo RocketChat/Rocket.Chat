@@ -20,6 +20,9 @@ export interface IRoomTypesCommon {
 	getRelativePath(roomType: RoomTypes, subData: any): string;
 	getRouteData(roomType: RoomTypes, subData: any): { [key: string]: string } | undefined;
 	getRoomName(roomType: RoomTypes, roomData: any): string | undefined;
+	getSecondaryRoomName(roomType: RoomTypes, roomData: any): string | undefined;
+	getUserStatus(roomType: RoomTypes, roomId: string): string | undefined;
+	getUserStatusText(roomType: RoomTypes, roomId: string): string | undefined;
 }
 
 export abstract class RoomTypesCommon {
@@ -135,5 +138,21 @@ export abstract class RoomTypesCommon {
 		}
 
 		return routeData;
+	}
+
+	getRoomName(roomType: RoomTypes, roomData: any): string | undefined {
+		return this.roomTypes.get(roomType)?.roomName(roomData);
+	}
+
+	getSecondaryRoomName(roomType: RoomTypes, roomData: any): string | undefined {
+		return this.roomTypes.get(roomType)?.secondaryRoomName(roomData);
+	}
+
+	getUserStatus(roomType: RoomTypes, rid: string): string | undefined {
+		return this.roomTypes.get(roomType)?.getUserStatus(rid);
+	}
+
+	getUserStatusText(roomType: RoomTypes, rid: string): string | undefined {
+		return this.roomTypes.get(roomType)?.getUserStatusText(rid);
 	}
 }

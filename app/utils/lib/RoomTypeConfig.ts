@@ -7,7 +7,7 @@ import { IRoomsRepository } from '../../models/lib/IRoomsRepository';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 import { IRoomCommonUtils } from './IRoomCommonUtils';
 import { ICommonUtils } from './ICommonUtils';
-import { IRoomTypes, IRoomTypesCommon } from './RoomTypesCommon';
+import { IRoomTypesCommon } from './RoomTypesCommon';
 import { ISettingsBase } from '../../settings/lib/settings';
 import { RoomTypes } from '../../../definition/IRoom';
 
@@ -72,7 +72,7 @@ export interface IRoomTypeConfigDependencies {
 	AuthorizationUtils: IAuthorization;
 	RoomCommonUtils: IRoomCommonUtils;
 	CommonUtils: ICommonUtils;
-	RoomTypesCommon: IRoomTypes;
+	RoomTypesCommon: IRoomTypesCommon;
 }
 
 export interface IRoomTypeConfig extends IRoomTypeConfigObject {
