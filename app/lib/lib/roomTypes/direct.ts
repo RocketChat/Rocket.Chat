@@ -8,17 +8,11 @@ import {
 	RoomTypeRouteConfig,
 	RoomSettingsEnum,
 	RoomMemberActions,
-	UiTextContext,
+	UiTextContext, IRoomTypeConfigDependencies,
 } from '../../../utils/lib/RoomTypeConfig';
-import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
-import { ISettingsBase } from '../../../settings/lib/settings';
-import { IRoomsRepository, IUsersRepository } from '../../../models/lib';
-import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
 import { IUser } from '../../../../definition/IUser';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
-import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
-import { IRoomTypesCommon } from '../../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../../definition/IRoom';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
@@ -45,22 +39,7 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig implements IRoom
 export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	private UserCommonUtils: IUserCommonUtils;
 
-	constructor(settings: ISettingsBase,
-		Users: IUsersRepository,
-		Rooms: IRoomsRepository,
-		Subscriptions: ISubscriptionRepository,
-		AuthorizationUtils: IAuthorization,
-		UserCommonUtils: IUserCommonUtils,
-		RoomCommonUtils: IRoomCommonUtils,
-		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypesCommon) {
-		super({
-			identifier: RoomTypes.DIRECT,
-			order: 50,
-			icon: 'at',
-			label: 'Direct_Messages',
-			route: new DirectMessageRoomRoute(RoomCommonUtils),
-		},
+	constructor({
 		settings,
 		Users,
 		Rooms,
@@ -68,7 +47,26 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
 		AuthorizationUtils,
 		RoomCommonUtils,
 		CommonUtils,
-		RoomTypesCommon);
+		RoomTypesCommon,
+	}: IRoomTypeConfigDependencies,
+	UserCommonUtils: IUserCommonUtils) {
+		super({
+			identifier: RoomTypes.DIRECT,
+			order: 50,
+			icon: 'at',
+			label: 'Direct_Messages',
+			route: new DirectMessageRoomRoute(RoomCommonUtils),
+		},
+		{
+			settings,
+			Users,
+			Rooms,
+			Subscriptions,
+			AuthorizationUtils,
+			RoomCommonUtils,
+			CommonUtils,
+			RoomTypesCommon,
+		});
 		this.UserCommonUtils = UserCommonUtils;
 	}
 

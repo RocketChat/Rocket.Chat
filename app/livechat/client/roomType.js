@@ -5,4 +5,14 @@ import { Rooms, Subscriptions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../../authorization/client';
 import { LivechatInquiry } from './collections/LivechatInquiry';
 
-roomTypes.add(new LivechatRoomType(settings, Users, Rooms, Subscriptions, LivechatInquiry, AuthorizationUtils, roomCommonUtils, commonUtils, roomTypes));
+roomTypes.add(new LivechatRoomType({
+	settings,
+	Users,
+	Rooms,
+	Subscriptions,
+	AuthorizationUtils,
+	RoomCommonUtils: roomCommonUtils,
+	CommonUtils: commonUtils,
+	RoomTypesCommon: roomTypes,
+},
+LivechatInquiry));

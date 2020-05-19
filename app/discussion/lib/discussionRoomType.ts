@@ -1,14 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { IRoomTypeConfig, RoomTypeConfig } from '../../utils/lib/RoomTypeConfig';
-import { ISettingsBase } from '../../settings/lib/settings';
-import { IRoomsRepository, IUsersRepository } from '../../models/lib';
-import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
+import { IRoomTypeConfig, IRoomTypeConfigDependencies, RoomTypeConfig } from '../../utils/lib/RoomTypeConfig';
 import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
-import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
-import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
-import { ICommonUtils } from '../../utils/lib/ICommonUtils';
-import { IRoomTypesCommon } from '../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../definition/IRoom';
 
 export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfig {
@@ -16,28 +9,32 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
 
 	private UserCommonUtils: IUserCommonUtils;
 
-	constructor(settings: ISettingsBase,
-		Users: IUsersRepository,
-		Rooms: IRoomsRepository,
-		SubscriptionRepository: ISubscriptionRepository,
-		AuthorizationUtils: IAuthorization,
-		UserCommonUtils: IUserCommonUtils,
-		RoomCommonUtils: IRoomCommonUtils,
-		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypesCommon) {
+	constructor({
+		settings,
+		Users,
+		Rooms,
+		Subscriptions,
+		AuthorizationUtils,
+		RoomCommonUtils,
+		CommonUtils,
+		RoomTypesCommon,
+	}: IRoomTypeConfigDependencies,
+	UserCommonUtils: IUserCommonUtils) {
 		super({
 			identifier: RoomTypes.DISCUSSION,
 			order: 25,
 			label: 'Discussion',
 		},
-		settings,
-		Users,
-		Rooms,
-		SubscriptionRepository,
-		AuthorizationUtils,
-		RoomCommonUtils,
-		CommonUtils,
-		RoomTypesCommon);
+		{
+			settings,
+			Users,
+			Rooms,
+			Subscriptions,
+			AuthorizationUtils,
+			RoomCommonUtils,
+			CommonUtils,
+			RoomTypesCommon,
+		});
 
 		// we need a custom template in order to have a custom query showing the subscriptions to discussions
 		this.customTemplate = 'DiscussionList';

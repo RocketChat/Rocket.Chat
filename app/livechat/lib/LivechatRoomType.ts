@@ -7,7 +7,7 @@ import {
 	RoomTypeConfig,
 	RoomTypeRouteConfig,
 	RoomSettingsEnum,
-	UiTextContext,
+	UiTextContext, IRoomTypeConfigDependencies,
 } from '../../utils/lib/RoomTypeConfig';
 import { ISettingsBase } from '../../settings/lib/settings';
 import { IRoomsRepository, IUsersRepository } from '../../models/lib';
@@ -19,6 +19,7 @@ import { ILivechatInquiryRepository } from '../../models/lib/ILivechatInquiryRep
 import { ICommonUtils } from '../../utils/lib/ICommonUtils';
 import { IRoomTypesCommon } from '../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../definition/IRoom';
+import { IUserCommonUtils } from '../../utils/lib/IUserCommonUtils';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
 	private RoomCommonUtils: IRoomCommonUtils;
@@ -50,22 +51,7 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
 
 	public readOnlyTpl: string;
 
-	constructor(settings: ISettingsBase,
-		Users: IUsersRepository,
-		Rooms: IRoomsRepository,
-		Subscriptions: ISubscriptionRepository,
-		LivechatInquiry: ILivechatInquiryRepository,
-		AuthorizationUtils: IAuthorization,
-		RoomCommonUtils: IRoomCommonUtils,
-		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypesCommon) {
-		super({
-			identifier: RoomTypes.OMNICHANNEL,
-			order: 5,
-			icon: 'omnichannel',
-			label: 'Omnichannel',
-			route: new LivechatRoomRoute(RoomCommonUtils),
-		},
+	constructor({
 		settings,
 		Users,
 		Rooms,
@@ -73,7 +59,26 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
 		AuthorizationUtils,
 		RoomCommonUtils,
 		CommonUtils,
-		RoomTypesCommon);
+		RoomTypesCommon,
+	}: IRoomTypeConfigDependencies,
+	LivechatInquiry: ILivechatInquiryRepository) {
+		super({
+			identifier: RoomTypes.OMNICHANNEL,
+			order: 5,
+			icon: 'omnichannel',
+			label: 'Omnichannel',
+			route: new LivechatRoomRoute(RoomCommonUtils),
+		},
+		{
+			settings,
+			Users,
+			Rooms,
+			Subscriptions,
+			AuthorizationUtils,
+			RoomCommonUtils,
+			CommonUtils,
+			RoomTypesCommon,
+		});
 		this.notSubscribedTpl = 'livechatNotSubscribed';
 		this.readOnlyTpl = 'livechatReadOnly';
 		this.LivechatInquiry = LivechatInquiry;

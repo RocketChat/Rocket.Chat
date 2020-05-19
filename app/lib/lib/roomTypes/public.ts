@@ -7,16 +7,10 @@ import {
 	RoomTypeRouteConfig,
 	RoomSettingsEnum,
 	UiTextContext,
-	RoomMemberActions,
+	RoomMemberActions, IRoomTypeConfigDependencies,
 } from '../../../utils/lib/RoomTypeConfig';
-import { ISettingsBase } from '../../../settings/lib/settings';
-import { IRoomsRepository, IUsersRepository } from '../../../models/lib';
-import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
-import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
-import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
-import { IRoomTypesCommon } from '../../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../../definition/IRoom';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
@@ -39,22 +33,7 @@ export class PublicRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRou
 export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	private UserCommonUtils: IUserCommonUtils;
 
-	constructor(settings: ISettingsBase,
-		Users: IUsersRepository,
-		Rooms: IRoomsRepository,
-		Subscriptions: ISubscriptionRepository,
-		AuthorizationUtils: IAuthorization,
-		UserCommonUtils: IUserCommonUtils,
-		RoomCommonUtils: IRoomCommonUtils,
-		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypesCommon) {
-		super({
-			identifier: RoomTypes.PUBLIC,
-			order: 30,
-			icon: 'hashtag',
-			label: 'Channels',
-			route: new PublicRoomRoute(RoomCommonUtils),
-		},
+	constructor({
 		settings,
 		Users,
 		Rooms,
@@ -62,7 +41,26 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		AuthorizationUtils,
 		RoomCommonUtils,
 		CommonUtils,
-		RoomTypesCommon);
+		RoomTypesCommon,
+	}: IRoomTypeConfigDependencies,
+	UserCommonUtils: IUserCommonUtils) {
+		super({
+			identifier: RoomTypes.PUBLIC,
+			order: 30,
+			icon: 'hashtag',
+			label: 'Channels',
+			route: new PublicRoomRoute(RoomCommonUtils),
+		},
+		{
+			settings,
+			Users,
+			Rooms,
+			Subscriptions,
+			AuthorizationUtils,
+			RoomCommonUtils,
+			CommonUtils,
+			RoomTypesCommon,
+		});
 		this.UserCommonUtils = UserCommonUtils;
 	}
 

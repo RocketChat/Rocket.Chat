@@ -42,4 +42,14 @@ Meteor.startup(() => {
 	});
 });
 
-roomTypes.add(new DiscussionRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils, commonUtils, roomTypes));
+roomTypes.add(new DiscussionRoomType({
+	settings,
+	Users,
+	Rooms,
+	Subscriptions,
+	AuthorizationUtils,
+	RoomCommonUtils: roomCommonUtils,
+	CommonUtils: commonUtils,
+	RoomTypesCommon: roomTypes,
+},
+userCommonUtils));

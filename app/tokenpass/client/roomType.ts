@@ -1,35 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 
 import { roomTypes } from '../../utils/client';
-import { IRoomTypeConfig, RoomTypeConfig } from '../../utils/lib/RoomTypeConfig';
-import { ISettingsBase } from '../../settings/lib/settings';
-import { IRoomsRepository, IUsersRepository } from '../../models/lib';
-import { IAuthorization } from '../../authorization/lib/IAuthorizationUtils';
+import { IRoomTypeConfig, IRoomTypeConfigDependencies, RoomTypeConfig } from '../../utils/lib/RoomTypeConfig';
 import { settings } from '../../settings/client';
 import { Rooms, Subscriptions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../../authorization/client';
-import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
-import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
-import { ICommonUtils } from '../../utils/lib/ICommonUtils';
 import { commonUtils, roomCommonUtils } from '../../utils/client/factory';
-import { IRoomTypesCommon } from '../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../definition/IRoom';
 
 class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	public customTemplate: string;
 
-	constructor(settings: ISettingsBase,
-		Users: IUsersRepository,
-		Rooms: IRoomsRepository,
-		Subscriptions: ISubscriptionRepository,
-		AuthorizationUtils: IAuthorization,
-		RoomCommonUtils: IRoomCommonUtils,
-		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypesCommon) {
-		super({
-			identifier: RoomTypes.TOKENPASS,
-			order: 1,
-		},
+	constructor({
 		settings,
 		Users,
 		Rooms,
@@ -37,7 +19,22 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		AuthorizationUtils,
 		RoomCommonUtils,
 		CommonUtils,
-		RoomTypesCommon);
+		RoomTypesCommon,
+	}: IRoomTypeConfigDependencies) {
+		super({
+			identifier: RoomTypes.TOKENPASS,
+			order: 1,
+		},
+		{
+			settings,
+			Users,
+			Rooms,
+			Subscriptions,
+			AuthorizationUtils,
+			RoomCommonUtils,
+			CommonUtils,
+			RoomTypesCommon,
+		});
 
 		this.customTemplate = 'tokenChannelsList';
 	}
@@ -50,4 +47,13 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	}
 }
 
-roomTypes.add(new TokenPassRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, roomCommonUtils, commonUtils, roomTypes));
+roomTypes.add(new TokenPassRoomType({
+	settings,
+	Users,
+	Rooms,
+	Subscriptions,
+	AuthorizationUtils,
+	RoomCommonUtils: roomCommonUtils,
+	CommonUtils: commonUtils,
+	RoomTypesCommon: roomTypes,
+}));

@@ -7,7 +7,7 @@ import { IRoomsRepository } from '../../models/lib/IRoomsRepository';
 import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepository';
 import { IRoomCommonUtils } from './IRoomCommonUtils';
 import { ICommonUtils } from './ICommonUtils';
-import { IRoomTypesCommon } from './RoomTypesCommon';
+import { IRoomTypes, IRoomTypesCommon } from './RoomTypesCommon';
 import { ISettingsBase } from '../../settings/lib/settings';
 import { RoomTypes } from '../../../definition/IRoom';
 
@@ -62,6 +62,17 @@ interface IRoomTypeConfigObject {
 	notSubscribedTpl?: string;
 	readOnlyTpl?: string;
 	creationTemplate?: any;
+}
+
+export interface IRoomTypeConfigDependencies {
+	settings: ISettingsBase;
+	Users: IUsersRepository;
+	Rooms: IRoomsRepository;
+	Subscriptions: ISubscriptionRepository;
+	AuthorizationUtils: IAuthorization;
+	RoomCommonUtils: IRoomCommonUtils;
+	CommonUtils: ICommonUtils;
+	RoomTypesCommon: IRoomTypes;
 }
 
 export interface IRoomTypeConfig extends IRoomTypeConfigObject {
@@ -161,14 +172,16 @@ export abstract class RoomTypeConfig {
 		label,
 		route,
 	}: IRoomTypeConfigObject,
-	settings: ISettingsBase,
-	Users: IUsersRepository,
-	Rooms: IRoomsRepository,
-	Subscriptions: ISubscriptionRepository,
-	AuthorizationUtils: IAuthorization,
-	RoomCommonUtils: IRoomCommonUtils,
-	CommonUtils: ICommonUtils,
-	RoomTypesCommon: IRoomTypesCommon) {
+	{
+		settings,
+		Users,
+		Rooms,
+		Subscriptions,
+		AuthorizationUtils,
+		RoomCommonUtils,
+		CommonUtils,
+		RoomTypesCommon,
+	}: IRoomTypeConfigDependencies) {
 		this._identifier = identifier;
 		this._order = order;
 		this._icon = icon;

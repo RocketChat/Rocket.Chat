@@ -7,16 +7,10 @@ import {
 	RoomTypeConfig,
 	RoomSettingsEnum,
 	UiTextContext,
-	RoomMemberActions,
+	RoomMemberActions, IRoomTypeConfigDependencies,
 } from '../../../utils/lib/RoomTypeConfig';
-import { ISettingsBase } from '../../../settings/lib/settings';
-import { IUsersRepository, IRoomsRepository } from '../../../models/lib';
-import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
-import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
-import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
-import { IRoomTypesCommon } from '../../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../../definition/IRoom';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
@@ -39,22 +33,7 @@ export class PrivateRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRo
 export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	private UserCommonUtils: IUserCommonUtils;
 
-	constructor(settings: ISettingsBase,
-		Users: IUsersRepository,
-		Rooms: IRoomsRepository,
-		Subscriptions: ISubscriptionRepository,
-		AuthorizationUtils: IAuthorization,
-		UserCommonUtils: IUserCommonUtils,
-		RoomCommonUtils: IRoomCommonUtils,
-		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypesCommon) {
-		super({
-			identifier: RoomTypes.PRIVATE,
-			order: 40,
-			icon: 'lock',
-			label: 'Private_Groups',
-			route: new PrivateRoomRoute(RoomCommonUtils),
-		},
+	constructor({
 		settings,
 		Users,
 		Rooms,
@@ -62,7 +41,26 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		AuthorizationUtils,
 		RoomCommonUtils,
 		CommonUtils,
-		RoomTypesCommon);
+		RoomTypesCommon,
+	}: IRoomTypeConfigDependencies,
+	UserCommonUtils: IUserCommonUtils) {
+		super({
+			identifier: RoomTypes.PRIVATE,
+			order: 40,
+			icon: 'lock',
+			label: 'Private_Groups',
+			route: new PrivateRoomRoute(RoomCommonUtils),
+		},
+		{
+			settings,
+			Users,
+			Rooms,
+			Subscriptions,
+			AuthorizationUtils,
+			RoomCommonUtils,
+			CommonUtils,
+			RoomTypesCommon,
+		});
 		this.UserCommonUtils = UserCommonUtils;
 	}
 

@@ -1,14 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { IRoomTypeConfig, RoomTypeConfig } from '../../../utils/lib/RoomTypeConfig';
-import { ISettingsBase } from '../../../settings/lib/settings';
-import { IRoomsRepository, IUsersRepository } from '../../../models/lib';
-import { IAuthorization } from '../../../authorization/lib/IAuthorizationUtils';
+import { IRoomTypeConfig, IRoomTypeConfigDependencies, RoomTypeConfig } from '../../../utils/lib/RoomTypeConfig';
 import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
-import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionRepository';
-import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
-import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
-import { IRoomTypesCommon } from '../../../utils/lib/RoomTypesCommon';
 import { RoomTypes } from '../../../../definition/IRoom';
 
 export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
@@ -16,20 +9,7 @@ export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 
 	private UserCommonUtils: IUserCommonUtils;
 
-	constructor(settings: ISettingsBase,
-		Users: IUsersRepository,
-		Rooms: IRoomsRepository,
-		Subscriptions: ISubscriptionRepository,
-		AuthorizationUtils: IAuthorization,
-		UserCommonUtils: IUserCommonUtils,
-		RoomCommonUtils: IRoomCommonUtils,
-		CommonUtils: ICommonUtils,
-		RoomTypesCommon: IRoomTypesCommon) {
-		super({
-			identifier: RoomTypes.UNREAD,
-			order: 10,
-			label: 'Unread',
-		},
+	constructor({
 		settings,
 		Users,
 		Rooms,
@@ -37,7 +17,24 @@ export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		AuthorizationUtils,
 		RoomCommonUtils,
 		CommonUtils,
-		RoomTypesCommon);
+		RoomTypesCommon,
+	}: IRoomTypeConfigDependencies,
+	UserCommonUtils: IUserCommonUtils) {
+		super({
+			identifier: RoomTypes.UNREAD,
+			order: 10,
+			label: 'Unread',
+		},
+		{
+			settings,
+			Users,
+			Rooms,
+			Subscriptions,
+			AuthorizationUtils,
+			RoomCommonUtils,
+			CommonUtils,
+			RoomTypesCommon,
+		});
 		this.UserCommonUtils = UserCommonUtils;
 		this.unread = true;
 	}

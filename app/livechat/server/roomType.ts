@@ -26,7 +26,17 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypesCommon,
 	) {
-		super(settings, Users, Rooms, Subscriptions, LivechatInquiry, AuthorizationUtils, RoomCommonUtils, CommonUtils, RoomTypesCommon);
+		super({
+			settings,
+			Users,
+			Rooms,
+			Subscriptions,
+			AuthorizationUtils,
+			RoomCommonUtils,
+			CommonUtils,
+			RoomTypesCommon,
+		},
+		LivechatInquiry);
 	}
 
 	getMsgSender(senderId:

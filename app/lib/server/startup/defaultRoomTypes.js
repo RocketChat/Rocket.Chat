@@ -11,9 +11,20 @@ import { settings } from '../../../settings/server';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { AuthorizationUtils } from '../../../authorization/server';
 
-roomTypes.add(new UnreadRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils, commonUtils, roomTypes));
-roomTypes.add(new FavoriteRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils, commonUtils, roomTypes));
-roomTypes.add(new ConversationRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils, commonUtils, roomTypes));
-roomTypes.add(new PublicRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils, commonUtils, roomTypes));
-roomTypes.add(new PrivateRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils, commonUtils, roomTypes));
-roomTypes.add(new DirectMessageRoomType(settings, Users, Rooms, Subscriptions, AuthorizationUtils, userCommonUtils, roomCommonUtils, commonUtils, roomTypes));
+const dependencies = {
+	settings,
+	Users,
+	Rooms,
+	Subscriptions,
+	AuthorizationUtils,
+	RoomCommonUtils: roomCommonUtils,
+	CommonUtils: commonUtils,
+	RoomTypesCommon: roomTypes,
+};
+
+roomTypes.add(new UnreadRoomType(dependencies, userCommonUtils));
+roomTypes.add(new FavoriteRoomType(dependencies, userCommonUtils));
+roomTypes.add(new ConversationRoomType(dependencies, userCommonUtils));
+roomTypes.add(new PublicRoomType(dependencies, userCommonUtils));
+roomTypes.add(new PrivateRoomType(dependencies, userCommonUtils));
+roomTypes.add(new DirectMessageRoomType(dependencies, userCommonUtils));
