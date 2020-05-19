@@ -101,7 +101,7 @@ export function EditUser({ data, roles, ...props }) {
 
 	const setCustomFieldsData = useCallback((val) => {
 		setNewData({ ...newData, customFields: val });
-	}, JSON.stringify(newData));
+	}, [JSON.stringify(newData)]);
 
 	const testEqual = (a, b) => a === b || !(a || b);
 	const handleChange = (field, currentValue, getValue = (e) => e.currentTarget.value, areEqual = testEqual) => (e) => setNewData({ ...newData, [field]: areEqual(getValue(e), currentValue) ? null : getValue(e) });
