@@ -968,8 +968,8 @@ export class SlackImporter extends Base {
 			message = message.replace(/:memo:/g, ':pencil:');
 			message = message.replace(/:piggy:/g, ':pig:');
 			message = message.replace(/:uk:/g, ':gb:');
+			message = message.replace(/<(http[s]?:[^>|]*)>/g, '$1');
 			message = message.replace(/<(http[s]?:[^|]*)\|([^>]*)>/g, '[$2]($1)');
-			message = message.replace(/<(http[s]?:[^>]*)>/g, '$1');
 
 			for (const userReplace of Array.from(this.userTags)) {
 				message = message.replace(userReplace.slack, userReplace.rocket);
