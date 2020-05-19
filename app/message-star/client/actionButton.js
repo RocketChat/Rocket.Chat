@@ -85,7 +85,7 @@ Meteor.startup(function() {
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		condition({ msg, subscription, u }) {
-			if (subscription == null || settings.get('Message_AllowStarring')) {
+			if (subscription == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
 

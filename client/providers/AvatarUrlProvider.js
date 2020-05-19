@@ -2,8 +2,9 @@ import React, { useMemo } from 'react';
 import { Avatar } from '@rocket.chat/fuselage';
 
 import { useSetting } from '../contexts/SettingsContext';
+import { baseURI } from '../../app/utils/client/lib/baseuri';
 
-const base = '';
+const base = baseURI;
 
 export function AvatarUrlProvider({ children }) {
 	const cdn = useSetting('CDN_PREFIX_ALL');
