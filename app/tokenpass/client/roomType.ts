@@ -13,6 +13,7 @@ import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../utils/lib/ICommonUtils';
 import { commonUtils, roomCommonUtils } from '../../utils/client/factory';
 import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
+import { RoomTypes } from '../../../definition/IRoom';
 
 class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	public customTemplate: string;
@@ -26,7 +27,7 @@ class TokenPassRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypes) {
 		super({
-			identifier: 'tokenpass',
+			identifier: RoomTypes.TOKENPASS,
 			order: 1,
 		},
 		settings,

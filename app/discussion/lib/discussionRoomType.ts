@@ -9,6 +9,7 @@ import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepositor
 import { IRoomCommonUtils } from '../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
+import { RoomTypes } from '../../../definition/IRoom';
 
 export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	public customTemplate: string;
@@ -25,7 +26,7 @@ export class DiscussionRoomType extends RoomTypeConfig implements IRoomTypeConfi
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypes) {
 		super({
-			identifier: 't',
+			identifier: RoomTypes.DISCUSSION,
 			order: 25,
 			label: 'Discussion',
 		},

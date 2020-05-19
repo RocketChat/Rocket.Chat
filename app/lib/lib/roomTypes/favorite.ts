@@ -9,6 +9,7 @@ import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionReposi
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
+import { RoomTypes } from '../../../../definition/IRoom';
 
 export class FavoriteRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	private UserCommonUtils: IUserCommonUtils;
@@ -23,7 +24,7 @@ export class FavoriteRoomType extends RoomTypeConfig implements IRoomTypeConfig 
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypes) {
 		super({
-			identifier: 'f',
+			identifier: RoomTypes.FAVORITE,
 			order: 20,
 			header: 'favorite',
 			icon: 'star',

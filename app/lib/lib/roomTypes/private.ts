@@ -17,6 +17,7 @@ import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
+import { RoomTypes } from '../../../../definition/IRoom';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
 	private RoomCommonUtils: IRoomCommonUtils;
@@ -48,7 +49,7 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypes) {
 		super({
-			identifier: 'p',
+			identifier: RoomTypes.PRIVATE,
 			order: 40,
 			icon: 'lock',
 			label: 'Private_Groups',
@@ -109,7 +110,7 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		return this.Subscriptions.find({ rid: roomId }).count() > 0;
 	}
 
-	allowRoomSettingChange(room: any, setting: string): boolean {
+	allowRoomSettingChange(room: any, setting: RoomSettingsEnum): boolean {
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
@@ -127,7 +128,7 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(room: any, action: string): boolean {
+	allowMemberAction(room: any, action: RoomMemberActions): boolean {
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return false;
@@ -140,7 +141,7 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		return true;
 	}
 
-	getUiText(context: string): string {
+	getUiText(context: UiTextContext): string {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
 				return 'Hide_Group_Warning';

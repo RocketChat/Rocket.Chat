@@ -3,22 +3,23 @@ import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { IRoomTypeConfig } from './RoomTypeConfig';
+import { RoomTypes } from '../../../definition/IRoom';
 
 interface IRoomTypeOrder {
-	identifier: string;
+	identifier: RoomTypes;
 	order: number;
 }
 
 export interface IRoomTypes {
 	getTypesToShowOnDashboard(): string[];
 	add(roomConfig: IRoomTypeConfig): void;
-	hasCustomLink(roomType: string): boolean;
-	getRouteLink(roomType: string, subData: any): string;
-	getConfig(roomType: string): IRoomTypeConfig | undefined;
-	getURL(roomType: string, subData: any): string;
-	getRelativePath(roomType: string, subData: any): string;
-	getRouteData(roomType: string, subData: any): { [key: string]: string } | undefined;
-	getRoomName(roomType: string, roomData: any): string | undefined;
+	hasCustomLink(roomType: RoomTypes): boolean;
+	getRouteLink(roomType: RoomTypes, subData: any): string;
+	getConfig(roomType: RoomTypes): IRoomTypeConfig | undefined;
+	getURL(roomType: RoomTypes, subData: any): string;
+	getRelativePath(roomType: RoomTypes, subData: any): string;
+	getRouteData(roomType: RoomTypes, subData: any): { [key: string]: string } | undefined;
+	getRoomName(roomType: RoomTypes, roomData: any): string | undefined;
 }
 
 export abstract class RoomTypesCommon {
@@ -76,7 +77,7 @@ export abstract class RoomTypesCommon {
 		}
 	}
 
-	hasCustomLink(roomType: string): boolean {
+	hasCustomLink(roomType: RoomTypes): boolean {
 		return this.roomTypes.get(roomType)?.route?.link != null;
 	}
 
@@ -84,7 +85,7 @@ export abstract class RoomTypesCommon {
      * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
      * @param {object} subData the user's subscription data
      */
-	getRouteLink(roomType: string, subData: any): string {
+	getRouteLink(roomType: RoomTypes, subData: any): string {
 		const routeData = this.getRouteData(roomType, subData);
 		if (!routeData) {
 			return '';
@@ -97,7 +98,7 @@ export abstract class RoomTypesCommon {
      * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
      * @param {RoomTypeConfig} roomConfig room's type configuration
      */
-	getConfig(roomType: string): IRoomTypeConfig | undefined {
+	getConfig(roomType: RoomTypes): IRoomTypeConfig | undefined {
 		return this.roomTypes.get(roomType);
 	}
 
@@ -105,7 +106,7 @@ export abstract class RoomTypesCommon {
      * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
      * @param {object} subData the user's subscription data
      */
-	getURL(roomType: string, subData: any): string {
+	getURL(roomType: RoomTypes, subData: any): string {
 		const routeData = this.getRouteData(roomType, subData);
 		if (!routeData) {
 			return '';
@@ -114,11 +115,11 @@ export abstract class RoomTypesCommon {
 		return FlowRouter.url(this.roomTypes.get(roomType)?.route?.name, routeData);
 	}
 
-	getRelativePath(roomType: string, subData: any): string {
+	getRelativePath(roomType: RoomTypes, subData: any): string {
 		return this.getRouteLink(roomType, subData).replace(Meteor.absoluteUrl(), '');
 	}
 
-	getRouteData(roomType: string, subData: any): { [key: string]: string } | undefined {
+	getRouteData(roomType: RoomTypes, subData: any): { [key: string]: string } | undefined {
 		if (!this.roomTypes.get(roomType)) {
 			return;
 		}

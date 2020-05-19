@@ -9,6 +9,7 @@ import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionReposi
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
+import { RoomTypes } from '../../../../definition/IRoom';
 
 export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	public unread: boolean;
@@ -25,7 +26,7 @@ export class UnreadRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypes) {
 		super({
-			identifier: 'unread',
+			identifier: RoomTypes.UNREAD,
 			order: 10,
 			label: 'Unread',
 		},

@@ -19,6 +19,7 @@ import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
+import { RoomTypes } from '../../../../definition/IRoom';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
 	private RoomCommonUtils: IRoomCommonUtils;
@@ -54,7 +55,7 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypes) {
 		super({
-			identifier: 'd',
+			identifier: RoomTypes.DIRECT,
 			order: 50,
 			icon: 'at',
 			label: 'Direct_Messages',
@@ -147,7 +148,7 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
 		return Session.get(`user_${ subscription.name }_status_text`);
 	}
 
-	allowRoomSettingChange(room: any, setting: string): boolean {
+	allowRoomSettingChange(room: any, setting: RoomSettingsEnum): boolean {
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:
@@ -165,7 +166,7 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
 		}
 	}
 
-	allowMemberAction(room: any, action: string): boolean {
+	allowMemberAction(room: any, action: RoomMemberActions): boolean {
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return !this.isGroupChat(room);
@@ -182,7 +183,7 @@ export class DirectMessageRoomType extends RoomTypeConfig implements IRoomTypeCo
 		return true;
 	}
 
-	getUiText(context: string): string {
+	getUiText(context: UiTextContext): string {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
 				return 'Hide_Private_Warning';

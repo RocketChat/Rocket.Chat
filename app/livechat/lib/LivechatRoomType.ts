@@ -18,6 +18,7 @@ import { ISubscriptionRepository } from '../../models/lib/ISubscriptionRepositor
 import { ILivechatInquiryRepository } from '../../models/lib/ILivechatInquiryRepository';
 import { ICommonUtils } from '../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../utils/lib/RoomTypesCommon';
+import { RoomTypes } from '../../../definition/IRoom';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
 	private RoomCommonUtils: IRoomCommonUtils;
@@ -59,7 +60,7 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypes) {
 		super({
-			identifier: 'l',
+			identifier: RoomTypes.OMNICHANNEL,
 			order: 5,
 			icon: 'omnichannel',
 			label: 'Omnichannel',
@@ -108,7 +109,7 @@ export default class LivechatRoomType extends RoomTypeConfig implements IRoomTyp
 		return inquiry && inquiry.v && inquiry.v.status;
 	}
 
-	allowRoomSettingChange(room: any, setting: string): boolean {
+	allowRoomSettingChange(room: any, setting: RoomSettingsEnum): boolean {
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;

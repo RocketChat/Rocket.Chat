@@ -5,6 +5,7 @@ import { hasAtLeastOnePermission } from '../../../authorization/client/hasPermis
 import { ChatRoom, ChatSubscription } from '../../../models/client';
 import { IRoomTypeConfig } from '../../lib/RoomTypeConfig';
 import { IUser } from '../../../../definition/IUser';
+import { RoomTypes } from '../../../../definition/IRoom';
 
 interface IRoomTypesClient extends IRoomTypes {
 	archived(rid: string): boolean;
@@ -12,25 +13,22 @@ interface IRoomTypesClient extends IRoomTypes {
 	getNotSubscribedTpl(rid: string): string | undefined;
 	getReadOnlyTpl(rid: string): string | undefined;
 	getRoomType(roomId: string): string | undefined;
-	getSecondaryRoomName(roomType: string, roomData: any): string | undefined;
+	getSecondaryRoomName(roomType: RoomTypes, roomData: any): string | undefined;
 	getTypes(): IRoomTypeConfig[];
-	getUserStatus(roomType: string, roomId: string): string | undefined;
-	getUserStatusText(roomType: string, roomId: string): string | undefined;
+	getUserStatus(roomType: RoomTypes, roomId: string): string | undefined;
+	getUserStatusText(roomType: RoomTypes, roomId: string): string | undefined;
 	readOnly(rid: string, user: IUser): boolean | undefined;
 	verifyCanSendMessage(rid: string): boolean;
 	verifyShowJoinLink(rid: string): boolean | undefined;
-	openRouteLink(roomType: string, subData: any, queryParams: any): void;
+	openRouteLink(roomType: RoomTypes, subData: any, queryParams: any): void;
 	isAValidRoomTypeRoute(routeName: string): boolean;
 	roomTypesBeforeStandard(): any[];
 	roomTypesAfterStandard(): any[];
 }
 
 class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
-	protected roomTypes: Map<string, IRoomTypeConfig>;
-
-	constructor() {
+	public constructor() {
 		super();
-		this.roomTypes = new Map();
 	}
 
 	getTypes(): any[] {
@@ -46,11 +44,11 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		return this.roomTypes.get(roomData.t)?.getIcon(roomData);
 	}
 
-	getRoomName(roomType: string, roomData: any): string | undefined {
+	getRoomName(roomType: RoomTypes, roomData: any): string | undefined {
 		return this.roomTypes.get(roomType)?.roomName(roomData);
 	}
 
-	getSecondaryRoomName(roomType: string, roomData: any): string | undefined {
+	getSecondaryRoomName(roomType: RoomTypes, roomData: any): string | undefined {
 		return this.roomTypes.get(roomType)?.secondaryRoomName(roomData);
 	}
 
@@ -61,7 +59,7 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		return list.map((t) => t.identifier);
 	}
 
-	getUserStatus(roomType: string, rid: string): string | undefined {
+	getUserStatus(roomType: RoomTypes, rid: string): string | undefined {
 		return this.roomTypes.get(roomType)?.getUserStatus(rid);
 	}
 
@@ -77,7 +75,7 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		return room && room.t;
 	}
 
-	getUserStatusText(roomType: string, rid: string): string | undefined {
+	getUserStatusText(roomType: RoomTypes, rid: string): string | undefined {
 		return this.roomTypes.get(roomType)?.getUserStatusText(rid);
 	}
 
@@ -179,7 +177,7 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 			.includes(routeName);
 	}
 
-	openRouteLink(roomType: string, subData: any, queryParams: any): void {
+	openRouteLink(roomType: RoomTypes, subData: any, queryParams: any): void {
 		if (!this.roomTypes.has(roomType)) {
 			return;
 		}

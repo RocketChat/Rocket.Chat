@@ -1,19 +1,16 @@
 import { IRoomTypes, RoomTypesCommon } from '../../lib/RoomTypesCommon';
-import { IRoomTypeConfig } from '../../lib/RoomTypeConfig';
+import { RoomTypes } from '../../../../definition/IRoom';
 
 interface IRoomTypesServer extends IRoomTypes {
 	getSearchableRoomsTypes(): string[];
 }
 
 class RoomTypesServer extends RoomTypesCommon implements IRoomTypesServer {
-	roomTypes: Map<string, IRoomTypeConfig>;
-
-	constructor() {
+	public constructor() {
 		super();
-		this.roomTypes = new Map();
 	}
 
-	getRoomName(roomType: string, roomData: any): string | undefined {
+	getRoomName(roomType: RoomTypes, roomData: any): string | undefined {
 		return this.roomTypes.get(roomType)?.roomName?.(roomData);
 	}
 

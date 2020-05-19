@@ -17,6 +17,7 @@ import { IUserCommonUtils } from '../../../utils/lib/IUserCommonUtils';
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
+import { RoomTypes } from '../../../../definition/IRoom';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig implements IRoomTypeRouteConfig {
 	private RoomCommonUtils: IRoomCommonUtils;
@@ -48,7 +49,7 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypes) {
 		super({
-			identifier: 'c',
+			identifier: RoomTypes.PUBLIC,
 			order: 30,
 			icon: 'hashtag',
 			label: 'Channels',
@@ -131,7 +132,7 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		return true;
 	}
 
-	allowRoomSettingChange(room: any, setting: string): boolean {
+	allowRoomSettingChange(room: any, setting: RoomSettingsEnum): boolean {
 		switch (setting) {
 			case RoomSettingsEnum.BROADCAST:
 				return room.broadcast;
@@ -147,7 +148,7 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(room: any, action: string): boolean {
+	allowMemberAction(room: any, action: RoomMemberActions): boolean {
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return false;
@@ -156,7 +157,7 @@ export class PublicRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		}
 	}
 
-	getUiText(context: string): string {
+	getUiText(context: UiTextContext): string {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
 				return 'Hide_Room_Warning';

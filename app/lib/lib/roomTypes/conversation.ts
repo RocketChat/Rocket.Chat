@@ -9,6 +9,7 @@ import { ISubscriptionRepository } from '../../../models/lib/ISubscriptionReposi
 import { IRoomCommonUtils } from '../../../utils/lib/IRoomCommonUtils';
 import { ICommonUtils } from '../../../utils/lib/ICommonUtils';
 import { IRoomTypes } from '../../../utils/lib/RoomTypesCommon';
+import { RoomTypes } from '../../../../definition/IRoom';
 
 export class ConversationRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 	private UserCommonUtils: IUserCommonUtils;
@@ -23,7 +24,7 @@ export class ConversationRoomType extends RoomTypeConfig implements IRoomTypeCon
 		CommonUtils: ICommonUtils,
 		RoomTypesCommon: IRoomTypes) {
 		super({
-			identifier: 'merged',
+			identifier: RoomTypes.CONVERSATION,
 			order: 30,
 			label: 'Conversations',
 		},

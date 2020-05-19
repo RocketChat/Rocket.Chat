@@ -25,26 +25,26 @@ export enum RoomSettingsEnum {
 	E2E = 'encrypted',
 }
 
-export const RoomMemberActions = {
-	ARCHIVE: 'archive',
-	IGNORE: 'ignore',
-	BLOCK: 'block',
-	MUTE: 'mute',
-	SET_AS_OWNER: 'setAsOwner',
-	SET_AS_LEADER: 'setAsLeader',
-	SET_AS_MODERATOR: 'setAsModerator',
-	LEAVE: 'leave',
-	REMOVE_USER: 'removeUser',
-	JOIN: 'join',
-	INVITE: 'invite',
-};
+export enum RoomMemberActions {
+	ARCHIVE = 'archive',
+	IGNORE = 'ignore',
+	BLOCK = 'block',
+	MUTE = 'mute',
+	SET_AS_OWNER = 'setAsOwner',
+	SET_AS_LEADER = 'setAsLeader',
+	SET_AS_MODERATOR = 'setAsModerator',
+	LEAVE = 'leave',
+	REMOVE_USER = 'removeUser',
+	JOIN = 'join',
+	INVITE = 'invite',
+}
 
-export const UiTextContext = {
-	CLOSE_WARNING: 'closeWarning',
-	HIDE_WARNING: 'hideWarning',
-	LEAVE_WARNING: 'leaveWarning',
-	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed',
-};
+export enum UiTextContext {
+	CLOSE_WARNING = 'closeWarning',
+	HIDE_WARNING = 'hideWarning',
+	LEAVE_WARNING = 'leaveWarning',
+	NO_ROOMS_SUBSCRIBED = 'noRoomsSubscribed',
+}
 
 interface IRoomTypeRouteConfigObject {
 	name: string;
@@ -64,8 +64,8 @@ interface IRoomTypeConfigObject {
 }
 
 export interface IRoomTypeConfig extends IRoomTypeConfigObject {
-	allowMemberAction(room: any, action: string): boolean;
-	allowRoomSettingChange(room: any, setting: string): boolean;
+	allowMemberAction(room: any, action: RoomMemberActions): boolean;
+	allowRoomSettingChange(room: any, setting: RoomSettingsEnum): boolean;
 	canAccessUploadedFile(accessData: any): boolean;
 	canAddUser(room: any): boolean;
 	canBeCreated(): boolean;
@@ -83,7 +83,7 @@ export interface IRoomTypeConfig extends IRoomTypeConfigObject {
 	getIcon(roomData: any): string | undefined;
 	getMsgSender(senderId: string): IUser | {};
 	getNotificationDetails(room: any, user: IUser, notificationMessage: string): any;
-	getUiText(context: string): string;
+	getUiText(context: UiTextContext): string;
 	getReadReceiptsExtraData(message: any): any;
 	getUserStatus(roomId: string): string;
 	getUserStatusText(roomId: string): string;
