@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
+import { roomTypes } from '../../utils/client';
 import { Rooms } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
@@ -69,11 +70,12 @@ Meteor.startup(function() {
 			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, msg._id));
 		},
 		condition({ msg: message, u: user, room, subscription }) {
+
 			if (!room) {
 				return false;
 			}
 
-			if (room.ro && !room.reactWhenReadOnly) {
+			if (room.ro && !room.reactWhenReadOnly && roomTypes.readOnly(room._id, user._id)) {
 				if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
 					return false;
 				}
