@@ -18,13 +18,7 @@ Template.room.events({
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: rid });
 
-		if (room.ro && !room.reactWhenReadOnly) {
-			if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
-				return false;
-			}
-		}
-
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+		if (roomTypes.readOnly(room._id, user._id)) {
 			return false;
 		}
 
@@ -70,18 +64,7 @@ Meteor.startup(function() {
 			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, msg._id));
 		},
 		condition({ msg: message, u: user, room, subscription }) {
-
 			if (!room) {
-				return false;
-			}
-
-			if (room.ro && !room.reactWhenReadOnly && roomTypes.readOnly(room._id, user._id)) {
-				if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
-					return false;
-				}
-			}
-
-			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 				return false;
 			}
 
@@ -90,6 +73,10 @@ Meteor.startup(function() {
 			}
 
 			if (message.private) {
+				return false;
+			}
+
+			if (roomTypes.readOnly(room._id, user._id)) {
 				return false;
 			}
 
