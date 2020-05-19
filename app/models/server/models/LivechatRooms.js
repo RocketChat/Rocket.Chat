@@ -238,6 +238,16 @@ export class LivechatRooms extends Base {
 		return this.find(query);
 	}
 
+	findByVisitorIdAndAgentId(visitorId, agentId, options) {
+		const query = {
+			t: 'l',
+			...visitorId && { 'v._id': visitorId },
+			...agentId && { 'servedBy._id': agentId },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByVisitorId(visitorId) {
 		const query = {
 			t: 'l',

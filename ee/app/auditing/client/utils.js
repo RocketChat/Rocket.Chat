@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
+import { handleError } from '../../../../app/utils';
+
 export const call = (...args) => new Promise(function(resolve, reject) {
 	Meteor.call(...args, function(err, result) {
 		if (err) {
