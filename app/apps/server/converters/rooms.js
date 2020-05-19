@@ -116,6 +116,7 @@ export class AppRoomsConverter {
 			customFields: 'customFields',
 			isWaitingResponse: 'waitingResponse',
 			isOpen: 'open',
+			_USERNAMES: '_USERNAMES',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;
