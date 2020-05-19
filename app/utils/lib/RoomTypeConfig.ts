@@ -9,6 +9,7 @@ import { IRoomCommonUtils } from './IRoomCommonUtils';
 import { ICommonUtils } from './ICommonUtils';
 import { IRoomTypes } from './RoomTypesCommon';
 import { ISettingsBase } from '../../settings/lib/settings';
+import { RoomTypes } from '../../../definition/IRoom';
 
 export enum RoomSettingsEnum {
 	TYPE = 'type',
@@ -52,7 +53,7 @@ interface IRoomTypeRouteConfigObject {
 }
 
 interface IRoomTypeConfigObject {
-	identifier: string;
+	identifier: RoomTypes;
 	order: number;
 	label?: string;
 	route?: IRoomTypeRouteConfig;
@@ -78,7 +79,7 @@ export interface IRoomTypeConfig extends IRoomTypeConfigObject {
 	includeInRoomSearch(): boolean;
 	isEmitAllowed(): boolean;
 	isGroupChat(room?: any): boolean;
-	getAvatarPath(roomData: any, subData?: any): string;
+	getAvatarPath(roomData: any, subData?: any): string | undefined;
 	getDiscussionType(): string;
 	getIcon(roomData: any): string | undefined;
 	getMsgSender(senderId: string): IUser | {};
@@ -124,7 +125,7 @@ export abstract class RoomTypeRouteConfig {
 }
 
 export abstract class RoomTypeConfig {
-	protected readonly _identifier: string;
+	protected readonly _identifier: RoomTypes;
 
 	protected _order: number;
 
@@ -189,7 +190,7 @@ export abstract class RoomTypeConfig {
 	/**
      * The room type's internal identifier.
      */
-	get identifier(): string {
+	get identifier(): RoomTypes {
 		return this._identifier;
 	}
 

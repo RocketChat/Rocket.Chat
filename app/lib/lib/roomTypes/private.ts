@@ -152,7 +152,7 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		}
 	}
 
-	getAvatarPath(roomData: any): string {
+	getAvatarPath(roomData: any): string | undefined {
 		// TODO: change to always get avatar from _id when rooms have avatars
 		// if room is not a discussion, returns the avatar for its name
 		if (!roomData.prid) {
@@ -166,7 +166,7 @@ export class PrivateRoomType extends RoomTypeConfig implements IRoomTypeConfig {
 		}
 		const proom = this.Rooms.findOne({ _id: roomData.prid }, options);
 		if (proom) {
-			return this.RoomTypesCommon.getConfig(proom.t).getAvatarPath(proom);
+			return this.RoomTypesCommon.getConfig(proom.t)?.getAvatarPath?.(proom);
 		}
 
 		// otherwise gets discussion's avatar via _id

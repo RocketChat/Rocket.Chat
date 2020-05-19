@@ -11,7 +11,7 @@ class RoomTypesServer extends RoomTypesCommon implements IRoomTypesServer {
 	}
 
 	getRoomName(roomType: RoomTypes, roomData: any): string | undefined {
-		return this.roomTypes.get(roomType)?.roomName?.(roomData);
+		return this.roomTypes.get(roomType)?.roomName(roomData);
 	}
 
 	getSearchableRoomsTypes(): string[] {
