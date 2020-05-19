@@ -1,8 +1,10 @@
-import React, { useMemo, useEffect, useState } from 'react';
-import { TextInput, Select, Field } from '@rocket.chat/fuselage';
+import React, { useMemo, useEffect } from 'react';
+import { TextInput, Select, Field, Divider, Box } from '@rocket.chat/fuselage';
 
 import { useSetting } from '../../contexts/SettingsContext';
+import { useForm } from '../../hooks/useForm';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { capitalize } from '../../helpers/capitalize';
 
 const CustomTextInput = (props) => {
 	const t = useTranslation();
@@ -28,9 +30,6 @@ const CustomSelect = (props) => {
 	const { name, required, options, setState, state } = props;
 	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [...options]);
 	const verify = useMemo(() => (!state.length && required ? t('Field_required') : ''), [required, state]);
-	useEffect(() => {
-		setState(state);
-	}, []);
 
 	return useMemo(() => <Field>
 		<Field.Label>{name}</Field.Label>
@@ -41,32 +40,41 @@ const CustomSelect = (props) => {
 	</Field>, [name, verify, state, required, JSON.stringify(mappedOptions)]);
 };
 
-const CustomFieldsAssembler = ({ customFields, didUpdate, customFieldsData, setCustomFieldsData, ...props }) => Object.entries(customFields).map(([key, value]) => {
-	const [state, setState] = useState((customFieldsData && customFieldsData[key]) ?? value.defaultValue ?? '');
-	useEffect(() => {
-		if (didUpdate) {
-			setCustomFieldsData({ ...customFieldsData, [key]: state });
-		}
-	}, [state]);
+const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...props }) => Object.entries(customFields).map(([key, value]) => {
+	const extraProps = {
+		key,
+		name: key,
+		setState: formHandlers[`handle${ capitalize(key) }`],
+		state: formValues[key],
+		...value,
+	};
 	return value.type === 'text'
-		? <CustomTextInput key={key} name={key} {...value} setState={setState} state={state} {...props}/>
-		: <CustomSelect key={key} name={key} {...value} setState={setState} state={state} {...props}/>;
+		? <CustomTextInput {...extraProps} {...props}/>
+		: <CustomSelect {...extraProps} {...props}/>;
 });
 
 export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData, ...props }) {
-	const fields = useSetting('Accounts_CustomFields');
+	const t = useTranslation();
 
-	const parsedFields = useMemo(() => JSON.parse(fields), [fields]);
+	const customFieldsJson = useSetting('Accounts_CustomFields');
 
-	const [didUpdate, setDidUpdate] = useState(false);
+	const customFields = useMemo(() => JSON.parse(customFieldsJson || '{}'), []);
+
+	if (!Object.values(customFields).length) {
+		return null;
+	}
+
+	const defaultFields = useMemo(() => Object.entries(customFields).reduce((data, [key, value]) => { data[key] = value.defaultValue ?? ''; return data; }, {}), []);
+
+	const { values, handlers } = useForm({ ...defaultFields, ...customFieldsData });
 
 	useEffect(() => {
-		setDidUpdate(true);
-		if (!Object.values(customFieldsData).length) {
-			const initialData = Object.entries(parsedFields).reduce((data, [key, value]) => { data[key] = value.defaultValue ?? ''; return data; }, {});
-			setCustomFieldsData(initialData);
-		}
-	}, []);
+		setCustomFieldsData(values);
+	}, [JSON.stringify(values)]);
 
-	return <CustomFieldsAssembler didUpdate={didUpdate} customFields={parsedFields} customFieldsData={customFieldsData} setCustomFieldsData={setCustomFieldsData} {...props}/>;
+	return <>
+		<Divider />
+		<Box fontScale='s2'>{t('Custom_Fields')}</Box>
+		<CustomFieldsAssembler formValues={values} formHandlers={handlers} customFields={customFields} {...props}/>
+	</>;
 }
