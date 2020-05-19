@@ -874,6 +874,8 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		public: true,
 	});
+
+	// Deprecated setting
 	this.add('Support_Cordova_App', false, {
 		type: 'boolean',
 		i18nDescription: 'Support_Cordova_App_Description',

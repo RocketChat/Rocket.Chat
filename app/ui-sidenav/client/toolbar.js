@@ -73,7 +73,6 @@ Template.toolbar.helpers({
 	},
 	popupConfig() {
 		const config = {
-			cls: 'search-results-list',
 			collection: Meteor.userId() ? Subscriptions : Rooms,
 			template: 'toolbarSearchList',
 			sidebar: true,
