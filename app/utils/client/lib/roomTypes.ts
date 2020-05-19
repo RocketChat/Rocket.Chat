@@ -1,5 +1,4 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import _ from 'underscore';
 
 import { IRoomTypes, RoomTypesCommon } from '../../lib/RoomTypesCommon';
 import { hasAtLeastOnePermission } from '../../../authorization/client/hasPermission';
@@ -9,7 +8,7 @@ import { IUser } from '../../../../definition/IUser';
 
 interface IRoomTypesClient extends IRoomTypes {
 	archived(rid: string): boolean;
-	getIdentifiers(e: string): string[];
+	getIdentifiers(e?: string[]): string[];
 	getNotSubscribedTpl(rid: string): string | undefined;
 	getReadOnlyTpl(rid: string): string | undefined;
 	getRoomType(roomId: string): string | undefined;
@@ -34,8 +33,8 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		this.roomTypes = new Map();
 	}
 
-	getTypes(): IRoomTypeConfig[] {
-		return _.sortBy(this.roomTypesOrder, 'order')
+	getTypes(): any[] {
+		return this.roomTypesOrder.sort((a, b) => a.order - b.order)
 			.map((type) => this.roomTypes.get(type.identifier) as IRoomTypeConfig)
 			.filter((type) => !type.condition || type.condition());
 	}
@@ -55,11 +54,11 @@ class RocketChatRoomTypes extends RoomTypesCommon implements IRoomTypesClient {
 		return this.roomTypes.get(roomType)?.secondaryRoomName(roomData);
 	}
 
-	getIdentifiers(e: string): string[] {
+	getIdentifiers(e?: string[]): string[] {
 		const initial: string[] = [];
-		const except = initial.concat(e);
-		const list = _.reject(this.roomTypesOrder, (t) => except.indexOf(t.identifier) !== -1);
-		return _.map(list, (t) => t.identifier);
+		const except = initial.concat(e || '');
+		const list = this.roomTypesOrder.filter((t) => !except.includes(t.identifier));
+		return list.map((t) => t.identifier);
 	}
 
 	getUserStatus(roomType: string, rid: string): string | undefined {
