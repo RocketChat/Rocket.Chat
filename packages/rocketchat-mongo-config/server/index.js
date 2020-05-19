@@ -11,11 +11,20 @@ import { Mongo } from 'meteor/mongo';
 // This is fixed in Node 10, but this supports LTS versions
 tls.DEFAULT_ECDH_CURVE = 'auto';
 
+const mongoConnectionOptions = {
+	// add retryWrites=false if not present in MONGO_URL
+	...!process.env.MONGO_URL.includes('retryWrites') && { retryWrites: false },
+};
+
 const mongoOptionStr = process.env.MONGO_OPTIONS;
 if (typeof mongoOptionStr !== 'undefined') {
 	const mongoOptions = JSON.parse(mongoOptionStr);
 
-	Mongo.setConnectionOptions(mongoOptions);
+	Object.assign(mongoConnectionOptions, mongoOptions);
+}
+
+if (Object.keys(mongoConnectionOptions).length > 0) {
+	Mongo.setConnectionOptions(mongoConnectionOptions);
 }
 
 process.env.HTTP_FORWARDED_COUNT = process.env.HTTP_FORWARDED_COUNT || '1';
