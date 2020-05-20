@@ -75,6 +75,7 @@
 	--component-color: #f2f3f5;
 	--pending-color: #fcb316;
 	--error-color: #bc2031;
+	--success-color: #2de0a5;
 	--selection-color: #02acec;
 	--attention-color: #9c27b0;
 
@@ -86,7 +87,6 @@
 	--link-font-color: var(--primary-action-color);
 	--info-font-color: var(--secondary-font-color);
 	--custom-scrollbar-color: var(--transparent-darker);
-	--status-offline: var(--transparent-darker);
 
 	/* #endregion */
 
@@ -98,6 +98,7 @@
 	/*
 	* General
 	*/
+
 	--text-size: 0.875rem;
 	--header-min-height: 60px;
 	--toolbar-height: 55px;
@@ -108,11 +109,12 @@
 	--flex-tab-webrtc-2-width: 850px;
 	--border: 2px;
 	--border-radius: 2px;
-	--status-online: var(--rc-color-success);
-	--status-away: var(--rc-color-alert);
-	--status-busy: var(--rc-color-error);
-	--status-invisible: var(--color-gray-medium);
-	--status-invisible-sidebar: var(--rc-color-primary-darkest);
+	--rc-status-online: var(--rc-color-success);
+	--rc-status-away: var(--rc-color-alert);
+	--rc-status-busy: var(--rc-color-error);
+	--rc-status-invisible: var(--color-gray-medium);
+	--rc-status-offline: var(--transparent-darker);
+	--rc-status-invisible-sidebar: var(--rc-color-primary-darkest);
 	--default-padding: 1.5rem;
 	--default-small-padding: 1rem;
 	--status-bullet-size: 10px;
