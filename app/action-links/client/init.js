@@ -8,7 +8,7 @@ import { actionLinks } from '../both/lib/actionLinks';
 
 
 Template.room.events({
-	'click .action-link'(event, instance) {
+	'click [data-actionlink]'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
