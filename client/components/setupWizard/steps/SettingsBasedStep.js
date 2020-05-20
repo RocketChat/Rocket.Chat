@@ -8,12 +8,12 @@ import {
 	Skeleton,
 	TextInput,
 } from '@rocket.chat/fuselage';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useReducer, useState } from 'react';
 
 import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation, useLanguages } from '../../../contexts/TranslationContext';
-import { useFocus } from '../../../hooks/useFocus';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
@@ -42,7 +42,7 @@ const useFields = () => {
 	return { fields, resetFields, setFieldValue };
 };
 
-export function SettingsBasedStep({ step, title, active }) {
+function SettingsBasedStep({ step, title, active }) {
 	const { settings, currentStep, goToPreviousStep, goToNextStep } = useSetupWizardContext();
 	const { fields, resetFields, setFieldValue } = useFields();
 	const [commiting, setCommiting] = useState(false);
@@ -63,7 +63,7 @@ export function SettingsBasedStep({ step, title, active }) {
 
 	const batchSetSettings = useBatchSettingsDispatch();
 
-	const autoFocusRef = useFocus(active);
+	const autoFocusRef = useAutoFocus(active);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -125,7 +125,6 @@ export function SettingsBasedStep({ step, title, active }) {
 							/>}
 
 							{type === 'select' && <Select
-								type='select'
 								data-qa={_id}
 								id={_id}
 								name={_id}
@@ -136,7 +135,6 @@ export function SettingsBasedStep({ step, title, active }) {
 							/>}
 
 							{type === 'boolean' && <Select
-								type='select'
 								data-qa={_id}
 								id={_id}
 								name={_id}
@@ -150,7 +148,6 @@ export function SettingsBasedStep({ step, title, active }) {
 							/>}
 
 							{type === 'language' && <Select
-								type='select'
 								data-qa={_id}
 								id={_id}
 								name={_id}
@@ -173,3 +170,5 @@ export function SettingsBasedStep({ step, title, active }) {
 		/>
 	</Step>;
 }
+
+export default SettingsBasedStep;
