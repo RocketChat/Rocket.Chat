@@ -56,8 +56,8 @@ function UsersPage() {
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
 			<VerticalBar.Content>
-				{context === 'info' && <UserInfoWithData userId={id}/>}
-				{context === 'edit' && <EditUserWithData userId={id}/>}
+				{context === 'info' && <UserInfoWithData uid={id}/>}
+				{context === 'edit' && <EditUserWithData uid={id}/>}
 				{context === 'new' && <AddUser/>}
 				{context === 'invite' && <InviteUsers/>}
 			</VerticalBar.Content>
