@@ -55,7 +55,6 @@ export const createSettings = () => {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Routing',
-		i18nLabel: 'Livechat_last_chatted_agent_preferred',
 		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } },
 	});
 
