@@ -36,11 +36,12 @@ export function EditUserWithData({ userId, ...props }) {
 const getInitialValue = (data) => ({
 	roles: data.roles,
 	name: data.name ?? '',
+	password: '',
 	username: data.username,
 	status: data.status,
 	bio: data.bio ?? '',
 	email: (data.emails && data.emails[0].address) || '',
-	emailVerified: (data.emails && data.emails[0].verified) || false,
+	verified: (data.emails && data.emails[0].verified) || false,
 	setRandomPassword: false,
 	requirePasswordChange: data.setRandomPassword || false,
 	customFields: data.customFields ?? {},
