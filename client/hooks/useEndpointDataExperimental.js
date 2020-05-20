@@ -5,14 +5,13 @@ import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
 export const ENDPOINT_STATES = {
 	LOADING: 'LOADING',
-	DELAYING: 'DELAYING',
 	DONE: 'DONE',
 	ERROR: 'ERROR',
 };
 
 const defaultState = { data: null, state: ENDPOINT_STATES.LOADING };
 
-export const useEndpointDataExperimental = (endpoint, params = {}) => {
+export const useEndpointDataExperimental = (endpoint, params = {}, { delayTimeout = 1000 } = {}) => {
 	const [data, setData] = useState(defaultState);
 
 	const getData = useEndpoint('GET', endpoint);
@@ -27,8 +26,8 @@ export const useEndpointDataExperimental = (endpoint, params = {}) => {
 					return;
 				}
 
-				setData({ state: ENDPOINT_STATES.DELAYING });
-			}, 1000);
+				setData({ delaying: true, state: ENDPOINT_STATES.LOADING });
+			}, delayTimeout);
 
 			try {
 				setData(defaultState);
