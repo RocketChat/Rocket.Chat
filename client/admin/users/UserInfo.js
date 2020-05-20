@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Box, Avatar, Margins, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
+import { Box, Avatar, Margins, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -9,6 +9,7 @@ import { DateFormat } from '../../../app/lib';
 import { UserInfoActions } from './UserInfoActions';
 import MarkdownText from '../../components/basic/MarkdownText';
 import VerticalBar from '../../components/basic/VerticalBar';
+import { FormSkeleton } from './Skeleton';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();
@@ -28,23 +29,16 @@ const UTCClock = ({ utcOffset, ...props }) => {
 	return <Box {...props}>{time} UTC {utcOffset}</Box>;
 };
 
-export function UserInfoWithData({ userId, ...props }) {
+export function UserInfoWithData({ uid, ...props }) {
 	const t = useTranslation();
 	const [cache, setCache] = useState();
 
 	const onChange = () => setCache(new Date());
 
-	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId }), [userId, cache]));
+	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId: uid }), [uid, cache]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
-		return <Box w='full' pb='x24'>
-			<Skeleton mbe='x4'/>
-			<Skeleton mbe='x8' />
-			<Skeleton mbe='x4'/>
-			<Skeleton mbe='x8'/>
-			<Skeleton mbe='x4'/>
-			<Skeleton mbe='x8'/>
-		</Box>;
+		return <FormSkeleton/>;
 	}
 
 	if (error) {

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Box, Skeleton, Field, Margins, Button } from '@rocket.chat/fuselage';
+import { Box, Field, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -9,21 +9,15 @@ import { useRoute } from '../../contexts/RouterContext';
 import UserAvatarEditor from '../../components/basic/avatar/UserAvatarEditor';
 import { useForm } from '../../hooks/useForm';
 import UserForm from './UserForm';
+import { FormSkeleton } from './Skeleton';
 
-export function EditUserWithData({ userId, ...props }) {
+export function EditUserWithData({ uid, ...props }) {
 	const t = useTranslation();
 	const { data: roleData, state: roleState, error: roleError } = useEndpointDataExperimental('roles.list', '') || {};
-	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId }), [userId]));
+	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId: uid }), [uid]));
 
 	if ([state, roleState].includes(ENDPOINT_STATES.LOADING)) {
-		return <Box w='full' pb='x24' {...props}>
-			<Skeleton mbe='x4'/>
-			<Skeleton mbe='x8' />
-			<Skeleton mbe='x4'/>
-			<Skeleton mbe='x8'/>
-			<Skeleton mbe='x4'/>
-			<Skeleton mbe='x8'/>
-		</Box>;
+		return <FormSkeleton/>;
 	}
 
 	if (error || roleError) {
