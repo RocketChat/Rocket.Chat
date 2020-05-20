@@ -1,17 +1,16 @@
-import { Box, Table, TextInput, Icon, Chip } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import { Box, Table, TextInput, Icon, Tag, Avatar } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
+import PriceDisplay from './PriceDisplay';
+import { AppStatus } from './AppStatus';
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
-import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-import { Apps } from '../../../app/apps/client/orchestrator';
-import { formatPricingPlan } from '../../../app/apps/client/admin/helpers';
-
-
-// const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+import { useMarketplaceApps } from './hooks/useMarketplaceApps';
+import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
+import { AppMenu } from './AppMenu';
 
 const FilterByText = React.memo(({ setFilter, ...props }) => {
 	const t = useTranslation();
@@ -29,60 +28,29 @@ const FilterByText = React.memo(({ setFilter, ...props }) => {
 	</Box>;
 });
 
-const useResizeInlineBreakpoint = (sizes = [], debounceDelay = 0) => {
-	const { ref, borderBoxSize } = useResizeObserver({ debounceDelay });
-	const inlineSize = borderBoxSize ? borderBoxSize.inlineSize : 0;
-	sizes = useMemo(() => sizes.map((current) => (inlineSize ? inlineSize > current : true)), [inlineSize]);
-	return [ref, ...sizes];
-};
+const objectFit = { objectFit: 'contain' };
 
-const formatPrice = (purchaseType, pricingPlans, price) => {
-	if (purchaseType === 'subscription') {
-		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
-			return;
-		}
-
-		return formatPricingPlan(pricingPlans[0]);
-	}
-
-	if (price > 0) {
-		return formatPrice(price);
-	}
-
-	return 'Free';
-};
-
-export function MarketplaceTable({ type }) {
+export function MarketplaceTable({ setModal }) {
 	const t = useTranslation();
-	const formatDateAndTime = useFormatDateAndTime();
 	const [ref, isBig] = useResizeInlineBreakpoint([700], 200);
-
-	const [data, setData] = useState({});
-
-	useEffect(() => {
-		(async () => {
-			const appsData = await Promise.all([Apps.getAppsFromMarketplace(), Apps.getApps()]);
-			setData(await Apps.getAppsFromMarketplace())
-		})();
-	}, []);
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const debouncedText = useDebouncedValue(params.text, 500);
-	const debouncedSort = useDebouncedValue(sort, 500);
+	const debouncedSort = useDebouncedValue(sort, 200);
 
-	const filteredData = useMemo(() => {
-		const filteredValues = Object.values(data).filter(debouncedSort).sort((a, b) => (a.name > b.name ? 1 : -1));
-		return debouncedSort[1] === 'asc' ? filteredValues : filteredValues.reverse();
-	}, [debouncedText, debouncedSort, params.current, params.itemsPerPage, JSON.stringify(data)]);
+	const [data, total] = useMarketplaceApps({ debouncedSort, debouncedText, ...params });
 
-	const router = useRoute('admin-integrations');
+	const getLoggedInCloud = useMethod('cloud:checkUserLoggedIn');
+	const isLoggedIn = getLoggedInCloud();
 
-	const onClick = (_id, type) => () => router.push({
-		context: 'edit',
-		type: type === 'webhook-incoming' ? 'incoming' : 'outgoing',
-		id: _id,
+	const router = useRoute('admin-apps');
+
+	const onClick = (id, version) => () => router.push({
+		context: 'details',
+		version,
+		id,
 	});
 
 	const onHeaderClick = useCallback((id) => {
@@ -100,31 +68,67 @@ export function MarketplaceTable({ type }) {
 		<Th key={'details'}>{t('Details')}</Th>,
 		<Th key={'price'}>{t('Price')}</Th>,
 		isBig && <Th key={'status'}>{t('Status')}</Th>,
-
 	].filter(Boolean), [sort, isBig]);
 
-	const renderRow = useCallback(({ author, name, id, description, categories, purchaseType, pricingPlans, price, purchased,  }) => {
-		const handler = useMemo(() => onClick(id, type), []);
-		return <Table.Row key={id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action>
+	const renderRow = useCallback((props) => {
+		const {
+			author: { name: authorName },
+			name,
+			id,
+			description,
+			categories,
+			purchaseType,
+			pricingPlans,
+			price,
+			iconFileData,
+			marketplaceVersion,
+			installed,
+		} = props;
+
+		const [showStatus, setShowStatus] = useState(false);
+
+		const toggleShow = (state) => () => setShowStatus(state);
+		const handler = onClick(id, marketplaceVersion);
+		const preventDefault = useCallback((e) => { e.preventDefault(); e.stopPropagation(); }, []);
+
+		return useMemo(() => <Table.Row key={id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
 			<Table.Cell withTruncatedText display='flex' flexDirection='row'>
-				<Box w='x40' h='x40' alignSelf='center'>avatar</Box>
+				<Avatar style={objectFit} size='x40' mie='x8' alignSelf='center' url={`data:image/png;base64,${ iconFileData }`}/>
 				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
 					<Box color='default' fontScale='p2'>{name}</Box>
-					<Box color='default' fontScale='p2'>{`${ t('By') } ${ author.name }`}</Box>
+					<Box color='default' fontScale='p2'>{`${ t('By') } ${ authorName }`}</Box>
 				</Box>
 			</Table.Cell>
-			<Table.Cell withTruncatedText>
+			<Table.Cell>
 				<Box display='flex' flexDirection='column'>
-					<Box color='default'>{description}</Box>
-					{categories && <Box color='hint'>{categories.map((current) => <Chip key={current}>{current}</Chip>)}</Box>}
+					<Box color='default' withTruncatedText>{description}</Box>
+					{categories && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
+						{categories.map((current) => <Tag disabled key={current} mie='x4'>{current}</Tag>)}
+					</Box>}
 				</Box>
 			</Table.Cell>
-			<Table.Cell withTruncatedText>{formatPrice(purchaseType, pricingPlans, price)}</Table.Cell>
-			{isBig && <Table.Cell withTruncatedText>{}</Table.Cell>}
-		</Table.Row>;
+			<Table.Cell >
+				<PriceDisplay {...{ purchaseType, pricingPlans, price }} />
+			</Table.Cell>
+			{isBig && <Table.Cell withTruncatedText>
+				<Box display={showStatus ? 'flex' : 'none'} flexDirection='row' alignItems='center' onClick={preventDefault}>
+					<AppStatus app={props} setModal={setModal} isLoggedIn={isLoggedIn} mie='x12'/>
+					{installed && <AppMenu app={props} setModal={setModal} isLoggedIn={isLoggedIn} mis='x12'/>}
+				</Box>
+			</Table.Cell>}
+		</Table.Row>, [showStatus, JSON.stringify(props)]);
 	}, []);
 
-	return <GenericTable ref={ref} FilterComponent={FilterByText} header={header} renderRow={renderRow} results={filteredData} total={filteredData.length} setParams={setParams} params={params} />;
+	return <GenericTable
+		ref={ref}
+		FilterComponent={FilterByText}
+		header={header}
+		renderRow={renderRow}
+		results={data}
+		total={total}
+		setParams={setParams}
+		params={params}
+	/>;
 }
 
 export default MarketplaceTable;
