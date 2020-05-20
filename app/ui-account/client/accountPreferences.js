@@ -49,7 +49,7 @@ Template.accountPreferences.helpers({
 		const languages = TAPi18n.getLanguages();
 
 		const result = Object.entries(languages)
-			.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+			.map(([key, language]) => ({ ...language, key }))
 			.sort((a, b) => a.key - b.key);
 
 		result.unshift({
@@ -62,7 +62,7 @@ Template.accountPreferences.helpers({
 	},
 	isUserLanguage(key) {
 		const languageKey = Meteor.user().language;
-		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key.toLowerCase();
 	},
 	ifThenElse(condition, val, not = '') {
 		return condition ? val : not;
@@ -353,10 +353,10 @@ Template.accountPreferences.events({
 	'click .js-dont-ask-remove'(e) {
 		e.preventDefault();
 		const selectEl = document.getElementById('dont-ask');
-		const { options } = selectEl;
-		const selectedOption = selectEl.value;
-		const optionIndex = Array.from(options).findIndex((option) => option.value === selectedOption);
-
-		selectEl.remove(optionIndex);
+		for (let i = selectEl.options.length - 1; i >= 0; i--) {
+			if (selectEl.options[i].selected) {
+				selectEl.remove(i);
+			}
+		}
 	},
 });

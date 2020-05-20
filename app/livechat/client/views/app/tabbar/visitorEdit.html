@@ -31,20 +31,25 @@
 					</label>
 				</div>
 
-				{{#each visitorCustomFields}}
-					<div class="rc-input rc-form-group rc-form-group--small">
-						<label class="rc-input__label">
-							<div class="rc-input__title">{{label}}</div>
-							<div class="rc-input__wrapper">
-								<input class="rc-input__element" type="text" name="{{name}}" autocomplete="off" data-visitorLivechatData="true" value="{{value}}">
-							</div>
-						</label>
-					</div>
-				{{/each}}
+				{{#if canViewCustomFields }}
+					{{#each visitorCustomFields}}
+						<div class="rc-input rc-form-group rc-form-group--small">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{label}}</div>
+								<div class="rc-input__wrapper">
+									<input class="rc-input__element" type="text" name="{{name}}" autocomplete="off" data-visitorLivechatData="true" value="{{value}}" disabled="{{canOnlyViewCustomFields}}">
+								</div>
+							</label>
+						</div>
+					{{/each}}
+				{{/if}}
 			{{/with}}
 
 			{{#with room}}
 				<h3>{{_ "Conversation" }}</h3>
+				{{#if customFieldsTemplate}}
+					{{> Template.dynamic template=customFieldsTemplate data=room }}
+				{{/if}}
 				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Topic"}}</div>
@@ -88,17 +93,18 @@
 						{{/each}}
 					</ul>
 				</div>
-
-				{{#each roomCustomFields}}
-					<div class="rc-input rc-form-group rc-form-group--small">
-						<label class="rc-input__label">
-							<div class="rc-input__title">{{label}}</div>
-							<div class="rc-input__wrapper">
-								<input class="rc-input__element" type="text" name="{{name}}" autocomplete="off" data-roomLivechatData="true" value="{{value}}">
-							</div>
-						</label>
-					</div>
-				{{/each}}
+				{{#if canViewCustomFields }}
+					{{#each roomCustomFields}}
+						<div class="rc-input rc-form-group rc-form-group--small">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{label}}</div>
+								<div class="rc-input__wrapper">
+									<input class="rc-input__element" type="text" name="{{name}}" autocomplete="off" data-roomLivechatData="true" value="{{value}}" disabled="{{canOnlyViewCustomFields}}">
+								</div>
+							</label>
+						</div>
+					{{/each}}
+				{{/if}}
 			{{/with}}
 
 			<div class="rc-user-info__flex rc-user-info__row">

@@ -3,14 +3,14 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useUserId } from '../../contexts/UserContext';
-import { SetupWizardPage } from './SetupWizardPage';
+import SetupWizardPage from './SetupWizardPage';
 
 export const finalStep = 'final';
 
 const useStepRouting = () => {
 	const param = useRouteParameter('step');
 	const userId = useUserId();
-	const goToSetupWizard = useRoute('setup-wizard');
+	const setupWizardRoute = useRoute('setup-wizard');
 
 	const [currentStep, setCurrentStep] = useState(() => {
 		if (param === finalStep) {
@@ -32,8 +32,8 @@ const useStepRouting = () => {
 			setCurrentStep(2);
 		}
 
-		goToSetupWizard.replacingState({ step: String(currentStep) });
-	}, [goToSetupWizard, userId, currentStep]);
+		setupWizardRoute.replace({ step: String(currentStep) });
+	}, [setupWizardRoute, userId, currentStep]);
 
 	return [currentStep, setCurrentStep];
 };
@@ -90,7 +90,7 @@ const SetupWizardContext = createContext({
 	goToFinalStep: () => {},
 });
 
-export function SetupWizardState() {
+function SetupWizardState() {
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const {
 		loaded,
@@ -123,3 +123,5 @@ export function SetupWizardState() {
 }
 
 export const useSetupWizardContext = () => useContext(SetupWizardContext);
+
+export default SetupWizardState;

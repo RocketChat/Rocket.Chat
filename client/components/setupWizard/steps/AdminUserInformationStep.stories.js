@@ -1,7 +1,7 @@
 import { boolean, select, text } from '@storybook/addon-knobs';
 import React from 'react';
 
-import { AdminUserInformationStep } from './AdminUserInformationStep';
+import AdminUserInformationStep from './AdminUserInformationStep';
 
 export default {
 	title: 'setupWizard/steps/AdminUserInformationStep',

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
 
+import { callbacks } from '../../callbacks/server';
 import { settings } from '../../settings';
 import { Logger } from '../../logger';
 
@@ -376,6 +377,8 @@ export default class LDAP {
 	searchAllPaged(BaseDN, options, page) {
 		this.bindIfNecessary();
 
+		({ BaseDN, options } = callbacks.run('ldap.beforeSearchAll', { BaseDN, options }));
+
 		const processPage = ({ entries, title, end, next }) => {
 			logger.search.info(title);
 			// Force LDAP idle to wait the record processing
@@ -425,8 +428,8 @@ export default class LDAP {
 						title: 'Final Page',
 						end: true,
 					});
+					entries = [];
 				} else if (entries.length) {
-					logger.search.info('Page');
 					processPage({
 						entries,
 						title: 'Page',
@@ -452,6 +455,8 @@ export default class LDAP {
 
 	searchAllAsync(BaseDN, options, callback) {
 		this.bindIfNecessary();
+
+		({ BaseDN, options } = callbacks.run('ldap.beforeSearchAll', { BaseDN, options }));
 
 		this.client.search(BaseDN, options, (error, res) => {
 			if (error) {
