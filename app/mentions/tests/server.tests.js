@@ -2,6 +2,8 @@
 import 'babel-polyfill';
 import assert from 'assert';
 
+import _ from 'underscore';
+
 import MentionsServer from '../server/Mentions';
 
 
@@ -18,7 +20,7 @@ beforeEach(function() {
 			}, {
 				_id: 2,
 				username: 'jon',
-			}].filter((user) => usernames.includes(user.username)), // Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
+			}].filter((user) => _.unique(usernames).find((username) => (username instanceof RegExp ? username.test(user.username) : username === user.username))), // Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
 		getChannels(channels) {
 			return [{
 				_id: 1,
