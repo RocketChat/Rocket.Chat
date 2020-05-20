@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Field, Box, Headline, Skeleton, Margins, Button } from '@rocket.chat/fuselage';
+import { Field, Box, Skeleton, Margins, Button } from '@rocket.chat/fuselage';
 
 import { SuccessModal, DeleteWarningModal } from './EditIntegrationsPage';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -21,11 +21,11 @@ export default function EditIncomingWebhookWithData({ integrationId, ...props })
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
 		</Box>;
 	}

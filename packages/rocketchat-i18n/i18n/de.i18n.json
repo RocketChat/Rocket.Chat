@@ -660,6 +660,7 @@
   "Closing_chat": "Schließe Chat",
   "Cloud": "Cloud",
   "Cloud_Register_manually": "Manuell registrieren",
+  "Cloud_click_here": "Wechseln Sie nach dem Kopieren des Texts zur Cloud-Konsole. [Klicke hier](__cloudConsoleUrl__)",
   "Cloud_register_offline_finish_helper": "Nach Abschluss des Registrierungsvorgangs in der Cloud-Konsole, sollte ein Text angezeigt werden. Bitte hier einfügen, um die Registrierung abzuschließen.",
   "Cloud_register_offline_helper": "Arbeitsbereiche können manuell registriert werden, wenn ein Airgap besteht oder der Netzwerkzugriff eingeschränkt ist. Kopieren Sie den folgenden Text und rufen Sie unsere Cloud-Konsole auf, um den Vorgang abzuschließen.",
   "Cloud_register_success": "Ihr Arbeitsbereich wurde erfolgreich registriert!",

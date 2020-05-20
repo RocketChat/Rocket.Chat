@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Headline, Skeleton, Box, Accordion, Field, FieldGroup, Pagination } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Skeleton, Box, Accordion, Field, FieldGroup, Pagination } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import Page from '../../../components/basic/Page';
@@ -174,11 +174,11 @@ function HistoryContent({ data, state, onChange, ...props }) {
 
 	if (!loadedData || state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
 		</Box>;
 	}
