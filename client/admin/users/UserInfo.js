@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { Box, Avatar, Margins, Headline, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { Box, Avatar, Margins, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -38,11 +38,11 @@ export function UserInfoWithData({ userId, ...props }) {
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24'>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
 		</Box>;
 	}
@@ -64,7 +64,7 @@ export function UserInfo({ data, onChange, ...props }) {
 
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
-	return <VerticalBar.ScrollableContent is='form' {...props}>
+	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
 		<Box display='flex' flexDirection='column' alignItems='center'>
 			<Margins block='x2'>
 				<Avatar size={'x120'} title={data.username} url={avatarUrl}/>

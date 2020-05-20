@@ -64,7 +64,9 @@
 	}
 
 	& .unread-rooms {
-		display: none;
+		padding: calc(var(--sidebar-small-default-padding) - 8px);
+
+		text-align: center;
 	}
 }
 
