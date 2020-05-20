@@ -1314,6 +1314,15 @@
 				border-bottom: none;
 			}
 
+			& .add-token {
+				display: flex;
+
+				& .rc-select {
+					width: 40%;
+					margin: 0 0 0 10px;
+				}
+			}
+
 			&:first-child {
 				padding-top: 0;
 			}
@@ -4145,6 +4154,15 @@
 
 		& .jump-to-large {
 			display: none;
+		}
+	}
+
+	.add-token {
+		display: block !important;
+
+		& .rc-select {
+			width: auto !important;
+			margin: 10px 0 !important;
 		}
 	}
 }
