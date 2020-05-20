@@ -1017,7 +1017,7 @@ Template.room.onCreated(function() {
 	this.autorun(() => this.state.set('rid', Template.currentData()._id()));
 
 
-	const debounced = _.debounce((rid) => Tracker.afterFlush(()=> this.state.set('debounced_rid', rid)), 100);
+	const debounced = _.debounce((rid) => Tracker.afterFlush(() => this.state.set('debounced_rid', rid)), 100);
 
 	this.autorun(() => debounced(this.state.get('rid')));
 
