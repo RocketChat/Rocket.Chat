@@ -10,6 +10,7 @@ function VerticalBar({ children, ...props }) {
 
 	return <Box
 		display='flex'
+		flexDirection='column'
 		flexShrink={0}
 		width={mobile ? 'full' : 'x380'}
 		height='full'
@@ -23,6 +24,8 @@ function VerticalBar({ children, ...props }) {
 			display='flex'
 			flexDirection='column'
 			flexGrow={1}
+			flexShrink={1}
+			withTruncatedText
 		>
 			{children}
 		</Tile>
