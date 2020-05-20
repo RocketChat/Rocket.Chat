@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
@@ -25,7 +25,7 @@ export function Mailer({ sendMail = () => {} }) {
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
-			<FieldGroup maxWidth='x600' is='form' method='post'>
+			<FieldGroup maxWidth='x600' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} method='post'>
 				<Field>
 					<Field.Label>{t('From')}</Field.Label>
 					<Field.Row>
