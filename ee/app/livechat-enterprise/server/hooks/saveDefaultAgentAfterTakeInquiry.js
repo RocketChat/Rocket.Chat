@@ -1,5 +1,5 @@
-import { callbacks } from '../../../../../app/callbacks';
-import { settings } from '../../../../../app/settings';
+import { callbacks } from '../../../../../app/callbacks/server';
+import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { LivechatVisitors } from '../../../../../app/models/server';
 

@@ -1,6 +1,6 @@
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../app/callbacks/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { settings } from '../../../../../app/settings';
+import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms, LivechatVisitors, Users } from '../../../../../app/models/server';
 
 callbacks.add('livechat.checkDefaultAgentOnNewRoom', (defaultAgent, defaultGuest) => {
