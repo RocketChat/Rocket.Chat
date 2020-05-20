@@ -5,9 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../hooks/useEndpointUpload';
-// import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useRoute } from '../../contexts/RouterContext';
-// import CustomFieldsForm from './CustomFieldsForm';
 import UserAvatarEditor from '../../components/basic/avatar/UserAvatarEditor';
 import { useForm } from '../../hooks/useForm';
 import UserForm from './UserForm';
@@ -116,5 +114,5 @@ export function EditUser({ data, roles, ...props }) {
 		</Field.Row>
 	</Field>, [handleSave, reset]);
 
-	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} prepend={prepend} append={append}/>;
+	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} prepend={prepend} append={append} {...props}/>;
 }
