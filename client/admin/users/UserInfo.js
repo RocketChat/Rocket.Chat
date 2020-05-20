@@ -65,17 +65,17 @@ export function UserInfo({ data, onChange, ...props }) {
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
-		<Box display='flex' flexDirection='column' alignItems='center'>
-			<Margins block='x2'>
+		<Box display='flex' flexDirection='column' alignItems='center' withTruncatedText>
+			<Margins block='x2' inline='auto'>
 				<Avatar size={'x120'} title={data.username} url={avatarUrl}/>
-				<Box fontScale='h1'>{data.name || data.username}</Box>
-				{!!data.name && <Box fontScale='p1' color='hint'>@{data.username}</Box>}
-				<Box fontScale='p1' color='hint'>{data.status}</Box>
+				<Box fontScale='h1' withTruncatedText>{data.name || data.username}</Box>
+				{!!data.name && <Box fontScale='p1' color='hint' withTruncatedText>@{data.username}</Box>}
+				<Box fontScale='p1' color='hint' withTruncatedText>{data.status}</Box>
 			</Margins>
 		</Box>
 
 		<UserInfoActions isActive={data.active} isAdmin={data.roles.includes('admin')} _id={data._id} username={data.username} onChange={onChange}/>
-		<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16'>
+		<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16' withTruncatedText>
 			<Margins blockEnd='x4'>
 				{data.bio && data.bio.trim().length > 0 && <MarkdownText fontScale='s1'>{data.bio}</MarkdownText>}
 				{!!data.roles.length && <>
@@ -89,7 +89,7 @@ export function UserInfo({ data, onChange, ...props }) {
 
 				{data.emails && <> <Box fontScale='micro' color='hint'>{t('Email')}</Box>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Box fontScale='s1'>{data.emails[0].address}</Box>
+						<Box fontScale='s1' withTruncatedText>{data.emails[0].address}</Box>
 						<Margins inline='x4'>
 							{data.emails[0].verified && <Tag variant='primary'>{t('Verified')}</Tag>}
 							{data.emails[0].verified || <Tag disabled>{t('Not_verified')}</Tag>}
