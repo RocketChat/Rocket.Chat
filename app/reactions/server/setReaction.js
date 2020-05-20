@@ -3,11 +3,12 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { Messages, EmojiCustom, Subscriptions, Rooms } from '../../models';
+import { Messages, EmojiCustom, Rooms } from '../../models';
 import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
 import { isTheLastMessage, msgStream } from '../../lib';
+import { hasPermission } from '../../authorization/server/functions/hasPermission';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
@@ -17,16 +18,17 @@ const removeUserReaction = (message, reaction, username) => {
 	return message;
 };
 
-export function setReaction(room, user, message, reaction, shouldReact) {
+async function setReaction(room, user, message, reaction, shouldReact) {
 	reaction = `:${ reaction.replace(/:/g, '') }:`;
 
 	if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', { method: 'setReaction' });
 	}
 
-	if (room.ro && !room.reactWhenReadOnly) {
-		if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
-			return false;
+	if (room.ro === true && (!room.reactWhenReadOnly && !hasPermission(user._id, 'post-readonly', room._id))) {
+		// Unless the user was manually unmuted
+		if (!(room.unmuted || []).includes(user.username)) {
+			throw new Error('You can\'t send messages because the room is readonly.');
 		}
 	}
 
@@ -37,8 +39,6 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 			ts: new Date(),
 			msg: TAPi18n.__('You_have_been_muted', {}, user.language),
 		});
-		return false;
-	} if (!Subscriptions.findOne({ rid: message.rid })) {
 		return false;
 	}
 
@@ -92,17 +92,17 @@ Meteor.methods({
 	setReaction(reaction, messageId, shouldReact) {
 		const user = Meteor.user();
 
-		const message = Messages.findOneById(messageId);
-
-		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
-
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
 
+		const message = Messages.findOneById(messageId);
+
 		if (!message) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
+
+		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
 
 		if (!room) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
