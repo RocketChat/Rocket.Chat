@@ -175,6 +175,7 @@ export const sendNotification = async ({
 const project = {
 	$project: {
 		audioNotifications: 1,
+		desktopNotifications: 1,
 		emailNotifications: 1,
 		mobilePushNotifications: 1,
 		muteGroupMentions: 1,

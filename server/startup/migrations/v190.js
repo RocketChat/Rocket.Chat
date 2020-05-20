@@ -1,10 +1,19 @@
 import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Settings, Subscriptions } from '../../../app/models/server/raw';
 
 Migrations.add({
 	version: 190,
 	up() {
 		// Remove unused settings
-		Settings.remove({ _id: 'Accounts_Default_User_Preferences_desktopNotificationDuration' });
+		Promise.await(Settings.col.deleteOne({ _id: 'Accounts_Default_User_Preferences_desktopNotificationDuration' }));
+		Promise.await(Subscriptions.col.updateMany({
+			desktopNotificationDuration: {
+				$exists: true,
+			},
+		}, {
+			$unset: {
+				desktopNotificationDuration: 1,
+			},
+		}));
 	},
 });
