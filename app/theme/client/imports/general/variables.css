@@ -17,7 +17,7 @@
 	--color-purple: #861da8;
 	--color-red: #f5455c;
 	--color-dark-red: #e0364d;
-	--color-orange: #f59547;
+	--color-orange: #F38C39;
 	--color-yellow: #ffd21f;
 	--color-dark-yellow: #f6c502;
 	--color-green: #2de0a5;
@@ -40,7 +40,7 @@
 	/* #region colors Colors */
 	--rc-color-error: var(--color-red);
 	--rc-color-error-light: #e1364c;
-	--rc-color-alert: var(--color-yellow);
+	--rc-color-alert: var(--color-orange);
 	--rc-color-alert-light: var(--color-dark-yellow);
 	--rc-color-success: var(--color-green);
 	--rc-color-success-light: #25d198;
