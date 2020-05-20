@@ -16,6 +16,8 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
+		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
+		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -164,7 +166,7 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
+	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
 		const query = {
 			t: 'l',
 			'v.token': visitorToken,

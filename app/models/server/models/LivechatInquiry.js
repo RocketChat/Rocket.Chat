@@ -185,7 +185,7 @@ export class LivechatInquiry extends Base {
 	}
 
 	removeDefaultAgentById(inquiryId) {
-		this.update({
+		return this.update({
 			_id: inquiryId,
 		}, {
 			$unset: { defaultAgent: 1 },

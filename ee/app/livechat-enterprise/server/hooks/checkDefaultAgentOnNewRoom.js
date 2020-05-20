@@ -17,7 +17,7 @@ callbacks.add('livechat.checkDefaultAgentOnNewRoom', (defaultAgent, defaultGuest
 	}
 
 	const { _id: guestId } = defaultGuest;
-	const guest = LivechatVisitors.findOneById(guestId, { fields: { lastAgent: 1 } });
+	const guest = LivechatVisitors.findOneById(guestId, { fields: { lastAgent: 1, token: 1 } });
 	const { lastAgent: { username: usernameByVisitor } = {}, token } = guest;
 
 	const lastGuestAgent = usernameByVisitor && Users.findOneOnlineAgentByUsername(usernameByVisitor, { fields: { _id: 1, username: 1 } });
@@ -25,7 +25,7 @@ callbacks.add('livechat.checkDefaultAgentOnNewRoom', (defaultAgent, defaultGuest
 		return lastGuestAgent;
 	}
 
-	const room = LivechatRooms.findLastServedAndClosedByVisitorToken(token, { fields: { servedBy: 1 } });
+	const room = LivechatRooms.findOneLastServedAndClosedByVisitorToken(token, { fields: { servedBy: 1 } });
 	if (!room || !room.servedBy) {
 		return defaultAgent;
 	}
