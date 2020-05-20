@@ -25,7 +25,7 @@ callbacks.add('livechat.beforeRouteChat', async (inquiry) => {
 		dispatchInquiryPosition(inq);
 	}
 
-	checkWaitingQueue(department);
+	await checkWaitingQueue(department);
 
 	return LivechatInquiry.findOneById(_id);
 }, callbacks.priority.HIGH, 'livechat-before-routing-chat');

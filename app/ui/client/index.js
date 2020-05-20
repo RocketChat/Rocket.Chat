@@ -12,7 +12,6 @@ import './views/cmsPage.html';
 import './views/404/roomNotFound.html';
 import './views/404/invalidSecretURL.html';
 import './views/404/invalidInvite.html';
-import './views/app/audioNotification.html';
 import './views/app/burger.html';
 import './views/app/createChannel.html';
 import './views/app/editStatus.html';

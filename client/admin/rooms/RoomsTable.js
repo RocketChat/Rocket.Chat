@@ -44,7 +44,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const idOmnichannel = useUniqueId();
 	const idDiscussions = useUniqueId();
 
-	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 		<TextInput flexShrink={0} placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 		<Field>
 			<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mbs='x8' mi='neg-x8'>
