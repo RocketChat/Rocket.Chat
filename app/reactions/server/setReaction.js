@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { Messages, EmojiCustom, Subscriptions, Rooms } from '../../models';
+import { Messages, EmojiCustom, Rooms } from '../../models';
 import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
