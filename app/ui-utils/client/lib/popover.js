@@ -143,6 +143,16 @@ Template.popover.onRendered(function() {
 	this.firstNode.style.visibility = 'visible';
 });
 
+Template.popover.onCreated(function() {
+	this.route = FlowRouter.current().path;
+	this.autorun(() => {
+		FlowRouter.watchPathChange();
+		if (FlowRouter.current().path !== this.route) {
+			popover.close();
+		}
+	});
+});
+
 Template.popover.onDestroyed(function() {
 	if (this.data.onDestroyed) {
 		this.data.onDestroyed();
