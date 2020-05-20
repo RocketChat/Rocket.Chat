@@ -7,7 +7,7 @@ import { getActions } from './userActions';
 import { RoomManager, popover } from '../../../ui-utils';
 import { ChatRoom, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
-import { t, isRtl, handleError, roomTypes } from '../../../utils';
+import { t, isRtl, handleError, roomTypes, isMobile } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
 import { hasPermission } from '../../../authorization';
 
@@ -311,7 +311,9 @@ Template.membersList.onCreated(function() {
 });
 
 Template.membersList.onRendered(function() {
-	this.firstNode.parentNode.querySelector('#user-search').focus();
+	if (!isMobile()) {
+		this.firstNode.parentNode.querySelector('#user-search').focus();
+	}
 	this.autorun(() => {
 		const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');
