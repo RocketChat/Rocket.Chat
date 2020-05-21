@@ -100,7 +100,8 @@ const processWaitingQueue = async (department) => {
 		return;
 	}
 
-	const room = await RoutingManager.delegateInquiry(inquiry);
+	const { defaultAgent } = inquiry;
+	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
 	const propagateAgentDelegated = Meteor.bindEnvironment((rid, agentId) => {
 		dispatchAgentDelegated(rid, agentId);
