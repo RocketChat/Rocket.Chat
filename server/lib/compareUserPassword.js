@@ -5,8 +5,12 @@ import { Accounts } from 'meteor/accounts-base';
  * @param {object} user User object
  * @param {object} pass Object with { plain: 'plain-test-password' } or { sha256: 'sha256password' }
  */
-export function checkUserPassword(user = {}, pass) {
-	if (!(user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim())) {
+export function compareUserPassword(user, pass) {
+	if (!user?.services?.password?.bcrypt?.trim()) {
+		return true;
+	}
+
+	if (!pass || !pass.plain || !pass.sha256) {
 		return true;
 	}
 

@@ -7,7 +7,7 @@ import { Users } from '../../app/models/server';
 import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
-import { checkUserPassword } from '../lib/checkUserPassword';
+import { compareUserPassword } from '../lib/compareUserPassword';
 
 Meteor.methods({
 	saveUserProfile: twoFactorRequired(function(settings, customFields) {
@@ -52,7 +52,7 @@ Meteor.methods({
 		}
 
 		if (settings.email) {
-			if (!checkUserPassword(user, { sha256: settings.typedPassword })) {
+			if (!compareUserPassword(user, { sha256: settings.typedPassword })) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
 					method: 'saveUserProfile',
 				});
@@ -63,14 +63,14 @@ Meteor.methods({
 
 		// Should be the last check to prevent error when trying to check password for users without password
 		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
-			if (!checkUserPassword(user, { sha256: settings.typedPassword })) {
+			if (!compareUserPassword(user, { sha256: settings.typedPassword })) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
 					method: 'saveUserProfile',
 				});
 			}
 
 			// don't let user change to same password
-			if (checkUserPassword(user, { plain: settings.newPassword })) {
+			if (compareUserPassword(user, { plain: settings.newPassword })) {
 				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 					method: 'saveUserProfile',
 				});

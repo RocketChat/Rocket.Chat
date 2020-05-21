@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { Users } from '../../app/models/server';
 import { passwordPolicy } from '../../app/lib/server';
-import { checkUserPassword } from '../lib/checkUserPassword';
+import { compareUserPassword } from '../lib/compareUserPassword';
 
 Meteor.methods({
 	setUserPassword(password) {
@@ -26,7 +26,7 @@ Meteor.methods({
 			});
 		}
 
-		if (checkUserPassword(user, { plain: password })) {
+		if (compareUserPassword(user, { plain: password })) {
 			throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 				method: 'setUserPassword',
 			});
