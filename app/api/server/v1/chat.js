@@ -6,6 +6,7 @@ import { canAccessRoom, hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib/server';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
+import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
@@ -294,7 +295,7 @@ API.v1.addRoute('chat.react', { authRequired: true }, {
 			throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
 		}
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id, this.bodyParams.shouldReact));
+		Meteor.runAsUser(this.userId, () => Promise.await(executeSetReaction(emoji, msg._id, this.bodyParams.shouldReact)));
 
 		return API.v1.success();
 	},
