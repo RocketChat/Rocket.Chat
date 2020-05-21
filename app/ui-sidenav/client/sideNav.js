@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
@@ -106,17 +105,6 @@ const redirectToDefaultChannelIfNeeded = () => {
 		c.stop();
 		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
 	});
-};
-
-const openMainContentIfNeeded = () => {
-	const currentRouteState = FlowRouter.current();
-	const defaults = ['/', '/home', '/account'];
-
-	if (defaults.includes(currentRouteState.path)) {
-		menu.open();
-	} else {
-		menu.close();
-	}
 };
 
 const openMainContentIfNeeded = () => {
