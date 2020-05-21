@@ -1256,6 +1256,7 @@
   "error-invalid-triggerWords": "Gerador de palavras inválido",
   "error-invalid-urls": "URLs inválidas",
   "error-invalid-user": "Utilizador inválido",
+  "error-invalid-value": "Valor inválido",
   "error-invalid-username": "Nome de utilizador Inválido",
   "error-invalid-webhook-response": "O URL do webhook respondeu com um status diferente de 200",
   "error-message-deleting-blocked": "Exclusão de mensagens está bloqueada",
