@@ -1,17 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-
-import { handleError } from '../../../../app/utils';
-
-export const call = (...args) => new Promise(function(resolve, reject) {
-	Meteor.call(...args, function(err, result) {
-		if (err) {
-			// eslint-disable-next-line no-undef
-			handleError(err);
-			reject(err);
-		}
-		resolve(result);
-	});
-});
+export { call } from '../../../../app/ui-utils/client/lib/callMethod';
 
 export const convertDate = (date) => {
 	const [y, m, d] = date.split('-');

@@ -5,12 +5,12 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import AuditLog from './auditLog';
-import { LivechatRooms, Rooms, Messages } from '../../../../app/models';
-import { hasAllPermission } from '../../../../app/authorization';
+import { LivechatRooms, Rooms, Messages } from '../../../../app/models/server';
+import { hasAllPermission } from '../../../../app/authorization/server';
+
+const getValue = (room) => room && { rids: [room._id], name: room.name };
 
 const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
-	const getValue = (room) => room && { rids: [room._id], name: room.name };
-
 	if (roomId) {
 		return getValue(Rooms.findOne({ _id: roomId }));
 	}
