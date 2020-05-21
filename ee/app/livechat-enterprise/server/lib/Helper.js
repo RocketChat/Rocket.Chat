@@ -94,15 +94,6 @@ export const dispatchWaitingQueueStatus = async (department) => {
 	});
 };
 
-const normalizeDefaultAgent = (agent) => {
-	if (!agent) {
-		return;
-	}
-
-	const { _id: agentId, username } = agent;
-	return { agentId, username };
-};
-
 const processWaitingQueue = async (department) => {
 	const inquiry = LivechatInquiry.getNextInquiryQueued(department);
 	if (!inquiry) {
@@ -110,7 +101,7 @@ const processWaitingQueue = async (department) => {
 	}
 
 	const { defaultAgent } = inquiry;
-	const room = await RoutingManager.delegateInquiry(inquiry, normalizeDefaultAgent(defaultAgent));
+	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
 	const propagateAgentDelegated = Meteor.bindEnvironment((rid, agentId) => {
 		dispatchAgentDelegated(rid, agentId);

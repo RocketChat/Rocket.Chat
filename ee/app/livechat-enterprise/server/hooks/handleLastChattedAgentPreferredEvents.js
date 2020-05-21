@@ -4,6 +4,15 @@ import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms, LivechatInquiry, LivechatVisitors, Users } from '../../../../../app/models/server';
 import { checkWaitingQueue } from '../lib/Helper';
 
+const normalizeDefaultAgent = (agent) => {
+	if (!agent) {
+		return;
+	}
+
+	const { _id: agentId, username } = agent;
+	return { agentId, username };
+};
+
 const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	if (defaultAgent || !defaultGuest) {
 		return defaultAgent;
@@ -17,7 +26,7 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	const guest = LivechatVisitors.findOneById(guestId, { fields: { lastAgent: 1, token: 1 } });
 	const { lastAgent: { username: usernameByVisitor } = {}, token } = guest;
 
-	const lastGuestAgent = usernameByVisitor && Users.findOneOnlineAgentByUsername(usernameByVisitor, { fields: { _id: 1, username: 1 } });
+	const lastGuestAgent = usernameByVisitor && normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(usernameByVisitor, { fields: { _id: 1, username: 1 } }));
 	if (lastGuestAgent) {
 		return lastGuestAgent;
 	}
@@ -28,7 +37,7 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	}
 
 	const { servedBy: { username: usernameByRoom } } = room;
-	const lastRoomAgent = Users.findOneOnlineAgentByUsername(usernameByRoom, { fields: { _id: 1, username: 1 } });
+	const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(usernameByRoom, { fields: { _id: 1, username: 1 } }));
 	return lastRoomAgent || defaultAgent;
 };
 
@@ -69,8 +78,7 @@ const afterTakeInquiry = (inquiry, agent) => {
 		return inquiry;
 	}
 
-	const { agentId: _id, username } = agent;
-	LivechatVisitors.updateLastAgentByToken(token, { _id, username, ts: new Date() });
+	LivechatVisitors.updateLastAgentByToken(token, { ...agent, ts: new Date() });
 
 	return inquiry;
 };
