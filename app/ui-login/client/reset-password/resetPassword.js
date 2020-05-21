@@ -59,6 +59,8 @@ async function setUserPassword(password) {
 				requirePasswordChange: false,
 			},
 		});
+		toastr.remove();
+		toastr.success(t('Password_changed_successfully'));
 	} catch (e) {
 		console.error(e);
 		toastr.error(t('Error'));
