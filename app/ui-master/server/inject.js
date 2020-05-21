@@ -35,7 +35,6 @@ Meteor.startup(() => {
 	});
 
 	injectIntoHead('noreferrer', '<meta name="referrer" content="origin-when-cross-origin" />');
-	injectIntoHead('dynamic', `<script>${ Assets.getText('server/dynamic-css.js') }</script>`);
 
 	if (process.env.DISABLE_ANIMATION || process.env.TEST_MODE === 'true') {
 		injectIntoHead('disable-animation', `
@@ -50,6 +49,13 @@ Meteor.startup(() => {
 		</script>
 		`);
 	}
+
+	settings.get('API_Use_REST_For_DDP_Calls', (key, value) => {
+		if (!value) {
+			return injectIntoHead(key, '');
+		}
+		injectIntoHead(key, '<script>window.USE_REST_FOR_DDP_CALLS = true;</script>');
+	});
 
 	settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 		const standardFavicons = `
