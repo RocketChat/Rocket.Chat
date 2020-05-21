@@ -27,14 +27,12 @@ import './hooks/beforeNewInquiry';
 import './hooks/beforeNewRoom';
 import './hooks/beforeRoutingChat';
 import './hooks/checkAgentBeforeTakeInquiry';
-import './hooks/checkDefaultAgentOnNewRoom';
+import './hooks/handleLastChattedAgentPreferredEvents';
 import './hooks/onCheckRoomParamsApi';
 import './hooks/onLoadConfigApi';
-import './hooks/onMaxNumberSimultaneousChatsReached';
 import './hooks/onSetUserStatusLivechat';
 import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
-import './hooks/saveDefaultAgentAfterTakeInquiry';
 import './lib/routing/LoadBalancing';
 import { onLicense } from '../../license/server';
 
