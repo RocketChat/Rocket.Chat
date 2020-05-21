@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../app/settings';
+import { handleError } from '../app/utils/client';
 
 function urlBase64ToUint8Array(base64String) {
 	const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -19,13 +20,18 @@ function urlBase64ToUint8Array(base64String) {
 function subscribeUser() {
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker.ready.then(async function(reg) {
-			const vapidKey = settings.get('Vapid_public_key');
-			const subscription = await reg.pushManager
-				.subscribe({
-					userVisibleOnly: true,
-					applicationServerKey: urlBase64ToUint8Array(vapidKey),
-				});
-			await Meteor.call('savePushNotificationSubscription', JSON.stringify(subscription));
+			try {
+				const vapidKey = await settings.get('Vapid_public_key');
+				const subscription = await reg.pushManager
+					.subscribe({
+						userVisibleOnly: true,
+						applicationServerKey: urlBase64ToUint8Array(vapidKey),
+					});
+				Meteor.call('savePushNotificationSubscription', JSON.stringify(subscription));
+			}
+			catch (e) {
+				handleError(e);
+			}
 		});
 	}
 }
