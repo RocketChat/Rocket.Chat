@@ -1,25 +1,26 @@
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useState } from 'react';
 
 import { useRole } from '../../contexts/AuthorizationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useUserId, useUser } from '../../contexts/UserContext';
-import { SetupWizardState } from './SetupWizardState';
+import SetupWizardState from './SetupWizardState';
 
 const useRouteLock = () => {
 	const [locked, setLocked] = useState(true);
 	const setupWizardState = useSetting('Show_Setup_Wizard');
 	const userId = useUserId();
-	const user = useUser();
+	const user = useDebouncedValue(useUser(), 100);
 	const hasAdminRole = useRole('admin');
-	const goToHome = useRoute('home');
+	const homeRoute = useRoute('home');
 
 	useEffect(() => {
 		if (!setupWizardState) {
 			return;
 		}
 
-		if (userId && (!user || !user.status)) {
+		if (userId && !user?.status) {
 			return;
 		}
 
@@ -30,12 +31,12 @@ const useRouteLock = () => {
 		const mustRedirect = isComplete || noUserLoggedInAndIsNotPending || userIsLoggedInButIsNotAdmin;
 
 		if (mustRedirect) {
-			goToHome.replacingState();
+			homeRoute.replace();
 			return;
 		}
 
 		setLocked(false);
-	}, [setupWizardState, userId, user, hasAdminRole]);
+	}, [homeRoute, setupWizardState, userId, user, hasAdminRole]);
 
 	return locked;
 };
@@ -49,3 +50,5 @@ export function SetupWizardRoute() {
 
 	return <SetupWizardState />;
 }
+
+export default SetupWizardRoute;

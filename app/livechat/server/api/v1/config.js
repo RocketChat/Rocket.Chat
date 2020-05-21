@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { findGuest, settings, online, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
 
 API.v1.addRoute('livechat/config', {
@@ -8,6 +8,7 @@ API.v1.addRoute('livechat/config', {
 		try {
 			check(this.queryParams, {
 				token: Match.Maybe(String),
+				department: Match.Maybe(String),
 			});
 
 			const config = settings();
@@ -15,9 +16,8 @@ API.v1.addRoute('livechat/config', {
 				return API.v1.success({ config: { enabled: false } });
 			}
 
-			const status = online();
-
-			const { token } = this.queryParams;
+			const { token, department } = this.queryParams;
+			const status = online(department);
 			const guest = token && findGuest(token);
 
 			let room;

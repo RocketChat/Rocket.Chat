@@ -10,6 +10,7 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ ts: 1 }); // timestamp
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
+		this.tryEnsureIndex({ queueOrder: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
 	}
 
 	findOneById(inquiryId) {
@@ -28,7 +29,9 @@ export class LivechatInquiry extends Base {
 			},
 			{
 				sort: {
-					ts: 1,
+					queueOrder: 1,
+					estimatedWaitingTimeQueue: 1,
+					estimatedServiceTimeAt: 1,
 				},
 			},
 		);
@@ -102,6 +105,17 @@ export class LivechatInquiry extends Base {
 		return this.update(query, update);
 	}
 
+	setNameByRoomId(rid, name) {
+		const query = { rid };
+
+		const update = {
+			$set: {
+				name,
+			},
+		};
+		return this.update(query, update);
+	}
+
 	findOneByToken(token) {
 		const query = {
 			'v.token': token,
@@ -171,6 +185,14 @@ export class LivechatInquiry extends Base {
 	*/
 	removeByRoomId(rid) {
 		return this.remove({ rid });
+	}
+
+	removeByVisitorToken(token) {
+		const query = {
+			'v.token': token,
+		};
+
+		this.remove(query);
 	}
 }
 

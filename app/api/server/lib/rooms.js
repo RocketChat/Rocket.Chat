@@ -18,6 +18,8 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		unmuted: 1,
 		ro: 1,
 		default: 1,
+		favorite: 1,
+		featured: 1,
 		topic: 1,
 		msgs: 1,
 		archived: 1,
@@ -52,6 +54,34 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		offset,
 		total,
 	};
+}
+
+export async function findAdminRoom({ uid, rid }) {
+	if (!await hasPermissionAsync(uid, 'view-room-administration')) {
+		throw new Error('error-not-authorized');
+	}
+	const fields = {
+		prid: 1,
+		fname: 1,
+		name: 1,
+		t: 1,
+		cl: 1,
+		u: 1,
+		usernames: 1,
+		usersCount: 1,
+		muted: 1,
+		unmuted: 1,
+		ro: 1,
+		default: 1,
+		favorite: 1,
+		featured: 1,
+		topic: 1,
+		msgs: 1,
+		archived: 1,
+		tokenpass: 1,
+	};
+
+	return Rooms.findOneById(rid, { fields });
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }) {

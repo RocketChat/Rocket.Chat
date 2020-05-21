@@ -1,11 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { roomTypes } from '../../../app/utils';
-import { ROOM_DATA_STREAM_OBSERVER } from '../../../app/utils/stream/constants';
+import { ROOM_DATA_STREAM } from '../../../app/utils/stream/constants';
 
-export const roomDataStream = new Meteor.Streamer(ROOM_DATA_STREAM_OBSERVER);
-
-const isEmitAllowed = (t) => roomTypes.getConfig(t).isEmitAllowed();
+export const roomDataStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 
 roomDataStream.allowWrite('none');
 
@@ -16,11 +14,7 @@ roomDataStream.allowRead(function(rid) {
 			return false;
 		}
 
-		if (isEmitAllowed(room.t) === false) {
-			return false;
-		}
-
-		return true;
+		return roomTypes.getConfig(room.t).isEmitAllowed();
 	} catch (error) {
 		return false;
 	}
@@ -31,9 +25,9 @@ export function emitRoomDataEvent(id, data) {
 		return;
 	}
 
-	if (isEmitAllowed(data.t) === false) {
+	if (!roomTypes.getConfig(data.t).isEmitAllowed()) {
 		return;
 	}
 
-	roomDataStream.emit(id, data);
+	roomDataStream.emitWithoutBroadcast(id, data);
 }
