@@ -2,7 +2,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 
 import { AccountBox } from './AccountBox';
-import { roomTypes } from '../../../utils/client/lib/roomTypes';
+import { roomTypes, isMobile } from '../../../utils';
 import { Subscriptions } from '../../../models';
 
 export const SideNav = new class {
@@ -48,7 +48,7 @@ export const SideNav = new class {
 		const routesNamesForRooms = roomTypes.getTypes().filter((i) => i.route).map((i) => i.route.name);
 		if (!routesNamesForRooms.includes(FlowRouter.current().route.name)) {
 			const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') });
-			if (subscription) {
+			if (subscription && !isMobile()) {
 				roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 			} else {
 				FlowRouter.go('home');
