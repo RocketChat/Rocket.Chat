@@ -14,9 +14,16 @@ Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);
 	this.resultType = new ReactiveVar(this.data.settings.DefaultResultType);
 	this.data.parentPayload.resultType = this.resultType.get();
+	this.data.parentPayload.searchAll = true;
 });
 
 Template.ChatpalSearchResultTemplate.events = {
+	'change #global-search'(e, t) {
+		t.data.parentPayload.searchAll = e.target.checked;
+		t.data.payload.limit = t.pageSize;
+		t.data.result.set(undefined);
+		t.data.search();
+	},
 	'click .chatpal-search-typefilter li'(evt, t) {
 		t.data.parentPayload.resultType = evt.currentTarget.getAttribute('value');
 		t.data.payload.start = 0;
