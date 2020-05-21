@@ -148,7 +148,7 @@ const mountPopover = (e, i, outerContext) => {
 		onRendered: () => new Clipboard('.rc-popover__item'),
 	};
 
-	if (!popover.renderedPopover){
+	if (!popover.renderedPopover) {
 		popover.open(config);
 	}
 };
