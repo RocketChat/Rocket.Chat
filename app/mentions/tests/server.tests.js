@@ -31,7 +31,7 @@ beforeEach(function() {
 	});
 });
 
-describe.only('Mention Server', () => {
+describe('Mention Server', () => {
 	describe('getUsersByMentions', () => {
 		describe('for @all but the number of users is greater than messageMaxAll', () => {
 			beforeEach(() => {
@@ -154,7 +154,7 @@ describe.only('Mention Server', () => {
 			});
 		});
 
-		describe.only('for case-insensitive', () => {
+		describe('for case-insensitive', () => {
 			beforeEach(() => {
 				mention.getChannel = () =>
 					({
