@@ -56,7 +56,7 @@ export default class MentionsServer extends MentionsParser {
 		const userMentions = [];
 
 		mentions.forEach((m) => {
-			const mention = m.trim().substr(1);
+			const mention = m.trim().substr(1).toLowerCase();
 			if (mention !== 'all' && mention !== 'here') {
 				return userMentions.push(new RegExp(`^${ s.escapeRegExp(mention) }$`, 'i'));
 			}
