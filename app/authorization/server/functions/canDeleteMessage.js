@@ -37,7 +37,6 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 	}
 
 	const room = await Rooms.findOneById(rid, { fields: { ro: 1, unmuted: 1 } });
-	console.log(room, u.username);
 	if (room.ro === true && !await hasPermissionAsync(uid, 'post-readonly', rid)) {
 		// Unless the user was manually unmuted
 		if (!(room.unmuted || []).includes(u.username)) {
