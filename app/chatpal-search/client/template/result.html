@@ -4,6 +4,9 @@
 			<li value="All" class="{{navSelected 'All'}}">{{_ "Chatpal_All_Results"}}</li>
 			<li value="Messages" class="{{navSelected 'Messages'}}">{{_ "Chatpal_Messages_Only"}}</li>
 		</ul>
+		<label>
+			<input type="checkbox" id="global-search" checked>{{_ "Global_Search"}}
+		</label>
 		<div class="chatpal-search-result">
 			{{#if searching}}
 				<div class="chatpal_search-loader">

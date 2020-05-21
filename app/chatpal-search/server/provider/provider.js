@@ -313,7 +313,7 @@ class ChatpalProvider extends SearchProvider {
 		this.index.query(
 			text,
 			this._settings.get('Main_Language'),
-			this._getAcl(context),
+			payload.searchAll ? this._getAcl(context) : [context.rid],
 			type,
 			payload.start || 0,
 			payload.rows || this._settings.get('PageSize'),
