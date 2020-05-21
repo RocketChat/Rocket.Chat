@@ -10,8 +10,8 @@ export function compareUserPassword(user, pass) {
 		return true;
 	}
 
-	if (!pass || !pass.plain || !pass.sha256) {
-		return true;
+	if (!pass || (!pass.plain && !pass.sha256)) {
+		return false;
 	}
 
 	const password = pass.plain || {
