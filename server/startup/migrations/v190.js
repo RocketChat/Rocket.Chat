@@ -1,9 +1,19 @@
-import { Migrations } from '../../../app/migrations/server';
-import { Settings } from '../../../app/models/server';
+import { Migrations } from '../../../app/migrations';
+import { Settings, Subscriptions } from '../../../app/models/server/raw';
 
 Migrations.add({
 	version: 190,
 	up() {
-		Settings.remove({ _id: /theme-color-status/ }, { multi: true });
+		// Remove unused settings
+		Promise.await(Settings.col.deleteOne({ _id: 'Accounts_Default_User_Preferences_desktopNotificationDuration' }));
+		Promise.await(Subscriptions.col.updateMany({
+			desktopNotificationDuration: {
+				$exists: true,
+			},
+		}, {
+			$unset: {
+				desktopNotificationDuration: 1,
+			},
+		}));
 	},
 });
