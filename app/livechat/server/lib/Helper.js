@@ -1,4 +1,3 @@
-import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
@@ -8,7 +7,7 @@ import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
-import { Apps } from '../../../apps/server';
+import { Apps, AppEvents } from '../../../apps/server';
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
@@ -45,7 +44,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 
 	const roomId = Rooms.insert(room);
 
-	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatRoomStarted, room);
+	Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomStarted, room);
 	callbacks.run('livechat.newRoom', room);
 	return roomId;
 };
@@ -167,7 +166,7 @@ export const removeAgentFromSubscription = (rid, { _id, username }) => {
 	Subscriptions.removeByRoomIdAndUserId(rid, _id);
 	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
 
-	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatAgentUnassigned, { room, user });
+	Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
 };
 
 export const parseAgentCustomFields = (customFields) => {

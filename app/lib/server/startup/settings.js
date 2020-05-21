@@ -236,11 +236,6 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Idle_Time_Limit',
 		});
-		this.add('Accounts_Default_User_Preferences_desktopNotificationDuration', 0, {
-			type: 'int',
-			public: true,
-			i18nLabel: 'Notification_Duration',
-		});
 		this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
 			type: 'boolean',
 			public: true,
