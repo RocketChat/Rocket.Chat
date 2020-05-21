@@ -14,12 +14,10 @@ export function compareUserPassword(user, pass) {
 		return true;
 	}
 
-	const password = pass.plain
-		? pass.plain.toLowerCase()
-		: {
-			digest: pass.sha256.toLowerCase(),
-			algorithm: 'sha-256',
-		};
+	const password = pass.plain || {
+		digest: pass.sha256.toLowerCase(),
+		algorithm: 'sha-256',
+	};
 
 	const passCheck = Accounts._checkPassword(user, password);
 
