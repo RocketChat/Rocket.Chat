@@ -107,7 +107,8 @@ const processWaitingQueue = async (department) => {
 		return;
 	}
 
-	const room = await RoutingManager.delegateInquiry(inquiry);
+	const { defaultAgent } = inquiry;
+	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
 	const propagateAgentDelegated = Meteor.bindEnvironment((rid, agentId) => {
 		dispatchAgentDelegated(rid, agentId);
@@ -135,7 +136,7 @@ export const checkWaitingQueue = async (department) => {
 		return processWaitingQueue();
 	}
 
-	return Promise.all(departments.forEach((department) => processWaitingQueue(department)));
+	return Promise.all(departments.map(async (department) => processWaitingQueue(department)));
 };
 
 export const allowAgentSkipQueue = (agent) => {

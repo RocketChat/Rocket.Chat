@@ -61,19 +61,19 @@
 		border-radius: var(--sidebar-item-user-status-radius);
 
 		&--online {
-			background-color: var(--status-online);
+			background-color: var(--rc-status-online);
 		}
 
 		&--away {
-			background-color: var(--status-away);
+			background-color: var(--rc-status-away);
 		}
 
 		&--busy {
-			background-color: var(--status-busy);
+			background-color: var(--rc-status-busy);
 		}
 
 		&--offline {
-			background-color: var(--status-invisible-sidebar);
+			background-color: var(--rc-status-invisible-sidebar);
 		}
 	}
 
