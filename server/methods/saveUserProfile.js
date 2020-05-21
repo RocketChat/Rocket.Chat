@@ -42,6 +42,10 @@ Meteor.methods({
 			Meteor.call('setUserStatus', null, settings.statusText);
 		}
 
+		if (settings.statusType) {
+			Meteor.call('setUserStatus', settings.statusType, null);
+		}
+
 		if (settings.bio) {
 			if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
 				throw new Meteor.Error('error-invalid-field', 'bio', {
