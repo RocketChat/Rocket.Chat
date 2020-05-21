@@ -1,13 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
 import '../lib/messageTypes';
-import './hooks/addDepartmentAncestors';
-import './hooks/afterForwardChatToDepartment';
-import './hooks/beforeListTags';
-import './hooks/setPredictedVisitorAbandonmentTime';
-import './hooks/beforeForwardRoomToDepartment';
-import './hooks/afterRemoveDepartment';
-import './hooks/onLoadForwardDepartmentRestrictions';
 import './methods/addMonitor';
 import './methods/getUnitsFromUserRoles';
 import './methods/removeMonitor';
@@ -38,6 +31,7 @@ import { onLicense } from '../../license/server';
 
 onLicense('livechat-enterprise', () => {
 	require('./api');
+	require('./hooks');
 	const { createPermissions } = require('./permissions');
 	const { createSettings } = require('./settings');
 
