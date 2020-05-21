@@ -1361,7 +1361,7 @@
   "error-edit-permissions-not-allowed": "Editing permissions is not allowed",
   "error-email-domain-blacklisted": "The email domain is blacklisted",
   "error-email-send-failed": "Error trying to send email: __message__",
-  "error-entered-password-same-as-current-password": "Entered password same as current password",
+  "error-password-same-as-current": "Entered password same as current password",
   "error-field-unavailable": "<strong>__field__</strong> is already in use :(",
   "error-file-too-large": "File is too large",
   "error-forwarding-chat-same-department": "The selected department and the current room department are the same",

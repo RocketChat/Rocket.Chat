@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { SHA256 } from 'meteor/sha';
-import bcrypt from 'bcrypt';
 
-import { Users } from '../../app/models';
-import { passwordPolicy } from '../../app/lib';
+import { Users } from '../../app/models/server';
+import { passwordPolicy } from '../../app/lib/server';
+import { checkUserPassword } from '../lib/checkUserPassword';
 
 Meteor.methods({
 	setUserPassword(password) {
@@ -27,12 +26,8 @@ Meteor.methods({
 			});
 		}
 
-		const bcryptCompare = Meteor.wrapAsync(bcrypt.compare);
-		const formattedPassword = SHA256(password).toLowerCase();
-		const hash = user.services.password.bcrypt;
-
-		if (bcryptCompare(formattedPassword, hash)) {
-			throw new Meteor.Error('error-entered-password-same-as-current-password', 'Entered password same as current password', {
+		if (checkUserPassword(user, { plain: password })) {
+			throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 				method: 'setUserPassword',
 			});
 		}
