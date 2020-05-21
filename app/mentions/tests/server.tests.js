@@ -2,8 +2,6 @@
 import 'babel-polyfill';
 import assert from 'assert';
 
-import _ from 'underscore';
-
 import MentionsServer from '../server/Mentions';
 
 
@@ -20,7 +18,7 @@ beforeEach(function() {
 			}, {
 				_id: 2,
 				username: 'jon',
-			}].filter((user) => _.unique(usernames).find((username) => (username instanceof RegExp ? username.test(user.username) : username === user.username))), // Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
+			}].filter((user) => [...new Set(usernames)].find((username) => (username instanceof RegExp ? username.test(user.username) : username === user.username))), // Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
 		getChannels(channels) {
 			return [{
 				_id: 1,
@@ -33,7 +31,7 @@ beforeEach(function() {
 	});
 });
 
-describe('Mention Server', () => {
+describe.only('Mention Server', () => {
 	describe('getUsersByMentions', () => {
 		describe('for @all but the number of users is greater than messageMaxAll', () => {
 			beforeEach(() => {
@@ -151,6 +149,72 @@ describe('Mention Server', () => {
 					msg: '@unknow',
 				};
 				const expected = [];
+				const result = mention.getUsersByMentions(message);
+				assert.deepEqual(expected, result);
+			});
+		});
+
+		describe.only('for case-insensitive', () => {
+			beforeEach(() => {
+				mention.getChannel = () =>
+					({
+						usernames: [{
+							_id: 1,
+							username: 'rocket.cat',
+						}, {
+							_id: 2,
+							username: 'jon',
+						}],
+					});
+				// Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
+			});
+			it('should return "all"', () => {
+				const message = {
+					msg: '@ALl',
+				};
+				const expected = [{
+					_id: 'all',
+					username: 'all',
+				}];
+				const result = mention.getUsersByMentions(message);
+				assert.deepEqual(expected, result);
+			});
+			it('should return "here"', () => {
+				const message = {
+					msg: '@HeRe',
+				};
+				const expected = [{
+					_id: 'here',
+					username: 'here',
+				}];
+				const result = mention.getUsersByMentions(message);
+				assert.deepEqual(expected, result);
+			});
+			it('should return "rocket.cat"', () => {
+				const message = {
+					msg: '@Rocket.CAT',
+				};
+				const expected = [{
+					_id: 1,
+					username: 'rocket.cat',
+				}];
+				const result = mention.getUsersByMentions(message);
+				assert.deepEqual(expected, result);
+			});
+			it('should return "here, rocket.cat, jon"', () => {
+				const message = {
+					msg: '@HEre @ROCKET.cat @JoN',
+				};
+				const expected = [{
+					_id: 'here',
+					username: 'here',
+				}, {
+					_id: 1,
+					username: 'rocket.cat',
+				}, {
+					_id: 2,
+					username: 'jon',
+				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
 			});
