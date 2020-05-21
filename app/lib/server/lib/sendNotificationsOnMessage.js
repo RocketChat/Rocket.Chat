@@ -312,7 +312,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 
 export async function sendAllNotifications(message, room) {
 	if (TroubleshootDisableNotifications === true) {
-		return;
+		return message;
 	}
 
 	// threads
