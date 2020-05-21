@@ -102,7 +102,7 @@ import '../app/notifications';
 import '../app/promises/client';
 import '../app/ui-utils';
 import '../app/ui-cached-collection';
-import '../app/action-links';
+import '../app/action-links/client';
 import '../app/reactions/client';
 import '../app/livechat/client';
 import '../app/meteor-autocomplete/client';
