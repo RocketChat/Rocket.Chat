@@ -5,7 +5,7 @@ import { HTTP } from 'meteor/http';
 
 import { Migrations } from '../../../app/migrations';
 import { Settings } from '../../../app/models';
-import { RocketChatAssets } from '../../../app/assets';
+import { RocketChatAssets } from '../../../app/assets/server';
 
 Migrations.add({
 	version: 36,

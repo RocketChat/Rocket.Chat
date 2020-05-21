@@ -15,18 +15,18 @@
 
 .messages-container .room-icon {
 	&.online {
-		color: var(--status-online);
+		color: var(--rc-status-online);
 	}
 
 	&.away {
-		color: var(--status-away);
+		color: var(--rc-status-away);
 	}
 
 	&.busy {
-		color: var(--status-busy);
+		color: var(--rc-status-busy);
 	}
 
 	&.offline {
-		color: var(--status-invisible);
+		color: var(--rc-status-invisible);
 	}
 }
