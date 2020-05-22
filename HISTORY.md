@@ -1,6 +1,26 @@
 
 # 3.3.0 (Under Release Candidate Process)
 
+## 3.3.0-rc.2
+`2020-05-22  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- SAML IDP initiated logout error ([#17482](https://github.com/RocketChat/Rocket.Chat/pull/17482))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix error preventing creation of group DMs ([#17726](https://github.com/RocketChat/Rocket.Chat/pull/17726))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+
 ## 3.3.0-rc.1
 `2020-05-21  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
