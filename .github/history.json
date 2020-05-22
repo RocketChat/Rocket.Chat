@@ -44703,6 +44703,154 @@
           ]
         }
       ]
+    },
+    "3.2.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17506",
+          "title": "Release 3.2.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17497",
+          "title": "[FIX] LDAP login error on Enterprise version",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "3.2.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17600",
+          "title": "Release 3.2.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "ggazzo",
+            "mtmr0x",
+            "pierre-lehnen-rc",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "17582",
+          "title": "[FIX] Push settings enabled when push gateway is selected",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.2.2",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17508",
+          "title": "[FIX] LDAP login on Enteprise Version",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17579",
+          "title": "[FIX] Login Forbidden on servers that had LDAP enabled in the past",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17578",
+          "title": "[FIX] Email configs not updating after setting changes",
+          "userLogin": "rodrigok",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17577",
+          "title": "[FIX] Error during data export for DMs",
+          "userLogin": "mtmr0x",
+          "milestone": "3.2.2",
+          "contributors": [
+            "mtmr0x"
+          ]
+        },
+        {
+          "pr": "17570",
+          "title": "[FIX] Emoji picker search broken",
+          "userLogin": "ggazzo",
+          "milestone": "3.2.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17536",
+          "title": "[FIX] Reactions may present empty names of who reacted when using Real Names",
+          "userLogin": "rodrigok",
+          "description": "When changing usernames the reactions became outdated since it's not possible to update the usernames stored there, so when the server users Real Name setting enabled the system process all messages before return to the clients and get the names of the usernames to show since the usernames are outdated the names will not be found. Now the usernames will be displayed when the name can't be found as a temporary fix until we change the architecture of the data to fix the issue.",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.3.0-rc.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17716",
+          "title": "Regression: Threads list was fetching all threads",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17715",
+          "title": "Regression: Add missing return to afterSaveMessage callbacks",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.3.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
