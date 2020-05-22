@@ -69,7 +69,7 @@ export class AppRoomsConverter {
 		}
 
 		const newRoom = {
-			_id: room.id,
+			...room.id && { _id: room.id },
 			fname: room.displayName,
 			name: room.slugifiedName,
 			t: room.type,
