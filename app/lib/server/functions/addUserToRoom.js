@@ -39,6 +39,14 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		callbacks.run('beforeJoinRoom', user, room);
 	}
 
+	Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter).catch((error) => {
+		if (error instanceof AppsEngineException) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}));
+
 	Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
 		open: true,

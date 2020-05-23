@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
+import { roomTypes } from '../../utils/client';
 import { Rooms } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
@@ -17,13 +18,7 @@ Template.room.events({
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: rid });
 
-		if (room.ro && !room.reactWhenReadOnly) {
-			if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
-				return false;
-			}
-		}
-
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+		if (roomTypes.readOnly(room._id, user._id)) {
 			return false;
 		}
 
@@ -73,21 +68,15 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			if (room.ro && !room.reactWhenReadOnly) {
-				if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
-					return false;
-				}
-			}
-
-			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
-				return false;
-			}
-
 			if (!subscription) {
 				return false;
 			}
 
 			if (message.private) {
+				return false;
+			}
+
+			if (roomTypes.readOnly(room._id, user._id)) {
 				return false;
 			}
 

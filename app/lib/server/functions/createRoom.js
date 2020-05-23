@@ -1,13 +1,15 @@
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { Users, Rooms, Subscriptions } from '../../../models';
-import { callbacks } from '../../../callbacks';
-import { addUserRoles } from '../../../authorization';
-import { getValidRoomName } from '../../../utils';
 import { Apps } from '../../../apps/server';
+import { addUserRoles } from '../../../authorization';
+import { callbacks } from '../../../callbacks';
+import { Rooms, Subscriptions, Users } from '../../../models';
+import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
+
 
 export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}) {
 	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
@@ -64,9 +66,16 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 
 	room._USERNAMES = members;
 
-	const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', room));
+	const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', room).catch((error) => {
+		if (error instanceof AppsEngineException) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}));
+
 	if (prevent) {
-		throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
+		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 	}
 
 	let result;

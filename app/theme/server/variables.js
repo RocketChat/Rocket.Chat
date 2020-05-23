@@ -10,62 +10,43 @@ import { settings } from '../../settings';
 // Major colors form the core of the scheme
 // Names changed to reflect usage, comments show pre-refactor names
 
-const reg = /--(rc-color-.*?): (.*?);/igm;
+const variablesContent = Assets.getText('client/imports/general/variables.css');
 
-const colors = [...Assets.getText('client/imports/general/variables.css').match(reg)].map((color) => {
-	const [name, value] = color.split(': ');
-	return [name.replace('--', ''), value.replace(';', '')];
-});
+const regionRegex = /\/\*\s*#region\s+([^ ]*?)\s+(.*?)\s*\*\/((.|\s)*?)\/\*\s*#endregion\s*\*\//igm;
 
-colors.forEach(([key, color]) => 	{
-	if (/var/.test(color)) {
-		const [, value] = color.match(/var\(--(.*?)\)/i);
-		return theme.addPublicColor(key, value, 'Colors', 'expression');
-	}
-	theme.addPublicColor(key, color, 'Colors');
-});
+for (let matches = regionRegex.exec(variablesContent); matches; matches = regionRegex.exec(variablesContent)) {
+	const [, type, section, content] = matches;
+	[...content.match(/--(.*?):\s*(.*?);/igm)].forEach((entry) => {
+		const matches = /--(.*?):\s*(.*?);/im.exec(entry);
+		const [, name, value] = matches;
 
-const majorColors = {
-	'content-background-color': '#FFFFFF',
-	'primary-background-color': '#04436A',
-	'primary-font-color': '#444444',
-	'primary-action-color': '#1d74f5', // was action-buttons-color
-	'secondary-background-color': '#F4F4F4',
-	'secondary-font-color': '#A0A0A0',
-	'secondary-action-color': '#DDDDDD',
-	'component-color': '#f2f3f5',
-	'success-color': '#4dff4d',
-	'pending-color': '#FCB316',
-	'error-color': '#BC2031',
-	'selection-color': '#02ACEC',
-	'attention-color': '#9C27B0',
-};
+		if (type === 'fonts') {
+			theme.addVariable('font', name, value, 'Fonts', true);
+			return;
+		}
 
-// Minor colours implement major colours by default, but can be overruled
-const minorColors = {
-	'tertiary-background-color': '@component-color',
-	'tertiary-font-color': '@transparent-lightest',
-	'link-font-color': '@primary-action-color',
-	'info-font-color': '@secondary-font-color',
-	'custom-scrollbar-color': '@transparent-darker',
-	'status-online': '@success-color',
-	'status-away': '@pending-color',
-	'status-busy': '@error-color',
-	'status-offline': '@transparent-darker',
-};
+		if (type === 'colors') {
+			if (/var/.test(value)) {
+				const [, variableName] = value.match(/var\(--(.*?)\)/i);
+				theme.addVariable('color', name, variableName, section, true, 'expression', ['color', 'expression']);
+				return;
+			}
 
-// Bulk-add settings for color scheme
-Object.keys(majorColors).forEach((key) => {
-	const value = majorColors[key];
-	theme.addPublicColor(key, value, 'Old Colors');
-});
+			theme.addVariable('color', name, value, section, true, 'color', ['color', 'expression']);
+			return;
+		}
 
-Object.keys(minorColors).forEach((key) => {
-	const value = minorColors[key];
-	theme.addPublicColor(key, value, 'Old Colors (minor)', 'expression');
-});
+		if (type === 'less-colors') {
+			if (/var/.test(value)) {
+				const [, variableName] = value.match(/var\(--(.*?)\)/i);
+				theme.addVariable('color', name, `@${ variableName }`, section, true, 'expression', ['color', 'expression']);
+				return;
+			}
 
-theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Helvetica Neue\', \'Apple Color Emoji\', \'Segoe UI Emoji\', \'Segoe UI Symbol\', \'Meiryo UI\', Arial, sans-serif');
+			theme.addVariable('color', name, value, section, true, 'color', ['color', 'expression']);
+		}
+	});
+}
 
 settings.add('theme-custom-css', '', {
 	group: 'Layout',

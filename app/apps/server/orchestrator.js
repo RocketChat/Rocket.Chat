@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/server/managers/AppListenerManager';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import { Meteor } from 'meteor/meteor';
 
 import { Logger } from '../../logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel, Permissions } from '../../models';
@@ -17,7 +17,6 @@ import { AppRealLogsStorage, AppRealStorage } from './storage';
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
-
 
 class AppServerOrchestrator {
 	constructor() {
