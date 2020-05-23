@@ -101,20 +101,6 @@
 							<i class="icon-play-circled" data-play="{{audioNotificationValue}}"></i>
 						{{/with}}
 					</div>
-					<div class="rc-user-info__config-content">
-						<div class="rc-user-info__config-name">{{_ "Notifications_Duration"}}:</div>
-						{{# with "desktopNotificationDuration"}}
-							<div class="rc-user-info__config-value">
-								{{#if desktopNotificationDuration }}
-									{{_ "Duration"}} {{desktopNotificationDuration}} {{_ "seconds"}}
-								{{else}}
-									{{_ "Use_User_Preferences_or_Global_Settings"}}
-								{{/if}}
-
-								{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
-							</div>
-						{{/with}}
-					</div>
 				</div>
 			</div>
 			<div class="rc-user-info__row rc-user-info__row--separator">

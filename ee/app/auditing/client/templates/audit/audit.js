@@ -10,12 +10,12 @@ import { call, convertDate, scrollTo } from '../../utils.js';
 
 import './audit.html';
 
-const loadMessages = async function({ rid, users, startDate, endDate = new Date(), msg }) {
+const loadMessages = async function({ rid, users, startDate, endDate = new Date(), msg, type, visitor, agent }) {
 	this.messages = this.messages || new ReactiveVar([]);
 	this.loading = this.loading || new ReactiveVar(true);
 	try {
 		this.loading.set(true);
-		const messages = await call('auditGetMessages', { rid, users, startDate, endDate, msg });
+		const messages = await call('auditGetMessages', { rid, users, startDate, endDate, msg, type, visitor, agent });
 		this.messagesContext.set({
 			...messageContext({ rid }),
 			messages,
@@ -40,16 +40,29 @@ Template.audit.events({
 	async 'click .js-submit'(e, t) {
 		const form = e.currentTarget.parentElement;
 
-		const result = {};
+		const type = t.type.get();
+		const result = { type };
 
 		e.currentTarget.blur();
 
-		if (t.type.get() === 'd') {
+		if (type === 'd') {
 			if (!t.users) {
 				return form.querySelector('#autocomplete-users').classList.add('rc-input--error');
 			}
 			form.querySelector('#autocomplete-users').classList.remove('rc-input--error');
 			result.users = t.users.map((user) => user.username);
+		} else if (type === 'l') {
+			if (!t.visitor && !t.agent) {
+				form.querySelector('#autocomplete-agent').classList.add('rc-input--error');
+				form.querySelector('#autocomplete-visitor').classList.add('rc-input--error');
+				return;
+			}
+
+			form.querySelector('#autocomplete-agent').classList.remove('rc-input--error');
+			form.querySelector('#autocomplete-visitor').classList.remove('rc-input--error');
+
+			result.visitor = t.visitor?._id;
+			result.agent = t.agent?._id;
 		} else {
 			if (!t.room || !t.room._id) {
 				return form.querySelector('#autocomplete-room').classList.add('rc-input--error');
@@ -103,11 +116,14 @@ Template.audit.helpers({
 			return `<strong>${ part }</strong>`;
 		}) }`;
 	},
-	nTypeD() {
+	nTypeOthers() {
+		return ['d', 'l'].includes(Template.instance().type.get());
+	},
+	nTypeDM() {
 		return Template.instance().type.get() !== 'd';
 	},
-	typeD() {
-		return Template.instance().type.get() === 'd';
+	nTypeOmni() {
+		return Template.instance().type.get() !== 'l';
 	},
 	type() {
 		return Template.instance().type.get();
@@ -120,6 +136,9 @@ Template.audit.helpers({
 	},
 	hasResults() {
 		return Template.instance().hasResults.get();
+	},
+	agentConditions() {
+		return { role: 'livechat-agent' };
 	},
 });
 
@@ -275,8 +294,9 @@ Template.auditAutocomplete.helpers({
 	},
 	config() {
 		const { filter } = Template.instance();
+		const { templateItem } = Template.instance().data;
 		return {
-			template_item: 'popupList_item_channel',
+			template_item: templateItem || 'popupList_item_channel',
 			// noMatchTemplate: Template.roomSearchEmpty,
 			filter: filter.get(),
 			noMatchTemplate: 'userSearchEmpty',
