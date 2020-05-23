@@ -1,6 +1,6 @@
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 
 import { Logger } from '../../logger';
