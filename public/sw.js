@@ -15,6 +15,12 @@ function hasSameHash(firstUrl, secondUrl) {
 	}
 }
 
+function handleAvatar(request, response) {
+	const clonedResponse = response.clone();
+	const url = request.url.split('?')[0];
+	caches.open(version).then((cache) => cache.put(new Request(url), clonedResponse));
+}
+
 const fetchFromNetwork = (event) => {
 	const requestToFetch = event.request.clone();
 	return fetch(requestToFetch, { cache: 'reload' }).then((response) => {
@@ -37,6 +43,12 @@ const fetchFromNetwork = (event) => {
 					}
 				})));
 			}
+
+			if (/avatar\/.*\?_dc/.test(event.request.url)) {
+				// handle the avatar updates
+				handleAvatar(event.request, response);
+			}
+
 			caches.open(version).then((cache) => cache.put(event.request, clonedResponse));
 		}
 		return response;
