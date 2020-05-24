@@ -243,11 +243,11 @@ export class SlackImporter extends Base {
 		});
 	}
 
-	parseMentions(message){
+	parseMentions(message) {
 		let mentionsParser;
 		mentionsParser = new MentionsParser({
-			pattern: settings.get('UTF8_Names_Validation'),
-			useRealName: settings.get('UI_Use_Real_Name'),
+			pattern: () => settings.get('UTF8_Names_Validation'),
+			useRealName: () => settings.get('UI_Use_Real_Name'),
 			me: () => 'me',
 		});
 
@@ -259,7 +259,17 @@ export class SlackImporter extends Base {
 		if(!message.channels){
 			message.channels=[];
 		}
-		message.channels.push(...mentionsParser.getChannelMentions(message.msg));
+		let channels = mentionsParser.getChannelMentions(message.msg);
+		channels.forEach((channel_name, index, arr) => {
+			let chan = channel_name.slice(1, channel_name.length);
+			try{
+				const slackChannel = this.getSlackChannelFromName(chan);
+				arr[index] = Rooms.findOneById(slackChannel.rocketId);
+			} catch (e) {
+				this.logger.warn(`Failed to import room with name: ${ chan }`);
+			}
+		});
+		message.channels.push(...channels);
 
 		message.temp = message.msg;
 	}
