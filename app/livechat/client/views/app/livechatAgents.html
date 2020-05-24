@@ -51,9 +51,11 @@
 					{{#table fixed='true' onScroll=onTableScroll}}
 						<thead>
 							<tr>
-								<th><div class="table-fake-th">{{_ "Name"}}</div></th>
-								<th width="33%"><div class="table-fake-th">{{_ "Username"}}</div></th>
-								<th width="33%"><div class="table-fake-th">{{_ "Email"}}</div></th>
+								<th width="30%"><div class="table-fake-th">{{_ "Name"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Username"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Email"}}</div></th>
+								<th><div class="table-fake-th">{{_ "Status"}}</div></th>
+								<th><div class="table-fake-th">{{_ "Service"}}</div></th>
 								<th width='40px'><div class="table-fake-th">&nbsp;</div></th>
 							</tr>
 						</thead>
@@ -79,6 +81,8 @@
 									</td>
 									<td>{{username}}</td>
 									<td>{{emailAddress}}</td>
+									<td>{{status}}</td>
+									<td>{{statusService}}</td>
 									<td>
 										<a href="#remove" class="remove-agent">
 											<i class="icon-trash"></i>

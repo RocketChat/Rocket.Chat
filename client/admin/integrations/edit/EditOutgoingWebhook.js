@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import {
 	Field,
 	Box,
-	Headline,
 	Skeleton,
 	Margins,
 	Button,
@@ -28,11 +27,11 @@ export default function EditOutgoingWebhookWithData({ integrationId, ...props })
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
-			<Headline.Skeleton mbe='x4'/>
+			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8'/>
 		</Box>;
 	}

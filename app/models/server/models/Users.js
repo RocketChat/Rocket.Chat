@@ -124,10 +124,10 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentByUsername(username) {
+	findOneOnlineAgentByUsername(username, options) {
 		const query = queryStatusAgentOnline({ username });
 
-		return this.findOne(query);
+		return this.findOne(query, options);
 	}
 
 	findOneOnlineAgentById(_id) {
@@ -523,7 +523,7 @@ export class Users extends Base {
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
-		const query = { 'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i') };
+		const query = { 'emails.address': String(emailAddress).trim().toLowerCase() };
 
 		return this.findOne(query, options);
 	}
