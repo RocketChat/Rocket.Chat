@@ -24,7 +24,6 @@ export const fields = {
 	audioNotifications: 1,
 	audioNotificationValue: 1,
 	desktopNotifications: 1,
-	desktopNotificationDuration: 1,
 	mobilePushNotifications: 1,
 	emailNotifications: 1,
 	unreadAlert: 1,

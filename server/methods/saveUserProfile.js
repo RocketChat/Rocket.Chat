@@ -2,27 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
-import { saveCustomFields, passwordPolicy } from '../../app/lib';
-import { Users } from '../../app/models';
-import { settings as rcSettings } from '../../app/settings';
+import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
+import { Users } from '../../app/models/server';
+import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
-
-function checkPassword(user = {}, typedPassword) {
-	if (!(user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim())) {
-		return true;
-	}
-
-	const passCheck = Accounts._checkPassword(user, {
-		digest: typedPassword.toLowerCase(),
-		algorithm: 'sha-256',
-	});
-
-	if (passCheck.error) {
-		return false;
-	}
-	return true;
-}
+import { compareUserPassword } from '../lib/compareUserPassword';
 
 Meteor.methods({
 	saveUserProfile: twoFactorRequired(function(settings, customFields) {
@@ -57,6 +42,10 @@ Meteor.methods({
 			Meteor.call('setUserStatus', null, settings.statusText);
 		}
 
+		if (settings.statusType) {
+			Meteor.call('setUserStatus', settings.statusType, null);
+		}
+
 		if (settings.bio) {
 			if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
 				throw new Meteor.Error('error-invalid-field', 'bio', {
@@ -67,7 +56,7 @@ Meteor.methods({
 		}
 
 		if (settings.email) {
-			if (!checkPassword(user, settings.typedPassword)) {
+			if (!compareUserPassword(user, { sha256: settings.typedPassword })) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
 					method: 'saveUserProfile',
 				});
@@ -78,8 +67,15 @@ Meteor.methods({
 
 		// Should be the last check to prevent error when trying to check password for users without password
 		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
-			if (!checkPassword(user, settings.typedPassword)) {
+			if (!compareUserPassword(user, { sha256: settings.typedPassword })) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
+					method: 'saveUserProfile',
+				});
+			}
+
+			// don't let user change to same password
+			if (compareUserPassword(user, { plain: settings.newPassword })) {
+				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 					method: 'saveUserProfile',
 				});
 			}

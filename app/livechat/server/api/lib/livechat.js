@@ -146,7 +146,7 @@ export function settings() {
 }
 
 export async function getExtraConfigInfo(room) {
-	return callbacks.run('livechat.onLoadConfigApi', room);
+	return callbacks.run('livechat.onLoadConfigApi', { room });
 }
 
 export function onCheckRoomParams(params) {
