@@ -76,7 +76,7 @@
 			width: 100%;
 			padding: calc(var(--sidebar-small-default-padding) - 8px);
 
-			animation: fade 1s;
+			animation: fade 0.3s;
 
 			text-align: center;
 		}
