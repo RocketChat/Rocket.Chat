@@ -55,7 +55,7 @@ function VerticalBarContent(props) {
 	return <Page.Content {...props} />;
 }
 
-function VerticalBarScrollableContent({ children, props }) {
+function VerticalBarScrollableContent({ children, ...props }) {
 	return <Page.ScrollableContent padding='x24' mi='neg-x24' {...props}>
 		<Margins blockEnd='x16'>{children}</Margins>
 	</Page.ScrollableContent>;
