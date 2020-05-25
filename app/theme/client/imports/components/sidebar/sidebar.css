@@ -63,10 +63,33 @@
 		}
 	}
 
-	& .unread-rooms {
-		padding: calc(var(--sidebar-small-default-padding) - 8px);
+	& .wrapper-unread {
+		position: relative;
+		z-index: 2;
 
-		text-align: center;
+		& .unread-rooms {
+			position: absolute;
+			top: 0;
+			right: 0;
+			left: 0;
+
+			width: 100%;
+			padding: calc(var(--sidebar-small-default-padding) - 8px);
+
+			animation: fade 0.3s;
+
+			text-align: center;
+		}
+	}
+}
+
+@keyframes fade {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
 	}
 }
 
