@@ -3,7 +3,7 @@ import React from 'react';
 import Logo from './Logo';
 
 export default {
-	title: 'setupWizard/Logo',
+	title: 'views/setupWizard/Logo',
 	component: Logo,
 };
 
