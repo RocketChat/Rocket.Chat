@@ -3331,6 +3331,11 @@
 		font-weight: 300;
 	}
 
+	button {
+		flex-grow: 1;
+		margin: 0 5px;
+	}
+
 	& .button {
 		margin-bottom: 4px;
 
