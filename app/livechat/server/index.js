@@ -84,5 +84,6 @@ import './sendMessageBySMS';
 import './api';
 import './api/rest';
 import './externalFrame';
+import './lib/messageTypes';
 
 export { Livechat } from './lib/Livechat';

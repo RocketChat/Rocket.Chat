@@ -43,6 +43,13 @@ registerAdminSidebarItem({
 });
 
 registerAdminSidebarItem({
+	icon: 'cloud-plus',
+	href: 'cloud',
+	i18nLabel: 'Connectivity_Services',
+	permissionGranted: () => hasPermission('manage-cloud'),
+});
+
+registerAdminSidebarItem({
 	href: 'admin-view-logs',
 	i18nLabel: 'View_Logs',
 	icon: 'post',
