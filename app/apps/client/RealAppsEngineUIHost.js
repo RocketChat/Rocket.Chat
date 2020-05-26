@@ -11,13 +11,14 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	constructor() {
 		super();
 
-		this._baseURL = baseURI;
+		this._baseURL = baseURI.replace(/\/$/, '');
 	}
 
 	getUserAvatarUrl(username) {
-		let avatarUrl = getUserAvatarURL(username);
+		const avatarUrl = getUserAvatarURL(username);
+
 		if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('data')) {
-			avatarUrl = `${ this._baseURL.replace(/\/$/, '') }${ avatarUrl }`;
+			return `${ this._baseURL }${ avatarUrl }`;
 		}
 
 		return avatarUrl;
