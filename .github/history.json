@@ -44878,6 +44878,53 @@
           ]
         }
       ]
+    },
+    "3.3.0-rc.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17711",
+          "title": "Regression: Scroll on admin user info",
+          "userLogin": "ggazzo",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17741",
+          "title": "Regression: Removed status border on mentions list",
+          "userLogin": "mariaeduardacunha",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "17728",
+          "title": "Regression: Force unread-rooms bar to appears over the room list",
+          "userLogin": "mariaeduardacunha",
+          "contributors": [
+            "mariaeduardacunha",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17656",
+          "title": "[NEW][APPS-ENGINE] Essentials mechanism",
+          "userLogin": "d-gubert",
+          "milestone": "3.3.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
