@@ -1,6 +1,32 @@
 
 # 3.3.0 (Under Release Candidate Process)
 
+## 3.3.0-rc.3
+`2020-05-25  ·  1 🎉  ·  3 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- **APPS-ENGINE:** Essentials mechanism ([#17656](https://github.com/RocketChat/Rocket.Chat/pull/17656))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Scroll on admin user info ([#17711](https://github.com/RocketChat/Rocket.Chat/pull/17711))
+
+- Regression: Removed status border on mentions list ([#17741](https://github.com/RocketChat/Rocket.Chat/pull/17741))
+
+- Regression: Force unread-rooms bar to appears over the room list ([#17728](https://github.com/RocketChat/Rocket.Chat/pull/17728))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@ggazzo](https://github.com/ggazzo)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
+
 ## 3.3.0-rc.2
 `2020-05-22  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
@@ -58,13 +84,15 @@
 
   After this process, if an agent has been found, the system will check the agent's availability to assist the new chat. If it's not available, then the routing system will get the next available agent in the queue.
 
+- **Apps-Engine:** New Room events ([#17487](https://github.com/RocketChat/Rocket.Chat/pull/17487))
+
+- **Apps-Engine:** New Livechat event handlers ([#17033](https://github.com/RocketChat/Rocket.Chat/pull/17033))
+
 - API endpoint to fetch Omnichannel's room transfer history ([#17694](https://github.com/RocketChat/Rocket.Chat/pull/17694))
 
 - Option to remove users from RocketChat if not found in Crowd ([#17619](https://github.com/RocketChat/Rocket.Chat/pull/17619) by [@ocanema](https://github.com/ocanema))
 
 - Added custom fields to Add/Edit user ([#17681](https://github.com/RocketChat/Rocket.Chat/pull/17681))
-
-- [Apps-Engine] New Room events ([#17487](https://github.com/RocketChat/Rocket.Chat/pull/17487))
 
 - Admin refactor  Second phase ([#17551](https://github.com/RocketChat/Rocket.Chat/pull/17551))
 
@@ -90,10 +118,10 @@
 
 - Add Livechat website URL to the offline message e-mail ([#17429](https://github.com/RocketChat/Rocket.Chat/pull/17429))
 
-- [Apps-Engine] New Livechat event handlers ([#17033](https://github.com/RocketChat/Rocket.Chat/pull/17033))
-
 ### 🚀 Improvements
 
+
+- **Apps-Engine:** App user as the default notifier ([#17050](https://github.com/RocketChat/Rocket.Chat/pull/17050))
 
 - Always shows the exact match first on user's and room's autocomplete for mentions and on sidebar search ([#16394](https://github.com/RocketChat/Rocket.Chat/pull/16394))
 
@@ -108,8 +136,6 @@
 - Unused styles ([#17554](https://github.com/RocketChat/Rocket.Chat/pull/17554))
 
 - Add new webhooks to the Omnichannel integration feature ([#17503](https://github.com/RocketChat/Rocket.Chat/pull/17503))
-
-- [Apps-Engine] App user as the default notifier ([#17050](https://github.com/RocketChat/Rocket.Chat/pull/17050))
 
 ### 🐛 Bug fixes
 
