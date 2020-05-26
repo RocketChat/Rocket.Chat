@@ -153,16 +153,17 @@
 				<tbody>
 					{{#each livechatRoom}}
 						<tr class="rc-table-tr manage row-link" data-name="{{latest.name}}">
-
-							<td>
-								<div class="rc-table-wrapper">
-									<div class="rc-table-info">
-										<span class="rc-table-title">
-											{{fname}}
-										</span>
+							<a href="/live{{_id}}">
+								<td>
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{fname}}
+											</span>
+										</div>
 									</div>
-								</div>
-							</td>
+								</td>
+							</a>
 							<td>{{department.name}}</td>
 							<td>{{servedBy}}</td>
 							<td>{{startedAt}}</td>
