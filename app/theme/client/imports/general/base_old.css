@@ -3332,8 +3332,9 @@
 	}
 
 	button {
-		flex-grow: 1;
 		margin: 0 5px;
+
+		flex-grow: 1;
 	}
 
 	& .button {
