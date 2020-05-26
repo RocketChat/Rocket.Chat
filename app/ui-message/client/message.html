@@ -105,6 +105,10 @@
 				{{> messageAttachment}}
 			{{/each}}
 
+			{{#if isPushMessage}}
+				{{> pushMessage msg=msg}}
+			{{/if}}
+
 			{{#if msg.drid}}
 				<div class="message-discussion">
 					{{#if $gt msg.dcount 0}}
