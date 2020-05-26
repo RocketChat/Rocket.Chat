@@ -4,7 +4,7 @@ import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
-import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
+import ConnectionStatusAlert from '../connectionStatus/ConnectionStatusAlert';
 import { finalStep } from './SetupWizardState';
 import FinalStep from './steps/FinalStep';
 import SideBar from './SideBar';

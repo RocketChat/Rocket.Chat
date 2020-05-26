@@ -3,7 +3,7 @@ import React from 'react';
 
 import { useRoute } from '../../contexts/RouterContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
-import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
+import ConnectionStatusAlert from '../connectionStatus/ConnectionStatusAlert';
 import { useTranslation } from '../../contexts/TranslationContext';
 
 function PageNotFound() {
