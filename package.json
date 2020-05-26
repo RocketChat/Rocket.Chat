@@ -58,6 +58,7 @@
 		"@settlin/spacebars-loader": "^1.0.7",
 		"@storybook/addon-actions": "^5.3.19",
 		"@storybook/addon-knobs": "^5.3.19",
+		"@storybook/addon-viewport": "^5.3.19",
 		"@storybook/addons": "^5.3.19",
 		"@storybook/react": "^5.3.19",
 		"@types/bcrypt": "^3.0.0",

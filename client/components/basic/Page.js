@@ -1,7 +1,7 @@
 import { Box, Scrollable } from '@rocket.chat/fuselage';
 import React, { createContext, useContext, useState } from 'react';
 
-import { BurgerMenuButton } from './BurgerMenuButton';
+import BurgerMenuButton from './BurgerMenuButton';
 
 const PageContext = createContext();
 

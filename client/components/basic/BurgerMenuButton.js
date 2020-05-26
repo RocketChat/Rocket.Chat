@@ -6,7 +6,7 @@ import { useSession } from '../../contexts/SessionContext';
 import { useSidebar } from '../../contexts/SidebarContext';
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 
-export const BurgerMenuButton = (props) => {
+function BurgerMenuButton(props) {
 	const [isSidebarOpen, setSidebarOpen] = useSidebar();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const unreadMessagesBadge = useSession('unread');
@@ -35,4 +35,6 @@ export const BurgerMenuButton = (props) => {
 			{unreadMessagesBadge}
 		</Box>}
 	</Box>;
-};
+}
+
+export default BurgerMenuButton;
