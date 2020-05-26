@@ -173,7 +173,7 @@ FlowRouter.route('/setup-wizard/:step?', {
 
 FlowRouter.notFound = {
 	action: () => {
-		renderRouteComponent(() => import('./components/pageNotFound/PageNotFound'));
+		renderRouteComponent(() => import('./views/notFound/NotFoundPage'));
 	},
 };
 
