@@ -84,17 +84,15 @@ class MsAutoTranslate extends AutoTranslate {
 	}
 
 	/**
-	 * Send Request REST API call to the service provider.
-	 * Returns translated message for each target language in target languages.
+	 * Re-use method for REST API consumption of MS translate.
 	 * @private
 	 * @param {object} message
 	 * @param {object} targetLanguages
+	 * @throws Communication Errors
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translateMessage(message, targetLanguages) {
+	_translate(data, targetLanguages) {
 		let translations = {};
-		let msgs = message.msg.split('\n');
-		msgs = msgs.map((msg) => ({ Text: msg }));
 		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages = targetLanguages.map((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -103,28 +101,44 @@ class MsAutoTranslate extends AutoTranslate {
 			return language;
 		});
 		const url = `${ this.apiEndPointUrl }&to=${ targetLanguages.join('&to=') }`;
-		try {
-			const result = HTTP.post(url, {
-				headers: {
-					'Ocp-Apim-Subscription-Key': this.apiKey,
-					'Content-Type': 'application/json; charset=UTF-8',
-				},
-				data: msgs,
-			});
+		const result = HTTP.post(url, {
+			headers: {
+				'Ocp-Apim-Subscription-Key': this.apiKey,
+				'Content-Type': 'application/json; charset=UTF-8',
+			},
+			data,
+		});
 
-			if (result.statusCode === 200 && result.data && result.data.length > 0) {
-				// store translation only when the source and target language are different.
-				// multiple lines might contain different languages => Mix the text between source and detected target if neccessary
-				translations = Object.assign({}, ...targetLanguages.map((language) =>
-					({
-						[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
-					}),
-				));
-			}
+		if (result.statusCode === 200 && result.data && result.data.length > 0) {
+			// store translation only when the source and target language are different.
+			translations = Object.assign({}, ...targetLanguages.map((language) =>
+				({
+					[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
+				}),
+			));
+		}
+
+		return translations;
+	}
+
+	/**
+	 * Returns translated message for each target language.
+	 * @private
+	 * @param {object} message
+	 * @param {object} targetLanguages
+	 * @returns {object} translations: Translated messages for each language
+	 */
+	_translateMessage(message, targetLanguages) {
+		// There are multi-sentence-messages where multiple sentences come from different languages
+		// This is a problem for translation services since the language detection fails.
+		// Thus, we'll split the message in sentences, get them translated, and join them again after translation
+		const msgs = message.msg.split('\n').map((msg) => ({ Text: msg }));
+		try {
+			return this._translate(msgs, targetLanguages);
 		} catch (e) {
 			logger.microsoft.error('Error translating message', e);
 		}
-		return translations;
+		return {};
 	}
 
 	/**
@@ -135,38 +149,14 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @returns {object} translated messages for each target language
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		let translations = {};
-		const supportedLanguages = this.getSupportedLanguages('en');
-		targetLanguages = targetLanguages.map((language) => {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-				language = language.substr(0, 2);
-			}
-			return language;
-		});
-		const url = `${ this.apiEndPointUrl }&to=${ targetLanguages.join('&to=') }`;
 		try {
-			const result = HTTP.post(url, {
-				headers: {
-					'Ocp-Apim-Subscription-Key': this.apiKey,
-					'Content-Type': 'application/json; charset=UTF-8',
-				},
-				data: [{
-					Text: attachment.description || attachment.text,
-				}],
-			});
-
-			if (result.statusCode === 200 && result.data && result.data.length > 0) {
-				// store translation only when the source and target language are different.
-				translations = Object.assign({}, ...targetLanguages.map((language) =>
-					({
-						[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
-					}),
-				));
-			}
+			return this._translate([{
+				Text: attachment.description || attachment.text,
+			}], targetLanguages);
 		} catch (e) {
 			logger.microsoft.error('Error translating message attachment', e);
 		}
-		return translations;
+		return {};
 	}
 }
 
