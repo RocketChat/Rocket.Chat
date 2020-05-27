@@ -69,7 +69,6 @@
 
 		& .unread-rooms {
 			position: absolute;
-			top: 0;
 			left: 50%;
 
 			overflow: hidden;
@@ -91,6 +90,14 @@
 			text-overflow: ellipsis;
 
 			border-radius: 25px;
+
+			&.bottom-unread-rooms {
+				bottom: 0;
+			}
+
+			&.top-unread-rooms {
+				top: 0;
+			}
 		}
 	}
 }
