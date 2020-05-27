@@ -128,6 +128,7 @@
 		"@nivo/line": "^0.61.1",
 		"@nivo/pie": "^0.61.1",
 		"@rocket.chat/apps-engine": "1.15.0",
+		"@rocket.chat/css-in-js": "^0.9.0",
 		"@rocket.chat/fuselage": "^0.9.0",
 		"@rocket.chat/fuselage-hooks": "^0.9.0",
 		"@rocket.chat/fuselage-polyfills": "^0.9.0",
