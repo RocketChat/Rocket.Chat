@@ -5,6 +5,7 @@ import fiber from 'fibers';
 import s from 'underscore.string';
 
 import { SAMLServiceProvider } from './ServiceProvider';
+import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 const showErrorMessage = function(res: object, err: string): void {
 	res.writeHead(200, {
@@ -15,7 +16,7 @@ const showErrorMessage = function(res: object, err: string): void {
 };
 
 export class SAML {
-	static processRequest(req: object, res: object, service: object, samlObject: object): void {
+	static processRequest(req: object, res: object, service: IServiceProviderOptions, samlObject: object): void {
 		// Skip everything if there's no service set by the saml middleware
 		if (!service) {
 			if (samlObject.actionName === 'metadata') {
@@ -42,7 +43,7 @@ export class SAML {
 		}
 	}
 
-	static processMetadataAction(req: object, res: object, service: object): void {
+	static processMetadataAction(req: object, res: object, service: IServiceProviderOptions): void {
 		try {
 			const serviceProvider = new SAMLServiceProvider(service);
 			service.callbackUrl = Meteor.absoluteUrl(`_saml/validate/${ service.provider }`);
@@ -55,7 +56,7 @@ export class SAML {
 		}
 	}
 
-	static processLogoutAction(req: object, res: object, service: object): void {
+	static processLogoutAction(req: object, res: object, service: IServiceProviderOptions): void {
 		// This is where we receive SAML LogoutResponse
 		if (req.query.SAMLRequest) {
 			return this.processLogoutRequest(req, res, service);
@@ -86,7 +87,7 @@ export class SAML {
 		});
 	}
 
-	static processLogoutRequest(req: object, res: object, service: object): void {
+	static processLogoutRequest(req: object, res: object, service: IServiceProviderOptions): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		serviceProvider.validateLogoutRequest(req.query.SAMLRequest, (err, result) => {
 			if (err) {
@@ -128,7 +129,7 @@ export class SAML {
 		});
 	}
 
-	static processLogoutResponse(req: object, res: object, service: object): void {
+	static processLogoutResponse(req: object, res: object, service: IServiceProviderOptions): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		serviceProvider.validateLogoutResponse(req.query.SAMLResponse, (err, result) => {
 			if (!err) {
@@ -164,7 +165,7 @@ export class SAML {
 		res.end();
 	}
 
-	static processAuthorizeAction(req: object, res: object, service: object, samlObject: object): void {
+	static processAuthorizeAction(req: object, res: object, service: IServiceProviderOptions, samlObject: object): void {
 		service.callbackUrl = Meteor.absoluteUrl(`_saml/validate/${ service.provider }`);
 		service.id = samlObject.credentialToken;
 
@@ -180,7 +181,7 @@ export class SAML {
 		});
 	}
 
-	static processValidateAction(req: object, res: object, service: object, samlObject: object): void {
+	static processValidateAction(req: object, res: object, service: IServiceProviderOptions, samlObject: object): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		Accounts.saml.RelayState = req.body.RelayState;
 		serviceProvider.validateResponse(req.body.SAMLResponse, req.body.RelayState, (err, profile/* , loggedOut*/) => {

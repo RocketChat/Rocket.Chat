@@ -6,6 +6,7 @@ import {
 	defaultNameIDTemplate,
 	defaultAuthnContextTemplate,
 } from '../Utils';
+import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 
 /*
 	An Authorize Request is used to show the Identity Provider login form when the user clicks on the Rocket.Chat SAML login button
