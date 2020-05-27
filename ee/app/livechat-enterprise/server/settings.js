@@ -36,5 +36,27 @@ export const createSettings = () => {
 		enableQuery: { _id: 'Livechat_waiting_queue', value: true },
 	});
 
+	settings.add('Livechat_auto_close_abandoned_rooms', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		i18nLabel: 'Enable_omnichannel_auto_close_abandoned_rooms',
+	});
+
+	settings.add('Livechat_abandoned_rooms_closed_custom_message', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		i18nLabel: 'Livechat_abandoned_rooms_closed_custom_message',
+		enableQuery: { _id: 'Livechat_auto_close_abandoned_rooms', value: true },
+	});
+
+	settings.add('Livechat_last_chatted_agent_routing', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Routing',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } },
+	});
+
 	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
 };

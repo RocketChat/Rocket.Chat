@@ -7,11 +7,11 @@ export function Section({
 	filter = <InputBox.Skeleton />,
 }) {
 	return <Box>
-		<Margins block='x16'>
+		<Margins block='x24'>
 			<Flex.Container alignItems='center' wrap='no-wrap'>
 				<Box>
 					<Flex.Item grow={1}>
-						<Box textStyle='s2' textColor='default'>{title}</Box>
+						<Box fontScale='s2' color='default'>{title}</Box>
 					</Flex.Item>
 					{filter && <Flex.Item grow={0}>
 						{filter}

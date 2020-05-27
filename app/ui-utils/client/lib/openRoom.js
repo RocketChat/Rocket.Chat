@@ -29,6 +29,8 @@ const getDomOfLoading = mem(function getDomOfLoading() {
 });
 
 function replaceCenterDomBy(dom) {
+	document.dispatchEvent(new CustomEvent('main-content-destroyed'));
+
 	const mainNode = document.querySelector('.main-content');
 	if (mainNode) {
 		for (const child of Array.from(mainNode.children)) {
@@ -61,6 +63,7 @@ export const openRoom = async function(type, name) {
 
 		try {
 			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
+			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (RoomManager.open(type + name).ready() !== true) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
@@ -71,8 +74,6 @@ export const openRoom = async function(type, name) {
 			}
 
 			c.stop();
-
-			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (window.currentTracker) {
 				window.currentTracker = undefined;
