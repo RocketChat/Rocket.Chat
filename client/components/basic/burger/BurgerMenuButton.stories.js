@@ -1,9 +1,9 @@
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { centeredDecorator } from '../../../.storybook/decorators';
-import { SidebarContext } from '../../contexts/SidebarContext';
-import { SessionContext } from '../../contexts/SessionContext';
+import { centeredDecorator } from '../../../../.storybook/decorators';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { SessionContext } from '../../../contexts/SessionContext';
 import BurgerMenuButton from './BurgerMenuButton';
 
 const stateDecorator = ({
@@ -18,7 +18,7 @@ const stateDecorator = ({
 		</SessionContext.Provider>;
 
 export default {
-	title: 'components/basic/BurgerMenuButton',
+	title: 'components/basic/burger/BurgerMenuButton',
 	component: BurgerMenuButton,
 	decorators: [
 		centeredDecorator,
