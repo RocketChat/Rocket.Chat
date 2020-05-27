@@ -44925,6 +44925,36 @@
           ]
         }
       ]
+    },
+    "3.3.0-rc.4": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17750",
+          "title": "Regression: Fix Unread bar design",
+          "userLogin": "dudizilla",
+          "milestone": "3.3.0",
+          "contributors": [
+            "dudizilla",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17745",
+          "title": "Regression: Adjusting spaces between OAuth login buttons",
+          "userLogin": "dudizilla",
+          "milestone": "3.3.0",
+          "contributors": [
+            "dudizilla"
+          ]
+        }
+      ]
     }
   }
 }
