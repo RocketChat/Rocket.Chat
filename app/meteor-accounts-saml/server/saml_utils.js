@@ -373,8 +373,10 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 			return callback(err, null);
 		}
 
-		debugLog(`LogoutRequest: ${ decoded }`);
-		const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
+		const xmlString = array2string(decoded);
+		debugLog(`LogoutRequest: ${ xmlString }`);
+
+		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');
 		if (!doc) {
 			return callback('No Doc Found');
 		}
@@ -385,17 +387,10 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 		}
 
 		try {
-			const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
+			const sessionNode = request.getElementsByTagNameNS('*', 'SessionIndex')[0];
+			const nameIdNode = request.getElementsByTagNameNS('*', 'NameID')[0];
 
-			const nameNodes1 = request.getElementsByTagName('saml:NameID');
-			const nameNodes2 = request.getElementsByTagName('NameID');
-
-			let nameIdNode;
-			if (nameNodes1 && nameNodes1.length) {
-				nameIdNode = nameNodes1[0];
-			} else if (nameNodes2 && nameNodes2.length) {
-				nameIdNode = nameNodes2[0];
-			} else {
+			if (!nameIdNode) {
 				throw new Error('SAML Logout Request: No NameID node found');
 			}
 

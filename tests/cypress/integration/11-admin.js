@@ -683,15 +683,6 @@ describe('[Administration]', () => {
 					admin.accountsidleTimeLimit.should('have.value', '300');
 				});
 
-				it('it should show the notifications durations field', () => {
-					admin.accountsNotificationDuration.click();
-					admin.accountsNotificationDuration.should('be.visible');
-				});
-
-				it('the notification duration field value should be 0', () => {
-					admin.accountsNotificationDuration.should('have.value', '0');
-				});
-
 				it('it should show the audio notifications select field', () => {
 					admin.accountsAudioNotifications.scrollIntoView();
 					admin.accountsAudioNotifications.should('be.visible');

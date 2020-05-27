@@ -6,6 +6,7 @@ import './app/livechatRoomTagSelector';
 import './app/tabbar/agentEdit';
 import './app/tabbar/agentInfo';
 import './app/tabbar/visitorEdit';
+import './app/tabbar/visitorEditCustomField';
 import './app/tabbar/visitorForward';
 import './app/tabbar/visitorHistory';
 import './app/tabbar/visitorInfo';

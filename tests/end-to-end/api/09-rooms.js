@@ -58,7 +58,6 @@ describe('[Rooms]', function() {
 						emailNotifications: 'nothing',
 						audioNotificationValue: 'beep',
 						desktopNotifications: 'nothing',
-						desktopNotificationDuration: '2',
 						audioNotifications: 'all',
 						mobilePushNotifications: 'mentions',
 					},
