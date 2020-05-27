@@ -1,6 +1,24 @@
 
 # 3.3.0 (Under Release Candidate Process)
 
+## 3.3.0-rc.4
+`2020-05-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix Unread bar design ([#17750](https://github.com/RocketChat/Rocket.Chat/pull/17750))
+
+- Regression: Adjusting spaces between OAuth login buttons ([#17745](https://github.com/RocketChat/Rocket.Chat/pull/17745))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dudizilla](https://github.com/dudizilla)
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 3.3.0-rc.3
 `2020-05-25  ·  1 🎉  ·  3 🔍  ·  3 👩‍💻👨‍💻`
 
@@ -15,17 +33,20 @@
 
 - Regression: Scroll on admin user info ([#17711](https://github.com/RocketChat/Rocket.Chat/pull/17711))
 
-- Regression: Removed status border on mentions list ([#17741](https://github.com/RocketChat/Rocket.Chat/pull/17741))
+- Regression: Removed status border on mentions list ([#17741](https://github.com/RocketChat/Rocket.Chat/pull/17741) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
-- Regression: Force unread-rooms bar to appears over the room list ([#17728](https://github.com/RocketChat/Rocket.Chat/pull/17728))
+- Regression: Force unread-rooms bar to appears over the room list ([#17728](https://github.com/RocketChat/Rocket.Chat/pull/17728) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 </details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@d-gubert](https://github.com/d-gubert)
 - [@ggazzo](https://github.com/ggazzo)
-- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 
 ## 3.3.0-rc.2
 `2020-05-22  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
@@ -110,7 +131,7 @@
 
 - Screen Lock settings - mobile client ([#17523](https://github.com/RocketChat/Rocket.Chat/pull/17523))
 
-- Rewrite admin pages ([#17388](https://github.com/RocketChat/Rocket.Chat/pull/17388))
+- Rewrite admin pages ([#17388](https://github.com/RocketChat/Rocket.Chat/pull/17388) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Allow filtering Omnichannel analytics dashboards by department ([#17463](https://github.com/RocketChat/Rocket.Chat/pull/17463))
 
@@ -150,7 +171,7 @@
 
 - Elements of  "Personal Access Tokens" section out of alignment and unusable on very small screens ([#17129](https://github.com/RocketChat/Rocket.Chat/pull/17129) by [@Nikhil713](https://github.com/Nikhil713))
 
-- Allow owners to react inside broadcast channels ([#17687](https://github.com/RocketChat/Rocket.Chat/pull/17687))
+- Allow owners to react inside broadcast channels ([#17687](https://github.com/RocketChat/Rocket.Chat/pull/17687) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Default filters on Omnichannel Current Chats screen not showing on first load ([#17522](https://github.com/RocketChat/Rocket.Chat/pull/17522))
 
@@ -207,7 +228,7 @@
 
 - Replace postcss Meteor package ([#15929](https://github.com/RocketChat/Rocket.Chat/pull/15929))
 
-- Increasing highlight time in 3 seconds ([#17540](https://github.com/RocketChat/Rocket.Chat/pull/17540))
+- Increasing highlight time in 3 seconds ([#17540](https://github.com/RocketChat/Rocket.Chat/pull/17540) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Remove deprecated Omnichannel Knowledge Base feature ([#17387](https://github.com/RocketChat/Rocket.Chat/pull/17387))
 
@@ -235,7 +256,7 @@
 
 - Update Fuselage version ([#17708](https://github.com/RocketChat/Rocket.Chat/pull/17708))
 
-- Regression: Status presence  color ([#17707](https://github.com/RocketChat/Rocket.Chat/pull/17707))
+- Regression: Status presence  color ([#17707](https://github.com/RocketChat/Rocket.Chat/pull/17707) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Improve: Remove index files from action-links, accounts and assets ([#17607](https://github.com/RocketChat/Rocket.Chat/pull/17607))
 
@@ -316,6 +337,7 @@
 - [@juzser](https://github.com/juzser)
 - [@kolorafa](https://github.com/kolorafa)
 - [@machester4](https://github.com/machester4)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@ocanema](https://github.com/ocanema)
 - [@qwertiko](https://github.com/qwertiko)
 - [@regalstreak](https://github.com/regalstreak)
@@ -337,7 +359,6 @@
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@lolimay](https://github.com/lolimay)
-- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@mtmr0x](https://github.com/mtmr0x)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
@@ -1608,11 +1629,11 @@
 ### ⚠️ BREAKING CHANGES
 
 
-- Filter System messages per room ([#16369](https://github.com/RocketChat/Rocket.Chat/pull/16369))
+- Filter System messages per room ([#16369](https://github.com/RocketChat/Rocket.Chat/pull/16369) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Remove deprecated publications ([#16351](https://github.com/RocketChat/Rocket.Chat/pull/16351))
 
-- Hide system messages ([#16243](https://github.com/RocketChat/Rocket.Chat/pull/16243))
+- Hide system messages ([#16243](https://github.com/RocketChat/Rocket.Chat/pull/16243) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Upgrade to Meteor 1.9 and NodeJS 12 ([#16252](https://github.com/RocketChat/Rocket.Chat/pull/16252))
 
@@ -1687,11 +1708,11 @@
 
 - Highlight freezing the UI ([#16378](https://github.com/RocketChat/Rocket.Chat/pull/16378))
 
-- Adding 'lang' tag ([#16375](https://github.com/RocketChat/Rocket.Chat/pull/16375))
+- Adding 'lang' tag ([#16375](https://github.com/RocketChat/Rocket.Chat/pull/16375) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - App removal was moving logs to the trash collection ([#16362](https://github.com/RocketChat/Rocket.Chat/pull/16362))
 
-- Role tags missing - Description field explanation ([#16356](https://github.com/RocketChat/Rocket.Chat/pull/16356))
+- Role tags missing - Description field explanation ([#16356](https://github.com/RocketChat/Rocket.Chat/pull/16356) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Invite links usage by channel owners/moderators ([#16176](https://github.com/RocketChat/Rocket.Chat/pull/16176))
 
@@ -1721,7 +1742,7 @@
 
 - SafePorts: Ports 80, 8080 & 443 linked to respective protocols (#16108) ([#16108](https://github.com/RocketChat/Rocket.Chat/pull/16108))
 
-- Drag and drop disabled when file upload is disabled ([#16049](https://github.com/RocketChat/Rocket.Chat/pull/16049))
+- Drag and drop disabled when file upload is disabled ([#16049](https://github.com/RocketChat/Rocket.Chat/pull/16049) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Video message sent to wrong room ([#16113](https://github.com/RocketChat/Rocket.Chat/pull/16113))
 
@@ -1731,7 +1752,7 @@
 
 - Thread message icon overlapping text ([#16083](https://github.com/RocketChat/Rocket.Chat/pull/16083))
 
-- Login change language button ([#16085](https://github.com/RocketChat/Rocket.Chat/pull/16085))
+- Login change language button ([#16085](https://github.com/RocketChat/Rocket.Chat/pull/16085) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - api-bypass-rate-limiter permission was not working ([#16080](https://github.com/RocketChat/Rocket.Chat/pull/16080))
 
@@ -1865,6 +1886,7 @@
 - [@antkaz](https://github.com/antkaz)
 - [@ashwaniYDV](https://github.com/ashwaniYDV)
 - [@aviral243](https://github.com/aviral243)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@mrsimpson](https://github.com/mrsimpson)
 - [@ritwizsinha](https://github.com/ritwizsinha)
 - [@vickyokrm](https://github.com/vickyokrm)
@@ -1879,7 +1901,6 @@
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@lolimay](https://github.com/lolimay)
-- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
@@ -2145,20 +2166,23 @@
 
 - Add missing password field back to administration area ([#16171](https://github.com/RocketChat/Rocket.Chat/pull/16171))
 
-- JS errors on Administration page ([#16139](https://github.com/RocketChat/Rocket.Chat/pull/16139))
+- JS errors on Administration page ([#16139](https://github.com/RocketChat/Rocket.Chat/pull/16139) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 <details>
 <summary>🔍 Minor changes</summary>
 
 
-- Release 2.4.1 ([#16195](https://github.com/RocketChat/Rocket.Chat/pull/16195))
+- Release 2.4.1 ([#16195](https://github.com/RocketChat/Rocket.Chat/pull/16195) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 </details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@d-gubert](https://github.com/d-gubert)
-- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
@@ -2249,17 +2273,17 @@
 
 - Admin Setting descriptions and Storybook ([#15994](https://github.com/RocketChat/Rocket.Chat/pull/15994))
 
-- width of upload-progress-text ([#16023](https://github.com/RocketChat/Rocket.Chat/pull/16023))
+- width of upload-progress-text ([#16023](https://github.com/RocketChat/Rocket.Chat/pull/16023) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
-- Message list scrolling to bottom on reactions ([#16018](https://github.com/RocketChat/Rocket.Chat/pull/16018))
+- Message list scrolling to bottom on reactions ([#16018](https://github.com/RocketChat/Rocket.Chat/pull/16018) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - SAML logout error ([#15978](https://github.com/RocketChat/Rocket.Chat/pull/15978))
 
 - Added Join button to Read Only rooms. ([#16016](https://github.com/RocketChat/Rocket.Chat/pull/16016))
 
-- z-index of new message button ([#16013](https://github.com/RocketChat/Rocket.Chat/pull/16013))
+- z-index of new message button ([#16013](https://github.com/RocketChat/Rocket.Chat/pull/16013) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
-- new message popup ([#16017](https://github.com/RocketChat/Rocket.Chat/pull/16017))
+- new message popup ([#16017](https://github.com/RocketChat/Rocket.Chat/pull/16017) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Changed renderMessage priority, fixed Katex on/off setting ([#16012](https://github.com/RocketChat/Rocket.Chat/pull/16012))
 
@@ -2352,6 +2376,7 @@
 - [@breaking-let](https://github.com/breaking-let)
 - [@iannuzzelli](https://github.com/iannuzzelli)
 - [@localguru](https://github.com/localguru)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@n-se](https://github.com/n-se)
 - [@ritwizsinha](https://github.com/ritwizsinha)
 - [@wreiske](https://github.com/wreiske)
@@ -2366,7 +2391,6 @@
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@lolimay](https://github.com/lolimay)
-- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
@@ -2540,7 +2564,7 @@
 
 - Mentions before blockquote ([#15774](https://github.com/RocketChat/Rocket.Chat/pull/15774))
 
-- Sidebar font color was not respecting theming ([#15745](https://github.com/RocketChat/Rocket.Chat/pull/15745))
+- Sidebar font color was not respecting theming ([#15745](https://github.com/RocketChat/Rocket.Chat/pull/15745) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
 - Add livechat agents into departments ([#15732](https://github.com/RocketChat/Rocket.Chat/pull/15732))
 
@@ -2615,6 +2639,7 @@
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Exordian](https://github.com/Exordian)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@mpdbl](https://github.com/mpdbl)
 - [@nstseek](https://github.com/nstseek)
 - [@rajvaibhavdubey](https://github.com/rajvaibhavdubey)
@@ -2628,7 +2653,6 @@
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
-- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
