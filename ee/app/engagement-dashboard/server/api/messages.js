@@ -1,6 +1,6 @@
 import { check } from 'meteor/check';
 
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api';
 import { findWeeklyMessagesSentData, findMessagesSentOrigin, findTopFivePopularChannelsByMessageSentQuantity } from '../lib/messages';
 import { transformDatesForAPI } from './helpers/date';
 

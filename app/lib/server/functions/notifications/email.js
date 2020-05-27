@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
 
-import * as Mailer from '../../../../mailer';
+import * as Mailer from '../../../../../server/mailer';
 import { settings } from '../../../../settings';
 import { roomTypes } from '../../../../utils';
-import { metrics } from '../../../../metrics';
+import { metrics } from '../../../../../server/metrics';
 import { callbacks } from '../../../../callbacks';
 import { getURL } from '../../../../utils/server';
 

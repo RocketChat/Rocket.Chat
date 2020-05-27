@@ -1,6 +1,6 @@
 import s from 'underscore.string';
 
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Rooms, Messages } from '../../../app/models';
 
 Migrations.add({

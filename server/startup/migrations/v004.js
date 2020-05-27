@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Rooms, Subscriptions, Messages } from '../../../app/models';
 
 Migrations.add({

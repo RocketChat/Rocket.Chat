@@ -1,7 +1,7 @@
 
 import { check } from 'meteor/check';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api';
 import { findVisitorInfo, findVisitedPages, findChatHistory, findVisitorsToAutocomplete } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {

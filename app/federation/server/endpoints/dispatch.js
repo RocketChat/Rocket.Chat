@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 
-import { API } from '../../../api/server';
+import { API } from '../../../../server/api';
 import { logger } from '../lib/logger';
 import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
 import {

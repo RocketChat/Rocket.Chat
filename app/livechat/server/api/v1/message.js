@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 
 import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';

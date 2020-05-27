@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../../server/mailer';
 import { settings } from '../../../settings';
 
 Meteor.methods({

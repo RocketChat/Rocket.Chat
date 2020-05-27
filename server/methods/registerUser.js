@@ -6,7 +6,7 @@ import s from 'underscore.string';
 import { Users } from '../../app/models';
 import { settings } from '../../app/settings';
 import { saveCustomFields, validateEmailDomain, passwordPolicy } from '../../app/lib';
-import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
+import { validateInviteToken } from '../invites/validateInviteToken';
 
 Meteor.methods({
 	registerUser(formData) {

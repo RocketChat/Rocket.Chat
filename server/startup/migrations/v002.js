@@ -1,6 +1,6 @@
-import { RocketChatFile } from '../../../app/file';
+import { RocketChatFile } from '../../file';
 import { FileUpload } from '../../../app/file-upload';
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Users } from '../../../app/models';
 import { getAvatarSuggestionForUser } from '../../../app/lib';
 

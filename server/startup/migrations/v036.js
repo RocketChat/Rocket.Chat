@@ -3,9 +3,9 @@ import url from 'url';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Settings } from '../../../app/models';
-import { RocketChatAssets } from '../../../app/assets/server';
+import { RocketChatAssets } from '../../assets';
 
 Migrations.add({
 	version: 36,

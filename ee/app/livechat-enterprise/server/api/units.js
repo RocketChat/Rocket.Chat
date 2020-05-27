@@ -1,4 +1,4 @@
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 
 API.v1.addRoute('livechat/units.list', { authRequired: true }, {

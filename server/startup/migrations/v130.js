@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Rooms, Subscriptions, Users } from '../../../app/models';
 
 Migrations.add({

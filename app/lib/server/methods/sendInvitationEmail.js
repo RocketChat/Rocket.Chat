@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../../server/mailer';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 

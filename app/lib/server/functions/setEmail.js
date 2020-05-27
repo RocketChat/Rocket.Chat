@@ -4,7 +4,7 @@ import s from 'underscore.string';
 import { Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter, validateEmailDomain } from '../lib';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../../server/mailer';
 import { settings } from '../../../settings';
 
 import { checkEmailAvailability } from '.';

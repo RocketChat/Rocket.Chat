@@ -7,7 +7,7 @@ import { hasPermission } from '../../../authorization';
 import { Users, Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { Message } from '../../../ui-utils';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../../server/mailer';
 
 Meteor.methods({
 	'mailMessages'(data) {

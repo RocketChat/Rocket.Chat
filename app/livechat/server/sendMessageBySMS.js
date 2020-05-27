@@ -1,6 +1,6 @@
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
-import { SMS } from '../../sms';
+import { SMS } from '../../../server/sms';
 import { LivechatVisitors } from '../../models';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 

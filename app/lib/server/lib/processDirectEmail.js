@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { settings } from '../../../settings';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models';
-import { metrics } from '../../../metrics';
+import { metrics } from '../../../../server/metrics';
 import { hasPermission } from '../../../authorization';
 import { sendMessage as _sendMessage } from '../functions';
 

@@ -1,5 +1,5 @@
 // Migration to give delete channel, delete group permissions to owner
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Permissions } from '../../../app/models';
 
 Migrations.add({

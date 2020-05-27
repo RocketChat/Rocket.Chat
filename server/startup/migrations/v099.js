@@ -5,10 +5,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 
-import { RocketChatFile } from '../../../app/file';
+import { RocketChatFile } from '../../file';
 import { SystemLogger } from '../../../app/logger';
 import { FileUpload } from '../../../app/file-upload';
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Uploads, Settings, Users } from '../../../app/models';
 
 function log(...args) {

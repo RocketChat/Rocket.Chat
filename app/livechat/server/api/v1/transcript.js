@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/transcript', {

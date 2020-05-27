@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
-import { metrics } from '../../../metrics';
+import { metrics } from '../../../../server/metrics';
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
 import { messageProperties } from '../../../ui-utils';

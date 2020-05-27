@@ -3,8 +3,8 @@ import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { Logger } from '../../app/logger';
-import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { statistics } from '../../app/statistics';
+import { getWorkspaceAccessToken } from '../cloud';
+import { statistics } from '../statistics';
 import { settings } from '../../app/settings';
 
 const logger = new Logger('SyncedCron');

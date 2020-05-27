@@ -1,6 +1,6 @@
 import { EJSON } from 'meteor/ejson';
 
-import { API } from '../../../api/server';
+import { API } from '../../../../server/api';
 import { logger } from '../lib/logger';
 import { FederationRoomEvents } from '../../../models/server';
 import { decryptIfNeeded } from '../lib/crypt';

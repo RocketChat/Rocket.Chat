@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import Busboy from 'busboy';
 
-import { API } from '../../../api/server';
-import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
+import { API } from '../../../../server/api';
+import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../../server/cloud';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';

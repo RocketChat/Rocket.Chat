@@ -4,7 +4,7 @@ import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import _ from 'underscore';
 
 import { settings } from '../../../settings';
-import { metrics } from '../../../metrics';
+import { metrics } from '../../../../server/metrics';
 import { Logger } from '../../../logger';
 
 const logger = new Logger('Meteor', {

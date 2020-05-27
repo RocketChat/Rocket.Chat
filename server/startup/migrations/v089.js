@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Integrations } from '../../../app/models';
 
 Migrations.add({

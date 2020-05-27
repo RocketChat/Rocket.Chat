@@ -2,7 +2,7 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 
 import { hasPermission } from '../../../../authorization';
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api';
 import { Users } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';

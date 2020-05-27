@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Rooms, Messages, Subscriptions, Uploads, Settings, Users } from '../../../app/models/server';
 
 const unifyRooms = (room) => {

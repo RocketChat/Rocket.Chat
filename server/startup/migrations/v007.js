@@ -1,7 +1,7 @@
 import _ from 'underscore';
 
 import { OEmbed } from '../../../app/oembed/server';
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Messages } from '../../../app/models';
 
 Migrations.add({

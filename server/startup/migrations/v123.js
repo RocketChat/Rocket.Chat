@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Messages, Rooms, LivechatPageVisited } from '../../../app/models';
 
 let pageVisitedCollection;

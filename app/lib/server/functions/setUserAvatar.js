@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
-import { RocketChatFile } from '../../../file';
+import { RocketChatFile } from '../../../../server/file';
 import { FileUpload } from '../../../file-upload';
 import { Users } from '../../../models';
 import { Notifications } from '../../../notifications';

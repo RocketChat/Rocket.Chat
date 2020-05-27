@@ -1,4 +1,4 @@
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api';
 import { setPriorityToInquiry } from './lib/inquiries';
 
 API.v1.addRoute('livechat/inquiry.prioritize', { authRequired: true }, {

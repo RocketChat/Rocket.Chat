@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Push } from '../../../push/server';
+import { Push } from '../../../../server/push';
 import { settings } from '../../../settings/server';
-import { metrics } from '../../../metrics/server';
-import { RocketChatAssets } from '../../../assets/server';
+import { metrics } from '../../../../server/metrics';
+import { RocketChatAssets } from '../../../../server/assets';
 
 export class PushNotification {
 	getNotificationId(roomId) {

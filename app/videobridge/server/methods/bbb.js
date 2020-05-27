@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
 
-import BigBlueButtonApi from '../../../bigbluebutton/server';
+import BigBlueButtonApi from '../../../../server/bigbluebutton';
 import { settings } from '../../../settings';
 import { Rooms, Users } from '../../../models';
 import { saveStreamingOptions } from '../../../channel-settings';
-import { API } from '../../../api/server';
+import { API } from '../../../../server/api';
 
 const parser = new xml2js.Parser({
 	explicitRoot: true,

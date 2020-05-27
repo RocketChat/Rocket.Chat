@@ -1,6 +1,6 @@
 import {
 	Migrations,
-} from '../../../app/migrations';
+} from '../../migrations';
 import {
 	Settings,
 } from '../../../app/models';

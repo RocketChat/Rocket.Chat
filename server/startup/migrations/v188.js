@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations/server';
+import { Migrations } from '../../migrations';
 import { Permissions } from '../../../app/models/server';
 
 const newRolePermissions = [

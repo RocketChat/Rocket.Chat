@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Users, Subscriptions, Rooms, Messages } from '../../../app/models';
 
 Migrations.add({

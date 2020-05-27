@@ -1,6 +1,6 @@
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Settings } from '../../../app/models';
 
 Migrations.add({

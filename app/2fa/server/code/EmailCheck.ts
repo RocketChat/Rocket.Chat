@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 
 import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../../server/mailer';
 import { Users } from '../../../models/server';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { IUser } from '../../../../definition/IUser';
