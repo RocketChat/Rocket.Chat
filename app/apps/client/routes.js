@@ -46,13 +46,3 @@ registerAdminRoute('/apps/:appId/logs', {
 	name: 'app-logs',
 	action: createAppsRouteAction('appLogs'),
 });
-
-registerAdminRoute('/marketplace', {
-	name: 'marketplace',
-	action: createAppsRouteAction('marketplace'),
-});
-
-registerAdminRoute('/marketplace/:appId', {
-	name: 'marketplace-app',
-	action: createAppsRouteAction('appManage'),
-});

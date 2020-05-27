@@ -29,7 +29,7 @@ const actions = {
 	},
 };
 
-export const AppStatus = React.memo(({ app, setModal, isLoggedIn, ...props }) => {
+export const AppStatus = React.memo(({ app, setModal, isLoggedIn, showStatus = true, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useState();
 
@@ -74,7 +74,7 @@ export const AppStatus = React.memo(({ app, setModal, isLoggedIn, ...props }) =>
 	}, [id, isLoggedIn, button && button.action]);
 
 	return <Box {...props}>
-		{button && <Button primary disabled={loading} onClick={handleClick}>
+		{button && <Button primary disabled={loading} onClick={handleClick} display={showStatus || loading ? 'block' : 'none'}>
 			{loading && <Throbber />}
 			{!loading && button.icon && <Icon name={button.icon} />}
 			{!loading && t(button.label)}

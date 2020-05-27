@@ -60,7 +60,7 @@ class AppClientOrchestrator {
 
 		registerAdminSidebarItem({
 			icon: 'cube',
-			href: 'marketplace',
+			href: 'admin-apps',
 			i18nLabel: 'Marketplace',
 			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
 		});
@@ -103,6 +103,11 @@ class AppClientOrchestrator {
 	getApp = async (appId) => {
 		const { app } = await APIClient.get(`apps/${ appId }`);
 		return app;
+	}
+
+	getAppLogs = async (appId) => {
+		const { logs } = await APIClient.get(`apps/${ appId }/logs`);
+		return logs;
 	}
 
 	getAppFromMarketplace = async (appId, version) => {

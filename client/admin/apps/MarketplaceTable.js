@@ -32,7 +32,7 @@ const objectFit = { objectFit: 'contain' };
 
 export function MarketplaceTable({ setModal }) {
 	const t = useTranslation();
-	const [ref, isBig] = useResizeInlineBreakpoint([700], 200);
+	const [ref, isBig, isMedium] = useResizeInlineBreakpoint([800, 600], 200);
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
@@ -64,11 +64,11 @@ export function MarketplaceTable({ setModal }) {
 	}, [sort]);
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w={isBig ? 'x280' : 'x240'}>{t('Name')}</Th>,
-		<Th key={'details'}>{t('Details')}</Th>,
-		<Th key={'price'}>{t('Price')}</Th>,
-		isBig && <Th key={'status'}>{t('Status')}</Th>,
-	].filter(Boolean), [sort, isBig]);
+		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w={isMedium ? 'x240' : 'x180'}>{t('Name')}</Th>,
+		isBig && <Th key={'details'}>{t('Details')}</Th>,
+		isMedium && <Th key={'price'}>{t('Price')}</Th>,
+		<Th key={'status'} w='x160'>{t('Status')}</Th>,
+	].filter(Boolean), [sort, isBig, isMedium]);
 
 	const renderRow = useCallback((props) => {
 		const {
@@ -99,25 +99,25 @@ export function MarketplaceTable({ setModal }) {
 					<Box color='default' fontScale='p2'>{`${ t('By') } ${ authorName }`}</Box>
 				</Box>
 			</Table.Cell>
-			<Table.Cell>
+			{isBig && <Table.Cell>
 				<Box display='flex' flexDirection='column'>
 					<Box color='default' withTruncatedText>{description}</Box>
 					{categories && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
 						{categories.map((current) => <Tag disabled key={current} mie='x4'>{current}</Tag>)}
 					</Box>}
 				</Box>
-			</Table.Cell>
-			<Table.Cell >
-				<PriceDisplay {...{ purchaseType, pricingPlans, price }} />
-			</Table.Cell>
-			{isBig && <Table.Cell withTruncatedText>
-				<Box display={showStatus ? 'flex' : 'none'} flexDirection='row' alignItems='center' onClick={preventDefault}>
-					<AppStatus app={props} setModal={setModal} isLoggedIn={isLoggedIn} mie='x12'/>
-					{installed && <AppMenu app={props} setModal={setModal} isLoggedIn={isLoggedIn} mis='x12'/>}
-				</Box>
 			</Table.Cell>}
-		</Table.Row>, [showStatus, JSON.stringify(props)]);
-	}, []);
+			{isMedium && <Table.Cell >
+				<PriceDisplay {...{ purchaseType, pricingPlans, price }} />
+			</Table.Cell>}
+			<Table.Cell withTruncatedText>
+				<Box display='flex' flexDirection='row' alignItems='center' onClick={preventDefault}>
+					<AppStatus app={props} setModal={setModal} isLoggedIn={isLoggedIn} showStatus={showStatus} mie='x4'/>
+					{installed && <AppMenu display={showStatus ? 'block' : 'none'} app={props} setModal={setModal} isLoggedIn={isLoggedIn} mis='x4'/>}
+				</Box>
+			</Table.Cell>
+		</Table.Row>, [showStatus, isMedium, isBig, JSON.stringify(props)]);
+	}, [isMedium, isBig]);
 
 	return <GenericTable
 		ref={ref}

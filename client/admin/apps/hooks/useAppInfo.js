@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import { AppEvents } from '../../../../app/apps/client/communication';
 import { handleAPIError } from '../helpers';
-
 
 const getBundledIn = async (bundledIn) => {
 	try {
@@ -20,7 +20,6 @@ const getBundledIn = async (bundledIn) => {
 
 const attachMarketplaceInfo = async (app) => {
 	try {
-		console.log(app);
 		const {
 			categories,
 			isPurchased,
@@ -72,9 +71,9 @@ const loadApp = async (id, setData) => {
 export const useAppInfo = (id) => {
 	const [data, setData] = useState({});
 
-	const handleChange = useCallback(() => {
+	const handleChange = useDebouncedCallback(() => {
 		loadApp(id, setData);
-	}, []);
+	}, 100, []);
 
 	useEffect(() => {
 		loadApp(id, setData);
