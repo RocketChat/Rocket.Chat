@@ -42,9 +42,9 @@ Accounts.saml.subscribeToSAMLChannels = function(channels: Array, user: object):
 				continue;
 			}
 
-			let room = Rooms.findOneByNameAndType(roomName, 'c');
+			const room = Rooms.findOneByNameAndType(roomName, 'c');
 			if (!room) {
-				room = createRoom('c', roomName, user.username);
+				createRoom('c', roomName, user.username);
 			}
 		}
 	} catch (err) {
