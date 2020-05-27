@@ -19,4 +19,10 @@ export interface IServiceProviderOptions {
 	authRequestTemplate: string;
 	logoutResponseTemplate: string;
 	logoutRequestTemplate: string;
+
+	// Those attributes are filled midway through the operations
+	callbackUrl?: string;
+	id?: string;
+	protocol?: string;
+	path?: string;
 }

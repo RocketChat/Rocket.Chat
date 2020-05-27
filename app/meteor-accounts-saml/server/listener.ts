@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
-import _ from 'underscore';
 
 import { SAML } from './lib/SAML';
+import { SAMLUtils } from './lib/Utils';
 
 RoutePolicy.declare('/_saml/', 'network');
 
@@ -30,9 +29,8 @@ const samlUrlToObject = function(url: string): Record<string, string> {
 		serviceName: splitPath[3],
 		credentialToken: splitPath[4],
 	};
-	if (Accounts.saml.settings.debug) {
-		console.log(result);
-	}
+
+	SAMLUtils.log(result);
 	return result;
 };
 
@@ -50,14 +48,7 @@ const middleware = function(req: object, res: object, next: function): void {
 			throw new Error('Missing SAML action');
 		}
 
-		if (Accounts.saml.settings.debug) {
-			console.log(Accounts.saml.settings.providers);
-			console.log(samlObject.serviceName);
-		}
-		const service = _.find(Accounts.saml.settings.providers, function(samlSetting) {
-			return samlSetting.provider === samlObject.serviceName;
-		});
-
+		const service = SAMLUtils.getServiceProviderOptions(samlObject.serviceName);
 
 		SAML.processRequest(req, res, service, samlObject);
 	} catch (err) {

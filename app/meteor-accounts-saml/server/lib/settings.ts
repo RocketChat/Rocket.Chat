@@ -1,8 +1,17 @@
-import { Accounts } from 'meteor/accounts-base';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../../settings';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import { SAMLUtils, logger } from './Utils';
+import { SAMLUtils } from './Utils';
+import { Logger } from '../../../logger/server';
+
+const logger = new Logger('steffo:meteor-accounts-saml', {
+	methods: {
+		updated: {
+			type: 'info',
+		},
+	},
+});
 
 // Settings are created on the addSamlService method
 
@@ -58,17 +67,7 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		logger.error('You must specify both cert and key files.');
 	}
 
-	// TODO: the function configureSamlService is called many times and Accounts.saml.settings.generateUsername keeps just the last value
-	Accounts.saml.settings.generateUsername = samlConfigs.generateUsername;
-	Accounts.saml.settings.nameOverwrite = samlConfigs.nameOverwrite;
-	Accounts.saml.settings.mailOverwrite = samlConfigs.mailOverwrite;
-	Accounts.saml.settings.immutableProperty = samlConfigs.immutableProperty;
-	Accounts.saml.settings.userDataFieldMap = samlConfigs.userDataFieldMap;
-	Accounts.saml.settings.usernameNormalize = samlConfigs.usernameNormalize;
-	Accounts.saml.settings.debug = samlConfigs.debug;
-	Accounts.saml.settings.defaultUserRole = samlConfigs.defaultUserRole;
-	Accounts.saml.settings.roleAttributeName = samlConfigs.roleAttributeName;
-	Accounts.saml.settings.roleAttributeSync = samlConfigs.roleAttributeSync;
+	SAMLUtils.updateGlobalSettings(samlConfigs);
 
 	return {
 		provider: samlConfigs.clientConfig.provider,
@@ -92,4 +91,27 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		logoutResponseTemplate: samlConfigs.logoutResponseTemplate,
 		logoutRequestTemplate: samlConfigs.logoutRequestTemplate,
 	};
+};
+
+export const loadSamlServiceProviders = function(): void {
+	const serviceName = 'saml';
+	const services = settings.get(/^(SAML_Custom_)[a-z]+$/i);
+
+	const providers = services.map((service) => {
+		if (service.value === true) {
+			const samlConfigs = getSamlConfigs(service);
+			logger.updated(service.key);
+			ServiceConfiguration.configurations.upsert({
+				service: serviceName.toLowerCase(),
+			}, {
+				$set: samlConfigs,
+			});
+			return configureSamlService(samlConfigs);
+		}
+		return ServiceConfiguration.configurations.remove({
+			service: serviceName.toLowerCase(),
+		});
+	}).filter((e) => e);
+
+	SAMLUtils.setServiceProvidersList(providers);
 };

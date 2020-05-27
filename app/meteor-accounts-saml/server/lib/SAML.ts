@@ -1,11 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import fiber from 'fibers';
 import s from 'underscore.string';
 
+import { settings } from '../../../settings/server';
+import { Users, Rooms, CredentialTokens } from '../../../models/server';
+import { IUser } from '../../../../definition/IUser';
+import { createRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { SAMLUtils } from './Utils';
 
 const showErrorMessage = function(res: object, err: string): void {
 	res.writeHead(200, {
@@ -66,9 +70,7 @@ export class SAML {
 	}
 
 	static _logoutRemoveTokens(userId: string): void {
-		if (Accounts.saml.settings.debug) {
-			console.log(`Found user ${ userId }`);
-		}
+		SAMLUtils.log(`Found user ${ userId }`);
 
 		Meteor.users.update({
 			_id: userId,
@@ -134,9 +136,7 @@ export class SAML {
 		serviceProvider.validateLogoutResponse(req.query.SAMLResponse, (err, result) => {
 			if (!err) {
 				const logOutUser = (inResponseTo: string): void => {
-					if (Accounts.saml.settings.debug) {
-						console.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
-					}
+					SAMLUtils.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
 					const loggedOutUser = Meteor.users.find({
 						'services.saml.inResponseTo': inResponseTo,
 					}).fetch();
@@ -183,7 +183,7 @@ export class SAML {
 
 	static processValidateAction(req: object, res: object, service: IServiceProviderOptions, samlObject: object): void {
 		const serviceProvider = new SAMLServiceProvider(service);
-		Accounts.saml.RelayState = req.body.RelayState;
+		SAMLUtils.relayState = req.body.RelayState;
 		serviceProvider.validateResponse(req.body.SAMLResponse, req.body.RelayState, (err, profile/* , loggedOut*/) => {
 			if (err) {
 				throw new Error(`Unable to validate response url: ${ err }`);
@@ -197,18 +197,116 @@ export class SAML {
 			if (!credentialToken) {
 				// No credentialToken in IdP-initiated SSO
 				credentialToken = Random.id();
-
-				if (Accounts.saml.settings.debug) {
-					console.log('[SAML] Using random credentialToken: ', credentialToken);
-				}
+				SAMLUtils.log('[SAML] Using random credentialToken: ', credentialToken);
 			}
 
-			Accounts.saml.storeCredential(credentialToken, loginResult);
+			this.storeCredential(credentialToken, loginResult);
 			const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ credentialToken }`;
 			res.writeHead(302, {
 				Location: url,
 			});
 			res.end();
 		});
+	}
+
+	static findUser(username: string, emailRegex: RegExp): IUser | undefined {
+		const { globalSettings } = SAMLUtils;
+
+		if (globalSettings.immutableProperty === 'Username') {
+			if (username) {
+				return Users.findOne({
+					username,
+				});
+			}
+
+			return;
+		}
+
+		return Users.findOne({
+			'emails.address': emailRegex,
+		});
+	}
+
+	static guessNameFromUsername(username: string): string {
+		return username
+			.replace(/\W/g, ' ')
+			.replace(/\s(.)/g, (u) => u.toUpperCase())
+			.replace(/^(.)/, (u) => u.toLowerCase())
+			.replace(/^\w/, (u) => u.toUpperCase());
+	}
+
+	static overwriteData(user: IUser, fullName: string, eppnMatch: boolean, emailList: Array<string>): void {
+		const { globalSettings } = SAMLUtils;
+
+		// Overwrite fullname if needed
+		if (globalSettings.nameOverwrite === true) {
+			Users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					name: fullName,
+				},
+			});
+		}
+
+		// Overwrite mail if needed
+		if (globalSettings.mailOverwrite === true && eppnMatch === true) {
+			Users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					emails: emailList.map((email) => ({
+						address: email,
+						verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
+					})),
+				},
+			});
+		}
+	}
+
+	static normalizeUsername(name: string): string {
+		const { globalSettings } = SAMLUtils;
+
+		switch (globalSettings.usernameNormalize) {
+			case 'Lowercase':
+				name = name.toLowerCase();
+				break;
+		}
+
+		return name;
+	}
+
+	static subscribeToSAMLChannels(channels: Array<string>, user: IUser): void {
+		try {
+			for (let roomName of channels) {
+				roomName = roomName.trim();
+				if (!roomName) {
+					continue;
+				}
+
+				const room = Rooms.findOneByNameAndType(roomName, 'c');
+				if (!room) {
+					createRoom('c', roomName, user.username);
+				}
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	static hasCredential(credentialToken: string): boolean {
+		return CredentialTokens.findOneById(credentialToken) != null;
+	}
+
+	static retrieveCredential(credentialToken: string): object | undefined {
+		// The credentialToken in all these functions corresponds to SAMLs inResponseTo field and is mandatory to check.
+		const data = CredentialTokens.findOneById(credentialToken);
+		if (data) {
+			return data.userInfo;
+		}
+	}
+
+	static storeCredential(credentialToken: string, loginResult: object): void {
+		CredentialTokens.create(credentialToken, loginResult);
 	}
 }

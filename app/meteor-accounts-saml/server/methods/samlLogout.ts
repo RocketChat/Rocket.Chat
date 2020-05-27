@@ -1,24 +1,27 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 
 import { Users } from '../../../models/server';
 import { SAMLServiceProvider } from '../lib/ServiceProvider';
+import { SAMLUtils } from '../lib/Utils';
+import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 /**
  * Fetch SAML provider configs for given 'provider'.
  */
-function getSamlServiceProviderOptions(provider: string): Record<string, any> {
+function getSamlServiceProviderOptions(provider: string): IServiceProviderOptions {
 	if (!provider) {
 		throw new Meteor.Error('no-saml-provider', 'SAML internal error', {
 			method: 'getSamlServiceProviderOptions',
 		});
 	}
 
-	const samlProvider = function(element: object): boolean {
+	const providers = SAMLUtils.serviceProviders;
+
+	const samlProvider = function(element: IServiceProviderOptions): boolean {
 		return element.provider === provider;
 	};
 
-	return Accounts.saml.settings.providers.filter(samlProvider)[0];
+	return providers.filter(samlProvider)[0];
 }
 
 Meteor.methods({
@@ -29,9 +32,7 @@ Meteor.methods({
 		}
 		const providerConfig = getSamlServiceProviderOptions(provider);
 
-		if (Accounts.saml.settings.debug) {
-			console.log(`Logout request from ${ JSON.stringify(providerConfig) }`);
-		}
+		SAMLUtils.log(`Logout request from ${ JSON.stringify(providerConfig) }`);
 		// This query should respect upcoming array of SAML logins
 		const user = Users.getSAMLByIdAndSAMLProvider(Meteor.userId(), provider);
 		if (!user || !user.services || !user.services.saml) {
@@ -41,9 +42,7 @@ Meteor.methods({
 		let { nameID } = user.services.saml;
 		const sessionIndex = user.services.saml.idpSession;
 		nameID = sessionIndex;
-		if (Accounts.saml.settings.debug) {
-			console.log(`NameID for user ${ Meteor.userId() } found: ${ JSON.stringify(nameID) }`);
-		}
+		SAMLUtils.log(`NameID for user ${ Meteor.userId() } found: ${ JSON.stringify(nameID) }`);
 
 		const _saml = new SAMLServiceProvider(providerConfig);
 
@@ -65,9 +64,7 @@ Meteor.methods({
 
 		const _syncRequestToUrl = Meteor.wrapAsync(_saml.requestToUrl, _saml);
 		const result = _syncRequestToUrl(request.request, 'logout');
-		if (Accounts.saml.settings.debug) {
-			console.log(`SAML Logout Request ${ result }`);
-		}
+		SAMLUtils.log(`SAML Logout Request ${ result }`);
 
 		return result;
 	},

@@ -51,7 +51,7 @@ export class AuthorizeRequest {
 		return serviceProviderOptions.authnContextTemplate || defaultAuthnContextTemplate;
 	}
 
-	static getDataForNewRequest(serviceProviderOptions: IServiceProviderOptions, host: string): object {
+	static getDataForNewRequest(serviceProviderOptions: IServiceProviderOptions, host: string): Record<string, string> {
 		let id = `_${ SAMLUtils.generateUniqueID() }`;
 		const instant = SAMLUtils.generateInstant();
 

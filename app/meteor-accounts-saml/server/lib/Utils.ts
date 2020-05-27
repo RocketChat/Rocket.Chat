@@ -1,21 +1,88 @@
 import zlib from 'zlib';
 
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import array2string from 'arraybuffer-to-string';
+import _ from 'underscore';
 
-import { Logger } from '../../../logger';
-import { settings } from '../../../settings';
+import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
-export const logger = new Logger('steffo:meteor-accounts-saml', {
-	methods: {
-		updated: {
-			type: 'info',
-		},
-	},
-});
+let providerList: Array<IServiceProviderOptions> = [];
+let debug = false;
+let relayState: string | null = null;
+
+const globalSettings = {
+	generateUsername: false,
+	nameOverwrite: false,
+	mailOverwrite: false,
+	immutableProperty: 'EMail',
+	defaultUserRole: 'user',
+	roleAttributeName: '',
+	roleAttributeSync: false,
+	userDataFieldMap: '{"username":"username", "email":"email", "cn": "name"}',
+	usernameNormalize: 'None',
+};
 
 export class SAMLUtils {
+	static get isDebugging(): boolean {
+		return debug;
+	}
+
+	static get globalSettings(): Record<string, any> {
+		return globalSettings;
+	}
+
+	static get serviceProviders(): Array<IServiceProviderOptions> {
+		return providerList;
+	}
+
+	static get relayState(): string | null {
+		return relayState;
+	}
+
+	static set relayState(value: string | null) {
+		relayState = value;
+	}
+
+	static getServiceProviderOptions(providerName: string): IServiceProviderOptions | undefined {
+		this.log(providerName);
+		this.log(providerList);
+
+		return _.find(providerList, (providerOptions) => providerOptions.provider === providerName);
+	}
+
+	static setServiceProvidersList(list: Array<IServiceProviderOptions>): void {
+		providerList = list;
+	}
+
+	// TODO: Some of those should probably not be global
+	static updateGlobalSettings(samlConfigs: Record<string, any>): void {
+		debug = Boolean(samlConfigs.debug);
+
+		globalSettings.generateUsername = Boolean(samlConfigs.generateUsername);
+		globalSettings.nameOverwrite = Boolean(samlConfigs.nameOverwrite);
+		globalSettings.mailOverwrite = Boolean(samlConfigs.mailOverwrite);
+		globalSettings.roleAttributeSync = Boolean(samlConfigs.roleAttributeSync);
+
+		if (samlConfigs.immutableProperty && typeof samlConfigs.immutableProperty === 'string') {
+			globalSettings.immutableProperty = samlConfigs.immutableProperty;
+		}
+
+		if (samlConfigs.usernameNormalize && typeof samlConfigs.usernameNormalize === 'string') {
+			globalSettings.usernameNormalize = samlConfigs.usernameNormalize;
+		}
+
+		if (samlConfigs.defaultUserRole && typeof samlConfigs.defaultUserRole === 'string') {
+			globalSettings.defaultUserRole = samlConfigs.defaultUserRole;
+		}
+
+		if (samlConfigs.roleAttributeName && typeof samlConfigs.roleAttributeName === 'string') {
+			globalSettings.roleAttributeName = samlConfigs.roleAttributeName;
+		}
+
+		if (samlConfigs.userDataFieldMap && typeof samlConfigs.userDataFieldMap === 'string') {
+			globalSettings.userDataFieldMap = samlConfigs.userDataFieldMap;
+		}
+	}
+
 	static generateUniqueID(): string {
 		const chars = 'abcdef0123456789';
 		let uniqueID = 'id-';
@@ -30,13 +97,18 @@ export class SAMLUtils {
 	}
 
 	static certToPEM(cert: string): string {
-		cert = cert.match(/.{1,64}/g).join('\n');
-		cert = `-----BEGIN CERTIFICATE-----\n${ cert }`;
-		cert = `${ cert }\n-----END CERTIFICATE-----\n`;
-		return cert;
+		const lines = cert.match(/.{1,64}/g);
+		if (!lines) {
+			throw new Error('Invalid Certificate');
+		}
+
+		lines.splice(0, 0, '-----BEGIN CERTIFICATE-----');
+		lines.push('-----END CERTIFICATE-----');
+
+		return lines.join('\n');
 	}
 
-	static fillTemplateData(template: string, data: object): string {
+	static fillTemplateData(template: string, data: Record<string, string>): string {
 		let newTemplate = template;
 
 		for (const variable in data) {
@@ -48,36 +120,37 @@ export class SAMLUtils {
 		return newTemplate;
 	}
 
-	static log(...args): void {
+	static log(...args: Array<any>): void {
 		if (Meteor.settings.debug) {
-			logger.info(...args);
+			console.log(...args);
 		}
 	}
 
-	static inflateXml(base64Data: object, successCallback: (xml: string) => void, errorCallback: (err: object) => void): void {
+	static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: object) => void): void {
 		const buffer = new Buffer(base64Data, 'base64');
 		zlib.inflateRaw(buffer, (err, decoded) => {
 			if (err) {
-				SAMLUtils.log(`Error while inflating. ${ err }`);
+				this.log(`Error while inflating. ${ err }`);
 				return errorCallback(err);
 			}
 
-			const xmlString = array2string(decoded);
+			const xmlString = this.convertArrayBufferToString(decoded);
 			return successCallback(xmlString);
 		});
 	}
 
-	static validateStatus(doc: object): Record<string, string> {
+	static validateStatus(doc: Element): { success: boolean; message: string; statusCode: string } {
 		let successStatus = false;
-		let status = '';
+		let status = null;
 		let messageText = '';
+
 		const statusNodes = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusCode');
 
 		if (statusNodes.length) {
 			const statusNode = statusNodes[0];
 			const statusMessage = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage')[0];
 
-			if (statusMessage) {
+			if (statusMessage && statusMessage.firstChild && statusMessage.firstChild.textContent) {
 				messageText = statusMessage.firstChild.textContent;
 			}
 
@@ -90,7 +163,7 @@ export class SAMLUtils {
 		return {
 			success: successStatus,
 			message: messageText,
-			statusCode: status,
+			statusCode: status || '',
 		};
 	}
 
@@ -99,9 +172,9 @@ export class SAMLUtils {
 	}
 
 	static getUserDataMapping(): Record<string, any> {
-		const { userDataFieldMap } = Accounts.saml.settings;
+		const { userDataFieldMap } = globalSettings;
 
-		let map;
+		let map: Record<string, any>;
 
 		try {
 			map = JSON.parse(userDataFieldMap);
@@ -112,12 +185,12 @@ export class SAMLUtils {
 		let emailField = 'email';
 		let usernameField = 'username';
 		let nameField = 'cn';
-		const newMapping = {};
-		const regexes = {};
+		const newMapping = new Map();
+		const regexes = new Map();
 
-		const applyField = function(samlFieldName: string, targetFieldName: string): void {
+		const applyField = function(samlFieldName: string, targetFieldName: string | {field: string; regex: string}): void {
 			if (typeof targetFieldName === 'object') {
-				regexes[targetFieldName.field] = targetFieldName.regex;
+				regexes.set(targetFieldName.field, targetFieldName.regex);
 				targetFieldName = targetFieldName.field;
 			}
 
@@ -136,7 +209,8 @@ export class SAMLUtils {
 				return;
 			}
 
-			newMapping[samlFieldName] = map[samlFieldName];
+			// If it's neither of those, move it to the new object
+			newMapping.set(samlFieldName, map[samlFieldName]);
 		};
 
 		for (const field in map) {
@@ -164,7 +238,7 @@ export class SAMLUtils {
 		};
 	}
 
-	static getProfileValue(profile: object, samlFieldName: string, regex: string): any {
+	static getProfileValue(profile: Record<string, any>, samlFieldName: string, regex: string): any {
 		const value = profile[samlFieldName];
 
 		if (!regex) {
@@ -187,55 +261,8 @@ export class SAMLUtils {
 		return match[0];
 	}
 
-	static findUser(username: string, emailRegex: RegExp): object {
-		if (Accounts.saml.settings.immutableProperty === 'Username') {
-			if (username) {
-				return Meteor.users.findOne({
-					username,
-				});
-			}
-
-			return null;
-		}
-
-		return Meteor.users.findOne({
-			'emails.address': emailRegex,
-		});
-	}
-
-	static guessNameFromUsername(username: string): string {
-		return username
-			.replace(/\W/g, ' ')
-			.replace(/\s(.)/g, (u) => u.toUpperCase())
-			.replace(/^(.)/, (u) => u.toLowerCase())
-			.replace(/^\w/, (u) => u.toUpperCase());
-	}
-
-	static overwriteData(user: object, fullName: string, eppnMatch: boolean, emailList: Array): void {
-		// Overwrite fullname if needed
-		if (Accounts.saml.settings.nameOverwrite === true) {
-			Meteor.users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					name: fullName,
-				},
-			});
-		}
-
-		// Overwrite mail if needed
-		if (Accounts.saml.settings.mailOverwrite === true && eppnMatch === true) {
-			Meteor.users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					emails: emailList.map((email) => ({
-						address: email,
-						verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
-					})),
-				},
-			});
-		}
+	static convertArrayBufferToString(buffer: ArrayBuffer, encoding = 'utf8'): string {
+		return Buffer.from(buffer).toString(encoding);
 	}
 }
 

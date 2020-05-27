@@ -6,13 +6,14 @@ import { settings } from '../../settings/server';
 import { generateUsernameSuggestion } from '../../lib';
 import { _setUsername } from '../../lib/server/functions';
 import { SAMLUtils } from './lib/Utils';
+import { SAML } from './lib/SAML';
 
 Accounts.registerLoginHandler(function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}
 
-	const loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
+	const loginResult = SAML.retrieveCredential(loginRequest.credentialToken);
 	SAMLUtils.log(`RESULT :${ JSON.stringify(loginResult) }`);
 
 	if (loginResult === undefined) {
@@ -22,7 +23,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 	}
 	const { emailField, usernameField, nameField, userDataFieldMap, regexes } = SAMLUtils.getUserDataMapping();
-	const { defaultUserRole = 'user', roleAttributeName, roleAttributeSync } = Accounts.saml.settings;
+	const { defaultUserRole = 'user', roleAttributeName, roleAttributeSync, generateUsername, immutableProperty } = SAMLUtils.globalSettings;
 
 	if (loginResult && loginResult.profile && loginResult.profile[emailField]) {
 		try {
@@ -51,13 +52,13 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			if (loginResult.profile[usernameField]) {
 				const profileUsername = SAMLUtils.getProfileValue(loginResult.profile, usernameField, regexes.username);
 				if (profileUsername) {
-					username = Accounts.normalizeUsername(profileUsername);
+					username = SAML.normalizeUsername(profileUsername);
 				}
 			}
 
 			// If eppn is not exist
 			if (!user) {
-				user = SAMLUtils.findUser(username, emailRegex);
+				user = SAML.findUser(username, emailRegex);
 			}
 
 			const emails = emailList.map((email) => ({
@@ -82,13 +83,13 @@ Accounts.registerLoginHandler(function(loginRequest) {
 					services: {},
 				};
 
-				if (Accounts.saml.settings.generateUsername === true) {
+				if (generateUsername === true) {
 					username = generateUsernameSuggestion(newUser);
 				}
 
 				if (username) {
 					newUser.username = username;
-					newUser.name = newUser.name || SAMLUtils.guessNameFromUsername(username);
+					newUser.name = newUser.name || SAML.guessNameFromUsername(username);
 				}
 
 				const languages = TAPi18n.getLanguages();
@@ -101,7 +102,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 				if (loginResult.profile.channels) {
 					const channels = loginResult.profile.channels.split(',');
-					Accounts.saml.subscribeToSAMLChannels(channels, user);
+					SAML.subscribeToSAMLChannels(channels, user);
 				}
 			}
 
@@ -125,7 +126,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			});
 
 			const samlLogin = {
-				provider: Accounts.saml.RelayState,
+				provider: SAMLUtils.relayState,
 				idp: loginResult.profile.issuer,
 				idpSession: loginResult.profile.sessionIndex,
 				nameID: loginResult.profile.nameID,
@@ -148,7 +149,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				}
 			}
 
-			if (Accounts.saml.settings.immutableProperty !== 'EMail') {
+			if (immutableProperty !== 'EMail') {
 				updateData.emails = emails;
 			}
 
@@ -166,7 +167,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				_setUsername(user._id, username);
 			}
 
-			SAMLUtils.overwriteData(user, fullName, eppnMatch, emailList);
+			SAML.overwriteData(user, fullName, eppnMatch, emailList);
 
 			// sending token along with the userId
 			const result = {
