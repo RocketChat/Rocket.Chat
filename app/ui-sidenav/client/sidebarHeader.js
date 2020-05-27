@@ -46,7 +46,7 @@ const toolbarButtons = (/* user */) => [{
 },
 {
 	name: t('Search'),
-	icon: 'inbox',
+	icon: 'magnifier',
 	action: () => {
 		toolbarSearch.show(false);
 	},

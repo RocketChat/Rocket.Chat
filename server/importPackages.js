@@ -1,5 +1,3 @@
-import '../app/assistify/ai/server';
-import '../app/assistify/configuration/server';
 import '../app/cors/server';
 import '../app/sms';
 import '../app/2fa/server';
@@ -106,6 +104,7 @@ import '../app/user-status';
 import '../app/utils';
 import '../app/settings';
 import '../app/models';
+import '../app/assistify/ai/server';
 import '../app/metrics';
 import '../app/callbacks';
 import '../app/notifications';

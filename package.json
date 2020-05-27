@@ -174,7 +174,6 @@
 		"googleapis": "^25.0.0",
 		"grapheme-splitter": "^1.0.4",
 		"gridfs-stream": "^1.1.1",
-		"hasha": "^5.0.0",
 		"he": "^1.2.0",
 		"highlight.js": "^9.18.0",
 		"iconv-lite": "^0.4.24",

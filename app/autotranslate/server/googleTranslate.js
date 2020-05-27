@@ -7,7 +7,7 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { AutoTranslate,	TranslationProviderRegistry } from './autotranslate';
-import { logger } from './logger';
+import { SystemLogger } from '../../logger/server';
 import { settings } from '../../settings';
 
 /**
@@ -126,6 +126,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
+
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
@@ -134,12 +135,13 @@ class GoogleAutoTranslate extends AutoTranslate {
 					},
 					query,
 				});
+
 				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 					const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 				}
 			} catch (e) {
-				logger.google.error('Error translating message', e);
+				SystemLogger.error('Error translating message', e);
 			}
 		});
 		return translations;
@@ -161,6 +163,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
+
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
@@ -169,11 +172,12 @@ class GoogleAutoTranslate extends AutoTranslate {
 					},
 					query,
 				});
+
 				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 					translations[language] = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 				}
 			} catch (e) {
-				logger.google.error('Error translating message', e);
+				SystemLogger.error('Error translating message', e);
 			}
 		});
 		return translations;

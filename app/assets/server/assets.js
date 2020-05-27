@@ -22,7 +22,7 @@ const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 const assets = {
 	logo: {
 		label: 'logo (svg, png, jpg)',
-		defaultUrl: 'images/logo/assistify-logo.svg',
+		defaultUrl: 'images/logo/logo.svg',
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
@@ -46,7 +46,7 @@ const assets = {
 	},
 	favicon_ico: {
 		label: 'favicon (ico)',
-		defaultUrl: 'assistify-favicon.ico',
+		defaultUrl: 'favicon.ico',
 		constraints: {
 			type: 'image',
 			extensions: ['ico'],
@@ -56,7 +56,7 @@ const assets = {
 	},
 	favicon: {
 		label: 'favicon (svg)',
-		defaultUrl: 'images/logo/assistify-icon.svg',
+		defaultUrl: 'images/logo/icon.svg',
 		constraints: {
 			type: 'image',
 			extensions: ['svg'],
@@ -66,7 +66,7 @@ const assets = {
 	},
 	favicon_16: {
 		label: 'favicon 16x16 (png)',
-		defaultUrl: 'images/logo/assistify-favicon-16x16.png',
+		defaultUrl: 'images/logo/favicon-16x16.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -76,7 +76,7 @@ const assets = {
 	},
 	favicon_32: {
 		label: 'favicon 32x32 (png)',
-		defaultUrl: 'images/logo/assistify-favicon-32x32.png',
+		defaultUrl: 'images/logo/favicon-32x32.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -86,7 +86,7 @@ const assets = {
 	},
 	favicon_192: {
 		label: 'android-chrome 192x192 (png)',
-		defaultUrl: 'images/logo/assistify-android-chrome-192x192.png',
+		defaultUrl: 'images/logo/android-chrome-192x192.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -96,7 +96,7 @@ const assets = {
 	},
 	favicon_512: {
 		label: 'android-chrome 512x512 (png)',
-		defaultUrl: 'images/logo/assistify-android-chrome-512x512.png',
+		defaultUrl: 'images/logo/android-chrome-512x512.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -106,7 +106,7 @@ const assets = {
 	},
 	touchicon_180: {
 		label: 'apple-touch-icon 180x180 (png)',
-		defaultUrl: 'images/logo/assistify-apple-touch-icon.png',
+		defaultUrl: 'images/logo/apple-touch-icon.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -116,7 +116,7 @@ const assets = {
 	},
 	touchicon_180_pre: {
 		label: 'apple-touch-icon-precomposed 180x180 (png)',
-		defaultUrl: 'images/logo/assistify-apple-touch-icon-precomposed.png',
+		defaultUrl: 'images/logo/apple-touch-icon-precomposed.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -126,7 +126,7 @@ const assets = {
 	},
 	tile_70: {
 		label: 'mstile 70x70 (png)',
-		defaultUrl: 'images/logo/assistify-mstile-70x70.png',
+		defaultUrl: 'images/logo/mstile-70x70.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -136,7 +136,7 @@ const assets = {
 	},
 	tile_144: {
 		label: 'mstile 144x144 (png)',
-		defaultUrl: 'images/logo/assistify-mstile-144x144.png',
+		defaultUrl: 'images/logo/mstile-144x144.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -146,7 +146,7 @@ const assets = {
 	},
 	tile_150: {
 		label: 'mstile 150x150 (png)',
-		defaultUrl: 'images/logo/assistify-mstile-150x150.png',
+		defaultUrl: 'images/logo/mstile-150x150.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -156,7 +156,7 @@ const assets = {
 	},
 	tile_310_square: {
 		label: 'mstile 310x310 (png)',
-		defaultUrl: 'images/logo/assistify-mstile-310x310.png',
+		defaultUrl: 'images/logo/mstile-310x310.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -166,7 +166,7 @@ const assets = {
 	},
 	tile_310_wide: {
 		label: 'mstile 310x150 (png)',
-		defaultUrl: 'images/logo/assistify-mstile-310x150.png',
+		defaultUrl: 'images/logo/mstile-310x150.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -176,7 +176,7 @@ const assets = {
 	},
 	safari_pinned: {
 		label: 'safari pinned tab (svg)',
-		defaultUrl: 'images/logo/assistify-safari-pinned-tab.svg',
+		defaultUrl: 'images/logo/safari-pinned-tab.svg',
 		constraints: {
 			type: 'image',
 			extensions: ['svg'],
