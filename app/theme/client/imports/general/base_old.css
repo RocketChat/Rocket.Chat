@@ -3310,9 +3310,15 @@
 }
 
 .rc-old .oauth-login {
+	display: flex;
+
 	margin-bottom: 16px;
+
 	margin-left: -4px;
-	flex-wrap: wrap;
+
+	flex-flow: row wrap;
+
+	justify-content: space-around;
 
 	& h3 {
 		margin-top: 0;
@@ -3325,10 +3331,17 @@
 		font-weight: 300;
 	}
 
+	button {
+		margin: 0 5px;
+
+		flex-grow: 1;
+	}
+
 	& .button {
 		margin-bottom: 4px;
 
 		font-size: 18px;
+
 		line-height: 22px;
 		flex-grow: 1;
 

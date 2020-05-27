@@ -69,16 +69,35 @@
 
 		& .unread-rooms {
 			position: absolute;
-			top: 0;
-			right: 0;
-			left: 0;
+			left: 50%;
 
-			width: 100%;
-			padding: calc(var(--sidebar-small-default-padding) - 8px);
+			overflow: hidden;
+
+			min-width: 120px;
+			max-width: 100%;
+
+			padding: 8px var(--sidebar-small-default-padding);
+
+			-webkit-transform: translateX(-50%);
+			transform: translateX(-50%);
 
 			animation: fade 0.3s;
 
 			text-align: center;
+
+			white-space: nowrap;
+
+			text-overflow: ellipsis;
+
+			border-radius: 25px;
+
+			&.bottom-unread-rooms {
+				bottom: 0;
+			}
+
+			&.top-unread-rooms {
+				top: 0;
+			}
 		}
 	}
 }
