@@ -3,8 +3,8 @@ import React from 'react';
 import Logo from './Logo';
 
 export default {
-	title: 'views/setupWizard/Logo',
+	title: 'components/basic/Logo',
 	component: Logo,
 };
 
-export const _default = () => <Logo />;
+export const AsPlaceholder = () => <Logo />;
