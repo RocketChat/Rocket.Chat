@@ -121,6 +121,27 @@ class RoomEventsModel extends EventsModel {
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
+	public async createPruneMessagesEvent(options: any): Promise<{ count: number }> {
+		const { result }: any = await this.model.rawCollection().updateMany({
+			'd.msg': { $exists: 1 },
+			'd.drid': { $exists: 0 },
+			...options,
+		}, {
+			$set: {
+				'd.msg': '', // TODO: this is removing the other fields as well, check how to change only msg
+			},
+			$currentDate: { _deletedAt: true },
+		});
+
+		console.log('createPruneMessagesEvent eventMessages', result);
+
+		// console.log('createPruneMessagesEvent result nModified', typeof result.nModified, result.nModified);
+
+		return {
+			count: result.nModified,
+		};
+	}
+
 	// async createAddUserEvent(src, roomId, user, subscription, domainsAfterAdd) {
 	// 	return super.createEvent(src, getContextQuery(roomId), eventTypes.ROOM_ADD_USER, { roomId, user, subscription, domainsAfterAdd });
 	// }

@@ -10,10 +10,12 @@ import { handleError } from '../../../utils/client/lib/handleError';
  */
 export const call = (method, ...params) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...params, (err, result) => {
+		console.log('inside call', method, params);
 		if (err) {
 			handleError(err);
 			return reject(err);
 		}
+		console.log('inside call 2 ', result);
 		return resolve(result);
 	});
 });

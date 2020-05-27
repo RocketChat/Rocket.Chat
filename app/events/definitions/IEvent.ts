@@ -16,11 +16,12 @@ export enum EventTypeDescriptor {
 	// PING = 'ping',
 
 	// Rooms
-	ROOM = 'room',
-	DELETE_ROOM = 'droom',
-	MESSAGE = 'msg',
-	EDIT_MESSAGE = 'emsg',
-	DELETE_MESSAGE = 'dmsg',
+	ROOM = 'room', // create new room
+	DELETE_ROOM = 'droom', // delete room
+	PRUNE_ROOM_MESSAGES = 'prmsg', // prune messages from room
+	MESSAGE = 'msg', // new message
+	EDIT_MESSAGE = 'emsg', // edit a message content
+	DELETE_MESSAGE = 'dmsg', // delete message
 
 	// // Not implemented
 	// ADD_USER = 'add_user',

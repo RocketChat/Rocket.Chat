@@ -1,7 +1,12 @@
 import { IUser } from '../IUser';
 
+export enum EventMessageTypeDescriptor {
+	MESSAGE = 'msg', // regular message
+	MESSAGE_PINNED = 'message_pinned', // item for demonstrate when a message was pinned at the channel
+}
+
 export interface IEDataMessage {
-	t: string;
+	t: EventMessageTypeDescriptor;
 	u: IUser;
 	msg: string;
 	mentions?: Array<string>;

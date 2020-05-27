@@ -3,6 +3,7 @@ import { callbacks } from '../../../callbacks';
 import { FileUpload } from '../../../file-upload/server';
 
 export const deleteRoom = function(rid) {
+	console.log('function deleteRoom rid', rid);
 	FileUpload.removeFilesByRoomId(rid);
 	Messages.removeByRoomId(rid);
 	callbacks.run('beforeDeleteRoom', rid);
