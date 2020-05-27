@@ -4,7 +4,6 @@ import querystring from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 
-
 import { SAMLUtils } from './Utils';
 import { AuthorizeRequest } from './generators/AuthorizeRequest';
 import { LogoutRequest } from './generators/LogoutRequest';
@@ -13,14 +12,14 @@ import { ServiceProviderMetadata } from './generators/ServiceProviderMetadata';
 import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
-
+import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 export class SAMLServiceProvider {
-	constructor(serviceProviderOptions: Record<string, any>): void {
+	constructor(serviceProviderOptions: IServiceProviderOptions): void {
 		this.serviceProviderOptions = this.initialize(serviceProviderOptions);
 	}
 
-	initialize(serviceProviderOptions: Record<string, any>): Record<string, any> {
+	initialize(serviceProviderOptions: IServiceProviderOptions): IServiceProviderOptions {
 		if (!serviceProviderOptions) {
 			serviceProviderOptions = {};
 		}
@@ -36,8 +35,6 @@ export class SAMLServiceProvider {
 		if (!serviceProviderOptions.issuer) {
 			serviceProviderOptions.issuer = 'onelogin_saml';
 		}
-
-		serviceProviderOptions.allowedClockDrift = parseInt(serviceProviderOptions.allowedClockDrift) || 0;
 
 		return serviceProviderOptions;
 	}

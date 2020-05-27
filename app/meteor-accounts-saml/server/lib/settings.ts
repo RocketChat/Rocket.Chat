@@ -83,7 +83,7 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		defaultUserRole: samlConfigs.defaultUserRole,
 		roleAttributeName: samlConfigs.roleAttributeName,
 		roleAttributeSync: samlConfigs.roleAttributeSync,
-		allowedClockDrift: samlConfigs.allowedClockDrift,
+		allowedClockDrift: parseInt(samlConfigs.allowedClockDrift) || 0,
 		signatureValidationType: samlConfigs.signatureValidationType,
 		identifierFormat: samlConfigs.identifierFormat,
 		nameIDPolicyTemplate: samlConfigs.nameIDPolicyTemplate,
