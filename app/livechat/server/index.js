@@ -24,7 +24,7 @@ import './methods/addManager';
 import './methods/changeLivechatStatus';
 import './methods/closeByVisitor';
 import './methods/closeRoom';
-import './methods/declineTranscript';
+import './methods/discardTranscript';
 import './methods/facebook';
 import './methods/getCustomFields';
 import './methods/getAgentData';

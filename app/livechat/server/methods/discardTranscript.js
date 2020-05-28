@@ -5,7 +5,7 @@ import { hasPermission } from '../../../authorization';
 import { LivechatRooms } from '../../../models';
 
 Meteor.methods({
-	'livechat:declineTranscript'(rid) {
+	'livechat:discardTranscript'(rid) {
 		check(rid, String);
 
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'send-omnichannel-chat-transcript')) {

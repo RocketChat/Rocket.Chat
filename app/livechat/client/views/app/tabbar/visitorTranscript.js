@@ -127,13 +127,13 @@ Template.visitorTranscript.events({
 		});
 	},
 
-	'click .decline'(e, instance) {
+	'click .discard'(e, instance) {
 		event.preventDefault();
 
 		const room = instance.room.get();
 		const { _id: rid } = room;
 
-		Meteor.call('livechat:declineTranscript', rid, (err) => {
+		Meteor.call('livechat:discardTranscript', rid, (err) => {
 			if (err != null) {
 				return handleError(err);
 			}
