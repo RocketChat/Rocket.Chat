@@ -184,6 +184,7 @@ export const menu = new class extends EventEmitter {
 			FlowRouter.withReplaceState(function() {
 				FlowRouter.go('/home');
 			});
+			Session.set('openSearchPage', false);
 		}));
 
 		this.list = $('.rooms-list');
