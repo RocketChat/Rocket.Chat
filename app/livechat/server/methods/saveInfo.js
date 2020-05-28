@@ -29,7 +29,7 @@ Meteor.methods({
 			livechatData: Match.Optional(Object),
 		}));
 
-		const room = LivechatRooms.findOneById(roomData._id, { t: 1, servedBy: 1 });
+		const room = LivechatRooms.findOneById(roomData._id);
 		if (room == null || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:saveInfo' });
 		}
@@ -42,7 +42,7 @@ Meteor.methods({
 			delete guestData.phone;
 		}
 
-		const ret = Livechat.saveGuest(guestData) && Livechat.saveRoomInfo(roomData, guestData);
+		const ret = Livechat.saveGuest(guestData, userId) && Livechat.saveRoomInfo(roomData, guestData, userId);
 
 		const user = Meteor.users.findOne({ _id: userId }, { fields: { _id: 1, username: 1 } });
 
