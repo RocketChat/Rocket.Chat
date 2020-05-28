@@ -21,6 +21,7 @@ import {
 	simpleLogoutResponse,
 	invalidLogoutResponse,
 } from './data';
+import '../../../definition/xml-encryption';
 
 const { expect } = chai;
 

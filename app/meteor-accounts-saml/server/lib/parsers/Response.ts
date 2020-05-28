@@ -7,12 +7,16 @@ import {
 } from '../Utils';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 
+type XmlParent = Element | Document;
+
 export class ResponseParser {
+	serviceProviderOptions: IServiceProviderOptions;
+
 	constructor(serviceProviderOptions: IServiceProviderOptions) {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	validate(xml: string, callback: (err: string | object | null, profile?: object, loggedOut?: boolean) => void): void {
+	validate(xml: string, callback: (err: string | object | null, profile?: object | null, loggedOut?: boolean) => void): void {
 		// We currently use RelayState to save SAML provider
 		SAMLUtils.log(`Validating response with relay state: ${ xml }`);
 
@@ -44,18 +48,18 @@ export class ResponseParser {
 		}
 		SAMLUtils.log('Got response');
 
-		let assertion;
+		let assertion: XmlParent;
 		let issuer;
 
 		try {
-			assertion = this.getAssertion(response, callback);
+			assertion = this.getAssertion(response);
 
 			this.verifySignatures(response, assertion, xml);
 		} catch (e) {
 			return callback(e, null, false);
 		}
 
-		const profile = {};
+		const profile: Record<string, any> = {};
 
 		if (response.hasAttribute('InResponseTo')) {
 			profile.inResponseToId = response.getAttribute('InResponseTo');
@@ -133,7 +137,7 @@ export class ResponseParser {
 		return callback(null, profile, false);
 	}
 
-	getAssertion(response: object): any {
+	getAssertion(response: Element): XmlParent {
 		const allAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
 		const allEncrypedAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion');
 
@@ -141,13 +145,17 @@ export class ResponseParser {
 			throw new Error('Too many SAML assertions');
 		}
 
-		let assertion = allAssertions[0];
+		let assertion: XmlParent = allAssertions[0];
 		const encAssertion = allEncrypedAssertions[0];
 
 
 		if (typeof encAssertion !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
-			xmlenc.decrypt(encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
+			xmlenc.decrypt(encData, options, function(err, result: string) {
+				if (err) {
+					console.error(err);
+				}
 				assertion = new xmldom.DOMParser().parseFromString(result, 'text/xml');
 			});
 		}
@@ -159,7 +167,7 @@ export class ResponseParser {
 		return assertion;
 	}
 
-	verifySignatures(response: object, assertion: object, xml: string): void {
+	verifySignatures(response: Element, assertion: XmlParent, xml: string): void {
 		if (!this.serviceProviderOptions.cert) {
 			return;
 		}
@@ -203,20 +211,24 @@ export class ResponseParser {
 		}
 	}
 
-	validateResponseSignature(xml: string, cert: string, response): boolean {
+	validateResponseSignature(xml: string, cert: string, response: Element): boolean {
 		return this.validateSignatureChildren(xml, cert, response);
 	}
 
-	validateAssertionSignature(xml: string, cert: string, assertion): boolean {
+	validateAssertionSignature(xml: string, cert: string, assertion: XmlParent): boolean {
 		return this.validateSignatureChildren(xml, cert, assertion);
 	}
 
-	validateSignatureChildren(xml: string, cert: string, parent: object): boolean {
+	validateSignatureChildren(xml: string, cert: string, parent: XmlParent): boolean {
 		const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
 		const signatures = xmlCrypto.xpath(parent, xpathSigQuery);
 		let signature = null;
 
 		for (const sign of signatures) {
+			if (!(sign instanceof Element)) {
+				continue;
+			}
+
 			if (sign.parentNode !== parent) {
 				continue;
 			}
@@ -236,11 +248,12 @@ export class ResponseParser {
 		return this.validateSignature(xml, cert, signature);
 	}
 
-	validateSignature(xml: string, cert: string, signature: object): any {
+	validateSignature(xml: string, cert: string, signature: Element): any {
 		const sig = new xmlCrypto.SignedXml();
 
 		sig.keyInfoProvider = {
 			getKeyInfo: (/* key*/): string => '<X509Data></X509Data>',
+			// @ts-ignore - the definition file must be wrong
 			getKey: (/* keyInfo*/): string => SAMLUtils.certToPEM(cert),
 		};
 
@@ -249,7 +262,7 @@ export class ResponseParser {
 		return sig.checkSignature(xml);
 	}
 
-	getIssuer(assertion: object): any {
+	getIssuer(assertion: XmlParent): any {
 		const issuers = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer');
 
 		if (issuers.length > 1) {
@@ -259,13 +272,16 @@ export class ResponseParser {
 		return issuers[0];
 	}
 
-	getSubject(assertion: object): any {
-		let subject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
+	getSubject(assertion: XmlParent): XmlParent {
+		let subject: XmlParent = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
 		const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
 
 		if (typeof encSubject !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
-			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result: string) {
+				if (err) {
+					console.error(err);
+				}
 				subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
 			});
 		}
@@ -274,7 +290,7 @@ export class ResponseParser {
 	}
 
 
-	validateSubjectConditions(subject: object): void {
+	validateSubjectConditions(subject: XmlParent): void {
 		const subjectConfirmation = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmation')[0];
 		if (subjectConfirmation) {
 			const subjectConfirmationData = subjectConfirmation.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmationData')[0];
@@ -284,14 +300,18 @@ export class ResponseParser {
 		}
 	}
 
-	validateNotBeforeNotOnOrAfterAssertions(element: object): boolean {
+	validateNotBeforeNotOnOrAfterAssertions(element: Element): boolean {
 		const sysnow = new Date();
 		const allowedclockdrift = this.serviceProviderOptions.allowedClockDrift;
 
 		const now = new Date(sysnow.getTime() + allowedclockdrift);
 
 		if (element.hasAttribute('NotBefore')) {
-			const notBefore = element.getAttribute('NotBefore');
+			const notBefore: string | null = element.getAttribute('NotBefore');
+
+			if (!notBefore) {
+				return false;
+			}
 
 			const date = new Date(notBefore);
 			if (now < date) {
@@ -300,7 +320,11 @@ export class ResponseParser {
 		}
 
 		if (element.hasAttribute('NotOnOrAfter')) {
-			const notOnOrAfter = element.getAttribute('NotOnOrAfter');
+			const notOnOrAfter: string | null = element.getAttribute('NotOnOrAfter');
+			if (!notOnOrAfter) {
+				return false;
+			}
+
 			const date = new Date(notOnOrAfter);
 
 			if (now >= date) {
@@ -311,14 +335,14 @@ export class ResponseParser {
 		return true;
 	}
 
-	validateAssertionConditions(assertion: object): void {
+	validateAssertionConditions(assertion: XmlParent): void {
 		const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
 		if (conditions && !this.validateNotBeforeNotOnOrAfterAssertions(conditions)) {
 			throw new Error('NotBefore / NotOnOrAfter assertion failed');
 		}
 	}
 
-	mapAttributes(attributeStatement: object, profile: object): void {
+	mapAttributes(attributeStatement: Element, profile: Record<string, any>): void {
 		SAMLUtils.log(`Attribute Statement found in SAML response: ${ attributeStatement }`);
 		const attributes = attributeStatement.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute');
 		SAMLUtils.log(`Attributes will be processed: ${ attributes.length }`);
@@ -337,10 +361,11 @@ export class ResponseParser {
 				}
 
 				const key = attributes[i].getAttribute('Name');
-
-				SAMLUtils.log(`Name:  ${ attributes[i] }`);
-				SAMLUtils.log(`Adding attribute from SAML response to profile: ${ key } = ${ value }`);
-				profile[key] = value;
+				if (key) {
+					SAMLUtils.log(`Name:  ${ attributes[i] }`);
+					SAMLUtils.log(`Adding attribute from SAML response to profile: ${ key } = ${ value }`);
+					profile[key] = value;
+				}
 			}
 		} else {
 			SAMLUtils.log('No Attributes found in SAML attribute statement.');
