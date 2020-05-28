@@ -1,8 +1,19 @@
-import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import { AppEvents } from '../../../../app/apps/client/communication';
 import { handleAPIError } from '../helpers';
+
+const registerListeners = (listeners) => {
+	Object.entries(listeners).forEach(([event, callback]) => {
+		Apps.getWsListener().registerListener(AppEvents[event], callback);
+	});
+	return () => {
+		Object.entries(listeners).forEach(([event, callback]) => {
+			Apps.getWsListener().unregisterListener(AppEvents[event], callback);
+		});
+	};
+};
 
 /* TODO
  *	If order is reversed and search is performed, the result will return in the wrong order, then refresh correctly
@@ -16,7 +27,7 @@ export function useMarketplaceApps({ debouncedText, debouncedSort, current, item
 
 	const stringifiedData = JSON.stringify(data);
 
-	const handleAppAddedOrUpdated = useCallback(async (appId) => {
+	const handleAppAddedOrUpdated = async (appId) => {
 		try {
 			const { status, version } = await Apps.getApp(appId);
 			const app = await Apps.getAppFromMarketplace(appId, version);
@@ -33,33 +44,37 @@ export function useMarketplaceApps({ debouncedText, debouncedSort, current, item
 		} catch (error) {
 			handleAPIError(error);
 		}
-	}, [stringifiedData, setData]);
+	};
 
-	const handleAppRemoved = useCallback((appId) => {
-		const updatedData = getDataCopy();
-		const app = updatedData.find(({ id }) => id === appId);
-		if (!app) {
-			return;
-		}
-		delete app.installed;
-		delete app.status;
-		app.version = app.marketplaceVersion;
+	const listeners = {
+		APP_ADDED: handleAppAddedOrUpdated,
+		APP_UPDATED: handleAppAddedOrUpdated,
+		APP_REMOVED: (appId) => {
+			const updatedData = getDataCopy();
+			const app = updatedData.find(({ id }) => id === appId);
+			if (!app) {
+				return;
+			}
+			delete app.installed;
+			delete app.status;
+			app.version = app.marketplaceVersion;
 
-		setData(updatedData);
-	}, [stringifiedData, setData]);
+			setData(updatedData);
+		},
+		APP_STATUS_CHANGE: ({ appId, status }) => {
+			const updatedData = getDataCopy();
+			const app = updatedData.find(({ id }) => id === appId);
 
-	const handleAppStatusChange = useCallback(({ appId, status }) => {
-		const updatedData = getDataCopy();
-		const app = updatedData.find(({ id }) => id === appId);
-
-		if (!app) {
-			return;
-		}
-		app.status = status;
-		setData(updatedData);
-	}, [stringifiedData, setData]);
+			if (!app) {
+				return;
+			}
+			app.status = status;
+			setData(updatedData);
+		},
+	};
 
 	useEffect(() => {
+		const unregisterListeners = registerListeners(listeners);
 		(async () => {
 			try {
 				const marketAndInstalledApps = await Promise.all([Apps.getAppsFromMarketplace(), Apps.getApps()]);
@@ -83,22 +98,13 @@ export function useMarketplaceApps({ debouncedText, debouncedSort, current, item
 				});
 
 				setData(appsData.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)));
-
-				Apps.getWsListener().registerListener(AppEvents.APP_ADDED, handleAppAddedOrUpdated);
-				Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, handleAppAddedOrUpdated);
-				Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, handleAppRemoved);
-				Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, handleAppStatusChange);
 			} catch (e) {
 				handleAPIError(e);
+				unregisterListeners();
 			}
 		})();
 
-		return () => {
-			Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, handleAppAddedOrUpdated);
-			Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, handleAppAddedOrUpdated);
-			Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, handleAppRemoved);
-			Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, handleAppStatusChange);
-		};
+		return unregisterListeners;
 	}, []);
 
 	const filteredValues = useMemo(() => {
