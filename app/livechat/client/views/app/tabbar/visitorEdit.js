@@ -4,15 +4,30 @@ import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
 import { t } from '../../../../../utils';
-import { hasRole } from '../../../../../authorization';
+import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../../authorization';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
+import { getCustomFormTemplate } from '../customTemplates/register';
 
 const CUSTOM_FIELDS_COUNT = 100;
+
+const getCustomFieldsByScope = (customFields = [], data = {}, filter, disabled) =>
+	customFields
+		.filter(({ visibility, scope }) => visibility !== 'hidden' && scope === filter)
+		.map(({ _id: name, scope, label, ...extraData }) => {
+			const value = data[name] ? data[name] : '';
+			return { name, label, scope, value, disabled, ...extraData };
+		});
+
+const isCustomFieldDisabled = () => !hasPermission('edit-livechat-room-customfields');
 
 Template.visitorEdit.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
+	},
+
+	canViewCustomFields() {
+		return hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 	},
 
 	visitorCustomFields() {
@@ -21,18 +36,10 @@ Template.visitorEdit.helpers({
 			return [];
 		}
 
-		const fields = [];
 		const visitor = Template.instance().visitor.get();
 		const { livechatData = {} } = visitor || {};
 
-		customFields.forEach((field) => {
-			if (field.visibility !== 'hidden' && field.scope === 'visitor') {
-				const value = livechatData[field._id] ? livechatData[field._id] : '';
-				fields.push({ name: field._id, label: field.label, value });
-			}
-		});
-
-		return fields;
+		return getCustomFieldsByScope(customFields, livechatData, 'visitor', isCustomFieldDisabled());
 	},
 
 	room() {
@@ -45,18 +52,10 @@ Template.visitorEdit.helpers({
 			return [];
 		}
 
-		const fields = [];
 		const room = Template.instance().room.get();
 		const { livechatData = {} } = room || {};
 
-		customFields.forEach((field) => {
-			if (field.visibility !== 'hidden' && field.scope === 'room') {
-				const value = livechatData[field._id] ? livechatData[field._id] : '';
-				fields.push({ name: field._id, label: field.label, value });
-			}
-		});
-
-		return fields;
+		return getCustomFieldsByScope(customFields, livechatData, 'room', isCustomFieldDisabled());
 	},
 
 	email() {
@@ -93,6 +92,10 @@ Template.visitorEdit.helpers({
 	isSmsIntegration() {
 		const room = Template.instance().room.get();
 		return !!(room && room.sms);
+	},
+
+	customFieldsTemplate() {
+		return getCustomFormTemplate('livechatVisitorEditForm');
 	},
 });
 
@@ -166,6 +169,11 @@ Template.visitorEdit.events({
 		if (sms) {
 			delete userData.phone;
 		}
+		instance.$('.customFormField').each((i, el) => {
+			const elField = instance.$(el);
+			const name = elField.attr('name');
+			roomData[name] = elField.val();
+		});
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {

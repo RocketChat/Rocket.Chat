@@ -22,6 +22,7 @@ const fullFields = {
 	emails: 1,
 	phone: 1,
 	statusConnection: 1,
+	bio: 1,
 	createdAt: 1,
 	lastLogin: 1,
 	services: 1,
@@ -63,16 +64,32 @@ const getFields = (canViewAllInfo) => ({
 	...getCustomFields(canViewAllInfo),
 });
 
-export function getFullUserDataById({ userId, filterId }) {
-	const canViewAllInfo = userId === filterId || hasPermission(userId, 'view-full-other-user-info');
+const removePasswordInfo = (user) => {
+	if (user && user.services) {
+		delete user.services.password;
+		delete user.services.email;
+		delete user.services.resume;
+		delete user.services.emailCode;
+		delete user.services.cloud;
+		delete user.services.email2fa;
+		delete user.services.totp;
+	}
+	return user;
+};
+
+export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername }) {
+	const caller = Users.findOneById(userId, { fields: { username: 1 } });
+	const myself = userId === filterId || filterUsername === caller.username;
+	const canViewAllInfo = myself || hasPermission(userId, 'view-full-other-user-info');
 
 	const fields = getFields(canViewAllInfo);
 
 	const options = {
 		fields,
 	};
+	const user = Users.findOneByIdOrUsername(filterId || filterUsername, options);
 
-	return Users.findById(filterId, options);
+	return myself ? user : removePasswordInfo(user);
 }
 
 export const getFullUserData = function({ userId, filter, limit: l }) {

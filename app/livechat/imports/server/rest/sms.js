@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models';
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
 
@@ -40,7 +40,7 @@ const defineVisitor = (smsNumber) => {
 };
 
 const normalizeLocationSharing = (payload) => {
-	const { extra: { fromLatitude: latitude, fromLongitude: longitude } } = payload;
+	const { extra: { fromLatitude: latitude, fromLongitude: longitude } = { } } = payload;
 	if (!latitude || !longitude) {
 		return;
 	}

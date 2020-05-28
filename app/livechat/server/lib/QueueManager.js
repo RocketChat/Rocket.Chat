@@ -7,7 +7,7 @@ import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 
 export const QueueManager = {
-	async requestRoom({ guest, message, roomInfo, agent }) {
+	async requestRoom({ guest, message, roomInfo, agent, extraData }) {
 		check(message, Match.ObjectIncluding({
 			rid: String,
 		}));
@@ -25,8 +25,8 @@ export const QueueManager = {
 		const { rid } = message;
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
-		const room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo));
-		let inquiry = LivechatInquiry.findOneById(createLivechatInquiry(rid, name, guest, message));
+		const room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo, extraData));
+		let inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid, name, guest, message, extraData }));
 
 		LivechatRooms.updateRoomCount();
 
@@ -35,10 +35,14 @@ export const QueueManager = {
 		}
 
 		inquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, agent);
-		if (inquiry.status !== 'ready') {
-			return room;
+		if (inquiry.status === 'ready') {
+			return RoutingManager.delegateInquiry(inquiry, agent);
 		}
 
-		return RoutingManager.delegateInquiry(inquiry, agent);
+		if (inquiry.status === 'queued') {
+			Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
+		}
+
+		return room;
 	},
 };

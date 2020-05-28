@@ -15,6 +15,9 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'metrics.chatDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
+		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
+		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -71,8 +74,8 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveRoomById({ _id, topic, tags, livechatData }) {
-		const setData = {};
+	saveRoomById({ _id, topic, tags, livechatData, ...extra }) {
+		const setData = { ...extra };
 		const unsetData = {};
 
 		if (topic != null) {
@@ -163,6 +166,18 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			closedAt: { $exists: true },
+			servedBy: { $exists: true },
+		};
+
+		options.sort = { closedAt: -1 };
+		return this.findOne(query, options);
+	}
+
 	findOneByVisitorToken(visitorToken, fields) {
 		const options = {};
 
@@ -237,6 +252,16 @@ export class LivechatRooms extends Base {
 		return this.find(query);
 	}
 
+	findByVisitorIdAndAgentId(visitorId, agentId, options) {
+		const query = {
+			t: 'l',
+			...visitorId && { 'v._id': visitorId },
+			...agentId && { 'servedBy._id': agentId },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByVisitorId(visitorId) {
 		const query = {
 			t: 'l',
@@ -282,6 +307,20 @@ export class LivechatRooms extends Base {
 			},
 			$unset: {
 				waitingResponse: 1,
+			},
+		});
+	}
+
+	setNotResponseByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				waitingResponse: true,
+			},
+			$unset: {
+				responseBy: 1,
 			},
 		});
 	}
@@ -336,31 +375,33 @@ export class LivechatRooms extends Base {
 		}, update);
 	}
 
-	getTotalConversationsBetweenDate(t, date) {
+	getTotalConversationsBetweenDate(t, date, { departmentId } = {}) {
 		const query = {
 			t,
 			ts: {
 				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 				$lt: new Date(date.lt),	// ISODate, ts < date.lt
 			},
+			...departmentId && departmentId !== 'undefined' && { departmentId },
 		};
 
 		return this.find(query).count();
 	}
 
-	getAnalyticsMetricsBetweenDate(t, date) {
+	getAnalyticsMetricsBetweenDate(t, date, { departmentId } = {}) {
 		const query = {
 			t,
 			ts: {
 				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 				$lt: new Date(date.lt),	// ISODate, ts < date.lt
 			},
+			...departmentId && departmentId !== 'undefined' && { departmentId },
 		};
 
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
-	getAnalyticsBetweenDate(date) {
+	getAnalyticsBetweenDate(date, { departmentId } = {}) {
 		return this.model.rawCollection().aggregate([
 			{
 				$match: {
@@ -369,6 +410,7 @@ export class LivechatRooms extends Base {
 						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 						$lt: new Date(date.lt),	// ISODate, ts < date.lt
 					},
+					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
 			{
@@ -566,7 +608,7 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setVisitorInactivityInSecondsByRoomId(roomId, visitorInactivity) {
+	setVisitorInactivityInSecondsById(roomId, visitorInactivity) {
 		const query = {
 			_id: roomId,
 		};
