@@ -1,14 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { loadSamlServiceProviders } from './lib/settings';
-
 
 settings.addGroup('SAML');
 
-
-const debounce = (fn, delay): () => number => {
-	let timer = null;
+const debounce = (fn: Function, delay: number): () => number => {
+	let timer: number | null = null;
 	return (): number => {
 		if (timer != null) {
 			Meteor.clearTimeout(timer);

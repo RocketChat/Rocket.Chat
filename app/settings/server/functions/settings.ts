@@ -213,7 +213,7 @@ class Settings extends SettingsBase {
 	/*
 	* Add a setting group
 	*/
-	addGroup(_id: string, cb: addGroupCallback): boolean;
+	addGroup(_id: string, cb?: addGroupCallback): boolean;
 
 	// eslint-disable-next-line no-dupe-class-members
 	addGroup(_id: string, options: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): boolean {

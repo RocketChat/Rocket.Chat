@@ -6,11 +6,13 @@ import {
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 
 export class LogoutRequestParser {
+	serviceProviderOptions: IServiceProviderOptions;
+
 	constructor(serviceProviderOptions: IServiceProviderOptions) {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	validate(xmlString: string, callback: (err: object, data?: object) => void): void {
+	validate(xmlString: string, callback: (err: string | object | null, data?: Record<string, any> | null) => void): void {
 		SAMLUtils.log(`LogoutRequest: ${ xmlString }`);
 
 		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');

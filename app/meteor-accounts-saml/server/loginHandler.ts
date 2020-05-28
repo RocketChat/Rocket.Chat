@@ -3,12 +3,12 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings/server';
-import { generateUsernameSuggestion } from '../../lib';
+import { generateUsernameSuggestion } from '../../lib/server';
 import { _setUsername } from '../../lib/server/functions';
 import { SAMLUtils } from './lib/Utils';
 import { SAML } from './lib/SAML';
 
-Accounts.registerLoginHandler(function(loginRequest) {
+Accounts.registerLoginHandler('saml', function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
 		return undefined;
 	}

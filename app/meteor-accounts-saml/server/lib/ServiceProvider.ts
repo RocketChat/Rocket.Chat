@@ -45,7 +45,7 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the response URL with all the query string params and pass it to the callback
 	*/
-	logoutResponseToUrl(response: string, callback: (err: object, url?: string) => void): void {
+	logoutResponseToUrl(response: string, callback: (err: string | object | null, url?: string) => void): void {
 		zlib.deflateRaw(response, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -82,7 +82,7 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
-	requestToUrl(request: string, operation: string, callback: (err: object, url?: string) => void): void {
+	requestToUrl(request: string, operation: string, callback: (err: string | object | null, url?: string) => void): void {
 		zlib.deflateRaw(request, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -134,7 +134,7 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	getAuthorizeUrl(req: object, callback: (err: object, url?: string) => void): void {
+	getAuthorizeUrl(req: object, callback: (err: string | object | null, url?: string) => void): void {
 		const request = this.generateAuthorizeRequest(req.headers.host);
 		SAMLUtils.log('-----REQUEST------');
 		SAMLUtils.log(request);
@@ -142,7 +142,7 @@ export class SAMLServiceProvider {
 		this.requestToUrl(request, 'authorize', callback);
 	}
 
-	validateLogoutRequest(samlRequest: object, callback: (err: object, data?: object) => void): void {
+	validateLogoutRequest(samlRequest: object, callback: (err: string | object | null, data?: object) => void): void {
 		SAMLUtils.inflateXml(samlRequest, (xml: string) => {
 			const parser = new LogoutRequestParser(this.serviceProviderOptions);
 			return parser.validate(xml, callback);
@@ -151,7 +151,7 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	validateLogoutResponse(samlResponse: object, callback: (err: object, inResponseTo?: string) => void): void {
+	validateLogoutResponse(samlResponse: object, callback: (err: string | object | null, inResponseTo?: string) => void): void {
 		SAMLUtils.inflateXml(samlResponse, (xml: string) => {
 			const parser = new LogoutResponseParser(this.serviceProviderOptions);
 			return parser.validate(xml, callback);
@@ -160,7 +160,7 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	validateResponse(samlResponse: object, relayState: string, callback: (err: object, profile?: object, loggedOut?: boolean) => void): void {
+	validateResponse(samlResponse: object, relayState: string, callback: (err: string | object | null, profile?: object, loggedOut?: boolean) => void): void {
 		const xml = new Buffer(samlResponse, 'base64').toString('utf8');
 
 		const parser = new ResponseParser(this.serviceProviderOptions);

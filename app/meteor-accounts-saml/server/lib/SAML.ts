@@ -296,7 +296,7 @@ export class SAML {
 		return CredentialTokens.findOneById(credentialToken) != null;
 	}
 
-	static retrieveCredential(credentialToken: string): object | undefined {
+	static retrieveCredential(credentialToken: string): Record<string, any> | undefined {
 		// The credentialToken in all these functions corresponds to SAMLs inResponseTo field and is mandatory to check.
 		const data = CredentialTokens.findOneById(credentialToken);
 		if (data) {

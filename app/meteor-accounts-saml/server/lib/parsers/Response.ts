@@ -12,7 +12,7 @@ export class ResponseParser {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	validate(xml: string, callback: (err: object, profile?: object, loggedOut?: boolean) => void): void {
+	validate(xml: string, callback: (err: string | object | null, profile?: object, loggedOut?: boolean) => void): void {
 		// We currently use RelayState to save SAML provider
 		SAMLUtils.log(`Validating response with relay state: ${ xml }`);
 
