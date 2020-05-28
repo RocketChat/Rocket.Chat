@@ -10,7 +10,9 @@ services:
       MONGODB_REPLICA_SET_KEY: replicasetkey123
 
   rocketchat:
-    image: rocketchat/rocket.chat:latest
+    build:
+      type: dockerfile
+      config: ./.docker/Dockerfile
     command: ["bash", "-c", "set -x; for i in {1..30}; do node main.js && s=$$? && break || s=$$?; echo \"Tried $$i times. Waiting 5 secs...\"; sleep 2; done; (exit $$s)"]
     environment:
       PORT: 3000
