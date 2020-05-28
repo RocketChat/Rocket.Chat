@@ -243,35 +243,46 @@ export class SlackImporter extends Base {
 		});
 	}
 
-	parseMentions(message) {
-		let mentionsParser;
-		mentionsParser = new MentionsParser({
+	parseMentions (message) {
+		const mentionsParser = new MentionsParser({
 			pattern: () => settings.get('UTF8_Names_Validation'),
 			useRealName: () => settings.get('UI_Use_Real_Name'),
 			me: () => 'me',
 		});
 
-		if(!message.mentions){
-			message.mentions=[];
+		if (!message.mentions) {
+			message.mentions = [];
 		}
-		message.mentions.push(...mentionsParser.getUserMentions(message.msg));
+		let users = mentionsParser.getUserMentions(message.msg);
+		users.forEach((user_id, index, arr) => {
+			const user = user_id.slice(1, user_id.length);
+			try {
+				if (user === 'all' || user === 'here'){
+					arr[index] = user;
+				} else {
+					arr[index] = Users.findOneByUsernameIgnoringCase(user);
+				}
+			} catch (e) {
+				this.logger.warn(`Failed to import user mention with name: ${ user }`);
+			}
+		});
+		message.mentions.push(...users);
 
-		if(!message.channels){
-			message.channels=[];
+		if (!message.channels) {
+			message.channels = [];
 		}
 		let channels = mentionsParser.getChannelMentions(message.msg);
 		channels.forEach((channel_name, index, arr) => {
-			let chan = channel_name.slice(1, channel_name.length);
-			try{
+			const chan = channel_name.slice(1, channel_name.length);
+			try {
 				const slackChannel = this.getSlackChannelFromName(chan);
 				arr[index] = Rooms.findOneById(slackChannel.rocketId);
+				arr[index].dname = chan; // Have to store name to display so parser can match it
 			} catch (e) {
-				this.logger.warn(`Failed to import room with name: ${ chan }`);
+				this.logger.warn(`Failed to import channel mention with name: ${ chan }`);
 			}
 		});
 		message.channels.push(...channels);
-
-		message.temp = message.msg;
 	}
 
 	processMessageSubType(message, room, msgDataDefaults, missedTypes) {
