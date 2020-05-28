@@ -2,21 +2,24 @@ import { Button, Box, Throbber } from '@rocket.chat/fuselage';
 import React, { useState, useCallback } from 'react';
 
 import Page from '../../components/basic/Page';
+import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 
-function AppsWhatIsIt({ updateEnabled }) {
+function AppsWhatIsIt() {
 	const t = useTranslation();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 
 	const enable = useMethod('apps/go-enable');
 
+	const appsRouter = useRoute('admin-apps');
+
 	const handleClick = useCallback(async () => {
 		try {
 			setLoading(true);
 			await enable();
-			updateEnabled();
+			appsRouter.push({});
 		} catch (error) {
 			setError(error);
 		}

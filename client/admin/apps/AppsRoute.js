@@ -1,35 +1,39 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { useRouteParameter } from '../../contexts/RouterContext';
-import { useMethod } from '../../contexts/ServerContext';
+import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
+import { Apps } from '../../../app/apps/client/orchestrator';
 import NotAuthorizedPage from '../NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';
 import MarketplacePage from './MarketplacePage';
 import AppLogsPage from './AppLogsPage';
-import AppsWhatIsIt from './AppsWhatIsIt';
+// import AppsWhatIsIt from './AppsWhatIsIt';
+import PageSkeleton from '../PageSkeleton';
 
 export default function AppsRoute() {
 	const canViewAppsAndMarketplace = usePermission('manage-apps');
-	const [isEnabled, setEnabled] = useState(false);
+	const [isEnabled, setEnabled] = useState();
+
+	const appsWhatIsItRouter = useRoute('admin-apps-disabled');
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const version = useRouteParameter('version');
-	const checkIsEnabled = useMethod('apps/is-enabled');
-
-	const updateEnabled = useCallback(async () => setEnabled(await checkIsEnabled()), []);
 
 	useEffect(() => {
-		updateEnabled();
+		(async () => setEnabled(await Apps.isEnabled()))();
 	}, []);
 
 	if (!canViewAppsAndMarketplace) {
 		return <NotAuthorizedPage />;
 	}
 
+	if (isEnabled === undefined) {
+		return <PageSkeleton />;
+	}
+
 	if (!isEnabled) {
-		return <AppsWhatIsIt updateEnabled={updateEnabled}/>;
+		appsWhatIsItRouter.push({});
 	}
 
 	return <>
