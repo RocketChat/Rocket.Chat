@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../../settings';
@@ -90,6 +91,7 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		authRequestTemplate: samlConfigs.authRequestTemplate,
 		logoutResponseTemplate: samlConfigs.logoutResponseTemplate,
 		logoutRequestTemplate: samlConfigs.logoutRequestTemplate,
+		callbackUrl: Meteor.absoluteUrl(`_saml/validate/${ samlConfigs.clientConfig.provider }`),
 	};
 };
 

@@ -16,27 +16,11 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 export class SAMLServiceProvider {
 	constructor(serviceProviderOptions: IServiceProviderOptions): void {
-		this.serviceProviderOptions = this.initialize(serviceProviderOptions);
-	}
-
-	initialize(serviceProviderOptions: IServiceProviderOptions): IServiceProviderOptions {
 		if (!serviceProviderOptions) {
-			serviceProviderOptions = {};
+			throw new Error('SAMLServiceProvider instantiated without an options object');
 		}
 
-		if (!serviceProviderOptions.protocol) {
-			serviceProviderOptions.protocol = 'https://';
-		}
-
-		if (!serviceProviderOptions.path) {
-			serviceProviderOptions.path = '/saml/consume';
-		}
-
-		if (!serviceProviderOptions.issuer) {
-			serviceProviderOptions.issuer = 'onelogin_saml';
-		}
-
-		return serviceProviderOptions;
+		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
 	signRequest(xml: string): Buffer {
@@ -183,7 +167,7 @@ export class SAMLServiceProvider {
 		return parser.validate(xml, callback);
 	}
 
-	generateServiceProviderMetadata(callbackUrl: string): string {
-		return ServiceProviderMetadata.generate(this.serviceProviderOptions, callbackUrl);
+	generateServiceProviderMetadata(): string {
+		return ServiceProviderMetadata.generate(this.serviceProviderOptions);
 	}
 }

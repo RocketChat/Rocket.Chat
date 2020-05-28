@@ -50,10 +50,9 @@ export class SAML {
 	static processMetadataAction(req: object, res: object, service: IServiceProviderOptions): void {
 		try {
 			const serviceProvider = new SAMLServiceProvider(service);
-			service.callbackUrl = Meteor.absoluteUrl(`_saml/validate/${ service.provider }`);
 
 			res.writeHead(200);
-			res.write(serviceProvider.generateServiceProviderMetadata(service.callbackUrl));
+			res.write(serviceProvider.generateServiceProviderMetadata());
 			res.end();
 		} catch (err) {
 			showErrorMessage(res, err);
@@ -166,7 +165,6 @@ export class SAML {
 	}
 
 	static processAuthorizeAction(req: object, res: object, service: IServiceProviderOptions, samlObject: object): void {
-		service.callbackUrl = Meteor.absoluteUrl(`_saml/validate/${ service.provider }`);
 		service.id = samlObject.credentialToken;
 
 		const serviceProvider = new SAMLServiceProvider(service);

@@ -10,8 +10,8 @@ import { IServiceProviderOptions } from '../../definition/IServiceProviderOption
 */
 
 export class ServiceProviderMetadata {
-	static generate(serviceProviderOptions: IServiceProviderOptions, callbackUrl: string): string {
-		const data = this.getData(serviceProviderOptions, callbackUrl);
+	static generate(serviceProviderOptions: IServiceProviderOptions): string {
+		const data = this.getData(serviceProviderOptions);
 
 		const metadata = {
 			EntityDescriptor: {
@@ -75,7 +75,7 @@ export class ServiceProviderMetadata {
 		});
 	}
 
-	static getData(serviceProviderOptions: IServiceProviderOptions, callbackUrl: string): Record<string, any> {
+	static getData(serviceProviderOptions: IServiceProviderOptions): Record<string, any> {
 		let decryptionCert = serviceProviderOptions.privateCert;
 		if (decryptionCert) {
 			decryptionCert = decryptionCert.replace(/-+BEGIN CERTIFICATE-+\r?\n?/, '');
@@ -83,7 +83,7 @@ export class ServiceProviderMetadata {
 			decryptionCert = decryptionCert.replace(/\r\n/g, '\n');
 		}
 
-		if (!serviceProviderOptions.callbackUrl && !callbackUrl) {
+		if (!serviceProviderOptions.callbackUrl) {
 			throw new Error('Unable to generate service provider metadata when callbackUrl option is not set');
 		}
 
@@ -92,7 +92,7 @@ export class ServiceProviderMetadata {
 			privateKey: serviceProviderOptions.privateKey,
 			decryptionCert,
 			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
-			callbackUrl,
+			callbackUrl: serviceProviderOptions.callbackUrl,
 		};
 	}
 }

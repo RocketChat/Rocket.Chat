@@ -27,13 +27,14 @@ const serviceProviderOptions = {
 	authRequestTemplate: '<authRequest>__identifierFormatTag__ __authnContextTag__ </authRequest>',
 	logoutResponseTemplate: '[logout-response-template]',
 	logoutRequestTemplate: '[logout-request-template]',
+	callbackUrl: '[callback-url]',
 };
 
 describe('SAML', () => {
 	describe('[Authorize]', () => {
 		describe('Authorize.generate', () => {
 			it('should use the custom templates to generate the request', () => {
-				const authorizeRequest = AuthorizeRequest.generate(serviceProviderOptions, 'test.host');
+				const authorizeRequest = AuthorizeRequest.generate(serviceProviderOptions);
 				assert.equal(authorizeRequest.request, '<authRequest><NameID IdentifierFormat="email"/> <authnContext Comparison="Whatever">Password</authnContext> </authRequest>');
 			});
 		});

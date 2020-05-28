@@ -12,8 +12,8 @@ import { IServiceProviderOptions } from '../../definition/IServiceProviderOption
 	An Authorize Request is used to show the Identity Provider login form when the user clicks on the Rocket.Chat SAML login button
 */
 export class AuthorizeRequest {
-	static generate(serviceProviderOptions: IServiceProviderOptions, host: string): { id: string; request: string } {
-		const data = this.getDataForNewRequest(serviceProviderOptions, host);
+	static generate(serviceProviderOptions: IServiceProviderOptions): { id: string; request: string } {
+		const data = this.getDataForNewRequest(serviceProviderOptions);
 		const request = SAMLUtils.fillTemplateData(this.authorizeRequestTemplate(serviceProviderOptions), data);
 
 		return {
@@ -51,19 +51,11 @@ export class AuthorizeRequest {
 		return serviceProviderOptions.authnContextTemplate || defaultAuthnContextTemplate;
 	}
 
-	static getDataForNewRequest(serviceProviderOptions: IServiceProviderOptions, host: string): Record<string, string> {
+	static getDataForNewRequest(serviceProviderOptions: IServiceProviderOptions): Record<string, string> {
 		let id = `_${ SAMLUtils.generateUniqueID() }`;
 		const instant = SAMLUtils.generateInstant();
 
 		// Post-auth destination
-		let callbackUrl;
-
-		if (serviceProviderOptions.callbackUrl) {
-			callbackUrl = serviceProviderOptions.callbackUrl;
-		} else {
-			callbackUrl = serviceProviderOptions.protocol + host + serviceProviderOptions.path;
-		}
-
 		if (serviceProviderOptions.id) {
 			id = serviceProviderOptions.id;
 		}
@@ -71,7 +63,7 @@ export class AuthorizeRequest {
 		return {
 			uniqueId: id,
 			instant,
-			callbackUrl,
+			callbackUrl: serviceProviderOptions.callbackUrl,
 			entryPoint: serviceProviderOptions.entryPoint,
 			issuer: serviceProviderOptions.issuer,
 			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
