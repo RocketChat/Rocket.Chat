@@ -35,10 +35,14 @@ export const QueueManager = {
 		}
 
 		inquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, agent);
-		if (inquiry.status !== 'ready') {
-			return room;
+		if (inquiry.status === 'ready') {
+			return RoutingManager.delegateInquiry(inquiry, agent);
 		}
 
-		return RoutingManager.delegateInquiry(inquiry, agent);
+		if (inquiry.status === 'queued') {
+			Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
+		}
+
+		return room;
 	},
 };

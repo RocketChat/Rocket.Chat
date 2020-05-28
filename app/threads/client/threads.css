@@ -63,7 +63,7 @@
 			left: 40px;
 
 			width: 20px;
-			height: 20px;
+			height: 16px;
 
 			color: var(--rc-color-alert-message-primary);
 		}
@@ -82,7 +82,7 @@
 
 		display: flex;
 
-		margin: calc((var(--default-padding) /2) - 6px) 0 7px 0;
+		margin: calc((var(--default-padding) /2) - 2px) 0 2px 0;
 		align-items: center;
 	}
 

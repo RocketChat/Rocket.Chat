@@ -1,4 +1,4 @@
-import { Box, Headline, Margins } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -6,12 +6,8 @@ import { useTranslation } from '../../contexts/TranslationContext';
 export function StepHeader({ number, title }) {
 	const t = useTranslation();
 
-	return <Margins blockEnd='32'>
-		<Box is='header' className='SetupWizard__StepHeader'>
-			<Box is='p' textStyle='c1' textColor='hint'>
-				{t('Step')} {number}
-			</Box>
-			<Headline is='h2'>{title}</Headline>
-		</Box>
-	</Margins>;
+	return <Box is='header' marginBlockEnd='x32'>
+		<Box is='p' fontScale='c1' color='hint'>{t('Step')} {number}</Box>
+		<Box is='h2' fontScale='h1' color='default'>{title}</Box>
+	</Box>;
 }
