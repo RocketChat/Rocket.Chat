@@ -4,7 +4,7 @@
 			<div class="avatar tertiary-background-color" style="background-image: url({{blob}});">
 			</div>
 			<div class="action">
-				<button type="button" class="button primary {{service}} select-service">{{_ "Use_service_avatar" service}}</button>
+				<button type="button" class="rc-button rc-button--primary {{service}} select-service">{{_ "Use_service_avatar" service}}</button>
 			</div>
 		</div>
 	{{/if}}
@@ -15,7 +15,7 @@
 		<div class="avatar-suggestion-item border-component-color">
 			<div class="avatar question-mark icon-user tertiary-background-color"></div>
 			<div class="action">
-				<button type="button" class="button primary {{.}} login-with-service">{{_ "Login_with" .}}</button>
+				<button type="button" class="rc-button rc-button--primary {{.}} login-with-service">{{_ "Login_with" .}}</button>
 			</div>
 		</div>
 	{{/if}}
@@ -35,7 +35,7 @@
 							{{> avatar username=initialsUsername }}
 							{{#with service='initials'}}
 								<div class="action">
-									<button type="button" class="button primary select-service">{{_ "Use_initials_avatar" }}</button>
+									<button type="button" class="rc-button rc-button--primary select-service">{{_ "Use_initials_avatar" }}</button>
 								</div>
 							{{/with}}
 						</div>
@@ -43,11 +43,11 @@
 							<div style="background-image: url({{upload.blob}});" class="avatar tertiary-background-color {{#unless upload}}question-mark icon-upload{{/unless}}">
 							</div>
 							<div class="action">
-								<div class="button primary">{{_ "Select_file"}}
+								<div class="rc-button rc-button--primary">{{_ "Select_file"}}
 									<input type="file" class="avatar-file-input" accept="image/*">
 								</div>
 								{{#with upload}}
-									<button type="button" class="button primary select-service">{{_ "Use_uploaded_avatar"}}</button>
+									<button type="button" class="rc-button rc-button--primary select-service">{{_ "Use_uploaded_avatar"}}</button>
 								{{/with}}
 							</div>
 						</div>
@@ -57,7 +57,7 @@
 								<div class="action">
 									<div class="input-line">
 										<input type="text" name="avatarurl" id="avatarurl" />
-										<button type="button" class="button primary select-service">{{_ "Use_url_for_avatar"}}</button>
+										<button type="button" class="rc-button rc-button--primary select-service">{{_ "Use_url_for_avatar"}}</button>
 									</div>
 								</div>
 							{{/with}}
@@ -100,7 +100,7 @@
 
 				{{#if username.ready}}
 					<div class="submit">
-						<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{_ "Use_this_username"}}</span></button>
+						<button data-loading-text="{{_ "Please_wait"}}..." class="rc-button rc-button--primary login"><span>{{_ "Use_this_username"}}</span></button>
 					</div>
 				{{/if}}
 			</div>

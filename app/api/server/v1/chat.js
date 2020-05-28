@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { Messages } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { processWebhookMessage } from '../../../lib';
+import { processWebhookMessage } from '../../../lib/server';
 import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';

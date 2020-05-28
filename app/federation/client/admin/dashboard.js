@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { hasRole } from '../../../authorization';
-import { registerAdminRoute, registerAdminSidebarItem } from '../../../ui-admin/client';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../../../client/admin';
 
 import './dashboard.html';
 import './dashboard.css';
