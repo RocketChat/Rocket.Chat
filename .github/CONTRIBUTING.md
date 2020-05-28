@@ -18,7 +18,7 @@ __Note:__ If there's a feature you'd like, there's a bug you'd like to fix, or y
 
 ## Setup
 
-Your development workstation needs to have at least 8GB or RAM to be able to build the Rocket.Chat's source code.
+Your development workstation needs to have at least 8GB RAM or more to be able to build the Rocket.Chat's source code.
 
 Rocket.Chat runs on top of [Meteor](https://www.meteor.com/). To run it on development mode you need to [install Meteor](https://www.meteor.com/install) and clone/download the Rocket.Chat's code, then just open the code folder and run:
 ```shell
@@ -241,7 +241,7 @@ All those PRs will be grouped under the `Minor changes` section which is collaps
 
 - Prefer inform the fields you want, and only the necessary ones, when querying data from database over query the full documents
 - Limit the number of returned records to a reasonable value
-- Check if the query is using indexes, it it's not create new indexes
+- Check if the query is using indexes, if it's not create new indexes
 - Prefer queues over long executions
 - Create new metrics to mesure things whenever possible
 - Cache data and returns whenever possible
