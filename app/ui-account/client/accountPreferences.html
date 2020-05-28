@@ -92,16 +92,6 @@
 								{{/if}}
 							</div>
 						</div>
-						<div class="input-line double-col">
-							<label class="setting-label">{{_ "Notification_Duration"}}</label>
-							<div class="setting-field">
-								{{#if desktopNotificationDuration}}
-									<input type="number" class="rc-input__element" name="desktopNotificationDuration" min="0" value="{{desktopNotificationDuration}}">
-								{{else}}
-									<input type="number" class="rc-input__element" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultDesktopNotificationDuration}})">
-								{{/if}}
-							</div>
-						</div>
 						<div class="input-line double-col" id="desktopNotificationRequireInteraction">
 							<label class="setting-label">{{_ "Notification_RequireInteraction"}}</label>
 							<div class="setting-field">

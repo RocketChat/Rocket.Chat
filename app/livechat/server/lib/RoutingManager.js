@@ -145,7 +145,7 @@ export const RoutingManager = {
 		LivechatInquiry.takeInquiry(_id);
 		const inq = this.assignAgent(inquiry, agent);
 
-		callbacks.run('livechat.afterTakeInquiry', inq);
+		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
 
 		return LivechatRooms.findOneById(rid);
 	},
