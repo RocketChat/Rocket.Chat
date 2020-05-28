@@ -11,3 +11,4 @@ import './app/tabbar/visitorForward';
 import './app/tabbar/visitorHistory';
 import './app/tabbar/visitorInfo';
 import './app/tabbar/visitorNavigation';
+import './app/tabbar/visitorTranscript';

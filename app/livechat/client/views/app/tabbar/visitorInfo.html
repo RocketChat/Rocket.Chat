@@ -1,9 +1,12 @@
 <template name="visitorInfo">
 	{{#if editing}}
-		{{> visitorEdit (editDetails)}}
+		{{> visitorEdit (roomInfoData)}}
 	{{/if}}
 	{{#if forwarding}}
-		{{> visitorForward (forwardDetails)}}
+		{{> visitorForward (roomInfoData)}}
+	{{/if}}
+	{{#if sendingTranscript}}
+		{{> visitorTranscript (roomInfoData)}}
 	{{/if}}
 	<div class="user-view {{showDetail}}">
 		<div class="about clearfix">
@@ -51,24 +54,38 @@
 					{{/if}}
 				</ul>
 			</div>
+
+			{{#with transcriptRequest}}
+				<div class="info">
+					<h3>{{_ "Transcript_Request"}}</h3>
+					<ul>
+						{{#if requestedAt}}<li><strong>{{_ "Requested_At"}}</strong>: {{transcriptRequestedDateTime}}</li>{{/if}}
+						{{#if requestedBy}}<li><strong>{{_ "Requested_By"}}</strong>: {{requestedBy.username}}</li>{{/if}}
+					</ul>
+				</div>
+			{{/with}}
 		</div>
 
 		{{#if canSeeButtons}}
 			<nav class="centered-buttons">
 				{{#if canEditRoom}}
-					<button class='button button-block edit-livechat'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
+					<button class='button rc-button rc-button--secondary button-block edit-livechat'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
 				{{/if}}
 
 				{{#if roomOpen}}
 					{{#if canCloseRoom}}
-						<button class='button button-block close-livechat'><span><i class='icon-download'></i> {{_ "Close"}}</span></button>
+						<button class='button rc-button rc-button--secondary button-block close-livechat'><span><i class='icon-download'></i> {{_ "Close"}}</span></button>
 					{{/if}}
 					{{#if canForwardGuest}}
-						<button class="rc-button rc-button--secondary button-block forward-livechat"><span><i class="icon-forward"></i> {{_ "Forward"}}</span></button>
+						<button class="button rc-button rc-button--secondary button-block forward-livechat"><span><i class="icon-forward"></i> {{_ "Forward"}}</span></button>
 					{{/if}}
 					{{#if canReturnQueue}}
-						<button class="rc-button rc-button--secondary button-block return-inquiry"><span><i class="icon-ccw"></i> {{_ "Return"}}</span></button>
+						<button class="button rc-button rc-button--secondary button-block return-inquiry"><span><i class="icon-ccw"></i> {{_ "Return"}}</span></button>
 					{{/if}}
+				{{/if}}
+
+				{{#if canSendTranscript}}
+					<button class="button rc-button rc-button--secondary button-block send-transcript"><span><i class="icon-mail"></i> {{_ "Transcript"}}</span></button>
 				{{/if}}
 			</nav>
 		{{/if}}
