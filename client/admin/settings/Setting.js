@@ -115,7 +115,7 @@ export function Setting({ settingId, sectionChanged }) {
 	} = setting;
 
 	const label = (i18nLabel && t(i18nLabel)) || (_id || t(_id));
-	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText>{t(i18nDescription)}</MarkdownText>, [i18nDescription]);
+	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText content={t(i18nDescription)} />, [i18nDescription]);
 	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t(alert) }} />, [alert]);
 	const hasResetButton = !disableReset && !readonly && type !== 'asset' && (JSON.stringify(packageEditor) !== JSON.stringify(editor) || JSON.stringify(value) !== JSON.stringify(packageValue)) && !disabled;
 
