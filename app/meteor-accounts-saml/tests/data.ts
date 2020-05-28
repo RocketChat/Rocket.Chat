@@ -68,3 +68,14 @@ export const invalidLogoutRequest = `<samlp:LogoutRequest xmlns:samlp="urn:oasis
 	<saml:Issuer>http://localhost:8080/simplesaml/saml2/idp/metadata.php</saml:Issuer>
 	<samlp:SessionIndex>_d6ad0e25459aaddd0433a81e159aa79e55dc52c280</samlp:SessionIndex>
 </samlp:LogoutRequest>`;
+
+export const simpleLogoutResponse = `<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_804853615e31dd9b2fb54a71faa09d95a370003574" Version="2.0" IssueInstant="[INSTANT]" Destination="http://localhost:3000/_saml/logout/test-sp/" InResponseTo="_id-6530db3fcd23dc42a31c">
+	<saml:Issuer>[IssuerName]</saml:Issuer>
+	<samlp:Status>
+		<samlp:StatusCode Value="[STATUSCODE]"/>
+	</samlp:Status>
+</samlp:LogoutResponse>`;
+
+export const invalidLogoutResponse = `<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_804853615e31dd9b2fb54a71faa09d95a370003574" Version="2.0" IssueInstant="[INSTANT]" Destination="http://localhost:3000/_saml/logout/test-sp/" InResponseTo="_id-6530db3fcd23dc42a31c">
+	<saml:Issuer>[IssuerName]</saml:Issuer>
+</samlp:LogoutResponse>`;

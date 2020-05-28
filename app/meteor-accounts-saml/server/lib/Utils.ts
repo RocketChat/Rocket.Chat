@@ -138,7 +138,7 @@ export class SAMLUtils {
 		});
 	}
 
-	static validateStatus(doc: Element): { success: boolean; message: string; statusCode: string } {
+	static validateStatus(doc: Document): { success: boolean; message: string; statusCode: string } {
 		let successStatus = false;
 		let status = null;
 		let messageText = '';

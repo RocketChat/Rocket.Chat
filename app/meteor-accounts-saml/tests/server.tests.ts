@@ -9,6 +9,7 @@ import { LogoutRequest } from '../server/lib/generators/LogoutRequest';
 import { LogoutResponse } from '../server/lib/generators/LogoutResponse';
 import { ServiceProviderMetadata } from '../server/lib/generators/ServiceProviderMetadata';
 import { LogoutRequestParser } from '../server/lib/parsers/LogoutRequest';
+import { LogoutResponseParser } from '../server/lib/parsers/LogoutResponse';
 import {
 	serviceProviderOptions,
 	simpleMetadata,
@@ -17,6 +18,8 @@ import {
 	invalidXml,
 	randomXml,
 	invalidLogoutRequest,
+	simpleLogoutResponse,
+	invalidLogoutResponse,
 } from './data';
 
 const { expect } = chai;
@@ -81,17 +84,9 @@ describe('SAML', () => {
 
 		describe('LogoutRequest.validate', () => {
 			it('should extract the idpSession and nameID from the request', () => {
-				const instant = new Date().toISOString();
-				const later = new Date();
-				later.setMinutes(later.getMinutes() + 3);
-
-				const logoutRequest = simpleLogoutRequest
-					.replace('[INSTANT]', instant)
-					.replace('[NotOnOrAfter]', later.toISOString());
-
 				const parser = new LogoutRequestParser(serviceProviderOptions);
 
-				parser.validate(logoutRequest, (err, data) => {
+				parser.validate(simpleLogoutRequest, (err, data) => {
 					expect(err).to.be.null;
 					expect(data).to.be.an('object');
 					expect(data).to.have.property('idpSession');
@@ -155,6 +150,69 @@ describe('SAML', () => {
 
 				const logoutResponse = LogoutResponse.generate(customOptions);
 				expect(logoutResponse.response).to.be.equal('[idpSLORedirectURL] [issuer]');
+			});
+		});
+
+		describe('LogoutResponse.validate', () => {
+			it('should extract the inResponseTo from the response', () => {
+				const logoutResponse = simpleLogoutResponse
+					.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success');
+				const parser = new LogoutResponseParser(serviceProviderOptions);
+
+				parser.validate(logoutResponse, (err, inResponseTo) => {
+					expect(err).to.be.null;
+					expect(inResponseTo).to.be.equal('_id-6530db3fcd23dc42a31c');
+				});
+			});
+
+			it('should reject a response with a non-success StatusCode', () => {
+				const logoutResponse = simpleLogoutResponse
+					.replace('[STATUSCODE]', 'Anything');
+				const parser = new LogoutResponseParser(serviceProviderOptions);
+
+				parser.validate(logoutResponse, (err, inResponseTo) => {
+					expect(err).to.be.equal('Error. Logout not confirmed by IDP');
+					expect(inResponseTo).to.be.null;
+				});
+			});
+
+			it('should fail to parse an invalid xml', () => {
+				const parser = new LogoutResponseParser(serviceProviderOptions);
+				parser.validate(invalidXml, (err, inResponseTo) => {
+					expect(err).to.be.exist;
+					expect(inResponseTo).to.not.exist;
+				});
+			});
+
+			it('should fail to parse a xml without any LogoutResponse tag', () => {
+				const parser = new LogoutResponseParser(serviceProviderOptions);
+				parser.validate(randomXml, (err, inResponseTo) => {
+					expect(err).to.be.equal('No Response Found');
+					expect(inResponseTo).to.not.exist;
+				});
+			});
+
+			it('should fail to parse a xml without an inResponseTo attribute', () => {
+				const instant = new Date().toISOString();
+				const logoutResponse = simpleLogoutResponse
+					.replace('[INSTANT]', instant)
+					.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success')
+					.replace('InResponseTo=', 'SomethingElse=');
+
+				const parser = new LogoutResponseParser(serviceProviderOptions);
+				parser.validate(logoutResponse, (err, inResponseTo) => {
+					expect(err).to.be.equal('Unexpected Response from IDP');
+					expect(inResponseTo).to.not.exist;
+				});
+			});
+
+			it('should reject a response with no status tag', () => {
+				const parser = new LogoutResponseParser(serviceProviderOptions);
+
+				parser.validate(invalidLogoutResponse, (err, inResponseTo) => {
+					expect(err).to.be.equal('Error. Logout not confirmed by IDP');
+					expect(inResponseTo).to.be.null;
+				});
 			});
 		});
 	});

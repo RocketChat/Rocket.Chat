@@ -6,11 +6,13 @@ import {
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 
 export class LogoutResponseParser {
+	serviceProviderOptions: IServiceProviderOptions;
+
 	constructor(serviceProviderOptions: IServiceProviderOptions) {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	validate(xmlString: string, callback: (err: string | object | null, inResponseTo?: string) => void): void {
+	validate(xmlString: string, callback: (err: string | object | null, inResponseTo?: string | null) => void): void {
 		SAMLUtils.log(`LogoutResponse: ${ xmlString }`);
 
 		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');
@@ -32,6 +34,10 @@ export class LogoutResponseParser {
 			SAMLUtils.log(`Caught error: ${ e }`);
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
 			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
+		}
+
+		if (!inResponseTo) {
+			return callback('Unexpected Response from IDP', null);
 		}
 
 		const statusValidateObj = SAMLUtils.validateStatus(doc);
