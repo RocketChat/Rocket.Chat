@@ -10,6 +10,7 @@ import { LogoutResponse } from '../server/lib/generators/LogoutResponse';
 import { ServiceProviderMetadata } from '../server/lib/generators/ServiceProviderMetadata';
 import { LogoutRequestParser } from '../server/lib/parsers/LogoutRequest';
 import { LogoutResponseParser } from '../server/lib/parsers/LogoutResponse';
+import { ResponseParser } from '../server/lib/parsers/Response';
 import {
 	serviceProviderOptions,
 	simpleMetadata,
@@ -20,6 +21,7 @@ import {
 	invalidLogoutRequest,
 	simpleLogoutResponse,
 	invalidLogoutResponse,
+	simpleSamlResponse,
 } from './data';
 import '../../../definition/xml-encryption';
 
@@ -234,6 +236,36 @@ describe('SAML', () => {
 
 				const metadata = ServiceProviderMetadata.generate(customOptions);
 				expect(metadata).to.be.equal(metadataWithCertificate);
+			});
+		});
+	});
+
+	describe('[Response]', () => {
+		describe('[Response.validate]', () => {
+			it('should extract information from the response', () => {
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
+
+				const response = simpleSamlResponse
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(response, (err, profile, loggedOut) => {
+					expect(err).to.be.null;
+					expect(profile).to.be.an('object');
+					expect(profile).to.have.property('inResponseToId').equal('[INRESPONSETO]');
+					expect(profile).to.have.property('issuer').equal('[ISSUER]');
+					expect(profile).to.have.property('nameID').equal('[NAMEID]');
+					expect(profile).to.have.property('sessionIndex').equal('[SESSIONINDEX]');
+					expect(profile).to.have.property('uid').equal('1');
+					expect(profile).to.have.property('eduPersonAffiliation').equal('group1');
+					expect(profile).to.have.property('email').equal('user1@example.com');
+					expect(loggedOut).to.be.false;
+				});
 			});
 		});
 	});

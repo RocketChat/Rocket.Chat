@@ -148,7 +148,6 @@ export class ResponseParser {
 		let assertion: XmlParent = allAssertions[0];
 		const encAssertion = allEncrypedAssertions[0];
 
-
 		if (typeof encAssertion !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
