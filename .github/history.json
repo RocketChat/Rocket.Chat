@@ -44955,6 +44955,49 @@
           ]
         }
       ]
+    },
+    "3.3.0": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17595",
+          "title": "[FIX] Slack importer Link handling",
+          "userLogin": "lpilz",
+          "contributors": [
+            "lpilz",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17600",
+          "title": "Release 3.2.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "ggazzo",
+            "mtmr0x",
+            "pierre-lehnen-rc",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "17497",
+          "title": "[FIX] LDAP login error on Enterprise version",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
