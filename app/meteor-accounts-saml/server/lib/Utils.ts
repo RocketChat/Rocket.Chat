@@ -1,6 +1,5 @@
 import zlib from 'zlib';
 
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
@@ -121,7 +120,7 @@ export class SAMLUtils {
 	}
 
 	static log(...args: Array<any>): void {
-		if (Meteor.settings.debug) {
+		if (debug) {
 			console.log(...args);
 		}
 	}
