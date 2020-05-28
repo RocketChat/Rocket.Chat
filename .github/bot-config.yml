@@ -2,9 +2,11 @@ bot:
   name: "@rocket-cat"
 whitelist:
   users:
+    - wreiske
     - TwizzyDizzy
     - theorenck
     - JSzaszvari
+    - reetp
   labels:
     - "Contributions: welcome"
     - "Contributions: only core team"
