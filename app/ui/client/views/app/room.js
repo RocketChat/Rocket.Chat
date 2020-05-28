@@ -148,7 +148,9 @@ const mountPopover = (e, i, outerContext) => {
 		onRendered: () => new Clipboard('.rc-popover__item'),
 	};
 
-	popover.open(config);
+	if (!popover.renderedPopover) {
+		popover.open(config);
+	}
 };
 
 function roomHasGlobalPurge(room) {
