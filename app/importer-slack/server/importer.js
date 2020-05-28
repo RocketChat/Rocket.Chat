@@ -15,7 +15,7 @@ import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Users, Rooms, Messages } from '../../models';
 import { insertMessage, createDirectRoom } from '../../lib';
 import { getValidRoomName } from '../../utils';
-import { settings } from '../../settings/lib/settings';
+import { settings } from '../../settings/server';
 
 export class SlackImporter extends Base {
 	constructor(info, importRecord) {
