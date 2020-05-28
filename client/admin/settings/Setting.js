@@ -2,7 +2,6 @@ import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/
 import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../components/basic/MarkdownText';
-import RawText from '../../components/basic/RawText';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
@@ -117,7 +116,7 @@ export function Setting({ settingId, sectionChanged }) {
 
 	const label = (i18nLabel && t(i18nLabel)) || (_id || t(_id));
 	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText>{t(i18nDescription)}</MarkdownText>, [i18nDescription]);
-	const callout = useMemo(() => alert && <RawText>{t(alert)}</RawText>, [alert]);
+	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t(alert) }} />, [alert]);
 	const hasResetButton = !disableReset && !readonly && type !== 'asset' && (JSON.stringify(packageEditor) !== JSON.stringify(editor) || JSON.stringify(value) !== JSON.stringify(packageValue)) && !disabled;
 
 	return <MemoizedSetting

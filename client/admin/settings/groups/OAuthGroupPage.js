@@ -2,7 +2,6 @@ import { Button } from '@rocket.chat/fuselage';
 import React from 'react';
 import s from 'underscore.string';
 
-import RawText from '../../../components/basic/RawText';
 import { useAbsoluteUrl, useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -92,7 +91,7 @@ export function OAuthGroupPage({ _id, sections, ...group }) {
 				return <Section
 					key={sectionName}
 					groupId={_id}
-					help={<RawText>{t('Custom_oauth_helper', callbackURL(sectionName))}</RawText>}
+					help={<span dangerouslySetInnerHTML={{ __html: t('Custom_oauth_helper', callbackURL(sectionName)) }} />}
 					sectionName={sectionName}
 					solo={solo}
 				>
