@@ -5,6 +5,7 @@ export const ServerContext = createContext({
 	absoluteUrl: (path) => path,
 	callMethod: async () => {},
 	callEndpoint: async () => {},
+	upload: async () => {},
 });
 
 export const useServerInformation = () => useContext(ServerContext).info;
@@ -19,4 +20,9 @@ export const useMethod = (methodName) => {
 export const useEndpoint = (httpMethod, endpoint) => {
 	const { callEndpoint } = useContext(ServerContext);
 	return useCallback((...args) => callEndpoint(httpMethod, endpoint, ...args), [callEndpoint, httpMethod, endpoint]);
+};
+
+export const useUpload = (endpoint) => {
+	const { upload } = useContext(ServerContext);
+	return useCallback((...args) => upload(endpoint, ...args), [upload]);
 };

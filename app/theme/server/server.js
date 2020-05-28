@@ -26,7 +26,6 @@ export const theme = new class {
 	constructor() {
 		this.variables = {};
 		this.packageCallbacks = [];
-		this.files = ['server/colors.less'];
 		this.customCSS = '';
 		settings.add('css', '');
 		settings.addGroup('Layout');
@@ -59,9 +58,7 @@ export const theme = new class {
 	}
 
 	compile() {
-		let content = [this.getVariablesAsLess()];
-
-		content.push(...this.files.map((name) => Assets.getText(name)));
+		let content = [];
 
 		content.push(...this.packageCallbacks.map((name) => name()));
 
@@ -122,26 +119,11 @@ export const theme = new class {
 		}
 	}
 
-	addPublicColor(name, value, section, editor = 'color', property) {
-		return this.addVariable('color', name, value, section, true, editor, ['color', 'expression'], property);
-	}
-
-	addPublicFont(name, value) {
-		return this.addVariable('font', name, value, 'Fonts', true);
-	}
-
 	getVariablesAsObject() {
 		return Object.keys(this.variables).reduce((obj, name) => {
 			obj[name] = this.variables[name].value;
 			return obj;
 		}, {});
-	}
-
-	getVariablesAsLess() {
-		return Object.keys(this.variables).map((name) => {
-			const variable = this.variables[name];
-			return `@${ name }: ${ variable.value };`;
-		}).join('\n');
 	}
 
 	addPackageAsset(cb) {
