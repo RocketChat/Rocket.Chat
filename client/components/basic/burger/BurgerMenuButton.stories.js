@@ -2,20 +2,7 @@ import { action } from '@storybook/addon-actions';
 import React from 'react';
 
 import { centeredDecorator } from '../../../../.storybook/decorators';
-import { SidebarContext } from '../../../contexts/SidebarContext';
-import { SessionContext } from '../../../contexts/SessionContext';
 import BurgerMenuButton from './BurgerMenuButton';
-
-const stateDecorator = ({
-	isSidebarOpen = false,
-	unreadMessagesBadge = null,
-} = {}) =>
-	(storyFn) =>
-		<SessionContext.Provider value={{
-			get: (name) => name === 'unread' && unreadMessagesBadge,
-		}}>
-			<SidebarContext.Provider children={storyFn()} value={[isSidebarOpen, action('setSidebarOpen')]} />
-		</SessionContext.Provider>;
 
 export default {
 	title: 'components/basic/burger/BurgerMenuButton',
@@ -23,30 +10,13 @@ export default {
 	decorators: [
 		centeredDecorator,
 	],
-	parameters: {
-		viewport: {
-			defaultViewport: 'mobile1',
-		},
-	},
 };
 
-export const Basic = () => <BurgerMenuButton />;
-Basic.story = {
-	decorators: [
-		stateDecorator(),
-	],
-};
+export const Basic = () =>
+	<BurgerMenuButton onClick={action('click')} />;
 
-export const WhenSidebarIsOpen = () => <BurgerMenuButton />;
-WhenSidebarIsOpen.story = {
-	decorators: [
-		stateDecorator({ isSidebarOpen: true }),
-	],
-};
+export const Open = () =>
+	<BurgerMenuButton open onClick={action('click')} />;
 
-export const WithUnreadMessagesBadge = () => <BurgerMenuButton />;
-WithUnreadMessagesBadge.story = {
-	decorators: [
-		stateDecorator({ unreadMessagesBadge: '99' }),
-	],
-};
+export const WithBadge = () =>
+	<BurgerMenuButton badge='99' onClick={action('click')} />;
