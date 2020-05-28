@@ -1,0 +1,23 @@
+version: 1.0
+publish: rocketchat
+services:
+  mongo:
+    image: bitnami/mongodb:4.0
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_ROOT_PASSWORD: password
+      MONGODB_REPLICA_SET_KEY: replicasetkey123
+
+  rocketchat:
+    image: rocketchat/rocket.chat:latest
+    command: ["bash", "-c", "set -x; for i in {1..30}; do node main.js && s=$$? && break || s=$$?; echo \"Tried $$i times. Waiting 5 secs...\"; sleep 2; done; (exit $$s)"]
+    environment:
+      PORT: 3000
+      ROOT_URL: http://localhost:3000
+      MONGO_URL: mongodb://root:password@mongo:27017/rocketchat?replicaSet=rs0&authSource=admin
+      MONGO_OPLOG_URL: mongodb://root:password@mongo:27017/local?replicaSet=rs0&authSource=admin
+      MAIL_URL: smtp://smtp.email
+    ports:
+    - container: 3000
+      public: 80
