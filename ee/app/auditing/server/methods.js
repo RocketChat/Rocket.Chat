@@ -2,13 +2,31 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import AuditLog from './auditLog';
-import { Rooms, Messages } from '../../../../app/models';
-import { hasAllPermission } from '../../../../app/authorization';
+import { LivechatRooms, Rooms, Messages } from '../../../../app/models/server';
+import { hasAllPermission } from '../../../../app/authorization/server';
+
+const getValue = (room) => room && { rids: [room._id], name: room.name };
+
+const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
+	if (roomId) {
+		return getValue(Rooms.findOne({ _id: roomId }));
+	}
+
+	if (type === 'd') {
+		return getValue(Rooms.findDirectRoomContainingAllUsernames(users));
+	}
+
+	if (type === 'l') {
+		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, { fields: { _id: 1 } }).fetch();
+		return rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
+	}
+};
 
 Meteor.methods({
-	auditGetMessages({ rid, startDate, endDate, users, msg }) {
+	auditGetMessages({ rid: roomId, startDate, endDate, users, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
@@ -17,15 +35,15 @@ Meteor.methods({
 			throw new Meteor.Error('Not allowed');
 		}
 
-		const room = !rid ? Rooms.findDirectRoomContainingAllUsernames(users) : Rooms.findOne({ _id: rid });
-		if (!room) {
+		const roomInfo = getRoomInfoByAuditParams({ type, roomId, users, visitor, agent });
+		if (!roomInfo) {
 			throw new Meteor.Error('Room doesn`t exist');
 		}
 
-		rid = room._id;
+		const { rids, name } = roomInfo;
 
 		const query = {
-			rid,
+			rid: { $in: rids },
 			ts: {
 				$gt: startDate,
 				$lt: endDate,
@@ -40,7 +58,7 @@ Meteor.methods({
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
-		AuditLog.insert({ ts: new Date(), results: messages.length, u: user, fields: { msg, users, rid: room._id, room: room.name, startDate, endDate } });
+		AuditLog.insert({ ts: new Date(), results: messages.length, u: user, fields: { msg, users, rids, room: name, startDate, endDate, type, visitor, agent } });
 
 		return messages;
 	},

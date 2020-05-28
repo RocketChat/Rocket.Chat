@@ -1,8 +1,8 @@
 
 import { check } from 'meteor/check';
 
-import { API } from '../../../../api';
-import { findVisitorInfo, findVisitedPages, findChatHistory } from '../../../server/api/lib/visitors';
+import { API } from '../../../../api/server';
+import { findVisitorInfo, findVisitedPages, findChatHistory, findVisitorsToAutocomplete } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
 	get() {
@@ -60,5 +60,19 @@ API.v1.addRoute('livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId',
 		}));
 
 		return API.v1.success(history);
+	},
+});
+
+API.v1.addRoute('livechat/visitors.autocomplete', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findVisitorsToAutocomplete({
+			userId: this.userId,
+			selector: JSON.parse(selector),
+		})));
 	},
 });

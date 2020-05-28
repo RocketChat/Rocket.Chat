@@ -831,6 +831,7 @@
   "Created_at_s_by_s_triggered_by_s": "Creato alle <strong>%s</strong> da <strong>%s</strong> scatenato da <strong>%s</strong>",
   "CRM_Integration": "Integrazione CRM",
   "CROWD_Reject_Unauthorized": "Rifiuta non autorizzati",
+  "Crowd_Remove_Orphaned_Users": "Rimuovi utenti orfani",
   "Crowd_sync_interval_Description": "L'intervallo tra le sincronizzazioni. Esempio \"ogni 24 ore\" o \"il primo giorno della settimana\", altri esempi su [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
   "Current_Chats": "Chat attuali",
   "Current_Status": "Stato attuale",

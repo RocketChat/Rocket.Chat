@@ -21,6 +21,16 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		return;
 	}
 
+	try {
+		Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter));
+	} catch (error) {
+		if (error instanceof AppsEngineException) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
+
 	if (room.t === 'c' || room.t === 'p') {
 		// Add a new event, with an optional inviter
 		callbacks.run('beforeAddedToRoom', { user, inviter }, room);
