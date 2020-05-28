@@ -18,7 +18,7 @@ const registerListeners = (listeners) => {
 /* TODO
  *	If order is reversed and search is performed, the result will return in the wrong order, then refresh correctly
  */
-export function useMarketplaceApps({ debouncedText, debouncedSort, current, itemsPerPage }) {
+export function useMarketplaceApps({ text, sort, current, itemsPerPage }) {
 	const [data, setData] = useState({});
 	const ref = useRef();
 	ref.current = data;
@@ -109,9 +109,9 @@ export function useMarketplaceApps({ debouncedText, debouncedSort, current, item
 
 	const filteredValues = useMemo(() => {
 		if (data.length) {
-			let filtered = debouncedSort[1] === 'asc' ? data : data.reverse();
+			let filtered = sort[1] === 'asc' ? data : data.reverse();
 
-			filtered = debouncedText ? filtered.filter((app) => app.name.toLowerCase().indexOf(debouncedText.toLowerCase()) > -1) : filtered;
+			filtered = text ? filtered.filter((app) => app.name.toLowerCase().indexOf(text.toLowerCase()) > -1) : filtered;
 
 			const filteredLength = filtered.length;
 
@@ -122,7 +122,7 @@ export function useMarketplaceApps({ debouncedText, debouncedSort, current, item
 			return [filtered, filteredLength];
 		}
 		return [null, 0];
-	}, [debouncedText, debouncedSort[1], stringifiedData, current, itemsPerPage]);
+	}, [text, sort[1], stringifiedData, current, itemsPerPage]);
 
 	return [...filteredValues];
 }

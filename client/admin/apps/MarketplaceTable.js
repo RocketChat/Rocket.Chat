@@ -40,7 +40,7 @@ export function MarketplaceTable({ setModal }) {
 	const debouncedText = useDebouncedValue(params.text, 500);
 	const debouncedSort = useDebouncedValue(sort, 200);
 
-	const [data, total] = useMarketplaceApps({ debouncedSort, debouncedText, ...params });
+	const [data, total] = useMarketplaceApps({ sort: debouncedSort, text: debouncedText, ...params });
 
 	const getLoggedInCloud = useMethod('cloud:checkUserLoggedIn');
 	const isLoggedIn = getLoggedInCloud();
