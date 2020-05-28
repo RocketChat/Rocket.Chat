@@ -1,93 +1,11 @@
 
-# 3.3.0 (Under Release Candidate Process)
+# 3.3.0
+`2020-05-27  ·  20 🎉  ·  8 🚀  ·  41 🐛  ·  45 🔍  ·  37 👩‍💻👨‍💻`
 
-## 3.3.0-rc.4
-`2020-05-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix Unread bar design ([#17750](https://github.com/RocketChat/Rocket.Chat/pull/17750))
-
-- Regression: Adjusting spaces between OAuth login buttons ([#17745](https://github.com/RocketChat/Rocket.Chat/pull/17745))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@dudizilla](https://github.com/dudizilla)
-- [@ggazzo](https://github.com/ggazzo)
-
-## 3.3.0-rc.3
-`2020-05-25  ·  1 🎉  ·  3 🔍  ·  3 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-
-- **APPS-ENGINE:** Essentials mechanism ([#17656](https://github.com/RocketChat/Rocket.Chat/pull/17656))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Scroll on admin user info ([#17711](https://github.com/RocketChat/Rocket.Chat/pull/17711))
-
-- Regression: Removed status border on mentions list ([#17741](https://github.com/RocketChat/Rocket.Chat/pull/17741) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
-
-- Regression: Force unread-rooms bar to appears over the room list ([#17728](https://github.com/RocketChat/Rocket.Chat/pull/17728) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
-
-## 3.3.0-rc.2
-`2020-05-22  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- SAML IDP initiated logout error ([#17482](https://github.com/RocketChat/Rocket.Chat/pull/17482))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix error preventing creation of group DMs ([#17726](https://github.com/RocketChat/Rocket.Chat/pull/17726))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-
-## 3.3.0-rc.1
-`2020-05-21  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Threads list was fetching all threads ([#17716](https://github.com/RocketChat/Rocket.Chat/pull/17716))
-
-- Regression: Add missing return to afterSaveMessage callbacks ([#17715](https://github.com/RocketChat/Rocket.Chat/pull/17715))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.3.0-rc.0
-`2020-05-21  ·  19 🎉  ·  8 🚀  ·  40 🐛  ·  36 🔍  ·  35 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
 
 ### 🎉 New features
 
@@ -108,6 +26,8 @@
 - **Apps-Engine:** New Room events ([#17487](https://github.com/RocketChat/Rocket.Chat/pull/17487))
 
 - **Apps-Engine:** New Livechat event handlers ([#17033](https://github.com/RocketChat/Rocket.Chat/pull/17033))
+
+- **APPS-ENGINE:** Essentials mechanism ([#17656](https://github.com/RocketChat/Rocket.Chat/pull/17656))
 
 - API endpoint to fetch Omnichannel's room transfer history ([#17694](https://github.com/RocketChat/Rocket.Chat/pull/17694))
 
@@ -160,6 +80,8 @@
 
 ### 🐛 Bug fixes
 
+
+- Slack importer Link handling ([#17595](https://github.com/RocketChat/Rocket.Chat/pull/17595) by [@lpilz](https://github.com/lpilz))
 
 - Missing dropdown to select custom status color on user's profile ([#16537](https://github.com/RocketChat/Rocket.Chat/pull/16537) by [@ritwizsinha](https://github.com/ritwizsinha))
 
@@ -242,15 +164,17 @@
 
 - Replace obsolete X-FRAME-OPTIONS header on Livechat route ([#17419](https://github.com/RocketChat/Rocket.Chat/pull/17419))
 
-- LDAP login error on Enterprise version ([#17497](https://github.com/RocketChat/Rocket.Chat/pull/17497))
-
 - Change email verification label ([#17450](https://github.com/RocketChat/Rocket.Chat/pull/17450))
 
 - Omnichannel room priorities system messages were create on every saved room info ([#17479](https://github.com/RocketChat/Rocket.Chat/pull/17479))
 
+- SAML IDP initiated logout error ([#17482](https://github.com/RocketChat/Rocket.Chat/pull/17482))
+
 <details>
 <summary>🔍 Minor changes</summary>
 
+
+- Release 3.2.2 ([#17600](https://github.com/RocketChat/Rocket.Chat/pull/17600))
 
 - Upgrade Livechat Widget version to 1.5.0 ([#17710](https://github.com/RocketChat/Rocket.Chat/pull/17710))
 
@@ -324,6 +248,22 @@
 
 - Merge master into develop & Set version to 3.3.0-develop ([#17468](https://github.com/RocketChat/Rocket.Chat/pull/17468))
 
+- Regression: Threads list was fetching all threads ([#17716](https://github.com/RocketChat/Rocket.Chat/pull/17716))
+
+- Regression: Add missing return to afterSaveMessage callbacks ([#17715](https://github.com/RocketChat/Rocket.Chat/pull/17715))
+
+- Regression: Fix error preventing creation of group DMs ([#17726](https://github.com/RocketChat/Rocket.Chat/pull/17726))
+
+- Regression: Scroll on admin user info ([#17711](https://github.com/RocketChat/Rocket.Chat/pull/17711))
+
+- Regression: Removed status border on mentions list ([#17741](https://github.com/RocketChat/Rocket.Chat/pull/17741) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
+
+- Regression: Force unread-rooms bar to appears over the room list ([#17728](https://github.com/RocketChat/Rocket.Chat/pull/17728) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
+
+- Regression: Fix Unread bar design ([#17750](https://github.com/RocketChat/Rocket.Chat/pull/17750))
+
+- Regression: Adjusting spaces between OAuth login buttons ([#17745](https://github.com/RocketChat/Rocket.Chat/pull/17745))
+
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
@@ -336,6 +276,7 @@
 - [@huzaifahj](https://github.com/huzaifahj)
 - [@juzser](https://github.com/juzser)
 - [@kolorafa](https://github.com/kolorafa)
+- [@lpilz](https://github.com/lpilz)
 - [@machester4](https://github.com/machester4)
 - [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@ocanema](https://github.com/ocanema)
@@ -354,6 +295,7 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
+- [@dudizilla](https://github.com/dudizilla)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
