@@ -9,3 +9,4 @@ import './stylesheets/livechat.css';
 import './views/sideNav/livechat';
 import './views/sideNav/livechatFlex';
 import './externalFrame';
+import './lib/messageTypes';

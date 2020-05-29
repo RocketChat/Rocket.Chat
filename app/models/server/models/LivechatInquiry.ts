@@ -47,6 +47,7 @@ export class LivechatInquiry extends Base implements ILivechatInquiryRepository 
 			_id: inquiryId,
 		}, {
 			$set: { status: 'taken' },
+			$unset: { defaultAgent: 1 },
 		});
 	}
 
@@ -64,11 +65,14 @@ export class LivechatInquiry extends Base implements ILivechatInquiryRepository 
 	/*
 	* mark inquiry as queued
 	*/
-	queueInquiry(inquiryId) {
+	queueInquiry(inquiryId, defaultAgent) {
 		return this.update({
 			_id: inquiryId,
 		}, {
-			$set: { status: 'queued' },
+			$set: {
+				status: 'queued',
+				...defaultAgent && { defaultAgent },
+			},
 		});
 	}
 
@@ -180,6 +184,14 @@ export class LivechatInquiry extends Base implements ILivechatInquiryRepository 
 		}
 
 		return collectionObj.aggregate(aggregate).toArray();
+	}
+
+	removeDefaultAgentById(inquiryId) {
+		return this.update({
+			_id: inquiryId,
+		}, {
+			$unset: { defaultAgent: 1 },
+		});
 	}
 
 	/*
