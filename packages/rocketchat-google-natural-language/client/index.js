@@ -1,10 +1,10 @@
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { ChatRoom } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
+import { ChatRoom } from 'meteor/rocketchat:models';
 
 Template.room.helpers({
 	sentimentSmile() {
-		if (!RocketChat.settings.get('GoogleNaturalLanguage_Enabled')) {
+		if (!settings.get('GoogleNaturalLanguage_Enabled')) {
 			return;
 		}
 
@@ -12,9 +12,9 @@ Template.room.helpers({
 
 		if (room.sentiment >= 0.3) {
 			return ':)';
-		} else if (room.sentiment >= -0.3) {
+		} if (room.sentiment >= -0.3) {
 			return ':|';
-		} else if (room.sentiment < -0.3) {
+		} if (room.sentiment < -0.3) {
 			return ':(';
 		}
 	},

@@ -1,6 +1,9 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Permissions } from '../../../app/models';
+
+Migrations.add({
 	version: 28,
 	up() {
-		return RocketChat.models.Permissions.addRole('view-c-room', 'bot');
+		return Permissions.addRole('view-c-room', 'bot');
 	},
 });

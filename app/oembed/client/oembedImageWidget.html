@@ -1,0 +1,19 @@
+<template name="oembedImageWidget">
+	{{#if parsedUrl}}
+		{{> collapseArrow collapsedMedia=collapsedMediaVar}} <br>
+		{{#unless collapsed}}
+			{{#if loadImage}}
+				<figure>
+					<div class="inline-image" style="background-image: url('{{url}}');">
+						<img src="{{url}}" rel="noopener noreferrer" height="200" class="gallery-item">
+					</div>
+				</figure>
+			{{else}}
+				<div class="image-to-download" data-url="{{url}}">
+					<i class="icon-picture"></i>
+					<div>click to load</div>
+				</div>
+			{{/if}}
+		{{/unless}}
+	{{/if}}
+</template>

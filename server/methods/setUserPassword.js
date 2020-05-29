@@ -2,6 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
+import { Users } from '../../app/models/server';
+import { passwordPolicy } from '../../app/lib/server';
+import { compareUserPassword } from '../lib/compareUserPassword';
+
 Meteor.methods({
 	setUserPassword(password) {
 		check(password, String);
@@ -14,7 +18,7 @@ Meteor.methods({
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
 		if (user && user.requirePasswordChange !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -22,12 +26,18 @@ Meteor.methods({
 			});
 		}
 
-		RocketChat.passwordPolicy.validate(password);
+		if (compareUserPassword(user, { plain: password })) {
+			throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
+				method: 'setUserPassword',
+			});
+		}
+
+		passwordPolicy.validate(password);
 
 		Accounts.setPassword(userId, password, {
 			logout: false,
 		});
 
-		return RocketChat.models.Users.unsetRequirePasswordChange(userId);
+		return Users.unsetRequirePasswordChange(userId);
 	},
 });

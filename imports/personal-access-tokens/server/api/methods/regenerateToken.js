@@ -1,15 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermission } from '../../../../../app/authorization';
+import { Users } from '../../../../../app/models';
+import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
+
 Meteor.methods({
-	'personalAccessTokens:regenerateToken'({ tokenName }) {
+	'personalAccessTokens:regenerateToken': twoFactorRequired(function({ tokenName }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:regenerateToken' });
 		}
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-personal-access-tokens')) {
+		if (!hasPermission(Meteor.userId(), 'create-personal-access-tokens')) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:regenerateToken' });
 		}
 
-		const tokenExist = RocketChat.models.Users.findPersonalAccessTokenByTokenNameAndUserId({
+		const tokenExist = Users.findPersonalAccessTokenByTokenNameAndUserId({
 			userId: Meteor.userId(),
 			tokenName,
 		});
@@ -18,6 +22,6 @@ Meteor.methods({
 		}
 
 		Meteor.call('personalAccessTokens:removeToken', { tokenName });
-		return Meteor.call('personalAccessTokens:generateToken', { tokenName });
-	},
+		return Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor: tokenExist.bypassTwoFactor });
+	}),
 });
