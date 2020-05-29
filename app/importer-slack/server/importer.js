@@ -243,7 +243,7 @@ export class SlackImporter extends Base {
 		});
 	}
 
-	parseMentions (message) {
+	parseMentions(message) {
 		const mentionsParser = new MentionsParser({
 			pattern: () => settings.get('UTF8_Names_Validation'),
 			useRealName: () => settings.get('UI_Use_Real_Name'),
@@ -253,11 +253,11 @@ export class SlackImporter extends Base {
 		if (!message.mentions) {
 			message.mentions = [];
 		}
-		let users = mentionsParser.getUserMentions(message.msg);
+		const users = mentionsParser.getUserMentions(message.msg);
 		users.forEach((user_id, index, arr) => {
 			const user = user_id.slice(1, user_id.length);
 			try {
-				if (user === 'all' || user === 'here'){
+				if (user === 'all' || user === 'here') {
 					arr[index] = user;
 				} else {
 					arr[index] = Users.findOneByUsernameIgnoringCase(user);
@@ -271,7 +271,7 @@ export class SlackImporter extends Base {
 		if (!message.channels) {
 			message.channels = [];
 		}
-		let channels = mentionsParser.getChannelMentions(message.msg);
+		const channels = mentionsParser.getChannelMentions(message.msg);
 		channels.forEach((channel_name, index, arr) => {
 			const chan = channel_name.slice(1, channel_name.length);
 			try {

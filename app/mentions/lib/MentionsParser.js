@@ -79,11 +79,11 @@ export class MentionsParser {
 	replaceChannels = (msg, { temp, channels }) => msg
 		.replace(/&#39;/g, '\'')
 		.replace(this.channelMentionRegex, (match, prefix, mention) => {
-			if (!temp && !(channels && channels.find((c) => c.dname ? c.dname === mention : c.name === mention))) {
+			if (!temp && !(channels && channels.find((c) => { return c.dname ? c.dname === mention : c.name === mention; }))) {
 				return match;
 			}
 
-			const channel = channels && channels.find(({ name, dname }) => dname? dname === mention : name === mention);
+			const channel = channels && channels.find(({ name, dname }) => { return dname ? dname === mention : name === mention; });
 			const reference = channel ? channel._id : mention;
 			return `${ prefix }<a class="mention-link mention-link--room" data-channel="${ reference }">${ `#${ mention }` }</a>`;
 		})
