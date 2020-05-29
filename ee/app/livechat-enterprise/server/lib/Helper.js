@@ -3,7 +3,14 @@ import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
 import { hasRole } from '../../../../../app/authorization';
-import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms } from '../../../../../app/models/server';
+import {
+	LivechatDepartment,
+	Users,
+	LivechatInquiry,
+	LivechatRooms,
+	Messages,
+	LivechatCustomField,
+} from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
@@ -100,7 +107,8 @@ const processWaitingQueue = async (department) => {
 		return;
 	}
 
-	const room = await RoutingManager.delegateInquiry(inquiry);
+	const { defaultAgent } = inquiry;
+	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
 	const propagateAgentDelegated = Meteor.bindEnvironment((rid, agentId) => {
 		dispatchAgentDelegated(rid, agentId);
@@ -118,7 +126,7 @@ const processWaitingQueue = async (department) => {
 	await dispatchWaitingQueueStatus(departmentId);
 };
 
-export const checkWaitingQueue = (department) => {
+export const checkWaitingQueue = async (department) => {
 	if (!settings.get('Livechat_waiting_queue')) {
 		return;
 	}
@@ -128,7 +136,7 @@ export const checkWaitingQueue = (department) => {
 		return processWaitingQueue();
 	}
 
-	departments.forEach((department) => processWaitingQueue(department));
+	return Promise.all(departments.map(async (department) => processWaitingQueue(department)));
 };
 
 export const allowAgentSkipQueue = (agent) => {
@@ -165,4 +173,88 @@ export const updatePredictedVisitorAbandonment = () => {
 	} else {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
 	}
+};
+
+export const updateRoomPriorityHistory = (rid, user, priority) => {
+	const history = {
+		priorityData: {
+			definedBy: user,
+			priority: priority || {},
+		},
+	};
+
+	Messages.createPriorityHistoryWithRoomIdMessageAndUser(rid, '', user, history);
+};
+
+export const updateInquiryQueuePriority = (roomId, priority) => {
+	const inquiry = LivechatInquiry.findOneByRoomId(roomId, { fields: { rid: 1, ts: 1 } });
+	if (!inquiry) {
+		return;
+	}
+
+	let { ts: estimatedServiceTimeAt } = inquiry;
+	let queueOrder = 1;
+	let estimatedWaitingTimeQueue = 0;
+
+	if (priority) {
+		const { dueTimeInMinutes } = priority;
+		queueOrder = 0;
+		estimatedWaitingTimeQueue = dueTimeInMinutes;
+		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
+	}
+
+	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, { queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
+};
+
+export const removePriorityFromRooms = (priorityId) => {
+	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
+		updateInquiryQueuePriority(room._id);
+	});
+
+	LivechatRooms.unsetPriorityById(priorityId);
+};
+
+export const updatePriorityInquiries = (priority) => {
+	if (!priority) {
+		return;
+	}
+
+	const { _id: priorityId } = priority;
+	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
+		updateInquiryQueuePriority(room._id, priority);
+	});
+};
+
+export const getLivechatCustomFields = () => {
+	const customFields = LivechatCustomField.find({ visibility: 'visible', scope: 'visitor', public: true }).fetch();
+	return customFields.map(({ _id, label, regexp, required = false, type, defaultValue = null, options }) => ({ _id, label, regexp, required, type, defaultValue, ...options && options !== '' && { options: options.split(',') } }));
+};
+
+export const getLivechatQueueInfo = async (room) => {
+	if (!room) {
+		return null;
+	}
+
+	if (!settings.get('Livechat_waiting_queue')) {
+		return null;
+	}
+
+	const { _id: rid } = room;
+	const inquiry = LivechatInquiry.findOneByRoomId(rid, { fields: { _id: 1, status: 1 } });
+	if (!inquiry) {
+		return null;
+	}
+
+	const { _id, status } = inquiry;
+	if (status !== 'queued') {
+		return null;
+	}
+
+	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id });
+
+	if (!inq) {
+		return null;
+	}
+
+	return normalizeQueueInfo(inq);
 };

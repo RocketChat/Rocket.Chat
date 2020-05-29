@@ -4,6 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { baseURI } from './baseuri';
 import { process2faReturn } from '../../../2fa/client/callWithTwoFactorRequired';
 
+export const mountArrayQueryParameters = (label, array) => array.reduce((acc, item) => {
+	acc += `${ label }[]=${ item }&`;
+	return acc;
+}, '');
+
 export const APIClient = {
 	delete(endpoint, params) {
 		return APIClient._jqueryCall('DELETE', endpoint, params);
@@ -44,7 +49,12 @@ export const APIClient = {
 			Object.keys(params).forEach((key) => {
 				query += query === '' ? '?' : '&';
 
-				query += `${ key }=${ params[key] }`;
+				if (Array.isArray(params[key])) {
+					const joinedArray = params[key].join(`&${ key }[]=`);
+					query += `${ key }[]=${ joinedArray }`;
+				} else {
+					query += `${ key }=${ params[key] }`;
+				}
 			});
 		}
 

@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { hasRole } from '../../../authorization';
-import { registerAdminRoute, registerAdminSidebarItem } from '../../../ui-admin/client';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../../../client/admin';
 
 import './dashboard.html';
 import './dashboard.css';
@@ -77,7 +77,7 @@ registerAdminRoute('/federation-dashboard', {
 
 registerAdminSidebarItem({
 	icon: 'discover',
-	href: 'admin/federation-dashboard',
+	href: 'federation-dashboard',
 	i18nLabel: 'Federation Dashboard',
 	permissionGranted() {
 		return hasRole(Meteor.userId(), 'admin');
