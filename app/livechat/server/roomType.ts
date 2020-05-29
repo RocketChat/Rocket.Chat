@@ -39,50 +39,35 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 		LivechatInquiry);
 	}
 
-	getMsgSender(senderId:
-	string,
-	):
-		string {
+	getMsgSender(senderId: string): string {
 		return LivechatVisitors.findOneById(senderId);
 	}
 
 	/**
-     * Returns details to use on notifications
-     *
-     * @param {object} room
-     * @param {object} user
-     * @param {string} notificationMessage
-     * @return {object} Notification details
-     */
-	getNotificationDetails(room:
-	any, user:
-	IUser, notificationMessage:
-	string,
-	):
-		any {
+	 * Returns details to use on notifications
+	 *
+	 * @param {object} room
+	 * @param {object} user
+	 * @param {string} notificationMessage
+	 * @return {object} Notification details
+	 */
+	getNotificationDetails(room: any, user: IUser, notificationMessage: string): any {
 		const title = `[Omnichannel] ${ this.roomName(room) }`;
 		const text = notificationMessage;
 
 		return { title, text };
 	}
 
-	canAccessUploadedFile({ rc_token, rc_rid }:
-	any = {},
-	):
-		boolean {
+	canAccessUploadedFile({ rc_token, rc_rid }: any = {}): boolean {
 		return rc_token && rc_rid && Boolean(LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rc_rid, rc_token));
 	}
 
-	getReadReceiptsExtraData(message:
-	any,
-	):
-		any {
+	getReadReceiptsExtraData(message: any): any {
 		const { token } = message;
 		return { token };
 	}
 
-	isEmitAllowed():
-	boolean {
+	isEmitAllowed(): boolean {
 		return true;
 	}
 }
