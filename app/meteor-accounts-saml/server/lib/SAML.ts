@@ -91,39 +91,61 @@ export class SAML {
 				throw new Meteor.Error('Unable to process Logout Request: missing request data.');
 			}
 
-			const logOutUser = (samlInfo: Record<string, string | null>): void => {
-				const cursor = Users.findBySAMLNameIdOrIdpSession(samlInfo.nameID, samlInfo.idpSession);
-				const count = cursor.count();
-				if (count > 1) {
-					throw new Meteor.Error('Found multiple users matching SAML session');
+			let timeoutHandler: NodeJS.Timer | null = null;
+			const redirect = (url?: string | undefined): void => {
+				if (!timeoutHandler) {
+					// If the handler is null, then we already ended the response;
+					return;
 				}
 
-				if (count === 0) {
-					throw new Meteor.Error('Invalid logout request: no user associaited with session.');
-				}
-
-				const loggedOutUser = cursor.fetch();
-				this._logoutRemoveTokens(loggedOutUser[0]._id);
-			};
-
-			fiber(() => logOutUser(result)).run();
-
-			const { response } = serviceProvider.generateLogoutResponse({
-				nameID: result.nameID || '',
-				sessionIndex: result.idpSession || '',
-			});
-
-			serviceProvider.logoutResponseToUrl(response, (err, url) => {
-				if (err) {
-					console.error(err);
-					throw new Meteor.Error('Unable to generate SAML logout Response Url');
-				}
+				clearTimeout(timeoutHandler);
+				timeoutHandler = null;
 
 				res.writeHead(302, {
-					Location: url,
+					Location: url || Meteor.absoluteUrl(),
 				});
 				res.end();
-			});
+			};
+
+			// Add a timeout to end the server response
+			timeoutHandler = setTimeout(() => {
+				// If we couldn't get a valid IdP url, let's redirect the user to our home so the browser doesn't hang on him.
+				redirect();
+			}, 5000);
+
+			fiber(() => {
+				try {
+					const cursor = Users.findBySAMLNameIdOrIdpSession(result.nameID, result.idpSession);
+					const count = cursor.count();
+					if (count > 1) {
+						throw new Meteor.Error('Found multiple users matching SAML session');
+					}
+
+					if (count === 0) {
+						throw new Meteor.Error('Invalid logout request: no user associated with session.');
+					}
+
+					const loggedOutUser = cursor.fetch();
+					this._logoutRemoveTokens(loggedOutUser[0]._id);
+
+					const { response } = serviceProvider.generateLogoutResponse({
+						nameID: result.nameID || '',
+						sessionIndex: result.idpSession || '',
+					});
+
+					serviceProvider.logoutResponseToUrl(response, (err, url) => {
+						if (err) {
+							console.error(err);
+							return redirect();
+						}
+
+						redirect(url);
+					});
+				} catch (e) {
+					console.error(e);
+					redirect();
+				}
+			}).run();
 		});
 	}
 
@@ -155,19 +177,21 @@ export class SAML {
 				}
 
 				if (count === 0) {
-					throw new Meteor.Error('Invalid logout request: no user associaited with inResponseTo.');
+					throw new Meteor.Error('Invalid logout request: no user associated with inResponseTo.');
 				}
 
 				const loggedOutUser = cursor.fetch();
 				this._logoutRemoveTokens(loggedOutUser[0]._id);
 			};
 
-			fiber(() => logOutUser(inResponseTo)).run();
-
-			res.writeHead(302, {
-				Location: req.query.RelayState,
-			});
-			res.end();
+			try {
+				fiber(() => logOutUser(inResponseTo)).run();
+			} finally {
+				res.writeHead(302, {
+					Location: req.query.RelayState,
+				});
+				res.end();
+			}
 		});
 	}
 
