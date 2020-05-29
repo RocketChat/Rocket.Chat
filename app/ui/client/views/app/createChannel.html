@@ -6,10 +6,7 @@
 			</div>
 		{{/each}}
 		<div class="create-channel__wrapper">
-			<header class="create-channel__header">
-				<h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
-				<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
-			</header>
+			<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
 			<form id="create-channel" name="create-channel" class="create-channel__content">
 				<div class="create-channel__switches">
 					<div class="rc-switch">
@@ -99,17 +96,12 @@
 									{{#each user in selectedUsers}}
 										{{> tag user}}
 									{{/each}}
-									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}"
-										   name="users" autocomplete="off"/>
+									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
 								</div>
 							</div>
 							{{#with config}}
 								{{#if autocomplete 'isShowing'}}
-									<div class="fadeInDown">
-
-										{{> popupList data=config items=items}}
-
-									</div>
+									{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
 								{{/if}}
 							{{/with}}
 						</label>

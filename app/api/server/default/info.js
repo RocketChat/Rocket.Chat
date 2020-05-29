@@ -1,5 +1,5 @@
-import { hasRole } from '/app/authorization';
-import { Info } from '/app/utils';
+import { hasRole } from '../../../authorization';
+import { Info } from '../../../utils';
 import { API } from '../api';
 
 API.default.addRoute('info', { authRequired: false }, {

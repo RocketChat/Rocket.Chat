@@ -1,6 +1,7 @@
 import mock from 'mock-require';
 import _ from 'underscore';
 import s from 'underscore.string';
+
 _.mixin(s.exports());
 
 mock('meteor/meteor', {
@@ -15,10 +16,12 @@ mock('meteor/blaze', {
 	Blaze: {},
 });
 
-mock('/app/settings', {
+mock('../../settings', {
 	settings: {
 		get(setting) {
 			switch (setting) {
+				case 'DeepLink_Url':
+					return 'https://go.rocket.chat';
 				case 'Markdown_SupportSchemesForLink':
 					return 'http,https';
 				case 'Markdown_Parser':
@@ -38,7 +41,7 @@ mock('/app/settings', {
 	},
 });
 
-mock('/app/callbacks', {
+mock('../../callbacks', {
 	callbacks: {
 		add() {
 

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { EmojiCustom } from '/app/models';
+
+import { EmojiCustom } from '../../../models';
 
 Meteor.methods({
 	listEmojiCustom(options = {}) {

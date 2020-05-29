@@ -3,14 +3,17 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { ChatSubscription } from '/app/models';
-import { KonchatNotification } from '/app/ui';
-import { settings } from '/app/settings';
-import { hasRole } from '/app/authorization';
-import { modal } from '/app/ui-utils';
-import { Users } from '/app/models';
-import { t, handleError, getUserPreference, roomTypes } from '/app/utils';
-import { LivechatInquiry } from '../../../lib/LivechatInquiry';
+
+import { ChatSubscription, Users } from '../../../../models';
+import { KonchatNotification } from '../../../../ui';
+import { settings } from '../../../../settings';
+import { hasPermission } from '../../../../authorization';
+import { t, handleError, getUserPreference } from '../../../../utils';
+import { LivechatInquiry } from '../../collections/LivechatInquiry';
+import { Notifications } from '../../../../notifications/client';
+import { initializeLivechatInquiryStream } from '../../lib/stream/queueManager';
+
+import './livechat.html';
 
 Template.livechat.helpers({
 	isActive() {
@@ -34,29 +37,28 @@ Template.livechat.helpers({
 			open: true,
 		};
 
-		const user = Users.findOne(Meteor.userId(), {
-			fields: { 'settings.preferences.sidebarShowUnread': 1 },
-		});
+		const user = Meteor.userId();
 
 		if (getUserPreference(user, 'sidebarShowUnread')) {
 			query.alert = { $ne: true };
 		}
 
-		return ChatSubscription.find(query, { sort: {
-			t: 1,
-			fname: 1,
-		} });
+		const sortBy = getUserPreference(user, 'sidebarSortby');
+		const sort = sortBy === 'activity' ? { _updatedAt: - 1 } : { fname: 1 };
+
+		return ChatSubscription.find(query, { sort });
 	},
 
 	inquiries() {
-		// get all inquiries of the department
 		const inqs = LivechatInquiry.find({
-			agents: Meteor.userId(),
-			status: 'open',
+			status: 'queued',
 		}, {
 			sort: {
-				ts : 1,
+				queueOrder: 1,
+				estimatedWaitingTimeQueue: 1,
+				estimatedServiceTimeAt: 1,
 			},
+			limit: Template.instance().inquiriesLimit.get(),
 		});
 
 		// for notification sound
@@ -67,8 +69,9 @@ Template.livechat.helpers({
 		return inqs;
 	},
 
-	guestPool() {
-		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	showIncomingQueue() {
+		const config = Template.instance().routingConfig.get();
+		return config.showQueue;
 	},
 
 	available() {
@@ -86,10 +89,11 @@ Template.livechat.helpers({
 	},
 
 	showQueueLink() {
-		if (settings.get('Livechat_Routing_Method') !== 'Least_Amount') {
+		const config = Template.instance().routingConfig.get();
+		if (!config.showQueueLink) {
 			return false;
 		}
-		return hasRole(Meteor.userId(), 'livechat-manager') || (Template.instance().statusLivechat.get() === 'available' && settings.get('Livechat_show_queue_list_link'));
+		return hasPermission(Meteor.userId(), 'view-livechat-queue') || (Template.instance().statusLivechat.get() === 'available' && settings.get('Livechat_show_queue_list_link'));
 	},
 
 	activeLivechatQueue() {
@@ -108,32 +112,18 @@ Template.livechat.events({
 			}
 		});
 	},
-
-	'click .inquiries .sidebar-item'(event) {
-		event.preventDefault();
-		event.stopPropagation();
-
-		modal.open({
-			title: t('Livechat_Take_Confirm'),
-			text: `${ t('Message') }: ${ this.message }`,
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: t('Take_it'),
-		}, (isConfirm) => {
-			if (isConfirm) {
-				Meteor.call('livechat:takeInquiry', this._id, (error, result) => {
-					if (!error) {
-						roomTypes.openRouteLink(result.t, result);
-					}
-				});
-			}
-		});
-	},
 });
 
 Template.livechat.onCreated(function() {
 	this.statusLivechat = new ReactiveVar();
+	this.routingConfig = new ReactiveVar({});
+	this.inquiriesLimit = new ReactiveVar();
+
+	Meteor.call('livechat:getRoutingConfig', (err, config) => {
+		if (config) {
+			this.routingConfig.set(config);
+		}
+	});
 
 	this.autorun(() => {
 		if (Meteor.userId()) {
@@ -144,5 +134,9 @@ Template.livechat.onCreated(function() {
 		}
 	});
 
-	this.subscribe('livechat:inquiry');
+	initializeLivechatInquiryStream(Meteor.userId());
+	this.updateAgentDepartments = () => initializeLivechatInquiryStream(Meteor.userId());
+	this.autorun(() => this.inquiriesLimit.set(settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed')));
+
+	Notifications.onUser('departmentAgentData', (payload) => this.updateAgentDepartments(payload));
 });

@@ -1,5 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
-import { Users } from '/app/models';
+
+import { Users } from '../../../models';
 import { API } from '../api';
 
 API.helperMethods.set('getLoggedInUser', function _getLoggedInUser() {

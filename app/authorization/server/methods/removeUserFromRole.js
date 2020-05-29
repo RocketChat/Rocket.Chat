@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles } from '/app/models';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
-import { hasPermission } from '../functions/hasPermission';
 import _ from 'underscore';
+
+import { Roles } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Notifications } from '../../../notifications/server';
+import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({
 	'authorization:removeUserFromRole'(roleName, username, scope) {

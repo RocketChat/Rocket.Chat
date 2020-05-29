@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 
 settings.addGroup('Webdav Integration', function() {
 	this.add('Webdav_Integration_Enabled', false, {

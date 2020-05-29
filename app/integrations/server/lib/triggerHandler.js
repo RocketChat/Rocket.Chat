@@ -1,17 +1,19 @@
+import vm from 'vm';
+
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
-import * as Models from '/app/models';
-import { settings } from '/app/settings';
-import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '/app/lib';
-import { logger } from '../logger';
-import { integrations } from '../../lib/rocketchat';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
-import vm from 'vm';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
+
+import * as Models from '../../../models';
+import { settings } from '../../../settings';
+import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib';
+import { logger } from '../logger';
+import { integrations } from '../../lib/rocketchat';
 
 integrations.triggerHandler = new class RocketChatIntegrationHandler {
 	constructor() {
@@ -155,10 +157,9 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		if (historyId) {
 			Models.IntegrationHistory.update({ _id: historyId }, { $set: history });
 			return historyId;
-		} else {
-			history._createdAt = new Date();
-			return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
 		}
+		history._createdAt = new Date();
+		return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
 	}
 
 	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
@@ -166,13 +167,13 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		let user;
 		// Try to find the user who we are impersonating
 		if (trigger.impersonateUser) {
-			user = Models.Users.findOneByUsername(data.user_name);
+			user = Models.Users.findOneByUsernameIgnoringCase(data.user_name);
 		}
 
 		// If they don't exist (aka the trigger didn't contain a user) then we set the user based upon the
 		// configured username for the integration since this is required at all times.
 		if (!user) {
-			user = Models.Users.findOneByUsername(trigger.username);
+			user = Models.Users.findOneByUsernameIgnoringCase(trigger.username);
 		}
 
 		let tmpRoom;
@@ -220,7 +221,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			Fiber,
 			Promise,
 			Store: {
-				set: (key, val) => store[key] = val,
+				set: (key, val) => { store[key] = val; },
 				get: (key) => store[key],
 			},
 			HTTP: (method, url, options) => {
@@ -345,7 +346,6 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			logger.outgoing.debug(integration.scriptCompiled.replace(/^/gm, '  ')); // Only output the compiled script if debugging is enabled, so the logs don't get spammed.
 			logger.outgoing.error('Stack:');
 			logger.outgoing.error(e.stack.replace(/^/gm, '  '));
-			return;
 		}
 	}
 
@@ -414,6 +414,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
 				data.text = message.msg;
+				data.siteUrl = settings.get('Site_Url');
 
 				if (message.alias) {
 					data.alias = message.alias;
@@ -425,6 +426,10 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 
 				if (message.editedAt) {
 					data.isEdited = true;
+				}
+
+				if (message.tmid) {
+					data.tmid = message.tmid;
 				}
 				break;
 			case 'fileUploaded':
@@ -486,6 +491,73 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		}
 	}
 
+	getTriggersToExecute(room, message) {
+		const triggersToExecute = new Set();
+		if (room) {
+			switch (room.t) {
+				case 'd':
+					if (this.triggers.all_direct_messages) {
+						for (const trigger of Object.values(this.triggers.all_direct_messages)) {
+							triggersToExecute.add(trigger);
+						}
+					}
+
+					room.uids.filter((uid) => this.triggers[`@${ uid }`]).forEach((uid) => {
+						for (const trigger of Object.values(this.triggers[`@${ uid }`])) {
+							triggersToExecute.add(trigger);
+						}
+					});
+
+					room.usernames.filter((username) => username !== message.u.username && this.triggers[`@${ username }`]).forEach((username) => {
+						for (const trigger of Object.values(this.triggers[`@${ username }`])) {
+							triggersToExecute.add(trigger);
+						}
+					});
+					break;
+				case 'c':
+					if (this.triggers.all_public_channels) {
+						for (const trigger of Object.values(this.triggers.all_public_channels)) {
+							triggersToExecute.add(trigger);
+						}
+					}
+
+					if (this.triggers[`#${ room._id }`]) {
+						for (const trigger of Object.values(this.triggers[`#${ room._id }`])) {
+							triggersToExecute.add(trigger);
+						}
+					}
+
+					if (room._id !== room.name && this.triggers[`#${ room.name }`]) {
+						for (const trigger of Object.values(this.triggers[`#${ room.name }`])) {
+							triggersToExecute.add(trigger);
+						}
+					}
+					break;
+
+				default:
+					if (this.triggers.all_private_groups) {
+						for (const trigger of Object.values(this.triggers.all_private_groups)) {
+							triggersToExecute.add(trigger);
+						}
+					}
+
+					if (this.triggers[`#${ room._id }`]) {
+						for (const trigger of Object.values(this.triggers[`#${ room._id }`])) {
+							triggersToExecute.add(trigger);
+						}
+					}
+
+					if (room._id !== room.name && this.triggers[`#${ room.name }`]) {
+						for (const trigger of Object.values(this.triggers[`#${ room.name }`])) {
+							triggersToExecute.add(trigger);
+						}
+					}
+					break;
+			}
+		}
+		return [...triggersToExecute];
+	}
+
 	executeTriggers(...args) {
 		logger.outgoing.debug('Execute Trigger:', args[0]);
 
@@ -499,75 +571,9 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			return;
 		}
 
-		const triggersToExecute = [];
-
 		logger.outgoing.debug('Starting search for triggers for the room:', room ? room._id : '__any');
-		if (room) {
-			switch (room.t) {
-				case 'd':
-					const id = room._id.replace(message.u._id, '');
-					const username = _.without(room.usernames, message.u.username)[0];
 
-					if (this.triggers[`@${ id }`]) {
-						for (const trigger of Object.values(this.triggers[`@${ id }`])) {
-							triggersToExecute.push(trigger);
-						}
-					}
-
-					if (this.triggers.all_direct_messages) {
-						for (const trigger of Object.values(this.triggers.all_direct_messages)) {
-							triggersToExecute.push(trigger);
-						}
-					}
-
-					if (id !== username && this.triggers[`@${ username }`]) {
-						for (const trigger of Object.values(this.triggers[`@${ username }`])) {
-							triggersToExecute.push(trigger);
-						}
-					}
-					break;
-
-				case 'c':
-					if (this.triggers.all_public_channels) {
-						for (const trigger of Object.values(this.triggers.all_public_channels)) {
-							triggersToExecute.push(trigger);
-						}
-					}
-
-					if (this.triggers[`#${ room._id }`]) {
-						for (const trigger of Object.values(this.triggers[`#${ room._id }`])) {
-							triggersToExecute.push(trigger);
-						}
-					}
-
-					if (room._id !== room.name && this.triggers[`#${ room.name }`]) {
-						for (const trigger of Object.values(this.triggers[`#${ room.name }`])) {
-							triggersToExecute.push(trigger);
-						}
-					}
-					break;
-
-				default:
-					if (this.triggers.all_private_groups) {
-						for (const trigger of Object.values(this.triggers.all_private_groups)) {
-							triggersToExecute.push(trigger);
-						}
-					}
-
-					if (this.triggers[`#${ room._id }`]) {
-						for (const trigger of Object.values(this.triggers[`#${ room._id }`])) {
-							triggersToExecute.push(trigger);
-						}
-					}
-
-					if (room._id !== room.name && this.triggers[`#${ room.name }`]) {
-						for (const trigger of Object.values(this.triggers[`#${ room.name }`])) {
-							triggersToExecute.push(trigger);
-						}
-					}
-					break;
-			}
-		}
+		const triggersToExecute = this.getTriggersToExecute(room, message);
 
 		if (this.triggers.__any) {
 			// For outgoing integration which don't rely on rooms.
@@ -812,4 +818,4 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 
 		this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
 	}
-};
+}();

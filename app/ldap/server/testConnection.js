@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { hasRole } from '/app/authorization';
-import { settings } from '/app/settings';
+
 import LDAP from './ldap';
+import { hasRole } from '../../authorization';
+import { settings } from '../../settings';
 
 Meteor.methods({
 	ldap_test_connection() {

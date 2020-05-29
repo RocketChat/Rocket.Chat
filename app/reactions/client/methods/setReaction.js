@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages, Rooms, Subscriptions, EmojiCustom } from '/app/models';
-import { callbacks } from '/app/callbacks';
-import { emoji } from '/app/emoji';
 import _ from 'underscore';
+
+import { Messages, Rooms, Subscriptions } from '../../../models';
+import { callbacks } from '../../../callbacks';
+import { emoji } from '../../../emoji';
+import { roomTypes } from '../../../utils/client';
 
 Meteor.methods({
 	setReaction(reaction, messageId) {
@@ -15,13 +17,19 @@ Meteor.methods({
 		const message = Messages.findOne({ _id: messageId });
 		const room = Rooms.findOne({ _id: message.rid });
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+		if (message.private) {
 			return false;
-		} else if (!Subscriptions.findOne({ rid: message.rid })) {
+		}
+
+		if (!emoji.list[reaction]) {
 			return false;
-		} else if (message.private) {
+		}
+
+		if (roomTypes.readOnly(room._id, user._id)) {
 			return false;
-		} else if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
+		}
+
+		if (!Subscriptions.findOne({ rid: message.rid })) {
 			return false;
 		}
 
@@ -54,7 +62,5 @@ Meteor.methods({
 			Messages.setReactions(messageId, message.reactions);
 			callbacks.run('setReaction', messageId, reaction);
 		}
-
-		return;
 	},
 });

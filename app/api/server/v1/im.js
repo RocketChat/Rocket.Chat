@@ -1,25 +1,25 @@
 import { Meteor } from 'meteor/meteor';
-import { getRoomByNameOrIdWithOptionToJoin } from '/app/lib';
-import { Subscriptions, Uploads, Users, Messages, Rooms } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { composeMessageObjectWithUser } from '/app/utils';
-import { settings } from '/app/settings';
+
+import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
+import { hasPermission } from '../../../authorization';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { settings } from '../../../settings';
 import { API } from '../api';
+import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
 
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
 	}
 
-	const room = getRoomByNameOrIdWithOptionToJoin({
+	const room = getDirectMessageByNameOrIdWithOptionToJoin({
 		currentUserId: user._id,
 		nameOrId: params.username || params.roomId,
-		type: 'd',
 	});
 
 	const canAccess = Meteor.call('canAccessRoom', room._id, user._id);
 	if (!canAccess || !room || room.t !== 'd') {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any dirct message');
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any direct message');
 	}
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
@@ -32,10 +32,18 @@ function findDirectMessageRoom(params, user) {
 
 API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 	post() {
-		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+		const { username, usernames } = this.requestParams();
+
+		const users = username ? [username] : usernames && usernames.split(',').map((username) => username.trim());
+
+		if (!users) {
+			throw new Meteor.Error('error-room-not-found', 'The required "username" or "usernames" param provided does not match any direct message');
+		}
+
+		const room = Meteor.call('createDirectMessage', ...users);
 
 		return API.v1.success({
-			room: findResult.room,
+			room: { ...room, _id: room.rid },
 		});
 	},
 });
@@ -124,7 +132,7 @@ API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 		const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
 		const files = Uploads.find(ourQuery, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -195,7 +203,7 @@ API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 		const cursor = Subscriptions.findByRoomId(findResult.room._id, {
-			sort: { 'u.username':  sort && sort.username ? sort.username : 1 },
+			sort: { 'u.username': sort && sort.username ? sort.username : 1 },
 			skip: offset,
 			limit: count,
 		});
@@ -204,8 +212,8 @@ API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true }, {
 		const members = cursor.fetch().map((s) => s.u && s.u.username);
 
 		const users = Users.find({ username: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
-			sort: { username:  sort && sort.username ? sort.username : 1 },
+			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
+			sort: { username: sort && sort.username ? sort.username : 1 },
 		}).fetch();
 
 		return API.v1.success({
@@ -227,14 +235,14 @@ API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 		const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
 		const messages = Messages.find(ourQuery, {
-			sort: sort ? sort : { ts: -1 },
+			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
 			fields,
 		}).fetch();
 
 		return API.v1.success({
-			messages: messages.map((message) => composeMessageObjectWithUser(message, this.userId)),
+			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
 			total: Messages.find(ourQuery).count(),
@@ -267,14 +275,14 @@ API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: tr
 		const ourQuery = Object.assign({}, query, { rid: room._id });
 
 		const msgs = Messages.find(ourQuery, {
-			sort: sort ? sort : { ts: -1 },
+			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
 			fields,
 		}).fetch();
 
 		return API.v1.success({
-			messages: msgs.map((message) => composeMessageObjectWithUser(message, this.userId)),
+			messages: normalizeMessagesForUser(msgs, this.userId),
 			offset,
 			count: msgs.length,
 			total: Messages.find(ourQuery).count(),
@@ -320,7 +328,7 @@ API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequired: true }
 		const ourQuery = Object.assign({}, query, { t: 'd' });
 
 		const rooms = Rooms.find(ourQuery, {
-			sort: sort ? sort : { name: 1 },
+			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -351,7 +359,7 @@ API.v1.addRoute(['dm.open', 'im.open'], { authRequired: true }, {
 
 API.v1.addRoute(['dm.setTopic', 'im.setTopic'], { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
+		if (!this.bodyParams.hasOwnProperty('topic')) {
 			return API.v1.failure('The bodyParam "topic" is required');
 		}
 

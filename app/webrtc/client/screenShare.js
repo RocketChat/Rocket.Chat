@@ -1,4 +1,4 @@
-import { fireGlobalEvent } from '/app/ui-utils';
+import { fireGlobalEvent } from '../../ui-utils';
 
 export const ChromeScreenShare = {
 	callbacks: {},
@@ -13,7 +13,7 @@ export const ChromeScreenShare = {
 	},
 	getSourceId(navigator, callback) {
 		if (callback == null) {
-			throw '"callback" parameter is mandatory.';
+			throw new Error('"callback" parameter is mandatory.');
 		}
 		this.callbacks.getSourceId = callback;
 		if (navigator === 'electron') {

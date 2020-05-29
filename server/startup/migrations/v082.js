@@ -1,5 +1,5 @@
-import { Migrations } from '/app/migrations';
-import { getUsersInRole, removeUserFromRoles } from '/app/authorization';
+import { Migrations } from '../../../app/migrations';
+import { getUsersInRole, removeUserFromRoles } from '../../../app/authorization';
 
 Migrations.add({
 	version: 82,

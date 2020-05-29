@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from '/app/models';
+
+import { Users } from '../../../models';
 import { TOTP } from '../lib/totp';
 
 Meteor.methods({

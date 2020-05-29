@@ -1,15 +1,21 @@
+import url from 'url';
+
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { settings } from '/app/settings';
-import { Autoupdate } from 'meteor/autoupdate';
-import _ from 'underscore';
-import url from 'url';
+
+import { settings } from '../../settings/server';
+import { addServerUrlToIndex } from '../lib/Assets';
+
+const indexHtmlWithServerURL = addServerUrlToIndex(Assets.getText('livechat/index.html'));
 
 WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) => {
 	const reqUrl = url.parse(req.url);
 	if (reqUrl.pathname !== '/') {
 		return next();
 	}
+
+
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
 	let domainWhiteList = settings.get('Livechat_AllowedDomainsList');
@@ -20,41 +26,13 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 
 		const referer = url.parse(req.headers.referer);
 		if (!_.contains(domainWhiteList, referer.host)) {
-			res.setHeader('X-FRAME-OPTIONS', 'DENY');
+			res.setHeader('Content-Security-Policy', 'frame-ancestors \'none\'');
 			return next();
 		}
 
-		res.setHeader('X-FRAME-OPTIONS', `ALLOW-FROM ${ referer.protocol }//${ referer.host }`);
+		res.setHeader('Content-Security-Policy', `frame-ancestors ${ referer.protocol }//${ referer.host }`);
 	}
 
-	const head = Assets.getText('public/head.html');
-
-	let baseUrl;
-	if (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX && __meteor_runtime_config__.ROOT_URL_PATH_PREFIX.trim() !== '') {
-		baseUrl = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-	} else {
-		baseUrl = '/';
-	}
-	if (/\/$/.test(baseUrl) === false) {
-		baseUrl += '/';
-	}
-
-	const html = `<html>
-		<head>
-			<link rel="stylesheet" type="text/css" class="__meteor-css__" href="${ baseUrl }livechat/livechat.css?_dc=${ Autoupdate.autoupdateVersion }">
-			<script type="text/javascript">
-				__meteor_runtime_config__ = ${ JSON.stringify(__meteor_runtime_config__) };
-			</script>
-
-			<base href="${ baseUrl }">
-
-			${ head }
-		</head>
-		<body>
-			<script type="text/javascript" src="${ baseUrl }livechat/livechat.js?_dc=${ Autoupdate.autoupdateVersion }"></script>
-		</body>
-	</html>`;
-
-	res.write(html);
+	res.write(indexHtmlWithServerURL);
 	res.end();
 }));

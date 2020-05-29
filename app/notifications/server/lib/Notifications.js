@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
-import { Subscriptions, Rooms } from '/app/models';
-import { settings } from '/app/settings';
+
+import { WEB_RTC_EVENTS } from '../../../webrtc';
+import { Subscriptions, Rooms } from '../../../models/server';
+import { settings } from '../../../settings/server';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
@@ -36,6 +38,9 @@ class RoomStreamer extends Meteor.Streamer {
 					case 'inserted':
 						rooms.push({ rid });
 						this.on(rid, roomEvent);
+
+						// after a subscription is added need to emit the room again
+						roomEvent('inserted', Rooms.findOneById(rid));
 						break;
 
 					case 'removed':
@@ -175,9 +180,10 @@ const notifications = new Notifications();
 notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
 	const [roomId, e] = eventName.split('/');
 
-	if (e === 'webrtc') {
+	if (isNaN(e) ? e === WEB_RTC_EVENTS.WEB_RTC : parseFloat(e) === WEB_RTC_EVENTS.WEB_RTC) {
 		return true;
 	}
+
 	if (e === 'typing') {
 		const key = settings.get('UI_Use_Real_Name') ? 'name' : 'username';
 		// typing from livechat widget

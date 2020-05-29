@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Messages } from '/app/models';
-import { slashCommands } from '/app/utils';
-import { Notifications } from '/app/notifications';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
+import { Rooms, Messages } from '../../models';
+import { slashCommands } from '../../utils';
+import { Notifications } from '../../notifications';
 
 function Archive(command, params, item) {
 	if (command !== 'archive' || !Match.test(params, String)) {
@@ -72,4 +73,5 @@ function Archive(command, params, item) {
 slashCommands.add('archive', Archive, {
 	description: 'Archive',
 	params: '#channel',
+	permission: 'archive-room',
 });

@@ -1,6 +1,7 @@
 import _ from 'underscore';
+
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import '../../ufs/Webdav/server.js';
 
 const get = function(file, req, res) {

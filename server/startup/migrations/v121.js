@@ -1,10 +1,9 @@
-import { Migrations } from '/app/migrations';
-import { Users, Subscriptions } from '/app/models';
+import { Migrations } from '../../../app/migrations';
+import { Users, Subscriptions } from '../../../app/models';
 
 Migrations.add({
 	version: 121,
 	up() {
-
 		// set user preferences on subscriptions
 		Users.find({
 			$or: [

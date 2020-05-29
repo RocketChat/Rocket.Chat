@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
 import EventEmitter from 'wolfy87-eventemitter';
+
+import { settings } from '../../../../settings';
 
 class AudioEncoder extends EventEmitter {
 	constructor(source, {
@@ -10,7 +11,7 @@ class AudioEncoder extends EventEmitter {
 	} = {}) {
 		super();
 
-		const workerPath = Meteor.absoluteUrl('public/mp3-realtime-worker.js');
+		const workerPath = Meteor.absoluteUrl('mp3-realtime-worker.js');
 
 		this.worker = new Worker(workerPath);
 		this.worker.onmessage = this.handleWorkerMessage;

@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { WebdavAccounts } from '/app/models';
-import { modal } from '/app/ui-utils';
-import { t } from '/app/utils';
 import toastr from 'toastr';
+
+import { WebdavAccounts } from '../../models';
+import { modal } from '../../ui-utils';
+import { t } from '../../utils';
 
 Template.accountIntegrations.helpers({
 	webdavAccounts() {

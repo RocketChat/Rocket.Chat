@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions } from '/app/models';
-import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
-import { sendMessage } from './sendMessage';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
+import { sendMessage } from './sendMessage';
+import { Subscriptions } from '../../../models';
+import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from './getDirectMessageByNameOrIdWithOptionToJoin';
 
 export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
 	const sentData = [];
@@ -20,7 +22,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 				room = getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true });
 				break;
 			case '@':
-				room = getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd' });
+				room = getDirectMessageByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue });
 				break;
 			default:
 				channelValue = channelType + channelValue;
@@ -32,7 +34,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 				}
 
 				// We didn't get a room, let's try finding direct messages
-				room = getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd', tryDirectByUserIdOnly: true });
+				room = getDirectMessageByIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue });
 				if (room) {
 					break;
 				}
@@ -57,7 +59,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 			attachments: messageObj.attachments || [],
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
-			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false,
+			groupable: messageObj.groupable !== undefined ? messageObj.groupable : false,
 		};
 
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { ChatSubscription } from '/app/models';
+
+import { ChatSubscription } from '../../app/models';
 
 Meteor.methods({
 	hideRoom(rid) {

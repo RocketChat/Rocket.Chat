@@ -1,6 +1,7 @@
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { SideNav } from '/app/ui-utils';
+
+import { SideNav } from '../../ui-utils';
 
 Template.account.onRendered(function() {
 	Tracker.afterFlush(function() {

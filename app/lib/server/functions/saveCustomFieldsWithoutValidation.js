@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Users, Subscriptions } from '/app/models';
 import s from 'underscore.string';
+
+import { settings } from '../../../settings';
+import { Users, Subscriptions } from '../../../models';
 
 export const saveCustomFieldsWithoutValidation = function(userId, formData) {
 	if (s.trim(settings.get('Accounts_CustomFields')) !== '') {
@@ -13,7 +14,7 @@ export const saveCustomFieldsWithoutValidation = function(userId, formData) {
 		}
 
 		const customFields = {};
-		Object.keys(customFieldsMeta).forEach((key) => customFields[key] = formData[key]);
+		Object.keys(customFieldsMeta).forEach((key) => { customFields[key] = formData[key]; });
 		Users.setCustomFields(userId, customFields);
 
 		// Update customFields of all Direct Messages' Rooms for userId

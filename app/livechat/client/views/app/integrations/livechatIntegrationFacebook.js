@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { modal } from '/app/ui-utils';
-import { t, handleError } from '/app/utils';
+
+import { modal } from '../../../../../ui-utils';
+import { t, handleError } from '../../../../../utils';
+import './livechatIntegrationFacebook.html';
 
 Template.livechatIntegrationFacebook.helpers({
 	pages() {

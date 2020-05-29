@@ -1,9 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Base } from './_Base';
 
 export class Integrations extends Base {
 	constructor() {
 		super('integrations');
+
+		this.tryEnsureIndex({ type: 1 });
 	}
 
 	findByType(type, options) {
@@ -16,6 +19,12 @@ export class Integrations extends Base {
 
 	disableByUserId(userId) {
 		return this.update({ userId }, { $set: { enabled: false } }, { multi: true });
+	}
+
+	updateRoomName(oldRoomName, newRoomName) {
+		const hashedOldRoomName = `#${ oldRoomName }`;
+		const hashedNewRoomName = `#${ newRoomName }`;
+		return this.update({ channel: hashedOldRoomName }, { $set: { 'channel.$': hashedNewRoomName } }, { multi: true });
 	}
 }
 

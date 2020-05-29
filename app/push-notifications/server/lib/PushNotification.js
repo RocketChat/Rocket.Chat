@@ -1,7 +1,9 @@
-import { Push } from 'meteor/rocketchat:push';
-import { settings } from '/app/settings';
-import { metrics } from '/app/metrics';
-import { RocketChatAssets } from '/app/assets';
+import { Meteor } from 'meteor/meteor';
+
+import { Push } from '../../../push/server';
+import { settings } from '../../../settings/server';
+import { metrics } from '../../../metrics/server';
+import { RocketChatAssets } from '../../../assets/server';
 
 export class PushNotification {
 	getNotificationId(roomId) {
@@ -15,12 +17,12 @@ export class PushNotification {
 
 		while (i) {
 			hash = ((hash << 5) - hash) + str.charCodeAt(--i);
-			hash = hash & hash; // Convert to 32bit integer
+			hash &= hash; // Convert to 32bit integer
 		}
 		return hash;
 	}
 
-	send({ roomName, roomId, username, message, usersTo, payload, badge = 1, category }) {
+	send({ rid, uid: userId, mid: messageId, roomName, username, message, payload, badge = 1, category }) {
 		let title;
 		if (roomName && roomName !== '') {
 			title = `${ roomName }`;
@@ -28,18 +30,24 @@ export class PushNotification {
 		} else {
 			title = `${ username }`;
 		}
+
 		const config = {
 			from: 'push',
 			badge,
 			sound: 'default',
+			priority: 10,
 			title,
 			text: message,
-			payload,
-			query: usersTo,
-			notId: this.getNotificationId(roomId),
+			payload: {
+				host: Meteor.absoluteUrl(),
+				rid,
+				messageId,
+				...payload,
+			},
+			userId,
+			notId: this.getNotificationId(rid),
 			gcm: {
 				style: 'inbox',
-				summaryText: '%n% new messages',
 				image: RocketChatAssets.getURL('Assets_favicon_192'),
 			},
 		};

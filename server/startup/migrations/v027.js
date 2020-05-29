@@ -1,10 +1,9 @@
-import { Migrations } from '/app/migrations';
-import { Users, Roles } from '/app/models';
+import { Migrations } from '../../../app/migrations';
+import { Users, Roles } from '../../../app/models';
 
 Migrations.add({
 	version: 27,
 	up() {
-
 		Users.update({}, {
 			$rename: {
 				roles: '_roles',

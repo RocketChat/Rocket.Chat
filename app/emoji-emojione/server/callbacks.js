@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '/app/callbacks';
-import { emojione } from 'meteor/emojione:emojione';
+import emojione from 'emojione';
+
+import { callbacks } from '../../callbacks';
 
 Meteor.startup(function() {
-	callbacks.add('beforeSendMessageNotifications', (message) => emojione.shortnameToUnicode(message));
+	callbacks.add('beforeSendMessageNotifications', (message) => emojione.shortnameToUnicode(message), callbacks.priority.MEDIUM, 'emojione-shortnameToUnicode');
 });

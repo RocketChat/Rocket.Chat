@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from '/app/settings';
-import { Users } from '/app/models';
-import { callbacks } from '/app/callbacks';
-import { setUsername, checkUsernameAvailability } from '../functions';
-import { RateLimiter } from '../lib';
 import _ from 'underscore';
+
+import { settings } from '../../../settings';
+import { Users } from '../../../models';
+import { callbacks } from '../../../callbacks';
+import { checkUsernameAvailability } from '../functions';
+import { RateLimiter } from '../lib';
+import { saveUserIdentity } from '../functions/saveUserIdentity';
 
 Meteor.methods({
 	setUsername(username, param = {}) {
@@ -41,7 +43,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-field-unavailable', `<strong>${ _.escape(username) }</strong> is already in use :(`, { method: 'setUsername', field: username });
 		}
 
-		if (!setUsername(user._id, username)) {
+		if (!saveUserIdentity(user._id, { _id: user._id, username })) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', { method: 'setUsername' });
 		}
 

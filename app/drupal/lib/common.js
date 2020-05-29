@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
-import { CustomOAuth } from '/app/custom-oauth';
+
+import { settings } from '../../settings';
+import { CustomOAuth } from '../../custom-oauth';
 
 // Drupal Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/drupal
 // In RocketChat -> Administration the URL needs to be http(s)://{drupal.server}/
@@ -19,6 +20,7 @@ const config = {
 		forLoggedInUser: ['services.drupal'],
 		forOtherUsers: ['services.drupal.name'],
 	},
+	accessTokenParam: 'access_token',
 };
 
 const Drupal = new CustomOAuth('drupal', config);

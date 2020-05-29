@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '/app/models';
+
+import { Messages } from '../../../models';
 
 Meteor.startup(function() {
 	return Meteor.defer(function() {

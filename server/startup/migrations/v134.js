@@ -1,5 +1,5 @@
-import { Migrations } from '/app/migrations';
-import { Settings } from '/app/models';
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
 
 Migrations.add({
 	version: 134,
@@ -61,8 +61,6 @@ Migrations.add({
 			if (setting.value === oldValue) {
 				Settings.updateValueById(_id, setting.packageValue);
 			}
-
 		});
-
 	},
 });

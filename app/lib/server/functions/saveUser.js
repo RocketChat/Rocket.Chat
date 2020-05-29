@@ -2,22 +2,56 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
-import * as Mailer from '/app/mailer';
 import { Gravatar } from 'meteor/jparker:gravatar';
-import { getRoles, hasPermission } from '/app/authorization';
-import { settings } from '/app/settings';
-import PasswordPolicy from '../lib/PasswordPolicyClass';
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername } from '.';
-import { validateEmailDomain } from '../lib';
+import { Random } from 'meteor/random';
 
-const passwordPolicy = new PasswordPolicy();
+import * as Mailer from '../../../mailer';
+import { getRoles, hasPermission } from '../../../authorization';
+import { settings } from '../../../settings';
+import { passwordPolicy } from '../lib/passwordPolicy';
+import { validateEmailDomain } from '../lib';
+import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
+import { saveUserIdentity } from './saveUserIdentity';
+
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 
 let html = '';
+let passwordChangedHtml = '';
 Meteor.startup(() => {
 	Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
 		html = template;
 	});
+
+	Mailer.getTemplate('Password_Changed_Email', (template) => {
+		passwordChangedHtml = template;
+	});
 });
+
+function _sendUserEmail(subject, html, userData) {
+	const email = {
+		to: userData.email,
+		from: settings.get('From_Email'),
+		subject,
+		html,
+		data: {
+			email: s.escapeHTML(userData.email),
+			password: s.escapeHTML(userData.password),
+		},
+	};
+
+	if (typeof userData.name !== 'undefined') {
+		email.data.name = s.escapeHTML(userData.name);
+	}
+
+	try {
+		Mailer.send(email);
+	} catch (error) {
+		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
+			function: 'RocketChat.saveUser',
+			message: error.message,
+		});
+	}
+}
 
 function validateUserData(userId, userData) {
 	const existingRoles = _.pluck(getRoles(), '_id');
@@ -50,7 +84,7 @@ function validateUserData(userId, userData) {
 		});
 	}
 
-	if (!userData._id && !s.trim(userData.name)) {
+	if (settings.get('Accounts_RequireNameForSignUp') && !userData._id && !s.trim(userData.name)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Name',
@@ -62,6 +96,10 @@ function validateUserData(userId, userData) {
 			method: 'insertOrUpdateUser',
 			field: 'Username',
 		});
+	}
+
+	if (userData.roles) {
+		validateUserRoles(userId, userData);
 	}
 
 	let nameValidation;
@@ -80,7 +118,7 @@ function validateUserData(userId, userData) {
 		});
 	}
 
-	if (!userData._id && !userData.password) {
+	if (!userData._id && !userData.password && !userData.setRandomPassword) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Password is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Password',
@@ -131,6 +169,13 @@ function validateUserEditing(userId, userData) {
 		});
 	}
 
+	if (userData.statusText && !settings.get('Accounts_AllowUserStatusMessageChange') && (!canEditOtherUserInfo || editingMyself)) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit user status is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
 	if (userData.name && !settings.get('Accounts_AllowRealNameChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
 			method: 'insertOrUpdateUser',
@@ -153,8 +198,36 @@ function validateUserEditing(userId, userData) {
 	}
 }
 
+const handleBio = (updateUser, bio) => {
+	if (bio) {
+		if (bio.trim()) {
+			if (typeof bio !== 'string' || bio.length > 260) {
+				throw new Meteor.Error('error-invalid-field', 'bio', {
+					method: 'saveUserProfile',
+				});
+			}
+			updateUser.$set = updateUser.$set || {};
+			updateUser.$set.bio = bio;
+		} else {
+			updateUser.$unset = updateUser.$unset || {};
+			updateUser.$unset.bio = 1;
+		}
+	}
+};
+
 export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
+	let sendPassword = false;
+
+	if (userData.hasOwnProperty('setRandomPassword')) {
+		if (userData.setRandomPassword) {
+			userData.password = Random.id();
+			userData.requirePasswordChange = true;
+			sendPassword = true;
+		}
+
+		delete userData.setRandomPassword;
+	}
 
 	if (!userData._id) {
 		validateEmailDomain(userData.email);
@@ -173,8 +246,8 @@ export const saveUser = function(userId, userData) {
 
 		const updateUser = {
 			$set: {
-				name: userData.name,
 				roles: userData.roles || ['user'],
+				...typeof userData.name !== 'undefined' && { name: userData.name },
 				settings: userData.settings || {},
 			},
 		};
@@ -187,31 +260,16 @@ export const saveUser = function(userId, userData) {
 			updateUser.$set['emails.0.verified'] = userData.verified;
 		}
 
+		handleBio(updateUser, userData.bio);
+
 		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
-			const subject = settings.get('Accounts_UserAddedEmail_Subject');
+			_sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
+		}
 
-			const email = {
-				to: userData.email,
-				from: settings.get('From_Email'),
-				subject,
-				html,
-				data: {
-					name: s.escapeHTML(userData.name),
-					email: s.escapeHTML(userData.email),
-					password: s.escapeHTML(userData.password),
-				},
-			};
-
-			try {
-				Mailer.send(email);
-			} catch (error) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
-					function: 'RocketChat.saveUser',
-					message: error.message,
-				});
-			}
+		if (sendPassword) {
+			_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 		}
 
 		userData._id = _id;
@@ -232,12 +290,18 @@ export const saveUser = function(userId, userData) {
 	validateUserEditing(userId, userData);
 
 	// update user
-	if (userData.username) {
-		setUsername(userData._id, userData.username);
+	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
+		if (!saveUserIdentity(userId, {
+			_id: userData._id,
+			username: userData.username,
+			name: userData.name,
+		})) {
+			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUser' });
+		}
 	}
 
-	if (userData.name) {
-		setRealName(userData._id, userData.name);
+	if (typeof userData.statusText === 'string') {
+		setStatusText(userData._id, userData.statusText);
 	}
 
 	if (userData.email) {
@@ -247,11 +311,15 @@ export const saveUser = function(userId, userData) {
 
 	if (userData.password && userData.password.trim() && hasPermission(userId, 'edit-other-user-password') && passwordPolicy.validate(userData.password)) {
 		Accounts.setPassword(userData._id, userData.password.trim());
+	} else {
+		sendPassword = false;
 	}
 
 	const updateUser = {
 		$set: {},
 	};
+
+	handleBio(updateUser, userData.bio);
 
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;
@@ -273,6 +341,10 @@ export const saveUser = function(userId, userData) {
 	}
 
 	Meteor.users.update({ _id: userData._id }, updateUser);
+
+	if (sendPassword) {
+		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
+	}
 
 	return true;
 };

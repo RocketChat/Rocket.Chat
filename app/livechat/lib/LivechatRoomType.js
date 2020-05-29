@@ -1,10 +1,17 @@
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { ChatRoom } from '/app/models';
-import { settings } from '/app/settings';
-import { hasPermission } from '/app/authorization';
-import { openRoom } from '/app/ui-utils';
-import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '/app/utils';
-import { LivechatInquiry } from './LivechatInquiry';
+
+import { ChatRoom } from '../../models';
+import { settings } from '../../settings';
+import { hasPermission } from '../../authorization';
+import { openRoom } from '../../ui-utils';
+import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
+import { getAvatarURL } from '../../utils/lib/getAvatarURL';
+
+let LivechatInquiry;
+if (Meteor.isClient) {
+	({ LivechatInquiry } = require('../client/collections/LivechatInquiry'));
+}
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -30,14 +37,17 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'l',
 			order: 5,
-			icon: 'livechat',
-			label: 'Livechat',
+			icon: 'omnichannel',
+			label: 'Omnichannel',
 			route: new LivechatRoomRoute(),
 		});
 
-		this.notSubscribedTpl = {
-			template: 'livechatNotSubscribed',
-		};
+		this.notSubscribedTpl = 'livechatNotSubscribed';
+		this.readOnlyTpl = 'livechatReadOnly';
+	}
+
+	enableMembersListProfile() {
+		return true;
 	}
 
 	findRoom(identifier) {
@@ -52,17 +62,17 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	}
 
-	canSendMessage(roomId) {
-		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
+	canSendMessage(rid) {
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1 } });
 		return room && room.open === true;
 	}
 
-	getUserStatus(roomId) {
-		const room = Session.get(`roomData${ roomId }`);
+	getUserStatus(rid) {
+		const room = Session.get(`roomData${ rid }`);
 		if (room) {
 			return room.v && room.v.status;
 		}
-		const inquiry = LivechatInquiry.findOne({ rid: roomId });
+		const inquiry = LivechatInquiry.findOne({ rid });
 		return inquiry && inquiry.v && inquiry.v.status;
 	}
 
@@ -84,5 +94,43 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			default:
 				return '';
 		}
+	}
+
+	readOnly(rid, user) {
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
+		if (!room || !room.open) {
+			return true;
+		}
+
+		const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
+		if (inquiry && inquiry.status === 'queued') {
+			return true;
+		}
+
+		return (!room.servedBy || room.servedBy._id !== user._id) && !hasPermission('view-livechat-rooms');
+	}
+
+	getAvatarPath(roomData) {
+		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+	}
+
+	openCustomProfileTab(instance, room, username) {
+		if (!room || !room.v || room.v.username !== username) {
+			return false;
+		}
+		const button = instance.tabBar.getButtons().find((button) => button.id === 'visitor-info');
+		if (!button) {
+			return false;
+		}
+
+		const { template, i18nTitle: label, icon } = button;
+		instance.tabBar.setTemplate(template);
+		instance.tabBar.setData({
+			label,
+			icon,
+		});
+
+		instance.tabBar.open();
+		return true;
 	}
 }

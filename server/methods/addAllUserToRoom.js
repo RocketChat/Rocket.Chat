@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasRole } from '/app/authorization';
-import { Users, Rooms, Subscriptions, Messages } from '/app/models';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
+
+import { hasRole } from '../../app/authorization';
+import { Users, Rooms, Subscriptions, Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	addAllUserToRoom(rid, activeUsersOnly = false) {
-
-		check (rid, String);
-		check (activeUsersOnly, Boolean);
+		check(rid, String);
+		check(activeUsersOnly, Boolean);
 
 		if (hasRole(this.userId, 'admin') === true) {
 			const userCount = Users.find().count();
@@ -57,10 +57,9 @@ Meteor.methods({
 				return callbacks.run('afterJoinRoom', user, room);
 			});
 			return true;
-		} else {
-			throw (new Meteor.Error(403, 'Access to Method Forbidden', {
-				method: 'addAllToRoom',
-			}));
 		}
+		throw new Meteor.Error(403, 'Access to Method Forbidden', {
+			method: 'addAllToRoom',
+		});
 	},
 });

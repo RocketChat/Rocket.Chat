@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
+
+import { settings } from '../../../settings';
 
 Template.usernameLayout.helpers({
 	backgroundUrl() {

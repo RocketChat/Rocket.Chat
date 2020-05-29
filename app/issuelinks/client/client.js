@@ -1,6 +1,7 @@
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
 import s from 'underscore.string';
+
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
 
 //
 // IssueLink is a named function that will add issue links

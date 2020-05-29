@@ -1,2 +1,3 @@
-import './federationSearchUsers';
-import './federationAddUser';
+import './dashboard';
+import './loadContextEvents';
+import './testSetup';

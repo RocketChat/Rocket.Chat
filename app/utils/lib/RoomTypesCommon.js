@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RoomTypeConfig } from './RoomTypeConfig';
+import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
+import { RoomTypeConfig } from './RoomTypeConfig';
 import { roomExit } from './roomExit';
 
 export class RoomTypesCommon {
@@ -8,6 +10,10 @@ export class RoomTypesCommon {
 		this.roomTypes = {};
 		this.roomTypesOrder = [];
 		this.mainOrder = 1;
+	}
+
+	getTypesToShowOnDashboard() {
+		return Object.keys(this.roomTypes).filter((key) => this.roomTypes[key].includeInDashboard && this.roomTypes[key].includeInDashboard());
 	}
 
 	/**
@@ -41,6 +47,7 @@ export class RoomTypesCommon {
 			const routeConfig = {
 				name: roomConfig.route.name,
 				action: roomConfig.route.action,
+				triggersExit: [() => Session.set('openedRoom', '')],
 			};
 
 			if (Meteor.isClient) {
@@ -60,17 +67,9 @@ export class RoomTypesCommon {
 	 * @param {object} subData the user's subscription data
 	 */
 	getRouteLink(roomType, subData) {
-		if (!this.roomTypes[roomType]) {
+		const routeData = this.getRouteData(roomType, subData);
+		if (!routeData) {
 			return false;
-		}
-
-		let routeData = {};
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
-			routeData = this.roomTypes[roomType].route.link(subData);
-		} else if (subData && subData.name) {
-			routeData = {
-				name: subData.name,
-			};
 		}
 
 		return FlowRouter.path(this.roomTypes[roomType].route.name, routeData);
@@ -84,11 +83,38 @@ export class RoomTypesCommon {
 		return this.roomTypes[roomType];
 	}
 
-	getURL(...args) {
-		const path = this.getRouteLink(...args);
-		if (!path) {
+	/**
+	 * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
+	 * @param {object} subData the user's subscription data
+	 */
+	getURL(roomType, subData) {
+		const routeData = this.getRouteData(roomType, subData);
+		if (!routeData) {
 			return false;
 		}
-		return Meteor.absoluteUrl(path.replace(/^\//, ''));
+
+		return FlowRouter.url(this.roomTypes[roomType].route.name, routeData);
+	}
+
+	getRelativePath(roomType, subData) {
+		return this.getRouteLink(roomType, subData).replace(Meteor.absoluteUrl(), '');
+	}
+
+	getRouteData(roomType, subData) {
+		if (!this.roomTypes[roomType]) {
+			return false;
+		}
+
+		let routeData = {};
+		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
+			routeData = this.roomTypes[roomType].route.link(subData);
+		} else if (subData && subData.name) {
+			routeData = {
+				rid: subData.rid || subData._id,
+				name: subData.name,
+			};
+		}
+
+		return routeData;
 	}
 }

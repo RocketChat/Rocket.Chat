@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-
-if (Meteor.isClient) {
-	module.exports = require('./client/index.js');
-}
-if (Meteor.isServer) {
-	module.exports = require('./server/index.js');
-}
+export const WEB_RTC_EVENTS = {
+	WEB_RTC: 'webrtc',
+	STATUS: 'status',
+	CALL: 'call',
+	JOIN: 'join',
+	CANDIDATE: 'candidate',
+	DESCRIPTION: 'description',
+};

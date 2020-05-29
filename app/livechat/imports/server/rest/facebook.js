@@ -1,8 +1,10 @@
 import crypto from 'crypto';
+
 import { Random } from 'meteor/random';
-import { API } from '/app/api';
-import { Rooms, Users, LivechatVisitors } from '/app/models';
-import { settings } from '/app/settings';
+
+import { API } from '../../../../api/server';
+import { LivechatRooms, LivechatVisitors } from '../../../../models';
+import { settings } from '../../../../settings';
 import { Livechat } from '../../../server/lib/Livechat';
 
 /**
@@ -60,7 +62,7 @@ API.v1.addRoute('livechat/facebook', {
 		};
 		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
-			const rooms = Rooms.findOpenByVisitorToken(visitor.token).fetch();
+			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
 			} else {
@@ -76,7 +78,7 @@ API.v1.addRoute('livechat/facebook', {
 				name: `${ this.bodyParams.first_name } ${ this.bodyParams.last_name }`,
 			});
 
-			visitor = Users.findOneById(userId);
+			visitor = LivechatVisitors.findOneById(userId);
 		}
 
 		sendMessage.message.msg = this.bodyParams.text;

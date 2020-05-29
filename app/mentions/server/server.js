@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Notifications } from '/app/notifications';
-import { Users, Subscriptions, Rooms } from '/app/models';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
+
 import MentionsServer from './Mentions';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { Notifications } from '../../notifications';
+import { Users, Subscriptions, Rooms } from '../../models';
 
 const mention = new MentionsServer({
 	pattern: () => settings.get('UTF8_Names_Validation'),
@@ -23,7 +24,7 @@ const mention = new MentionsServer({
 		Notifications.notifyUser(sender._id, 'message', {
 			_id: Random.id(),
 			rid,
-			ts: new Date,
+			ts: new Date(),
 			msg,
 			groupable: false,
 		});

@@ -1,5 +1,5 @@
-import { Users, Rooms, Subscriptions } from '/app/models';
-import { sendMessage } from '/app/lib';
+import { Users, Rooms, Subscriptions } from '../../../../models';
+import { sendMessage } from '../../../../lib';
 /*
  *
  * Get direct chat room helper

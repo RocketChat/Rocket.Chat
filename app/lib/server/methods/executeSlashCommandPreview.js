@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from '/app/utils';
+
+import { slashCommands } from '../../../utils';
 
 Meteor.methods({
 	executeSlashCommandPreview(command, preview) {
@@ -28,6 +29,6 @@ Meteor.methods({
 			});
 		}
 
-		return slashCommands.executePreview(command.cmd, command.params, command.msg, preview);
+		return slashCommands.executePreview(command.cmd, command.params, command.msg, preview, command.triggerId);
 	},
 });

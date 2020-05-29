@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '/app/authorization';
-import { Users, Subscriptions, Rooms, Messages } from '/app/models';
-import { callbacks } from '/app/callbacks';
+
+import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization';
+import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
+import { callbacks } from '../../app/callbacks';
+import { roomTypes, RoomMemberActions } from '../../app/utils/server';
 
 Meteor.methods({
 	removeUserFromRoom(data) {
@@ -27,13 +29,13 @@ Meteor.methods({
 
 		const room = Rooms.findOneById(data.rid);
 
-		if (!room || room.t === 'd') {
+		if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeUserFromRoom',
 			});
 		}
 
-		const removedUser = Users.findOneByUsername(data.username);
+		const removedUser = Users.findOneByUsernameIgnoringCase(data.username);
 
 		const fromUser = Users.findOneById(fromId);
 

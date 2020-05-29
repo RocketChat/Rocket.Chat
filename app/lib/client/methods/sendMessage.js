@@ -1,15 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
-import { ChatMessage } from '/app/models';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { promises } from '/app/promises';
 import s from 'underscore.string';
+import toastr from 'toastr';
+
+import { ChatMessage } from '../../../models';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { promises } from '../../../promises/client';
+import { t } from '../../../utils/client';
 
 Meteor.methods({
 	sendMessage(message) {
 		if (!Meteor.userId() || s.trim(message.msg) === '') {
 			return false;
+		}
+		const messageAlreadyExists = message._id && ChatMessage.findOne({ _id: message._id });
+		if (messageAlreadyExists) {
+			return toastr.error(t('Message_Already_Sent'));
 		}
 		const user = Meteor.user();
 		message.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());

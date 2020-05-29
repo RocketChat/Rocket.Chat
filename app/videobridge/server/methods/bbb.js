@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import BigBlueButtonApi from '/app/bigbluebutton';
-import { settings } from '/app/settings';
-import { Rooms, Users } from '/app/models';
-import { saveStreamingOptions } from '/app/channel-settings';
-import { API } from '/app/api';
 import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
+
+import BigBlueButtonApi from '../../../bigbluebutton/server';
+import { settings } from '../../../settings';
+import { Rooms, Users } from '../../../models';
+import { saveStreamingOptions } from '../../../channel-settings';
+import { API } from '../../../api/server';
 
 const parser = new xml2js.Parser({
 	explicitRoot: true,
@@ -22,7 +23,6 @@ const getBBBAPI = () => {
 
 Meteor.methods({
 	bbbJoin({ rid }) {
-
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
 		}

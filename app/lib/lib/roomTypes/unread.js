@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { getUserPreference, RoomTypeConfig } from '/app/utils';
+
+import { getUserPreference, RoomTypeConfig } from '../../../utils';
 
 export class UnreadRoomType extends RoomTypeConfig {
 	constructor() {

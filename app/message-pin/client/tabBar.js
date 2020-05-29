@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
-import { TabBar } from '/app/ui-utils';
+
+import { settings } from '../../settings';
+import { TabBar } from '../../ui-utils';
 
 Meteor.startup(function() {
 	return Tracker.autorun(function() {
@@ -12,7 +13,7 @@ Meteor.startup(function() {
 				i18nTitle: 'Pinned_Messages',
 				icon: 'pin',
 				template: 'pinnedMessages',
-				order: 10,
+				order: 11,
 			});
 		} else {
 			TabBar.removeButton('pinned-messages');

@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { hasRole } from '/app/authorization';
-import { settings } from '/app/settings';
-import { importNewUsers } from './sync';
+
+import { sync } from './sync';
+import { hasRole } from '../../authorization';
+import { settings } from '../../settings';
 
 Meteor.methods({
 	ldap_sync_now() {
@@ -20,7 +21,7 @@ Meteor.methods({
 
 		this.unblock();
 
-		importNewUsers();
+		sync();
 
 		return {
 			message: 'Sync_in_progress',
