@@ -1,15 +1,20 @@
+import { IncomingMessage, ServerResponse } from 'http';
+
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 
+
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
+import { ISAMLAction } from './definition/ISAMLAction';
+import { IIncomingMessage } from '../../../definition/IIncomingMessage';
 
 RoutePolicy.declare('/_saml/', 'network');
 
-const samlUrlToObject = function(url: string): Record<string, string> {
+const samlUrlToObject = function(url: string | undefined): ISAMLAction | null {
 	// req.url will be '/_saml/<action>/<service name>/<credentialToken>'
 	if (!url) {
 		return null;
@@ -34,7 +39,7 @@ const samlUrlToObject = function(url: string): Record<string, string> {
 	return result;
 };
 
-const middleware = function(req: object, res: object, next: function): void {
+const middleware = function(req: IIncomingMessage, res: ServerResponse, next: (err?: any) => void): void {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
 	try {
@@ -49,6 +54,10 @@ const middleware = function(req: object, res: object, next: function): void {
 		}
 
 		const service = SAMLUtils.getServiceProviderOptions(samlObject.serviceName);
+		if (!service) {
+			console.error(`${ samlObject.serviceName } service provider not found`);
+			throw new Error('SAML Service Provider not found.');
+		}
 
 		SAML.processRequest(req, res, service, samlObject);
 	} catch (err) {
@@ -64,10 +73,10 @@ const middleware = function(req: object, res: object, next: function): void {
 };
 
 // Listen to incoming SAML http requests
-WebApp.connectHandlers.use(bodyParser.json()).use(function(req, res, next) {
+WebApp.connectHandlers.use(bodyParser.json()).use(function(req: IncomingMessage, res: ServerResponse, next: (err?: any) => void) {
 	// Need to create a fiber since we're using synchronous http calls and nothing
 	// else is wrapping this in a fiber automatically
 	fiber(function() {
-		middleware(req, res, next);
+		middleware(req as IIncomingMessage, res, next);
 	}).run();
 });

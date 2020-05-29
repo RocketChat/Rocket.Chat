@@ -1,6 +1,7 @@
 import {
 	SAMLUtils,
 	defaultLogoutResponseTemplate,
+	defaultIdentifierFormat,
 } from '../Utils';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 
@@ -8,8 +9,8 @@ import { IServiceProviderOptions } from '../../definition/IServiceProviderOption
 	A Logout Response is used when the Identity Provider (IdP) sends us a Logout Request.
 */
 export class LogoutResponse {
-	static generate(serviceProviderOptions: IServiceProviderOptions): { id: string; response: string } {
-		const data = this.getDataForNewResponse(serviceProviderOptions);
+	static generate(serviceProviderOptions: IServiceProviderOptions, nameID: string, sessionIndex: string): { id: string; response: string } {
+		const data = this.getDataForNewResponse(serviceProviderOptions, nameID, sessionIndex);
 		const response = SAMLUtils.fillTemplateData(serviceProviderOptions.logoutResponseTemplate || defaultLogoutResponseTemplate, data);
 
 		SAMLUtils.log('------- SAML Logout response -----------');
@@ -21,7 +22,7 @@ export class LogoutResponse {
 		};
 	}
 
-	static getDataForNewResponse(serviceProviderOptions: IServiceProviderOptions): Record<string, any> {
+	static getDataForNewResponse(serviceProviderOptions: IServiceProviderOptions, nameID: string, sessionIndex: string): Record<string, any> {
 		const id = `_${ SAMLUtils.generateUniqueID() }`;
 		const instant = SAMLUtils.generateInstant();
 
@@ -30,6 +31,9 @@ export class LogoutResponse {
 			instant,
 			idpSLORedirectURL: serviceProviderOptions.idpSLORedirectURL,
 			issuer: serviceProviderOptions.issuer,
+			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
+			nameID,
+			sessionIndex,
 		};
 	}
 }

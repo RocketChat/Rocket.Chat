@@ -76,6 +76,13 @@ export interface ISettingAddOptions {
 	meteorSettingsValue?: SettingValue;
 	value?: SettingValue;
 	ts?: Date;
+	multiline?: boolean;
+	values?: Array<ISettingSelectOption>;
+}
+
+export interface ISettingSelectOption {
+	key: string;
+	i18nLabel: string;
 }
 
 export interface ISettingAddGroupOptions {

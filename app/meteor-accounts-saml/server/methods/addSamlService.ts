@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import {
 	defaultAuthnContextTemplate,
 	defaultAuthRequestTemplate,
@@ -255,7 +255,7 @@ Meteor.methods({
 			group: 'SAML',
 			section: 'SAML_Section_6_Advanced',
 			i18nLabel: 'SAML_LogoutResponse_Template',
-			i18nDescription: 'SAML_LogoutResponse_Template_Description',
+			i18nDescription: 'SAML_Logout_Template_Description',
 			multiline: true,
 		});
 
@@ -264,7 +264,7 @@ Meteor.methods({
 			group: 'SAML',
 			section: 'SAML_Section_6_Advanced',
 			i18nLabel: 'SAML_LogoutRequest_Template',
-			i18nDescription: 'SAML_LogoutRequest_Template_Description',
+			i18nDescription: 'SAML_Logout_Template_Description',
 			multiline: true,
 		});
 	},

@@ -11,7 +11,6 @@ import { IServiceProviderOptions } from '../../definition/IServiceProviderOption
 export class LogoutRequest {
 	static generate(serviceProviderOptions: IServiceProviderOptions, nameID: string, sessionIndex: string): { id: string; request: string} {
 		const data = this.getDataForNewRequest(serviceProviderOptions, nameID, sessionIndex);
-
 		const request = SAMLUtils.fillTemplateData(serviceProviderOptions.logoutRequestTemplate || defaultLogoutRequestTemplate, data);
 
 		SAMLUtils.log('------- SAML Logout request -----------');

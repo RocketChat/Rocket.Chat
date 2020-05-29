@@ -2,10 +2,9 @@ import xmldom from 'xmldom';
 import xmlenc from 'xml-encryption';
 import xmlCrypto from 'xml-crypto';
 
-import {
-	SAMLUtils,
-} from '../Utils';
+import { SAMLUtils } from '../Utils';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import { IResponseValidateCallback } from '../../definition/callbacks';
 
 type XmlParent = Element | Document;
 
@@ -16,7 +15,7 @@ export class ResponseParser {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	validate(xml: string, callback: (err: string | object | null, profile?: object | null, loggedOut?: boolean) => void): void {
+	validate(xml: string, callback: IResponseValidateCallback): void {
 		// We currently use RelayState to save SAML provider
 		SAMLUtils.log(`Validating response with relay state: ${ xml }`);
 
@@ -220,14 +219,10 @@ export class ResponseParser {
 
 	validateSignatureChildren(xml: string, cert: string, parent: XmlParent): boolean {
 		const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
-		const signatures = xmlCrypto.xpath(parent, xpathSigQuery);
+		const signatures = xmlCrypto.xpath(parent, xpathSigQuery) as Array<Element>;
 		let signature = null;
 
 		for (const sign of signatures) {
-			if (!(sign instanceof Element)) {
-				continue;
-			}
-
 			if (sign.parentNode !== parent) {
 				continue;
 			}

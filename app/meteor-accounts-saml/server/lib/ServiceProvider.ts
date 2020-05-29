@@ -13,9 +13,16 @@ import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import {
+	ILogoutRequestValidateCallback,
+	ILogoutResponseValidateCallback,
+	IResponseValidateCallback,
+} from '../definition/callbacks';
 
 export class SAMLServiceProvider {
-	constructor(serviceProviderOptions: IServiceProviderOptions): void {
+	serviceProviderOptions: IServiceProviderOptions;
+
+	constructor(serviceProviderOptions: IServiceProviderOptions) {
 		if (!serviceProviderOptions) {
 			throw new Error('SAMLServiceProvider instantiated without an options object');
 		}
@@ -23,19 +30,19 @@ export class SAMLServiceProvider {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	signRequest(xml: string): Buffer {
+	signRequest(xml: string): string {
 		const signer = crypto.createSign('RSA-SHA1');
 		signer.update(xml);
 		return signer.sign(this.serviceProviderOptions.privateKey, 'base64');
 	}
 
-	generateAuthorizeRequest(host: string): string {
-		const identifiedRequest = AuthorizeRequest.generate(this.serviceProviderOptions, host);
+	generateAuthorizeRequest(): string {
+		const identifiedRequest = AuthorizeRequest.generate(this.serviceProviderOptions);
 		return identifiedRequest.request;
 	}
 
-	generateLogoutResponse(): Record<string, string> {
-		return LogoutResponse.generate(this.serviceProviderOptions);
+	generateLogoutResponse({ nameID, sessionIndex }: { nameID: string; sessionIndex: string }): Record<string, string> {
+		return LogoutResponse.generate(this.serviceProviderOptions, nameID, sessionIndex);
 	}
 
 	generateLogoutRequest({ nameID, sessionIndex }: { nameID: string; sessionIndex: string }): Record<string, string> {
@@ -63,7 +70,7 @@ export class SAMLServiceProvider {
 			// TBD. We should really include a proper RelayState here
 			const relayState = Meteor.absoluteUrl();
 
-			const samlResponse = {
+			const samlResponse: Record<string, any> = {
 				SAMLResponse: base64,
 				RelayState: relayState,
 			};
@@ -112,7 +119,7 @@ export class SAMLServiceProvider {
 				relayState = this.serviceProviderOptions.provider;
 			}
 
-			const samlRequest = {
+			const samlRequest: Record<string, any> = {
 				SAMLRequest: base64,
 				RelayState: relayState,
 			};
@@ -134,15 +141,15 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	getAuthorizeUrl(req: object, callback: (err: string | object | null, url?: string) => void): void {
-		const request = this.generateAuthorizeRequest(req.headers.host);
+	getAuthorizeUrl(callback: (err: string | object | null, url?: string) => void): void {
+		const request = this.generateAuthorizeRequest();
 		SAMLUtils.log('-----REQUEST------');
 		SAMLUtils.log(request);
 
 		this.requestToUrl(request, 'authorize', callback);
 	}
 
-	validateLogoutRequest(samlRequest: object, callback: (err: string | object | null, data?: object) => void): void {
+	validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): void {
 		SAMLUtils.inflateXml(samlRequest, (xml: string) => {
 			const parser = new LogoutRequestParser(this.serviceProviderOptions);
 			return parser.validate(xml, callback);
@@ -151,7 +158,7 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	validateLogoutResponse(samlResponse: object, callback: (err: string | object | null, inResponseTo?: string) => void): void {
+	validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): void {
 		SAMLUtils.inflateXml(samlResponse, (xml: string) => {
 			const parser = new LogoutResponseParser(this.serviceProviderOptions);
 			return parser.validate(xml, callback);
@@ -160,7 +167,7 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	validateResponse(samlResponse: object, relayState: string, callback: (err: string | object | null, profile?: object, loggedOut?: boolean) => void): void {
+	validateResponse(samlResponse: string, callback: IResponseValidateCallback): void {
 		const xml = new Buffer(samlResponse, 'base64').toString('utf8');
 
 		const parser = new ResponseParser(this.serviceProviderOptions);

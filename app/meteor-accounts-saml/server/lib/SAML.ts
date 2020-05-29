@@ -1,3 +1,5 @@
+import { ServerResponse } from 'http';
+
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import fiber from 'fibers';
@@ -6,12 +8,14 @@ import s from 'underscore.string';
 import { settings } from '../../../settings/server';
 import { Users, Rooms, CredentialTokens } from '../../../models/server';
 import { IUser } from '../../../../definition/IUser';
+import { IIncomingMessage } from '../../../../definition/IIncomingMessage';
 import { createRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { ISAMLAction } from '../definition/ISAMLAction';
 import { SAMLUtils } from './Utils';
 
-const showErrorMessage = function(res: object, err: string): void {
+const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
 		'Content-Type': 'text/html',
 	});
@@ -20,7 +24,7 @@ const showErrorMessage = function(res: object, err: string): void {
 };
 
 export class SAML {
-	static processRequest(req: object, res: object, service: IServiceProviderOptions, samlObject: object): void {
+	static processRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, samlObject: ISAMLAction): void {
 		// Skip everything if there's no service set by the saml middleware
 		if (!service) {
 			if (samlObject.actionName === 'metadata') {
@@ -33,13 +37,13 @@ export class SAML {
 
 		switch (samlObject.actionName) {
 			case 'metadata':
-				return this.processMetadataAction(req, res, service);
+				return this.processMetadataAction(res, service);
 			case 'logout':
 				return this.processLogoutAction(req, res, service);
 			case 'sloRedirect':
 				return this.processSLORedirectAction(req, res);
 			case 'authorize':
-				return this.processAuthorizeAction(req, res, service, samlObject);
+				return this.processAuthorizeAction(res, service, samlObject);
 			case 'validate':
 				return this.processValidateAction(req, res, service, samlObject);
 			default:
@@ -47,7 +51,7 @@ export class SAML {
 		}
 	}
 
-	static processMetadataAction(req: object, res: object, service: IServiceProviderOptions): void {
+	static processMetadataAction(res: ServerResponse, service: IServiceProviderOptions): void {
 		try {
 			const serviceProvider = new SAMLServiceProvider(service);
 
@@ -59,7 +63,7 @@ export class SAML {
 		}
 	}
 
-	static processLogoutAction(req: object, res: object, service: IServiceProviderOptions): void {
+	static processLogoutAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
 		// This is where we receive SAML LogoutResponse
 		if (req.query.SAMLRequest) {
 			return this.processLogoutRequest(req, res, service);
@@ -88,7 +92,7 @@ export class SAML {
 		});
 	}
 
-	static processLogoutRequest(req: object, res: object, service: IServiceProviderOptions): void {
+	static processLogoutRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		serviceProvider.validateLogoutRequest(req.query.SAMLRequest, (err, result) => {
 			if (err) {
@@ -96,7 +100,11 @@ export class SAML {
 				throw new Meteor.Error('Unable to Validate Logout Request');
 			}
 
-			const logOutUser = (samlInfo: object): void => {
+			if (!result) {
+				throw new Meteor.Error('Unable to process Logout Request: missing request data.');
+			}
+
+			const logOutUser = (samlInfo: Record<string, string | null>): void => {
 				const loggedOutUser = Meteor.users.find({
 					$or: [
 						{ 'services.saml.nameID': samlInfo.nameID },
@@ -112,8 +120,8 @@ export class SAML {
 			fiber(() => logOutUser(result)).run();
 
 			const { response } = serviceProvider.generateLogoutResponse({
-				nameID: result.nameID,
-				sessionIndex: result.idpSession,
+				nameID: result.nameID || '',
+				sessionIndex: result.idpSession || '',
 			});
 
 			serviceProvider.logoutResponseToUrl(response, (err, url) => {
@@ -130,33 +138,47 @@ export class SAML {
 		});
 	}
 
-	static processLogoutResponse(req: object, res: object, service: IServiceProviderOptions): void {
+	static processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
 		const serviceProvider = new SAMLServiceProvider(service);
-		serviceProvider.validateLogoutResponse(req.query.SAMLResponse, (err, result) => {
-			if (!err) {
-				const logOutUser = (inResponseTo: string): void => {
-					SAMLUtils.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
-					const loggedOutUser = Meteor.users.find({
-						'services.saml.inResponseTo': inResponseTo,
-					}).fetch();
-					if (loggedOutUser.length === 1) {
-						this._logoutRemoveTokens(loggedOutUser[0]._id);
-					} else {
-						throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
-					}
-				};
-
-				fiber(() => logOutUser(result)).run();
-
-				res.writeHead(302, {
-					Location: req.query.RelayState,
-				});
-				res.end();
+		serviceProvider.validateLogoutResponse(req.query.SAMLResponse, (err, inResponseTo) => {
+			if (err) {
+				return;
 			}
+
+			if (!inResponseTo) {
+				throw new Meteor.Error('Invalid logout request: no inResponseTo value.');
+			}
+
+			const logOutUser = (inResponseTo: string): void => {
+				SAMLUtils.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
+
+				const cursor = Users.find({
+					'services.saml.inResponseTo': inResponseTo,
+				});
+
+				const count = cursor.count();
+				if (count > 1) {
+					throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
+				}
+
+				if (count === 0) {
+					throw new Meteor.Error('Invalid logout request: no user associaited with inResponseTo.');
+				}
+
+				const loggedOutUser = cursor.fetch();
+				this._logoutRemoveTokens(loggedOutUser[0]._id);
+			};
+
+			fiber(() => logOutUser(inResponseTo)).run();
+
+			res.writeHead(302, {
+				Location: req.query.RelayState,
+			});
+			res.end();
 		});
 	}
 
-	static processSLORedirectAction(req: object, res: object): void {
+	static processSLORedirectAction(req: IIncomingMessage, res: ServerResponse): void {
 		res.writeHead(302, {
 			// credentialToken here is the SAML LogOut Request that we'll send back to IDP
 			Location: req.query.redirect,
@@ -164,11 +186,11 @@ export class SAML {
 		res.end();
 	}
 
-	static processAuthorizeAction(req: object, res: object, service: IServiceProviderOptions, samlObject: object): void {
+	static processAuthorizeAction(res: ServerResponse, service: IServiceProviderOptions, samlObject: ISAMLAction): void {
 		service.id = samlObject.credentialToken;
 
 		const serviceProvider = new SAMLServiceProvider(service);
-		serviceProvider.getAuthorizeUrl(req, (err, url) => {
+		serviceProvider.getAuthorizeUrl((err, url) => {
 			if (err) {
 				throw new Error('Unable to generate authorize url');
 			}
@@ -179,12 +201,16 @@ export class SAML {
 		});
 	}
 
-	static processValidateAction(req: object, res: object, service: IServiceProviderOptions, samlObject: object): void {
+	static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, samlObject: ISAMLAction): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		SAMLUtils.relayState = req.body.RelayState;
-		serviceProvider.validateResponse(req.body.SAMLResponse, req.body.RelayState, (err, profile/* , loggedOut*/) => {
+		serviceProvider.validateResponse(req.body.SAMLResponse, (err, profile/* , loggedOut*/) => {
 			if (err) {
 				throw new Error(`Unable to validate response url: ${ err }`);
+			}
+
+			if (!profile) {
+				throw new Error('No user data collected from IdP response.');
 			}
 
 			let credentialToken = (profile.inResponseToId && profile.inResponseToId.value) || profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
@@ -282,7 +308,7 @@ export class SAML {
 					continue;
 				}
 
-				const room = Rooms.findOneByNameAndType(roomName, 'c');
+				const room = Rooms.findOneByNameAndType(roomName, 'c', {});
 				if (!room) {
 					createRoom('c', roomName, user.username);
 				}
