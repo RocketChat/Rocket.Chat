@@ -2,10 +2,11 @@ import React, { lazy, useMemo, Suspense, useEffect } from 'react';
 
 import { SideNav } from '../../app/ui-utils/client';
 import PageSkeleton from './PageSkeleton';
+import { createTemplateForComponent } from '../reactAdapters';
 
 function AdministrationRouter({ lazyRouteComponent, ...props }) {
 	useEffect(() => {
-		SideNav.setFlex('adminFlex');
+		SideNav.setFlex(createTemplateForComponent('AdminSidebar', () => import('./sidebar/AdminSidebar')));
 		SideNav.openFlex();
 	}, []);
 
