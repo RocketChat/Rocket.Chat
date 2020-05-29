@@ -156,7 +156,7 @@ Template.createChannel.helpers({
 		return roomTypes.roomTypesBeforeStandard();
 	},
 	roomTypesAfterStandard() {
-
+		return roomTypes.roomTypesAfterStandard();
 	},
 });
 
