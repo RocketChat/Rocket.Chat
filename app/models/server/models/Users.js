@@ -856,6 +856,21 @@ export class Users extends Base {
 		});
 	}
 
+	findBySAMLNameIdOrIdpSession(nameID, idpSession) {
+		return this.find({
+			$or: [
+				{ 'services.saml.nameID': nameID },
+				{ 'services.saml.idpSession': idpSession },
+			],
+		});
+	}
+
+	findBySAMLInResponseTo(inResponseTo) {
+		return this.find({
+			'services.saml.inResponseTo': inResponseTo,
+		});
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -1302,6 +1317,16 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
+	removeSamlService(_id) {
+		const update = {
+			$unset: {
+				'services.saml': '',
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
 	updateDefaultStatus(_id, statusDefault) {
 		return this.update({
 			_id,
@@ -1309,6 +1334,16 @@ export class Users extends Base {
 		}, {
 			$set: {
 				statusDefault,
+			},
+		});
+	}
+
+	setSamlInResponseTo(_id, inResponseTo) {
+		this.update({
+			_id,
+		}, {
+			$set: {
+				'services.saml.inResponseTo': inResponseTo,
 			},
 		});
 	}

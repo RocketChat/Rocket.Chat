@@ -57,13 +57,7 @@ Meteor.methods({
 		// request.request: actual XML SAML Request
 		// request.id: comminucation id which will be mentioned in the ResponseTo field of SAMLResponse
 
-		Meteor.users.update({
-			_id: Meteor.userId(),
-		}, {
-			$set: {
-				'services.saml.inResponseTo': request.id,
-			},
-		});
+		Users.setSamlInResponseTo(Meteor.userId(), request.id);
 
 		const _syncRequestToUrl = Meteor.wrapAsync(_saml.requestToUrl, _saml);
 		const result = _syncRequestToUrl(request.request, 'logout');

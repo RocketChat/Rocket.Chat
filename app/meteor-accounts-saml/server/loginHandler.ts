@@ -7,6 +7,7 @@ import { generateUsernameSuggestion } from '../../lib/server';
 import { _setUsername } from '../../lib/server/functions';
 import { SAMLUtils } from './lib/Utils';
 import { SAML } from './lib/SAML';
+import { Users } from '../../models/server';
 
 Accounts.registerLoginHandler('saml', function(loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken) {
@@ -39,7 +40,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 
 			// Check eppn
 			if (eduPersonPrincipalName) {
-				user = Meteor.users.findOne({
+				user = Users.findOne({
 					eppn: eduPersonPrincipalName,
 				});
 
@@ -98,7 +99,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 				}
 
 				const userId = Accounts.insertUserDoc({}, newUser);
-				user = Meteor.users.findOne(userId);
+				user = Users.findOne(userId);
 
 				if (loginResult.profile.channels) {
 					const channels = loginResult.profile.channels.split(',');
@@ -108,7 +109,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 
 			// If eppn is not exist then update
 			if (eppnMatch === false) {
-				Meteor.users.update({
+				Users.update({
 					_id: user._id,
 				}, {
 					$set: {
@@ -119,10 +120,9 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 
 			// creating the token and adding to the user
 			const stampedToken = Accounts._generateStampedLoginToken();
-			Meteor.users.update(user, {
-				$push: {
-					'services.resume.loginTokens': stampedToken,
-				},
+			Users.addPersonalAccessTokenToUser({
+				userId: user._id,
+				loginTokenObject: stampedToken,
 			});
 
 			const samlLogin = {
@@ -157,7 +157,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 				updateData.roles = globalRoles;
 			}
 
-			Meteor.users.update({
+			Users.update({
 				_id: user._id,
 			}, {
 				$set: updateData,

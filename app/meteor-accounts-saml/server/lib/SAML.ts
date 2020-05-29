@@ -75,21 +75,8 @@ export class SAML {
 	static _logoutRemoveTokens(userId: string): void {
 		SAMLUtils.log(`Found user ${ userId }`);
 
-		Meteor.users.update({
-			_id: userId,
-		}, {
-			$set: {
-				'services.resume.loginTokens': [],
-			},
-		});
-
-		Meteor.users.update({
-			_id: userId,
-		}, {
-			$unset: {
-				'services.saml': '',
-			},
-		});
+		Users.unsetLoginTokens(userId);
+		Users.removeSamlService(userId);
 	}
 
 	static processLogoutRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
@@ -105,16 +92,18 @@ export class SAML {
 			}
 
 			const logOutUser = (samlInfo: Record<string, string | null>): void => {
-				const loggedOutUser = Meteor.users.find({
-					$or: [
-						{ 'services.saml.nameID': samlInfo.nameID },
-						{ 'services.saml.idpSession': samlInfo.idpSession },
-					],
-				}).fetch();
-
-				if (loggedOutUser.length === 1) {
-					this._logoutRemoveTokens(loggedOutUser[0]._id);
+				const cursor = Users.findBySAMLNameIdOrIdpSession(samlInfo.nameID, samlInfo.idpSession);
+				const count = cursor.count();
+				if (count > 1) {
+					throw new Meteor.Error('Found multiple users matching SAML session');
 				}
+
+				if (count === 0) {
+					throw new Meteor.Error('Invalid logout request: no user associaited with session.');
+				}
+
+				const loggedOutUser = cursor.fetch();
+				this._logoutRemoveTokens(loggedOutUser[0]._id);
 			};
 
 			fiber(() => logOutUser(result)).run();
@@ -159,10 +148,7 @@ export class SAML {
 			const logOutUser = (inResponseTo: string): void => {
 				SAMLUtils.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
 
-				const cursor = Users.find({
-					'services.saml.inResponseTo': inResponseTo,
-				});
-
+				const cursor = Users.findBySAMLInResponseTo(inResponseTo);
 				const count = cursor.count();
 				if (count > 1) {
 					throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
