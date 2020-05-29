@@ -1,7 +1,11 @@
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { Meteor } from 'meteor/meteor';
+
+import { Apps } from '../../../apps/server';
+import { callbacks } from '../../../callbacks/server';
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
-import { callbacks } from '../../../callbacks/server';
 
 const generateSubscription = (fname, name, user, extra) => ({
 	alert: false,
@@ -40,7 +44,7 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	const isNewRoom = !room;
 
-	const rid = room?._id || Rooms.insert({
+	const roomInfo = {
 		...uids.length === 2 && { _id: uids.join('') }, // Deprecated: using users' _id to compose the room _id is deprecated
 		t: 'd',
 		usernames,
@@ -49,7 +53,34 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 		ts: new Date(),
 		uids,
 		...roomExtraData,
-	});
+	};
+
+	if (isNewRoom) {
+		roomInfo._USERNAMES = usernames;
+
+		const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', roomInfo).catch((error) => {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		}));
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
+		}
+
+		let result;
+		result = Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', roomInfo));
+		result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', result));
+
+		if (typeof result === 'object') {
+			Object.assign(roomInfo, result);
+		}
+
+		delete roomInfo._USERNAMES;
+	}
+
+	const rid = room?._id || Rooms.insert(roomInfo);
 
 	if (members.length === 1) { // dm to yourself
 		Subscriptions.upsert({ rid, 'u._id': members[0]._id }, {
@@ -80,6 +111,8 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 		const insertedRoom = Rooms.findOneById(rid);
 
 		callbacks.run('afterCreateDirectRoom', insertedRoom, { members });
+
+		Apps.triggerEvent('IPostRoomCreate', insertedRoom);
 	}
 
 	return {
