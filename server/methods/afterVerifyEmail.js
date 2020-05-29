@@ -1,4 +1,6 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+
+import { Users, Roles } from '../../app/models';
 
 Meteor.methods({
 	afterVerifyEmail() {
@@ -6,17 +8,22 @@ Meteor.methods({
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'afterVerifyEmail'
+				method: 'afterVerifyEmail',
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
+		if (user && user.emails && Array.isArray(user.emails)) {
+			const verifiedEmail = user.emails.find((email) => email.verified);
+			const rolesToChangeTo = { anonymous: ['user'] };
+			const rolesThatNeedChanges = user.roles.filter((role) => rolesToChangeTo[role]);
 
-		const verifiedEmail = _.find(user.emails, (email) => email.verified);
-
-		if (verifiedEmail) {
-			RocketChat.models.Roles.addUserRoles(user._id, 'user');
-			RocketChat.models.Roles.removeUserRoles(user._id, 'anonymous');
+			if (rolesThatNeedChanges.length && verifiedEmail) {
+				rolesThatNeedChanges.forEach((role) => {
+					Roles.addUserRoles(user._id, rolesToChangeTo[role]);
+					Roles.removeUserRoles(user._id, role);
+				});
+			}
 		}
-	}
+	},
 });

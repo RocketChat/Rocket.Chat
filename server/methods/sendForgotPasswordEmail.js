@@ -1,44 +1,28 @@
-import s from 'underscore.string';
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+
+import { Users } from '../../app/models';
 
 Meteor.methods({
-	sendForgotPasswordEmail(email) {
-		check(email, String);
+	sendForgotPasswordEmail(to) {
+		check(to, String);
 
-		email = email.trim();
+		const email = to.trim();
 
-		const user = RocketChat.models.Users.findOneByEmailAddress(email);
+		const user = Users.findOneByEmailAddress(email, { fields: { _id: 1 } });
 
-		if (user) {
-			const regex = new RegExp(`^${ s.escapeRegExp(email) }$`, 'i');
-			email = (user.emails || []).map(item => item.address).find(userEmail => regex.test(userEmail));
-
-			if (RocketChat.settings.get('Forgot_Password_Customized')) {
-				const data = { name: user.name, email };
-				const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Forgot_Password_Email_Subject') || '', data);
-				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Forgot_Password_Email') || '', data);
-
-				Accounts.emailTemplates.resetPassword.subject = function(/*userModel*/) {
-					return subject;
-				};
-
-				Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
-					url = url.replace('/#/', '/');
-					return html.replace(/\[Forgot_Password_Url]/g, url);
-				};
-			}
-
-			try {
-				Accounts.sendResetPasswordEmail(user._id, email);
-			} catch (error) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
-					method: 'registerUser',
-					message: error.message
-				});
-			}
-
-			return true;
+		if (!user) {
+			return false;
 		}
 
-		return false;
-	}
+		try {
+			return !!Accounts.sendResetPasswordEmail(user._id, email);
+		} catch (error) {
+			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
+				method: 'registerUser',
+				message: error.message,
+			});
+		}
+	},
 });
