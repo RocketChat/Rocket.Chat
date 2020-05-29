@@ -90,7 +90,9 @@
         "@typescript-eslint/interface-name-prefix": [
           "error",
           "always"
-        ]
+        ],
+        "no-useless-constructor": "warn",
+        "@typescript-eslint/no-useless-constructor": "error"
       },
       "env": {
         "browser": true,

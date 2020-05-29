@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { CachedCollection } from '../../../ui-cached-collection';
-import { SettingsBase, SettingValue } from '../../lib/settings';
+import { ISettingsBase, SettingsBase, SettingValue } from '../../lib/settings';
 
 const cachedCollection = new CachedCollection({
 	name: 'public-settings',
@@ -11,7 +11,11 @@ const cachedCollection = new CachedCollection({
 	listenChangesForLoggedUsersOnly: true,
 });
 
-class Settings extends SettingsBase {
+class Settings extends SettingsBase implements ISettingsBase {
+	public constructor() {
+		super();
+	}
+
 	cachedCollection = cachedCollection
 
 	collection = cachedCollection.collection;
@@ -25,17 +29,17 @@ class Settings extends SettingsBase {
 	init(): void {
 		let initialLoad = true;
 		this.collection.find().observe({
-			added: (record: {_id: string; value: SettingValue}) => {
+			added: (record: { _id: string; value: SettingValue }) => {
 				Meteor.settings[record._id] = record.value;
 				this.dict.set(record._id, record.value);
 				this.load(record._id, record.value, initialLoad);
 			},
-			changed: (record: {_id: string; value: SettingValue}) => {
+			changed: (record: { _id: string; value: SettingValue }) => {
 				Meteor.settings[record._id] = record.value;
 				this.dict.set(record._id, record.value);
 				this.load(record._id, record.value, initialLoad);
 			},
-			removed: (record: {_id: string}) => {
+			removed: (record: { _id: string }) => {
 				delete Meteor.settings[record._id];
 				this.dict.set(record._id, null);
 				this.load(record._id, undefined, initialLoad);

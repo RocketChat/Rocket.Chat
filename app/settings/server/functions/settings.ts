@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { SettingsBase, SettingValue } from '../../lib/settings';
+import { ISettingsBase, SettingsBase, SettingValue } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
 
 const blockedSettings = new Set<string>();
@@ -113,12 +113,16 @@ type addGroupCallback = (this: {
 	section(section: string, cb: addSectionCallback): void;
 }) => void;
 
-class Settings extends SettingsBase {
+class Settings extends SettingsBase implements ISettingsBase {
 	private afterInitialLoad: Array<(settings: Meteor.Settings) => void> = [];
 
 	private _sorter: {[key: string]: number} = {};
 
 	private initialLoad = false;
+
+	public constructor() {
+		super();
+	}
 
 	/*
 	* Add a setting
