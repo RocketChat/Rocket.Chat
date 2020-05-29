@@ -139,6 +139,13 @@ export class SAML {
 	}
 
 	static processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
+		if (!req.query.SAMLResponse) {
+			SAMLUtils.log('-----RECEIVED PARAMS (Missing SAMLResponse)-----');
+			SAMLUtils.log(req.query);
+
+			throw new Error('Invalid LogoutResponse received. Additional information is available on the log if Debug mode is enabled.');
+		}
+
 		const serviceProvider = new SAMLServiceProvider(service);
 		serviceProvider.validateLogoutResponse(req.query.SAMLResponse, (err, inResponseTo) => {
 			if (err) {
