@@ -5,13 +5,21 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import * as Mailer from '../../app/mailer';
-import { settings } from '../../app/settings';
-import { callbacks } from '../../app/callbacks';
-import { Roles, Users, Settings } from '../../app/models';
-import { Users as UsersRaw } from '../../app/models/server/raw';
-import { addUserRoles } from '../../app/authorization';
-import { getAvatarSuggestionForUser } from '../../app/lib/server/functions';
+import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
+import { callbacks } from '../../../callbacks/server';
+import { Roles, Users, Settings } from '../../../models/server';
+import { Users as UsersRaw } from '../../../models/server/raw';
+import { addUserRoles } from '../../../authorization/server';
+import { getAvatarSuggestionForUser } from '../../../lib/server/functions';
+import {
+	isValidAttemptByUser,
+	saveFailedLoginAttempts,
+	saveSuccessfulLogin,
+	isValidLoginAttemptByIp,
+} from '../lib/restrictLoginAttempts';
+import { ILoginAttempt } from '../ILoginAttempt';
+import './settings';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -84,6 +92,7 @@ Meteor.startup(() => {
 });
 
 Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url, name: userModel.name });
 };
 
@@ -288,8 +297,18 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	return _id;
 });
 
-Accounts.validateLoginAttempt(function(login) {
+Accounts.validateLoginAttempt(function(login: ILoginAttempt) {
 	login = callbacks.run('beforeValidateLogin', login);
+	if (!Promise.await(isValidLoginAttemptByIp(login.connection.clientAddress))) {
+		throw new Meteor.Error('error-login-blocked-by-ip', 'Login has been temporarily blocked By IP', {
+			function: 'Accounts.validateLoginAttempt',
+		});
+	}
+	if (!Promise.await(isValidAttemptByUser(login))) {
+		throw new Meteor.Error('error-login-blocked-by-user', 'Login has been temporarily blocked By User', {
+			function: 'Accounts.validateLoginAttempt',
+		});
+	}
 
 	if (login.allowed !== true) {
 		return login.allowed;
@@ -385,3 +404,6 @@ Accounts.onLogin(async ({ user }) => {
 		Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
 	}
 });
+
+Accounts.onLoginFailure((login: ILoginAttempt) => saveFailedLoginAttempts(login));
+callbacks.add('afterValidateLogin', (login: ILoginAttempt) => saveSuccessfulLogin(login));

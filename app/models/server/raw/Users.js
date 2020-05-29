@@ -11,6 +11,12 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findOneByUsername(username, options) {
+		const query = { username };
+
+		return this.findOne(query, options);
+	}
+
 	findUsersInRolesWithQuery(roles, query, options) {
 		roles = [].concat(roles);
 
