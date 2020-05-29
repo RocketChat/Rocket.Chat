@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { Apps } from '../../../app/apps/client/orchestrator';
+import AppProvider from './AppProvider';
 import NotAuthorizedPage from '../NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';
 import MarketplacePage from './MarketplacePage';
@@ -36,9 +37,9 @@ export default function AppsRoute() {
 		appsWhatIsItRouter.push({});
 	}
 
-	return <>
+	return <AppProvider>
 		{!context && <MarketplacePage />}
 		{context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version}/>}
 		{context === 'logs' && <AppLogsPage id={id}/>}
-	</>;
+	</AppProvider>;
 }

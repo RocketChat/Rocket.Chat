@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import { AppEvents } from '../../../../app/apps/client/communication';
@@ -15,17 +15,17 @@ const registerListeners = (listeners) => {
 	};
 };
 
-/* TODO
- *	If order is reversed and search is performed, the result will return in the wrong order, then refresh correctly
- */
-export function useMarketplaceApps({ text, sort, current, itemsPerPage }) {
+export function useAppsData() {
 	const [data, setData] = useState({});
+
+	const [dataCache, setDataCache] = useState();
+
 	const ref = useRef();
 	ref.current = data;
 
-	const getDataCopy = () => ref.current.slice(0);
+	const invalidateData = () => setDataCache(new Date());
 
-	const stringifiedData = JSON.stringify(data);
+	const getDataCopy = () => ref.current.slice(0);
 
 	const handleAppAddedOrUpdated = async (appId) => {
 		try {
@@ -41,6 +41,7 @@ export function useMarketplaceApps({ text, sort, current, itemsPerPage }) {
 				marketplaceVersion: app.version,
 			};
 			setData(updatedData);
+			invalidateData();
 		} catch (error) {
 			handleAPIError(error);
 		}
@@ -60,6 +61,7 @@ export function useMarketplaceApps({ text, sort, current, itemsPerPage }) {
 			app.version = app.marketplaceVersion;
 
 			setData(updatedData);
+			invalidateData();
 		},
 		APP_STATUS_CHANGE: ({ appId, status }) => {
 			const updatedData = getDataCopy();
@@ -70,6 +72,7 @@ export function useMarketplaceApps({ text, sort, current, itemsPerPage }) {
 			}
 			app.status = status;
 			setData(updatedData);
+			invalidateData();
 		},
 	};
 
@@ -85,6 +88,7 @@ export function useMarketplaceApps({ text, sort, current, itemsPerPage }) {
 							...app,
 							status: undefined,
 							marketplaceVersion: app.version,
+							bundledIn: app.bundledIn,
 						};
 					}
 
@@ -93,11 +97,13 @@ export function useMarketplaceApps({ text, sort, current, itemsPerPage }) {
 						installed: true,
 						status: installedApp.status,
 						version: installedApp.version,
+						bundledIn: app.bundledIn,
 						marketplaceVersion: app.version,
 					};
 				});
 
 				setData(appsData.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)));
+				invalidateData();
 			} catch (e) {
 				handleAPIError(e);
 				unregisterListeners();
@@ -107,22 +113,5 @@ export function useMarketplaceApps({ text, sort, current, itemsPerPage }) {
 		return unregisterListeners;
 	}, []);
 
-	const filteredValues = useMemo(() => {
-		if (data.length) {
-			let filtered = sort[1] === 'asc' ? data : data.reverse();
-
-			filtered = text ? filtered.filter((app) => app.name.toLowerCase().indexOf(text.toLowerCase()) > -1) : filtered;
-
-			const filteredLength = filtered.length;
-
-			const sliceStart = current > filteredLength ? 0 : current;
-
-			filtered = filtered.slice(sliceStart, current + itemsPerPage);
-
-			return [filtered, filteredLength];
-		}
-		return [null, 0];
-	}, [text, sort[1], stringifiedData, current, itemsPerPage]);
-
-	return [...filteredValues];
+	return { data, dataCache };
 }

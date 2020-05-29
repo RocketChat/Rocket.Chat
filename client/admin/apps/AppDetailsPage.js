@@ -3,12 +3,12 @@ import { Button, ButtonGroup, Icon, Avatar, Box, Divider, Chip, Margins, Skeleto
 
 import Page from '../../components/basic/Page';
 import { useRoute } from '../../contexts/RouterContext';
-import { useMethod } from '../../contexts/ServerContext';
 import PriceDisplay from './PriceDisplay';
 import { AppStatus } from './AppStatus';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useAppInfo } from './hooks/useAppInfo';
 import { AppMenu } from './AppMenu';
+import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 
 const objectFit = { objectFit: 'contain' };
 
@@ -82,7 +82,7 @@ function AppDetailsPageContent({ data, setModal, isLoggedIn }) {
 				<Box fontScale='h1' textTransform='uppercase'>{t('Bundles')}</Box>
 				{bundledIn.map((bundle) => <Box key={bundle.bundleId} display='flex' flexDirection='row' alignItems='center'>
 					<Box width='x80' height='x80' display='flex' flexDirection='row' justifyContent='space-around' flexWrap='wrap' flexShrink={0}>
-						{bundle.apps.map((app) => <Avatar size='x36' url={app.latest.iconFileContent || `data:image/png;base64,${ app.latest.iconFileData }`} />)}
+						{bundle.apps.map((app) => <Avatar size='x36' key={app.latest.name} url={app.latest.iconFileContent || `data:image/png;base64,${ app.latest.iconFileData }`} />)}
 					</Box>
 					<Box display='flex' flexDirection='column' mis='x12'>
 						<Box fontScale='p2'>{bundle.bundleName}</Box>
@@ -112,8 +112,7 @@ export default function AppDetailsPage({ id }) {
 	const router = useRoute('admin-apps');
 	const handleReturn = useCallback(() => router.push({}));
 
-	const getLoggedInCloud = useMethod('cloud:checkUserLoggedIn');
-	const isLoggedIn = getLoggedInCloud();
+	const isLoggedIn = useLoggedInCloud();
 
 	const isLoading = Object.values(data).length === 0;
 

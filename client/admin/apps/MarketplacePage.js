@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useMethod } from '../../contexts/ServerContext';
+import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import MarketplaceTable from './MarketplaceTable';
 
 function MarketplacePage() {
@@ -13,12 +13,11 @@ function MarketplacePage() {
 
 	const cloudRouter = useRoute('cloud');
 
-	const getLoggedInCloud = useMethod('cloud:checkUserLoggedIn');
-	const isLoggedInCloud = getLoggedInCloud();
+	const isLoggedIn = useLoggedInCloud();
 
 	return <><Page flexDirection='column'>
 		<Page.Header title={t('Marketplace')}>
-			{isLoggedInCloud && <ButtonGroup>
+			{!isLoggedIn && <ButtonGroup>
 				<Button onClick={() => { cloudRouter.push({}); }}>
 					<Icon name='download'/> {t('Login')}
 				</Button>

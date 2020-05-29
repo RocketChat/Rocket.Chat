@@ -5,10 +5,10 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import PriceDisplay from './PriceDisplay';
 import { AppStatus } from './AppStatus';
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
-import { useMethod } from '../../contexts/ServerContext';
+import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useMarketplaceApps } from './hooks/useMarketplaceApps';
+import { useFilteredMarketplaceApps } from './hooks/useFilteredMarketplaceApps';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { AppMenu } from './AppMenu';
 
@@ -40,10 +40,9 @@ export function MarketplaceTable({ setModal }) {
 	const debouncedText = useDebouncedValue(params.text, 500);
 	const debouncedSort = useDebouncedValue(sort, 200);
 
-	const [data, total] = useMarketplaceApps({ sort: debouncedSort, text: debouncedText, ...params });
+	const [data, total] = useFilteredMarketplaceApps({ sort: debouncedSort, text: debouncedText, ...params });
 
-	const getLoggedInCloud = useMethod('cloud:checkUserLoggedIn');
-	const isLoggedIn = getLoggedInCloud();
+	const isLoggedIn = useLoggedInCloud();
 
 	const router = useRoute('admin-apps');
 

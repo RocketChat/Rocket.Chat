@@ -1,95 +1,36 @@
-import { useState, useEffect } from 'react';
-import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useState, useEffect, useContext } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
-import { AppEvents } from '../../../../app/apps/client/communication';
+import { AppDataContext } from '../AppProvider';
 import { handleAPIError } from '../helpers';
 
-const getBundledIn = async (bundledIn) => {
+const getBundledIn = async (appId, appVersion) => {
 	try {
+		const { bundledIn } = await Apps.getLatestAppFromMarketplace(appId, appVersion);
 		bundledIn && await Promise.all(bundledIn.map((bundle, i) => Apps.getAppsOnBundle(bundle.bundleId).then((value) => {
 			bundle.apps = value.slice(0, 4);
 			bundledIn[i] = bundle;
 		})));
+		return bundledIn;
 	} catch (e) {
 		handleAPIError(e);
 	}
-
-	return bundledIn;
 };
 
-const attachMarketplaceInfo = async (app) => {
-	try {
-		const {
-			categories,
-			isPurchased,
-			price,
-			bundledIn,
-			purchaseType,
-			subscriptionInfo,
-			version: marketplaceVersion,
-		} = await Apps.getLatestAppFromMarketplace(app.id, app.version);
+export const useAppInfo = (appId) => {
+	const { data, dataCache } = useContext(AppDataContext);
 
-		const bundledInWithApps = await getBundledIn(bundledIn);
-		return { ...app, categories, isPurchased, price, purchaseType, subscriptionInfo, marketplaceVersion, bundledIn: bundledInWithApps };
-	} catch (error) {
-		if (error.xhr && error.xhr.status === 404) {
-			return;
-		}
-
-		handleAPIError(error);
-	}
-};
-
-const loadApp = async (id, setData) => {
-	let app;
-	try {
-		app = await Apps.getApp(id);
-
-		if (app) {
-			app.installed = true;
-
-			app = await attachMarketplaceInfo(app);
-
-			setData(app);
-			return;
-		}
-	} catch (error) {
-		console.log(error);
-	}
-
-	try {
-		app = await Apps.getAppFromMarketplace(id);
-	} catch (error) {
-		console.log(error);
-	}
-
-	const bundledIn = await getBundledIn(app.bundledIn);
-	setData({ ...app, installed: false, marketplaceVersion: app.version, bundledIn });
-};
-
-export const useAppInfo = (id) => {
-	const [data, setData] = useState({});
-
-	const handleChange = useDebouncedCallback(() => {
-		loadApp(id, setData);
-	}, 100, []);
+	const [appData, setAppData] = useState({});
 
 	useEffect(() => {
-		loadApp(id, setData);
+		(async () => {
+			if (!data.length) { return; }
+			const app = data.find(({ id }) => id === appId);
+			const bundledIn = await getBundledIn(app.id, app.version);
 
-		Apps.getWsListener().registerListener(AppEvents.APP_ADDED, handleChange);
-		Apps.getWsListener().registerListener(AppEvents.APP_UPDATED, handleChange);
-		Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, handleChange);
-		Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, handleChange);
+			setAppData({ ...app, bundledIn });
+		})();
+	}, [dataCache]);
 
-		() => {
-			Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, handleChange);
-			Apps.getWsListener().unregisterListener(AppEvents.APP_UPDATED, handleChange);
-			Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, handleChange);
-			Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, handleChange);
-		};
-	}, []);
-
-	return data;
+	return appData;
 };

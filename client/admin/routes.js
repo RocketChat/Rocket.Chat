@@ -47,7 +47,6 @@ registerAdminRoute('/apps/what-is-it', {
 	lazyRouteComponent: () => import('./apps/AppsWhatIsIt'),
 });
 
-
 registerAdminRoute('/info', {
 	name: 'admin-info',
 	lazyRouteComponent: () => import('./info/InformationRoute'),
