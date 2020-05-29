@@ -150,7 +150,7 @@ export class ResponseParser {
 		if (typeof encAssertion !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
-			xmlenc.decrypt(encData, options, function(err, result: string) {
+			xmlenc.decrypt(encData, options, function(err: Error, result: string) {
 				if (err) {
 					console.error(err);
 				}
@@ -272,7 +272,7 @@ export class ResponseParser {
 
 		if (typeof encSubject !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
-			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result: string) {
+			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err: Error, result: string) {
 				if (err) {
 					console.error(err);
 				}

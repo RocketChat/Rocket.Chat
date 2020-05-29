@@ -4,9 +4,14 @@ import _ from 'underscore';
 
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
+// @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would cause )
+type NullableLogger = Logger | Null;
+
+
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
 let relayState: string | null = null;
+let logger: NullableLogger = null;
 
 const globalSettings = {
 	generateUsername: false,
@@ -50,6 +55,10 @@ export class SAMLUtils {
 
 	static setServiceProvidersList(list: Array<IServiceProviderOptions>): void {
 		providerList = list;
+	}
+
+	static setLoggerInstance(instance: NullableLogger): void {
+		logger = instance;
 	}
 
 	// TODO: Some of those should probably not be global
@@ -120,8 +129,20 @@ export class SAMLUtils {
 	}
 
 	static log(...args: Array<any>): void {
-		if (debug) {
-			console.log(...args);
+		if (debug && logger) {
+			logger.info(...args);
+		}
+	}
+
+	static error(...args: Array<any>): void {
+		if (logger) {
+			logger.error(...args);
+		}
+	}
+
+	static logUpdated(key: string): void {
+		if (logger) {
+			logger.updated(key);
 		}
 	}
 

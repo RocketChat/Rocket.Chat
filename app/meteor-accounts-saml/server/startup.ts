@@ -2,8 +2,19 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
 import { loadSamlServiceProviders } from './lib/settings';
+import { Logger } from '../../logger/server';
+import { SAMLUtils } from './lib/Utils';
 
 settings.addGroup('SAML');
+
+export const logger = new Logger('steffo:meteor-accounts-saml', {
+	methods: {
+		updated: {
+			type: 'info',
+		},
+	},
+});
+SAMLUtils.setLoggerInstance(logger);
 
 const debounce = (fn: Function, delay: number): () => number => {
 	let timer: number | null = null;
