@@ -263,7 +263,7 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
-  }
+	}
 
 	findOneByNonValidatedName(name, options) {
 		const room = this.findOneByName(name, options);

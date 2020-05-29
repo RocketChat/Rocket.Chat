@@ -177,48 +177,44 @@ describe('[Groups]', function() {
 
 	describe('/groups.addAll:', () => {
 		let testGroup;
-		beforeEach(async () => {
-			return request.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: `group.test.${ Date.now() }`,
-					readOnly: true,
-				})
-				.end((err, res) => {
-					testGroup = res.body.group;
-				});
-		});
-		it('should add all users of the server to the group', async () => {
-			return request.post(api('groups.addAll'))
-				.set(credentials)
-				.send({
-					roomId: testGroup._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('group._id');
-					expect(res.body).to.have.nested.property('group.name', testGroup.name);
-					expect(res.body).to.have.nested.property('group.t', 'p');
-				});
-		});
-		it('should add and mute all users of the server to the group when group is read-only', async () => {
-			return request.post(api('groups.addAll'))
-				.set(credentials)
-				.send({
-					roomId: testGroup._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('group._id');
-					expect(res.body).to.have.nested.property('group.name', testGroup.name);
-					expect(res.body).to.have.nested.property('group.t', 'p');
-					expect(res.body).to.have.nested.property('group.muted').and.to.be.an('array');
-				});
-		});
+		beforeEach(async () => request.post(api('groups.create'))
+			.set(credentials)
+			.send({
+				name: `group.test.${ Date.now() }`,
+				readOnly: true,
+			})
+			.end((err, res) => {
+				testGroup = res.body.group;
+			}));
+
+		it('should add all users of the server to the group', async () => request.post(api('groups.addAll'))
+			.set(credentials)
+			.send({
+				roomId: testGroup._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('group._id');
+				expect(res.body).to.have.nested.property('group.name', testGroup.name);
+				expect(res.body).to.have.nested.property('group.t', 'p');
+			}));
+
+		it('should add and mute all users of the server to the group when group is read-only', async () => request.post(api('groups.addAll'))
+			.set(credentials)
+			.send({
+				roomId: testGroup._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('group._id');
+				expect(res.body).to.have.nested.property('group.name', testGroup.name);
+				expect(res.body).to.have.nested.property('group.t', 'p');
+				expect(res.body).to.have.nested.property('group.muted').and.to.be.an('array');
+			}));
 	});
 
 	it('/groups.invite', async () => {
