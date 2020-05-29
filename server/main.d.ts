@@ -12,6 +12,10 @@ declare module 'meteor/accounts-base' {
 		function _bcryptRounds(): number;
 
 		function _getLoginToken(connectionId: string): string | undefined;
+
+		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): string;
+
+		function _generateStampedLoginToken(): {token: string; when: Date};
 	}
 }
 
