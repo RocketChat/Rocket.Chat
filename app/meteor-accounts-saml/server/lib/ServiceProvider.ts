@@ -153,7 +153,7 @@ export class SAMLServiceProvider {
 		SAMLUtils.inflateXml(samlRequest, (xml: string) => {
 			const parser = new LogoutRequestParser(this.serviceProviderOptions);
 			return parser.validate(xml, callback);
-		}, (err: object) => {
+		}, (err: string | object | null) => {
 			callback(err, null);
 		});
 	}
@@ -162,7 +162,7 @@ export class SAMLServiceProvider {
 		SAMLUtils.inflateXml(samlResponse, (xml: string) => {
 			const parser = new LogoutResponseParser(this.serviceProviderOptions);
 			return parser.validate(xml, callback);
-		}, (err: object) => {
+		}, (err: string | object | null) => {
 			callback(err, null);
 		});
 	}

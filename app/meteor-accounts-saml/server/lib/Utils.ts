@@ -125,12 +125,16 @@ export class SAMLUtils {
 		}
 	}
 
-	static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: object) => void): void {
+	static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: string | object | null) => void): void {
 		const buffer = new Buffer(base64Data, 'base64');
 		zlib.inflateRaw(buffer, (err, decoded) => {
 			if (err) {
 				this.log(`Error while inflating. ${ err }`);
 				return errorCallback(err);
+			}
+
+			if (!decoded) {
+				return errorCallback('Failed to extract request data');
 			}
 
 			const xmlString = this.convertArrayBufferToString(decoded);
