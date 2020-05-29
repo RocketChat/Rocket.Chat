@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 
 import { ChatPermissions } from './lib/ChatPermissions';
 import * as Models from '../../models';
-import { AuthorizationUtils } from '../lib/AuthorizationUtils';
+import { AuthorizationUtils } from './AuthorizationUtils';
 
 function atLeastOne(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
