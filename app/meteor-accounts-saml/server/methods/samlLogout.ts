@@ -39,20 +39,18 @@ Meteor.methods({
 			return;
 		}
 
-		// We store a nameID and an idpSession on the user object, but for some reason we use the idpSession for both attributes here
-		// I wonder if this is an error, but I'm afraid to change it and break things for everyone.
-		// let { nameID } = user.services.saml;
-		const sessionIndex = user.services.saml.idpSession;
-		const nameID = sessionIndex;
-
+		const { nameID, idpSession } = user.services.saml;
 		SAMLUtils.log(`NameID for user ${ Meteor.userId() } found: ${ JSON.stringify(nameID) }`);
 
 		const _saml = new SAMLServiceProvider(providerConfig);
 
 		const request = _saml.generateLogoutRequest({
-			nameID,
-			sessionIndex,
+			nameID: nameID || idpSession,
+			sessionIndex: idpSession,
 		});
+
+		SAMLUtils.log('----Logout Request----');
+		SAMLUtils.log(request);
 
 		// request.request: actual XML SAML Request
 		// request.id: comminucation id which will be mentioned in the ResponseTo field of SAMLResponse
