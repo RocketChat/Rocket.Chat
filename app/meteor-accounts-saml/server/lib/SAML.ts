@@ -2,6 +2,8 @@ import { ServerResponse } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Accounts } from 'meteor/accounts-base';
 import fiber from 'fibers';
 import s from 'underscore.string';
 
@@ -9,10 +11,11 @@ import { settings } from '../../../settings/server';
 import { Users, Rooms, CredentialTokens } from '../../../models/server';
 import { IUser } from '../../../../definition/IUser';
 import { IIncomingMessage } from '../../../../definition/IIncomingMessage';
-import { createRoom } from '../../../lib/server/functions';
+import { _setUsername, createRoom, generateUsernameSuggestion } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
+import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
@@ -250,7 +253,7 @@ export class SAML {
 		});
 	}
 
-	static findUser(username: string, emailRegex: RegExp): IUser | undefined {
+	static findUser(username: string | undefined, emailRegex: RegExp): IUser | undefined {
 		const { globalSettings } = SAMLUtils;
 
 		if (globalSettings.immutableProperty === 'Username') {
@@ -274,35 +277,6 @@ export class SAML {
 			.replace(/\s(.)/g, (u) => u.toUpperCase())
 			.replace(/^(.)/, (u) => u.toLowerCase())
 			.replace(/^\w/, (u) => u.toUpperCase());
-	}
-
-	static overwriteData(user: IUser, fullName: string, eppnMatch: boolean, emailList: Array<string>): void {
-		const { globalSettings } = SAMLUtils;
-
-		// Overwrite fullname if needed
-		if (globalSettings.nameOverwrite === true) {
-			Users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					name: fullName,
-				},
-			});
-		}
-
-		// Overwrite mail if needed
-		if (globalSettings.mailOverwrite === true && eppnMatch === true) {
-			Users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					emails: emailList.map((email) => ({
-						address: email,
-						verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
-					})),
-				},
-			});
-		}
 	}
 
 	static normalizeUsername(name: string): string {
@@ -349,5 +323,203 @@ export class SAML {
 
 	static storeCredential(credentialToken: string, loginResult: object): void {
 		CredentialTokens.create(credentialToken, loginResult);
+	}
+
+	static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
+		const { emailField, usernameField, nameField, userDataFieldMap, regexes } = SAMLUtils.getUserDataMapping();
+		const { defaultUserRole = 'user', roleAttributeName } = SAMLUtils.globalSettings;
+
+		const email = profile[emailField];
+		if (!email) {
+			throw new Error('SAML Profile did not contain an email address');
+		}
+
+		const userObject: ISAMLUser = {
+			customFields: new Map(),
+			samlLogin: {
+				provider: SAMLUtils.relayState,
+				idp: profile.issuer,
+				idpSession: profile.sessionIndex,
+				nameID: profile.nameID,
+			},
+			emailList: Array.isArray(email) ? email : [email],
+			fullName: SAMLUtils.getProfileValue(profile, nameField, regexes.name) || profile.displayName || profile.username,
+			roles: [].concat(defaultUserRole.split(',')),
+			eppn: profile.eppn,
+		};
+
+		if (profile[usernameField]) {
+			const profileUsername = SAMLUtils.getProfileValue(profile, usernameField, regexes.username);
+			if (profileUsername) {
+				userObject.username = SAML.normalizeUsername(profileUsername);
+			}
+		}
+
+		if (roleAttributeName && profile[roleAttributeName]) {
+			userObject.roles = [].concat(profile[roleAttributeName]);
+		}
+
+		const languages = TAPi18n.getLanguages();
+		if (languages[profile.language]) {
+			userObject.language = profile.language;
+		}
+
+		if (profile.channels) {
+			userObject.channels = profile.channels.split(',');
+		}
+
+		for (const field in userDataFieldMap) {
+			if (!userDataFieldMap.hasOwnProperty(field)) {
+				continue;
+			}
+
+			if (profile[field]) {
+				const rcField = userDataFieldMap[field];
+				const value = SAMLUtils.getProfileValue(profile, field, regexes[rcField]);
+				userObject.customFields.set(rcField, value);
+			}
+		}
+
+		return userObject;
+	}
+
+	static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
+		// @ts-ignore RegExp.escape is a meteor method
+		const escapeRegexp = (email: string): string => RegExp.escape(email);
+		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite } = SAMLUtils.globalSettings;
+
+		let eppnMatch = false;
+		let user = null;
+
+		// First, try searching by eppn
+		if (userObject.eppn) {
+			user = Users.findOne({
+				eppn: userObject.eppn,
+			});
+
+			if (user) {
+				eppnMatch = true;
+			}
+		}
+
+		// Second, try searching by username or email (according to the setting)
+		if (!user) {
+			const expression = userObject.emailList.map((email) => `^${ escapeRegexp(email) }$`).join('|');
+			const emailRegex = new RegExp(expression, 'i');
+
+			user = SAML.findUser(userObject.username, emailRegex);
+		}
+
+		const emails = userObject.emailList.map((email) => ({
+			address: email,
+			verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
+		}));
+		const globalRoles = userObject.roles;
+
+		let { username } = userObject;
+
+		if (!user) {
+			const newUser: Record<string, any> = {
+				name: userObject.fullName,
+				active: true,
+				eppn: userObject.eppn,
+				globalRoles,
+				emails,
+				services: {},
+			};
+
+			if (generateUsername === true) {
+				username = generateUsernameSuggestion(newUser);
+			}
+
+			if (username) {
+				newUser.username = username;
+				newUser.name = newUser.name || SAML.guessNameFromUsername(username);
+			}
+
+			if (userObject.language) {
+				newUser.language = userObject.language;
+			}
+
+			const userId = Accounts.insertUserDoc({}, newUser);
+			user = Users.findOne(userId);
+
+			if (userObject.channels) {
+				SAML.subscribeToSAMLChannels(userObject.channels, user);
+			}
+		}
+
+		// If the user was not found through the eppn property, then update it
+		if (eppnMatch === false) {
+			Users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					eppn: userObject.eppn,
+				},
+			});
+		}
+
+		// creating the token and adding to the user
+		const stampedToken = Accounts._generateStampedLoginToken();
+		Users.addPersonalAccessTokenToUser({
+			userId: user._id,
+			loginTokenObject: stampedToken,
+		});
+
+		const updateData: Record<string, any> = {
+			// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
+			'services.saml': userObject.samlLogin,
+		};
+
+		for (const [customField, value] of userObject.customFields) {
+			updateData[`customFields.${ customField }`] = value;
+		}
+
+		if (immutableProperty !== 'EMail') {
+			updateData.emails = emails;
+		}
+
+		if (roleAttributeSync) {
+			updateData.roles = globalRoles;
+		}
+
+		Users.update({
+			_id: user._id,
+		}, {
+			$set: updateData,
+		});
+
+		if (username) {
+			_setUsername(user._id, username);
+		}
+
+		// Overwrite fullname if needed
+		if (nameOverwrite === true) {
+			Users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					name: userObject.fullName,
+				},
+			});
+		}
+
+		// Overwrite mail if needed
+		if (mailOverwrite === true && (eppnMatch === true || immutableProperty !== 'EMail')) {
+			Users.update({
+				_id: user._id,
+			}, {
+				$set: {
+					emails,
+				},
+			});
+		}
+
+		// sending token along with the userId
+		return {
+			userId: user._id,
+			token: stampedToken.token,
+		};
 	}
 }
