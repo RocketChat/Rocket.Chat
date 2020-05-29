@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import _ from 'underscore';
@@ -5,8 +6,9 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Settings from './Settings';
+import { IRoomsRepository } from '../../lib';
 
-export class LivechatRooms extends Base {
+export class LivechatRooms extends Base implements IRoomsRepository {
 	constructor(...args) {
 		super(...args);
 
