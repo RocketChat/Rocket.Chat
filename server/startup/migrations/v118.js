@@ -1,5 +1,5 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Subscriptions, Settings, Users } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Subscriptions, Settings, Users } from '../../../app/models';
 
 Migrations.add({
 	version: 118,
@@ -12,7 +12,7 @@ Migrations.add({
 				emailNotifications: 'mentions',
 			},
 		}, {
-			multi:true,
+			multi: true,
 		});
 
 		Users.update({
@@ -22,7 +22,7 @@ Migrations.add({
 				'settings.preferences.emailNotificationMode': 'nothing',
 			},
 		}, {
-			multi:true,
+			multi: true,
 		});
 
 		Users.update({
@@ -32,7 +32,7 @@ Migrations.add({
 				'settings.preferences.emailNotificationMode': 'mentions',
 			},
 		}, {
-			multi:true,
+			multi: true,
 		});
 
 		Settings.update({

@@ -1,6 +1,6 @@
 // Migration to give delete channel, delete group permissions to owner
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Permissions } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Permissions } from '../../../app/models';
 
 Migrations.add({
 	version: 111,

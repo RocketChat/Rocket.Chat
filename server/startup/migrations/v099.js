@@ -1,13 +1,15 @@
+import fs from 'fs';
+import path from 'path';
+
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
-import { RocketChatFile } from 'meteor/rocketchat:file';
-import { SystemLogger } from 'meteor/rocketchat:logger';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Uploads, Settings, Users } from 'meteor/rocketchat:models';
-import fs from 'fs';
-import path from 'path';
+
+import { RocketChatFile } from '../../../app/file';
+import { SystemLogger } from '../../../app/logger';
+import { FileUpload } from '../../../app/file-upload';
+import { Migrations } from '../../../app/migrations';
+import { Uploads, Settings, Users } from '../../../app/models';
 
 function log(...args) {
 	console.log('[AVATAR]', ...args);

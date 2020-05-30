@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages } from 'meteor/rocketchat:models';
+
+import { Messages } from '../../../../../app/models';
 import { ReadReceipt } from '../../lib/ReadReceipt';
 
 Meteor.methods({

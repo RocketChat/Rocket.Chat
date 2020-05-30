@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Rooms, Subscriptions, Messages, Settings, OEmbedCache } from 'meteor/rocketchat:models';
+
+import { Migrations } from '../../../app/migrations';
+import { Rooms, Subscriptions, Messages, Settings, OEmbedCache } from '../../../app/models';
 
 Migrations.add({
 	version: 9,
@@ -39,7 +40,7 @@ Migrations.add({
 				// use upsert to account for GENERAL room created by initialData
 				target.upsert({
 					_id: doc._id,
-				}, doc)
+				}, doc),
 			);
 
 			const rawSource = source.rawCollection();

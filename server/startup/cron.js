@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Logger } from 'meteor/rocketchat:logger';
-import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { statistics } from 'meteor/rocketchat:statistics';
-import { settings } from 'meteor/rocketchat:settings';
+
+import { Logger } from '../../app/logger';
+import { getWorkspaceAccessToken } from '../../app/cloud/server';
+import { statistics } from '../../app/statistics';
+import { settings } from '../../app/settings';
 
 const logger = new Logger('SyncedCron');
 
@@ -44,23 +45,34 @@ function cleanupOEmbedCache() {
 	return Meteor.call('OEmbedCacheCleanup');
 }
 
+const name = 'Generate and save statistics';
+
 Meteor.startup(function() {
 	return Meteor.defer(function() {
-		generateStatistics();
+		let TroubleshootDisableStatisticsGenerator;
+		settings.get('Troubleshoot_Disable_Statistics_Generator', (key, value) => {
+			if (TroubleshootDisableStatisticsGenerator === value) { return; }
+			TroubleshootDisableStatisticsGenerator = value;
 
-		SyncedCron.add({
-			name: 'Generate and save statistics',
-			schedule(parser) {
-				return parser.cron(`${ new Date().getMinutes() } * * * *`);
-			},
-			job: generateStatistics,
+			if (value) {
+				return SyncedCron.remove(name);
+			}
+
+			generateStatistics();
+
+			SyncedCron.add({
+				name,
+				schedule(parser) {
+					return parser.cron('12 * * * *');
+				},
+				job: generateStatistics,
+			});
 		});
 
 		SyncedCron.add({
 			name: 'Cleanup OEmbed cache',
 			schedule(parser) {
-				const now = new Date();
-				return parser.cron(`${ now.getMinutes() } ${ now.getHours() } * * *`);
+				return parser.cron('24 2 * * *');
 			},
 			job: cleanupOEmbedCache,
 		});

@@ -1,5 +1,5 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Users, Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Users, Subscriptions, Rooms, Messages } from '../../../app/models';
 
 Migrations.add({
 	version: 3,
@@ -128,9 +128,8 @@ Migrations.add({
 				}, {
 					multi: true,
 				});
-			} else {
-				return Rooms.update(room._id, update);
 			}
+			return Rooms.update(room._id, update);
 		});
 
 		console.log('Fixing ChatMessage uid');

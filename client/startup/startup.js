@@ -3,13 +3,15 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { UserPresence } from 'meteor/konecty:user-presence';
-import { fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
-import { getUserPreference } from 'meteor/rocketchat:utils';
+import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
-import hljs from 'highlight.js';
+
+
+import hljs from '../../app/markdown/lib/hljs';
+import { fireGlobalEvent } from '../../app/ui-utils';
+import { getUserPreference } from '../../app/utils';
 import 'highlight.js/styles/github.css';
+import { syncUserdata } from '../lib/userData';
 
 hljs.initHighlightingOnLoad();
 
@@ -21,6 +23,8 @@ if (window.DISABLE_ANIMATION) {
 }
 
 Meteor.startup(function() {
+	Accounts.onLogout(() => Session.set('openedRoom', null));
+
 	TimeSync.loggingEnabled = false;
 
 	Session.setDefault('AvatarRandom', 0);
@@ -28,28 +32,17 @@ Meteor.startup(function() {
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
 
-	Tracker.autorun(function(computation) {
-		if (!Meteor.userId() && !settings.get('Accounts_AllowAnonymousRead')) {
-			return;
-		}
-		Meteor.subscribe('userData');
-		Meteor.subscribe('activeUsers');
-		computation.stop();
-	});
-
 	let status = undefined;
-	Tracker.autorun(function() {
-		if (!Meteor.userId()) {
+	Tracker.autorun(async function() {
+		const uid = Meteor.userId();
+		if (!uid) {
 			return;
 		}
-		const user = Users.findOne(Meteor.userId(), {
-			fields: {
-				status: 1,
-				'settings.preferences.idleTimeLimit': 1,
-				'settings.preferences.enableAutoAway': 1,
-			},
-		});
+		if (!Meteor.status().connected) {
+			return;
+		}
 
+		const user = await syncUserdata(uid);
 		if (!user) {
 			return;
 		}

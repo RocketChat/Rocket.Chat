@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
+
+import { Migrations } from '../../../app/migrations';
+import { Rooms, Subscriptions, Users } from '../../../app/models';
 
 Migrations.add({
 	version: 130,
@@ -15,7 +16,7 @@ Migrations.add({
 			},
 			{
 				multi: true,
-			}
+			},
 		);
 
 		Rooms.find(
@@ -26,10 +27,10 @@ Migrations.add({
 				fields: {
 					_id: 1,
 				},
-			}
+			},
 		).forEach(({ _id }) => {
 			const usersCount = Subscriptions.findByRoomId(
-				_id
+				_id,
 			).count();
 
 			Rooms._db.originals.update(
@@ -40,7 +41,7 @@ Migrations.add({
 					$set: {
 						usersCount,
 					},
-				}
+				},
 			);
 		});
 
@@ -56,12 +57,12 @@ Migrations.add({
 				fields: {
 					name: 1,
 				},
-			}
+			},
 		).fetch();
 
 		const users = Users.find(
 			{ username: { $exists: true }, name: { $exists: true } },
-			{ fields: { username: 1, name: 1 } }
+			{ fields: { username: 1, name: 1 } },
 		).fetch();
 		const usersByUsername = users.reduce((obj, user) => {
 			obj[user.username] = user.name;
@@ -84,7 +85,7 @@ Migrations.add({
 						$set: {
 							fname: name,
 						},
-					}
+					},
 				);
 
 				resolve();
@@ -102,7 +103,7 @@ Migrations.add({
 				itens.length,
 				'of',
 				subscriptions.length,
-				'subscriptions'
+				'subscriptions',
 			);
 
 			if (itens.length) {

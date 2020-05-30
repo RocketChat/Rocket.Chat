@@ -1,6 +1,8 @@
 import _ from 'underscore';
 import { Accounts } from 'meteor/accounts-base';
-import { Users } from 'meteor/rocketchat:models';
+
+import { settings } from '../../app/settings/server';
+import { Users } from '../../app/models';
 
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 
@@ -13,11 +15,10 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		'meteor-developer',
 		'linkedin',
 		'twitter',
-		'sandstorm',
 	];
 
 	if (services.includes(serviceName) === false && serviceData._OAuthCustom !== true) {
-		return;
+		return orig_updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, ...args]);
 	}
 
 	if (serviceName === 'meteor-developer') {
@@ -36,7 +37,7 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		if (user != null) {
 			const findQuery = {
 				address: serviceData.email,
-				verified: true,
+				verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 			};
 
 			if (!_.findWhere(user.emails, findQuery)) {

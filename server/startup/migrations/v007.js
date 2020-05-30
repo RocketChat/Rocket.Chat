@@ -1,7 +1,8 @@
-import { OEmbed } from 'meteor/rocketchat:oembed';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Messages } from 'meteor/rocketchat:models';
 import _ from 'underscore';
+
+import { OEmbed } from '../../../app/oembed/server';
+import { Migrations } from '../../../app/migrations';
+import { Messages } from '../../../app/models';
 
 Migrations.add({
 	version: 7,

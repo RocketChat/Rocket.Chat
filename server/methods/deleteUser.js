@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Users } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { deleteUser } from 'meteor/rocketchat:lib';
+
+import { Users } from '../../app/models';
+import { hasPermission } from '../../app/authorization';
+import { deleteUser } from '../../app/lib';
 
 Meteor.methods({
 	deleteUser(userId) {
@@ -23,6 +24,12 @@ Meteor.methods({
 		const user = Users.findOneById(userId);
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
+				method: 'deleteUser',
+			});
+		}
+
+		if (user.type === 'app') {
+			throw new Meteor.Error('error-cannot-delete-app-user', 'Deleting app user is not allowed', {
 				method: 'deleteUser',
 			});
 		}

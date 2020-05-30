@@ -1,5 +1,5 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Uploads, Messages } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Uploads, Messages } from '../../../app/models';
 
 Migrations.add({
 	version: 113,
@@ -12,7 +12,7 @@ Migrations.add({
 			const filesToUpdate = Uploads.find(fileQuery);
 			filesToUpdate.forEach((file) => {
 				const messageQuery = {
-					'file._id' : file._id,
+					'file._id': file._id,
 				};
 				const message = Messages.findOne(messageQuery);
 				if (message) {

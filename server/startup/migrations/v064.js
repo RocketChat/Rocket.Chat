@@ -1,6 +1,7 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Messages } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
+
+import { Migrations } from '../../../app/migrations';
+import { Messages } from '../../../app/models';
 
 Migrations.add({
 	version: 64,
