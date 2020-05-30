@@ -5,7 +5,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { Rooms, Subscriptions } from '../../models';
 import { slashCommands } from '../../utils';
 import { settings } from '../../settings';
@@ -13,7 +14,6 @@ import { Notifications } from '../../notifications';
 
 function inviteAll(type) {
 	return function inviteAll(command, params, item) {
-
 		if (!/invite\-all-(to|from)/.test(command) || !Match.test(params, String)) {
 			return;
 		}
@@ -88,9 +88,11 @@ function inviteAll(type) {
 slashCommands.add('invite-all-to', inviteAll('to'), {
 	description: 'Invite_user_to_join_channel_all_to',
 	params: '#room',
+	permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
 });
 slashCommands.add('invite-all-from', inviteAll('from'), {
 	description: 'Invite_user_to_join_channel_all_from',
 	params: '#room',
+	permission: 'add-user-to-joined-room',
 });
 module.exports = inviteAll;

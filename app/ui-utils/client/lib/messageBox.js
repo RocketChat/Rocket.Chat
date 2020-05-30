@@ -26,7 +26,8 @@ class MessageBoxActions {
 			return false;
 		}
 
-		return (this.actions[group] = this.actions[group].filter((action) => !expression.test(action.id)));
+		this.actions[group] = this.actions[group].filter((action) => !expression.test(action.id));
+		return this.actions[group];
 	}
 
 	get(group) {
@@ -55,5 +56,5 @@ class MessageBoxActions {
 }
 
 export const messageBox = {
-	actions: new MessageBoxActions,
+	actions: new MessageBoxActions(),
 };

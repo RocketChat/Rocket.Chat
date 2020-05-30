@@ -8,7 +8,6 @@ import { updateUsersSubscriptions } from '../../../lib/server/lib/notifyUsersOnM
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 
 function notifyUsersOnReply(message, replies, room) {
-
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -26,7 +25,6 @@ const metaData = (message, parentMessage) => {
 };
 
 const notification = (message, room, replies) => {
-
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -40,22 +38,23 @@ const notification = (message, room, replies) => {
 
 const processThreads = (message, room) => {
 	if (!message.tmid) {
-		return;
+		return message;
 	}
 
 	const parentMessage = Messages.findOneById(message.tmid);
 	if (!parentMessage) {
-		return;
+		return message;
 	}
 
 	const replies = [
-		parentMessage.u._id,
-		...(parentMessage.replies || []),
+		...parentMessage.replies || [],
 	].filter((userId) => userId !== message.u._id);
 
 	notifyUsersOnReply(message, replies, room);
 	metaData(message, parentMessage);
 	notification(message, room, replies);
+
+	return message;
 };
 
 Meteor.startup(function() {

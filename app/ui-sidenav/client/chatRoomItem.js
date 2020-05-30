@@ -1,16 +1,12 @@
-import { Tracker } from 'meteor/tracker';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t } from '../../utils/client';
+import { t, roomTypes } from '../../utils/client';
 import { settings } from '../../settings/client';
-import { roomTypes } from '../../utils/client';
 import { Rooms } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 
 Template.chatRoomItem.helpers({
 	roomData() {
-		const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
 		const unread = this.unread > 0 ? this.unread : false;
 		// if (this.unread > 0 && (!hasFocus || openedRoom !== this.rid)) {
 		// 	unread = this.unread;
@@ -18,23 +14,24 @@ Template.chatRoomItem.helpers({
 
 		const roomType = roomTypes.getConfig(this.t);
 
-		const active = [this.rid, this._id].includes((id) => id === openedRoom);
-
 		const archivedClass = this.archived ? 'archived' : false;
 
-		const icon = this.t !== 'd' && roomTypes.getIcon(this);
+		const room = Rooms.findOne(this.rid);
+
+		const icon = roomTypes.getIcon(this.t === 'd' ? room : this);
 
 		const roomData = {
 			...this,
-			icon,
-			avatar: roomType.getAvatarPath(this),
-			username : this.name,
+			icon: icon !== 'at' && icon,
+			avatar: roomTypes.getConfig(this.t).getAvatarPath(room || this),
+			username: this.name,
 			route: roomTypes.getRouteLink(this.t, this),
 			name: roomType.roomName(this),
 			unread,
-			active,
+			active: false,
 			archivedClass,
 			status: this.t === 'd' || this.t === 'l',
+			isGroupChat: roomType.isGroupChat(room),
 		};
 		roomData.username = roomData.username || roomData.name;
 

@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { EmailReplyParser as reply } from 'emailreplyparser';
+import moment from 'moment';
+
 import { settings } from '../../../settings';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models';
 import { metrics } from '../../../metrics';
-import { EmailReplyParser as reply } from 'emailreplyparser';
+import { hasPermission } from '../../../authorization';
 import { sendMessage as _sendMessage } from '../functions';
-import moment from 'moment';
 
 export const processDirectEmail = function(email) {
 	function sendMessage(email) {
@@ -86,12 +88,18 @@ export const processDirectEmail = function(email) {
 		}
 
 		if ((room.muted || []).includes(user.username)) {
-			// room is muted
+			// user is muted
 			return false;
 		}
 
-		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
-			message.alias = user.name;
+		// room is readonly
+		if (room.ro === true) {
+			if (!hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
+				// Check if the user was manually unmuted
+				if (!(room.unmuted || []).includes(user.username)) {
+					return false;
+				}
+			}
 		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736

@@ -1,15 +1,15 @@
-import _ from 'underscore';
-import less from 'less';
-import Autoprefixer from 'less-plugin-autoprefix';
 import crypto from 'crypto';
 
+import _ from 'underscore';
+import less from 'less';
+import Autoprefixer from 'less-plugin-autoprefixer';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
-import { Inject } from 'meteor/meteorhacks:inject-initial';
 
 import { settings } from '../../settings';
 import { Logger } from '../../logger';
 import { getURL } from '../../utils/lib/getURL';
+import { injectIntoHead } from '../../ui-master/server';
 
 const logger = new Logger('rocketchat:theme', {
 	methods: {
@@ -26,7 +26,6 @@ export const theme = new class {
 	constructor() {
 		this.variables = {};
 		this.packageCallbacks = [];
-		this.files = ['server/colors.less'];
 		this.customCSS = '';
 		settings.add('css', '');
 		settings.addGroup('Layout');
@@ -59,9 +58,7 @@ export const theme = new class {
 	}
 
 	compile() {
-		let content = [this.getVariablesAsLess()];
-
-		content.push(...this.files.map((name) => Assets.getText(name)));
+		let content = [];
 
 		content.push(...this.packageCallbacks.map((name) => name()));
 
@@ -106,6 +103,7 @@ export const theme = new class {
 		this.variables[name] = {
 			type,
 			value,
+			editor,
 		};
 		if (persist) {
 			const config = {
@@ -119,15 +117,6 @@ export const theme = new class {
 			};
 			return settings.add(`theme-${ type }-${ name }`, value, config);
 		}
-
-	}
-
-	addPublicColor(name, value, section, editor = 'color', property) {
-		return this.addVariable('color', name, value, section, true, editor, ['color', 'expression'], property);
-	}
-
-	addPublicFont(name, value) {
-		return this.addVariable('font', name, value, 'Fonts', true);
 	}
 
 	getVariablesAsObject() {
@@ -135,13 +124,6 @@ export const theme = new class {
 			obj[name] = this.variables[name].value;
 			return obj;
 		}, {});
-	}
-
-	getVariablesAsLess() {
-		return Object.keys(this.variables).map((name) => {
-			const variable = this.variables[name];
-			return `@${ name }: ${ variable.value };`;
-		}).join('\n');
 	}
 
 	addPackageAsset(cb) {
@@ -152,12 +134,14 @@ export const theme = new class {
 	getCss() {
 		return settings.get('css') || '';
 	}
-};
+}();
 
-settings.get('css', (key, value = '') => {
-	currentHash = crypto.createHash('sha1').update(value).digest('hex');
-	currentSize = value.length;
-	Inject.rawHead('css-theme', `<link rel="stylesheet" type="text/css" href="${ getURL(`/theme.css?${ currentHash }`) }">`);
+Meteor.startup(() => {
+	settings.get('css', (key, value = '') => {
+		currentHash = crypto.createHash('sha1').update(value).digest('hex');
+		currentSize = value.length;
+		injectIntoHead('css-theme', `<link rel="stylesheet" type="text/css" href="${ getURL(`/theme.css?${ currentHash }`) }">`);
+	});
 });
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {

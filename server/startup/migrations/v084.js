@@ -5,7 +5,6 @@ Migrations.add({
 	version: 84,
 	up() {
 		if (Permissions) {
-
 			// Update permission name, copy values from old name
 			const oldPermission = Permissions.findOne('add-user-to-room');
 			if (oldPermission && oldPermission.roles.length) {
@@ -17,7 +16,6 @@ Migrations.add({
 
 	down() {
 		if (Permissions) {
-
 			// Revert permission name, copy values from updated name
 			const newPermission = Permissions.findOne('add-user-to-joined-room');
 			if (newPermission && newPermission.roles.length) {

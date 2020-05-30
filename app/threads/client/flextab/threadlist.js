@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+
 import { TabBar } from '../../../ui-utils/client';
 import { Subscriptions } from '../../../models/client';
 
@@ -16,6 +17,6 @@ Meteor.startup(function() {
 				return subscription.tunread && subscription.tunread.length && { body: subscription.tunread.length > 99 ? '99+' : subscription.tunread.length };
 			}
 		},
-		order: 0,
+		order: 2,
 	});
 });

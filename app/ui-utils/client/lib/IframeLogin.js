@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { settings } from '../../../settings';
 import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { HTTP } from 'meteor/http';
+
+import { settings } from '../../../settings';
 
 export class IframeLogin {
 	constructor() {

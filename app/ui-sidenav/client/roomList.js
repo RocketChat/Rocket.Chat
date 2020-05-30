@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '../../callbacks';
 import { Template } from 'meteor/templating';
+
+import { callbacks } from '../../callbacks';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
 import { settings } from '../../settings';
@@ -25,10 +26,11 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarShowUnread': 1,
 				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
+				messageViewMode: 1,
 			},
 		});
 
-		const sortBy = getUserPreference(user, 'sidebarSortby') || 'alphabetical';
+		const sortBy = getUserPreference(user, 'sidebarSortby') || 'activity';
 		const query = {
 			open: true,
 		};
@@ -123,11 +125,10 @@ Template.roomList.helpers({
 
 	noSubscriptionText() {
 		const instance = Template.instance();
-		return roomTypes.roomTypes[instance.data.identifier].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
-	},
-
-	showRoomCounter() {
-		return getUserPreference(Meteor.userId(), 'roomCounterSidebar');
+		if (instance.data.anonymous) {
+			return 'No_channels_yet';
+		}
+		return roomTypes.getConfig(instance.data.identifier).getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 });
 
@@ -135,8 +136,8 @@ const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
 	return {
-		lowerCaseName: name.toLowerCase(),
-		lowerCaseFName: fname.toLowerCase(),
+		lowerCaseName: String(name).toLowerCase(),
+		lowerCaseFName: String(fname).toLowerCase(),
 	};
 };
 

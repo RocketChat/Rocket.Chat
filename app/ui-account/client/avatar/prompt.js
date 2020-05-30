@@ -3,19 +3,20 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import s from 'underscore.string';
+import toastr from 'toastr';
+
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { SideNav } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { fileUploadHandler } from '../../../file-upload';
-import s from 'underscore.string';
-import toastr from 'toastr';
 
 Template.avatarPrompt.onCreated(function() {
 	const self = this;
-	self.suggestions = new ReactiveVar;
-	self.upload = new ReactiveVar;
+	self.suggestions = new ReactiveVar();
+	self.upload = new ReactiveVar();
 	self.getSuggestions = function() {
 		self.suggestions.set(undefined);
 		Meteor.call('getAvatarSuggestion', function(error, avatars) {

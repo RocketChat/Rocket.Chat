@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Permissions } from '../../models';
 
 Meteor.startup(() => {
@@ -9,8 +10,6 @@ Meteor.startup(() => {
 	];
 
 	for (const permission of permissions) {
-		if (!Permissions.findOneById(permission._id)) {
-			Permissions.upsert(permission._id, { $set: permission });
-		}
+		Permissions.create(permission._id, permission.roles);
 	}
 });

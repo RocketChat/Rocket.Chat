@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { OAuthApps, Users } from '../../../models';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
-import { API } from '../../../api';
+
+import { OAuthApps, Users } from '../../../models';
+import { API } from '../../../api/server';
 
 const oauth2server = new OAuth2Server({
 	accessTokensCollectionName: 'rocketchat_oauth_access_tokens',
@@ -42,20 +43,6 @@ oauth2server.routes.get('/oauth/userinfo', function(req, res) {
 		preffered_username: user.username,
 		updated_at: user._updatedAt,
 		picture: `${ Meteor.absoluteUrl() }avatar/${ user.username }`,
-	});
-});
-
-Meteor.publish('oauthClient', function(clientId) {
-	if (!this.userId) {
-		return this.ready();
-	}
-	return OAuthApps.find({
-		clientId,
-		active: true,
-	}, {
-		fields: {
-			name: 1,
-		},
 	});
 });
 

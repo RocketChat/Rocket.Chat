@@ -1,9 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import zlib from 'zlib';
-import xmlCrypto from 'xml-crypto';
 import crypto from 'crypto';
-import xmldom from 'xmldom';
 import querystring from 'querystring';
+
+import { Meteor } from 'meteor/meteor';
+import xmlCrypto from 'xml-crypto';
+import xmldom from 'xmldom';
 import xmlbuilder from 'xmlbuilder';
 import array2string from 'arraybuffer-to-string';
 import xmlenc from 'xml-encryption';
@@ -49,6 +50,8 @@ SAML.prototype.initialize = function(options) {
 		options.authnContext = 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
 	}
 
+	options.allowedClockDrift = parseInt(options.allowedClockDrift) || 0;
+
 	return options;
 };
 
@@ -56,7 +59,7 @@ SAML.prototype.generateUniqueID = function() {
 	const chars = 'abcdef0123456789';
 	let uniqueID = 'id-';
 	for (let i = 0; i < 20; i++) {
-		uniqueID += chars.substr(Math.floor((Math.random() * 15)), 1);
+		uniqueID += chars.substr(Math.floor(Math.random() * 15), 1);
 	}
 	return uniqueID;
 };
@@ -87,19 +90,23 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 		id = this.options.id;
 	}
 
-	let request =
-		`<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant }" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
-			this.options.entryPoint }">` +
-		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>\n`;
+	let request = `<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant }" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
+		this.options.entryPoint }">`
+		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>\n`;
 
 	if (this.options.identifierFormat) {
 		request += `<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="${ this.options.identifierFormat }" AllowCreate="true"></samlp:NameIDPolicy>\n`;
 	}
 
-	request +=
-		'<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="exact">' +
-		'<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>\n' +
-		'</samlp:AuthnRequest>';
+	if (this.options.customAuthnContext) {
+		const authnContextComparison = this.options.authnContextComparison || 'exact';
+		const authnContext = this.options.customAuthnContext;
+		request
+			+= `<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="${ authnContextComparison }">`
+			+ `<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ authnContext }</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>\n`;
+	}
+
+	request += '</samlp:AuthnRequest>';
 
 	return request;
 };
@@ -109,15 +116,15 @@ SAML.prototype.generateLogoutResponse = function() {
 	const instant = this.generateInstant();
 
 
-	const response = `${ '<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  ' +
-		'ID="' }${ id }" ` +
-		'Version="2.0" ' +
-		`IssueInstant="${ instant }" ` +
-		`Destination="${ this.options.idpSLORedirectURL }" ` +
-		'>' +
-		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>` +
-		'<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>' +
-		'</samlp:LogoutResponse>';
+	const response = `${ '<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  '
+		+ 'ID="' }${ id }" `
+		+ 'Version="2.0" '
+		+ `IssueInstant="${ instant }" `
+		+ `Destination="${ this.options.idpSLORedirectURL }" `
+		+ '>'
+		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>`
+		+ '<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>'
+		+ '</samlp:LogoutResponse>';
 
 	debugLog('------- SAML Logout response -----------');
 	debugLog(response);
@@ -126,7 +133,6 @@ SAML.prototype.generateLogoutResponse = function() {
 		response,
 		id,
 	};
-
 };
 
 SAML.prototype.generateLogoutRequest = function(options) {
@@ -138,20 +144,20 @@ SAML.prototype.generateLogoutRequest = function(options) {
 	const id = `_${ this.generateUniqueID() }`;
 	const instant = this.generateInstant();
 
-	const request = `${ '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  ' +
-		'ID="' }${ id }" ` +
-		'Version="2.0" ' +
-		`IssueInstant="${ instant }" ` +
-		`Destination="${ this.options.idpSLORedirectURL }" ` +
-		'>' +
-		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>` +
-		'<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ' +
-		'NameQualifier="http://id.init8.net:8080/openam" ' +
-		`SPNameQualifier="${ this.options.issuer }" ` +
-		`Format="${ this.options.identifierFormat }">${
-			options.nameID }</saml:NameID>` +
-		`<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">${ options.sessionIndex }</samlp:SessionIndex>` +
-		'</samlp:LogoutRequest>';
+	const request = `${ '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  '
+		+ 'ID="' }${ id }" `
+		+ 'Version="2.0" '
+		+ `IssueInstant="${ instant }" `
+		+ `Destination="${ this.options.idpSLORedirectURL }" `
+		+ '>'
+		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>`
+		+ '<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" '
+		+ 'NameQualifier="http://id.init8.net:8080/openam" '
+		+ `SPNameQualifier="${ this.options.issuer }" `
+		+ `Format="${ this.options.identifierFormat }">${
+			options.nameID }</saml:NameID>`
+		+ `<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">${ options.sessionIndex }</samlp:SessionIndex>`
+		+ '</samlp:LogoutRequest>';
 
 	debugLog('------- SAML Logout request -----------');
 	debugLog(request);
@@ -246,10 +252,8 @@ SAML.prototype.requestToUrl = function(request, operation, callback) {
 		if (operation === 'logout') {
 			// in case of logout we want to be redirected back to the Meteor app.
 			return callback(null, target);
-
-		} else {
-			callback(null, target);
 		}
+		callback(null, target);
 	});
 };
 
@@ -290,7 +294,6 @@ SAML.prototype.validateStatus = function(doc) {
 	const statusNodes = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusCode');
 
 	if (statusNodes.length) {
-
 		const statusNode = statusNodes[0];
 		const statusMessage = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage')[0];
 
@@ -311,12 +314,8 @@ SAML.prototype.validateStatus = function(doc) {
 	};
 };
 
-SAML.prototype.validateSignature = function(xml, cert) {
+SAML.prototype.validateSignature = function(xml, cert, signature) {
 	const self = this;
-
-	const doc = new xmldom.DOMParser().parseFromString(xml);
-	const signature = xmlCrypto.xpath(doc, '//*[local-name(.)=\'Signature\' and namespace-uri(.)=\'http://www.w3.org/2000/09/xmldsig#\']')[0];
-
 	const sig = new xmlCrypto.SignedXml();
 
 	sig.keyInfoProvider = {
@@ -333,6 +332,39 @@ SAML.prototype.validateSignature = function(xml, cert) {
 	return sig.checkSignature(xml);
 };
 
+SAML.prototype.validateSignatureChildren = function(xml, cert, parent) {
+	const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
+	const signatures = xmlCrypto.xpath(parent, xpathSigQuery);
+	let signature = null;
+
+	for (const sign of signatures) {
+		if (sign.parentNode !== parent) {
+			continue;
+		}
+
+		// Too many signatures
+		if (signature) {
+			return false;
+		}
+
+		signature = sign;
+	}
+
+	if (!signature) {
+		return false;
+	}
+
+	return this.validateSignature(xml, cert, signature);
+};
+
+SAML.prototype.validateResponseSignature = function(xml, cert, response) {
+	return this.validateSignatureChildren(xml, cert, response);
+};
+
+SAML.prototype.validateAssertionSignature = function(xml, cert, assertion) {
+	return this.validateSignatureChildren(xml, cert, assertion);
+};
+
 SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 	const compressedSAMLRequest = new Buffer(samlRequest, 'base64');
 	zlib.inflateRaw(compressedSAMLRequest, function(err, decoded) {
@@ -341,8 +373,10 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 			return callback(err, null);
 		}
 
-		debugLog(`LogoutRequest: ${ decoded }`);
-		const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
+		const xmlString = array2string(decoded);
+		debugLog(`LogoutRequest: ${ xmlString }`);
+
+		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');
 		if (!doc) {
 			return callback('No Doc Found');
 		}
@@ -353,15 +387,19 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 		}
 
 		try {
-			const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
-			const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
+			const sessionNode = request.getElementsByTagNameNS('*', 'SessionIndex')[0];
+			const nameIdNode = request.getElementsByTagNameNS('*', 'NameID')[0];
+
+			if (!nameIdNode) {
+				throw new Error('SAML Logout Request: No NameID node found');
+			}
 
 			const idpSession = sessionNode.childNodes[0].nodeValue;
 			const nameID = nameIdNode.childNodes[0].nodeValue;
 
 			return callback(null, { idpSession, nameID });
-
 		} catch (e) {
+			console.error(e);
 			debugLog(`Caught error: ${ e }`);
 
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
@@ -424,7 +462,7 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 				value = values[0].textContent;
 			} else {
 				value = [];
-				for (let j = 0;j < values.length;j++) {
+				for (let j = 0; j < values.length; j++) {
 					value.push(values[j].textContent);
 				}
 			}
@@ -448,18 +486,159 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 		profile.email = profile['urn:oid:1.2.840.113549.1.9.1'];
 	}
 
-	if (!profile.email && profile.mail) {
-		profile.email = profile.mail;
-	}
-
 	if (!profile.displayName && profile['urn:oid:2.16.840.1.113730.3.1.241']) {
 		profile.displayName = profile['urn:oid:2.16.840.1.113730.3.1.241'];
+	}
+
+	if (!profile.eppn && profile['urn:oid:1.3.6.1.4.1.5923.1.1.1.6']) {
+		profile.eppn = profile['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'];
+	}
+
+	if (!profile.email && profile.mail) {
+		profile.email = profile.mail;
 	}
 
 	if (!profile.cn && profile['urn:oid:2.5.4.3']) {
 		profile.cn = profile['urn:oid:2.5.4.3'];
 	}
+};
 
+SAML.prototype.validateAssertionConditions = function(assertion) {
+	const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
+	if (conditions && !this.validateNotBeforeNotOnOrAfterAssertions(conditions)) {
+		throw new Error('NotBefore / NotOnOrAfter assertion failed');
+	}
+};
+
+SAML.prototype.validateSubjectConditions = function(subject) {
+	const subjectConfirmation = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmation')[0];
+	if (subjectConfirmation) {
+		const subjectConfirmationData = subjectConfirmation.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmationData')[0];
+		if (subjectConfirmationData && !this.validateNotBeforeNotOnOrAfterAssertions(subjectConfirmationData)) {
+			throw new Error('NotBefore / NotOnOrAfter assertion failed');
+		}
+	}
+};
+
+SAML.prototype.validateNotBeforeNotOnOrAfterAssertions = function(element) {
+	const sysnow = new Date();
+	const allowedclockdrift = this.options.allowedClockDrift;
+
+	const now = new Date(sysnow.getTime() + allowedclockdrift);
+
+	if (element.hasAttribute('NotBefore')) {
+		const notBefore = element.getAttribute('NotBefore');
+
+		const date = new Date(notBefore);
+		if (now < date) {
+			return false;
+		}
+	}
+
+	if (element.hasAttribute('NotOnOrAfter')) {
+		const notOnOrAfter = element.getAttribute('NotOnOrAfter');
+		const date = new Date(notOnOrAfter);
+
+		if (now >= date) {
+			return false;
+		}
+	}
+
+	return true;
+};
+
+SAML.prototype.getAssertion = function(response) {
+	const allAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
+	const allEncrypedAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion');
+
+	if (allAssertions.length + allEncrypedAssertions.length > 1) {
+		throw new Error('Too many SAML assertions');
+	}
+
+	let assertion = allAssertions[0];
+	const encAssertion = allEncrypedAssertions[0];
+
+
+	if (typeof encAssertion !== 'undefined') {
+		const options = { key: this.options.privateKey };
+		xmlenc.decrypt(encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+			assertion = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+		});
+	}
+
+	if (!assertion) {
+		throw new Error('Missing SAML assertion');
+	}
+
+	return assertion;
+};
+
+SAML.prototype.verifySignatures = function(response, assertion, xml) {
+	if (!this.options.cert) {
+		return;
+	}
+
+	const signatureType = this.options.signatureValidationType;
+
+	const checkEither = signatureType === 'Either';
+	const checkResponse = signatureType === 'Response' || signatureType === 'All' || checkEither;
+	const checkAssertion = signatureType === 'Assertion' || signatureType === 'All' || checkEither;
+	let anyValidSignature = false;
+
+	if (checkResponse) {
+		debugLog('Verify Document Signature');
+		if (!this.validateResponseSignature(xml, this.options.cert, response)) {
+			if (!checkEither) {
+				debugLog('Document Signature WRONG');
+				throw new Error('Invalid Signature');
+			}
+		} else {
+			anyValidSignature = true;
+		}
+		debugLog('Document Signature OK');
+	}
+
+	if (checkAssertion) {
+		debugLog('Verify Assertion Signature');
+		if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
+			if (!checkEither) {
+				debugLog('Assertion Signature WRONG');
+				throw new Error('Invalid Assertion signature');
+			}
+		} else {
+			anyValidSignature = true;
+		}
+		debugLog('Assertion Signature OK');
+	}
+
+	if (checkEither && !anyValidSignature) {
+		debugLog('No Valid Signature');
+		throw new Error('No valid SAML Signature found');
+	}
+};
+
+SAML.prototype.getSubject = function(assertion) {
+	let subject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
+	const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
+
+	if (typeof encSubject !== 'undefined') {
+		const options = { key: this.options.privateKey };
+		xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+			subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+		});
+	}
+
+	return subject;
+};
+
+SAML.prototype.getIssuer = function(assertion) {
+	const issuers = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer');
+
+	if (issuers.length > 1) {
+		throw new Error('Too many Issuers');
+	}
+
+	return issuers[0];
 };
 
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
@@ -481,15 +660,12 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	}
 	debugLog('Status ok');
 
-	// Verify signature
-	debugLog('Verify signature');
-	if (self.options.cert && !self.validateSignature(xml, self.options.cert)) {
-		debugLog('Signature WRONG');
-		return callback(new Error('Invalid signature'), null, false);
+	const allResponses = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response');
+	if (allResponses.length !== 1) {
+		return callback(new Error('Too many SAML responses'), null, false);
 	}
-	debugLog('Signature OK');
 
-	const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response')[0];
+	const response = allResponses[0];
 	if (!response) {
 		const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
 
@@ -500,19 +676,15 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	}
 	debugLog('Got response');
 
-	let assertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')[0];
-	const encAssertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion')[0];
+	let assertion;
+	let issuer;
 
-	const options = { key: this.options.privateKey };
+	try {
+		assertion = this.getAssertion(response, callback);
 
-	if (typeof encAssertion !== 'undefined') {
-		xmlenc.decrypt(encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
-			assertion = new xmldom.DOMParser().parseFromString(result, 'text/xml');
-		});
-	}
-
-	if (!assertion) {
-		return callback(new Error('Missing SAML assertion'), null, false);
+		this.verifySignatures(response, assertion, xml);
+	} catch (e) {
+		return callback(e, null, false);
 	}
 
 	const profile = {};
@@ -521,19 +693,17 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 		profile.inResponseToId = response.getAttribute('InResponseTo');
 	}
 
-	const issuer = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')[0];
+	try {
+		issuer = this.getIssuer(assertion);
+	} catch (e) {
+		return callback(e, null, false);
+	}
+
 	if (issuer) {
 		profile.issuer = issuer.textContent;
 	}
 
-	let subject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
-	const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
-
-	if (typeof encSubject !== 'undefined') {
-		xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
-			subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
-		});
-	}
+	const subject = this.getSubject(assertion);
 
 	if (subject) {
 		const nameID = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')[0];
@@ -544,13 +714,24 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 				profile.nameIDFormat = nameID.getAttribute('Format');
 			}
 		}
+
+		try {
+			this.validateSubjectConditions(subject);
+		} catch (e) {
+			return callback(e, null, false);
+		}
+	}
+
+	try {
+		this.validateAssertionConditions(assertion);
+	} catch (e) {
+		return callback(e, null, false);
 	}
 
 	const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];
 
 	if (authnStatement) {
 		if (authnStatement.hasAttribute('SessionIndex')) {
-
 			profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
 			debugLog(`Session Index: ${ profile.sessionIndex }`);
 		} else {
@@ -587,7 +768,6 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 
 let decryptionCert;
 SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
-
 	if (!decryptionCert) {
 		decryptionCert = this.options.privateCert;
 	}
@@ -599,23 +779,13 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 
 	const metadata = {
 		EntityDescriptor: {
+			'@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+			'@xsi:schemaLocation': 'urn:oasis:names:tc:SAML:2.0:metadata https://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd',
 			'@xmlns': 'urn:oasis:names:tc:SAML:2.0:metadata',
 			'@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
 			'@entityID': this.options.issuer,
 			SPSSODescriptor: {
 				'@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-				SingleLogoutService: {
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-					'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-					'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-				},
-				NameIDFormat: this.options.identifierFormat,
-				AssertionConsumerService: {
-					'@index': '1',
-					'@isDefault': 'true',
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-					'@Location': callbackUrl,
-				},
 			},
 		},
 	};
@@ -652,6 +822,19 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 			],
 		};
 	}
+
+	metadata.EntityDescriptor.SPSSODescriptor.SingleLogoutService = {
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+		'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+		'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+	};
+	metadata.EntityDescriptor.SPSSODescriptor.NameIDFormat = this.options.identifierFormat;
+	metadata.EntityDescriptor.SPSSODescriptor.AssertionConsumerService = {
+		'@index': '1',
+		'@isDefault': 'true',
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+		'@Location': callbackUrl,
+	};
 
 	return xmlbuilder.create(metadata).end({
 		pretty: true,

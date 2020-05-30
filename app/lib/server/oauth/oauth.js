@@ -44,7 +44,7 @@ Accounts.registerLoginHandler(function(options) {
 			type: 'oauth',
 			error: new Meteor.Error(
 				Accounts.LoginCancelledError.numericError,
-				`No registered oauth service found for: ${ service.serviceName }`
+				`No registered oauth service found for: ${ service.serviceName }`,
 			),
 		};
 	}
@@ -53,5 +53,3 @@ Accounts.registerLoginHandler(function(options) {
 
 	return Accounts.updateOrCreateUserFromExternalService(service.serviceName, oauthResult.serviceData, oauthResult.options);
 });
-
-

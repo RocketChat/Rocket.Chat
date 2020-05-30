@@ -1,19 +1,19 @@
 import _ from 'underscore';
-
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 
-import { ChatMessages } from '../../../ui';
+import { chatMessages, ChatMessages } from '../../../ui';
 import { normalizeThreadMessage, call } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
-import { lazyloadtick } from '../../../lazy-load';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
-import { dropzoneEvents } from '../../../ui/client/views/app/room';
-import { upsert } from '../upsert';
+import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
+import { getUserPreference } from '../../../utils';
 
 const sort = { ts: 1 };
 
@@ -26,24 +26,28 @@ Template.thread.events({
 		return close && close();
 	},
 	'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }, i) => {
-		lazyloadtick();
 		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
-	}, 500),
+	}, 50),
 	'load img'() {
 		const { atBottom } = this;
 		atBottom && this.sendToBottom();
 	},
+	'click .toggle-hidden'(e) {
+		const id = e.currentTarget.dataset.message;
+		document.querySelector(`#thread-${ id }`).classList.toggle('message--ignored');
+	},
 });
 
 Template.thread.helpers({
+	...dropzoneHelpers,
 	threadTitle() {
 		return normalizeThreadMessage(Template.currentData().mainMessage);
 	},
 	mainMessage() {
 		return Template.parentData().mainMessage;
 	},
-	loading() {
-		return Template.instance().state.get('loading');
+	isLoading() {
+		return Template.instance().state.get('loading') !== false;
 	},
 	messages() {
 		const { Threads, state } = Template.instance();
@@ -51,27 +55,31 @@ Template.thread.helpers({
 		return Threads.find({ tmid }, { sort });
 	},
 	messageContext() {
-		const result = messageContext.apply(this);
+		const result = messageContext.call(this, { rid: this.mainMessage.rid });
 		return {
 			...result,
 			settings: {
 				...result.settings,
 				showReplyButton: false,
-				showreply:false,
+				showreply: false,
 			},
 		};
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid } } = this;
+		const { mainMessage: { rid, _id: tmid }, subscription } = this;
 
 		return {
+			subscription,
 			rid,
 			tmid,
 			onSend: (...args) => instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args),
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
 			onKeyDown: (...args) => instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args),
 		};
+	},
+	hideUsername() {
+		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
 });
 
@@ -80,7 +88,7 @@ Template.thread.onRendered(function() {
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 
-	this.chatMessages = new ChatMessages;
+	this.chatMessages = new ChatMessages();
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 
@@ -94,18 +102,9 @@ Template.thread.onRendered(function() {
 
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
-		this.state.set({
-			tmid,
-			loading: false,
-		});
-		this.loadMore();
-	});
-
-	this.autorun(() => {
-		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ tmid, _updatedAt: { $gt: new Date() } }, {
+		this.threadsObserve = Messages.find({ tmid, _hidden: { $ne: true } }, {
 			fields: {
 				collapsed: 0,
 				threadMsg: 0,
@@ -124,32 +123,62 @@ Template.thread.onRendered(function() {
 			},
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
+
+		this.loadMore();
 	});
 
 	this.autorun(() => {
 		const rid = this.state.get('rid');
 		const tmid = this.state.get('tmid');
 		this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
+		if (rid && tmid) {
+			chatMessages[`${ rid }-${ tmid }`] = this.chatMessages;
+		}
 	});
 
-	Tracker.afterFlush(() => {
-		this.autorun(async () => {
-			const { mainMessage } = Template.currentData();
-			this.state.set({
-				tmid: mainMessage._id,
-				rid: mainMessage.rid,
-			});
+
+	this.autorun(() => {
+		const { mainMessage, jump } = Template.currentData();
+		this.state.set({
+			tmid: mainMessage._id,
+			rid: mainMessage.rid,
+			jump,
 		});
+	});
+
+
+	this.autorun(() => {
+		const jump = this.state.get('jump');
+		const loading = this.state.get('loading');
+
+		if (jump && this.lastJump !== jump && loading === false) {
+			this.lastJump = jump;
+			this.find('.js-scroll-thread').style.scrollBehavior = 'smooth';
+			this.state.set('jump', null);
+			Tracker.afterFlush(() => {
+				const message = this.find(`#thread-${ jump }`);
+				message.classList.add('highlight');
+				const removeClass = () => {
+					message.classList.remove('highlight');
+					message.removeEventListener('animationend', removeClass);
+				};
+				message.addEventListener('animationend', removeClass);
+				setTimeout(() => {
+					message.scrollIntoView();
+				}, 300);
+			});
+		}
 	});
 });
 
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
 
-	this.state = new ReactiveDict();
+	this.state = new ReactiveDict({
+	});
 
 	this.loadMore = _.debounce(async () => {
-		if (this.state.get('loading')) {
+		if (this.state.get('loading') === true) {
 			return;
 		}
 
@@ -159,10 +188,11 @@ Template.thread.onCreated(async function() {
 
 		const messages = await call('getThreadMessages', { tmid });
 
-		upsert(this.Threads, messages);
+		upsertMessageBulk({ msgs: messages }, this.Threads);
 
-		this.state.set('loading', false);
-
+		Tracker.afterFlush(() => {
+			this.state.set('loading', false);
+		});
 	}, 500);
 });
 

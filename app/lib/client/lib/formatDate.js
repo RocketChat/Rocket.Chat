@@ -1,5 +1,5 @@
 import moment from 'moment';
-
+import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -13,7 +13,7 @@ const dayFormat = ['h:mm A', 'H:mm'];
 
 Meteor.startup(() => Tracker.autorun(() => {
 	clockMode = getUserPreference(Meteor.userId(), 'clockMode', false);
-	sameDay = dayFormat[clockMode - 1] || 'h:mm A';
+	sameDay = dayFormat[clockMode - 1] || settings.get('Message_TimeFormat');
 	lastDay = t('yesterday');
 }));
 
@@ -50,4 +50,4 @@ export const timeAgo = (date) => moment(date).calendar(null, {
 	sameElse,
 });
 
-export const formatDate = (time) => moment(time).format(settings.get('Message_DateFormat'));
+export const formatDate = mem((time) => moment(time).format(settings.get('Message_DateFormat')), { maxAge: 5000 });

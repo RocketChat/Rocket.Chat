@@ -1,87 +1,60 @@
 import _ from 'underscore';
-
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
-import { Blaze } from 'meteor/blaze';
+import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { Session } from 'meteor/session';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
-import { AutoTranslate } from '../../autotranslate/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
-import { t, roomTypes, getURL } from '../../utils';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { t, roomTypes } from '../../utils';
+import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
+import './message.html';
+import './messageThread.html';
+import { AutoTranslate } from '../../autotranslate/client';
 
-async function renderPdfToCanvas(canvasId, pdfLink) {
-	const isSafari = /constructor/i.test(window.HTMLElement) ||
-		((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari ||
-			(typeof window.safari !== 'undefined' && window.safari.pushNotification));
+const renderBody = (msg, settings) => {
+	const isSystemMessage = MessageTypes.isSystemMessage(msg);
+	const messageType = MessageTypes.getType(msg) || {};
 
-	if (isSafari) {
-		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
-		if (version <= 12) {
-			return;
-		}
+	if (messageType.render) {
+		msg = messageType.render(msg);
+	} else if (messageType.template) {
+		// render template
+	} else if (messageType.message) {
+		msg.msg = s.escapeHTML(msg.msg);
+		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
+	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
+		msg.html = msg.msg;
+		msg = callbacks.run('renderMentions', msg);
+		msg = msg.html;
+	} else {
+		msg = renderMessageBody(msg);
 	}
 
-	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) {
-		return;
+	if (isSystemMessage) {
+		msg.html = Markdown.parse(msg.html);
 	}
-	pdfLink = getURL(pdfLink);
-
-	const canvas = document.getElementById(canvasId);
-	if (!canvas) {
-		return;
-	}
-
-	const pdfjsLib = await import('pdfjs-dist');
-	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }pdf.worker.min.js`;
-
-	const loader = document.getElementById(`js-loading-${ canvasId }`);
-
-	if (loader) {
-		loader.style.display = 'block';
-	}
-
-	const pdf = await pdfjsLib.getDocument(pdfLink);
-	const page = await pdf.getPage(1);
-	const scale = 0.5;
-	const viewport = page.getViewport(scale);
-	const context = canvas.getContext('2d');
-	canvas.height = viewport.height;
-	canvas.width = viewport.width;
-	await page.render({
-		canvasContext: context,
-		viewport,
-	}).promise;
-
-	if (loader) {
-		loader.style.display = 'none';
-	}
-
-	canvas.style.maxWidth = '-webkit-fill-available';
-	canvas.style.maxWidth = '-moz-available';
-	canvas.style.display = 'block';
-}
+	return msg;
+};
 
 Template.message.helpers({
-	and(a, b) {
-		return a && b;
+	body() {
+		const { msg, settings } = this;
+		return Tracker.nonreactive(() => renderBody(msg, settings));
 	},
-	i18nKeyMessage() {
+	i18nReplyCounter() {
 		const { msg } = this;
-		return msg.dcount > 1
-			? 'messages'
-			: 'message';
+		return `<span class='reply-counter'>${ msg.tcount }</span>`;
 	},
-	i18nKeyReply() {
+	i18nDiscussionCounter() {
 		const { msg } = this;
-		return msg.tcount > 1
-			? 'replies'
-			: 'reply';
+		return `<span class='reply-counter'>${ msg.dcount }</span>`;
 	},
 	formatDateAndTime,
 	encodeURI(text) {
@@ -92,12 +65,14 @@ Template.message.helpers({
 		return !msg.private && !msg.t && msg.u._id !== u._id && room && room.broadcast;
 	},
 	isIgnored() {
-		const { msg } = this;
-		return msg.ignored;
+		const { ignored, msg } = this;
+		const isIgnored = typeof ignored !== 'undefined' ? ignored : msg.ignored;
+		return isIgnored;
 	},
 	ignoredClass() {
-		const { msg } = this;
-		return msg.ignored ? 'message--ignored' : '';
+		const { ignored, msg } = this;
+		const isIgnored = typeof ignored !== 'undefined' ? ignored : msg.ignored;
+		return isIgnored ? 'message--ignored' : '';
 	},
 	isDecrypting() {
 		const { msg } = this;
@@ -108,8 +83,8 @@ Template.message.helpers({
 		return msg.bot && 'bot';
 	},
 	roleTags() {
-		const { msg, hideRoles } = this;
-		if (hideRoles) {
+		const { msg, hideRoles, settings } = this;
+		if (settings.hideRoles || hideRoles) {
 			return [];
 		}
 
@@ -138,19 +113,9 @@ Template.message.helpers({
 	},
 	isGroupable() {
 		const { msg, room = {}, settings, groupable } = this;
-		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || MessageTypes.isSystemMessage(msg)) {
+		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || (MessageTypes.isSystemMessage(msg) && !msg.tmid)) {
 			return 'false';
 		}
-	},
-	sequentialClass() {
-		const { msg, groupable, settings: { showreply } } = this;
-		if (msg.tmid && showreply) {
-			return;
-		}
-		if (MessageTypes.isSystemMessage(msg)) {
-			return;
-		}
-		return groupable !== false && msg.groupable !== false && 'sequential';
 	},
 	avatarFromUsername() {
 		const { msg } = this;
@@ -158,6 +123,10 @@ Template.message.helpers({
 		if (msg.avatar != null && msg.avatar[0] === '@') {
 			return msg.avatar.replace(/^@/, '');
 		}
+	},
+	getStatus() {
+		const { msg } = this;
+		return Session.get(`user_${ msg.u.username }_status_text`);
 	},
 	getName() {
 		const { msg, settings } = this;
@@ -178,6 +147,10 @@ Template.message.helpers({
 		if (msg.u && msg.u._id === u._id) {
 			return 'own';
 		}
+	},
+	t() {
+		const { msg } = this;
+		return msg.t;
 	},
 	timestamp() {
 		const { msg } = this;
@@ -204,10 +177,7 @@ Template.message.helpers({
 			return 'temp';
 		}
 	},
-	body() {
-		return Template.instance().body;
-	},
-	normalizedBody() {
+	threadMessage() {
 		const { msg } = this;
 		return normalizeThreadMessage(msg);
 	},
@@ -227,25 +197,28 @@ Template.message.helpers({
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
 		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== u._id && !MessageTypes.isSystemMessage(msg)) {
-			const language = AutoTranslate.getLanguage(msg.rid);
 			const autoTranslate = subscription && subscription.autoTranslate;
-			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[language]);
+			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]);
 		}
 	},
+	translationProvider() {
+		const instance = Template.instance();
+		const { translationProvider } = instance.data.msg;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
+	},
 	edited() {
-		return Template.instance().wasEdited;
+		const { msg } = this;
+		return msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	},
 	editTime() {
 		const { msg } = this;
-		if (Template.instance().wasEdited) {
-			return DateFormat.formatDateAndTime(msg.editedAt);
-		}
+		return msg.editedAt ? DateFormat.formatDateAndTime(msg.editedAt) : '';
 	},
 	editedBy() {
-		if (!Template.instance().wasEdited) {
+		const { msg } = this;
+		if (!msg.editedAt) {
 			return '';
 		}
-		const { msg } = this;
 		// try to return the username of the editor,
 		// otherwise a special "?" character that will be
 		// rendered as a special avatar
@@ -256,7 +229,7 @@ Template.message.helpers({
 
 		if (msg.i18nLabel) {
 			return t(msg.i18nLabel);
-		} else if (msg.label) {
+		} if (msg.label) {
 			return msg.label;
 		}
 	},
@@ -279,7 +252,7 @@ Template.message.helpers({
 		return Object.entries(reactions)
 			.map(([emoji, reaction]) => {
 				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
-				const displayNames = (reaction.names || reaction.usernames.map((username) => `@${ username }`));
+				const displayNames = reaction.names || reaction.usernames.map((username) => `@${ username }`);
 				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
 
 				if (displayNames.some((displayName) => displayName === myDisplayName)) {
@@ -289,7 +262,7 @@ Template.message.helpers({
 				let usernames;
 
 				if (displayNames.length > 15) {
-					usernames = `${ selectedDisplayNames.join(', ') }${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
+					usernames = `${ selectedDisplayNames.join(', ') } ${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
 				} else if (displayNames.length > 1) {
 					usernames = `${ selectedDisplayNames.slice(0, -1).join(', ') } ${ t('and') } ${ selectedDisplayNames[selectedDisplayNames.length - 1] }`;
 				} else {
@@ -338,8 +311,14 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	injectMessage(data, { _id, rid }) {
+		data.msg = { _id, rid };
+	},
 	injectIndex(data, index) {
 		data.index = index;
+	},
+	injectSettings(data, settings) {
+		data.settings = settings;
 	},
 	channelName() {
 		const { subscription } = this;
@@ -353,9 +332,13 @@ Template.message.helpers({
 		}
 		return roomTypes.getIcon(room);
 	},
+	customClass() {
+		const { customClass, msg } = this;
+		return customClass || msg.customClass;
+	},
 	fromSearch() {
-		const { customClass } = this;
-		return customClass === 'search';
+		const { customClass, msg } = this;
+		return [msg.customClass, customClass].includes('search');
 	},
 	actionContext() {
 		const { msg } = this;
@@ -374,19 +357,19 @@ Template.message.helpers({
 			context = 'message';
 		}
 
-		return MessageAction.getButtons(msg, context, messageGroup);
+		return MessageAction.getButtons(this, context, messageGroup);
 	},
 	isSnippet() {
 		const { msg } = this;
 		return msg.actionContext === 'snippeted';
 	},
 	isThreadReply() {
-		const { msg: { tmid }, settings: { showreply } } = this;
-		return !!(tmid && showreply);
+		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
+		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
-		const { msg: { tmid, collapsed }, settings: { showreply } } = this;
-		const isCollapsedThreadReply = tmid && showreply && collapsed !== false;
+		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
+		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;
 		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
@@ -399,95 +382,51 @@ Template.message.helpers({
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
+	showStar() {
+		const { msg } = this;
+		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+	},
 });
 
 
 const findParentMessage = (() => {
-
 	const waiting = [];
-
+	const uid = Tracker.nonreactive(() => Meteor.userId());
 	const getMessages = _.debounce(async function() {
 		const _tmp = [...waiting];
 		waiting.length = 0;
-		const messages = await call('getMessages', _tmp);
-		messages.forEach((message) => {
-			if (!message) {
-				return;
-			}
-			const { _id, ...msg } = message;
-			Messages.update({ tmid: _id, repliesCount: { $exists: 0 } }, {
-				$set: {
-					threadMsg: normalizeThreadMessage(msg),
-					repliesCount: msg.tcount,
-				},
-			}, { multi: true });
-			if (!Messages.findOne({ _id })) {
-				/**
-				 * Delete rid from message to not render it and to not be considred in last message
-				 * find from load history method what was preveting the load of some messages in
-				 * between the reals last loaded message and this one if this one is older than
-				 * the real last loaded message.
-				 */
-				delete msg.rid;
-				Messages.upsert({ _id }, msg);
-			}
-		});
+		(await call('getMessages', _tmp)).map((msg) => Messages.findOne({ _id: msg._id }) || upsertMessage({ msg: { ...msg, _hidden: true }, uid }));
 	}, 500);
+
 
 	return (tmid) => {
 		if (waiting.indexOf(tmid) > -1) {
 			return;
 		}
-
 		const message = Messages.findOne({ _id: tmid });
-
-		if (message) {
-			return Messages.update({ tmid, repliesCount: { $exists: 0 } }, {
+		if (!message) {
+			waiting.push(tmid);
+			return getMessages();
+		}
+		return Messages.update(
+			{ tmid, repliesCount: { $exists: 0 } },
+			{
 				$set: {
+					following: message.replies && message.replies.indexOf(uid) > -1,
 					threadMsg: normalizeThreadMessage(message),
 					repliesCount: message.tcount,
 				},
-			}, { multi: true });
-		}
-
-		waiting.push(tmid);
-		getMessages();
+			},
+			{ multi: true },
+		);
 	};
 })();
 
-
-const renderBody = (msg, settings) => {
-	const isSystemMessage = MessageTypes.isSystemMessage(msg);
-	const messageType = MessageTypes.getType(msg) || {};
-
-	if (messageType.render) {
-		msg = messageType.render(msg);
-	} else if (messageType.template) {
-		// render template
-	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
-	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
-		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
-		msg = msg.html;
-	} else {
-		msg = renderMessageBody(msg);
-	}
-
-	if (isSystemMessage) {
-		msg.html = Markdown.parse(msg.html);
-	}
-	return msg;
-};
-
 Template.message.onCreated(function() {
-	const { msg, settings } = Template.currentData();
-
-	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
-	if (msg.tmid && !msg.threadMsg) {
+	const { msg, shouldCollapseReplies } = Template.currentData();
+	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	return this.body = renderBody(msg, settings);
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
@@ -505,83 +444,108 @@ const getPreviousSentMessage = (currentNode) => {
 	}
 };
 
-const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate) => {
-	const { classList, dataset: currentDataset } = currentNode;
-
-	if (!previousNode) {
-		classList.remove('sequential');
-		!noDate && classList.add('new-day');
-		return;
+const isNewDay = (currentNode, previousNode, forceDate, showDateSeparator) => {
+	if (!showDateSeparator) {
+		return false;
 	}
 
+	if (forceDate || !previousNode) {
+		return true;
+	}
+
+	const { dataset: currentDataset } = currentNode;
 	const { dataset: previousDataset } = previousNode;
 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
-	if (!noDate && (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString())) {
-		classList.remove('sequential');
-		classList.add('new-day');
+	if (previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+		return true;
 	}
 
-	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
-		return classList.remove('sequential');
+	return false;
+};
+
+const isSequential = (currentNode, previousNode, forceDate, period, showDateSeparator, shouldCollapseReplies) => {
+	if (!previousNode) {
+		return false;
+	}
+
+	if (showDateSeparator && forceDate) {
+		return false;
+	}
+
+	const { dataset: currentDataset } = currentNode;
+	const { dataset: previousDataset } = previousNode;
+	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
+	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
+
+	if (showDateSeparator && previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+		return false;
+	}
+
+	if (shouldCollapseReplies && currentDataset.tmid) {
+		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
+	}
+
+	if (previousDataset.tmid && !currentDataset.tmid) {
+		return false;
 	}
 
 	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
-		return classList.remove('sequential');
+		return false;
 	}
+
+	if (previousDataset.username !== currentDataset.username) {
+		return false;
+	}
+
+	if (previousDataset.alias !== currentDataset.alias) {
+		return false;
+	}
+
+	if (parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) <= period) {
+		return true;
+	}
+
+	return false;
 };
 
-Template.message.onViewRendered = function() {
-	const { settings, forceDate, noDate, groupable, msg } = messageArgs(Template.currentData());
-
-	if (noDate && !groupable) {
+const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, shouldCollapseReplies }) => {
+	if (!showDateSeparator && !groupable) {
 		return;
 	}
+	// const currentDataset = currentNode.dataset;
+	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
+	const nextNode = currentNode.nextElementSibling;
 
-	return this._domrange.onAttached((domRange) => {
-		if (msg.file && msg.file.type === 'application/pdf') {
-			Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
-		}
-		const currentNode = domRange.lastNode();
-		const currentDataset = currentNode.dataset;
-		const previousNode = getPreviousSentMessage(currentNode);
-		const nextNode = currentNode.nextElementSibling;
-		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, noDate);
-		if (nextNode && nextNode.dataset) {
-			const nextDataset = nextNode.dataset;
-			if (forceDate || nextDataset.date !== currentDataset.date) {
-				if (!noDate) {
-					currentNode.classList.add('new-day');
-				}
-				currentNode.classList.remove('sequential');
-			} else {
-				nextNode.classList.remove('new-day');
-			}
+	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
+		currentNode.classList.add('sequential');
+	} else {
+		currentNode.classList.remove('sequential');
+	}
 
-			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
-					nextNode.classList.remove('sequential');
-				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
-					nextNode.classList.add('sequential');
-				}
-			}
+	if (isNewDay(currentNode, previousNode, forceDate, showDateSeparator)) {
+		currentNode.classList.add('new-day');
+	} else {
+		currentNode.classList.remove('new-day');
+	}
 
-			if (currentNode.classList.contains('system')) {
-				nextNode.classList.remove('sequential');
-			}
+	if (nextNode && nextNode.dataset) {
+		if (isSequential(nextNode, currentNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
+			nextNode.classList.add('sequential');
 		} else {
-			const [el] = $(`#chat-window-${ msg.rid }`);
-			const view = el && Blaze.getView(el);
-			const templateInstance = view && view.templateInstance();
-			if (!templateInstance) {
-				return;
-			}
-
-			if (currentNode.classList.contains('own') === true) {
-				templateInstance.atBottom = true;
-			}
-			templateInstance.sendToBottomIfNecessary();
+			nextNode.classList.remove('sequential');
 		}
-	});
+
+		if (isNewDay(nextNode, currentNode, forceDate, showDateSeparator)) {
+			nextNode.classList.add('new-day');
+		} else {
+			nextNode.classList.remove('new-day');
+		}
+	}
 };
+
+Template.message.onRendered(function() {
+	const currentNode = this.firstNode;
+	this.autorun(() => processSequentials({ currentNode, ...Template.currentData() }));
+});

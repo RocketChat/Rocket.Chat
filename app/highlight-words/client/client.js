@@ -4,13 +4,12 @@
  */
 import _ from 'underscore';
 import s from 'underscore.string';
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from './helper';
 import { callbacks } from '../../callbacks';
 import { getUserPreference } from '../../utils';
-import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from './helper';
 
 Tracker.autorun(() => {
 	const toHighlight = (getUserPreference(Meteor.userId(), 'highlights') || []).filter((highlight) => !s.isBlank(highlight)).map((highlight) => ({

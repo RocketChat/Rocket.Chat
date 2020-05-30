@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../settings';
+
 import Bridge from './irc-bridge';
+import { settings } from '../../settings';
 
 if (!!settings.get('IRC_Enabled') === true) {
 	// Normalize the config values

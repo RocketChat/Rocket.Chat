@@ -24,7 +24,7 @@ Migrations.add({
 			},
 			$set: {
 				'settings.preferences.sidebarSortby': 'alphabetical',
-				'settings.preferences.sidebarShowUnread' : true,
+				'settings.preferences.sidebarShowUnread': true,
 				'settings.preferences.sidebarShowFavorites': true,
 			},
 		});

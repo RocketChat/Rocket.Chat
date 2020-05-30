@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
 import { Rooms } from '../../models';
@@ -57,4 +58,5 @@ function Create(command, params, item) {
 slashCommands.add('create', Create, {
 	description: 'Create_A_New_Channel',
 	params: '#channel',
+	permission: ['create-c', 'create-p'],
 });

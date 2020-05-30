@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
+
 import { KonchatNotification } from '../../app/ui';
 import { CachedChatSubscription } from '../../app/models';
 import { fireGlobalEvent, readMessage, Layout } from '../../app/ui-utils';
@@ -13,7 +14,6 @@ import { Notifications } from '../../app/notifications';
 // group messages in which the user is mentioned.
 
 function notifyNewRoom(sub) {
-
 	// Do not play new room sound if user is busy
 	if (Session.equals(`user_${ Meteor.userId() }_status`, 'busy')) {
 		return;
@@ -28,7 +28,6 @@ Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
 			Notifications.onUser('notification', function(notification) {
-
 				let openedRoomId = undefined;
 				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
 					openedRoomId = Session.get('openedRoom');
@@ -56,7 +55,6 @@ Meteor.startup(function() {
 			});
 
 			Notifications.onUser('audioNotification', function(notification) {
-
 				const openedRoomId = Session.get('openedRoom');
 
 				// This logic is duplicated in /client/startup/unread.coffee.

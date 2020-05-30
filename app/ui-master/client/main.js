@@ -1,22 +1,36 @@
+import Clipboard from 'clipboard';
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { t, getUserPreference } from '../../utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
+import { t, getUserPreference } from '../../utils/client';
 import { chatMessages } from '../../ui';
 import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';
 import { settings } from '../../settings';
-import { CachedChatSubscription, Roles, ChatSubscription } from '../../models';
+import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
-import { tooltip } from '../../tooltip';
-import Clipboard from 'clipboard';
-import s from 'underscore.string';
+import { tooltip } from '../../ui/client/components/tooltip';
+import { callbacks } from '../../callbacks/client';
+import { isSyncReady } from '../../../client/lib/userData';
 
-settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
+function executeCustomScript(script) {
+	eval(script);//eslint-disable-line
+}
+
+function customScriptsOnLogout() {
+	const script = settings.get('Custom_Script_On_Logout') || '';
+	if (script.trim()) {
+		executeCustomScript(script);
+	}
+}
+
+callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -71,14 +85,19 @@ Template.body.onRendered(function() {
 			return;
 		}
 
-		popover.close();
-
 		if (/input|textarea|select/i.test(target.tagName)) {
 			return;
 		}
 		if (target.id === 'pswp') {
 			return;
 		}
+
+		popover.close();
+
+		if (document.querySelector('.rc-modal-wrapper dialog[open]')) {
+			return;
+		}
+
 		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
 		if (!inputMessage) {
 			return;
@@ -86,19 +105,18 @@ Template.body.onRendered(function() {
 		inputMessage.focus();
 	});
 
-	$(document.body).on('click', function(e) {
-		if (e.target.tagName === 'A') {
-			const link = e.currentTarget;
-			if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
-				e.preventDefault();
-				e.stopPropagation();
-				if (Layout.isEmbedded()) {
-					return fireGlobalEvent('click-message-link', {
-						link: link.pathname + link.search,
-					});
-				}
-				return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
-			}
+	const handleMessageLinkClick = (event) => {
+		const link = event.currentTarget;
+		if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
+			fireGlobalEvent('click-message-link', { link: link.pathname + link.search });
+		}
+	};
+
+	this.autorun(() => {
+		if (Layout.isEmbedded()) {
+			$(document.body).on('click', 'a', handleMessageLinkClick);
+		} else {
+			$(document.body).off('click', 'a', handleMessageLinkClick);
 		}
 	});
 
@@ -133,8 +151,7 @@ Template.main.onCreated(function() {
 
 Template.main.helpers({
 	removeSidenav() {
-		const { modal } = this;
-		return (modal || typeof modal === 'function' ? modal() : modal); // || RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
 	},
 	siteName() {
 		return settings.get('Site_Name');
@@ -143,10 +160,9 @@ Template.main.helpers({
 		if (Meteor.userId() != null || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
 			$('html').addClass('noscroll').removeClass('scroll');
 			return true;
-		} else {
-			$('html').addClass('scroll').removeClass('noscroll');
-			return false;
 		}
+		$('html').addClass('scroll').removeClass('noscroll');
+		return false;
 	},
 	useIframe() {
 		const iframeEnabled = typeof iframeLogin !== 'undefined';
@@ -157,18 +173,19 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const routerReady = FlowRouter.subsReady('userData', 'activeUsers');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
-		const ready = (Meteor.userId() == null) || (routerReady && subscriptionsReady && settingsReady);
+		const ready = !Meteor.userId() || (isSyncReady.get() && subscriptionsReady && settingsReady);
+
 		CachedCollectionManager.syncEnabled = ready;
-		Meteor.defer(() => {
-			mainReady.set(ready);
-		});
+		mainReady.set(ready);
+
 		return ready;
 	},
 	hasUsername() {
-		return (Meteor.userId() != null && Meteor.user().username != null) || (Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead') === true);
+		const uid = Meteor.userId();
+		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
+		return (user && user.username) || (!uid && settings.get('Accounts_AllowAnonymousRead'));
 	},
 	requirePasswordChange() {
 		const user = Meteor.user();
@@ -178,7 +195,7 @@ Template.main.helpers({
 		const user = Meteor.user();
 
 		// User is already using 2fa
-		if (user.services.totp !== undefined && user.services.totp.enabled) {
+		if (!user || (user.services.totp !== undefined && user.services.totp.enabled)) {
 			return false;
 		}
 
@@ -188,13 +205,13 @@ Template.main.helpers({
 	CustomScriptLoggedOut() {
 		const script = settings.get('Custom_Script_Logged_Out') || '';
 		if (script.trim()) {
-			eval(script);//eslint-disable-line
+			executeCustomScript(script);
 		}
 	},
 	CustomScriptLoggedIn() {
 		const script = settings.get('Custom_Script_Logged_In') || '';
 		if (script.trim()) {
-			eval(script);//eslint-disable-line
+			executeCustomScript(script);
 		}
 	},
 	embeddedVersion() {
@@ -211,7 +228,7 @@ Template.main.helpers({
 });
 
 Template.main.events({
-	'click .burger'() {
+	'click div.burger'() {
 		return menu.toggle();
 	},
 });
@@ -238,10 +255,9 @@ Template.main.onRendered(function() {
 					return tooltip.showElement($('<span>').text(username), avatarElem);
 				}
 			});
-		} else {
-			$(document.body).off('mouseenter', 'button.thumb');
-			return $(document.body).off('mouseleave', 'button.thumb');
 		}
+		$(document.body).off('mouseenter', 'button.thumb');
+		return $(document.body).off('mouseleave', 'button.thumb');
 	});
 });
 

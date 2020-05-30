@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
 import { UploadFS } from 'meteor/jalik:ufs';
+
 import { FileUploadBase } from '../../lib/FileUploadBase';
 import { Uploads, Avatars } from '../../../models';
 
@@ -20,14 +21,15 @@ export const fileUploadHandler = (directive, meta, file) => {
 
 	if (store) {
 		return new FileUploadBase(store, meta, file);
-	} else {
-		console.error('Invalid file store', directive);
 	}
+	console.error('Invalid file store', directive);
 };
 
 Tracker.autorun(function() {
 	if (Meteor.userId()) {
-		document.cookie = `rc_uid=${ escape(Meteor.userId()) }; path=/`;
-		document.cookie = `rc_token=${ escape(Accounts._storedLoginToken()) }; path=/`;
+		const secure = location.protocol === 'https:' ? '; secure' : '';
+
+		document.cookie = `rc_uid=${ escape(Meteor.userId()) }; path=/${ secure }`;
+		document.cookie = `rc_token=${ escape(Accounts._storedLoginToken()) }; path=/${ secure }`;
 	}
 });

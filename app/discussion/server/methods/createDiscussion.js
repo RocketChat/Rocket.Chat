@@ -5,6 +5,7 @@ import { hasAtLeastOnePermission, canAccessRoom } from '../../../authorization/s
 import { Messages, Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
+import { roomTypes } from '../../../utils/server';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);
@@ -86,12 +87,15 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
-	// discussions are always created as private groups
-	const discussion = createRoom('p', name, user.username, [...new Set(invitedUsers)], false, {
+	const type = roomTypes.getConfig(p_room.t).getDiscussionType();
+	const discussion = createRoom(type, name, user.username, [...new Set(invitedUsers)], false, {
 		fname: t_name,
 		description: message.msg, // TODO discussions remove
 		topic: p_room.name, // TODO discussions remove
 		prid,
+	}, {
+		// overrides name validation to allow anything, because discussion's name is randomly generated
+		nameValidationRegex: /.*/,
 	});
 
 	if (pmid) {
@@ -119,7 +123,6 @@ Meteor.methods({
 	* @param {string[]} users - users to be added
 	*/
 	createDiscussion({ prid, pmid, t_name, reply, users }) {
-
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}

@@ -32,11 +32,11 @@ export class MentionsParser {
 	}
 
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s|<p>|<br> ?)@(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
+		return new RegExp(`(^|\\s|> ?)@(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
 	}
 
 	get channelMentionRegex() {
-		return new RegExp(`(^|\\s|<p>)#(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
+		return new RegExp(`(^|\\s|>)#(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
 	}
 
 	replaceUsers = (msg, { mentions, temp }, me) => msg
@@ -62,9 +62,9 @@ export class MentionsParser {
 				return `${ prefix }<a class="${ className }" data-group="${ mention }">${ mention }</a>`;
 			}
 
-			const label = temp ?
-				mention && s.escapeHTML(mention) :
-				(mentions || [])
+			const label = temp
+				? mention && s.escapeHTML(mention)
+				: (mentions || [])
 					.filter(({ username }) => username === mention)
 					.map(({ name, username }) => (this.useRealName ? name : username))
 					.map((label) => label && s.escapeHTML(label))[0];

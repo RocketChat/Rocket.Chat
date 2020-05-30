@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import _ from 'underscore';
+
 import { hasRole } from '../../../authorization';
 import * as Models from '../../../models';
-import _ from 'underscore';
 
 Meteor.methods({
 	'robot.modelCall'(model, method, args) {

@@ -1,36 +1,23 @@
 import { HTTP } from 'meteor/http';
-import { settings } from '../../../settings';
 
+import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
-
-import { statistics } from '../../../statistics';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
+import { Settings } from '../../../models';
+import { settings } from '../../../settings';
 
-export function syncWorkspace() {
+export function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
-	if (!workspaceRegistered || !connectToCloud) {
+	if (!workspaceRegistered || (!connectToCloud && !reconnectCheck)) {
 		return false;
 	}
 
-	const stats = statistics.get();
-
-	const address = settings.get('Site_Url');
-
-	const info = {
-		uniqueId: stats.uniqueId,
-		address,
-		contactName: stats.wizard.contactName,
-		contactEmail: stats.wizard.contactEmail,
-		accountName: stats.wizard.organizationName,
-		siteName: stats.wizard.siteName,
-		deploymentMethod: stats.deploy.method,
-		deploymentPlatform: stats.deploy.platform,
-		version: stats.version,
-	};
+	const info = buildWorkspaceRegistrationData();
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
 
+	let result;
 	try {
 		const headers = {};
 		const token = getWorkspaceAccessToken(true);
@@ -41,18 +28,27 @@ export function syncWorkspace() {
 			return false;
 		}
 
-		HTTP.post(`${ workspaceUrl }/registration`, {
+		result = HTTP.post(`${ workspaceUrl }/client`, {
 			data: info,
 			headers,
 		});
 
+		getWorkspaceLicense();
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
 			console.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		} else {
+			console.error(e);
 		}
 
 		return false;
 	}
 
-	return getWorkspaceLicense();
+	const { data } = result;
+
+	if (data && data.publicKey) {
+		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
+	}
+
+	return true;
 }

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+
 import { Rooms } from '../../../models';
 
 export const saveReactWhenReadOnly = function(rid, allowReact) {

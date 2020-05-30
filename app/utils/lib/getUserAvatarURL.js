@@ -1,7 +1,8 @@
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '../../settings';
+
 import { getAvatarURL } from './getAvatarURL';
+import { settings } from '../../settings';
 
 export const getUserAvatarURL = function(username) {
 	const externalSource = (settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');

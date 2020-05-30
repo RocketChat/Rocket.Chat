@@ -5,6 +5,7 @@ const fs = require('fs');
 const extend = require('util')._extend;
 const { spawn } = require('child_process');
 const net = require('net');
+
 const processes = [];
 let exitCode;
 
@@ -42,7 +43,7 @@ function startProcess(opts, callback) {
 	const proc = spawn(
 		opts.command,
 		opts.params,
-		opts.options
+		opts.options,
 	);
 
 	if (opts.waitForMessage) {
@@ -111,14 +112,14 @@ function startChimp() {
 	startProcess({
 		name: 'Chimp',
 		command: 'npm',
-		params: ['run', 'chimp-test'],
+		params: ['test'],
 		// command: 'exit',
 		// params: ['2'],
 		options: {
 			env: Object.assign({}, process.env, {
-				NODE_PATH: `${ process.env.NODE_PATH +
-					path.delimiter + srcDir +
-					path.delimiter + srcDir }/node_modules`,
+				NODE_PATH: `${ process.env.NODE_PATH
+					+ path.delimiter + srcDir
+					+ path.delimiter + srcDir }/node_modules`,
 			}),
 		},
 	});

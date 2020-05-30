@@ -1,9 +1,9 @@
 import Filter from 'bad-words';
+
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 
 callbacks.add('beforeSaveMessage', function(message) {
-
 	if (settings.get('Message_AllowBadWordsFilter')) {
 		const badWordsList = settings.get('Message_BadWordsFilterList');
 		let options;
@@ -19,5 +19,4 @@ callbacks.add('beforeSaveMessage', function(message) {
 	}
 
 	return message;
-
 }, 1, 'filterBadWords');

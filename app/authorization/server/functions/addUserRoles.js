@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Roles } from '../../../models';
-import { getRoles } from './getRoles';
 import _ from 'underscore';
+
+import { getRoles } from './getRoles';
+import { Users, Roles } from '../../../models';
 
 export const addUserRoles = (userId, roleNames, scope) => {
 	if (!userId || !roleNames) {

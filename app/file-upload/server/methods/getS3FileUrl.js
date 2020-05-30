@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
+
 import { settings } from '../../../settings';
 import { Uploads } from '../../../models';
 

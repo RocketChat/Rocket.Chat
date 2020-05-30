@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+
 import { ChatRoom, ChatSubscription } from '../../../models';
 import { openRoom } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
-import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../../utils';
+import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, roomTypes, RoomMemberActions } from '../../../utils';
 import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
-import { roomTypes } from '../../../utils';
+
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -89,9 +90,18 @@ export class PrivateRoomType extends RoomTypeConfig {
 				return !room.broadcast;
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
 				return !room.broadcast && room.ro;
-			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			case RoomSettingsEnum.E2E:
 				return settings.get('E2E_Enable') === true;
+			case RoomSettingsEnum.SYSTEM_MESSAGES:
+			default:
+				return true;
+		}
+	}
+
+	allowMemberAction(room, action) {
+		switch (action) {
+			case RoomMemberActions.BLOCK:
+				return false;
 			default:
 				return true;
 		}
@@ -128,5 +138,9 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 		// otherwise gets discussion's avatar via _id
 		return getRoomAvatarURL(roomData.prid);
+	}
+
+	includeInDashboard() {
+		return true;
 	}
 }

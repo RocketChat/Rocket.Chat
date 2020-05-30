@@ -2,6 +2,7 @@
 
 import 'babel-polyfill';
 import assert from 'assert';
+
 import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from '../client/helper';
 
 describe('helper', () => {

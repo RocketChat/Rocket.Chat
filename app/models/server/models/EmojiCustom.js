@@ -10,7 +10,7 @@ class EmojiCustom extends Base {
 	}
 
 	// find one
-	findOneByID(_id, options) {
+	findOneById(_id, options) {
 		return this.findOne(_id, options);
 	}
 
@@ -83,7 +83,7 @@ class EmojiCustom extends Base {
 
 
 	// REMOVE
-	removeByID(_id) {
+	removeById(_id) {
 		return this.remove(_id);
 	}
 }

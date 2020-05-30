@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions, Users } from '../../models';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
+
 import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
 import { Tokenpass } from './Tokenpass';
+import { Rooms, Subscriptions, Users } from '../../models';
 import { removeUserFromRoom } from '../../lib/server/functions/removeUserFromRoom';
 
 function removeUsersFromTokenChannels() {

@@ -4,14 +4,15 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
-import { SideNav } from './SideNav';
 import _ from 'underscore';
+
+import { SideNav } from './SideNav';
 
 export const AccountBox = (function() {
 	let status = 0;
 	const items = new ReactiveVar([]);
-	function setStatus(status) {
-		return Meteor.call('UserPresence:setDefaultStatus', status);
+	function setStatus(status, statusText) {
+		return Meteor.call('setUserStatus', status, statusText);
 	}
 	function open() {
 		if (SideNav.flexStatus()) {
@@ -26,9 +27,8 @@ export const AccountBox = (function() {
 	function toggle() {
 		if (status) {
 			return close();
-		} else {
-			return open();
 		}
+		return open();
 	}
 	function openFlex() {
 		status = 0;
@@ -58,12 +58,13 @@ export const AccountBox = (function() {
 			}
 		});
 	}
-	function addRoute(newRoute, router) {
+	function addRoute(newRoute, router, wait = () => {}) {
 		if (router == null) {
 			router = FlowRouter;
 		}
+		const container = newRoute.customContainer ? 'pageCustomContainer' : 'pageContainer';
 		const routeConfig = {
-			center: 'pageContainer',
+			center: container,
 			pageTemplate: newRoute.pageTemplate,
 		};
 		if (newRoute.i18nPageTitle != null) {
@@ -74,7 +75,8 @@ export const AccountBox = (function() {
 		}
 		return router.route(newRoute.path, {
 			name: newRoute.name,
-			action() {
+			async action() {
+				await wait();
 				Session.set('openedRoom');
 				return BlazeLayout.render('main', routeConfig);
 			},
