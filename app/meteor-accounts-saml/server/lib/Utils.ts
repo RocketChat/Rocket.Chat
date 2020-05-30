@@ -126,7 +126,10 @@ export class SAMLUtils {
 
 		for (const variable in data) {
 			if (variable in data) {
-				newTemplate = newTemplate.replace(`__${ variable }__`, data[variable]);
+				const key = `__${ variable }__`;
+				while (newTemplate.includes(key)) {
+					newTemplate = newTemplate.replace(key, data[variable]);
+				}
 			}
 		}
 
@@ -197,7 +200,14 @@ export class SAMLUtils {
 	}
 
 	static normalizeCert(cert: string): string {
-		return cert.replace('-----BEGIN CERTIFICATE-----', '').replace('-----END CERTIFICATE-----', '').trim();
+		if (!cert) {
+			return cert;
+		}
+
+		return cert.replace(/-+BEGIN CERTIFICATE-+\r?\n?/, '')
+			.replace(/-+END CERTIFICATE-+\r?\n?/, '')
+			.replace(/\r\n/g, '\n')
+			.trim();
 	}
 
 	static getUserDataMapping(): IUserDataMap {
@@ -493,6 +503,27 @@ export const defaultLogoutRequestTemplate = `<samlp:LogoutRequest xmlns:samlp="u
 	<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" NameQualifier="http://id.init8.net:8080/openam" SPNameQualifier="__issuer__" Format="__identifierFormat__">__nameID__</saml:NameID>
 	<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">__sessionIndex__</samlp:SessionIndex>
 </samlp:LogoutRequest>`;
+
+export const defaultMetadataCertificateTemplate = `
+    <KeyDescriptor>
+      <ds:KeyInfo>
+        <ds:X509Data>
+          <ds:X509Certificate>__certificate__</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+      <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc"/>
+      <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+      <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+    </KeyDescriptor>`;
+
+export const defaultMetadataTemplate = `<?xml version="1.0"?>
+<EntityDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:SAML:2.0:metadata https://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" entityID="__issuer__">
+  <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">__certificateTag__
+    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="__sloLocation__" ResponseLocation="__sloLocation__"/>
+    <NameIDFormat>__identifierFormat__</NameIDFormat>
+    <AssertionConsumerService index="1" isDefault="true" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="__callbackUrl__"/>
+  </SPSSODescriptor>
+</EntityDescriptor>`;
 
 export const defaultNameIDTemplate = '<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="__identifierFormat__" AllowCreate="true"></samlp:NameIDPolicy>';
 export const defaultIdentifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress';

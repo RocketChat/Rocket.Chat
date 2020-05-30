@@ -19,6 +19,8 @@ export const serviceProviderOptions = {
 	authRequestTemplate: '<authRequest>__identifierFormatTag__ __authnContextTag__ </authRequest>',
 	logoutResponseTemplate: '[logout-response-template]',
 	logoutRequestTemplate: '[logout-request-template]',
+	metadataCertificateTemplate: '',
+	metadataTemplate: '',
 	callbackUrl: '[callback-url]',
 };
 

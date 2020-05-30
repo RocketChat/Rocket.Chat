@@ -9,6 +9,8 @@ import {
 	defaultNameIDTemplate,
 	defaultIdentifierFormat,
 	defaultAuthnContext,
+	defaultMetadataTemplate,
+	defaultMetadataCertificateTemplate,
 } from '../lib/Utils';
 
 
@@ -266,6 +268,24 @@ Meteor.methods({
 			section: 'SAML_Section_6_Advanced',
 			i18nLabel: 'SAML_LogoutRequest_Template',
 			i18nDescription: 'SAML_Logout_Template_Description',
+			multiline: true,
+		});
+
+		settings.add(`SAML_Custom_${ name }_MetadataCertificate_template`, defaultMetadataCertificateTemplate, {
+			type: 'string',
+			group: 'SAML',
+			section: 'SAML_Section_6_Advanced',
+			i18nLabel: 'SAML_MetadataCertificate_Template',
+			i18nDescription: 'SAML_Metadata_Template_Description',
+			multiline: true,
+		});
+
+		settings.add(`SAML_Custom_${ name }_Metadata_template`, defaultMetadataTemplate, {
+			type: 'string',
+			group: 'SAML',
+			section: 'SAML_Section_6_Advanced',
+			i18nLabel: 'SAML_Metadata_Template',
+			i18nDescription: 'SAML_Metadata_Template_Description',
 			multiline: true,
 		});
 	},

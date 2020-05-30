@@ -19,6 +19,8 @@ export interface IServiceProviderOptions {
 	authRequestTemplate: string;
 	logoutResponseTemplate: string;
 	logoutRequestTemplate: string;
+	metadataCertificateTemplate: string;
+	metadataTemplate: string;
 	callbackUrl: string;
 
 	// The id attribute is filled midway through some operations
