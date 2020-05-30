@@ -28,7 +28,7 @@ export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 		return false;
 	}
 	const searchOptions = {
-		filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapGroup),
+		filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapGroup).replace(/#{userdn}/g, ldapUser.dn),
 		scope: 'sub',
 	};
 
