@@ -10,7 +10,6 @@
 		"autoprefixer": {}
 	},
 	"excludedPackages": [
-		"deepwell:bootstrap-datepicker2",
-		"smoral:sweetalert"
+		"deepwell:bootstrap-datepicker2"
 	]
 }

@@ -10,6 +10,7 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ ts: 1 }); // timestamp
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
+		this.tryEnsureIndex({ queueOrder: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
 	}
 
 	findOneById(inquiryId) {
@@ -28,7 +29,9 @@ export class LivechatInquiry extends Base {
 			},
 			{
 				sort: {
-					ts: 1,
+					queueOrder: 1,
+					estimatedWaitingTimeQueue: 1,
+					estimatedServiceTimeAt: 1,
 				},
 			},
 		);
@@ -42,6 +45,7 @@ export class LivechatInquiry extends Base {
 			_id: inquiryId,
 		}, {
 			$set: { status: 'taken' },
+			$unset: { defaultAgent: 1 },
 		});
 	}
 
@@ -59,11 +63,14 @@ export class LivechatInquiry extends Base {
 	/*
 	* mark inquiry as queued
 	*/
-	queueInquiry(inquiryId) {
+	queueInquiry(inquiryId, defaultAgent) {
 		return this.update({
 			_id: inquiryId,
 		}, {
-			$set: { status: 'queued' },
+			$set: {
+				status: 'queued',
+				...defaultAgent && { defaultAgent },
+			},
 		});
 	}
 
@@ -99,6 +106,17 @@ export class LivechatInquiry extends Base {
 			},
 		};
 
+		return this.update(query, update);
+	}
+
+	setNameByRoomId(rid, name) {
+		const query = { rid };
+
+		const update = {
+			$set: {
+				name,
+			},
+		};
 		return this.update(query, update);
 	}
 
@@ -166,11 +184,27 @@ export class LivechatInquiry extends Base {
 		return collectionObj.aggregate(aggregate).toArray();
 	}
 
+	removeDefaultAgentById(inquiryId) {
+		return this.update({
+			_id: inquiryId,
+		}, {
+			$unset: { defaultAgent: 1 },
+		});
+	}
+
 	/*
 	* remove the inquiry by roomId
 	*/
 	removeByRoomId(rid) {
 		return this.remove({ rid });
+	}
+
+	removeByVisitorToken(token) {
+		const query = {
+			'v.token': token,
+		};
+
+		this.remove(query);
 	}
 }
 

@@ -29,10 +29,10 @@ jobs:
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
-    - name: Use Node.js 8.17.0
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: "8.17.0"
+        node-version: "12.16.1"
 
     - uses: actions/checkout@v1
 
@@ -40,24 +40,32 @@ jobs:
       run: |
         npx package-lock-check
 
+    - name: Cache cypress
+      id: cache-cypress
+      uses: actions/cache@v1
+      with:
+        path: /home/runner/.cache/Cypress
+        key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+
     - name: Cache node modules
+      if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v1
       with:
         path: ./.meteor/local
-        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}
+        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor
       uses: actions/cache@v1
       with:
         path: ~/.meteor
-        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}
+        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Install Meteor
       run: |
@@ -88,7 +96,7 @@ jobs:
         git version
 
     - name: npm install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
       run: |
         meteor npm install
 
@@ -156,7 +164,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["8.17.0"]
+        node-version: ["12.16.1"]
         mongodb-version: ["3.4", "3.6", "4.0"]
 
     steps:
@@ -193,15 +201,23 @@ jobs:
 
     - uses: actions/checkout@v1
 
+    - name: Cache cypress
+      id: cache-cypress
+      uses: actions/cache@v1
+      with:
+        path: /home/runner/.cache/Cypress
+        key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+
     - name: Cache node modules
+      if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: NPM install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
       run: |
         npm install
 
@@ -211,7 +227,7 @@ jobs:
         MONGO_URL: mongodb://localhost:27017/rocketchat
         MONGO_OPLOG_URL: mongodb://localhost:27017/local
       run: |
-        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && xvfb-run --auto-servernum npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && xvfb-run --auto-servernum npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
 #   notification:
 #     runs-on: ubuntu-latest
@@ -229,34 +245,42 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-latest
-    if: github.event_name == 'DEACTIVATED-pull_request'
+    if: github.event_name == 'pull_request'
 
     steps:
     - uses: actions/checkout@v1
+
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     - name: Cache node modules
       id: cache-nodemodules
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v1
       with:
         path: ./.meteor/local
-        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}
+        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor
       uses: actions/cache@v1
       with:
         path: ~/.meteor
-        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}
+        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Use Node.js 8.17.0
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: "8.17.0"
+        node-version: "12.16.1"
 
     - name: Install Meteor
       run: |
@@ -313,9 +337,7 @@ jobs:
       run: |
         cd /tmp/build-pr
 
-        export OWNER="${GITHUB_REPOSITORY%/*}"
-
-        docker login docker.pkg.github.com -u "${OWNER}" -p "${GITHUB_TOKEN}"
+        docker login docker.pkg.github.com -u "${GITHUB_ACTOR}" -p "${GITHUB_TOKEN}"
 
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
 
@@ -405,7 +427,6 @@ jobs:
 
         export DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
           export DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
@@ -423,6 +444,10 @@ jobs:
         cd /tmp/build
         export CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+        fi;
+
         docker build -t ${IMAGE}:$CIRCLE_TAG .
         docker push ${IMAGE}:$CIRCLE_TAG
 
@@ -439,5 +464,10 @@ jobs:
       if: github.ref == 'refs/heads/develop'
       run: |
         cd /tmp/build
+
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+        fi;
+
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop

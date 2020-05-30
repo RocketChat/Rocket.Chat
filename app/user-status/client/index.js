@@ -1,4 +1,3 @@
-import './admin/route';
 import './admin/startup';
 
 import './notifications/deleteCustomUserStatus';
