@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { Subscriptions, Messages } from '/app/models';
-import { settings } from '/app/settings';
-import { composeMessageObjectWithUser } from '/app/utils';
 import _ from 'underscore';
+
+import { hasPermission } from '../../../authorization';
+import { Subscriptions, Messages } from '../../../models';
+import { settings } from '../../../settings';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 
 Meteor.methods({
 	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads }) {
@@ -58,7 +59,7 @@ Meteor.methods({
 			records = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
 		}
 
-		const messages = records.map((record) => composeMessageObjectWithUser(record, fromUserId));
+		const messages = normalizeMessagesForUser(records, fromUserId);
 
 		if (unreads) {
 			let unreadNotLoaded = 0;

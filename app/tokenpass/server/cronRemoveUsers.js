@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions, Users } from '/app/models';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
+
 import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
 import { Tokenpass } from './Tokenpass';
+import { Rooms, Subscriptions, Users } from '../../models';
+import { removeUserFromRoom } from '../../lib/server/functions/removeUserFromRoom';
 
-async function removeUsersFromTokenChannels() {
+function removeUsersFromTokenChannels() {
 	const rooms = {};
-	const { removeUserFromRoom } = await import('/app/lib');
 
 	Rooms.findAllTokenChannels().forEach((room) => {
 		rooms[room._id] = room.tokenpass;
@@ -39,8 +40,8 @@ async function removeUsersFromTokenChannels() {
 }
 
 Meteor.startup(function() {
-	Meteor.defer(async function() {
-		await removeUsersFromTokenChannels();
+	Meteor.defer(function() {
+		removeUsersFromTokenChannels();
 
 		SyncedCron.add({
 			name: 'Remove users from Token Channels',

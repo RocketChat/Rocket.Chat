@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Permissions } from '/app/models';
+
+import { settings } from '../../settings';
+import { Permissions } from '../../models';
 
 Meteor.startup(function() {
 	settings.add('Message_AllowPinning', true, {
@@ -8,9 +9,5 @@ Meteor.startup(function() {
 		group: 'Message',
 		public: true,
 	});
-	return Permissions.upsert('pin-message', {
-		$setOnInsert: {
-			roles: ['owner', 'moderator', 'admin'],
-		},
-	});
+	return Permissions.create('pin-message', ['owner', 'moderator', 'admin']);
 });

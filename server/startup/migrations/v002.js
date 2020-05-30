@@ -1,8 +1,8 @@
-import { RocketChatFile } from '/app/file';
-import { FileUpload } from '/app/file-upload';
-import { Migrations } from '/app/migrations';
-import { Users } from '/app/models';
-import { getAvatarSuggestionForUser } from '/app/lib';
+import { RocketChatFile } from '../../../app/file';
+import { FileUpload } from '../../../app/file-upload';
+import { Migrations } from '../../../app/migrations';
+import { Users } from '../../../app/models';
+import { getAvatarSuggestionForUser } from '../../../app/lib';
 
 Migrations.add({
 	version: 2,

@@ -1,18 +1,21 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
+import './tabs.html';
+
+
 Template.tabs.onCreated(function() {
 	this.activeTab = new ReactiveVar(this.data.tabs.tabs.find((tab) => tab.active).value);
 });
 
 Template.tabs.events({
-	'click .tab'(e) {
-		const { value } = e.currentTarget.dataset;
-		if (value === Template.instance().activeTab.get()) {
+	'click .tab'(event, instance) {
+		const { value } = event.currentTarget.dataset;
+		if (value === instance.activeTab.get()) {
 			return;
 		}
-		Template.instance().activeTab.set(value);
-		Template.instance().data.tabs.onChange(value);
+		instance.activeTab.set(value);
+		instance.data.tabs.onChange(value);
 	},
 });
 
@@ -22,5 +25,8 @@ Template.tabs.helpers({
 	},
 	isActive(value) {
 		return Template.instance().activeTab.get() === value;
+	},
+	ariaSelected(value) {
+		return Template.instance().activeTab.get() === value ? { 'aria-selected': 'true' } : {};
 	},
 });

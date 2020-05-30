@@ -1,10 +1,9 @@
-import { callbacks } from '/app/callbacks';
-import { Users, Rooms } from '/app/models';
+import { callbacks } from '../../../callbacks';
+import { Users, Rooms } from '../../../models';
 import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 
 class EventService {
-
 	/* eslint no-unused-vars: [2, { "args": "none" }]*/
 	_pushError(name, value, payload) {
 		// TODO implement a (performant) cache
@@ -25,11 +24,13 @@ const eventService = new EventService();
  */
 callbacks.add('afterSaveMessage', function(m) {
 	eventService.promoteEvent('message.save', m._id, m);
-});
+	return m;
+}, callbacks.priority.MEDIUM, 'search-events');
 
 callbacks.add('afterDeleteMessage', function(m) {
 	eventService.promoteEvent('message.delete', m._id);
-});
+	return m;
+}, callbacks.priority.MEDIUM, 'search-events-delete');
 
 /**
  * Listen to user and room changes via cursor

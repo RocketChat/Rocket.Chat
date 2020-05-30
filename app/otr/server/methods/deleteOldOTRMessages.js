@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions, Messages } from '/app/models';
+
+import { Subscriptions, Messages } from '../../../models';
 
 Meteor.methods({
 	deleteOldOTRMessages(roomId) {

@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Integrations, IntegrationHistory } from '/app/models';
+
+import { hasPermission } from '../../../../authorization';
+import { Integrations, IntegrationHistory } from '../../../../models';
 import { integrations } from '../../../lib/rocketchat';
 
 Meteor.methods({
 	replayOutgoingIntegration({ integrationId, historyId }) {
 		let integration;
 
-		if (hasPermission(this.userId, 'manage-integrations') || hasPermission(this.userId, 'manage-integrations', 'bot')) {
+		if (hasPermission(this.userId, 'manage-outgoing-integrations') || hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')) {
 			integration = Integrations.findOne(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-integrations') || hasPermission(this.userId, 'manage-own-integrations', 'bot')) {
+		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations') || hasPermission(this.userId, 'manage-own-outgoing-integrations', 'bot')) {
 			integration = Integrations.findOne(integrationId, { fields: { '_createdBy._id': this.userId } });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'replayOutgoingIntegration' });

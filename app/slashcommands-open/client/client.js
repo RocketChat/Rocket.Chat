@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { slashCommands, roomTypes } from '/app/utils';
-import { ChatSubscription, Subscriptions } from '/app/models';
+
+import { slashCommands, roomTypes } from '../../utils';
+import { ChatSubscription, Subscriptions } from '../../models';
 
 function Open(command, params /* , item*/) {
 	const dict = {
@@ -44,11 +45,11 @@ function Open(command, params /* , item*/) {
 		const subscription = Subscriptions.findOne(query);
 		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	});
-
 }
 
 slashCommands.add('open', Open, {
 	description: 'Opens_a_channel_group_or_direct_message',
 	params: 'room_name',
 	clientOnly: true,
+	permission: ['view-c-room', 'view-c-room', 'view-d-room', 'view-joined-room', 'create-d'],
 });

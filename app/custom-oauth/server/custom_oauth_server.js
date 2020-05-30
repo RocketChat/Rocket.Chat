@@ -1,12 +1,17 @@
 import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
+import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { Logger } from '/app/logger';
-import { Users } from '/app/models';
 import _ from 'underscore';
+
+import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
+import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
+import { Logger } from '../../logger';
+import { Users } from '../../models';
+import { isURL } from '../../utils/lib/isURL';
+import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 
 const logger = new Logger('CustomOAuth');
 
@@ -39,6 +44,7 @@ export class CustomOAuth {
 		Accounts.oauth.registerService(this.name);
 		this.registerService();
 		this.addHookToProcessUser();
+		this.registerAccessTokenService(this.name, this.accessTokenParam);
 	}
 
 	configure(options) {
@@ -58,23 +64,33 @@ export class CustomOAuth {
 			options.identityPath = '/me';
 		}
 
+		if (!Match.test(options.accessTokenParam, String)) {
+			options.accessTokenParam = 'access_token';
+		}
+
 		this.serverURL = options.serverURL;
 		this.tokenPath = options.tokenPath;
 		this.identityPath = options.identityPath;
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
+		this.emailField = (options.emailField || '').trim();
+		this.nameField = (options.nameField || '').trim();
+		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+		this.mergeRoles = options.mergeRoles || false;
+		this.rolesClaim = options.rolesClaim || 'roles';
+		this.accessTokenParam = options.accessTokenParam;
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
 		}
 
-		if (!/^https?:\/\/.+/.test(this.tokenPath)) {
+		if (!isURL(this.tokenPath)) {
 			this.tokenPath = this.serverURL + this.tokenPath;
 		}
 
-		if (!/^https?:\/\/.+/.test(this.identityPath)) {
+		if (!isURL(this.identityPath)) {
 			this.identityPath = this.serverURL + this.identityPath;
 		}
 
@@ -129,7 +145,7 @@ export class CustomOAuth {
 		if (data.error) { // if the http response was a json object with an error attribute
 			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ data.error }`);
 		} else {
-			return data.access_token;
+			return data;
 		}
 	}
 
@@ -137,12 +153,13 @@ export class CustomOAuth {
 		const params = {};
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
+			Accept: 'application/json',
 		};
 
 		if (this.identityTokenSentVia === 'header') {
 			headers.Authorization = `Bearer ${ accessToken }`;
 		} else {
-			params.access_token = accessToken;
+			params[this.accessTokenParam] = accessToken;
 		}
 
 		try {
@@ -161,7 +178,7 @@ export class CustomOAuth {
 
 			logger.debug('Identity response', JSON.stringify(data, null, 2));
 
-			return data;
+			return this.normalizeIdentity(data);
 		} catch (err) {
 			const error = new Error(`Failed to fetch identity from ${ this.name } at ${ this.identityPath }. ${ err.message }`);
 			throw _.extend(error, { response: err.response });
@@ -171,84 +188,23 @@ export class CustomOAuth {
 	registerService() {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
-			const accessToken = self.getAccessToken(query);
-			// console.log 'at:', accessToken
-
-			let identity = self.getIdentity(accessToken);
-
-			if (identity) {
-				// Set 'id' to '_id' for any sources that provide it
-				if (identity._id && !identity.id) {
-					identity.id = identity._id;
-				}
-
-				// Fix for Reddit
-				if (identity.result) {
-					identity = identity.result;
-				}
-
-				// Fix WordPress-like identities having 'ID' instead of 'id'
-				if (identity.ID && !identity.id) {
-					identity.id = identity.ID;
-				}
-
-				// Fix Auth0-like identities having 'user_id' instead of 'id'
-				if (identity.user_id && !identity.id) {
-					identity.id = identity.user_id;
-				}
-
-				if (identity.CharacterID && !identity.id) {
-					identity.id = identity.CharacterID;
-				}
-
-				// Fix Dataporten having 'user.userid' instead of 'id'
-				if (identity.user && identity.user.userid && !identity.id) {
-					if (identity.user.userid_sec && identity.user.userid_sec[0]) {
-						identity.id = identity.user.userid_sec[0];
-					} else {
-						identity.id = identity.user.userid;
-					}
-					identity.email = identity.user.email;
-				}
-				// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
-				if (identity.user && identity.user.user_id && !identity.id) {
-					identity.id = identity.user.user_id;
-					identity.email = identity.user.user_email;
-				}
-				// Fix general 'phid' instead of 'id' from phabricator
-				if (identity.phid && !identity.id) {
-					identity.id = identity.phid;
-				}
-
-				// Fix Keycloak-like identities having 'sub' instead of 'id'
-				if (identity.sub && !identity.id) {
-					identity.id = identity.sub;
-				}
-
-				// Fix general 'userid' instead of 'id' from provider
-				if (identity.userid && !identity.id) {
-					identity.id = identity.userid;
-				}
-
-				// Fix Nextcloud provider
-				if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
-					identity.id = identity.ocs.data.id;
-					identity.name = identity.ocs.data.displayname;
-					identity.email = identity.ocs.data.email;
-				}
-
-				// Fix when authenticating from a meteor app with 'emails' field
-				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
-					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
-				}
-			}
-
-			// console.log 'id:', JSON.stringify identity, null, '  '
+			const response = self.getAccessToken(query);
+			const identity = self.getIdentity(response.access_token);
 
 			const serviceData = {
 				_OAuthCustom: true,
-				accessToken,
+				serverURL: self.serverURL,
+				accessToken: response.access_token,
+				idToken: response.id_token,
+				expiresAt: +new Date() + (1000 * parseInt(response.expires_in, 10)),
 			};
+
+			// only set the token in serviceData if it's there. this ensures
+			// that we don't lose old ones (since we only get this on the first
+			// log in attempt)
+			if (response.refresh_token) {
+				serviceData.refreshToken = response.refresh_token;
+			}
 
 			_.extend(serviceData, identity);
 
@@ -256,15 +212,44 @@ export class CustomOAuth {
 				serviceData,
 				options: {
 					profile: {
-						name: identity.name || identity.username || identity.nickname || identity.CharacterName || identity.userName || identity.preferred_username || (identity.user && identity.user.name),
+						name: identity.name,
 					},
 				},
 			};
 
-			// console.log data
-
 			return data;
 		});
+	}
+
+	normalizeIdentity(identity) {
+		if (identity) {
+			for (const normalizer of Object.values(normalizers)) {
+				const result = normalizer(identity);
+				if (result) {
+					identity = result;
+				}
+			}
+		}
+
+		if (this.usernameField) {
+			identity.username = this.getUsername(identity);
+		}
+
+		if (this.emailField) {
+			identity.email = this.getEmail(identity);
+		}
+
+		if (this.avatarField) {
+			identity.avatarUrl = this.getAvatarUrl(identity);
+		}
+
+		if (this.nameField) {
+			identity.name = this.getCustomName(identity);
+		} else {
+			identity.name = this.getName(identity);
+		}
+
+		return renameInvalidProperties(identity);
 	}
 
 	retrieveCredential(credentialToken, credentialSecret) {
@@ -272,15 +257,61 @@ export class CustomOAuth {
 	}
 
 	getUsername(data) {
-		let username = '';
+		try {
+			const value = fromTemplate(this.usernameField, data);
 
-		username = this.usernameField.split('.').reduce(function(prev, curr) {
-			return prev ? prev[curr] : undefined;
-		}, data);
-		if (!username) {
-			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
+			if (!value) {
+				throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
+			}
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract username', error.message);
 		}
-		return username;
+	}
+
+	getEmail(data) {
+		try {
+			const value = fromTemplate(this.emailField, data);
+
+			if (!value) {
+				throw new Meteor.Error('field_not_found', `Email field "${ this.emailField }" not found in data`, data);
+			}
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract email', error.message);
+		}
+	}
+
+	getCustomName(data) {
+		try {
+			const value = fromTemplate(this.nameField, data);
+
+			if (!value) {
+				return this.getName(data);
+			}
+
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract custom name', error.message);
+		}
+	}
+
+	getAvatarUrl(data) {
+		try {
+			const value = fromTemplate(this.avatarField, data);
+
+			if (!value) {
+				logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
+			}
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract avatar url', error.message);
+		}
+	}
+
+	getName(identity) {
+		const name = identity.name || identity.username || identity.nickname || identity.CharacterName || identity.userName || identity.preferred_username || (identity.user && identity.user.name);
+		return name;
 	}
 
 	addHookToProcessUser() {
@@ -289,16 +320,18 @@ export class CustomOAuth {
 				return;
 			}
 
-			if (this.usernameField) {
-				const username = this.getUsername(serviceData);
-
-				const user = Users.findOneByUsername(username);
+			if (serviceData.username) {
+				const user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
 				if (!user) {
 					return;
 				}
 
-				// User already created or merged
-				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id) {
+				if (this.mergeRoles) {
+					updateRolesFromSSO(user, serviceData, this.rolesClaim);
+				}
+
+				// User already created or merged and has identical name as before
+				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id && user.name === serviceData.name) {
 					return;
 				}
 
@@ -309,6 +342,7 @@ export class CustomOAuth {
 				const serviceIdKey = `services.${ serviceName }.id`;
 				const update = {
 					$set: {
+						name: serviceData.name,
 						[serviceIdKey]: serviceData.id,
 					},
 				};
@@ -323,15 +357,62 @@ export class CustomOAuth {
 			}
 
 			if (this.usernameField) {
-				user.username = this.getUsername(user.services[this.name]);
+				user.username = user.services[this.name].username;
+			}
+
+			if (this.emailField) {
+				user.email = user.services[this.name].email;
+			}
+
+			if (this.nameField) {
+				user.name = user.services[this.name].name;
+			}
+
+			if (this.mergeRoles) {
+				user.roles = mapRolesFromSSO(user.services[this.name], this.rolesClaim);
 			}
 
 			return true;
 		});
+	}
 
+	registerAccessTokenService(name) {
+		const self = this;
+		const whitelisted = [
+			'id',
+			'email',
+			'username',
+			'name',
+			this.rolesClaim,
+		];
+
+		registerAccessTokenService(name, function(options) {
+			check(options, Match.ObjectIncluding({
+				accessToken: String,
+				expiresIn: Match.Integer,
+			}));
+
+			const identity = self.getIdentity(options.accessToken);
+
+			const serviceData = {
+				accessToken: options.accessToken,
+				expiresAt: +new Date() + (1000 * parseInt(options.expiresIn, 10)),
+			};
+
+			const fields = _.pick(identity, whitelisted);
+			_.extend(serviceData, fields);
+
+			return {
+				serviceData,
+				options: {
+					profile: {
+						name: identity.name,
+					},
+				},
+			};
+		});
 	}
 }
-
 
 const { updateOrCreateUserFromExternalService } = Accounts;
 Accounts.updateOrCreateUserFromExternalService = function(...args /* serviceName, serviceData, options*/) {

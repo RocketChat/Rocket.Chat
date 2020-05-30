@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { CustomOAuth } from '/app/custom-oauth';
-import { callbacks } from '/app/callbacks';
-import { Settings } from '/app/models';
+
+import { settings } from '../../settings';
+import { CustomOAuth } from '../../custom-oauth';
+import { callbacks } from '../../callbacks';
+import { Settings } from '../../models';
 
 const config = {
 	serverURL: '',
@@ -16,6 +17,7 @@ const config = {
 		forLoggedInUser: ['services.dolphin'],
 		forOtherUsers: ['services.dolphin.name'],
 	},
+	accessTokenParam: 'access_token',
 };
 
 const Dolphin = new CustomOAuth('dolphin', config);
@@ -38,7 +40,7 @@ if (Meteor.isServer) {
 				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);
 			},
-		})
+		}),
 	);
 
 	if (settings.get('Accounts_OAuth_Dolphin_URL')) {
@@ -55,7 +57,7 @@ if (Meteor.isServer) {
 		ServiceConfiguration.configurations.upsert({ service: 'dolphin' }, { $set: data });
 	}
 
-	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH);
+	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
 } else {
 	Meteor.startup(() =>
 		Tracker.autorun(function() {
@@ -63,6 +65,6 @@ if (Meteor.isServer) {
 				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);
 			}
-		})
+		}),
 	);
 }

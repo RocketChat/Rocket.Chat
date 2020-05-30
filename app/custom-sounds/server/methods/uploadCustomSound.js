@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Notifications } from '/app/notifications';
-import { RocketChatFile } from '/app/file';
+
+import { hasPermission } from '../../../authorization';
+import { Notifications } from '../../../notifications';
+import { RocketChatFile } from '../../../file';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({
@@ -16,7 +17,7 @@ Meteor.methods({
 		RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.extension }`);
 		const ws = RocketChatFileCustomSoundsInstance.createWriteStream(`${ soundData._id }.${ soundData.extension }`, contentType);
 		ws.on('end', Meteor.bindEnvironment(() =>
-			Meteor.setTimeout(() => Notifications.notifyAll('updateCustomSound', { soundData }), 500)
+			Meteor.setTimeout(() => Notifications.notifyAll('updateCustomSound', { soundData }), 500),
 		));
 
 		rs.pipe(ws);

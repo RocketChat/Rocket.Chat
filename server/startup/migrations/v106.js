@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { LivechatVisitors } from '/app/models';
-import { Migrations } from '/app/migrations';
+
+import { LivechatVisitors } from '../../../app/models';
+import { Migrations } from '../../../app/migrations';
 
 Migrations.add({
 	version: 106,

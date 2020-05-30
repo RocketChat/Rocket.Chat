@@ -3,12 +3,13 @@ import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { ChatRoom } from '/app/models';
-import { t, roomTypes } from '/app/utils';
-import { settings } from '/app/settings';
-import { modal, call } from '/app/ui-utils';
 import moment from 'moment';
+
+import { ChatRoom } from '../../../models';
+import { t, roomTypes } from '../../../utils';
+import { settings } from '../../../settings';
+import { modal, call } from '../../../ui-utils';
+import { AutoComplete } from '../../../meteor-autocomplete/client';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -22,7 +23,7 @@ const getRoomName = function() {
 	return t('conversation_with_s', roomTypes.getRoomName(room.t, room));
 };
 
-const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePinned, ignoreThreads, filesOnly, fromUsers) {
+const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers) {
 	return call('cleanRoomHistory', {
 		roomId,
 		latest,
@@ -30,7 +31,7 @@ const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePi
 		inclusive,
 		limit,
 		excludePinned,
-		ignoreThreads,
+		ignoreDiscussion,
 		filesOnly,
 		fromUsers,
 	});
@@ -40,7 +41,7 @@ const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePi
 const getTimeZoneOffset = function() {
 	const offset = new Date().getTimezoneOffset();
 	const absOffset = Math.abs(offset);
-	return `${ offset < 0 ? '+' : '-' }${ (`00${ Math.floor(absOffset / 60) }`).slice(-2) }:${ (`00${ (absOffset % 60) }`).slice(-2) }`;
+	return `${ offset < 0 ? '+' : '-' }${ `00${ Math.floor(absOffset / 60) }`.slice(-2) }:${ `00${ absOffset % 60 }`.slice(-2) }`;
 };
 
 
@@ -88,30 +89,6 @@ Template.cleanHistory.helpers({
 			},
 		};
 	},
-	autocompleteSettings() {
-		return {
-			limit: 10,
-			rules: [
-				{
-					collection: 'CachedChannelList',
-					subscription: 'userAutocomplete',
-					field: 'username',
-					template: Template.userSearch,
-					noMatchTemplate: Template.userSearchEmpty,
-					matchAll: true,
-					filter: {
-						exceptions: Template.instance().selectedUsers.get(),
-					},
-					selector(match) {
-						return {
-							term: match,
-						};
-					},
-					sort: 'username',
-				},
-			],
-		};
-	},
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
 	},
@@ -122,6 +99,9 @@ Template.cleanHistory.helpers({
 	},
 	items() {
 		return Template.instance().ac.filteredList();
+	},
+	isSingular(prunedCount) {
+		return prunedCount === 1;
 	},
 });
 
@@ -140,7 +120,7 @@ Template.cleanHistory.onCreated(function() {
 	this.cleanHistoryExcludePinned = new ReactiveVar(false);
 	this.cleanHistoryFilesOnly = new ReactiveVar(false);
 
-	this.ignoreThreads = new ReactiveVar(false);
+	this.ignoreDiscussion = new ReactiveVar(false);
 
 
 	this.cleanHistoryBusy = new ReactiveVar(false);
@@ -149,7 +129,7 @@ Template.cleanHistory.onCreated(function() {
 
 	this.ac = new AutoComplete(
 		{
-			selector:{
+			selector: {
 				item: '.rc-popup-list__item',
 				container: '.rc-popup-list__list',
 			},
@@ -159,7 +139,7 @@ Template.cleanHistory.onCreated(function() {
 			rules: [
 				{
 					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					matchAll: true,
 					doNotChangeWidth: false,
@@ -274,11 +254,10 @@ Template.cleanHistory.events({
 	'change [name=filesOnly]'(e, instance) {
 		instance.cleanHistoryFilesOnly.set(e.target.checked);
 	},
-	'change [name=ignoreThreads]'(e, instance) {
-		instance.ignoreThreads.set(e.target.checked);
+	'change [name=ignoreDiscussion]'(e, instance) {
+		instance.ignoreDiscussion.set(e.target.checked);
 	},
 	'click .js-prune'(e, instance) {
-
 		modal.open({
 			title: t('Are_you_sure'),
 			text: t('Prune_Modal'),
@@ -299,7 +278,7 @@ Template.cleanHistory.events({
 			const metaCleanHistoryInclusive = instance.cleanHistoryInclusive.get();
 			const metaCleanHistoryExcludePinned = instance.cleanHistoryExcludePinned.get();
 			const metaCleanHistoryFilesOnly = instance.cleanHistoryFilesOnly.get();
-			const ignoreThreads = instance.ignoreThreads.get();
+			const ignoreDiscussion = instance.ignoreDiscussion.get();
 
 			let fromDate = new Date('0001-01-01T00:00:00Z');
 			let toDate = new Date('9999-12-31T23:59:59Z');
@@ -318,7 +297,7 @@ Template.cleanHistory.events({
 			let count = 0;
 			let result;
 			do {
-				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreThreads, metaCleanHistoryFilesOnly, users);
+				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreDiscussion, metaCleanHistoryFilesOnly, users); // eslint-disable-line no-await-in-loop
 				count += result;
 			} while (result === limit);
 

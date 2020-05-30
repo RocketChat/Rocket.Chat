@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { lazyloadtick } from '/app/lazy-load';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { SideNav, menu } from '/app/ui-utils';
-import { settings } from '/app/settings';
-import { roomTypes, getUserPreference } from '/app/utils';
-import { Users } from '/app/models';
+
+import { SideNav, menu } from '../../ui-utils';
+import { settings } from '../../settings';
+import { roomTypes, getUserPreference } from '../../utils';
+import { Users } from '../../models';
 
 Template.sideNav.helpers({
 	flexTemplate() {
@@ -39,7 +40,7 @@ Template.sideNav.helpers({
 
 	sidebarViewMode() {
 		const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
-		return viewMode ? viewMode : 'condensed';
+		return viewMode || 'condensed';
 	},
 
 	sidebarHideAvatar() {
@@ -57,7 +58,6 @@ Template.sideNav.events({
 	},
 
 	'scroll .rooms-list'() {
-		lazyloadtick();
 		return menu.updateUnreadBars();
 	},
 
@@ -79,15 +79,35 @@ Template.sideNav.events({
 	},
 });
 
+const redirectToDefaultChannelIfNeeded = () => {
+	const needToBeRedirect = () => ['/', '/home'].includes(FlowRouter.current().path);
+
+	Tracker.autorun((c) => {
+		const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
+
+		if (!needToBeRedirect()) {
+			return c.stop();
+		}
+
+		if (!firstChannelAfterLogin) {
+			return c.stop();
+		}
+
+		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+
+		if (!room) {
+			return;
+		}
+
+		c.stop();
+		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
+	});
+};
+
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-	lazyloadtick();
-	const first_channel_login = settings.get('First_Channel_After_Login');
-	const room = roomTypes.findRoom('c', first_channel_login, Meteor.userId());
-	if (room !== undefined && room._id !== '') {
-		FlowRouter.go(`/channel/${ first_channel_login }`);
-	}
+	redirectToDefaultChannelIfNeeded();
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
@@ -102,6 +122,6 @@ Template.sideNav.onCreated(function() {
 			},
 		});
 		const userPref = getUserPreference(user, 'sidebarGroupByType');
-		this.groupedByType.set(userPref ? userPref : settings.get('UI_Group_Channels_By_Type'));
+		this.groupedByType.set(userPref || settings.get('UI_Group_Channels_By_Type'));
 	});
 });

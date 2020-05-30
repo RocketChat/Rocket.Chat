@@ -1,8 +1,8 @@
-import { AdminBox } from '/app/ui-utils';
-import { hasAllPermission } from '/app/authorization';
+import { hasAllPermission } from '../../authorization';
+import { registerAdminSidebarItem } from '../../../client/admin';
 
-AdminBox.addOption({
-	href: 'mailer',
+registerAdminSidebarItem({
+	href: 'admin-mailer',
 	i18nLabel: 'Mailer',
 	icon: 'mail',
 	permissionGranted() {

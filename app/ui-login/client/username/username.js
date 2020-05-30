@@ -1,14 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { Button } from '/app/ui';
-import { callbacks } from '/app/callbacks';
 import _ from 'underscore';
+
+import { settings } from '../../../settings';
+import { Button } from '../../../ui';
+import { callbacks } from '../../../callbacks';
 
 Template.username.onCreated(function() {
 	const self = this;
-	self.username = new ReactiveVar;
+	self.username = new ReactiveVar();
 
 	return Meteor.call('getUsernameSuggestion', function(error, username) {
 		self.username.set({

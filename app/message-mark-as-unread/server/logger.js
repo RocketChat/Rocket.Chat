@@ -1,4 +1,4 @@
-import { Logger } from '/app/logger';
+import { Logger } from '../../logger';
 
 const logger = new Logger('MessageMarkAsUnread', {
 	sections: {

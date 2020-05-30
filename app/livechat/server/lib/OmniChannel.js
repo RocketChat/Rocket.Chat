@@ -1,5 +1,6 @@
 import { HTTP } from 'meteor/http';
-import { settings } from '/app/settings';
+
+import { settings } from '../../../settings';
 
 const gatewayURL = 'https://omni.rocket.chat';
 

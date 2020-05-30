@@ -1,7 +1,16 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+
 import { Base } from './_Base';
+
+const fillTypeGroup = (fileData) => {
+	if (!fileData.type) {
+		return;
+	}
+
+	fileData.typeGroup = fileData.type.split('/').shift();
+};
 
 export class Uploads extends Base {
 	constructor() {
@@ -13,9 +22,10 @@ export class Uploads extends Base {
 
 		this.tryEnsureIndex({ rid: 1 });
 		this.tryEnsureIndex({ uploadedAt: 1 });
+		this.tryEnsureIndex({ typeGroup: 1 });
 	}
 
-	findNotHiddenFilesOfRoom(roomId, searchText, limit) {
+	findNotHiddenFilesOfRoom(roomId, searchText, fileType, limit) {
 		const fileQuery = {
 			rid: roomId,
 			complete: true,
@@ -27,6 +37,10 @@ export class Uploads extends Base {
 
 		if (searchText) {
 			fileQuery.name = { $regex: new RegExp(RegExp.escape(searchText), 'i') };
+		}
+
+		if (fileType && fileType !== 'all') {
+			fileQuery.typeGroup = fileType;
 		}
 
 		const fileOptions = {
@@ -43,10 +57,26 @@ export class Uploads extends Base {
 				type: 1,
 				url: 1,
 				uploadedAt: 1,
+				typeGroup: 1,
 			},
 		};
 
 		return this.find(fileQuery, fileOptions);
+	}
+
+	insert(fileData, ...args) {
+		fillTypeGroup(fileData);
+		return super.insert(fileData, ...args);
+	}
+
+	update(filter, update, ...args) {
+		if (update.$set) {
+			fillTypeGroup(update.$set);
+		} else if (update.type) {
+			fillTypeGroup(update);
+		}
+
+		return super.update(filter, update, ...args);
 	}
 
 	insertFileInit(userId, store, file, extra) {
@@ -63,6 +93,7 @@ export class Uploads extends Base {
 		_.extend(fileData, file, extra);
 
 		if (this.model.direct && this.model.direct.insert != null) {
+			fillTypeGroup(fileData);
 			file = this.model.direct.insert(fileData);
 		} else {
 			file = this.insert(fileData);
@@ -93,6 +124,8 @@ export class Uploads extends Base {
 		update.$set = _.extend(file, update.$set);
 
 		if (this.model.direct && this.model.direct.update != null) {
+			fillTypeGroup(update.$set);
+
 			result = this.model.direct.update(filter, update);
 		} else {
 			result = this.update(filter, update);
@@ -104,9 +137,8 @@ export class Uploads extends Base {
 	deleteFile(fileId) {
 		if (this.model.direct && this.model.direct.remove != null) {
 			return this.model.direct.remove({ _id: fileId });
-		} else {
-			return this.remove({ _id: fileId });
 		}
+		return this.remove({ _id: fileId });
 	}
 }
 

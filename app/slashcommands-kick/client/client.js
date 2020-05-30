@@ -1,4 +1,4 @@
-import { slashCommands } from '/app/utils';
+import { slashCommands } from '../../utils';
 
 slashCommands.add('kick', function(command, params) {
 	const username = params.trim();
@@ -9,4 +9,5 @@ slashCommands.add('kick', function(command, params) {
 }, {
 	description: 'Remove_someone_from_room',
 	params: '@username',
+	permission: 'remove-user',
 });

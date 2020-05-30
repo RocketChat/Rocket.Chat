@@ -1,11 +1,8 @@
+import './routes';
+
+import './gameCenter/tabBar';
+import './gameCenter/gameContainer';
+import './gameCenter/gameCenter';
+import './gameCenter/invitePlayers';
+
 export { Apps } from './orchestrator';
-import './admin/apps.html';
-import './admin/apps';
-import './admin/appInstall.html';
-import './admin/appInstall';
-import './admin/appLogs.html';
-import './admin/appLogs';
-import './admin/appManage.html';
-import './admin/appManage';
-import './admin/appWhatIsIt.html';
-import './admin/appWhatIsIt';

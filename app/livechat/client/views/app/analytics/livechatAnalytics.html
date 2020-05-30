@@ -10,6 +10,28 @@
 			<i class="icon-angle-down"></i>
 		</div>
 
+		{{#if hasDepartments }}
+			<div class="form-group ">
+				{{> livechatAutocompleteUser
+					onClickTag=onClickTagDepartment
+					list=selectedDepartments
+					onSelect=onSelectDepartments
+					collection='CachedDepartmentList'
+					endpoint='livechat/department.autocomplete'
+					field='name'
+					sort='name'
+					placeholder="Select_a_department"
+					name="department"
+					icon="queue"
+					noMatchTemplate="userSearchEmpty"
+					templateItem="popupList_item_channel"
+					template="roomSearch"
+					noMatchTemplate="roomSearchEmpty"
+					modifier=departmentModifier
+				}}
+			</div>
+		{{/if}}
+
 		<div class="form-group lc-analytics-header">
 			{{#if showLeftNavButton}}
 			<button class="lc-daterange-prev">
@@ -82,7 +104,7 @@
 									<tbody>
 										{{#each data}}
 										<tr>
-											<td class="border-component-color">{{name}}</td>
+											<td class="border-component-color border-component-td">{{name}}</td>
 											<td class="border-component-color">{{value}}</td>
 										</tr>
 										{{/each}}

@@ -28,12 +28,12 @@
 						{{> icon classes="rc-popout__minimize" icon="arrow-down"}}
 					</button>
 				{{/unless}}
-				<button class="contextual-bar__close js-close">
+				<button class="contextual-bar__close js-close" aria-label="{{_ "Close"}}">
 					{{> icon classes="rc-popout__close" icon="plus"}}
 				</button>
 			</header>
 
-			<main class="rc-popout__content rc-popout--{{ state }} ">
+			<section class="rc-popout__content rc-popout--{{ state }} ">
 				{{#if content}}
 					{{> Template.dynamic template=content data=data}}
 				{{/if}}
@@ -58,7 +58,7 @@
 						<span> {{ getStreamStatus }} </span>
 					</div>
 				{{/if}}
-			</main>
+			</section>
 
 		</div>
 	</div>

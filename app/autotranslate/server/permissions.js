@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions } from '/app/models';
+
+import { Permissions } from '../../models';
 
 Meteor.startup(() => {
 	if (Permissions) {

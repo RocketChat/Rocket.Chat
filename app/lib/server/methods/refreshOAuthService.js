@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { hasPermission } from '/app/authorization';
-import { Settings } from '/app/models';
+
+import { hasPermission } from '../../../authorization';
+import { Settings } from '../../../models';
 
 Meteor.methods({
 	refreshOAuthService() {
@@ -15,6 +16,6 @@ Meteor.methods({
 
 		ServiceConfiguration.configurations.remove({});
 
-		Settings.update({ _id: /^Accounts_OAuth_.+/ }, { $set: { _updatedAt: new Date } }, { multi: true });
+		Settings.update({ _id: /^Accounts_OAuth_.+/ }, { $set: { _updatedAt: new Date() } }, { multi: true });
 	},
 });

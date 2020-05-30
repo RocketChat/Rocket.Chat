@@ -1,6 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions, Users } from '/app/models';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { Meteor } from 'meteor/meteor';
+
+import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { Rooms, Subscriptions, Users } from '../../../models/server';
 
 export class AppRoomBridge {
 	constructor(orch) {
@@ -8,7 +10,7 @@ export class AppRoomBridge {
 	}
 
 	async create(room, members, appId) {
-		console.log(`The App ${ appId } is creating a new room.`, room);
+		this.orch.debugLog(`The App ${ appId } is creating a new room.`, room);
 
 		const rcRoom = this.orch.getConverters().get('rooms').convertAppRoom(room);
 		let method;
@@ -36,8 +38,7 @@ export class AppRoomBridge {
 			delete extraData.customFields;
 			let info;
 			if (room.type === RoomType.DIRECT_MESSAGE) {
-				members.splice(members.indexOf(room.creator.username), 1);
-				info = Meteor.call(method, members[0]);
+				info = Meteor.call(method, ...members);
 			} else {
 				info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
 			}
@@ -48,19 +49,19 @@ export class AppRoomBridge {
 	}
 
 	async getById(roomId, appId) {
-		console.log(`The App ${ appId } is getting the roomById: "${ roomId }"`);
+		this.orch.debugLog(`The App ${ appId } is getting the roomById: "${ roomId }"`);
 
 		return this.orch.getConverters().get('rooms').convertById(roomId);
 	}
 
 	async getByName(roomName, appId) {
-		console.log(`The App ${ appId } is getting the roomByName: "${ roomName }"`);
+		this.orch.debugLog(`The App ${ appId } is getting the roomByName: "${ roomName }"`);
 
 		return this.orch.getConverters().get('rooms').convertByName(roomName);
 	}
 
 	async getCreatorById(roomId, appId) {
-		console.log(`The App ${ appId } is getting the room's creator by id: "${ roomId }"`);
+		this.orch.debugLog(`The App ${ appId } is getting the room's creator by id: "${ roomId }"`);
 
 		const room = Rooms.findOneById(roomId);
 
@@ -72,7 +73,7 @@ export class AppRoomBridge {
 	}
 
 	async getCreatorByName(roomName, appId) {
-		console.log(`The App ${ appId } is getting the room's creator by name: "${ roomName }"`);
+		this.orch.debugLog(`The App ${ appId } is getting the room's creator by name: "${ roomName }"`);
 
 		const room = Rooms.findOneByName(roomName);
 
@@ -84,13 +85,13 @@ export class AppRoomBridge {
 	}
 
 	async getMembers(roomId, appId) {
-		console.log(`The App ${ appId } is getting the room's members by room id: "${ roomId }"`);
+		this.orch.debugLog(`The App ${ appId } is getting the room's members by room id: "${ roomId }"`);
 		const subscriptions = await Subscriptions.findByRoomId(roomId);
 		return subscriptions.map((sub) => this.orch.getConverters().get('users').convertById(sub.u && sub.u._id));
 	}
 
 	async getDirectByUsernames(usernames, appId) {
-		console.log(`The App ${ appId } is getting direct room by usernames: "${ usernames }"`);
+		this.orch.debugLog(`The App ${ appId } is getting direct room by usernames: "${ usernames }"`);
 		const room = await Rooms.findDirectRoomContainingAllUsernames(usernames);
 		if (!room) {
 			return undefined;
@@ -99,12 +100,7 @@ export class AppRoomBridge {
 	}
 
 	async update(room, members = [], appId) {
-		console.log(`The App ${ appId } is updating a room.`);
-
-		if (!this.addUserToRoom) {
-			const { addUserToRoom } = await import('/app/lib');
-			this.addUserToRoom = addUserToRoom;
-		}
+		this.orch.debugLog(`The App ${ appId } is updating a room.`);
 
 		if (!room.id || !Rooms.findOneById(room.id)) {
 			throw new Error('A room must exist to update.');
@@ -121,7 +117,38 @@ export class AppRoomBridge {
 				continue;
 			}
 
-			this.addUserToRoom(rm._id, member);
+			addUserToRoom(rm._id, member);
 		}
+	}
+
+	async createDiscussion(room, parentMessage = null, reply = '', members = [], appId) {
+		this.orch.debugLog(`The App ${ appId } is creating a new discussion.`, room);
+
+		const rcRoom = this.orch.getConverters().get('rooms').convertAppRoom(room);
+
+		let rcMessage;
+		if (parentMessage) {
+			rcMessage = this.orch.getConverters().get('messages').convertAppMessage(parentMessage);
+		}
+
+		if (!rcRoom.prid || !Rooms.findOneById(rcRoom.prid)) {
+			throw new Error('There must be a parent room to create a discussion.');
+		}
+
+		const discussion = {
+			prid: rcRoom.prid,
+			t_name: rcRoom.fname,
+			pmid: rcMessage ? rcMessage._id : undefined,
+			reply: reply && reply.trim() !== '' ? reply : undefined,
+			users: members.length > 0 ? members : [],
+		};
+
+		let rid;
+		Meteor.runAsUser(room.creator.id, () => {
+			const info = Meteor.call('createDiscussion', discussion);
+			rid = info.rid;
+		});
+
+		return rid;
 	}
 }

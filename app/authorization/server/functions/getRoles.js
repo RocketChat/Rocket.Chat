@@ -1,3 +1,3 @@
-import { Roles } from '/app/models';
+import { Roles } from '../../../models';
 
 export const getRoles = () => Roles.find().fetch();

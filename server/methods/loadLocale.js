@@ -11,7 +11,7 @@ Meteor.methods({
 			try {
 				return Assets.getText(`moment-locales/${ locale.split('-').shift().toLowerCase() }.js`);
 			} catch (error) {
-				return console.log(error);
+				throw new Meteor.Error('moment-locale-not-found', `Moment locale not found: ${ locale }`);
 			}
 		}
 	},

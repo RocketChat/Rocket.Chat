@@ -1,6 +1,7 @@
 import { Match, check } from 'meteor/check';
-import { Markdown } from '/app/markdown';
-import { Messages } from '/app/models';
+
+import { Markdown } from '../../../markdown/server';
+import { Messages } from '../../../models';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
@@ -46,7 +47,7 @@ const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
-		ts: Match.OneOf(String, Match.Integer),
+		ts: Match.OneOf(String, Number),
 		thumb_url: String,
 		button_alignment: String,
 		actions: [Match.Any],
@@ -127,13 +128,6 @@ export const insertMessage = function(user, message, room, upsert = false) {
 		delete message.tokens;
 	}
 
-	// Avoid saving sandstormSessionId to the database
-	let sandstormSessionId = null;
-	if (message.sandstormSessionId) {
-		sandstormSessionId = message.sandstormSessionId;
-		delete message.sandstormSessionId;
-	}
-
 	if (message._id && upsert) {
 		const { _id } = message;
 		delete message._id;
@@ -146,6 +140,5 @@ export const insertMessage = function(user, message, room, upsert = false) {
 		message._id = Messages.insert(message);
 	}
 
-	message.sandstormSessionId = sandstormSessionId;
 	return message;
 };

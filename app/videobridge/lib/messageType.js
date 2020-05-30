@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { MessageTypes } from '/app/ui-utils';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
+import { MessageTypes } from '../../ui-utils';
 
 Meteor.startup(function() {
 	MessageTypes.registerType({

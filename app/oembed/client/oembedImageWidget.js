@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { getUserPreference } from '/app/utils';
+
+import { getUserPreference } from '../../utils';
 
 Template.oembedImageWidget.helpers({
 	loadImage() {
@@ -11,12 +12,5 @@ Template.oembedImageWidget.helpers({
 			return false;
 		}
 		return true;
-	},
-	collapsed() {
-		if (this.collapsed != null) {
-			return this.collapsed;
-		} else {
-			return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
-		}
 	},
 });

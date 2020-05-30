@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
+
+import { settings } from '../../settings';
 
 Meteor.startup(function() {
 	settings.add('GoogleVision_Enable', false, {
@@ -15,6 +16,7 @@ Meteor.startup(function() {
 		section: 'Google Vision',
 		multiline: true,
 		enableQuery: { _id: 'GoogleVision_Enable', value: true },
+		secret: true,
 	});
 	settings.add('GoogleVision_Max_Monthly_Calls', 0, {
 		type: 'int',

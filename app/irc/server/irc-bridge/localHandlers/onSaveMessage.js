@@ -1,4 +1,4 @@
-import { Subscriptions, Users } from '/app/models';
+import { Subscriptions, Users } from '../../../../models';
 
 export default function handleOnSaveMessage(message, to) {
 	let toIdentification = '';

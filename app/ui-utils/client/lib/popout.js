@@ -2,7 +2,8 @@ import './popout.html';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { callbacks } from '/app/callbacks';
+
+import { callbacks } from '../../../callbacks';
 
 export const popout = {
 	context: null,
@@ -36,7 +37,7 @@ export const popout = {
 		if (this.timer) {
 			clearTimeout(this.timer);
 		}
-		if (typeof(this.onCloseCallback) === 'function') {
+		if (typeof this.onCloseCallback === 'function') {
 			this.onCloseCallback();
 		}
 	},

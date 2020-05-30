@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { CustomSounds } from '/app/models';
-import { Notifications } from '/app/notifications';
-import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 import s from 'underscore.string';
+import { check } from 'meteor/check';
+
+import { hasPermission } from '../../../authorization';
+import { CustomSounds } from '../../../models';
+import { Notifications } from '../../../notifications';
+import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({
 	insertOrUpdateSound(soundData) {
@@ -31,7 +33,8 @@ Meteor.methods({
 		let matchingResults = [];
 
 		if (soundData._id) {
-			matchingResults = CustomSounds.findByNameExceptID(soundData.name, soundData._id).fetch();
+			check(soundData._id, String);
+			matchingResults = CustomSounds.findByNameExceptId(soundData.name, soundData._id).fetch();
 		} else {
 			matchingResults = CustomSounds.findByName(soundData.name).fetch();
 		}
@@ -51,18 +54,17 @@ Meteor.methods({
 			createSound._id = _id;
 
 			return _id;
-		} else {
-			// update sound
-			if (soundData.newFile) {
-				RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.previousExtension }`);
-			}
-
-			if (soundData.name !== soundData.previousName) {
-				CustomSounds.setName(soundData._id, soundData.name);
-				Notifications.notifyAll('updateCustomSound', { soundData });
-			}
-
-			return soundData._id;
 		}
+		// update sound
+		if (soundData.newFile) {
+			RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.previousExtension }`);
+		}
+
+		if (soundData.name !== soundData.previousName) {
+			CustomSounds.setName(soundData._id, soundData.name);
+			Notifications.notifyAll('updateCustomSound', { soundData });
+		}
+
+		return soundData._id;
 	},
 });

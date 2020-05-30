@@ -5,7 +5,9 @@
 	min-width: 400px;
 	max-width: 500px;
 	height: auto;
-	max-height: 100%;
+	max-height: 90%;
+
+	padding: 1rem;
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -32,10 +34,26 @@
 		justify-content: center;
 	}
 
+	&--modal {
+		width: 640px;
+		max-width: 100%;
+	}
+
+	&--modal &__title {
+		font-size: 1.375rem;
+		font-weight: 500;
+	}
+
+	&__description {
+		font-size: 0.874rem;
+		margin-block-end: 1.5rem;
+		margin-block-start: 0.5rem;
+	}
+
 	&__title {
 		flex: 1 1 auto;
 
-		font-size: 16px;
+		font-size: 1rem;
 	}
 
 	&__close {
@@ -48,7 +66,7 @@
 	&__header {
 		display: flex;
 		flex-direction: row;
-		flex: 0 0;
+		flex: 0 0 auto;
 
 		margin-bottom: -16px;
 		padding: 16px;
@@ -61,6 +79,8 @@
 		position: relative;
 
 		display: flex;
+
+		overflow: hidden auto;
 
 		flex-direction: column;
 
@@ -121,35 +141,27 @@
 	&__footer {
 		display: flex;
 
-		flex: 0 0;
+		flex: 0 0 auto;
 
-		padding: 16px;
+		padding: 1rem;
 
-		background: #f7f8fa;
 		justify-content: space-between;
 
 		& > .rc-button {
 			margin: 0;
-		}
-
-		&--empty {
-			padding: 0;
-
-			background: transparent;
 		}
 	}
 }
 
 @media (width <= 400px) {
 	.rc-modal {
-		top: initial !important;
+		top: 0 !important;
 		bottom: 0;
 		left: 0 !important;
 
 		width: 100%;
 		min-width: 100%;
 		max-width: 100%;
-		margin: 0 16px;
 
 		animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 	}

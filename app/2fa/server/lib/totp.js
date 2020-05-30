@@ -1,8 +1,9 @@
 import { SHA256 } from 'meteor/sha';
 import { Random } from 'meteor/random';
-import { Users } from '/app/models';
-import { settings } from '/app/settings';
 import speakeasy from 'speakeasy';
+
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 
 export const TOTP = {
 	generateSecret() {

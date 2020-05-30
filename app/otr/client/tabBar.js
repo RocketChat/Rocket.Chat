@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
-import { TabBar } from '/app/ui-utils';
+
 import { OTR } from './rocketchat.otr';
+import { settings } from '../../settings';
+import { TabBar } from '../../ui-utils';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
@@ -15,7 +16,7 @@ Meteor.startup(function() {
 				i18nTitle: 'OTR',
 				icon: 'key',
 				template: 'otrFlexTab',
-				order: 11,
+				order: 13,
 			});
 		} else {
 			OTR.enabled.set(false);

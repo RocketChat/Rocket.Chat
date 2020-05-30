@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { TabBar } from '/app/ui-utils';
+
+import { TabBar } from '../../ui-utils';
 
 Meteor.startup(function() {
 	TabBar.addButton({
@@ -8,6 +9,6 @@ Meteor.startup(function() {
 		i18nTitle: 'Starred_Messages',
 		icon: 'star',
 		template: 'starredMessages',
-		order: 3,
+		order: 10,
 	});
 });

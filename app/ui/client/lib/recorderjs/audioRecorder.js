@@ -5,8 +5,8 @@ const getUserMedia = ((navigator) => {
 		return navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
 	}
 
-	const legacyGetUserMedia = navigator.getUserMedia ||
-		navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+	const legacyGetUserMedia = navigator.getUserMedia
+		|| navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
 	if (legacyGetUserMedia) {
 		return (options) => new Promise((resolve, reject) => {
@@ -27,7 +27,7 @@ class AudioRecorder {
 			return;
 		}
 
-		this.audioContext = new AudioContext;
+		this.audioContext = new AudioContext();
 	}
 
 	destroyAudioContext() {
@@ -66,6 +66,11 @@ class AudioRecorder {
 	}
 
 	destroyEncoder() {
+		if (!this.encoder) {
+			return;
+		}
+
+		this.encoder.close();
 		delete this.encoder;
 	}
 
@@ -77,7 +82,6 @@ class AudioRecorder {
 			cb && cb.call(this, true);
 		} catch (error) {
 			console.error(error);
-			this.encoder.close();
 			this.destroyEncoder();
 			this.destroyStream();
 			this.destroyAudioContext();
@@ -95,6 +99,6 @@ class AudioRecorder {
 	}
 }
 
-const instance = new AudioRecorder;
+const instance = new AudioRecorder();
 
 export { instance as AudioRecorder };
