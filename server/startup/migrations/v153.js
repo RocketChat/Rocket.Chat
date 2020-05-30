@@ -1,6 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Settings, LivechatRooms, Rooms } from '../../../app/models/server';
-import { LivechatInquiry } from '../../../app/livechat/lib/LivechatInquiry';
+import { Settings, LivechatRooms, Rooms, LivechatInquiry } from '../../../app/models/server';
 import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
 
 Migrations.add({
@@ -25,8 +24,8 @@ Migrations.add({
 			const inquiry = LivechatInquiry.findOneByRoomId(room._id);
 			if (!inquiry) {
 				try {
-					const { _id, fname, v } = room;
-					createLivechatInquiry(_id, fname, v, { msg: '' }, 'taken');
+					const { _id: rid, fname: name, v: guest } = room;
+					createLivechatInquiry({ rid, name, guest, message: { msg: '' }, initialStatus: 'taken' });
 				} catch (error) {
 					console.error(error);
 				}
@@ -48,7 +47,7 @@ Migrations.add({
 					$set: {
 						'metrics.chatDuration': (room.closedAt - room.ts) / 1000,
 					},
-				}
+				},
 			);
 		});
 
@@ -60,7 +59,7 @@ Migrations.add({
 					status: 'queued',
 				},
 			},
-			{ multi: true }
+			{ multi: true },
 		);
 	},
 });

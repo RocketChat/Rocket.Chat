@@ -139,3 +139,7 @@ table {
 
 	border-collapse: collapse;
 }
+
+a {
+	color: var(--rc-color-button-primary);
+}

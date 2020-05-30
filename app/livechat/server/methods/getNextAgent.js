@@ -5,7 +5,7 @@ import { LivechatRooms, Users } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:getNextAgent'({ token, department }) {
+	async 'livechat:getNextAgent'({ token, department }) {
 		check(token, String);
 
 		const room = LivechatRooms.findOpenByVisitorToken(token).fetch();
@@ -21,7 +21,7 @@ Meteor.methods({
 			}
 		}
 
-		const agent = Livechat.getNextAgent(department);
+		const agent = await Livechat.getNextAgent(department);
 		if (!agent) {
 			return;
 		}

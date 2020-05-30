@@ -41,9 +41,10 @@ export const KonchatNotification = {
 					tag: notification.payload._id,
 					silent: true,
 					canReply: true,
+					requireInteraction: getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction'),
 				});
 
-				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
+				const notificationDuration = notification.duration - 0 || 10;
 				if (notificationDuration > 0) {
 					setTimeout(() => n.close(), notificationDuration * 1000);
 				}
@@ -55,7 +56,7 @@ export const KonchatNotification = {
 								_id: Random.id(),
 								rid: notification.payload.rid,
 								msg: response,
-							})
+							}),
 						);
 					}
 
@@ -64,7 +65,7 @@ export const KonchatNotification = {
 						window.focus();
 						switch (notification.payload.type) {
 							case 'd':
-								return FlowRouter.go('direct', { username: notification.payload.sender.username }, FlowRouter.current().queryParams);
+								return FlowRouter.go('direct', { rid: notification.payload.rid }, FlowRouter.current().queryParams);
 							case 'c':
 								return FlowRouter.go('channel', { name: notification.payload.name }, FlowRouter.current().queryParams);
 							case 'p':
@@ -164,14 +165,7 @@ Meteor.startup(() => {
 				}
 			});
 		} else {
-			const [room] = $(`audio#${ newRoomNotification }`);
-			if (!room) {
-				return;
-			}
-			if (room.pause) {
-				room.pause();
-				room.currentTime = 0;
-			}
+			CustomSounds.pause(newRoomNotification);
 		}
 	});
 });
