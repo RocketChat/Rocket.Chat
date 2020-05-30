@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
 
@@ -11,6 +10,7 @@ import { ChatRoom } from '../../../models';
 import { t, isEmail, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import resetSelection from '../resetSelection';
+import { AutoComplete } from '../../../meteor-autocomplete/client';
 
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
@@ -39,7 +39,7 @@ Template.mailMessagesInstructions.helpers({
 			rules: [
 				{
 					collection: 'CachedChannelList',
-					subscription: 'userAutocomplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					template: Template.userSearch,
 					noMatchTemplate: Template.userSearchEmpty,
@@ -93,8 +93,12 @@ Template.mailMessagesInstructions.helpers({
 });
 
 Template.mailMessagesInstructions.events({
-	'click .js-cancel, click .mail-messages__instructions--selected'(e, t) {
+	'click .mail-messages__instructions--selected'(e, t) {
 		t.reset(true);
+	},
+	'click .js-cancel'(e, t) {
+		t.reset(true);
+		t.data.tabBar.close();
 	},
 	'click .js-send'(e, instance) {
 		const { selectedUsers, selectedEmails, selectedMessages } = instance;
@@ -129,7 +133,7 @@ Template.mailMessagesInstructions.events({
 			to_emails: selectedEmails.get().map((email) => email.text).toString(),
 			subject,
 			messages: selectedMessages.get(),
-			language: localStorage.getItem('userLanguage'),
+			language: Meteor._localStorage.getItem('userLanguage'),
 		};
 
 		Meteor.call('mailMessages', data, function(err, result) {
@@ -236,9 +240,9 @@ Template.mailMessagesInstructions.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 	this.userFilter = new ReactiveVar('');
 
-	const filter = { exceptions: [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
+	const filter = { exceptions: this.selectedUsers.get().map((u) => u.username) };
 	Deps.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
+		filter.exceptions = this.selectedUsers.get().map((u) => u.username);
 	});
 
 	this.ac = new AutoComplete(
@@ -253,7 +257,7 @@ Template.mailMessagesInstructions.onCreated(function() {
 			rules: [
 				{
 					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
+					endpoint: 'users.autocomplete',
 					field: 'username',
 					matchAll: true,
 					filter,

@@ -35,7 +35,14 @@ Meteor.methods({
 		});
 
 		if (!user || !user._id) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new Meteor.Error('error-user-not-found', 'User not found', {
+				method: 'authorization:addUserToRole',
+			});
+		}
+
+		// verify if user can be added to given scope
+		if (scope && !Roles.canAddUserToRole(user._id, roleName, scope)) {
+			throw new Meteor.Error('error-invalid-user', 'User is not part of given room', {
 				method: 'authorization:addUserToRole',
 			});
 		}

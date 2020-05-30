@@ -23,8 +23,9 @@
 
 .rocket-search-result {
 	display: flex;
+	overflow: hidden;
 	flex-direction: column;
-	flex: 1;
+	flex: 1 1 0;
 }
 
 .rocket-default-search-settings {

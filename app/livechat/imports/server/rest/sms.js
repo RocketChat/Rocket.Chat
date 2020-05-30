@@ -1,56 +1,81 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { Rooms, LivechatVisitors } from '../../../../models';
-import { API } from '../../../../api';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models';
+import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
+
+const defineDepartment = (idOrName) => {
+	if (!idOrName || idOrName === '') {
+		return;
+	}
+
+	const department = LivechatDepartment.findOneByIdOrName(idOrName);
+	return department && department._id;
+};
+
+const defineVisitor = (smsNumber) => {
+	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber);
+	let data = {
+		token: (visitor && visitor.token) || Random.id(),
+	};
+
+	if (!visitor) {
+		data = Object.assign(data, {
+			username: smsNumber.replace(/[^0-9]/g, ''),
+			phone: {
+				number: smsNumber,
+			},
+		});
+	}
+
+	const department = defineDepartment(SMS.department);
+	if (department) {
+		data.department = department;
+	}
+
+	const id = Livechat.registerGuest(data);
+	return LivechatVisitors.findOneById(id);
+};
+
+const normalizeLocationSharing = (payload) => {
+	const { extra: { fromLatitude: latitude, fromLongitude: longitude } = { } } = payload;
+	if (!latitude || !longitude) {
+		return;
+	}
+
+	return {
+		type: 'Point',
+		coordinates: [parseFloat(longitude), parseFloat(latitude)],
+	};
+};
 
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	post() {
 		const SMSService = SMS.getService(this.urlParams.service);
-
 		const sms = SMSService.parse(this.bodyParams);
 
-		let visitor = LivechatVisitors.findOneVisitorByPhone(sms.from);
+		const visitor = defineVisitor(sms.from);
+		const { token } = visitor;
+		const room = LivechatRooms.findOneOpenByVisitorToken(token);
+		const location = normalizeLocationSharing(sms);
 
 		const sendMessage = {
 			message: {
 				_id: Random.id(),
+				rid: (room && room._id) || Random.id(),
+				token,
+				msg: sms.body,
+				...location && { location },
 			},
+			guest: visitor,
 			roomInfo: {
 				sms: {
 					from: sms.to,
 				},
 			},
 		};
-
-		if (visitor) {
-			const rooms = Rooms.findOpenByVisitorToken(visitor.token).fetch();
-
-			if (rooms && rooms.length > 0) {
-				sendMessage.message.rid = rooms[0]._id;
-			} else {
-				sendMessage.message.rid = Random.id();
-			}
-			sendMessage.message.token = visitor.token;
-		} else {
-			sendMessage.message.rid = Random.id();
-			sendMessage.message.token = Random.id();
-
-			const visitorId = Livechat.registerGuest({
-				username: sms.from.replace(/[^0-9]/g, ''),
-				token: sendMessage.message.token,
-				phone: {
-					number: sms.from,
-				},
-			});
-
-			visitor = LivechatVisitors.findOneById(visitorId);
-		}
-
-		sendMessage.message.msg = sms.body;
-		sendMessage.guest = visitor;
 
 		sendMessage.message.attachments = sms.media.map((curr) => {
 			const attachment = {
@@ -74,7 +99,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		});
 
 		try {
-			const message = SMSService.response.call(this, Livechat.sendMessage(sendMessage));
+			const message = SMSService.response.call(this, Promise.await(Livechat.sendMessage(sendMessage)));
 
 			Meteor.defer(() => {
 				if (sms.extra) {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
@@ -60,7 +60,7 @@ API.v1.addRoute('livechat/agent.next/:token', {
 				}
 			}
 
-			const agentData = Livechat.getNextAgent(department);
+			const agentData = Promise.await(Livechat.getNextAgent(department));
 			if (!agentData) {
 				throw new Meteor.Error('agent-not-found');
 			}

@@ -5,6 +5,10 @@
 		background-color: var(--sidebar-background-light-hover);
 	}
 
+	&--active {
+		background-color: var(--sidebar-background-light-active);
+	}
+
 	&__picture {
 		color: inherit;
 	}
@@ -89,7 +93,7 @@
 		background-color: var(--sidebar-item-hover-background);
 
 		& .sidebar-item__menu {
-			display: block;
+			display: flex;
 		}
 	}
 
@@ -133,15 +137,15 @@
 
 		&-status {
 			&--online {
-				color: var(--status-online);
+				color: var(--rc-status-online);
 			}
 
 			&--away {
-				color: var(--status-away);
+				color: var(--rc-status-away);
 			}
 
 			&--busy {
-				color: var(--status-busy);
+				color: var(--rc-status-busy);
 			}
 		}
 	}
@@ -171,19 +175,19 @@
 		border-radius: var(--sidebar-item-user-status-radius);
 
 		&--online {
-			background-color: var(--status-online);
+			background-color: var(--rc-status-online);
 		}
 
 		&--away {
-			background-color: var(--status-away);
+			background-color: var(--rc-status-away);
 		}
 
 		&--busy {
-			background-color: var(--status-busy);
+			background-color: var(--rc-status-busy);
 		}
 
 		&--offline {
-			background-color: var(--status-invisible-sidebar);
+			background-color: var(--rc-status-invisible-sidebar);
 		}
 	}
 
@@ -282,12 +286,19 @@
 
 	&__menu {
 		position: absolute;
+
+		top: 0;
+
 		right: 0;
 
 		display: none;
 		flex: 0;
 
+		height: 100%;
+
 		padding: 6px;
+		align-items: center;
+		justify-content: center;
 
 		&-icon {
 			fill: var(--color-white);

@@ -4,7 +4,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
-import { statistics } from '../../../statistics';
+import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 
 
 export function startRegisterWorkspace(resend = false) {
@@ -22,25 +22,7 @@ export function startRegisterWorkspace(resend = false) {
 		}
 	}
 
-	const stats = statistics.get();
-
-	const address = settings.get('Site_Url');
-
-	// If we have it lets send it because likely an update
-	const workspaceId = settings.get('Cloud_Workspace_Id');
-
-	const regInfo = {
-		uniqueId: stats.uniqueId,
-		workspaceId,
-		address,
-		contactName: stats.wizard.contactName,
-		contactEmail: stats.wizard.contactEmail,
-		accountName: stats.wizard.organizationName,
-		siteName: stats.wizard.siteName,
-		deploymentMethod: stats.deploy.method,
-		deploymentPlatform: stats.deploy.platform,
-		version: stats.version,
-	};
+	const regInfo = buildWorkspaceRegistrationData();
 
 	const cloudUrl = settings.get('Cloud_Url');
 
