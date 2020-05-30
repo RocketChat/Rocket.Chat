@@ -11,6 +11,10 @@ export class ReadReceipts extends Base {
 		}, {
 			unique: 1,
 		});
+
+		this.tryEnsureIndex({
+			messageId: 1,
+		});
 	}
 
 	findByMessageId(messageId) {

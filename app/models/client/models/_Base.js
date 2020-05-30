@@ -2,14 +2,14 @@ import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 
 export class Base {
-
 	_baseName() {
 		return 'rocketchat_';
 	}
 
 	_initModel(name) {
 		check(name, String);
-		return this.model = new Mongo.Collection(this._baseName() + name);
+		this.model = new Mongo.Collection(this._baseName() + name);
+		return this.model;
 	}
 
 	find(...args) {
@@ -51,5 +51,4 @@ export class Base {
 	tryEnsureIndex() {}
 
 	tryDropIndex() {}
-
 }

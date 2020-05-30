@@ -1,11 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import semver from 'semver';
+
+import getNewUpdates from './getNewUpdates';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
-import { Roles, Users } from '../../../models';
-import semver from 'semver';
+import { Users } from '../../../models';
 import logger from '../logger';
-import getNewUpdates from './getNewUpdates';
+import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 // import getNewUpdates from '../sampleUpdateData';
 
 export default () => {
@@ -39,63 +40,36 @@ export default () => {
 
 	if (update.exists) {
 		settings.updateById('Update_LatestAvailableVersion', update.lastestVersion.version);
-		Roles.findUsersInRole('admin').forEach((adminUser) => {
-			try {
-				Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
 
-				const msg = {
-					msg: `*${ TAPi18n.__('Update_your_RocketChat', adminUser.language) }*\n${ TAPi18n.__('New_version_available_(s)', update.lastestVersion.version, adminUser.language) }\n${ update.lastestVersion.infoUrl }`,
-					rid: [adminUser._id, 'rocket.cat'].sort().join(''),
-				};
-
-				Meteor.runAsUser('rocket.cat', () => Meteor.call('sendMessage', msg));
-			} catch (e) {
-				console.error(e);
-			}
-
-			Users.addBannerById(adminUser._id, {
+		sendMessagesToAdmins({
+			msgs: ({ adminUser }) => [{ msg: `*${ TAPi18n.__('Update_your_RocketChat', adminUser.language) }*\n${ TAPi18n.__('New_version_available_(s)', update.lastestVersion.version, adminUser.language) }\n${ update.lastestVersion.infoUrl }` }],
+			banners: [{
 				id: 'versionUpdate',
 				priority: 10,
 				title: 'Update_your_RocketChat',
 				text: 'New_version_available_(s)',
 				textArguments: [update.lastestVersion.version],
 				link: update.lastestVersion.infoUrl,
-			});
+			}],
 		});
 	}
 
 	if (alerts && alerts.length) {
-		Roles.findUsersInRole('admin').forEach((adminUser) => {
-			try {
-				Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
-
-				alerts.forEach((alert) => {
-					if (Users.bannerExistsById(adminUser._id, `alert-${ alert.id }`)) {
-						return;
-					}
-
-					const msg = {
-						msg: `*${ TAPi18n.__('Rocket_Chat_Alert', adminUser.language) }:*\n\n*${ TAPi18n.__(alert.title, adminUser.language) }*\n${ TAPi18n.__(alert.text, ...(alert.textArguments || []), adminUser.language) }\n${ alert.infoUrl }`,
-						rid: [adminUser._id, 'rocket.cat'].sort().join(''),
-					};
-
-					Meteor.runAsUser('rocket.cat', () => Meteor.call('sendMessage', msg));
-				});
-			} catch (e) {
-				console.error(e);
-			}
-
-			alerts.forEach((alert) => {
-				Users.addBannerById(adminUser._id, {
-					id: `alert-${ alert.id }`,
-					priority: 10,
-					title: alert.title,
-					text: alert.text,
-					textArguments: alert.textArguments,
-					modifiers: alert.modifiers,
-					link: alert.infoUrl,
-				});
-			});
+		sendMessagesToAdmins({
+			msgs: ({ adminUser }) => alerts
+				.filter((alert) => !Users.bannerExistsById(adminUser._id, `alert-${ alert.id }`))
+				.map((alert) => ({
+					msg: `*${ TAPi18n.__('Rocket_Chat_Alert', adminUser.language) }:*\n\n*${ TAPi18n.__(alert.title, adminUser.language) }*\n${ TAPi18n.__(alert.text, ...alert.textArguments || [], adminUser.language) }\n${ alert.infoUrl }`,
+				})),
+			banners: alerts.map((alert) => ({
+				id: `alert-${ alert.id }`,
+				priority: 10,
+				title: alert.title,
+				text: alert.text,
+				textArguments: alert.textArguments,
+				modifiers: alert.modifiers,
+				link: alert.infoUrl,
+			})),
 		});
 	}
 };

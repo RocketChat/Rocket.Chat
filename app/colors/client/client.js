@@ -1,6 +1,8 @@
+import s from 'underscore.string';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
-import s from 'underscore.string';
+import './style.css';
 
 //
 // HexColorPreview is a named function that will process Colors

@@ -12,7 +12,7 @@ export class StatsTracker {
 
 	now() {
 		const hrtime = process.hrtime();
-		return (hrtime[0] * 1000000 + hrtime[1] / 1000);
+		return hrtime[0] * 1000000 + hrtime[1] / 1000;
 	}
 
 	timing(stats, time, tags) {
@@ -45,4 +45,3 @@ export class StatsTracker {
 }
 
 export default new StatsTracker();
-

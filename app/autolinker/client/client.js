@@ -1,31 +1,17 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
 import s from 'underscore.string';
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
 import Autolinker from 'autolinker';
 
-const createAutolinker = () => {
-	const regUrls = new RegExp(settings.get('AutoLinker_UrlsRegExp'));
 
-	const replaceAutolinkerMatch = (match) => {
-		if (match.getType() !== 'url') {
-			return null;
-		}
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
 
-		if (!regUrls.test(match.matchedText)) {
-			return null;
-		}
+let config;
 
-		if (match.matchedText.indexOf(Meteor.absoluteUrl()) === 0) {
-			const tag = match.buildTag();
-			tag.setAttr('target', '');
-			return tag;
-		}
-
-		return true;
-	};
-
-	return new Autolinker({
+Tracker.autorun(function() {
+	config = {
 		stripPrefix: settings.get('AutoLinker_StripPrefix'),
 		urls: {
 			schemeMatches: settings.get('AutoLinker_Urls_Scheme'),
@@ -36,15 +22,10 @@ const createAutolinker = () => {
 		phone: settings.get('AutoLinker_Phone'),
 		twitter: false,
 		stripTrailingSlash: false,
-		replaceFn: replaceAutolinkerMatch,
-	});
-};
+	};
+});
 
 const renderMessage = (message) => {
-	if (settings.get('AutoLinker') !== true) {
-		return message;
-	}
-
 	if (!s.trim(message.html)) {
 		return message;
 	}
@@ -57,18 +38,38 @@ const renderMessage = (message) => {
 	} else {
 		msgParts = [message.html];
 	}
-	const autolinker = createAutolinker();
+
 	message.html = msgParts
 		.map((msgPart) => {
 			if (regexTokens && regexTokens.test(msgPart)) {
 				return msgPart;
 			}
+			return Autolinker.link(msgPart, {
+				...config,
+				replaceFn: (match) => {
+					const token = `=!=${ Random.id() }=!=`;
+					const tag = match.buildTag();
 
-			return autolinker.link(msgPart);
+					if (~match.matchedText.indexOf(Meteor.absoluteUrl())) {
+						tag.setAttr('target', '');
+					}
+
+					message.tokens.push({
+						token,
+						text: tag.toAnchorString(),
+					});
+					return token;
+				} });
 		})
 		.join('');
 
 	return message;
 };
 
-callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'autolinker');
+Tracker.autorun(function() {
+	if (settings.get('AutoLinker') !== true) {
+		return callbacks.remove('renderMessage', 'autolinker');
+	}
+
+	callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'autolinker');
+});

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebAppInternals } from 'meteor/webapp';
+
 import { settings } from '../../../settings';
 
 export let hostname;

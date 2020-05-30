@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../settings';
 import { Permissions } from '../../../models';
 
@@ -8,10 +9,5 @@ Meteor.startup(function() {
 		public: true,
 		group: 'Message',
 	});
-	Permissions.upsert('snippet-message', {
-		$setOnInsert: {
-			roles: ['owner', 'moderator', 'admin'],
-		},
-	});
+	Permissions.create('snippet-message', ['owner', 'moderator', 'admin']);
 });
-

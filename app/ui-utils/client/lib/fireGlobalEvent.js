@@ -1,5 +1,6 @@
-import { settings } from '../../../settings';
 import { Tracker } from 'meteor/tracker';
+
+import { settings } from '../../../settings';
 
 export const fireGlobalEvent = function _fireGlobalEvent(eventName, params) {
 	window.dispatchEvent(new CustomEvent(eventName, { detail: params }));

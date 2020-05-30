@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'mongo',
+		'email',
 	]);
 
 	api.mainModule('server/index.js', 'server');

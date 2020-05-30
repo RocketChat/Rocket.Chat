@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
+
 import { modal } from '../../ui-utils';
 import { t } from '../../utils';
 import { WebdavAccounts } from '../../models';

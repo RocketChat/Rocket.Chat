@@ -1,12 +1,15 @@
 <template name="header">
-<header class="rc-header">
+	<header class="rc-header">
 		<div class="rc-header__wrap">
-
 			<div class="rc-header__block rc-header--burger">
 				{{> burger}}
 			</div>
 
-			<span class="rc-header__block">{{_ sectionName}}</span>
+			{{#if rawSectionName}}
+				<span class="rc-header__block">{{rawSectionName}}</span>
+			{{else}}
+				<span class="rc-header__block">{{_ sectionName}}</span>
+			{{/if}}
 
 			{{#if Template.contentBlock}}
 				{{> Template.contentBlock}}

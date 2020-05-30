@@ -34,7 +34,13 @@
 
 		display: flex;
 
+		overflow: auto;
+
 		flex-direction: column;
+
+		height: auto;
+
+		max-height: 70%;
 
 		padding: var(--popover-padding);
 
@@ -117,6 +123,30 @@
 
 		&--star-filled .rc-icon {
 			fill: currentColor;
+		}
+
+		&--online {
+			& .rc-popover__icon {
+				color: var(--rc-status-online);
+			}
+		}
+
+		&--away {
+			& .rc-popover__icon {
+				color: var(--rc-status-away);
+			}
+		}
+
+		&--busy {
+			& .rc-popover__icon {
+				color: var(--rc-status-busy);
+			}
+		}
+
+		&--offline {
+			& .rc-popover__icon {
+				color: var(--rc-status-invisible);
+			}
 		}
 	}
 

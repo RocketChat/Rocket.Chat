@@ -12,9 +12,9 @@ Template.room.helpers({
 
 		if (room.sentiment >= 0.3) {
 			return ':)';
-		} else if (room.sentiment >= -0.3) {
+		} if (room.sentiment >= -0.3) {
 			return ':|';
-		} else if (room.sentiment < -0.3) {
+		} if (room.sentiment < -0.3) {
 			return ':(';
 		}
 	},

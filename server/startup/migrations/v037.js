@@ -5,7 +5,6 @@ Migrations.add({
 	version: 37,
 	up() {
 		if (Permissions) {
-
 			// Find permission add-user (changed it to create-user)
 			const addUserPermission = Permissions.findOne('add-user');
 

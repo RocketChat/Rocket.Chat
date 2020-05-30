@@ -96,17 +96,12 @@
 									{{#each user in selectedUsers}}
 										{{> tag user}}
 									{{/each}}
-									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}"
-										   name="users" autocomplete="off"/>
+									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
 								</div>
 							</div>
 							{{#with config}}
 								{{#if autocomplete 'isShowing'}}
-									<div class="dropdown-in">
-
-										{{> popupList data=config items=items}}
-
-									</div>
+									{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
 								{{/if}}
 							{{/with}}
 						</label>

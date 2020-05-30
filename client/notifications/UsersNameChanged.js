@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Notifications } from '../../app/notifications';
 import { Messages, Subscriptions } from '../../app/models';
 
@@ -8,6 +9,7 @@ Meteor.startup(function() {
 			'u._id': _id,
 		}, {
 			$set: {
+				'u.username': username,
 				'u.name': name,
 			},
 		}, {
@@ -20,6 +22,7 @@ Meteor.startup(function() {
 			},
 		}, {
 			$set: {
+				'mentions.$.username': username,
 				'mentions.$.name': name,
 			},
 		}, {

@@ -89,6 +89,8 @@ html.rtl .attachment {
 		display: flex;
 
 		margin-top: 4px;
+
+		align-items: center;
 		flex-wrap: wrap;
 
 		& .attachment-field {
@@ -128,6 +130,7 @@ html.rtl .attachment {
 		align-items: flex-start;
 
 		& .attachment-flex-column-grow {
+			word-break: break-word;
 			flex-grow: 1;
 		}
 	}

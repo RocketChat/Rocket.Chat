@@ -1,13 +1,10 @@
-HOW INSERT A NEW ICON
+## HOW INSERT A NEW ICON
 
 paste your icon on `./icons` folder
 
-run
+run below commands inside `app/ui-master/public` directory
 
-````
+```js
 node generateSprite.js
-node generateHTML.js
-
-git add icon.html icons icons.svg
-....
+cp icons.svg ../../../private/public
 ```
