@@ -7,9 +7,11 @@ import { createLivechatSubscription,
 	forwardRoomToAgent,
 	forwardRoomToDepartment,
 	removeAgentFromSubscription,
+	updateChatDepartment,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
+import { Apps, AppEvents } from '../../../apps/server';
 
 export const RoutingManager = {
 	methodName: null,
@@ -73,8 +75,12 @@ export const RoutingManager = {
 		Rooms.incUsersCountById(rid);
 
 		const user = Users.findOneById(agent.agentId);
+		const room = LivechatRooms.findOneById(rid);
+
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
 		dispatchAgentDelegated(rid, agent.agentId);
+
+		Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
 	},
 
@@ -87,13 +93,17 @@ export const RoutingManager = {
 		}
 
 		if (departmentId && departmentId !== department) {
-			LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
-			LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
+			updateChatDepartment({
+				rid,
+				newDepartmentId: departmentId,
+				oldDepartmentId: department,
+			});
 			// Fake the department to delegate the inquiry;
 			inquiry.department = departmentId;
 		}
 
 		const { servedBy } = room;
+
 		if (servedBy) {
 			removeAgentFromSubscription(rid, servedBy);
 			LivechatRooms.removeAgentByRoomId(rid);
@@ -135,7 +145,7 @@ export const RoutingManager = {
 		LivechatInquiry.takeInquiry(_id);
 		const inq = this.assignAgent(inquiry, agent);
 
-		callbacks.run('livechat.afterTakeInquiry', inq);
+		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
 
 		return LivechatRooms.findOneById(rid);
 	},

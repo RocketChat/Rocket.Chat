@@ -1,6 +1,7 @@
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions, Rooms } from '../../../models/server/raw';
+import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
 const subscriptionOptions = {
 	projection: {
@@ -9,16 +10,18 @@ const subscriptionOptions = {
 	},
 };
 
-export const canSendMessageAsync = async (rid, { uid, username }, extraData) => {
+export const canSendMessageAsync = async (rid, { uid, username, type }, extraData) => {
 	const room = await Rooms.findOneById(rid);
 
-	if (!await canAccessRoomAsync(room, { _id: uid, username }, extraData)) {
+	if (type !== 'app' && !await canAccessRoomAsync(room, { _id: uid, username }, extraData)) {
 		throw new Error('error-not-allowed');
 	}
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, subscriptionOptions);
-	if (subscription && (subscription.blocked || subscription.blocker)) {
-		throw new Error('room_is_blocked');
+	if (roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK)) {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, subscriptionOptions);
+		if (subscription && (subscription.blocked || subscription.blocker)) {
+			throw new Error('room_is_blocked');
+		}
 	}
 
 	if (room.ro === true && !await hasPermissionAsync(uid, 'post-readonly', rid)) {
@@ -35,4 +38,4 @@ export const canSendMessageAsync = async (rid, { uid, username }, extraData) => 
 	return room;
 };
 
-export const canSendMessage = (rid, { uid, username }, extraData) => Promise.await(canSendMessageAsync(rid, { uid, username }, extraData));
+export const canSendMessage = (rid, { uid, username, type }, extraData) => Promise.await(canSendMessageAsync(rid, { uid, username, type }, extraData));

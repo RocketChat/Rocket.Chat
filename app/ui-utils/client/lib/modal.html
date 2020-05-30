@@ -1,7 +1,11 @@
 <template name="rc_modal">
 	<div class="rc-modal-wrapper">
+		{{#if $eq template 'ModalBlock'}}
+			{{> ModalBlock data}}
+		{{else}}
 		<dialog class="rc-modal rc-modal--{{modifier}}" data-modal="modal">
-			{{#if template}}
+
+			{{# if template}}
 				{{> Template.dynamic template=template data=data}}
 			{{else}}
 				<header class="rc-modal__header">
@@ -43,6 +47,9 @@
 						</div>
 						<div class="rc-modal__content-error"></div>
 					{{/if}}
+					{{#if inputActionText}}
+						<input class="rc-button rc-button--nude js-input-action" type="submit" data-button="input-action" value="{{inputActionText}}">
+					{{/if}}
 					{{#if dontAskAgain}}
 						<label class="rc-checkbox">
 							<input type="checkbox" id="dont-ask-me-again" class="rc-checkbox__input js-modal-dont-ask">
@@ -59,5 +66,6 @@
 					{{/if}}
 			{{/if}}
 			</dialog>
+		{{/if}}
 	</div>
 </template>

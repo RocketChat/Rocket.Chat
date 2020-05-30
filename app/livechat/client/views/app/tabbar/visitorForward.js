@@ -13,12 +13,6 @@ Template.visitorForward.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
 	},
-	hasDepartments() {
-		return Template.instance().departments.get().filter((department) => department.enabled === true).length > 0;
-	},
-	departments() {
-		return Template.instance().departments.get().filter((department) => department.enabled === true);
-	},
 	agentName() {
 		return this.name || this.username;
 	},
@@ -43,6 +37,25 @@ Template.visitorForward.helpers({
 	onClickTagAgent() {
 		return Template.instance().onClickTagAgent;
 	},
+	departmentModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	onClickTagDepartment() {
+		return Template.instance().onClickTagDepartment;
+	},
+	selectedDepartments() {
+		return Template.instance().selectedDepartments.get();
+	},
+	onSelectDepartments() {
+		return Template.instance().onSelectDepartments;
+	},
+	departmentConditions() {
+		const departmentForwardRestrictions = Template.instance().departmentForwardRestrictions.get();
+		return { enabled: true, numAgents: { $gt: 0 }, ...departmentForwardRestrictions };
+	},
 });
 
 Template.visitorForward.onCreated(async function() {
@@ -50,9 +63,22 @@ Template.visitorForward.onCreated(async function() {
 	this.room = new ReactiveVar();
 	this.departments = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
+	this.selectedDepartments = new ReactiveVar([]);
+	this.departmentForwardRestrictions = new ReactiveVar({});
+
+	this.onSelectDepartments = ({ item: department }) => {
+		department.text = department.name;
+		this.selectedDepartments.set([department]);
+		this.selectedAgents.set([]);
+	};
+
+	this.onClickTagDepartment = () => {
+		this.selectedDepartments.set([]);
+	};
 
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
+		this.selectedDepartments.set([]);
 	};
 
 	this.onClickTagAgent = ({ username }) => {
@@ -65,6 +91,12 @@ Template.visitorForward.onCreated(async function() {
 
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().roomId }));
+		const { departmentId } = this.room.get();
+		if (departmentId) {
+			Meteor.call('livechat:getDepartmentForwardRestrictions', departmentId, (err, result) => {
+				this.departmentForwardRestrictions.set(result);
+			});
+		}
 	});
 
 	const { departments } = await APIClient.v1.get('livechat/department');
@@ -78,13 +110,19 @@ Template.visitorForward.events({
 
 		const transferData = {
 			roomId: instance.room.get()._id,
+			comment: event.target.comment.value,
 		};
 
 		const [user] = instance.selectedAgents.get();
 		if (user) {
 			transferData.userId = user._id;
-		} else if (instance.find('#forwardDepartment').value) {
-			transferData.departmentId = instance.find('#forwardDepartment').value;
+		} else if (instance.selectedDepartments.get()) {
+			const [department] = instance.selectedDepartments.get();
+			transferData.departmentId = department && department._id;
+		}
+
+		if (!transferData.userId && !transferData.departmentId) {
+			return;
 		}
 
 		Meteor.call('livechat:transfer', transferData, (error, result) => {
@@ -98,18 +136,6 @@ Template.visitorForward.events({
 				toastr.warning(t('No_available_agents_to_transfer'));
 			}
 		});
-	},
-
-	'change #forwardDepartment, blur #forwardDepartment'(event, instance) {
-		if (event.currentTarget.value) {
-			instance.find('#forwardUser').value = '';
-		}
-	},
-
-	'change #forwardUser, blur #forwardUser'(event, instance) {
-		if (event.currentTarget.value && instance.find('#forwardDepartment')) {
-			instance.find('#forwardDepartment').value = '';
-		}
 	},
 
 	'click .cancel'(event) {
