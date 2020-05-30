@@ -306,8 +306,8 @@ class ChatpalProvider extends SearchProvider {
 		const subscribedRooms = Subscriptions.find({ 'u._id': context.uid }).fetch().map((room) => room.rid);
 		aclRoomsIds = aclRoomsIds.concat(subscribedRooms);
 
-		const publicRooms = Rooms.findByType('c').fetch().map((room) => room._id);
 		if (this._settings.get('IncludeAllPublicChannels')) {
+			const publicRooms = Rooms.findByType('c').fetch().map((room) => room._id);
 			aclRoomsIds = aclRoomsIds.concat(publicRooms);
 		}
 
