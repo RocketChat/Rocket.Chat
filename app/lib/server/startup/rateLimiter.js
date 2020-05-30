@@ -4,7 +4,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { RateLimiter } from 'meteor/rate-limit';
 
 import { settings } from '../../../settings';
-import { metrics } from '../../../metrics';
+import { metrics } from '../../../../server/metrics';
 import { Logger } from '../../../logger';
 
 const logger = new Logger('RateLimiter', {});

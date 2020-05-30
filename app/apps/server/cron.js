@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { Apps } from './orchestrator';
-import { getWorkspaceAccessToken } from '../../cloud/server';
+import { getWorkspaceAccessToken } from '../../../server/cloud';
 import { Settings, Users } from '../../models/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 

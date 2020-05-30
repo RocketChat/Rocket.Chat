@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { LivechatRooms } from '../../../../models';
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api';
 import { findLivechatTransferHistory } from '../lib/transfer';
 
 API.v1.addRoute('livechat/transfer.history/:rid', { authRequired: true }, {

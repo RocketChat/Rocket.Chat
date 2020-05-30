@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 
-import { Migrations } from '../../../app/migrations/server';
+import { Migrations } from '../../migrations';
 import { Rooms } from '../../../app/models/server';
 
 const batchSize = 5000;

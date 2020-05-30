@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 
 if (Migrations.getVersion() !== 0) {
 	Migrations.migrateTo(process.env.MIGRATION_VERSION || 'latest');

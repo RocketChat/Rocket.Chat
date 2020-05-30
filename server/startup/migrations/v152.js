@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Migrations } from '../../../app/migrations/server';
+import { Migrations } from '../../migrations';
 import { Users } from '../../../app/models/server';
 import { MAX_RESUME_LOGIN_TOKENS } from '../../lib/accounts';
 

@@ -1,6 +1,6 @@
 import { check } from 'meteor/check';
 
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api';
 import { findAllChannelsWithNumberOfMessages } from '../lib/channels';
 import { transformDatesForAPI } from './helpers/date';
 

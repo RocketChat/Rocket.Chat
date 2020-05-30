@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api';
 import { hasPermission } from '../../../../../app/authorization/server';
 import { findAllAverageServiceTime, findAllServiceTime, findAvailableServiceTimeHistory } from '../../../../../app/livechat/server/lib/analytics/agents';
 

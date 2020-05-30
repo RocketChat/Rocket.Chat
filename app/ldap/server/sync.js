@@ -6,7 +6,7 @@ import _ from 'underscore';
 
 import LDAP from './ldap';
 import { callbacks } from '../../callbacks/server';
-import { RocketChatFile } from '../../file';
+import { RocketChatFile } from '../../../server/file';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
 import { Users, Roles, Rooms, Subscriptions } from '../../models';

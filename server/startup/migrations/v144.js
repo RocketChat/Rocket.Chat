@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations/server';
+import { Migrations } from '../../migrations';
 import { Sessions } from '../../../app/models/server';
 
 Migrations.add({

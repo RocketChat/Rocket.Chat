@@ -1,8 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { settings } from '../../../app/settings';
-import { RocketChatAssets } from '../../../app/assets/server';
+import { RocketChatAssets } from '../../assets';
 
 Migrations.add({
 	version: 42,

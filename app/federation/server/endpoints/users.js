@@ -1,4 +1,4 @@
-import { API } from '../../../api/server';
+import { API } from '../../../../server/api';
 import { Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { logger } from '../lib/logger';

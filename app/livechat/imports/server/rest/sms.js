@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models';
-import { API } from '../../../../api/server';
-import { SMS } from '../../../../sms';
+import { API } from '../../../../../server/api';
+import { SMS } from '../../../../../server/sms';
 import { Livechat } from '../../../server/lib/Livechat';
 
 const defineDepartment = (idOrName) => {

@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations/server';
+import { Migrations } from '../../migrations';
 import { Settings, LivechatRooms, Rooms, LivechatInquiry } from '../../../app/models/server';
 import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
 

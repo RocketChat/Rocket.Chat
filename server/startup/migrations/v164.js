@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { Settings } from '../../../app/models';
 
 // Enable iframe usage for existant RC installations.

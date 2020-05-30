@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import s from 'underscore.string';
 
 import { placeholders } from '../../../utils';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../../server/mailer';
 
 export const sendMail = function(from, subject, body, dryrun, query) {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');

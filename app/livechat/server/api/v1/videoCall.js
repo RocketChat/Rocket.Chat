@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 
 import { Messages } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings';
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api';
 import { findGuest, getRoom, settings } from '../lib/livechat';
 
 API.v1.addRoute('livechat/video.call/:token', {

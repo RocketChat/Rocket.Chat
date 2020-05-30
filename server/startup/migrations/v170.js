@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations';
+import { Migrations } from '../../migrations';
 import { LivechatRooms } from '../../../app/models/server';
 
 Migrations.add({

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 

@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api';
 import { hasPermission } from '../../../../authorization';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';

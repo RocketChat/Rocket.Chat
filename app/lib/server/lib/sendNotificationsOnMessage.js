@@ -11,7 +11,7 @@ import { getEmailData, shouldNotifyEmail } from '../functions/notifications/emai
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
-import { Notification } from '../../../notification-queue/server/NotificationQueue';
+import { Notification } from '../../../../server/notification-queue/NotificationQueue';
 
 let TroubleshootDisableNotifications;
 

@@ -12,7 +12,7 @@ import moment from 'moment';
 
 import { logger } from '../logger';
 import { processWebhookMessage } from '../../../lib';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
+import { API, APIClass, defaultRateLimiterOptions } from '../../../../server/api';
 import * as Models from '../../../models';
 import { settings } from '../../../settings/server';
 

@@ -1,4 +1,4 @@
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api';
 import { findMonitors, findMonitorByUsername } from './lib/monitors';
 
 API.v1.addRoute('livechat/monitors.list', { authRequired: true }, {

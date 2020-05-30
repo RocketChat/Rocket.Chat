@@ -1,4 +1,4 @@
-import { API } from '../../../../app/api/server';
+import { API } from '../../../../server/api';
 import { findAllCannedResponses } from './lib/canned-responses';
 
 API.v1.addRoute('canned-responses.get', { authRequired: true }, {

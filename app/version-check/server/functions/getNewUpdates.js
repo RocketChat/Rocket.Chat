@@ -6,7 +6,7 @@ import { MongoInternals } from 'meteor/mongo';
 
 import { Settings } from '../../../models';
 import { Info } from '../../../utils';
-import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { getWorkspaceAccessToken } from '../../../../server/cloud';
 
 export default () => {
 	try {

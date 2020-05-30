@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api';
 import { findAgentDepartments } from '../../../server/api/lib/agents';
 
 API.v1.addRoute('livechat/agents/:agentId/departments', { authRequired: true }, {

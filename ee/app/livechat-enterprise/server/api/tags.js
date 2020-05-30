@@ -1,4 +1,4 @@
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api';
 import { findTags, findTagById } from './lib/tags';
 
 API.v1.addRoute('livechat/tags.list', { authRequired: true }, {

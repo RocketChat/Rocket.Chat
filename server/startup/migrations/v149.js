@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations/server';
+import { Migrations } from '../../migrations';
 import { settings } from '../../../app/settings/server';
 import { Settings } from '../../../app/models/server';
 

@@ -1,4 +1,4 @@
-import { metrics } from '../../../../metrics';
+import { metrics } from '../../../../../server/metrics';
 import { settings } from '../../../../settings';
 import { Notifications } from '../../../../notifications';
 import { roomTypes } from '../../../../utils';
