@@ -76,7 +76,7 @@ const parseNotEscaped = function(msg, message) {
 	msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote');
 
 	// Support ![alt text](http://image url)
-	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
+	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\s]+)\\)`, 'gm'), (match, title, url) => {
 		if (!validateUrl(url)) {
 			return match;
 		}
@@ -85,7 +85,7 @@ const parseNotEscaped = function(msg, message) {
 	});
 
 	// Support [Text](http://link)
-	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
+	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\s]+)\\)`, 'gm'), (match, title, url) => {
 		if (!validateUrl(url)) {
 			return match;
 		}
