@@ -7,3 +7,11 @@ mock('meteor/meteor', {
 		},
 	},
 });
+
+mock('meteor/rocketchat:tap-i18n', {
+	TAPi18n: {
+		getLanguages() {
+			return {};
+		},
+	},
+});

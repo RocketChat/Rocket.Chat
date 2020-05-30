@@ -27,7 +27,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 	}
 
 	try {
-		const userObject = SAML.mapProfileToUserObject(loginResult.profile);
+		const userObject = SAMLUtils.mapProfileToUserObject(loginResult.profile);
 
 		return SAML.insertOrUpdateSAMLUser(userObject);
 	} catch (error) {

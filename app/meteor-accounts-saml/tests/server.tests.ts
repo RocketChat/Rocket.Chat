@@ -11,6 +11,7 @@ import { ServiceProviderMetadata } from '../server/lib/generators/ServiceProvide
 import { LogoutRequestParser } from '../server/lib/parsers/LogoutRequest';
 import { LogoutResponseParser } from '../server/lib/parsers/LogoutResponse';
 import { ResponseParser } from '../server/lib/parsers/Response';
+import { SAMLUtils } from '../server/lib/Utils';
 import {
 	serviceProviderOptions,
 	simpleMetadata,
@@ -22,6 +23,7 @@ import {
 	simpleLogoutResponse,
 	invalidLogoutResponse,
 	simpleSamlResponse,
+	profile,
 } from './data';
 import '../../../definition/xml-encryption';
 
@@ -266,6 +268,110 @@ describe('SAML', () => {
 					expect(profile).to.have.property('email').equal('user1@example.com');
 					expect(loggedOut).to.be.false;
 				});
+			});
+		});
+	});
+
+	describe('[Login]', () => {
+		describe('UserMapping', () => {
+			it('should collect all appropriate data from the profile, respecting the fieldMap', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					anotherUsername: 'username',
+					singleEmail: 'email',
+					anotherName: 'name',
+					customField1: 'customField1',
+					customField2: 'customField2',
+					customField3: 'customField3',
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+				globalSettings.roleAttributeName = 'roles';
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				SAMLUtils.relayState = '[RelayState]';
+				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('samlLogin').that.is.an('object');
+				expect(userObject).to.have.nested.property('samlLogin.provider').that.is.equal('[RelayState]');
+				expect(userObject).to.have.nested.property('samlLogin.idp').that.is.equal('[IssuerName]');
+				expect(userObject).to.have.nested.property('samlLogin.idpSession').that.is.equal('[SessionIndex]');
+				expect(userObject).to.have.nested.property('samlLogin.nameID').that.is.equal('[nameID]');
+				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('testing@server.com');
+				expect(userObject).to.have.property('fullName').that.is.equal('[AnotherName]');
+				expect(userObject).to.have.property('username').that.is.equal('[AnotherUserName]');
+				expect(userObject).to.have.property('roles').that.is.an('array').with.members(['user', 'ruler', 'admin', 'king', 'president', 'governor', 'mayor']);
+				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny', 'random', 'babies']);
+
+				const map = new Map();
+				map.set('customField1', 'value1');
+				map.set('customField2', 'value2');
+				map.set('customField3', 'value3');
+
+				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
+			});
+
+			it('should reject an userDataFieldMap without an email field', () => {
+				const { globalSettings } = SAMLUtils;
+				globalSettings.userDataFieldMap = JSON.stringify({});
+				SAMLUtils.updateGlobalSettings(globalSettings);
+
+				expect(() => {
+					SAMLUtils.mapProfileToUserObject(profile);
+				}).to.throw('SAML Profile did not contain an email address');
+			});
+
+			it('should fail to map a profile that is missing the email field', () => {
+				const { globalSettings } = SAMLUtils;
+				const fieldMap = {
+					inexistentField: 'email',
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+				SAMLUtils.updateGlobalSettings(globalSettings);
+
+				expect(() => {
+					SAMLUtils.mapProfileToUserObject(profile);
+				}).to.throw('SAML Profile did not contain an email address');
+			});
+
+			it('should load data from the default fields when the field map is lacking', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					singleEmail: 'email',
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName]');
+				expect(userObject).to.have.property('username').that.is.equal('[username]');
+			});
+
+			it('should assign the default role when the roleAttributeName is missing', () => {
+				const { globalSettings } = SAMLUtils;
+				globalSettings.roleAttributeName = '';
+				SAMLUtils.updateGlobalSettings(globalSettings);
+
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['user']);
+			});
+
+			it('should assign the default role when the value of the role attribute is missing', () => {
+				const { globalSettings } = SAMLUtils;
+				globalSettings.roleAttributeName = 'inexistentField';
+				SAMLUtils.updateGlobalSettings(globalSettings);
+
+				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['user']);
 			});
 		});
 	});

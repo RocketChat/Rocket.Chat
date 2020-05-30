@@ -1,8 +1,12 @@
 import zlib from 'zlib';
 
 import _ from 'underscore';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { ISAMLUser } from '../definition/ISAMLUser';
+import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
+
 
 // @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would cause )
 type NullableLogger = Logger | Null;
@@ -13,7 +17,7 @@ let debug = false;
 let relayState: string | null = null;
 let logger: NullableLogger = null;
 
-const globalSettings = {
+const globalSettings: ISAMLGlobalSettings = {
 	generateUsername: false,
 	nameOverwrite: false,
 	mailOverwrite: false,
@@ -30,7 +34,7 @@ export class SAMLUtils {
 		return debug;
 	}
 
-	static get globalSettings(): Record<string, any> {
+	static get globalSettings(): ISAMLGlobalSettings {
 		return globalSettings;
 	}
 
@@ -287,6 +291,76 @@ export class SAMLUtils {
 
 	static convertArrayBufferToString(buffer: ArrayBuffer, encoding = 'utf8'): string {
 		return Buffer.from(buffer).toString(encoding);
+	}
+
+	static normalizeUsername(name: string): string {
+		const { globalSettings } = this;
+
+		switch (globalSettings.usernameNormalize) {
+			case 'Lowercase':
+				name = name.toLowerCase();
+				break;
+		}
+
+		return name;
+	}
+
+	static ensureArray<T>(param: T | Array<T>): Array<T> {
+		const emptyArray: Array<T> = [];
+		return emptyArray.concat(param);
+	}
+
+	static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
+		const { emailField, usernameField, nameField, userDataFieldMap, regexes } = this.getUserDataMapping();
+		const { defaultUserRole = 'user', roleAttributeName } = this.globalSettings;
+
+		const email = profile[emailField];
+		if (!email) {
+			throw new Error('SAML Profile did not contain an email address');
+		}
+
+		const userObject: ISAMLUser = {
+			customFields: new Map(),
+			samlLogin: {
+				provider: this.relayState,
+				idp: profile.issuer,
+				idpSession: profile.sessionIndex,
+				nameID: profile.nameID,
+			},
+			emailList: this.ensureArray<string>(email),
+			fullName: this.getProfileValue(profile, nameField, regexes.name) || profile.displayName || profile.username,
+			roles: this.ensureArray<string>(defaultUserRole.split(',')),
+			eppn: profile.eppn,
+		};
+
+		if (profile[usernameField]) {
+			const profileUsername = this.getProfileValue(profile, usernameField, regexes.username);
+			if (profileUsername) {
+				userObject.username = this.normalizeUsername(profileUsername);
+			}
+		}
+
+		if (roleAttributeName && profile[roleAttributeName]) {
+			userObject.roles = this.ensureArray<string>((profile[roleAttributeName] || '').split(','));
+		}
+
+		const languages = TAPi18n.getLanguages();
+		if (languages[profile.language]) {
+			userObject.language = profile.language;
+		}
+
+		if (profile.channels) {
+			userObject.channels = profile.channels.split(',');
+		}
+
+		for (const [field, rcField] of userDataFieldMap) {
+			if (profile[field]) {
+				const value = this.getProfileValue(profile, field, regexes[rcField]);
+				userObject.customFields.set(rcField, value);
+			}
+		}
+
+		return userObject;
 	}
 }
 

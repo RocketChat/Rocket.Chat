@@ -185,3 +185,22 @@ export const samlResponse = `<samlp:Response Destination="http://localhost:3000/
 		</saml:AttributeStatement>
 	</saml:Assertion>
 </samlp:Response>`;
+
+export const profile = {
+	issuer: '[IssuerName]',
+	sessionIndex: '[SessionIndex]',
+	nameID: '[nameID]',
+	displayName: '[DisplayName]',
+	anotherName: '[AnotherName]',
+	username: '[username]',
+	anotherUsername: '[AnotherUserName]',
+	roles: 'user,ruler,admin,king,president,governor,mayor',
+	otherRoles: 'user,customer,client',
+	language: 'ptbr',
+	channels: 'pets,pics,funny,random,babies',
+	customField1: 'value1',
+	customField2: 'value2',
+	customField3: 'value3',
+	singleEmail: 'testing@server.com',
+	multipleEmails: 'test1@server.com,test2@server.com,test3@server.com',
+};

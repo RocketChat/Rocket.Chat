@@ -2,7 +2,6 @@ import { ServerResponse } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Accounts } from 'meteor/accounts-base';
 import fiber from 'fibers';
 import s from 'underscore.string';
@@ -279,18 +278,6 @@ export class SAML {
 			.replace(/^\w/, (u) => u.toUpperCase());
 	}
 
-	static normalizeUsername(name: string): string {
-		const { globalSettings } = SAMLUtils;
-
-		switch (globalSettings.usernameNormalize) {
-			case 'Lowercase':
-				name = name.toLowerCase();
-				break;
-		}
-
-		return name;
-	}
-
 	static subscribeToSAMLChannels(channels: Array<string>, user: IUser): void {
 		try {
 			for (let roomName of channels) {
@@ -323,64 +310,6 @@ export class SAML {
 
 	static storeCredential(credentialToken: string, loginResult: object): void {
 		CredentialTokens.create(credentialToken, loginResult);
-	}
-
-	static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
-		const { emailField, usernameField, nameField, userDataFieldMap, regexes } = SAMLUtils.getUserDataMapping();
-		const { defaultUserRole = 'user', roleAttributeName } = SAMLUtils.globalSettings;
-
-		const email = profile[emailField];
-		if (!email) {
-			throw new Error('SAML Profile did not contain an email address');
-		}
-
-		const userObject: ISAMLUser = {
-			customFields: new Map(),
-			samlLogin: {
-				provider: SAMLUtils.relayState,
-				idp: profile.issuer,
-				idpSession: profile.sessionIndex,
-				nameID: profile.nameID,
-			},
-			emailList: Array.isArray(email) ? email : [email],
-			fullName: SAMLUtils.getProfileValue(profile, nameField, regexes.name) || profile.displayName || profile.username,
-			roles: [].concat(defaultUserRole.split(',')),
-			eppn: profile.eppn,
-		};
-
-		if (profile[usernameField]) {
-			const profileUsername = SAMLUtils.getProfileValue(profile, usernameField, regexes.username);
-			if (profileUsername) {
-				userObject.username = SAML.normalizeUsername(profileUsername);
-			}
-		}
-
-		if (roleAttributeName && profile[roleAttributeName]) {
-			userObject.roles = [].concat(profile[roleAttributeName]);
-		}
-
-		const languages = TAPi18n.getLanguages();
-		if (languages[profile.language]) {
-			userObject.language = profile.language;
-		}
-
-		if (profile.channels) {
-			userObject.channels = profile.channels.split(',');
-		}
-
-		for (const field in userDataFieldMap) {
-			if (!userDataFieldMap.hasOwnProperty(field)) {
-				continue;
-			}
-
-			if (profile[field]) {
-				const rcField = userDataFieldMap[field];
-				const value = SAMLUtils.getProfileValue(profile, field, regexes[rcField]);
-				userObject.customFields.set(rcField, value);
-			}
-		}
-
-		return userObject;
 	}
 
 	static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
