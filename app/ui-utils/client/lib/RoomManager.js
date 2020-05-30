@@ -9,13 +9,14 @@ import _ from 'underscore';
 import { fireGlobalEvent } from './fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
+import { menu } from './menu';
 import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
-import { ROOM_DATA_STREAM_OBSERVER } from '../../../utils/stream/constants';
+import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 
 import { call } from '..';
 
@@ -45,7 +46,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 export const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
-	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM_OBSERVER);
+	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
 	const Cls = class {
@@ -78,7 +79,7 @@ export const RoomManager = new function() {
 								// Do not load command messages into channel
 								if (msg.t !== 'command') {
 									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-									const isNew = !ChatMessage.findOne(msg._id);
+									const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
 									upsertMessage({ msg, subscription });
 
 									msg.room = {
@@ -86,12 +87,13 @@ export const RoomManager = new function() {
 										name,
 									};
 									if (isNew) {
+										menu.updateUnreadBars();
 										callbacks.run('streamNewMessage', msg);
 									}
 								}
 
 								msg.name = room.name;
-								RoomManager.updateMentionsMarksOfRoom(typeName);
+								Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 								callbacks.run('streamMessage', msg);
 
@@ -141,7 +143,11 @@ export const RoomManager = new function() {
 				openedRooms[typeName].ready = false;
 				openedRooms[typeName].active = false;
 				if (openedRooms[typeName].template != null) {
-					Blaze.remove(openedRooms[typeName].template);
+					try {
+						Blaze.remove(openedRooms[typeName].template);
+					} catch (e) {
+						console.error('Error removing template from DOM', e);
+					}
 				}
 				delete openedRooms[typeName].dom;
 				delete openedRooms[typeName].template;

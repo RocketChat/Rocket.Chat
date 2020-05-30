@@ -48,7 +48,7 @@ const loadUserSubscriptions = function(exportOperation) {
 		const roomId = subscription.rid;
 		const roomData = Rooms.findOneById(roomId);
 		const roomName = roomData && roomData.name && subscription.t !== 'd' ? roomData.name : roomId;
-		const userId = subscription.t === 'd' ? roomId.replace(exportUserId, '') : null;
+		const [userId] = subscription.t === 'd' ? roomData.uids.filter((uid) => uid !== exportUserId) : [null];
 		const fileName = exportOperation.fullExport ? roomId : roomName;
 		const fileType = exportOperation.fullExport ? 'json' : 'html';
 		const targetFile = `${ fileName }.${ fileType }`;
@@ -582,14 +582,24 @@ async function processDataDownloads() {
 	}
 }
 
+const name = 'Generate download files for user data';
+
 Meteor.startup(function() {
 	Meteor.defer(function() {
-		processDataDownloads();
+		let TroubleshootDisableDataExporterProcessor;
+		settings.get('Troubleshoot_Disable_Data_Exporter_Processor', (key, value) => {
+			if (TroubleshootDisableDataExporterProcessor === value) { return; }
+			TroubleshootDisableDataExporterProcessor = value;
 
-		SyncedCron.add({
-			name: 'Generate download files for user data',
-			schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
-			job: processDataDownloads,
+			if (value) {
+				return SyncedCron.remove(name);
+			}
+
+			SyncedCron.add({
+				name,
+				schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
+				job: processDataDownloads,
+			});
 		});
 	});
 });

@@ -3,10 +3,11 @@ import {
 	Field,
 	FieldGroup,
 	Icon,
-	Label,
+	Margins,
 	PasswordInput,
 	TextInput,
 } from '@rocket.chat/fuselage';
+import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
@@ -16,13 +17,11 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useLoginWithPassword } from '../../../contexts/UserContext';
 import { useCallbacks } from '../../../hooks/useCallbacks';
-import { useFocus } from '../../../hooks/useFocus';
 import { Pager } from '../Pager';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
-import { StepContent } from '../StepContent';
 
-export function AdminUserInformationStep({ step, title, active }) {
+function AdminUserInformationStep({ step, title, active }) {
 	const loginWithPassword = useLoginWithPassword();
 	const registerUser = useMethod('registerUser');
 	const defineUsername = useMethod('setUsername');
@@ -86,7 +85,7 @@ export function AdminUserInformationStep({ step, title, active }) {
 
 	const t = useTranslation();
 
-	const autoFocusRef = useFocus(active);
+	const autoFocusRef = useAutoFocus(active);
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -116,62 +115,76 @@ export function AdminUserInformationStep({ step, title, active }) {
 		}
 	};
 
+	const nameInputId = useUniqueId();
+	const usernameInputId = useUniqueId();
+	const emailInputId = useUniqueId();
+	const passwordInputId = useUniqueId();
+
 	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 		<StepHeader number={step} title={title} />
 
-		<StepContent>
+		<Margins blockEnd='x32'>
 			<FieldGroup>
 				<Field>
-					<Label text={t('Name')} />
-					<TextInput
-						ref={autoFocusRef}
-						addon={<Icon name='user' />}
-						placeholder={t('Type_your_name')}
-						value={name}
-						onChange={({ currentTarget: { value } }) => setName(value)}
-						error={!isNameValid}
-					/>
-				</Field>
-				<Field>
+					<Field.Label htmlFor={nameInputId} required>{t('Name')}</Field.Label>
 					<Field.Row>
-						<Label text={t('Username')} />
-						{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
+						<TextInput
+							ref={autoFocusRef}
+							id={nameInputId}
+							addon={<Icon name='user' size='x20' />}
+							placeholder={t('Type_your_name')}
+							value={name}
+							onChange={({ currentTarget: { value } }) => setName(value)}
+							error={!isNameValid ? 'error' : ''}
+						/>
 					</Field.Row>
-					<TextInput
-						addon={<Icon name='at' />}
-						placeholder={t('Type_your_username')}
-						value={username}
-						onChange={({ currentTarget: { value } }) => setUsername(value)}
-						error={!isUsernameValid}
-					/>
 				</Field>
 				<Field>
+					<Field.Label htmlFor={usernameInputId} required>{t('Username')}</Field.Label>
 					<Field.Row>
-						<Label text={t('Organization_Email')} />
-						{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
+						<TextInput
+							id={usernameInputId}
+							addon={<Icon name='at' size='x20' />}
+							placeholder={t('Type_your_username')}
+							value={username}
+							onChange={({ currentTarget: { value } }) => setUsername(value)}
+							error={!isUsernameValid ? 'error' : ''}
+						/>
 					</Field.Row>
-					<EmailInput
-						addon={<Icon name='mail' />}
-						placeholder={t('Type_your_email')}
-						value={email}
-						onChange={({ currentTarget: { value } }) => setEmail(value)}
-						error={!isEmailValid}
-					/>
+					{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
 				</Field>
 				<Field>
-					<Label text={t('Password')} />
-					<PasswordInput
-						type='password'
-						addon={<Icon name='key' />}
-						placeholder={t('Type_your_password')}
-						value={password}
-						onChange={({ currentTarget: { value } }) => setPassword(value)}
-						error={!isPasswordValid}
-					/>
+					<Field.Label htmlFor={emailInputId} required>{t('Organization_Email')}</Field.Label>
+					<Field.Row>
+						<EmailInput
+							id={emailInputId}
+							addon={<Icon name='mail' size='x20' />}
+							placeholder={t('Type_your_email')}
+							value={email}
+							onChange={({ currentTarget: { value } }) => setEmail(value)}
+							error={!isEmailValid ? 'error' : ''}
+						/>
+					</Field.Row>
+					{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
+				</Field>
+				<Field>
+					<Field.Label htmlFor={passwordInputId} required>{t('Password')}</Field.Label>
+					<Field.Row>
+						<PasswordInput
+							id={passwordInputId}
+							addon={<Icon name='key' size='x20' />}
+							placeholder={t('Type_your_password')}
+							value={password}
+							onChange={({ currentTarget: { value } }) => setPassword(value)}
+							error={!isPasswordValid ? 'error' : ''}
+						/>
+					</Field.Row>
 				</Field>
 			</FieldGroup>
-		</StepContent>
+		</Margins>
 
 		<Pager disabled={commiting} isContinueEnabled={isContinueEnabled} />
 	</Step>;
 }
+
+export default AdminUserInformationStep;

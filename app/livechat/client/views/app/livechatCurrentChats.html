@@ -1,7 +1,7 @@
 <template name="livechatCurrentChats">
 	{{#requiresPermission 'view-livechat-current-chats'}}
 		<fieldset>
-			<form class="form-inline" method="post">
+			<form class="form-inline" id="form-filters" method="post">
 				<div class="livechat-group-filters-wrapper">
 					<div class="livechat-group-filters-container">
 						<div class="livechat-current-chats-standard-filters">
@@ -9,7 +9,7 @@
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Guest"}}</div>
 									<div class="rc-input__wrapper">
-										<input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" name="name">
+										<input type="text" placeholder="{{_ "Name"}}" class="rc-input__element" id="name" name="name">
 									</div>
 								</label>
 							</div>
@@ -36,7 +36,7 @@
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Status"}}</div>
 									<div class="rc-select">
-										<select class="rc-select__element" name="status">
+										<select class="rc-select__element" id="status" name="status">
 											<option class="rc-select__option" value="">{{_ "All"}}</option>
 											<option class="rc-select__option" value="opened">{{_ "Opened"}}</option>
 											<option class="rc-select__option" value="closed">{{_ "Closed"}}</option>
@@ -46,18 +46,25 @@
 								</label>
 							</div>
 							<div class="form-group">
-								<label class="rc-input__label">
-									<div class="rc-input__title">{{_ "Department"}}</div>
-									<div class="rc-select">
-										<select class="rc-select__element" name="department">
-											<option class="rc-select__option" value="">{{_ "Select_a_department"}}</option>
-											{{#each departments}}
-												<option class="rc-select__option" value="{{_id}}">{{name}}</option>
-											{{/each}}
-										</select>
-										{{> icon block="rc-select__arrow" icon="arrow-down" }}
-									</div>
-								</label>
+								{{> livechatAutocompleteUser
+									onClickTag=onClickTagDepartment
+									list=selectedDepartments
+									onSelect=onSelectDepartments
+									collection='CachedDepartmentList'
+									endpoint='livechat/department.autocomplete'
+									field='name'
+									sort='name'
+									label="Department"
+									placeholder="Enter_a_department_name"
+									name="department"
+									icon="queue"
+									noMatchTemplate="userSearchEmpty"
+									templateItem="popupList_item_channel"
+									template="roomSearch"
+									noMatchTemplate="roomSearchEmpty"
+									modifier=departmentModifier
+									showLabel=true
+								}}
 							</div>
 							<div class="form-group input-daterange">
 								<label class="rc-input__label">
@@ -108,11 +115,9 @@
 					<div class="livechat-group-filters-buttons">
 						<div class="rc-button__group">
 							<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
-							{{#if hasPopoverPermissions}}
-								<button class="livechat-current-chats-extra-actions">
-									{{> icon icon="menu" block="rc-icon--default-size"}}
-								</button>
-							{{/if}}
+							<button class="livechat-current-chats-extra-actions">
+								{{> icon icon="menu" block="rc-icon--default-size"}}
+							</button>
 						</div>
 					</div>
 				</div>
@@ -122,24 +127,24 @@
 			{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 				<thead>
 					<tr>
-						<th width="25%">
-							<div class="table-fake-th">{{_ "Name"}}</div>
+						<th class="js-sort {{#if sortBy 'fname'}}is-sorting{{/if}}" data-sort="fname" width="25%">
+							<div class="table-fake-th">{{_ "Name"}}{{> icon icon=(sortIcon 'fname')}}</div>
 						</th>
-						<th width="15%">
-							<div class="table-fake-th">{{_ "Department"}}</div>
+						<th class="js-sort {{#if sortBy 'departmentId'}}is-sorting{{/if}}" data-sort="departmentId" width="15%">
+							<div class="table-fake-th">{{_ "Department"}}{{> icon icon=(sortIcon 'departmentId')}}</div>
 						</th>
-						<th width="15%">
-							<div class="table-fake-th">{{_ "Served_By"}}</div>
+						<th class="js-sort {{#if sortBy 'servedBy.username'}}is-sorting{{/if}}" data-sort="servedBy.username" width="15%">
+							<div class="table-fake-th">{{_ "Served_By"}}{{> icon icon=(sortIcon 'servedBy.username')}}</div>
 						</th>
-						<th width="15%">
-							<div class="table-fake-th">{{_ "Started_At"}}</div>
+						<th class="js-sort {{#if sortBy 'ts'}}is-sorting{{/if}}" data-sort="ts" width="15%">
+							<div class="table-fake-th">{{_ "Started_At"}}{{> icon icon=(sortIcon 'ts')}}</div>
 						</th>
 
-						<th width="15%">
-							<div class="table-fake-th">{{_ "Last_Message_At"}}</div>
+						<th class="js-sort {{#if sortBy 'lm'}}is-sorting{{/if}}" data-sort="lm" width="15%">
+							<div class="table-fake-th">{{_ "Last_Message_At"}}{{> icon icon=(sortIcon 'lm')}}</div>
 						</th>
-						<th width="10%">
-							<div class="table-fake-th">{{_ "Status"}}</div>
+						<th class="js-sort {{#if sortBy 'open'}}is-sorting{{/if}}" data-sort="open" width="10%">
+							<div class="table-fake-th">{{_ "Status"}}{{> icon icon=(sortIcon 'open')}}</div>
 						</th>
 
 						<th width="5%"><div class="table-fake-th">&nbsp;</div></th>
