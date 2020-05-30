@@ -29,7 +29,7 @@
 							<div class="rc-user-info__avatar">
 								{{> avatar username=username}}
 							</div>
-							<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
+							<h3 title="{{name}}" class="rc-user-info__name">{{name}}</h3>
 							{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
 							{{# userPresence uid=uid}}<span class="rc-header__status rc-user-info__status">
 								<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>
@@ -51,6 +51,11 @@
 							{{/with}}
 						</div>
 
+						{{#if hasBio}}
+							<div class="rc-user-info-details">
+								{{ bio }}
+							</div>
+						{{/if}}
 						<div class="rc-user-info-details">
 							{{#if roleTags}}
 								<div class="rc-user-info-details__item">

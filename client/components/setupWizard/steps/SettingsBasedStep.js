@@ -8,12 +8,12 @@ import {
 	Skeleton,
 	TextInput,
 } from '@rocket.chat/fuselage';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useReducer, useState } from 'react';
 
 import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation, useLanguages } from '../../../contexts/TranslationContext';
-import { useFocus } from '../../../hooks/useFocus';
 import { Pager } from '../Pager';
 import { useSetupWizardContext } from '../SetupWizardState';
 import { Step } from '../Step';
@@ -42,7 +42,7 @@ const useFields = () => {
 	return { fields, resetFields, setFieldValue };
 };
 
-export function SettingsBasedStep({ step, title, active }) {
+function SettingsBasedStep({ step, title, active }) {
 	const { settings, currentStep, goToPreviousStep, goToNextStep } = useSetupWizardContext();
 	const { fields, resetFields, setFieldValue } = useFields();
 	const [commiting, setCommiting] = useState(false);
@@ -53,9 +53,9 @@ export function SettingsBasedStep({ step, title, active }) {
 		resetFields(
 			settings
 				.filter(({ wizard }) => wizard.step === step)
-				.filter(({ type }) => ['string', 'select', 'language'].includes(type))
+				.filter(({ type }) => ['string', 'select', 'language', 'boolean'].includes(type))
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
-				.map(({ value, ...field }) => ({ ...field, value: value || '' })),
+				.map(({ value, ...field }) => ({ ...field, value: value != null ? value : '' })),
 		);
 	}, [settings, currentStep]);
 
@@ -63,7 +63,7 @@ export function SettingsBasedStep({ step, title, active }) {
 
 	const batchSetSettings = useBatchSettingsDispatch();
 
-	const autoFocusRef = useFocus(active);
+	const autoFocusRef = useAutoFocus(active);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -125,7 +125,6 @@ export function SettingsBasedStep({ step, title, active }) {
 							/>}
 
 							{type === 'select' && <Select
-								type='select'
 								data-qa={_id}
 								id={_id}
 								name={_id}
@@ -135,8 +134,20 @@ export function SettingsBasedStep({ step, title, active }) {
 								options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
 							/>}
 
+							{type === 'boolean' && <Select
+								data-qa={_id}
+								id={_id}
+								name={_id}
+								ref={i === 0 ? autoFocusRef : undefined}
+								value={String(value)}
+								onChange={(value) => setFieldValue(_id, value === 'true')}
+								options={[
+									['true', t('Yes')],
+									['false', t('No')],
+								]}
+							/>}
+
 							{type === 'language' && <Select
-								type='select'
 								data-qa={_id}
 								id={_id}
 								name={_id}
@@ -159,3 +170,5 @@ export function SettingsBasedStep({ step, title, active }) {
 		/>
 	</Step>;
 }
+
+export default SettingsBasedStep;

@@ -12,12 +12,13 @@ import toastr from 'toastr';
 import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
 import { modal } from '../../ui-utils';
+import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
 		this.userId = userId;
 		this.roomId = roomId;
-		this.peerId = roomId.replace(userId, '');
+		this.peerId = getUidDirectMessage(roomId);
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 
@@ -70,13 +71,9 @@ OTR.Room = class {
 			if (this.established.get()) {
 				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
 					$title.prepend('<i class=\'otr-icon icon-key\'></i>');
-					$('.input-message-container').addClass('otr');
-					$('.inner-right-toolbar').prepend('<i class=\'otr-icon icon-key\'></i>');
 				}
 			} else if ($title.length) {
 				$('.otr-icon', $title).remove();
-				$('.input-message-container').removeClass('otr');
-				$('.inner-right-toolbar .otr-icon').remove();
 			}
 		});
 
@@ -260,6 +257,7 @@ OTR.Room = class {
 						title: TAPi18n.__('OTR'),
 						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
 						html: true,
+						confirmButtonText: TAPi18n.__('Ok'),
 					});
 				}
 				break;
