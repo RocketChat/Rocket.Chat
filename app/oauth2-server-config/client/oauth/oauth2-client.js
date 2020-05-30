@@ -1,8 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Template } from 'meteor/templating';
-import { ChatOAuthApps } from '../admin/collection';
+import { Accounts } from 'meteor/accounts-base';
+import { ReactiveVar } from 'meteor/reactive-var';
+
+import { APIClient } from '../../../utils/client';
 
 FlowRouter.route('/oauth/authorize', {
 	action(params, queryParams) {
@@ -27,17 +30,18 @@ FlowRouter.route('/oauth/error/:error', {
 	},
 });
 
-Template.authorize.onCreated(function() {
-	this.subscribe('authorizedOAuth');
-	this.subscribe('oauthClient', this.data.client_id());
+Template.authorize.onCreated(async function() {
+	this.oauthApp = new ReactiveVar({});
+	const { oauthApp } = await APIClient.v1.get(`oauth-apps.get?clientId=${ this.data.client_id() }`);
+	this.oauthApp.set(oauthApp);
 });
 
 Template.authorize.helpers({
 	getToken() {
-		return localStorage.getItem('Meteor.loginToken');
+		return Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY);
 	},
 	getClient() {
-		return ChatOAuthApps.findOne();
+		return Template.instance().oauthApp.get();
 	},
 });
 
@@ -51,11 +55,8 @@ Template.authorize.events({
 });
 
 Template.authorize.onRendered(function() {
-	this.autorun((c) => {
-		const user = Meteor.user();
-		if (user && user.oauth && user.oauth.authorizedClients && user.oauth.authorizedClients.includes(this.data.client_id())) {
-			c.stop();
-			$('button[type=submit]').click();
-		}
-	});
+	const user = Meteor.user();
+	if (user && user.oauth && user.oauth.authorizedClients && user.oauth.authorizedClients.includes(this.data.client_id())) {
+		$('button[type=submit]').click();
+	}
 });

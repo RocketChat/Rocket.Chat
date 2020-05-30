@@ -1,11 +1,12 @@
 import { Template } from 'meteor/templating';
+import './livechatTriggerCondition.html';
 
 Template.livechatTriggerCondition.helpers({
 	hiddenValue(current) {
 		if (this.name === undefined && Template.instance().firstCondition) {
 			Template.instance().firstCondition = false;
 			return '';
-		} else if (this.name !== current) {
+		} if (this.name !== current) {
 			return 'hidden';
 		}
 	},

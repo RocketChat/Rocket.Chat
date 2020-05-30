@@ -1,7 +1,34 @@
 .rc-header {
-	padding: 0.5rem;
+
+	z-index: 10;
 
 	font-size: var(--text-heading-size);
+
+	.rc-badge {
+		position: absolute;
+		z-index: 1;
+		top: -2px;
+		left: var(--badge-size);
+
+		display: flex;
+
+		min-width: var(--badge-size);
+		height: var(--badge-size);
+
+		padding: 0 5px;
+
+		text-align: center;
+
+		color: white;
+		border-radius: calc(4 * var(--badge-font-size));
+		background: var(--rc-color-button-primary);
+		box-shadow: 0 0 0 2px #ffffff;
+
+		font-size: var(--badge-font-size);
+		font-weight: 600;
+		align-items: center;
+		justify-content: center;
+	}
 
 	&__first-icon {
 		display: flex;
@@ -32,8 +59,6 @@
 
 		height: 36px;
 
-		margin: 0 -0.5rem;
-
 		white-space: nowrap;
 
 		background-color: var(--header-background-color);
@@ -49,6 +74,8 @@
 		margin: 0 -0.5rem;
 
 		padding: 0 0.5rem;
+
+		cursor: pointer;
 
 		align-items: center;
 
@@ -176,8 +203,13 @@
 		text-overflow: ellipsis;
 	}
 
-	&-visual-status {
-		text-transform: capitalize;
+	&__visual-status {
+		overflow: hidden;
+
+		width: 100%;
+		max-width: fit-content;
+
+		text-overflow: ellipsis;
 	}
 
 	&__status {
@@ -193,23 +225,23 @@
 			border-radius: var(--header-title-status-bullet-radius);
 
 			&--online {
-				background-color: var(--status-online);
+				background-color: var(--rc-status-online);
 			}
 
 			&--away {
-				background-color: var(--status-away);
+				background-color: var(--rc-status-away);
 			}
 
 			&--busy {
-				background-color: var(--status-busy);
+				background-color: var(--rc-status-busy);
 			}
 
 			&--invisible {
-				background-color: var(--status-invisible);
+				background-color: var(--rc-status-invisible);
 			}
 
 			&--offline {
-				background-color: var(--status-invisible);
+				background-color: var(--rc-status-invisible);
 			}
 		}
 	}
@@ -218,21 +250,17 @@
 
 		padding: 0 0.25rem;
 
-		color: var(--header-toggle-favorite-star-color);
-
-		&.empty {
-			color: var(--header-toggle-favorite-color);
-
-			& > .rc-header__icon {
-				fill: none;
-			}
-		}
+		color: var(--header-toggle-favorite-color);
 
 		& > .rc-header__icon {
 			font-size: 2rem;
 		}
 
 		&:hover {
+			color: var(--header-toggle-favorite-star-color);
+		}
+
+		&--checked {
 			color: var(--header-toggle-favorite-star-color);
 		}
 	}
@@ -276,6 +304,8 @@
 
 	&__action,
 	&__more-action {
+		position: relative;
+
 		display: flex;
 		flex-direction: column;
 
@@ -384,10 +414,6 @@
 
 @media (width <= 500px) {
 	.rc-header {
-		&__visual-status {
-			display: none;
-		}
-
 		&__block {
 			margin: 0 0.25rem;
 		}
@@ -426,6 +452,9 @@
 
 		&--burger {
 			display: flex;
+
+			margin: 0;
+			padding: 0;
 		}
 	}
 }
@@ -435,6 +464,7 @@
 }
 
 .burger {
+	position: relative;
 
 	cursor: pointer;
 	transition: transform 0.2s ease-out 0.1s;
@@ -493,6 +523,9 @@
 	.rc-header {
 		&--burger {
 			display: flex;
+
+			margin: 0;
+			padding: 0;
 		}
 	}
 }

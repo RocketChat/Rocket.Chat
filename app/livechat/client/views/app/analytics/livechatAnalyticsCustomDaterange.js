@@ -1,8 +1,10 @@
 import { Template } from 'meteor/templating';
+import moment from 'moment';
+
 import { handleError } from '../../../../../utils';
 import { popover } from '../../../../../ui-utils';
-import moment from 'moment';
 import { setDateRange } from '../../../lib/dateHandler';
+import './livechatAnalyticsCustomDaterange.html';
 
 
 Template.livechatAnalyticsCustomDaterange.helpers({

@@ -1,6 +1,8 @@
 textarea.rc-input__element {
+	height: auto;
+	padding: 0.5rem 1rem;
+
 	font-family: inherit;
-	line-height: 0.5rem 1rem;
 }
 
 .rc-input {
@@ -48,11 +50,22 @@ textarea.rc-input__element {
 			right: 1rem;
 			left: auto;
 		}
+
+		&--clickable {
+			cursor: pointer;
+		}
+
+		&--right + .rc-input__element {
+			padding: 0 2.75rem 0 1rem;
+		}
 	}
 
 	&__element {
 		width: 100%;
+		height: 2.5rem;
 		padding: 0 1rem;
+
+		text-align: start;
 
 		text-overflow: ellipsis;
 
@@ -64,14 +77,15 @@ textarea.rc-input__element {
 		background-color: transparent;
 
 		font-size: var(--input-font-size);
-
-		line-height: 2.25rem;
+		line-height: normal;
 
 		&--small {
-			line-height: 1.75rem;
+			height: 2rem;
 		}
 
 		&::placeholder {
+
+			text-align: start;
 			text-overflow: ellipsis;
 
 			color: var(--input-placeholder-color);

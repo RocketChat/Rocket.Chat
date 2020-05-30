@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+
 import { Logger } from '../../logger';
 import { settings } from '../../settings';
-import { ServiceConfiguration } from 'meteor/service-configuration';
+
 export const logger = new Logger('CAS', {});
 
 Meteor.startup(function() {
@@ -10,6 +12,7 @@ Meteor.startup(function() {
 		this.add('CAS_base_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_login_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_version', '1.0', { type: 'select', values: [{ key: '1.0', i18nLabel: '1.0' }, { key: '2.0', i18nLabel: '2.0' }], group: 'CAS' });
+		this.add('CAS_trust_username', false, { type: 'boolean', group: 'CAS', public: true, i18nDescription: 'CAS_trust_username_description' });
 
 		this.section('Attribute_handling', function() {
 			// Enable/disable sync
@@ -39,16 +42,16 @@ function updateServices(/* record*/) {
 	timer = Meteor.setTimeout(function() {
 		const data = {
 			// These will pe passed to 'node-cas' as options
-			enabled:          settings.get('CAS_enabled'),
-			base_url:         settings.get('CAS_base_url'),
-			login_url:        settings.get('CAS_login_url'),
+			enabled: settings.get('CAS_enabled'),
+			base_url: settings.get('CAS_base_url'),
+			login_url: settings.get('CAS_login_url'),
 			// Rocketchat Visuals
-			buttonLabelText:  settings.get('CAS_button_label_text'),
+			buttonLabelText: settings.get('CAS_button_label_text'),
 			buttonLabelColor: settings.get('CAS_button_label_color'),
-			buttonColor:      settings.get('CAS_button_color'),
-			width:            settings.get('CAS_popup_width'),
-			height:           settings.get('CAS_popup_height'),
-			autoclose:        settings.get('CAS_autoclose'),
+			buttonColor: settings.get('CAS_button_color'),
+			width: settings.get('CAS_popup_width'),
+			height: settings.get('CAS_popup_height'),
+			autoclose: settings.get('CAS_autoclose'),
 		};
 
 		// Either register or deregister the CAS login service based upon its configuration

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../settings';
 import { getUserPreference, RoomTypeConfig } from '../../../utils';
 
@@ -12,6 +13,7 @@ export class FavoriteRoomType extends RoomTypeConfig {
 			label: 'Favorites',
 		});
 	}
+
 	condition() {
 		return settings.get('Favorite_Rooms') && getUserPreference(Meteor.userId(), 'sidebarShowFavorites');
 	}

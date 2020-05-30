@@ -1,32 +1,33 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Subscriptions } from '../../../models';
+import s from 'underscore.string';
+
+import { Users } from '../../../models/server';
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
-import s from 'underscore.string';
 
-export const _setRealName = function(userId, name) {
+export const _setRealName = function(userId, name, fullUser) {
 	name = s.trim(name);
-	if (!userId || !name) {
+
+	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
 		return false;
 	}
 
-	const user = Users.findOneById(userId);
+	const user = fullUser || Users.findOneById(userId);
 
 	// User already has desired name, return
-	if (user.name === name) {
+	if (s.trim(user.name) === name) {
 		return user;
 	}
 
 	// Set new name
-	Users.setName(user._id, name);
-	user.name = name;
-
-	// if user has no username, there is no need to updated any direct messages (there is none)
-	if (user.username && user.username !== '') {
-		Subscriptions.updateDirectFNameByName(user.username, name);
+	if (name) {
+		Users.setName(user._id, name);
+	} else {
+		Users.unsetName(user._id);
 	}
+	user.name = name;
 
 	if (settings.get('UI_Use_Real_Name') === true) {
 		Notifications.notifyLogged('Users:NameChanged', {

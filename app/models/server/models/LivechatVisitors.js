@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Base } from './_Base';
-import Settings from './Settings';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { Base } from './_Base';
+import Settings from './Settings';
 
 export class LivechatVisitors extends Base {
 	constructor() {
@@ -34,6 +35,17 @@ export class LivechatVisitors extends Base {
 	}
 
 	/**
+	 * Find One visitor by _id
+	 */
+	findOneById(_id, options) {
+		const query = {
+			_id,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	/**
 	 * Gets visitor by token
 	 * @param {string} token - Visitor token
 	 */
@@ -60,6 +72,20 @@ export class LivechatVisitors extends Base {
 		const update = {
 			$set: {
 				[`livechatData.${ key }`]: value,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateLastAgentByToken(token, lastAgent) {
+		const query = {
+			token,
+		};
+
+		const update = {
+			$set: {
+				lastAgent,
 			},
 		};
 
@@ -146,6 +172,17 @@ export class LivechatVisitors extends Base {
 			} else {
 				unsetData.phone = 1;
 			}
+		}
+
+		if (data.livechatData) {
+			Object.keys(data.livechatData).forEach((key) => {
+				const value = s.trim(data.livechatData[key]);
+				if (value) {
+					setData[`livechatData.${ key }`] = value;
+				} else {
+					unsetData[`livechatData.${ key }`] = 1;
+				}
+			});
 		}
 
 		const update = {};

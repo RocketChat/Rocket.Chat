@@ -1,6 +1,8 @@
-import { Users } from '..';
+
 import _ from 'underscore';
 import mem from 'mem';
+
+import { Users } from '..';
 
 const Subscriptions = {};
 
@@ -14,10 +16,10 @@ Object.assign(Subscriptions, {
 			rid: roomId,
 		};
 
-		const subscription = this.findOne(query);
+		const subscription = this.findOne(query, { fields: { roles: 1 } });
 
 		return subscription && Array.isArray(subscription.roles) && subscription.roles.includes(roleName);
-	}, { maxAge: 1000 }),
+	}, { maxAge: 1000, cacheKey: JSON.stringify }),
 
 	findUsersInRoles: mem(function(roles, scope, options) {
 		roles = [].concat(roles);
@@ -33,13 +35,13 @@ Object.assign(Subscriptions, {
 		const subscriptions = this.find(query).fetch();
 
 		const users = _.compact(_.map(subscriptions, function(subscription) {
-			if ('undefined' !== typeof subscription.u && 'undefined' !== typeof subscription.u._id) {
+			if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
 				return subscription.u._id;
 			}
 		}));
 
 		return Users.find({ _id: { $in: users } }, options);
-	}, { maxAge: 1000 }),
+	}, { maxAge: 1000, cacheKey: JSON.stringify }),
 });
 
 export { Subscriptions };

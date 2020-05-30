@@ -1,9 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Base } from './_Base';
 
 export class Integrations extends Base {
 	constructor() {
 		super('integrations');
+
+		this.tryEnsureIndex({ type: 1 });
 	}
 
 	findByType(type, options) {

@@ -4,7 +4,6 @@ import { callbacks } from '../../../callbacks/server';
 import { Subscriptions } from '../../../models/server';
 
 callbacks.add('beforeSaveMessage', (message, room) => {
-
 	// abort if room is not a discussion
 	if (!room || !room.prid) {
 		return message;
@@ -20,4 +19,4 @@ callbacks.add('beforeSaveMessage', (message, room) => {
 	Meteor.runAsUser(message.u._id, () => Meteor.call('joinRoom', room._id));
 
 	return message;
-});
+}, callbacks.priority.MEDIUM, 'joinDiscussionOnMessage');

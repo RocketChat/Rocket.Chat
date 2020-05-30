@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Roles } from '../../../models';
-import { settings } from '../../../settings';
-import { Notifications } from '../../../notifications';
-import { hasPermission } from '../functions/hasPermission';
 import _ from 'underscore';
+
+import { Users, Roles } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Notifications } from '../../../notifications/server';
+import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({
 	'authorization:addUserToRole'(roleName, username, scope) {
@@ -27,14 +28,21 @@ Meteor.methods({
 			});
 		}
 
-		const user = Users.findOneByUsername(username, {
+		const user = Users.findOneByUsernameIgnoringCase(username, {
 			fields: {
 				_id: 1,
 			},
 		});
 
 		if (!user || !user._id) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new Meteor.Error('error-user-not-found', 'User not found', {
+				method: 'authorization:addUserToRole',
+			});
+		}
+
+		// verify if user can be added to given scope
+		if (scope && !Roles.canAddUserToRole(user._id, roleName, scope)) {
+			throw new Meteor.Error('error-invalid-user', 'User is not part of given room', {
 				method: 'authorization:addUserToRole',
 			});
 		}

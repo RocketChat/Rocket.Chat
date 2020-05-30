@@ -1,4 +1,4 @@
-import { Subscriptions } from '../../../models';
+import { Subscriptions, Settings } from '../../../models';
 
 export class AppInternalBridge {
 	constructor(orch) {
@@ -6,6 +6,10 @@ export class AppInternalBridge {
 	}
 
 	getUsernamesOfRoomById(roomId) {
+		if (!roomId) {
+			return [];
+		}
+
 		const records = Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
 			fields: {
 				'u.username': 1,
@@ -17,5 +21,11 @@ export class AppInternalBridge {
 		}
 
 		return records.map((s) => s.u.username);
+	}
+
+	getWorkspacePublicKey() {
+		const publicKeySetting = Settings.findById('Cloud_Workspace_PublicKey').fetch()[0];
+
+		return this.orch.getConverters().get('settings').convertToApp(publicKeySetting);
 	}
 }

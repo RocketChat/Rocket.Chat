@@ -1,9 +1,10 @@
 import './settings';
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Users, Rooms } from '../../models';
 import { settings } from '../../settings';
 import { hasRole } from '../../authorization';
-import _ from 'underscore';
 
 /**
  * BotHelpers helps bots
@@ -35,11 +36,10 @@ class BotHelpers {
 	request(prop, ...params) {
 		if (typeof this[prop] === 'undefined') {
 			return null;
-		} else if (typeof this[prop] === 'function') {
+		} if (typeof this[prop] === 'function') {
 			return this[prop](...params);
-		} else {
-			return this[prop];
 		}
+		return this[prop];
 	}
 
 	addUserToRole(userName, roleName) {
@@ -86,65 +86,64 @@ class BotHelpers {
 		if (!Object.keys(this.userFields).length) {
 			this.requestError();
 			return false;
-		} else {
-			return this._allUsers.fetch();
 		}
+		return this._allUsers.fetch();
 	}
+
 	get onlineUsers() {
 		if (!Object.keys(this.userFields).length) {
 			this.requestError();
 			return false;
-		} else {
-			return this._onlineUsers.fetch();
 		}
+		return this._onlineUsers.fetch();
 	}
+
 	get allUsernames() {
 		if (!this.userFields.hasOwnProperty('username')) {
 			this.requestError();
 			return false;
-		} else {
-			return this._allUsers.fetch().map((user) => user.username);
 		}
+		return this._allUsers.fetch().map((user) => user.username);
 	}
+
 	get onlineUsernames() {
 		if (!this.userFields.hasOwnProperty('username')) {
 			this.requestError();
 			return false;
-		} else {
-			return this._onlineUsers.fetch().map((user) => user.username);
 		}
+		return this._onlineUsers.fetch().map((user) => user.username);
 	}
+
 	get allNames() {
 		if (!this.userFields.hasOwnProperty('name')) {
 			this.requestError();
 			return false;
-		} else {
-			return this._allUsers.fetch().map((user) => user.name);
 		}
+		return this._allUsers.fetch().map((user) => user.name);
 	}
+
 	get onlineNames() {
 		if (!this.userFields.hasOwnProperty('name')) {
 			this.requestError();
 			return false;
-		} else {
-			return this._onlineUsers.fetch().map((user) => user.name);
 		}
+		return this._onlineUsers.fetch().map((user) => user.name);
 	}
+
 	get allIDs() {
 		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
 			this.requestError();
 			return false;
-		} else {
-			return this._allUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
 		}
+		return this._allUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
 	}
+
 	get onlineIDs() {
 		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
 			this.requestError();
 			return false;
-		} else {
-			return this._onlineUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
 		}
+		return this._onlineUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
 	}
 }
 
@@ -161,8 +160,7 @@ Meteor.methods({
 		const userID = Meteor.userId();
 		if (userID && hasRole(userID, 'bot')) {
 			return botHelpers.request(...args);
-		} else {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
 		}
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
 	},
 });

@@ -1,5 +1,6 @@
 // import resetSelection from '../resetSelection';
 import { Meteor } from 'meteor/meteor';
+
 import { TabBar } from '../../../ui-utils';
 import { hasAllPermission } from '../../../authorization';
 
@@ -11,7 +12,7 @@ Meteor.startup(() => {
 		i18nTitle: 'Mail_Messages',
 		icon: 'mail',
 		template: 'mailMessagesInstructions',
-		order: 10,
+		order: 12,
 		condition: () => hasAllPermission('mail-messages'),
 	});
 

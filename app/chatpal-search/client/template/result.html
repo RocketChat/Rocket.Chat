@@ -110,7 +110,7 @@
 		</h2>
 		<div class="chatpal-avatar">
 			<div class="chatpal-avatar-image"
-				 style="background-image:url(/avatar/{{username}}?_dc=undefined);"></div>
+				 style="background-image:url({{getAvatarUrl cleanUsername }});"></div>
 		</div>
 		<span class="chatpal-name">{{username}}</span>
 		<span class="chatpal-time">{{time}}</span>
@@ -121,11 +121,11 @@
 <template name="ChatpalSearchSingleUser">
 	<div class="chatpal-search-result-user">
 		<div class="chatpal-avatar">
-			<div class="chatpal-avatar-image" style="background-image:url(/avatar/{{cleanUsername}}?_dc=undefined);"></div>
+			<div class="chatpal-avatar-image" style="background-image:url({{ getAvatarUrl cleanUsername }});"></div>
 		</div>
 		<h2>{{{user_name}}}</h2>
 		<div class="direct-message">
-			<a href="/direct/{{cleanUsername}}">{{_ "Chatpal_go_to_user"}}</a>
+			<a href="{{ getDMUrl cleanUsername }}">{{_ "Chatpal_go_to_user"}}</a>
 		</div>
 	</div>
 </template>

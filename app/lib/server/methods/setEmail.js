@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { settings } from '../../../settings';
 import { setEmail } from '../functions';
 import { RateLimiter } from '../lib';
 
 Meteor.methods({
 	setEmail(email) {
-
-		check (email, String);
+		check(email, String);
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setEmail' });

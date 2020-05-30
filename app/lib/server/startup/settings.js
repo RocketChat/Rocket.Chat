@@ -1,6 +1,8 @@
 import { Random } from 'meteor/random';
-import { settings } from '../../../settings';
+
+import { settings } from '../../../settings/server';
 import './email';
+import { MessageTypesValues } from '../../lib/MessageTypes';
 
 // Insert server unique id if it doesn't exist
 settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
@@ -43,6 +45,10 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Accounts_AllowUserStatusMessageChange', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Accounts_AllowUsernameChange', true, {
 		type: 'boolean',
 		public: true,
@@ -52,6 +58,10 @@ settings.addGroup('Accounts', function() {
 		public: true,
 	});
 	this.add('Accounts_AllowPasswordChange', true, {
+		type: 'boolean',
+		public: true,
+	});
+	this.add('Accounts_AllowEmailNotifications', true, {
 		type: 'boolean',
 		public: true,
 	});
@@ -87,9 +97,8 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_SearchFields', 'username, name', {
+	this.add('Accounts_SearchFields', 'username, name, bio', {
 		type: 'string',
-		public: true,
 	});
 	this.add('Accounts_Directory_DefaultView', 'channels', {
 		type: 'select',
@@ -115,7 +124,7 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
-		this.add('Accounts_RequireNameForSignUp', true, {
+		this.add('Accounts_RequireNameForSignUp', true, { // TODO rename to Accounts_RequireFullName
 			type: 'boolean',
 			public: true,
 		});
@@ -133,6 +142,9 @@ settings.addGroup('Accounts', function() {
 					$ne: '',
 				},
 			},
+		});
+		this.add('Accounts_Verify_Email_For_External_Accounts', true, {
+			type: 'boolean',
 		});
 		this.add('Accounts_ManuallyApproveNewUsers', false, {
 			public: true,
@@ -172,7 +184,21 @@ settings.addGroup('Accounts', function() {
 		});
 		this.add('Accounts_RegistrationForm_SecretURL', Random.id(), {
 			type: 'string',
+			secret: true,
 		});
+		this.add('Accounts_Registration_InviteUrlType', 'proxy', {
+			type: 'select',
+			values: [
+				{
+					key: 'direct',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Direct',
+				}, {
+					key: 'proxy',
+					i18nLabel: 'Accounts_Registration_InviteUrlType_Proxy',
+				},
+			],
+		});
+
 		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
 			type: 'string',
 			public: true,
@@ -210,10 +236,11 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Idle_Time_Limit',
 		});
-		this.add('Accounts_Default_User_Preferences_desktopNotificationDuration', 0, {
-			type: 'int',
+		this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
+			type: 'boolean',
 			public: true,
-			i18nLabel: 'Notification_Duration',
+			i18nLabel: 'Notification_RequireInteraction',
+			i18nDescription: 'Notification_RequireInteraction_Description',
 		});
 		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
 			type: 'select',
@@ -233,7 +260,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'mentions', {
+		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -251,20 +278,20 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'mentions', {
+		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
-					key : 'all',
-					i18nLabel : 'All_messages',
+					key: 'all',
+					i18nLabel: 'All_messages',
 				},
 				{
-					key : 'mentions',
-					i18nLabel : 'Mentions',
+					key: 'mentions',
+					i18nLabel: 'Mentions',
 				},
 				{
-					key : 'nothing',
-					i18nLabel : 'Nothing',
+					key: 'nothing',
+					i18nLabel: 'Nothing',
 				},
 			],
 			public: true,
@@ -346,13 +373,31 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars',
+			i18nLabel: 'Hide_Avatars_Sidebar',
 		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Unread_on_top',
 		});
+
+		this.add('Accounts_Default_User_Preferences_sidebarSortby', 'activity', {
+			type: 'select',
+			values: [
+				{
+					key: 'activity',
+					i18nLabel: 'Activity',
+				},
+				{
+					key: 'alphabetical',
+					i18nLabel: 'Alphabetical',
+				},
+			],
+			public: true,
+			i18nLabel: 'Sort_By',
+		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
 			type: 'boolean',
 			public: true,
@@ -410,11 +455,6 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 			i18nLabel: 'Email_Notification_Mode',
-		});
-		this.add('Accounts_Default_User_Preferences_roomCounterSidebar', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Show_room_counter_on_sidebar',
 		});
 		this.add('Accounts_Default_User_Preferences_newRoomNotification', 'door', {
 			type: 'select',
@@ -558,6 +598,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Facebook_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Facebook_callback_url', '_oauth/facebook', {
 			type: 'relativeUrl',
@@ -582,6 +623,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Google_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Google_callback_url', '_oauth/google', {
 			type: 'relativeUrl',
@@ -606,6 +648,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Github_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Github_callback_url', '_oauth/github', {
 			type: 'relativeUrl',
@@ -630,6 +673,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Linkedin_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Linkedin_callback_url', '_oauth/linkedin', {
 			type: 'relativeUrl',
@@ -654,6 +698,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Meteor_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Meteor_callback_url', '_oauth/meteor', {
 			type: 'relativeUrl',
@@ -678,6 +723,7 @@ settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_Twitter_secret', '', {
 			type: 'string',
 			enableQuery,
+			secret: true,
 		});
 		return this.add('Accounts_OAuth_Twitter_callback_url', '_oauth/twitter', {
 			type: 'relativeUrl',
@@ -702,6 +748,7 @@ settings.addGroup('General', function() {
 	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
+		readonly: true,
 		values: [
 			{
 				key: 'pending',
@@ -742,6 +789,19 @@ settings.addGroup('General', function() {
 	});
 	this.add('Allow_Invalid_SelfSigned_Certs', false, {
 		type: 'boolean',
+		secret: true,
+	});
+	this.add('Iframe_Restrict_Access', true, {
+		type: 'boolean',
+		secret: true,
+	});
+	this.add('Iframe_X_Frame_Options', 'sameorigin', {
+		type: 'string',
+		secret: true,
+		enableQuery: {
+			_id: 'Iframe_Restrict_Access',
+			value: true,
+		},
 	});
 	this.add('Favorite_Rooms', true, {
 		type: 'boolean',
@@ -783,6 +843,12 @@ settings.addGroup('General', function() {
 		],
 		public: true,
 	});
+
+	this.add('DeepLink_Url', 'https://go.rocket.chat', {
+		type: 'string',
+		public: true,
+	});
+
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		public: true,
@@ -803,17 +869,22 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		public: true,
 	});
+
+	// Deprecated setting
+	this.add('Support_Cordova_App', false, {
+		type: 'boolean',
+		i18nDescription: 'Support_Cordova_App_Description',
+		alert: 'Support_Cordova_App_Alert',
+	});
 	this.add('GoogleTagManager_id', '', {
 		type: 'string',
 		public: true,
+		secret: true,
 	});
 	this.add('Bugsnag_api_key', '', {
 		type: 'string',
 		public: false,
-	});
-	this.add('Force_Disable_OpLog_For_Cache', false, {
-		type: 'boolean',
-		public: false,
+		secret: true,
 	});
 	this.add('Restart', 'restart_server', {
 		type: 'action',
@@ -850,12 +921,6 @@ settings.addGroup('General', function() {
 			type: 'int',
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description',
-		});
-
-		this.add('Notifications_Always_Notify_Mobile', false, {
-			type: 'boolean',
-			public: true,
-			i18nDescription: 'Notifications_Always_Notify_Mobile_Description',
 		});
 	});
 	this.section('REST API', function() {
@@ -988,11 +1053,6 @@ settings.addGroup('Message', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_SetNameToAliasEnabled', false, {
-		type: 'boolean',
-		public: false,
-		i18nDescription: 'Message_SetNameToAliasEnabled_Description',
-	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,
@@ -1046,25 +1106,16 @@ settings.addGroup('Message', function() {
 		type: 'int',
 		public: true,
 	});
-	this.add('Message_HideType_uj', false, {
-		type: 'boolean',
+
+
+	this.add('Hide_System_Messages', [], {
+		type: 'multiSelect',
 		public: true,
-	});
-	this.add('Message_HideType_ul', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_ru', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Message_HideType_au', false, {
-		type: 'boolean',
-		public: true,
+		values: MessageTypesValues,
 	});
 
-	this.add('Message_HideType_mute_unmute', false, {
-		type: 'boolean',
+	this.add('DirectMesssage_maxUsers', 8, {
+		type: 'int',
 		public: true,
 	});
 
@@ -1092,15 +1143,18 @@ settings.addGroup('Meta', function() {
 	});
 	this.add('Meta_fb_app_id', '', {
 		type: 'string',
+		secret: true,
 	});
 	this.add('Meta_robots', 'INDEX,FOLLOW', {
 		type: 'string',
 	});
 	this.add('Meta_google-site-verification', '', {
 		type: 'string',
+		secret: true,
 	});
 	this.add('Meta_msvalidate01', '', {
 		type: 'string',
+		secret: true,
 	});
 	return this.add('Meta_custom', '', {
 		type: 'code',
@@ -1109,21 +1163,30 @@ settings.addGroup('Meta', function() {
 	});
 });
 
+settings.addGroup('Mobile', function() {
+	this.section('Screen_Lock', function() {
+		this.add('Force_Screen_Lock', false, { type: 'boolean', i18nDescription: 'Force_Screen_Lock_description', public: true });
+		this.add('Force_Screen_Lock_After', 1800, { type: 'int', i18nDescription: 'Force_Screen_Lock_After_description', enableQuery: { _id: 'Force_Screen_Lock', value: true }, public: true });
+	});
+});
+
+const pushEnabledWithoutGateway = [
+	{
+		_id: 'Push_enable',
+		value: true,
+	}, {
+		_id: 'Push_enable_gateway',
+		value: false,
+	},
+];
+
 settings.addGroup('Push', function() {
 	this.add('Push_enable', true, {
 		type: 'boolean',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
 	});
-	this.add('Push_debug', false, {
-		type: 'boolean',
-		public: true,
-		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
-	});
+
 	this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',
@@ -1134,7 +1197,9 @@ settings.addGroup('Push', function() {
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
+		i18nDescription: 'Push_gateway_description',
 		alert: 'Push_Setting_Requires_Restart_Alert',
+		multiline: true,
 		enableQuery: [
 			{
 				_id: 'Push_enable',
@@ -1149,15 +1214,7 @@ settings.addGroup('Push', function() {
 		type: 'boolean',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: [
-			{
-				_id: 'Push_enable',
-				value: true,
-			}, {
-				_id: 'Push_enable_gateway',
-				value: false,
-			},
-		],
+		enableQuery: pushEnabledWithoutGateway,
 	});
 	this.add('Push_test_push', 'push_test', {
 		type: 'action',
@@ -1170,32 +1227,48 @@ settings.addGroup('Push', function() {
 	this.section('Certificates_and_Keys', function() {
 		this.add('Push_apn_passphrase', '', {
 			type: 'string',
+			enableQuery: pushEnabledWithoutGateway,
+			secret: true,
 		});
 		this.add('Push_apn_key', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
+			secret: true,
 		});
 		this.add('Push_apn_cert', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
+			secret: true,
 		});
 		this.add('Push_apn_dev_passphrase', '', {
 			type: 'string',
+			enableQuery: pushEnabledWithoutGateway,
+			secret: true,
 		});
 		this.add('Push_apn_dev_key', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
+			secret: true,
 		});
 		this.add('Push_apn_dev_cert', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
+			secret: true,
 		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
+			enableQuery: pushEnabledWithoutGateway,
+			secret: true,
 		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			public: true,
+			enableQuery: pushEnabledWithoutGateway,
+			secret: true,
 		});
 	});
 	return this.section('Privacy', function() {
@@ -1214,6 +1287,10 @@ settings.addGroup('Layout', function() {
 	this.section('Content', function() {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
+			public: true,
+		});
+		this.add('Layout_Show_Home_Button', true, {
+			type: 'boolean',
 			public: true,
 		});
 		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {
@@ -1245,7 +1322,7 @@ settings.addGroup('Layout', function() {
 			multiline: true,
 			public: true,
 		});
-		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo"/></a>', {
+		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
 			type: 'code',
 			code: 'text/html',
 			public: true,
@@ -1253,6 +1330,11 @@ settings.addGroup('Layout', function() {
 		});
 	});
 	this.section('Custom_Scripts', function() {
+		this.add('Custom_Script_On_Logout', '//Add your script', {
+			type: 'code',
+			multiline: true,
+			public: true,
+		});
 		this.add('Custom_Script_Logged_Out', '//Add your script', {
 			type: 'code',
 			multiline: true,
@@ -1299,6 +1381,10 @@ settings.addGroup('Layout', function() {
 			public: true,
 		});
 		this.add('UI_Allow_room_names_with_special_chars', false, {
+			type: 'boolean',
+			public: true,
+		});
+		return this.add('UI_Show_top_navbar_embedded_layout', false, {
 			type: 'boolean',
 			public: true,
 		});
@@ -1367,6 +1453,16 @@ settings.addGroup('Logs', function() {
 		this.add('Prometheus_Port', 9458, {
 			type: 'string',
 			i18nLabel: 'Port',
+		});
+		this.add('Prometheus_Reset_Interval', 0, {
+			type: 'int',
+		});
+		this.add('Prometheus_Garbage_Collector', false, {
+			type: 'boolean',
+			alert: 'Prometheus_Garbage_Collector_Alert',
+		});
+		this.add('Prometheus_API_User_Agent', false, {
+			type: 'boolean',
 		});
 	});
 });
@@ -2568,6 +2664,11 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
+		});
+
+		this.add('Cloud_Service_Agree_PrivacyTerms', false, {
+			type: 'boolean',
 		});
 
 		this.add('Cloud_Workspace_Id', '', {
@@ -2578,6 +2679,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Name', '', {
@@ -2588,6 +2690,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Client_Id', '', {
@@ -2598,6 +2701,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Client_Secret', '', {
@@ -2608,6 +2712,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Client_Secret_Expires_At', '', {
@@ -2618,6 +2723,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Registration_Client_Uri', '', {
@@ -2628,6 +2734,18 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
+		});
+
+		this.add('Cloud_Workspace_PublicKey', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_License', '', {
@@ -2638,6 +2756,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Access_Token', '', {
@@ -2648,9 +2767,10 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
+		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(0), {
 			type: 'date',
 			hidden: true,
 			readonly: true,
@@ -2658,6 +2778,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
 		});
 
 		this.add('Cloud_Workspace_Registration_State', '', {
@@ -2668,16 +2789,7 @@ settings.addGroup('Setup_Wizard', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
-		});
-
-		this.add('Cloud_Workspace_Account_Associated', false, {
-			type: 'boolean',
-			hidden: true,
-			readonly: true,
-			enableQuery: {
-				_id: 'Register_Server',
-				value: true,
-			},
+			secret: true,
 		});
 	});
 });
@@ -2706,9 +2818,45 @@ settings.addGroup('Rate Limiter', function() {
 	});
 
 	this.section('API Rate Limiter', function() {
-		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean' });
-		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int' });
-		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int' });
+		this.add('API_Enable_Rate_Limiter', true, { type: 'boolean' });
+		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+	});
+});
+
+settings.addGroup('Troubleshoot', function() {
+	this.add('Troubleshoot_Disable_Notifications', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Notifications_Alert',
+	});
+	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
+	});
+	this.add('Troubleshoot_Disable_Sessions_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Sessions_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Livechat_Activity_Monitor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Statistics_Generator', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Statistics_Generator_Alert',
+	});
+	this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
+	});
+	this.add('Troubleshoot_Disable_Workspace_Sync', false, {
+		type: 'boolean',
+		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 	});
 });
 

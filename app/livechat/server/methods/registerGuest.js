@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages, Rooms, LivechatVisitors } from '../../../models';
+
+import { Messages, LivechatRooms, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -25,7 +26,7 @@ Meteor.methods({
 		});
 
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const cursor = Rooms.findOpenByVisitorToken(token);
+		const cursor = LivechatRooms.findOpenByVisitorToken(token);
 		cursor.forEach((room) => {
 			Livechat.saveRoomInfo(room, visitor);
 		});
