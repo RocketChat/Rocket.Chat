@@ -7,7 +7,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { toolbarSearch } from '../../../ui-sidenav';
-import { lazyloadtick } from '../../../lazy-load';
 import './messagePopup.html';
 
 const keys = {
@@ -245,7 +244,6 @@ Template.messagePopup.onRendered(function() {
 	}
 	const self = this;
 	self.autorun(() => {
-		lazyloadtick();
 		const open = self.open.get();
 		if ($('.reply-preview').length) {
 			if (open === true) {
@@ -274,9 +272,6 @@ Template.messagePopup.onDestroyed(function() {
 });
 
 Template.messagePopup.events({
-	'scroll .rooms-list__list'() {
-		lazyloadtick();
-	},
 	'mouseenter .popup-item'(e) {
 		if (e.currentTarget.className.indexOf('selected') > -1) {
 			return;
@@ -293,12 +288,16 @@ Template.messagePopup.events({
 		const template = Template.instance();
 		template.clickingItem = true;
 	},
-	'mouseup .popup-item, touchend .popup-item'() {
+	'mouseup .popup-item, touchend .popup-item'(e) {
+		e.stopPropagation();
 		const template = Template.instance();
+		const wasMenuIconClicked = e.target.classList.contains('sidebar-item__menu-icon');
 		template.clickingItem = false;
-		template.value.set(this._id);
-		template.enterValue();
-		template.open.set(false);
+		if (!wasMenuIconClicked) {
+			template.value.set(this._id);
+			template.enterValue();
+			template.open.set(false);
+		}
 	},
 });
 

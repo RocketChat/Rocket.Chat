@@ -43,7 +43,7 @@ function startProcess(opts, callback) {
 	const proc = spawn(
 		opts.command,
 		opts.params,
-		opts.options
+		opts.options,
 	);
 
 	if (opts.waitForMessage) {
@@ -112,7 +112,7 @@ function startChimp() {
 	startProcess({
 		name: 'Chimp',
 		command: 'npm',
-		params: ['run', 'chimp-test'],
+		params: ['test'],
 		// command: 'exit',
 		// params: ['2'],
 		options: {

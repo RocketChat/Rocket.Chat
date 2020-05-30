@@ -3,7 +3,7 @@ import querystring from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import { HTTPInternals } from 'meteor/http';
-import { changeCase } from 'meteor/konecty:change-case';
+import { camelCase } from 'change-case';
 import _ from 'underscore';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
@@ -65,6 +65,12 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		urlObj = URL.parse(urlObj);
 	}
 
+	const portsProtocol = {
+		80: 'http:',
+		8080: 'http:',
+		443: 'https:',
+	};
+
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
 	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
@@ -72,7 +78,12 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	}
 
 	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
-	if (parsedUrl.port && safePorts.length > 0 && !safePorts.includes(parsedUrl.port)) {
+
+	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
+		return callback();
+	}
+
+	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
 		return callback();
 	}
 
@@ -165,16 +176,16 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 			return escapeMeta('pageTitle', title);
 		});
 		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gmi, function(meta, name, value) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gmi, function(meta, name, value) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, function(meta, value, name) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, function(meta, value, name) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		if (metas.fragment === '!' && (withFragment == null)) {
 			return OEmbed.getUrlMeta(url, true);
@@ -188,7 +199,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		headers = {};
 		const headerObj = content.headers;
 		Object.keys(headerObj).forEach((header) => {
-			headers[changeCase.camelCase(header)] = headerObj[header];
+			headers[camelCase(header)] = headerObj[header];
 		});
 	}
 	if (content && content.statusCode !== 200) {

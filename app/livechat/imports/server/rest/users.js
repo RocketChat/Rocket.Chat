@@ -2,7 +2,7 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 
 import { hasPermission } from '../../../../authorization';
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { Users } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
@@ -14,10 +14,12 @@ API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 		});
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
+		const { text } = this.queryParams;
 
 		if (this.urlParams.type === 'agent') {
 			return API.v1.success(Promise.await(findAgents({
 				userId: this.userId,
+				text,
 				pagination: {
 					offset,
 					count,
@@ -28,6 +30,7 @@ API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 		if (this.urlParams.type === 'manager') {
 			return API.v1.success(Promise.await(findManagers({
 				userId: this.userId,
+				text,
 				pagination: {
 					offset,
 					count,
@@ -101,7 +104,7 @@ API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
 
 			if (user.roles.indexOf(role) !== -1) {
 				return API.v1.success({
-					user: _.pick(user, '_id', 'username'),
+					user: _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'),
 				});
 			}
 

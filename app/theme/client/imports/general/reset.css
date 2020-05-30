@@ -82,6 +82,7 @@ section,
 summary,
 time,
 mark,
+button,
 audio,
 video {
 	margin: 0;
@@ -137,4 +138,8 @@ table {
 	border-spacing: 0;
 
 	border-collapse: collapse;
+}
+
+a {
+	color: var(--rc-color-button-primary);
 }

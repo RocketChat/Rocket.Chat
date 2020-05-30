@@ -78,6 +78,20 @@ export class LivechatVisitors extends Base {
 		return this.update(query, update);
 	}
 
+	updateLastAgentByToken(token, lastAgent) {
+		const query = {
+			token,
+		};
+
+		const update = {
+			$set: {
+				lastAgent,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	/**
 	 * Find a visitor by their phone number
 	 * @return {object} User from db
@@ -158,6 +172,17 @@ export class LivechatVisitors extends Base {
 			} else {
 				unsetData.phone = 1;
 			}
+		}
+
+		if (data.livechatData) {
+			Object.keys(data.livechatData).forEach((key) => {
+				const value = s.trim(data.livechatData[key]);
+				if (value) {
+					setData[`livechatData.${ key }`] = value;
+				} else {
+					unsetData[`livechatData.${ key }`] = 1;
+				}
+			});
 		}
 
 		const update = {};

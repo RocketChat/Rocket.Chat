@@ -36,27 +36,25 @@ Template.apps.onCreated(function() {
 
 	(async () => {
 		try {
-			const appsFromMarketplace = await Apps.getAppsFromMarketplace().catch(() => []);
 			const installedApps = await Apps.getApps();
+			let apps = installedApps.map((app) => ({ ...app, installed: true }));
 
-			const apps = installedApps.map((app) => {
+			this.state.set('apps', apps);
+
+			const appsFromMarketplace = await Apps.getAppsFromMarketplace().catch(() => []);
+
+			apps = apps.map((app) => {
 				const appFromMarketplace = appsFromMarketplace.find(({ id } = {}) => id === app.id);
 
-				if (!appFromMarketplace) {
+				if (appFromMarketplace) {
 					return {
 						...app,
-						installed: true,
+						categories: appFromMarketplace.categories,
+						marketplaceVersion: appFromMarketplace.version,
 					};
 				}
-
-				return {
-					...app,
-					installed: true,
-					categories: appFromMarketplace.categories,
-					marketplaceVersion: appFromMarketplace.version,
-				};
+				return app;
 			});
-
 			this.state.set('apps', apps);
 		} catch (error) {
 			handleAPIError(error);
@@ -228,7 +226,7 @@ Template.apps.events({
 		} = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
 		FlowRouter.go('app-manage', { appId }, { version });
 	},
-	async 'click .js-install, click .js-update'(event, instance) {
+	async 'click .js-update'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -242,7 +240,7 @@ Template.apps.events({
 		instance.startAppWorking(app.id);
 
 		try {
-			const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+			const { status } = await Apps.updateApp(app.id, app.marketplaceVersion);
 			warnStatusChange(app.name, status);
 		} catch (error) {
 			handleAPIError(error);

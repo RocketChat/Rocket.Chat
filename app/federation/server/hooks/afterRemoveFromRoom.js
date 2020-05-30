@@ -42,7 +42,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		// Dispatch the events
 		dispatchEvent(domainsBeforeRemoval, removeUserEvent);
 	} catch (err) {
-		logger.client.error('afterRemoveFromRoom => Could not add user:', err);
+		logger.client.error('afterRemoveFromRoom => Could not remove user:', err);
 	}
 
 	return involvedUsers;
