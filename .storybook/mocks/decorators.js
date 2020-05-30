@@ -7,7 +7,7 @@ export const rocketChatDecorator = (fn) => {
 	if (linkElement.id !== 'theme-styles') {
 		require('../../app/theme/client/main.css');
 		require('../../app/theme/client/vendor/fontello/css/fontello.css');
-		require('../../client/rocketchat.font.css');
+		require('../../app/theme/client/rocketchat.font.css');
 		linkElement.setAttribute('id', 'theme-styles');
 		linkElement.setAttribute('rel', 'stylesheet');
 		linkElement.setAttribute('href', 'https://open.rocket.chat/theme.css');
@@ -24,7 +24,7 @@ export const rocketChatDecorator = (fn) => {
 			}
 		`}</style>
 		<div dangerouslySetInnerHTML={{ __html: icons }} />
-		<div className='global-font-family color-primary-font-color'>
+		<div className='color-primary-font-color'>
 			{fn()}
 		</div>
 	</MeteorProviderMock>;

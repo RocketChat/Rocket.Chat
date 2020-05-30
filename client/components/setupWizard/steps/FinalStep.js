@@ -1,11 +1,10 @@
-import { Box, Button, Margins, Tile } from '@rocket.chat/fuselage';
+import { Box, Button, Tile } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useSetting, useSettingDispatch } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import './FinalStep.css';
 
-export function FinalStep() {
+function FinalStep() {
 	const t = useTranslation();
 	const siteUrl = useSetting('Site_Url');
 	const setShowSetupWizard = useSettingDispatch('Show_Setup_Wizard');
@@ -14,21 +13,17 @@ export function FinalStep() {
 		setShowSetupWizard('completed');
 	};
 
-	return <Box is='section' className='SetupWizard__FinalStep'>
+	return <Box is='section' width='full' maxWidth='x480' margin='auto'>
 		<Tile is='main' padding='x40'>
-			<Margins all='x32'>
-				<Box>
-					<Box is='span' textColor='hint' className='SetupWizard__FinalStep-runningHead'>
-						{t('Launched_successfully')}
-					</Box>
-					<Margins blockEnd='x32'>
-						<Box is='h1' textColor='default' className='SetupWizard__FinalStep-title'>{t('Your_workspace_is_ready')}</Box>
-					</Margins>
-					<Box textColor='default' textStyle='micro' className='SetupWizard__FinalStep-linkLabel'>{t('Your_server_link')}</Box>
-					<Box textColor='primary' textStyle='p1' className='SetupWizard__FinalStep-link'>{siteUrl}</Box>
-					<Button primary data-qa='go-to-workspace' onClick={handleClick}>{t('Go_to_your_workspace')}</Button>
-				</Box>
-			</Margins>
+			<Box margin='x32'>
+				<Box is='span' color='hint' fontScale='c2'>{t('Launched_successfully')}</Box>
+				<Box is='h1' fontScale='h1' marginBlockEnd='x32'>{t('Your_workspace_is_ready')}</Box>
+				<Box fontScale='micro'>{t('Your_server_link')}</Box>
+				<Box color='primary' fontScale='s1' marginBlockEnd='x24'>{siteUrl}</Box>
+				<Button primary data-qa='go-to-workspace' onClick={handleClick}>{t('Go_to_your_workspace')}</Button>
+			</Box>
 		</Tile>
 	</Box>;
 }
+
+export default FinalStep;

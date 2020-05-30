@@ -31,15 +31,35 @@ module.exports = async ({ config }) => {
 		use: '@settlin/spacebars-loader',
 	});
 
-	config.plugins.push(new webpack.NormalModuleReplacementPlugin(
-		/^meteor/,
-		require.resolve('./mocks/meteor.js'),
-	));
+	config.module.rules.push({
+		test: /\.(ts|tsx)$/,
+		use: [
+			{
+				loader: 'ts-loader',
+				options: {
+					compilerOptions: {
+						noEmit: false,
+					},
+				},
+			},
+			{
+				loader: 'react-docgen-typescript-loader',
+			},
+		],
+	});
 
-	config.plugins.push(new webpack.NormalModuleReplacementPlugin(
-		/\.\/server\/index.js/,
-		require.resolve('./mocks/empty.js'),
-	));
+	config.resolve.extensions.push('.ts', '.tsx');
+
+	config.plugins.push(
+		new webpack.NormalModuleReplacementPlugin(
+			/^meteor/,
+			require.resolve('./mocks/meteor.js'),
+		),
+		new webpack.NormalModuleReplacementPlugin(
+			/\/server(\/index.js)$/,
+			require.resolve('./mocks/empty.js'),
+		),
+	);
 
 	config.mode = 'development';
 	config.optimization.usedExports = true;

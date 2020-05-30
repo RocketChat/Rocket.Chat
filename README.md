@@ -13,8 +13,7 @@
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
-
-* [**NEW!** Help Wanted](#help-wanted)
+* [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-a-single-codebase) 
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
@@ -24,7 +23,6 @@
    * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
    * [Yunohost.org](#yunohostorg)
-   * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio)
@@ -37,7 +35,6 @@
   * [Raspberry Pi 2](#raspberry-pi-2)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
-  * [Hyper.sh](#hypersh)
   * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
   * [Syncloud.org](#syncloudorg)
@@ -58,7 +55,12 @@
   * [Translations](#translations)
   * [How to Contribute](#how-to-contribute)
 * [Credits](#credits)
+* [Help Wanted](#help-wanted)
 * [Donate](#donate)
+
+# Moving to a Single Codebase
+
+Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/2020/03/28/moving-to-a-single-codebase/).
 
 # Help Wanted
 
@@ -122,12 +124,6 @@ Painless SSL. Automatically scale your server cluster based on usage demand.
 Host your own Rocket.Chat server in a few seconds.
 
 [![Install RocketChat with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=rocketchat)
-
-## DPlatform
-
-The easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS.
-
-[![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/images/logo.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
 ## IndieHosters
 Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
@@ -198,9 +194,6 @@ Add Rocket.Chat to this world famous time tested small enterprise server today.
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/).
-
-## Hyper.sh
-Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/).
 
 ## WeDeploy
 Install Rocket.Chat on [WeDeploy](https://wedeploy.com):

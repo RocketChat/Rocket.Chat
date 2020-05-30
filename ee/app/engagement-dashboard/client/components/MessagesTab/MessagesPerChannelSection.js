@@ -4,8 +4,8 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { LegendSymbol } from '../data/LegendSymbol';
-import { useEndpointData } from '../../hooks/useEndpointData';
 import { Section } from '../Section';
 
 export function MessagesPerChannelSection() {
@@ -48,8 +48,8 @@ export function MessagesPerChannelSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const pieData = useEndpointData('GET', 'engagement-dashboard/messages/origin', params);
-	const tableData = useEndpointData('GET', 'engagement-dashboard/messages/top-five-popular-channels', params);
+	const pieData = useEndpointData('engagement-dashboard/messages/origin', params);
+	const tableData = useEndpointData('engagement-dashboard/messages/top-five-popular-channels', params);
 
 	const [pie, table] = useMemo(() => {
 		if (!pieData || !tableData) {
@@ -132,7 +132,7 @@ export function MessagesPerChannelSection() {
 																		},
 																	},
 																}}
-																tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+																tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 																	{t('Value_messages', { value })}
 																</Box>}
 															/>
@@ -144,15 +144,15 @@ export function MessagesPerChannelSection() {
 												<Margins block='neg-x4'>
 													<Box>
 														<Margins block='x4'>
-															<Box textColor='info' textStyle='p1'>
+															<Box color='info' fontScale='p1'>
 																<LegendSymbol color='#FFD031' />
 																{t('Private_Chats')}
 															</Box>
-															<Box textColor='info' textStyle='p1'>
+															<Box color='info' fontScale='p1'>
 																<LegendSymbol color='#2DE0A5' />
 																{t('Private_Channels')}
 															</Box>
-															<Box textColor='info' textStyle='p1'>
+															<Box color='info' fontScale='p1'>
 																<LegendSymbol color='#1D74F5' />
 																{t('Public_Channels')}
 															</Box>
@@ -168,9 +168,9 @@ export function MessagesPerChannelSection() {
 						<Flex.Item grow={1} shrink={0} basis='0'>
 							<Box>
 								<Margins blockEnd='x16'>
-									{table ? <Box textStyle='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
+									{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
 								</Margins>
-								{table && !table.length && <Tile textStyle='p1' textColor='info' style={{ textAlign: 'center' }}>
+								{table && !table.length && <Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
 									{t('Not_enough_data')}
 								</Tile>}
 								{(!table || !!table.length) && <Table>

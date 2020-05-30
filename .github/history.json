@@ -40067,6 +40067,3578 @@
           ]
         }
       ]
+    },
+    "3.0.8": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17078",
+          "title": "Regression: Remove model observe that was used to control the status of the Omnichannel agents",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.8",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17086",
+          "title": "[FIX] Emit livechat events to instace only",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.8",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17088",
+          "title": "Reduce notifyUser propagation",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.8",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17089",
+          "title": "[FIX] Error when websocket received status update event",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.8",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.0": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16604",
+          "title": "[NEW] Sort channel directory listing by latest message",
+          "userLogin": "subham103",
+          "contributors": [
+            "subham103",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16680",
+          "title": "[FIX] Wrong message count statistics in Admin info page",
+          "userLogin": "subham103",
+          "contributors": [
+            "subham103",
+            "gabriellsh",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16998",
+          "title": "Fix: 2FA DDP method not getting code on API call that doesn’t requires 2FA",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16761",
+          "title": "[NEW] Direct message between multiple users",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17017",
+          "title": "Regression: Remove deprecated Omnichannel setting used to fetch the queue data through subscription ",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16999",
+          "title": "Regression: Replace the Omnichannel queue model observe with Stream",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16960",
+          "title": "[NEW] [ENTERPRISE] Engagement Dashboard",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16995",
+          "title": "Fix StreamCast info",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16784",
+          "title": "[IMPROVE] Ability to change offline message button link on emails notifications",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16989",
+          "title": "[FIX] Race conditions on/before login",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16983",
+          "title": "Fix: StreamCast was not working correctly",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16942",
+          "title": "[FIX] CAS ignores username attribute map",
+          "userLogin": "pmayer",
+          "milestone": "3.1.0",
+          "contributors": [
+            "pmayer",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16958",
+          "title": "[FIX] Ancestral departments were not updated when an Omnichannel room is forwarded to another department",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16956",
+          "title": "Change license version requested",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16158",
+          "title": "[NEW] Synchronize saml roles to local user (#16152)",
+          "userLogin": "col-panic",
+          "contributors": [
+            "col-panic",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16202",
+          "title": "Fix: Padding required in the Facebook Messenger option in Livechat",
+          "userLogin": "ritwizsinha",
+          "contributors": [
+            "ritwizsinha",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16120",
+          "title": "Add some missing ES translations",
+          "userLogin": "ivanape",
+          "contributors": [
+            "ivanape",
+            "gabriellsh",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16210",
+          "title": "Fix: Adding margin to click to load text",
+          "userLogin": "ritwizsinha",
+          "contributors": [
+            "ritwizsinha",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16138",
+          "title": "[FIX] Explicitly set text of confirmation button",
+          "userLogin": "jschirrmacher",
+          "contributors": [
+            "jschirrmacher",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16227",
+          "title": "Redirected to home when a room has been deleted instead of getting broken link(blank page) of deleted room",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16310",
+          "title": "Fixed translate variable in UnarchiveRoom Modal",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16875",
+          "title": "[FIX] Display user status along with icon",
+          "userLogin": "Nikhil713",
+          "contributors": [
+            "Nikhil713",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16128",
+          "title": "[FIX] `users.setStatus` API was ignoring the user from params when trying to set status of other users",
+          "userLogin": "rm-yakovenko",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rm-yakovenko",
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16685",
+          "title": "Update cypress to version 4.0.2",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14136",
+          "title": "[FIX] Text formatted to remain within button even on screen resize ",
+          "userLogin": "Rodriq",
+          "milestone": "3.1.0",
+          "contributors": [
+            "Rodriq",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16565",
+          "title": "[FIX] Messages doesn't send to Slack via SlackBridge after renaming channel",
+          "userLogin": "antkaz",
+          "milestone": "3.1.0",
+          "contributors": [
+            "antkaz"
+          ]
+        },
+        {
+          "pr": "16610",
+          "title": "[NEW] Route to get updated roles after a date",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ashwaniYDV",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16957",
+          "title": "[FIX] Remove Reply in DM from Omnichannel rooms",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ashwaniYDV",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16786",
+          "title": "Update presence package",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16944",
+          "title": "[NEW] Enterprise Edition",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16953",
+          "title": "Add an index to the name field for omnichannel department",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16955",
+          "title": "[FIX] Login with LinkedIn not mapping name and picture correctly",
+          "userLogin": "marceloschmidt",
+          "contributors": [
+            "marceloschmidt",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16949",
+          "title": "[IMPROVE] Allow login of non LDAP users when LDAP is enabled",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16893",
+          "title": "Add lint to `.less` files",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16950",
+          "title": "Upgrade Livechat Widget version to 1.4.0",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16876",
+          "title": "Bump acorn from 6.0.7 to 6.4.1",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16928",
+          "title": "[NEW] Settings to enable E2E encryption for Private and Direct Rooms by default",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16941",
+          "title": "Fix: Make the AppLivechatBridge.createMessage works properly as a promise",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "15123",
+          "title": "[NEW] Experimental Game Center (externalComponents implementation)",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "lolimay",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16755",
+          "title": "[IMPROVE] Omnichannel aggregations performance improvements",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16669",
+          "title": "[IMPROVE] Replace the Department select component by an Autocomplete input in Omnichannel UI",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16859",
+          "title": "[NEW] Add default chat closing tags in Omnichannel departments",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16557",
+          "title": "[NEW] Allow to set default department and location sharing on SMS / WhatsApp integration",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15949",
+          "title": "[NEW] Two Factor authentication via email",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16779",
+          "title": "Add new Omnichannel department forwarding callback",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16782",
+          "title": "[FIX] Omnichannel Inquiry names not being updated when the guest name changes",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16787",
+          "title": "[FIX]  Keeps the agent in the room after accepting a new Omnichannel request",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16783",
+          "title": "[FIX] Real-time data rendering on Omnichannel room info panel ",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16247",
+          "title": "[FIX] Show error message if password and confirm password not equal ",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16925",
+          "title": "[FIX]  When trying to quote messages inside threads the quote would be sent to room instead to the thread",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "13860",
+          "title": "[IMPROVE] User gets feedback when a message has been starred or unstarred",
+          "userLogin": "fliptrail",
+          "milestone": "3.1.0",
+          "contributors": [
+            "fliptrail"
+          ]
+        },
+        {
+          "pr": "15796",
+          "title": "[FIX] Admins can't sort users by email in directory view",
+          "userLogin": "sneakson",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sneakson"
+          ]
+        },
+        {
+          "pr": "16188",
+          "title": "[FIX] Pinned messages wouldn't collapse",
+          "userLogin": "gabriellsh",
+          "milestone": "3.1.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16792",
+          "title": "Added border to page header",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16835",
+          "title": "[FIX] Wrong thread messages display in contextual bar",
+          "userLogin": "ritwizsinha",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ritwizsinha"
+          ]
+        },
+        {
+          "pr": "16914",
+          "title": "[FIX] Public channel cannot be accessed via URL when 'Allow Anonymous Read' is active",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16918",
+          "title": "Fixed Line break incorrectly being called apostrophe in code",
+          "userLogin": "aKn1ghtOut",
+          "contributors": [
+            "aKn1ghtOut"
+          ]
+        },
+        {
+          "pr": "16915",
+          "title": "[IMPROVE] Contextual bar autofocus",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16753",
+          "title": "Improve room types usage",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16363",
+          "title": "[NEW] Translation via MS translate",
+          "userLogin": "mrsimpson",
+          "description": "Adds Microsoft's translation service (https://translator.microsoft.com/) as a provider for translation of messages.\r\nIn addition to implementing the interface (similar to google and DeepL), a small change has been done in order to display the translation provider on the UI.",
+          "milestone": "3.1.0",
+          "contributors": [
+            "mrsimpson",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16849",
+          "title": "[NEW] API `users.deactivateIdle` for mass-disabling of idle users",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16193",
+          "title": "[NEW] API `users.logoutOtherClient` to logout from other locations",
+          "userLogin": "jschirrmacher",
+          "milestone": "3.1.0",
+          "contributors": [
+            "jschirrmacher",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16845",
+          "title": "[IMPROVE] Add option to require authentication on user's shield endpoint",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16811",
+          "title": "[FIX] Custom OAuth Bug",
+          "userLogin": "PrajvalRaval",
+          "contributors": [
+            "PrajvalRaval"
+          ]
+        },
+        {
+          "pr": "16838",
+          "title": "[FIX] Integrations page pagination",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16810",
+          "title": "[FIX] Facebook integration missing visitor data after registerGuest",
+          "userLogin": "antkaz",
+          "milestone": "3.1.0",
+          "contributors": [
+            "antkaz",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16591",
+          "title": "[FIX] Invite links counting users already joined",
+          "userLogin": "ritwizsinha",
+          "contributors": [
+            "ritwizsinha",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16255",
+          "title": "[IMPROVE] Displays `Nothing found` on admin sidebar when search returns nothing",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16304",
+          "title": "Fix: Removed some hardcoded texts",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16560",
+          "title": "[FIX] Cannot unfollow message from thread's panel",
+          "userLogin": "subham103",
+          "contributors": [
+            "subham103"
+          ]
+        },
+        {
+          "pr": "16801",
+          "title": "Add Enterprise Edition license",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16776",
+          "title": "[IMPROVE] Fallback content-type as application/octet-stream for FileSystem uploads",
+          "userLogin": "georgmu",
+          "contributors": [
+            "georgmu"
+          ]
+        },
+        {
+          "pr": "16781",
+          "title": "Improve: Apps-engine E2E tests",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16724",
+          "title": "[FIX] Remove spaces from i18n placeholders to show Personal access token",
+          "userLogin": "harakiwi1",
+          "contributors": [
+            "harakiwi1",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16751",
+          "title": "[NEW] SAML config to allow clock drift",
+          "userLogin": "localguru",
+          "contributors": [
+            "localguru",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16750",
+          "title": "[FIX] Slash command preview: Wrong item being selected, Horizontal scroll",
+          "userLogin": "gabriellsh",
+          "milestone": "3.1.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16759",
+          "title": "[FIX] Cannot pin on direct messages",
+          "userLogin": "ritwizsinha",
+          "contributors": [
+            "ritwizsinha"
+          ]
+        },
+        {
+          "pr": "16767",
+          "title": "[FIX] SlackBridge: Get all channels from Slack via REST API",
+          "userLogin": "antkaz",
+          "contributors": [
+            "antkaz"
+          ]
+        },
+        {
+          "pr": "16837",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16797",
+          "title": "[FIX]  Flextab information is not working when clicking on visitor or agent username in Omnichannel messages",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16718",
+          "title": "[NEW] Update Meteor to 1.9.2 and Node to 12.16.1",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16645",
+          "title": "[FIX] Slackbridge-import command doesn't work",
+          "userLogin": "antkaz",
+          "contributors": [
+            "antkaz"
+          ]
+        },
+        {
+          "pr": "16775",
+          "title": "Regression: Fix omnichannel icon missing on sidebar",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16752",
+          "title": "[IMPROVE] Rename client-side term \"Livechat\" to \"Omnichannel\"",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16757",
+          "title": "[FIX] Language country has been ignored on translation load",
+          "userLogin": "rodrigok",
+          "description": "Languages including country variations like `pt-BR` were ignoring the country party because the user's preference has been saved in lowercase `pt-br` causing the language to not match the available languages. Now we enforce the uppercase of the country part when loading the language.",
+          "milestone": "3.0.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16744",
+          "title": "[FIX] Cannot edit Profile when Full Name is empty and not required",
+          "userLogin": "gabriellsh",
+          "milestone": "3.1.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16502",
+          "title": "[IMPROVE] Accept open formarts of text, spreadsheet, presentation for upload by default",
+          "userLogin": "rodrigok",
+          "milestone": "4.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16470",
+          "title": "Removing Trailing Space",
+          "userLogin": "aryamanpuri",
+          "contributors": [
+            "aryamanpuri",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16258",
+          "title": "[Apps] Lazy load categories and marketplaceVersion in admin - apps page",
+          "userLogin": "lolimay",
+          "contributors": [
+            "lolimay",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16736",
+          "title": "Fix Docker preview image",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16726",
+          "title": "[FIX] Manual Register use correct state for determining registered",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.0.3",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16723",
+          "title": "[FIX] Rocket.Chat takes too long to set the username when it fails to send enrollment email",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.0.3",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "16719",
+          "title": "[CHORE] Changed remaining SelectInput's to Select",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16720",
+          "title": "[CHORE] Update snap install instructions",
+          "userLogin": "tassoevan",
+          "milestone": "3.1.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16699",
+          "title": "[FIX] TypeError when trying to load avatar of an invalid room.",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "16706",
+          "title": "[FIX] Color setting editing issues",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16704",
+          "title": "Fix: Console error on login",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16576",
+          "title": "Add methods to include room types on dashboard",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "16682",
+          "title": "[FIX] ie11 support",
+          "userLogin": "gabriellsh",
+          "milestone": "3.0.2",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16681",
+          "title": "Regression: Show upload errors",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16568",
+          "title": "[FIX] Deleting messages while searching causes the whole room chat to disappear",
+          "userLogin": "karimelghazouly",
+          "contributors": [
+            "karimelghazouly"
+          ]
+        },
+        {
+          "pr": "16617",
+          "title": "[IMPROVE] Send files over REST API",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16322",
+          "title": "[FIX] Prune message saying `files deleted` and `messages deleted` even when singular message or file in prune",
+          "userLogin": "ritwizsinha",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ritwizsinha"
+          ]
+        },
+        {
+          "pr": "16151",
+          "title": "Fix: Correctly aligned input element of custom user status component",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16170",
+          "title": "[FIX] \"Jump to message\" is rendered twice when message is starred.",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16217",
+          "title": "[IMPROVE] Added autofocus to Directory",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16221",
+          "title": "[IMPROVE] Added timer in video message recorder",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16371",
+          "title": "[IMPROVE] Use `rocket.cat` as default bot If `InternalHubot_Username` is undefined",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16315",
+          "title": "[FIX] Pressing Cancel while 'deleting by edit' message blocks sending messages",
+          "userLogin": "ritwizsinha",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ritwizsinha"
+          ]
+        },
+        {
+          "pr": "16416",
+          "title": "[FIX] File uploads out of threads are not visible in regular message view",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.0.0",
+          "contributors": [
+            "ashwaniYDV",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16457",
+          "title": "[FIX] There is no option to pin a thread message by admin",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV"
+          ]
+        },
+        {
+          "pr": "16595",
+          "title": "[CHORE] Look for Storybook stories on `app/` too",
+          "userLogin": "tassoevan",
+          "milestone": "3.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "16630",
+          "title": "[IMPROVE] Removed the 'reply in thread' from thread replies",
+          "userLogin": "ritwizsinha",
+          "contributors": [
+            "ritwizsinha"
+          ]
+        },
+        {
+          "pr": "16631",
+          "title": "Changed Opt_In message, removed translations",
+          "userLogin": "gabriellsh",
+          "milestone": "3.1.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16671",
+          "title": "[FIX] LDAP sync admin action was not syncing existent users",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16618",
+          "title": "[FIX] Check agent status when starting a new conversation with an agent assigned",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.3",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16667",
+          "title": "[FIX] Additional scroll when contextual bar is open",
+          "userLogin": "gabriellsh",
+          "milestone": "3.1.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16668",
+          "title": "[FIX] Clear unread red line when the ESC key is pressed ",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16495",
+          "title": "[FIX] users.info endpoint not handling the error if the user does not exist",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.2",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16653",
+          "title": "[NEW] Save default filters in the Omnichannel Current Chats list",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16629",
+          "title": "[FIX] Admin height if the blue banner is opened",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16639",
+          "title": "[FIX] Data converters overriding fields added by apps",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16626",
+          "title": "[FIX] Block user option inside admin view",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16640",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16637",
+          "title": "[FIX] Regression: New 'app' role with no permissions when updating to 3.0.0",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "13591",
+          "title": "fix: add option to mount media on snap",
+          "userLogin": "knrt10",
+          "contributors": [
+            "knrt10"
+          ]
+        },
+        {
+          "pr": "16496",
+          "title": "[NEW] Open the Visitor Info panel automatically when the agent enters an Omnichannel room",
+          "userLogin": "renatobecker",
+          "milestone": "4.0.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16603",
+          "title": "[FIX] Omnichannel Inquiry queues when removing chats",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16623",
+          "title": "[FIX] livechat/rooms endpoint not working with big amount of livechats",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.0.1",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16625",
+          "title": "[FIX] Regression: Jitsi on external window infinite loop",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16624",
+          "title": "[FIX] UiKit not updating new actionIds received as responses from actions",
+          "userLogin": "ggazzo",
+          "milestone": "3.0.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16609",
+          "title": "Merge master into develop & Set version to 3.1.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17018",
+          "title": "Regression: Small fixes for Game Center",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17028",
+          "title": "Regression: Fix issue with opening rooms",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17061",
+          "title": "Regression: Overwrite model functions on EE only when license applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17036",
+          "title": "Regression: `users.setStatus` throwing an error if message is empty",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16346",
+          "title": "Regression: Omnichannel notification on new conversations displaying incorrect information",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17058",
+          "title": "Fix: Notifications of Group DM were not showing the room name",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17059",
+          "title": "Fix: Last message of Group DMs not showing the sender",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17056",
+          "title": "Regression: Invite links working for group DMs",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17060",
+          "title": "Regression: Do not refresh statistics when opening the info panel",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17057",
+          "title": "Regression: Fix removing user not removing his 1-on-1 DMs",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17048",
+          "title": "Regression: omnichannel manual queued sidebarlist",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo",
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17077",
+          "title": "[NEW] Add update method for user bridge",
+          "userLogin": "d-gubert",
+          "milestone": "3.1.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17062",
+          "title": "[FIX] Verification email body",
+          "userLogin": "GOVINDDIXIT",
+          "milestone": "3.1.0",
+          "contributors": [
+            "GOVINDDIXIT",
+            "web-flow",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "17075",
+          "title": "Add User’s index for field `appId`",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16979",
+          "title": "Regression: OmniChannel agent activity monitor was counting time wrongly",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17052",
+          "title": "[NEW] Home button on sidebar",
+          "userLogin": "gabriellsh",
+          "milestone": "3.2.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17073",
+          "title": "[IMPROVE] Repeat “Reply In Thread” and “Add Reaction” inside the message actions menu",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17074",
+          "title": "Regression: Broken Search if users without DM subscriptions are listed",
+          "userLogin": "tassoevan",
+          "milestone": "3.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17072",
+          "title": "[IMPROVE] Tab Bar actions reorder",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "tassoevan"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.4": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17078",
+          "title": "Regression: Remove model observe that was used to control the status of the Omnichannel agents",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.8",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17086",
+          "title": "[FIX] Emit livechat events to instace only",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.8",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17089",
+          "title": "[FIX] Error when websocket received status update event",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.8",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17088",
+          "title": "Reduce notifyUser propagation",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.8",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17078",
+          "title": "Regression: Remove model observe that was used to control the status of the Omnichannel agents",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.8",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17087",
+          "title": "Regression: Check Omnichannel routing system before emitting queue changes",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
+    },
+    "3.0.9": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17094",
+          "title": "Release 3.0.9",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17093",
+          "title": "[FIX] Apps Engine notifyRoom sending notification to wrong users",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.9",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.5": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17093",
+          "title": "[FIX] Apps Engine notifyRoom sending notification to wrong users",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.9",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.6": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17111",
+          "title": "Regression: Files were been deleted when deleting users as last members of private rooms",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17105",
+          "title": "Regression: Block users was not possible for 1:1 DMs",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16994",
+          "title": "Regression: Collapsible elements didn't respect attachment parameter.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.1.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.0.10": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17126",
+          "title": "Release 3.0.10",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "1rV1N-git",
+            "sampaiodiego",
+            "rodrigok",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17114",
+          "title": "New Troubleshoot section for disabling features",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17115",
+          "title": "[IMPROVE] Apps Engine: Reduce some stream calls and remove a find user from the app's status changes",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.10",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17060",
+          "title": "Regression: Do not refresh statistics when opening the info panel",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17075",
+          "title": "Add User’s index for field `appId`",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16878",
+          "title": "[FIX] Federation Event ROOM_ADD_USER not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16861",
+          "title": "[FIX] Federation delete room event not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.7": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17109",
+          "title": "Regression: Direct message creation by REST",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17128",
+          "title": "Regression: Can't login with 2FA over REST API when 2FA via Email is enabled",
+          "userLogin": "djorkaeffalexandre",
+          "milestone": "3.1.0",
+          "contributors": [
+            "djorkaeffalexandre"
+          ]
+        },
+        {
+          "pr": "17127",
+          "title": "Regression: Fix engagement dashboard urls, fixing Flowrouter imports",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17125",
+          "title": "Regression: IE11 Support",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16861",
+          "title": "[FIX] Federation delete room event not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16878",
+          "title": "[FIX] Federation Event ROOM_ADD_USER not being dispatched",
+          "userLogin": "1rV1N-git",
+          "milestone": "3.0.10",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17114",
+          "title": "New Troubleshoot section for disabling features",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.10",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17118",
+          "title": "Regression: Wrong size of Directory search/sort icons and Sort Channels menu not showing on production build",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17070",
+          "title": "[FIX] Discussions were not inheriting the public status of parent's channel",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17116",
+          "title": "Regression: fix fuselage import, remove directory css",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17115",
+          "title": "[IMPROVE] Apps Engine: Reduce some stream calls and remove a find user from the app's status changes",
+          "userLogin": "d-gubert",
+          "milestone": "3.0.10",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17113",
+          "title": "Regression: Remove old and closed Omnichannel inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17110",
+          "title": "[FIX] Member's list only filtering users already on screen",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17081",
+          "title": "Single codebase announcement",
+          "userLogin": "Sing-Li",
+          "milestone": "3.1.0",
+          "contributors": [
+            "Sing-Li",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17043",
+          "title": "[NEW] Directory page refactored, new user's bio field",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17103",
+          "title": "[NEW] Merge Sort List and View Mode menus and improve its UI/UX",
+          "userLogin": "ggazzo",
+          "description": "![image](https://user-images.githubusercontent.com/5263975/78036622-e8db2a80-7340-11ea-91d0-65728eabdcb6.png)",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tassoevan"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.8": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17142",
+          "title": "New metric to track oplog queue",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.11",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17143",
+          "title": "[FIX] Option BYPASS_OPLOG_VALIDATION not working",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.11",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17132",
+          "title": "[FIX] Omnichannel endpoint `inquiries.getOne` returning only queued inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.11",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17133",
+          "title": "Regression: fix design review of Directory",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.0.11": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17148",
+          "title": "Release 3.0.11",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17132",
+          "title": "[FIX] Omnichannel endpoint `inquiries.getOne` returning only queued inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.0.11",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17143",
+          "title": "[FIX] Option BYPASS_OPLOG_VALIDATION not working",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.11",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17142",
+          "title": "New metric to track oplog queue",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.11",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.0.12": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17158",
+          "title": "Release 3.0.12",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17155",
+          "title": "Fix: Missing checks for Troubleshoot > Disable Notifications",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17152",
+          "title": "Fix: Error message on startup of multiple instances related to the metrics’ server",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.9": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17035",
+          "title": "[IMPROVE] First data load from existing data on engagement dashboard",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.1.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "ggazzo",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17193",
+          "title": "Regression: Fix calling readmessage after mark as unread",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17194",
+          "title": "[IMPROVE] Increase the push throughput to prevent queuing",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17092",
+          "title": "Add wrapper to make Meteor methods calls over REST",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17189",
+          "title": "[IMPROVE] Change sidebar sort mode to activity by default",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17192",
+          "title": "Regression: Fix auditing for Multiple Direct Messages",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17145",
+          "title": "[FIX] WebRTC echo while talking",
+          "userLogin": "ndroo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "1rV1N-git",
+            "rodrigok",
+            "d-gubert",
+            "ndroo",
+            "renatobecker",
+            "engelgabriel",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "17186",
+          "title": "Regression: Admin create user button",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17188",
+          "title": "Regression: fix scroll after room loads",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17183",
+          "title": "Metrics: New metrics, performance and size improvements",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17169",
+          "title": "Fix: Huge amount of hasLicense calls to the server",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17155",
+          "title": "Fix: Missing checks for Troubleshoot > Disable Notifications",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17038",
+          "title": "[NEW] Add omnichannel external frame feature",
+          "userLogin": "d-gubert",
+          "milestone": "3.1.0",
+          "contributors": [
+            "d-gubert",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17152",
+          "title": "Fix: Error message on startup of multiple instances related to the metrics’ server",
+          "userLogin": "rodrigok",
+          "milestone": "3.0.12",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.10": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17204",
+          "title": "Regression: Fix users raw model",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.11": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17208",
+          "title": "Add statistics and metrics about push queue",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.12": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17227",
+          "title": "[FIX] Random errors on SAML logout",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17216",
+          "title": "Collect metrics about meteor facts",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17224",
+          "title": "[FIX] Room event emitter passing an invalid parameter when finding removed subscriptions",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16922",
+          "title": "[FIX] Wrong SAML Response Signature Validation",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17219",
+          "title": "[FIX] SAML login errors not showing on UI",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "3.1.0-rc.13": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17239",
+          "title": "Fix self DMs created during release candidate",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17237",
+          "title": "[CHORE] Use REST API for sending audio messages",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.1.0": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17158",
+          "title": "Release 3.0.12",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17093",
+          "title": "[FIX] Apps Engine notifyRoom sending notification to wrong users",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.0.9",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.1.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17278",
+          "title": "[FIX] SAML assertion signature enforcement",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17299",
+          "title": "[FIX] User search on directory not working correctly",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17275",
+          "title": "[FIX] 404 error when clicking an username",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17287",
+          "title": "Update Apps-Engine to stable version",
+          "userLogin": "d-gubert",
+          "milestone": "3.1.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17286",
+          "title": "[FIX] Avatar on sidebar when showing real names",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17283",
+          "title": "[FIX] Directory default tab",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17282",
+          "title": "[FIX] Discussions created from inside DMs were not working and some errors accessing recently created rooms",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17288",
+          "title": " [FIX] Omnichannel SMS / WhatsApp integration errors due to missing location data",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.1",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17302",
+          "title": "[FIX] LDAP users lose session on refresh",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "3.2.0-rc.0": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17333",
+          "title": "[NEW] [ENTERPRISE] Restrict the permissions configuration for guest users ",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "The **Guest** role is blocked for edition on the EE version. This will allow the EE customers to receive licenses with extra seats for Guests for free. The CE version continues to have the Guest role configurable.",
+          "milestone": "3.2.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17091",
+          "title": "[NEW] Federation event for when users left rooms",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16790",
+          "title": "[FIX] CSV Importer fails when there are no users to import",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17206",
+          "title": "[FIX] Import slack's multiple direct messages as direct rooms instead of private groups",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17324",
+          "title": "[FIX] SAML Idp Initiated Logout Error",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17357",
+          "title": "[NEW] Better Push and Email Notification logic",
+          "userLogin": "rodrigok",
+          "description": "We are still using the same logic to define which notifications every new message will generate, it takes some servers' settings, users's preferences and subscriptions' settings in consideration to determine who will receive each notification type (desktop, audio, email and mobile push), but now it doesn't check the user's status (online, away, offline) for email and mobile push notifications but send those notifications to a new queue with the following rules:\r\n\r\n- When the user is online the notification is scheduled to be sent in 120 seconds\r\n- When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away\r\n- When the user is offline the notification is scheduled to be sent right away\r\n- When the user reads a channel all the notifications for that user are removed (clear queue)\r\n- When a notification is processed to be sent to a user and there are other scheduled notifications:\r\n  - All the scheduled notifications for that user are rescheduled to now\r\n  - The current notification goes back to the queue to be processed ordered by creation date",
+          "milestone": "3.2.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17372",
+          "title": "[NEW] Error page when browser is not supported",
+          "userLogin": "ggazzo",
+          "milestone": "3.2.0",
+          "contributors": [
+            "ggazzo",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17141",
+          "title": "[NEW] [ENTERPRISE] Omnichannel queue priorities",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.2.0",
+          "contributors": [
+            "renatobecker",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15488",
+          "title": "[IMPROVE] Change the SAML metadata order to conform to XSD specification",
+          "userLogin": "fcrespo82",
+          "milestone": "3.2.0",
+          "contributors": [
+            "fcrespo82",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "9995",
+          "title": "[IMPROVE] Filter markdown in notifications",
+          "userLogin": "c0dzilla",
+          "milestone": "3.2.0",
+          "contributors": [
+            "c0dzilla",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16056",
+          "title": "[IMPROVE] User gets UI feedback when message is pinned or unpinned",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.2.0",
+          "contributors": [
+            "ashwaniYDV",
+            "web-flow",
+            "ggazzo",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16343",
+          "title": "Remove set as alias setting",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.2.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16858",
+          "title": "[IMPROVE] Add `file-title` and `file-desc` as new filter tag options on message search",
+          "userLogin": "subham103",
+          "milestone": "3.2.0",
+          "contributors": [
+            "subham103",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17254",
+          "title": "[NEW]  Add ability to set tags in the Omnichannel room closing dialog",
+          "userLogin": "renatobecker",
+          "milestone": "3.2.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17047",
+          "title": "[FIX] Show active admin and user account menu item",
+          "userLogin": "hullen",
+          "milestone": "3.2.0",
+          "contributors": [
+            "hullen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17335",
+          "title": "[NEW] [ENTERPRISE] Allows to set a group of departments accepted for forwarding chats",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17331",
+          "title": "[FIX] Prevent user from getting stuck on login, if there is some bad fname",
+          "userLogin": "ggazzo",
+          "milestone": "3.2.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17238",
+          "title": "[FIX] Remove properties from users.info response",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16286",
+          "title": "[NEW] Allow to send Agent custom fields through the Omnichannel CRM integration",
+          "userLogin": "renatobecker",
+          "milestone": "3.2.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17356",
+          "title": "[FIX] Spotify embed and collapsed",
+          "userLogin": "ffauvel",
+          "milestone": "3.2.0",
+          "contributors": [
+            "ffauvel",
+            "web-flow",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "17338",
+          "title": "Improve: Better Push Notification code",
+          "userLogin": "rodrigok",
+          "milestone": "3.2.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17365",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17290",
+          "title": "[FIX] Allow Screensharing in BBB Iframe",
+          "userLogin": "wolbernd",
+          "contributors": [
+            "wolbernd",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16762",
+          "title": "[NEW] Make the header for rooms clickable",
+          "userLogin": "aKn1ghtOut",
+          "milestone": "3.2.0",
+          "contributors": [
+            "aKn1ghtOut",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "17355",
+          "title": "Regression: Import data pagination",
+          "userLogin": "ggazzo",
+          "milestone": "3.2.0",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17353",
+          "title": "[NEW] Allow to set a comment when forwarding Omnichannel chats",
+          "userLogin": "renatobecker",
+          "milestone": "3.2.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17320",
+          "title": "[FIX] Web Client memory leak caused by the Emoji rendering",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17348",
+          "title": "[FIX] Omnichannel room info panel opening whenever a message is sent",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17249",
+          "title": "[FIX] New user added by admin doesn't receive random password email",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17323",
+          "title": "Bump https-proxy-agent from 2.2.1 to 2.2.4",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16683",
+          "title": "[NEW] Adds ability for Rocket.Chat Apps to create discussions",
+          "userLogin": "marceloschmidt",
+          "milestone": "3.2.0",
+          "contributors": [
+            "marceloschmidt",
+            "lolimay",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17347",
+          "title": "[IMPROVE] Add possibility to sort the Omnichannel current chats list by column",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.2.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "17289",
+          "title": "[IMPROVE] Redesign Administration > Import",
+          "userLogin": "tassoevan",
+          "milestone": "3.2.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17322",
+          "title": "Mailer Scrollbar",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "17191",
+          "title": "[IMPROVE] Administration -> Mailer Rewrite.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.2.0",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17321",
+          "title": "Regression: Storybook",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "15690",
+          "title": "[NEW] Feature/custom oauth mail field and interpolation for mapped fields",
+          "userLogin": "benkroeger",
+          "milestone": "3.2.0",
+          "contributors": [
+            "sampaiodiego",
+            "benkroeger",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17226",
+          "title": "[FIX] \"Invalid Invite\" message when registration is disabled",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16536",
+          "title": "[FIX] Red color error outline is not removed after password update on profile details",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.2.0",
+          "contributors": [
+            "ashwaniYDV",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "8799",
+          "title": "[FIX] Change wording to start DM from info panel",
+          "userLogin": "bryandesrosiers",
+          "milestone": "3.2.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17305",
+          "title": "New hooks for RouterContext",
+          "userLogin": "tassoevan",
+          "milestone": "3.2.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17278",
+          "title": "[FIX] SAML assertion signature enforcement",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17302",
+          "title": "[FIX] LDAP users lose session on refresh",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17217",
+          "title": "[NEW] Add MMS support to Voxtelesys",
+          "userLogin": "john08burke",
+          "milestone": "3.2.0",
+          "contributors": [
+            "john08burke",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17198",
+          "title": "[FIX] Popover component doesn't have scroll",
+          "userLogin": "Nikhil713",
+          "milestone": "3.2.0",
+          "contributors": [
+            "Nikhil713",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17288",
+          "title": " [FIX] Omnichannel SMS / WhatsApp integration errors due to missing location data",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.1",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17299",
+          "title": "[FIX] User search on directory not working correctly",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "16313",
+          "title": "[FIX] Can not save Unread Tray Icon Alert user preference",
+          "userLogin": "taiju271",
+          "milestone": "3.2.0",
+          "contributors": [
+            "taiju271",
+            "web-flow",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "15997",
+          "title": "[FIX] Variable rendering problem on Import recent history page",
+          "userLogin": "ritwizsinha",
+          "contributors": [
+            "ritwizsinha",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16215",
+          "title": "[FIX] Admin panel custom sounds, multiple sound playback fix and added single play/pause button",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17282",
+          "title": "[FIX] Discussions created from inside DMs were not working and some errors accessing recently created rooms",
+          "userLogin": "rodrigok",
+          "milestone": "3.1.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16742",
+          "title": "[FIX] Translation for nl",
+          "userLogin": "CC007",
+          "contributors": [
+            "CC007",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16534",
+          "title": "[FIX] No maxlength(120) defined for custom user status",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16606",
+          "title": "[FIX] Fixed email sort button in directory -> users",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.2.0",
+          "contributors": [
+            "ashwaniYDV",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16405",
+          "title": "[FIX] In Create a New Channel, input should be focused on channel name instead of invite users",
+          "userLogin": "ashwaniYDV",
+          "contributors": [
+            "ashwaniYDV",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16236",
+          "title": "[FIX] Email not verified message",
+          "userLogin": "gabriellsh",
+          "milestone": "3.2.0",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17283",
+          "title": "[FIX] Directory default tab",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16869",
+          "title": "[FIX] Update ru.i18n.json",
+          "userLogin": "1rV1N-git",
+          "contributors": [
+            "1rV1N-git",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17286",
+          "title": "[FIX] Avatar on sidebar when showing real names",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17287",
+          "title": "Update Apps-Engine to stable version",
+          "userLogin": "d-gubert",
+          "milestone": "3.1.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17055",
+          "title": "[NEW][ENTERPRISE] Auto close abandoned Omnichannel rooms",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.2.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17285",
+          "title": "Static props for Administration route components",
+          "userLogin": "tassoevan",
+          "milestone": "3.2.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "16025",
+          "title": "[NEW] Default favorite channels",
+          "userLogin": "gabriellsh",
+          "milestone": "3.2.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17280",
+          "title": "Apply $and helper to message template",
+          "userLogin": "tassoevan",
+          "milestone": "3.2.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17222",
+          "title": "[NEW] Enable the IDP to choose the best authnContext",
+          "userLogin": "felipecrp",
+          "contributors": [
+            "felipecrp",
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17130",
+          "title": "[NEW] Support importing Slack threads",
+          "userLogin": "lpilz",
+          "contributors": [
+            "lpilz",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17107",
+          "title": "Upgrade file storage packages",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.2.0",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17274",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17275",
+          "title": "[FIX] 404 error when clicking an username",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "16771",
+          "title": "[FIX] Global event click-message-link not fired",
+          "userLogin": "tassoevan",
+          "milestone": "3.1.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "16806",
+          "title": "[NEW] Add Color variable to left sidebar",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "16887",
+          "title": "[FIX] Search valid for emoji with dual name",
+          "userLogin": "subham103",
+          "contributors": [
+            "subham103"
+          ]
+        },
+        {
+          "pr": "16959",
+          "title": "[FIX] Threads: Hide Usernames hides Full names.",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17207",
+          "title": "[NEW] Buttons to check/uncheck all users and channels on import",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17261",
+          "title": "[IMPROVE] Move CSS imports to `/app` modules",
+          "userLogin": "tassoevan",
+          "milestone": "3.2.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17265",
+          "title": "[FIX] Unsafe React portals mount/unmount ",
+          "userLogin": "tassoevan",
+          "milestone": "3.2.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17266",
+          "title": "[CHORE] Move polyfills to client/",
+          "userLogin": "tassoevan",
+          "milestone": "3.2.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17241",
+          "title": "Merge master into develop & Set version to 3.2.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "1rV1N-git",
+            "rodrigok",
+            "d-gubert",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17209",
+          "title": "[IMPROVE] Administration Pages root rewritten",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16642",
+          "title": "[IMPROVE] Increase decoupling between React components and Blaze templates",
+          "userLogin": "tassoevan",
+          "milestone": "3.1.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.2.0-rc.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17391",
+          "title": "Regression: Fix mem usage with more than one argument",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17378",
+          "title": "[FIX] 2FA not showing codes for Spanish translation",
+          "userLogin": "RavenSystem",
+          "milestone": "3.2.0",
+          "contributors": [
+            "RavenSystem",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.2.0-rc.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17453",
+          "title": "[FIX] LDAP error when trying to add room with spaces in the name",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17393",
+          "title": "Complement Guest role restrictions for Enterprise",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17430",
+          "title": "Regression: Add missing cacheKey to mem",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17428",
+          "title": "Remove `@typescript-eslint/explicit-function-return-type` rule",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17422",
+          "title": "[FIX] Empty Incoming webhook script field ",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17417",
+          "title": "[FIX] LDAP Sync error",
+          "userLogin": "fastrde",
+          "milestone": "3.1.2",
+          "contributors": [
+            "fastrde"
+          ]
+        },
+        {
+          "pr": "17404",
+          "title": "[FIX] Bot Agents not being able to get Omnichannel Inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17406",
+          "title": "[FIX] Allowing blocking a user on channels",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17297",
+          "title": "Fix moving-to-a-single-codebase link in README",
+          "userLogin": "Krinkle",
+          "contributors": [
+            "Krinkle",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.1.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17454",
+          "title": "Release 3.1.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "renatobecker",
+            "ggazzo",
+            "fastrde"
+          ]
+        },
+        {
+          "pr": "17453",
+          "title": "[FIX] LDAP error when trying to add room with spaces in the name",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17430",
+          "title": "Regression: Add missing cacheKey to mem",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17422",
+          "title": "[FIX] Empty Incoming webhook script field ",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17417",
+          "title": "[FIX] LDAP Sync error",
+          "userLogin": "fastrde",
+          "milestone": "3.1.2",
+          "contributors": [
+            "fastrde"
+          ]
+        },
+        {
+          "pr": "17404",
+          "title": "[FIX] Bot Agents not being able to get Omnichannel Inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17406",
+          "title": "[FIX] Allowing blocking a user on channels",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17391",
+          "title": "Regression: Fix mem usage with more than one argument",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17320",
+          "title": "[FIX] Web Client memory leak caused by the Emoji rendering",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17348",
+          "title": "[FIX] Omnichannel room info panel opening whenever a message is sent",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17249",
+          "title": "[FIX] New user added by admin doesn't receive random password email",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "3.2.0": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17454",
+          "title": "Release 3.1.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "renatobecker",
+            "ggazzo",
+            "fastrde"
+          ]
+        },
+        {
+          "pr": "17453",
+          "title": "[FIX] LDAP error when trying to add room with spaces in the name",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17430",
+          "title": "Regression: Add missing cacheKey to mem",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17422",
+          "title": "[FIX] Empty Incoming webhook script field ",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17417",
+          "title": "[FIX] LDAP Sync error",
+          "userLogin": "fastrde",
+          "milestone": "3.1.2",
+          "contributors": [
+            "fastrde"
+          ]
+        },
+        {
+          "pr": "17404",
+          "title": "[FIX] Bot Agents not being able to get Omnichannel Inquiries",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17406",
+          "title": "[FIX] Allowing blocking a user on channels",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17391",
+          "title": "Regression: Fix mem usage with more than one argument",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.1.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17320",
+          "title": "[FIX] Web Client memory leak caused by the Emoji rendering",
+          "userLogin": "ggazzo",
+          "milestone": "3.1.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17348",
+          "title": "[FIX] Omnichannel room info panel opening whenever a message is sent",
+          "userLogin": "renatobecker",
+          "milestone": "3.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17249",
+          "title": "[FIX] New user added by admin doesn't receive random password email",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.1.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }

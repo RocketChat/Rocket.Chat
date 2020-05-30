@@ -4,8 +4,8 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
-import { useEndpointData } from '../../hooks/useEndpointData';
 
 function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick }) {
 	const t = useTranslation();
@@ -14,7 +14,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 		moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
 			.subtract(1).subtract(displacement, 'days'), [displacement]);
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-	const data = useEndpointData('GET', 'engagement-dashboard/users/chat-busier/hourly-data', params);
+	const data = useEndpointData('engagement-dashboard/users/chat-busier/hourly-data', params);
 	const values = useMemo(() => {
 		if (!data) {
 			return [];
@@ -22,12 +22,12 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 
 		const divider = 2;
 		const values = Array.from({ length: 24 / divider }, (_, i) => ({
-			hour: divider * i,
+			hour: String(divider * i),
 			users: 0,
 		}));
 		for (const { hour, users } of data.hours) {
 			const i = Math.floor(hour / divider);
-			values[i] = values[i] || { hour: divider * i, users: 0 };
+			values[i] = values[i] || { hour: String(divider * i), users: 0 };
 			values[i].users += users;
 		}
 
@@ -111,7 +111,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 										{t('Value_users', { value })}
 									</Box>}
 								/>
@@ -131,10 +131,10 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 		return `${ startOfWeekDate.format('L') } - ${ currentDate.format('L') }`;
 	}, [currentDate]);
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-	const data = useEndpointData('GET', 'engagement-dashboard/users/chat-busier/weekly-data', params);
+	const data = useEndpointData('engagement-dashboard/users/chat-busier/weekly-data', params);
 	const values = useMemo(() => (data ? data.month.map(({ users, day, month, year }) => ({
 		users,
-		day: moment.utc([year, month - 1, day, 0, 0, 0]).valueOf(),
+		day: String(moment.utc([year, month - 1, day, 0, 0, 0]).valueOf()),
 	})).sort(({ day: a }, { day: b }) => a - b) : []), [data]);
 
 	return <>
@@ -185,7 +185,7 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 										tickPadding: 4,
 										tickRotation: 0,
 										tickValues: 'every 3 days',
-										format: (timestamp) => moment(timestamp).format('L'),
+										format: (timestamp) => moment(parseInt(timestamp, 10)).format('L'),
 									}}
 									axisLeft={null}
 									animate={true}
@@ -226,11 +226,12 @@ export function BusiestChatTimesSection() {
 		['days', t('Days')],
 	], [t]);
 
+	const [displacement, setDisplacement] = useState(0);
+
 	const handleTimeUnitChange = (timeUnit) => {
 		setTimeUnit(timeUnit);
+		setDisplacement(0);
 	};
-
-	const [displacement, setDisplacement] = useState(0);
 
 	const handlePreviousDateClick = () => setDisplacement((displacement) => displacement + 1);
 	const handleNextDateClick = () => setDisplacement((displacement) => displacement - 1);

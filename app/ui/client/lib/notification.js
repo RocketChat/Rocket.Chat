@@ -44,7 +44,7 @@ export const KonchatNotification = {
 					requireInteraction: getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction'),
 				});
 
-				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
+				const notificationDuration = notification.duration - 0 || 10;
 				if (notificationDuration > 0) {
 					setTimeout(() => n.close(), notificationDuration * 1000);
 				}
@@ -165,14 +165,7 @@ Meteor.startup(() => {
 				}
 			});
 		} else {
-			const [room] = $(`audio#${ newRoomNotification }`);
-			if (!room) {
-				return;
-			}
-			if (room.pause) {
-				room.pause();
-				room.currentTime = 0;
-			}
+			CustomSounds.pause(newRoomNotification);
 		}
 	});
 });
