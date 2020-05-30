@@ -26,5 +26,11 @@ function Leave(command, params, item) {
 	}
 }
 
-slashCommands.add('leave', Leave, { description: 'Leave_the_current_channel' });
-slashCommands.add('part', Leave, { description: 'Leave_the_current_channel' });
+slashCommands.add('leave', Leave, {
+	description: 'Leave_the_current_channel',
+	permission: ['leave-c', 'leave-p'],
+});
+slashCommands.add('part', Leave, {
+	description: 'Leave_the_current_channel',
+	permission: ['leave-c', 'leave-p'],
+});

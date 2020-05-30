@@ -1,6 +1,16 @@
-The MIT License (MIT)
+Copyright (c) 2015-2020 Rocket.Chat Technologies Corp.
 
-Copyright (c) 2015-2018 Rocket.Chat Technologies Corp.
+Portions of this software are licensed as follows:
+
+* All content that resides under the "ee/" directory of this repository, if
+  that directory exists, is licensed under the license defined in "ee/LICENSE".
+* All third-party components incorporated into the Rocket.Chat Software are
+  licensed under the original license provided by the owner of the applicable
+  component.
+* Content outside of the above-mentioned directories or restrictions above is
+  available under the MIT (Expat) license as defined below.
+
+The MIT License (MIT)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,4 +29,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-

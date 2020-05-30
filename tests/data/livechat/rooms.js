@@ -2,7 +2,7 @@ import { api, credentials, request } from '../api-data';
 import { adminUsername } from '../user';
 
 export const createLivechatRoom = (visitorToken) => new Promise((resolve) => {
-	request.get(api(`/livechat/room?token=${ visitorToken }`))
+	request.get(api(`livechat/room?token=${ visitorToken }`))
 		.set(credentials)
 		.end((err, res) => resolve(res.body.room));
 });
@@ -30,6 +30,15 @@ export const createVisitor = () => new Promise((resolve) => {
 
 export const createAgent = () => new Promise((resolve) => {
 	request.post(api('livechat/users/agent'))
+		.set(credentials)
+		.send({
+			username: adminUsername,
+		})
+		.end((err, res) => resolve(res.body.user));
+});
+
+export const createManager = () => new Promise((resolve) => {
+	request.post(api('livechat/users/manager'))
 		.set(credentials)
 		.send({
 			username: adminUsername,

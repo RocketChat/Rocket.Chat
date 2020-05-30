@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
@@ -160,7 +162,7 @@ describe('AutoTranslate', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal('The bodyParam "autoTranslate" must be a string.');
+						expect(res.body.error).to.be.equal('The bodyParam "autoTranslateLanguage" must be a string.');
 					})
 					.end(done);
 			});

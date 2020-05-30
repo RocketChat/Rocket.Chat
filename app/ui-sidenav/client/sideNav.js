@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
-import { lazyloadtick } from '../../lazy-load';
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference } from '../../utils';
@@ -58,7 +58,6 @@ Template.sideNav.events({
 	},
 
 	'scroll .rooms-list'() {
-		lazyloadtick();
 		return menu.updateUnreadBars();
 	},
 
@@ -81,19 +80,33 @@ Template.sideNav.events({
 });
 
 const redirectToDefaultChannelIfNeeded = () => {
-	const currentRouteState = FlowRouter.current();
-	const needToBeRedirect = ['/', '/home'];
-	const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
-	const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
-	if (room && room._id && needToBeRedirect.includes(currentRouteState.path)) {
+	const needToBeRedirect = () => ['/', '/home'].includes(FlowRouter.current().path);
+
+	Tracker.autorun((c) => {
+		const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
+
+		if (!needToBeRedirect()) {
+			return c.stop();
+		}
+
+		if (!firstChannelAfterLogin) {
+			return c.stop();
+		}
+
+		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+
+		if (!room) {
+			return;
+		}
+
+		c.stop();
 		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
-	}
+	});
 };
 
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-	lazyloadtick();
 	redirectToDefaultChannelIfNeeded();
 
 	return Meteor.defer(() => menu.updateUnreadBars());

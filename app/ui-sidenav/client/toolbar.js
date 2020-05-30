@@ -35,39 +35,33 @@ const getFromServer = (cb, type) => {
 			return false;
 		}
 
+		let exactUser = null;
+		let exactRoom = null;
+		if (results.users[0] && results.users[0].username === currentFilter) {
+			exactUser = results.users.shift();
+		}
+		if (results.rooms[0] && results.rooms[0].username === currentFilter) {
+			exactRoom = results.rooms.shift();
+		}
+
 		const resultsFromServer = [];
-		const usersLength = results.users.length;
-		const roomsLength = results.rooms.length;
 
-		if (usersLength) {
-			for (let i = 0; i < usersLength; i++) {
-				resultsFromServer.push({
-					_id: results.users[i]._id,
-					t: 'd',
-					name: results.users[i].username,
-					fname: results.users[i].name,
-				});
-			}
-		}
+		const roomFilter = (room) => !resultsFromClient.find((item) => [item.rid, item._id].includes(room._id));
+		const userMap = (user) => ({
+			_id: user._id,
+			t: 'd',
+			name: user.username,
+			fname: user.name,
+		});
 
-		if (roomsLength) {
-			for (let i = 0; i < roomsLength; i++) {
-				const alreadyOnClient = resultsFromClient.find((item) => item._id === results.rooms[i]._id);
-				if (alreadyOnClient) {
-					continue;
-				}
+		resultsFromServer.push(...results.users.map(userMap));
+		resultsFromServer.push(...results.rooms.filter(roomFilter));
 
-				resultsFromServer.push({
-					_id: results.rooms[i]._id,
-					t: results.rooms[i].t,
-					name: results.rooms[i].name,
-					lastMessage: results.rooms[i].lastMessage,
-				});
-			}
-		}
-
-		if (resultsFromServer.length) {
-			cb(resultsFromClient.concat(resultsFromServer));
+		if (resultsFromServer.length || exactUser || exactRoom) {
+			exactRoom = exactRoom ? [roomFilter(exactRoom)] : [];
+			exactUser = exactUser ? [userMap(exactUser)] : [];
+			const combinedResults = exactUser.concat(exactRoom, resultsFromClient, resultsFromServer);
+			cb(combinedResults);
 		}
 	});
 };
@@ -93,7 +87,6 @@ Template.toolbar.helpers({
 	},
 	popupConfig() {
 		const config = {
-			cls: 'search-results-list',
 			collection: Meteor.userId() ? Subscriptions : Rooms,
 			template: 'toolbarSearchList',
 			sidebar: true,

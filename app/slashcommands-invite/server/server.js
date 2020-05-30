@@ -87,4 +87,5 @@ function Invite(command, params, item) {
 slashCommands.add('invite', Invite, {
 	description: 'Invite_user_to_join_channel',
 	params: '@username',
+	permission: 'add-user-to-joined-room',
 });

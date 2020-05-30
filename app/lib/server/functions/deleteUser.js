@@ -1,17 +1,40 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { FileUpload } from '../../../file-upload';
-import { Users, Subscriptions, Messages, Rooms, Integrations, FederationPeers } from '../../../models';
-import { hasRole, getUsersInRole } from '../../../authorization';
-import { settings } from '../../../settings';
-import { Notifications } from '../../../notifications';
-import { getConfig } from '../../../federation/server/config';
+import { FileUpload } from '../../../file-upload/server';
+import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models/server';
+import { hasRole, getUsersInRole } from '../../../authorization/server';
+import { settings } from '../../../settings/server';
+import { Notifications } from '../../../notifications/server';
+import { updateGroupDMsName } from './updateGroupDMsName';
+
+const bulkRoomCleanUp = (rids) => {
+	// no bulk deletion for files
+	rids.forEach((rid) => FileUpload.removeFilesByRoomId(rid));
+
+	return Promise.await(Promise.all([
+		Subscriptions.removeByRoomIds(rids),
+		Messages.removeByRoomIds(rids),
+		Rooms.removeByIds(rids),
+	]));
+};
 
 export const deleteUser = function(userId) {
 	const user = Users.findOneById(userId, {
-		fields: { username: 1, avatarOrigin: 1 },
+		fields: { username: 1, avatarOrigin: 1, federation: 1 },
 	});
+
+	if (!user) {
+		return;
+	}
+
+	if (user.federation) {
+		const existingSubscriptions = Subscriptions.find({ 'u._id': user._id }).count();
+
+		if (existingSubscriptions > 0) {
+			throw new Meteor.Error('FEDERATION_Error_user_is_federated_on_rooms');
+		}
+	}
 
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
@@ -71,22 +94,23 @@ export const deleteUser = function(userId) {
 				break;
 		}
 
-		roomCache.forEach((roomData) => {
+		const roomIds = roomCache.filter((roomData) => {
 			if (roomData.subscribers === null && roomData.t !== 'd' && roomData.t !== 'c') {
 				roomData.subscribers = Subscriptions.findByRoomId(roomData.rid).count();
 			}
 
-			// Remove DMs and non-channel rooms with only 1 user (the one being deleted)
-			if (roomData.t === 'd' || (roomData.t !== 'c' && roomData.subscribers === 1)) {
-				Subscriptions.removeByRoomId(roomData.rid);
-				Messages.removeFilesByRoomId(roomData.rid);
-				Messages.removeByRoomId(roomData.rid);
-				Rooms.removeById(roomData.rid);
-			}
-		});
+			// Remove non-channel rooms with only 1 user (the one being deleted)
+			return roomData.t !== 'c' && roomData.subscribers === 1;
+		}).map(({ rid }) => rid);
+
+		Rooms.find1On1ByUserId(user._id, { fields: { _id: 1 } }).forEach(({ _id }) => roomIds.push(_id));
+
+		bulkRoomCleanUp(roomIds);
+
+		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username); // Remove direct rooms with the user
+		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions
-		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
@@ -97,9 +121,12 @@ export const deleteUser = function(userId) {
 		Notifications.notifyLogged('Users:Deleted', { userId });
 	}
 
-	Users.removeById(userId); // Remove user from users database
+	// Remove user from users database
+	Users.removeById(userId);
 
-	// Refresh the peers list
-	const { peer: { domain: localPeerDomain } } = getConfig();
-	FederationPeers.refreshPeers(localPeerDomain);
+	// update name and fname of group direct messages
+	updateGroupDMsName(user);
+
+	// Refresh the servers list
+	FederationServers.refreshServers();
 };

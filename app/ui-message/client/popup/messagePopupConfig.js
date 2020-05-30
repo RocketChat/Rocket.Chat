@@ -218,7 +218,7 @@ Template.messagePopupConfig.helpers({
 						{
 							limit: 5,
 							sort: { ts: -1 },
-						}
+						},
 					)
 					.fetch();
 
@@ -246,7 +246,7 @@ Template.messagePopupConfig.helpers({
 								},
 								{
 									fields: { name: 1 },
-								}
+								},
 							)
 							.map(({ name }) => name);
 						const newItems = Users
@@ -263,7 +263,7 @@ Template.messagePopupConfig.helpers({
 										status: 1,
 									},
 									limit: 5 - usernamesAlreadyFetched.length,
-								}
+								},
 							)
 							.fetch()
 							.map(({ username, name, status }) => ({

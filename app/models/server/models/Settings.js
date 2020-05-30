@@ -58,7 +58,7 @@ export class Settings extends Base {
 			filter._id = { $in: ids };
 		}
 
-		return this.find(filter, { fields: { _id: 1, value: 1 } });
+		return this.find(filter, { fields: { _id: 1, value: 1, editor: 1 } });
 	}
 
 	findNotHiddenPublicUpdatedAfter(updatedAt) {
@@ -70,7 +70,7 @@ export class Settings extends Base {
 			},
 		};
 
-		return this.find(filter, { fields: { _id: 1, value: 1 } });
+		return this.find(filter, { fields: { _id: 1, value: 1, editor: 1 } });
 	}
 
 	findNotHiddenPrivate() {
@@ -162,6 +162,40 @@ export class Settings extends Base {
 		};
 
 		const update = { $set: options };
+
+		return this.update(query, update);
+	}
+
+	addOptionValueById(_id, option = {}) {
+		const query = {
+			blocked: { $ne: true },
+			_id,
+		};
+
+		const { key, i18nLabel } = option;
+		const update = {
+			$addToSet: {
+				values: {
+					key,
+					i18nLabel,
+				},
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	removeOptionValueByIdAndKey(_id, key) {
+		const query = {
+			blocked: { $ne: true },
+			_id,
+		};
+
+		const update = {
+			$pull: {
+				values: { key },
+			},
+		};
 
 		return this.update(query, update);
 	}

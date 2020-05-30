@@ -1,19 +1,19 @@
-import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 
 import { DateFormat } from '../../../lib';
 import { settings } from '../../../settings';
 import { Markdown } from '../../../markdown/client';
-import { SnippetedMessages } from '../lib/collections';
+import { APIClient } from '../../../utils/client';
 
 Template.snippetPage.helpers({
 	snippet() {
-		return SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
+		return Template.instance().message.get();
 	},
 	snippetContent() {
-		const message = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
+		const message = Template.instance().message.get();
 		if (message === undefined) {
 			return null;
 		}
@@ -22,22 +22,23 @@ Template.snippetPage.helpers({
 		return markdown.tokens[0].text;
 	},
 	date() {
-		const snippet = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
+		const snippet = Template.instance().message.get();
 		if (snippet !== undefined) {
 			return moment(snippet.ts).format(settings.get('Message_DateFormat'));
 		}
 	},
 	time() {
-		const snippet = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
+		const snippet = Template.instance().message.get();
 		if (snippet !== undefined) {
 			return DateFormat.formatTime(snippet.ts);
 		}
 	},
 });
 
-Template.snippetPage.onCreated(function() {
+Template.snippetPage.onCreated(async function() {
 	const snippetId = FlowRouter.getParam('snippetId');
-	this.autorun(function() {
-		Meteor.subscribe('snippetedMessage', snippetId);
-	});
+	this.message = new ReactiveVar({});
+
+	const { message } = await APIClient.v1.get(`chat.getSnippetedMessageById?messageId=${ snippetId }`);
+	this.message.set(message);
 });

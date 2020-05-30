@@ -11,7 +11,7 @@ import EventEmitter from 'wolfy87-eventemitter';
 import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../ui-utils/client/config';
-
+import { callMethod } from '../../../ui-utils/client/lib/callMethod';
 
 const fromEntries = Object.fromEntries || function fromEntries(iterable) {
 	return [...iterable].reduce((obj, { 0: key, 1: val }) => Object.assign(obj, { [key]: val }), {});
@@ -25,8 +25,6 @@ const wrap = (fn) => (...args) => new Promise((resolve, reject) => {
 		return resolve(result);
 	});
 });
-
-const call = wrap(Meteor.call);
 
 const localforageGetItem = wrap(localforage.getItem);
 
@@ -47,13 +45,13 @@ class CachedCollectionManagerClass extends EventEmitter {
 		// on first connection the `reconnect` callbacks will run
 
 		Tracker.autorun(() => {
-			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DICONNECTION, LISTENING_RECONNECTIONS] = [0, 1, 2];
+			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DISCONNECTION, LISTENING_RECONNECTIONS] = [0, 1, 2];
 			this.step = this.step || WAITING_FIRST_CONNECTION;
 			const { connected } = Meteor.status();
 			switch (this.step) {
 				case WAITING_FIRST_CONNECTION:
 					return !connected || this.step++;
-				case WAITING_FIRST_DICONNECTION:
+				case WAITING_FIRST_DISCONNECTION:
 					return connected || this.step++;
 				case LISTENING_RECONNECTIONS:
 					return connected && this.emit('reconnect');
@@ -122,31 +120,29 @@ const log = (...args) => console.log(`CachedCollection ${ this.name } =>`, ...ar
 
 export class CachedCollection extends EventEmitter {
 	constructor({
-		collection,
+		collection = new Mongo.Collection(null),
 		name,
-		methodName,
-		syncMethodName,
-		eventName,
+		methodName = `${ name }/get`,
+		syncMethodName = `${ name }/get`,
+		eventName = `${ name }-changed`,
 		eventType = 'onUser',
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
-		useCache = true,
-		version = 8,
+		version = 11,
 		maxCacheTime = 60 * 60 * 24 * 30,
 		onSyncData = (/* action, record */) => {},
 	}) {
 		super();
-		this.collection = collection || new Mongo.Collection(null);
+		this.collection = collection;
 
 		this.ready = new ReactiveVar(false);
 		this.name = name;
-		this.methodName = methodName || `${ name }/get`;
-		this.syncMethodName = syncMethodName || `${ name }/get`;
-		this.eventName = eventName || `${ name }-changed`;
+		this.methodName = methodName;
+		this.syncMethodName = syncMethodName;
+		this.eventName = eventName;
 		this.eventType = eventType;
 		this.useSync = useSync;
-		this.useCache = useCache;
 		this.listenChangesForLoggedUsersOnly = listenChangesForLoggedUsersOnly;
 		this.version = version;
 		this.userRelated = userRelated;
@@ -199,11 +195,11 @@ export class CachedCollection extends EventEmitter {
 			callbacks.run(`cachedCollection-loadFromCache-${ this.name }`, record);
 			// this.collection.direct.insert(record);
 
-			if (record._updatedAt) {
+			if (!record._updatedAt) {
 				return;
 			}
-
 			const _updatedAt = new Date(record._updatedAt);
+			record._updatedAt = _updatedAt;
 
 			if (_updatedAt > this.updatedAt) {
 				this.updatedAt = _updatedAt;
@@ -221,7 +217,7 @@ export class CachedCollection extends EventEmitter {
 	async loadFromServer() {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
-		const data = await call(this.methodName);
+		const data = await callMethod(this.methodName);
 		this.log(`${ data.length } records loaded from server`);
 		data.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromServer-${ this.name }`, record, 'changed');
@@ -309,7 +305,7 @@ export class CachedCollection extends EventEmitter {
 	}
 
 	async sync() {
-		if (this.updatedAt.valueOf() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
+		if (!this.updatedAt || this.updatedAt.valueOf() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
 			return false;
 		}
 
@@ -318,7 +314,7 @@ export class CachedCollection extends EventEmitter {
 
 		this.log(`syncing from ${ this.updatedAt }`);
 
-		const data = await call(this.syncMethodName, this.updatedAt);
+		const data = await callMethod(this.syncMethodName, this.updatedAt);
 		let changes = [];
 
 		if (data.update && data.update.length > 0) {
@@ -357,7 +353,7 @@ export class CachedCollection extends EventEmitter {
 				this.collection.direct.upsert({ _id }, recordData);
 			}
 			if (actionTime > this.updatedAt) {
-				this.updatedAt = record._updatedAt;
+				this.updatedAt = actionTime;
 			}
 			this.onSyncData(action, record);
 		}

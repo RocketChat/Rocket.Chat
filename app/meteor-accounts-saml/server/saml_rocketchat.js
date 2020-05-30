@@ -62,6 +62,19 @@ Meteor.methods({
 			multiline: true,
 			i18nLabel: 'SAML_Custom_Public_Cert',
 		});
+		settings.add(`SAML_Custom_${ name }_signature_validation_type`, 'All', {
+			type: 'select',
+			values: [
+				{ key: 'Response', i18nLabel: 'SAML_Custom_signature_validation_response' },
+				{ key: 'Assertion', i18nLabel: 'SAML_Custom_signature_validation_assertion' },
+				{ key: 'Either', i18nLabel: 'SAML_Custom_signature_validation_either' },
+				{ key: 'All', i18nLabel: 'SAML_Custom_signature_validation_all' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_signature_validation_type',
+			i18nDescription: 'SAML_Custom_signature_validation_type_description',
+		});
 		settings.add(`SAML_Custom_${ name }_private_key`, '', {
 			type: 'string',
 			group: 'SAML',
@@ -87,18 +100,6 @@ Meteor.methods({
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
-		});
-		settings.add(`SAML_Custom_${ name }_email_field`, 'email', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_EMail_Field',
-		});
-		settings.add(`SAML_Custom_${ name }_username_field`, 'username', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Username_Field',
 		});
 		settings.add(`SAML_Custom_${ name }_generate_username`, false, {
 			type: 'boolean',
@@ -159,6 +160,57 @@ Meteor.methods({
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Custom_Authn_Context',
+			i18nDescription: 'SAML_Custom_Authn_Context_description',
+		});
+		settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "cn": "name"}', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_user_data_fieldmap',
+			i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
+		});
+		settings.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
+			type: 'select',
+			values: [
+				{ key: 'better', i18nLabel: 'Better' },
+				{ key: 'exact', i18nLabel: 'Exact' },
+				{ key: 'maximum', i18nLabel: 'Maximum' },
+				{ key: 'minimum', i18nLabel: 'Minimum' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
+		});
+
+		settings.add(`SAML_Custom_${ name }_default_user_role`, 'user', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Default_User_Role',
+			i18nDescription: 'SAML_Default_User_Role_Description',
+		});
+		settings.add(`SAML_Custom_${ name }_role_attribute_name`, '', {
+			type: 'string',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Role_Attribute_Name',
+			i18nDescription: 'SAML_Role_Attribute_Name_Description',
+		});
+
+		settings.add(`SAML_Custom_${ name }_role_attribute_sync`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Role_Attribute_Sync',
+			i18nDescription: 'SAML_Role_Attribute_Sync_Description',
+		});
+
+		settings.add(`SAML_Custom_${ name }_allowed_clock_drift`, 0, {
+			type: 'int',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Allowed_Clock_Drift',
+			i18nDescription: 'SAML_Allowed_Clock_Drift_Description',
 		});
 	},
 });
@@ -181,9 +233,7 @@ const getSamlConfigs = function(service) {
 		},
 		entryPoint: settings.get(`${ service.key }_entry_point`),
 		idpSLORedirectURL: settings.get(`${ service.key }_idp_slo_redirect_url`),
-		usernameField: settings.get(`${ service.key }_username_field`),
 		usernameNormalize: settings.get(`${ service.key }_username_normalize`),
-		emailField: settings.get(`${ service.key }_email_field`),
 		immutableProperty: settings.get(`${ service.key }_immutable_property`),
 		generateUsername: settings.get(`${ service.key }_generate_username`),
 		debug: settings.get(`${ service.key }_debug`),
@@ -192,12 +242,19 @@ const getSamlConfigs = function(service) {
 		issuer: settings.get(`${ service.key }_issuer`),
 		logoutBehaviour: settings.get(`${ service.key }_logout_behaviour`),
 		customAuthnContext: settings.get(`${ service.key }_custom_authn_context`),
+		authnContextComparison: settings.get(`${ service.key }_authn_context_comparison`),
+		defaultUserRole: settings.get(`${ service.key }_default_user_role`),
+		roleAttributeName: settings.get(`${ service.key }_role_attribute_name`),
+		roleAttributeSync: settings.get(`${ service.key }_role_attribute_sync`),
 		secret: {
 			privateKey: settings.get(`${ service.key }_private_key`),
 			publicCert: settings.get(`${ service.key }_public_cert`),
 			// People often overlook the instruction to remove the header and footer of the certificate on this specific setting, so let's do it for them.
 			cert: normalizeCert(settings.get(`${ service.key }_cert`)),
 		},
+		signatureValidationType: settings.get(`${ service.key }_signature_validation_type`),
+		userDataFieldMap: settings.get(`${ service.key }_user_data_fieldmap`),
+		allowedClockDrift: settings.get(`${ service.key }_allowed_clock_drift`),
 	};
 };
 
@@ -227,10 +284,12 @@ const configureSamlService = function(samlConfigs) {
 	Accounts.saml.settings.nameOverwrite = samlConfigs.nameOverwrite;
 	Accounts.saml.settings.mailOverwrite = samlConfigs.mailOverwrite;
 	Accounts.saml.settings.immutableProperty = samlConfigs.immutableProperty;
-	Accounts.saml.settings.emailField = samlConfigs.emailField;
-	Accounts.saml.settings.usernameField = samlConfigs.usernameField;
+	Accounts.saml.settings.userDataFieldMap = samlConfigs.userDataFieldMap;
 	Accounts.saml.settings.usernameNormalize = samlConfigs.usernameNormalize;
 	Accounts.saml.settings.debug = samlConfigs.debug;
+	Accounts.saml.settings.defaultUserRole = samlConfigs.defaultUserRole;
+	Accounts.saml.settings.roleAttributeName = samlConfigs.roleAttributeName;
+	Accounts.saml.settings.roleAttributeSync = samlConfigs.roleAttributeSync;
 
 	return {
 		provider: samlConfigs.clientConfig.provider,
@@ -241,6 +300,12 @@ const configureSamlService = function(samlConfigs) {
 		privateCert,
 		privateKey,
 		customAuthnContext: samlConfigs.customAuthnContext,
+		authnContextComparison: samlConfigs.authnContextComparison,
+		defaultUserRole: samlConfigs.defaultUserRole,
+		roleAttributeName: samlConfigs.roleAttributeName,
+		roleAttributeSync: samlConfigs.roleAttributeSync,
+		allowedClockDrift: samlConfigs.allowedClockDrift,
+		signatureValidationType: samlConfigs.signatureValidationType,
 	};
 };
 

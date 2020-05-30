@@ -1,16 +1,34 @@
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Subscriptions, Messages } from '../../../models';
+import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../callbacks';
+import { Messages, Rooms, Subscriptions } from '../../../models';
+import { RoomMemberActions, roomTypes } from '../../../utils/server';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
 	const room = Rooms.findOneById(rid);
 
+	const roomConfig = roomTypes.getConfig(room.t);
+	if (!roomConfig.allowMemberAction(room, RoomMemberActions.JOIN) && !roomConfig.allowMemberAction(room, RoomMemberActions.INVITE)) {
+		return;
+	}
+
 	// Check if user is already in room
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	if (subscription) {
 		return;
+	}
+
+	try {
+		Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter));
+	} catch (error) {
+		if (error instanceof AppsEngineException) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
@@ -20,6 +38,14 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		// Keep the current event
 		callbacks.run('beforeJoinRoom', user, room);
 	}
+
+	Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter).catch((error) => {
+		if (error instanceof AppsEngineException) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}));
 
 	Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
@@ -53,6 +79,8 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 
 			// Keep the current event
 			callbacks.run('afterJoinRoom', user, room);
+
+			Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, user, inviter);
 		});
 	}
 
