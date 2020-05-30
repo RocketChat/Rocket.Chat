@@ -1,11 +1,12 @@
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { slashCommands } from '../../../utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { toolbarSearch } from '../../../ui-sidenav';
-import _ from 'underscore';
+import './messagePopupSlashCommandPreview.html';
 
 const keys = {
 	TAB: 9,
@@ -24,7 +25,7 @@ function getCursorPosition(input) {
 
 	if (input.selectionStart) {
 		return input.selectionStart;
-	} else if (document.selection) {
+	} if (document.selection) {
 		input.focus();
 		const sel = document.selection.createRange();
 		const selLen = document.selection.createRange().text.length;
@@ -47,11 +48,14 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 	this.selectorRegex = /(\/[\w\d\S]+ )([^]*)$/;
 	this.replaceRegex = /(\/[\w\d\S]+ )[^]*$/; // WHAT'S THIS
 
+	this.dragging = false;
+
 	const template = this;
 	template.fetchPreviews = _.debounce(function _previewFetcher(cmd, args) {
 		const command = cmd;
 		const params = args;
-		Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid: Session.get('openedRoom') } }, function(err, preview) {
+		const { rid, tmid } = template.data;
+		Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid, tmid } }, function(err, preview) {
 			if (err) {
 				return;
 			}
@@ -101,7 +105,8 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 			return;
 		}
 
-		Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid: Session.get('openedRoom') } }, item, function(err) {
+		const { rid, tmid } = template.data;
+		Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid, tmid } }, item, function(err) {
 			if (err) {
 				console.warn(err);
 			}
@@ -129,7 +134,8 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 		// Ensure the command they're typing actually exists
 		// And it provides a command preview
 		// And if it provides a permission to check, they have permission to run the command
-		if (!command || !command.providesPreview || (command.permission && !hasAtLeastOnePermission(command.permission, Session.get('openedRoom')))) {
+		const { rid } = template.data;
+		if (!command || !command.providesPreview || (command.permission && !hasAtLeastOnePermission(command.permission, rid))) {
 			template.open.set(false);
 			return;
 		}
@@ -277,7 +283,7 @@ Template.messagePopupSlashCommandPreview.onDestroyed(function() {
 });
 
 Template.messagePopupSlashCommandPreview.events({
-	'mouseenter .popup-item'(e) {
+	'mouseenter .popup-item, mousedown .popup-item, touchstart .popup-item'(e) {
 		if (e.currentTarget.className.includes('selected')) {
 			return;
 		}
@@ -296,8 +302,18 @@ Template.messagePopupSlashCommandPreview.events({
 	},
 	'mouseup .popup-item, touchend .popup-item'() {
 		const template = Template.instance();
+		if (template.dragging) {
+			template.dragging = false;
+			return;
+		}
+
 		template.clickingItem = false;
 		template.enterKeyAction();
+	},
+	'touchmove .popup-item'(e) {
+		e.stopPropagation();
+		const template = Template.instance();
+		template.dragging = true;
 	},
 });
 

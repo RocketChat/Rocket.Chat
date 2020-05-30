@@ -1,10 +1,6 @@
 import './messageAttachment.html';
 import './messageAttachment';
 import './renderField.html';
-import './renderField';
+import './stylesheets/messageAttachments.css';
 
-import { registerFieldTemplate } from './renderField';
-
-export {
-	registerFieldTemplate,
-};
+export { registerFieldTemplate } from './renderField';

@@ -5,10 +5,11 @@
 //  files: ['i3nc9l3mn']
 // }
 import _ from 'underscore';
+import { UploadFS } from 'meteor/jalik:ufs';
+
 import * as Mailer from '../../../mailer';
 import { Uploads } from '../../../models';
 import { settings } from '../../../settings';
-import { UploadFS } from 'meteor/jalik:ufs';
 import { smarsh } from '../lib/rocketchat';
 
 smarsh.sendEmail = (data) => {

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { t } from '../../../utils';
 import { modal } from '../../../ui-utils';
 import { settings } from '../../../settings';
@@ -11,7 +12,7 @@ Meteor.startup(function() {
 		if (!siteUrl || (Meteor.userId() == null)) {
 			return;
 		}
-		if (hasRole(Meteor.userId(), 'admin') === false || Meteor.settings.public.sandstorm) {
+		if (hasRole(Meteor.userId(), 'admin') === false) {
 			return c.stop();
 		}
 		Meteor.setTimeout(function() {

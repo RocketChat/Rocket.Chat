@@ -1,33 +1,38 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { Rooms, Subscriptions } from '../../models';
+
+import { roomTypes } from '../../utils/client';
+import { Rooms } from '../../models';
 import { MessageAction } from '../../ui-utils';
+import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { EmojiPicker } from '../../emoji';
-import { tooltip } from '../../tooltip';
+import { tooltip } from '../../ui/client/components/tooltip';
 
 Template.room.events({
 	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
-
+		const { msg: { rid, _id: mid } } = messageArgs(data);
 		const user = Meteor.user();
-		const room = Rooms.findOne({ _id: data._arguments[1].rid });
+		const room = Rooms.findOne({ _id: rid });
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+		if (roomTypes.readOnly(room._id, user._id)) {
 			return false;
 		}
 
 		EmojiPicker.open(event.currentTarget, (emoji) => {
-			Meteor.call('setReaction', `:${ emoji }:`, data._arguments[1]._id);
+			Meteor.call('setReaction', `:${ emoji }:`, mid);
 		});
 	},
 
 	'click .reactions > li:not(.add-reaction)'(event) {
 		event.preventDefault();
+
 		const data = Blaze.getData(event.currentTarget);
-		Meteor.call('setReaction', $(event.currentTarget).data('emoji'), data._arguments[1]._id, () => {
+		const { msg: { _id: mid } } = messageArgs(data);
+		Meteor.call('setReaction', $(event.currentTarget).data('emoji'), mid, () => {
 			tooltip.hide();
 		});
 	},
@@ -47,32 +52,37 @@ Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'reaction-message',
 		icon: 'add-reaction',
-		label: 'Reactions',
+		label: 'Add_Reaction',
 		context: [
 			'message',
 			'message-mobile',
+			'threads',
 		],
 		action(event) {
 			event.stopPropagation();
-			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, this._arguments[1]._id));
+			const { msg } = messageArgs(this);
+			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, msg._id));
 		},
-		condition(message) {
-			const room = Rooms.findOne({ _id: message.rid });
-			const user = Meteor.user();
-
+		condition({ msg: message, u: user, room, subscription }) {
 			if (!room) {
 				return false;
-			} else if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+			}
+
+			if (!subscription) {
 				return false;
-			} else if (!Subscriptions.findOne({ rid: message.rid })) {
+			}
+
+			if (message.private) {
 				return false;
-			} else if (message.private) {
+			}
+
+			if (roomTypes.readOnly(room._id, user._id)) {
 				return false;
 			}
 
 			return true;
 		},
-		order: 22,
-		group: 'message',
+		order: -2,
+		group: ['message', 'menu'],
 	});
 });

@@ -1,5 +1,5 @@
 import limax from 'limax';
-import { Meteor } from 'meteor/meteor';
+
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 
@@ -16,7 +16,7 @@ function usernameIsAvaliable(username) {
 		return false;
 	}
 
-	return !Users.findOneByUsername(username);
+	return !Users.findOneByUsernameIgnoringCase(username);
 }
 
 
@@ -25,12 +25,7 @@ const name = (username) => (settings.get('UTF8_Names_Slugify') ? slug(username) 
 export function generateUsernameSuggestion(user) {
 	let usernames = [];
 
-	if (Meteor.settings.public.sandstorm) {
-		usernames.push(user.services.sandstorm.preferredHandle);
-	}
-
 	if (user.name) {
-
 		usernames.push(name(user.name));
 
 		const nameParts = user.name.split(' ');

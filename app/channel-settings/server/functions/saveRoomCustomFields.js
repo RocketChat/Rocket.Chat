@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+
 import { Rooms, Subscriptions } from '../../../models';
 
 export const saveRoomCustomFields = function(rid, roomCustomFields) {

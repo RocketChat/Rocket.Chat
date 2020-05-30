@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import s from 'underscore.string';
 
 Meteor.methods({
 	'livechat:saveIntegration'(values) {
@@ -17,8 +18,24 @@ Meteor.methods({
 			settings.updateById('Livechat_secret_token', s.trim(values.Livechat_secret_token));
 		}
 
+		if (typeof values.Livechat_webhook_on_start !== 'undefined') {
+			settings.updateById('Livechat_webhook_on_start', !!values.Livechat_webhook_on_start);
+		}
+
 		if (typeof values.Livechat_webhook_on_close !== 'undefined') {
 			settings.updateById('Livechat_webhook_on_close', !!values.Livechat_webhook_on_close);
+		}
+
+		if (typeof values.Livechat_webhook_on_chat_taken !== 'undefined') {
+			settings.updateById('Livechat_webhook_on_chat_taken', !!values.Livechat_webhook_on_chat_taken);
+		}
+
+		if (typeof values.Livechat_webhook_on_chat_queued !== 'undefined') {
+			settings.updateById('Livechat_webhook_on_chat_queued', !!values.Livechat_webhook_on_chat_queued);
+		}
+
+		if (typeof values.Livechat_webhook_on_forward !== 'undefined') {
+			settings.updateById('Livechat_webhook_on_forward', !!values.Livechat_webhook_on_forward);
 		}
 
 		if (typeof values.Livechat_webhook_on_offline_msg !== 'undefined') {
@@ -32,7 +49,5 @@ Meteor.methods({
 		if (typeof values.Livechat_webhook_on_agent_message !== 'undefined') {
 			settings.updateById('Livechat_webhook_on_agent_message', !!values.Livechat_webhook_on_agent_message);
 		}
-
-		return;
 	},
 });

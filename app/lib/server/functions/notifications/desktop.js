@@ -50,9 +50,10 @@ export function shouldNotifyDesktop({
 	hasMentionToHere,
 	isHighlighted,
 	hasMentionToUser,
+	hasReplyToThread,
 	roomType,
 }) {
-	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser) {
+	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
 
@@ -69,5 +70,5 @@ export function shouldNotifyDesktop({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser;
+	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser || hasReplyToThread;
 }

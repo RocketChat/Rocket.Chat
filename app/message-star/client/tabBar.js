@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { TabBar } from '../../ui-utils';
 
 Meteor.startup(function() {
@@ -8,6 +9,6 @@ Meteor.startup(function() {
 		i18nTitle: 'Starred_Messages',
 		icon: 'star',
 		template: 'starredMessages',
-		order: 3,
+		order: 10,
 	});
 });

@@ -1,0 +1,40 @@
+<template name="threads">
+	{{# with messageContext}}
+		{{#if hasNoThreads}}
+			<h2 class="thread-empty">{{_ "No_Threads"}}</h2>
+		{{/if}}
+		{{#unless doDotLoadThreads}}
+			<div class="thread-list js-scroll-threads">
+				<ul class="thread">
+					{{#each thread in threads}}
+						{{> message
+							groupable=false
+							msg=thread
+							room=room
+							hideRoles=true
+							subscription=subscription
+							customClass="thread-message"
+							settings=settings
+							templatePrefix='threads-'
+							u=u
+							showDateSeparator=false
+							context="threads"
+							timeAgo=true
+							ignored=false
+						}}
+					{{/each}}
+				</ul>
+			</div>
+			{{#if isLoading}}
+				<div class="load-more">
+					{{> loading}}
+				</div>
+			{{/if}}
+		{{/unless}}
+		{{#if msg}}
+		<div class="rc-user-info-container flex-nav">
+			{{> thread mainMessage=msg room=room subscription=subscription settings=settings close=close jump=jump }}
+		</div>
+		{{/if}}
+	{{/with}}
+</template>

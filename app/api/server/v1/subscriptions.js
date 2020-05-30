@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { Subscriptions } from '../../../models';
 import { API } from '../api';
 
@@ -17,7 +18,7 @@ API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('subscriptions/get', updatedSinceDate));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('subscriptions/get', updatedSinceDate); });
 
 		if (Array.isArray(result)) {
 			result = {
@@ -61,7 +62,7 @@ API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 		});
 
 		Meteor.runAsUser(this.userId, () =>
-			Meteor.call('readMessages', this.bodyParams.rid)
+			Meteor.call('readMessages', this.bodyParams.rid),
 		);
 
 		return API.v1.success();
@@ -76,11 +77,9 @@ API.v1.addRoute('subscriptions.unread', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () =>
-			Meteor.call('unreadMessages', firstUnreadMessage, roomId)
+			Meteor.call('unreadMessages', firstUnreadMessage, roomId),
 		);
 
 		return API.v1.success();
 	},
 });
-
-

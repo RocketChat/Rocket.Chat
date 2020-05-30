@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+
+import { createLiveStream, statusLiveStream, statusStreamLiveStream, getBroadcastStatus, setBroadcastStatus } from './functions/livestream';
 import { settings } from '../../settings';
 import { Rooms } from '../../models';
-import { createLiveStream, statusLiveStream, statusStreamLiveStream, getBroadcastStatus, setBroadcastStatus } from './functions/livestream';
 
 const selectLivestreamSettings = (user) => user && user.settings && user.settings.livestream;
 
@@ -24,14 +25,13 @@ Meteor.methods({
 
 		const { access_token, refresh_token } = livestreamSettings;
 
-		return await statusStreamLiveStream({
+		return statusStreamLiveStream({
 			id: streamId,
 			access_token,
 			refresh_token,
 			clientId: settings.get('Broadcasting_client_id'),
 			clientSecret: settings.get('Broadcasting_client_secret'),
 		});
-
 	},
 	async setLivestreamStatus({ broadcastId, status }) {
 		if (!broadcastId) {
@@ -50,7 +50,7 @@ Meteor.methods({
 
 		const { access_token, refresh_token } = livestreamSettings;
 
-		return await statusLiveStream({
+		return statusLiveStream({
 			id: broadcastId,
 			access_token,
 			refresh_token,
@@ -58,7 +58,6 @@ Meteor.methods({
 			clientId: settings.get('Broadcasting_client_id'),
 			clientSecret: settings.get('Broadcasting_client_secret'),
 		});
-
 	},
 	async livestreamGet({ rid }) {
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
@@ -79,14 +78,13 @@ Meteor.methods({
 		}
 
 		const { access_token, refresh_token } = livestreamSettings;
-		return await createLiveStream({
+		return createLiveStream({
 			room,
 			access_token,
 			refresh_token,
 			clientId: settings.get('Broadcasting_client_id'),
 			clientSecret: settings.get('Broadcasting_client_secret'),
 		});
-
 	},
 	async getBroadcastStatus({ broadcastId }) {
 		if (!broadcastId) {
@@ -105,7 +103,7 @@ Meteor.methods({
 
 		const { access_token, refresh_token } = livestreamSettings;
 
-		return await getBroadcastStatus({
+		return getBroadcastStatus({
 			id: broadcastId,
 			access_token,
 			refresh_token,
@@ -130,7 +128,7 @@ Meteor.methods({
 
 		const { access_token, refresh_token } = livestreamSettings;
 
-		return await setBroadcastStatus({
+		return setBroadcastStatus({
 			id: broadcastId,
 			access_token,
 			refresh_token,
@@ -138,6 +136,5 @@ Meteor.methods({
 			clientId: settings.get('Broadcasting_client_id'),
 			clientSecret: settings.get('Broadcasting_client_secret'),
 		});
-
 	},
 });

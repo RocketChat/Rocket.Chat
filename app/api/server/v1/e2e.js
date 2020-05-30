@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+
 import { API } from '../api';
 
 API.v1.addRoute('e2e.fetchMyKeys', { authRequired: true }, {
 	get() {
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('e2e.fetchMyKeys'));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('e2e.fetchMyKeys'); });
 
 		return API.v1.success(result);
 	},
@@ -15,7 +16,7 @@ API.v1.addRoute('e2e.getUsersOfRoomWithoutKey', { authRequired: true }, {
 		const { rid } = this.queryParams;
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('e2e.getUsersOfRoomWithoutKey', rid));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('e2e.getUsersOfRoomWithoutKey', rid); });
 
 		return API.v1.success(result);
 	},
@@ -33,12 +34,12 @@ API.v1.addRoute('e2e.setRoomKeyID', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('e2e.setUserPublicAndPivateKeys', { authRequired: true }, {
+API.v1.addRoute('e2e.setUserPublicAndPrivateKeys', { authRequired: true }, {
 	post() {
 		const { public_key, private_key } = this.bodyParams;
 
 		Meteor.runAsUser(this.userId, () => {
-			API.v1.success(Meteor.call('e2e.setUserPublicAndPivateKeys', {
+			API.v1.success(Meteor.call('e2e.setUserPublicAndPrivateKeys', {
 				public_key,
 				private_key,
 			}));

@@ -93,9 +93,10 @@ var JitsiMeetExternalAPI;
  * @param filmStripOnly if the value is true only the small videos will be
  * visible.
  * @param noSsl if the value is true https won't be used
+ * @param token if you need token authentication, then pass the token
  * @constructor
  */
-function JitsiMeetExternalAPI(domain, room_name, width, height, parentNode, configOverwrite, interfaceConfigOverwrite, noSsl) {
+function JitsiMeetExternalAPI(domain, room_name, width, height, parentNode, configOverwrite, interfaceConfigOverwrite, noSsl, token) {
     if (!width || width < MIN_WIDTH) width = MIN_WIDTH;
     if (!height || height < MIN_HEIGHT) height = MIN_HEIGHT;
 
@@ -114,6 +115,9 @@ function JitsiMeetExternalAPI(domain, room_name, width, height, parentNode, conf
     this.frameName = "jitsiConferenceFrame" + id;
     this.url = (noSsl ? "http" : "https") + "://" + domain + "/";
     if (room_name) this.url += room_name;
+    if (token) {
+        this.url += "?jwt=" + token;
+    }
     this.url += "#jitsi_meet_external_api_id=" + id;
 
     var key;

@@ -1,16 +1,17 @@
-import querystring from 'querystring';
-
 import { HTTP } from 'meteor/http';
-import { settings } from '../../../settings';
-import { Settings } from '../../../models';
+
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
+import { Settings } from '../../../models';
+import { settings } from '../../../settings';
+import { saveRegistrationData } from './saveRegistrationData';
 
 export function connectWorkspace(token) {
-	const { registeredWithWizard } = retrieveRegistrationStatus();
-	if (!registeredWithWizard) {
-		return false;
+	const { connectToCloud } = retrieveRegistrationStatus();
+	if (!connectToCloud) {
+		Settings.updateValueById('Register_Server', true);
 	}
 
 	const redirectUri = getRedirectUri();
@@ -31,6 +32,12 @@ export function connectWorkspace(token) {
 			data: regInfo,
 		});
 	} catch (e) {
+		if (e.response && e.response.data && e.response.data.error) {
+			console.error(`Failed to register with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		} else {
+			console.error(e);
+		}
+
 		return false;
 	}
 
@@ -40,34 +47,13 @@ export function connectWorkspace(token) {
 		return false;
 	}
 
-	Settings.updateValueById('Cloud_Workspace_Id', data.workspaceId);
-	Settings.updateValueById('Cloud_Workspace_Name', data.client_name);
-	Settings.updateValueById('Cloud_Workspace_Client_Id', data.client_id);
-	Settings.updateValueById('Cloud_Workspace_Client_Secret', data.client_secret);
-	Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', data.client_secret_expires_at);
-	Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', data.registration_client_uri);
+	Promise.await(saveRegistrationData(data));
 
 	// Now that we have the client id and secret, let's get the access token
-	let authTokenResult;
-	try {
-		authTokenResult = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
-			data: {},
-			query: querystring.stringify({
-				client_id: data.client_id,
-				client_secret: data.client_secret,
-				grant_type: 'client_credentials',
-				redirect_uri: redirectUri,
-			}),
-		});
-	} catch (e) {
+	const accessToken = getWorkspaceAccessToken(true);
+	if (!accessToken) {
 		return false;
 	}
-
-	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
-
-	Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
-	Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
 
 	return true;
 }

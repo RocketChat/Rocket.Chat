@@ -32,7 +32,6 @@ class Setting {
 
 		if (this._value === undefined) { this._value = this.defaultValue; }
 	}
-
 }
 
 /**
@@ -76,13 +75,11 @@ class Settings {
 }
 
 export default class SearchProvider {
-
 	/**
 	 * Create search provider, key must match /^[a-z0-9]+$/
 	 * @param key
 	 */
 	constructor(key) {
-
 		if (!key.match(/^[A-z0-9]+$/)) { throw new Error(`cannot instantiate provider: ${ key } does not match key-pattern`); }
 
 		SearchLogger.info(`create search provider ${ key }`);
@@ -174,4 +171,3 @@ export default class SearchProvider {
 		resolve();
 	}
 }
-

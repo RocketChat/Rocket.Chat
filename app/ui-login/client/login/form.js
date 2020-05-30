@@ -4,12 +4,13 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
-import { t, handleError } from '../../../utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { t, handleError } from '../../../utils';
 
 Template.loginForm.helpers({
 	userName() {
@@ -19,9 +20,8 @@ Template.loginForm.helpers({
 	namePlaceholder() {
 		if (settings.get('Accounts_RequireNameForSignUp')) {
 			return t('Name');
-		} else {
-			return t('Name_optional');
 		}
+		return t('Name_optional');
 	},
 	showFormLogin() {
 		return settings.get('Accounts_ShowFormLogin');
@@ -72,6 +72,9 @@ Template.loginForm.helpers({
 	manuallyApproveNewUsers() {
 		return settings.get('Accounts_ManuallyApproveNewUsers');
 	},
+	typedEmail() {
+		return s.trim(Template.instance().typedEmail);
+	},
 });
 
 Template.loginForm.events({
@@ -96,12 +99,11 @@ Template.loginForm.events({
 					if (err) {
 						handleError(err);
 						return instance.state.set('login');
-					} else {
-						instance.loading.set(false);
-						callbacks.run('userForgotPasswordEmailRequested');
-						toastr.success(t('If_this_email_is_registered'));
-						return instance.state.set('login');
 					}
+					instance.loading.set(false);
+					callbacks.run('userForgotPasswordEmailRequested');
+					toastr.success(t('If_this_email_is_registered'));
+					return instance.state.set('login');
 				});
 				return;
 			}
@@ -121,36 +123,38 @@ Template.loginForm.events({
 					return Meteor.loginWithPassword(s.trim(formData.email), formData.pass, function(error) {
 						if (error && error.error === 'error-invalid-email') {
 							return instance.state.set('wait-email-activation');
-						} else if (error && error.error === 'error-user-is-not-activated') {
+						} if (error && error.error === 'error-user-is-not-activated') {
 							return instance.state.set('wait-activation');
-						} else {
-							Session.set('forceLogin', false);
 						}
+						Session.set('forceLogin', false);
 					});
 				});
-			} else {
-				let loginMethod = 'loginWithPassword';
-				if (settings.get('LDAP_Enable')) {
-					loginMethod = 'loginWithLDAP';
-				}
-				if (settings.get('CROWD_Enable')) {
-					loginMethod = 'loginWithCrowd';
-				}
-				return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
-					instance.loading.set(false);
-					if (error != null) {
-						if (error.error === 'no-valid-email') {
-							instance.state.set('email-verification');
-						} else if (error.error === 'error-user-is-not-activated') {
-							toastr.error(t('Wait_activation_warning'));
-						} else {
-							toastr.error(t('User_not_found_or_incorrect_password'));
-						}
-						return;
-					}
-					Session.set('forceLogin', false);
-				});
 			}
+			let loginMethod = 'loginWithPassword';
+			if (settings.get('LDAP_Enable')) {
+				loginMethod = 'loginWithLDAP';
+			}
+			if (settings.get('CROWD_Enable')) {
+				loginMethod = 'loginWithCrowd';
+			}
+			return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
+				instance.loading.set(false);
+				if (error != null) {
+					if (error.error === 'error-user-is-not-activated') {
+						return toastr.error(t('Wait_activation_warning'));
+					} if (error.error === 'error-invalid-email') {
+						instance.typedEmail = formData.emailOrUsername;
+						return instance.state.set('email-verification');
+					} if (error.error === 'error-user-is-not-activated') {
+						toastr.error(t('Wait_activation_warning'));
+					} else if (error.error === 'error-app-user-is-not-allowed-to-login') {
+						toastr.error(t('App_user_not_allowed_to_login'));
+					} else {
+						return toastr.error(t('User_not_found_or_incorrect_password'));
+					}
+				}
+				Session.set('forceLogin', false);
+			});
 		}
 	},
 	'click .register'() {
@@ -169,7 +173,7 @@ Template.loginForm.events({
 
 Template.loginForm.onCreated(function() {
 	const instance = this;
-	this.customFields = new ReactiveVar;
+	this.customFields = new ReactiveVar();
 	this.loading = new ReactiveVar(false);
 	Tracker.autorun(() => {
 		const Accounts_CustomFields = settings.get('Accounts_CustomFields');
@@ -183,13 +187,19 @@ Template.loginForm.onCreated(function() {
 			return this.customFields.set(null);
 		}
 	});
-	if (Meteor.settings.public.sandstorm) {
-		this.state = new ReactiveVar('sandstorm');
-	} else if (Session.get('loginDefaultState')) {
+	if (Session.get('loginDefaultState')) {
 		this.state = new ReactiveVar(Session.get('loginDefaultState'));
 	} else {
 		this.state = new ReactiveVar('login');
 	}
+
+	Tracker.autorun(() => {
+		const registrationForm = settings.get('Accounts_RegistrationForm');
+		if (registrationForm === 'Disabled' && this.state.get() === 'register') {
+			this.state.set('login');
+		}
+	});
+
 	this.validSecretURL = new ReactiveVar(false);
 	const validateCustomFields = function(formObj, validationObj) {
 		const customFields = instance.customFields.get();
@@ -205,13 +215,16 @@ Template.loginForm.onCreated(function() {
 				}
 				const customField = customFields[field];
 				if (customField.required === true && !value) {
-					return validationObj[field] = t('Field_required');
+					validationObj[field] = t('Field_required');
+					return validationObj[field];
 				}
 				if ((customField.maxLength != null) && value.length > customField.maxLength) {
-					return validationObj[field] = t('Max_length_is', customField.maxLength);
+					validationObj[field] = t('Max_length_is', customField.maxLength);
+					return validationObj[field];
 				}
 				if ((customField.minLength != null) && value.length < customField.minLength) {
-					return validationObj[field] = t('Min_length_is', customField.minLength);
+					validationObj[field] = t('Min_length_is', customField.minLength);
+					return validationObj[field];
 				}
 			}
 		}
@@ -234,7 +247,7 @@ Template.loginForm.onCreated(function() {
 				validationObj.emailOrUsername = t('Invalid_email');
 			}
 		}
-		if (state !== 'forgot-password') {
+		if (state !== 'forgot-password' && state !== 'email-verification') {
 			if (!formObj.pass) {
 				validationObj.pass = t('Invalid_pass');
 			}
