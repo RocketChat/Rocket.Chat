@@ -307,7 +307,7 @@ export const FileUpload = {
 		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
 		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
 		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
-		const isAuthorizedByJWT = !settings.get('FileUpload_Enable_json_web_token_for_files') || (token && isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files')));
+		const isAuthorizedByJWT = settings.get('FileUpload_Enable_json_web_token_for_files') && token && isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
 		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
 	},
 	addExtensionTo(file) {
