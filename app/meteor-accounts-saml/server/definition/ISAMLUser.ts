@@ -14,4 +14,10 @@ export interface ISAMLUser {
 		idpSession: string;
 		nameID: string;
 	};
+
+	attributeList: Map<string, any>;
+	identifier: {
+		type: string;
+		attribute?: string;
+	};
 }

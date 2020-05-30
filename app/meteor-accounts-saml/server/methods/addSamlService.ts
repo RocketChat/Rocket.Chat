@@ -178,12 +178,13 @@ Meteor.methods({
 
 
 		// Data Mapping Settings
-		settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "cn": "name"}', {
+		settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "name": "cn"}', {
 			type: 'string',
 			group: 'SAML',
 			section: 'SAML_Section_5_Mapping',
 			i18nLabel: 'SAML_Custom_user_data_fieldmap',
 			i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
+			multiline: true,
 		});
 
 		// Advanced settings

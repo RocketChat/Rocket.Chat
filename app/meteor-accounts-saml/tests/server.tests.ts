@@ -244,7 +244,7 @@ describe('SAML', () => {
 
 	describe('[Response]', () => {
 		describe('[Response.validate]', () => {
-			it('should extract information from the response', () => {
+			it('should extract a profile from the response', () => {
 				const notBefore = new Date();
 				notBefore.setMinutes(notBefore.getMinutes() - 3);
 
@@ -278,9 +278,9 @@ describe('SAML', () => {
 				const { globalSettings } = SAMLUtils;
 
 				const fieldMap = {
-					anotherUsername: 'username',
-					singleEmail: 'email',
-					anotherName: 'name',
+					username: 'anotherUsername',
+					email: 'singleEmail',
+					name: 'anotherName',
 					customField1: 'customField1',
 					customField2: 'customField2',
 					customField3: 'customField3',
@@ -341,7 +341,7 @@ describe('SAML', () => {
 				const { globalSettings } = SAMLUtils;
 
 				const fieldMap = {
-					singleEmail: 'email',
+					email: 'singleEmail',
 				};
 
 				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
@@ -373,6 +373,9 @@ describe('SAML', () => {
 
 				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['user']);
 			});
+
+			// teste para RegEx e template
+			// teste para __identifier__
 		});
 	});
 });

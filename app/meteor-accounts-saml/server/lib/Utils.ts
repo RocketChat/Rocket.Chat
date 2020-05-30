@@ -1,11 +1,12 @@
 import zlib from 'zlib';
 
 import _ from 'underscore';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+// import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
+import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 
 
 // @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would cause )
@@ -199,8 +200,8 @@ export class SAMLUtils {
 		return cert.replace('-----BEGIN CERTIFICATE-----', '').replace('-----END CERTIFICATE-----', '').trim();
 	}
 
-	static getUserDataMapping(): Record<string, any> {
-		const { userDataFieldMap } = globalSettings;
+	static getUserDataMapping(): IUserDataMap {
+		const { userDataFieldMap, immutableProperty } = globalSettings;
 
 		let map: Record<string, any>;
 
@@ -210,83 +211,168 @@ export class SAMLUtils {
 			map = {};
 		}
 
-		let emailField = 'email';
-		let usernameField = 'username';
-		let nameField = 'cn';
-		const newMapping = new Map();
-		const regexes = new Map();
-
-		const applyField = function(samlFieldName: string, targetFieldName: string | {field: string; regex: string}): void {
-			if (typeof targetFieldName === 'object') {
-				regexes.set(targetFieldName.field, targetFieldName.regex);
-				targetFieldName = targetFieldName.field;
-			}
-
-			if (targetFieldName === 'email') {
-				emailField = samlFieldName;
-				return;
-			}
-
-			if (targetFieldName === 'username') {
-				usernameField = samlFieldName;
-				return;
-			}
-
-			if (targetFieldName === 'name') {
-				nameField = samlFieldName;
-				return;
-			}
-
-			// If it's neither of those, move it to the new object
-			newMapping.set(samlFieldName, map[samlFieldName]);
+		const parsedMap: IUserDataMap = {
+			customFields: new Map(),
+			attributeList: new Set(),
+			email: {
+				fieldName: 'email',
+			},
+			username: {
+				fieldName: 'username',
+			},
+			name: {
+				fieldName: 'cn',
+			},
+			identifier: {
+				type: '',
+			},
 		};
 
-		for (const field in map) {
-			if (!map.hasOwnProperty(field)) {
+		let identifier = immutableProperty.toLowerCase();
+
+		for (const spFieldName in map) {
+			if (!map.hasOwnProperty(spFieldName)) {
 				continue;
 			}
 
-			const targetFieldName = map[field];
+			const attribute = map[spFieldName];
+			if (typeof attribute !== 'string' && typeof attribute !== 'object') {
+				throw new Error('SAML User Map: Invalid configuration for ${ spFieldName } field.');
+			}
 
-			if (Array.isArray(targetFieldName)) {
-				for (const item of targetFieldName) {
-					applyField(field, item);
+			if (spFieldName === '__identifier__') {
+				if (typeof attribute !== 'string') {
+					throw new Error('SAML User Map: Invalid identifier.');
 				}
-			} else {
-				applyField(field, targetFieldName);
+
+				identifier = attribute;
+				continue;
+			}
+
+
+			let attributeMap: IAttributeMapping | null = null;
+
+			// If it's a complex type, let's check what's in it
+			if (typeof attribute === 'object') {
+				// A fieldName is mandatory for complex fields. If it's missing, let's skip this one.
+				if (!attribute.hasOwnProperty('fieldName') && !attribute.hasOwnProperty('fieldNames')) {
+					continue;
+				}
+
+				const fieldName = attribute.fieldName || attribute.fieldNames;
+				const { regex, template } = attribute;
+				// let attributeName: string;
+
+				if (Array.isArray(fieldName)) {
+					if (!fieldName.length) {
+						throw new Error(`SAML User Map: Invalid configuration for ${ spFieldName } field.`);
+					}
+
+					// attributeName = fieldName[0];
+					for (const idpFieldName of fieldName) {
+						parsedMap.attributeList.add(idpFieldName);
+					}
+				} else {
+					// attributeName = fieldName;
+					parsedMap.attributeList.add(fieldName);
+				}
+
+				if (regex && typeof regex !== 'string') {
+					throw new Error('SAML User Map: Invalid RegEx');
+				}
+
+				if (template && typeof template !== 'string') {
+					throw new Error('SAML User Map: Invalid Template');
+				}
+
+				attributeMap = {
+					fieldName,
+					...regex && { regex },
+					...template && { template },
+				};
+			} else if (typeof attribute === 'string') {
+				attributeMap = {
+					fieldName: attribute,
+				};
+				parsedMap.attributeList.add(attribute);
+			}
+
+			if (attributeMap) {
+				if (spFieldName === 'email' || spFieldName === 'username' || spFieldName === 'name') {
+					parsedMap[spFieldName] = attributeMap;
+				} else {
+					parsedMap.customFields.set(spFieldName, attributeMap);
+				}
 			}
 		}
 
-		return {
-			emailField,
-			usernameField,
-			nameField,
-			userDataFieldMap: newMapping,
-			regexes,
-		};
+		if (identifier) {
+			const defaultTypes = [
+				'email',
+				'username',
+			];
+
+			if (defaultTypes.includes(identifier)) {
+				parsedMap.identifier.type = identifier;
+			} else {
+				parsedMap.identifier.type = 'custom';
+				parsedMap.identifier.attribute = identifier;
+				parsedMap.attributeList.add(identifier);
+			}
+		}
+
+		return parsedMap;
 	}
 
-	static getProfileValue(profile: Record<string, any>, samlFieldName: string, regex: string): any {
-		const value = profile[samlFieldName];
+	static getProfileValue(profile: Record<string, any>, mapping: IAttributeMapping): any {
+		const values: Record<string, string> = {
+			regex: '',
+		};
+		const fieldNames = this.ensureArray<string>(mapping.fieldName);
 
-		if (!regex) {
-			return value;
+		let mainValue;
+		for (const fieldName of fieldNames) {
+			values[fieldName] = profile[fieldName];
+
+			if (!mainValue) {
+				mainValue = profile[fieldName];
+			}
 		}
 
-		if (!value || !value.match) {
-			return;
+		let shouldRunTemplate = false;
+		if (typeof mapping.template === 'string') {
+			// unless the regex result is used on the template, we process the template first
+			if (mapping.template.includes('__regex__')) {
+				shouldRunTemplate = true;
+			} else {
+				mainValue = this.fillTemplateData(mapping.template, values);
+			}
 		}
 
-		const match = value.match(new RegExp(regex));
-		if (!match || !match.length) {
-			return;
+		if (mapping.regex && mainValue && mainValue.match) {
+			let regexValue;
+			const match = mainValue.match(new RegExp(mapping.regex));
+			if (match && match.length) {
+				if (match.length >= 2) {
+					regexValue = match[1];
+				} else {
+					regexValue = match[0];
+				}
+			}
+
+			if (regexValue) {
+				values.regex = regexValue;
+				if (!shouldRunTemplate) {
+					mainValue = regexValue;
+				}
+			}
 		}
 
-		if (match.length >= 2) {
-			return match[1];
+		if (shouldRunTemplate && typeof mapping.template === 'string') {
+			mainValue = this.fillTemplateData(mapping.template, values);
 		}
 
-		return match[0];
+		return mainValue;
 	}
 
 	static convertArrayBufferToString(buffer: ArrayBuffer, encoding = 'utf8'): string {
@@ -311,10 +397,32 @@ export class SAMLUtils {
 	}
 
 	static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
-		const { emailField, usernameField, nameField, userDataFieldMap, regexes } = this.getUserDataMapping();
+		const userDataMap = this.getUserDataMapping();
 		const { defaultUserRole = 'user', roleAttributeName } = this.globalSettings;
 
-		const email = profile[emailField];
+		if (userDataMap.identifier.type === 'custom') {
+			if (!userDataMap.identifier.attribute) {
+				throw new Error('SAML User Data Map: invalid Identifier configuration received.');
+			}
+			if (!profile[userDataMap.identifier.attribute]) {
+				throw new Error(`SAML Profile did not have the expected identifier (${ userDataMap.identifier.attribute }).`);
+			}
+		}
+
+		const attributeList = new Map();
+		for (const attributeName of userDataMap.attributeList) {
+			if (profile[attributeName] === undefined) {
+				this.log(`SAML user profile is missing the attribute ${ attributeName }.`);
+				continue;
+			}
+			attributeList.set(attributeName, profile[attributeName]);
+		}
+
+		const email = this.getProfileValue(profile, userDataMap.email);
+		const profileUsername = this.getProfileValue(profile, userDataMap.username);
+		const name = this.getProfileValue(profile, userDataMap.name);
+
+		// Even if we're not using the email to identify the user, it is still mandatory because it's a mandatory information on Rocket.Chat
 		if (!email) {
 			throw new Error('SAML Profile did not contain an email address');
 		}
@@ -328,35 +436,34 @@ export class SAMLUtils {
 				nameID: profile.nameID,
 			},
 			emailList: this.ensureArray<string>(email),
-			fullName: this.getProfileValue(profile, nameField, regexes.name) || profile.displayName || profile.username,
+			fullName: name || profile.displayName || profile.username,
 			roles: this.ensureArray<string>(defaultUserRole.split(',')),
 			eppn: profile.eppn,
+			attributeList,
+			identifier: userDataMap.identifier,
 		};
 
-		if (profile[usernameField]) {
-			const profileUsername = this.getProfileValue(profile, usernameField, regexes.username);
-			if (profileUsername) {
-				userObject.username = this.normalizeUsername(profileUsername);
-			}
+		if (profileUsername) {
+			userObject.username = this.normalizeUsername(profileUsername);
 		}
 
 		if (roleAttributeName && profile[roleAttributeName]) {
 			userObject.roles = this.ensureArray<string>((profile[roleAttributeName] || '').split(','));
 		}
 
-		const languages = TAPi18n.getLanguages();
-		if (languages[profile.language]) {
-			userObject.language = profile.language;
-		}
+		// const languages = TAPi18n.getLanguages();
+		// if (languages[profile.language]) {
+		// 	userObject.language = profile.language;
+		// }
 
 		if (profile.channels) {
 			userObject.channels = profile.channels.split(',');
 		}
 
-		for (const [field, rcField] of userDataFieldMap) {
-			if (profile[field]) {
-				const value = this.getProfileValue(profile, field, regexes[rcField]);
-				userObject.customFields.set(rcField, value);
+		for (const [fieldName, customField] of userDataMap.customFields) {
+			const value = this.getProfileValue(profile, customField);
+			if (value) {
+				userObject.customFields.set(fieldName, value);
 			}
 		}
 

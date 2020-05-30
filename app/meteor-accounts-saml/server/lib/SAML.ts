@@ -315,21 +315,25 @@ export class SAML {
 		const escapeRegexp = (email: string): string => RegExp.escape(email);
 		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite } = SAMLUtils.globalSettings;
 
-		let eppnMatch = false;
+		let customIdentifierMatch = false;
+		let customIdentifierAttributeName: string | null = null;
 		let user = null;
 
-		// First, try searching by eppn
-		if (userObject.eppn) {
-			user = Users.findOne({
-				eppn: userObject.eppn,
-			});
+		// First, try searching by custom identifier
+		if (userObject.identifier.type === 'custom' && userObject.identifier.attribute && userObject.attributeList.has(userObject.identifier.attribute)) {
+			customIdentifierAttributeName = userObject.identifier.attribute;
+
+			// #ToDo: Find a better place to store this value and also update the migration to move the existing eppn value
+			const query: Record<string, any> = {};
+			query[customIdentifierAttributeName] = userObject.attributeList.get(customIdentifierAttributeName);
+			user = Users.findOne(query);
 
 			if (user) {
-				eppnMatch = true;
+				customIdentifierMatch = true;
 			}
 		}
 
-		// Second, try searching by username or email (according to the setting)
+		// Second, try searching by username or email (according to the immutableProperty setting)
 		if (!user) {
 			const expression = userObject.emailList.map((email) => `^${ escapeRegexp(email) }$`).join('|');
 			const emailRegex = new RegExp(expression, 'i');
@@ -376,14 +380,16 @@ export class SAML {
 			}
 		}
 
-		// If the user was not found through the eppn property, then update it
-		if (eppnMatch === false) {
+		// If the user was not found through the customIdentifier property, then update it's value
+		if (customIdentifierMatch === false && customIdentifierAttributeName) {
+			const updateData: Record<string, any> = {};
+			updateData[customIdentifierAttributeName] = userObject.attributeList.get(customIdentifierAttributeName);
+
+			// #ToDo: Find a better place to store this value and also update the migration to move the existing eppn value
 			Users.update({
 				_id: user._id,
 			}, {
-				$set: {
-					eppn: userObject.eppn,
-				},
+				$set: updateData,
 			});
 		}
 
@@ -404,7 +410,7 @@ export class SAML {
 		}
 
 		// Overwrite mail if needed
-		if (mailOverwrite === true && (eppnMatch === true || immutableProperty !== 'EMail')) {
+		if (mailOverwrite === true && (customIdentifierMatch === true || immutableProperty !== 'EMail')) {
 			updateData.emails = emails;
 		}
 
