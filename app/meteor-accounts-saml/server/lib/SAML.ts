@@ -111,7 +111,7 @@ export class SAML {
 
 			// Add a timeout to end the server response
 			timeoutHandler = setTimeout(() => {
-				// If we couldn't get a valid IdP url, let's redirect the user to our home so the browser doesn't hang on him.
+				// If we couldn't get a valid IdP url, let's redirect the user to our home so the browser doesn't hang on them.
 				redirect();
 			}, 5000);
 
@@ -153,10 +153,8 @@ export class SAML {
 
 	static processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
 		if (!req.query.SAMLResponse) {
-			SAMLUtils.log('-----RECEIVED PARAMS (Missing SAMLResponse)-----');
-			SAMLUtils.log(req.query);
-
-			throw new Error('Invalid LogoutResponse received. Additional information is available on the log if Debug mode is enabled.');
+			SAMLUtils.error('Invalid LogoutResponse, missing SAMLResponse', req.query);
+			throw new Error('Invalid LogoutResponse received.');
 		}
 
 		const serviceProvider = new SAMLServiceProvider(service);
@@ -405,8 +403,14 @@ export class SAML {
 			updateData[`customFields.${ customField }`] = value;
 		}
 
-		if (immutableProperty !== 'EMail') {
+		// Overwrite mail if needed
+		if (mailOverwrite === true && (eppnMatch === true || immutableProperty !== 'EMail')) {
 			updateData.emails = emails;
+		}
+
+		// Overwrite fullname if needed
+		if (nameOverwrite === true) {
+			updateData.name = userObject.fullName;
 		}
 
 		if (roleAttributeSync) {
@@ -421,28 +425,6 @@ export class SAML {
 
 		if (username) {
 			_setUsername(user._id, username);
-		}
-
-		// Overwrite fullname if needed
-		if (nameOverwrite === true) {
-			Users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					name: userObject.fullName,
-				},
-			});
-		}
-
-		// Overwrite mail if needed
-		if (mailOverwrite === true && (eppnMatch === true || immutableProperty !== 'EMail')) {
-			Users.update({
-				_id: user._id,
-			}, {
-				$set: {
-					emails,
-				},
-			});
 		}
 
 		// sending token along with the userId
