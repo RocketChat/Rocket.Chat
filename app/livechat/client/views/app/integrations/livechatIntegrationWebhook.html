@@ -30,9 +30,33 @@
 					</div>
 				</div>
 				<div class="input-line">
+					<label for="sendOnStart">
+						<input type="checkbox" name="sendOnStart" id="sendOnStart" value="1" checked="{{sendOnStartChecked}}">
+						{{_ "Send_request_on_chat_start"}}
+					</label>
+				</div>
+				<div class="input-line">
 					<label for="sendOnClose">
 						<input type="checkbox" name="sendOnClose" id="sendOnClose" value="1" checked="{{sendOnCloseChecked}}">
 						{{_ "Send_request_on_chat_close"}}
+					</label>
+				</div>
+				<div class="input-line">
+					<label for="sendOnChatTaken">
+						<input type="checkbox" name="sendOnChatTaken" id="sendOnChatTaken" value="1" checked="{{sendOnChatTakenChecked}}">
+						{{_ "Send_request_on_chat_taken"}}
+					</label>
+				</div>
+				<div class="input-line">
+					<label for="sendOnChatQueued">
+						<input type="checkbox" name="sendOnChatQueued" id="sendOnChatQueued" value="1" checked="{{sendOnChatQueuedChecked}}">
+						{{_ "Send_request_on_chat_queued"}}
+					</label>
+				</div>
+				<div class="input-line">
+					<label for="sendOnForward">
+						<input type="checkbox" name="sendOnForward" id="sendOnForward" value="1" checked="{{sendOnForwardChecked}}">
+						{{_ "Send_request_on_forwarding"}}
 					</label>
 				</div>
 				<div class="input-line">

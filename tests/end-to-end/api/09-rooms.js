@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
@@ -40,7 +42,7 @@ describe('[Rooms]', function() {
 	describe('/rooms.saveNotification:', () => {
 		let testChannel;
 		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: `channel.test.${ Date.now() }` })
+			createRoom({ type: 'c', name: `channel.test.${ Date.now() }-${ Math.random() }` })
 				.end((err, res) => {
 					testChannel = res.body.channel;
 					done();
@@ -56,7 +58,6 @@ describe('[Rooms]', function() {
 						emailNotifications: 'nothing',
 						audioNotificationValue: 'beep',
 						desktopNotifications: 'nothing',
-						desktopNotificationDuration: '2',
 						audioNotifications: 'all',
 						mobilePushNotifications: 'mentions',
 					},
@@ -72,7 +73,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.upload', () => {
 		let testChannel;
-		const testChannelName = `channel.test.upload.${ Date.now() }`;
+		const testChannelName = `channel.test.upload.${ Date.now() }-${ Math.random() }`;
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName })
 				.end((err, res) => {
@@ -138,7 +139,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.favorite', () => {
 		let testChannel;
-		const testChannelName = `channel.test.${ Date.now() }`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName })
 				.end((err, res) => {
@@ -620,7 +621,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.createDiscussion', () => {
 		let testChannel;
-		const testChannelName = `channel.test.${ Date.now() }`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
 		let messageSent;
 		before((done) => {
 			createRoom({ type: 'c', name: testChannelName })
@@ -806,7 +807,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.getDiscussions', () => {
 		let testChannel;
-		const testChannelName = `channel.test.getDiscussions${ Date.now() }`;
+		const testChannelName = `channel.test.getDiscussions${ Date.now() }-${ Math.random() }`;
 		let discussion;
 		before((done) => {
 			createRoom({ type: 'c', name: testChannelName })
@@ -824,7 +825,7 @@ describe('[Rooms]', function() {
 						});
 				});
 		});
-		after((done) => closeRoom({ type: 'p', roomId: discussion._id }).then(done));
+		after(() => closeRoom({ type: 'p', roomId: discussion._id }));
 		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', (done) => {
 			request.get(api('rooms.getDiscussions'))
 				.set(credentials)
