@@ -9,7 +9,7 @@ import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 
 
-// @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would cause )
+// @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would bring a lot of baggace with it's dependencies, affecting the unit tests)
 type NullableLogger = Logger | Null;
 
 
@@ -237,7 +237,7 @@ export class SAMLUtils {
 
 			const attribute = map[spFieldName];
 			if (typeof attribute !== 'string' && typeof attribute !== 'object') {
-				throw new Error('SAML User Map: Invalid configuration for ${ spFieldName } field.');
+				throw new Error(`SAML User Map: Invalid configuration for ${ spFieldName } field.`);
 			}
 
 			if (spFieldName === '__identifier__') {
