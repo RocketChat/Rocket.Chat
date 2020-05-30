@@ -506,6 +506,7 @@ export default class SlackAdapter {
 	addSlackChannel(rocketChID, slackChID) {
 		const ch = this.getSlackChannel(rocketChID);
 		if (ch == null) {
+			logger.slack.debug('Added channel', { rocketChID, slackChID });
 			this.slackChannelRocketBotMembershipMap.set(rocketChID, { id: slackChID, family: slackChID.charAt(0) === 'C' ? 'channels' : 'groups' });
 		}
 	}
@@ -530,28 +531,28 @@ export default class SlackAdapter {
 
 	populateMembershipChannelMapByChannels() {
 		const channels = this.slackAPI.getChannels();
-		if (channels && channels.length > 0) {
-			for (const slackChannel of channels) {
-				const rocketchat_room = Rooms.findOneByName(slackChannel.name, { fields: { _id: 1 } });
-				if (rocketchat_room) {
-					if (slackChannel.is_member) {
-						this.addSlackChannel(rocketchat_room._id, slackChannel.id);
-					}
-				}
+		if (!channels || channels.length <= 0) {
+			return;
+		}
+
+		for (const slackChannel of channels) {
+			const rocketchat_room = Rooms.findOneByName(slackChannel.name, { fields: { _id: 1 } }) || Rooms.findOneByImportId(slackChannel.id, { fields: { _id: 1 } });
+			if (rocketchat_room && slackChannel.is_member) {
+				this.addSlackChannel(rocketchat_room._id, slackChannel.id);
 			}
 		}
 	}
 
 	populateMembershipChannelMapByGroups() {
 		const groups = this.slackAPI.getGroups();
-		if (groups && groups.length > 0) {
-			for (const slackGroup of groups) {
-				const rocketchat_room = Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } });
-				if (rocketchat_room) {
-					if (slackGroup.is_member) {
-						this.addSlackChannel(rocketchat_room._id, slackGroup.id);
-					}
-				}
+		if (!groups || groups.length <= 0) {
+			return;
+		}
+
+		for (const slackGroup of groups) {
+			const rocketchat_room = Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } }) || Rooms.findOneByImportId(slackGroup.id, { fields: { _id: 1 } });
+			if (rocketchat_room && slackGroup.is_member) {
+				this.addSlackChannel(rocketchat_room._id, slackGroup.id);
 			}
 		}
 	}

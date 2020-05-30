@@ -7,12 +7,10 @@
 			{{else}}
 				<a rel="noopener noreferrer" href="{{url}}">{{{replace meta.ogDescription ", an? (?:song|album) by (.+?) on Spotify" " - $1" regex=true}}}</a>
 			{{/if}}
-			{{#if collapsed}}
-				<span class="collapse-switch icon-right-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
-			{{else}}
-				<span class="collapse-switch icon-down-dir" data-url="{{url}}" data-collapsed="{{collapsed}}"></span>
-				<iframe width="300" height="380" src="https://embed.spotify.com/?uri={{url}}" rel="noopener noreferrer" frameborder="0"></iframe><br/>
-			{{/if}}
+                        {{> collapseArrow collapsedMedia=collapsedMediaVar}} <br>
+                        {{#unless collapsed}}
+                                <iframe width="300" height="380" src="{{meta.twitterPlayer}}" rel="noopener noreferrer" frameborder="0"></iframe><br>
+                        {{/unless}}
 		</blockquote>
 	{{/if}}
 </template>

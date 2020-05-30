@@ -6,11 +6,21 @@ import { LivechatRooms } from '../../models';
 import { hasPermission, hasRole, addRoomAccessValidator } from '../../authorization';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
-import { LivechatInquiry } from '../lib/LivechatInquiry';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../models/server';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 import { createLivechatQueueView } from './lib/Helper';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
+
+function allowAccessClosedRoomOfSameDepartment(room, user) {
+	if (!room || !user || room.t !== 'l' || !room.departmentId || room.open) {
+		return;
+	}
+	const agentOfDepartment = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(user._id, room.departmentId);
+	if (!agentOfDepartment) {
+		return;
+	}
+	return hasPermission(user._id, 'view-livechat-room-closed-same-department');
+}
 
 Meteor.startup(() => {
 	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
@@ -25,7 +35,7 @@ Meteor.startup(() => {
 		}
 		const { _id: userId } = user;
 		const { servedBy: { _id: agentId } = {} } = room;
-		return userId === agentId;
+		return userId === agentId || (!room.open && hasPermission(user._id, 'view-livechat-room-closed-by-another-agent'));
 	});
 
 	addRoomAccessValidator(function(room, user, extraData) {
@@ -60,6 +70,8 @@ Meteor.startup(() => {
 		return inquiry && inquiry.status === 'queued';
 	});
 
+	addRoomAccessValidator(allowAccessClosedRoomOfSameDepartment);
+
 	callbacks.add('beforeLeaveRoom', function(user, room) {
 		if (room.t !== 'l') {
 			return user;
@@ -71,5 +83,17 @@ Meteor.startup(() => {
 
 	createLivechatQueueView();
 
-	new LivechatAgentActivityMonitor().start();
+	const monitor = new LivechatAgentActivityMonitor();
+
+	let TroubleshootDisableLivechatActivityMonitor;
+	settings.get('Troubleshoot_Disable_Livechat_Activity_Monitor', (key, value) => {
+		if (TroubleshootDisableLivechatActivityMonitor === value) { return; }
+		TroubleshootDisableLivechatActivityMonitor = value;
+
+		if (value) {
+			return monitor.stop();
+		}
+
+		monitor.start();
+	});
 });

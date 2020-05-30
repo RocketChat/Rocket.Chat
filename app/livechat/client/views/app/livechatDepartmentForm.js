@@ -10,7 +10,7 @@ import { t, handleError } from '../../../../utils';
 import { hasPermission } from '../../../../authorization';
 import { getCustomFormTemplate } from './customTemplates/register';
 import './livechatDepartmentForm.html';
-import { APIClient } from '../../../../utils/client';
+import { APIClient, roomTypes } from '../../../../utils/client';
 
 Template.livechatDepartmentForm.helpers({
 	department() {
@@ -79,6 +79,33 @@ Template.livechatDepartmentForm.helpers({
 			.some((button) => button.groups
 				.some((group) => group.startsWith('livechat-department')));
 	},
+	chatClosingTags() {
+		return Template.instance().chatClosingTags.get();
+	},
+	availableDepartmentTags() {
+		return Template.instance().availableDepartmentTags.get();
+	},
+	hasAvailableTags() {
+		return [...Template.instance().availableTags.get()].length > 0;
+	},
+	hasChatClosingTags() {
+		return [...Template.instance().chatClosingTags.get()].length > 0;
+	},
+	onClickTagOfflineMessageChannel() {
+		return Template.instance().onClickTagOfflineMessageChannel;
+	},
+	selectedOfflineMessageChannel() {
+		return Template.instance().offlineMessageChannel.get();
+	},
+	onSelectOfflineMessageChannel() {
+		return Template.instance().onSelectOfflineMessageChannel;
+	},
+	offlineMessageChannelModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
 });
 
 Template.livechatDepartmentForm.events({
@@ -98,6 +125,9 @@ Template.livechatDepartmentForm.events({
 			const email = instance.$('input[name=email]').val();
 			const showOnOfflineForm = instance.$('input[name=showOnOfflineForm]:checked').val();
 			const requestTagBeforeClosingChat = instance.$('input[name=requestTagBeforeClosingChat]:checked').val();
+			const chatClosingTags = instance.chatClosingTags.get();
+			const [offlineMessageChannel] = instance.offlineMessageChannel.get();
+			const offlineMessageChannelName = (offlineMessageChannel && roomTypes.getRoomName(offlineMessageChannel.t, offlineMessageChannel)) || '';
 
 			if (enabled !== '1' && enabled !== '0') {
 				return toastr.error(t('Please_select_enabled_yes_or_no'));
@@ -119,6 +149,8 @@ Template.livechatDepartmentForm.events({
 				showOnOfflineForm: showOnOfflineForm === '1',
 				requestTagBeforeClosingChat: requestTagBeforeClosingChat === '1',
 				email: email.trim(),
+				chatClosingTags,
+				offlineMessageChannelName,
 			};
 		}
 
@@ -190,6 +222,33 @@ Template.livechatDepartmentForm.events({
 
 		instance.departmentAgents.set(instance.departmentAgents.get().filter((agent) => agent.agentId !== this.agentId));
 	},
+
+	'click #addTag'(e, instance) {
+		e.stopPropagation();
+		e.preventDefault();
+
+		const isSelect = [...instance.availableTags.get()].length > 0;
+		const elId = isSelect ? '#tagSelect' : '#tagInput';
+		const elDefault = isSelect ? 'placeholder' : '';
+
+		const tag = $(elId).val();
+		const chatClosingTags = [...instance.chatClosingTags.get()];
+		if (tag === '' || chatClosingTags.indexOf(tag) > -1) {
+			return;
+		}
+
+		chatClosingTags.push(tag);
+		instance.chatClosingTags.set(chatClosingTags);
+		$(elId).val(elDefault);
+	},
+
+	'click .remove-tag'(e, instance) {
+		e.stopPropagation();
+		e.preventDefault();
+
+		const chatClosingTags = [...instance.chatClosingTags.get()].filter((el) => el !== this.valueOf());
+		instance.chatClosingTags.set(chatClosingTags);
+	},
 });
 
 Template.livechatDepartmentForm.onCreated(async function() {
@@ -199,21 +258,60 @@ Template.livechatDepartmentForm.onCreated(async function() {
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
+	this.chatClosingTags = new ReactiveVar([]);
+	this.availableTags = new ReactiveVar([]);
+	this.availableDepartmentTags = new ReactiveVar([]);
+	this.offlineMessageChannel = new ReactiveVar([]);
 
+	this.onClickTagOfflineMessageChannel = () => {
+		this.offlineMessageChannel.set([]);
+	};
+
+	this.onSelectOfflineMessageChannel = async ({ item }) => {
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ item._id }`);
+		room.text = room.name;
+		this.offlineMessageChannel.set([room]);
+	};
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
 	};
 
-	this.onClickTagAgent = ({ username }) => {
+	this.onClickTagAgents = ({ username }) => {
 		this.selectedAgents.set(this.selectedAgents.get().filter((user) => user.username !== username));
+	};
+
+	this.loadAvailableTags = (departmentId) => {
+		Meteor.call('livechat:getTagsList', (err, tagsList) => {
+			this.availableTags.set(tagsList || []);
+			const tags = this.availableTags.get();
+			const availableTags = tags
+				.filter(({ departments }) => departments.length === 0 || departments.indexOf(departmentId) > -1)
+				.map(({ name }) => name);
+			this.availableDepartmentTags.set(availableTags);
+		});
 	};
 
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');
 		if (id) {
-			const { department, agents } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
+			const { department, agents = [] } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
 			this.department.set(department);
 			this.departmentAgents.set(agents);
+			this.chatClosingTags.set((department && department.chatClosingTags) || []);
+			this.loadAvailableTags(id);
 		}
+	});
+
+	this.autorun(async () => {
+		const department = this.department.get();
+		let offlineChannel = [];
+		if (department?.offlineMessageChannelName) {
+			const { room } = await APIClient.v1.get(`rooms.info?roomName=${ department?.offlineMessageChannelName }`);
+			if (room) {
+				room.text = room.name;
+				offlineChannel = [{ ...room }];
+			}
+		}
+		this.offlineMessageChannel.set(offlineChannel);
 	});
 });

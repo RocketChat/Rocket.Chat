@@ -47,6 +47,26 @@ const resetPassword = (token, password) => new Promise((resolve, reject) => {
 	});
 });
 
+async function setUserPassword(password) {
+	try {
+		const result = await call('setUserPassword', password);
+		if (!result) {
+			return toastr.error(t('Error'));
+		}
+
+		Meteor.users.update({ _id: Meteor.userId() }, {
+			$set: {
+				requirePasswordChange: false,
+			},
+		});
+		toastr.remove();
+		toastr.success(t('Password_changed_successfully'));
+	} catch (e) {
+		console.error(e);
+		toastr.error(t('Error'));
+	}
+}
+
 Template.resetPassword.events({
 	'input #newPassword'(e, i) {
 		i.state.set('password', e.currentTarget.value);
@@ -65,7 +85,7 @@ Template.resetPassword.events({
 
 		try {
 			if (Meteor.userId() && !token) {
-				return call('setUserPassword', password);
+				return setUserPassword(password);
 			}
 			await resetPassword(token, password);
 		} catch (error) {
