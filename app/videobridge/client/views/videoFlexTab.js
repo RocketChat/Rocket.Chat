@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { TimeSync } from 'meteor/mizzao:timesync';
 
 import { settings } from '../../../settings';
 import { modal, TabBar } from '../../../ui-utils';
@@ -57,9 +59,9 @@ Template.videoFlexTab.onRendered(function() {
 
 	const start = () => {
 		const update = () => {
-			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 }, reactive: false });
+			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 } });
 
-			if (jitsiTimeout && (new Date() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
+			if (jitsiTimeout && (TimeSync.serverTime() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
 				return;
 			}
 			if (Meteor.status().connected) {
@@ -69,7 +71,7 @@ Template.videoFlexTab.onRendered(function() {
 			return this.stop();
 		};
 		update();
-		this.intervalHandler = Meteor.setInterval(update, CONSTANTS.HEARTBEAT);
+		this.intervalHandler = setInterval(update, CONSTANTS.HEARTBEAT);
 		TabBar.updateButton('video', { class: 'red' });
 	};
 
@@ -86,7 +88,7 @@ Template.videoFlexTab.onRendered(function() {
 			return closePanel();
 		}
 		this.intervalHandler = null;
-		this.autorun(() => {
+		this.autorun(async () => {
 			if (!settings.get('Jitsi_Enabled')) {
 				return closePanel();
 			}
@@ -99,6 +101,7 @@ Template.videoFlexTab.onRendered(function() {
 			const domain = settings.get('Jitsi_Domain');
 			const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + rid;
 			const noSsl = !settings.get('Jitsi_SSL');
+			const isEnabledTokenAuth = settings.get('Jitsi_Enabled_TokenAuth');
 
 			if (jitsiRoomActive !== null && jitsiRoomActive !== jitsiRoom) {
 				jitsiRoomActive = null;
@@ -108,11 +111,28 @@ Template.videoFlexTab.onRendered(function() {
 				return stop();
 			}
 
+			let accessToken = null;
+			if (isEnabledTokenAuth) {
+				accessToken = await new Promise((resolve, reject) => {
+					Meteor.call('jitsi:generateAccessToken', rid, (error, result) => {
+						if (error) {
+							return reject(error);
+						}
+						resolve(result);
+					});
+				});
+			}
+
 			jitsiRoomActive = jitsiRoom;
 
 			if (settings.get('Jitsi_Open_New_Window')) {
-				start();
-				const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }`, jitsiRoom);
+				Tracker.nonreactive(() => start());
+				let queryString = '';
+				if (accessToken) {
+					queryString = `?jwt=${ accessToken }`;
+				}
+
+				const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, jitsiRoom);
 				if (newWindow) {
 					const closeInterval = setInterval(() => {
 						if (newWindow.closed === false) {
@@ -130,7 +150,7 @@ Template.videoFlexTab.onRendered(function() {
 				// Keep it from showing duplicates when re-evaluated on variable change.
 				const name = Users.findOne(Meteor.userId(), { fields: { name: 1 } });
 				if (!$('[id^=jitsiConference]').length) {
-					this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl);
+					this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl, accessToken);
 
 					/*
 					* Hack to send after frame is loaded.
@@ -138,7 +158,7 @@ Template.videoFlexTab.onRendered(function() {
 					* For some reason those aren't working right.
 					*/
 					Meteor.setTimeout(() => this.api.executeCommand('displayName', [name]), 5000);
-					return start();
+					return Tracker.nonreactive(() => start());
 				}
 
 				// Execute any commands that might be reactive.  Like name changing.

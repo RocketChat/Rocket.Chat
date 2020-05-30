@@ -47,7 +47,7 @@ const promptCloudLogin = () => {
 		html: false,
 	}, (confirmed) => {
 		if (confirmed) {
-			FlowRouter.go('cloud-config');
+			FlowRouter.go('cloud');
 		}
 	});
 };
@@ -277,8 +277,7 @@ export const appButtonProps = ({
 }) => {
 	const canUpdate = installed
 		&& version && marketplaceVersion
-		&& semver.lt(version, marketplaceVersion)
-		&& isPurchased;
+		&& semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
 		return {
 			action: 'update',
@@ -335,7 +334,7 @@ export const appStatusSpanProps = ({
 		return {
 			type: 'failed',
 			icon: 'warning',
-			label: 'Failed',
+			label: status === AppStatus.INVALID_SETTINGS_DISABLED ? 'Config Needed' : 'Failed',
 		};
 	}
 
@@ -364,11 +363,12 @@ export const appStatusSpanProps = ({
 
 export const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
 
-export const formatPricingPlan = ({ strategy, price, tiers }) => {
+export const formatPricingPlan = ({ strategy, price, tiers = [] }) => {
 	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',
+		Array.isArray(tiers) && tiers.length > 0 && 'startingAt',
 		strategy,
 		perUnit && 'perUser',
 	].filter(Boolean).join('_');

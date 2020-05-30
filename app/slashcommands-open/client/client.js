@@ -51,4 +51,5 @@ slashCommands.add('open', Open, {
 	description: 'Opens_a_channel_group_or_direct_message',
 	params: 'room_name',
 	clientOnly: true,
+	permission: ['view-c-room', 'view-c-room', 'view-d-room', 'view-joined-room', 'create-d'],
 });

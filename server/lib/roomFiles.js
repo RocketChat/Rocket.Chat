@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Users, Uploads } from '../../app/models';
 
-export const roomFiles = (pub, { rid, searchText, limit = 50 }) => {
+export const roomFiles = (pub, { rid, searchText, fileType, limit = 50 }) => {
 	if (!pub.userId) {
 		return pub.ready();
 	}
@@ -11,7 +11,7 @@ export const roomFiles = (pub, { rid, searchText, limit = 50 }) => {
 		return this.ready();
 	}
 
-	const cursorFileListHandle = Uploads.findNotHiddenFilesOfRoom(rid, searchText, limit).observeChanges({
+	const cursorFileListHandle = Uploads.findNotHiddenFilesOfRoom(rid, searchText, fileType, limit).observeChanges({
 		added(_id, record) {
 			const { username, name } = record.userId ? Users.findOneById(record.userId) : {};
 			return pub.added('room_files', _id, { ...record, user: { username, name } });

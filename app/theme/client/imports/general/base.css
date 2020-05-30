@@ -29,6 +29,7 @@ body {
 
 	background-color: var(--rc-color-primary);
 
+	font-family: var(--body-font-family);
 	font-size: var(--text-small-size);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -86,6 +87,8 @@ button {
 	position: relative;
 
 	display: flex;
+
+	overflow: hidden;
 
 	flex: 1 1 auto;
 
@@ -169,6 +172,9 @@ button {
 
 		content: "";
 
+		animation-name: unread;
+		animation-duration: 0.2s;
+
 		pointer-events: none;
 
 		background: var(--rc-color-error);
@@ -184,6 +190,9 @@ button {
 		padding-bottom: 2px;
 
 		content: attr(data-unread-text);
+
+		animation-name: unread;
+		animation-duration: 0.2s;
 		text-align: right;
 		text-transform: lowercase;
 
@@ -197,6 +206,16 @@ button {
 		font-size: 10px;
 
 		line-height: 10px;
+	}
+}
+
+@keyframes unread {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 100%;
 	}
 }
 

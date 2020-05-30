@@ -14,15 +14,14 @@ import {
 } from './functions/hasPermission';
 import { hasRole } from './functions/hasRole';
 import { removeUserFromRoles } from './functions/removeUserFromRoles';
+import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 import './methods/addPermissionToRole';
 import './methods/addUserToRole';
 import './methods/deleteRole';
 import './methods/removeRoleFromPermission';
 import './methods/removeUserFromRole';
 import './methods/saveRole';
-import './publications/permissions';
-import './publications/roles';
-import './publications/usersInRole';
+import './streamer/permissions';
 import './startup';
 
 export {
@@ -38,4 +37,5 @@ export {
 	hasAllPermission,
 	hasAtLeastOnePermission,
 	hasPermission,
+	AuthorizationUtils,
 };

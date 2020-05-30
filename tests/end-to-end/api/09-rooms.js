@@ -1,6 +1,9 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
 
@@ -39,7 +42,7 @@ describe('[Rooms]', function() {
 	describe('/rooms.saveNotification:', () => {
 		let testChannel;
 		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: `channel.test.${ Date.now() }` })
+			createRoom({ type: 'c', name: `channel.test.${ Date.now() }-${ Math.random() }` })
 				.end((err, res) => {
 					testChannel = res.body.channel;
 					done();
@@ -55,7 +58,6 @@ describe('[Rooms]', function() {
 						emailNotifications: 'nothing',
 						audioNotificationValue: 'beep',
 						desktopNotifications: 'nothing',
-						desktopNotificationDuration: '2',
 						audioNotifications: 'all',
 						mobilePushNotifications: 'mentions',
 					},
@@ -69,9 +71,75 @@ describe('[Rooms]', function() {
 		});
 	});
 
+	describe('/rooms.upload', () => {
+		let testChannel;
+		const testChannelName = `channel.test.upload.${ Date.now() }-${ Math.random() }`;
+		it('create an channel', (done) => {
+			createRoom({ type: 'c', name: testChannelName })
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('don\'t upload a file to room with file field other than file', (done) => {
+			request.post(api(`rooms.upload/${ testChannel._id }`))
+				.set(credentials)
+				.attach('test', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', '[invalid-field]');
+					expect(res.body).to.have.property('errorType', 'invalid-field');
+				})
+				.end(done);
+		});
+		it('don\'t upload a file to room with empty file', (done) => {
+			request.post(api(`rooms.upload/${ testChannel._id }`))
+				.set(credentials)
+				.attach('file', '')
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', res.body.error);
+				})
+				.end(done);
+		});
+		it('don\'t upload a file to room with more than 1 file', (done) => {
+			request.post(api(`rooms.upload/${ testChannel._id }`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Just 1 file is allowed');
+				})
+				.end(done);
+		});
+		it('upload a file to room', (done) => {
+			request.post(api(`rooms.upload/${ testChannel._id }`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message._id', message._id);
+					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
+					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
+					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+				})
+				.end(done);
+		});
+	});
+
 	describe('/rooms.favorite', () => {
 		let testChannel;
-		const testChannelName = `channel.test.${ Date.now() }`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName })
 				.end((err, res) => {
@@ -553,7 +621,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.createDiscussion', () => {
 		let testChannel;
-		const testChannelName = `channel.test.${ Date.now() }`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
 		let messageSent;
 		before((done) => {
 			createRoom({ type: 'c', name: testChannelName })
@@ -739,7 +807,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.getDiscussions', () => {
 		let testChannel;
-		const testChannelName = `channel.test.getDiscussions${ Date.now() }`;
+		const testChannelName = `channel.test.getDiscussions${ Date.now() }-${ Math.random() }`;
 		let discussion;
 		before((done) => {
 			createRoom({ type: 'c', name: testChannelName })
@@ -757,7 +825,7 @@ describe('[Rooms]', function() {
 						});
 				});
 		});
-		after((done) => closeRoom({ type: 'p', roomId: discussion._id }).then(done));
+		after(() => closeRoom({ type: 'p', roomId: discussion._id }));
 		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', (done) => {
 			request.get(api('rooms.getDiscussions'))
 				.set(credentials)
@@ -793,6 +861,74 @@ describe('[Rooms]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussions').and.to.be.an('array');
 					expect(res.body.discussions).to.have.lengthOf(1);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/rooms.autocomplete.channelAndPrivate]', () => {
+		it('should return an empty list when the user does not have the necessary permission', (done) => {
+			updatePermission('view-other-user-channels', []).then(() => {
+				request.get(api('rooms.autocomplete.channelAndPrivate?selector={}'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			updatePermission('view-other-user-channels', ['admin']).then(() => {
+				request.get(api('rooms.autocomplete.channelAndPrivate'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('The \'selector\' param is required');
+					})
+					.end(done);
+			});
+		});
+		it('should return the rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.channelAndPrivate?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+	describe('/rooms.adminRooms', () => {
+		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
+			updatePermission('view-room-administration', []).then(() => {
+				request.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('error-not-authorized');
+					})
+					.end(() => updatePermission('view-room-administration', ['admin']).then(done));
+			});
+		});
+		it('should return a list of admin rooms', (done) => {
+			request.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
 				})
 				.end(done);
 		});

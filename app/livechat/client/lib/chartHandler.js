@@ -1,5 +1,4 @@
-import Chart from 'chart.js';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = false }) => {
 	const config = {
@@ -126,7 +125,7 @@ const doughnutChartConfiguration = (title) => ({
  * @param {Array(String)} dataLabels
  * @param {Array(Array(Double))} dataPoints
  */
-export const drawLineChart = (chart, chartContext, chartLabels, dataLabels, dataSets, options = {}) => {
+export const drawLineChart = async (chart, chartContext, chartLabels, dataLabels, dataSets, options = {}) => {
 	if (!chart) {
 		console.log('No chart element');
 		return;
@@ -157,7 +156,8 @@ export const drawLineChart = (chart, chartContext, chartLabels, dataLabels, data
 			fill: false,
 		});
 	});
-
+	const chartImport = await import('chart.js');
+	const Chart = chartImport.default;
 	return new Chart(chart, {
 		type: 'line',
 		data: {
@@ -175,14 +175,15 @@ export const drawLineChart = (chart, chartContext, chartLabels, dataLabels, data
  * @param {Array(String)} dataLabels
  * @param {Array(Double)} dataPoints
  */
-export const drawDoughnutChart = (chart, title, chartContext, dataLabels, dataPoints) => {
+export const drawDoughnutChart = async (chart, title, chartContext, dataLabels, dataPoints) => {
 	if (!chart) {
 		return;
 	}
 	if (chartContext) {
 		chartContext.destroy();
 	}
-
+	const chartImport = await import('chart.js');
+	const Chart = chartImport.default;
 	return new Chart(chart, {
 		type: 'doughnut',
 		data: {
@@ -208,7 +209,8 @@ export const drawDoughnutChart = (chart, title, chartContext, dataLabels, dataPo
  * @param  {String} label [chart label]
  * @param  {Array(Double)} data  [updated data]
  */
-export const updateChart = (chart, label, data) => {
+export const updateChart = async (c, label, data) => {
+	const chart = await c;
 	if (chart.data.labels.indexOf(label) === -1) {
 		// insert data
 		chart.data.labels.push(label);
