@@ -1,11 +1,10 @@
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
@@ -17,6 +16,8 @@ import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
+import { DateFormat } from '../../../../../lib/client';
+import { getCustomFormTemplate } from '../customTemplates/register';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -26,6 +27,14 @@ const isSubscribedToRoom = () => {
 
 	const subscription = Subscriptions.findOne({ rid: data.rid });
 	return subscription !== undefined;
+};
+
+const closingDialogRequired = (department) => {
+	if (settings.get('Livechat_request_comment_when_closing_conversation')) {
+		return true;
+	}
+
+	return department && department.requestTagBeforeClosingChat;
 };
 
 Template.visitorInfo.helpers({
@@ -84,6 +93,9 @@ Template.visitorInfo.helpers({
 
 	customVisitorFields() {
 		const customFields = Template.instance().customFields.get();
+		if (!hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields'])) {
+			return;
+		}
 		if (!customFields || customFields.length === 0) {
 			return [];
 		}
@@ -198,6 +210,37 @@ Template.visitorInfo.helpers({
 	canForwardGuest() {
 		return hasPermission('transfer-livechat-guest');
 	},
+
+	roomClosedDateTime() {
+		const { closedAt } = this;
+		return DateFormat.formatDateAndTime(closedAt);
+	},
+
+	roomClosedBy() {
+		const { closedBy = {}, servedBy = {} } = this;
+		let { closer } = this;
+
+		if (closer === 'user') {
+			if (servedBy._id !== closedBy._id) {
+				return closedBy.username;
+			}
+
+			closer = 'agent';
+		}
+
+		const closerLabel = closer.charAt(0).toUpperCase() + closer.slice(1);
+		return t(`${ closerLabel }`);
+	},
+
+	customInfoTemplate() {
+		return getCustomFormTemplate('livechatVisitorInfo');
+	},
+
+	roomDataContext() {
+		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
+		// because only the dynamic template data will be reloaded
+		return Template.instance().room;
+	},
 });
 
 Template.visitorInfo.events({
@@ -206,46 +249,36 @@ Template.visitorInfo.events({
 
 		instance.action.set('edit');
 	},
-	'click .close-livechat'(event) {
+	'click .close-livechat'(event, instance) {
 		event.preventDefault();
 
-		const closeRoom = (comment) => Meteor.call('livechat:closeRoom', this.rid, comment, function(error/* , result*/) {
-			if (error) {
-				return handleError(error);
-			}
-			modal.open({
-				title: t('Chat_closed'),
-				text: t('Chat_closed_successfully'),
-				type: 'success',
-				timer: 1000,
-				showConfirmButton: false,
-			});
-		});
-
-		if (!settings.get('Livechat_request_comment_when_closing_conversation')) {
+		if (!closingDialogRequired(instance.department.get())) {
 			const comment = TAPi18n.__('Chat_closed_by_agent');
-			return closeRoom(comment);
+			return Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function(error/* , result*/) {
+				if (error) {
+					return handleError(error);
+				}
+
+				modal.open({
+					title: t('Chat_closed'),
+					text: t('Chat_closed_successfully'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false,
+				});
+			});
 		}
 
-		// Setting for Ask_for_conversation_finished_message is set to true
 		modal.open({
 			title: t('Closing_chat'),
-			type: 'input',
-			inputPlaceholder: t('Please_add_a_comment'),
-			showCancelButton: true,
-			closeOnConfirm: false,
-		}, (inputValue) => {
-			if (!inputValue) {
-				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
-
-			if (s.trim(inputValue) === '') {
-				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
-
-			return closeRoom(inputValue);
+			modifier: 'modal',
+			content: 'closeRoom',
+			data: {
+				rid: this.rid,
+			},
+			confirmOnEnter: false,
+			showConfirmButton: false,
+			showCancelButton: false,
 		});
 	},
 
@@ -289,8 +322,18 @@ Template.visitorInfo.onCreated(function() {
 	this.department = new ReactiveVar({});
 	this.room = new ReactiveVar({});
 
+	this.updateVisitor = async (visitorId) => {
+		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
+		this.user.set(visitor);
+	};
+
 	this.updateRoom = (room) => {
+		this.departmentId.set(room && room.departmentId);
+		this.tags.set(room && room.tags);
 		this.room.set(room);
+		const visitorId = room && room.v && room.v._id;
+		this.visitorId.set(visitorId);
+		this.updateVisitor(visitorId);
 	};
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
@@ -308,15 +351,12 @@ Template.visitorInfo.onCreated(function() {
 
 	const loadRoomData = async (rid) => {
 		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
-		this.visitorId.set(room && room.v && room.v._id);
-		this.departmentId.set(room && room.departmentId);
-		this.tags.set(room && room.tags);
-		this.room.set(room);
+		this.updateRoom(room);
 	};
 
 	if (rid) {
-		loadRoomData(rid);
 		RoomManager.roomStream.on(rid, this.updateRoom);
+		loadRoomData(rid);
 	}
 
 	this.autorun(async () => {
@@ -326,11 +366,10 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	this.autorun(async () => {
+	this.autorun(() => {
 		const visitorId = this.visitorId.get();
 		if (visitorId) {
-			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
-			this.user.set(visitor);
+			this.updateVisitor(visitorId);
 		}
 	});
 });

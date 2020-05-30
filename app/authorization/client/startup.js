@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 import { hasAtLeastOnePermission } from './hasPermission';
+import { registerAdminSidebarItem } from '../../../client/admin';
 import { CachedCollectionManager } from '../../ui-cached-collection';
-import { AdminBox } from '../../ui-utils/client/lib/AdminBox';
 import { APIClient } from '../../utils/client';
 import { Roles } from '../../models/client';
 import { rolesStreamer } from './lib/streamer';
@@ -13,7 +14,7 @@ Meteor.startup(() => {
 		roles.forEach((role) => Roles.insert(role));
 	});
 
-	AdminBox.addOption({
+	registerAdminSidebarItem({
 		href: 'admin-permissions',
 		i18nLabel: 'Permissions',
 		icon: 'lock',
@@ -28,5 +29,12 @@ Meteor.startup(() => {
 		},
 		removed: (role) => Roles.remove({ _id: role.name }),
 	};
-	rolesStreamer.on('roles', (role) => events[role.type](role));
+
+	Tracker.autorun((c) => {
+		if (!Meteor.userId()) {
+			return;
+		}
+		rolesStreamer.on('roles', (role) => events[role.type](role));
+		c.stop();
+	});
 });

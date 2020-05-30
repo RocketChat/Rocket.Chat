@@ -14,8 +14,10 @@ export class AppUploadBridge {
 	getBuffer(upload, appId) {
 		this.orch.debugLog(`The App ${ appId } is getting the upload: "${ upload.id }"`);
 
+		const rocketChatUpload = this.orch.getConverters().get('uploads').convertToRocketChat(upload);
+
 		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(upload, (error, result) => {
+			FileUpload.getBuffer(rocketChatUpload, (error, result) => {
 				if (error) {
 					return reject(error);
 				}
