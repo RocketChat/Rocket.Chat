@@ -327,7 +327,7 @@ Template.messagePopup.events({
 			e.stopPropagation();
 		}
 	},
-	'mouseup .popup-item'() {
+	'mouseup .popup-item'(e) {
 		// To prevent refreshing of page in Mobile client.
 		if (isMobile()) {
 			return;
