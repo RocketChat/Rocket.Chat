@@ -88,6 +88,10 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+	if (event.request.method === 'POST') {
+		return;
+	}
+
 	event.respondWith(
 		caches.match(event.request.clone()).then((cached) => {
 			const fetchEvent = fetchFromNetwork(event);
