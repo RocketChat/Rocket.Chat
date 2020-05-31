@@ -33,6 +33,7 @@ export const popover = {
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
+		this.renderedPopover = null;
 	},
 };
 
