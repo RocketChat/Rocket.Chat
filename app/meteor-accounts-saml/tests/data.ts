@@ -82,12 +82,74 @@ export const invalidLogoutResponse = `<samlp:LogoutResponse xmlns:samlp="urn:oas
 	<saml:Issuer>[IssuerName]</saml:Issuer>
 </samlp:LogoutResponse>`;
 
-export const simpleSamlResponse = `<samlp:Response Destination="http://localhost:3000/_saml/validate/test-sp" ID="_f58e6bce78eac527058e0e4c0230aa4765831a5437" InResponseTo="[INRESPONSETO]" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
-	<saml:Issuer>[ISSUER]</saml:Issuer>
-	<samlp:Status>
+
+const samlResponseStatus = `<samlp:Status>
 		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+	</samlp:Status>`;
+
+const samlResponseAssertion = `<saml:Assertion ID="_cad47813d7242e43b4730b5c7bfd57de3639c8b047" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<saml:Issuer>[ISSUER]</saml:Issuer>
+		<saml:Subject>
+			<saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" SPNameQualifier="http://localhost:3000/_saml/metadata/test-sp">[NAMEID]</saml:NameID>
+		</saml:Subject>
+		<saml:AuthnStatement AuthnInstant="2020-05-28T21:39:37Z" SessionIndex="[SESSIONINDEX]" SessionNotOnOrAfter="2020-05-29T05:39:37Z">
+			<saml:AuthnContext>
+				<saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
+			</saml:AuthnContext>
+		</saml:AuthnStatement>
+		<saml:AttributeStatement>
+			<saml:Attribute Name="uid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+				<saml:AttributeValue xsi:type="xs:string">1</saml:AttributeValue>
+			</saml:Attribute>
+			<saml:Attribute Name="eduPersonAffiliation" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+				<saml:AttributeValue xsi:type="xs:string">group1</saml:AttributeValue>
+			</saml:Attribute>
+			<saml:Attribute Name="email" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+				<saml:AttributeValue xsi:type="xs:string">user1@example.com</saml:AttributeValue>
+			</saml:Attribute>
+		</saml:AttributeStatement>
+	</saml:Assertion>`;
+
+const samlResponseHeader = '<samlp:Response Destination="http://localhost:3000/_saml/validate/test-sp" ID="_f58e6bce78eac527058e0e4c0230aa4765831a5437" InResponseTo="[INRESPONSETO]" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">';
+const samlResponseFooter = '</samlp:Response>';
+const samlResponseIssuer = '<saml:Issuer>[ISSUER]</saml:Issuer>';
+
+export const simpleSamlResponse = `${ samlResponseHeader }
+	${ samlResponseIssuer }
+	${ samlResponseStatus }
+	${ samlResponseAssertion }
+${ samlResponseFooter }`;
+
+export const samlResponseMissingStatus = `${ samlResponseHeader }
+	${ samlResponseIssuer }
+	${ samlResponseAssertion }
+${ samlResponseFooter }`;
+
+export const samlResponseMissingAssertion = `${ samlResponseHeader }
+	${ samlResponseIssuer }
+	${ samlResponseStatus }
+${ samlResponseFooter }`;
+
+export const samlResponseFailedStatus = `${ samlResponseHeader }
+	${ samlResponseIssuer }
+	<samlp:Status>
+		<samlp:StatusCode Value="Failed"/>
 	</samlp:Status>
+	${ samlResponseAssertion }
+${ samlResponseFooter }`;
+
+export const samlResponseMultipleAssertions = `${ samlResponseHeader }
+	${ samlResponseIssuer }
+	${ samlResponseStatus }
+	${ samlResponseAssertion }
+	${ samlResponseAssertion }
+${ samlResponseFooter }`;
+
+export const samlResponseMultipleIssuers = `${ samlResponseHeader }
+	${ samlResponseIssuer }
+	${ samlResponseStatus }
 	<saml:Assertion ID="_cad47813d7242e43b4730b5c7bfd57de3639c8b047" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<saml:Issuer>[ISSUER]</saml:Issuer>
 		<saml:Issuer>[ISSUER]</saml:Issuer>
 		<saml:Subject>
 			<saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" SPNameQualifier="http://localhost:3000/_saml/metadata/test-sp">[NAMEID]</saml:NameID>
@@ -109,11 +171,9 @@ export const simpleSamlResponse = `<samlp:Response Destination="http://localhost
 			</saml:Attribute>
 		</saml:AttributeStatement>
 	</saml:Assertion>
-</samlp:Response>`;
+${ samlResponseFooter }`;
 
-export const samlResponse = `<samlp:Response Destination="http://localhost:3000/_saml/validate/test-sp" ID="_f58e6bce78eac527058e0e4c0230aa4765831a5437" InResponseTo="[INRESPONSETO]" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
-	<saml:Issuer>[ISSUER]</saml:Issuer>
-	<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+const samlResponseSignature = `<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
 		<ds:SignedInfo>
 			<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
 			<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
@@ -132,12 +192,10 @@ export const samlResponse = `<samlp:Response Destination="http://localhost:3000/
 				<ds:X509Certificate>MIIDXTCCAkWgAwIBAgIJALmVVuDWu4NYMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwHhcNMTYxMjMxMTQzNDQ3WhcNNDgwNjI1MTQzNDQ3WjBFMQswCQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzUCFozgNb1h1M0jzNRSCjhOBnR+uVbVpaWfXYIR+AhWDdEe5ryY+CgavOg8bfLybyzFdehlYdDRgkedEB/GjG8aJw06l0qF4jDOAw0kEygWCu2mcH7XOxRt+YAH3TVHa/Hu1W3WjzkobqqqLQ8gkKWWM27fOgAZ6GieaJBN6VBSMMcPey3HWLBmc+TYJmv1dbaO2jHhKh8pfKw0W12VM8P1PIO8gv4Phu/uuJYieBWKixBEyy0lHjyixYFCR12xdh4CA47q958ZRGnnDUGFVE1QhgRacJCOZ9bd5t9mr8KLaVBYTCJo5ERE8jymab5dPqe5qKfJsCZiqWglbjUo9twIDAQABo1AwTjAdBgNVHQ4EFgQUxpuwcs/CYQOyui+r1G+3KxBNhxkwHwYDVR0jBBgwFoAUxpuwcs/CYQOyui+r1G+3KxBNhxkwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAAiWUKs/2x/viNCKi3Y6blEuCtAGhzOOZ9EjrvJ8+COH3Rag3tVBWrcBZ3/uhhPq5gy9lqw4OkvEws99/5jFsX1FJ6MKBgqfuy7yh5s1YfM0ANHYczMmYpZeAcQf2CGAaVfwTTfSlzNLsF2lW/ly7yapFzlYSJLGoVE+OHEu8g5SlNACUEfkXw+5Eghh+KzlIN7R6Q7r2ixWNFBC/jWf7NKUfJyX8qIG5md1YUeT6GBW9Bm2/1/RiO24JTaYlfLdKK9TYb8sG5B+OLab2DImG99CJ25RkAcSobWNF5zD0O6lgOo3cEdB/ksCq3hmtlC/DlLZ/D8CJ+7VuZnS1rR2naQ==</ds:X509Certificate>
 			</ds:X509Data>
 		</ds:KeyInfo>
-	</ds:Signature>
-	<samlp:Status>
-		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
-	</samlp:Status>
-	<saml:Assertion ID="_cad47813d7242e43b4730b5c7bfd57de3639c8b047" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-		<saml:Issuer>[ISSUER]</saml:Issuer>
+	</ds:Signature>`;
+
+const samlResponseFullAssertion = `<saml:Assertion ID="_cad47813d7242e43b4730b5c7bfd57de3639c8b047" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		${ samlResponseIssuer }
 		<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
 			<ds:SignedInfo>
 				<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
@@ -185,8 +243,16 @@ export const samlResponse = `<samlp:Response Destination="http://localhost:3000/
 				<saml:AttributeValue xsi:type="xs:string">user1@example.com</saml:AttributeValue>
 			</saml:Attribute>
 		</saml:AttributeStatement>
-	</saml:Assertion>
-</samlp:Response>`;
+	</saml:Assertion>`;
+
+export const samlResponse = `${ samlResponseHeader }
+	${ samlResponseIssuer }
+	${ samlResponseSignature }
+	${ samlResponseStatus }
+	${ samlResponseFullAssertion }
+${ samlResponseFooter }`;
+
+export const duplicatedSamlResponse = `${ simpleSamlResponse }${ simpleSamlResponse }`;
 
 export const profile = {
 	issuer: '[IssuerName]',

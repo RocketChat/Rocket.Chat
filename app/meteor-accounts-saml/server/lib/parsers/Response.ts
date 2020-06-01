@@ -15,6 +15,23 @@ export class ResponseParser {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
+	_checkLogoutResponse(doc: Document, callback: IResponseValidateCallback): void {
+		const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
+		if (!logoutResponse.length) {
+			return callback(new Error('Unknown SAML response message'), null, false);
+		}
+
+		SAMLUtils.log('Verify status');
+		const statusValidateObj = SAMLUtils.validateStatus(doc);
+		if (!statusValidateObj.success) {
+			return callback(new Error(`Status is: ${ statusValidateObj.statusCode }`), null, false);
+		}
+		SAMLUtils.log('Status ok');
+
+		// #ToDo: Check if this situation is still used
+		return callback(null, null, true);
+	}
+
 	validate(xml: string, callback: IResponseValidateCallback): void {
 		// We currently use RelayState to save SAML provider
 		SAMLUtils.log(`Validating response with relay state: ${ xml }`);
@@ -24,28 +41,28 @@ export class ResponseParser {
 			return callback('No Doc Found');
 		}
 
-		SAMLUtils.log('Verify status');
-		const statusValidateObj = SAMLUtils.validateStatus(doc);
-		if (!statusValidateObj.success) {
-			return callback(new Error(`Status is:  ${ statusValidateObj.statusCode }`), null, false);
-		}
-		SAMLUtils.log('Status ok');
-
 		const allResponses = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response');
+		if (allResponses.length === 0) {
+			return this._checkLogoutResponse(doc, callback);
+		}
+
 		if (allResponses.length !== 1) {
 			return callback(new Error('Too many SAML responses'), null, false);
 		}
-
 		const response = allResponses[0];
-		if (!response) {
-			const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
-
-			if (!logoutResponse) {
-				return callback(new Error('Unknown SAML response message'), null, false);
-			}
-			return callback(null, null, true);
-		}
 		SAMLUtils.log('Got response');
+
+		SAMLUtils.log('Verify status');
+		const statusValidateObj = SAMLUtils.validateStatus(doc);
+		if (!statusValidateObj.success) {
+			if (!statusValidateObj.statusCode) {
+				return callback(new Error('Missing StatusCode'), null, false);
+			}
+
+			return callback(new Error(`Status is: ${ statusValidateObj.statusCode }`), null, false);
+		}
+		SAMLUtils.log('Status ok');
+
 
 		let assertion: XmlParent;
 		let issuer;
@@ -258,7 +275,6 @@ export class ResponseParser {
 
 	getIssuer(assertion: XmlParent): any {
 		const issuers = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer');
-
 		if (issuers.length > 1) {
 			throw new Error('Too many Issuers');
 		}

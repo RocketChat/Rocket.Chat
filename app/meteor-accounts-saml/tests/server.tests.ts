@@ -23,6 +23,13 @@ import {
 	simpleLogoutResponse,
 	invalidLogoutResponse,
 	simpleSamlResponse,
+	samlResponse,
+	duplicatedSamlResponse,
+	samlResponseMissingStatus,
+	samlResponseFailedStatus,
+	samlResponseMultipleAssertions,
+	samlResponseMissingAssertion,
+	samlResponseMultipleIssuers,
 	profile,
 } from './data';
 import '../../../definition/xml-encryption';
@@ -106,7 +113,7 @@ describe('SAML', () => {
 			it('should fail to parse an invalid xml', () => {
 				const parser = new LogoutRequestParser(serviceProviderOptions);
 				parser.validate(invalidXml, (err, data) => {
-					expect(err).to.be.exist;
+					expect(err).to.exist;
 					expect(data).to.not.exist;
 				});
 			});
@@ -184,7 +191,7 @@ describe('SAML', () => {
 			it('should fail to parse an invalid xml', () => {
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 				parser.validate(invalidXml, (err, inResponseTo) => {
-					expect(err).to.be.exist;
+					expect(err).to.exist;
 					expect(inResponseTo).to.not.exist;
 				});
 			});
@@ -266,6 +273,189 @@ describe('SAML', () => {
 					expect(profile).to.have.property('uid').equal('1');
 					expect(profile).to.have.property('eduPersonAffiliation').equal('group1');
 					expect(profile).to.have.property('email').equal('user1@example.com');
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should respect NotOnOrAfter conditions', () => {
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+				const response = samlResponse
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', new Date().toISOString());
+
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(response, (err, profile, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(profile).to.be.null;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should respect NotBefore conditions', () => {
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() + 3);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
+
+				const response = samlResponse
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(response, (err, profile, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(profile).to.be.null;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+
+			it('should fail to parse an invalid xml', () => {
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(invalidXml, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Unknown SAML response message');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should fail to parse a xml without any Response tag', () => {
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(randomXml, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Unknown SAML response message');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should reject a xml with multiple responses', () => {
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(duplicatedSamlResponse, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many SAML responses');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should fail to parse a reponse with no Status tag', () => {
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(samlResponseMissingStatus, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Missing StatusCode');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should fail to parse a reponse with a failed status', () => {
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(samlResponseFailedStatus, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Status is: Failed');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should reject a response with multiple assertions', () => {
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(samlResponseMultipleAssertions, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many SAML assertions');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should reject a response with no assertions', () => {
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(samlResponseMissingAssertion, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Missing SAML assertion');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should reject an unsigned assertion if the setting says so', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'Assertion',
+					cert: 'invalidCert',
+				};
+
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
+
+				const response = simpleSamlResponse
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(response, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Assertion signature');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should reject an unsigned response if the setting says so', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'Response',
+					cert: 'invalidCert',
+				};
+
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
+
+				const response = simpleSamlResponse
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(response, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should reject a document without signatures if the setting requires at least one', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'Either',
+					cert: 'invalidCert',
+				};
+
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
+
+				const response = simpleSamlResponse
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(response, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('No valid SAML Signature found');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should reject a document with multiple issuers', () => {
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(samlResponseMultipleIssuers, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many Issuers');
+					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
 			});
