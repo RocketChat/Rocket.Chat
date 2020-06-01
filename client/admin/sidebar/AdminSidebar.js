@@ -1,53 +1,92 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { Box, Button, Icon, SearchInput, Scrollable } from '@rocket.chat/fuselage';
 
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useRoute } from '../../contexts/RouterContext';
+import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
+import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { sidebarItems } from '../sidebarItems';
-import { useSettingsGroupsFiltered } from './useSettingsCollectionPrivate';
+import { useSettingsGroupsFiltered } from './useSettingsGroupsFiltered';
 
-const SidebarItems = ({ items }) => {
+import './styles.css';
+
+const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
+	if (permissionGranted && !permissionGranted()) { return null; }
+	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
+	const path = useRoutePath(href, params);
+	const isActive = path === currentPath || false;
+	return useMemo(() => <Box
+		is='a'
+		color='default'
+		pb='x8'
+		pi='x24'
+		key={path}
+		href={path}
+		display='flex'
+		flexDirection='row'
+		alignItems='center'
+		rcx-sidebar--item
+		rcx-sidebar--item-active={isActive}
+	>
+		{icon && <Icon name={icon} size='x16' mi='x2'/>}
+		<Box withTruncatedText fontScale='p1' mi='x4'>{label}</Box>
+	</Box>, [path, label, name, icon]);
+};
+
+const SidebarItemsAssembler = ({ items, currentPath }) => {
 	const t = useTranslation();
+	return items.map(({
+		href,
+		i18nLabel,
+		name,
+		icon,
+		permissionGranted,
+		pathGroup,
+	}) => <SidebarItem
+		permissionGranted={permissionGranted}
+		pathGroup={pathGroup}
+		href={href}
+		icon={icon}
+		label={t(i18nLabel || name)}
+		key={i18nLabel || name}
+		currentPath={currentPath}
+	/>);
+};
+
+const AdminSidebarPages = ({ currentPath }) => {
+	const items = useReactiveValue(() => sidebarItems.get());
+
 	return <Box is='ul' display='flex' flexDirection='column'>
-		{items.map(({ href, i18nLabel: label, icon, permissionGranted }) => {
-			if (permissionGranted && !permissionGranted()) { return null; }
-			const router = useRoute(href);
-			const handleClick = useCallback(() => router.push({}), []);
-			return <Box is='li' pb='x8' pi='x24' key={href} href={href} onClick={handleClick} display='flex' flexDirection='row' alignItems='center'>
-				{icon && <Icon name={icon} size='x16' mi='x2'/>}
-				<Box withTruncatedText fontScale='p1' mi='x4'>{t(label)}</Box>
-			</Box>;
-		})}
+		{useMemo(() => <SidebarItemsAssembler items={items} currentPath={currentPath}/>, [items, currentPath])}
 	</Box>;
 };
 
-const SidebarSettings = ({ groups, filter, setFilter }) => {
+const AdminSidebarSettings = ({ currentPath }) => {
 	const t = useTranslation();
+	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
+
+	const groups = useSettingsGroupsFiltered(filter);
+
+	const showGroups = !!groups.length;
+
 	return <Box is='section' display='flex' flexDirection='column'>
 		<Box mi='x24' mb='x16' fontScale='p2' color='hint'>{t('Settings')}</Box>
 		<Box pi='x24' mb='x8' display='flex'>
 			<Box is={SearchInput} border='0' value={filter} onChange={handleChange} addon={<Icon name='magnifier' size='x20'/>}/>
 		</Box>
 		<Box is='ul' display='flex' flexDirection='column'>
-			{groups.map(({ pathSection, pathGroup, name, permissionGranted }) => {
-				if (permissionGranted && !permissionGranted()) { return null; }
-				return <Box is='a' pb='x8' pi='x24' key={name} href={`/${ pathSection }/${ pathGroup }`} color='default' display='flex' flexDirection='row' alignItems='center'>
-					<Box withTruncatedText fontScale='p1' mi='x4'>{name}</Box>
-				</Box>;
-			})}
+			{showGroups && <SidebarItemsAssembler items={groups} currentPath={currentPath}/>}
+			{!showGroups && <Box pi='x28' mb='x4' color='hint'>{t('Nothing_found')}</Box>}
 		</Box>
 	</Box>;
 };
 
 export default function AdminSidebar() {
 	const t = useTranslation();
-	const sidebarItemsArray = useReactiveValue(() => sidebarItems.get());
-	const [filter, setFilter] = useState();
 
-	const settingsGroups = useSettingsGroupsFiltered(filter);
+	const canViewSettings = useAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
 
 	const closeAdminFlex = useCallback(() => {
 		if (Layout.isEmbedded()) {
@@ -58,6 +97,9 @@ export default function AdminSidebar() {
 		SideNav.closeFlex();
 	}, []);
 
+	const currentRoute = useCurrentRoute();
+	const currentPath = useRoutePath(...currentRoute);
+
 	return <Box display='flex' flexDirection='column' h='full' flexGrow={1} flexShrink={1}>
 		<Box is='header' padding='x24' display='flex' flexDirection='row' justifyContent='space-between'>
 			<Box fontScale='s1'>{t('Administration')}</Box>
@@ -65,8 +107,8 @@ export default function AdminSidebar() {
 		</Box>
 		<Scrollable>
 			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1}>
-				<SidebarItems items={sidebarItemsArray}/>
-				<SidebarSettings groups={settingsGroups} filter={filter} setFilter={setFilter}/>
+				<AdminSidebarPages currentPath={currentPath}/>
+				{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}
 			</Box>
 		</Scrollable>
 	</Box>;

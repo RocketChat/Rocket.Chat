@@ -6,11 +6,11 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { settings } from '../../../app/settings';
 
 
-export const useSettingsGroupsFiltered = (filterText) => {
+export const useSettingsGroupsFiltered = (textFilter) => {
 	const t = useTranslation();
 	const [collection, setCollection] = useState(settings.collectionPrivate);
 
-	const filter = useDebouncedValue(filterText, 400);
+	const filter = useDebouncedValue(textFilter, 400);
 
 	useEffect(() => {
 		(async () => {
@@ -23,8 +23,8 @@ export const useSettingsGroupsFiltered = (filterText) => {
 		})();
 	}, []);
 
-	const groups = useMemo(() => {
-		if (!settings.cachedCollectionPrivate) { return []; }
+	return useMemo(() => {
+		if (!collection) { return []; }
 		const query = {
 			type: 'group',
 		};
@@ -56,10 +56,8 @@ export const useSettingsGroupsFiltered = (filterText) => {
 			.sort(({ name: a }, { name: b }) => (a.toLowerCase() >= b.toLowerCase() ? 1 : -1))
 			.map(({ _id, name }) => ({
 				name,
-				pathSection: 'admin',
+				href: 'admin',
 				pathGroup: _id,
 			}));
-	}, [filter, settings.cachedCollectionPrivate]);
-
-	return groups;
+	}, [filter, collection]);
 };
