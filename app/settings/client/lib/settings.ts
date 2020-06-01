@@ -12,10 +12,6 @@ const cachedCollection = new CachedCollection({
 });
 
 class Settings extends SettingsBase implements ISettingsBase {
-	public constructor() {
-		super();
-	}
-
 	cachedCollection = cachedCollection
 
 	collection = cachedCollection.collection;

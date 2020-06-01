@@ -1,5 +1,5 @@
-import { IOptions } from './IOptions';
+/* eslint-disable @typescript-eslint/no-empty-interface */
+import { IRead } from './IRead';
 
-export interface ILivechatInquiryRepository {
-	findOne(filter: {[key: string]: any}, options?: IOptions): any;
+export interface ILivechatInquiryRepository extends IRead {
 }

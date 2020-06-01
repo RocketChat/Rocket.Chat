@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import _ from 'underscore';
@@ -6,8 +7,9 @@ import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
+import { ISubscriptionRepository } from '../../lib/ISubscriptionRepository';
 
-export class Subscriptions extends Base {
+export class Subscriptions extends Base implements ISubscriptionRepository {
 	constructor(...args) {
 		super(...args);
 

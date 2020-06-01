@@ -1,6 +1,5 @@
-import { IOptions } from './IOptions';
+/* eslint-disable @typescript-eslint/no-empty-interface */
+import { IRead } from './IRead';
 
-export interface ISubscriptionRepository {
-	findOne(filter: {[key: string]: any}, options?: IOptions): any;
-	find(filter: {[key: string]: any}, options?: IOptions): any;
+export interface ISubscriptionRepository extends IRead {
 }
