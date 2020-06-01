@@ -46,6 +46,8 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		authRequestTemplate: settings.get(`${ service }_AuthRequest_template`),
 		logoutResponseTemplate: settings.get(`${ service }_LogoutResponse_template`),
 		logoutRequestTemplate: settings.get(`${ service }_LogoutRequest_template`),
+		metadataCertificateTemplate: settings.get(`${ service }_MetadataCertificate_template`),
+		metadataTemplate: settings.get(`${ service }_Metadata_template`),
 	};
 };
 
@@ -83,6 +85,8 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		authRequestTemplate: samlConfigs.authRequestTemplate,
 		logoutResponseTemplate: samlConfigs.logoutResponseTemplate,
 		logoutRequestTemplate: samlConfigs.logoutRequestTemplate,
+		metadataCertificateTemplate: samlConfigs.metadataCertificateTemplate,
+		metadataTemplate: samlConfigs.metadataTemplate,
 		callbackUrl: Meteor.absoluteUrl(`_saml/validate/${ samlConfigs.clientConfig.provider }`),
 	};
 };
