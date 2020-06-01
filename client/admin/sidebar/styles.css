@@ -1,8 +1,10 @@
 .rcx-sidebar--item {
-    &:hover {
-        background-color: var(--sidebar-background-light-hover);
-    }
-    &-active, &:active {
-        background-color: var(--sidebar-background-light-active);
-    }
+	&:hover {
+		background-color: var(--sidebar-background-light-hover);
+	}
+
+	&-active,
+	&:active {
+		background-color: var(--sidebar-background-light-active);
+	}
 }
