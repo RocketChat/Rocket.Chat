@@ -12,6 +12,24 @@ Meteor.startup(function() {
 			this.add('Accounts_Block_Failed_Attempts_Until_Block_By_Ip', 10, { type: 'int' });
 			this.add('Accounts_Block_Failed_Attempts_Time_To_Unblock_By_Ip_In_Minutes', 5, { type: 'int' });
 			this.add('Accounts_Block_Failed_Attempts_Ip_Whitelist', '', { type: 'string' });
+
+			this.add('Accounts_FailedLoginAudit_Enabled', false, { type: 'boolean' });
+			this.add('Accounts_FailedLoginAudit_Log_Username', false, {
+				type: 'boolean',
+				enableQuery: { _id: 'Accounts_FailedLoginAudit_Enabled', value: true },
+			});
+			this.add('Accounts_FailedLoginAudit_Log_UserAgent', false, {
+				type: 'boolean',
+				enableQuery: { _id: 'Accounts_FailedLoginAudit_Enabled', value: true },
+			});
+			this.add('Accounts_FailedLoginAudit_Log_ClientIp', false, {
+				type: 'boolean',
+				enableQuery: { _id: 'Accounts_FailedLoginAudit_Enabled', value: true },
+			});
+			this.add('Accounts_FailedLoginAudit_Log_ForwardedForIp', false, {
+				type: 'boolean',
+				enableQuery: { _id: 'Accounts_FailedLoginAudit_Enabled', value: true },
+			});
 		});
 	});
 });

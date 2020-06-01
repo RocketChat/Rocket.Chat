@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
@@ -20,6 +21,7 @@ import {
 } from '../lib/restrictLoginAttempts';
 import { ILoginAttempt } from '../ILoginAttempt';
 import './settings';
+import { logFailedLoginAttemps } from '../lib/logLoginAttempts';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -405,5 +407,8 @@ Accounts.onLogin(async ({ user }) => {
 	}
 });
 
-Accounts.onLoginFailure((login: ILoginAttempt) => saveFailedLoginAttempts(login));
+Accounts.onLoginFailure((login: ILoginAttempt) => {
+	saveFailedLoginAttempts(login);
+	logFailedLoginAttemps(login);
+});
 callbacks.add('afterValidateLogin', (login: ILoginAttempt) => saveSuccessfulLogin(login));
