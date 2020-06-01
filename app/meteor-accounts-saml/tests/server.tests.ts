@@ -291,7 +291,7 @@ describe('SAML', () => {
 
 				SAMLUtils.updateGlobalSettings(globalSettings);
 				SAMLUtils.relayState = '[RelayState]';
-				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('samlLogin').that.is.an('object');
@@ -369,7 +369,7 @@ describe('SAML', () => {
 				globalSettings.roleAttributeName = 'inexistentField';
 				SAMLUtils.updateGlobalSettings(globalSettings);
 
-				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['user']);
 			});
@@ -390,7 +390,7 @@ describe('SAML', () => {
 
 				SAMLUtils.updateGlobalSettings(globalSettings);
 				SAMLUtils.relayState = '[RelayState]';
-				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('username').that.is.equal('testing');
@@ -418,7 +418,7 @@ describe('SAML', () => {
 
 				SAMLUtils.updateGlobalSettings(globalSettings);
 				SAMLUtils.relayState = '[RelayState]';
-				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('username').that.is.equal('user-[AnotherName]');
@@ -449,7 +449,7 @@ describe('SAML', () => {
 
 				SAMLUtils.updateGlobalSettings(globalSettings);
 				SAMLUtils.relayState = '[RelayState]';
-				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object');
 				// should run the template first, then the regex
@@ -458,8 +458,94 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName] (AnotherName)');
 			});
 
-			
-			// teste para __identifier__
+			it('should collect the values of every attribute on the field map', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					username: 'anotherUsername',
+					email: 'singleEmail',
+					name: 'anotherName',
+					others: {
+						fieldNames: [
+							'issuer',
+							'sessionIndex',
+							'nameID',
+							'displayName',
+							'username',
+							'roles',
+							'otherRoles',
+							'language',
+							'channels',
+							'customField1',
+						],
+					},
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('attributeList').that.is.a('Map').that.have.keys([
+					'anotherUsername',
+					'singleEmail',
+					'anotherName',
+					'issuer',
+					'sessionIndex',
+					'nameID',
+					'displayName',
+					'username',
+					'roles',
+					'otherRoles',
+					'language',
+					'channels',
+					'customField1',
+				]);
+
+				for (const [key, value] of userObject.attributeList) {
+					// @ts-ignore
+					expect(value).to.be.equal(profile[key]);
+				}
+			});
+
+			it('should use the immutable property as default identifier', () => {
+				const { globalSettings } = SAMLUtils;
+
+				globalSettings.immutableProperty = 'EMail';
+				SAMLUtils.updateGlobalSettings(globalSettings);
+
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('identifier').that.has.property('type').that.is.equal('email');
+
+				globalSettings.immutableProperty = 'Username';
+				SAMLUtils.updateGlobalSettings(globalSettings);
+
+				const newUserObject = SAMLUtils.mapProfileToUserObject(profile);
+				expect(newUserObject).to.be.an('object');
+				expect(newUserObject).to.have.property('identifier').that.has.property('type').that.is.equal('username');
+			});
+
+			it('should collect the identifier from the fieldset', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					username: 'anotherUsername',
+					email: 'singleEmail',
+					name: 'anotherName',
+					__identifier__: 'customField3',
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+				SAMLUtils.updateGlobalSettings(globalSettings);
+
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('identifier').that.has.property('type').that.is.equal('custom');
+				expect(userObject).to.have.property('identifier').that.has.property('attribute').that.is.equal('customField3');
+			});
 		});
 	});
 });
