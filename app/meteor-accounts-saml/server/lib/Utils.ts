@@ -268,19 +268,16 @@ export class SAMLUtils {
 
 				const fieldName = attribute.fieldName || attribute.fieldNames;
 				const { regex, template } = attribute;
-				// let attributeName: string;
 
 				if (Array.isArray(fieldName)) {
 					if (!fieldName.length) {
 						throw new Error(`SAML User Map: Invalid configuration for ${ spFieldName } field.`);
 					}
 
-					// attributeName = fieldName[0];
 					for (const idpFieldName of fieldName) {
 						parsedMap.attributeList.add(idpFieldName);
 					}
 				} else {
-					// attributeName = fieldName;
 					parsedMap.attributeList.add(fieldName);
 				}
 

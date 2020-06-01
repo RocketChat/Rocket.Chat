@@ -374,7 +374,91 @@ describe('SAML', () => {
 				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['user']);
 			});
 
-			// teste para RegEx e template
+			it('should run custom regexes when one is used', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					username: {
+						fieldName: 'singleEmail',
+						regex: '(.*)@.+$',
+					},
+					email: 'singleEmail',
+					name: 'anotherName',
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				SAMLUtils.relayState = '[RelayState]';
+				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('username').that.is.equal('testing');
+			});
+
+			it('should run custom templates when one is used', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					username: {
+						fieldName: 'anotherName',
+						template: 'user-__anotherName__',
+					},
+					email: 'singleEmail',
+					name: {
+						fieldNames: [
+							'anotherName',
+							'displayName',
+						],
+						template: '__displayName__ (__anotherName__)',
+					},
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				SAMLUtils.relayState = '[RelayState]';
+				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('username').that.is.equal('user-[AnotherName]');
+				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName] ([AnotherName])');
+			});
+
+			it('should combine regexes and templates when both are used', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					username: {
+						fieldName: 'anotherName',
+						template: 'user-__anotherName__45@7',
+						regex: 'user-(.*)@',
+					},
+					email: 'singleEmail',
+					name: {
+						fieldNames: [
+							'anotherName',
+							'displayName',
+						],
+						regex: '\\[(.*)\\]',
+						template: '__displayName__ (__regex__)',
+					},
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				SAMLUtils.relayState = '[RelayState]';
+				const userObject =	SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				// should run the template first, then the regex
+				expect(userObject).to.have.property('username').that.is.equal('[AnotherName]45');
+				// for this one, should run the regex first, then the template
+				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName] (AnotherName)');
+			});
+
+			
 			// teste para __identifier__
 		});
 	});
