@@ -62,19 +62,19 @@ export async function findChatHistory({ userId, roomId, visitorId, text, closedC
 		skip: offset,
 		limit: count,
 	};
-	const cursor = closedChatsOnly ? LivechatRooms.findClosedByVisitorId(visitorId, options) : LivechatRooms.findByVisitorId(visitorId,options); 
+	const cursor = closedChatsOnly ? LivechatRooms.findClosedByVisitorId(visitorId, options) : LivechatRooms.findByVisitorId(visitorId, options);
 	const total = await cursor.count();
 	const history = await cursor.toArray();
 	const resultArray = [];
 	const searchResultRooms = [];
 	if (text !== undefined) {
 		Meteor.runAsUser(userId, () => {
-			history.map((val) => {
+			history.forEach((val) => {
 				const roomId = val._id;
 				const count = 1;
 				const result = Meteor.call('messageSearch', text, roomId, count).message.docs;
 				if (result.length > 0) {
-					result.map((e) => {
+					result.forEach((e) => {
 						resultArray.push(e);
 					});
 					searchResultRooms.push(val);
