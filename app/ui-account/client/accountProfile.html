@@ -115,8 +115,9 @@
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "StatusMessage"}}</div>
 										<div class="rc-input__wrapper">
-											<div class="rc-input__icon">
-												{{> icon block="rc-input__icon-svg" icon="edit"}}
+											<div class="rc-input__icon js-status-type edit-status-type-icon--{{statusType}}">
+												{{> icon block="rc-input__icon-svg" icon="circle"}}
+												{{> icon block="rc-input__icon-svg" icon="arrow-down"}}
 											</div>
 
 											<input type="text" class="rc-input__element" maxlength="120" name="statusText" id="statusText" placeholder="{{_ "StatusMessage_Placeholder" }}" value="{{get 'statusText'}}" {{ifThenElse canChange '' 'disabled'}}>

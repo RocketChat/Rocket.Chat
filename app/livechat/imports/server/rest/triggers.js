@@ -1,6 +1,6 @@
 import { check } from 'meteor/check';
 
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { findTriggers, findTriggerById } from '../../../server/api/lib/triggers';
 
 API.v1.addRoute('livechat/triggers', { authRequired: true }, {

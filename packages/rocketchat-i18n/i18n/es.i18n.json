@@ -685,6 +685,7 @@
   "Closed_by_visitor": "Cerrado por el visitante",
   "Closing_chat": "Cerrando chat",
   "Cloud_Register_manually": "Registrar manualmente",
+  "Cloud_click_here": "Después de copiar el texto, ve a la consola Cloud. [Haga clic aquí](__cloudConsoleUrl__)",
   "Cloud_register_offline_finish_helper": "Después de completar el proceso de registro en la Cloud Console se le presentará un texto. Por favor, pégalo aquí para terminar el registro.",
   "Cloud_register_offline_helper": "Los espacios de trabajo pueden registrarse manualmente si el acceso a la red está restringido. Copia el texto de abajo y ve a nuestra Cloud Console para completar el proceso.",
   "Cloud_register_success": "¡Su espacio de trabajo ha sido registrado correctamente!",

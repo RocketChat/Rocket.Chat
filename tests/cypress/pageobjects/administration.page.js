@@ -231,10 +231,6 @@ class Administration extends Page {
 
 	get accountsidleTimeLimitReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
 
-	get accountsNotificationDuration() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
-
-	get accountsNotificationDurationReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
-
 	get accountsAudioNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_audioNotifications"]'); }
 
 	get accountsAudioNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_audioNotifications"]'); }

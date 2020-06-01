@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import { Box, Button, Margins, TextInput, Skeleton, Field, ToggleSwitch, Divider, Icon, Callout } from '@rocket.chat/fuselage';
+import { Box, Button, Margins, TextInput, Skeleton, Field, ToggleSwitch, Divider, Icon, Callout, RadioButton	 } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -103,41 +103,31 @@ function EditRoom({ room, onChange }) {
 					<TextInput disabled={deleted} value={(newData.roomTopic ?? room.topic) || ''} onChange={handleChange('roomTopic', room.topic)} flexGrow={1}/>
 				</Field.Row>
 			</Field>
-			<Field mbs='x20'>
+			<Divider />
+			<Field>
 				<Field.Row>
-					<Box display='flex' flexDirection='row' alignItems='flex-start'>
-						<Box display='flex' flexDirection='column' alignItems='flex-end' flexGrow='1' color={roomType !== 'c' ? 'hint' : 'default'}>
-							<Box fontScale='s1'>{t('Public')}</Box>
-							<Box fontScale='p1' style={{ textAlign: 'end' }}>{t('All_users_in_the_channel_can_write_new_messages')}</Box>
-						</Box>
-						<Margins inline='x16'>
-							<ToggleSwitch disabled={deleted} checked={roomType === 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
-						</Margins>
-						<Box display='flex' flexDirection='column' alignItems='flex-start' flexGrow='1' color={roomType !== 'p' ? 'hint' : 'default'}>
-							<Box fontScale='s1'>{t('Private')}</Box>
-							<Box fontScale='p1' style={{ textAlign: 'start' }}>{t('Just_invited_people_can_access_this_channel')}</Box>
-						</Box>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<Field.Label>{t('Public')}</Field.Label>
+						<RadioButton disabled={deleted} checked={roomType === 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
 					</Box>
 				</Field.Row>
-				<Divider />
 			</Field>
-			<Field mbs='x20'>
+			<Field>
 				<Field.Row>
-					<Box display='flex' flexDirection='row' alignItems='flex-start'>
-						<Box display='flex' flexDirection='column' alignItems='flex-end' flexGrow='1' color={readOnly ? 'hint' : 'default'}>
-							<Box fontScale='s1'>{t('Collaborative')}</Box>
-							<Box fontScale='p1' style={{ textAlign: 'end' }}>{t('All_users_in_the_channel_can_write_new_messages')}</Box>
-						</Box>
-						<Margins inline='x16'>
-							<ToggleSwitch disabled={deleted} checked={readOnly} onChange={handleChange('readOnly', room.ro, () => !readOnly)}/>
-						</Margins>
-						<Box display='flex' flexDirection='column' alignItems='flex-start' flexGrow='1' color={!readOnly ? 'hint' : 'default'}>
-							<Box fontScale='s1'>{t('Read_only')}</Box>
-							<Box fontScale='p1' style={{ textAlign: 'start' }}>{t('Only_authorized_users_can_write_new_messages')}</Box>
-						</Box>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<Field.Label>{t('Private')}</Field.Label>
+						<RadioButton disabled={deleted} checked={roomType !== 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
 					</Box>
 				</Field.Row>
-				<Divider />
+			</Field>
+			<Divider />
+			<Field>
+				<Field.Row>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<Field.Label>{t('Read_only')}</Field.Label>
+						<ToggleSwitch disabled={deleted} checked={readOnly} onChange={handleChange('readOnly', room.ro, () => !readOnly)}/>
+					</Box>
+				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Row>

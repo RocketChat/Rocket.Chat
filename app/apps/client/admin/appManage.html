@@ -104,6 +104,22 @@
 									</div>
 								{{/each}}
 
+								{{#if essentials}}
+									<div class="rc-apps-details__alert rc-apps-details__alert-warning">
+										{{_ "Apps_Essential_Alert"}}
+										<ul>
+											{{#each essentials}}
+												<li>
+													<strong>{{interfaceName}}</strong> -
+													{{_ i18nKey}}
+												</li>
+											{{/each}}
+										</ul>
+										<br/>
+										<p>{{_ "Apps_Essential_Disclaimer"}}</p>
+									</div>
+								{{/if}}
+
 								{{#if categories}}
 									<div class="rc-apps-details__row rc-apps-details__block">
 										<h2> {{_ "Categories"}} </h2>

@@ -317,6 +317,12 @@ Template.appManage.helpers({
 	bundleAppNames(apps) {
 		return apps.map((app) => app.latest.name).join(', ');
 	},
+	essentials() {
+		return Template.instance()._app.get('essentials')?.map((interfaceName) => ({
+			interfaceName,
+			i18nKey: `Apps_Interface_${ interfaceName }`,
+		}));
+	},
 });
 
 Template.appManage.events({

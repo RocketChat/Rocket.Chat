@@ -35,19 +35,33 @@ const getFromServer = (cb, type) => {
 			return false;
 		}
 
+		let exactUser = null;
+		let exactRoom = null;
+		if (results.users[0] && results.users[0].username === currentFilter) {
+			exactUser = results.users.shift();
+		}
+		if (results.rooms[0] && results.rooms[0].username === currentFilter) {
+			exactRoom = results.rooms.shift();
+		}
+
 		const resultsFromServer = [];
 
-		resultsFromServer.push(...results.users.map((user) => ({
+		const roomFilter = (room) => !resultsFromClient.find((item) => [item.rid, item._id].includes(room._id));
+		const userMap = (user) => ({
 			_id: user._id,
 			t: 'd',
 			name: user.username,
 			fname: user.name,
-		})));
+		});
 
-		resultsFromServer.push(...results.rooms.filter((room) => !resultsFromClient.find((item) => [item.rid, item._id].includes(room._id))));
+		resultsFromServer.push(...results.users.map(userMap));
+		resultsFromServer.push(...results.rooms.filter(roomFilter));
 
-		if (resultsFromServer.length) {
-			cb(resultsFromClient.concat(resultsFromServer));
+		if (resultsFromServer.length || exactUser || exactRoom) {
+			exactRoom = exactRoom ? [roomFilter(exactRoom)] : [];
+			exactUser = exactUser ? [userMap(exactUser)] : [];
+			const combinedResults = exactUser.concat(exactRoom, resultsFromClient, resultsFromServer);
+			cb(combinedResults);
 		}
 	});
 };

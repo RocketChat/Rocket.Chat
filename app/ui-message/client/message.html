@@ -60,6 +60,9 @@
 							<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
 						</span>
 					{{/if}}
+					{{#if showStar}}
+						<span aria-label="{{_ "Message_has_been_starred"}}" class="starred rc-tooltip rc-tooltip--up rc-tooltip--start"><i class="icon-star"></i></span>
+					{{/if}}
 					{{#if msg.alert}}
 						<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div>
 					{{/if}}
@@ -173,11 +176,9 @@
 			</ul>
 			{{/unless}}
 			{{#if broadcast}}
-				{{#with msg.u}}
-					<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
-						{{> icon icon="reply"}} {{_'Reply'}}
-					</button>
-				{{/with}}
+				<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
+					{{> icon icon="reply"}} {{_'Reply'}}
+				</button>
 			{{/if}}
 			{{#unless hideReactions}}
 			<ul class="reactions">

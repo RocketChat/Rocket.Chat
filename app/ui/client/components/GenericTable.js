@@ -88,6 +88,7 @@ export const GenericTable = forwardRef(function GenericTable({
 					</Box>
 				</Scrollable>
 				<Pagination
+					divider
 					current={current}
 					itemsPerPage={itemsPerPage}
 					itemsPerPageLabel={itemsPerPageLabel}

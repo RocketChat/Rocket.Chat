@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages, Subscriptions } from '../../../models';
+import { Messages, Subscriptions } from '../../../models/server';
 
 // Action Links namespace creation.
 export const actionLinks = {

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Box, Avatar, Margins, Skeleton, Chip, Tag } from '@rocket.chat/fuselage';
+import { Box, Avatar, Margins, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -9,6 +9,7 @@ import { DateFormat } from '../../../app/lib';
 import { UserInfoActions } from './UserInfoActions';
 import MarkdownText from '../../components/basic/MarkdownText';
 import VerticalBar from '../../components/basic/VerticalBar';
+import { FormSkeleton } from './Skeleton';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();
@@ -28,23 +29,16 @@ const UTCClock = ({ utcOffset, ...props }) => {
 	return <Box {...props}>{time} UTC {utcOffset}</Box>;
 };
 
-export function UserInfoWithData({ userId, ...props }) {
+export function UserInfoWithData({ uid, ...props }) {
 	const t = useTranslation();
 	const [cache, setCache] = useState();
 
 	const onChange = () => setCache(new Date());
 
-	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId }), [userId, cache]));
+	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId: uid }), [uid, cache]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
-		return <Box w='full' pb='x24'>
-			<Skeleton mbe='x4'/>
-			<Skeleton mbe='x8' />
-			<Skeleton mbe='x4'/>
-			<Skeleton mbe='x8'/>
-			<Skeleton mbe='x4'/>
-			<Skeleton mbe='x8'/>
-		</Box>;
+		return <FormSkeleton/>;
 	}
 
 	if (error) {
@@ -65,19 +59,19 @@ export function UserInfo({ data, onChange, ...props }) {
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
-		<Box display='flex' flexDirection='column' alignItems='center'>
-			<Margins block='x2'>
+		<Box display='flex' flexDirection='column' alignItems='center' flexShrink={0} withTruncatedText>
+			<Margins block='x2' inline='auto'>
 				<Avatar size={'x120'} title={data.username} url={avatarUrl}/>
-				<Box fontScale='h1'>{data.name || data.username}</Box>
-				{!!data.name && <Box fontScale='p1' color='hint'>@{data.username}</Box>}
-				<Box fontScale='p1' color='hint'>{data.status}</Box>
+				<Box fontScale='h1' withTruncatedText>{data.name || data.username}</Box>
+				{!!data.name && <Box fontScale='p1' color='hint' withTruncatedText>@{data.username}</Box>}
+				<Box fontScale='p1' color='hint' withTruncatedText>{data.status}</Box>
 			</Margins>
 		</Box>
 
 		<UserInfoActions isActive={data.active} isAdmin={data.roles.includes('admin')} _id={data._id} username={data.username} onChange={onChange}/>
-		<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16'>
+		<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16' withTruncatedTex flexShrink={0}t>
 			<Margins blockEnd='x4'>
-				{data.bio && data.bio.trim().length > 0 && <MarkdownText fontScale='s1'>{data.bio}</MarkdownText>}
+				{data.bio && data.bio.trim().length > 0 && <Box withTruncatedText> <MarkdownText fontScale='s1'>{data.bio}</MarkdownText></Box>}
 				{!!data.roles.length && <>
 					<Box fontScale='micro' color='hint' mbs='none'>{t('Roles')}</Box>
 					<Box display='flex' flexDirection='row' flexWrap='wrap'>
@@ -89,7 +83,7 @@ export function UserInfo({ data, onChange, ...props }) {
 
 				{data.emails && <> <Box fontScale='micro' color='hint'>{t('Email')}</Box>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Box fontScale='s1'>{data.emails[0].address}</Box>
+						<Box fontScale='s1' withTruncatedText>{data.emails[0].address}</Box>
 						<Margins inline='x4'>
 							{data.emails[0].verified && <Tag variant='primary'>{t('Verified')}</Tag>}
 							{data.emails[0].verified || <Tag disabled>{t('Not_verified')}</Tag>}
