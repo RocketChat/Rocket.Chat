@@ -14,7 +14,7 @@ import {
 } from './functions/hasPermission';
 import { hasRole } from './functions/hasRole';
 import { removeUserFromRoles } from './functions/removeUserFromRoles';
-import { AuthorizationUtils } from './lib/AuthorizationUtils';
+import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 import './methods/addPermissionToRole';
 import './methods/addUserToRole';
 import './methods/deleteRole';

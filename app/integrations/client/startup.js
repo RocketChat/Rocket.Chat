@@ -1,5 +1,5 @@
 import { hasAtLeastOnePermission } from '../../authorization';
-import { registerAdminSidebarItem } from '../../ui-admin/client';
+import { registerAdminSidebarItem } from '../../../client/admin';
 
 registerAdminSidebarItem({
 	href: 'admin-integrations',

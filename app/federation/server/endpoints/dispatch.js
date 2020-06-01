@@ -225,10 +225,16 @@ const eventHandlers = {
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
 
-					// Update the message's attachments
+					// Update the message's attachments dependent on type
 					for (const attachment of denormalizedMessage.attachments) {
 						attachment.title_link = attachment.title_link.replace(oldUploadId, upload._id);
-						attachment.image_url = attachment.image_url.replace(oldUploadId, upload._id);
+						if (/^image\/.+/.test(denormalizedMessage.file.type)) {
+							attachment.image_url = attachment.image_url.replace(oldUploadId, upload._id);
+						} else if (/^audio\/.+/.test(denormalizedMessage.file.type)) {
+							attachment.audio_url = attachment.audio_url.replace(oldUploadId, upload._id);
+						} else if (/^video\/.+/.test(denormalizedMessage.file.type)) {
+							attachment.video_url = attachment.video_url.replace(oldUploadId, upload._id);
+						}
 					}
 				}
 

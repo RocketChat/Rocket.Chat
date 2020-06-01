@@ -4,10 +4,10 @@
 			<fieldset class="rc-form-legend">
 				<div class="rc-form-group">
 					{{#if enabled}}
-						<button class="button reload">{{_ "Reload_Pages"}}</button>
-						<button class="button danger disable">{{_ "Disable"}}</button>
+						<button class="rc-button rc-button--secondary reload">{{_ "Reload_Pages"}}</button>
+						<button class="rc-button rc-button--danger disable">{{_ "Disable"}}</button>
 					{{else}}
-						<button class="button primary enable" {{enableButtonDisabled}}>{{_ "Enable"}}</button>
+						<button class="rc-button rc-button--primary enable" {{enableButtonDisabled}}>{{_ "Enable"}}</button>
 						{{#unless hasToken}}
 							<div class="rc-input__wrapper">
 								<p>{{_ "You_have_to_set_an_API_token_first_in_order_to_use_the_integration"}}</p>

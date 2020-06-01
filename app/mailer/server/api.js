@@ -23,7 +23,7 @@ settings.get('Language', (key, value) => {
 	lng = value || 'en';
 });
 
-export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
+export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), s.escapeHTML(value));
 export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
 export const replace = function replace(str, data = {}) {
 	if (!str) {

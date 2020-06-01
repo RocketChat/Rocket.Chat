@@ -91,3 +91,27 @@ export async function findChatHistory({ userId, roomId, visitorId, text, closedC
 		searchResultRooms,
 	};
 }
+
+export async function findVisitorsToAutocomplete({ userId, selector }) {
+	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+		return { items: [] };
+	}
+	const { exceptions = [], conditions = {} } = selector;
+
+	const options = {
+		fields: {
+			_id: 1,
+			name: 1,
+			username: 1,
+		},
+		limit: 10,
+		sort: {
+			name: 1,
+		},
+	};
+
+	const items = await LivechatVisitors.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
+	return {
+		items,
+	};
+}

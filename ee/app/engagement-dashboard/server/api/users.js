@@ -1,6 +1,6 @@
 import { check } from 'meteor/check';
 
-import { API } from '../../../../../app/api';
+import { API } from '../../../../../app/api/server';
 import {
 	findWeeklyUsersRegisteredData,
 	findActiveUsersMonthlyData,

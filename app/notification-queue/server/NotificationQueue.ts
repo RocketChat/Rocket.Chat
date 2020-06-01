@@ -53,8 +53,6 @@ class NotificationClass {
 			return this.worker(counter);
 		}
 
-		console.log('processing', notification._id);
-
 		try {
 			for (const item of notification.items) {
 				switch (item.type) {

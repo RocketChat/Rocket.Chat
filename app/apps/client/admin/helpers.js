@@ -363,11 +363,12 @@ export const appStatusSpanProps = ({
 
 export const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
 
-export const formatPricingPlan = ({ strategy, price, tiers }) => {
+export const formatPricingPlan = ({ strategy, price, tiers = [] }) => {
 	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',
+		Array.isArray(tiers) && tiers.length > 0 && 'startingAt',
 		strategy,
 		perUnit && 'perUser',
 	].filter(Boolean).join('_');
