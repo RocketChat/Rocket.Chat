@@ -1,16 +1,17 @@
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
-import { Box, Table, TextInput, Icon, Tag, Avatar } from '@rocket.chat/fuselage';
+import { Box, Table, TextInput, Icon, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import PriceDisplay from './PriceDisplay';
-import { AppStatus } from './AppStatus';
+import AppAvatar from '../../components/basic/avatar/AppAvatar';
+import AppStatus from './AppStatus';
 import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
 import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useFilteredMarketplaceApps } from './hooks/useFilteredMarketplaceApps';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
-import { AppMenu } from './AppMenu';
+import AppMenu from './AppMenu';
 
 const FilterByText = React.memo(({ setFilter, ...props }) => {
 	const t = useTranslation();
@@ -27,8 +28,6 @@ const FilterByText = React.memo(({ setFilter, ...props }) => {
 		<TextInput placeholder={t('Search_Apps')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 });
-
-const objectFit = { objectFit: 'contain' };
 
 export function MarketplaceTable({ setModal }) {
 	const t = useTranslation();
@@ -81,6 +80,7 @@ export function MarketplaceTable({ setModal }) {
 			price,
 			iconFileData,
 			marketplaceVersion,
+			iconFileContent,
 			installed,
 		} = props;
 
@@ -92,7 +92,7 @@ export function MarketplaceTable({ setModal }) {
 
 		return useMemo(() => <Table.Row key={id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
 			<Table.Cell withTruncatedText display='flex' flexDirection='row'>
-				<Avatar style={objectFit} size='x40' mie='x8' alignSelf='center' url={`data:image/png;base64,${ iconFileData }`}/>
+				<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
 				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
 					<Box color='default' fontScale='p2'>{name}</Box>
 					<Box color='default' fontScale='p2'>{`${ t('By') } ${ authorName }`}</Box>

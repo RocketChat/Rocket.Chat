@@ -12,9 +12,9 @@ const LogItem = ({ entries, instanceId, title, t, ...props }) => {
 	const hilightCode = useHilightCode();
 
 	return <Accordion.Item title={title} {...props}>
-		{instanceId && <Box>{`${ t('Instance') }: ${ instanceId }`}</Box>}
+		{instanceId && <Box>{t('Instance')}: {instanceId}</Box>}
 		{entries.map((entry, i) => <Box key={i}>
-			<Box>{`${ entry.severity }: ${ entry.timestamp } ( ${ t('Caller') }: ${ entry.caller })`}</Box>
+			<Box>{ entry.severity }: { entry.timestamp } { t('Caller') }: { entry.caller }</Box>
 			<Box withRichContent w='full'>
 				<pre><code dangerouslySetInnerHTML={{ __html: hilightCode('json', JSON.stringify(entry.args, null, 2)) }}></code></pre>
 			</Box>

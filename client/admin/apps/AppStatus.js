@@ -29,7 +29,7 @@ const actions = {
 	},
 };
 
-export const AppStatus = React.memo(({ app, setModal, isLoggedIn, showStatus = true, ...props }) => {
+const AppStatus = React.memo(({ app, setModal, isLoggedIn, showStatus = true, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useState();
 
@@ -85,3 +85,5 @@ export const AppStatus = React.memo(({ app, setModal, isLoggedIn, showStatus = t
 		</Box>}
 	</Box>;
 });
+
+export default AppStatus;
