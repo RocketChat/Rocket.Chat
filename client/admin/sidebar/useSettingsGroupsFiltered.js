@@ -13,14 +13,14 @@ export const useSettingsGroupsFiltered = (textFilter) => {
 	const filter = useDebouncedValue(textFilter, 400);
 
 	useEffect(() => {
-		(async () => {
+		(async function initCollection() {
 			if (!settings.cachedCollectionPrivate) {
 				settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection();
 				settings.collectionPrivate = settings.cachedCollectionPrivate.collection;
 				await settings.cachedCollectionPrivate.init();
 			}
 			setCollection(settings.collectionPrivate);
-		})();
+		}());
 	}, []);
 
 	return useMemo(() => {

@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useMemo } from 'react';
 import { Box, Button, Icon, SearchInput, Scrollable } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
 
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -9,7 +10,15 @@ import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { sidebarItems } from '../sidebarItems';
 import { useSettingsGroupsFiltered } from './useSettingsGroupsFiltered';
 
-import './styles.css';
+const style = css`
+	&:hover,
+	&.active:hover {
+		background-color: var(--sidebar-background-light-hover);
+	}
+
+	&.active {
+		background-color: var(--sidebar-background-light-active);
+	}`;
 
 const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
 	if (permissionGranted && !permissionGranted()) { return null; }
@@ -26,12 +35,11 @@ const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentP
 		display='flex'
 		flexDirection='row'
 		alignItems='center'
-		rcx-sidebar--item
-		rcx-sidebar--item-active={isActive}
+		className={[isActive && 'active', style].filter(Boolean)}
 	>
 		{icon && <Icon name={icon} size='x16' mi='x2'/>}
 		<Box withTruncatedText fontScale='p1' mi='x4'>{label}</Box>
-	</Box>, [path, label, name, icon]);
+	</Box>, [path, label, name, icon, isActive]);
 };
 
 const SidebarItemsAssembler = ({ items, currentPath }) => {

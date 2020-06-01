@@ -6,7 +6,8 @@ import { createTemplateForComponent } from '../reactAdapters';
 
 function AdministrationRouter({ lazyRouteComponent, ...props }) {
 	useEffect(() => {
-		SideNav.setFlex(createTemplateForComponent('AdminSidebar', () => import('./sidebar/AdminSidebar')));
+		const templateName = createTemplateForComponent('AdminSidebar', () => import('./sidebar/AdminSidebar'));
+		SideNav.setFlex(templateName);
 		SideNav.openFlex();
 	}, []);
 
