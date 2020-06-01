@@ -1,17 +1,14 @@
 import zlib from 'zlib';
 
 import _ from 'underscore';
-// import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 
-
-// @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would bring a lot of baggace with it's dependencies, affecting the unit tests)
+// @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would bring a lot of baggage with its dependencies, affecting the unit tests)
 type NullableLogger = Logger | Null;
-
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
@@ -461,10 +458,9 @@ export class SAMLUtils {
 			userObject.roles = this.ensureArray<string>((profile[roleAttributeName] || '').split(','));
 		}
 
-		// const languages = TAPi18n.getLanguages();
-		// if (languages[profile.language]) {
-		// 	userObject.language = profile.language;
-		// }
+		if (profile.language) {
+			userObject.language = profile.language;
+		}
 
 		if (profile.channels) {
 			userObject.channels = profile.channels.split(',');

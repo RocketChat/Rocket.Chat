@@ -3,6 +3,7 @@ import { ServerResponse } from 'http';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Accounts } from 'meteor/accounts-base';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
 import s from 'underscore.string';
 
@@ -369,7 +370,10 @@ export class SAML {
 			}
 
 			if (userObject.language) {
-				newUser.language = userObject.language;
+				const languages = TAPi18n.getLanguages();
+				if (languages[userObject.language]) {
+					newUser.language = userObject.language;
+				}
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);
