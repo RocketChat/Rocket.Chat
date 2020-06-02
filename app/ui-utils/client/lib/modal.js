@@ -70,6 +70,9 @@ const createModal = (config = {}, fn, onCancel) => {
 		},
 
 		close: () => {
+			if (onCancel) {
+				onCancel.call(instance);
+			}
 			instance.destroy();
 			modalStack = modalStack.filter((modal) => modal !== instance);
 			if (modalStack.length) {
@@ -89,9 +92,6 @@ const createModal = (config = {}, fn, onCancel) => {
 		},
 
 		cancel: () => {
-			if (onCancel) {
-				onCancel.call(instance);
-			}
 			instance.close();
 		},
 
@@ -269,8 +269,6 @@ Template.rc_modal.events({
 			this.confirm(document.getElementsByClassName('js-modal-input')[0].value);
 			return;
 		}
-
-		document.getElementById('textarea').value = '';
 
 		this.confirm(true);
 	},
