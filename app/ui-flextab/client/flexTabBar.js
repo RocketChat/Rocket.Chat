@@ -207,7 +207,6 @@ Template.RoomsActionTab.events({
 			currentTarget: e.currentTarget,
 			offsetHorizontal: -e.currentTarget.clientWidth,
 			offsetVertical: e.currentTarget.clientHeight + 10,
-			currentWindowWidth: window.innerWidth,
 		};
 
 		popover.open(config);

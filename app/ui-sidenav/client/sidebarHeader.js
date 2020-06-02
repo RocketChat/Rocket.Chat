@@ -72,7 +72,6 @@ const toolbarButtons = (/* user */) => [{
 				options,
 			},
 			offsetVertical: e.currentTarget.clientHeight + 10,
-			currentWindowWidth: window.innerWidth,
 		};
 		popover.open(config);
 	},
@@ -142,7 +141,6 @@ const toolbarButtons = (/* user */) => [{
 			],
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight + 10,
-			currentWindowWidth: window.innerWidth,
 		};
 		popover.open(config);
 	},
@@ -209,7 +207,6 @@ const toolbarButtons = (/* user */) => [{
 			],
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight + 10,
-			currentWindowWidth: window.innerWidth,
 		};
 
 		popover.open(config);
@@ -344,7 +341,6 @@ Template.sidebarHeader.events({
 				],
 				currentTarget: e.currentTarget,
 				offsetVertical: e.currentTarget.clientHeight + 10,
-				currentWindowWidth: window.innerWidth,
 			};
 
 			popover.open(config);

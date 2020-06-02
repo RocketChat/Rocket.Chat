@@ -54,9 +54,8 @@ Template.popover.onRendered(function() {
 	});
 	const { offsetVertical = 0, offsetHorizontal = 0 } = this.data;
 	const { activeElement } = this.data;
-	const { currentWindowWidth } = this.data;
-	const distanceRight = currentWindowWidth - this.data.targetRect.x;
 	const distanceLeft = this.data.targetRect.x;
+	const distanceRight = window.innerWidth - distanceLeft;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
@@ -73,7 +72,6 @@ Template.popover.onRendered(function() {
 			x: this.data.targetRect[horizontalDirection === 'left' ? 'right' : 'left'],
 			y: this.data.targetRect[verticalDirection],
 		};
-
 		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
 		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
 

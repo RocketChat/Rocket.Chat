@@ -138,7 +138,6 @@ const mountPopover = (e, i, outerContext) => {
 		data: outerContext,
 		activeElement: $(e.currentTarget).parents('.message')[0],
 		onRendered: () => new Clipboard('.rc-popover__item'),
-		currentWindowWidth: window.innerWidth,
 	};
 
 	popover.open(config);
@@ -869,7 +868,6 @@ Template.room.events({
 			currentTarget: e.currentTarget,
 			activeElement: $(e.currentTarget).parents('.message')[0],
 			onRendered: () => new Clipboard('.rc-popover__item'),
-			currentWindowWidth: window.innerWidth,
 		};
 
 		popover.open(config);

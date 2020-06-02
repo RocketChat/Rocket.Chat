@@ -31,7 +31,6 @@ Template.livechatAnalyticsDaterange.events({
 						daterange: Template.currentData().daterange,
 					},
 					offsetVertical: target.clientHeight + 10,
-					currentWindowWidth: window.innerWidth,
 				};
 				popover.open(config);
 				break;

@@ -214,7 +214,6 @@ Template.membersList.events({
 			offsetHorizontal: 15,
 			activeElement: e.currentTarget,
 			currentTarget: e.currentTarget,
-			currentWindowWidth: window.innerWidth,
 			onDestroyed: () => {
 				e.currentTarget.parentElement.classList.remove('active');
 			},
