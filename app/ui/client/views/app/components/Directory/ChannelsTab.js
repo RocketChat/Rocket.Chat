@@ -8,6 +8,7 @@ import { useTranslation } from '../../../../../../../client/contexts/Translation
 import { useRoute } from '../../../../../../../client/contexts/RouterContext';
 import { useQuery, useFormatDate } from '../hooks';
 import { roomTypes } from '../../../../../../utils/client';
+import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -49,7 +50,9 @@ export function ChannelsTab() {
 
 	const channelRoute = useRoute('channel');
 
-	const data = useEndpointData('GET', 'directory', query) || {};
+	const canViewPublicRooms = usePermission('view-c-room');
+
+	const data = (canViewPublicRooms && useEndpointData('GET', 'directory', query)) || { result: [] };
 
 	const onClick = useMemo(() => (name) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {

@@ -12,8 +12,9 @@ import {
 	hasAtLeastOnePermission,
 	hasPermission,
 } from './functions/hasPermission';
-import { hasRole } from './functions/hasRole';
+import { hasRole, subscriptionHasRole } from './functions/hasRole';
 import { removeUserFromRoles } from './functions/removeUserFromRoles';
+import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 import './methods/addPermissionToRole';
 import './methods/addUserToRole';
 import './methods/deleteRole';
@@ -27,6 +28,7 @@ export {
 	getRoles,
 	getUsersInRole,
 	hasRole,
+	subscriptionHasRole,
 	removeUserFromRoles,
 	canSendMessage,
 	addRoomAccessValidator,
@@ -36,4 +38,5 @@ export {
 	hasAllPermission,
 	hasAtLeastOnePermission,
 	hasPermission,
+	AuthorizationUtils,
 };

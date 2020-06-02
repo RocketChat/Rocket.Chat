@@ -8,7 +8,7 @@ import { registerAdminRoute, registerAdminSidebarItem } from '../../ui-admin/cli
 import { hasAtLeastOnePermission } from '../../authorization';
 
 registerAdminRoute('/cloud', {
-	name: 'cloud-config',
+	name: 'cloud',
 	async action() {
 		await import('./admin');
 		BlazeLayout.render('main', { center: 'cloud', old: true });
@@ -25,7 +25,7 @@ registerAdminRoute('/cloud/oauth-callback', {
 
 registerAdminSidebarItem({
 	icon: 'cloud-plus',
-	href: 'admin/cloud',
+	href: 'cloud',
 	i18nLabel: 'Connectivity_Services',
 	permissionGranted() {
 		return hasAtLeastOnePermission(['manage-cloud']);

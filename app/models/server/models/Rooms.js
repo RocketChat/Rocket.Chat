@@ -4,6 +4,7 @@ import s from 'underscore.string';
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
+import { getValidRoomName } from '../../../utils';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -253,6 +254,22 @@ export class Rooms extends Base {
 		const query = { importIds: _id };
 
 		return this.findOne(query, options);
+	}
+
+	findOneByNonValidatedName(name, options) {
+		const room = this.findOneByName(name, options);
+		if (room) {
+			return room;
+		}
+
+		let channelName = s.trim(name);
+		try {
+			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
+		} catch (e) {
+			console.error(e);
+		}
+
+		return this.findOneByName(channelName, options);
 	}
 
 	findOneByName(name, options) {

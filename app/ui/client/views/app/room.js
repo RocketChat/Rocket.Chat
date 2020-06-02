@@ -1072,6 +1072,10 @@ Template.room.onCreated(function() {
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
+	callbacks.run('onCreateRoomTabBar', {
+		tabBar: this.tabBar,
+		room: Rooms.findOne(rid, { fields: { t: 1 } }),
+	});
 
 	this.hideLeaderHeader = new ReactiveVar(false);
 
@@ -1378,8 +1382,6 @@ Template.room.onRendered(function() {
 		if (!room) {
 			return FlowRouter.go('home');
 		}
-
-		callbacks.run('onRenderRoom', template, room);
 	});
 
 	const observer = new ResizeObserver(template.sendToBottomIfNecessary);

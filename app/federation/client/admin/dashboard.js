@@ -77,7 +77,7 @@ registerAdminRoute('/federation-dashboard', {
 
 registerAdminSidebarItem({
 	icon: 'discover',
-	href: 'admin/federation-dashboard',
+	href: 'federation-dashboard',
 	i18nLabel: 'Federation Dashboard',
 	permissionGranted() {
 		return hasRole(Meteor.userId(), 'admin');

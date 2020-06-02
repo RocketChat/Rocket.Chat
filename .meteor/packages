@@ -66,7 +66,6 @@ nooitaf:colors
 ostrio:cookies
 pauli:accounts-linkedin
 raix:handlebar-helpers
-rocketchat:push
 raix:ui-dropped-event
 
 rocketchat:tap-i18n
@@ -87,7 +86,6 @@ matb33:collection-hooks
 meteorhacks:inject-initial
 oauth@1.2.8
 oauth2@1.2.1
-raix:eventemitter
 routepolicy@1.1.0
 sha@1.0.9
 templating

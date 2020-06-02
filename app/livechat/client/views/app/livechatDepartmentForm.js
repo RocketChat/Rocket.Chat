@@ -265,7 +265,7 @@ Template.livechatDepartmentForm.onCreated(async function() {
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');
 		if (id) {
-			const { department, agents } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
+			const { department, agents = [] } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
 			this.department.set(department);
 			this.departmentAgents.set(agents);
 			this.chatClosingTags.set((department && department.chatClosingTags) || []);

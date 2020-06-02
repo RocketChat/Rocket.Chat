@@ -108,7 +108,7 @@ export const Livechat = {
 		});
 	},
 
-	async getRoom(guest, message, roomInfo, agent) {
+	async getRoom(guest, message, roomInfo, agent, extraData) {
 		let room = LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
 
@@ -128,7 +128,7 @@ export const Livechat = {
 			}
 
 			// delegate room creation to QueueManager
-			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent });
+			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent, extraData });
 			newRoom = true;
 		}
 
@@ -320,7 +320,8 @@ export const Livechat = {
 			return false;
 		}
 
-		const extraData = callbacks.run('livechat.beforeCloseRoom', { room, options });
+		const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
+		const { extraData } = params;
 
 		const now = new Date();
 		const { _id: rid, servedBy } = room;
@@ -367,7 +368,12 @@ export const Livechat = {
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
+			/**
+			 * @deprecated the `AppInterface.ILivechatRoomClosedHandler` event will be removed
+			 * in the next major version of the Apps-Engine
+			 */
 			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomClosedHandler, room);
+			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatRoomClosed, room);
 			callbacks.run('livechat.closeRoom', room);
 		});
 
@@ -540,7 +546,7 @@ export const Livechat = {
 
 	saveTransferHistory(room, transferData) {
 		const { departmentId: previousDepartment } = room;
-		const { department: nextDepartment, transferredBy, transferredTo, scope } = transferData;
+		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
 
 		check(transferredBy, Match.ObjectIncluding({
 			_id: String,
@@ -556,6 +562,7 @@ export const Livechat = {
 				transferredBy,
 				ts: new Date(),
 				scope: scope || (nextDepartment ? 'department' : 'agent'),
+				comment,
 				...previousDepartment && { previousDepartment },
 				...nextDepartment && { nextDepartment },
 				...transferredTo && { transferredTo },
@@ -627,6 +634,16 @@ export const Livechat = {
 		const visitor = LivechatVisitors.findOneById(room.v._id);
 		const agent = Users.findOneById(room.servedBy && room.servedBy._id);
 
+		const externalCustomFields = () => {
+			try {
+				const customFields = JSON.parse(settings.get('Accounts_CustomFields'));
+				return Object.keys(customFields)
+					.filter((customFieldKey) => customFields[customFieldKey].sendToIntegrations === true);
+			} catch (error) {
+				return [];
+			}
+		};
+
 		const ua = new UAParser();
 		ua.setUA(visitor.userAgent);
 
@@ -654,11 +671,16 @@ export const Livechat = {
 		};
 
 		if (agent) {
+			const { customFields: agentCustomFields = {} } = agent;
+			const externalCF = externalCustomFields();
+			const customFields = Object.keys(agentCustomFields).reduce((newObj, key) => (externalCF.includes(key) ? { ...newObj, [key]: agentCustomFields[key] } : newObj), null);
+
 			postData.agent = {
 				_id: agent._id,
 				username: agent.username,
 				name: agent.name,
 				email: null,
+				...customFields && { customFields },
 			};
 
 			if (agent.emails && agent.emails.length > 0) {
@@ -872,7 +894,13 @@ export const Livechat = {
 			throw new Meteor.Error('department-not-found', 'Department not found', { method: 'livechat:removeDepartment' });
 		}
 
-		return LivechatDepartment.removeById(_id);
+		const ret = LivechatDepartment.removeById(_id);
+		if (ret) {
+			Meteor.defer(() => {
+				callbacks.run('livechat.afterRemoveDepartment', department);
+			});
+		}
+		return ret;
 	},
 
 	showConnecting() {

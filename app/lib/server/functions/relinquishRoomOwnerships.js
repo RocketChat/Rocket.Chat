@@ -1,6 +1,6 @@
-import { hasRole, getUsersInRole, addUserRoles } from '../../../authorization';
+import { subscriptionHasRole } from '../../../authorization';
 import { FileUpload } from '../../../file-upload';
-import { Users, Subscriptions, Messages, Rooms } from '../../../models';
+import { Users, Subscriptions, Messages, Rooms, Roles } from '../../../models';
 
 const bulkRoomCleanUp = (rids) => {
 	// no bulk deletion for files
@@ -17,51 +17,45 @@ export const relinquishRoomOwnerships = function(userId, removeDirectMessages = 
 	const roomCache = [];
 
 	// Iterate through all the rooms the user is subscribed to, to check if they are the last owner of any of them.
-	Subscriptions.db.findByUserId(userId).forEach((subscription) => {
-		// DMs don't have owners
-		if (subscription.t === 'd') {
-			return;
-		}
-
+	Subscriptions.findByUserIdExceptType(userId, 'd').forEach((subscription) => {
 		const roomData = {
 			rid: subscription.rid,
 			t: subscription.t,
 			subscribers: null,
 		};
 
-		if (hasRole(userId, 'owner', subscription.rid)) {
+		if (subscriptionHasRole(subscription, 'owner')) {
 			// Fetch the number of owners
-			const numOwners = getUsersInRole('owner', subscription.rid).fetch().length;
+			const numOwners = Subscriptions.findByRoomIdAndRoles(subscription.rid, ['owner']).count();
 			// If it's only one, then this user is the only owner.
 			if (numOwners === 1) {
 				// Let's check how many subscribers the room has.
 				const options = { sort: { ts: 1 } };
 				const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
-				roomData.subscribers = subscribersCursor.count();
 
 				let changedOwner = false;
 
 				subscribersCursor.forEach((subscriber) => {
+					// If we already changed the owner or this subscription is for the user we are removing, then don't try to give it ownership
 					if (changedOwner || subscriber.u._id === userId) {
-						return false;
+						return;
 					}
 
-					const newOwner = Users.findOneById(subscriber.u._id);
-					if (!newOwner || !newOwner.active) {
-						return true;
+					const newOwner = Users.findOneActiveById(subscriber.u._id, { fields: { _id: 1 } });
+					if (!newOwner) {
+						return;
 					}
 
-					addUserRoles(subscriber.u._id, 'owner', subscriber.rid);
+					Roles.addUserRoles(subscriber.u._id, ['owner'], subscriber.rid);
 					changedOwner = true;
-					return false;
 				});
 
-				// If there's no subscriber available to be the new owner, we can remove this room.
-				if (!changedOwner) {
+				// If there's no subscriber available to be the new owner and it's not a public room, we can remove it.
+				if (!changedOwner && roomData.t !== 'c') {
 					roomData.remove = true;
 				}
 			}
-		} else {
+		} else if (roomData.t !== 'c') {
 			// If the user is not an owner, remove the room if the user is the only subscriber
 			roomData.remove = Subscriptions.findByRoomId(roomData.rid).count() === 1;
 		}

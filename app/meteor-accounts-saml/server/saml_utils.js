@@ -386,13 +386,25 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 
 		try {
 			const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
-			const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
+
+			const nameNodes1 = request.getElementsByTagName('saml:NameID');
+			const nameNodes2 = request.getElementsByTagName('NameID');
+
+			let nameIdNode;
+			if (nameNodes1 && nameNodes1.length) {
+				nameIdNode = nameNodes1[0];
+			} else if (nameNodes2 && nameNodes2.length) {
+				nameIdNode = nameNodes2[0];
+			} else {
+				throw new Error('SAML Logout Request: No NameID node found');
+			}
 
 			const idpSession = sessionNode.childNodes[0].nodeValue;
 			const nameID = nameIdNode.childNodes[0].nodeValue;
 
 			return callback(null, { idpSession, nameID });
 		} catch (e) {
+			console.error(e);
 			debugLog(`Caught error: ${ e }`);
 
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
@@ -772,23 +784,13 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 
 	const metadata = {
 		EntityDescriptor: {
+			'@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+			'@xsi:schemaLocation': 'urn:oasis:names:tc:SAML:2.0:metadata https://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd',
 			'@xmlns': 'urn:oasis:names:tc:SAML:2.0:metadata',
 			'@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
 			'@entityID': this.options.issuer,
 			SPSSODescriptor: {
 				'@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-				SingleLogoutService: {
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-					'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-					'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-				},
-				NameIDFormat: this.options.identifierFormat,
-				AssertionConsumerService: {
-					'@index': '1',
-					'@isDefault': 'true',
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-					'@Location': callbackUrl,
-				},
 			},
 		},
 	};
@@ -825,6 +827,19 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 			],
 		};
 	}
+
+	metadata.EntityDescriptor.SPSSODescriptor.SingleLogoutService = {
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+		'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+		'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+	};
+	metadata.EntityDescriptor.SPSSODescriptor.NameIDFormat = this.options.identifierFormat;
+	metadata.EntityDescriptor.SPSSODescriptor.AssertionConsumerService = {
+		'@index': '1',
+		'@isDefault': 'true',
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+		'@Location': callbackUrl,
+	};
 
 	return xmlbuilder.create(metadata).end({
 		pretty: true,

@@ -1,3 +1,4 @@
+import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
@@ -11,6 +12,7 @@ import { createLivechatSubscription,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
+import { Apps } from '../../../apps/server';
 
 export const RoutingManager = {
 	methodName: null,
@@ -74,8 +76,12 @@ export const RoutingManager = {
 		Rooms.incUsersCountById(rid);
 
 		const user = Users.findOneById(agent.agentId);
+		const room = LivechatRooms.findOneById(rid);
+
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
 		dispatchAgentDelegated(rid, agent.agentId);
+
+		Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
 	},
 
@@ -98,6 +104,7 @@ export const RoutingManager = {
 		}
 
 		const { servedBy } = room;
+
 		if (servedBy) {
 			removeAgentFromSubscription(rid, servedBy);
 			LivechatRooms.removeAgentByRoomId(rid);

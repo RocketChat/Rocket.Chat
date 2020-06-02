@@ -196,7 +196,10 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.info]', () => {
-		after(() => updatePermission('view-other-user-channels', ['admin']));
+		after(() => {
+			updatePermission('view-other-user-channels', ['admin']);
+			updatePermission('view-full-other-user-info', ['admin']);
+		});
 
 		it('should return an error when the user does not exist', (done) => {
 			request.get(api('users.info'))
@@ -212,7 +215,6 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
 				.set(credentials)
@@ -289,6 +291,45 @@ describe('[Users]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.nested.property('user.rooms');
+					})
+					.end(done);
+			});
+		});
+		it('should NOT return some services fields when request to another user\'s info even if the user has the necessary permission', (done) => {
+			updatePermission('view-full-other-user-info', ['admin']).then(() => {
+				request.get(api('users.info'))
+					.set(credentials)
+					.query({
+						userId: targetUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.services.emailCode');
+						expect(res.body).to.not.have.nested.property('user.services.cloud');
+						expect(res.body).to.not.have.nested.property('user.services.email2fa');
+						expect(res.body).to.not.have.nested.property('user.services.totp');
+						expect(res.body).to.not.have.nested.property('user.services.password');
+						expect(res.body).to.not.have.nested.property('user.services.email');
+						expect(res.body).to.not.have.nested.property('user.services.resume');
+					})
+					.end(done);
+			});
+		});
+		it('should return all services fields when request for myself data even without privileged permission', (done) => {
+			updatePermission('view-full-other-user-info', []).then(() => {
+				request.get(api('users.info'))
+					.set(credentials)
+					.query({
+						userId: credentials['X-User-Id'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.services.password');
+						expect(res.body).to.have.nested.property('user.services.resume');
 					})
 					.end(done);
 			});

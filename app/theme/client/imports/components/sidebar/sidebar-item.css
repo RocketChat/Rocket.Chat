@@ -5,6 +5,10 @@
 		background-color: var(--sidebar-background-light-hover);
 	}
 
+	&--active {
+		background-color: var(--sidebar-background-light-active);
+	}
+
 	&__picture {
 		color: inherit;
 	}

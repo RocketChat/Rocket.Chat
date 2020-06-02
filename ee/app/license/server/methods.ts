@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasLicense, getModules } from './license';
+import { hasLicense, getModules, isEnterprise } from './license';
 
 Meteor.methods({
 	'license:hasLicense'(feature: string) {
@@ -11,5 +11,8 @@ Meteor.methods({
 	},
 	'license:getModules'() {
 		return getModules();
+	},
+	'license:isEnterprise'() {
+		return isEnterprise();
 	},
 });

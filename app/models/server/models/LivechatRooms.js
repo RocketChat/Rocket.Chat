@@ -72,8 +72,8 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveRoomById({ _id, topic, tags, livechatData }) {
-		const setData = {};
+	saveRoomById({ _id, topic, tags, livechatData, ...extra }) {
+		const setData = { ...extra };
 		const unsetData = {};
 
 		if (topic != null) {

@@ -317,7 +317,7 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 		}
 
 		for (const channel of channels) {
-			let room = Rooms.findOneByName(channel);
+			let room = Rooms.findOneByNonValidatedName(channel);
 			if (!room) {
 				room = createRoomForSync(channel);
 			}

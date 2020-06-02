@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
 
+import { callbacks } from '../../../../callbacks';
 import { settings } from '../../../../settings';
 
 /**
@@ -22,7 +23,8 @@ export function parseMessageTextPerUser(messageText, message, receiver) {
 		return TAPi18n.__('Encrypted_message', { lng });
 	}
 
-	return messageText;
+	// perform processing required before sending message as notification such as markdown filtering
+	return callbacks.run('renderNotification', messageText);
 }
 
 /**
