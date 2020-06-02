@@ -1,6 +1,6 @@
-import 'url-polyfill';
+import './polyfills';
 
-import './importsCss';
+import './lib/meteorCallWrapper';
 import './importPackages';
 import '../imports/startup/client';
 
@@ -25,6 +25,8 @@ import './startup/i18n';
 import './startup/loginViaQuery';
 import './startup/roomObserve';
 import './startup/startup';
+import './startup/theme';
 import './startup/unread';
 import './startup/userSetUtcOffset';
 import './startup/usersObserve';
+import './admin';

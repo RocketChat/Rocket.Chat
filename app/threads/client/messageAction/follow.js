@@ -29,7 +29,7 @@ Meteor.startup(function() {
 				}
 				return !replies.includes(u._id);
 			},
-			order: 0,
+			order: 2,
 			group: 'menu',
 		});
 	});

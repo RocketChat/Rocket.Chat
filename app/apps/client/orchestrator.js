@@ -4,7 +4,7 @@ import toastr from 'toastr';
 
 import { AppWebsocketReceiver } from './communication';
 import { APIClient } from '../../utils';
-import { AdminBox } from '../../ui-utils';
+import { registerAdminSidebarItem } from '../../../client/admin';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { handleI18nResources } from './i18n';
@@ -51,14 +51,14 @@ class AppClientOrchestrator {
 	getAppClientManager = () => this._manager;
 
 	registerAdminMenuItems = () => {
-		AdminBox.addOption({
+		registerAdminSidebarItem({
 			icon: 'cube',
 			href: 'apps',
 			i18nLabel: 'Apps',
 			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
 		});
 
-		AdminBox.addOption({
+		registerAdminSidebarItem({
 			icon: 'cube',
 			href: 'marketplace',
 			i18nLabel: 'Marketplace',

@@ -13,16 +13,21 @@ import { Users as UsersRaw } from '../../app/models/server/raw';
 import { addUserRoles } from '../../app/authorization';
 import { getAvatarSuggestionForUser } from '../../app/lib/server/functions';
 
-const accountsConfig = {
+Accounts.config({
 	forbidClientAccountCreation: true,
-	loginExpirationInDays: settings.get('Accounts_LoginExpiration'),
-};
+});
 
-Accounts.config(accountsConfig);
+const updateMailConfig = _.debounce(() => {
+	Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
 
-Accounts.emailTemplates.siteName = settings.get('Site_Name');
+	Accounts.emailTemplates.siteName = settings.get('Site_Name');
 
-Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
+	Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
+}, 1000);
+
+Meteor.startup(() => {
+	settings.get(/^(Accounts_LoginExpiration|Site_Name|From_Email)$/, updateMailConfig);
+});
 
 Accounts.emailTemplates.userToActivate = {
 	subject() {
@@ -63,10 +68,9 @@ Accounts.emailTemplates.userActivated = {
 	},
 };
 
-
-// const verifyEmailHtml = Accounts.emailTemplates.verifyEmail.html;
 let verifyEmailTemplate = '';
 let enrollAccountTemplate = '';
+let resetPasswordTemplate = '';
 Meteor.startup(() => {
 	Mailer.getTemplateWrapped('Verification_Email', (value) => {
 		verifyEmailTemplate = value;
@@ -74,17 +78,35 @@ Meteor.startup(() => {
 	Mailer.getTemplateWrapped('Accounts_Enrollment_Email', (value) => {
 		enrollAccountTemplate = value;
 	});
+	Mailer.getTemplateWrapped('Forgot_Password_Email', (value) => {
+		resetPasswordTemplate = value;
+	});
 });
-Accounts.emailTemplates.verifyEmail.html = function(user, url) {
-	url = url.replace(Meteor.absoluteUrl(), `${ Meteor.absoluteUrl() }login/`);
-	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url });
+
+Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
+	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url, name: userModel.name });
+};
+
+Accounts.emailTemplates.verifyEmail.subject = function() {
+	const subject = settings.get('Verification_Email_Subject');
+	return Mailer.replace(subject || '');
 };
 
 Accounts.urls.resetPassword = function(token) {
 	return Meteor.absoluteUrl(`reset-password/${ token }`);
 };
 
-Accounts.emailTemplates.resetPassword.html = Accounts.emailTemplates.resetPassword.text;
+Accounts.emailTemplates.resetPassword.subject = function(userModel) {
+	return Mailer.replace(settings.get('Forgot_Password_Email_Subject') || '', {
+		name: userModel.name,
+	});
+};
+
+Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
+	return Mailer.replacekey(Mailer.replace(resetPasswordTemplate, {
+		name: userModel.name,
+	}), 'Forgot_Password_Url', url);
+};
 
 Accounts.emailTemplates.enrollAccount.subject = function(user) {
 	const subject = settings.get('Accounts_Enrollment_Email_Subject');

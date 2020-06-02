@@ -3,8 +3,8 @@ import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -12,65 +12,14 @@ import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMe
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
-import { t, roomTypes, getURL } from '../../utils';
+import { t, roomTypes } from '../../utils';
 import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import './message.html';
 import './messageThread.html';
 import { AutoTranslate } from '../../autotranslate/client';
 
-async function renderPdfToCanvas(canvasId, pdfLink) {
-	const isSafari = /constructor/i.test(window.HTMLElement)
-		|| ((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari
-			|| (typeof window.safari !== 'undefined' && window.safari.pushNotification));
-
-	if (isSafari) {
-		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
-		if (version <= 12) {
-			return;
-		}
-	}
-
-	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) {
-		return;
-	}
-	pdfLink = getURL(pdfLink);
-
-	const canvas = document.getElementById(canvasId);
-	if (!canvas) {
-		return;
-	}
-
-	const pdfjsLib = await import('pdfjs-dist');
-	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }pdf.worker.min.js`;
-
-	const loader = document.getElementById(`js-loading-${ canvasId }`);
-
-	if (loader) {
-		loader.style.display = 'block';
-	}
-
-	const pdf = await pdfjsLib.getDocument(pdfLink);
-	const page = await pdf.getPage(1);
-	const scale = 0.5;
-	const viewport = page.getViewport(scale);
-	const context = canvas.getContext('2d');
-	canvas.height = viewport.height;
-	canvas.width = viewport.width;
-	await page.render({
-		canvasContext: context,
-		viewport,
-	}).promise;
-
-	if (loader) {
-		loader.style.display = 'none';
-	}
-
-	canvas.style.maxWidth = '-webkit-fill-available';
-	canvas.style.maxWidth = '-moz-available';
-	canvas.style.display = 'block';
-}
-
 const renderBody = (msg, settings) => {
+	const searchedText = msg.searchedText ? msg.searchedText : '';
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
 
@@ -92,22 +41,18 @@ const renderBody = (msg, settings) => {
 	if (isSystemMessage) {
 		msg.html = Markdown.parse(msg.html);
 	}
+
+	if (searchedText) {
+		msg = msg.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${ str }</mark>`);
+	}
+
 	return msg;
 };
-
-Template.message.events({
-	'click .collapse-switch'(e, instance) {
-		instance.collapsedMedia.set(!instance.collapsedMedia.get());
-	},
-});
 
 Template.message.helpers({
 	body() {
 		const { msg, settings } = this;
 		return Tracker.nonreactive(() => renderBody(msg, settings));
-	},
-	and(a, b) {
-		return a && b;
 	},
 	i18nReplyCounter() {
 		const { msg } = this;
@@ -184,6 +129,10 @@ Template.message.helpers({
 		if (msg.avatar != null && msg.avatar[0] === '@') {
 			return msg.avatar.replace(/^@/, '');
 		}
+	},
+	getStatus() {
+		const { msg } = this;
+		return Session.get(`user_${ msg.u.username }_status_text`);
 	},
 	getName() {
 		const { msg, settings } = this;
@@ -377,11 +326,6 @@ Template.message.helpers({
 	injectSettings(data, settings) {
 		data.settings = settings;
 	},
-	injectCollapsedMedia(data) {
-		const collapsedMedia = Template.instance().collapsedMedia.get();
-		Object.assign(data, { collapsedMedia });
-		return data;
-	},
 	channelName() {
 		const { subscription } = this;
 		// const subscription = Subscriptions.findOne({ rid: this.rid });
@@ -436,9 +380,6 @@ Template.message.helpers({
 			return 'collapsed';
 		}
 	},
-	collapsedMedia() {
-		return Template.instance().collapsedMedia.get();
-	},
 	collapseSwitchClass() {
 		const { msg: { collapsed = true } } = this;
 		return collapsed ? 'icon-right-dir' : 'icon-down-dir';
@@ -446,6 +387,10 @@ Template.message.helpers({
 	parentMessage() {
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
+	},
+	showStar() {
+		const { msg } = this;
+		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
 	},
 });
 
@@ -485,7 +430,6 @@ const findParentMessage = (() => {
 
 Template.message.onCreated(function() {
 	const { msg, shouldCollapseReplies } = Template.currentData();
-	this.collapsedMedia = new ReactiveVar(this.data.settings.collapseMediaByDefault === true);
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
@@ -572,12 +516,9 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	return false;
 };
 
-const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies, collapsedMedia }) => {
+const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, shouldCollapseReplies }) => {
 	if (!showDateSeparator && !groupable) {
 		return;
-	}
-	if (msg.file && msg.file.type === 'application/pdf' && !collapsedMedia) {
-		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
 	}
 	// const currentDataset = currentNode.dataset;
 	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
@@ -612,5 +553,5 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 
 Template.message.onRendered(function() {
 	const currentNode = this.firstNode;
-	this.autorun(() => processSequentials({ currentNode, ...Template.currentData(), collapsedMedia: this.collapsedMedia.get() }));
+	this.autorun(() => processSequentials({ currentNode, ...Template.currentData() }));
 });

@@ -98,7 +98,7 @@ Template.sidebarItem.onCreated(function() {
 		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
 		const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
 
-		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
+		if (!currentData.isGroupChat && Meteor.userId() !== currentData.lastMessage.u._id) {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
 		} else {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;

@@ -32,10 +32,18 @@ function findDirectMessageRoom(params, user) {
 
 API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 	post() {
-		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+		const { username, usernames } = this.requestParams();
+
+		const users = username ? [username] : usernames && usernames.split(',').map((username) => username.trim());
+
+		if (!users) {
+			throw new Meteor.Error('error-room-not-found', 'The required "username" or "usernames" param provided does not match any direct message');
+		}
+
+		const room = Meteor.call('createDirectMessage', ...users);
 
 		return API.v1.success({
-			room: findResult.room,
+			room: { ...room, _id: room.rid },
 		});
 	},
 });

@@ -11,5 +11,6 @@ export function getUnitsFromUser() {
 		return;
 	}
 
+	// TODO remove this Meteor.call as this is used undirectly by models
 	return Meteor.call('livechat:getUnitsFromUserRoles');
 }

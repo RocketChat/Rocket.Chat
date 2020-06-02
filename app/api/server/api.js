@@ -21,6 +21,7 @@ export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
+let prometheusAPIUserAgent = false;
 
 export let API = {};
 
@@ -320,14 +321,14 @@ export class APIClass extends Restivus {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
-						user_agent: this.request.headers['user-agent'],
-						entrypoint: route,
+						...prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] },
+						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
-					const requestIp = getRequestIP(this.request);
+					this.requestIp = getRequestIP(this.request);
 					const objectForRateLimitMatch = {
-						IPAddr: requestIp,
+						IPAddr: this.requestIp,
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
 					let result;
@@ -337,7 +338,7 @@ export class APIClass extends Restivus {
 						close() {},
 						token: this.token,
 						httpHeaders: this.request.headers,
-						clientAddress: requestIp,
+						clientAddress: this.requestIp,
 					};
 
 					try {
@@ -373,7 +374,7 @@ export class APIClass extends Restivus {
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
-						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, undefined, e);
+						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 					} finally {
 						delete Accounts._accountData[connection.id];
 					}
@@ -481,6 +482,7 @@ export class APIClass extends Restivus {
 						body: {
 							status: 'error',
 							error: e.error,
+							details: e.details,
 							message: e.reason || e.message,
 						},
 					};
@@ -693,4 +695,8 @@ settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
 settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
+});
+
+settings.get('Prometheus_API_User_Agent', (key, value) => {
+	prometheusAPIUserAgent = value;
 });

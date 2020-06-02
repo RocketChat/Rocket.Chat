@@ -1,12 +1,9 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session';
-import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
-import { fileUploadHandler } from '../../../file-upload';
+import { uploadFileWithMessage } from '../../../ui/client/lib/fileUpload';
 import { settings } from '../../../settings';
 import { AudioRecorder } from '../../../ui';
-import { call } from '../../../ui-utils';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
@@ -14,74 +11,6 @@ const startRecording = () => new Promise((resolve, reject) =>
 	AudioRecorder.start((result) => (result ? resolve() : reject())));
 
 const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve));
-
-const registerUploadProgress = (upload) => {
-	const uploads = Session.get('uploading') || [];
-	Session.set('uploading', [...uploads, {
-		id: upload.id,
-		name: upload.getFileName(),
-		percentage: 0,
-	}]);
-};
-
-const updateUploadProgress = (upload, { progress, error: { message: error } = {} }) => {
-	const uploads = Session.get('uploading') || [];
-	const item = uploads.find(({ id }) => id === upload.id) || {
-		id: upload.id,
-		name: upload.getFileName(),
-	};
-	item.percentage = Math.round(progress * 100) || 0;
-	item.error = error;
-	Session.set('uploading', uploads);
-};
-
-const unregisterUploadProgress = (upload) => setTimeout(() => {
-	const uploads = Session.get('uploading') || [];
-	Session.set('uploading', uploads.filter(({ id }) => id !== upload.id));
-}, 2000);
-
-const uploadRecord = async ({ rid, tmid, blob }) => {
-	const upload = fileUploadHandler('Uploads', {
-		name: `${ t('Audio record') }.mp3`,
-		size: blob.size,
-		type: 'audio/mpeg',
-		rid,
-		description: '',
-	}, blob);
-
-	upload.onProgress = (progress) => {
-		updateUploadProgress(upload, { progress });
-	};
-
-	registerUploadProgress(upload);
-
-	try {
-		const [file, storage] = await new Promise((resolve, reject) => {
-			upload.start((error, ...args) => (error ? reject(error) : resolve(args)));
-		});
-
-		await call('sendFileMessage', rid, storage, file, { tmid });
-
-		unregisterUploadProgress(upload);
-	} catch (error) {
-		updateUploadProgress(upload, { error, progress: 0 });
-		unregisterUploadProgress(upload);
-	}
-
-	Tracker.autorun((c) => {
-		const cancel = Session.get(`uploading-cancel-${ upload.id }`);
-
-		if (!cancel) {
-			return;
-		}
-
-		upload.stop();
-		c.stop();
-
-		updateUploadProgress(upload, { progress: 0 });
-		unregisterUploadProgress(upload);
-	});
-};
 
 const recordingInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
@@ -206,6 +135,7 @@ Template.messageBoxAudioMessage.events({
 		instance.state.set(null);
 
 		const { rid, tmid } = this;
-		await uploadRecord({ rid, tmid, blob });
+
+		await uploadFileWithMessage(rid, tmid, { file: { file: blob }, fileName: `${ t('Audio record') }.mp3` });
 	},
 });

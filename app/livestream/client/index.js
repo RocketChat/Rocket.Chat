@@ -7,3 +7,4 @@ import './views/broadcastView';
 import './views/liveStreamView.html';
 import './views/liveStreamView';
 import './tabBar';
+import './styles/liveStreamTab.css';

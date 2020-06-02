@@ -5,49 +5,53 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
 import { useTranslation } from '../../contexts/TranslationContext';
-import './PageNotFound.css';
 
-export function PageNotFound() {
+function PageNotFound() {
 	useWipeInitialPageLoading();
 
 	const t = useTranslation();
-	const goToHome = useRoute('home');
+	const homeRoute = useRoute('home');
 
 	const handleGoToPreviousPageClick = () => {
 		window.history.back();
 	};
 
 	const handleGoHomeClick = () => {
-		goToHome();
+		homeRoute.push();
 	};
 
 	return <>
 		<ConnectionStatusAlert />
 		<Flex.Container direction='column' justifyContent='center' alignItems='center'>
-			<Box is='section' componentClassName='PageNotFound'>
+			<Box is='section' width='full' minHeight='sh' textAlign='center' backgroundColor='neutral-800' style={{
+				backgroundImage: 'url(\'/images/404.svg\')',
+				backgroundRepeat: 'no-repeat',
+				backgroundPosition: 'center',
+				backgroundSize: 'cover',
+			}}>
 				<Flex.Item>
 					<Box>
 						<Margins all='x12'>
-							<Box componentClassName='PageNotFound__404' textColor='alternative'>404</Box>
+							<Box fontWeight='p2' fontSize='x64' color='alternative'>404</Box>
 
-							<Box textStyle='h1' textColor='alternative'>
+							<Box fontScale='h1' color='alternative'>
 								{t('Oops_page_not_found')}
 							</Box>
 
-							<Box textStyle='p1' textColor='alternative'>
+							<Box fontScale='p1' color='alternative'>
 								{t('Sorry_page_you_requested_does_not_exist_or_was_deleted')}
 							</Box>
 						</Margins>
 
-						<Margins all='x32'>
-							<ButtonGroup align='center'>
-								<Button type='button' primary onClick={handleGoToPreviousPageClick}>{t('Return_to_previous_page')}</Button>
-								<Button type='button' primary onClick={handleGoHomeClick}>{t('Return_to_home')}</Button>
-							</ButtonGroup>
-						</Margins>
+						<ButtonGroup align='center' margin='x64'>
+							<Button type='button' primary onClick={handleGoToPreviousPageClick}>{t('Return_to_previous_page')}</Button>
+							<Button type='button' primary onClick={handleGoHomeClick}>{t('Return_to_home')}</Button>
+						</ButtonGroup>
 					</Box>
 				</Flex.Item>
 			</Box>
 		</Flex.Container>
 	</>;
 }
+
+export default PageNotFound;

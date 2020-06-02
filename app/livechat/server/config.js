@@ -192,11 +192,39 @@ Meteor.startup(function() {
 		secret: true,
 	});
 
+	settings.add('Livechat_webhook_on_start', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_chat_start',
+	});
+
 	settings.add('Livechat_webhook_on_close', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_chat_close',
+	});
+
+	settings.add('Livechat_webhook_on_chat_taken', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_chat_taken',
+	});
+
+	settings.add('Livechat_webhook_on_chat_queued', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_chat_queued',
+	});
+
+	settings.add('Livechat_webhook_on_forward', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_forwarding',
 	});
 
 	settings.add('Livechat_webhook_on_offline_msg', false, {
@@ -248,31 +276,6 @@ Meteor.startup(function() {
 		group: 'Omnichannel',
 		section: 'CRM_Integration',
 		i18nLabel: 'Lead_capture_phone_regex',
-	});
-
-	settings.add('Livechat_Knowledge_Enabled', false, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		section: 'Knowledge_Base',
-		public: true,
-		i18nLabel: 'Enabled',
-	});
-
-	settings.add('Livechat_Knowledge_Apiai_Key', '', {
-		type: 'string',
-		group: 'Omnichannel',
-		section: 'Knowledge_Base',
-		public: true,
-		i18nLabel: 'Apiai_Key',
-		secret: true,
-	});
-
-	settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
-		type: 'string',
-		group: 'Omnichannel',
-		section: 'Knowledge_Base',
-		public: true,
-		i18nLabel: 'Apiai_Language',
 	});
 
 	settings.add('Livechat_history_monitor_type', 'url', {
@@ -364,6 +367,22 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Livechat_AllowedDomainsList',
 		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget',
+	});
+
+	settings.add('Livechat_OfflineMessageToChannel_enabled', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+	});
+
+	settings.add('Livechat_OfflineMessageToChannel_channel_name', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+		enableQuery: { _id: 'Livechat_OfflineMessageToChannel_enabled', value: true },
+		i18nLabel: 'Channel_name',
 	});
 
 	settings.add('Livechat_Facebook_Enabled', false, {

@@ -21,6 +21,7 @@ import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
+import { NotificationQueue } from '../../../models/server/raw';
 
 const wizardFields = [
 	'Organization_Type',
@@ -61,6 +62,7 @@ export const statistics = {
 		// User statistics
 		statistics.totalUsers = Users.find().count();
 		statistics.activeUsers = Users.getActiveLocalUserCount();
+		statistics.activeGuests = Users.getActiveLocalGuestCount();
 		statistics.nonActiveUsers = Users.find({ active: false }).count();
 		statistics.appUsers = Users.find({ type: 'app' }).count();
 		statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
@@ -164,6 +166,8 @@ export const statistics = {
 			totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing').length,
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
+
+		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
 
 		return statistics;
 	},

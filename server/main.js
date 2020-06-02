@@ -5,7 +5,7 @@ import '../lib/RegExp';
 
 import '../ee/server';
 import './lib/accounts';
-import './lib/cordova';
+import './lib/pushConfig';
 import './lib/roomFiles';
 import './startup/migrations';
 import './startup/appcache';

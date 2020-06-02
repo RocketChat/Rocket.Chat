@@ -1,7 +1,15 @@
 import { Template } from 'meteor/templating';
 
+import { createCollapseable } from '../../ui-utils';
+
+createCollapseable(Template.oembedBaseWidget, (instance) => instance.data.settings.collapseMediaByDefault || false);
+
 Template.oembedBaseWidget.helpers({
 	template() {
+		const { collapsedMedia } = Template.instance();
+		this.collapsedMediaVar = function() { return collapsedMedia; };
+		this.collapsed = collapsedMedia.get();
+
 		let contentType;
 		if (this.headers) {
 			contentType = this.headers.contentType;

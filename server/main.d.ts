@@ -1,3 +1,5 @@
+import { EJSON } from 'meteor/ejson';
+
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {
 	namespace Random {
@@ -30,6 +32,13 @@ declare module 'meteor/meteor' {
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
 		}
+	}
+}
+
+declare module 'meteor/ddp-common' {
+	namespace DDPCommon {
+		function stringifyDDP(msg: EJSON): string;
+		function parseDDP(msg: string): EJSON;
 	}
 }
 

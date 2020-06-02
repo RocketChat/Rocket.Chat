@@ -1,7 +1,7 @@
 import { boolean, select, text } from '@storybook/addon-knobs';
 import React from 'react';
 
-import { SettingsBasedStep } from './SettingsBasedStep';
+import SettingsBasedStep from './SettingsBasedStep';
 
 export default {
 	title: 'setupWizard/steps/SettingsBasedStep',

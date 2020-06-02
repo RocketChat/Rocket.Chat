@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { t } from '../../utils/client';
@@ -58,9 +59,10 @@ function getEmojisBySearchTerm(searchTerm) {
 
 		if (searchRegExp.test(current)) {
 			const emojiObject = emoji.list[current];
-			const { emojiPackage } = emojiObject;
+			const { emojiPackage, shortnames = [] } = emojiObject;
 			let tone = '';
 			current = current.replace(/:/g, '');
+			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
 
 			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
 				tone = `_tone${ actualTone }`;
@@ -71,7 +73,8 @@ function getEmojisBySearchTerm(searchTerm) {
 			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
 				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
-					if (contents.indexOf(current) !== -1) {
+					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
+					if (contents.indexOf(current) !== -1 || (searchValArray !== undefined && searchValArray.includes(searchTerm))) {
 						emojiFound = true;
 						break;
 					}
@@ -139,6 +142,12 @@ Template.emojiPicker.events({
 	'click .emoji-picker'(event) {
 		event.stopPropagation();
 		event.preventDefault();
+	},
+	'click .add-custom'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		FlowRouter.go('/admin/emoji-custom');
+		EmojiPicker.close();
 	},
 	'click .category-link'(event) {
 		event.stopPropagation();

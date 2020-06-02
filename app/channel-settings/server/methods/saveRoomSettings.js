@@ -17,7 +17,7 @@ import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
 
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
+const fields = ['featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
@@ -74,6 +74,12 @@ Meteor.methods({
 		Object.keys(settings).forEach((setting) => {
 			const value = settings[setting];
 			if (settings === 'default' && !hasPermission(userId, 'view-room-administration')) {
+				throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
+					method: 'saveRoomSettings',
+					action: 'Viewing_room_administration',
+				});
+			}
+			if (settings === 'featured' && !hasPermission(userId, 'view-room-administration')) {
 				throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
 					method: 'saveRoomSettings',
 					action: 'Viewing_room_administration',
@@ -194,6 +200,9 @@ Meteor.methods({
 				case 'default':
 					Rooms.saveDefaultById(rid, value);
 					break;
+				case 'featured':
+					Rooms.saveFeaturedById(rid, value);
+					break;
 				case 'retentionEnabled':
 					Rooms.saveRetentionEnabledById(rid, value);
 					break;
@@ -211,6 +220,9 @@ Meteor.methods({
 					break;
 				case 'encrypted':
 					Rooms.saveEncryptedById(rid, value);
+					break;
+				case 'favorite':
+					Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 					break;
 			}
 		});

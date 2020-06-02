@@ -896,6 +896,10 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
+	removeByRoomIds(rids) {
+		return this.remove({ rid: { $in: rids } });
+	}
+
 	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = []) {
 		const query = {
 			rid,

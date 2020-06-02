@@ -62,6 +62,19 @@ Meteor.methods({
 			multiline: true,
 			i18nLabel: 'SAML_Custom_Public_Cert',
 		});
+		settings.add(`SAML_Custom_${ name }_signature_validation_type`, 'All', {
+			type: 'select',
+			values: [
+				{ key: 'Response', i18nLabel: 'SAML_Custom_signature_validation_response' },
+				{ key: 'Assertion', i18nLabel: 'SAML_Custom_signature_validation_assertion' },
+				{ key: 'Either', i18nLabel: 'SAML_Custom_signature_validation_either' },
+				{ key: 'All', i18nLabel: 'SAML_Custom_signature_validation_all' },
+			],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_signature_validation_type',
+			i18nDescription: 'SAML_Custom_signature_validation_type_description',
+		});
 		settings.add(`SAML_Custom_${ name }_private_key`, '', {
 			type: 'string',
 			group: 'SAML',
@@ -147,6 +160,7 @@ Meteor.methods({
 			group: 'SAML',
 			section: name,
 			i18nLabel: 'SAML_Custom_Authn_Context',
+			i18nDescription: 'SAML_Custom_Authn_Context_description',
 		});
 		settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "cn": "name"}', {
 			type: 'string',
@@ -238,6 +252,7 @@ const getSamlConfigs = function(service) {
 			// People often overlook the instruction to remove the header and footer of the certificate on this specific setting, so let's do it for them.
 			cert: normalizeCert(settings.get(`${ service.key }_cert`)),
 		},
+		signatureValidationType: settings.get(`${ service.key }_signature_validation_type`),
 		userDataFieldMap: settings.get(`${ service.key }_user_data_fieldmap`),
 		allowedClockDrift: settings.get(`${ service.key }_allowed_clock_drift`),
 	};
@@ -290,6 +305,7 @@ const configureSamlService = function(samlConfigs) {
 		roleAttributeName: samlConfigs.roleAttributeName,
 		roleAttributeSync: samlConfigs.roleAttributeSync,
 		allowedClockDrift: samlConfigs.allowedClockDrift,
+		signatureValidationType: samlConfigs.signatureValidationType,
 	};
 };
 

@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
-import { Settings } from '../../../models';
+import { Settings } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { API } from '../api';
 
@@ -61,6 +61,21 @@ API.v1.addRoute('settings.oauth', { authRequired: false }, {
 		return API.v1.success({
 			services: mountOAuthServices(),
 		});
+	},
+});
+
+API.v1.addRoute('settings.addCustomOAuth', { authRequired: true }, {
+	post() {
+		if (!this.requestParams().name || !this.requestParams().name.trim()) {
+			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('addOAuthService', this.requestParams().name, this.userId);
+		});
+
+
+		return API.v1.success();
 	},
 });
 
