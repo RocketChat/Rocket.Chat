@@ -22,7 +22,8 @@ const getRoom = (roomId) => {
 };
 
 export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
-	const roomId = req.url.substr(1);
+	const roomId = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
+	// const roomId = req.url.substr(1);
 	const room = getRoom(roomId);
 
 	if (!room) {

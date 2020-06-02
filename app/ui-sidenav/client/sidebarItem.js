@@ -12,6 +12,9 @@ import { timeAgo } from '../../lib/client/lib/formatDate';
 import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 
 Template.sidebarItem.helpers({
+	displayAvatar(){
+		return this.avatar+'?'+new Date().getTime();
+	},
 	displayName(){
 		return this.name.split("_")[0];
 	},
