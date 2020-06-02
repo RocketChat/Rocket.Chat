@@ -189,7 +189,7 @@ function createChannelValidator(params) {
 
 function createChannel(userId, params) {
 	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
-	const id = Meteor.runAsUser(userId, () => Meteor.call('createChannel', params.name, params.members ? params.members : [], readOnly, params.customFields));
+	const id = Meteor.runAsUser(userId, () => Meteor.call('createChannel', params.name, params.members ? params.members : [], readOnly, params.customFields,{},params.avatar));
 
 	return {
 		channel: findChannelByIdOrName({ params: { roomId: id.rid }, userId: this.userId }),

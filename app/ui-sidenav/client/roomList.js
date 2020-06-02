@@ -133,6 +133,7 @@ Template.roomList.helpers({
 });
 
 const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
+	// console.log(room);
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
 	return {
