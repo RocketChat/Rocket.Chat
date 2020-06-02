@@ -173,7 +173,7 @@ Template.accountPreferences.onCreated(function() {
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
-		data.unreadAlert = JSON.parse($('input[name=unreadAlert]:checked').val());
+		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
 		data.sidebarShowDiscussion = JSON.parse($('#sidebarShowDiscussion').find('input:checked').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
