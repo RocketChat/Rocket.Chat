@@ -1,6 +1,7 @@
 import 'moment-timezone';
 import _ from 'underscore';
 import moment from 'moment';
+import './livechatCurrentChats.css';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
@@ -84,11 +85,42 @@ Template.livechatCurrentChats.helpers({
 	tagFilters() {
 		return Template.instance().tagFilters.get();
 	},
-	departments() {
-		return Template.instance().departments.get();
-	},
 	tagId() {
 		return this;
+	},
+	departmentModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	onClickTagDepartment() {
+		return Template.instance().onClickTagDepartment;
+	},
+	selectedDepartments() {
+		return Template.instance().selectedDepartments.get();
+	},
+	onSelectDepartments() {
+		return Template.instance().onSelectDepartments;
+	},
+	onTableSort() {
+		const { sortDirection, sortBy } = Template.instance();
+		return function(type) {
+			if (sortBy.get() === type) {
+				return sortDirection.set(sortDirection.get() === 'asc' ? 'desc' : 'asc');
+			}
+			sortBy.set(type);
+			sortDirection.set('asc');
+		};
+	},
+	sortBy(key) {
+		return Template.instance().sortBy.get() === key;
+	},
+	sortIcon(key) {
+		const { sortDirection, sortBy } = Template.instance();
+		return key === sortBy.get() && sortDirection.get() === 'asc'
+			? 'sort-up'
+			: 'sort-down';
 	},
 });
 
@@ -302,6 +334,11 @@ Template.livechatCurrentChats.events({
 			filter.agents = [agents[0]];
 		}
 
+		const departments = instance.selectedDepartments.get();
+		if (departments && departments.length > 0) {
+			filter.department = [departments[0]];
+		}
+
 		instance.filter.set(filter);
 		instance.offset.set(0);
 		storeFilters(filter);
@@ -353,7 +390,18 @@ Template.livechatCurrentChats.onCreated(async function() {
 	this.customFilters = new ReactiveVar([]);
 	this.customFields = new ReactiveVar([]);
 	this.tagFilters = new ReactiveVar([]);
-	this.departments = new ReactiveVar([]);
+	this.selectedDepartments = new ReactiveVar([]);
+	this.sortBy = new ReactiveVar('ts');
+	this.sortDirection = new ReactiveVar('desc');
+
+	this.onSelectDepartments = ({ item: department }) => {
+		department.text = department.name;
+		this.selectedDepartments.set([department]);
+	};
+
+	this.onClickTagDepartment = () => {
+		this.selectedDepartments.set([]);
+	};
 
 	const mountArrayQueryParameters = (label, items, index) => items.reduce((acc, item) => {
 		const isTheLastElement = index === items.length - 1;
@@ -361,15 +409,15 @@ Template.livechatCurrentChats.onCreated(async function() {
 		return acc;
 	}, '');
 
-	const mountUrlWithParams = (filter, offset) => {
+	const mountUrlWithParams = (filter, offset, sort) => {
 		const { status, agents, department, from, to, tags, customFields, name: roomName } = filter;
-		let url = `livechat/rooms?count=${ ROOMS_COUNT }&offset=${ offset }&sort={"ts": -1}`;
+		let url = `livechat/rooms?count=${ ROOMS_COUNT }&offset=${ offset }&sort=${ JSON.stringify(sort) }`;
 		const dateRange = {};
 		if (status) {
 			url += `&open=${ status === 'opened' }`;
 		}
-		if (department) {
-			url += `&departmentId=${ department }`;
+		if (department && Array.isArray(department) && department.length) {
+			url += `&departmentId=${ department[0]._id }`;
 		}
 		if (from) {
 			dateRange.start = `${ moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss') }Z`;
@@ -407,6 +455,8 @@ Template.livechatCurrentChats.onCreated(async function() {
 			switch (key) {
 				case 'agents':
 					return this.selectedAgents.set(value);
+				case 'department':
+					return this.selectedDepartments.set(value);
 				case 'from':
 				case 'to':
 					return $(`#${ key }`).datepicker('setDate', new Date(value));
@@ -420,12 +470,13 @@ Template.livechatCurrentChats.onCreated(async function() {
 		removeStoredFilters();
 		$('#form-filters').get(0).reset();
 		this.selectedAgents.set([]);
+		this.selectedDepartments.set([]);
 		this.filter.set({});
 	};
 
-	this.loadRooms = async (filter, offset) => {
+	this.loadRooms = async (filter, offset, sort) => {
 		this.isLoading.set(true);
-		const { rooms, total } = await APIClient.v1.get(mountUrlWithParams(filter, offset));
+		const { rooms, total } = await APIClient.v1.get(mountUrlWithParams(filter, offset, sort));
 		this.total.set(total);
 		if (offset === 0) {
 			this.livechatRooms.set(rooms);
@@ -446,19 +497,15 @@ Template.livechatCurrentChats.onCreated(async function() {
 	this.autorun(async () => {
 		const filter = this.filter.get();
 		const offset = this.offset.get();
-		this.loadRooms(filter, offset);
+		const { sortDirection, sortBy } = Template.instance();
+		this.loadRooms(filter, offset, { [sortBy.get()]: sortDirection.get() === 'asc' ? 1 : -1 });
 	});
-
-	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
-	this.departments.set(departments);
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
 			this.customFields.set(customFields);
 		}
 	});
-
-	setTimeout(this.loadDefaultFilters, 500);
 });
 
 Template.livechatCurrentChats.onRendered(function() {
@@ -467,4 +514,6 @@ Template.livechatCurrentChats.onRendered(function() {
 		todayHighlight: true,
 		format: moment.localeData().longDateFormat('L').toLowerCase(),
 	});
+
+	this.loadDefaultFilters();
 });

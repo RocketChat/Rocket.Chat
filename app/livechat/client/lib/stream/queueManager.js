@@ -1,31 +1,29 @@
-import { Meteor } from 'meteor/meteor';
-
 import { APIClient } from '../../../../utils/client';
-import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
-import { LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER } from '../../../lib/stream/constants';
+import { LivechatInquiry } from '../../collections/LivechatInquiry';
+import { inquiryDataStream } from './inquiry';
 import { hasRole } from '../../../../authorization/client';
+import { call } from '../../../../ui-utils/client';
 
-const livechatQueueStreamer = new Meteor.Streamer('livechat-queue-stream');
 let agentDepartments = [];
 
 const events = {
-	added: (inquiry, collection) => {
+	added: (inquiry) => {
 		delete inquiry.type;
-		collection.insert(inquiry);
+		LivechatInquiry.insert(inquiry);
 	},
-	changed: (inquiry, collection) => {
+	changed: (inquiry) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !agentDepartments.includes(inquiry.department))) {
-			return collection.remove(inquiry._id);
+			return LivechatInquiry.remove(inquiry._id);
 		}
 		delete inquiry.type;
-		collection.upsert({ _id: inquiry._id }, inquiry);
+		LivechatInquiry.upsert({ _id: inquiry._id }, inquiry);
 	},
-	removed: (inquiry, collection) => collection.remove(inquiry._id),
+	removed: (inquiry) => LivechatInquiry.remove(inquiry._id),
 };
 
-const appendListenerToDepartment = (departmentId, collection) => livechatQueueStreamer.on(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`, (inquiry) => events[inquiry.type](inquiry, collection));
-
-const removeListenerOfDepartment = (departmentId) => livechatQueueStreamer.removeListener(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`);
+const updateCollection = (inquiry) => { events[inquiry.type](inquiry); };
+const appendListenerToDepartment = (departmentId) => inquiryDataStream.on(`department/${ departmentId }`, updateCollection);
+const removeListenerOfDepartment = (departmentId) => inquiryDataStream.removeListener(`department/${ departmentId }`, updateCollection);
 
 const getInquiriesFromAPI = async (url) => {
 	const { inquiries } = await APIClient.v1.get(url);
@@ -33,8 +31,7 @@ const getInquiriesFromAPI = async (url) => {
 };
 
 const updateInquiries = async (inquiries) => {
-	const collection = getLivechatInquiryCollection();
-	(inquiries || []).forEach((inquiry) => collection.upsert({ _id: inquiry._id }, inquiry));
+	(inquiries || []).forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, inquiry));
 };
 
 const getAgentsDepartments = async (userId) => {
@@ -43,9 +40,8 @@ const getAgentsDepartments = async (userId) => {
 };
 
 const addListenerForeachDepartment = async (userId, departments) => {
-	const collection = getLivechatInquiryCollection();
 	if (departments && Array.isArray(departments) && departments.length) {
-		departments.forEach((department) => appendListenerToDepartment(department, collection));
+		departments.forEach((department) => appendListenerToDepartment(department));
 	}
 };
 
@@ -54,20 +50,27 @@ const removeDepartmentsListeners = (departments) => {
 };
 
 const removeGlobalListener = () => {
-	livechatQueueStreamer.removeListener(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER);
+	inquiryDataStream.removeListener('public', updateCollection);
 };
 
 export const initializeLivechatInquiryStream = async (userId) => {
-	const collection = getLivechatInquiryCollection();
-	collection.remove({});
+	LivechatInquiry.remove({});
+
 	if (agentDepartments.length) {
 		removeDepartmentsListeners(agentDepartments);
 	}
 	removeGlobalListener();
+
+	const config = await call('livechat:getRoutingConfig');
+	if (config && config.autoAssignAgent) {
+		return;
+	}
+
 	await updateInquiries(await getInquiriesFromAPI('livechat/inquiries.queued?sort={"ts": 1}'));
+
 	agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
 	await addListenerForeachDepartment(userId, agentDepartments);
 	if (agentDepartments.length === 0 || hasRole(userId, 'livechat-manager')) {
-		livechatQueueStreamer.on(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
+		inquiryDataStream.on('public', updateCollection);
 	}
 };

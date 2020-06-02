@@ -6,6 +6,7 @@ import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
+import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
@@ -16,107 +17,6 @@ const logger = new Logger('CustomOAuth');
 
 const Services = {};
 const BeforeUpdateOrCreateUserFromExternalService = [];
-
-const normalizers = {
-	// Set 'id' to '_id' for any sources that provide it
-	_id(identity) {
-		if (identity._id && !identity.id) {
-			identity.id = identity._id;
-		}
-	},
-
-	// Fix for Reddit
-	redit(identity) {
-		if (identity.result) {
-			return identity.result;
-		}
-	},
-
-	// Fix WordPress-like identities having 'ID' instead of 'id'
-	wordpress(identity) {
-		if (identity.ID && !identity.id) {
-			identity.id = identity.ID;
-		}
-	},
-
-	// Fix Auth0-like identities having 'user_id' instead of 'id'
-	user_id(identity) {
-		if (identity.user_id && !identity.id) {
-			identity.id = identity.user_id;
-		}
-	},
-
-	characterid(identity) {
-		if (identity.CharacterID && !identity.id) {
-			identity.id = identity.CharacterID;
-		}
-	},
-
-	// Fix Dataporten having 'user.userid' instead of 'id'
-	dataporten(identity) {
-		if (identity.user && identity.user.userid && !identity.id) {
-			if (identity.user.userid_sec && identity.user.userid_sec[0]) {
-				identity.id = identity.user.userid_sec[0];
-			} else {
-				identity.id = identity.user.userid;
-			}
-			identity.email = identity.user.email;
-		}
-	},
-
-	// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
-	xenforo(identity) {
-		if (identity.user && identity.user.user_id && !identity.id) {
-			identity.id = identity.user.user_id;
-			identity.email = identity.user.user_email;
-		}
-	},
-
-	// Fix general 'phid' instead of 'id' from phabricator
-	phabricator(identity) {
-		if (identity.phid && !identity.id) {
-			identity.id = identity.phid;
-		}
-	},
-
-	// Fix Keycloak-like identities having 'sub' instead of 'id'
-	kaycloak(identity) {
-		if (identity.sub && !identity.id) {
-			identity.id = identity.sub;
-		}
-	},
-
-	// Fix OpenShift identities where id is in 'metadata' object
-	openshift(identity) {
-		if (!identity.id && identity.metadata && identity.metadata.uid) {
-			identity.id = identity.metadata.uid;
-			identity.name = identity.fullName;
-		}
-	},
-
-	// Fix general 'userid' instead of 'id' from provider
-	userid(identity) {
-		if (identity.userid && !identity.id) {
-			identity.id = identity.userid;
-		}
-	},
-
-	// Fix Nextcloud provider
-	nextcloud(identity) {
-		if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
-			identity.id = identity.ocs.data.id;
-			identity.name = identity.ocs.data.displayname;
-			identity.email = identity.ocs.data.email;
-		}
-	},
-
-	// Fix when authenticating from a meteor app with 'emails' field
-	meteor(identity) {
-		if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
-			identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
-		}
-	},
-};
 
 export class CustomOAuth {
 	constructor(name, options) {
@@ -174,6 +74,7 @@ export class CustomOAuth {
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
+		this.emailField = (options.emailField || '').trim();
 		this.nameField = (options.nameField || '').trim();
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
@@ -334,6 +235,10 @@ export class CustomOAuth {
 			identity.username = this.getUsername(identity);
 		}
 
+		if (this.emailField) {
+			identity.email = this.getEmail(identity);
+		}
+
 		if (this.avatarField) {
 			identity.avatarUrl = this.getAvatarUrl(identity);
 		}
@@ -344,7 +249,7 @@ export class CustomOAuth {
 			identity.name = this.getName(identity);
 		}
 
-		return identity;
+		return renameInvalidProperties(identity);
 	}
 
 	retrieveCredential(credentialToken, credentialSecret) {
@@ -352,42 +257,56 @@ export class CustomOAuth {
 	}
 
 	getUsername(data) {
-		let username = '';
+		try {
+			const value = fromTemplate(this.usernameField, data);
 
-		username = this.usernameField.split('.').reduce(function(prev, curr) {
-			return prev ? prev[curr] : undefined;
-		}, data);
-
-		if (!username) {
-			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
+			if (!value) {
+				throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
+			}
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract username', error.message);
 		}
-		return username;
+	}
+
+	getEmail(data) {
+		try {
+			const value = fromTemplate(this.emailField, data);
+
+			if (!value) {
+				throw new Meteor.Error('field_not_found', `Email field "${ this.emailField }" not found in data`, data);
+			}
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract email', error.message);
+		}
 	}
 
 	getCustomName(data) {
-		let customName = '';
+		try {
+			const value = fromTemplate(this.nameField, data);
 
-		customName = this.nameField.split('.').reduce(function(prev, curr) {
-			return prev ? prev[curr] : undefined;
-		}, data);
+			if (!value) {
+				return this.getName(data);
+			}
 
-		if (!customName) {
-			return this.getName(data);
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract custom name', error.message);
 		}
-
-		return customName;
 	}
 
 	getAvatarUrl(data) {
-		const avatarUrl = this.avatarField.split('.').reduce(function(prev, curr) {
-			return prev ? prev[curr] : undefined;
-		}, data);
+		try {
+			const value = fromTemplate(this.avatarField, data);
 
-		if (!avatarUrl) {
-			logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
+			if (!value) {
+				logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
+			}
+			return value;
+		} catch (error) {
+			throw new Error('CustomOAuth: Failed to extract avatar url', error.message);
 		}
-
-		return avatarUrl;
 	}
 
 	getName(identity) {
@@ -438,11 +357,15 @@ export class CustomOAuth {
 			}
 
 			if (this.usernameField) {
-				user.username = this.getUsername(user.services[this.name]);
+				user.username = user.services[this.name].username;
+			}
+
+			if (this.emailField) {
+				user.email = user.services[this.name].email;
 			}
 
 			if (this.nameField) {
-				user.name = this.getCustomName(user.services[this.name]);
+				user.name = user.services[this.name].name;
 			}
 
 			if (this.mergeRoles) {

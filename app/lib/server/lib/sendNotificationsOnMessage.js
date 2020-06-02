@@ -3,14 +3,17 @@ import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../callbacks/server';
 import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
-import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
-import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';
+import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
+import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
+import { Notification } from '../../../notification-queue/server/NotificationQueue';
+
+let TroubleshootDisableNotifications;
 
 export const sendNotification = async ({
 	subscription,
@@ -24,6 +27,10 @@ export const sendNotification = async ({
 	mentionIds,
 	disableAllMessageNotifications,
 }) => {
+	if (TroubleshootDisableNotifications === true) {
+		return;
+	}
+
 	// don't notify the sender
 	if (subscription.u._id === sender._id) {
 		return;
@@ -105,9 +112,10 @@ export const sendNotification = async ({
 			user: sender,
 			message,
 			room,
-			duration: subscription.desktopNotificationDuration,
 		});
 	}
+
+	const queueItems = [];
 
 	if (shouldNotifyMobile({
 		disableAllMessageNotifications,
@@ -116,23 +124,24 @@ export const sendNotification = async ({
 		isHighlighted,
 		hasMentionToUser,
 		hasReplyToThread,
-		statusConnection: receiver.statusConnection,
 		roomType,
 	})) {
-		sendSinglePush({
-			notificationMessage,
-			room,
-			message,
-			userId: subscription.u._id,
-			senderUsername: sender.username,
-			senderName: sender.name,
-			receiverUsername: receiver.username,
+		queueItems.push({
+			type: 'push',
+			data: await getPushData({
+				notificationMessage,
+				room,
+				message,
+				userId: subscription.u._id,
+				senderUsername: sender.username,
+				senderName: sender.name,
+				receiverUsername: receiver.username,
+			}),
 		});
 	}
 
 	if (receiver.emails && shouldNotifyEmail({
 		disableAllMessageNotifications,
-		statusConnection: receiver.statusConnection,
 		emailNotifications,
 		isHighlighted,
 		hasMentionToUser,
@@ -142,11 +151,23 @@ export const sendNotification = async ({
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
-				sendEmail({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser });
+				queueItems.push({
+					type: 'email',
+					data: getEmailData({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser }),
+				});
 
 				return true;
 			}
 			return false;
+		});
+	}
+
+	if (queueItems.length) {
+		Notification.scheduleItem({
+			uid: subscription.u._id,
+			rid: room._id,
+			mid: message._id,
+			items: queueItems,
 		});
 	}
 };
@@ -154,7 +175,6 @@ export const sendNotification = async ({
 const project = {
 	$project: {
 		audioNotifications: 1,
-		desktopNotificationDuration: 1,
 		desktopNotifications: 1,
 		emailNotifications: 1,
 		mobilePushNotifications: 1,
@@ -187,6 +207,10 @@ const lookup = {
 };
 
 export async function sendMessageNotifications(message, room, usersInThread = []) {
+	if (TroubleshootDisableNotifications === true) {
+		return;
+	}
+
 	const sender = roomTypes.getConfig(room.t).getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
@@ -253,7 +277,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		}
 	});
 
-	// the find bellow is crucial. all subscription records returned will receive at least one kind of notification.
+	// the find below is crucial. All subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
 
 	const subscriptions = await Subscriptions.model.rawCollection().aggregate([
@@ -287,6 +311,10 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 }
 
 export async function sendAllNotifications(message, room) {
+	if (TroubleshootDisableNotifications === true) {
+		return message;
+	}
+
 	// threads
 	if (message.tmid) {
 		return message;
@@ -353,4 +381,13 @@ export async function sendAllNotifications(message, room) {
 	return message;
 }
 
-callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
+settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
+	if (TroubleshootDisableNotifications === value) { return; }
+	TroubleshootDisableNotifications = value;
+
+	if (value) {
+		return callbacks.remove('afterSaveMessage', 'sendNotificationsOnMessage');
+	}
+
+	callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
+});

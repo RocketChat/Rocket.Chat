@@ -11,6 +11,7 @@ if (Meteor.isServer) {
 }
 
 export const RoomSettingsEnum = {
+	TYPE: 'type',
 	NAME: 'roomName',
 	TOPIC: 'roomTopic',
 	ANNOUNCEMENT: 'roomAnnouncement',
@@ -22,6 +23,20 @@ export const RoomSettingsEnum = {
 	BROADCAST: 'broadcast',
 	SYSTEM_MESSAGES: 'systemMessages',
 	E2E: 'encrypted',
+};
+
+export const RoomMemberActions = {
+	ARCHIVE: 'archive',
+	IGNORE: 'ignore',
+	BLOCK: 'block',
+	MUTE: 'mute',
+	SET_AS_OWNER: 'setAsOwner',
+	SET_AS_LEADER: 'setAsLeader',
+	SET_AS_MODERATOR: 'setAsModerator',
+	LEAVE: 'leave',
+	REMOVE_USER: 'removeUser',
+	JOIN: 'join',
+	INVITE: 'invite',
 };
 
 export const UiTextContext = {
@@ -154,6 +169,10 @@ export class RoomTypeConfig {
 		return true;
 	}
 
+	allowMemberAction(/* room, action */) {
+		return false;
+	}
+
 	/**
 	 * Return a room's name
 	 *
@@ -279,5 +298,9 @@ export class RoomTypeConfig {
 
 	openCustomProfileTab() {
 		return false;
+	}
+
+	getDiscussionType() {
+		return 'p';
 	}
 }

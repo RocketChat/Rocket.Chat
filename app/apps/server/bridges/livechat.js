@@ -32,7 +32,7 @@ export class AppLivechatBridge {
 			message: this.orch.getConverters().get('messages').convertAppMessage(message),
 		};
 
-		const msg = Livechat.sendMessage(data);
+		const msg = await Livechat.sendMessage(data);
 
 		return msg._id;
 	}

@@ -4,7 +4,7 @@ import { ChatRoom, ChatSubscription } from '../../../models';
 import { openRoom } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
-import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, roomTypes } from '../../../utils';
+import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, roomTypes, RoomMemberActions } from '../../../utils';
 import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
@@ -93,6 +93,15 @@ export class PrivateRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.E2E:
 				return settings.get('E2E_Enable') === true;
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
+			default:
+				return true;
+		}
+	}
+
+	allowMemberAction(room, action) {
+		switch (action) {
+			case RoomMemberActions.BLOCK:
+				return false;
 			default:
 				return true;
 		}

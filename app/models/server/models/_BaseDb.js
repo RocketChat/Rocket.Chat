@@ -1,8 +1,10 @@
 import { EventEmitter } from 'events';
 
 import { Match } from 'meteor/check';
-import { Mongo, MongoInternals } from 'meteor/mongo';
+import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
+
+import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 
 const baseName = 'rocketchat_';
 
@@ -35,6 +37,8 @@ export class BaseDb extends EventEmitter {
 
 		this.wrapModel();
 
+		const { oplogEnabled, mongo } = getMongoInfo();
+
 		// When someone start listening for changes we start oplog if available
 		const handleListener = (event /* , listener*/) => {
 			if (event !== 'change') {
@@ -47,7 +51,7 @@ export class BaseDb extends EventEmitter {
 				collection: this.collectionName,
 			};
 
-			if (!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle) {
+			if (!mongo._oplogHandle) {
 				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
 				1. Start your mongodb in a replicaset mode: mongod --smallfiles --oplogSize 128 --replSet rs0\n
 				2. Start the replicaset via mongodb shell: mongo mongo/meteor --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"\n
@@ -55,18 +59,21 @@ export class BaseDb extends EventEmitter {
 				`);
 			}
 
-			MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(
+			mongo._oplogHandle.onOplogEntry(
 				query,
 				this.processOplogRecord.bind(this),
 			);
 			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
 			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
-				MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(
+				mongo._oplogHandle._defineTooFarBehind(
 					Number.MAX_SAFE_INTEGER,
 				);
 			}
 		};
-		this.on('newListener', handleListener);
+
+		if (oplogEnabled) {
+			this.on('newListener', handleListener);
+		}
 
 		this.tryEnsureIndex({ _updatedAt: 1 }, options._updatedAtIndexOptions);
 	}

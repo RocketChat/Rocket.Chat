@@ -1,9 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-
-import { getUserPreference } from '../../utils';
 
 const getTitle = function(self) {
 	if (self.meta == null) {
@@ -53,20 +50,10 @@ Template.oembedUrlWidget.helpers({
 		if (url == null) {
 			return;
 		}
-		if (url.indexOf('//') === 0) {
-			url = `${ this.parsedUrl.protocol }${ url }`;
-		} else if (url.indexOf('/') === 0 && (this.parsedUrl && this.parsedUrl.host)) {
-			url = `${ this.parsedUrl.protocol }//${ this.parsedUrl.host }${ url }`;
-		}
+		url = new URL(url, `${ this.parsedUrl.protocol }//${ this.parsedUrl.host }`).href;
 		return url;
 	},
 	show() {
 		return (getDescription(this) != null) || (getTitle(this) != null);
-	},
-	collapsed() {
-		if (this.collapsed != null) {
-			return this.collapsed;
-		}
-		return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 	},
 });

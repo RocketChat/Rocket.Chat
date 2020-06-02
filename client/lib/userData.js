@@ -9,7 +9,7 @@ export const isSyncReady = new ReactiveVar(false);
 
 function updateUser(userData) {
 	const user = Users.findOne({ _id: userData._id });
-	if (!user || userData._updatedAt > user._updatedAt.toISOString()) {
+	if (!user || !user._updatedAt || userData._updatedAt > user._updatedAt.toISOString()) {
 		userData._updatedAt = new Date(userData._updatedAt);
 		return Meteor.users.upsert({ _id: userData._id }, userData);
 	}

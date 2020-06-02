@@ -59,7 +59,7 @@ export const MessageAction = new class {
 		}
 
 		if (config.condition) {
-			config.condition = mem(config.condition, { maxAge: 1000 });
+			config.condition = mem(config.condition, { maxAge: 1000, cacheKey: JSON.stringify });
 		}
 
 		return Tracker.nonreactive(() => {
@@ -99,7 +99,7 @@ export const MessageAction = new class {
 	})
 
 	_getButtonsByGroup = mem(function(group) {
-		return this._getButtons().filter((button) => button.group === group);
+		return this._getButtons().filter((button) => (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 	})
 
 	getButtons(message, context, group) {
@@ -176,12 +176,12 @@ Meteor.startup(async function() {
 			if (subscription == null) {
 				return false;
 			}
-			if (room.t === 'd') {
+			if (room.t === 'd' || room.t === 'l') {
 				return false;
 			}
 			return true;
 		},
-		order: 2,
+		order: 0,
 		group: 'menu',
 	});
 
@@ -192,7 +192,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			const { input } = chatMessages[message.rid];
+			const { input } = chatMessages[message.rid + (message.tmid ? `-${ message.tmid }` : '')];
 			const $input = $(input);
 
 			let messages = $input.data('reply') || [];

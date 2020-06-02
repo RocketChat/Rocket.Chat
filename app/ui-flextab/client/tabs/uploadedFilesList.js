@@ -313,3 +313,7 @@ Template.uploadedFilesList.events({
 		popover.open(config);
 	},
 });
+
+Template.uploadedFilesList.onRendered(function() {
+	this.firstNode.querySelector('[name="file-search"]').focus();
+});
