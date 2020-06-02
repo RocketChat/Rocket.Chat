@@ -14,6 +14,7 @@ Meteor.startup(function() {
 		this.add('CROWD_APP_PASSWORD', '', { type: 'password', enableQuery, i18nLabel: 'Password', secret: true });
 		this.add('CROWD_Sync_User_Data', false, { type: 'boolean', enableQuery, i18nLabel: 'Sync_Users' });
 		this.add('CROWD_Sync_Interval', 'Every 60 mins', { type: 'string', enableQuery: enableSyncQuery, i18nLabel: 'Sync_Interval', i18nDescription: 'Crowd_sync_interval_Description' });
+		this.add('CROWD_Remove_Orphaned_Users', false, { type: 'boolean', public: true, i18nLabel: 'Crowd_Remove_Orphaned_Users' });
 		this.add('CROWD_Clean_Usernames', true, { type: 'boolean', enableQuery, i18nLabel: 'Clean_Usernames', i18nDescription: 'Crowd_clean_usernames_Description' });
 		this.add('CROWD_Allow_Custom_Username', true, { type: 'boolean', i18nLabel: 'CROWD_Allow_Custom_Username' });
 		this.add('CROWD_Test_Connection', 'crowd_test_connection', { type: 'action', actionText: 'Test_Connection', i18nLabel: 'Test_Connection' });

@@ -75,6 +75,8 @@
 
 		padding: 0 0.5rem;
 
+		cursor: pointer;
+
 		align-items: center;
 
 		&-action {
@@ -223,23 +225,23 @@
 			border-radius: var(--header-title-status-bullet-radius);
 
 			&--online {
-				background-color: var(--status-online);
+				background-color: var(--rc-status-online);
 			}
 
 			&--away {
-				background-color: var(--status-away);
+				background-color: var(--rc-status-away);
 			}
 
 			&--busy {
-				background-color: var(--status-busy);
+				background-color: var(--rc-status-busy);
 			}
 
 			&--invisible {
-				background-color: var(--status-invisible);
+				background-color: var(--rc-status-invisible);
 			}
 
 			&--offline {
-				background-color: var(--status-invisible);
+				background-color: var(--rc-status-invisible);
 			}
 		}
 	}
@@ -412,10 +414,6 @@
 
 @media (width <= 500px) {
 	.rc-header {
-		&__visual-status {
-			display: none;
-		}
-
 		&__block {
 			margin: 0 0.25rem;
 		}

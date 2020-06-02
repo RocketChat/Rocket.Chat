@@ -257,6 +257,14 @@ export class AppsRestApi {
 			},
 		});
 
+		this.api.addRoute('externalComponents', { authRequired: false }, {
+			get() {
+				const externalComponents = orchestrator.getProvidedComponents();
+
+				return API.v1.success({ externalComponents });
+			},
+		});
+
 		this.api.addRoute('languages', { authRequired: false }, {
 			get() {
 				const apps = manager.get().map((prl) => ({
@@ -265,6 +273,24 @@ export class AppsRestApi {
 				}));
 
 				return API.v1.success({ apps });
+			},
+		});
+
+		this.api.addRoute('externalComponentEvent', { authRequired: true }, {
+			post() {
+				if (!this.bodyParams.externalComponent || !['IPostExternalComponentOpened', 'IPostExternalComponentClosed'].includes(this.bodyParams.event)) {
+					return API.v1.failure({ error: 'Event and externalComponent must be provided.' });
+				}
+
+				try {
+					const { event, externalComponent } = this.bodyParams;
+					const result = Apps.getBridges().getListenerBridge().externalComponentEvent(event, externalComponent);
+
+					return API.v1.success({ result });
+				} catch (e) {
+					orchestrator.getRocketChatLogger().error(`Error triggering external components' events ${ e.response.data }`);
+					return API.v1.internalError();
+				}
 			},
 		});
 
@@ -503,16 +529,30 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/icon', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
+		this.api.addRoute(':id/icon', { authRequired: false }, {
 			get() {
 				const prl = manager.getOneById(this.urlParams.id);
-
-				if (prl) {
-					const info = prl.getInfo();
-
-					return API.v1.success({ iconFileContent: info.iconFileContent });
+				if (!prl) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+
+				const info = prl.getInfo();
+				if (!info || !info.iconFileContent) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+				}
+
+				const imageData = info.iconFileContent.split(';base64,');
+
+				const buf = Buffer.from(imageData[1], 'base64');
+
+				return {
+					statusCode: 200,
+					headers: {
+						'Content-Length': buf.length,
+						'Content-Type': imageData[0].replace('data:', ''),
+					},
+					body: buf,
+				};
 			},
 		});
 

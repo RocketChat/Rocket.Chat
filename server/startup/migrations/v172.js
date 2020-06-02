@@ -5,7 +5,6 @@ import {
 	Settings,
 } from '../../../app/models';
 
-
 Migrations.add({
 	version: 172,
 	up() {

@@ -48,6 +48,8 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 	this.selectorRegex = /(\/[\w\d\S]+ )([^]*)$/;
 	this.replaceRegex = /(\/[\w\d\S]+ )[^]*$/; // WHAT'S THIS
 
+	this.dragging = false;
+
 	const template = this;
 	template.fetchPreviews = _.debounce(function _previewFetcher(cmd, args) {
 		const command = cmd;
@@ -281,7 +283,7 @@ Template.messagePopupSlashCommandPreview.onDestroyed(function() {
 });
 
 Template.messagePopupSlashCommandPreview.events({
-	'mouseenter .popup-item'(e) {
+	'mouseenter .popup-item, mousedown .popup-item, touchstart .popup-item'(e) {
 		if (e.currentTarget.className.includes('selected')) {
 			return;
 		}
@@ -300,8 +302,18 @@ Template.messagePopupSlashCommandPreview.events({
 	},
 	'mouseup .popup-item, touchend .popup-item'() {
 		const template = Template.instance();
+		if (template.dragging) {
+			template.dragging = false;
+			return;
+		}
+
 		template.clickingItem = false;
 		template.enterKeyAction();
+	},
+	'touchmove .popup-item'(e) {
+		e.stopPropagation();
+		const template = Template.instance();
+		template.dragging = true;
 	},
 });
 

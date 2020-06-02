@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { PageNotFound } from './PageNotFound';
+import PageNotFound from './PageNotFound';
 
 export default {
 	title: 'pageNotFound/PageNotFound',

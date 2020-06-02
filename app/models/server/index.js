@@ -16,6 +16,7 @@ import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
 import CustomUserStatus from './models/CustomUserStatus';
+import Imports from './models/Imports';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
 import Invites from './models/Invites';
@@ -37,6 +38,7 @@ import LivechatAgentActivity from './models/LivechatAgentActivity';
 import LivechatInquiry from './models/LivechatInquiry';
 import ReadReceipts from './models/ReadReceipts';
 import LivechatExternalMessage from './models/LivechatExternalMessages';
+import Analytics from './models/Analytics';
 
 export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
@@ -65,6 +67,7 @@ export {
 	Roles,
 	CustomSounds,
 	CustomUserStatus,
+	Imports,
 	Integrations,
 	IntegrationHistory,
 	Invites,
@@ -86,4 +89,5 @@ export {
 	ReadReceipts,
 	LivechatExternalMessage,
 	LivechatInquiry,
+	Analytics,
 };

@@ -5,6 +5,7 @@ import { hasPermission, canAccessRoom } from '../../../authorization';
 import { Rooms } from '../../../models';
 import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';
 import { addUserToRoom } from '../functions';
+import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
 Meteor.methods({
 	joinRoom(rid, code) {
@@ -18,6 +19,10 @@ Meteor.methods({
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
+		}
+
+		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.JOIN)) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
 		// TODO we should have a 'beforeJoinRoom' call back so external services can do their own validations

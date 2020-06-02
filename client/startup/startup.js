@@ -6,6 +6,7 @@ import { UserPresence } from 'meteor/konecty:user-presence';
 import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
 
+
 import hljs from '../../app/markdown/lib/hljs';
 import { fireGlobalEvent } from '../../app/ui-utils';
 import { getUserPreference } from '../../app/utils';
@@ -35,6 +36,9 @@ Meteor.startup(function() {
 	Tracker.autorun(async function() {
 		const uid = Meteor.userId();
 		if (!uid) {
+			return;
+		}
+		if (!Meteor.status().connected) {
 			return;
 		}
 

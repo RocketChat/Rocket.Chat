@@ -317,6 +317,12 @@ Template.appManage.helpers({
 	bundleAppNames(apps) {
 		return apps.map((app) => app.latest.name).join(', ');
 	},
+	essentials() {
+		return Template.instance()._app.get('essentials')?.map((interfaceName) => ({
+			interfaceName,
+			i18nKey: `Apps_Interface_${ interfaceName }`,
+		}));
+	},
 });
 
 Template.appManage.events({
@@ -399,7 +405,8 @@ Template.appManage.events({
 		_app.set('working', true);
 
 		try {
-			const { status } = await Apps.updateApp(appId, _app.get('marketplaceVersion'));
+			const method = _app.get('installed') ? 'updateApp' : 'installApp';
+			const { status } = await Apps[method](appId, _app.get('marketplaceVersion'));
 			warnStatusChange(_app.get('name'), status);
 		} catch (error) {
 			handleAPIError(error);

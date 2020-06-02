@@ -4,6 +4,7 @@ import s from 'underscore.string';
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
+import { getValidRoomName } from '../../../utils';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -11,14 +12,16 @@ export class Rooms extends Base {
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
 		this.tryEnsureIndex({ default: 1 });
+		this.tryEnsureIndex({ featured: 1 });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
-		// Livechat - statistics
-		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
+		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
+		// field used for DMs only
+		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -218,9 +221,13 @@ export class Rooms extends Base {
 		const query = {
 			_id,
 		};
-		const update = {
+		const update = systemMessages && systemMessages.length > 0 ? {
 			$set: {
 				sysMes: systemMessages,
+			},
+		} : {
+			$unset: {
+				sysMes: '',
 			},
 		};
 		return this.update(query, update);
@@ -244,6 +251,22 @@ export class Rooms extends Base {
 		const query = { importIds: _id };
 
 		return this.findOne(query, options);
+	}
+
+	findOneByNonValidatedName(name, options) {
+		const room = this.findOneByName(name, options);
+		if (room) {
+			return room;
+		}
+
+		let channelName = s.trim(name);
+		try {
+			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
+		} catch (e) {
+			console.error(e);
+		}
+
+		return this.findOneByName(channelName, options);
 	}
 
 	findOneByName(name, options) {
@@ -407,6 +430,20 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
+	findByNameOrFNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			$or: [{
+				name,
+			}, {
+				fname: name,
+			}],
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,
@@ -459,19 +496,20 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findDirectRoomContainingUsername(username, options) {
-		const query = {
-			t: 'd',
-			usernames: username,
-		};
-
-		return this.find(query, options);
-	}
-
 	findDirectRoomContainingAllUsernames(usernames, options) {
 		const query = {
 			t: 'd',
 			usernames: { $size: usernames.length, $all: usernames },
+			usersCount: usernames.length,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneDirectRoomContainingAllUserIDs(uid, options) {
+		const query = {
+			t: 'd',
+			uids: { $size: uid.length, $all: uid },
 		};
 
 		return this.findOne(query, options);
@@ -481,6 +519,18 @@ export class Rooms extends Base {
 		const query = {
 			name,
 			t: type,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByTypeAndNameOrId(type, identifier, options) {
+		const query = {
+			t: type,
+			$or: [
+				{ name: identifier },
+				{ _id: identifier },
+			],
 		};
 
 		return this.findOne(query, options);
@@ -521,6 +571,20 @@ export class Rooms extends Base {
 		}
 
 		return this.find(query, options);
+	}
+
+	findGroupDMsByUids(uids, options) {
+		return this.find({
+			usersCount: { $gt: 2 },
+			uids,
+		}, options);
+	}
+
+	find1On1ByUserId(userId, options) {
+		return this.find({
+			uids: userId,
+			usersCount: 2,
+		}, options);
 	}
 
 	// UPDATE
@@ -588,8 +652,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountById(_id, inc) {
-		if (inc == null) { inc = 1; }
+	incMsgCountById(_id, inc = 1) {
 		const query = { _id };
 
 		const update = {
@@ -621,6 +684,10 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	decreaseMessageCountById(_id, count = 1) {
+		return this.incMsgCountById(_id, -count);
+	}
+
 	incUsersCountById(_id, inc = 1) {
 		const query = { _id };
 
@@ -633,11 +700,12 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	incUsersCountByIds(ids, inc = 1) {
+	incUsersCountNotDMsByIds(ids, inc = 1) {
 		const query = {
 			_id: {
 				$in: ids,
 			},
+			t: { $ne: 'd' },
 		};
 
 		const update = {
@@ -835,13 +903,37 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	saveFeaturedById(_id, featured) {
+		const query = { _id };
+		const set = ['true', true].includes(featured);
+
+		const update = {
+			[set ? '$set' : '$unset']: {
+				featured: true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	saveDefaultById(_id, defaultValue) {
 		const query = { _id };
 
 		const update = {
 			$set: {
-				default: defaultValue === 'true',
+				default: defaultValue,
 			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveFavoriteById(_id, favorite, defaultValue) {
+		const query = { _id };
+
+		const update = {
+			...favorite && defaultValue && { $set: { favorite } },
+			...(!favorite || !defaultValue) && { $unset: {	favorite: 1 } },
 		};
 
 		return this.update(query, update);
@@ -926,6 +1018,22 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	updateGroupDMsRemovingUsernamesByUsername(username) {
+		const query = {
+			t: 'd',
+			usernames: username,
+			usersCount: { $gt: 2 },
+		};
+
+		const update = {
+			$pull: {
+				usernames: username,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	// INSERT
 	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
 		const room = {
@@ -978,10 +1086,15 @@ export class Rooms extends Base {
 		return this.remove(query);
 	}
 
+	removeByIds(ids) {
+		return this.remove({ _id: { $in: ids } });
+	}
+
 	removeDirectRoomContainingUsername(username) {
 		const query = {
 			t: 'd',
 			usernames: username,
+			usersCount: { $lte: 2 },
 		};
 
 		return this.remove(query);

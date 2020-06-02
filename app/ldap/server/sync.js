@@ -5,6 +5,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import _ from 'underscore';
 
 import LDAP from './ldap';
+import { callbacks } from '../../callbacks/server';
 import { RocketChatFile } from '../../file';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
@@ -16,7 +17,7 @@ import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
 
 
-const logger = new Logger('LDAPSync', {});
+export const logger = new Logger('LDAPSync', {});
 
 export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 	const syncUserRolesFilter = settings.get('LDAP_Sync_User_Data_Groups_Filter').trim();
@@ -27,7 +28,7 @@ export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 		return false;
 	}
 	const searchOptions = {
-		filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapGroup),
+		filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapGroup).replace(/#{userdn}/g, ldapUser.dn),
 		scope: 'sub',
 	};
 
@@ -122,12 +123,14 @@ export function getDataToSyncUserData(ldapUser, user) {
 						return;
 					}
 
+					const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+
 					if (_.isObject(ldapUser[ldapField])) {
 						_.map(ldapUser[ldapField], function(item) {
-							emailList.push({ address: item, verified: true });
+							emailList.push({ address: item, verified });
 						});
 					} else {
-						emailList.push({ address: ldapUser[ldapField], verified: true });
+						emailList.push({ address: ldapUser[ldapField], verified });
 					}
 					break;
 
@@ -207,6 +210,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 	const syncUserRolesFieldMap = settings.get('LDAP_Sync_User_Data_GroupsMap').trim();
 
 	if (!syncUserRoles || !syncUserRolesFieldMap) {
+		logger.debug('not syncing user roles');
 		return [];
 	}
 
@@ -293,6 +297,7 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 
 	const userChannels = [];
 	if (!syncUserRoles || !syncUserRolesAutoChannels || !syncUserRolesChannelFieldMap) {
+		logger.debug('not syncing groups to channels');
 		return [];
 	}
 
@@ -314,7 +319,7 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 		}
 
 		for (const channel of channels) {
-			let room = Rooms.findOneByName(channel);
+			let room = Rooms.findOneByNonValidatedName(channel);
 			if (!room) {
 				room = createRoomForSync(channel);
 			}
@@ -531,7 +536,7 @@ export function importNewUsers(ldap) {
 	}));
 }
 
-function sync() {
+export function sync() {
 	if (settings.get('LDAP_Enable') !== true) {
 		return;
 	}
@@ -562,9 +567,9 @@ function sync() {
 
 				if (ldapUser) {
 					syncUserData(user, ldapUser, ldap);
-				} else {
-					logger.info('Can\'t sync user', user.username);
 				}
+
+				callbacks.run('ldap.afterSyncExistentUser', { ldapUser, user });
 			});
 		}
 	} catch (error) {

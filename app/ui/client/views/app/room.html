@@ -121,13 +121,14 @@
 													{{/unless}}
 												</div>
 											{{/if}}
-											{{_ "Start_of_conversation"}}
+
+											{{> RoomForeword }}
 										</li>
 									{{/if}}
 								{{/if}}
 
 								{{# with messageContext}}
-									{{#each msg in messagesHistory}}{{> message shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+									{{#each msg in messagesHistory}}{{> message index=@index shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
 								{{/with}}
 
 								{{#if hasMoreNext}}

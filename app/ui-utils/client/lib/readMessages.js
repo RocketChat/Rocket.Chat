@@ -174,7 +174,12 @@ Meteor.startup(function() {
 		.on('keyup', (e) => {
 			const key = e.which;
 			if (key === 27) { // ESCAPE KEY
-				readMessage.readNow();
+				const rid = Session.get('openedRoom');
+				if (!rid) {
+					return;
+				}
+				readMessage.readNow(rid);
+				readMessage.refreshUnreadMark(rid);
 			}
 		});
 });

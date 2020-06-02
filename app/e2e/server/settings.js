@@ -8,4 +8,14 @@ settings.addGroup('E2E Encryption', function() {
 		public: true,
 		alert: 'E2E_Enable_alert',
 	});
+
+	this.add('E2E_Enabled_Default_DirectRooms', false, {
+		type: 'boolean',
+		enableQuery: { _id: 'E2E_Enable', value: true },
+	});
+
+	this.add('E2E_Enabled_Default_PrivateRooms', false, {
+		type: 'boolean',
+		enableQuery: { _id: 'E2E_Enable', value: true },
+	});
 });

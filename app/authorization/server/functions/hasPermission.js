@@ -1,17 +1,25 @@
 import mem from 'mem';
 
 import { Permissions, Users, Subscriptions } from '../../../models/server/raw';
+import { AuthorizationUtils } from '../../lib/AuthorizationUtils';
 
 const rolesHasPermission = mem(async (permission, roles) => {
-	const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } });
+	if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
+		return false;
+	}
+
+	const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
 	return !!result;
+}, {
+	cacheKey: JSON.stringify,
+	...process.env.TEST_MODE === 'true' && { maxAge: 0 },
 });
 
 const getRoles = mem(async (uid, scope) => {
-	const { roles: userRoles = [] } = await Users.findOne({ _id: uid });
-	const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid }, { fields: { roles: 1 } })) || {};
+	const { roles: userRoles = [] } = await Users.findOne({ _id: uid }, { projection: { roles: 1 } });
+	const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
 	return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
-}, { maxAge: 1000 });
+}, { maxAge: 1000, cacheKey: JSON.stringify });
 
 export const clearCache = () => {
 	mem.clear(getRoles);

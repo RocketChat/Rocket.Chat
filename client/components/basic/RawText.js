@@ -1,3 +1,5 @@
 import React from 'react';
 
-export const RawText = ({ children }) => <span dangerouslySetInnerHTML={{ __html: children }} />;
+const RawText = ({ children }) => <span dangerouslySetInnerHTML={{ __html: children }} />;
+
+export default RawText;

@@ -1,4 +1,8 @@
+--require ts-node/register
 --require babel-mocha-es6-compiler
 --require babel-polyfill
 --reporter spec
 --ui bdd
+--watch-extensions ts
+--extension ts
+app/**/*.tests.js app/**/*.tests.ts
