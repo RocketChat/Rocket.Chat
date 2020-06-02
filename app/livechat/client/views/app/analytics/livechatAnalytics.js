@@ -8,6 +8,7 @@ import { handleError } from '../../../../../utils';
 import { popover } from '../../../../../ui-utils';
 import { drawLineChart } from '../../../lib/chartHandler';
 import { setDateRange, updateDateRange } from '../../../lib/dateHandler';
+import { APIClient } from '../../../../../utils/client';
 import './livechatAnalytics.html';
 
 let templateInstance;		// current template instance/context
@@ -62,13 +63,19 @@ const chunkArray = (arr, chunkCount) => {	// split array into n almost equal arr
 	return chunks;
 };
 
+const getChartDepartment = (department) => department?._id;
+
 const updateAnalyticsChart = () => {
+	const [department] = templateInstance.selectedDepartments.get();
+	const departmentId = getChartDepartment(department);
+
 	const options = {
 		daterange: {
 			from: moment(templateInstance.daterange.get().from, 'MMM D YYYY').toISOString(),
 			to: moment(templateInstance.daterange.get().to, 'MMM D YYYY').toISOString(),
 		},
 		chartOptions: templateInstance.chartOptions.get(),
+		...departmentId && { departmentId },
 	};
 
 	Meteor.call('livechat:getAnalyticsChartData', options, async function(error, result) {
@@ -97,12 +104,16 @@ const updateAnalyticsChart = () => {
 };
 
 const updateAnalyticsOverview = () => {
+	const [department] = templateInstance.selectedDepartments.get();
+	const departmentId = getChartDepartment(department);
+
 	const options = {
 		daterange: {
 			from: moment(templateInstance.daterange.get().from, 'MMM D YYYY').toISOString(),
 			to: moment(templateInstance.daterange.get().to, 'MMM D YYYY').toISOString(),
 		},
 		analyticsOptions: templateInstance.analyticsOptions.get(),
+		...departmentId && { departmentId },
 	};
 
 	Meteor.call('livechat:getAnalyticsOverviewData', options, (error, result) => {
@@ -150,10 +161,28 @@ Template.livechatAnalytics.helpers({
 		}
 		return true;
 	},
+	departmentModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	onClickTagDepartment() {
+		return Template.instance().onClickTagDepartment;
+	},
+	selectedDepartments() {
+		return Template.instance().selectedDepartments.get();
+	},
+	onSelectDepartments() {
+		return Template.instance().onSelectDepartments;
+	},
+	hasDepartments() {
+		return Template.instance().hasDepartments.get();
+	},
 });
 
 
-Template.livechatAnalytics.onCreated(function() {
+Template.livechatAnalytics.onCreated(async function() {
 	templateInstance = Template.instance();
 
 	this.analyticsOverviewData = new ReactiveVar();
@@ -161,6 +190,20 @@ Template.livechatAnalytics.onCreated(function() {
 	this.daterange = new ReactiveVar({});
 	this.analyticsOptions = new ReactiveVar(analyticsAllOptions()[0]);		// default selected first
 	this.chartOptions = new ReactiveVar(analyticsAllOptions()[0].chartOptions[0]);		// default selected first
+	this.selectedDepartments = new ReactiveVar([]);
+	this.hasDepartments = new ReactiveVar(false);
+
+	this.onSelectDepartments = ({ item: department }) => {
+		department.text = department.name;
+		this.selectedDepartments.set([department]);
+	};
+
+	this.onClickTagDepartment = () => {
+		this.selectedDepartments.set([]);
+	};
+
+	const { departments } = await APIClient.v1.get('livechat/department?count=1');
+	this.hasDepartments.set(departments?.length > 0);
 
 	this.autorun(() => {
 		templateInstance.daterange.set(setDateRange());
@@ -169,7 +212,9 @@ Template.livechatAnalytics.onCreated(function() {
 
 Template.livechatAnalytics.onRendered(() => {
 	Tracker.autorun(() => {
-		if (templateInstance.daterange.get() && templateInstance.analyticsOptions.get() && templateInstance.chartOptions.get()) {
+		if (templateInstance.daterange.get()
+		&& templateInstance.analyticsOptions.get()
+		&& templateInstance.chartOptions.get()) {
 			updateAnalyticsOverview();
 			updateAnalyticsChart();
 		}

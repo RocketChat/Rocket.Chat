@@ -1,25 +1,34 @@
 import { Box, Margins, Scrollable, Tile } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
 import { finalStep } from './SetupWizardState';
-import { FinalStep } from './steps/FinalStep';
-import { SideBar } from './SideBar';
-import { AdminUserInformationStep } from './steps/AdminUserInformationStep';
-import { SettingsBasedStep } from './steps/SettingsBasedStep';
-import { RegisterServerStep } from './steps/RegisterServerStep';
+import FinalStep from './steps/FinalStep';
+import SideBar from './SideBar';
+import AdminUserInformationStep from './steps/AdminUserInformationStep';
+import SettingsBasedStep from './steps/SettingsBasedStep';
+import RegisterServerStep from './steps/RegisterServerStep';
 
-import './SetupWizardPage.css';
-
-export function SetupWizardPage({ currentStep = 1 }) {
+function SetupWizardPage({ currentStep = 1 }) {
 	useWipeInitialPageLoading();
+
 	const t = useTranslation();
+	const small = useMediaQuery('(max-width: 760px)');
 
 	return <>
 		<ConnectionStatusAlert />
-		<Box className='SetupWizard' data-qa='setup-wizard'>
+		<Box
+			width='full'
+			height='sh'
+			display='flex'
+			flexDirection={small ? 'column' : 'row'}
+			alignItems='stretch'
+			style={{ backgroundColor: 'var(--color-dark-05, #f1f2f4)' }}
+			data-qa='setup-wizard'
+		>
 			{(currentStep === finalStep && <FinalStep />)
 			|| <>
 				<SideBar
@@ -43,10 +52,16 @@ export function SetupWizardPage({ currentStep = 1 }) {
 					]}
 					currentStep={currentStep}
 				/>
-				<Box className='SetupWizard__wrapper'>
+				<Box
+					flexGrow={1}
+					flexShrink={1}
+					minHeight='none'
+					display='flex'
+					flexDirection='column'
+				>
 					<Scrollable>
 						<Margins all='x16'>
-							<Tile is='section' className='SetupWizard__steps'>
+							<Tile is='section' flexGrow={1} flexShrink={1}>
 								<AdminUserInformationStep step={1} title={t('Admin_Info')} active={currentStep === 1} />
 								<SettingsBasedStep step={2} title={t('Organization_Info')} active={currentStep === 2} />
 								<SettingsBasedStep step={3} title={t('Server_Info')} active={currentStep === 3} />
@@ -59,3 +74,5 @@ export function SetupWizardPage({ currentStep = 1 }) {
 		</Box>
 	</>;
 }
+
+export default SetupWizardPage;

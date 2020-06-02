@@ -167,8 +167,9 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 
 // fix for :+1: - had to replace all function that does its conversion: https://github.com/joypixels/emojione/blob/4.5.0/lib/js/emojione.js#L249
 (function(ns) {
-	ns.shortnameConversionMap = mem(ns.shortnameConversionMap);
-	ns.unicodeCharRegex = mem(ns.unicodeCharRegex);
+	ns.shortnameConversionMap = mem(ns.shortnameConversionMap, { maxAge: 1000 });
+
+	ns.unicodeCharRegex = mem(ns.unicodeCharRegex, { maxAge: 1000 });
 
 	const convertShortName = mem(function(shortname) {
 		// the fix is basically adding this .replace(/[+]/g, '\\$&')
@@ -202,7 +203,7 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 			return `<span class="emojione emojione-${ category } _${ fname }" ${ title }>${ alt }</span>`;
 		}
 		return `<img class="emojione" alt="${ alt }" ${ title } src="${ ePath }${ fname }${ ns.fileExtension }"/>`;
-	});
+	}, { maxAge: 1000 });
 
 	const convertUnicode = mem(function(entire, m1, m2, m3) {
 		const mappedUnicode = ns.mapUnicodeToShort();
@@ -228,7 +229,7 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 			return `${ m2 }<span class="emojione emojione-${ category } _${ unicode }"  ${ title }>${ alt }</span>`;
 		}
 		return `${ m2 }<img class="emojione" alt="${ alt }" ${ title } src="${ ePath }${ unicode }${ ns.fileExtension }"/>`;
-	});
+	}, { maxAge: 1000, cacheKey: JSON.stringify });
 
 	ns.shortnameToImage = function(str) {
 		// replace regular shortnames first

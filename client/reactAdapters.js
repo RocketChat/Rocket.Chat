@@ -20,7 +20,7 @@ const mountRoot = async () => {
 	}
 
 	const [
-		{ Component, Fragment, Suspense, createElement, lazy, useLayoutEffect, useState },
+		{ Component, Suspense, createElement, lazy, useLayoutEffect, useState },
 		{ render },
 	] = await Promise.all([
 		import('react'),
@@ -29,10 +29,14 @@ const mountRoot = async () => {
 
 	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
 
-	class Portals extends Component {
-		static getDerivedStateFromError = () => ({})
+	class PortalWrapper extends Component {
+		state = { errored: false }
 
-		render = () => createElement(Fragment, {}, ...this.props.portals)
+		static getDerivedStateFromError = () => ({ errored: true })
+
+		componentDidCatch = () => {}
+
+		render = () => (this.state.errored ? null : this.props.portal)
 	}
 
 	function AppRoot() {
@@ -51,7 +55,7 @@ const mountRoot = async () => {
 
 		return createElement(Suspense, { fallback: null },
 			createElement(LazyMeteorProvider, {},
-				createElement(Portals, { portals }),
+				...portals.map((portal, key) => createElement(PortalWrapper, { key, portal })),
 			),
 		);
 	}
@@ -148,6 +152,10 @@ export const renderRouteComponent = (importFn, {
 	propsFn = () => ({}),
 } = {}) => {
 	const routeName = FlowRouter.getRouteName();
+
+	if (portalsMap.has(routeName)) {
+		return;
+	}
 
 	Tracker.autorun(async (computation) => {
 		if (routeName !== FlowRouter.getRouteName()) {

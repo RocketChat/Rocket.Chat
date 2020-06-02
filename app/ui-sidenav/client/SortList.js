@@ -16,7 +16,7 @@ function SortListItem({ text, icon, input }) {
 					</Flex.Item>
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>
-							<Box is='span' textStyle='p2'>{text}</Box>
+							<Box is='span' fontScale='p2'>{text}</Box>
 						</Flex.Item>
 					</Margins>
 					<Flex.Item grow={0}>
@@ -54,7 +54,7 @@ function SortModeList() {
 
 	return <>
 		<Margins block='x8'>
-			<Box is='p' style={style} textStyle='micro'>{t('Sort_By')}</Box>
+			<Box is='p' style={style} fontScale='micro'>{t('Sort_By')}</Box>
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>
@@ -84,7 +84,7 @@ function ViewModeList() {
 
 	return <>
 		<Margins block='x8'>
-			<Box is='p' style={style} textStyle='micro'>{t('View_mode')}</Box>
+			<Box is='p' style={style} fontScale='micro'>{t('View_mode')}</Box>
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>
@@ -117,7 +117,7 @@ function GroupingList() {
 	const t = useTranslation();
 	return <>
 		<Margins block='x8'>
-			<Box is='p' style={style} textStyle='micro'>{t('Grouping')}</Box>
+			<Box is='p' style={style} fontScale='micro'>{t('Grouping')}</Box>
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>

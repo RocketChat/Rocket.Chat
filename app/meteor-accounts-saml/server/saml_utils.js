@@ -350,6 +350,10 @@ SAML.prototype.validateSignatureChildren = function(xml, cert, parent) {
 		signature = sign;
 	}
 
+	if (!signature) {
+		return false;
+	}
+
 	return this.validateSignature(xml, cert, signature);
 };
 
@@ -369,8 +373,10 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 			return callback(err, null);
 		}
 
-		debugLog(`LogoutRequest: ${ decoded }`);
-		const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
+		const xmlString = array2string(decoded);
+		debugLog(`LogoutRequest: ${ xmlString }`);
+
+		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');
 		if (!doc) {
 			return callback('No Doc Found');
 		}
@@ -381,14 +387,19 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 		}
 
 		try {
-			const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
-			const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
+			const sessionNode = request.getElementsByTagNameNS('*', 'SessionIndex')[0];
+			const nameIdNode = request.getElementsByTagNameNS('*', 'NameID')[0];
+
+			if (!nameIdNode) {
+				throw new Error('SAML Logout Request: No NameID node found');
+			}
 
 			const idpSession = sessionNode.childNodes[0].nodeValue;
 			const nameID = nameIdNode.childNodes[0].nodeValue;
 
 			return callback(null, { idpSession, nameID });
 		} catch (e) {
+			console.error(e);
 			debugLog(`Caught error: ${ e }`);
 
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
@@ -567,19 +578,43 @@ SAML.prototype.verifySignatures = function(response, assertion, xml) {
 		return;
 	}
 
-	debugLog('Verify Document Signature');
-	if (!this.validateResponseSignature(xml, this.options.cert, response)) {
-		debugLog('Document Signature WRONG');
-		throw new Error('Invalid Signature');
-	}
-	debugLog('Document Signature OK');
+	const signatureType = this.options.signatureValidationType;
 
-	debugLog('Verify Assertion Signature');
-	if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
-		debugLog('Assertion Signature WRONG');
-		throw new Error('Invalid Assertion signature');
+	const checkEither = signatureType === 'Either';
+	const checkResponse = signatureType === 'Response' || signatureType === 'All' || checkEither;
+	const checkAssertion = signatureType === 'Assertion' || signatureType === 'All' || checkEither;
+	let anyValidSignature = false;
+
+	if (checkResponse) {
+		debugLog('Verify Document Signature');
+		if (!this.validateResponseSignature(xml, this.options.cert, response)) {
+			if (!checkEither) {
+				debugLog('Document Signature WRONG');
+				throw new Error('Invalid Signature');
+			}
+		} else {
+			anyValidSignature = true;
+		}
+		debugLog('Document Signature OK');
 	}
-	debugLog('Assertion Signature OK');
+
+	if (checkAssertion) {
+		debugLog('Verify Assertion Signature');
+		if (!this.validateAssertionSignature(xml, this.options.cert, assertion)) {
+			if (!checkEither) {
+				debugLog('Assertion Signature WRONG');
+				throw new Error('Invalid Assertion signature');
+			}
+		} else {
+			anyValidSignature = true;
+		}
+		debugLog('Assertion Signature OK');
+	}
+
+	if (checkEither && !anyValidSignature) {
+		debugLog('No Valid Signature');
+		throw new Error('No valid SAML Signature found');
+	}
 };
 
 SAML.prototype.getSubject = function(assertion) {
@@ -744,23 +779,13 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 
 	const metadata = {
 		EntityDescriptor: {
+			'@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+			'@xsi:schemaLocation': 'urn:oasis:names:tc:SAML:2.0:metadata https://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd',
 			'@xmlns': 'urn:oasis:names:tc:SAML:2.0:metadata',
 			'@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
 			'@entityID': this.options.issuer,
 			SPSSODescriptor: {
 				'@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-				SingleLogoutService: {
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-					'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-					'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-				},
-				NameIDFormat: this.options.identifierFormat,
-				AssertionConsumerService: {
-					'@index': '1',
-					'@isDefault': 'true',
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-					'@Location': callbackUrl,
-				},
 			},
 		},
 	};
@@ -797,6 +822,19 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 			],
 		};
 	}
+
+	metadata.EntityDescriptor.SPSSODescriptor.SingleLogoutService = {
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+		'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+		'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+	};
+	metadata.EntityDescriptor.SPSSODescriptor.NameIDFormat = this.options.identifierFormat;
+	metadata.EntityDescriptor.SPSSODescriptor.AssertionConsumerService = {
+		'@index': '1',
+		'@isDefault': 'true',
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+		'@Location': callbackUrl,
+	};
 
 	return xmlbuilder.create(metadata).end({
 		pretty: true,

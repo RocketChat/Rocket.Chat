@@ -11,6 +11,6 @@ export default {
 
 export const _default = () => <PositiveGrowthSymbol />;
 
-export const withColor = () => <Box textColor='success'>
+export const withColor = () => <Box color='success'>
 	<PositiveGrowthSymbol />
 </Box>;

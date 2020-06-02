@@ -2,7 +2,7 @@ import { Box, Margins, Tabs } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { Page } from '../../../../../client/components/basic/Page';
+import Page from '../../../../../client/components/basic/Page';
 import { UsersTab } from './UsersTab';
 import { MessagesTab } from './MessagesTab';
 import { ChannelsTab } from './ChannelsTab';
