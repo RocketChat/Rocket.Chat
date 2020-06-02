@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 
+import { timeAgo } from '../../lib/client/lib/formatDate';
 import './pushMessage.html';
 
 Template.pushMessage.helpers({
@@ -11,5 +12,8 @@ Template.pushMessage.helpers({
 		};
 		console.log(data);
 		return data;
+	},
+	timeAgo(date) {
+		return timeAgo(date);
 	},
 });

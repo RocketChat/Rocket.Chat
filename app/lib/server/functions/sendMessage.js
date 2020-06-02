@@ -219,6 +219,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		options: {
 			body: 'Description',
 			icon: 'https://awsmp-logos.s3.amazonaws.com/dcb2092b-ef39-40bd-bc7c-f2394fa75ba7/16a827701bdfc7ae7ddf389f61507024.png',
+			timestamp: new Date().getTime(),
 		},
 	};
 
