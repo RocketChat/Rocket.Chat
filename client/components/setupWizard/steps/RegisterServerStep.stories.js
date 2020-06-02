@@ -1,7 +1,7 @@
 import { boolean, select, text } from '@storybook/addon-knobs';
 import React from 'react';
 
-import { RegisterServerStep } from './RegisterServerStep';
+import RegisterServerStep from './RegisterServerStep';
 
 export default {
 	title: 'setupWizard/steps/RegisterServerStep',

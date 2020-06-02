@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Margins, Tile } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { Page } from './Page';
+import Page from './Page';
 
 export default {
 	title: 'basic/Page',

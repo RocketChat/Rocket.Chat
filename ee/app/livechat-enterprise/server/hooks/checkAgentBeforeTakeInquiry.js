@@ -34,9 +34,12 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async (agent, inquiry) => 
 
 	const { queueInfo: { chats = 0 } = {} } = user;
 	if (maxNumberSimultaneousChat <= chats) {
+		callbacks.run('livechat.onMaxNumberSimultaneousChatsReached', inquiry, agent);
+
 		if (!RoutingManager.getConfig().autoAssignAgent) {
 			throw new Meteor.Error('error-max-number-simultaneous-chats-reached', 'Not allowed');
 		}
+
 		return null;
 	}
 	return agent;

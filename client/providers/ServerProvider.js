@@ -32,11 +32,14 @@ const callEndpoint = (httpMethod, endpoint, ...args) => {
 	return APIClient.v1[httpMethod.toLowerCase()](endpoint, ...args);
 };
 
+const upload = (endpoint, params, formData) => APIClient.v1.upload(endpoint, params, formData);
+
 const contextValue = {
 	info,
 	absoluteUrl,
 	callMethod,
 	callEndpoint,
+	upload,
 };
 
 export function ServerProvider({ children }) {

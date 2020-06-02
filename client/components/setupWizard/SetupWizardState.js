@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useUserId } from '../../contexts/UserContext';
-import { SetupWizardPage } from './SetupWizardPage';
+import SetupWizardPage from './SetupWizardPage';
 
 export const finalStep = 'final';
 
@@ -90,7 +90,7 @@ const SetupWizardContext = createContext({
 	goToFinalStep: () => {},
 });
 
-export function SetupWizardState() {
+function SetupWizardState() {
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const {
 		loaded,
@@ -123,3 +123,5 @@ export function SetupWizardState() {
 }
 
 export const useSetupWizardContext = () => useContext(SetupWizardContext);
+
+export default SetupWizardState;

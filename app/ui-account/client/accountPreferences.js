@@ -83,13 +83,6 @@ Template.accountPreferences.helpers({
 	desktopNotificationDisabled() {
 		return KonchatNotification.notificationStatus.get() === 'denied' || (window.Notification && Notification.permission === 'denied');
 	},
-	desktopNotificationDuration() {
-		const userPref = getUserPreference(Meteor.userId(), 'desktopNotificationDuration', 'undefined');
-		return userPref !== 'undefined' ? userPref : undefined;
-	},
-	defaultDesktopNotificationDuration() {
-		return settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration');
-	},
 	desktopNotificationRequireInteraction() {
 		const userPref = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction', 'undefined');
 		return userPref !== 'undefined' ? userPref : undefined;
@@ -178,7 +171,6 @@ Template.accountPreferences.onCreated(function() {
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
 		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
-		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
@@ -330,7 +322,6 @@ Template.accountPreferences.events({
 	'click .js-test-notifications'(e) {
 		e.preventDefault();
 		KonchatNotification.notify({
-			duration: $('input[name=desktopNotificationDuration]').val(),
 			payload: { sender: { username: 'rocket.cat' },
 			},
 			title: TAPi18n.__('Desktop_Notification_Test'),
@@ -353,10 +344,10 @@ Template.accountPreferences.events({
 	'click .js-dont-ask-remove'(e) {
 		e.preventDefault();
 		const selectEl = document.getElementById('dont-ask');
-		const { options } = selectEl;
-		const selectedOption = selectEl.value;
-		const optionIndex = Array.from(options).findIndex((option) => option.value === selectedOption);
-
-		selectEl.remove(optionIndex);
+		for (let i = selectEl.options.length - 1; i >= 0; i--) {
+			if (selectEl.options[i].selected) {
+				selectEl.remove(i);
+			}
+		}
 	},
 });

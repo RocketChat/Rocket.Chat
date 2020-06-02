@@ -787,7 +787,7 @@ Template.room.events({
 		});
 	},
 
-	'click .user-image, click .rc-member-list__user'(e, instance) {
+	'click .rc-member-list__user'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
 		}

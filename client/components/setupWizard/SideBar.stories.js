@@ -1,7 +1,7 @@
 import { select } from '@storybook/addon-knobs';
 import React from 'react';
 
-import { SideBar } from './SideBar';
+import SideBar from './SideBar';
 
 export default {
 	title: 'setupWizard/SideBar',
