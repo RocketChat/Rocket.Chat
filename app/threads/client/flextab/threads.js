@@ -27,7 +27,7 @@ Template.threads.events({
 		return false;
 	},
 	'scroll .js-scroll-threads': _.throttle(({ currentTarget: e }, { incLimit }) => {
-		if (e.offsetHeight + e.scrollTop <= e.scrollHeight - 50) {
+		if (e.offsetHeight + e.scrollTop >= e.scrollHeight - 50) {
 			incLimit && incLimit();
 		}
 	}, 500),

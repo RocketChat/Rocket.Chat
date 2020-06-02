@@ -14,7 +14,7 @@ const FilterByText = ({ setFilter, ...props }) => {
 	useEffect(() => {
 		setFilter({ text });
 	}, [text]);
-	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 		<TextInput flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 };

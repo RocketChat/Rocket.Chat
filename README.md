@@ -32,10 +32,9 @@
   * [Sloppy.io](#sloppyio)
   * [Docker](#docker)
   * [Ansible](#ansible)
-  * [Raspberry Pi 2](#raspberry-pi-2)
+  * [Raspberry Pi 4](#raspberry-pi-4)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
-  * [Hyper.sh](#hypersh)
   * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
   * [Syncloud.org](#syncloudorg)
@@ -182,10 +181,10 @@ Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 
 
 [![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://rocket.chat/docs/installation/automation-tools/ansible/)
 
-## Raspberry Pi 2
-Run Rocket.Chat on this world famous $30 quad-core server.
+## Raspberry Pi 4
+Run Rocket.Chat on this world famous $35 quad-core server.
 
-[![Raspberry Pi 2](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
+[![Raspberry Pi 4](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
 
 ## Koozali SME
 
@@ -195,9 +194,6 @@ Add Rocket.Chat to this world famous time tested small enterprise server today.
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/).
-
-## Hyper.sh
-Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/).
 
 ## WeDeploy
 Install Rocket.Chat on [WeDeploy](https://wedeploy.com):

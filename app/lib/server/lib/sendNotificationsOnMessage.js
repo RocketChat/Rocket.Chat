@@ -112,7 +112,6 @@ export const sendNotification = async ({
 			user: sender,
 			message,
 			room,
-			duration: subscription.desktopNotificationDuration,
 		});
 	}
 
@@ -176,7 +175,6 @@ export const sendNotification = async ({
 const project = {
 	$project: {
 		audioNotifications: 1,
-		desktopNotificationDuration: 1,
 		desktopNotifications: 1,
 		emailNotifications: 1,
 		mobilePushNotifications: 1,
@@ -314,7 +312,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 
 export async function sendAllNotifications(message, room) {
 	if (TroubleshootDisableNotifications === true) {
-		return;
+		return message;
 	}
 
 	// threads

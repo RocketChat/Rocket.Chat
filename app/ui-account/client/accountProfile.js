@@ -9,11 +9,12 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { modal, SideNav } from '../../ui-utils';
+import { modal, SideNav, popover } from '../../ui-utils';
 import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
+import { getPopoverStatusConfig } from '../../ui/client';
 
 const validateEmail = (email) => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
 const validateUsername = (username) => {
@@ -118,6 +119,8 @@ Template.accountProfile.helpers({
 		const instance = Template.instance();
 		instance.dep.depend();
 		const realname = instance.realname.get();
+
+		const statusType = instance.statusType.get();
 		const statusText = instance.fields.get('statusText');
 		const bio = instance.fields.get('bio');
 		const username = instance.username.get();
@@ -137,9 +140,11 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.bio === bio && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password) {
+
+		if (!avatar && user.bio === bio && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password && statusType === user.status) {
 			return ret;
 		}
+
 		if (!validateEmail(email) || !validatePassword(password, confirmationPassword) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
 			return ret;
 		}
@@ -186,6 +191,9 @@ Template.accountProfile.helpers({
 	customFields() {
 		return Meteor.user().customFields;
 	},
+	statusType() {
+		return Meteor.user().status;
+	},
 	get(field) {
 		return Template.instance().fields.get(field);
 	},
@@ -211,6 +219,7 @@ Template.accountProfile.onCreated(function() {
 	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
 	self.statusText = new ReactiveVar(user.statusText);
+	self.statusType = new ReactiveVar(user.status);
 
 	Notifications.onLogged('updateAvatar', () => self.avatar.set());
 	self.getSuggestions = function() {
@@ -288,6 +297,9 @@ Template.accountProfile.onCreated(function() {
 
 		if (s.trim(self.fields.get('bio')) !== user.statusText) {
 			data.bio = s.trim(self.fields.get('bio'));
+		}
+		if (self.statusType.get() !== user.statusType) {
+			data.statusType = self.statusType.get();
 		}
 		if (s.trim(self.username.get()) !== user.username) {
 			if (!settings.get('Accounts_AllowUsernameChange')) {
@@ -378,6 +390,9 @@ Template.accountProfile.events({
 				contentType: '',
 			},
 		}, [e, instance, ...args]);
+	},
+	'click .js-status-type'(e, instance) {
+		popover.open(getPopoverStatusConfig(e.currentTarget, (status) => instance.statusType.set(status)));
 	},
 	'input .js-avatar-url-input'(e, instance) {
 		const text = e.target.value;

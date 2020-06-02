@@ -7,7 +7,7 @@ import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
 
 import { settings } from '../../../settings';
-import { t } from '../../../utils';
+import { t, handleError } from '../../../utils/client';
 import { AutoComplete } from '../../../meteor-autocomplete/client';
 
 const acEvents = {
@@ -106,7 +106,7 @@ Template.inviteUsers.events({
 			users,
 		}, function(err) {
 			if (err) {
-				return toastr.error(err);
+				return handleError(err);
 			}
 			toastr.success(t('Users_added'));
 			instance.selectedUsers.set([]);

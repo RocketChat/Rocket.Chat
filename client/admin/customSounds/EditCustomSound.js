@@ -19,7 +19,7 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t('Custom_Sound_Status_Delete_Warning')}
+			{t('Custom_Sound_Delete_Warning')}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -49,8 +49,7 @@ const SuccessModal = ({ onClose, ...props }) => {
 	</Modal>;
 };
 
-export function EditSound({ _id, cache, ...props }) {
-	const t = useTranslation();
+export function EditCustomSound({ _id, cache, ...props }) {
 	const query = useMemo(() => ({
 		query: JSON.stringify({ _id }),
 	}), [_id]);
@@ -75,13 +74,13 @@ export function EditSound({ _id, cache, ...props }) {
 	}
 
 	if (error || !data || data.sounds.length < 1) {
-		return <Box fontScale='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
+		return <Box fontScale='h1' pb='x20'>{error}</Box>;
 	}
 
-	return <EditCustomSound data={data.sounds[0]} {...props}/>;
+	return <EditSound data={data.sounds[0]} {...props}/>;
 }
 
-export function EditCustomSound({ close, onChange, data, ...props }) {
+function EditSound({ close, onChange, data, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

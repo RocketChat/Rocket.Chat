@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Box, Headline, Button, Icon, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -24,7 +24,7 @@ export function InviteUsers({ data, ...props }) {
 		});
 	};
 	return <VerticalBar.ScrollableContent {...props}>
-		<Headline mbs='x8'>{t('Send_invitation_email')}</Headline>
+		<Box is='h2' fontScale='h1' mb='x8'>{t('Send_invitation_email')}</Box>
 		<Box fontScale='p1' mb='x8'>{t('Send_invitation_email_info')}</Box>
 		<TextAreaInput rows={5} flexGrow={0} onChange={(e) => setText(e.currentTarget.value)}/>
 		<Button primary onClick={handleClick} alignItems='stretch' mb='x8'>

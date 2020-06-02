@@ -69,7 +69,7 @@ export class AppRoomsConverter {
 		}
 
 		const newRoom = {
-			_id: room.id,
+			...room.id && { _id: room.id },
 			fname: room.displayName,
 			name: room.slugifiedName,
 			t: room.type,
@@ -116,6 +116,7 @@ export class AppRoomsConverter {
 			customFields: 'customFields',
 			isWaitingResponse: 'waitingResponse',
 			isOpen: 'open',
+			_USERNAMES: '_USERNAMES',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;

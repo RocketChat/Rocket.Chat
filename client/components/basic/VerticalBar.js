@@ -10,6 +10,7 @@ function VerticalBar({ children, ...props }) {
 
 	return <Box
 		display='flex'
+		flexDirection='column'
 		flexShrink={0}
 		width={mobile ? 'full' : 'x380'}
 		height='full'
@@ -23,6 +24,8 @@ function VerticalBar({ children, ...props }) {
 			display='flex'
 			flexDirection='column'
 			flexGrow={1}
+			flexShrink={1}
+			withTruncatedText
 		>
 			{children}
 		</Tile>
@@ -52,7 +55,7 @@ function VerticalBarContent(props) {
 	return <Page.Content {...props} />;
 }
 
-function VerticalBarScrollableContent({ children, props }) {
+function VerticalBarScrollableContent({ children, ...props }) {
 	return <Page.ScrollableContent padding='x24' mi='neg-x24' {...props}>
 		<Margins blockEnd='x16'>{children}</Margins>
 	</Page.ScrollableContent>;
