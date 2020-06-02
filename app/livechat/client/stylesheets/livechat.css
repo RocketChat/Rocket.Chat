@@ -220,8 +220,7 @@
 .lc-analytics-table {
 	display: flex;
 
-	height: ~"calc(100% - 280px)";
-	height: ~"-webkit-calc-height(100% - 280px)";
+	height: 100%;
 
 	min-height: 300px;
 	flex-flow: column;

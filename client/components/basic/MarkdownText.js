@@ -1,5 +1,9 @@
 import React from 'react';
 
 import { Markdown } from '../../../app/markdown/client';
+import RawText from './RawText';
 
-export const MarkdownText = ({ children }) => <span dangerouslySetInnerHTML={{ __html: Markdown.parseNotEscaped(children) }} />;
+const MarkdownText = ({ children }) =>
+	<RawText>{Markdown.parse(children)}</RawText>;
+
+export default MarkdownText;

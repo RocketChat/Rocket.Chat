@@ -20,9 +20,6 @@ export class Rooms extends Base {
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
-		// Livechat - statistics
-		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
-
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 	}
