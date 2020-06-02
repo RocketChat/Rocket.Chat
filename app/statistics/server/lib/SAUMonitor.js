@@ -28,6 +28,7 @@ export class SAUMonitorClass {
 		this._timer = null;
 		this._today = getDateObj();
 		this._instanceId = null;
+		this._jobName = 'aggregate-sessions';
 	}
 
 	start(instanceId) {
@@ -58,6 +59,8 @@ export class SAUMonitorClass {
 		if (this._timer) {
 			Meteor.clearInterval(this._timer);
 		}
+
+		SyncedCron.remove(this._jobName);
 
 		logger.debug(`[stop] - InstanceId: ${ this._instanceId }`);
 	}
@@ -101,6 +104,9 @@ export class SAUMonitorClass {
 		}
 
 		Meteor.onConnection((connection) => {
+			if (!this.isRunning()) {
+				return;
+			}
 			// this._handleSession(connection, getDateObj());
 
 			connection.onClose(() => {
@@ -115,6 +121,10 @@ export class SAUMonitorClass {
 		}
 
 		Accounts.onLogin((info) => {
+			if (!this.isRunning()) {
+				return;
+			}
+
 			const userId = info.user._id;
 			const loginAt = new Date();
 			const params = { userId, loginAt, ...getDateObj() };
@@ -123,6 +133,10 @@ export class SAUMonitorClass {
 		});
 
 		Accounts.onLogout((info) => {
+			if (!this.isRunning()) {
+				return;
+			}
+
 			const sessionId = info.connection.id;
 			if (info.user) {
 				const userId = info.user._id;
@@ -280,9 +294,10 @@ export class SAUMonitorClass {
 		if (!sessionId) {
 			return;
 		}
-		if (Meteor.server.sessions[sessionId]) {
+		const session = Meteor.server.sessions.get(sessionId);
+		if (session) {
 			Object.keys(data).forEach((p) => {
-				Meteor.server.sessions[sessionId].connectionHandle = Object.assign({}, Meteor.server.sessions[sessionId].connectionHandle, { [p]: data[p] });
+				session.connectionHandle = Object.assign({}, session.connectionHandle, { [p]: data[p] });
 			});
 		}
 	}
@@ -310,8 +325,9 @@ export class SAUMonitorClass {
 
 	_startAggregation() {
 		logger.info('[aggregate] - Start Cron.');
+
 		SyncedCron.add({
-			name: 'aggregate-sessions',
+			name: this._jobName,
 			schedule: (parser) => parser.text('at 2:00 am'),
 			job: () => {
 				this.aggregate();
@@ -320,6 +336,10 @@ export class SAUMonitorClass {
 	}
 
 	aggregate() {
+		if (!this.isRunning()) {
+			return;
+		}
+
 		logger.info('[aggregate] - Aggregatting data.');
 
 		const date = new Date();

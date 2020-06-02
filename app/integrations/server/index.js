@@ -1,8 +1,6 @@
 import '../lib/rocketchat';
 import './logger';
 import './lib/validation';
-import './publications/integrations';
-import './publications/integrationHistory';
 import './methods/incoming/addIncomingIntegration';
 import './methods/incoming/updateIncomingIntegration';
 import './methods/incoming/deleteIncomingIntegration';

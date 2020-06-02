@@ -27,6 +27,7 @@ import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
+import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 
 
 const messageBoxState = {
@@ -267,8 +268,8 @@ export class ChatMessages {
 		}
 
 		if (msg) {
-			readMessage.readNow(true);
-			$('.message.first-unread').removeClass('first-unread');
+			readMessage.readNow(rid);
+			readMessage.refreshUnreadMark(rid);
 
 			const message = await promises.run('onClientBeforeSendMessage', {
 				_id: Random.id(),
@@ -387,8 +388,8 @@ export class ChatMessages {
 			return false;
 		}
 
-		await call('updateMessage', message);
 		this.clearEditing();
+		await call('updateMessage', message);
 		return true;
 	}
 
@@ -406,7 +407,8 @@ export class ChatMessages {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
-							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => {
+							const triggerId = generateTriggerId(slashCommands.commands[command].appId);
+							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err, result) => {
 								typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject });
 							});
 						}
@@ -422,7 +424,7 @@ export class ChatMessages {
 						ts: new Date(),
 						msg: TAPi18n.__('No_such_command', { command: s.escapeHTML(match[1]) }),
 						u: {
-							username: settings.get('InternalHubot_Username'),
+							username: settings.get('InternalHubot_Username') || 'rocket.cat',
 						},
 						private: true,
 					};
@@ -470,6 +472,12 @@ export class ChatMessages {
 
 			this.deleteMsg(message);
 
+			this.$input.focus();
+			done();
+		}, () => {
+			if (this.editing.id === message._id) {
+				this.clearEditing();
+			}
 			this.$input.focus();
 			done();
 		});

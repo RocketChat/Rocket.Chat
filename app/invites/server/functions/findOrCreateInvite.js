@@ -3,9 +3,10 @@ import { Random } from 'meteor/random';
 
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
-import { Invites, Subscriptions } from '../../../models';
+import { Invites, Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils/lib/getURL';
+import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
 function getInviteUrl(invite) {
 	const { _id } = invite;
@@ -15,6 +16,7 @@ function getInviteUrl(invite) {
 	return getURL(`invite/${ _id }`, {
 		full: useDirectLink,
 		cloud: !useDirectLink,
+		cloud_route: 'invite',
 	});
 }
 
@@ -26,17 +28,22 @@ export const findOrCreateInvite = (userId, invite) => {
 		return false;
 	}
 
-	if (!hasPermission(userId, 'create-invite-links')) {
-		throw new Meteor.Error('not_authorized');
-	}
-
 	if (!invite.rid) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field rid is required', { method: 'findOrCreateInvite', field: 'rid' });
+	}
+
+	if (!hasPermission(userId, 'create-invite-links', invite.rid)) {
+		throw new Meteor.Error('not_authorized');
 	}
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, { fields: { _id: 1 } });
 	if (!subscription) {
 		throw new Meteor.Error('error-invalid-room', 'The rid field is invalid', { method: 'findOrCreateInvite', field: 'rid' });
+	}
+
+	const room = Rooms.findOneById(invite.rid);
+	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.INVITE)) {
+		throw new Meteor.Error('error-room-type-not-allowed', 'Cannot create invite links for this room type', { method: 'findOrCreateInvite' });
 	}
 
 	let { days, maxUses } = invite;

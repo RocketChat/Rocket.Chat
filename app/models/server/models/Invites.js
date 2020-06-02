@@ -37,6 +37,15 @@ class Invites extends Base {
 	removeById(_id) {
 		return this.remove({ _id });
 	}
+
+	// UPDATE
+	increaseUsageById(_id, uses = 1) {
+		return this.update({ _id }, {
+			$inc: {
+				uses,
+			},
+		});
+	}
 }
 
 export default new Invites();

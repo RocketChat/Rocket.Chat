@@ -8,7 +8,6 @@ import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
-import { Users } from '../../../models/server';
 
 /**
  * IMPORTANT
@@ -91,7 +90,7 @@ const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
-		ts: Match.OneOf(String, Match.Integer),
+		ts: Match.OneOf(String, Number),
 		thumb_url: ValidFullURLParam,
 		button_alignment: String,
 		actions: [Match.Any],
@@ -137,6 +136,7 @@ const validateMessage = (message) => {
 		emoji: String,
 		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
+		blocks: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -144,35 +144,9 @@ const validateMessage = (message) => {
 	}
 };
 
-const validateUserIdentity = (message, _id) => {
-	if (!message.alias && !message.avatar) {
-		return;
-	}
-	const forbiddenPropsToChangeWhenUserIsNotABot = ['alias', 'avatar'];
-	const user = Users.findOneById(_id, { fields: { roles: 1, name: 1 } });
-	/**
-	 * If the query returns no user, the message has likely
-	 * been sent by a Livechat Visitor, so we don't need to
-	 * validate whether the sender is a bot.
-	 */
-	if (!user) {
-		return;
-	}
-	const userIsNotABot = !user.roles.includes('bot');
-	const messageContainsAnyForbiddenProp = Object.keys(message).some((key) => forbiddenPropsToChangeWhenUserIsNotABot.includes(key));
-	if ((userIsNotABot && messageContainsAnyForbiddenProp) || (settings.get('Message_SetNameToAliasEnabled') && message.alias !== user.name)) {
-		throw new Error('You are not authorized to change message properties');
-	}
-};
-
-export const sendMessage = function(user, message, room, upsert = false, trustedSender = false) {
+export const sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
-	}
-	const { _id, username, name } = user;
-
-	if (!trustedSender) {
-		validateUserIdentity(message, _id);
 	}
 
 	validateMessage(message);
@@ -180,6 +154,7 @@ export const sendMessage = function(user, message, room, upsert = false, trusted
 	if (!message.ts) {
 		message.ts = new Date();
 	}
+	const { _id, username, name } = user;
 	message.u = {
 		_id,
 		username,

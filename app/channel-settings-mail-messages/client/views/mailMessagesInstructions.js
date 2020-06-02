@@ -93,8 +93,12 @@ Template.mailMessagesInstructions.helpers({
 });
 
 Template.mailMessagesInstructions.events({
-	'click .js-cancel, click .mail-messages__instructions--selected'(e, t) {
+	'click .mail-messages__instructions--selected'(e, t) {
 		t.reset(true);
+	},
+	'click .js-cancel'(e, t) {
+		t.reset(true);
+		t.data.tabBar.close();
 	},
 	'click .js-send'(e, instance) {
 		const { selectedUsers, selectedEmails, selectedMessages } = instance;
@@ -236,9 +240,9 @@ Template.mailMessagesInstructions.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 	this.userFilter = new ReactiveVar('');
 
-	const filter = { exceptions: [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
+	const filter = { exceptions: this.selectedUsers.get().map((u) => u.username) };
 	Deps.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
+		filter.exceptions = this.selectedUsers.get().map((u) => u.username);
 	});
 
 	this.ac = new AutoComplete(

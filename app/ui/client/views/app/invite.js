@@ -11,9 +11,9 @@ import { t, APIClient } from '../../../../utils';
 import './invite.html';
 
 Template.invite.helpers({
-	isEnabledAndValid() {
+	isValidInvite() {
 		const { inviteIsValid } = Template.instance();
-		return settings.get('Accounts_RegistrationForm') !== 'Disabled' && inviteIsValid && inviteIsValid.get();
+		return inviteIsValid && inviteIsValid.get();
 	},
 	ready() {
 		const instance = Template.instance();
@@ -35,20 +35,25 @@ Template.invite.onCreated(function() {
 			return this.inviteIsValid.set(false);
 		}
 
-		Session.set('loginDefaultState', 'register');
+		if (settings.get('Accounts_RegistrationForm') !== 'Disabled') {
+			Session.set('loginDefaultState', 'register');
+		} else {
+			Session.set('loginDefaultState', 'login');
+		}
 		return this.inviteIsValid.set(result.valid);
 	}).catch(() => {
 		toastr.error(t('Failed_to_validate_invite_token'));
 		return this.inviteIsValid.set(false);
 	});
 
-	this.autorun(() => {
+	this.autorun((c) => {
 		if (!this.inviteIsValid.get()) {
 			return;
 		}
 
 		const user = Meteor.user();
 		if (user) {
+			c.stop();
 			APIClient.v1.post('useInviteToken', { token }).then((result) => {
 				if (!result || !result.room || !result.room.name) {
 					toastr.error(t('Failed_to_activate_invite_token'));

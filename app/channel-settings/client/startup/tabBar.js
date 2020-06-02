@@ -10,6 +10,6 @@ Meteor.startup(() => {
 		i18nTitle: 'Room_Info',
 		icon: 'info-circled',
 		template: 'channelSettings',
-		order: 1,
+		order: 7,
 	});
 });

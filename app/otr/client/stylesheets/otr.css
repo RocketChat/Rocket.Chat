@@ -27,21 +27,3 @@
 		}
 	}
 }
-
-.input-message-container.otr {
-	& .input-message {
-		padding-right: 48px;
-	}
-
-	& .inner-right-toolbar {
-		& .otr-icon {
-			display: inline-block;
-
-			margin-top: 2px;
-
-			vertical-align: top;
-
-			color: green;
-		}
-	}
-}

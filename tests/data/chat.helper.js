@@ -44,3 +44,17 @@ export const deleteMessage = ({ roomId, msgId }) => {
 			msgId,
 		});
 };
+
+export const getMessageById = ({ msgId }) => {
+	if (!msgId) {
+		throw new Error('"msgId" is required in "getMessageById" test helper');
+	}
+
+	return new Promise((resolve) => {
+		request.get(api(`chat.getMessage?msgId=${ msgId }`))
+			.set(credentials)
+			.end((err, res) => {
+				resolve(res.body.message);
+			});
+	});
+};

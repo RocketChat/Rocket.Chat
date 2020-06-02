@@ -18,10 +18,6 @@
 		text-align: right;
 	}
 
-	& .text-right {
-		text-align: left;
-	}
-
 	& .main-content {
 		left: 0;
 
@@ -101,37 +97,6 @@
 		& .footer {
 			right: 0;
 			left: auto;
-		}
-
-		& .message-form {
-			& > div .input-message-container .inner-left-toolbar {
-				right: 13px;
-				left: auto;
-			}
-
-			& textarea {
-				padding-right: 49px;
-				padding-left: 8px;
-
-				text-align: right;
-
-				border-width: 0 0 0 1px;
-				border-right-width: 0;
-			}
-
-			& > .formatting-tips {
-				position: relative;
-				right: auto;
-
-				float: left;
-
-				& q {
-					padding: 0 3px 0 0;
-
-					border-right: 3px solid;
-					border-left: 0 none;
-				}
-			}
 		}
 	}
 
@@ -247,24 +212,6 @@
 					}
 				}
 			}
-		}
-	}
-
-	& .user-image .avatar::after {
-		right: -12px;
-		left: auto;
-	}
-
-	& .lines .user-image {
-		& button > div {
-			float: right;
-		}
-
-		& p {
-			float: right;
-
-			padding-right: 10px;
-			padding-left: auto;
 		}
 	}
 
@@ -454,21 +401,7 @@
 			margin-left: auto;
 		}
 
-		& .user-image {
-			float: left;
-
-			margin-right: 12px;
-			margin-left: auto;
-		}
-
 		& table thead th {
-			text-align: right;
-		}
-	}
-
-	& .statistics-table {
-		& th,
-		& td {
 			text-align: right;
 		}
 	}
@@ -497,10 +430,6 @@
 			right: 0;
 		}
 
-		& .logoutOthers {
-			text-align: left;
-		}
-
 		& .submit {
 			text-align: left;
 		}
@@ -510,26 +439,6 @@
 	& .toast-top-right {
 		right: auto;
 		left: 12px;
-	}
-
-	& .toolbar-search__icon {
-		right: 0;
-	}
-
-	& .toolbar-search__icon--cancel {
-		right: auto;
-		left: 0;
-	}
-
-	& .message-popup.search-results-list {
-		padding: 25px 8px 0 0;
-
-		text-align: right;
-		direction: ltr;
-
-		& .popup-item {
-			direction: rtl;
-		}
 	}
 
 	@media (width <= 1100px) {

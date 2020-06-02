@@ -38,12 +38,12 @@ const notification = (message, room, replies) => {
 
 const processThreads = (message, room) => {
 	if (!message.tmid) {
-		return;
+		return message;
 	}
 
 	const parentMessage = Messages.findOneById(message.tmid);
 	if (!parentMessage) {
-		return;
+		return message;
 	}
 
 	const replies = [
@@ -53,6 +53,8 @@ const processThreads = (message, room) => {
 	notifyUsersOnReply(message, replies, room);
 	metaData(message, parentMessage);
 	notification(message, room, replies);
+
+	return message;
 };
 
 Meteor.startup(function() {

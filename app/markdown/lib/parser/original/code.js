@@ -4,7 +4,8 @@
  */
 import { Random } from 'meteor/random';
 import s from 'underscore.string';
-import hljs from 'highlight.js';
+
+import hljs from '../../hljs';
 
 const inlinecode = (message) => {
 	// Support `text`

@@ -14,9 +14,8 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-	Imports,
 } from '../../importer/server';
-import { Messages, Users, Subscriptions, Rooms } from '../../models';
+import { Messages, Users, Subscriptions, Rooms, Imports } from '../../models';
 import { insertMessage } from '../../lib';
 
 const turndownService = new TurndownService({
@@ -36,8 +35,8 @@ turndownService.addRule('strikethrough', {
 });
 
 export class HipChatEnterpriseImporter extends Base {
-	constructor(info) {
-		super(info);
+	constructor(info, importRecord) {
+		super(info, importRecord);
 
 		this.Readable = Readable;
 		this.zlib = require('zlib');
@@ -874,6 +873,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	startImport(importSelection) {
+		this.reloadCount();
 		super.startImport(importSelection);
 		this._userDataCache = {};
 		const started = Date.now();
@@ -1279,26 +1279,6 @@ export class HipChatEnterpriseImporter extends Base {
 				super.addCountCompleted(msgCount);
 			}
 		});
-	}
-
-	getSelection() {
-		const tempUsers = this.collection.findOne({
-			import: this.importRecord._id,
-			importer: this.name,
-			type: 'users',
-		});
-
-		const tempChannels = this.collection.findOne({
-			import: this.importRecord._id,
-			importer: this.name,
-			type: 'channels',
-		});
-
-		const selectionUsers = tempUsers.users.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
-		const selectionChannels = tempChannels.channels.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate, r.creator));
-		const selectionMessages = this.importRecord.count.messages;
-
-		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
 	_getBasicUserData(userId) {

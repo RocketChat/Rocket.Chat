@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FinalStep } from './FinalStep';
+import FinalStep from './FinalStep';
 
 export default {
 	title: 'setupWizard/steps/FinalStep',

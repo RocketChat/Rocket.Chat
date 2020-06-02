@@ -28,6 +28,12 @@ Meteor.methods({
 			});
 		}
 
+		if (user.type === 'app') {
+			throw new Meteor.Error('error-cannot-delete-app-user', 'Deleting app user is not allowed', {
+				method: 'deleteUser',
+			});
+		}
+
 		const adminCount = Meteor.users.find({ roles: 'admin' }).count();
 
 		const userIsAdmin = user.roles.indexOf('admin') > -1;

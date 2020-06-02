@@ -89,7 +89,7 @@ const testCases = (options) => {
 			}
 		}
 	} else if (options._cdn_prefix === '') {
-		if (options.full && !options.cdn) {
+		if (options.full && !options.cdn && !options.cloud) {
 			it('should return with host if full: true', () => {
 				testPaths(options, (path) => _site_url + path);
 			});
@@ -107,19 +107,19 @@ const testCases = (options) => {
 			});
 		}
 
-		if (options.full && options.cdn) {
+		if (options.full && options.cdn && !options.cloud) {
 			it('should return with host if full: true and cdn: true', () => {
 				testPaths(options, (path) => _site_url + path);
 			});
 		}
 	} else {
-		if (options.full && !options.cdn) {
+		if (options.full && !options.cdn && !options.cloud) {
 			it('should return with host if full: true', () => {
 				testPaths(options, (path) => _site_url + path);
 			});
 		}
 
-		if (!options.full && options.cdn) {
+		if (!options.full && options.cdn && !options.cloud) {
 			it('should return with cdn prefix if cdn: true', () => {
 				testPaths(options, (path) => options._cdn_prefix + path);
 			});
@@ -131,7 +131,7 @@ const testCases = (options) => {
 			});
 		}
 
-		if (options.full && options.cdn) {
+		if (options.full && options.cdn && !options.cloud) {
 			it('should return with host if full: true and cdn: true', () => {
 				testPaths(options, (path) => options._cdn_prefix + path);
 			});

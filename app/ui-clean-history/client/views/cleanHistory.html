@@ -133,9 +133,17 @@
 				</div>
 				<div class="pruning__text-sub">
 					{{#unless filesOnly}}
-						{{_ "messages_pruned"}}
+						{{#if (isSingular prunedCount)}}
+							{{_ "message_pruned"}}
+						{{else}}
+							{{_ "messages_pruned"}}
+						{{/if}}
 					{{else}}
-						{{_ "files_pruned"}}
+						{{#if (isSingular prunedCount)}}
+							{{_ "file_pruned"}}
+						{{else}}
+							{{_ "files_pruned"}}
+						{{/if}}
 					{{/unless}}
 				</div>
 			</div>

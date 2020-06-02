@@ -12,7 +12,7 @@ Meteor.startup(() => {
 		i18nTitle: 'Mail_Messages',
 		icon: 'mail',
 		template: 'mailMessagesInstructions',
-		order: 10,
+		order: 12,
 		condition: () => hasAllPermission('mail-messages'),
 	});
 

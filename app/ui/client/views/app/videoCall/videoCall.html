@@ -7,13 +7,13 @@
 		{{#if videoActive}}
 			<div class="webrtc-video {{#if overlay}}webrtc-video-overlay{{/if}}">
 				<div class="main-video">
-					{{> rcVideo src=mainVideoUrl muted="true" screen=screenShareEnabled me=($eq mainVideoUrl selfVideoUrl)}}
+					{{> rcVideo src=mainVideoUrl muted="muted" screen=screenShareEnabled me=($eq mainVideoUrl selfVideoUrl)}}
 					<div class="background-transparent-darker">{{mainVideoUsername}}</div>
 				</div>
 				<div class="videos">
 					{{#if selfVideoUrl}}
 						<div class="video-item background-transparent-darker" data-username="$self">
-							{{> rcVideo src=selfVideoUrl me=true screen=screenShareEnabled }}
+							{{> rcVideo muted="muted" src=selfVideoUrl me=true screen=screenShareEnabled }}
 							{{#unless audioAndVideoEnabled}}
 								<div class="video-muted-overlay background-transparent-darker">
 									{{#unless audioEnabled}}

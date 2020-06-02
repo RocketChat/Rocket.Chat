@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
 
@@ -124,7 +126,6 @@ describe('miscellaneous', function() {
 					'mobileNotifications',
 					'enableAutoAway',
 					// 'highlights',
-					'desktopNotificationDuration',
 					'desktopNotificationRequireInteraction',
 					'messageViewMode',
 					'hideUsernames',
@@ -135,7 +136,7 @@ describe('miscellaneous', function() {
 					'idleTimeLimit',
 					'sidebarShowFavorites',
 					'sidebarShowUnread',
-					// 'sidebarSortby',
+					'sidebarSortby',
 					'sidebarViewMode',
 					'sidebarHideAvatar',
 					'sidebarGroupByType',

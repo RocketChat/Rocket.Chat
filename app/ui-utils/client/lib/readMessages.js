@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
@@ -23,32 +22,15 @@ export const readMessage = new class extends EventEmitter {
 	constructor() {
 		super();
 		this.debug = false;
-		this.read = _.debounce((force) => this.readNow(force), 2000);
 		this.enable();
 	}
 
-	readNow(force) {
-		this.log('--------------');
-		this.log('readMessage -> readNow init process force:', force);
-
-		if ((force !== true) && (this.enabled === false)) {
+	read(rid = Session.get('openedRoom')) {
+		if (!this.enabled) {
 			this.log('readMessage -> readNow canceled by enabled: false');
 			return;
 		}
 
-		const rid = Session.get('openedRoom');
-		if (rid == null) {
-			this.log('readMessage -> readNow canceled, no rid informed');
-			return;
-		}
-
-		if (force === true) {
-			this.log('readMessage -> readNow via force rid:', rid);
-			return Meteor.call('readMessages', rid, () => {
-				RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-				return this.emit(rid);
-			});
-		}
 
 		const subscription = ChatSubscription.findOne({ rid });
 		if (subscription == null) {
@@ -81,8 +63,15 @@ export const readMessage = new class extends EventEmitter {
 			return;
 		}
 
-		this.log('readMessage -> readNow rid:', rid);
-		Meteor.call('readMessages', rid, () => {
+		return this.readNow(rid);
+	}
+
+	readNow(rid = Session.get('openedRoom')) {
+		if (rid == null) {
+			this.log('readMessage -> readNow canceled, no rid informed');
+			return;
+		}
+		return Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
 			return this.emit(rid);
 		});
@@ -177,7 +166,7 @@ Meteor.startup(function() {
 		.on('blur', () => readMessage.disable())
 		.on('focus', () => {
 			readMessage.enable();
-			readMessage.readNow();
+			readMessage.read();
 		})
 		.on('touchend', () => {
 			readMessage.enable();
@@ -185,7 +174,12 @@ Meteor.startup(function() {
 		.on('keyup', (e) => {
 			const key = e.which;
 			if (key === 27) { // ESCAPE KEY
-				readMessage.readNow(true);
+				const rid = Session.get('openedRoom');
+				if (!rid) {
+					return;
+				}
+				readMessage.readNow(rid);
+				readMessage.refreshUnreadMark(rid);
 			}
 		});
 });

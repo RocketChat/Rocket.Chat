@@ -1,6 +1,7 @@
 import { settings } from '../../../settings';
 import { Users } from '../../../models';
 import { statistics } from '../../../statistics';
+import { LICENSE_VERSION } from '../license';
 
 export function buildWorkspaceRegistrationData() {
 	const stats = statistics.get();
@@ -49,6 +50,8 @@ export function buildWorkspaceRegistrationData() {
 		deploymentMethod: stats.deploy.method,
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version,
-		setupComplete: true,
+		licenseVersion: LICENSE_VERSION,
+		enterpriseReady: true,
+		setupComplete: settings.get('Show_Setup_Wizard') === 'completed',
 	};
 }

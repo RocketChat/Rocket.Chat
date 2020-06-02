@@ -79,3 +79,4 @@ tests/end-to-end/temporary_staged_test
 .screenshots
 /private/livechat
 /storybook-static
+/tests/cypress/screenshots
