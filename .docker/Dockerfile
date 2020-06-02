@@ -1,17 +1,15 @@
 FROM debian:buster-slim
 
-ADD . /app
-
 LABEL maintainer="buildmaster@rocket.chat"
 
-## Installing Node.js
+## Installing Node.js based on https://github.com/nodejs/docker-node/blob/e76dc47a4104a1b06765673dadb56f1855c32cad/12/buster-slim/Dockerfile
 ENV NODE_ENV production
 ENV NODE_VERSION 12.16.1
 
-# Node installation based on https://github.com/nodejs/docker-node/blob/e76dc47a4104a1b06765673dadb56f1855c32cad/12/stretch-slim/Dockerfile
+# Node installation
 RUN ARCH="x64" \
-    && set -eux \
-    && apt-get update && apt-get install -y --no-install-recommends ca-certificates curl wget gnupg dirmngr xz-utils \
+    && set -ex \
+    && apt-get update && apt-get install -y ca-certificates curl wget gnupg dirmngr xz-utils --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && for key in \
       94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
@@ -45,6 +43,8 @@ RUN ARCH="x64" \
       | sort -u \
       | xargs -r apt-mark manual \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
+
+ADD . /app
 
 RUN groupadd -g 65533 -r rocketchat \
     && useradd -u 65533 -r -g rocketchat rocketchat \
