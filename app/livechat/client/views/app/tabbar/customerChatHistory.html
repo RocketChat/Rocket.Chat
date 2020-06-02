@@ -4,37 +4,37 @@
 			<div>
 				<div class="active-pink-4 mb-4 inner-addon right-addon">
 					<i class="glyphicon glyphicon-search icon-search"></i>
-					<input type="text" id="searchInput"  class="" placeholder="Search" aria-label="Search">
+					<input type="text" id="visitor-history-search-input" class="" placeholder="Search" aria-label="Search">
 				</div>
 			</div>
 			{{#if hasChatHistory}}
 				{{#if isAllChat}}
-				<div class="vistior-history-block">
+				<div class="visitor-history-block">
 					<ul id='allist'>
 					{{#if isSearchingRoom}}
 						{{#if isfoundRoom }}
-							{{#each room in searchResultsRoom}} 
+							{{#each room in searchResultsRoom}}
 								{{> chatRoomHistoryItem room}}
 							{{/each}}
 						{{else}}
-							<h1 class='noresult'>{{_ "No_results_found"}}</h1> 
+							<h1 class='visitor-history-no-result'>{{_ "No_results_found"}}</h1>
 						{{/if}}
 					{{else}}
 						{{#each room in previousChats}}
 							{{> chatRoomHistoryItem room}}
 						{{/each}}
 					{{/if}}
-					</ul>      
+					</ul>
 				</div>
 				{{else}}
 					{{#if isChatClicked}}
 						{{#if isSearching}}
 							{{#if isfound }}
-								{{#each room in searchResults}} 
+								{{#each room in searchResults}}
 									{{> customerChatHistoryMessages room}}
 								{{/each}}
 							{{else}}
-								<h1 class='noresult'>{{_ "No_results_found"}}</h1> 
+								<h1 class='visitor-history-no-result'>{{_ "No_results_found"}}</h1>
 							{{/if}}
 						{{else}}
 							{{> customerChatHistoryMessages clickRid=clickRid clickToken=clickToken}}
@@ -42,7 +42,7 @@
 					{{/if}}
 				{{/if}}
 			{{else}}
-				<h1 class='noresult'>{{_ "No_Previous_Chats_Found"}}</h1> 
+				<h1 class='visitor-history-no-result'>{{_ "No_Previous_Chats_Found"}}</h1>
 			{{/if}}
 		</div>
 	</div>

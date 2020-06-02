@@ -40,7 +40,7 @@ Template.customerChatHistoryMessages.onCreated(function() {
 			}
 			if (header[0]) {
 				header[0].innerText = `${ agentName }, closed at ${ closingDay }`;
-				header[0].className = 'Contextualheading';
+				header[0].className = 'contextual-heading';
 			}
 			this.historyResult.set(allMessages);
 		});

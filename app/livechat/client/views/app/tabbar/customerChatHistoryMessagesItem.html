@@ -1,16 +1,16 @@
 <template name='customerChatHistoryMessagesItem'>
     {{#unless t}}
         <li>
-            <div class="history-main">
-                <div class="history-img">
+            <div class="chat-history-main">
+                <div class="chat-history-img">
                     <img src="/avatar/{{u.username}}" >
                 </div>
-                <div class="history-detail-main">
-                    <div class="detail-main-upper">
+                <div class="chat-history-detail-main">
+                    <div class="chat-history-detail-main-upper">
                         <h1>{{u.name}}</h1>
                         <p>{{time}}</p>
                     </div>
-                    <div class="detail-main-lower">
+                    <div class="chat-history-detail-main-lower">
                         <p>{{msg}}</p>
                     </div>
                 </div>
@@ -20,17 +20,17 @@
     {{#if hasClosingMessage}}
         <div class="closed-div">
             <p class='closed-div-p'><span>Conversation closed</span></p>
-            <div class="history-main">
-                <div class="history-img">
+            <div class="chat-history-main">
+                <div class="chat-history-img">
                     <div class='belldiv'>
                         <i class="icon-bell"></i>
                     </div>
                 </div>
-                <div class="history-detail-main">
-                    <div class="detail-main-upper closed-h1">
+                <div class="chat-history-detail-main">
+                    <div class="chat-history-detail-main-upper closed-h1">
                         <h1>Agent comment:</h1>
                     </div>
-                    <div class="detail-main-lower closed-p">
+                    <div class="chat-history-detail-main-lower closed-p">
                         <p>"{{msg}}".</p>
                     </div>
                 </div>

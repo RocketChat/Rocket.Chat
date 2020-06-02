@@ -138,7 +138,7 @@ Template.customerChatHistory.events({
 			return instance.offset.set(instance.offset.get() + ITEMS_COUNT);
 		}
 	}, 200),
-	'keyup #searchInput': _.debounce((event, template) => {
+	'keyup #visitor-history-search-input': _.debounce((event, template) => {
 		event.preventDefault();
 		event.stopPropagation();
 		template.isKeyUp.set(true);
@@ -162,7 +162,7 @@ Template.customerChatHistory.events({
 });
 
 Template.customerChatHistory.onDestroyed(function() {
-	const header = document.getElementsByClassName('Contextualheading');
+	const header = document.getElementsByClassName('contextual-heading');
 	if (header[0]) {
 		header[0].innerText = '';
 		header[0].className = 'contextual-bar__header-title';
