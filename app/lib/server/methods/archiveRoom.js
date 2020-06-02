@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import { Rooms } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { archiveRoom } from '../functions';
+import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
 Meteor.methods({
 	archiveRoom(rid) {
@@ -19,12 +20,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'archiveRoom' });
 		}
 
-		if (!hasPermission(Meteor.userId(), 'archive-room', room._id)) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
+		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
+			throw new Meteor.Error('error-direct-message-room', `rooms type: ${ room.t } can not be archived`, { method: 'archiveRoom' });
 		}
 
-		if (room.t === 'd') {
-			throw new Meteor.Error('error-direct-message-room', 'Direct Messages can not be archived', { method: 'archiveRoom' });
+		if (!hasPermission(Meteor.userId(), 'archive-room', room._id)) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
 		}
 
 		return archiveRoom(rid);

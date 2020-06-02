@@ -26,7 +26,7 @@ Rooms.on('change', ({ clientAction, id, data }) => {
 		return;
 	}
 	if (clientAction === 'removed') {
-		getSubscriptions(clientAction, id).forEach(({ u }) => {
+		getSubscriptions(id).forEach(({ u }) => {
 			Notifications.notifyUserInThisInstance(
 				u._id,
 				'rooms-changed',

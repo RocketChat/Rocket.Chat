@@ -6,7 +6,7 @@
 		<dialog class="rc-modal rc-modal--{{modifier}}" data-modal="modal">
 
 			{{# if template}}
-				{{> Template.dynamic template=template data=data}} -->
+				{{> Template.dynamic template=template data=data}}
 			{{else}}
 				<header class="rc-modal__header">
 					<h1 class="rc-modal__title">
@@ -46,6 +46,9 @@
 							</label>
 						</div>
 						<div class="rc-modal__content-error"></div>
+					{{/if}}
+					{{#if inputActionText}}
+						<input class="rc-button rc-button--nude js-input-action" type="submit" data-button="input-action" value="{{inputActionText}}">
 					{{/if}}
 					{{#if dontAskAgain}}
 						<label class="rc-checkbox">

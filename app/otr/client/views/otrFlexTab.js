@@ -4,6 +4,7 @@ import { Template } from 'meteor/templating';
 import { OTR } from '../rocketchat.otr';
 import { modal } from '../../../ui-utils';
 import { t } from '../../../utils';
+import { getUidDirectMessage } from '../../../ui-utils/client/lib/getUidDirectMessage';
 
 Template.otrFlexTab.helpers({
 	otrAvailable() {
@@ -16,7 +17,7 @@ Template.otrFlexTab.helpers({
 		}
 
 		if (this.rid) {
-			const peerId = this.rid.replace(Meteor.userId(), '');
+			const peerId = getUidDirectMessage(this.rid);
 			if (peerId) {
 				const user = Meteor.users.findOne(peerId);
 				const online = user && user.status !== 'offline';

@@ -1,5 +1,6 @@
 import { SHA256 } from 'meteor/sha';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -8,18 +9,19 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { modal, SideNav } from '../../ui-utils';
+import { modal, SideNav, popover } from '../../ui-utils';
 import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
+import { getPopoverStatusConfig } from '../../ui/client';
 
 const validateEmail = (email) => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
 const validateUsername = (username) => {
 	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	return reg.test(username);
 };
-const validateName = (name) => name && name.length;
+const validateName = (name) => (name && name.length) || !settings.get('Accounts_RequireNameForSignUp');
 const validateStatusMessage = (statusMessage) => {
 	if (!statusMessage || statusMessage.length <= 120 || statusMessage.length === 0) {
 		return true;
@@ -78,7 +80,7 @@ Template.accountProfile.helpers({
 		return !validateName(Template.instance().realname.get());
 	},
 	statusMessageInvalid() {
-		return !validateStatusMessage(Template.instance().statusText.get());
+		return !validateStatusMessage(Template.instance().fields.get('statusText'));
 	},
 	confirmationPasswordInvalid() {
 		const { password, confirmationPassword } = Template.instance();
@@ -117,7 +119,10 @@ Template.accountProfile.helpers({
 		const instance = Template.instance();
 		instance.dep.depend();
 		const realname = instance.realname.get();
-		const statusText = instance.statusText.get();
+
+		const statusType = instance.statusType.get();
+		const statusText = instance.fields.get('statusText');
+		const bio = instance.fields.get('bio');
 		const username = instance.username.get();
 		const password = instance.password.get();
 		const confirmationPassword = instance.confirmationPassword.get();
@@ -135,9 +140,11 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password) {
+
+		if (!avatar && user.bio === bio && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password && statusType === user.status) {
 			return ret;
 		}
+
 		if (!validateEmail(email) || !validatePassword(password, confirmationPassword) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
 			return ret;
 		}
@@ -150,9 +157,6 @@ Template.accountProfile.helpers({
 	},
 	username() {
 		return Meteor.user().username;
-	},
-	statusText() {
-		return Meteor.user().statusText;
 	},
 	email() {
 		const user = Meteor.user();
@@ -187,11 +191,23 @@ Template.accountProfile.helpers({
 	customFields() {
 		return Meteor.user().customFields;
 	},
+	statusType() {
+		return Meteor.user().status;
+	},
+	get(field) {
+		return Template.instance().fields.get(field);
+	},
 });
 
 Template.accountProfile.onCreated(function() {
-	const self = this;
 	const user = Meteor.user();
+
+	this.fields = new ReactiveDict({
+		statusText: user.statusText,
+		bio: user.bio,
+	});
+
+	const self = this;
 	self.dep = new Tracker.Dependency();
 	self.realname = new ReactiveVar(user.name);
 	self.email = new ReactiveVar(getUserEmailAddress(user));
@@ -203,6 +219,7 @@ Template.accountProfile.onCreated(function() {
 	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
 	self.statusText = new ReactiveVar(user.statusText);
+	self.statusType = new ReactiveVar(user.status);
 
 	Notifications.onLogged('updateAvatar', () => self.avatar.set());
 	self.getSuggestions = function() {
@@ -267,7 +284,7 @@ Template.accountProfile.onCreated(function() {
 			}
 			data.realname = s.trim(self.realname.get());
 		}
-		if (s.trim(self.statusText.get()) !== user.statusText) {
+		if (s.trim(self.fields.get('statusText')) !== user.statusText) {
 			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
 				toastr.remove();
 				toastr.error(t('StatusMessage_Change_Disabled'));
@@ -275,7 +292,14 @@ Template.accountProfile.onCreated(function() {
 				return cb && cb();
 			}
 
-			data.statusText = s.trim(self.statusText.get());
+			data.statusText = s.trim(self.fields.get('statusText'));
+		}
+
+		if (s.trim(self.fields.get('bio')) !== user.statusText) {
+			data.bio = s.trim(self.fields.get('bio'));
+		}
+		if (self.statusType.get() !== user.statusType) {
+			data.statusType = self.statusType.get();
 		}
 		if (s.trim(self.username.get()) !== user.username) {
 			if (!settings.get('Accounts_AllowUsernameChange')) {
@@ -295,6 +319,7 @@ Template.accountProfile.onCreated(function() {
 			}
 			data.email = s.trim(self.email.get());
 		}
+
 		const customFields = {};
 		$('[data-customfield=true]').each(function() {
 			customFields[this.name] = $(this).val() || '';
@@ -366,6 +391,9 @@ Template.accountProfile.events({
 			},
 		}, [e, instance, ...args]);
 	},
+	'click .js-status-type'(e, instance) {
+		popover.open(getPopoverStatusConfig(e.currentTarget, (status) => instance.statusType.set(status)));
+	},
 	'input .js-avatar-url-input'(e, instance) {
 		const text = e.target.value;
 		instance.url.set(text);
@@ -396,15 +424,15 @@ Template.accountProfile.events({
 	'input [name=realname]'(e, instance) {
 		instance.realname.set(e.target.value);
 	},
-	'input [name=statusText]'(e, instance) {
-		instance.statusText.set(e.target.value);
-	},
 	'input [name=password]'(e, instance) {
 		instance.password.set(e.target.value);
 
 		if (e.target.value.length === 0) {
 			instance.confirmationPassword.set('');
 		}
+	},
+	'input [name=bio], input [name=statusText]'(e, instance) {
+		instance.fields.set(e.target.name, e.target.value);
 	},
 	'input [name=confirmation-password]'(e, instance) {
 		instance.confirmationPassword.set(e.target.value);
@@ -436,6 +464,8 @@ Template.accountProfile.events({
 				toastr.remove();
 				toastr.warning(t('Please_wait_while_your_profile_is_being_saved'));
 				instance.save(SHA256(typedPassword), () => send.removeClass('loading'));
+				instance.password.set();
+				instance.confirmationPassword.set();
 			} else {
 				modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
 				return false;

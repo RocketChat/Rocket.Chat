@@ -33,6 +33,9 @@
 					<button type="button" class="user user-card-message color-primary-font-color" data-username="{{msg.u.username}}" tabindex="1">
 						{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}
 					</button>
+					{{#if getStatus}}
+						<button class="message-custom-status rc-tooltip rc-tooltip--up rc-tooltip--start" aria-label="{{getStatus}}">💬</button>
+					{{/if}}
 					<span class="info border-component-color color-info-font-color"></span>
 					{{#each role in roleTags}}
 						<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
@@ -44,6 +47,7 @@
 					{{#if showTranslated}}
 						<span class="translated">
 							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+							<span class="translation-provider">{{ translationProvider }}</span>
 						</span>
 					{{/if}}
 					{{#if msg.sentByEmail}}
@@ -55,6 +59,9 @@
 						<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
 							<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
 						</span>
+					{{/if}}
+					{{#if showStar}}
+						<span aria-label="{{_ "Message_has_been_starred"}}" class="starred rc-tooltip rc-tooltip--up rc-tooltip--start"><i class="icon-star"></i></span>
 					{{/if}}
 					{{#if msg.alert}}
 						<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div>
@@ -92,6 +99,7 @@
 			{{#if hasOembed}}
 				{{#each msg.urls}}
 					{{injectMessage . ../msg}}
+					{{injectSettings . ../settings}}
 					{{injectIndex . @index}}
 					{{> oembedBaseWidget}}
 				{{/each}}
@@ -119,7 +127,7 @@
 				</div>
 			{{/if}}
 
-			{{#if and settings.showReplyButton msg.tcount}}
+			{{#if $and settings.showReplyButton msg.tcount}}
 				<div class="message-discussion">
 					<button class="js-open-thread rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
 						{{> icon icon="thread"}}
@@ -153,7 +161,7 @@
 			<ul class="actionLinks">
 				{{#each actionLink in actionLinks}}
 					<li class="color-primary-action-color">
-						<span class="action-link" data-actionlink="{{actionLink.id}}">
+						<span class="rc-button rc-button--primary rc-button--small" style="display: inline-block; line-height: 1.75rem" data-actionlink="{{actionLink.id}}">
 							{{#if actionLink.icon}}
 								<i class="{{actionLink.icon}}"></i>
 							{{/if}}
@@ -168,11 +176,9 @@
 			</ul>
 			{{/unless}}
 			{{#if broadcast}}
-				{{#with msg.u}}
-					<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
-						{{> icon icon="reply"}} {{_'Reply'}}
-					</button>
-				{{/with}}
+				<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
+					{{> icon icon="reply"}} {{_'Reply'}}
+				</button>
 			{{/if}}
 			{{#unless hideReactions}}
 			<ul class="reactions">

@@ -160,26 +160,23 @@ export const modal = {
 		if (!modalStack.length) {
 			return;
 		}
-
 		const instance = modalStack[modalStack.length - 1];
-
-		if (instance && instance.config && instance.config.confirmOnEnter && event.key === 'Enter') {
-			event.preventDefault();
-			event.stopPropagation();
-
-			if (instance.config.input) {
-				return instance.confirm($('.js-modal-input').val());
-			}
-
-			instance.confirm(true);
-			return;
-		}
-
 		if (event.key === 'Escape') {
 			event.preventDefault();
 			event.stopPropagation();
 
 			instance.close();
+		}
+
+		if (instance && instance.confirmOnEnter && event.key === 'Enter') {
+			event.preventDefault();
+			event.stopPropagation();
+
+			if (instance.input) {
+				return instance.confirm($('.js-modal-input').val());
+			}
+
+			instance.confirm(true);
 		}
 	},
 };
@@ -211,18 +208,22 @@ Template.rc_modal.helpers({
 });
 
 Template.rc_modal.onRendered(function() {
+	this.oldFocus = document.activeElement;
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
 
 	if (this.data.input) {
-		$('.js-modal-input').focus();
+		$('.js-modal-input', this.firstNode).focus();
+	} else if (this.data.showConfirmButton && this.data.confirmOnEnter) {
+		$('.js-confirm', this.firstNode).focus();
 	}
 
 	this.data.closeOnEscape && document.addEventListener('keydown', modal.onKeyDown);
 });
 
 Template.rc_modal.onDestroyed(function() {
+	this.oldFocus && this.oldFocus.focus();
 	document.removeEventListener('keydown', modal.onKeyDown);
 });
 
@@ -232,7 +233,12 @@ Template.rc_modal.events({
 		event.stopPropagation();
 		this.close();
 	},
+	'click .js-input-action'(e, instance) {
+		!this.inputAction || this.inputAction.call(instance.data.data, e, instance);
+		e.stopPropagation();
+	},
 	'click .js-close'(e) {
+		e.preventDefault();
 		e.stopPropagation();
 		this.cancel();
 	},

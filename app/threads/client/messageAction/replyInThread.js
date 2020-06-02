@@ -16,7 +16,7 @@ Meteor.startup(function() {
 			id: 'reply-in-thread',
 			icon: 'thread',
 			label: 'Reply_in_thread',
-			context: ['message', 'message-mobile', 'threads'],
+			context: ['message', 'message-mobile'],
 			action() {
 				const { msg: message } = messageArgs(this);
 				const { input } = chatMessages[message.rid];
@@ -33,8 +33,8 @@ Meteor.startup(function() {
 			condition({ subscription }) {
 				return Boolean(subscription);
 			},
-			order: 1,
-			group: 'message',
+			order: -1,
+			group: ['message', 'menu'],
 		});
 	});
 });

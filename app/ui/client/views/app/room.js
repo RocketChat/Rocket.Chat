@@ -59,10 +59,13 @@ const openProfileTab = (e, instance, username) => {
 	}
 
 	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
-	if (roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
+	if (roomTypes.getConfig(roomData.t).enableMembersListProfile()) {
 		instance.userDetail.set(username);
 	}
 
+	if (roomTypes.roomTypes[roomData.t].openCustomProfileTab(instance, roomData, username)) {
+		return;
+	}
 	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('membersList');
 	instance.tabBar.open();
@@ -80,7 +83,7 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 			}
 
 			if (result && result.rid) {
-				FlowRouter.go('direct', { username }, FlowRouter.current().queryParams);
+				FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
 			}
 		});
 	} else {
@@ -784,7 +787,7 @@ Template.room.events({
 		});
 	},
 
-	'click .user-image, click .rc-member-list__user'(e, instance) {
+	'click .rc-member-list__user'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
 		}
@@ -876,6 +879,9 @@ Template.room.events({
 		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
+		e.stopPropagation();
+		e.preventDefault();
+
 		if (!Meteor.userId()) {
 			return;
 		}
@@ -891,8 +897,6 @@ Template.room.events({
 		}
 
 		if (group) {
-			e.stopPropagation();
-			e.preventDefault();
 			openMembersListTab(instance, group);
 			return;
 		}
@@ -906,25 +910,6 @@ Template.room.events({
 		const { msg } = messageArgs(this);
 		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
-	},
-
-	'click .collapse-switch'(e) {
-		const { msg: { _id } } = messageArgs(this);
-		const index = $(e.currentTarget).data('index');
-		const collapsed = $(e.currentTarget).data('collapsed');
-
-		const msg = ChatMessage.findOne(_id);
-		if (!msg) {
-			return;
-		}
-
-		if (msg.attachments) {
-			ChatMessage.update({ _id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
-		}
-
-		if (msg.urls) {
-			ChatMessage.update({ _id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
-		}
 	},
 	'load .gallery-item'(e, template) {
 		template.sendToBottomIfNecessaryDebounced();
@@ -1034,10 +1019,32 @@ Template.room.onCreated(function() {
 
 	this.subscription = new ReactiveVar();
 	this.state = new ReactiveDict();
+	this.userDetail = new ReactiveVar('');
+	const user = Meteor.user();
+	this.autorun((c) => {
+		const room = Rooms.findOne({ _id: rid }, {
+			fields: {
+				t: 1,
+				usernames: 1,
+				uids: 1,
+			},
+		});
+
+		if (room.t !== 'd') {
+			return c.stop();
+		}
+
+		if (roomTypes.getConfig(room.t).isGroupChat(room)) {
+			return;
+		}
+
+		this.userDetail.set(room.usernames.filter((username) => username !== user.username)[0]);
+	});
 
 	this.autorun(() => {
 		const rid = Template.currentData()._id;
-		this.state.set('announcement', Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } }).announcement);
+		const room = Rooms.findOne({ _id: rid }, { fields: { announcement: 1 } });
+		this.state.set('announcement', room.announcement);
 	});
 
 	this.autorun(() => {
@@ -1061,11 +1068,14 @@ Template.room.onCreated(function() {
 
 	this.flexTemplate = new ReactiveVar();
 
-	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
 	this.groupDetail = new ReactiveVar();
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
+	callbacks.run('onCreateRoomTabBar', {
+		tabBar: this.tabBar,
+		room: Rooms.findOne(rid, { fields: { t: 1 } }),
+	});
 
 	this.hideLeaderHeader = new ReactiveVar(false);
 
@@ -1285,6 +1295,14 @@ Template.room.onRendered(function() {
 	}, 500);
 
 	this.autorun(() => {
+		if (!Object.values(roomTypes.roomTypes).map(({ route }) => route && route.name).filter(Boolean).includes(FlowRouter.getRouteName())) {
+			return;
+		}
+
+		if (rid !== Session.get('openedRoom')) {
+			return;
+		}
+
 		const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
 		read();
 		return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
@@ -1362,9 +1380,12 @@ Template.room.onRendered(function() {
 
 		const room = Rooms.findOne({ _id: template.data._id });
 		if (!room) {
-			FlowRouter.go('home');
+			return FlowRouter.go('home');
 		}
 	});
+
+	const observer = new ResizeObserver(template.sendToBottomIfNecessary);
+	observer.observe(this.firstNode.querySelector('.wrapper ul'));
 });
 
 callbacks.add('enter-room', (sub) => {
@@ -1375,6 +1396,5 @@ callbacks.add('enter-room', (sub) => {
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
 		chatMessages[sub.rid].restoreReplies();
 	}
-	readMessage.read(sub.rid);
-	readMessage.refreshUnreadMark(sub.rid);
+	setTimeout(() => readMessage.read(sub.rid), 1000);
 });

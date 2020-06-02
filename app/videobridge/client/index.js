@@ -1,3 +1,4 @@
+import './stylesheets/video.css';
 import './views/videoFlexTab.html';
 import './views/bbbLiveView.html';
 import './views/videoFlexTabBbb.html';

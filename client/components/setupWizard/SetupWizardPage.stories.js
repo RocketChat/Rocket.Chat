@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { SetupWizardPage } from './SetupWizardPage';
+import SetupWizardPage from './SetupWizardPage';
 import { finalStep } from './SetupWizardState';
 
 export default {
