@@ -4,8 +4,8 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
-import { useEndpointData } from '../../hooks/useEndpointData';
 
 function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick }) {
 	const t = useTranslation();
@@ -14,7 +14,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 		moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
 			.subtract(1).subtract(displacement, 'days'), [displacement]);
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-	const data = useEndpointData('GET', 'engagement-dashboard/users/chat-busier/hourly-data', params);
+	const data = useEndpointData('engagement-dashboard/users/chat-busier/hourly-data', params);
 	const values = useMemo(() => {
 		if (!data) {
 			return [];
@@ -111,7 +111,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 										{t('Value_users', { value })}
 									</Box>}
 								/>
@@ -131,7 +131,7 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 		return `${ startOfWeekDate.format('L') } - ${ currentDate.format('L') }`;
 	}, [currentDate]);
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-	const data = useEndpointData('GET', 'engagement-dashboard/users/chat-busier/weekly-data', params);
+	const data = useEndpointData('engagement-dashboard/users/chat-busier/weekly-data', params);
 	const values = useMemo(() => (data ? data.month.map(({ users, day, month, year }) => ({
 		users,
 		day: String(moment.utc([year, month - 1, day, 0, 0, 0]).valueOf()),

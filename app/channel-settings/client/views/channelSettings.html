@@ -269,6 +269,7 @@
 			{{/if}}
 		{{/with}}
 		{{#with settings.joinCode}}
+			{{#if canView}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-input">
 					<label class="rc-input__label">
@@ -279,6 +280,7 @@
 					</label>
 				</div>
 			</div>
+			{{/if}}
 		{{/with}}
 
 		{{#if hasRetentionPermission}}

@@ -3,23 +3,28 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { getURL } from '../../../utils/client';
+
+const getCustomSoundId = (sound) => `custom-sound-${ sound }`;
 
 class CustomSoundsClass {
 	constructor() {
 		this.list = new ReactiveVar({});
-		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: 'sounds/beep.mp3' });
-		this.add({ _id: 'chelle', name: 'Chelle', extension: 'mp3', src: 'sounds/chelle.mp3' });
-		this.add({ _id: 'ding', name: 'Ding', extension: 'mp3', src: 'sounds/ding.mp3' });
-		this.add({ _id: 'droplet', name: 'Droplet', extension: 'mp3', src: 'sounds/droplet.mp3' });
-		this.add({ _id: 'highbell', name: 'Highbell', extension: 'mp3', src: 'sounds/highbell.mp3' });
-		this.add({ _id: 'seasons', name: 'Seasons', extension: 'mp3', src: 'sounds/seasons.mp3' });
+		this.add({ _id: 'chime', name: 'Chime', extension: 'mp3', src: getURL('sounds/chime.mp3') });
+		this.add({ _id: 'door', name: 'Door', extension: 'mp3', src: getURL('sounds/door.mp3') });
+		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: getURL('sounds/beep.mp3') });
+		this.add({ _id: 'chelle', name: 'Chelle', extension: 'mp3', src: getURL('sounds/chelle.mp3') });
+		this.add({ _id: 'ding', name: 'Ding', extension: 'mp3', src: getURL('sounds/ding.mp3') });
+		this.add({ _id: 'droplet', name: 'Droplet', extension: 'mp3', src: getURL('sounds/droplet.mp3') });
+		this.add({ _id: 'highbell', name: 'Highbell', extension: 'mp3', src: getURL('sounds/highbell.mp3') });
+		this.add({ _id: 'seasons', name: 'Seasons', extension: 'mp3', src: getURL('sounds/seasons.mp3') });
 	}
 
 	add(sound) {
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
-		const audio = $('<audio />', { id: sound._id, preload: true }).append(
+		const audio = $('<audio />', { id: getCustomSoundId(sound._id), preload: true }).append(
 			$('<source />', { src: sound.src }),
 		);
 		const list = this.list.get();
@@ -39,9 +44,12 @@ class CustomSoundsClass {
 		const audio = $(`#${ sound._id }`);
 		if (audio && audio[0]) {
 			const list = this.list.get();
+			if (!sound.src) {
+				sound.src = this.getURL(sound);
+			}
 			list[sound._id] = sound;
 			this.list.set(list);
-			$('source', audio).attr('src', this.getURL(sound));
+			$('source', audio).attr('src', sound.src);
 			audio[0].load();
 		} else {
 			this.add(sound);
@@ -49,8 +57,7 @@ class CustomSoundsClass {
 	}
 
 	getURL(sound) {
-		const path = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-		return `${ path }/custom-sounds/${ sound._id }.${ sound.extension }?_dc=${ sound.random || 0 }`;
+		return getURL(`/custom-sounds/${ sound._id }.${ sound.extension }?_dc=${ sound.random || 0 }`);
 	}
 
 	getList() {
@@ -59,7 +66,7 @@ class CustomSoundsClass {
 	}
 
 	play = (sound, { volume = 1, loop = false } = {}) => {
-		const audio = document.querySelector(`audio#${ sound }`);
+		const audio = document.querySelector(`#${ getCustomSoundId(sound) }`);
 		if (!audio || !audio.play) {
 			return;
 		}
@@ -69,6 +76,16 @@ class CustomSoundsClass {
 		audio.play();
 
 		return audio;
+	}
+
+	pause = (sound) => {
+		const audio = document.querySelector(`#${ getCustomSoundId(sound) }`);
+		if (!audio || !audio.pause) {
+			return;
+		}
+
+		audio.pause();
+		audio.currentTime = 0;
 	}
 }
 

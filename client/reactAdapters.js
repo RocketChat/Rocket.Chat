@@ -153,6 +153,10 @@ export const renderRouteComponent = (importFn, {
 } = {}) => {
 	const routeName = FlowRouter.getRouteName();
 
+	if (portalsMap.has(routeName)) {
+		return;
+	}
+
 	Tracker.autorun(async (computation) => {
 		if (routeName !== FlowRouter.getRouteName()) {
 			unregisterPortal(routeName);

@@ -24,8 +24,24 @@ Template.livechatIntegrationWebhook.helpers({
 	disableTest() {
 		return Template.instance().disableTest.get();
 	},
+	sendOnStartChecked() {
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_start');
+		return setting && setting.value;
+	},
 	sendOnCloseChecked() {
 		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_close');
+		return setting && setting.value;
+	},
+	sendOnChatTakenChecked() {
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_chat_taken');
+		return setting && setting.value;
+	},
+	sendOnChatQueuedChecked() {
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_chat_queued');
+		return setting && setting.value;
+	},
+	sendOnForwardChecked() {
+		const setting = getIntegrationSettingById(Template.instance().settings.get(), 'Livechat_webhook_on_forward');
 		return setting && setting.value;
 	},
 	sendOnOfflineChecked() {
@@ -78,14 +94,22 @@ Template.livechatIntegrationWebhook.events({
 
 		const webhookUrl = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhookUrl');
 		const secretToken = getIntegrationSettingById(instance.settings.get(), 'Livechat_secret_token');
+		const webhookOnStart = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_start');
 		const webhookOnClose = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_close');
+		const webhookOnChatTaken = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_chat_taken');
+		const webhookOnChatQueued = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_chat_queued');
+		const webhookOnForward = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_forward');
 		const webhookOnOfflineMsg = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_offline_msg');
 		const webhookOnVisitorMessage = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_visitor_message');
 		const webhookOnAgentMessage = getIntegrationSettingById(instance.settings.get(), 'Livechat_webhook_on_agent_message');
 
 		instance.$('#webhookUrl').val(webhookUrl && webhookUrl.value);
 		instance.$('#secretToken').val(secretToken && secretToken.value);
+		instance.$('#sendOnStart').get(0).checked = webhookOnStart && webhookOnStart.value;
 		instance.$('#sendOnClose').get(0).checked = webhookOnClose && webhookOnClose.value;
+		instance.$('#sendOnChatTaken').get(0).checked = webhookOnChatTaken && webhookOnChatTaken.value;
+		instance.$('#sendOnChatQueued').get(0).checked = webhookOnChatQueued && webhookOnChatQueued.value;
+		instance.$('#sendOnForward').get(0).checked = webhookOnForward && webhookOnForward.value;
 		instance.$('#sendOnOffline').get(0).checked = webhookOnOfflineMsg && webhookOnOfflineMsg.value;
 		instance.$('#sendOnVisitorMessage').get(0).checked = webhookOnVisitorMessage && webhookOnVisitorMessage.value;
 		instance.$('#sendOnAgentMessage').get(0).checked = webhookOnAgentMessage && webhookOnAgentMessage.value;
@@ -98,7 +122,11 @@ Template.livechatIntegrationWebhook.events({
 		const settings = {
 			Livechat_webhookUrl: s.trim(instance.$('#webhookUrl').val()),
 			Livechat_secret_token: s.trim(instance.$('#secretToken').val()),
+			Livechat_webhook_on_start: instance.$('#sendOnStart').get(0).checked,
 			Livechat_webhook_on_close: instance.$('#sendOnClose').get(0).checked,
+			Livechat_webhook_on_chat_taken: instance.$('#sendOnChatTaken').get(0).checked,
+			Livechat_webhook_on_chat_queued: instance.$('#sendOnChatQueued').get(0).checked,
+			Livechat_webhook_on_forward: instance.$('#sendOnForward').get(0).checked,
 			Livechat_webhook_on_offline_msg: instance.$('#sendOnOffline').get(0).checked,
 			Livechat_webhook_on_visitor_message: instance.$('#sendOnVisitorMessage').get(0).checked,
 			Livechat_webhook_on_agent_message: instance.$('#sendOnAgentMessage').get(0).checked,

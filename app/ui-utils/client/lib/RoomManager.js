@@ -9,6 +9,7 @@ import _ from 'underscore';
 import { fireGlobalEvent } from './fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
+import { menu } from './menu';
 import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
@@ -86,6 +87,7 @@ export const RoomManager = new function() {
 										name,
 									};
 									if (isNew) {
+										menu.updateUnreadBars();
 										callbacks.run('streamNewMessage', msg);
 									}
 								}
