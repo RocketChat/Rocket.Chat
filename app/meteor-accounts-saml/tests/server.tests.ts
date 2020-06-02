@@ -503,6 +503,22 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 
+			it('should support `channels` attribute with multiple values', () => {
+				const channelsProfile = {
+					...profile,
+					channels: [
+						'pets',
+						'pics',
+						'funny',
+					],
+				};
+
+				const userObject = SAMLUtils.mapProfileToUserObject(channelsProfile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny']);
+			});
+
 			it('should reject an userDataFieldMap without an email field', () => {
 				const { globalSettings } = SAMLUtils;
 				globalSettings.userDataFieldMap = JSON.stringify({});

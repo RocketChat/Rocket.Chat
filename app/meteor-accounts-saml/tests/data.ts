@@ -266,9 +266,9 @@ export const profile = {
 	otherRoles: 'user,customer,client',
 	language: 'ptbr',
 	channels: 'pets,pics,funny,random,babies',
+	multipleChannels: ['pets', 'pics', 'funny', 'random', 'babies'],
 	customField1: 'value1',
 	customField2: 'value2',
 	customField3: 'value3',
 	singleEmail: 'testing@server.com',
-	multipleEmails: 'test1@server.com,test2@server.com,test3@server.com',
 };

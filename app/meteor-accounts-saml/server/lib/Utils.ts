@@ -460,7 +460,11 @@ export class SAMLUtils {
 		}
 
 		if (profile.channels) {
-			userObject.channels = profile.channels.split(',');
+			if (Array.isArray(profile.channels)) {
+				userObject.channels = profile.channels;
+			} else {
+				userObject.channels = profile.channels.split(',');
+			}
 		}
 
 		for (const [fieldName, customField] of userDataMap.customFields) {
