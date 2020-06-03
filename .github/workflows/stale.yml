@@ -26,8 +26,8 @@ jobs:
     - uses: actions/stale@v2
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        days-before-stale: 90
-        days-before-close: 14
+        days-before-stale: 60
+        days-before-close: 7
         exempt-issue-labels: 'Epic,Feature: Planned,sla,sponsored,stat: waiting PR merge,Triaged,subj: security'
         stale-issue-message: >-
           This issue has been automatically marked as stale because it has not had
