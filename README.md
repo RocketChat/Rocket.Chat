@@ -32,7 +32,7 @@
   * [Sloppy.io](#sloppyio)
   * [Docker](#docker)
   * [Ansible](#ansible)
-  * [Raspberry Pi 2](#raspberry-pi-2)
+  * [Raspberry Pi 4](#raspberry-pi-4)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
   * [WeDeploy](#wedeploy)
@@ -181,10 +181,10 @@ Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 
 
 [![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://rocket.chat/docs/installation/automation-tools/ansible/)
 
-## Raspberry Pi 2
-Run Rocket.Chat on this world famous $30 quad-core server.
+## Raspberry Pi 4
+Run Rocket.Chat on this world famous $35 quad-core server.
 
-[![Raspberry Pi 2](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
+[![Raspberry Pi 4](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
 
 ## Koozali SME
 

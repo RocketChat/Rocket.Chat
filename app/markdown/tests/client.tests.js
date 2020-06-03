@@ -188,7 +188,7 @@ const link = {
 	'[Text](http://invalid link)': '[Text](http://invalid link)',
 	'[Text](http://link)': linkWrapped('http://link', 'Text'),
 	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
-	'[ Open Site For Rocket.Chat](https://open.rocket.chat/ )': linkWrapped('https://open.rocket.chat/ ', ' Open Site For Rocket.Chat'),
+	'[ Open Site For Rocket.Chat ](https://open.rocket.chat/)': linkWrapped('https://open.rocket.chat/', ' Open Site For Rocket.Chat '),
 	'[Rocket.Chat Site](https://rocket.chat/)': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
 	'[Testing Entry on Rocket.Chat Docs Site](https://rocket.chat/docs/developer-guides/testing/#testing)': linkWrapped('https://rocket.chat/docs/developer-guides/testing/#testing', 'Testing Entry on Rocket.Chat Docs Site'),
 	'[](http://linkText)': '[](http://linkText)',
@@ -201,7 +201,13 @@ const link = {
 	'[Open Site For Rocket.Chat](open.rocket.chat/)': '[Open Site For Rocket.Chat](open.rocket.chat/)',
 	'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)': '[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)',
 	'[Text](http://link?param1=1&param2=2)': linkWrapped('http://link?param1=1&param2=2', 'Text'),
+	'[Testing Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation))': linkWrapped('https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)', 'Testing Double parentheses'),
+	'[Testing data after Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla)': linkWrapped('https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla', 'Testing data after Double parentheses'),
 };
+
+Object.entries(link).forEach(([key, value]) => {
+	link[`before (test) ${ key } after (test)`] = `before (test) ${ value } after (test)`;
+});
 
 const inlinecode = {
 	'`code`': inlinecodeWrapper('code'),
