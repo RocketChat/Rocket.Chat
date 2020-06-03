@@ -78,8 +78,7 @@ export function ChannelsTab() {
 
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => {
-		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: name || fname, type: 'd', _id });
-
+		const avatarUrl = roomTypes.getConfig(room.t).getAvatarPath({ name: name || fname, type: room.t, _id });
 		return <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
 			<Table.Cell>
 				<Box display='flex'>
