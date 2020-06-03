@@ -6,6 +6,7 @@ import { SAMLUtils } from '../Utils';
 import { StatusCode } from '../constants';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import { IResponseValidateCallback } from '../../definition/callbacks';
+import { ISAMLAssertion } from '../../definition/ISAMLAssertion';
 
 type XmlParent = Element | Document;
 
@@ -70,12 +71,14 @@ export class ResponseParser {
 
 
 		let assertion: XmlParent;
+		let assertionData: ISAMLAssertion;
 		let issuer;
 
 		try {
-			assertion = this.getAssertion(response);
+			assertionData = this.getAssertion(response, xml);
+			assertion = assertionData.assertion;
 
-			this.verifySignatures(response, assertion, xml);
+			this.verifySignatures(response, assertionData, xml);
 		} catch (e) {
 			return callback(e, null, false);
 		}
@@ -158,7 +161,7 @@ export class ResponseParser {
 		return callback(null, profile, false);
 	}
 
-	getAssertion(response: Element): XmlParent {
+	getAssertion(response: Element, xml: string): ISAMLAssertion {
 		const allAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
 		const allEncrypedAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion');
 
@@ -168,6 +171,7 @@ export class ResponseParser {
 
 		let assertion: XmlParent = allAssertions[0];
 		const encAssertion = allEncrypedAssertions[0];
+		let newXml = null;
 
 		if (typeof encAssertion !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
@@ -176,7 +180,18 @@ export class ResponseParser {
 				if (err) {
 					console.error(err);
 				}
-				assertion = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+
+				const document = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+				if (!document) {
+					throw new Error('Failed to decrypt SAML assertion');
+				}
+
+				const decryptedAssertions = document.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
+				if (decryptedAssertions.length) {
+					assertion = decryptedAssertions[0];
+				}
+
+				newXml = result;
 			});
 		}
 
@@ -184,10 +199,13 @@ export class ResponseParser {
 			throw new Error('Missing SAML assertion');
 		}
 
-		return assertion;
+		return {
+			assertion,
+			xml: newXml || xml,
+		};
 	}
 
-	verifySignatures(response: Element, assertion: XmlParent, xml: string): void {
+	verifySignatures(response: Element, assertionData: ISAMLAssertion, xml: string): void {
 		if (!this.serviceProviderOptions.cert) {
 			return;
 		}
@@ -214,7 +232,7 @@ export class ResponseParser {
 
 		if (checkAssertion) {
 			SAMLUtils.log('Verify Assertion Signature');
-			if (!this.validateAssertionSignature(xml, this.serviceProviderOptions.cert, assertion)) {
+			if (!this.validateAssertionSignature(assertionData.xml, this.serviceProviderOptions.cert, assertionData.assertion)) {
 				if (!checkEither) {
 					SAMLUtils.log('Assertion Signature WRONG');
 					throw new Error('Invalid Assertion signature');
