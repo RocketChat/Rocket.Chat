@@ -26,22 +26,23 @@ export function getSubscribedRoomsForUserWithDetails(userId) {
 			// If it's only one, then this user is the only owner.
 			if (numOwners === 1) {
 				// Let's check how many subscribers the room has.
-				const options = { sort: { ts: 1 } };
+				const options = { fields: { 'u._id': 1 }, sort: { ts: 1 } };
 				const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
 
-				subscribersCursor.forEach((subscriber) => {
+				subscribersCursor.forEach(({ u: { _id: uid } }) => {
 					// If we already changed the owner or this subscription is for the user we are removing, then don't try to give it ownership
-					if (roomData.shouldChangeOwner || subscriber.u._id === userId) {
+					if (roomData.shouldChangeOwner || uid === userId) {
 						return;
 					}
-					const newOwner = Users.findOneActiveById(subscriber.u._id, { fields: { _id: 1 } });
+					const newOwner = Users.findOneActiveById(uid, { fields: { _id: 1 } });
 					if (!newOwner) {
 						return;
 					}
 
-					roomData.newOwner = subscriber.u._id;
+					roomData.newOwner = uid;
 					roomData.shouldChangeOwner = true;
 				});
+
 				// If there's no subscriber available to be the new owner and it's not a public room, we can remove it.
 				if (!roomData.shouldChangeOwner && roomData.t !== 'c') {
 					roomData.shouldBeRemoved = true;
