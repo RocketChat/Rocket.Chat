@@ -37,6 +37,8 @@ export function federationRequestToPeer(method, peerDomain, uri, body, options =
 	let result;
 
 	try {
+		logger.http.debug(() => `federationRequestToPeer => url=${ baseUrl }${ uri }`);
+
 		result = federationRequest(method, `${ baseUrl }${ uri }`, body, options.headers || {}, peerKey);
 	} catch (err) {
 		logger.http.error(`${ ignoreErrors ? '[IGNORED] ' : '' }Error ${ err }`);
