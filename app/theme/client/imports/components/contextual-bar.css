@@ -54,12 +54,13 @@
 		display: flex;
 		flex: 0 0 auto;
 
-		padding: var(--default-padding);
+		height: 64px;
 
 		margin: 0 -8px;
 
+		padding: var(--default-padding);
+
 		border-bottom: solid 2px var(--color-gray-lightest);
-		height: 64px;
 
 		align-items: center;
 		justify-content: flex-end;

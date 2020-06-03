@@ -1,8 +1,9 @@
 module.exports = {
 	stories: [
-		'../app/**/*.stories.js',
-		'../client/**/*.stories.js',
-		'../ee/app/**/*.stories.js',
+		'../app/**/ContextualBarMessage.stories.js',
+		'../app/**/ThreadsList.stories.js',
+		// '../client/**/*.stories.js',
+		// '../ee/app/**/*.stories.js',
 	],
 	addons: [
 		'@storybook/addon-actions',

@@ -23,16 +23,6 @@ import ThreadListMessage, { MessageSkeleton } from './ThreadListMessage';
 import useUserSubscription from '../hooks/useUserSubscription';
 import useUserRoom from '../hooks/useUserRoom';
 
-const clickable = css`{
-	cursor: pointer;
-	border-bottom: 2px solid #F2F3F5;
-
-	&:hover,
-	&:focus {
-		background: #F7F8FA;
-	}
-}`;
-
 const borderBottom = css`{
 	border-bottom: 2px solid #F2F3F5;
 }`;
@@ -42,6 +32,15 @@ const borderInlineStart = css`{
 }`;
 
 function clickableItem(WrappedComponent) {
+	const clickable = css`{
+		cursor: pointer;
+		border-bottom: 2px solid #F2F3F5 !important;
+
+		&:hover,
+		&:focus {
+			background: #F7F8FA;
+		}
+	}`;
 	return (props) => <WrappedComponent className={clickable} tabIndex={0} {...props}/>;
 }
 
@@ -50,6 +49,8 @@ function mapProps(WrappedComponent) {
 }
 
 const Thread = React.memo(mapProps(clickableItem(ThreadListMessage)));
+
+const Skeleton = React.memo(clickableItem(MessageSkeleton));
 
 const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 25;
 
@@ -181,7 +182,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 
 	const rowRenderer = useCallback(function rowRenderer({ index, style }) {
 		if (!threads[index]) {
-			return <MessageSkeleton style={style}/>;
+			return <Skeleton style={style}/>;
 		}
 		const thread = threads[index];
 		const msg = normalizeThreadMessage(thread);
