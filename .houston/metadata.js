@@ -38,9 +38,9 @@ const getNodeNpmVersions = async function({ version, git, request }) {
 
 const getAppsEngineVersion = async function({ version, git }) {
 	try {
-		const packageJson = await git.show([`${ version }:package.json`]);
+		const packageJson = await git.show([`${ version }:package-lock.json`]);
 		const { dependencies } = JSON.parse(packageJson);
-		const appsEngineVersion = dependencies['@rocket.chat/apps-engine'];
+		const { version: appsEngineVersion } = dependencies['@rocket.chat/apps-engine'];
 
 		return appsEngineVersion;
 	} catch (e) {
@@ -62,8 +62,8 @@ module.exports = async function({ version, git, request }) {
 	return {
 		node_version,
 		npm_version,
-		mongo_versions,
 		apps_engine_version,
+		mongo_versions,
 	};
 };
 
