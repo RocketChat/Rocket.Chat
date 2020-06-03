@@ -45,10 +45,3 @@ export const defaultMetadataTemplate = `<?xml version="1.0"?>
 export const defaultNameIDTemplate = '<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="__identifierFormat__" AllowCreate="true"></samlp:NameIDPolicy>';
 export const defaultIdentifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress';
 export const defaultAuthnContext = 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
-
-export const NameIDFormat = {
-	unspecified: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
-	email: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
-	persistent: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
-	transient: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
-};

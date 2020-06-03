@@ -270,7 +270,12 @@ export class ResponseParser {
 
 		sig.loadSignature(signature);
 
-		return sig.checkSignature(xml);
+		const result = sig.checkSignature(xml);
+		if (!result && sig.validationErrors) {
+			SAMLUtils.log(sig.validationErrors);
+		}
+
+		return result;
 	}
 
 	getIssuer(assertion: XmlParent): any {

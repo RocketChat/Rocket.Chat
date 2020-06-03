@@ -30,7 +30,10 @@ import {
 	samlResponseMultipleAssertions,
 	samlResponseMissingAssertion,
 	samlResponseMultipleIssuers,
+	samlResponseValidSignatures,
+	samlResponseValidAssertionSignature,
 	profile,
+	certificate,
 } from './data';
 import '../../../definition/xml-encryption';
 
@@ -376,6 +379,42 @@ describe('SAML', () => {
 				});
 			});
 
+			it('should reject a document without signatures if the setting requires at least one', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'Either',
+					cert: 'invalidCert',
+				};
+
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
+
+				const response = simpleSamlResponse
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(response, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('No valid SAML Signature found');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should reject a document with multiple issuers', () => {
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(samlResponseMultipleIssuers, (err, data, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many Issuers');
+					expect(data).to.not.exist;
+					expect(loggedOut).to.be.false;
+				});
+			});
+		});
+
+		describe('[Validate Signatures]', () => {
 			it('should reject an unsigned assertion if the setting says so', () => {
 				const providerOptions = {
 					...serviceProviderOptions,
@@ -426,11 +465,11 @@ describe('SAML', () => {
 				});
 			});
 
-			it('should reject a document without signatures if the setting requires at least one', () => {
+			it('should reject an assertion signed with an invalid signature', () => {
 				const providerOptions = {
 					...serviceProviderOptions,
-					signatureValidationType: 'Either',
-					cert: 'invalidCert',
+					signatureValidationType: 'Assertion',
+					cert: certificate,
 				};
 
 				const notBefore = new Date();
@@ -439,24 +478,109 @@ describe('SAML', () => {
 				const notOnOrAfter = new Date();
 				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
 
-				const response = simpleSamlResponse
+				const response = samlResponse
 					.replace('[NOTBEFORE]', notBefore.toISOString())
 					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(response, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('No valid SAML Signature found');
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Assertion signature');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
 			});
 
-			it('should reject a document with multiple issuers', () => {
-				const parser = new ResponseParser(serviceProviderOptions);
-				parser.validate(samlResponseMultipleIssuers, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many Issuers');
-					expect(data).to.not.exist;
+			it('should accept an assertion with a valid signature', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'Assertion',
+					cert: certificate,
+				};
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
+					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
+					expect(profile).to.be.null;
+				});
+			});
+
+			it('should accept a document with a valid response signature', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'Response',
+					cert: certificate,
+				};
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(samlResponseValidSignatures, (err, profile, loggedOut) => {
+					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(loggedOut).to.be.false;
+					expect(profile).to.be.null;
+				});
+			});
+
+			it('should reject a document with a valid signature of the wrong type', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'Response',
+					cert: certificate,
+				};
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
+					expect(loggedOut).to.be.false;
+					expect(profile).to.be.null;
+				});
+			});
+
+			it('should accept a document with both valid signatures', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'All',
+					cert: certificate,
+				};
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(samlResponseValidSignatures, (err, profile, loggedOut) => {
+					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(loggedOut).to.be.false;
+					expect(profile).to.be.null;
+				});
+			});
+
+			it('should reject a document with a single signature when both are expected', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'All',
+					cert: certificate,
+				};
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
+					expect(loggedOut).to.be.false;
+					expect(profile).to.be.null;
+				});
+			});
+
+			it('should accept a document with either valid signature', () => {
+				const providerOptions = {
+					...serviceProviderOptions,
+					signatureValidationType: 'Either',
+					cert: certificate,
+				};
+
+				const parser = new ResponseParser(providerOptions);
+				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
+					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(loggedOut).to.be.false;
+					expect(profile).to.be.null;
 				});
 			});
 		});
@@ -503,6 +627,7 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 
+			// Channels support both a comma separated single value and an array of values
 			it('should support `channels` attribute with multiple values', () => {
 				const channelsProfile = {
 					...profile,
@@ -752,6 +877,61 @@ describe('SAML', () => {
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('identifier').that.has.property('type').that.is.equal('custom');
 				expect(userObject).to.have.property('identifier').that.has.property('attribute').that.is.equal('customField3');
+			});
+		});
+	});
+
+	describe('Response Mapping', () => {
+		it('should extract a mapped user from the response', () => {
+			const notBefore = new Date();
+			notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+			const notOnOrAfter = new Date();
+			notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
+
+			const response = simpleSamlResponse
+				.replace('[NOTBEFORE]', notBefore.toISOString())
+				.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+			const parser = new ResponseParser(serviceProviderOptions);
+			parser.validate(response, (err, profile, loggedOut) => {
+				expect(profile).to.be.an('object');
+				expect(err).to.be.null;
+				expect(loggedOut).to.be.false;
+
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					username: {
+						fieldName: 'uid',
+						template: 'user-__uid__',
+					},
+					email: 'email',
+					epa: 'eduPersonAffiliation',
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+				globalSettings.roleAttributeName = 'roles';
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				SAMLUtils.relayState = '[RelayState]';
+
+				// @ts-ignore
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('samlLogin').that.is.an('object');
+				expect(userObject).to.have.nested.property('samlLogin.provider').that.is.equal('[RelayState]');
+				expect(userObject).to.have.nested.property('samlLogin.idp').that.is.equal('[ISSUER]');
+				expect(userObject).to.have.nested.property('samlLogin.idpSession').that.is.equal('[SESSIONINDEX]');
+				expect(userObject).to.have.nested.property('samlLogin.nameID').that.is.equal('[NAMEID]');
+				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('user1@example.com');
+				expect(userObject).to.have.property('username').that.is.equal('user-1');
+
+				const map = new Map();
+				map.set('epa', 'group1');
+
+				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 		});
 	});
