@@ -3,8 +3,8 @@
 		{{> sidebarHeader }}
 		{{#if loggedInUser}}
 			<div class="wrapper-unread">
-				<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden" id="fade">
-					{{_ "More_unreads"}} <i class="icon-up-big"></i>
+				<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
+					<i class="icon-up-big"></i> {{_ "More_unreads"}}
 				</div>
 			</div>
 			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
@@ -14,7 +14,7 @@
 			</div>
 			<div class="wrapper-unread">
 				<div class="unread-rooms background-primary-action-color color-primary-action-contrast bottom-unread-rooms hidden">
-					{{_ "More_unreads"}} <i class="icon-down-big"></i>
+					<i class="icon-down-big"></i> {{_ "More_unreads"}}
 				</div>
 			</div>
 			<div class="flex-nav animated-hidden">
