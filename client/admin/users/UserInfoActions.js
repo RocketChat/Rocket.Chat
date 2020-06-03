@@ -177,7 +177,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		activeStatus: !isActive,
 	}), [_id, isActive]);
 	const changeActiveStatusMessage = isActive ? 'User_has_been_deactivated' : 'User_has_been_activated';
-	const changeActiveStatusRequest = useEndpoint('POST', 'users.setActiveStatus', activeStatusQuery);
+	const changeActiveStatusRequest = useEndpoint('POST', 'users.setActiveStatus');
 
 	const changeActiveStatus = confirmOwnerChanges(async (confirm = false) => {
 		if (confirm) {

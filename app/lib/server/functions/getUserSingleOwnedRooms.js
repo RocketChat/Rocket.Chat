@@ -1,9 +1,6 @@
 import { Rooms } from '../../../models/server';
-// import { getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
 export const getUserSingleOwnedRooms = function(subscribedRooms) {
-	// const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
-
 	const roomsThatWillChangeOwner = subscribedRooms.filter(({ shouldChangeOwner }) => shouldChangeOwner).map(({ rid }) => rid);
 	const roomsThatWillBeRemoved = subscribedRooms.filter(({ shouldBeRemoved }) => shouldBeRemoved).map(({ rid }) => rid);
 

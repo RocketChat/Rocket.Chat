@@ -6,10 +6,11 @@ import toastr from 'toastr';
 import _ from 'underscore';
 
 import { WebRTC } from '../../../webrtc/client';
-import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models';
+import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models/client';
 import { modal } from '../../../ui-utils/client';
 import { t, handleError, roomTypes } from '../../../utils';
-import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization';
+import { settings } from '../../../settings/client';
+import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization/client';
 import { RoomMemberActions } from '../../../utils/client';
 
 const canSetLeader = () => hasAllPermission('set-leader', Session.get('openedRoom'));
@@ -445,19 +446,31 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 			icon: 'trash',
 			name: 'Delete',
 			action: prevent(getUser, ({ _id }) => {
-				const { instance } = this;
+				const erasureType = settings.get('Message_ErasureType');
+				const warningKey = `Delete_User_Warning_${ erasureType }`;
 
-				Meteor.call('deleteUser', _id, success(() => {
-					modal.open({
-						title: t('Deleted'),
-						text: t('User_has_been_deleted'),
-						type: 'success',
-						timer: 2000,
-						showConfirmButton: false,
-					});
-
-					instance.tabBar.close();
-				}));
+				modal.open({
+					title: t('Are_you_sure'),
+					text: t(warningKey),
+					type: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#DD6B55',
+					confirmButtonText: t('Yes_delete_it'),
+					cancelButtonText: t('Cancel'),
+					closeOnConfirm: false,
+					html: false,
+				}, () => {
+					Meteor.call('deleteUser', _id, success(() => {
+						modal.open({
+							title: t('Deleted'),
+							text: t('User_has_been_deleted'),
+							type: 'success',
+							timer: 2000,
+							showConfirmButton: false,
+						});
+						this.instance.tabBar.close();
+					}));
+				});
 			}),
 			group: 'admin',
 			condition: () => !hideAdminControls && hasPermission('delete-user'),
@@ -501,12 +514,12 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					id: 'deactivate',
 					name: t('Deactivate'),
 					modifier: 'alert',
-					action: prevent(getUser, (user) => {
+					action: prevent(getUser, (user) =>
 						Meteor.call('setUserActiveStatus', user._id, false, success(() => {
 							toastr.success(t('User_has_been_deactivated'));
 							user.active = false;
-						}));
-					}),
+						})),
+					),
 				};
 			}
 			return {
