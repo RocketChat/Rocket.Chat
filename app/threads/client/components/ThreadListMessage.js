@@ -46,9 +46,9 @@ export default function ThreadListMessage({ _id, msg, following, username, ts, r
 			<Body><RawText>{msg}</RawText></Body>
 			<Box mi='neg-x8' flexDirection='row' display='flex' alignItems='baseline' mb='x8'>
 				<Margins inline='x4'>
-					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='1 reply'><Icon name='thread' size='x20'/> {replies} </Box>
-					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='2 participants'><Icon name='user' size='x20'/> {participants} </Box>
-					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='Last Message'><Icon name='clock' size='x20'/> {formatDate(tlm)} </Box>
+					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='1 reply'><Icon name='thread' size='x20' mi='x4'/> {replies} </Box>
+					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='2 participants'><Icon name='user' size='x20' mi='x4'/> {participants} </Box>
+					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='Last Message'><Icon name='clock' size='x20' mi='x4'/> {formatDate(tlm)} </Box>
 				</Margins>
 			</Box>
 		</Container>

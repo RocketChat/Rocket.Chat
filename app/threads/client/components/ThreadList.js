@@ -19,7 +19,7 @@ import { Messages } from '../../../models/client';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
 import { getConfig } from '../../../ui-utils/client/config';
 import { useTimeAgo } from '../../../../client/hooks/useTimeAgo';
-import ContextualBarMessage, { MessageSkeleton } from './ThreadListMessage';
+import ThreadListMessage, { MessageSkeleton } from './ThreadListMessage';
 import useUserSubscription from '../hooks/useUserSubscription';
 import useUserRoom from '../hooks/useUserRoom';
 
@@ -45,7 +45,7 @@ function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
 }
 
-const Thread = React.memo(mapProps(clickableItem(ContextualBarMessage)));
+const Thread = React.memo(mapProps(clickableItem(ThreadListMessage)));
 
 const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 25;
 
