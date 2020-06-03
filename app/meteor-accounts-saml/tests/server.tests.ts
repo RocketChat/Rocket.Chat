@@ -32,8 +32,11 @@ import {
 	samlResponseMultipleIssuers,
 	samlResponseValidSignatures,
 	samlResponseValidAssertionSignature,
+	encryptedResponse,
 	profile,
 	certificate,
+	privateKeyCert,
+	privateKey,
 } from './data';
 import '../../../definition/xml-encryption';
 
@@ -410,6 +413,39 @@ describe('SAML', () => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many Issuers');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should decrypt an encrypted response', () => {
+				const options = {
+					...serviceProviderOptions,
+					privateCert: privateKeyCert,
+					privateKey,
+				};
+
+				const parser = new ResponseParser(options);
+				parser.validate(encryptedResponse, (err, profile, loggedOut) => {
+					// No way to change the assertion conditions on an encrypted response ¯\_(ツ)_/¯
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(loggedOut).to.be.false;
+					expect(profile).to.be.null;
+				});
+			});
+
+			it('should validate signatures on an encrypted response', () => {
+				const options = {
+					...serviceProviderOptions,
+					privateCert: privateKeyCert,
+					signatureValidationType: 'All',
+					privateKey,
+				};
+
+				const parser = new ResponseParser(options);
+				parser.validate(encryptedResponse, (err, profile, loggedOut) => {
+					// No way to change the assertion conditions on an encrypted response ¯\_(ツ)_/¯
+					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(loggedOut).to.be.false;
+					expect(profile).to.be.null;
 				});
 			});
 		});
