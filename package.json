@@ -110,6 +110,7 @@
 		"stylelint": "^9.9.0",
 		"stylelint-order": "^2.0.0",
 		"supertest": "^3.3.0",
+		"ts-loader": "^7.0.5",
 		"ts-node": "^8.8.2",
 		"typescript": "^3.7.3",
 		"webpack": "^4.29.3"
@@ -213,6 +214,8 @@
 		"queue-fifo": "^0.2.5",
 		"react": "^16.13.1",
 		"react-dom": "^16.8.6",
+		"react-window": "^1.8.5",
+		"react-window-infinite-loader": "^1.0.5",
 		"redis": "^2.8.0",
 		"semver": "^5.6.0",
 		"sharp": "^0.22.1",

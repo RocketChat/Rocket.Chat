@@ -56,9 +56,10 @@
 
 		padding: var(--default-padding);
 
-		border-bottom: solid 1px var(--color-gray-light);
+		margin: 0 -8px;
 
-		background: var(--color-gray-lightest);
+		border-bottom: solid 2px var(--color-gray-lightest);
+		height: 64px;
 
 		align-items: center;
 		justify-content: flex-end;

@@ -42,7 +42,7 @@
 	&--room {
 		padding: 1.25rem;
 
-		box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
+		border-bottom: 2px solid #F7F8FA;
 
 		font-size: var(--header-title-font-size);
 	}

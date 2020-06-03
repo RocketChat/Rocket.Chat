@@ -447,6 +447,7 @@ Template.room.helpers({
 				groupDetail: Template.instance().groupDetail.get(),
 				clearUserDetail: Template.instance().clearUserDetail,
 			},
+			...Template.instance().tabBar.getData(),
 		};
 
 		return flexData;
