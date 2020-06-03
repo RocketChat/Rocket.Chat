@@ -6,6 +6,7 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
+import { StatusCode } from './constants';
 
 // @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would bring a lot of baggage with its dependencies, affecting the unit tests)
 type NullableLogger = Logger | Null;
@@ -185,7 +186,7 @@ export class SAMLUtils {
 
 			status = statusNode.getAttribute('Value');
 
-			if (status === 'urn:oasis:names:tc:SAML:2.0:status:Success') {
+			if (status === StatusCode.success) {
 				successStatus = true;
 			}
 		}

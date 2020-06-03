@@ -210,8 +210,11 @@ export class SAML {
 		const serviceProvider = new SAMLServiceProvider(service);
 		serviceProvider.getAuthorizeUrl((err, url) => {
 			if (err) {
-				throw new Error('Unable to generate authorize url');
+				SAMLUtils.error('Unable to generate authorize url');
+				SAMLUtils.error(err);
+				url = Meteor.absoluteUrl();
 			}
+
 			res.writeHead(302, {
 				Location: url,
 			});
@@ -223,31 +226,40 @@ export class SAML {
 		const serviceProvider = new SAMLServiceProvider(service);
 		SAMLUtils.relayState = req.body.RelayState;
 		serviceProvider.validateResponse(req.body.SAMLResponse, (err, profile/* , loggedOut*/) => {
-			if (err) {
-				throw new Error(`Unable to validate response url: ${ err }`);
+			try {
+				if (err) {
+					SAMLUtils.error(err);
+					throw new Error('Unable to validate response url');
+				}
+
+				if (!profile) {
+					throw new Error('No user data collected from IdP response.');
+				}
+
+				let credentialToken = (profile.inResponseToId && profile.inResponseToId.value) || profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
+				const loginResult = {
+					profile,
+				};
+
+				if (!credentialToken) {
+					// No credentialToken in IdP-initiated SSO
+					credentialToken = Random.id();
+					SAMLUtils.log('[SAML] Using random credentialToken: ', credentialToken);
+				}
+
+				this.storeCredential(credentialToken, loginResult);
+				const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ credentialToken }`;
+				res.writeHead(302, {
+					Location: url,
+				});
+				res.end();
+			} catch (error) {
+				SAMLUtils.error(error);
+				res.writeHead(302, {
+					Location: Meteor.absoluteUrl(),
+				});
+				res.end();
 			}
-
-			if (!profile) {
-				throw new Error('No user data collected from IdP response.');
-			}
-
-			let credentialToken = (profile.inResponseToId && profile.inResponseToId.value) || profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
-			const loginResult = {
-				profile,
-			};
-
-			if (!credentialToken) {
-				// No credentialToken in IdP-initiated SSO
-				credentialToken = Random.id();
-				SAMLUtils.log('[SAML] Using random credentialToken: ', credentialToken);
-			}
-
-			this.storeCredential(credentialToken, loginResult);
-			const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ credentialToken }`;
-			res.writeHead(302, {
-				Location: url,
-			});
-			res.end();
 		});
 	}
 

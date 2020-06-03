@@ -3,6 +3,7 @@ import xmlenc from 'xml-encryption';
 import xmlCrypto from 'xml-crypto';
 
 import { SAMLUtils } from '../Utils';
+import { StatusCode } from '../constants';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import { IResponseValidateCallback } from '../../definition/callbacks';
 
@@ -57,6 +58,10 @@ export class ResponseParser {
 		if (!statusValidateObj.success) {
 			if (!statusValidateObj.statusCode) {
 				return callback(new Error('Missing StatusCode'), null, false);
+			}
+
+			if (statusValidateObj.statusCode === StatusCode.responder && statusValidateObj.message) {
+				return callback(new Error(statusValidateObj.message), null, false);
 			}
 
 			return callback(new Error(`Status is: ${ statusValidateObj.statusCode }`), null, false);
@@ -246,6 +251,7 @@ export class ResponseParser {
 
 			// Too many signatures
 			if (signature) {
+				SAMLUtils.log('Failed to validate SAML signature: Too Many Signatures');
 				return false;
 			}
 
@@ -253,6 +259,7 @@ export class ResponseParser {
 		}
 
 		if (!signature) {
+			SAMLUtils.log('Failed to validate SAML signature: Signature not found');
 			return false;
 		}
 

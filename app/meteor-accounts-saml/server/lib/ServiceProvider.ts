@@ -58,31 +58,35 @@ export class SAMLServiceProvider {
 				return callback(err);
 			}
 
-			const base64 = buffer.toString('base64');
-			let target = this.serviceProviderOptions.idpSLORedirectURL;
+			try {
+				const base64 = buffer.toString('base64');
+				let target = this.serviceProviderOptions.idpSLORedirectURL;
 
-			if (target.indexOf('?') > 0) {
-				target += '&';
-			} else {
-				target += '?';
+				if (target.indexOf('?') > 0) {
+					target += '&';
+				} else {
+					target += '?';
+				}
+
+				// TBD. We should really include a proper RelayState here
+				const relayState = Meteor.absoluteUrl();
+
+				const samlResponse: Record<string, any> = {
+					SAMLResponse: base64,
+					RelayState: relayState,
+				};
+
+				if (this.serviceProviderOptions.privateCert) {
+					samlResponse.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+					samlResponse.Signature = this.signRequest(querystring.stringify(samlResponse));
+				}
+
+				target += querystring.stringify(samlResponse);
+
+				return callback(null, target);
+			} catch (error) {
+				return callback(error);
 			}
-
-			// TBD. We should really include a proper RelayState here
-			const relayState = Meteor.absoluteUrl();
-
-			const samlResponse: Record<string, any> = {
-				SAMLResponse: base64,
-				RelayState: relayState,
-			};
-
-			if (this.serviceProviderOptions.privateCert) {
-				samlResponse.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-				samlResponse.Signature = this.signRequest(querystring.stringify(samlResponse));
-			}
-
-			target += querystring.stringify(samlResponse);
-
-			return callback(null, target);
 		});
 	}
 
@@ -95,49 +99,53 @@ export class SAMLServiceProvider {
 				return callback(err);
 			}
 
-			const base64 = buffer.toString('base64');
-			let target = this.serviceProviderOptions.entryPoint;
+			try {
+				const base64 = buffer.toString('base64');
+				let target = this.serviceProviderOptions.entryPoint;
 
-			if (operation === 'logout') {
-				if (this.serviceProviderOptions.idpSLORedirectURL) {
-					target = this.serviceProviderOptions.idpSLORedirectURL;
+				if (operation === 'logout') {
+					if (this.serviceProviderOptions.idpSLORedirectURL) {
+						target = this.serviceProviderOptions.idpSLORedirectURL;
+					}
 				}
+
+				if (target.indexOf('?') > 0) {
+					target += '&';
+				} else {
+					target += '?';
+				}
+
+				// TBD. We should really include a proper RelayState here
+				let relayState;
+				if (operation === 'logout') {
+					// in case of logout we want to be redirected back to the Meteor app.
+					relayState = Meteor.absoluteUrl();
+				} else {
+					relayState = this.serviceProviderOptions.provider;
+				}
+
+				const samlRequest: Record<string, any> = {
+					SAMLRequest: base64,
+					RelayState: relayState,
+				};
+
+				if (this.serviceProviderOptions.privateCert) {
+					samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+					samlRequest.Signature = this.signRequest(querystring.stringify(samlRequest));
+				}
+
+				target += querystring.stringify(samlRequest);
+
+				SAMLUtils.log(`requestToUrl: ${ target }`);
+
+				if (operation === 'logout') {
+					// in case of logout we want to be redirected back to the Meteor app.
+					return callback(null, target);
+				}
+				callback(null, target);
+			} catch (error) {
+				callback(error);
 			}
-
-			if (target.indexOf('?') > 0) {
-				target += '&';
-			} else {
-				target += '?';
-			}
-
-			// TBD. We should really include a proper RelayState here
-			let relayState;
-			if (operation === 'logout') {
-				// in case of logout we want to be redirected back to the Meteor app.
-				relayState = Meteor.absoluteUrl();
-			} else {
-				relayState = this.serviceProviderOptions.provider;
-			}
-
-			const samlRequest: Record<string, any> = {
-				SAMLRequest: base64,
-				RelayState: relayState,
-			};
-
-			if (this.serviceProviderOptions.privateCert) {
-				samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-				samlRequest.Signature = this.signRequest(querystring.stringify(samlRequest));
-			}
-
-			target += querystring.stringify(samlRequest);
-
-			SAMLUtils.log(`requestToUrl: ${ target }`);
-
-			if (operation === 'logout') {
-				// in case of logout we want to be redirected back to the Meteor app.
-				return callback(null, target);
-			}
-			callback(null, target);
 		});
 	}
 
