@@ -7,8 +7,10 @@ import { settings } from '../../../settings/server';
 import { Notifications } from '../../../notifications/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
+import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
+import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 
-export const deleteUser = function(userId) {
+export const deleteUser = function(userId, confirmRelinquish = false) {
 	const user = Users.findOneById(userId, {
 		fields: { username: 1, avatarOrigin: 1, federation: 1 },
 	});
@@ -25,9 +27,16 @@ export const deleteUser = function(userId) {
 		}
 	}
 
+	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
+
+	if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
+		const rooms = getUserSingleOwnedRooms(subscribedRooms);
+		throw new Meteor.Error('user-last-owner', '', rooms);
+	}
+
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
-		relinquishRoomOwnerships(user._id);
+		relinquishRoomOwnerships(userId, subscribedRooms);
 
 		const messageErasureType = settings.get('Message_ErasureType');
 		switch (messageErasureType) {

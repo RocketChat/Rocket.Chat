@@ -1,27 +1,25 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { t, APIClient } from '../../../utils/client';
+import { t } from '../../../utils/client';
 import { modal } from './modal';
 
-export const warnUserDeletionMayRemoveRooms = async function(userId, callbackFn, { warningKey, confirmButtonKey, closeOnConfirm = false, skipModalIfEmpty = false }) {
+export const warnUserDeletionMayRemoveRooms = async function(userId, callbackFn, { warningKey, confirmButtonKey, closeOnConfirm = false, skipModalIfEmpty = false, shouldChangeOwner, shouldBeRemoved }) {
 	let warningText = warningKey ? t(warningKey) : false;
 
-	const { rooms: { remove, changeOwner } } = await APIClient.v1.get('users.getSingleOwnedRooms', { userId });
-
-	if (remove.length + changeOwner.length === 0 && skipModalIfEmpty) {
+	if (shouldBeRemoved.length + shouldChangeOwner.length === 0 && skipModalIfEmpty) {
 		callbackFn();
 		return;
 	}
 
-	if (changeOwner.length > 0) {
+	if (shouldChangeOwner.length > 0) {
 		let newText;
 
-		if (changeOwner.length === 1) {
-			newText = TAPi18n.__('A_new_owner_will_be_assigned_automatically_to_the__roomName__room', { roomName: changeOwner.pop() });
-		} else if (changeOwner.length <= 5) {
-			newText = TAPi18n.__('A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__', { count: changeOwner.length, rooms: changeOwner.join(', ') });
+		if (shouldChangeOwner.length === 1) {
+			newText = TAPi18n.__('A_new_owner_will_be_assigned_automatically_to_the__roomName__room', { roomName: shouldChangeOwner.pop() });
+		} else if (shouldChangeOwner.length <= 5) {
+			newText = TAPi18n.__('A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__', { count: shouldChangeOwner.length, rooms: shouldChangeOwner.join(', ') });
 		} else {
-			newText = TAPi18n.__('A_new_owner_will_be_assigned_automatically_to__count__rooms', { count: changeOwner.length });
+			newText = TAPi18n.__('A_new_owner_will_be_assigned_automatically_to__count__rooms', { count: shouldChangeOwner.length });
 		}
 
 		if (warningText) {
@@ -31,15 +29,15 @@ export const warnUserDeletionMayRemoveRooms = async function(userId, callbackFn,
 		}
 	}
 
-	if (remove.length > 0) {
+	if (shouldBeRemoved.length > 0) {
 		let newText;
 
-		if (remove.length === 1) {
-			newText = TAPi18n.__('The_empty_room__roomName__will_be_removed_automatically', { roomName: remove.pop() });
-		} else if (remove.length <= 5) {
-			newText = TAPi18n.__('__count__empty_rooms_will_be_removed_automatically__rooms__', { count: remove.length, rooms: remove.join(', ') });
+		if (shouldBeRemoved.length === 1) {
+			newText = TAPi18n.__('The_empty_room__roomName__will_be_removed_automatically', { roomName: shouldBeRemoved.pop() });
+		} else if (shouldBeRemoved.length <= 5) {
+			newText = TAPi18n.__('__count__empty_rooms_will_be_removed_automatically__rooms__', { count: shouldBeRemoved.length, rooms: shouldBeRemoved.join(', ') });
 		} else {
-			newText = TAPi18n.__('__count__empty_rooms_will_be_removed_automatically', { count: remove.length });
+			newText = TAPi18n.__('__count__empty_rooms_will_be_removed_automatically', { count: shouldBeRemoved.length });
 		}
 
 		if (warningText) {

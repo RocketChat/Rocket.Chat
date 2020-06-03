@@ -7,9 +7,8 @@ import _ from 'underscore';
 
 import { WebRTC } from '../../../webrtc/client';
 import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models';
-import { modal, warnUserDeletionMayRemoveRooms } from '../../../ui-utils';
+import { modal } from '../../../ui-utils/client';
 import { t, handleError, roomTypes } from '../../../utils';
-import { settings } from '../../../settings';
 import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization';
 import { RoomMemberActions } from '../../../utils/client';
 
@@ -442,31 +441,23 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				this.editingUser.set(user._id);
 			}),
 		}, {
+			// deprecated, this action should not be called as this component is not used on admin pages anymore
 			icon: 'trash',
 			name: 'Delete',
 			action: prevent(getUser, ({ _id }) => {
-				const erasureType = settings.get('Message_ErasureType');
-				const warningKey = `Delete_User_Warning_${ erasureType }`;
-
 				const { instance } = this;
 
-				const deleteFn = () => {
-					Meteor.call('deleteUser', _id, success(() => {
-						modal.open({
-							title: t('Deleted'),
-							text: t('User_has_been_deleted'),
-							type: 'success',
-							timer: 2000,
-							showConfirmButton: false,
-						});
+				Meteor.call('deleteUser', _id, success(() => {
+					modal.open({
+						title: t('Deleted'),
+						text: t('User_has_been_deleted'),
+						type: 'success',
+						timer: 2000,
+						showConfirmButton: false,
+					});
 
-						instance.tabBar.close();
-					}));
-				};
-
-				warnUserDeletionMayRemoveRooms(_id, deleteFn, {
-					warningKey,
-				});
+					instance.tabBar.close();
+				}));
 			}),
 			group: 'admin',
 			condition: () => !hideAdminControls && hasPermission('delete-user'),
@@ -499,6 +490,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				),
 			};
 		}, () => {
+			// deprecated, this action should not be called as this component is not used on admin pages anymore
 			if (hideAdminControls || !hasPermission('edit-other-user-active-status')) {
 				return;
 			}
@@ -510,19 +502,10 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					name: t('Deactivate'),
 					modifier: 'alert',
 					action: prevent(getUser, (user) => {
-						const deactivateFn = () => {
-							Meteor.call('setUserActiveStatus', user._id, false, success(() => {
-								toastr.success(t('User_has_been_deactivated'));
-								user.active = false;
-							}));
-						};
-
-						warnUserDeletionMayRemoveRooms(user._id, deactivateFn, {
-							warningKey: false,
-							confirmButtonKey: 'Yes_deactivate_it',
-							closeOnConfirm: true,
-							skipModalIfEmpty: true,
-						});
+						Meteor.call('setUserActiveStatus', user._id, false, success(() => {
+							toastr.success(t('User_has_been_deactivated'));
+							user.active = false;
+						}));
 					}),
 				};
 			}
