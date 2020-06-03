@@ -44,7 +44,7 @@ export default () => {
 		sendMessagesToAdmins({
 			msgs: ({ adminUser }) => [{ msg: `*${ TAPi18n.__('Update_your_RocketChat', adminUser.language) }*\n${ TAPi18n.__('New_version_available_(s)', update.lastestVersion.version, adminUser.language) }\n${ update.lastestVersion.infoUrl }` }],
 			banners: [{
-				id: 'versionUpdate',
+				id: `versionUpdate-${ update.lastestVersion.version }`.replace(/\./g, '_'),
 				priority: 10,
 				title: 'Update_your_RocketChat',
 				text: 'New_version_available_(s)',
@@ -62,7 +62,7 @@ export default () => {
 					msg: `*${ TAPi18n.__('Rocket_Chat_Alert', adminUser.language) }:*\n\n*${ TAPi18n.__(alert.title, adminUser.language) }*\n${ TAPi18n.__(alert.text, ...alert.textArguments || [], adminUser.language) }\n${ alert.infoUrl }`,
 				})),
 			banners: alerts.map((alert) => ({
-				id: `alert-${ alert.id }`,
+				id: `alert-${ alert.id }`.replace(/\./g, '_'),
 				priority: 10,
 				title: alert.title,
 				text: alert.text,
