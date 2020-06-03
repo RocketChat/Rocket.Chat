@@ -37,6 +37,10 @@ const borderBottom = css`{
 	border-bottom: 2px solid #F2F3F5;
 }`;
 
+const borderInlineStart = css`{
+	border-inline-start: 2px solid #F2F3F5;
+}`;
+
 function clickableItem(WrappedComponent) {
 	return (props) => <WrappedComponent className={clickable} tabIndex={0} {...props}/>;
 }
@@ -200,7 +204,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 	const isItemLoaded = (index) => index < threads.length;
 	const { ref, contentBoxSize: { inlineSize = 380, blockSize = 750 } = {} } = useResizeObserver();
 
-	return <VerticalBar className={'contextual-bar'}>
+	return <VerticalBar className={['contextual-bar', borderInlineStart]}>
 		<VerticalBar.Header>
 			<Icon name='thread' size='x20'/>
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><RawText>{t('Threads')}</RawText></Box>
