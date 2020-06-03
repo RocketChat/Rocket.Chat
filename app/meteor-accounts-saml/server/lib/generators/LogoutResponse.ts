@@ -1,8 +1,8 @@
+import { SAMLUtils } from '../Utils';
 import {
-	SAMLUtils,
 	defaultLogoutResponseTemplate,
 	defaultIdentifierFormat,
-} from '../Utils';
+} from '../constants';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 
 /*

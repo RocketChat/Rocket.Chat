@@ -709,6 +709,7 @@ describe('SAML', () => {
 					'customField1',
 				]);
 
+				// Workaround because chai doesn't handle Maps very well
 				for (const [key, value] of userObject.attributeList) {
 					// @ts-ignore
 					expect(value).to.be.equal(profile[key]);

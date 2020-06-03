@@ -4,8 +4,8 @@ import {
 	defaultIdentifierFormat,
 	defaultMetadataCertificateTemplate,
 	defaultMetadataTemplate,
-	SAMLUtils,
-} from '../Utils';
+} from '../constants';
+import { SAMLUtils } from '../Utils';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 
 /*

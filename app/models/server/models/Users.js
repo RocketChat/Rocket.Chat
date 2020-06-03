@@ -1317,10 +1317,10 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
-	removeSamlService(_id) {
+	removeSamlServiceSession(_id) {
 		const update = {
 			$unset: {
-				'services.saml': '',
+				'services.saml.idpSession': '',
 			},
 		};
 

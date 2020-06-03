@@ -79,7 +79,7 @@ export class SAML {
 		SAMLUtils.log(`Found user ${ userId }`);
 
 		Users.unsetLoginTokens(userId);
-		Users.removeSamlService(userId);
+		Users.removeSamlServiceSession(userId);
 	}
 
 	static processLogoutRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
@@ -324,9 +324,8 @@ export class SAML {
 		if (userObject.identifier.type === 'custom' && userObject.identifier.attribute && userObject.attributeList.has(userObject.identifier.attribute)) {
 			customIdentifierAttributeName = userObject.identifier.attribute;
 
-			// #ToDo: Find a better place to store this value and also update the migration to move the existing eppn value
 			const query: Record<string, any> = {};
-			query[customIdentifierAttributeName] = userObject.attributeList.get(customIdentifierAttributeName);
+			query[`services.saml.${ customIdentifierAttributeName }`] = userObject.attributeList.get(customIdentifierAttributeName);
 			user = Users.findOne(query);
 
 			if (user) {
@@ -354,11 +353,20 @@ export class SAML {
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
 				active: true,
-				eppn: userObject.eppn,
 				globalRoles,
 				emails,
-				services: {},
+				services: {
+					saml: {
+						provider: userObject.samlLogin.provider,
+						idp: userObject.samlLogin.idp,
+					},
+				},
 			};
+
+			if (customIdentifierAttributeName) {
+				newUser.services.saml = {};
+				newUser.services.saml[customIdentifierAttributeName] = userObject.attributeList.get(customIdentifierAttributeName);
+			}
 
 			if (generateUsername === true) {
 				username = generateUsernameSuggestion(newUser);
@@ -384,19 +392,6 @@ export class SAML {
 			}
 		}
 
-		// If the user was not found through the customIdentifier property, then update it's value
-		if (customIdentifierMatch === false && customIdentifierAttributeName) {
-			const updateData: Record<string, any> = {};
-			updateData[customIdentifierAttributeName] = userObject.attributeList.get(customIdentifierAttributeName);
-
-			// #ToDo: Find a better place to store this value and also update the migration to move the existing eppn value
-			Users.update({
-				_id: user._id,
-			}, {
-				$set: updateData,
-			});
-		}
-
 		// creating the token and adding to the user
 		const stampedToken = Accounts._generateStampedLoginToken();
 		Users.addPersonalAccessTokenToUser({
@@ -405,9 +400,16 @@ export class SAML {
 		});
 
 		const updateData: Record<string, any> = {
-			// TBD this should be pushed, otherwise we're only able to SSO into a single IDP at a time
-			'services.saml': userObject.samlLogin,
+			'services.saml.provider': userObject.samlLogin.provider,
+			'services.saml.idp': userObject.samlLogin.idp,
+			'services.saml.idpSession': userObject.samlLogin.idpSession,
+			'services.saml.nameID': userObject.samlLogin.nameID,
 		};
+
+		// If the user was not found through the customIdentifier property, then update it's value
+		if (customIdentifierMatch === false && customIdentifierAttributeName) {
+			updateData[`services.saml.${ customIdentifierAttributeName }`] = userObject.attributeList.get(customIdentifierAttributeName);
+		}
 
 		for (const [customField, value] of userObject.customFields) {
 			updateData[`customFields.${ customField }`] = value;

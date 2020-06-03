@@ -11,7 +11,7 @@ import {
 	defaultAuthnContext,
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
-} from '../lib/Utils';
+} from '../lib/constants';
 
 
 Meteor.methods({
