@@ -20,8 +20,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client
 import { getConfig } from '../../../ui-utils/client/config';
 import { useReactiveValue } from '../../../../client/hooks/useReactiveValue';
 import { useTimeAgo } from '../../../../client/hooks/useTimeAgo';
-
-import ContextualBarMessage, { MessageSkeleton } from '.';
+import ContextualBarMessage, { MessageSkeleton } from './ThreadListMessage';
 
 const clickable = css`{
 	cursor: pointer;
@@ -150,7 +149,7 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
-export function ThreadsList({ total = 10, threads = [], room, unread = [], type, loadMoreItems, loading, onClose, error, userId, text }) {
+export function ThreadList({ total = 10, threads = [], room, unread = [], type, loadMoreItems, loading, onClose, error, userId, text }) {
 	const t = useTranslation();
 
 	const user = useUser();
@@ -237,4 +236,4 @@ export function ThreadsList({ total = 10, threads = [], room, unread = [], type,
 	</VerticalBar>;
 }
 
-export default withData(ThreadsList);
+export default withData(ThreadList);

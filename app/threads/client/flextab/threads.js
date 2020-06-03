@@ -7,8 +7,7 @@ import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { Rooms } from '../../../models/client';
 
 
-createTemplateForComponent('ThreadsList', () => import('../ContextualBarMessage/ThreadsList'), {
-});
+createTemplateForComponent('ThreadsList', () => import('../components/ThreadList'), {});
 
 Template.threads.helpers({
 	room() {

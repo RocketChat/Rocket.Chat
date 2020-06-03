@@ -29,7 +29,7 @@ export function NotificationStatusUnread() {
 	return <NotificationStatus aria-label={t('Unread')} bg='primary-500'/>;
 }
 
-export default function ContextualBarMessage({ _id, msg, following, username, ts, replies, participants, handleFollowButton, unread, mention, all, formatDate = (e) => e, tlm, ...props }) {
+export default function ThreadListMessage({ _id, msg, following, username, ts, replies, participants, handleFollowButton, unread, mention, all, formatDate = (e) => e, tlm, ...props }) {
 	const t = useTranslation();
 
 	const button = !following ? 'bell-off' : 'bell';
