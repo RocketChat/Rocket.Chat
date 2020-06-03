@@ -279,6 +279,7 @@ describe('SAML', () => {
 					expect(profile).to.have.property('uid').equal('1');
 					expect(profile).to.have.property('eduPersonAffiliation').equal('group1');
 					expect(profile).to.have.property('email').equal('user1@example.com');
+					expect(profile).to.have.property('channels').that.is.an('array').that.is.deep.equal(['channel1', 'pets', 'random']);
 					expect(loggedOut).to.be.false;
 				});
 			});

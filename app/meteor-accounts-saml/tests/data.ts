@@ -107,6 +107,11 @@ const samlResponseAssertion = `<saml:Assertion ID="_cad47813d7242e43b4730b5c7bfd
 			<saml:Attribute Name="email" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
 				<saml:AttributeValue xsi:type="xs:string">user1@example.com</saml:AttributeValue>
 			</saml:Attribute>
+			<saml:Attribute Name="channels" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+				<saml:AttributeValue xsi:type="xs:string">channel1</saml:AttributeValue>
+				<saml:AttributeValue xsi:type="xs:string">pets</saml:AttributeValue>
+				<saml:AttributeValue xsi:type="xs:string">random</saml:AttributeValue>
+			</saml:Attribute>
 		</saml:AttributeStatement>
 	</saml:Assertion>`;
 
