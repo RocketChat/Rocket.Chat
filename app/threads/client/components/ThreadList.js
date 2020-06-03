@@ -15,12 +15,13 @@ import { useRoute } from '../../../../client/contexts/RouterContext';
 import { roomTypes } from '../../../utils/client';
 import { call, renderMessageBody } from '../../../ui-utils/client';
 import { useUserId, useUser } from '../../../../client/contexts/UserContext';
-import { Messages, Subscriptions } from '../../../models/client';
+import { Messages } from '../../../models/client';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
 import { getConfig } from '../../../ui-utils/client/config';
-import { useReactiveValue } from '../../../../client/hooks/useReactiveValue';
 import { useTimeAgo } from '../../../../client/hooks/useTimeAgo';
 import ContextualBarMessage, { MessageSkeleton } from './ThreadListMessage';
+import useUserSubscription from '../hooks/useUserSubscription';
+import useUserRoom from '../hooks/useUserRoom';
 
 const clickable = css`{
 	cursor: pointer;
@@ -50,9 +51,13 @@ const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 25;
 
 const filterProps = ({ msg, u, username, replies, mentions, tcount, ts, _id, tlm, attachments }) => ({ ..._id && { _id }, attachments, mentions, msg, username: username || u.username, replies, tcount, ts: new Date(ts), tlm: new Date(tlm) });
 
+const subscriptionFields = { tunread: 1 };
+const roomFields = { t: 1, name: 1 };
+
 export function withData(WrappedComponent) {
-	return ({ room, ...props }) => {
-		const subscription = useReactiveValue(() => Subscriptions.findOne({ rid: room._id }, { field: { tunread: 1 } }));
+	return ({ rid, ...props }) => {
+		const room = useUserRoom(rid, roomFields);
+		const subscription = useUserSubscription(rid, subscriptionFields);
 
 		const userId = useUserId();
 		const type = useState('all');
@@ -176,8 +181,6 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 		}
 		const thread = threads[index];
 		const msg = normalizeThreadMessage(thread);
-
-		console.log(msg);
 
 		return <Thread
 			{ ...thread }
