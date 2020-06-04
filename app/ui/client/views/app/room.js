@@ -11,7 +11,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
+import { t, roomTypes, getUserPreference, handleError } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
@@ -63,7 +63,7 @@ const openProfileTab = (e, instance, username) => {
 		instance.userDetail.set(username);
 	}
 
-	if (roomTypes.roomTypes[roomData.t].openCustomProfileTab(instance, roomData, username)) {
+	if (roomTypes.getConfig(roomData.t).openCustomProfileTab(instance, roomData, username)) {
 		return;
 	}
 	instance.groupDetail.set(null);
@@ -1295,7 +1295,7 @@ Template.room.onRendered(function() {
 	}, 500);
 
 	this.autorun(() => {
-		if (!Object.values(roomTypes.roomTypes).map(({ route }) => route && route.name).filter(Boolean).includes(FlowRouter.getRouteName())) {
+		if (!roomTypes.isAValidRoomTypeRoute(FlowRouter.getRouteName())) {
 			return;
 		}
 

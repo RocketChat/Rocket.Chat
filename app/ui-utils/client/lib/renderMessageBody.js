@@ -1,7 +1,7 @@
 import s from 'underscore.string';
 import md5 from 'md5';
 
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../callbacks/client';
 
 const generateKeyDefault = (...args) => args.map((item) => JSON.stringify(item)).join('-');
 

@@ -9,7 +9,7 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models/client';
 import { call } from './callMethod';
 
 export const normalizeThreadMessage = (message) => {

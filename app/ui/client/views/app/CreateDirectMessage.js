@@ -53,7 +53,7 @@ Template.CreateDirectMessage.helpers({
 
 const waitUntilRoomBeInserted = async (rid) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
-		const room = roomTypes.findRoom('d', rid, Meteor.user());
+		const room = roomTypes.getConfig('d').findRoom(rid);
 		if (room) {
 			c.stop();
 			return resolve(room);

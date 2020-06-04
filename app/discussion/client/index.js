@@ -10,6 +10,7 @@ import './discussionFromMessageBox';
 import './tabBar';
 
 import '../lib/discussionRoomType';
+import './config';
 
 // Style
 import './public/stylesheets/discussion.css';

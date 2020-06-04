@@ -10,15 +10,14 @@ import { fireGlobalEvent } from './fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { menu } from './menu';
-import { roomTypes } from '../../../utils';
-import { callbacks } from '../../../callbacks';
-import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { roomTypes } from '../../../utils/client';
+import { callbacks } from '../../../callbacks/client';
+import { Notifications } from '../../../notifications/client';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models/client';
+import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getConfig } from '../config';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
-
-import { call } from '..';
+import { call } from './callMethod';
 
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
@@ -57,14 +56,13 @@ export const RoomManager = new function() {
 			this.prototype.computation = Tracker.autorun(() => {
 				const ready = CachedChatRoom.ready.get() && mainReady.get();
 				if (ready !== true) { return; }
-				const user = Meteor.user();
 				Tracker.nonreactive(() => Object.entries(openedRooms).forEach(([typeName, record]) => {
 					if (record.active !== true || record.ready === true) { return; }
 
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
 
-					const room = roomTypes.findRoom(type, name, user);
+					const room = roomTypes.getConfig(type).findRoom(name);
 
 					if (room != null) {
 						record.rid = room._id;

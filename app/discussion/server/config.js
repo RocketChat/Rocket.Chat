@@ -1,6 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
+import { DiscussionRoomType } from '../lib/discussionRoomType';
+import { commonUtils, roomCommonUtils, roomTypes, userCommonUtils } from '../../utils/server';
+import { Rooms, Subscriptions, Users } from '../../models/server';
+import { AuthorizationUtils } from '../../authorization/server';
 
 Meteor.startup(() => {
 	settings.addGroup('Discussion', function() {
@@ -37,3 +41,15 @@ Meteor.startup(() => {
 		enableQuery: globalQuery,
 	});
 });
+
+roomTypes.add(new DiscussionRoomType({
+	settings,
+	Users,
+	Rooms,
+	Subscriptions,
+	AuthorizationUtils,
+	RoomCommonUtils: roomCommonUtils,
+	CommonUtils: commonUtils,
+	RoomTypesCommon: roomTypes,
+},
+userCommonUtils));

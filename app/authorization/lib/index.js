@@ -6,5 +6,3 @@ export const getSettingPermissionId = function(settingId) {
 export const CONSTANTS = {
 	SETTINGS_LEVEL: 'settings',
 };
-
-export { AuthorizationUtils } from './AuthorizationUtils';

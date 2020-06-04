@@ -8,13 +8,14 @@ import { Session } from 'meteor/session';
 import mem from 'mem';
 import _ from 'underscore';
 
-import { ChatSubscription, Rooms } from '../../../models';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
-import { roomTypes } from '../../../utils';
+import { ChatSubscription, Rooms } from '../../../models/client';
+import { settings } from '../../../settings/client';
+import { callbacks } from '../../../callbacks/client';
+import { roomTypes } from '../../../utils/client/lib/roomTypes';
 import { call, callMethod } from './callMethod';
-
-import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
+import { fireGlobalEvent } from './fireGlobalEvent';
+import { RoomHistoryManager } from './RoomHistoryManager';
+import { RoomManager } from './RoomManager';
 
 window.currentTracker = undefined;
 
@@ -44,7 +45,7 @@ function replaceCenterDomBy(dom) {
 
 const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
-		const room = roomTypes.findRoom(type, rid, Meteor.user());
+		const room = roomTypes.getConfig(type).findRoom(rid);
 		if (room) {
 			c.stop();
 			return resolve(room);
@@ -62,7 +63,7 @@ export const openRoom = async function(type, name) {
 		}
 
 		try {
-			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
+			const room = roomTypes.getConfig(type).findRoom(name) || await callMethod('getRoomByTypeAndName', type, name);
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (RoomManager.open(type + name).ready() !== true) {

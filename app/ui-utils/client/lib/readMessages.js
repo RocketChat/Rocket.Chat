@@ -4,7 +4,7 @@ import EventEmitter from 'wolfy87-eventemitter';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
-import { ChatSubscription, ChatMessage } from '../../../models';
+import { ChatSubscription, ChatMessage } from '../../../models/client';
 /* DEFINITIONS
 - If window loses focus user needs to scroll or click/touch some place
 - On hit ESC enable read, force read of current room and remove unread mark

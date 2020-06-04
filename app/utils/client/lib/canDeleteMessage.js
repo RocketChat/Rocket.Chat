@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { hasPermission } from '../../../authorization/client';
+import { hasPermission } from '../../../authorization/client/hasPermission';
 import { settings } from '../../../settings/client';
 
 export const canDeleteMessage = ({ rid, ts, uid }) => {

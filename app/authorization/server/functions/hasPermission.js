@@ -1,7 +1,7 @@
 import mem from 'mem';
 
 import { Permissions, Users, Subscriptions } from '../../../models/server/raw';
-import { AuthorizationUtils } from '../../lib/AuthorizationUtils';
+import { AuthorizationUtils } from '../AuthorizationUtils';
 
 const rolesHasPermission = mem(async (permission, roles) => {
 	if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {

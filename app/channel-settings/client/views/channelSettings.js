@@ -10,7 +10,7 @@ import { modal, popover, call, erase, hide, leave } from '../../../ui-utils';
 import { ChatRoom } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } from '../../../authorization';
+import { hasAllPermission, hasRole, hasAtLeastOnePermission } from '../../../authorization';
 import { t, roomTypes, RoomSettingsEnum } from '../../../utils';
 import { ChannelSettings } from '../lib/ChannelSettings';
 import { MessageTypesValues } from '../../../lib/lib/MessageTypes';
@@ -29,7 +29,7 @@ const common = {
 		});
 
 		const roomType = room && room.t;
-		return roomType && roomTypes.getConfig(roomType).canBeDeleted(hasPermission, room);
+		return roomType && roomTypes.getConfig(roomType).canBeDeleted(room);
 	},
 	canEditRoom() {
 		const { _id } = Template.instance().room;
