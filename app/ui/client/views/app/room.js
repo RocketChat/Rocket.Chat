@@ -542,12 +542,15 @@ Template.room.helpers({
 		FlowRouter.watchPathChange();
 		const tab = FlowRouter.getParam('tab');
 		const mid = FlowRouter.getParam('context');
-		const rid = Template.instance().data._id;
+		const rid = Template.currentData()._id;
 		const jump = FlowRouter.getQueryParam('jump');
 
 		if (tab !== 'thread' || !mid) {
 			return;
 		}
+
+		Template.instance().tabBar.close();
+
 		const room = Rooms.findOne({ _id: rid }, {
 			fields: {
 				t: 1,
