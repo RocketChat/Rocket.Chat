@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import objectPath from 'object-path';
@@ -5,8 +6,9 @@ import _ from 'underscore';
 
 import { BaseDb } from './_BaseDb';
 import { oplogEvents } from '../oplogEvents';
+import { IRead } from '../../lib/IRead';
 
-export class Base {
+export abstract class Base implements IRead {
 	constructor(nameOrModel, options) {
 		this._db = new BaseDb(nameOrModel, this, options);
 		this.model = this._db.model;
@@ -33,6 +35,7 @@ export class Base {
 		return '_db';
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	roleBaseQuery() {
 
 	}

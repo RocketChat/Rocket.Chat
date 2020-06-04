@@ -2,9 +2,11 @@
 import _ from 'underscore';
 import mem from 'mem';
 
+import { ISubscriptionRepository } from '../../lib/ISubscriptionRepository';
+
 import { Users } from '..';
 
-const Subscriptions = {};
+const Subscriptions: ISubscriptionRepository = {};
 
 Object.assign(Subscriptions, {
 	isUserInRole: mem(function(userId, roleName, roomId) {
