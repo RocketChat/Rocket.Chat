@@ -136,6 +136,7 @@
 		"@rocket.chat/icons": "^0.6.3-dev.23",
 		"@rocket.chat/ui-kit": "^0.6.3-dev.23",
 		"@slack/client": "^4.8.0",
+		"@types/use-subscription": "^1.0.0",
 		"adm-zip": "RocketChat/adm-zip",
 		"apn": "2.2.0",
 		"archiver": "^3.0.0",
