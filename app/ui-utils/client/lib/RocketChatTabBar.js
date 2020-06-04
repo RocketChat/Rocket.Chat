@@ -59,8 +59,8 @@ export class RocketChatTabBar {
 			$('.contextual-bar__container').scrollTop(0).find('input[type=text]:first').focus();
 		});
 
-		// const current = FlowRouter.current();
-		// FlowRouter.go(current.route.name, { ...current.params, tab: null, context: null });
+		const current = FlowRouter.current();
+		FlowRouter.go(current.route.name, { ...current.params, tab: null, context: null });
 
 		if (!button) {
 			return;

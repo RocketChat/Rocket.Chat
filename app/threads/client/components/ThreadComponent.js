@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { Modal } from '@rocket.chat/fuselage';
+import { Modal, Box } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
@@ -24,7 +24,6 @@ export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 
 
 	const style = useMemo(() => ({
-		position: 'absolute',
 		top: 0,
 		right: 0,
 		maxWidth: '855px',
@@ -32,7 +31,8 @@ export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 		overflow: 'hidden',
 		bottom: 0,
 		zIndex: 100,
-	}), [document.dir]);
+	}), [document.dir, expanded]);
+
 	const following = mainMessage.replies && mainMessage.replies.includes(uid);
 	const actionId = useMemo(() => (following ? 'unfollow' : 'follow'), [uid, mainMessage && mainMessage.replies]);
 	const button = useMemo(() => (actionId === 'follow' ? 'bell-off' : 'bell'), [actionId]);
@@ -63,9 +63,12 @@ export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 	}, [mid]);
 
 	useEffect(() => {
-		const view = mainMessage.rid && ref.current && Blaze.renderWithData(Template.thread, { mainMessage, jump, following, ...props }, ref.current);
+		let view;
+		(async () => {
+			view = mainMessage.rid && ref.current && Blaze.renderWithData(Template.thread, { mainMessage: ChatMessage.findOne({ _id: mid }) || (await APIClient.v1.get('chat.getMessage', { msgId: mid })).message, jump, following, ...props }, ref.current);
+		})();
 		return () => view && Blaze.remove(view);
-	}, [mainMessage.rid]);
+	}, [mainMessage.rid, mid]);
 
 	if (!mainMessage.rid) {
 		return <>
@@ -76,15 +79,18 @@ export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 
 	return <>
 		{expanded && <Modal.Backdrop onClick={handleClose}/> }
-		<VerticalBar rcx-thread-view width='full' style={expanded && style} display='flex' flexDirection='column' borderInlineStart='2px solid' borderInlineStartColor='neutral-200'>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='thread' />
-				<VerticalBar.Text>{headerTitle}</VerticalBar.Text>
-				<VerticalBar.Action aria-label={expandLabel} onClick={handleExpandButton} name={expandIcon}/>
-				<VerticalBar.Action aria-label={actionLabel} onClick={handleFollowButton} name={button}/>
-				<VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
-			</VerticalBar.Header>
-			<VerticalBar.Content paddingInline={0} flexShrink={1} flexGrow={1} ref={ref}/>
-		</VerticalBar>
+
+		<Box width='380px' { ...!expanded && { position: 'relative' }}>
+			<VerticalBar rcx-thread-view width='full' style={style} display='flex' flexDirection='column' position='absolute' { ...!expanded && { width: '380px' } } borderInlineStart='2px solid' borderInlineStartColor='neutral-200' >
+				<VerticalBar.Header>
+					<VerticalBar.Icon name='thread' />
+					<VerticalBar.Text>{headerTitle}</VerticalBar.Text>
+					<VerticalBar.Action aria-label={expandLabel} onClick={handleExpandButton} name={expandIcon}/>
+					<VerticalBar.Action aria-label={actionLabel} onClick={handleFollowButton} name={button}/>
+					<VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
+				</VerticalBar.Header>
+				<VerticalBar.Content paddingInline={0} flexShrink={1} flexGrow={1} ref={ref}/>
+			</VerticalBar>
+		</Box>
 	</>;
 }

@@ -64,6 +64,9 @@ Template.thread.helpers({
 	messages() {
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
+
+		console.log(tmid);
+
 		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
 	messageContext() {
