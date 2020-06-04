@@ -384,6 +384,7 @@ export class ChatMessages {
 			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
 			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
 		} catch (e) {
+			messageBoxState.set(this.input, msg);
 			return true;
 		}
 		return true;
