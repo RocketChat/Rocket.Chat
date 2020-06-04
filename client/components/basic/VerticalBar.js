@@ -3,6 +3,7 @@ import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import Page from './Page';
+import RawText from './RawText';
 
 function VerticalBar({ children, ...props }) {
 	const mobile = useDebouncedValue(useMediaQuery('(max-width: 420px)'), 50);
@@ -24,7 +25,7 @@ function VerticalBar({ children, ...props }) {
 	</Box>;
 }
 
-function VerticalBarHeader(props) {
+function VerticalBarHeader({ children, ...props }) {
 	return <Box
 		pb='x24'
 		pi='x24'
@@ -37,13 +38,17 @@ function VerticalBarHeader(props) {
 		borderBlockEndWidth='x2'
 		fontScale='s2'
 		{...props}
-	/>;
+	>
+		<Margins inline='x4'>{children}</Margins>
+	</Box>;
+}
+
+function VerticalBarIcon(props) {
+	return <Icon {...props} size='x20'/>;
 }
 
 function VerticalBarClose(props) {
-	return <Button small flexShrink={0} ghost square {...props}>
-		<Icon name='cross' size='x20' />
-	</Button>;
+	return <VerticalBarAction {...props} name='cross' />;
 }
 
 const VerticalBarContent = React.forwardRef(function VerticalBarContent(props, ref) {
@@ -56,8 +61,12 @@ const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScroll
 	</Page.ScrollableContent>;
 });
 
-export function VerticalBarButton(props) {
+function VerticalBarButton(props) {
 	return <Button small square flexShrink={0} ghost {...props}/>;
+}
+
+function VerticalBarAction({ name, ...props }) {
+	return <VerticalBarButton small square flexShrink={0} ghost {...props}><VerticalBarIcon name={name}/></VerticalBarButton>;
 }
 
 function VerticalBarSkeleton(props) {
@@ -70,11 +79,18 @@ function VerticalBarSkeleton(props) {
 	</VerticalBar>;
 }
 
-VerticalBar.Header = VerticalBarHeader;
-VerticalBar.Close = VerticalBarClose;
-VerticalBar.Content = VerticalBarContent;
-VerticalBar.ScrollableContent = VerticalBarScrollableContent;
-VerticalBar.Skeleton = VerticalBarSkeleton;
-VerticalBar.Button = VerticalBarButton;
+function VerticalBarText({ children, ...props }) {
+	return <Box flexShrink={1} flexGrow={1} withTruncatedText {...props}><RawText>{children}</RawText></Box>;
+}
+
+VerticalBar.Icon = React.memo(VerticalBarIcon);
+VerticalBar.Text = React.memo(VerticalBarText);
+VerticalBar.Action = React.memo(VerticalBarAction);
+VerticalBar.Header = React.memo(VerticalBarHeader);
+VerticalBar.Close = React.memo(VerticalBarClose);
+VerticalBar.Content = React.memo(VerticalBarContent);
+VerticalBar.ScrollableContent = React.memo(VerticalBarScrollableContent);
+VerticalBar.Skeleton = React.memo(VerticalBarSkeleton);
+VerticalBar.Button = React.memo(VerticalBarButton);
 
 export default VerticalBar;

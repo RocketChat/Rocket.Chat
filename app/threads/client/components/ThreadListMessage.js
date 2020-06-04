@@ -53,7 +53,7 @@ export default function ThreadListMessage({ _id, msg, following, username, ts, r
 			</Box>
 		</Container>
 		<Container alignItems='center's>
-			<Button data-following={following} data-id={_id} onClick={handleFollowButton} aria-label={actionLabel} small square ghost> <Icon name={button} size='x16'/> </Button>
+			<Button small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} aria-label={actionLabel}> <Icon name={button} size='x16'/> </Button>
 			{
 				(mention && <NotificationStatusMe mb='x24'/>)
 				|| (all && <NotificationStatusAll mb='x24'/>)
@@ -108,5 +108,5 @@ const style = {
 };
 
 function Body(props) {
-	return <Box rcx-message__body flexShrink={1} rcx-message__body style={style} height='34px' {...props}/>;
+	return <Box rcx-message__body flexShrink={1} style={style} height='34px' {...props}/>;
 }

@@ -145,11 +145,11 @@
 						{{> messageBox messageboxData}}
 					</footer>
 				</div>
-				{{#with flexData}}
-					{{> contextualBar}}
-				{{/with}}
 				{{# with openedThread}}
 					{{> ThreadComponent}}
+				{{/with}}
+				{{#with flexData}}
+					{{> contextualBar}}
 				{{/with}}
 			</div>
 		</section>

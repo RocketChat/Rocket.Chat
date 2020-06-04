@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { Modal, Icon, Box, Margins } from '@rocket.chat/fuselage';
+import { Modal } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
@@ -11,12 +11,13 @@ import { roomTypes, APIClient } from '../../../utils/client';
 import { call, normalizeThreadMessage } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import RawText from '../../../../client/components/basic/RawText';
 
-export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
+export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 	const t = useTranslation();
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 	const [mainMessage, setMainMessage] = useState({});
+
+	const [expanded, setExpand] = useState(false);
 
 	const ref = useRef();
 	const uid = useMemo(() => Meteor.userId(), []);
@@ -37,6 +38,13 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	const button = useMemo(() => (actionId === 'follow' ? 'bell-off' : 'bell'), [actionId]);
 	const actionLabel = t(actionId === 'follow' ? 'Not_Following' : 'Following');
 	const headerTitle = useMemo(() => normalizeThreadMessage(mainMessage), [mainMessage._updatedAt]);
+
+	const expandLabel = expanded ? 'collapse' : 'expand';
+	const expandIcon = expanded ? 'arrow-collapse' : 'arrow-expand';
+
+	const handleExpandButton = useCallback(() => {
+		setExpand(!expanded);
+	}, [expanded]);
 
 	const handleFollowButton = useCallback(() => call(actionId === 'follow' ? 'followMessage' : 'unfollowMessage', { mid }), [actionId]);
 	const handleClose = useCallback(() => {
@@ -61,20 +69,20 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 
 	if (!mainMessage.rid) {
 		return <>
-			<Modal.Backdrop onClick={handleClose}/>
-			<VerticalBar.Skeleton width='full' style={style}/>
+			{expanded && <Modal.Backdrop onClick={handleClose}/> }
+			<VerticalBar.Skeleton width='full' style={expanded && style}/>
 		</>;
 	}
 
 	return <>
-		<Modal.Backdrop onClick={handleClose}/>
-		<VerticalBar width='full' style={style} display='flex' flexDirection='column'>
+		{expanded && <Modal.Backdrop onClick={handleClose}/> }
+		<VerticalBar rcx-thread-view width='full' style={expanded && style} display='flex' flexDirection='column' borderInlineStart='2px solid' borderInlineStartColor='neutral-200'>
 			<VerticalBar.Header>
-				<Margins inline='x4'>
-					<Icon name='thread' size='x20'/>
-					<Box flexShrink={1} flexGrow={1} withTruncatedText><RawText>{headerTitle}</RawText></Box>
-					<VerticalBar.Button onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></VerticalBar.Button><VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
-				</Margins>
+				<VerticalBar.Icon name='thread' />
+				<VerticalBar.Text>{headerTitle}</VerticalBar.Text>
+				<VerticalBar.Action aria-label={expandLabel} onClick={handleExpandButton} name={expandIcon}/>
+				<VerticalBar.Action aria-label={actionLabel} onClick={handleFollowButton} name={button}/>
+				<VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
 			</VerticalBar.Header>
 			<VerticalBar.Content paddingInline={0} flexShrink={1} flexGrow={1} ref={ref}/>
 		</VerticalBar>

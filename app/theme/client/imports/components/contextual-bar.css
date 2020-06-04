@@ -11,7 +11,8 @@
 	height: 100%;
 
 	background: var(--color-white);
-	box-shadow: 0 3px 1px 2px rgba(31, 35, 41, 0.08);
+
+	border-inline-start: 2px solid var(--color-gray-lightest);
 
 	&-wrap {
 		position: relative;

@@ -23,13 +23,6 @@ import ThreadListMessage, { MessageSkeleton } from './ThreadListMessage';
 import useUserSubscription from '../hooks/useUserSubscription';
 import useUserRoom from '../hooks/useUserRoom';
 
-const borderBottom = css`{
-	border-bottom: 2px solid #F2F3F5;
-}`;
-
-const borderInlineStart = css`{
-	border-inline-start: 2px solid #F2F3F5;
-}`;
 
 function clickableItem(WrappedComponent) {
 	const clickable = css`{
@@ -205,14 +198,14 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 	const isItemLoaded = (index) => index < threads.length;
 	const { ref, contentBoxSize: { inlineSize = 380, blockSize = 750 } = {} } = useResizeObserver();
 
-	return <VerticalBar className={['contextual-bar', borderInlineStart]}>
+	return <VerticalBar className={'contextual-bar'} borderInlineStart='2px solid' borderInlineStartColor='neutral-200'>
 		<VerticalBar.Header>
 			<Icon name='thread' size='x20'/>
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><RawText>{t('Threads')}</RawText></Box>
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
-			<Box display='flex' flexDirection='row' p='x24' className={borderBottom}>
+			<Box display='flex' flexDirection='row' p='x24' borderBlockEnd='2px solid' borderBlockEndColor='neutral-200'>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x8'>
 					<Margins inline='x8'>
 						<TextInput placeholder={t('Search_Messages')} value={text.value} onChange={text.set} addon={<Icon name='magnifier' size='x20'/>}/>
