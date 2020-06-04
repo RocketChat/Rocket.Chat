@@ -11,7 +11,7 @@ import './app/livechatCustomFieldForm';
 import './app/livechatDepartmentForm';
 import './app/livechatDepartments';
 import './app/livechatInstallation';
-import './app/livechatOfficeHours';
+import './app/livechatBusinessHours';
 import './app/livechatTriggers';
 import './app/livechatTriggersForm';
 import './app/livechatManagers';

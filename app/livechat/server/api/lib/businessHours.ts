@@ -1,12 +1,12 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatBusinessHours } from '../../../../models/server/raw';
+import { businessHourManager } from '../../business-hour';
 
-export async function findLivechatOfficeHours({ userId }) {
+export async function findLivechatBusinessHour(userId: string, id?: string) {
 	if (!await hasPermissionAsync(userId, 'view-livechat-officeHours')) {
 		throw new Error('error-not-authorized');
 	}
 
 	return {
-		officeHours: (await LivechatBusinessHours.findOneDefaultBusinessHour()).workHours,
+		businessHour: await businessHourManager.getBusinessHour(id),
 	};
 }

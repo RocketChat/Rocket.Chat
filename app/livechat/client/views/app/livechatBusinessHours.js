@@ -7,11 +7,11 @@ import moment from 'moment';
 
 import { t, handleError, APIClient } from '../../../../utils/client';
 import { settings } from '../../../../settings';
-import './livechatOfficeHours.html';
+import './livechatBusinessHours.html';
 
-Template.livechatOfficeHours.helpers({
+Template.livechatBusinessHours.helpers({
 	days() {
-		return Template.instance().officeHours.get();
+		return Template.instance().businessHour.get().workHours;
 	},
 	startName(day) {
 		return `${ day.day }_start`;
@@ -34,52 +34,54 @@ Template.livechatOfficeHours.helpers({
 	open(day) {
 		return Template.instance().dayVars[day.day].open.get();
 	},
-	enableOfficeHoursTrueChecked() {
-		if (Template.instance().enableOfficeHours.get()) {
+	enableBusinessHoursTrueChecked() {
+		if (Template.instance().enableBusinessHours.get()) {
 			return 'checked';
 		}
 	},
-	enableOfficeHoursFalseChecked() {
-		if (!Template.instance().enableOfficeHours.get()) {
+	enableBusinessHoursFalseChecked() {
+		if (!Template.instance().enableBusinessHours.get()) {
 			return 'checked';
 		}
 	},
-	allowAgentsOnlineOutOfficeHoursTrueChecked() {
-		if (Template.instance().allowAgentsOnlineOutOfficeHours.get()) {
+	allowAgentsOnlineOutBusinessHoursTrueChecked() {
+		if (Template.instance().allowAgentsOnlineOutBusinessHours.get()) {
 			return 'checked';
 		}
 	},
-	allowAgentsOnlineOutOfficeHoursFalseChecked() {
-		if (!Template.instance().allowAgentsOnlineOutOfficeHours.get()) {
+	allowAgentsOnlineOutBusinessHoursFalseChecked() {
+		if (!Template.instance().allowAgentsOnlineOutBusinessHours.get()) {
 			return 'checked';
 		}
 	},
 });
 
-Template.livechatOfficeHours.events({
+const splitDayAndPeriod = (value) => value.split('_');
+
+Template.livechatBusinessHours.events({
 	'change .preview-settings, keydown .preview-settings'(e, instance) {
-		const temp = e.currentTarget.name.split('_');
+		const [day, period] = splitDayAndPeriod(e.currentTarget.name);
 
 		const newTime = moment(e.currentTarget.value, 'HH:mm');
 
 		// check if start and stop do not cross
-		if (temp[1] === 'start') {
-			if (newTime.isSameOrBefore(moment(instance.dayVars[temp[0]].finish.get(), 'HH:mm'))) {
-				instance.dayVars[temp[0]].start.set(e.currentTarget.value);
+		if (period === 'start') {
+			if (newTime.isSameOrBefore(moment(instance.dayVars[day].finish.get(), 'HH:mm'))) {
+				instance.dayVars[day].start.set(e.currentTarget.value);
 			} else {
-				e.currentTarget.value = instance.dayVars[temp[0]].start.get();
+				e.currentTarget.value = instance.dayVars[day].start.get();
 			}
-		} else if (temp[1] === 'finish') {
-			if (newTime.isSameOrAfter(moment(instance.dayVars[temp[0]].start.get(), 'HH:mm'))) {
-				instance.dayVars[temp[0]].finish.set(e.currentTarget.value);
+		} else if (period === 'finish') {
+			if (newTime.isSameOrAfter(moment(instance.dayVars[day].start.get(), 'HH:mm'))) {
+				instance.dayVars[day].finish.set(e.currentTarget.value);
 			} else {
-				e.currentTarget.value = instance.dayVars[temp[0]].finish.get();
+				e.currentTarget.value = instance.dayVars[day].finish.get();
 			}
 		}
 	},
 	'change .dayOpenCheck input'(e, instance) {
-		const temp = e.currentTarget.name.split('_');
-		instance.dayVars[temp[0]][temp[1]].set(e.target.checked);
+		const [day, period] = splitDayAndPeriod(e.currentTarget.name);
+		instance.dayVars[day][period].set(e.target.checked);
 	},
 	'change .preview-settings, keyup .preview-settings'(e, instance) {
 		let { value } = e.currentTarget;
@@ -92,23 +94,29 @@ Template.livechatOfficeHours.events({
 		e.preventDefault();
 
 		// convert all times to utc then update them in db
+		const days = [];
 		for (const d in instance.dayVars) {
 			if (instance.dayVars.hasOwnProperty(d)) {
 				const day = instance.dayVars[d];
-				const start_utc = moment(day.start.get(), 'HH:mm').utc().format('HH:mm');
-				const finish_utc = moment(day.finish.get(), 'HH:mm').utc().format('HH:mm');
-
-				Meteor.call('livechat:saveOfficeHours', d, start_utc, finish_utc, day.open.get(), function(err /* ,result*/) {
-					if (err) {
-						return handleError(err);
-					}
+				const start = moment(day.start.get(), 'HH:mm').utc().format('HH:mm');
+				const finish = moment(day.finish.get(), 'HH:mm').utc().format('HH:mm');
+				days.push({
+					day: d,
+					start,
+					finish,
+					open: day.open.get(),
 				});
 			}
 		}
+		Meteor.call('livechat:saveBusinessHour', { ...instance.businessHour.get(), workHours: days }, function(err /* ,result*/) {
+			if (err) {
+				return handleError(err);
+			}
+		});
 
-		settings.set('Livechat_allow_online_agents_outside_office_hours', instance.allowAgentsOnlineOutOfficeHours.get());
+		settings.set('Livechat_allow_online_agents_outside_office_hours', instance.allowAgentsOnlineOutBusinessHours.get());
 
-		settings.set('Livechat_enable_office_hours', instance.enableOfficeHours.get(), (err/* , success*/) => {
+		settings.set('Livechat_enable_office_hours', instance.enableBusinessHours.get(), (err/* , success*/) => {
 			if (err) {
 				return handleError(err);
 			}
@@ -117,7 +125,7 @@ Template.livechatOfficeHours.events({
 	},
 });
 
-Template.livechatOfficeHours.onCreated(async function() {
+Template.livechatBusinessHours.onCreated(async function() {
 	this.dayVars = {
 		Monday: {
 			start: new ReactiveVar('08:00'),
@@ -155,20 +163,20 @@ Template.livechatOfficeHours.onCreated(async function() {
 			open: new ReactiveVar(false),
 		},
 	};
-	this.officeHours = new ReactiveVar([]);
-	this.enableOfficeHours = new ReactiveVar();
-	this.allowAgentsOnlineOutOfficeHours = new ReactiveVar();
+	this.businessHour = new ReactiveVar({});
+	this.enableBusinessHours = new ReactiveVar();
+	this.allowAgentsOnlineOutBusinessHours = new ReactiveVar();
 
-	const { officeHours } = await APIClient.v1.get('livechat/office-hours');
-	this.officeHours.set(officeHours);
-	officeHours.forEach((d) => {
+	const { businessHour } = await APIClient.v1.get('livechat/business-hour');
+	this.businessHour.set(businessHour);
+	businessHour.workHours.forEach((d) => {
 		this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
 		this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
 		this.dayVars[d.day].open.set(d.open);
 	});
 
 	this.autorun(() => {
-		this.enableOfficeHours.set(settings.get('Livechat_enable_office_hours'));
-		this.allowAgentsOnlineOutOfficeHours.set(settings.get('Livechat_allow_online_agents_outside_office_hours'));
+		this.enableBusinessHours.set(settings.get('Livechat_enable_office_hours'));
+		this.allowAgentsOnlineOutBusinessHours.set(settings.get('Livechat_allow_online_agents_outside_office_hours'));
 	});
 });

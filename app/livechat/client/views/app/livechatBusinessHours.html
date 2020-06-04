@@ -1,21 +1,21 @@
-<template name="livechatOfficeHours">
+<template name="livechatBusinessHours">
 	{{#requiresPermission 'view-livechat-officeHours'}}
 		<div class="livechat-officeHours-div">
 			<form class="rocket-form" id="officeHoursForm">
 
 				<fieldset>
 					<legend>{{_ "Office_hours_enabled"}}</legend>
-					<input type="radio" class="preview-settings" name="enableOfficeHours" id="enableOfficeHoursTrue" checked="{{enableOfficeHoursTrueChecked}}" value="true">
+					<input type="radio" class="preview-settings" name="enableOfficeHours" id="enableOfficeHoursTrue" checked="{{enableBusinessHoursTrueChecked}}" value="true">
 					<label for="displayOfflineFormTrue">{{_ "True"}}</label>
-					<input type="radio" class="preview-settings" name="enableOfficeHours" id="enableOfficeHoursFalse" checked="{{enableOfficeHoursFalseChecked}}" value="false">
+					<input type="radio" class="preview-settings" name="enableOfficeHours" id="enableOfficeHoursFalse" checked="{{enableBusinessHoursFalseChecked}}" value="false">
 					<label for="displayOfflineFormFalse">{{_ "False"}}</label>
 				</fieldset>
 
 				<fieldset>
 					<legend>{{_ "Allow_Online_Agents_Outside_Office_Hours"}}</legend>
-					<input type="radio" class="preview-settings" name="allowAgentsOnlineOutOfficeHours" id="allowAgentsOnlineOutOfficeHoursTrue" checked="{{allowAgentsOnlineOutOfficeHoursTrueChecked}}" value="true">
+					<input type="radio" class="preview-settings" name="allowAgentsOnlineOutOfficeHours" id="allowAgentsOnlineOutOfficeHoursTrue" checked="{{allowAgentsOnlineOutBusinessHoursTrueChecked}}" value="true">
 					<label for="displayOfflineFormTrue">{{_ "True"}}</label>
-					<input type="radio" class="preview-settings" name="allowAgentsOnlineOutOfficeHours" id="allowAgentsOnlineOutOfficeHoursFalse" checked="{{allowAgentsOnlineOutOfficeHoursFalseChecked}}" value="false">
+					<input type="radio" class="preview-settings" name="allowAgentsOnlineOutOfficeHours" id="allowAgentsOnlineOutOfficeHoursFalse" checked="{{allowAgentsOnlineOutBusinessHoursFalseChecked}}" value="false">
 					<label for="displayOfflineFormFalse">{{_ "False"}}</label>
 				</fieldset>
 
