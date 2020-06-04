@@ -1,30 +1,34 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
-import { PrivateSettingsCachedCollection } from '../PrivateSettingsCachedCollection';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { settings } from '../../../app/settings';
-
+import { useTranslation } from '../../contexts/TranslationContext';
+import { PrivateSettingsCachedCollection } from '../PrivateSettingsCachedCollection';
 
 export const useSettingsGroupsFiltered = (textFilter) => {
 	const t = useTranslation();
+
 	const [collection, setCollection] = useState(settings.collectionPrivate);
+
+	const [loading, setLoading] = useState(true);
 
 	const filter = useDebouncedValue(textFilter, 400);
 
 	useEffect(() => {
-		(async function initCollection() {
+		(async function getCollection() {
 			if (!settings.cachedCollectionPrivate) {
 				settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection();
 				settings.collectionPrivate = settings.cachedCollectionPrivate.collection;
 				await settings.cachedCollectionPrivate.init();
 			}
 			setCollection(settings.collectionPrivate);
+			setLoading(false);
 		}());
 	}, []);
 
 	return useMemo(() => {
-		if (!collection) { return []; }
+		if (loading) { return [[], loading]; }
+
 		const query = {
 			type: 'group',
 		};
@@ -35,10 +39,10 @@ export const useSettingsGroupsFiltered = (textFilter) => {
 			const records = collection.find().fetch();
 			records.forEach(function(record) {
 				if (filterRegex.test(t(record.i18nLabel || record._id))) {
-					groups.push(record.group || record._id);
+					!groups.includes(record.group || record._id) && groups.push(record.group || record._id);
 				}
 			});
-			// groups = _.unique(groups);
+
 			if (groups.length > 0) {
 				query._id = {
 					$in: groups,
@@ -47,17 +51,14 @@ export const useSettingsGroupsFiltered = (textFilter) => {
 		}
 
 		if (filter && groups.length === 0) {
-			return [];
+			return [[], loading];
 		}
 
-		return collection.find(query)
+		const result = collection.find(query)
 			.fetch()
-			.map((item) => ({ ...item, name: t(item.i18nLabel || item._id) }))
-			.sort(({ name: a }, { name: b }) => (a.toLowerCase() >= b.toLowerCase() ? 1 : -1))
-			.map(({ _id, name }) => ({
-				name,
-				href: 'admin',
-				pathGroup: _id,
-			}));
-	}, [filter, collection]);
+			.map((item) => ({ name: t(item.i18nLabel || item._id), href: 'admin', pathGroup: item._id }))
+			.sort(({ name: a }, { name: b }) => (a.toLowerCase() >= b.toLowerCase() ? 1 : -1));
+
+		return [result, loading];
+	}, [filter, collection, loading]);
 };

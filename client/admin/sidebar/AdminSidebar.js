@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import { Box, Button, Icon, SearchInput, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, SearchInput, Scrollable, Skeleton } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
@@ -75,7 +75,7 @@ const AdminSidebarSettings = ({ currentPath }) => {
 	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
 
-	const groups = useSettingsGroupsFiltered(filter);
+	const [groups, loading] = useSettingsGroupsFiltered(filter);
 
 	const showGroups = !!groups.length;
 
@@ -85,8 +85,9 @@ const AdminSidebarSettings = ({ currentPath }) => {
 			<Box is={SearchInput} border='0' value={filter} onChange={handleChange} addon={<Icon name='magnifier' size='x20'/>}/>
 		</Box>
 		<Box is='ul' display='flex' flexDirection='column'>
-			{showGroups && <SidebarItemsAssembler items={groups} currentPath={currentPath}/>}
-			{!showGroups && <Box pi='x28' mb='x4' color='hint'>{t('Nothing_found')}</Box>}
+			{loading && <Skeleton/>}
+			{!loading && showGroups && <SidebarItemsAssembler items={groups} currentPath={currentPath}/>}
+			{!loading && !showGroups && <Box pi='x28' mb='x4' color='hint'>{t('Nothing_found')}</Box>}
 		</Box>
 	</Box>;
 };
@@ -108,13 +109,13 @@ export default function AdminSidebar() {
 	const currentRoute = useCurrentRoute();
 	const currentPath = useRoutePath(...currentRoute);
 
-	return <Box display='flex' flexDirection='column' h='full' flexGrow={1} flexShrink={1}>
+	return <Box display='flex' flexDirection='column' h='100vh'>
 		<Box is='header' padding='x24' display='flex' flexDirection='row' justifyContent='space-between'>
 			<Box fontScale='s1'>{t('Administration')}</Box>
 			<Button square small onClick={closeAdminFlex}><Icon name='cross' size='x16'/></Button>
 		</Box>
 		<Scrollable>
-			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1}>
+			<Box display='flex' flexDirection='column' h='full'>
 				<AdminSidebarPages currentPath={currentPath}/>
 				{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}
 			</Box>
