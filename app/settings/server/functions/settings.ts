@@ -76,6 +76,7 @@ export interface ISettingAddOptions {
 	meteorSettingsValue?: SettingValue;
 	value?: SettingValue;
 	ts?: Date;
+	public?: boolean;
 }
 
 export interface ISettingAddGroupOptions {

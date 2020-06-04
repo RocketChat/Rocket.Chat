@@ -74,3 +74,4 @@ export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.mo
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection());
 export const Statistics = new StatisticsRaw(StatisticsModel.model.rawCollection());
 export const NotificationQueue = new NotificationQueueRaw(NotificationQueueModel.model.rawCollection());
+export * from './LivechatBusinessHours';
