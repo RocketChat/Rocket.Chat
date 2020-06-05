@@ -8,7 +8,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:getDepartmentForwardRestrictions' });
 		}
 
-		const restrictions = callbacks.run('livechat.onLoadForwardDepartmentRestrictions', departmentId);
-		return typeof restrictions === 'object' ? restrictions : {};
+		const options = callbacks.run('livechat.onLoadForwardDepartmentRestrictions', { departmentId });
+		const { restrictions } = options;
+
+		return restrictions;
 	},
 });
