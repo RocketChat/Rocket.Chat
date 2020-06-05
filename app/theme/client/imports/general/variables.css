@@ -324,13 +324,13 @@
 	/*
 	* Mention link
 	*/
-	--mention-link-radius: 10px;
-	--mention-link-background: var(--color-lighter-blue);
-	--mention-link-text-color: var(--color-dark-blue);
-	--mention-link-me-background: var(--color-dark-blue);
-	--mention-link-me-text-color: var(--color-white);
-	--mention-link-group-background: var(--rc-color-primary-dark);
-	--mention-link-group-text-color: var(--color-white);
+	--mention-link-radius: 4px;
+	--mention-link-background: #EEEFF1;
+	--mention-link-text-color: #2F343D;
+	--mention-link-me-background:#FFE9EC;
+	--mention-link-me-text-color: var(--color-red);
+	--mention-link-group-background: #FDE8D7;
+	--mention-link-group-text-color: #F38C39;
 
 	/*
 	* Message box
