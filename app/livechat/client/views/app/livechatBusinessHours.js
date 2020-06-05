@@ -6,7 +6,6 @@ import toastr from 'toastr';
 import moment from 'moment';
 
 import { t, handleError, APIClient } from '../../../../utils/client';
-import { settings } from '../../../../settings';
 import './livechatBusinessHours.html';
 
 Template.livechatBusinessHours.helpers({
@@ -33,16 +32,6 @@ Template.livechatBusinessHours.helpers({
 	},
 	open(day) {
 		return Template.instance().dayVars[day.day].open.get();
-	},
-	enableBusinessHoursTrueChecked() {
-		if (Template.instance().enableBusinessHours.get()) {
-			return 'checked';
-		}
-	},
-	enableBusinessHoursFalseChecked() {
-		if (!Template.instance().enableBusinessHours.get()) {
-			return 'checked';
-		}
 	},
 });
 
@@ -102,13 +91,7 @@ Template.livechatBusinessHours.events({
 			if (err) {
 				return handleError(err);
 			}
-		});
-
-		settings.set('Livechat_enable_business_hours', instance.enableBusinessHours.get(), (err/* , success*/) => {
-			if (err) {
-				return handleError(err);
-			}
-			toastr.success(t('Office_hours_updated'));
+			toastr.success(t('Business_hours_updated'));
 		});
 	},
 });
@@ -152,7 +135,6 @@ Template.livechatBusinessHours.onCreated(async function() {
 		},
 	};
 	this.businessHour = new ReactiveVar({});
-	this.enableBusinessHours = new ReactiveVar();
 
 	const { businessHour } = await APIClient.v1.get('livechat/business-hour');
 	this.businessHour.set(businessHour);
@@ -160,9 +142,5 @@ Template.livechatBusinessHours.onCreated(async function() {
 		this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
 		this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
 		this.dayVars[d.day].open.set(d.open);
-	});
-
-	this.autorun(() => {
-		this.enableBusinessHours.set(settings.get('Livechat_enable_business_hours'));
 	});
 });
