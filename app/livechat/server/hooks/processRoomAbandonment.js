@@ -2,10 +2,11 @@ import moment from 'moment';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { LivechatRooms, Messages, LivechatOfficeHour } from '../../../models';
+import { LivechatRooms, Messages } from '../../../models';
+import { businessHourManager } from '../business-hour';
 
 const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) => moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
-const getOfficeHoursDictionary = () => LivechatOfficeHour.find().fetch().reduce((acc, day) => {
+const getOfficeHoursDictionary = async () => (await businessHourManager.getBusinessHour()).workHours.reduce((acc, day) => {
 	acc[day.day] = {
 		start: day.start,
 		finish: day.finish,
@@ -13,13 +14,14 @@ const getOfficeHoursDictionary = () => LivechatOfficeHour.find().fetch().reduce(
 	};
 	return acc;
 }, {});
-const getSecondsSinceLastAgentResponse = (room, agentLastMessage) => {
+
+const getSecondsSinceLastAgentResponse = async (room, agentLastMessage) => {
 	if (!settings.get('Livechat_enable_business_hours')) {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
 
 	let totalSeconds = 0;
-	const officeDays = getOfficeHoursDictionary();
+	const officeDays = await getOfficeHoursDictionary();
 	const endOfConversation = moment(new Date(room.closedAt));
 	const startOfInactivity = moment(new Date(agentLastMessage.ts));
 	const daysOfInactivity = endOfConversation.clone().startOf('day').diff(startOfInactivity.clone().startOf('day'), 'days');
@@ -47,7 +49,7 @@ const getSecondsSinceLastAgentResponse = (room, agentLastMessage) => {
 	return totalSeconds;
 };
 
-callbacks.add('livechat.closeRoom', (room) => {
+callbacks.add('livechat.closeRoom', async (room) => {
 	const closedByAgent = room.closer !== 'visitor';
 	const wasTheLastMessageSentByAgent = room.lastMessage && !room.lastMessage.token;
 	if (!closedByAgent || !wasTheLastMessageSentByAgent) {
@@ -57,6 +59,6 @@ callbacks.add('livechat.closeRoom', (room) => {
 	if (!agentLastMessage) {
 		return;
 	}
-	const secondsSinceLastAgentResponse = getSecondsSinceLastAgentResponse(room, agentLastMessage);
+	const secondsSinceLastAgentResponse = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
 	LivechatRooms.setVisitorInactivityInSecondsById(room._id, secondsSinceLastAgentResponse);
 }, callbacks.priority.HIGH, 'process-room-abandonment');
