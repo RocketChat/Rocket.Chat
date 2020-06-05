@@ -317,20 +317,20 @@
 	--badge-radius: 12px;
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--rc-color-primary-dark);
-	--badge-unread-background: var(--rc-color-primary-dark);
-	--badge-user-mentions-background: var(--color-dark-blue);
-	--badge-group-mentions-background: var(--rc-color-primary-dark);
+	--badge-unread-background: var(--color-blue);
+	--badge-user-mentions-background: var(--color-red);
+	--badge-group-mentions-background: var(--color-orange);
 
 	/*
 	* Mention link
 	*/
 	--mention-link-radius: 4px;
-	--mention-link-background: #EEEFF1;
-	--mention-link-text-color: #2F343D;
-	--mention-link-me-background:#FFE9EC;
+	--mention-link-background: #eeeff1;
+	--mention-link-text-color: #2f343d;
+	--mention-link-me-background: #ffe9ec;
 	--mention-link-me-text-color: var(--color-red);
-	--mention-link-group-background: #FDE8D7;
-	--mention-link-group-text-color: #F38C39;
+	--mention-link-group-background: #fde8d7;
+	--mention-link-group-text-color: var(--color-orange);
 
 	/*
 	* Message box
