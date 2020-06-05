@@ -5,7 +5,7 @@ import { settings } from '../../../settings';
 import { Users, LivechatOfficeHour } from '../../../models';
 
 Meteor.setInterval(function() {
-	if (settings.get('Livechat_enable_office_hours')) {
+	if (settings.get('Livechat_enable_business_hours')) {
 		if (LivechatOfficeHour.isOpeningTime()) {
 			Users.openOffice();
 		} else if (LivechatOfficeHour.isClosingTime()) {

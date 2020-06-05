@@ -85,7 +85,6 @@ import './api';
 import './api/rest';
 import './externalFrame';
 import './lib/messageTypes';
-import './business-hour/settings';
 import './methods/saveBusinessHour';
 
 export { Livechat } from './lib/Livechat';

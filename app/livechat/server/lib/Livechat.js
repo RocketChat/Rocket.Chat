@@ -1053,11 +1053,11 @@ export const Livechat = {
 	},
 
 	allowAgentChangeServiceStatus(statusLivechat) {
-		if (!settings.get('Livechat_enable_office_hours')) {
+		if (!settings.get('Livechat_enable_business_hours')) {
 			return true;
 		}
 
-		if (settings.get('Livechat_allow_online_agents_outside_office_hours')) {
+		if (settings.get('Livechat_allow_online_agents_outside_business_hours')) {
 			return true;
 		}
 

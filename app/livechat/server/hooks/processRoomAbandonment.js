@@ -14,7 +14,7 @@ const getOfficeHoursDictionary = () => LivechatOfficeHour.find().fetch().reduce(
 	return acc;
 }, {});
 const getSecondsSinceLastAgentResponse = (room, agentLastMessage) => {
-	if (!settings.get('Livechat_enable_office_hours')) {
+	if (!settings.get('Livechat_enable_business_hours')) {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
 

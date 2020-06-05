@@ -114,9 +114,9 @@ Template.livechatBusinessHours.events({
 			}
 		});
 
-		settings.set('Livechat_allow_online_agents_outside_office_hours', instance.allowAgentsOnlineOutBusinessHours.get());
+		settings.set('Livechat_allow_online_agents_outside_business_hours', instance.allowAgentsOnlineOutBusinessHours.get());
 
-		settings.set('Livechat_enable_office_hours', instance.enableBusinessHours.get(), (err/* , success*/) => {
+		settings.set('Livechat_enable_business_hours', instance.enableBusinessHours.get(), (err/* , success*/) => {
 			if (err) {
 				return handleError(err);
 			}
@@ -176,7 +176,7 @@ Template.livechatBusinessHours.onCreated(async function() {
 	});
 
 	this.autorun(() => {
-		this.enableBusinessHours.set(settings.get('Livechat_enable_office_hours'));
-		this.allowAgentsOnlineOutBusinessHours.set(settings.get('Livechat_allow_online_agents_outside_office_hours'));
+		this.enableBusinessHours.set(settings.get('Livechat_enable_business_hours'));
+		this.allowAgentsOnlineOutBusinessHours.set(settings.get('Livechat_allow_online_agents_outside_business_hours'));
 	});
 });
