@@ -304,14 +304,6 @@ Meteor.startup(function() {
 		i18nLabel: 'Business_hours_enabled',
 	});
 
-	settings.add('Livechat_allow_online_agents_outside_business_hours', true, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		public: true,
-		i18nLabel: 'Allow_Online_Agents_Outside_Business_Hours',
-		enableQuery: { _id: 'Livechat_enable_business_hours', value: true },
-	});
-
 	settings.add('Livechat_continuous_sound_notification_new_livechat_room', false, {
 		type: 'boolean',
 		group: 'Omnichannel',

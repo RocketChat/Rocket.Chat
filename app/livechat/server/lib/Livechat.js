@@ -1057,10 +1057,6 @@ export const Livechat = {
 			return true;
 		}
 
-		if (settings.get('Livechat_allow_online_agents_outside_business_hours')) {
-			return true;
-		}
-
 		if (statusLivechat !== 'available') {
 			return true;
 		}
