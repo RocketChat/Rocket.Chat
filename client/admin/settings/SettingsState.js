@@ -208,10 +208,10 @@ export function SettingsState({ children }) {
 }
 
 export {
-	useGroup,
-	useSection,
-	useSettingActions,
-	useSettingDisabledState,
-	useSectionChangedState,
-	useSetting,
+	usePrivateSettingsGroup as useGroup,
+	usePrivateSettingsSection as useSection,
+	usePrivateSettingActions as useSettingActions,
+	usePrivateSettingDisabledState as useSettingDisabledState,
+	usePrivateSettingsSectionChangedState as useSectionChangedState,
+	usePrivateSetting as useSetting,
 } from '../../contexts/PrivateSettingsContext';

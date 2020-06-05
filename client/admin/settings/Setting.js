@@ -2,6 +2,7 @@ import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/
 import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../components/basic/MarkdownText';
+import { usePrivateSetting } from '../../contexts/PrivateSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
@@ -18,7 +19,6 @@ import { CodeSettingInput } from './inputs/CodeSettingInput';
 import { ActionSettingInput } from './inputs/ActionSettingInput';
 import { AssetSettingInput } from './inputs/AssetSettingInput';
 import { RoomPickSettingInput } from './inputs/RoomPickSettingInput';
-import { useSetting } from './SettingsState';
 
 export const MemoizedSetting = memo(function MemoizedSetting({
 	type,
@@ -70,7 +70,7 @@ export function Setting({ settingId, sectionChanged }) {
 		update,
 		reset,
 		...setting
-	} = useSetting(settingId);
+	} = usePrivateSetting(settingId);
 
 
 	const t = useTranslation();

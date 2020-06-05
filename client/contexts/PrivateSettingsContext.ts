@@ -1,6 +1,6 @@
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Tracker } from 'meteor/tracker';
-import { createContext, createRef, useContext, RefObject, useState, useEffect, useLayoutEffect } from 'react';
+import { createContext, useContext, RefObject, useState, useEffect, useLayoutEffect } from 'react';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useBatchSettingsDispatch } from './SettingsContext';
@@ -8,39 +8,60 @@ import { useToastMessageDispatch } from './ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from './TranslationContext';
 import { useUser } from './UserContext';
 
-type PrivateSettingsState = {
-	settings: any[];
-	persistedSettings: any[];
+type Setting = object & {
+	_id: unknown;
+	type: string;
+	blocked: boolean;
+	enableQuery: unknown;
+	group: string;
+	section: string;
+	changed: boolean;
+	value: unknown;
+	packageValue: unknown;
+	packageEditor: unknown;
+	editor: unknown;
+	disabled?: boolean;
+	update?: () => void;
+	reset?: () => void;
 };
 
-type EqualityFunction = (a: any, b: any) => boolean;
+type PrivateSettingsState = {
+	settings: Setting[];
+	persistedSettings: Setting[];
+};
+
+type EqualityFunction<T> = (a: T, b: T) => boolean;
 
 type PrivateSettingsContextValue = {
 	subscribers: Set<(state: PrivateSettingsState) => void>;
 	stateRef: RefObject<PrivateSettingsState>;
 	hydrate: (changes: any[]) => void;
-	isDisabled: (setting: any) => boolean;
+	isDisabled: (setting: Setting) => boolean;
 };
 
 export const PrivateSettingsContext = createContext<PrivateSettingsContextValue>({
 	subscribers: new Set<(state: PrivateSettingsState) => void>(),
-	stateRef: createRef(),
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	hydrate: () => {},
+	stateRef: {
+		current: {
+			settings: [],
+			persistedSettings: [],
+		},
+	},
+	hydrate: () => undefined,
 	isDisabled: () => false,
 });
 
-const useSelector = (
-	selector: (state: PrivateSettingsState) => any,
-	equalityFunction: EqualityFunction = Object.is,
-): any => {
+const useSelector = <T>(
+	selector: (state: PrivateSettingsState) => T,
+	equalityFunction: EqualityFunction<T> = Object.is,
+): T | null => {
 	const { subscribers, stateRef } = useContext(PrivateSettingsContext);
-	const [value, setValue] = useState<any>(() => (stateRef.current ? selector(stateRef.current) : null));
+	const [value, setValue] = useState<T | null>(() => (stateRef.current ? selector(stateRef.current) : null));
 
-	const handleUpdate = useMutableCallback((state) => {
+	const handleUpdate = useMutableCallback((state: PrivateSettingsState) => {
 		const newValue = selector(state);
 
-		if (!equalityFunction(newValue, value)) {
+		if (!value || !equalityFunction(newValue, value)) {
 			setValue(newValue);
 		}
 	});
@@ -60,7 +81,7 @@ const useSelector = (
 	return value;
 };
 
-export const useGroup = (groupId: string): any => {
+export const usePrivateSettingsGroup = (groupId: string): any => {
 	const group = useSelector((state) => state.settings.find(({ _id, type }) => _id === groupId && type === 'group'));
 
 	const filterSettings = (settings: any[]): any[] => settings.filter(({ group }) => group === groupId);
@@ -127,7 +148,7 @@ export const useGroup = (groupId: string): any => {
 	return group && { ...group, sections, changed, save, cancel };
 };
 
-export const useSection = (groupId: string, sectionName?: string): any => {
+export const usePrivateSettingsSection = (groupId: string, sectionName?: string): any => {
 	sectionName = sectionName || '';
 
 	const filterSettings = (settings: any[]): any[] =>
@@ -165,54 +186,59 @@ export const useSection = (groupId: string, sectionName?: string): any => {
 	};
 };
 
-export const useSettingActions = (persistedSetting: any): any => {
+export const usePrivateSettingActions = (persistedSetting: Setting | null | undefined): {
+	update: () => void;
+	reset: () => void;
+} => {
 	const { hydrate } = useContext(PrivateSettingsContext);
 
 	const update = useDebouncedCallback(({ value, editor }) => {
 		const changes = [{
-			_id: persistedSetting._id,
+			_id: persistedSetting?._id,
 			...value !== undefined && { value },
 			...editor !== undefined && { editor },
-			changed: JSON.stringify(persistedSetting.value) !== JSON.stringify(value) || JSON.stringify(editor) !== JSON.stringify(persistedSetting.editor),
+			changed: JSON.stringify(persistedSetting?.value) !== JSON.stringify(value) || JSON.stringify(editor) !== JSON.stringify(persistedSetting?.editor),
 		}];
 
 		hydrate(changes);
-	}, 100, [hydrate, persistedSetting]);
+	}, 100, [hydrate, persistedSetting]) as () => void;
 
 	const reset = useDebouncedCallback(() => {
-		const { _id, value, packageValue, packageEditor, editor } = persistedSetting;
-
 		const changes = [{
-			_id,
-			value: packageValue,
-			editor: packageEditor,
-			changed: JSON.stringify(packageValue) !== JSON.stringify(value) || JSON.stringify(packageEditor) !== JSON.stringify(editor),
+			_id: persistedSetting?._id,
+			value: persistedSetting?.packageValue,
+			editor: persistedSetting?.packageEditor,
+			changed: JSON.stringify(persistedSetting?.packageValue) !== JSON.stringify(persistedSetting?.value) || JSON.stringify(persistedSetting?.packageEditor) !== JSON.stringify(persistedSetting?.editor),
 		}];
 
 		hydrate(changes);
-	}, 100, [hydrate, persistedSetting]);
+	}, 100, [hydrate, persistedSetting]) as () => void;
 
 	return { update, reset };
 };
 
-export const useSettingDisabledState = ({ blocked, enableQuery }: any): any => {
+export const usePrivateSettingDisabledState = (setting: Setting | null | undefined): boolean => {
 	const { isDisabled } = useContext(PrivateSettingsContext);
-	return useReactiveValue(() => isDisabled({ blocked, enableQuery }), [blocked, enableQuery]);
+	return useReactiveValue(() => (setting ? isDisabled(setting) : false), [setting?.blocked, setting?.enableQuery]) as boolean;
 };
 
-export const useSectionChangedState = (groupId: string, sectionName: string): any =>
-	useSelector((state) =>
+export const usePrivateSettingsSectionChangedState = (groupId: string, sectionName: string): boolean =>
+	!!useSelector((state) =>
 		state.settings.some(({ group, section, changed }) =>
 			group === groupId && ((!sectionName && !section) || (sectionName === section)) && changed));
 
-export const useSetting = (_id: string): any => {
-	const selectSetting = (settings: any[]): any => settings.find((setting) => setting._id === _id);
+export const usePrivateSetting = (_id: string): Setting | null | undefined => {
+	const selectSetting = (settings: Setting[]): Setting | undefined => settings.find((setting) => setting._id === _id);
 
 	const setting = useSelector((state) => selectSetting(state.settings));
 	const persistedSetting = useSelector((state) => selectSetting(state.persistedSettings));
 
-	const { update, reset } = useSettingActions(persistedSetting);
-	const disabled = useSettingDisabledState(persistedSetting);
+	const { update, reset } = usePrivateSettingActions(persistedSetting);
+	const disabled = usePrivateSettingDisabledState(persistedSetting);
+
+	if (!setting) {
+		return null;
+	}
 
 	return {
 		...setting,
