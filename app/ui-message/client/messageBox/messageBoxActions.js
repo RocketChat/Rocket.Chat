@@ -63,6 +63,19 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 	},
 });
 
+messageBox.actions.add('Screen_share', 'Request_screen_share', {
+	id: 'request-screen-share',
+	icon: 'video',
+	condition: () => settings.get('Livechat_screenshare_enabled'),
+	action: ({ rid, tmid, messageBox }) => {
+		console.log(rid, tmid, messageBox);
+		console.log('requesting screen share...');
+		Meteor.call('livechat:requestScreenshare', rid, (data) => {
+			console.log(data);
+		});
+	},
+});
+
 const geolocation = new ReactiveVar(false);
 
 messageBox.actions.add('Share', 'My_location', {

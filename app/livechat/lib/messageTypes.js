@@ -54,3 +54,9 @@ MessageTypes.registerType({
 	system: true,
 	message: 'New_videocall_request',
 });
+
+MessageTypes.registerType({
+	id: 'request_screenshare_access',
+	system: true,
+	message: 'request_screenshare_access',
+});

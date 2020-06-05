@@ -43,6 +43,7 @@ import './methods/removeDepartment';
 import './methods/removeManager';
 import './methods/removeTrigger';
 import './methods/removeRoom';
+import './methods/requestScreenshare';
 import './methods/saveAgentInfo';
 import './methods/saveAppearance';
 import './methods/saveCustomField';
