@@ -65,8 +65,6 @@ Template.thread.helpers({
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
 
-		console.log(tmid);
-
 		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
 	messageContext() {
@@ -256,11 +254,7 @@ Template.thread.onCreated(async function() {
 		sendToChannel: false,
 	});
 
-	this.loadMore = _.debounce(async () => {
-		if (this.state.get('loading') === true) {
-			return;
-		}
-
+	this.loadMore = async () => {
 		const { tmid } = Tracker.nonreactive(() => this.state.all());
 
 		this.state.set('loading', true);
@@ -272,7 +266,7 @@ Template.thread.onCreated(async function() {
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
 		});
-	}, 500);
+	};
 });
 
 Template.thread.onDestroyed(function() {

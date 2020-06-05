@@ -20,8 +20,9 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client
 import { getConfig } from '../../../ui-utils/client/config';
 import { useTimeAgo } from '../../../../client/hooks/useTimeAgo';
 import ThreadListMessage, { MessageSkeleton } from './ThreadListMessage';
-import useUserSubscription from '../hooks/useUserSubscription';
-import useUserRoom from '../hooks/useUserRoom';
+import { useUserSubscription } from '../hooks/useUserSubscription';
+import { useUserRoom } from '../hooks/useUserRoom';
+import { useLocalStorage } from '../hooks/useLocalstorage';
 
 
 function clickableItem(WrappedComponent) {
@@ -58,7 +59,7 @@ export function withData(WrappedComponent) {
 		const subscription = useUserSubscription(rid, subscriptionFields);
 
 		const userId = useUserId();
-		const type = useState('all');
+		const type = useLocalStorage('thread-list-type', 'all');
 		const text = useState('');
 		const [total, setTotal] = useState(LIST_SIZE);
 		const [threads, setThreads] = useDebouncedState([], 100);
@@ -171,7 +172,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 
 	const formatDate = useTimeAgo();
 
-	const options = useMemo(() => [['all', t('All')], ['subscribed', t('Subscribed')], ['unread', t('Unread')]], []);
+	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], []);
 
 	const rowRenderer = useCallback(function rowRenderer({ index, style }) {
 		if (!threads[index]) {
@@ -193,7 +194,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 			formatDate={formatDate}
 			handleFollowButton={handleFollowButton} onClick={onClick}
 		/>;
-	}, [threads, unread]);
+	}, [threads, unread, formatDate]);
 
 	const isItemLoaded = (index) => index < threads.length;
 	const { ref, contentBoxSize: { inlineSize = 380, blockSize = 750 } = {} } = useResizeObserver();

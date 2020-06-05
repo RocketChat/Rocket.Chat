@@ -444,7 +444,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		}
 
 		const typeThread = {
-			...type === 'subscribed' && { replies: { $in: [this.userId] } },
+			...type === 'following' && { replies: { $in: [this.userId] } },
 			...type === 'unread' && { _id: { $in: Subscriptions.findOneByRoomIdAndUserId(room._id, user._id).tunread } },
 			...text && {
 				$text: {

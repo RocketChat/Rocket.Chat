@@ -11,13 +11,14 @@ import { roomTypes, APIClient } from '../../../utils/client';
 import { call, normalizeThreadMessage } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
+import { useLocalStorage } from '../hooks/useLocalstorage';
 
 export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 	const t = useTranslation();
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 	const [mainMessage, setMainMessage] = useState({});
 
-	const [expanded, setExpand] = useState(false);
+	const [expanded, setExpand] = useLocalStorage('expand-threads', false);
 
 	const ref = useRef();
 	const uid = useMemo(() => Meteor.userId(), []);
