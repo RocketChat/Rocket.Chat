@@ -48,12 +48,12 @@ export default function ThreadListMessage({ _id, msg, following, username, ts, r
 				<Margins inline='x4'>
 					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='1 reply'><Icon name='thread' size='x20' mi='x4'/> {replies} </Box>
 					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='2 participants'><Icon name='user' size='x20' mi='x4'/> {participants} </Box>
-					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='Last Message'><Icon name='clock' size='x20' mi='x4'/> {formatDate(tlm)} </Box>
+					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='Last Message' withTruncatedText><Icon name='clock' size='x20' mi='x4' /> {formatDate(tlm)} </Box>
 				</Margins>
 			</Box>
 		</Container>
 		<Container alignItems='center's>
-			<Button small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} aria-label={actionLabel}> <Icon name={button} size='x16'/> </Button>
+			<Button small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></Button>
 			{
 				(mention && <NotificationStatusMe mb='x24'/>)
 				|| (all && <NotificationStatusAll mb='x24'/>)
