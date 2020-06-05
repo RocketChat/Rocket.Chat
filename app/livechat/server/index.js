@@ -78,6 +78,7 @@ import './lib/RoutingManager';
 import './lib/routing/External';
 import './lib/routing/ManualSelection';
 import './lib/routing/AutoSelection';
+import './lib/ScreensharingManager';
 import './lib/stream/agentStatus';
 import './lib/stream/departmentAgents';
 import './lib/stream/queueManager';

@@ -67,7 +67,7 @@ messageBox.actions.add('Screen_share', 'Request_screen_share', {
 	id: 'request-screen-share',
 	icon: 'video',
 	condition: () => settings.get('Livechat_screenshare_enabled'),
-	action: ({ rid, tmid, messageBox }) => {
+	action: ({ rid }) => {
 		Meteor.call('livechat:requestScreenshare', rid);
 	},
 });
