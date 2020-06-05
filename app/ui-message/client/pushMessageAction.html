@@ -1,0 +1,41 @@
+<template name="pushMessageAction">
+	{{#with data}}
+		<style type="text/css">
+			.action-button:hover {
+				background-color: #dddddd;
+			}
+		</style>
+		<button type="button" class="action-button" style="
+			display: flex;
+    		align-items: center;
+			border-radius: 10px;
+			border: 1px solid;
+			border-color: grey;
+			min-height: 40px;
+			padding: 2px 12px;
+			margin: 4px 4px;
+			overflow: hidden;">
+
+			{{#if icon}}
+				<div class="" style="flex: none; width: 16px; height: 16px; float: left; margin-right: 8px;">
+					<img src="{{icon}}" style="width: 100%;
+						height: 100%;
+						background-repeat: no-repeat;
+						background-position: center;
+						background-size: cover;" alt=""/>
+				</div>
+			{{/if}}
+
+			{{#if title}}
+				<span class="" style="font-size: 15px;
+					font-weight: bold;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;">
+					{{title}}
+				</span>	
+			{{/if}}
+
+		</button>
+	{{/with}}
+</template>
