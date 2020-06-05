@@ -6,7 +6,7 @@ import s from 'underscore.string';
 import juice from 'juice';
 import stripHtml from 'string-strip-html';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 
 let contentHeader;
 let contentFooter;
@@ -42,11 +42,13 @@ export const replace = function replace(str, data = {}) {
 	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
 };
 
+const nonEscapeKeys = ['room_path'];
+
 export const replaceEscaped = (str, data = {}) => replace(str, {
 	Site_Name: s.escapeHTML(settings.get('Site_Name')),
 	Site_Url: s.escapeHTML(settings.get('Site_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {
-		ret[key] = s.escapeHTML(value);
+		ret[key] = nonEscapeKeys.includes(key) ? value : s.escapeHTML(value);
 		return ret;
 	}, {}),
 });
@@ -116,7 +118,18 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));
 };
 
-export const send = ({ to, from, replyTo, subject, html, text, data, headers }) => sendNoWrap({ to, from, replyTo, subject: replace(subject, data), text: text ? replace(text, data) : stripHtml(replace(html, data)), html: wrap(html, data), headers });
+export const send = ({ to, from, replyTo, subject, html, text, data, headers }) =>
+	sendNoWrap({
+		to,
+		from,
+		replyTo,
+		subject: replace(subject, data),
+		text: text
+			? replace(text, data)
+			: stripHtml(replace(html, data)),
+		html: wrap(html, data),
+		headers,
+	});
 
 export const checkAddressFormatAndThrow = (from, func) => {
 	if (checkAddressFormat(from)) {
