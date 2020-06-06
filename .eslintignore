@@ -19,3 +19,5 @@ public/livechat/
 public/pdf.worker.min.js
 imports/client/
 !/.storybook/
+public/localforage.min.js
+public/sw.js

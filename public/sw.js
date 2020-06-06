@@ -1,5 +1,9 @@
+importScripts('localforage.min.js');
+
 const HTMLToCache = '/';
 const version = 'viasat-0.1';
+const storeName = 'post_requests';
+let db;
 
 function removeHash(element) {
 	if (typeof element === 'string') { return element.split('?hash=')[0]; }
@@ -13,6 +17,89 @@ function hasSameHash(firstUrl, secondUrl) {
 	if (typeof firstUrl === 'string' && typeof secondUrl === 'string') {
 		return /\?hash=(.*)/.exec(firstUrl)[1] === /\?hash=(.*)/.exec(secondUrl)[1];
 	}
+}
+
+function jsonToArray(obj) {
+	if (typeof obj !== 'object') {
+		return [obj];
+	}
+
+	const keys = [];
+	for (const key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			const children = jsonToArray(obj[key]);
+			children.forEach((child) => {
+				keys.push({ [key]: child });
+			});
+		}
+	}
+
+	return keys;
+}
+
+function arrayToJson(objArray) {
+	let result = {};
+
+	const updateObject = (obj, result) => {
+		const key = Object.keys(obj)[0];
+		result[key] = key in result ? updateObject(obj[key], result[key]) : obj[key];
+		return result;
+	};
+
+	objArray.forEach((obj) => {
+		result = updateObject(obj, result);
+	});
+
+	return result;
+}
+
+function savePostRequest(url, payload, response) {
+	const keys = jsonToArray(payload);
+	const value = jsonToArray(response);
+	keys.forEach((key, idx) => {
+		db.setItem(JSON.stringify(key), { response: value[idx] });
+	});
+}
+
+function getPostResponse(payload) {
+	return new Promise((resolve) => {
+		let responses = [];
+		const keys = jsonToArray(payload);
+		keys.forEach(async (key, idx) => {
+			await new Promise((next) => {
+				db.getItem(JSON.stringify(key)).then((result) => {
+					result && responses.push(result.response);
+					next();
+				}).catch((err) => {
+					console.log(err);
+					next();
+				});
+			});
+			if (idx === keys.length - 1) {
+				responses = arrayToJson(responses);
+				const blob = new Blob([JSON.stringify(responses)], { type: 'application/json' });
+				resolve(new Response(blob, { status: 200, statusText: 'OK' }));
+			}
+		});
+	});
+}
+
+function handlePOST(event) {
+	const requestToFetch = event.request.clone();
+	db = db || localforage.createInstance({ name: storeName });
+	event.respondWith(fetch(requestToFetch, { method: 'POST' })
+		.then(async (response) => {
+			const clonedResponse = response.clone();
+			const formData = await event.request.json();
+			const body = await clonedResponse.json();
+			savePostRequest(requestToFetch.url, formData, body);
+			return response;
+		})
+		.catch(async () => {
+			const formData = await event.request.json();
+			return getPostResponse(formData);
+		}),
+	);
 }
 
 function handleAvatar(request, response) {
@@ -89,6 +176,9 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
 	if (event.request.method === 'POST') {
+		if (/__meteor__\/dynamic-import/.test(event.request.url)) {
+			handlePOST(event);
+		}
 		return;
 	}
 
