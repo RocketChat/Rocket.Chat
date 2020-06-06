@@ -11,12 +11,17 @@ export class Rooms extends Base {
 		super(...args);
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
-		this.tryEnsureIndex({ default: 1 });
-		this.tryEnsureIndex({ featured: 1 });
+		this.tryEnsureIndex({ default: 1 }, { sparse: true });
+		this.tryEnsureIndex({ featured: 1 }, { sparse: true });
+		this.tryEnsureIndex({ muted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ ts: 1 });
+		// Tokenpass
+		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ tokenpass: 1 }, { sparse: true });
+		// livechat
+		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
