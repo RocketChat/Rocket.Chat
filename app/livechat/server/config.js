@@ -144,7 +144,7 @@ Meteor.startup(function() {
 		group: 'Omnichannel',
 		section: 'Livechat',
 		public: true,
-		i18nLabel: 'Show Feedback form',
+		i18nLabel: 'Show_feedback_form',
 	});
 
 	settings.add('Livechat_registration_form', true, {
