@@ -104,6 +104,11 @@ Template.livechatAppearance.helpers({
 	registrationFormMessage() {
 		return Template.instance().registrationFormMessage.get();
 	},
+	feedbackFormEnabled() {
+		if (Template.instance().feedbackFormEnabled.get()) {
+			return 'checked';
+		}
+	},
 });
 
 Template.livechatAppearance.onCreated(async function() {
@@ -126,6 +131,7 @@ Template.livechatAppearance.onCreated(async function() {
 	this.registrationFormNameFieldEnabled = new ReactiveVar(null);
 	this.registrationFormEmailFieldEnabled = new ReactiveVar(null);
 	this.registrationFormMessage = new ReactiveVar(null);
+	this.feedbackFormEnabled = new ReactiveVar(null);
 
 	const { appearance } = await APIClient.v1.get('livechat/appearance');
 	this.appearance.set(appearance);
@@ -147,6 +153,7 @@ Template.livechatAppearance.onCreated(async function() {
 	const livechatNameFieldRegistrationForm = getSettingFromAppearance(this, 'Livechat_name_field_registration_form');
 	const livechatEmailFieldRegistrationForm = getSettingFromAppearance(this, 'Livechat_email_field_registration_form');
 	const conversationFinishedText = getSettingFromAppearance(this, 'Livechat_conversation_finished_text');
+	const livechatFeedbackForm = getSettingFromAppearance(this, 'Livechat_feedback_form');
 
 	this.title.set(livechatTitle && livechatTitle.value);
 	this.color.set(livechatTitleColor && livechatTitleColor.value);
@@ -165,6 +172,7 @@ Template.livechatAppearance.onCreated(async function() {
 	this.registrationFormNameFieldEnabled.set(livechatNameFieldRegistrationForm && livechatNameFieldRegistrationForm.value);
 	this.registrationFormEmailFieldEnabled.set(livechatEmailFieldRegistrationForm && livechatEmailFieldRegistrationForm.value);
 	this.conversationFinishedText.set(conversationFinishedText && conversationFinishedText.value);
+	this.feedbackFormEnabled.set(livechatFeedbackForm && livechatFeedbackForm.value);
 });
 
 Template.livechatAppearance.events({
@@ -228,6 +236,9 @@ Template.livechatAppearance.events({
 
 		const settingRegistrationFormMessage = getSettingFromAppearance(instance, 'Livechat_registration_form_message');
 		instance.registrationFormMessage.set(settingRegistrationFormMessage && settingRegistrationFormMessage.value);
+
+		const settingFeedbackFormEnabled = getSettingFromAppearance(instance, 'Livechat_feedback_form');
+		instance.feedbackFormEnabled.set(settingFeedbackFormEnabled && settingFeedbackFormEnabled.value);
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
@@ -299,6 +310,10 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_registration_form_message',
 				value: s.trim(instance.registrationFormMessage.get()),
+			},
+			{
+				_id: 'Livechat_feedback_form',
+				value: instance.feedbackFormEnabled.get(),
 			},
 		];
 

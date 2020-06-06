@@ -139,6 +139,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Conversation_finished_text',
 	});
 
+	settings.add('Livechat_feedback_form', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+		i18nLabel: 'Show Feedback form',
+	});
+
 	settings.add('Livechat_registration_form', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
