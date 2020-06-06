@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Messages } from '../../../models';
+import { ScreensharingManager } from '../lib/ScreenSharingManager';
 
 Meteor.methods({
 	async 'livechat:requestScreenshare'(roomId) {
@@ -9,6 +10,8 @@ Meteor.methods({
 		}
 
 		const guest = Meteor.user();
+
+		console.log('aaaaaaaaaaaaaaaaaaaaaa', ScreensharingManager.getProviderInfo());
 
 		Messages.createWithTypeRoomIdMessageAndUser('request_screenshare_access', roomId, '', guest, {
 			actionLinks: [
