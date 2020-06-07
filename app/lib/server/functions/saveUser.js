@@ -260,6 +260,11 @@ export const saveUser = function(userId, userData) {
 			updateUser.$set['emails.0.verified'] = userData.verified;
 		}
 
+		// For SAML Integration we need to save the eppn of a user
+		if (typeof userData.eppn !== 'undefined') {
+			updateUser.$set.eppn = userData.eppn;
+		}
+
 		handleBio(updateUser, userData.bio);
 
 		Meteor.users.update({ _id }, updateUser);
@@ -324,6 +329,12 @@ export const saveUser = function(userId, userData) {
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;
 	}
+
+	// We need to add eppn to the update methode for the integration with SAML authentication
+	if (userData.eppn) {
+		updateUser.$set.eppn = userData.eppn;
+	}
+
 	if (userData.settings) {
 		updateUser.$set.settings = { preferences: userData.settings.preferences };
 	}
