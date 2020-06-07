@@ -2150,7 +2150,7 @@
   "LDAP_Sync_User_Data_Groups_BaseDN": "LDAP Group BaseDN",
   "LDAP_Sync_User_Data_Groups_BaseDN_Description": "The LDAP BaseDN used to lookup users.",
   "LDAP_Sync_User_Data_Groups_Enforce_AutoChannels": "Auto Remove Users from Channels",
-  "LDAP_Sync_User_Data_Groups_Enforce_AutoChannels_Description": "**Attention**: Enabling this will remove any users in a channel that do not have the coorosponding LDAP group! Only enable this if you know what you're doing.",
+  "LDAP_Sync_User_Data_Groups_Enforce_AutoChannels_Description": "**Attention**: Enabling this will remove any users in a channel that do not have the corresponding LDAP group! Only enable this if you know what you're doing.",
   "LDAP_Sync_User_Data_Groups_Filter": "User Group Filter",
   "LDAP_Sync_User_Data_Groups_Filter_Description": "The LDAP search filter used to check if a user is in a group.",
   "LDAP_Sync_User_Data_GroupsMap": "User Data Group Map",
