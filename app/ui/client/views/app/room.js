@@ -68,7 +68,7 @@ const openProfileTab = (e, instance, username) => {
 	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('membersList');
 	instance.tabBar.setData({});
-	instance.tabBar.open();
+	instance.tabBar.open('members-list');
 };
 
 const openProfileTabOrOpenDM = (e, instance, username) => {
