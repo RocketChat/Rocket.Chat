@@ -2,19 +2,16 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
 import { IScreenShareProvider } from './screenSharing/IScreenShareProvider';
-import { CobrowseScreenShareProvider } from './screenSharing/CobrowseScreenShareProvider';
 
-class ScreenSharingManager {
+export class ScreenSharingManager {
 	providerName = '';
 
 	providers: any = {};
 
-	private screenShareProvider: IScreenShareProvider;
+	private screenShareProvider: IScreenShareProvider | any = null;
 
 	constructor(providerName: string) {
 		this.providerName = providerName;
-		this.registerProvider('cobrowse.io', new CobrowseScreenShareProvider());
-		this.screenShareProvider = this.getProvider();
 	}
 
 	enabled(): any {
@@ -48,6 +45,3 @@ class ScreenSharingManager {
 		return this.screenShareProvider.getInfo();
 	}
 }
-
-// name of provider will come from settings
-export const ScreensharingManager = new ScreenSharingManager('cobrowse.io');
