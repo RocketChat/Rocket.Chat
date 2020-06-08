@@ -112,7 +112,9 @@ export default function AdminSidebar() {
 	return <Box display='flex' flexDirection='column' h='100vh'>
 		<Box is='header' padding='x24' display='flex' flexDirection='row' justifyContent='space-between'>
 			<Box fontScale='s1'>{t('Administration')}</Box>
-			<Button square small onClick={closeAdminFlex}><Icon name='cross' size='x16'/></Button>
+			<Button square small ghost onClick={closeAdminFlex}>
+				<Icon name='cross' size='x16'/>
+			</Button>
 		</Box>
 		<Scrollable>
 			<Box display='flex' flexDirection='column' h='full'>
