@@ -1314,6 +1314,15 @@
 				border-bottom: none;
 			}
 
+			& .add-token {
+				display: flex;
+
+				& .rc-select {
+					width: 40%;
+					margin: 0 0 0 10px;
+				}
+			}
+
 			&:first-child {
 				padding-top: 0;
 			}
@@ -1958,7 +1967,6 @@
 	width: 10px;
 	height: 10px;
 
-	border-width: 1px;
 	border-radius: 10px;
 }
 
@@ -3302,9 +3310,15 @@
 }
 
 .rc-old .oauth-login {
+	display: flex;
+
 	margin-bottom: 16px;
+
 	margin-left: -4px;
-	flex-wrap: wrap;
+
+	flex-flow: row wrap;
+
+	justify-content: space-around;
 
 	& h3 {
 		margin-top: 0;
@@ -3317,10 +3331,17 @@
 		font-weight: 300;
 	}
 
+	button {
+		margin: 0 5px;
+
+		flex-grow: 1;
+	}
+
 	& .button {
 		margin-bottom: 4px;
 
 		font-size: 18px;
+
 		line-height: 22px;
 		flex-grow: 1;
 
@@ -4145,6 +4166,15 @@
 
 		& .jump-to-large {
 			display: none;
+		}
+	}
+
+	.add-token {
+		display: block !important;
+
+		& .rc-select {
+			width: auto !important;
+			margin: 10px 0 !important;
 		}
 	}
 }

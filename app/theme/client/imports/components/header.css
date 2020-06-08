@@ -225,23 +225,23 @@
 			border-radius: var(--header-title-status-bullet-radius);
 
 			&--online {
-				background-color: var(--status-online);
+				background-color: var(--rc-status-online);
 			}
 
 			&--away {
-				background-color: var(--status-away);
+				background-color: var(--rc-status-away);
 			}
 
 			&--busy {
-				background-color: var(--status-busy);
+				background-color: var(--rc-status-busy);
 			}
 
 			&--invisible {
-				background-color: var(--status-invisible);
+				background-color: var(--rc-status-invisible);
 			}
 
 			&--offline {
-				background-color: var(--status-invisible);
+				background-color: var(--rc-status-invisible);
 			}
 		}
 	}

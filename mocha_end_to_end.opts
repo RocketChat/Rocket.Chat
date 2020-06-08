@@ -5,4 +5,4 @@
 --timeout 10000
 --bail
 --file tests/end-to-end/teardown.js
-tests/end-to-end/apps/*.js
+tests/end-to-end/api/*.js tests/end-to-end/apps/*.js

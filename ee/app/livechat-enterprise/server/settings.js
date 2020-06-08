@@ -51,5 +51,12 @@ export const createSettings = () => {
 		enableQuery: { _id: 'Livechat_auto_close_abandoned_rooms', value: true },
 	});
 
+	settings.add('Livechat_last_chatted_agent_routing', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Routing',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } },
+	});
+
 	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
 };

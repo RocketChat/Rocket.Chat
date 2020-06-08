@@ -660,6 +660,7 @@
   "Closing_chat": "正在关闭聊天",
   "Cloud": "Cloud ",
   "Cloud_Register_manually": "手动注册",
+  "Cloud_click_here": "复制文字后，访问云端控制界面。[单击此处]()",
   "Cloud_register_offline_finish_helper": "在Cloud Console中完成注册过程后，应该显示出一些文本。请粘贴到此处以完成注册。",
   "Cloud_register_offline_helper": "如果网络访问受到限制，可以手动注册工作区。复制下面的文字并转到Cloud Console以完成本次操作。",
   "Cloud_register_success": "您的工作区已成功注册！",

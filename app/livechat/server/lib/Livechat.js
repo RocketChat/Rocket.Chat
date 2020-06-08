@@ -1,6 +1,5 @@
 import dns from 'dns';
 
-import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
@@ -38,7 +37,7 @@ import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields } from './Helper';
-import { Apps } from '../../../apps/server';
+import { Apps, AppEvents } from '../../../apps/server';
 
 export const Livechat = {
 	Analytics,
@@ -118,8 +117,9 @@ export const Livechat = {
 		}
 
 		if (room == null) {
+			const defaultAgent = callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
 			// if no department selected verify if there is at least one active and pick the first
-			if (!agent && !guest.department) {
+			if (!defaultAgent && !guest.department) {
 				const department = this.getRequiredDepartment();
 
 				if (department) {
@@ -128,7 +128,7 @@ export const Livechat = {
 			}
 
 			// delegate room creation to QueueManager
-			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent, extraData });
+			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent: defaultAgent, extraData });
 			newRoom = true;
 		}
 
@@ -372,11 +372,11 @@ export const Livechat = {
 
 		Meteor.defer(() => {
 			/**
-			 * @deprecated the `AppInterface.ILivechatRoomClosedHandler` event will be removed
+			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine
 			 */
-			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomClosedHandler, room);
-			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatRoomClosed, room);
+			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
+			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
 			callbacks.run('livechat.closeRoom', room);
 		});
 

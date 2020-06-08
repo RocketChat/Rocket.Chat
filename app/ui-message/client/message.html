@@ -176,11 +176,9 @@
 			</ul>
 			{{/unless}}
 			{{#if broadcast}}
-				{{#with msg.u}}
-					<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
-						{{> icon icon="reply"}} {{_'Reply'}}
-					</button>
-				{{/with}}
+				<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
+					{{> icon icon="reply"}} {{_'Reply'}}
+				</button>
 			{{/if}}
 			{{#unless hideReactions}}
 			<ul class="reactions">
