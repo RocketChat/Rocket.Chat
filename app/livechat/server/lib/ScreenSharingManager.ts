@@ -6,7 +6,7 @@ import { IScreenShareProvider } from './screenSharing/IScreenShareProvider';
 export class ScreenSharingManager {
 	providerName = '';
 
-	providers: any = {};
+	private providers = new Map<string, IScreenShareProvider>();
 
 	private screenShareProvider: IScreenShareProvider | any = null;
 
@@ -23,14 +23,14 @@ export class ScreenSharingManager {
 	}
 
 	registerProvider(name: string, Provider: IScreenShareProvider): void {
-		this.providers[name] = Provider;
+		this.providers.set(name, Provider);
 	}
 
-	getProvider(): IScreenShareProvider {
-		if (!this.providers[this.providerName]) {
+	getProvider(): IScreenShareProvider | any {
+		if (!this.providers.has(this.providerName)) {
 			throw new Meteor.Error('error-screensharing-provider-not-available');
 		}
-		return this.providers[this.providerName];
+		return this.providers.get(this.providerName);
 	}
 
 	setProvider(): void {
