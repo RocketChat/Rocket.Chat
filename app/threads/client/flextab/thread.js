@@ -31,7 +31,7 @@ const sort = { ts: 1 };
 
 createTemplateForComponent('ThreadComponent', () => import('../components/ThreadComponent'), {
 	// eslint-disable-next-line new-cap
-	renderContainerView: () => HTML.DIV({ class: 'test', style: 'display: flex; height: 100%;' }),
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar', style: 'display: flex; height: 100%;' }),
 });
 
 Template.thread.events({

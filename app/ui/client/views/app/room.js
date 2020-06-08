@@ -449,7 +449,7 @@ Template.room.helpers({
 			},
 			...Template.instance().tabBar.getData(),
 		};
-
+		console.log(flexData);
 		return flexData;
 	},
 
@@ -538,6 +538,14 @@ Template.room.helpers({
 		return moment.duration(roomMaxAge(room) * 1000 * 60 * 60 * 24).humanize();
 	},
 	messageContext,
+	shouldCloseFlexTab() {
+		FlowRouter.watchPathChange();
+		const tab = FlowRouter.getParam('tab');
+		const { tabBar } = Template.instance();
+		if (tab === 'thread' && tabBar.template.get() !== 'threads') {
+			return true;
+		}
+	},
 	openedThread() {
 		FlowRouter.watchPathChange();
 		const tab = FlowRouter.getParam('tab');
@@ -548,8 +556,6 @@ Template.room.helpers({
 		if (tab !== 'thread' || !mid) {
 			return;
 		}
-
-		Template.instance().tabBar.close();
 
 		const room = Rooms.findOne({ _id: rid }, {
 			fields: {

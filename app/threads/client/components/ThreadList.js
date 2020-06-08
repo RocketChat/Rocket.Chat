@@ -75,7 +75,7 @@ export function withData(WrappedComponent) {
 			setPagination({ skip, count: count - skip });
 
 			return new Promise((resolve) => { ref.current = resolve; });
-		}, [state]);
+		}, []);
 
 		useEffect(() => () => Threads.current.remove({}, () => {}), [text[0], type[0]]);
 
@@ -125,7 +125,21 @@ export function withData(WrappedComponent) {
 			text[1](e.currentTarget.value);
 		}, []);
 
-		return <WrappedComponent {...props} unread={subscription && subscription.tunread} userId={userId} error={error} threads={threads} total={total} loading={state === ENDPOINT_STATES.LOADING} loadMoreItems={loadMoreItems} room={room} text={{ value: text[0], set: handleTextChange }} type={{ value: type[0], set: type[1] }}/>;
+		return <WrappedComponent
+			{...props}
+			unread={subscription && subscription.tunread}
+			userId={userId}
+			error={error}
+			threads={threads}
+			total={total}
+			loading={state === ENDPOINT_STATES.LOADING}
+			loadMoreItems={loadMoreItems}
+			room={room}
+			text={text[0]}
+			setText={handleTextChange}
+			type={type[0]}
+			setType={type[1] }
+		/>;
 	};
 }
 
@@ -153,7 +167,9 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
-export function ThreadList({ total = 10, threads = [], room, unread = [], type, loadMoreItems, loading, onClose, error, userId, text }) {
+export function ThreadList({ total = 10, threads = [], room, unread = [], type, setType, loadMoreItems, loading, onClose, error, userId, text, setText }) {
+	const threadsRef = useRef();
+
 	const t = useTranslation();
 
 	const user = useUser();
@@ -174,11 +190,13 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 
 	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], []);
 
-	const rowRenderer = useCallback(function rowRenderer({ index, style }) {
-		if (!threads[index]) {
+	threadsRef.current = threads;
+
+	const rowRenderer = useCallback(React.memo(function rowRenderer({ data, index, style }) {
+		if (!data[index]) {
 			return <Skeleton style={style}/>;
 		}
-		const thread = threads[index];
+		const thread = data[index];
 		const msg = normalizeThreadMessage(thread);
 
 		return <Thread
@@ -194,12 +212,12 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 			formatDate={formatDate}
 			handleFollowButton={handleFollowButton} onClick={onClick}
 		/>;
-	}, [threads, unread, formatDate]);
+	}), []);
 
-	const isItemLoaded = (index) => index < threads.length;
-	const { ref, contentBoxSize: { inlineSize = 380, blockSize = 750 } = {} } = useResizeObserver();
+	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver();
 
-	return <VerticalBar className={'contextual-bar'} borderInlineStart='2px solid' borderInlineStartColor='neutral-200'>
+	return <VerticalBar>
 		<VerticalBar.Header>
 			<Icon name='thread' size='x20'/>
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><RawText>{t('Threads')}</RawText></Box>
@@ -209,8 +227,8 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEnd='2px solid' borderBlockEndColor='neutral-200'>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x8'>
 					<Margins inline='x8'>
-						<TextInput placeholder={t('Search_Messages')} value={text.value} onChange={text.set} addon={<Icon name='magnifier' size='x20'/>}/>
-						<Select flexGrow={0} width='110px' onChange={type.set} value={type.value} options={options} />
+						<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+						<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 					</Margins>
 				</Box>
 			</Box>
@@ -226,6 +244,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 						height={blockSize}
 						width={inlineSize}
 						itemCount={total}
+						itemData={threads}
 						itemSize={124}
 						ref={ref}
 						minimumBatchSize={LIST_SIZE}

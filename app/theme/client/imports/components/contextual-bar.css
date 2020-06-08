@@ -140,6 +140,12 @@
 	}
 }
 
+.contextual-bar + .contextual-bar {
+	position: absolute;
+	z-index: -1;
+	right: 0;
+}
+
 @media (width <= 1100px) {
 	.contextual-bar {
 		position: absolute;

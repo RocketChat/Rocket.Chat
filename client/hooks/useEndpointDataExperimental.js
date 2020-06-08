@@ -33,16 +33,21 @@ export const useEndpointDataExperimental = (endpoint, params = {}, { delayTimeou
 				setData(defaultState);
 				const data = await getData(params);
 
-				if (!data.success) {
-					throw new Error(data.status);
-				}
-
 				if (!mounted) {
 					return;
 				}
 
+				if (!data.success) {
+					throw new Error(data.status);
+				}
+
+
 				setData({ data, state: ENDPOINT_STATES.DONE });
 			} catch (error) {
+				if (!mounted) {
+					return;
+				}
+
 				setData({ error, state: ENDPOINT_STATES.ERROR });
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

@@ -81,8 +81,8 @@ export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 	return <>
 		{expanded && <Modal.Backdrop onClick={handleClose}/> }
 
-		<Box width='380px' { ...!expanded && { position: 'relative' }}>
-			<VerticalBar rcx-thread-view width='full' style={style} display='flex' flexDirection='column' position='absolute' { ...!expanded && { width: '380px' } } borderInlineStart='2px solid' borderInlineStartColor='neutral-200' >
+		<Box width='380px' flexGrow={1} { ...!expanded && { position: 'relative' }}>
+			<VerticalBar rcx-thread-view width='full' style={style} display='flex' flexDirection='column' position='absolute' { ...!expanded && { width: '380px' } }>
 				<VerticalBar.Header>
 					<VerticalBar.Icon name='thread' />
 					<VerticalBar.Text>{headerTitle}</VerticalBar.Text>

@@ -6,7 +6,7 @@ import Page from './Page';
 import RawText from './RawText';
 
 function VerticalBar({ children, ...props }) {
-	const mobile = useDebouncedValue(useMediaQuery('(max-width: 420px)'), 50);
+	const mobile = useDebouncedValue(useMediaQuery('(max-width: 500px)'), 50);
 	const small = useDebouncedValue(useMediaQuery('(max-width: 780px)'), 50);
 
 	return <Box
