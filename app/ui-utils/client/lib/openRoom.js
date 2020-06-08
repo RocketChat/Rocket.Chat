@@ -1,11 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
-import mem from 'mem';
 import _ from 'underscore';
 
 import { ChatSubscription, Rooms } from '../../../models';
@@ -17,30 +14,6 @@ import { call, callMethod } from './callMethod';
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 
 window.currentTracker = undefined;
-
-const getDomOfLoading = mem(function getDomOfLoading() {
-	const loadingDom = document.createElement('div');
-	const contentAsFunc = (content) => () => content;
-
-	const template = Blaze._TemplateWith({ }, contentAsFunc(Template.loading));
-	Blaze.render(template, loadingDom);
-
-	return loadingDom;
-});
-
-function replaceCenterDomBy(dom) {
-	document.dispatchEvent(new CustomEvent('main-content-destroyed'));
-
-	const mainNode = document.querySelector('.main-content');
-	if (mainNode) {
-		for (const child of Array.from(mainNode.children)) {
-			if (child) { mainNode.removeChild(child); }
-		}
-		mainNode.appendChild(dom);
-	}
-
-	return mainNode;
-}
 
 const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
@@ -69,7 +42,7 @@ export const openRoom = async function(type, name) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
 					BlazeLayout.render('main');
 				}
-				replaceCenterDomBy(getDomOfLoading());
+				// replaceCenterDomBy(getDomOfLoading());
 				return;
 			}
 
@@ -84,17 +57,13 @@ export const openRoom = async function(type, name) {
 				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 			}
 
-			const roomDom = RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate);
-			const mainNode = replaceCenterDomBy(roomDom);
-
-			if (mainNode) {
-				if (roomDom.classList.contains('room-container')) {
-					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
-				}
-			}
+			RoomManager.openedRoom = room._id;
+			BlazeLayout.render('main', {
+				center: 'room',
+				_id: room._id,
+			});
 
 			Session.set('openedRoom', room._id);
-			RoomManager.openedRoom = room._id;
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 

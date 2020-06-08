@@ -21,7 +21,7 @@ import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { call } from '..';
 
 
-const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
+const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 10;
 
 const onDeleteMessageStream = (msg) => {
 	ChatMessage.remove({ _id: msg._id });
@@ -112,6 +112,10 @@ export const RoomManager = new function() {
 
 		getOpenedRoomByRid(rid) {
 			return Object.keys(openedRooms).map((typeName) => openedRooms[typeName]).find((openedRoom) => openedRoom.rid === rid);
+		}
+
+		get room() {
+			return this.getOpenedRoomByRid(this.openedRoom);
 		}
 
 		getDomOfRoom(typeName, rid, templateName) {
@@ -212,11 +216,6 @@ export const RoomManager = new function() {
 					return openedRooms[typeName].ready;
 				},
 			};
-		}
-
-		existsDomOfRoom(typeName) {
-			const room = openedRooms[typeName];
-			return (room != null ? room.dom : undefined) != null;
 		}
 
 		updateUserStatus(user, status, utcOffset) {
