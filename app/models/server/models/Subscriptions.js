@@ -472,6 +472,15 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
+	findByUserIdExceptType(userId, typeException, options) {
+		const query = {
+			'u._id': userId,
+			t: { $ne: typeException },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByUserIdAndType(userId, type, options) {
 		const query = {
 			'u._id': userId,
