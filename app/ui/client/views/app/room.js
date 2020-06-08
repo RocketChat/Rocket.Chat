@@ -67,6 +67,7 @@ const openProfileTab = (e, instance, username) => {
 	}
 	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('membersList');
+	instance.tabBar.setData({});
 	instance.tabBar.open();
 };
 
@@ -449,7 +450,6 @@ Template.room.helpers({
 			},
 			...Template.instance().tabBar.getData(),
 		};
-		console.log(flexData);
 		return flexData;
 	},
 

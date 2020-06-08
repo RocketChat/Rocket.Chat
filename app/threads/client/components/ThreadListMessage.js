@@ -3,35 +3,29 @@ import { Box, Margins, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 import UserAvatar from '../../../../client/components/basic/avatar/UserAvatar';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import RawText from '../../../../client/components/basic/RawText';
 
 const borderRadius = css`{
 	border-radius: 100%;
 }`;
 
-export function NotificationStatus(props) {
-	return <Box width='x8' className={[borderRadius]} height='x8' {...props} />;
+export function NotificationStatus({ t = (e) => e, label, ...props }) {
+	return <Box width='x8' aria-label={t(label)} className={[borderRadius]} height='x8' {...props} />;
 }
 
-export function NotificationStatusAll() {
-	const t = useTranslation();
-	return <NotificationStatus aria-label={t('mention-all')}bg='#F38C39'/>;
+export function NotificationStatusAll(props) {
+	return <NotificationStatus label='mention-all' bg='#F38C39' {...props} />;
 }
 
-export function NotificationStatusMe() {
-	const t = useTranslation();
-	return <NotificationStatus aria-label={t('Me')} bg='danger-500'/>;
+export function NotificationStatusMe(props) {
+	return <NotificationStatus label='Me' bg='danger-500' {...props} />;
 }
 
-export function NotificationStatusUnread() {
-	const t = useTranslation();
-	return <NotificationStatus aria-label={t('Unread')} bg='primary-500'/>;
+export function NotificationStatusUnread(props) {
+	return <NotificationStatus label='Unread' bg='primary-500' {...props} />;
 }
 
-export default function ThreadListMessage({ _id, msg, following, username, ts, replies, participants, handleFollowButton, unread, mention, all, formatDate = (e) => e, tlm, ...props }) {
-	const t = useTranslation();
-
+export default function ThreadListMessage({ _id, msg, following, username, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, ...props }) {
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 	return <Box rcx-message pi='x20' pb='x16' pbs='x16' display='flex' {...props}>
@@ -55,9 +49,9 @@ export default function ThreadListMessage({ _id, msg, following, username, ts, r
 		<Container alignItems='center's>
 			<Button small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></Button>
 			{
-				(mention && <NotificationStatusMe mb='x24'/>)
-				|| (all && <NotificationStatusAll mb='x24'/>)
-				|| (unread && <NotificationStatusUnread mb='x24'/>)
+				(mention && <NotificationStatusMe t={t} mb='x24'/>)
+				|| (all && <NotificationStatusAll t={t} mb='x24'/>)
+				|| (unread && <NotificationStatusUnread t={t} mb='x24'/>)
 			}
 		</Container>
 	</Box>;

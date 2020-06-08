@@ -209,6 +209,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 			following={thread.replies && thread.replies.includes(userId)}
 			data-id={thread._id}
 			msg={msg}
+			t={t}
 			formatDate={formatDate}
 			handleFollowButton={handleFollowButton} onClick={onClick}
 		/>;
