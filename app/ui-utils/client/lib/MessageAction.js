@@ -149,15 +149,9 @@ Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
 
 	const getChatMessagesFrom = (msg) => {
-		const { rid, tmid } = msg;
+		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
 
-		if (rid) {
-			if (tmid) {
-				return chatMessages[`${ rid }-${ tmid }`];
-			}
-			return chatMessages[rid];
-		}
-		return chatMessages[Session.get('openedRoom')];
+		return chatMessages[`${ rid }-${ tmid }`] || chatMessages[rid];
 	};
 
 	MessageAction.addButton({
@@ -262,7 +256,8 @@ Meteor.startup(async function() {
 		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile', 'threads'],
-		action() {
+		action(event) {
+			console.log(event);
 			const { msg } = messageArgs(this);
 			getChatMessagesFrom(msg).edit(document.getElementById(msg.tmid ? `thread-${ msg._id }` : msg._id));
 		},
