@@ -219,7 +219,7 @@ export const usePrivateSettingActions = (persistedSetting: Setting | null | unde
 
 export const usePrivateSettingDisabledState = (setting: Setting | null | undefined): boolean => {
 	const { isDisabled } = useContext(PrivateSettingsContext);
-	return useReactiveValue(() => (setting ? isDisabled(setting) : false), [setting?.blocked, setting?.enableQuery]) as boolean;
+	return useReactiveValue(() => (setting ? isDisabled(setting) : false), [setting?.blocked, setting?.enableQuery]) as unknown as boolean;
 };
 
 export const usePrivateSettingsSectionChangedState = (groupId: string, sectionName: string): boolean =>
