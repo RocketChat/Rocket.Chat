@@ -4,7 +4,7 @@ import React from 'react';
 import {
 	usePrivateSettingsSection,
 	usePrivateSettingsSectionChangedState,
-} from '../../contexts/PrivateSettingsContext';
+} from '../../contexts/PrivilegedSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Setting } from './Setting';
 

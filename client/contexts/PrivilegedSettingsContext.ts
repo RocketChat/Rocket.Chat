@@ -8,7 +8,7 @@ import { useToastMessageDispatch } from './ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from './TranslationContext';
 import { useUser } from './UserContext';
 
-type Setting = object & {
+type PrivilegedSetting = object & {
 	_id: unknown;
 	type: string;
 	blocked: boolean;
@@ -25,22 +25,22 @@ type Setting = object & {
 	reset?: () => void;
 };
 
-type PrivateSettingsState = {
-	settings: Setting[];
-	persistedSettings: Setting[];
+type PrivilegedSettingsState = {
+	settings: PrivilegedSetting[];
+	persistedSettings: PrivilegedSetting[];
 };
 
 type EqualityFunction<T> = (a: T, b: T) => boolean;
 
-type PrivateSettingsContextValue = {
-	subscribers: Set<(state: PrivateSettingsState) => void>;
-	stateRef: RefObject<PrivateSettingsState>;
+type PrivilegedSettingsContextValue = {
+	subscribers: Set<(state: PrivilegedSettingsState) => void>;
+	stateRef: RefObject<PrivilegedSettingsState>;
 	hydrate: (changes: any[]) => void;
-	isDisabled: (setting: Setting) => boolean;
+	isDisabled: (setting: PrivilegedSetting) => boolean;
 };
 
-export const PrivateSettingsContext = createContext<PrivateSettingsContextValue>({
-	subscribers: new Set<(state: PrivateSettingsState) => void>(),
+export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContextValue>({
+	subscribers: new Set<(state: PrivilegedSettingsState) => void>(),
 	stateRef: {
 		current: {
 			settings: [],
@@ -52,13 +52,13 @@ export const PrivateSettingsContext = createContext<PrivateSettingsContextValue>
 });
 
 const useSelector = <T>(
-	selector: (state: PrivateSettingsState) => T,
+	selector: (state: PrivilegedSettingsState) => T,
 	equalityFunction: EqualityFunction<T> = Object.is,
 ): T | null => {
-	const { subscribers, stateRef } = useContext(PrivateSettingsContext);
+	const { subscribers, stateRef } = useContext(PrivilegedSettingsContext);
 	const [value, setValue] = useState<T | null>(() => (stateRef.current ? selector(stateRef.current) : null));
 
-	const handleUpdate = useMutableCallback((state: PrivateSettingsState) => {
+	const handleUpdate = useMutableCallback((state: PrivilegedSettingsState) => {
 		const newValue = selector(state);
 
 		if (!value || !equalityFunction(newValue, value)) {
@@ -90,7 +90,7 @@ export const usePrivateSettingsGroup = (groupId: string): any => {
 	const sections = useSelector((state) => Array.from(new Set(filterSettings(state.settings).map(({ section }) => section || ''))), (a, b) => a.length === b.length && a.join() === b.join());
 
 	const batchSetSettings = useBatchSettingsDispatch();
-	const { stateRef, hydrate } = useContext(PrivateSettingsContext);
+	const { stateRef, hydrate } = useContext(PrivilegedSettingsContext);
 
 	const dispatchToastMessage = useToastMessageDispatch() as any;
 	const t = useTranslation() as (key: string, ...args: any[]) => string;
@@ -157,7 +157,7 @@ export const usePrivateSettingsSection = (groupId: string, sectionName?: string)
 	const canReset = useSelector((state) => filterSettings(state.settings).some(({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue)));
 	const settingsIds = useSelector((state) => filterSettings(state.settings).map(({ _id }) => _id), (a, b) => a.length === b.length && a.join() === b.join());
 
-	const { stateRef, hydrate, isDisabled } = useContext(PrivateSettingsContext);
+	const { stateRef, hydrate, isDisabled } = useContext(PrivilegedSettingsContext);
 
 	const reset = useMutableCallback(() => {
 		const state = stateRef.current;
@@ -186,11 +186,11 @@ export const usePrivateSettingsSection = (groupId: string, sectionName?: string)
 	};
 };
 
-export const usePrivateSettingActions = (persistedSetting: Setting | null | undefined): {
+export const usePrivateSettingActions = (persistedSetting: PrivilegedSetting | null | undefined): {
 	update: () => void;
 	reset: () => void;
 } => {
-	const { hydrate } = useContext(PrivateSettingsContext);
+	const { hydrate } = useContext(PrivilegedSettingsContext);
 
 	const update = useDebouncedCallback(({ value, editor }) => {
 		const changes = [{
@@ -217,8 +217,8 @@ export const usePrivateSettingActions = (persistedSetting: Setting | null | unde
 	return { update, reset };
 };
 
-export const usePrivateSettingDisabledState = (setting: Setting | null | undefined): boolean => {
-	const { isDisabled } = useContext(PrivateSettingsContext);
+export const usePrivateSettingDisabledState = (setting: PrivilegedSetting | null | undefined): boolean => {
+	const { isDisabled } = useContext(PrivilegedSettingsContext);
 	return useReactiveValue(() => (setting ? isDisabled(setting) : false), [setting?.blocked, setting?.enableQuery]) as unknown as boolean;
 };
 
@@ -227,8 +227,8 @@ export const usePrivateSettingsSectionChangedState = (groupId: string, sectionNa
 		state.settings.some(({ group, section, changed }) =>
 			group === groupId && ((!sectionName && !section) || (sectionName === section)) && changed));
 
-export const usePrivateSetting = (_id: string): Setting | null | undefined => {
-	const selectSetting = (settings: Setting[]): Setting | undefined => settings.find((setting) => setting._id === _id);
+export const usePrivateSetting = (_id: string): PrivilegedSetting | null | undefined => {
+	const selectSetting = (settings: PrivilegedSetting[]): PrivilegedSetting | undefined => settings.find((setting) => setting._id === _id);
 
 	const setting = useSelector((state) => selectSetting(state.settings));
 	const persistedSetting = useSelector((state) => selectSetting(state.persistedSettings));

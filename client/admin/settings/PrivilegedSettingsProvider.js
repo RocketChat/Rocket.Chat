@@ -2,7 +2,7 @@ import { Mongo } from 'meteor/mongo';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import { PrivateSettingsCachedCollection } from '../PrivateSettingsCachedCollection';
-import { PrivateSettingsContext } from '../../contexts/PrivateSettingsContext';
+import { PrivilegedSettingsContext } from '../../contexts/PrivilegedSettingsContext';
 
 let privateSettingsCachedCollection; // Remove this singleton (╯°□°)╯︵ ┻━┻
 
@@ -79,7 +79,7 @@ const settingsReducer = (states, { type, payload }) => {
 	return states;
 };
 
-export function SettingsState({ children }) {
+export function PrivilegedSettingsProvider({ children }) {
 	const [isLoading, setLoading] = useState(true);
 
 	const [subscribers] = useState(new Set());
@@ -204,14 +204,5 @@ export function SettingsState({ children }) {
 		isDisabled,
 	]);
 
-	return <PrivateSettingsContext.Provider children={children} value={contextValue} />;
+	return <PrivilegedSettingsContext.Provider children={children} value={contextValue} />;
 }
-
-export {
-	usePrivateSettingsGroup as useGroup,
-	usePrivateSettingsSection as useSection,
-	usePrivateSettingActions as useSettingActions,
-	usePrivateSettingDisabledState as useSettingDisabledState,
-	usePrivateSettingsSectionChangedState as useSectionChangedState,
-	usePrivateSetting as useSetting,
-} from '../../contexts/PrivateSettingsContext';

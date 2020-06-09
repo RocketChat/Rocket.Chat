@@ -4,7 +4,7 @@ import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter } from '../../contexts/RouterContext';
 import { GroupSelector } from './GroupSelector';
 import NotAuthorizedPage from '../NotAuthorizedPage';
-import { SettingsState } from './SettingsState';
+import { PrivilegedSettingsProvider } from './PrivilegedSettingsProvider';
 
 export function SettingsRoute() {
 	const hasPermission = useAtLeastOnePermission([
@@ -19,9 +19,9 @@ export function SettingsRoute() {
 		return <NotAuthorizedPage />;
 	}
 
-	return <SettingsState>
+	return <PrivilegedSettingsProvider>
 		<GroupSelector groupId={groupId} />
-	</SettingsState>;
+	</PrivilegedSettingsProvider>;
 }
 
 export default SettingsRoute;

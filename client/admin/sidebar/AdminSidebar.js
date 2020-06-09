@@ -8,7 +8,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { sidebarItems } from '../sidebarItems';
-import { useSettingsGroupsFiltered } from './useSettingsGroupsFiltered';
+import { usePrivateSettingsGroupsFiltered } from './useSettingsGroupsFiltered';
 
 const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
 	if (permissionGranted && !permissionGranted()) { return null; }
@@ -77,7 +77,7 @@ const AdminSidebarSettings = ({ currentPath }) => {
 	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
 
-	const [groups, loading] = useSettingsGroupsFiltered(filter);
+	const [groups, loading] = usePrivateSettingsGroupsFiltered(filter);
 
 	const showGroups = !!groups.length;
 
