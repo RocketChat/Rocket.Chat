@@ -256,6 +256,9 @@ Template.thread.onCreated(async function() {
 
 	this.loadMore = async () => {
 		const { tmid } = Tracker.nonreactive(() => this.state.all());
+		if (!tmid) {
+			return;
+		}
 
 		this.state.set('loading', true);
 

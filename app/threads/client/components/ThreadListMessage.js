@@ -46,7 +46,7 @@ export default function ThreadListMessage({ _id, msg, following, username, ts, r
 				</Margins>
 			</Box>
 		</Container>
-		<Container alignItems='center's>
+		<Container alignItems='center'>
 			<Button small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></Button>
 			{
 				(mention && <NotificationStatusMe t={t} mb='x24'/>)
