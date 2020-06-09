@@ -553,7 +553,7 @@ Template.room.helpers({
 		const rid = Template.currentData()._id;
 		const jump = FlowRouter.getQueryParam('jump');
 
-		if (tab !== 'thread' || !mid) {
+		if (tab !== 'thread' || !mid || rid !== Session.get('openedRoom')) {
 			return;
 		}
 
