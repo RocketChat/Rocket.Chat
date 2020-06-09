@@ -552,7 +552,9 @@ Template.room.helpers({
 
 		return moment.duration(roomMaxAge(room) * 1000 * 60 * 60 * 24).humanize();
 	},
-	messageContext,
+	messageContext() {
+		return messageContext({ rid: Template.instance().state.get('rid') });
+	},
 	shouldCloseFlexTab() {
 		FlowRouter.watchPathChange();
 		const tab = FlowRouter.getParam('tab');
@@ -1055,7 +1057,10 @@ Template.room.onCreated(function() {
 
 	this.tabBar = new RocketChatTabBar();
 
-	this.state = new ReactiveDict();
+	this.state = new ReactiveDict({
+		rid: this.data.rid,
+		debounced_rid: this.data.rid,
+	});
 
 	this.autorunClean = (fn) => {
 		let clean;
@@ -1151,6 +1156,8 @@ Template.room.onCreated(function() {
 				RoomRoles.upsert({ rid: record.rid, 'u._id': record.u._id }, record);
 			});
 		});
+
+		this.rolesObserve && this.rolesObserve.stop();
 
 		this.rolesObserve = RoomRoles.find({ rid }).observe({
 			added: (role) => {
@@ -1257,7 +1264,7 @@ Template.room.onCreated(function() {
 
 		callbacks.remove('streamNewMessage', rid);
 	};
-}); // Update message to re-render DOM
+});
 
 Template.room.onDestroyed(function() {
 	if (this.rolesObserve) {
