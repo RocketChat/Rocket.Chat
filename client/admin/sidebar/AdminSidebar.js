@@ -65,7 +65,7 @@ const SidebarItemsAssembler = ({ items, currentPath }) => {
 const AdminSidebarPages = ({ currentPath }) => {
 	const items = useReactiveValue(() => sidebarItems.get());
 
-	return <Box is='ul' display='flex' flexDirection='column'>
+	return <Box is='ul' display='flex' flexDirection='column' flexShrink={0}>
 		{useMemo(() => <SidebarItemsAssembler items={items} currentPath={currentPath}/>, [items, currentPath])}
 	</Box>;
 };
@@ -79,7 +79,7 @@ const AdminSidebarSettings = ({ currentPath }) => {
 
 	const showGroups = !!groups.length;
 
-	return <Box is='section' display='flex' flexDirection='column'>
+	return <Box is='section' display='flex' flexDirection='column' flexShrink={0}>
 		<Box mi='x24' mb='x16' fontScale='p2' color='hint'>{t('Settings')}</Box>
 		<Box pi='x24' mb='x8' display='flex'>
 			<Box is={SearchInput} border='0' value={filter} onChange={handleChange} addon={<Icon name='magnifier' size='x20'/>}/>
