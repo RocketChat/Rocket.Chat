@@ -167,13 +167,13 @@ FlowRouter.route('/invite/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		renderRouteComponent(() => import('./components/setupWizard/SetupWizardRoute'));
+		renderRouteComponent(() => import('./views/setupWizard/SetupWizardRoute'));
 	},
 });
 
 FlowRouter.notFound = {
 	action: () => {
-		renderRouteComponent(() => import('./components/pageNotFound/PageNotFound'));
+		renderRouteComponent(() => import('./views/notFound/NotFoundPage'));
 	},
 };
 
