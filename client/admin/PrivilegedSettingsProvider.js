@@ -1,8 +1,9 @@
 import { Mongo } from 'meteor/mongo';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { PrivateSettingsCachedCollection } from '../PrivateSettingsCachedCollection';
-import { PrivilegedSettingsContext } from '../../contexts/PrivilegedSettingsContext';
+import { PrivateSettingsCachedCollection } from './PrivateSettingsCachedCollection';
+import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
+import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
 
 let privateSettingsCachedCollection; // Remove this singleton (╯°□°)╯︵ ┻━┻
 
@@ -79,7 +80,7 @@ const settingsReducer = (states, { type, payload }) => {
 	return states;
 };
 
-export function PrivilegedSettingsProvider({ children }) {
+function AuthorizedPrivilegedSettingsProvider({ children }) {
 	const [isLoading, setLoading] = useState(true);
 
 	const [subscribers] = useState(new Set());
@@ -193,6 +194,7 @@ export function PrivilegedSettingsProvider({ children }) {
 	}, [collectionsRef]);
 
 	const contextValue = useMemo(() => ({
+		authorized: true,
 		subscribers,
 		stateRef,
 		hydrate,
@@ -206,3 +208,19 @@ export function PrivilegedSettingsProvider({ children }) {
 
 	return <PrivilegedSettingsContext.Provider children={children} value={contextValue} />;
 }
+
+function PrivilegedSettingsProvider({ children }) {
+	const hasPermission = useAtLeastOnePermission([
+		'view-privileged-setting',
+		'edit-privileged-setting',
+		'manage-selected-settings',
+	]);
+
+	if (!hasPermission) {
+		return children;
+	}
+
+	return <AuthorizedPrivilegedSettingsProvider children={children} />;
+}
+
+export default PrivilegedSettingsProvider;

@@ -33,6 +33,7 @@ type PrivilegedSettingsState = {
 type EqualityFunction<T> = (a: T, b: T) => boolean;
 
 type PrivilegedSettingsContextValue = {
+	authorized: boolean;
 	subscribers: Set<(state: PrivilegedSettingsState) => void>;
 	stateRef: RefObject<PrivilegedSettingsState>;
 	hydrate: (changes: any[]) => void;
@@ -40,6 +41,7 @@ type PrivilegedSettingsContextValue = {
 };
 
 export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContextValue>({
+	authorized: false,
 	subscribers: new Set<(state: PrivilegedSettingsState) => void>(),
 	stateRef: {
 		current: {
@@ -50,6 +52,8 @@ export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContext
 	hydrate: () => undefined,
 	isDisabled: () => false,
 });
+
+export const usePrivilegedSettingsAuthorized = (): boolean => useContext(PrivilegedSettingsContext).authorized;
 
 const useSelector = <T>(
 	selector: (state: PrivilegedSettingsState) => T,
@@ -81,7 +85,7 @@ const useSelector = <T>(
 	return value;
 };
 
-export const usePrivateSettingsGroup = (groupId: string): any => {
+export const usePrivilegedSettingsGroup = (groupId: string): any => {
 	const group = useSelector((state) => state.settings.find(({ _id, type }) => _id === groupId && type === 'group'));
 
 	const filterSettings = (settings: any[]): any[] => settings.filter(({ group }) => group === groupId);
@@ -148,7 +152,7 @@ export const usePrivateSettingsGroup = (groupId: string): any => {
 	return group && { ...group, sections, changed, save, cancel };
 };
 
-export const usePrivateSettingsSection = (groupId: string, sectionName?: string): any => {
+export const usePrivilegedSettingsSection = (groupId: string, sectionName?: string): any => {
 	sectionName = sectionName || '';
 
 	const filterSettings = (settings: any[]): any[] =>
@@ -186,7 +190,7 @@ export const usePrivateSettingsSection = (groupId: string, sectionName?: string)
 	};
 };
 
-export const usePrivateSettingActions = (persistedSetting: PrivilegedSetting | null | undefined): {
+export const usePrivilegedSettingActions = (persistedSetting: PrivilegedSetting | null | undefined): {
 	update: () => void;
 	reset: () => void;
 } => {
@@ -217,24 +221,24 @@ export const usePrivateSettingActions = (persistedSetting: PrivilegedSetting | n
 	return { update, reset };
 };
 
-export const usePrivateSettingDisabledState = (setting: PrivilegedSetting | null | undefined): boolean => {
+export const usePrivilegedSettingDisabledState = (setting: PrivilegedSetting | null | undefined): boolean => {
 	const { isDisabled } = useContext(PrivilegedSettingsContext);
 	return useReactiveValue(() => (setting ? isDisabled(setting) : false), [setting?.blocked, setting?.enableQuery]) as unknown as boolean;
 };
 
-export const usePrivateSettingsSectionChangedState = (groupId: string, sectionName: string): boolean =>
+export const usePrivilegedSettingsSectionChangedState = (groupId: string, sectionName: string): boolean =>
 	!!useSelector((state) =>
 		state.settings.some(({ group, section, changed }) =>
 			group === groupId && ((!sectionName && !section) || (sectionName === section)) && changed));
 
-export const usePrivateSetting = (_id: string): PrivilegedSetting | null | undefined => {
+export const usePrivilegedSetting = (_id: string): PrivilegedSetting | null | undefined => {
 	const selectSetting = (settings: PrivilegedSetting[]): PrivilegedSetting | undefined => settings.find((setting) => setting._id === _id);
 
 	const setting = useSelector((state) => selectSetting(state.settings));
 	const persistedSetting = useSelector((state) => selectSetting(state.persistedSettings));
 
-	const { update, reset } = usePrivateSettingActions(persistedSetting);
-	const disabled = usePrivateSettingDisabledState(persistedSetting);
+	const { update, reset } = usePrivilegedSettingActions(persistedSetting);
+	const disabled = usePrivilegedSettingDisabledState(persistedSetting);
 
 	if (!setting) {
 		return null;

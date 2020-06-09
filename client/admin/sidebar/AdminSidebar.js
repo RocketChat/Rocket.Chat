@@ -8,7 +8,8 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { sidebarItems } from '../sidebarItems';
-import { usePrivateSettingsGroupsFiltered } from './useSettingsGroupsFiltered';
+import { usePrivilegedSettingsGroupsFiltered } from './useSettingsGroupsFiltered';
+import PrivilegedSettingsProvider from '../PrivilegedSettingsProvider';
 
 const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
 	if (permissionGranted && !permissionGranted()) { return null; }
@@ -77,7 +78,7 @@ const AdminSidebarSettings = ({ currentPath }) => {
 	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
 
-	const [groups, loading] = usePrivateSettingsGroupsFiltered(filter);
+	const [groups, loading] = usePrivilegedSettingsGroupsFiltered(filter);
 
 	const showGroups = !!groups.length;
 
@@ -111,18 +112,21 @@ export default function AdminSidebar() {
 	const currentRoute = useCurrentRoute();
 	const currentPath = useRoutePath(...currentRoute);
 
-	return <Box display='flex' flexDirection='column' h='100vh'>
-		<Box is='header' padding='x24' display='flex' flexDirection='row' justifyContent='space-between'>
-			<Box fontScale='s1'>{t('Administration')}</Box>
-			<Button square small ghost onClick={closeAdminFlex}>
-				<Icon name='cross' size='x16'/>
-			</Button>
-		</Box>
-		<Scrollable>
-			<Box display='flex' flexDirection='column' h='full'>
-				<AdminSidebarPages currentPath={currentPath}/>
-				{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}
+	// TODO: uplift this provider
+	return <PrivilegedSettingsProvider>
+		<Box display='flex' flexDirection='column' h='100vh'>
+			<Box is='header' padding='x24' display='flex' flexDirection='row' justifyContent='space-between'>
+				<Box fontScale='s1'>{t('Administration')}</Box>
+				<Button square small ghost onClick={closeAdminFlex}>
+					<Icon name='cross' size='x16'/>
+				</Button>
 			</Box>
-		</Scrollable>
-	</Box>;
+			<Scrollable>
+				<Box display='flex' flexDirection='column' h='full'>
+					<AdminSidebarPages currentPath={currentPath}/>
+					{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}
+				</Box>
+			</Scrollable>
+		</Box>
+	</PrivilegedSettingsProvider>;
 }

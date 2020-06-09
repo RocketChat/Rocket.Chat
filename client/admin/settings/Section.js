@@ -2,15 +2,15 @@ import { Accordion, Box, Button, FieldGroup, Skeleton } from '@rocket.chat/fusel
 import React from 'react';
 
 import {
-	usePrivateSettingsSection,
-	usePrivateSettingsSectionChangedState,
+	usePrivilegedSettingsSection,
+	usePrivilegedSettingsSectionChangedState,
 } from '../../contexts/PrivilegedSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Setting } from './Setting';
 
 export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
-	const section = usePrivateSettingsSection(groupId, sectionName);
-	const changed = usePrivateSettingsSectionChangedState(groupId, sectionName);
+	const section = usePrivilegedSettingsSection(groupId, sectionName);
+	const changed = usePrivilegedSettingsSectionChangedState(groupId, sectionName);
 
 	const t = useTranslation();
 

@@ -3,6 +3,7 @@ import React, { lazy, useMemo, Suspense, useEffect } from 'react';
 import { SideNav } from '../../app/ui-utils/client';
 import PageSkeleton from './PageSkeleton';
 import { createTemplateForComponent } from '../reactAdapters';
+import PrivilegedSettingsProvider from './PrivilegedSettingsProvider';
 
 function AdministrationRouter({ lazyRouteComponent, ...props }) {
 	useEffect(() => {
@@ -14,7 +15,9 @@ function AdministrationRouter({ lazyRouteComponent, ...props }) {
 	const LazyRouteComponent = useMemo(() => lazy(lazyRouteComponent), [lazyRouteComponent]);
 
 	return <Suspense fallback={<PageSkeleton />}>
-		<LazyRouteComponent {...props} />
+		<PrivilegedSettingsProvider>
+			<LazyRouteComponent {...props} />
+		</PrivilegedSettingsProvider>
 	</Suspense>;
 }
 

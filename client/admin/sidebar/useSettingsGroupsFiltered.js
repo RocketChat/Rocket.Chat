@@ -5,7 +5,7 @@ import { settings } from '../../../app/settings';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { PrivateSettingsCachedCollection } from '../PrivateSettingsCachedCollection';
 
-export const usePrivateSettingsGroupsFiltered = (textFilter) => {
+export const usePrivilegedSettingsGroupsFiltered = (textFilter) => {
 	const t = useTranslation();
 
 	const [collection, setCollection] = useState(settings.collectionPrivate);
