@@ -295,7 +295,7 @@ export class Base {
 		} else if (!this._reportProgressHandler) {
 			this._reportProgressHandler = setTimeout(() => {
 				this.reportProgress();
-			}, 50);
+			}, 250);
 		}
 
 		this.logger.log(`${ this.progress.count.completed } messages imported`);
