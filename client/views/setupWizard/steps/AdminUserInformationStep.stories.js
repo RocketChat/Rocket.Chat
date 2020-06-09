@@ -4,7 +4,7 @@ import React from 'react';
 import AdminUserInformationStep from './AdminUserInformationStep';
 
 export default {
-	title: 'setupWizard/steps/AdminUserInformationStep',
+	title: 'views/setupWizard/steps/AdminUserInformationStep',
 	component: AdminUserInformationStep,
 };
 

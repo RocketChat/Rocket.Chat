@@ -4,7 +4,7 @@ import React from 'react';
 import SettingsBasedStep from './SettingsBasedStep';
 
 export default {
-	title: 'setupWizard/steps/SettingsBasedStep',
+	title: 'views/setupWizard/steps/SettingsBasedStep',
 	component: SettingsBasedStep,
 };
 

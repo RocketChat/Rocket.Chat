@@ -5,7 +5,6 @@ import { kitContext, UiKitComponent, UiKitModal, modalParser } from '@rocket.cha
 import { uiKitText } from '@rocket.chat/ui-kit';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import RawText from '../../../../client/components/basic/RawText';
 import { renderMessageBody } from '../../../ui-utils/client';
 import { getURL } from '../../../utils/lib/getURL';
 import * as ActionManager from '../ActionManager';
@@ -16,7 +15,7 @@ modalParser.text = ({ text, type } = {}) => {
 		return text;
 	}
 
-	return <RawText>{renderMessageBody({ msg: text })}</RawText>;
+	return <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
 };
 
 const textParser = uiKitText({
