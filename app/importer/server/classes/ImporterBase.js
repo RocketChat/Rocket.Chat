@@ -291,9 +291,13 @@ export class Base {
 		// Or the completed is greater than or equal to the total amount
 		if (((this.progress.count.completed % 500) === 0) || (this.progress.count.completed >= this.progress.count.total)) {
 			this.updateRecord({ 'count.completed': this.progress.count.completed });
+			this.reportProgress();
+		} else if (!this._reportProgressHandler) {
+			this._reportProgressHandler = setTimeout(() => {
+				this.reportProgress();
+			}, 50);
 		}
 
-		this.reportProgress();
 		this.logger.log(`${ this.progress.count.completed } messages imported`);
 
 		return this.progress;
@@ -303,6 +307,10 @@ export class Base {
 	 * Sends an updated progress to the websocket
 	 */
 	reportProgress() {
+		if (this._reportProgressHandler) {
+			clearTimeout(this._reportProgressHandler);
+			this._reportProgressHandler = false;
+		}
 		ImporterWebsocket.progressUpdated(this.progress);
 	}
 
