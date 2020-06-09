@@ -8,9 +8,16 @@ import {
 } from '../../../../definition/ILivechatBusinessHour';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
 
+export interface IWorkHoursForCreateCronJobs {
+	day: string;
+	start: string[];
+	finish: string[];
+}
+
 export interface ILivechatBusinessHourRepository {
 	insertOne(data: ILivechatBusinessHour): Promise<any>;
 	findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour>;
+	findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
 	updateOne(id: string, data: ILivechatBusinessHour): Promise<any>;
 	updateDayOfGlobalBusinessHour(day: IBusinessHourWorkHour): Promise<any>;
 }
@@ -55,6 +62,32 @@ class LivechatBusinessHoursRaw extends BaseRaw implements ILivechatBusinessHourR
 				'workHours.$.open': day.open,
 			},
 		});
+	}
+
+	async findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
+		return await this.col.aggregate([
+			{
+				$project: { _id: 0, workHours: 1 },
+			},
+			{
+				$unwind: { path: '$workHours' },
+			},
+			{
+				$group: {
+					_id: '$workHours.day',
+					start: { $addToSet: '$workHours.start' },
+					finish: { $addToSet: '$workHours.finish' },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					day: '$_id',
+					start: 1,
+					finish: 1,
+				},
+			},
+		]).toArray() as any;
 	}
 }
 

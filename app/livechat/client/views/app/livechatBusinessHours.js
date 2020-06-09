@@ -77,8 +77,8 @@ Template.livechatBusinessHours.events({
 		for (const d in instance.dayVars) {
 			if (instance.dayVars.hasOwnProperty(d)) {
 				const day = instance.dayVars[d];
-				const start = moment(day.start.get(), 'HH:mm').utc().format('HH:mm');
-				const finish = moment(day.finish.get(), 'HH:mm').utc().format('HH:mm');
+				const start = moment(day.start.get(), 'HH:mm').format('HH:mm');
+				const finish = moment(day.finish.get(), 'HH:mm').format('HH:mm');
 				days.push({
 					day: d,
 					start,
@@ -87,7 +87,10 @@ Template.livechatBusinessHours.events({
 				});
 			}
 		}
-		Meteor.call('livechat:saveBusinessHour', { ...instance.businessHour.get(), workHours: days }, function(err /* ,result*/) {
+		Meteor.call('livechat:saveBusinessHour', {
+			...instance.businessHour.get(),
+			workHours: days,
+		}, function(err /* ,result*/) {
 			if (err) {
 				return handleError(err);
 			}
@@ -139,8 +142,13 @@ Template.livechatBusinessHours.onCreated(async function() {
 	const { businessHour } = await APIClient.v1.get('livechat/business-hour');
 	this.businessHour.set(businessHour);
 	businessHour.workHours.forEach((d) => {
-		this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
-		this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
+		if (businessHour.timezone.name) {
+			this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+			this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+		} else {
+			this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
+			this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
+		}
 		this.dayVars[d.day].open.set(d.open);
 	});
 });

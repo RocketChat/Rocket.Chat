@@ -9,11 +9,17 @@ export interface IBusinessHourWorkHour {
 	open: boolean;
 }
 
+export interface IBusinessHourTimezone {
+	name: string;
+	utc: number;
+}
+
 export interface ILivechatBusinessHour {
 	_id: string;
 	name: string;
 	active: boolean;
 	type: LivechatBussinessHourTypes;
+	timezone: IBusinessHourTimezone;
 	ts: Date;
 	workHours: IBusinessHourWorkHour[];
 	_updatedAt?: Date;
