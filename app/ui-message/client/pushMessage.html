@@ -26,8 +26,7 @@
 				<div class="" style="display: flex;
 				justify-content: space-between;">
 					{{#if title}}
-						<span class="" 
-						style="font-size: 15px;
+						<span class="" style="font-size: 15px;
 							font-weight: bold;
 							white-space: nowrap;
 							overflow: hidden;
@@ -36,20 +35,41 @@
 						</span>	
 					{{/if}}
 
-					{{#if timestamp}}
-						<span class="" style="
-						flex-shrink: 0;
-						font-size: 13px;
-						white-space: nowrap;
-						overflow: hidden;
-						text-overflow: ellipsis;">
-							{{timeAgo(timestamp)}}
-						</span>	
-					{{/if}}
+					<div style="display: flex;">
+						{{#if timestamp}}
+							<span class="" style="
+								flex-shrink: 0;
+								font-size: 13px;
+								white-space: nowrap;
+								overflow: hidden;
+								text-overflow: ellipsis;">
+								{{timeAgo(timestamp)}}
+							</span>	
+						{{/if}}
+
+						<style type="text/css">
+							.expand {
+								transition: transform 0.2s;
+								transform: rotate(0deg);	
+							}
+							.collapse {
+								transition: transform 0.2s;
+								transform: rotate(180deg);
+							}
+							.body-collapsed {
+								max-height: 20px;
+								display: block;
+								white-space: nowrap;
+							}
+						</style>
+						<button class="button-down expand">
+							{{> icon icon="arrow-down" block="rc-icon--default-size"}}
+						</button>
+					</div>
 				</div>
 				
 				{{#if body}}
-					<span class="" style="
+					<span class="push-message-body" style="
 						font-size: 14px;
 						overflow: hidden;
 						text-overflow: ellipsis">
