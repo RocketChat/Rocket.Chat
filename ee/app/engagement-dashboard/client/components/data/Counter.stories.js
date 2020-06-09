@@ -3,7 +3,7 @@ import React from 'react';
 import { Counter } from './Counter';
 
 export default {
-	title: 'admin/engagement/data/Counter',
+	title: 'admin/enterprise/engagement/data/Counter',
 	component: Counter,
 };
 

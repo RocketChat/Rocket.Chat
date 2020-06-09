@@ -5,7 +5,7 @@ import React from 'react';
 import { Pager } from './Pager';
 
 export default {
-	title: 'setupWizard/Pager',
+	title: 'views/setupWizard/Pager',
 	component: Pager,
 };
 

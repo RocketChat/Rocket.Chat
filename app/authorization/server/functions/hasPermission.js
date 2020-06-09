@@ -12,7 +12,7 @@ const rolesHasPermission = mem(async (permission, roles) => {
 	return !!result;
 }, {
 	cacheKey: JSON.stringify,
-	...process.env.TEST_MODE === 'true' && { maxAge: 0 },
+	...process.env.TEST_MODE === 'true' && { maxAge: 1 },
 });
 
 const getRoles = mem(async (uid, scope) => {
