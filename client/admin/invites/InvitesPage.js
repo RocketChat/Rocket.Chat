@@ -9,9 +9,9 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
 import Page from '../../components/basic/Page';
+import { useModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpoint } from '../../contexts/ServerContext';
-import { useModal } from '../../hooks/useModal';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { GenericTable } from '../../../app/ui/client/components/GenericTable';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';

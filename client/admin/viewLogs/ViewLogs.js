@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 
 import Page from '../../components/basic/Page';
-import RawText from '../../components/basic/RawText';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -212,7 +211,7 @@ function ViewLogs() {
 						onScroll={handleScroll}
 					>
 						{lines.sort((a, b) => a.ts - b.ts).map(({ string }, i) =>
-							<RawText key={i}>{ansispan(string)}</RawText>)}
+							<span key={i} dangerouslySetInnerHTML={{ __html: ansispan(string) }} />)}
 					</Box>
 				</Scrollable>
 				<Box

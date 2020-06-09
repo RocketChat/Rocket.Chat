@@ -3,7 +3,7 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import Logo from './Logo';
+import Logo from '../../components/basic/Logo';
 import './SideBar.css';
 
 function SideBar({
