@@ -102,6 +102,7 @@ class RoomEventsModel extends EventsModel {
 	public async createDeleteMessageEvent(src: string, roomId: string, _cid?: string): Promise<IEvent<IEDataUpdate<IEDataEmpty>>> {
 		src = this.ensureSrc(src);
 
+		console.log('createDeleteMessageEvent srsc', src);
 		const stub: IEventStub<IEDataUpdate<IEDataEmpty>> = {
 			_cid,
 			t: EventTypeDescriptor.DELETE_MESSAGE,
