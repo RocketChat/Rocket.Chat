@@ -61,9 +61,9 @@ Meteor.methods({
 			return;
 		}
 
-		let { nameID } = user.services.saml;
+		const { nameID } = user.services.saml;
 		const sessionIndex = user.services.saml.idpSession;
-		nameID = sessionIndex;
+
 		if (Accounts.saml.settings.debug) {
 			console.log(`NameID for user ${ Meteor.userId() } found: ${ JSON.stringify(nameID) }`);
 		}
