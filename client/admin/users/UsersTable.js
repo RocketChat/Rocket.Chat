@@ -96,7 +96,7 @@ export function UsersTable() {
 			{mediaQuery && <Table.Cell>
 				<Box fontScale='p2' style={style} color='hint'>{ username }</Box> <Box mi='x4'/>
 			</Table.Cell>}
-			<Table.Cell style={style}>{emails && emails[0].address}</Table.Cell>
+			<Table.Cell style={style}>{emails && emails.length && emails[0].address}</Table.Cell>
 			{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
 			<Table.Cell fontScale='p1' color='hint' style={style}>{status}</Table.Cell>
 		</Table.Row>;

@@ -5,7 +5,7 @@ import { GenericTable, Th } from './GenericTable';
 
 
 export default {
-	title: 'directory/table',
+	title: 'uncategorized/GenericTable',
 	component: GenericTable,
 	decorators: [(fn) => <div children={fn()} style={{ height: '100vh' }} />],
 };

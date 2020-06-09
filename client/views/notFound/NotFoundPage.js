@@ -1,12 +1,12 @@
 import { Box, Button, ButtonGroup, Flex, Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import ConnectionStatusAlert from '../../components/connectionStatus/ConnectionStatusAlert';
 import { useRoute } from '../../contexts/RouterContext';
-import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
-import { ConnectionStatusAlert } from '../connectionStatus/ConnectionStatusAlert';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 
-function PageNotFound() {
+function NotFoundPage() {
 	useWipeInitialPageLoading();
 
 	const t = useTranslation();
@@ -54,4 +54,4 @@ function PageNotFound() {
 	</>;
 }
 
-export default PageNotFound;
+export default NotFoundPage;

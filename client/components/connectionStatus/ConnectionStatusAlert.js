@@ -37,7 +37,7 @@ const useReconnectCountdown = (retryTime, status) => {
 	return reconnectCountdown;
 };
 
-export function ConnectionStatusAlert() {
+function ConnectionStatusAlert() {
 	const { connected, retryTime, status, reconnect } = useConnectionStatus();
 	const reconnectCountdown = useReconnectCountdown(retryTime, status);
 	const t = useTranslation();
@@ -69,3 +69,5 @@ export function ConnectionStatusAlert() {
 		</>}
 	</div>;
 }
+
+export default ConnectionStatusAlert;

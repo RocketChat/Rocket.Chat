@@ -549,6 +549,15 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneActiveById(userId, options) {
+		const query = {
+			_id: userId,
+			active: true,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByIdOrUsername(idOrUsername, options) {
 		const query = {
 			$or: [{
