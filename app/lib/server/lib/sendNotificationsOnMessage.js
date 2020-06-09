@@ -180,6 +180,7 @@ const project = {
 		mobilePushNotifications: 1,
 		muteGroupMentions: 1,
 		name: 1,
+		rid: 1,
 		userHighlights: 1,
 		'u._id': 1,
 		'receiver.active': 1,
