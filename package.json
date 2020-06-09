@@ -106,7 +106,6 @@
 		"postcss-url": "^8.0.0",
 		"progress": "^2.0.2",
 		"proxyquire": "^2.1.0",
-		"react-docgen-typescript-loader": "^3.7.2",
 		"simple-git": "^1.107.0",
 		"source-map": "^0.5.6",
 		"stylelint": "^9.9.0",

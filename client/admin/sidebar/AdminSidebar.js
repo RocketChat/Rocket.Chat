@@ -10,16 +10,6 @@ import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { sidebarItems } from '../sidebarItems';
 import { useSettingsGroupsFiltered } from './useSettingsGroupsFiltered';
 
-const style = css`
-	&:hover,
-	&.active:hover {
-		background-color: var(--sidebar-background-light-hover);
-	}
-
-	&.active {
-		background-color: var(--sidebar-background-light-active);
-	}`;
-
 const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
 	if (permissionGranted && !permissionGranted()) { return null; }
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
@@ -35,7 +25,19 @@ const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentP
 		display='flex'
 		flexDirection='row'
 		alignItems='center'
-		className={[isActive && 'active', style].filter(Boolean)}
+		className={[
+			isActive && 'active',
+			css`
+				&:hover,
+				&.active:hover {
+					background-color: var(--sidebar-background-light-hover);
+				}
+
+				&.active {
+					background-color: var(--sidebar-background-light-active);
+				}
+			`,
+		].filter(Boolean)}
 	>
 		{icon && <Icon name={icon} size='x16' mi='x2'/>}
 		<Box withTruncatedText fontScale='p1' mi='x4'>{label}</Box>
