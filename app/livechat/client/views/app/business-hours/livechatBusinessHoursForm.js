@@ -5,10 +5,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 
-import { t, handleError, APIClient } from '../../../../utils/client';
-import './livechatBusinessHours.html';
+import { t, handleError, APIClient } from '../../../../../utils/client';
+import './livechatBusinessHoursForm.html';
 
-Template.livechatBusinessHours.helpers({
+Template.livechatBusinessHoursForm.helpers({
 	days() {
 		return Template.instance().businessHour.get().workHours;
 	},
@@ -37,7 +37,7 @@ Template.livechatBusinessHours.helpers({
 
 const splitDayAndPeriod = (value) => value.split('_');
 
-Template.livechatBusinessHours.events({
+Template.livechatBusinessHoursForm.events({
 	'change .preview-settings, keydown .preview-settings'(e, instance) {
 		const [day, period] = splitDayAndPeriod(e.currentTarget.name);
 
@@ -99,7 +99,7 @@ Template.livechatBusinessHours.events({
 	},
 });
 
-Template.livechatBusinessHours.onCreated(async function() {
+Template.livechatBusinessHoursForm.onCreated(async function() {
 	this.dayVars = {
 		Monday: {
 			start: new ReactiveVar('08:00'),
