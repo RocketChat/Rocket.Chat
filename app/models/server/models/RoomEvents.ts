@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { IEDataRoom } from '../../../events/definitions/data/IEDataRoom';
 import { IEDataMessage } from '../../../events/definitions/data/IEDataMessage';
@@ -121,24 +122,72 @@ class RoomEventsModel extends EventsModel {
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
-	public async createPruneMessagesEvent(options: any): Promise<{ count: number }> {
-		const { result }: any = await this.model.rawCollection().updateMany({
-			'd.msg': { $exists: 1 },
-			'd.drid': { $exists: 0 },
-			...options,
-		}, {
-			$set: {
-				'd.msg': '', // TODO: this is removing the other fields as well, check how to change only msg
+	public async createPruneMessagesEvent(query: any): Promise<{
+		count: number;
+		filesIds: Array<string>;
+		discussionsIds: Array<string>;
+	}> {
+		const filesIds: Array<string> = [];
+		const discussionsIds: Array<string> = [];
+		const modifier = (event: IEvent<EDataDefinition>): {[key: string]: Function} => ({
+			msg: (): void => {
+				this.update({
+					_id: event._id,
+				}, {
+					$set: {
+						'd.msg': '',
+					},
+					$currentDate: { _deletedAt: true },
+				});
 			},
-			$currentDate: { _deletedAt: true },
+			discussion: (): void => {
+				const { d = {} } = event;
+				const { drid } = d;
+				discussionsIds.push(drid);
+				this.update({
+					_id: event._id,
+				}, {
+					$currentDate: { _deletedAt: true },
+				});
+			},
+			file: (): void => {
+				const { d = {} } = event;
+				const { file = {} } = d;
+				filesIds.push(file._id);
+				this.update({
+					_id: event._id,
+				}, {
+					$unset: { 'd.file': 1 },
+					$set: { 'd.attachments': [{ color: '#FD745E', prunedText: `_${ TAPi18n.__('File_removed_by_prune') }_` }] },
+					$currentDate: { _deletedAt: true },
+				});
+			},
 		});
 
-		console.log('createPruneMessagesEvent eventMessages', result);
+		const results: Array<IEvent<EDataDefinition>> = await this.model.rawCollection().find({
+			'd.msg': { $exists: true },
+			...query,
+		}).toArray();
 
-		// console.log('createPruneMessagesEvent result nModified', typeof result.nModified, result.nModified);
+		for (let i = 0; results.length > i; i++) {
+			// identify what type of data is the current one
+			const { d: data } = results[i];
+			if (data && data.file && data.file._id) {
+				modifier(results[i]).file();
+				continue;
+			} else if (data && data.drid) {
+				modifier(results[i]).discussion();
+				continue;
+			} else {
+				modifier(results[i]).msg();
+				continue;
+			}
+		}
 
 		return {
-			count: result.nModified,
+			count: results.length,
+			filesIds,
+			discussionsIds,
 		};
 	}
 
