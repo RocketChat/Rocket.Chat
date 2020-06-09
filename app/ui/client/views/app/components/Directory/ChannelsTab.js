@@ -88,9 +88,7 @@ export function ChannelsTab() {
 						<Box display='flex' alignItems='center'>
 							<Icon name={roomTypes.getIcon(room)} color='hint' /> <Box fontScale='p2' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
 						</Box>
-						{topic && <Box fontScale='p1' color='hint' style={style}>
-							<MarkdownText>{topic}</MarkdownText>
-						</Box>}
+						{topic && <MarkdownText fontScale='p1' color='hint' style={style} content={topic} />}
 					</Box>
 				</Box>
 			</Table.Cell>

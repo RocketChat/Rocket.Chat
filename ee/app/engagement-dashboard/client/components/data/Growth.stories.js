@@ -4,7 +4,7 @@ import React from 'react';
 import { Growth } from './Growth';
 
 export default {
-	title: 'admin/engagement/data/Growth',
+	title: 'admin/enterprise/engagement/data/Growth',
 	component: Growth,
 	decorators: [(fn) => <Margins children={fn()} all='x16' />],
 };

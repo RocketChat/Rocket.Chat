@@ -3,7 +3,7 @@ import React from 'react';
 import { CounterSet } from './CounterSet';
 
 export default {
-	title: 'admin/engagement/data/CounterSet',
+	title: 'admin/enterprise/engagement/data/CounterSet',
 	component: CounterSet,
 };
 
