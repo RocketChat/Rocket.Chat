@@ -74,7 +74,7 @@ export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 	if (!mainMessage.rid) {
 		return <>
 			{expanded && <Modal.Backdrop onClick={handleClose}/> }
-			<VerticalBar.Skeleton width='full' style={expanded && style}/>
+			<VerticalBar.Skeleton width='full' style={expanded ? style : null }/>
 		</>;
 	}
 

@@ -1,3 +1,7 @@
+<template name='roomWrapper'>
+	{{> room rid=rid _id=_id }}
+</template>
+
 <template name="room">
 	<div class="main-content-flex">
 		<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
@@ -127,9 +131,11 @@
 									{{/if}}
 								{{/if}}
 
-								{{# with messageContext}}
-									{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
-								{{/with}}
+								{{#unless pageChanged }}
+									{{# with messageContext}}
+										{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+									{{/with}}
+								{{/unless}}
 
 								{{#if hasMoreNext}}
 									<li class="load-more">

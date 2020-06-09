@@ -273,8 +273,22 @@ export const dropzoneHelpers = {
 	},
 };
 
+Template.roomWrapper.helpers({
+	rid() {
+		return Template.currentData()._id();
+	},
+	_id() {
+		return Template.currentData()._id();
+	},
+});
+
 Template.room.helpers({
 	...dropzoneHelpers,
+
+	pageChanged() {
+		const { state } = Template.instance();
+		return state.get('rid') !== state.get('debounced_rid');
+	},
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -321,15 +335,15 @@ Template.room.helpers({
 	},
 
 	hasMore() {
-		return RoomHistoryManager.hasMore(this._id());
+		return RoomHistoryManager.hasMore(Template.instance().state.get('rid'));
 	},
 
 	hasMoreNext() {
-		return RoomHistoryManager.hasMoreNext(this._id());
+		return RoomHistoryManager.hasMoreNext(Template.instance().state.get('rid'));
 	},
 
 	isLoading() {
-		return RoomHistoryManager.isLoading(this._id());
+		return RoomHistoryManager.isLoading(Template.instance().state.get('rid'));
 	},
 
 	windowId() {
@@ -415,7 +429,7 @@ Template.room.helpers({
 	unreadData() {
 		const data = { count: Template.instance().state.get('count') };
 
-		const room = RoomManager.getOpenedRoomByRid(this._id());
+		const room = RoomManager.getOpenedRoomByRid(Template.instance().state.get('rid'));
 		if (room) {
 			data.since = room.unreadSince.get();
 		}
@@ -586,7 +600,7 @@ export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
 
-		if (types != null && types.length > 0 && _.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) && userCanDrop(this._id())) {
+		if (types != null && types.length > 0 && _.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) && userCanDrop(Template.instance().state.get('rid'))) {
 			e.currentTarget.classList.add('over');
 		}
 		e.stopPropagation();
@@ -620,7 +634,7 @@ export const dropzoneEvents = {
 		e.stopPropagation();
 		e.preventDefault();
 
-		if (!userCanDrop(this._id()) || !settings.get('FileUpload_Enabled')) {
+		if (!userCanDrop(Template.instance().state.get('rid')) || !settings.get('FileUpload_Enabled')) {
 			return false;
 		}
 
@@ -835,7 +849,7 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
-		const rid = this._id();
+		const rid = t.state.get('rid');
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
 			if (e.target.scrollTop < lastScrollTop) {
@@ -979,11 +993,11 @@ Template.room.events({
 			addClass.forEach((message) => $(`.messages-box #${ message }`).addClass('selected'));
 		}
 	},
-	'click .announcement'() {
-		const roomData = Session.get(`roomData${ this._id() }`);
+	'click .announcement'(_, t) {
+		const roomData = Session.get(`roomData${ t.state.get('rid') }`);
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
-			return callbacks.run(roomData.announcementDetails.callback, this._id());
+			return callbacks.run(roomData.announcementDetails.callback, t.state.get('rid'));
 		}
 
 		modal.open({
@@ -1038,11 +1052,23 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id()
-	const { _id: rid } = this.data;
+
+	this.tabBar = new RocketChatTabBar();
+
 	this.state = new ReactiveDict();
 
-	this.autorun(() => this.state.set('rid', Template.currentData()._id()));
+	this.autorunClean = (fn) => {
+		let clean;
+		return this.autorun((e) => {
+			clean && clean();
+			clean = fn(e);
+		});
+	};
 
+	this.autorun(() => {
+		this.state.set('rid', Template.currentData()._id);
+		this.tabBar.close();
+	});
 
 	const debounced = _.debounce((rid) => Tracker.afterFlush(() => this.state.set('debounced_rid', rid)), 100);
 
@@ -1050,10 +1076,9 @@ Template.room.onCreated(function() {
 
 
 	this.onFile = (filesToUpload) => {
+		const rid = this.state.get('rid');
 		fileUpload(filesToUpload, chatMessages[rid].input, { rid });
 	};
-
-	this.rid = rid;
 
 	this.subscription = new ReactiveVar();
 	this.userDetail = new ReactiveVar('');
@@ -1111,8 +1136,6 @@ Template.room.onCreated(function() {
 
 	this.groupDetail = new ReactiveVar();
 
-	this.tabBar = new RocketChatTabBar();
-
 	this.autorun(() => {
 		const rid = this.state.get('rid');
 
@@ -1134,19 +1157,19 @@ Template.room.onCreated(function() {
 				if (!role.u || !role.u._id) {
 					return;
 				}
-				ChatMessage.update({ rid: this.data._id(), 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
+				ChatMessage.update({ rid, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
 			}, // Update message to re-render DOM
 			changed: (role) => {
 				if (!role.u || !role.u._id) {
 					return;
 				}
-				ChatMessage.update({ rid: this.data._id(), 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
+				ChatMessage.update({ rid, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
 			}, // Update message to re-render DOM
 			removed: (role) => {
 				if (!role.u || !role.u._id) {
 					return;
 				}
-				ChatMessage.update({ rid: this.data._id(), 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
+				ChatMessage.update({ rid, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 			},
 		});
 
@@ -1213,23 +1236,34 @@ Template.room.onCreated(function() {
 			this.sendToBottom();
 		}
 	};
+
+
+	this.autorunClean(() => {
+		const rid = this.state.get('rid');
+		return () => {
+			this.destroy(rid);
+		};
+	});
+
+	this.destroy = (rid) => {
+		readMessage.off(rid);
+
+		window.removeEventListener('resize', this.onWindowResize);
+
+		this.observer && this.observer.disconnect();
+
+		const chatMessage = chatMessages[rid];
+		chatMessage.onDestroyed && chatMessage.onDestroyed(rid);
+
+		callbacks.remove('streamNewMessage', rid);
+	};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
 	if (this.rolesObserve) {
 		this.rolesObserve.stop();
 	}
-
-	readMessage.off(this.data._id());
-
-	window.removeEventListener('resize', this.onWindowResize);
-
-	this.observer && this.observer.disconnect();
-
-	const chatMessage = chatMessages[this.data._id()];
-	chatMessage.onDestroyed && chatMessage.onDestroyed(this.data._id());
-
-	callbacks.remove('streamNewMessage', this.data._id());
+	this.destroy(this.state.get('rid'));
 });
 
 Template.room.onRendered(function() {
@@ -1381,45 +1415,51 @@ Template.room.onRendered(function() {
 	});
 
 
-	this.autorun(() => {
+	this.autorunClean(() => {
 		const rid = this.state.get('rid');
 		readMessage.on(rid, () => this.unreadCount.set(0));
+		return () => readMessage.off(rid);
 	});
 
 	wrapper.addEventListener('scroll', updateUnreadCount);
 	// salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date());
 
-	const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
-	if (webrtc) {
-		this.autorun(() => {
-			const remoteItems = webrtc.remoteItems.get();
-			if (remoteItems && remoteItems.length > 0) {
-				this.tabBar.setTemplate('membersList');
-				this.tabBar.open();
+	this.autorun(() => {
+		const webrtc = WebRTC.getInstanceByRoomId(this.state.get('rid'));
+		if (!webrtc) {
+			return;
+		}
+
+		const remoteItems = webrtc.remoteItems.get();
+		if (remoteItems && remoteItems.length > 0) {
+			this.tabBar.setTemplate('membersList');
+			this.tabBar.open();
+		}
+
+		if (webrtc.localUrl.get()) {
+			this.tabBar.setTemplate('membersList');
+			this.tabBar.open();
+		}
+	});
+
+	this.autorunClean(() => {
+		const rid = this.state.get('rid');
+		callbacks.add('streamNewMessage', (msg) => {
+			if (rid !== msg.rid || msg.editedAt) {
+				return;
 			}
 
-			if (webrtc.localUrl.get()) {
-				this.tabBar.setTemplate('membersList');
-				this.tabBar.open();
+			if (msg.u._id === Meteor.userId()) {
+				return template.sendToBottom();
 			}
-		});
-	}
-	// callbacks.add('streamNewMessage', (msg) => {
-	// 	const rid = this.state.get('rid');
 
-	// 	if (rid !== msg.rid || msg.editedAt) {
-	// 		return;
-	// 	}
-
-	// 	if (msg.u._id === Meteor.userId()) {
-	// 		return template.sendToBottom();
-	// 	}
-
-	// 	if (!template.isAtBottom()) {
-	// 		newMessage.classList.remove('not');
-	// 	}
-	// }, callbacks.priority.MEDIUM, rid);
+			if (!template.isAtBottom()) {
+				newMessage.classList.remove('not');
+			}
+		}, callbacks.priority.MEDIUM, rid);
+		return () => callbacks.remove('streamNewMessage', rid);
+	});
 
 	this.autorun(() => {
 		const rid = this.state.get('rid');

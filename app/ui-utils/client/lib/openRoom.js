@@ -59,7 +59,7 @@ export const openRoom = async function(type, name) {
 
 			RoomManager.openedRoom = room._id;
 			BlazeLayout.render('main', {
-				center: 'room',
+				center: 'roomWrapper',
 				_id: room._id,
 			});
 

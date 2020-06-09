@@ -77,7 +77,7 @@ export function withData(WrappedComponent) {
 			return new Promise((resolve) => { ref.current = resolve; });
 		}, []);
 
-		useEffect(() => () => Threads.current.remove({}, () => {}), [text[0], type[0]]);
+		useEffect(() => () => Threads.current.remove({}, () => {}), [text[0], type[0], room._id]);
 
 		useEffect(() => {
 			if (state !== ENDPOINT_STATES.DONE || !data || !data.threads) {
@@ -196,16 +196,15 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 		if (!data[index]) {
 			return <Skeleton style={style}/>;
 		}
-		const thread = data[index];
-		const msg = normalizeThreadMessage(thread);
+		const { mentions, attachments, ...thread } = data[index];
+		const msg = normalizeThreadMessage({ attachments, ...thread });
 
 		return <Thread
 			{ ...thread }
-			is='li'
 			style={style}
 			unread={unread.includes(thread._id)}
-			mention={thread.mentions && thread.mentions.includes(user.username)}
-			all={thread.mentions && thread.mentions.includes('all')}
+			mention={mentions && mentions.includes(user.username)}
+			all={mentions && mentions.includes('all')}
 			following={thread.replies && thread.replies.includes(userId)}
 			data-id={thread._id}
 			msg={msg}

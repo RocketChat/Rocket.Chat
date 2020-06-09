@@ -9,7 +9,9 @@
 						{{> loading}}
 					</li>
 				{{else}}
+					{{#if mainMessage}}
 						{{> message groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u ignored=false}}
+					{{/if}}
 						{{#each msg in messages}}
 							{{> message hideRoles=true msg=msg room=room shouldCollapseReplies=true subscription=subscription settings=settings templatePrefix='thread-' u=u context="threads"}}
 						{{/each}}

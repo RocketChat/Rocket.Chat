@@ -390,7 +390,7 @@ Template.message.helpers({
 	},
 	actionContext() {
 		const { msg } = this;
-		return msg.actionContext;
+		return msg && msg.actionContext;
 	},
 	messageActions(group) {
 		const { msg, context: ctx } = this;
@@ -433,6 +433,9 @@ Template.message.helpers({
 	showStar() {
 		const { msg } = this;
 		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+	},
+	msg() {
+		return { ...this.msg };
 	},
 });
 

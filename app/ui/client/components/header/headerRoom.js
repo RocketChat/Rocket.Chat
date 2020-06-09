@@ -30,22 +30,22 @@ const getUserStatusText = (id) => {
 Template.headerRoom.helpers({
 	isDiscussion: () => Template.instance().state.get('discussion'),
 	hasPresence() {
-		const room = Rooms.findOne(Template.currentData()._id());
+		const room = Rooms.findOne(Template.currentData()._id);
 		return !roomTypes.getConfig(room.t).isGroupChat(room);
 	},
-	isDirect() { return Rooms.findOne(Template.currentData()._id()).t === 'd'; },
+	isDirect() { return Rooms.findOne(Template.currentData()._id).t === 'd'; },
 	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
 	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
 	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
 	uid() {
-		return getUidDirectMessage(Template.currentData()._id());
+		return getUidDirectMessage(Template.currentData()._id);
 	},
 	back() {
 		return Template.instance().data.back;
 	},
 	avatarBackground() {
-		const roomData = Session.get(`roomData${ Template.currentData()._id() }`);
+		const roomData = Session.get(`roomData${ Template.currentData()._id }`);
 		if (!roomData) { return ''; }
 		return roomTypes.getConfig(roomData.t).getAvatarPath(roomData);
 	},
@@ -58,21 +58,21 @@ Template.headerRoom.helpers({
 		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
 	roomName() {
-		const roomData = Session.get(`roomData${ Template.currentData()._id() }`);
+		const roomData = Session.get(`roomData${ Template.currentData()._id }`);
 		if (!roomData) { return ''; }
 
 		return roomTypes.getRoomName(roomData.t, roomData);
 	},
 
 	secondaryName() {
-		const roomData = Session.get(`roomData${ Template.currentData()._id() }`);
+		const roomData = Session.get(`roomData${ Template.currentData()._id }`);
 		if (!roomData) { return ''; }
 
 		return roomTypes.getSecondaryRoomName(roomData.t, roomData);
 	},
 
 	roomTopic() {
-		const roomData = Session.get(`roomData${ Template.currentData()._id() }`);
+		const roomData = Session.get(`roomData${ Template.currentData()._id }`);
 		if (!roomData || !roomData.topic) { return ''; }
 
 		let roomTopic = Markdown.parse(roomData.topic.replace(/\n/mg, ' '));
@@ -87,7 +87,7 @@ Template.headerRoom.helpers({
 	},
 
 	roomIcon() {
-		const roomData = Session.get(`roomData${ Template.currentData()._id() }`);
+		const roomData = Session.get(`roomData${ Template.currentData()._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
 		return roomTypes.getIcon(roomData);
@@ -97,21 +97,21 @@ Template.headerRoom.helpers({
 		return Template.instance().hasTokenpass.get();
 	},
 	encryptionState() {
-		const room = ChatRoom.findOne(Template.currentData()._id());
+		const room = ChatRoom.findOne(Template.currentData()._id);
 		return settings.get('E2E_Enable') && room && room.encrypted && 'encrypted';
 	},
 
 	userStatus() {
-		return getUserStatus(Template.currentData()._id()) || 'offline';
+		return getUserStatus(Template.currentData()._id) || 'offline';
 	},
 
 	userStatusText() {
-		const statusText = getUserStatusText(Template.currentData()._id());
+		const statusText = getUserStatusText(Template.currentData()._id);
 		if (statusText) {
 			return statusText;
 		}
 
-		const presence = getUserStatus(Template.currentData()._id());
+		const presence = getUserStatus(Template.currentData()._id);
 		if (presence) {
 			return t(presence);
 		}
