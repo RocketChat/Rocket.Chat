@@ -201,7 +201,6 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 
 		return <Thread
 			{ ...thread }
-			is='li'
 			style={style}
 			unread={unread.includes(thread._id)}
 			mention={thread.mentions && thread.mentions.includes(user.username)}
