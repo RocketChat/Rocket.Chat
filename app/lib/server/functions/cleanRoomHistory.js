@@ -55,7 +55,6 @@ export const cleanRoomHistory = async function({ rid, latest = new Date(), oldes
 	}
 
 	// deleting rooms
-	// TODO: delete messages from these rooms
 	for (let d = 0; result.discussionsIds.length > d; d++) {
 		deleteRoom(result.discussionsIds[d]);
 	}
