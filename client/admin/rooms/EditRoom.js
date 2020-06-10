@@ -108,7 +108,7 @@ function EditRoom({ room, onChange }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Public')}</Field.Label>
-						<RadioButton disabled={deleted} checked={roomType === 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
+						<RadioButton disabled={deleted} checked={roomType !== 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
 					</Box>
 				</Field.Row>
 			</Field>
@@ -116,7 +116,7 @@ function EditRoom({ room, onChange }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Private')}</Field.Label>
-						<RadioButton disabled={deleted} checked={roomType !== 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
+						<RadioButton disabled={deleted} checked={roomType === 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
 					</Box>
 				</Field.Row>
 			</Field>
