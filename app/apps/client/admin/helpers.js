@@ -19,6 +19,11 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
+const subscriptionActiveStatuses = [
+	'trialing',
+	'active',
+];
+
 export const handleAPIError = (error) => {
 	console.error(error);
 	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
@@ -298,7 +303,7 @@ export const appButtonProps = ({
 		};
 	}
 
-	const canTrial = purchaseType === 'subscription' && !subscriptionInfo.status;
+	const canTrial = purchaseType === 'subscription' && !subscriptionActiveStatuses.includes(subscriptionInfo.status);
 	if (canTrial) {
 		return {
 			action: 'purchase',
