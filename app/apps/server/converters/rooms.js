@@ -92,6 +92,7 @@ export class AppRoomsConverter {
 			lm: room.lastModifiedAt,
 			customFields: room.customFields,
 			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
+			...room._USERNAMES && { _USERNAMES: room._USERNAMES },
 		};
 
 		return Object.assign(newRoom, room._unmappedProperties_);
