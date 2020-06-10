@@ -1601,6 +1601,8 @@
   "FileUpload_MaxFileSize": "Maximum File Upload Size (in bytes)",
   "FileUpload_MaxFileSizeDescription": "Set it to -1 to remove the file size limitation.",
   "FileUpload_MediaType_NotAccepted": "Media Types Not Accepted",
+  "FileUpload_MediaTypeBlackList": "Blocked Media Types",
+  "FileUpload_MediaTypeBlackListDescription": "Comma-separated list of media types. This setting has priority over the Accepted Media Types.",
   "FileUpload_MediaTypeWhiteList": "Accepted Media Types",
   "FileUpload_MediaTypeWhiteListDescription": "Comma-separated list of media types. Leave it blank for accepting all media types.",
   "FileUpload_ProtectFiles": "Protect Uploaded Files",
