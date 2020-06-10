@@ -25,7 +25,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
 
-		const response = cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers });
-		return response;
+		return cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers });
 	},
 });
