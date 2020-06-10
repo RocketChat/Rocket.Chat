@@ -74,7 +74,7 @@ export const useMenuOptions = ({ app, setModal, isLoggedIn }) => {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal}/>);
-	}, [app.id, app.purchaseType]);
+	}, [app.id, app.purchaseType, isLoggedIn]);
 
 	const handleDisable = useCallback(() => {
 		const confirm = async () => {
