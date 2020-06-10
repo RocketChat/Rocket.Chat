@@ -20,9 +20,9 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client
 import { getConfig } from '../../../ui-utils/client/config';
 import { useTimeAgo } from '../../../../client/hooks/useTimeAgo';
 import ThreadListMessage, { MessageSkeleton } from './ThreadListMessage';
-import { useUserSubscription } from '../hooks/useUserSubscription';
-import { useUserRoom } from '../hooks/useUserRoom';
-import { useLocalStorage } from '../hooks/useLocalstorage';
+import { useUserSubscription } from './hooks/useUserSubscription';
+import { useUserRoom } from './hooks/useUserRoom';
+import { useLocalStorage } from './hooks/useLocalstorage';
 
 
 function clickableItem(WrappedComponent) {
@@ -213,7 +213,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 			formatDate={formatDate}
 			handleFollowButton={handleFollowButton} onClick={onClick}
 		/>;
-	}), []);
+	}), [unread]);
 
 	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver();
