@@ -102,7 +102,6 @@ class RoomEventsModel extends EventsModel {
 	public async createDeleteMessageEvent(src: string, roomId: string, _cid?: string): Promise<IEvent<IEDataUpdate<IEDataEmpty>>> {
 		src = this.ensureSrc(src);
 
-		console.log('createDeleteMessageEvent srsc', src);
 		const stub: IEventStub<IEDataUpdate<IEDataEmpty>> = {
 			_cid,
 			t: EventTypeDescriptor.DELETE_MESSAGE,
@@ -123,11 +122,20 @@ class RoomEventsModel extends EventsModel {
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
-	public async createPruneMessagesEvent(query: any): Promise<{
+	public async createPruneMessagesEvent(query: any, roomId: string): Promise<{
 		count: number;
 		filesIds: Array<string>;
 		discussionsIds: Array<string>;
 	}> {
+		const pruneEvent = await super.createEvent(getLocalSrc(), getContextQuery(roomId), {
+			t: EventTypeDescriptor.PRUNE_ROOM_MESSAGES,
+			d: {
+				query: JSON.stringify(query),
+			},
+		});
+
+		this.addRoomEvent(pruneEvent);
+
 		const filesIds: Array<string> = [];
 		const discussionsIds: Array<string> = [];
 		const modifier = (event: IEvent<EDataDefinition>): {[key: string]: Function} => ({
@@ -189,7 +197,7 @@ class RoomEventsModel extends EventsModel {
 			count: results.length,
 			filesIds,
 			discussionsIds,
-		};
+		}
 	}
 
 	// async createAddUserEvent(src, roomId, user, subscription, domainsAfterAdd) {
