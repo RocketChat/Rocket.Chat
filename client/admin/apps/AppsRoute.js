@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-import { useRouteParameter, useRoute, use } from '../../contexts/RouterContext';
+import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { Apps } from '../../../app/apps/client/orchestrator';
 import AppProvider from './AppProvider';
 import NotAuthorizedPage from '../NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';
 import MarketplacePage from './MarketplacePage';
+import AppsPage from './AppsPage';
 import AppLogsPage from './AppLogsPage';
 // import AppsWhatIsIt from './AppsWhatIsIt';
 import PageSkeleton from '../PageSkeleton';
@@ -16,6 +17,10 @@ export default function AppsRoute() {
 	const [isEnabled, setEnabled] = useState();
 
 	const appsWhatIsItRouter = useRoute('admin-apps-disabled');
+
+	const currentRoute = useCurrentRoute();
+
+	const isMarketPlace = currentRoute[0] === 'admin-marketplace';
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -38,7 +43,8 @@ export default function AppsRoute() {
 	}
 
 	return <AppProvider>
-		{!context && <MarketplacePage />}
+		{!context && isMarketPlace && <MarketplacePage />}
+		{!context && !isMarketPlace && <AppsPage />}
 		{context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version}/>}
 		{context === 'logs' && <AppLogsPage id={id}/>}
 	</AppProvider>;

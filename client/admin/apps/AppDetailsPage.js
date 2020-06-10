@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Icon, Box, Divider, Chip, Margins, Skeleton } from
 import Page from '../../components/basic/Page';
 import AppAvatar from '../../components/basic/avatar/AppAvatar';
 import ExternalLink from '../../components/basic/ExternalLink';
-import { useCurrentRoute } from '../../contexts/RouterContext';
+import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import PriceDisplay from './PriceDisplay';
 import AppStatus from './AppStatus';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -38,7 +38,7 @@ function AppDetailsPageContent({ data, setModal, isLoggedIn }) {
 				<Box fontScale='h1'>{name}</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
 					<Box fontScale='p2' mie='x4'>{t('By_author', { author: authorName })}</Box>
-			|
+					|
 					<Box mis= 'x4'>{t('Version_version', { version })}</Box>
 				</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
@@ -111,7 +111,8 @@ export default function AppDetailsPage({ id }) {
 
 	const data = useAppInfo(id);
 
-	const router = useCurrentRoute();
+	const currentRoute = useCurrentRoute();
+	const router = useRoute(currentRoute[0]);
 	const handleReturn = useCallback(() => router.push({}));
 
 	const isLoggedIn = useLoggedInCloud();
