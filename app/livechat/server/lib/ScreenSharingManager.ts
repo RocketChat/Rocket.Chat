@@ -1,32 +1,33 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { IScreenShareProvider } from './screenSharing/IScreenShareProvider';
+import { Messages } from '../../../models/server';
+import { IScreenSharingProvider } from './screenSharing/IScreenSharingProvider';
 
 export class ScreenSharingManager {
 	providerName = '';
 
-	private providers = new Map<string, IScreenShareProvider>();
+	private providers = new Map<string, IScreenSharingProvider>();
 
-	private screenShareProvider: IScreenShareProvider | any = null;
+	private screenShareProvider: IScreenSharingProvider | any = null;
 
 	constructor(providerName: string) {
 		this.providerName = providerName;
 	}
 
 	enabled(): any {
-		return settings.get('Livechat_screenshare_enabled');
+		return settings.get('Livechat_screen_sharing_enabled');
 	}
 
 	setProviderName(name: string): void {
 		this.providerName = name;
 	}
 
-	registerProvider(name: string, Provider: IScreenShareProvider): void {
+	registerProvider(name: string, Provider: IScreenSharingProvider): void {
 		this.providers.set(name, Provider);
 	}
 
-	getProvider(): IScreenShareProvider | any {
+	getProvider(): IScreenSharingProvider | any {
 		if (!this.providers.has(this.providerName)) {
 			throw new Meteor.Error('error-screensharing-provider-not-available');
 		}
@@ -43,5 +44,9 @@ export class ScreenSharingManager {
 
 	getProviderInfo(): any {
 		return this.screenShareProvider.getInfo();
+	}
+
+	requestScreenSharing(roomId: string, user: any): void {
+		Messages.createWithTypeRoomIdMessageAndUser('request_screen_sharing_access', roomId, '', user, {});
 	}
 }

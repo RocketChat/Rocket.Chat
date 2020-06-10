@@ -11,10 +11,11 @@ Meteor.startup(function() {
 		public: true,
 	});
 
-	settings.add('Livechat_screenshare_enabled', false, {
+	settings.add('Livechat_screen_sharing_enabled', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		public: true,
+		section: 'Screen_Sharing',
 	});
 
 	settings.add('Livechat_title', 'Rocket.Chat', {

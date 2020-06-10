@@ -1,6 +1,6 @@
-import { IScreenShareProvider } from './IScreenShareProvider';
+import { IScreenSharingProvider } from './IScreenSharingProvider';
 
-export class CobrowseScreenShareProvider implements IScreenShareProvider {
+export class CobrowseProvider implements IScreenSharingProvider {
 	config = {
 		name: 'cobrowse.io',
 	}

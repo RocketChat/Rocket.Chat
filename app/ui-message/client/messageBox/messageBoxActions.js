@@ -63,12 +63,12 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 	},
 });
 
-messageBox.actions.add('Screen_share', 'Request_screen_share', {
-	id: 'request-screen-share',
+messageBox.actions.add('Screen_sharing', 'Request_Screen_Sharing', {
+	id: 'request-screen-sharing',
 	icon: 'video',
-	condition: () => settings.get('Livechat_screenshare_enabled'),
+	condition: () => settings.get('Livechat_screen_sharing_enabled'),
 	action: ({ rid }) => {
-		Meteor.call('livechat:requestScreenshare', rid);
+		Meteor.call('livechat:requestScreenSharing', rid);
 	},
 });
 

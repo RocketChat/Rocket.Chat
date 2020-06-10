@@ -56,7 +56,7 @@ MessageTypes.registerType({
 });
 
 MessageTypes.registerType({
-	id: 'request_screenshare_access',
+	id: 'request_screen_sharing_access',
 	system: true,
-	message: 'request_screenshare_access',
+	message: 'request_screen_sharing_access',
 });
