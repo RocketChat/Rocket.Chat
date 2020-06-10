@@ -3,8 +3,8 @@
 
 	min-width: 18px;
 	min-height: 18px;
-	padding: 2px 5px;
 	margin: 0 3px;
+	padding: 2px 5px;
 
 	color: var(--badge-text-color);
 	border-radius: var(--badge-radius);
