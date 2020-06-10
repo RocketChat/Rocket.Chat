@@ -36,25 +36,30 @@ Template.sidebarItem.helpers({
 	showUnread() {
 		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
+	unread() {
+		const { unread = 0, tunread = [] } = this;
+		return unread + tunread.length;
+	},
 	badgeClass() {
-		const { t, unread, userMentions, groupMentions } = this;
+		const { unread, userMentions, groupMentions, tunread = [] } = this;
 
-		const badges = ['badge'];
-
-		if (unread) {
-			badges.push('badge--unread');
-			if (t === 'd') {
-				badges.push('badge--dm');
-			}
-		}
+		console.log(this);
 
 		if (userMentions) {
-			badges.push('badge--user-mentions');
-		} else if (groupMentions) {
-			badges.push('badge--group-mentions');
+			return 'badge badge--user-mentions';
 		}
 
-		return badges.join(' ');
+		if (groupMentions) {
+			return 'badge badge--group-mentions';
+		}
+
+		if (tunread.length) {
+			return 'badge badge--thread';
+		}
+
+		if (unread) {
+			return 'badge';
+		}
 	},
 });
 
