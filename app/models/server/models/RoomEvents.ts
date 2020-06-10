@@ -138,7 +138,7 @@ class RoomEventsModel extends EventsModel {
 
 		const filesIds: Array<string> = [];
 		const discussionsIds: Array<string> = [];
-		const modifier = (event: IEvent<EDataDefinition>): {[key: string]: Function} => ({
+		const modifier = (event: IEvent<IEDataMessage>): {[key: string]: Function} => ({
 			msg: (): void => {
 				this.update({
 					_id: event._id,
@@ -150,8 +150,8 @@ class RoomEventsModel extends EventsModel {
 				});
 			},
 			discussion: (): void => {
-				const { d = {} } = event;
-				const { drid } = d;
+				const { d } = event;
+				const { drid = '' } = d;
 				discussionsIds.push(drid);
 				this.update({
 					_id: event._id,
@@ -160,8 +160,8 @@ class RoomEventsModel extends EventsModel {
 				});
 			},
 			file: (): void => {
-				const { d = {} } = event;
-				const { file = {} } = d;
+				const { d } = event;
+				const { file = { _id: '' } } = d;
 				filesIds.push(file._id);
 				this.update({
 					_id: event._id,
@@ -173,7 +173,7 @@ class RoomEventsModel extends EventsModel {
 			},
 		});
 
-		const results: Array<IEvent<EDataDefinition>> = await this.model.rawCollection().find({
+		const results: Array<IEvent<IEDataMessage>> = await this.model.rawCollection().find({
 			'd.msg': { $exists: true },
 			...query,
 		}).toArray();

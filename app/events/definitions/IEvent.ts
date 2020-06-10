@@ -18,7 +18,7 @@ export enum EventTypeDescriptor {
 	// Rooms
 	ROOM = 'room', // create new room
 	DELETE_ROOM = 'droom', // delete room
-	PRUNE_ROOM_MESSAGES = 'prmsg', // prune messages from room
+	PRUNE_ROOM_MESSAGES = 'prune', // prune messages from room
 	MESSAGE = 'msg', // new message
 	EDIT_MESSAGE = 'emsg', // edit a message content
 	DELETE_MESSAGE = 'dmsg', // delete message

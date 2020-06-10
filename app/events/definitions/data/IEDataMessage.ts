@@ -12,6 +12,12 @@ export interface IEDataMessage {
 	mentions?: Array<string>;
 	channels?: Array<string>;
 	reactions?: Array<object>;
+	drid?: string;
+	file?: {
+		_id: string;
+		name: string;
+		type: string;
+	};
 	pinned?: Array<object>;
 	starred?: Array<object>;
 	deleted?: boolean;
