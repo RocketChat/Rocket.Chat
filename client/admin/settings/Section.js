@@ -1,13 +1,16 @@
 import { Accordion, Box, Button, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import {
+	usePrivateSettingsSection,
+	usePrivateSettingsSectionChangedState,
+} from '../../contexts/PrivateSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Setting } from './Setting';
-import { useSection, useSectionChangedState } from './SettingsState';
 
 export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
-	const section = useSection(groupId, sectionName);
-	const changed = useSectionChangedState(groupId, sectionName);
+	const section = usePrivateSettingsSection(groupId, sectionName);
+	const changed = usePrivateSettingsSectionChangedState(groupId, sectionName);
 
 	const t = useTranslation();
 

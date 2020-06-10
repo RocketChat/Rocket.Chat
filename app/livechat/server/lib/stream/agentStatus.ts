@@ -9,19 +9,31 @@ let actionTimeout = 60000;
 let action = 'none';
 let comment = '';
 
-settings.get('Livechat_agent_leave_action_timeout', function(_key: string, value: number) {
+settings.get('Livechat_agent_leave_action_timeout', (_key, value) => {
+	if (typeof value !== 'number') {
+		return;
+	}
 	actionTimeout = value * 1000;
 });
 
-settings.get('Livechat_agent_leave_action', function(_key: string, value: boolean) {
+settings.get('Livechat_agent_leave_action', (_key, value) => {
+	if (typeof value !== 'boolean') {
+		return;
+	}
 	monitorAgents = value;
 });
 
-settings.get('Livechat_agent_leave_action', function(_key: string, value: string) {
+settings.get('Livechat_agent_leave_action', (_key, value) => {
+	if (typeof value !== 'string') {
+		return;
+	}
 	action = value;
 });
 
-settings.get('Livechat_agent_leave_comment', function(_key: string, value: string) {
+settings.get('Livechat_agent_leave_comment', (_key, value) => {
+	if (typeof value !== 'string') {
+		return;
+	}
 	comment = value;
 });
 
