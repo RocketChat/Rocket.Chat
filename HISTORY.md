@@ -1,4 +1,26 @@
 
+# 3.3.2
+`2020-06-10  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Fix invalid develop payload to release service ([#17799](https://github.com/RocketChat/Rocket.Chat/pull/17799))
+
+- Submit a payload to the release service when a release happens ([#17775](https://github.com/RocketChat/Rocket.Chat/pull/17775))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@graywolf336](https://github.com/graywolf336)
+
 # 3.3.1
 `2020-06-10  ·  8 🐛  ·  3 🔍  ·  10 👩‍💻👨‍💻`
 
