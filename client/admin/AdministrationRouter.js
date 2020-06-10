@@ -5,10 +5,11 @@ import PageSkeleton from './PageSkeleton';
 import { createTemplateForComponent } from '../reactAdapters';
 import PrivilegedSettingsProvider from './PrivilegedSettingsProvider';
 
+createTemplateForComponent('adminFlex', () => import('./sidebar/AdminSidebar'));
+
 function AdministrationRouter({ lazyRouteComponent, ...props }) {
 	useEffect(() => {
-		const templateName = createTemplateForComponent('AdminSidebar', () => import('./sidebar/AdminSidebar'));
-		SideNav.setFlex(templateName);
+		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();
 	}, []);
 
