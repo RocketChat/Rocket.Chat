@@ -158,6 +158,18 @@ class RoomEventsModel extends EventsModel {
 				}, {
 					$currentDate: { _deletedAt: true },
 				});
+
+				this.model.rawCollection().updateMany({
+					rid: { $eq: drid },
+					t: { $eq: 'msg' },
+				}, {
+					$set: {
+						'd.msg': '',
+						'd.attachments': [],
+					},
+					$unset: { 'd.file': 1 },
+					$currentDate: { _deletedAt: true },
+				});
 			},
 			file: (): void => {
 				const { d } = event;
