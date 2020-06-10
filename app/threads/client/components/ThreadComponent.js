@@ -74,7 +74,9 @@ export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 	if (!mainMessage.rid) {
 		return <>
 			{expanded && <Modal.Backdrop onClick={handleClose}/> }
-			<VerticalBar.Skeleton width='full' style={expanded && style}/>
+			<Box width='380px' flexGrow={1} { ...!expanded && { position: 'relative' }}>
+				<VerticalBar.Skeleton rcx-thread-view width='full' style={style} display='flex' flexDirection='column' position='absolute' { ...!expanded && { width: '380px' } }/>
+			</Box>
 		</>;
 	}
 

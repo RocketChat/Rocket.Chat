@@ -186,7 +186,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			const { input } = chatMessages[message.rid + (message.tmid ? `-${ message.tmid }` : '')];
+			const { input } = getChatMessagesFrom(message);
 			const $input = $(input);
 
 			let messages = $input.data('reply') || [];
