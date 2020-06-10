@@ -1,24 +1,18 @@
-import React, { lazy, useMemo, Suspense, useEffect } from 'react';
+import React, { lazy, useMemo, Suspense } from 'react';
 
-import { SideNav } from '../../app/ui-utils/client';
-import PageSkeleton from './PageSkeleton';
-import { createTemplateForComponent } from '../reactAdapters';
+import AdministrationLayout from './AdministrationLayout';
 import PrivilegedSettingsProvider from './PrivilegedSettingsProvider';
-
-createTemplateForComponent('adminFlex', () => import('./sidebar/AdminSidebar'));
+import PageSkeleton from './PageSkeleton';
 
 function AdministrationRouter({ lazyRouteComponent, ...props }) {
-	useEffect(() => {
-		SideNav.setFlex('adminFlex');
-		SideNav.openFlex();
-	}, []);
-
 	const LazyRouteComponent = useMemo(() => lazy(lazyRouteComponent), [lazyRouteComponent]);
 
 	return <PrivilegedSettingsProvider>
-		<Suspense fallback={<PageSkeleton />}>
-			<LazyRouteComponent {...props} />
-		</Suspense>
+		<AdministrationLayout>
+			<Suspense fallback={<PageSkeleton />}>
+				<LazyRouteComponent {...props} />
+			</Suspense>
+		</AdministrationLayout>
 	</PrivilegedSettingsProvider>;
 }
 
