@@ -172,7 +172,7 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], options = {}, ignoreThreads = true) {
 		const query = {
 			rid,
 			ts,
@@ -181,6 +181,11 @@ export class Messages extends Base {
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
 		}
 
 		if (ignoreDiscussion) {
@@ -900,7 +905,7 @@ export class Messages extends Base {
 		return this.remove({ rid: { $in: rids } });
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = []) {
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {
 		const query = {
 			rid,
 			ts,
@@ -912,6 +917,11 @@ export class Messages extends Base {
 
 		if (ignoreDiscussion) {
 			query.drid = { $exists: 0 };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
 		}
 
 		if (users.length) {

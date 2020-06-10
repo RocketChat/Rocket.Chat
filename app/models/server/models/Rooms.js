@@ -982,6 +982,18 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	saveRetentionIgnoreThreadsById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			[value === true ? '$set' : '$unset']: {
+				'retention.ignoreThreads': true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	saveRetentionFilesOnlyById(_id, value) {
 		const query = { _id };
 
