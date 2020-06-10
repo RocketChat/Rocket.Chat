@@ -38,11 +38,11 @@ export default function ThreadListMessage({ _id, msg, following, username, ts, r
 				<Timestamp ts={formatDate(ts)}/>
 			</Header>
 			<Body><RawText>{msg}</RawText></Body>
-			<Box mi='neg-x8' flexDirection='row' display='flex' alignItems='baseline' mb='x8'>
-				<Margins inline='x4'>
-					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='1 reply'><Icon name='thread' size='x20' mi='x4'/> {replies} </Box>
-					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='2 participants'><Icon name='user' size='x20' mi='x4'/> {participants} </Box>
-					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' aria-label='Last Message' withTruncatedText><Icon name='clock' size='x20' mi='x4' /> {formatDate(tlm)} </Box>
+			<Box mi='neg-x2' flexDirection='row' display='flex' alignItems='baseline' mbs='x8'>
+				<Margins inline='x2'>
+					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600'><Icon name='thread' size='x20' mi='x2'/> {replies} </Box>
+					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600'><Icon name='user' size='x20' mi='x2'/> {participants} </Box>
+					<Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600' withTruncatedText flexShrink={1}><Icon name='clock' size='x20' mi='x2' /> {formatDate(tlm)} </Box>
 				</Margins>
 			</Box>
 		</Container>
@@ -83,7 +83,7 @@ function Container({ children, ...props }) {
 }
 
 function Header({ children }) {
-	return <Box rcx-message__header display='flex' flexGrow={1} flexShrink={1} withTruncatedText><Box mi='neg-x2' display='flex' flexDirection='row' alignItems='baseline' withTruncatedText flexGrow={1	} flexShrink={1}><Margins inline='x2'> {children} </Margins></Box></Box>;
+	return <Box rcx-message__header display='flex' flexGrow={0} flexShrink={1} withTruncatedText><Box mi='neg-x2' display='flex' flexDirection='row' alignItems='baseline' withTruncatedText flexGrow={1	} flexShrink={1}><Margins inline='x2'> {children} </Margins></Box></Box>;
 }
 
 function Username(props) {
@@ -99,8 +99,9 @@ const style = {
 	overflow: 'hidden',
 	WebkitLineClamp: 2,
 	WebkitBoxOrient: 'vertical',
+	wordBreak: 'break-all',
 };
 
 function Body(props) {
-	return <Box rcx-message__body flexShrink={1} style={style} height='34px' {...props}/>;
+	return <Box rcx-message__body flexShrink={1} style={style} lineHeight='1.45' minHeight='40px' {...props}/>;
 }
