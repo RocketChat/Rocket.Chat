@@ -54,6 +54,8 @@ Template.messageBoxAudioMessage.helpers({
 			&& !Template.instance().isMicrophoneDenied.get()
 			&& settings.get('FileUpload_Enabled')
 			&& settings.get('Message_AudioRecorderEnabled')
+			&& (!settings.get('FileUpload_MediaTypeBlackList')
+				|| !settings.get('FileUpload_MediaTypeBlackList').match(/audio\/mp3|audio\/\*/i))
 			&& (!settings.get('FileUpload_MediaTypeWhiteList')
 				|| settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	},
