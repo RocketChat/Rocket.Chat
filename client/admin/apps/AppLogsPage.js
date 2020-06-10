@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Box, Button, ButtonGroup, Icon, Accordion, Skeleton, Margins, Pagination } from '@rocket.chat/fuselage';
 
-import { useRoute } from '../../contexts/RouterContext';
+import { useCurrentRoute } from '../../contexts/RouterContext';
 import { useAppWithLogs } from './hooks/useAppWithLogs';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -42,7 +42,7 @@ export default function AppLogsPage({ id, ...props }) {
 
 	const [data, total] = useAppWithLogs({ id, cache, itemsPerPage, current });
 
-	const router = useRoute('admin-apps');
+	const router = useCurrentRoute();
 	const handleReturn = useCallback(() => router.push({}), []);
 
 	const {

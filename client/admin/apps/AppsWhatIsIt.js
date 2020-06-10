@@ -13,7 +13,7 @@ function AppsWhatIsIt() {
 
 	const enable = useMethod('apps/go-enable');
 
-	const appsRouter = useRoute('admin-apps');
+	const appsRouter = useRoute('admin-marketplace');
 
 	const handleClick = useCallback(async () => {
 		try {

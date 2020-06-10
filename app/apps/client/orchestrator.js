@@ -53,14 +53,14 @@ class AppClientOrchestrator {
 	registerAdminMenuItems = () => {
 		registerAdminSidebarItem({
 			icon: 'cube',
-			href: 'apps',
+			href: 'admin-apps',
 			i18nLabel: 'Apps',
 			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
 		});
 
 		registerAdminSidebarItem({
 			icon: 'cube',
-			href: 'admin-apps',
+			href: 'admin-marketplace',
 			i18nLabel: 'Marketplace',
 			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
 		});

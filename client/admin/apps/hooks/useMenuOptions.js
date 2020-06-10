@@ -7,7 +7,7 @@ import { Modal } from '../../../components/basic/Modal';
 import { appEnabledStatuses, warnStatusChange, handleAPIError } from '../helpers';
 import { IframeModal } from '../IframeModal';
 import { CloudLoginModal } from '../CloudLoginModal';
-import { useRoute } from '../../../contexts/RouterContext';
+import { useCurrentRoute } from '../../../contexts/RouterContext';
 
 const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }) => {
 	const t = useTranslation();
@@ -31,7 +31,7 @@ const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, .
 
 export const useMenuOptions = ({ app, setModal, isLoggedIn }) => {
 	const t = useTranslation();
-	const router = useRoute('admin-apps');
+	const router = useCurrentRoute();
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);

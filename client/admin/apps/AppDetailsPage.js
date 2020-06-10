@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Icon, Box, Divider, Chip, Margins, Skeleton } from
 import Page from '../../components/basic/Page';
 import AppAvatar from '../../components/basic/avatar/AppAvatar';
 import ExternalLink from '../../components/basic/ExternalLink';
-import { useRoute } from '../../contexts/RouterContext';
+import { useCurrentRoute } from '../../contexts/RouterContext';
 import PriceDisplay from './PriceDisplay';
 import AppStatus from './AppStatus';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -111,7 +111,7 @@ export default function AppDetailsPage({ id }) {
 
 	const data = useAppInfo(id);
 
-	const router = useRoute('admin-apps');
+	const router = useCurrentRoute();
 	const handleReturn = useCallback(() => router.push({}));
 
 	const isLoggedIn = useLoggedInCloud();

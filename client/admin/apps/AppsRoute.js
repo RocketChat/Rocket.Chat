@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
+import { useRouteParameter, useRoute, use } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { Apps } from '../../../app/apps/client/orchestrator';
 import AppProvider from './AppProvider';

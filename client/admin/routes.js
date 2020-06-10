@@ -38,6 +38,11 @@ registerAdminRoute('/custom-sounds/:context?/:id?', {
 });
 
 registerAdminRoute('/marketplace/:context?/:id?/:version?', {
+	name: 'admin-marketplace',
+	lazyRouteComponent: () => import('./apps/AppsRoute'),
+});
+
+registerAdminRoute('/apps/:context?/:id?/:version?', {
 	name: 'admin-apps',
 	lazyRouteComponent: () => import('./apps/AppsRoute'),
 });

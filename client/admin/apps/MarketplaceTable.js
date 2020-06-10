@@ -43,7 +43,7 @@ export function MarketplaceTable({ setModal }) {
 
 	const isLoggedIn = useLoggedInCloud();
 
-	const router = useRoute('admin-apps');
+	const router = useRoute('admin-marketplace');
 
 	const onClick = (id, version) => () => router.push({
 		context: 'details',
