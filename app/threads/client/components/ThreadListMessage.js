@@ -25,10 +25,30 @@ export function NotificationStatusUnread(props) {
 	return <NotificationStatus label='Unread' bg='primary-500' {...props} />;
 }
 
-export default function ThreadListMessage({ _id, msg, following, username, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, ...props }) {
+function isIterable(obj) {
+	// checks for null and undefined
+	if (obj == null) {
+		return false;
+	}
+	return typeof obj[Symbol.iterator] === 'function';
+}
+
+const followStyle = css`{
+	& > .rcx-message__container > .rcx-contextual-message__follow {
+		opacity: 0;
+	}
+	.rcx-contextual-message__follow:focus,
+	&:hover > .rcx-message__container > .rcx-contextual-message__follow,
+	&:focus > .rcx-message__container > .rcx-contextual-message__follow {
+		opacity: 1
+	}
+}`;
+
+export default function ThreadListMessage({ _id, msg, following, username, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, className = [], ...props }) {
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
-	return <Box rcx-message pi='x20' pb='x16' pbs='x16' display='flex' {...props}>
+
+	return <Box rcx-contextual-message pi='x20' pb='x16' pbs='x16' display='flex' {...props} className={[...isIterable(className) ? className : [className], !following && followStyle].filter(Boolean)}>
 		<Container mb='neg-x2'>
 			<UserAvatar username={username} rcx-message__avatar size='x36'/>
 		</Container>
@@ -47,7 +67,7 @@ export default function ThreadListMessage({ _id, msg, following, username, ts, r
 			</Box>
 		</Container>
 		<Container alignItems='center'>
-			<Button small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></Button>
+			<Button rcx-contextual-message__follow small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></Button>
 			{
 				(mention && <NotificationStatusMe t={t} mb='x24'/>)
 				|| (all && <NotificationStatusAll t={t} mb='x24'/>)
@@ -87,7 +107,7 @@ function Header({ children }) {
 }
 
 function Username(props) {
-	return <Box rcx-message__username color='neutral-800' fontSize='x16' fontWeight='600' flexShrink={1} withTruncatedText {...props}/>;
+	return <Box rcx-message__username color='neutral-800' fontSize='x14' fontWeight='600' flexShrink={1} withTruncatedText {...props}/>;
 }
 
 function Timestamp({ ts }) {
