@@ -35,6 +35,7 @@ export type PrivilegedSettingsState = {
 
 type EqualityFunction<T> = (a: T, b: T) => boolean;
 
+// TODO: split editing into another context
 type PrivilegedSettingsContextValue = {
 	authorized: boolean;
 	loading: boolean;

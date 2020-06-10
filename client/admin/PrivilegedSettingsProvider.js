@@ -1,6 +1,7 @@
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
@@ -72,23 +73,19 @@ const settingsReducer = (states, { type, payload }) => {
 function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	const [isLoading, setLoading] = useState(true);
 
-	const [subscribers] = useState(new Set());
+	const subscribersRef = useRef();
+	if (!subscribersRef.current) {
+		subscribersRef.current = new Set();
+	}
 
 	const stateRef = useRef({ settings: [], persistedSettings: [] });
 
-	const enhancedReducer = useCallback((state, action) => {
-		const newState = settingsReducer(state, action);
+	const [state, dispatch] = useReducer(settingsReducer, { settings: [], persistedSettings: [] });
+	stateRef.current = state;
 
-		stateRef.current = newState;
-
-		subscribers.forEach((subscriber) => {
-			subscriber(newState);
-		});
-
-		return newState;
-	}, [settingsReducer, subscribers]);
-
-	const [, dispatch] = useReducer(enhancedReducer, { settings: [], persistedSettings: [] });
+	subscribersRef.current.forEach((subscriber) => {
+		subscriber(state);
+	});
 
 	const collectionsRef = useRef({});
 
@@ -155,21 +152,21 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 
 	const updateTimersRef = useRef({});
 
-	const updateAtCollection = useCallback(({ _id, ...data }) => {
+	const updateAtCollection = useMutableCallback(({ _id, ...data }) => {
 		const { current: { settingsCollection } } = collectionsRef;
 		const { current: updateTimers } = updateTimersRef;
 		clearTimeout(updateTimers[_id]);
 		updateTimers[_id] = setTimeout(() => {
 			settingsCollection.update(_id, { $set: data });
 		}, 70);
-	}, [collectionsRef, updateTimersRef]);
+	});
 
-	const hydrate = useCallback((changes) => {
+	const hydrate = useMutableCallback((changes) => {
 		changes.forEach(updateAtCollection);
 		dispatch({ type: 'hydrate', payload: changes });
-	}, [updateAtCollection, dispatch]);
+	});
 
-	const isDisabled = useCallback(({ blocked, enableQuery }) => {
+	const isDisabled = useMutableCallback(({ blocked, enableQuery }) => {
 		if (blocked) {
 			return true;
 		}
@@ -182,19 +179,17 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 
 		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
 		return !queries.every((query) => !!settingsCollection.findOne(query));
-	}, [collectionsRef]);
+	});
 
 	const contextValue = useMemo(() => ({
 		authorized: true,
 		loading: isLoading,
-		subscribers,
+		subscribers: subscribersRef.current,
 		stateRef,
 		hydrate,
 		isDisabled,
 	}), [
 		isLoading,
-		subscribers,
-		stateRef,
 		hydrate,
 		isDisabled,
 	]);
