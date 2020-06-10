@@ -2,7 +2,6 @@ import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/
 import { UiKitMessage, UiKitComponent, kitContext, messageParser } from '@rocket.chat/fuselage-ui-kit';
 import React, { useRef, useEffect } from 'react';
 
-import RawText from '../../../../client/components/basic/RawText';
 import { renderMessageBody } from '../../../ui-utils/client';
 import * as ActionManager from '../ActionManager';
 
@@ -12,7 +11,7 @@ messageParser.text = ({ text, type } = {}) => {
 		return text;
 	}
 
-	return <RawText>{renderMessageBody({ msg: text })}</RawText>;
+	return <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
 };
 
 export function MessageBlock({ mid: _mid, rid, blocks, appId }) {

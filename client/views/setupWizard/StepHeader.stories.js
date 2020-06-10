@@ -4,7 +4,7 @@ import React from 'react';
 import { StepHeader } from './StepHeader';
 
 export default {
-	title: 'setupWizard/StepHeader',
+	title: 'views/setupWizard/StepHeader',
 	component: StepHeader,
 };
 

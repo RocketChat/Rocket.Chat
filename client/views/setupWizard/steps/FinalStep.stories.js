@@ -3,7 +3,7 @@ import React from 'react';
 import FinalStep from './FinalStep';
 
 export default {
-	title: 'setupWizard/steps/FinalStep',
+	title: 'views/setupWizard/steps/FinalStep',
 	component: FinalStep,
 };
 

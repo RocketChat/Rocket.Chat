@@ -4,7 +4,7 @@ import React from 'react';
 import { NegativeGrowthSymbol } from './NegativeGrowthSymbol';
 
 export default {
-	title: 'admin/engagement/data/NegativeGrowthSymbol',
+	title: 'admin/enterprise/engagement/data/NegativeGrowthSymbol',
 	component: NegativeGrowthSymbol,
 	decorators: [(fn) => <Margins children={fn()} all='x16' />],
 };
