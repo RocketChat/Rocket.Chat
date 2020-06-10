@@ -45113,6 +45113,34 @@
           ]
         }
       ]
+    },
+    "3.3.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17799",
+          "title": "Fix invalid develop payload to release service",
+          "userLogin": "graywolf336",
+          "contributors": [
+            "graywolf336",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17775",
+          "title": "Submit a payload to the release service when a release happens",
+          "userLogin": "graywolf336",
+          "contributors": [
+            "graywolf336"
+          ]
+        }
+      ]
     }
   }
 }
