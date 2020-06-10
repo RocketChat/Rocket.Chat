@@ -197,7 +197,7 @@ class RoomEventsModel extends EventsModel {
 			count: results.length,
 			filesIds,
 			discussionsIds,
-		}
+		};
 	}
 
 	// async createAddUserEvent(src, roomId, user, subscription, domainsAfterAdd) {
