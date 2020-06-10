@@ -1,6 +1,7 @@
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Tracker } from 'meteor/tracker';
-import { createContext, useContext, RefObject, useState, useEffect, useLayoutEffect } from 'react';
+import { createContext, useContext, RefObject, useState, useEffect, useLayoutEffect, useMemo, useCallback } from 'react';
+import { useSubscription } from 'use-subscription';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useBatchSettingsDispatch } from './SettingsContext';
@@ -8,8 +9,8 @@ import { useToastMessageDispatch } from './ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from './TranslationContext';
 import { useUser } from './UserContext';
 
-type PrivilegedSetting = object & {
-	_id: unknown;
+export type PrivilegedSetting = object & {
+	_id: string;
 	type: string;
 	blocked: boolean;
 	enableQuery: unknown;
@@ -20,12 +21,14 @@ type PrivilegedSetting = object & {
 	packageValue: unknown;
 	packageEditor: unknown;
 	editor: unknown;
+	sorter: string;
+	i18nLabel: string;
 	disabled?: boolean;
 	update?: () => void;
 	reset?: () => void;
 };
 
-type PrivilegedSettingsState = {
+export type PrivilegedSettingsState = {
 	settings: PrivilegedSetting[];
 	persistedSettings: PrivilegedSetting[];
 };
@@ -53,7 +56,47 @@ export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContext
 	isDisabled: () => false,
 });
 
-export const usePrivilegedSettingsAuthorized = (): boolean => useContext(PrivilegedSettingsContext).authorized;
+export const usePrivilegedSettingsAuthorized = (): boolean =>
+	useContext(PrivilegedSettingsContext).authorized;
+
+export const usePrivilegedSettingsGroups = (filter?: string): any => {
+	const { subscribers, stateRef } = useContext(PrivilegedSettingsContext);
+	const t = useTranslation();
+
+	const getCurrentValue = useCallback(() => {
+		const filterRegex = filter ? new RegExp(filter, 'i') : null;
+
+		const filterPredicate = (setting: PrivilegedSetting): boolean =>
+			!filterRegex || filterRegex.test(t(setting.i18nLabel || setting._id));
+
+		const groupIds = Array.from(new Set(
+			(stateRef.current?.persistedSettings ?? [])
+				.filter(filterPredicate)
+				.map((setting) => setting.group || setting._id),
+		));
+
+		return (stateRef.current?.persistedSettings ?? [])
+			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
+			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
+	}, [filter]);
+
+	const subscribe = useCallback((cb) => {
+		const handleUpdate = (): void => {
+			cb(getCurrentValue());
+		};
+
+		subscribers.add(handleUpdate);
+
+		return (): void => {
+			subscribers.delete(handleUpdate);
+		};
+	}, [getCurrentValue]);
+
+	return useSubscription(useMemo(() => ({
+		getCurrentValue,
+		subscribe,
+	}), [getCurrentValue, subscribe]));
+};
 
 const useSelector = <T>(
 	selector: (state: PrivilegedSettingsState) => T,

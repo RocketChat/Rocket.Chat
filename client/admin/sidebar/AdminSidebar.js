@@ -1,6 +1,7 @@
-import React, { useCallback, useState, useMemo } from 'react';
-import { Box, Button, Icon, SearchInput, Scrollable, Skeleton } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
+import { Box, Button, Icon, SearchInput, Scrollable, Skeleton } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState, useMemo } from 'react';
 
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -8,8 +9,8 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { sidebarItems } from '../sidebarItems';
-import { usePrivilegedSettingsGroupsFiltered } from './useSettingsGroupsFiltered';
 import PrivilegedSettingsProvider from '../PrivilegedSettingsProvider';
+import { usePrivilegedSettingsGroups } from '../../contexts/PrivilegedSettingsContext';
 
 const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
 	if (permissionGranted && !permissionGranted()) { return null; }
@@ -68,7 +69,7 @@ const SidebarItemsAssembler = ({ items, currentPath }) => {
 const AdminSidebarPages = ({ currentPath }) => {
 	const items = useReactiveValue(() => sidebarItems.get());
 
-	return <Box is='ul' display='flex' flexDirection='column' flexShrink={0}>
+	return <Box display='flex' flexDirection='column' flexShrink={0}>
 		{useMemo(() => <SidebarItemsAssembler items={items} currentPath={currentPath}/>, [items, currentPath])}
 	</Box>;
 };
@@ -78,19 +79,30 @@ const AdminSidebarSettings = ({ currentPath }) => {
 	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
 
-	const [groups, loading] = usePrivilegedSettingsGroupsFiltered(filter);
-
-	const showGroups = !!groups.length;
+	const groups = usePrivilegedSettingsGroups(useDebouncedValue(filter, 400));
+	const isLoadingGroups = false; // TODO: get from PrivilegedSettingsContext
 
 	return <Box is='section' display='flex' flexDirection='column' flexShrink={0}>
 		<Box mi='x24' mb='x16' fontScale='p2' color='hint'>{t('Settings')}</Box>
 		<Box pi='x24' mb='x8' display='flex'>
-			<Box is={SearchInput} border='0' value={filter} onChange={handleChange} addon={<Icon name='magnifier' size='x20'/>}/>
+			<SearchInput
+				value={filter}
+				onChange={handleChange}
+				addon={<Icon name='magnifier' size='x20'/>}
+				className={['asdsads']}
+			/>
 		</Box>
-		<Box is='ul' display='flex' flexDirection='column'>
-			{loading && <Skeleton/>}
-			{!loading && showGroups && <SidebarItemsAssembler items={groups} currentPath={currentPath}/>}
-			{!loading && !showGroups && <Box pi='x28' mb='x4' color='hint'>{t('Nothing_found')}</Box>}
+		<Box display='flex' flexDirection='column'>
+			{isLoadingGroups && <Skeleton/>}
+			{!isLoadingGroups && !!groups.length && <SidebarItemsAssembler
+				items={groups.map((group) => ({
+					name: t(group.i18nLabel || group._id),
+					href: 'admin',
+					pathGroup: group._id,
+				}))}
+				currentPath={currentPath}
+			/>}
+			{!isLoadingGroups && !groups.length && <Box pi='x28' mb='x4' color='hint'>{t('Nothing_found')}</Box>}
 		</Box>
 	</Box>;
 };
