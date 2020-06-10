@@ -1,21 +1,10 @@
 import { Mongo } from 'meteor/mongo';
+import { Tracker } from 'meteor/tracker';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { PrivateSettingsCachedCollection } from './PrivateSettingsCachedCollection';
 import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
-
-let privateSettingsCachedCollection; // Remove this singleton (╯°□°)╯︵ ┻━┻
-
-const getPrivateSettingsCachedCollection = () => {
-	if (privateSettingsCachedCollection) {
-		return [privateSettingsCachedCollection, Promise.resolve()];
-	}
-
-	privateSettingsCachedCollection = new PrivateSettingsCachedCollection();
-
-	return [privateSettingsCachedCollection, privateSettingsCachedCollection.init()];
-};
+import { PrivateSettingsCachedCollection } from './PrivateSettingsCachedCollection';
 
 const compareStrings = (a = '', b = '') => {
 	if (a === b || (!a && !b)) {
@@ -80,7 +69,7 @@ const settingsReducer = (states, { type, payload }) => {
 	return states;
 };
 
-function AuthorizedPrivilegedSettingsProvider({ children }) {
+function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	const [isLoading, setLoading] = useState(true);
 
 	const [subscribers] = useState(new Set());
@@ -104,15 +93,17 @@ function AuthorizedPrivilegedSettingsProvider({ children }) {
 	const collectionsRef = useRef({});
 
 	useEffect(() => {
-		const [privateSettingsCachedCollection, loadingPromise] = getPrivateSettingsCachedCollection();
-
 		const stopLoading = () => {
 			setLoading(false);
 		};
 
-		loadingPromise.then(stopLoading, stopLoading);
+		if (!Tracker.nonreactive(() => cachedCollection.ready.get())) {
+			cachedCollection.init().then(stopLoading, stopLoading);
+		} else {
+			stopLoading();
+		}
 
-		const { collection: persistedSettingsCollection } = privateSettingsCachedCollection;
+		const { collection: persistedSettingsCollection } = cachedCollection;
 		const settingsCollection = new Mongo.Collection(null);
 
 		collectionsRef.current = {
@@ -195,11 +186,13 @@ function AuthorizedPrivilegedSettingsProvider({ children }) {
 
 	const contextValue = useMemo(() => ({
 		authorized: true,
+		loading: isLoading,
 		subscribers,
 		stateRef,
 		hydrate,
 		isDisabled,
 	}), [
+		isLoading,
 		subscribers,
 		stateRef,
 		hydrate,
@@ -220,7 +213,10 @@ function PrivilegedSettingsProvider({ children }) {
 		return children;
 	}
 
-	return <AuthorizedPrivilegedSettingsProvider children={children} />;
+	return <AuthorizedPrivilegedSettingsProvider
+		cachedCollection={PrivateSettingsCachedCollection.get()}
+		children={children}
+	/>;
 }
 
 export default PrivilegedSettingsProvider;

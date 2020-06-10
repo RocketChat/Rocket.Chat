@@ -37,6 +37,7 @@ type EqualityFunction<T> = (a: T, b: T) => boolean;
 
 type PrivilegedSettingsContextValue = {
 	authorized: boolean;
+	loading: boolean;
 	subscribers: Set<(state: PrivilegedSettingsState) => void>;
 	stateRef: RefObject<PrivilegedSettingsState>;
 	hydrate: (changes: any[]) => void;
@@ -45,6 +46,7 @@ type PrivilegedSettingsContextValue = {
 
 export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContextValue>({
 	authorized: false,
+	loading: false,
 	subscribers: new Set<(state: PrivilegedSettingsState) => void>(),
 	stateRef: {
 		current: {
@@ -59,8 +61,11 @@ export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContext
 export const usePrivilegedSettingsAuthorized = (): boolean =>
 	useContext(PrivilegedSettingsContext).authorized;
 
+export const useIsPrivilegedSettingsLoading = (): boolean =>
+	useContext(PrivilegedSettingsContext).loading;
+
 export const usePrivilegedSettingsGroups = (filter?: string): any => {
-	const { subscribers, stateRef } = useContext(PrivilegedSettingsContext);
+	const { stateRef, subscribers } = useContext(PrivilegedSettingsContext);
 	const t = useTranslation();
 
 	const getCurrentValue = useCallback(() => {

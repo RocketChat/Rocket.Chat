@@ -15,11 +15,11 @@ function AdministrationRouter({ lazyRouteComponent, ...props }) {
 
 	const LazyRouteComponent = useMemo(() => lazy(lazyRouteComponent), [lazyRouteComponent]);
 
-	return <Suspense fallback={<PageSkeleton />}>
-		<PrivilegedSettingsProvider>
+	return <PrivilegedSettingsProvider>
+		<Suspense fallback={<PageSkeleton />}>
 			<LazyRouteComponent {...props} />
-		</PrivilegedSettingsProvider>
-	</Suspense>;
+		</Suspense>
+	</PrivilegedSettingsProvider>;
 }
 
 export default AdministrationRouter;
