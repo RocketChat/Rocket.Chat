@@ -5,10 +5,10 @@ import { EJSON } from 'meteor/ejson';
 
 import { IEDataRoom } from '../../../events/definitions/data/IEDataRoom';
 import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
-import { EDataDefinition, EventTypeDescriptor, IEData, IEvent } from '../../../events/definitions/IEvent';
+import { EventContext, EventTypeDescriptor, EDataDefinition, IEData, IEvent } from '../../../events/definitions/IEvent';
 import { Base } from './_Base';
 
-export declare interface IContextQuery { rid: string }
+export declare interface IContextQuery { ct: EventContext; cid: string }
 export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
 export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d: T }
 
@@ -39,8 +39,11 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 	constructor(nameOrModel: string) {
 		super(nameOrModel);
 
-		this.tryEnsureIndex({ isLeaf: 1 }, { sparse: true });
+		this.tryEnsureIndex({ ct: 1 });
+		this.tryEnsureIndex({ ct: 1, cid: 1 });
+		this.tryEnsureIndex({ ct: 1, cid: 1, ts: 1 });
 		this.tryEnsureIndex({ ts: 1 });
+		this.tryEnsureIndex({ isLeaf: 1 }, { sparse: true });
 
 		this.dataHashOptions = this.dataHashOptionsDefinition.reduce((acc, item) => {
 			for (const t of item.t) {

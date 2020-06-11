@@ -7,6 +7,10 @@ export type IEData = IEDataRoom | IEDataMessage | IEDataEmpty;
 
 export type EDataDefinition = IEDataUpdate<IEData> | IEData;
 
+export enum EventContext {
+	ROOM = 'room',
+}
+
 export enum EventTypeDescriptor {
 	// // Global
 	// PING = 'ping',
@@ -34,7 +38,8 @@ export interface IEvent<T extends EDataDefinition> {
 	v: number;
 	ts: Date;
 	src: string;
-	rid: string;
+	ct: EventContext;
+	cid: string;
 	t: EventTypeDescriptor;
 	dHash: string;
 	d: T;

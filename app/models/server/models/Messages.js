@@ -88,6 +88,11 @@ export class Messages extends Base {
 			delete query._id;
 		}
 
+		if (query.rid) {
+			query.cid = query.rid;
+			delete query.rid;
+		}
+
 		const v2Query = {};
 
 		for (const item in query) {
@@ -203,7 +208,7 @@ export class Messages extends Base {
 			d['[csg]set'] = d['[csg]set'] || {};
 			d['[csg]set']._oid = event._id; // Original id
 
-			const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.rid, event._cid, d));
+			const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.cid, event._cid, d));
 
 			Promise.await(this.dispatchEvent(editEvent));
 
@@ -227,7 +232,7 @@ export class Messages extends Base {
 		const [query] = args;
 
 		return this.processEvents(query, (event) => {
-			const deleteEvent = Promise.await(RoomEvents.createDeleteMessageEvent(event.src, event.rid, event._cid));
+			const deleteEvent = Promise.await(RoomEvents.createDeleteMessageEvent(event.src, event.cid, event._cid));
 
 			Promise.await(this.dispatchEvent(deleteEvent));
 
