@@ -12,25 +12,29 @@ export declare interface IContextQuery { rid: string }
 export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
 export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d: T }
 
-export declare type IEventHashOptions = {
-	[key in EventTypeDescriptor]?: {
-		skip: [string];
-	};
+export declare type IEventDataHashOption = {
+	include?: Array<string>;
+	skip?: Array<string>;
 }
-export declare type IEventHashOptionsDef = {
+export declare type IEventDataHashOptions = {
+	[key in EventTypeDescriptor]?: IEventDataHashOption;
+}
+export declare type IEventDataHashOptionsDef = {
 	t: Array<EventTypeDescriptor>;
-	skip: [string];
+	options: IEventDataHashOption;
 };
 
 export class EventsModel extends Base<IEvent<EDataDefinition>> {
-	readonly hashOptionsDefinition: Array<IEventHashOptionsDef> = [
+	readonly dataHashOptionsDefinition: Array<IEventDataHashOptionsDef> = [
 		{
 			t: [EventTypeDescriptor.MESSAGE, EventTypeDescriptor.EDIT_MESSAGE],
-			skip: ['msg'],
+			options: {
+				include: ['t', 'u', 'msg'],
+			},
 		},
 	];
 
-	readonly hashOptions: IEventHashOptions;
+	readonly dataHashOptions: IEventDataHashOptions;
 
 	constructor(nameOrModel: string) {
 		super(nameOrModel);
@@ -38,27 +42,30 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 		this.tryEnsureIndex({ isLeaf: 1 }, { sparse: true });
 		this.tryEnsureIndex({ ts: 1 });
 
-		this.hashOptions = this.hashOptionsDefinition.reduce((acc, item) => {
+		this.dataHashOptions = this.dataHashOptionsDefinition.reduce((acc, item) => {
 			for (const t of item.t) {
-				acc[t] = _.omit(item, 't');
+				acc[t] = item.options;
 			}
 
 			return acc;
-		}, {} as IEventHashOptions);
-
-		console.log(this.hashOptions)
+		}, {} as IEventDataHashOptions);
 	}
 
-	public getEventHash<T extends EDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
+	public getEventIdHash<T extends EDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
+		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ event.dHash }`);
+	}
+
+	public getEventDataHash<T extends EDataDefinition>(event: IEvent<T>): string {
 		let data: any = event.d;
 
-		const options: any = this.hashOptions[event.t];
+		const options: any = this.dataHashOptions[event.t];
 
 		if (options) {
-			data = _.omit(data, options.skip);
+			if (options.include) { data = _.pick(data, options.include); }
+			if (options.skip) { data = _.omit(data, options.skip); }
 		}
 
-		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ JSON.stringify(data) }`);
+		return SHA256(JSON.stringify(data));
 	}
 
 	public async createEvent<T extends EDataDefinition>(src: string, contextQuery: IContextQuery, stub: IEventStub<T>): Promise<IEvent<T>> {
@@ -87,11 +94,18 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 			src,
 			...contextQuery,
 			t: stub.t,
+			dHash: '',
 			d: stub.d,
 			isLeaf: true,
 		};
 
-		event._id = this.getEventHash(contextQuery, event);
+		//
+		// Create the data hash
+		event.dHash = this.getEventDataHash(event);
+
+		//
+		// Create ID hash
+		event._id = this.getEventIdHash(contextQuery, event);
 
 		return event;
 	}

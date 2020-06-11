@@ -36,6 +36,7 @@ export interface IEvent<T extends EDataDefinition> {
 	src: string;
 	rid: string;
 	t: EventTypeDescriptor;
+	dHash: string;
 	d: T;
 	isLeaf: boolean;
 	_deletedAt?: Date;

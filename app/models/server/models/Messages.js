@@ -2,7 +2,6 @@ import { Match } from 'meteor/check';
 import _ from 'underscore';
 import deepMapKeys from 'deep-map-keys';
 import { EJSON } from 'meteor/ejson';
-import { SHA256 } from 'meteor/sha';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -188,9 +187,6 @@ export class Messages extends Base {
 		const [message] = args;
 
 		const v2Data = RoomEvents.fromV1Data(message);
-
-		// Generate message hash
-		v2Data._msgSha = SHA256(v2Data.msg || '');
 
 		const event = Promise.await(RoomEvents.createMessageEvent(getLocalSrc(), message.rid, message._id, v2Data));
 

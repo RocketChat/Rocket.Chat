@@ -101,9 +101,6 @@ module.exports.getWorkerProcess = () => ({
 			for (const message of messages) {
 				const v2Data = RoomEvents.fromV1Data(message);
 
-				// Generate message hash
-				v2Data._msgSha = v2Data.msg ? Events.SHA256(v2Data.msg) : null;
-
 				const event = Events.buildEvent(config.get('LOCAL_SRC'), message.rid, 'msg', v2Data, [lastEventId]);
 
 				lastEventId = event._id;
