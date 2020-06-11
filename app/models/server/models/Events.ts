@@ -5,33 +5,48 @@ import { EJSON } from 'meteor/ejson';
 
 import { IEDataRoom } from '../../../events/definitions/data/IEDataRoom';
 import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
-import { EDataDefinition, IEvent, EventTypeDescriptor, IEData } from '../../../events/definitions/IEvent';
+import { EDataDefinition, EventTypeDescriptor, IEData, IEvent } from '../../../events/definitions/IEvent';
 import { Base } from './_Base';
 
 export declare interface IContextQuery { rid: string }
 export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
 export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d: T }
+
 export declare type IEventHashOptions = {
 	[key in EventTypeDescriptor]?: {
 		skip: [string];
 	};
+}
+export declare type IEventHashOptionsDef = {
+	t: Array<EventTypeDescriptor>;
+	skip: [string];
 };
 
 export class EventsModel extends Base<IEvent<EDataDefinition>> {
-	readonly hashOptions: IEventHashOptions = {
-		msg: {
+	readonly hashOptionsDefinition: Array<IEventHashOptionsDef> = [
+		{
+			t: [EventTypeDescriptor.MESSAGE, EventTypeDescriptor.EDIT_MESSAGE],
 			skip: ['msg'],
 		},
-		emsg: {
-			skip: ['msg'],
-		},
-	};
+	];
+
+	readonly hashOptions: IEventHashOptions;
 
 	constructor(nameOrModel: string) {
 		super(nameOrModel);
 
 		this.tryEnsureIndex({ isLeaf: 1 }, { sparse: true });
 		this.tryEnsureIndex({ ts: 1 });
+
+		this.hashOptions = this.hashOptionsDefinition.reduce((acc, item) => {
+			for (const t of item.t) {
+				acc[t] = _.omit(item, 't');
+			}
+
+			return acc;
+		}, {} as IEventHashOptions);
+
+		console.log(this.hashOptions)
 	}
 
 	public getEventHash<T extends EDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
