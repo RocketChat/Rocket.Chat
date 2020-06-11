@@ -1,4 +1,24 @@
 
+# 3.3.3
+`2020-06-11  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Always initialize CIRCLE_BRANCH env var on CI ([#17874](https://github.com/RocketChat/Rocket.Chat/pull/17874))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.3.2
 `2020-06-10  ·  2 🔍  ·  1 👩‍💻👨‍💻`
 
