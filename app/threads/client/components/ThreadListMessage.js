@@ -44,7 +44,7 @@ const followStyle = css`{
 	}
 }`;
 
-export default function ThreadListMessage({ _id, msg, following, username, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, className = [], ...props }) {
+export default function ThreadListMessage({ _id, msg, following, username, name, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, className = [], ...props }) {
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 
@@ -54,7 +54,7 @@ export default function ThreadListMessage({ _id, msg, following, username, ts, r
 		</Container>
 		<Container width='1px' mb='neg-x4' flexGrow={1}>
 			<Header>
-				<Username>{username}</Username>
+				<Username title={username}>{name}</Username>
 				<Timestamp ts={formatDate(ts)}/>
 			</Header>
 			<Body><RawText>{msg}</RawText></Body>

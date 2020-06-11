@@ -23,6 +23,7 @@ import ThreadListMessage, { MessageSkeleton } from './ThreadListMessage';
 import { useUserSubscription } from './hooks/useUserSubscription';
 import { useUserRoom } from './hooks/useUserRoom';
 import { useLocalStorage } from './hooks/useLocalstorage';
+import { useSetting } from '../../../../client/contexts/SettingsContext';
 
 
 function clickableItem(WrappedComponent) {
@@ -48,7 +49,7 @@ const Skeleton = React.memo(clickableItem(MessageSkeleton));
 
 const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 25;
 
-const filterProps = ({ msg, u, username, replies, mentions, tcount, ts, _id, tlm, attachments }) => ({ ..._id && { _id }, attachments, mentions, msg, username: username || u.username, replies, tcount, ts: new Date(ts), tlm: new Date(tlm) });
+const filterProps = ({ msg, u, replies, mentions, tcount, ts, _id, tlm, attachments }) => ({ ..._id && { _id }, attachments, mentions, msg, u, replies, tcount, ts: new Date(ts), tlm: new Date(tlm) });
 
 const subscriptionFields = { tunread: 1 };
 const roomFields = { t: 1, name: 1 };
@@ -168,6 +169,7 @@ export const normalizeThreadMessage = ({ ...message }) => {
 };
 
 export function ThreadList({ total = 10, threads = [], room, unread = [], type, setType, loadMoreItems, loading, onClose, error, userId, text, setText }) {
+	const showRealNames = useSetting('UI_Use_Real_Name');
 	const threadsRef = useRef();
 
 	const t = useTranslation();
@@ -199,8 +201,12 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 		const thread = data[index];
 		const msg = normalizeThreadMessage(thread);
 
+		const { name = thread.u.username } = thread.u;
+
 		return <Thread
 			{ ...thread }
+			name={showRealNames ? name : thread.u.username }
+			username={ thread.u.username }
 			style={style}
 			unread={unread.includes(thread._id)}
 			mention={thread.mentions && thread.mentions.includes(user.username)}
@@ -212,7 +218,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 			formatDate={formatDate}
 			handleFollowButton={handleFollowButton} onClick={onClick}
 		/>;
-	}), [unread]);
+	}), [unread, showRealNames]);
 
 	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver();
