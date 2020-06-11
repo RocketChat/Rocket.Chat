@@ -16,7 +16,6 @@
 	justify-content: center;
 
 	&--unread {
-
 		white-space: nowrap;
 
 		background-color: var(--badge-unread-background);
