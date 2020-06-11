@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, SearchInput, Scrollable, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -12,12 +12,12 @@ import { sidebarItems } from '../sidebarItems';
 import PrivilegedSettingsProvider from '../PrivilegedSettingsProvider';
 import { usePrivilegedSettingsGroups } from '../../contexts/PrivilegedSettingsContext';
 
-const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
-	if (permissionGranted && !permissionGranted()) { return null; }
+const SidebarItem = React.memo(({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
 	const path = useRoutePath(href, params);
 	const isActive = path === currentPath || false;
-	return useMemo(() => <Box
+	if (permissionGranted && !permissionGranted()) { return null; }
+	return <Box
 		is='a'
 		color='default'
 		pb='x8'
@@ -31,6 +31,8 @@ const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentP
 			isActive && 'active',
 			css`
 				&:hover,
+				&:focus,
+				&.active:focus,
 				&.active:hover {
 					background-color: var(--sidebar-background-light-hover);
 				}
@@ -43,10 +45,10 @@ const SidebarItem = ({ permissionGranted, pathGroup, href, icon, label, currentP
 	>
 		{icon && <Icon name={icon} size='x16' mi='x2'/>}
 		<Box withTruncatedText fontScale='p1' mi='x4'>{label}</Box>
-	</Box>, [path, label, name, icon, isActive]);
-};
+	</Box>;
+});
 
-const SidebarItemsAssembler = ({ items, currentPath }) => {
+const SidebarItemsAssembler = React.memo(({ items, currentPath }) => {
 	const t = useTranslation();
 	return items.map(({
 		href,
@@ -64,13 +66,13 @@ const SidebarItemsAssembler = ({ items, currentPath }) => {
 		key={i18nLabel || name}
 		currentPath={currentPath}
 	/>);
-};
+});
 
 const AdminSidebarPages = ({ currentPath }) => {
 	const items = useReactiveValue(() => sidebarItems.get());
 
 	return <Box display='flex' flexDirection='column' flexShrink={0}>
-		{useMemo(() => <SidebarItemsAssembler items={items} currentPath={currentPath}/>, [items, currentPath])}
+		<SidebarItemsAssembler items={items} currentPath={currentPath}/>
 	</Box>;
 };
 
@@ -123,6 +125,12 @@ export default function AdminSidebar() {
 
 	const currentRoute = useCurrentRoute();
 	const currentPath = useRoutePath(...currentRoute);
+
+	useEffect(() => {
+		if (!currentPath.startsWith('/admin/')) {
+			SideNav.closeFlex();
+		}
+	}, [currentRoute]);
 
 	// TODO: uplift this provider
 	return <PrivilegedSettingsProvider>
