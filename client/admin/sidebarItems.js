@@ -1,12 +1,15 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { hasPermission } from '../../app/authorization/client';
+import { createTemplateForComponent } from '../reactAdapters';
 
 export const sidebarItems = new ReactiveVar([]);
 
 export const registerAdminSidebarItem = (itemOptions) => {
 	sidebarItems.set([...sidebarItems.get(), itemOptions]);
 };
+
+createTemplateForComponent('adminFlex', () => import('./sidebar/AdminSidebar'));
 
 registerAdminSidebarItem({
 	href: 'admin-info',
