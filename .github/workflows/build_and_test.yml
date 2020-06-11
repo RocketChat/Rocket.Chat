@@ -375,11 +375,12 @@ jobs:
       run: |
         if [[ '${{ github.event_name }}' = 'release' ]]; then
           export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+          export CIRCLE_BRANCH=""
         else
+          export CIRCLE_TAG=""
           export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
         fi;
 
-        export CIRCLE_TAG=${CIRCLE_TAG:=}
         export CIRCLE_SHA1=$GITHUB_SHA
         export CIRCLE_BUILD_NUM=$GITHUB_SHA
 
