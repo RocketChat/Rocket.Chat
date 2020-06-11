@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../models/server';
+import { Messages, Subscriptions } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
@@ -18,8 +18,8 @@ function notifyUsersOnReply(message, replies, room) {
 	return message;
 }
 
-const metaData = (message, parentMessage) => {
-	reply({ tmid: message.tmid }, message, parentMessage);
+const metaData = (message, parentMessage, followers) => {
+	reply({ tmid: message.tmid }, message, parentMessage, followers);
 
 	return message;
 };
@@ -51,12 +51,13 @@ const processThreads = (message, room) => {
 	const replies = [
 		...new Set([
 			...(!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || [],
+			...!parentMessage.tcount && room.t === 'd' ? Subscriptions.findByRoomId(room._id, { fields: { 'u._id': 1 } }).fetch().map(({ u }) => u._id) : [],
 			...mentionIds,
 		]),
 	].filter((userId) => userId !== message.u._id);
 
 	notifyUsersOnReply(message, replies, room);
-	metaData(message, parentMessage);
+	metaData(message, parentMessage, replies);
 	notification(message, room, replies);
 
 	return message;

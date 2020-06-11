@@ -542,8 +542,7 @@ export class Subscriptions extends Base {
 	}
 
 	findByRoomId(roomId, options) {
-		const query =			{ rid: roomId };
-
+		const query = { rid: roomId };
 		return this.find(query, options);
 	}
 
