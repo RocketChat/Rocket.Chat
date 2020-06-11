@@ -45141,6 +45141,25 @@
           ]
         }
       ]
+    },
+    "3.3.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17874",
+          "title": "Always initialize CIRCLE_BRANCH env var on CI",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
