@@ -5,12 +5,23 @@ import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
 import { t, handleError } from '../../../../utils';
+import { getCustomFormTemplate } from './customTemplates/register';
 import './livechatCustomFieldForm.html';
 import { APIClient } from '../../../../utils/client';
 
 Template.livechatCustomFieldForm.helpers({
 	customField() {
 		return Template.instance().customField.get();
+	},
+
+	customFieldsTemplate() {
+		return getCustomFormTemplate('livechatCustomFieldsAdditionalForm');
+	},
+
+	dataContext() {
+		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
+		// because only the dynamic template data will be reloaded
+		return Template.instance().localFields;
 	},
 });
 
@@ -45,6 +56,16 @@ Template.livechatCustomFieldForm.events({
 			regexp: regexp.trim(),
 		};
 
+		instance.$('.additional-field').each((i, el) => {
+			const elField = instance.$(el);
+			const name = elField.attr('name');
+			let value = elField.val();
+			if (['true', 'false'].includes(value) && el.tagName === 'SELECT') {
+				value = value === 'true';
+			}
+			customFieldData[name] = value;
+		});
+
 		Meteor.call('livechat:saveCustomField', _id, customFieldData, function(error) {
 			$btn.html(oldBtnValue);
 			if (error) {
@@ -60,12 +81,20 @@ Template.livechatCustomFieldForm.events({
 		e.preventDefault();
 		FlowRouter.go('livechat-customfields');
 	},
+
+	'change .custom-field-input'(e, instance) {
+		const { target: { name, value } } = e;
+		instance.localFields.set({ ...instance.localFields.get(), [name]: value });
+	},
 });
 
 Template.livechatCustomFieldForm.onCreated(async function() {
 	this.customField = new ReactiveVar({});
+	this.localFields = new ReactiveVar({});
+
 	const { customField } = await APIClient.v1.get(`livechat/custom-fields/${ FlowRouter.getParam('_id') }`);
 	if (customField) {
 		this.customField.set(customField);
+		this.localFields.set({ ...customField });
 	}
 });

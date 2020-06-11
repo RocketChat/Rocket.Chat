@@ -15,7 +15,6 @@ Migrations.add({
 				Desktop_Notifications_Default_Alert: 'Accounts_Default_User_Preferences_desktopNotifications',
 				Mobile_Notifications_Default_Alert: 'Accounts_Default_User_Preferences_mobileNotifications',
 				Audio_Notifications_Default_Alert: 'Accounts_Default_User_Preferences_audioNotifications',
-				Desktop_Notifications_Duration: 'Accounts_Default_User_Preferences_desktopNotificationDuration',
 				Audio_Notifications_Value: undefined,
 			};
 			Settings.find({ _id: { $in: Object.keys(settingsMap) } }).forEach((oldSetting) => {

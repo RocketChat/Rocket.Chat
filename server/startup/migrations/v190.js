@@ -1,33 +1,19 @@
-import { fork } from 'child_process';
-
-import { Migrations } from '../../../app/migrations/server';
-import { getLocalSrc } from '../../../app/events/server/lib/getLocalSrc';
-import { getFederationDomain } from '../../../app/federation/server/lib/getFederationDomain';
+import { Migrations } from '../../../app/migrations';
+import { Settings, Subscriptions } from '../../../app/models/server/raw';
 
 Migrations.add({
 	version: 190,
 	up() {
-		Promise.await(new Promise((resolve, reject) => {
-			const prc = fork(Assets.absoluteFilePath('migrations/v190/v1ToV2.js'), {
-				env: {
-					LOCAL_SRC: getLocalSrc(),
-					FEDERATION_DOMAIN: getFederationDomain(),
-					MONGO_URL: process.env.MONGO_URL,
-				},
-			});
-
-			prc.on('exit', function(code) {
-				console.log(`process exit code ${ code }`);
-
-				if (code === 0) {
-					resolve();
-				} else {
-					reject('Error running external script');
-				}
-			});
+		// Remove unused settings
+		Promise.await(Settings.col.deleteOne({ _id: 'Accounts_Default_User_Preferences_desktopNotificationDuration' }));
+		Promise.await(Subscriptions.col.updateMany({
+			desktopNotificationDuration: {
+				$exists: true,
+			},
+		}, {
+			$unset: {
+				desktopNotificationDuration: 1,
+			},
 		}));
-	},
-	down() {
-		// Once you go 175 you never go back
 	},
 });

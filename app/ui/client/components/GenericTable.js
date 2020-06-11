@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
 import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
@@ -35,15 +35,15 @@ const LoadingRow = ({ cols }) => <Table.Row>
 	</Table.Cell>)}
 </Table.Row>;
 
-export function GenericTable({
+export const GenericTable = forwardRef(function GenericTable({
 	results,
 	total,
-	renderRow,
+	renderRow: RenderRow,
 	header,
 	setParams = () => { },
 	params: paramsDefault = '',
 	FilterComponent = () => null,
-}) {
+}, ref) {
 	const t = useTranslation();
 
 	const [filter, setFilter] = useState(paramsDefault);
@@ -65,40 +65,39 @@ export function GenericTable({
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
 
 	return <>
-		<>
-			<FilterComponent flexShrink={0} setFilter={setFilter}/>
-			{results && !results.length
-				? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
-					{t('No_data_found')}
-				</Tile>
-				: <>
-					<Scrollable>
-						<Box mi='neg-x24' pi='x24' flexGrow={1}>
-							<Table fixed sticky>
-								{ header && <Table.Head>
-									<Table.Row>
-										{header}
-									</Table.Row>
-								</Table.Head> }
-								<Table.Body>
-									{results
-										? results.map(renderRow)
-										:	<Loading/>}
-								</Table.Body>
-							</Table>
-						</Box>
-					</Scrollable>
-					<Pagination
-						current={current}
-						itemsPerPage={itemsPerPage}
-						itemsPerPageLabel={itemsPerPageLabel}
-						showingResultsLabel={showingResultsLabel}
-						count={total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-					/>
-				</>
-			}
-		</>
+		<FilterComponent setFilter={setFilter} />
+		{results && !results.length
+			? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
+				{t('No_data_found')}
+			</Tile>
+			: <>
+				<Scrollable>
+					<Box mi='neg-x24' pi='x24' flexGrow={1} ref={ref}>
+						<Table fixed sticky>
+							{ header && <Table.Head>
+								<Table.Row>
+									{header}
+								</Table.Row>
+							</Table.Head> }
+							<Table.Body>
+								{results
+									? results.map((props, index) => <RenderRow key={props._id || index} { ...props }/>)
+									:	<Loading/>}
+							</Table.Body>
+						</Table>
+					</Box>
+				</Scrollable>
+				<Pagination
+					divider
+					current={current}
+					itemsPerPage={itemsPerPage}
+					itemsPerPageLabel={itemsPerPageLabel}
+					showingResultsLabel={showingResultsLabel}
+					count={total || 0}
+					onSetItemsPerPage={setItemsPerPage}
+					onSetCurrent={setCurrent}
+				/>
+			</>
+		}
 	</>;
-}
+});

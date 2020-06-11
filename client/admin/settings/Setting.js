@@ -2,7 +2,7 @@ import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/
 import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../components/basic/MarkdownText';
-import RawText from '../../components/basic/RawText';
+import { usePrivilegedSetting } from '../../contexts/PrivilegedSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
@@ -19,7 +19,6 @@ import { CodeSettingInput } from './inputs/CodeSettingInput';
 import { ActionSettingInput } from './inputs/ActionSettingInput';
 import { AssetSettingInput } from './inputs/AssetSettingInput';
 import { RoomPickSettingInput } from './inputs/RoomPickSettingInput';
-import { useSetting } from './SettingsState';
 
 export const MemoizedSetting = memo(function MemoizedSetting({
 	type,
@@ -71,7 +70,7 @@ export function Setting({ settingId, sectionChanged }) {
 		update,
 		reset,
 		...setting
-	} = useSetting(settingId);
+	} = usePrivilegedSetting(settingId);
 
 
 	const t = useTranslation();
@@ -116,8 +115,8 @@ export function Setting({ settingId, sectionChanged }) {
 	} = setting;
 
 	const label = (i18nLabel && t(i18nLabel)) || (_id || t(_id));
-	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText>{t(i18nDescription)}</MarkdownText>, [i18nDescription]);
-	const callout = useMemo(() => alert && <RawText>{t(alert)}</RawText>, [alert]);
+	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText content={t(i18nDescription)} />, [i18nDescription]);
+	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t(alert) }} />, [alert]);
 	const hasResetButton = !disableReset && !readonly && type !== 'asset' && (JSON.stringify(packageEditor) !== JSON.stringify(editor) || JSON.stringify(value) !== JSON.stringify(packageValue)) && !disabled;
 
 	return <MemoizedSetting

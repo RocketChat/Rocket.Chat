@@ -34,6 +34,10 @@ export const createPermissions = () => {
 		'view-livechat-real-time-monitoring',
 		'view-livechat-officeHours',
 		'manage-livechat-agents',
+		'view-livechat-room-closed-same-department',
+		'view-livechat-room-closed-by-another-agent',
+		'view-livechat-room-customfields',
+		'edit-livechat-room-customfields',
 	];
 
 

@@ -1,12 +1,15 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { hasPermission } from '../../app/authorization/client';
+import { createTemplateForComponent } from '../reactAdapters';
 
 export const sidebarItems = new ReactiveVar([]);
 
 export const registerAdminSidebarItem = (itemOptions) => {
 	sidebarItems.set([...sidebarItems.get(), itemOptions]);
 };
+
+createTemplateForComponent('adminFlex', () => import('./sidebar/AdminSidebar'));
 
 registerAdminSidebarItem({
 	href: 'admin-info',
@@ -40,6 +43,13 @@ registerAdminSidebarItem({
 	i18nLabel: 'Invites',
 	icon: 'user-plus',
 	permissionGranted: () => hasPermission('create-invite-links'),
+});
+
+registerAdminSidebarItem({
+	icon: 'cloud-plus',
+	href: 'cloud',
+	i18nLabel: 'Connectivity_Services',
+	permissionGranted: () => hasPermission('manage-cloud'),
 });
 
 registerAdminSidebarItem({
