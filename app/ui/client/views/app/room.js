@@ -293,6 +293,7 @@ Template.room.helpers({
 		return state.get('subscribed');
 	},
 	messagesHistory() {
+		const showInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const { rid } = Template.instance();
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
@@ -301,10 +302,12 @@ Template.room.helpers({
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			$or: [
-				{ tmid: { $exists: 0 } },
-				{ tshow: { $eq: true } },
-			],
+			...!showInMainThread && {
+				$or: [
+					{ tmid: { $exists: 0 } },
+					{ tshow: { $eq: true } },
+				],
+			},
 		};
 
 		if (hideMessagesOfType.size) {
