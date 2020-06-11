@@ -123,7 +123,7 @@ SAML.prototype.generateLogoutResponse = function() {
 		+ `Destination="${ this.options.idpSLORedirectURL }" `
 		+ '>'
 		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>`
-		+ '<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>'
+		+ '<samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>'
 		+ '</samlp:LogoutResponse>';
 
 	debugLog('------- SAML Logout response -----------');
