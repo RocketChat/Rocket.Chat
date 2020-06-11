@@ -592,6 +592,7 @@ const middleware = function(req, res, next) {
 						const { response } = _saml.generateLogoutResponse({
 							nameID: result.nameID,
 							sessionIndex: result.idpSession,
+							ID: result.ID,
 						});
 
 						_saml.logoutResponseToUrl(response, function(err, url) {

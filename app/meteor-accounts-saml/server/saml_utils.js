@@ -111,16 +111,16 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 	return request;
 };
 
-SAML.prototype.generateLogoutResponse = function() {
+SAML.prototype.generateLogoutResponse = function(options) {
 	const id = `_${ this.generateUniqueID() }`;
 	const instant = this.generateInstant();
-
 
 	const response = `${ '<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  '
 		+ 'ID="' }${ id }" `
 		+ 'Version="2.0" '
 		+ `IssueInstant="${ instant }" `
 		+ `Destination="${ this.options.idpSLORedirectURL }" `
+		+ `${ options.ID ? `InResponseTo="${ options.ID }" ` : '' }`
 		+ '>'
 		+ `<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>`
 		+ '<samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>'
@@ -389,6 +389,7 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 		try {
 			const sessionNode = request.getElementsByTagNameNS('*', 'SessionIndex')[0];
 			const nameIdNode = request.getElementsByTagNameNS('*', 'NameID')[0];
+			const ID = request.getAttribute('ID');
 
 			if (!nameIdNode) {
 				throw new Error('SAML Logout Request: No NameID node found');
@@ -397,7 +398,7 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 			const idpSession = sessionNode.childNodes[0].nodeValue;
 			const nameID = nameIdNode.childNodes[0].nodeValue;
 
-			return callback(null, { idpSession, nameID });
+			return callback(null, { idpSession, nameID, ID });
 		} catch (e) {
 			console.error(e);
 			debugLog(`Caught error: ${ e }`);
