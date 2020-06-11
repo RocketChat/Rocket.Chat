@@ -24,9 +24,6 @@ const SidebarItem = React.memo(({ permissionGranted, pathGroup, href, icon, labe
 		pi='x24'
 		key={path}
 		href={path}
-		display='flex'
-		flexDirection='row'
-		alignItems='center'
 		className={[
 			isActive && 'active',
 			css`
@@ -43,8 +40,14 @@ const SidebarItem = React.memo(({ permissionGranted, pathGroup, href, icon, labe
 			`,
 		].filter(Boolean)}
 	>
-		{icon && <Icon name={icon} size='x16' mi='x2'/>}
-		<Box withTruncatedText fontScale='p1' mi='x4'>{label}</Box>
+		<Box
+			mi='neg-x4'
+			display='flex'
+			flexDirection='row'
+			alignItems='center'>
+			{icon && <Icon name={icon} size='x20' mi='x4'/>}
+			<Box withTruncatedText fontScale='p1' mi='x4' color='info'>{label}</Box>
+		</Box>
 	</Box>;
 });
 
@@ -71,7 +74,7 @@ const SidebarItemsAssembler = React.memo(({ items, currentPath }) => {
 const AdminSidebarPages = ({ currentPath }) => {
 	const items = useReactiveValue(() => sidebarItems.get());
 
-	return <Box display='flex' flexDirection='column' flexShrink={0}>
+	return <Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
 		<SidebarItemsAssembler items={items} currentPath={currentPath}/>
 	</Box>;
 };
@@ -84,9 +87,9 @@ const AdminSidebarSettings = ({ currentPath }) => {
 	const groups = usePrivilegedSettingsGroups(useDebouncedValue(filter, 400));
 	const isLoadingGroups = false; // TODO: get from PrivilegedSettingsContext
 
-	return <Box is='section' display='flex' flexDirection='column' flexShrink={0}>
-		<Box mi='x24' mb='x16' fontScale='p2' color='hint'>{t('Settings')}</Box>
-		<Box pi='x24' mb='x8' display='flex'>
+	return <Box is='section' display='flex' flexDirection='column' flexShrink={0} pb='x24'>
+		<Box pi='x24' pb='x8' fontScale='p2' color='info'>{t('Settings')}</Box>
+		<Box pi='x24' pb='x8' display='flex'>
 			<SearchInput
 				value={filter}
 				placeholder={t('Search')}
@@ -95,7 +98,7 @@ const AdminSidebarSettings = ({ currentPath }) => {
 				className={['asdsads']}
 			/>
 		</Box>
-		<Box display='flex' flexDirection='column'>
+		<Box pb='x16' display='flex' flexDirection='column'>
 			{isLoadingGroups && <Skeleton/>}
 			{!isLoadingGroups && !!groups.length && <SidebarItemsAssembler
 				items={groups.map((group) => ({
@@ -136,11 +139,9 @@ export default function AdminSidebar() {
 	// TODO: uplift this provider
 	return <PrivilegedSettingsProvider>
 		<Box display='flex' flexDirection='column' h='100vh'>
-			<Box is='header' padding='x24' display='flex' flexDirection='row' justifyContent='space-between'>
-				<Box fontScale='s1'>{t('Administration')}</Box>
-				<Button square small ghost onClick={closeAdminFlex}>
-					<Icon name='cross' size='x16'/>
-				</Button>
+			<Box is='header' pb='x16' pi='x24' display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
+				<Box color='neutral-800' fontSize='p1' fontWeight='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{t('Administration')}</Box>
+				<Button square small ghost onClick={closeAdminFlex}><Icon name='cross' size='x20'/></Button>
 			</Box>
 			<Scrollable>
 				<Box display='flex' flexDirection='column' h='full'>
