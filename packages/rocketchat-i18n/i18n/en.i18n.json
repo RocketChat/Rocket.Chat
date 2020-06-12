@@ -778,6 +778,7 @@
   "Computer": "Computer",
   "Confirm_new_encryption_password": "Confirm new encryption password",
   "Confirm_password": "Confirm your password",
+  "Confirm_password_placeholder": "Confirm your Placeholder",
   "Connect": "Connect",
   "Connection_Closed": "Connection closed",
   "Connection_Reset": "Connection reset",
