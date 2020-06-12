@@ -16,6 +16,8 @@ export interface IWorkHoursForCreateCronJobs {
 
 export interface ILivechatBusinessHourRepository {
 	insertOne(data: ILivechatBusinessHour): Promise<any>;
+	findActiveBusinessHoursIdsToOpen(type: LivechatBussinessHourTypes, day: string, start: string): Promise<string[]>;
+	findActiveBusinessHoursIdsToClose(type: LivechatBussinessHourTypes, day: string, finish: string): Promise<string[]>;
 	findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour>;
 	findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
 	updateOne(id: string, data: ILivechatBusinessHour): Promise<any>;
@@ -88,6 +90,42 @@ class LivechatBusinessHoursRaw extends BaseRaw implements ILivechatBusinessHourR
 				},
 			},
 		]).toArray() as any;
+	}
+
+	async findActiveBusinessHoursIdsToOpen(type: LivechatBussinessHourTypes, day: string, start: string): Promise<string[]> {
+		return (await this.col.find({
+			type,
+			active: true,
+			workHours: {
+				$elemMatch: {
+					day,
+					start,
+				},
+			},
+		},
+		{
+			fields: {
+				_id: 1,
+			},
+		}).toArray()).map((businessHour) => businessHour._id);
+	}
+
+	async findActiveBusinessHoursIdsToClose(type: LivechatBussinessHourTypes, day: string, finish: string): Promise<string[]> {
+		return (await this.col.find({
+			type,
+			active: true,
+			workHours: {
+				$elemMatch: {
+					day,
+					finish,
+				},
+			},
+		},
+		{
+			fields: {
+				_id: 1,
+			},
+		}).toArray()).map((businessHour) => businessHour._id);
 	}
 }
 

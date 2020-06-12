@@ -31,6 +31,7 @@ export class BusinessHourManager implements IBusinessHoursManager {
 		this.cronJobs = cronJobs;
 		this.registerBusinessHourMethod(businessHour);
 		this.openWorkHoursCallback = this.openWorkHoursCallback.bind(this);
+		this.closeWorkHoursCallback = this.closeWorkHoursCallback.bind(this);
 	}
 
 	registerBusinessHourMethod(businessHour: IBusinessHour): void {
@@ -42,7 +43,7 @@ export class BusinessHourManager implements IBusinessHoursManager {
 			hour.start = moment(hour.start, 'HH:mm').utc().format('HH:mm');
 			hour.finish = moment(hour.finish, 'HH:mm').utc().format('HH:mm');
 		});
-		this.businessHour.saveBusinessHour(businessHourData);
+		await this.businessHour.saveBusinessHour(businessHourData);
 		this.createCronJobsForWorkHours(businessHourData, await this.businessHour.findHoursToCreateJobs());
 	}
 
@@ -72,12 +73,12 @@ export class BusinessHourManager implements IBusinessHoursManager {
 		});
 	}
 
-	private async openWorkHoursCallback(hour: string): void {
-		console.log('open:', hour);
+	private async openWorkHoursCallback(day: string, hour: string): Promise<void> {
+		this.businessHour.openBusinessHoursByDayAndHour(day, hour);
 	}
 
-	private async closeWorkHoursCallback(hour: string): void {
-		console.log('CLOSE', hour);
+	private async closeWorkHoursCallback(day: string, hour: string): Promise<void> {
+		this.businessHour.closeBusinessHoursByDayAndHour(day, hour);
 	}
 
 	private addToCache(jobName: string): void {

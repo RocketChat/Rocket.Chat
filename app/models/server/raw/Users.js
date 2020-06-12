@@ -293,4 +293,52 @@ export class UsersRaw extends BaseRaw {
 
 		return this.update(query, update, { multi: true });
 	}
+
+	openAgentsBusinessHours(businessHourIds) {
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: { $each: businessHourIds },
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	closeAgentsBusinessHours(businessHourIds) {
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: { $in: businessHourIds },
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateLivechatStatusBasedOnBusinessHours() {
+		const query = {
+			openBusinessHours: {
+				$exists: true,
+				$size: 0,
+			},
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'not-available',
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
 }

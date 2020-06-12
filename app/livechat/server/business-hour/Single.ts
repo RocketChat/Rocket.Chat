@@ -1,10 +1,10 @@
 import moment from 'moment';
 
-import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { AbstractBusinessHour, IBusinessHour } from './AbstractBusinessHour';
 
 export class SingleBusinessHour extends AbstractBusinessHour implements IBusinessHour {
-	saveBusinessHour(businessHourData: ILivechatBusinessHour): void {
+	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
 		businessHourData.timezone = {
 			name: '',
 			utc: moment().utcOffset() / 60,
@@ -17,5 +17,10 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 
 	getBusinessHour(): Promise<ILivechatBusinessHour> {
 		return this.LivechatBusinessHourRepository.findOneDefaultBusinessHour();
+	}
+
+	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
+		const businessHoursIds = await this.LivechatBusinessHourRepository.findActiveBusinessHoursIdsToOpen(LivechatBussinessHourTypes.SINGLE, day, hour);
+		this.UsersRepository.openAgentsBusinessHours(businessHoursIds);
 	}
 }
