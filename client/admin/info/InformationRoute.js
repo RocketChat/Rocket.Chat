@@ -5,7 +5,7 @@ import { useMethod, useServerInformation, useEndpoint } from '../../contexts/Ser
 import { downloadJsonAsAFile } from '../../helpers/download';
 import { InformationPage } from './InformationPage';
 
-export function InformationRoute() {
+export const InformationRoute = React.memo(function InformationRoute() {
 	const canViewStatistics = usePermission('view-statistics');
 
 	const [isLoading, setLoading] = useState(true);
@@ -78,6 +78,6 @@ export function InformationRoute() {
 		onClickRefreshButton={handleClickRefreshButton}
 		onClickDownloadInfo={handleClickDownloadInfo}
 	/>;
-}
+});
 
 export default InformationRoute;

@@ -71,13 +71,13 @@ const SidebarItemsAssembler = React.memo(({ items, currentPath }) => {
 	/>);
 });
 
-const AdminSidebarPages = ({ currentPath }) => {
+const AdminSidebarPages = React.memo(({ currentPath }) => {
 	const items = useReactiveValue(() => sidebarItems.get());
 
 	return <Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
 		<SidebarItemsAssembler items={items} currentPath={currentPath}/>
 	</Box>;
-};
+});
 
 const AdminSidebarSettings = ({ currentPath }) => {
 	const t = useTranslation();
@@ -113,7 +113,7 @@ const AdminSidebarSettings = ({ currentPath }) => {
 	</Box>;
 };
 
-export default function AdminSidebar() {
+export default React.memo(function AdminSidebar() {
 	const t = useTranslation();
 
 	const canViewSettings = useAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
@@ -151,4 +151,4 @@ export default function AdminSidebar() {
 			</Scrollable>
 		</Box>
 	</PrivilegedSettingsProvider>;
-}
+});

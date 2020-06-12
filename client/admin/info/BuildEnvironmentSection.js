@@ -5,7 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { DescriptionList } from './DescriptionList';
 
-export function BuildEnvironmentSection({ info }) {
+export const BuildEnvironmentSection = React.memo(function BuildEnvironmentSection({ info }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const build = info && (info.compile || info.build);
@@ -20,4 +20,4 @@ export function BuildEnvironmentSection({ info }) {
 		<DescriptionList.Entry label={t('Node_version')}>{build.nodeVersion}</DescriptionList.Entry>
 		<DescriptionList.Entry label={t('Date')}>{formatDateAndTime(build.date)}</DescriptionList.Entry>
 	</DescriptionList>;
-}
+});
