@@ -10,6 +10,7 @@ import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppDepartmentsConverter } from './converters/departments';
+import { AppRoomSubscriptionsConverter } from './converters/roomSubscriptions';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
 import { AppRealLogsStorage, AppRealStorage } from './storage';
@@ -43,6 +44,7 @@ class AppServerOrchestrator {
 		this._converters.set('visitors', new AppVisitorsConverter(this));
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
+		this._converters.set('roomSubscriptions', new AppRoomSubscriptionsConverter(this));
 
 		this._bridges = new RealAppBridges(this);
 

@@ -1,24 +1,58 @@
 import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw {
-	findOneByRoomIdAndUserId(rid, uid, options) {
+	// count
+	countByRoomId(roomId) {
 		const query = {
-			rid,
-			'u._id': uid,
+			rid: roomId,
 		};
 
-		return this.col.findOne(query, options);
+		return this.col.count(query);
 	}
 
-	countByRoomIdAndUserId(rid, uid) {
+	countByUserId(userId) {
 		const query = {
-			rid,
-			'u._id': uid,
+			'u._id': userId,
+		};
+
+		return this.col.count(query);
+	}
+
+	countByRoomIdAndUserId(roomId, userId) {
+		const query = {
+			rid: roomId,
+			'u._id': userId,
 		};
 
 		const cursor = this.col.find(query);
 
 		return cursor.count();
+	}
+
+	// find
+	findOneByRoomIdAndUserId(roomId, userId, options) {
+		const query = {
+			rid: roomId,
+			'u._id': userId,
+		};
+
+		return this.col.findOne(query, options);
+	}
+
+	findByRoomId(roomId, options) {
+		const query = {
+			rid: roomId,
+		};
+
+		return this.col.find(query, options);
+	}
+
+	findByUserId(userId, options) {
+		const query = {
+			'u._id': userId,
+		};
+
+		return this.col.find(query, options);
 	}
 
 	isUserInRole(uid, roleName, rid) {
