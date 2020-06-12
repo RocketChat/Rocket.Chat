@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { Box, Margins, Table, Avatar, Tag, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { GenericTable, Th } from '../../../../components/GenericTable';
+import { GenericTable, Th } from '../../../../../../../client/components/GenericTable';
 import MarkdownText from '../../../../../../../client/components/basic/MarkdownText';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
