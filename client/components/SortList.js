@@ -2,9 +2,9 @@ import React, { useCallback } from 'react';
 import { Icon, ToggleSwitch, RadioButton, Box, Flex, Margins } from '@rocket.chat/fuselage';
 
 
-import { useTranslation } from '../../../client/contexts/TranslationContext';
-import { useUserPreference } from '../../../client/contexts/UserContext';
-import { useMethod } from '../../../client/contexts/ServerContext';
+import { useTranslation } from '../contexts/TranslationContext';
+import { useUserPreference } from '../contexts/UserContext';
+import { useMethod } from '../contexts/ServerContext';
 
 function SortListItem({ text, icon, input }) {
 	return <Flex.Container>

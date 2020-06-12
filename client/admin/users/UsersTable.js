@@ -2,7 +2,7 @@ import { Box, Table, Avatar, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
-import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { GenericTable, Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { roomTypes } from '../../../app/utils/client';
 import { useRoute } from '../../contexts/RouterContext';

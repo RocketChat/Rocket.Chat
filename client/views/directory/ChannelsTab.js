@@ -1,16 +1,16 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { Box, Margins, Table, Avatar, Tag, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 
-import { GenericTable, Th } from '../../../../components/GenericTable';
-import MarkdownText from '../../../../../../../client/components/basic/MarkdownText';
-import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
-import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
-import { useRoute } from '../../../../../../../client/contexts/RouterContext';
-import { useEndpointData } from '../../../../../../../client/hooks/useEndpointData';
-import { useFormatDate } from '../../../../../../../client/hooks/useFormatDate';
-import { roomTypes } from '../../../../../../utils/client';
-import { useQuery } from '../hooks';
+import { GenericTable, Th } from '../../components/GenericTable';
+import MarkdownText from '../../components/basic/MarkdownText';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import { useRoute } from '../../contexts/RouterContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import { useFormatDate } from '../../hooks/useFormatDate';
+import { roomTypes } from '../../../app/utils/client';
+import { useQuery } from './hooks';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
