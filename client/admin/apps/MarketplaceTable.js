@@ -116,7 +116,7 @@ export function MarketplaceTable({ setModal }) {
 				</Box>
 			</Table.Cell>
 		</Table.Row>, [showStatus, isMedium, isBig, JSON.stringify(props)]);
-	}, [isMedium, isBig]);
+	}, [isMedium, isBig, isLoggedIn]);
 
 	return <GenericTable
 		ref={ref}
