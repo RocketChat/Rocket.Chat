@@ -2,8 +2,8 @@ import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/
 import { UiKitMessage, UiKitComponent, kitContext, messageParser } from '@rocket.chat/fuselage-ui-kit';
 import React, { useRef, useEffect } from 'react';
 
-import { renderMessageBody } from '../../../ui-utils/client';
-import * as ActionManager from '../ActionManager';
+import { renderMessageBody } from '../../../app/ui-utils/client';
+import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 
 // TODO: move this to fuselage-ui-kit itself
 messageParser.text = ({ text, type } = {}) => {

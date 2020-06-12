@@ -1,20 +1,11 @@
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { Tracker } from 'meteor/tracker';
+import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { PrivateSettingsCachedCollection } from '../PrivateSettingsCachedCollection';
-import { PrivateSettingsContext } from '../../contexts/PrivateSettingsContext';
-
-let privateSettingsCachedCollection; // Remove this singleton (╯°□°)╯︵ ┻━┻
-
-const getPrivateSettingsCachedCollection = () => {
-	if (privateSettingsCachedCollection) {
-		return [privateSettingsCachedCollection, Promise.resolve()];
-	}
-
-	privateSettingsCachedCollection = new PrivateSettingsCachedCollection();
-
-	return [privateSettingsCachedCollection, privateSettingsCachedCollection.init()];
-};
+import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
+import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
+import { PrivateSettingsCachedCollection } from './PrivateSettingsCachedCollection';
 
 const compareStrings = (a = '', b = '') => {
 	if (a === b || (!a && !b)) {
@@ -79,39 +70,37 @@ const settingsReducer = (states, { type, payload }) => {
 	return states;
 };
 
-export function SettingsState({ children }) {
+function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	const [isLoading, setLoading] = useState(true);
 
-	const [subscribers] = useState(new Set());
+	const subscribersRef = useRef();
+	if (!subscribersRef.current) {
+		subscribersRef.current = new Set();
+	}
 
 	const stateRef = useRef({ settings: [], persistedSettings: [] });
 
-	const enhancedReducer = useCallback((state, action) => {
-		const newState = settingsReducer(state, action);
+	const [state, dispatch] = useReducer(settingsReducer, { settings: [], persistedSettings: [] });
+	stateRef.current = state;
 
-		stateRef.current = newState;
-
-		subscribers.forEach((subscriber) => {
-			subscriber(newState);
-		});
-
-		return newState;
-	}, [settingsReducer, subscribers]);
-
-	const [, dispatch] = useReducer(enhancedReducer, { settings: [], persistedSettings: [] });
+	subscribersRef.current.forEach((subscriber) => {
+		subscriber(state);
+	});
 
 	const collectionsRef = useRef({});
 
 	useEffect(() => {
-		const [privateSettingsCachedCollection, loadingPromise] = getPrivateSettingsCachedCollection();
-
 		const stopLoading = () => {
 			setLoading(false);
 		};
 
-		loadingPromise.then(stopLoading, stopLoading);
+		if (!Tracker.nonreactive(() => cachedCollection.ready.get())) {
+			cachedCollection.init().then(stopLoading, stopLoading);
+		} else {
+			stopLoading();
+		}
 
-		const { collection: persistedSettingsCollection } = privateSettingsCachedCollection;
+		const { collection: persistedSettingsCollection } = cachedCollection;
 		const settingsCollection = new Mongo.Collection(null);
 
 		collectionsRef.current = {
@@ -163,21 +152,21 @@ export function SettingsState({ children }) {
 
 	const updateTimersRef = useRef({});
 
-	const updateAtCollection = useCallback(({ _id, ...data }) => {
+	const updateAtCollection = useMutableCallback(({ _id, ...data }) => {
 		const { current: { settingsCollection } } = collectionsRef;
 		const { current: updateTimers } = updateTimersRef;
 		clearTimeout(updateTimers[_id]);
 		updateTimers[_id] = setTimeout(() => {
 			settingsCollection.update(_id, { $set: data });
 		}, 70);
-	}, [collectionsRef, updateTimersRef]);
+	});
 
-	const hydrate = useCallback((changes) => {
+	const hydrate = useMutableCallback((changes) => {
 		changes.forEach(updateAtCollection);
 		dispatch({ type: 'hydrate', payload: changes });
-	}, [updateAtCollection, dispatch]);
+	});
 
-	const isDisabled = useCallback(({ blocked, enableQuery }) => {
+	const isDisabled = useMutableCallback(({ blocked, enableQuery }) => {
 		if (blocked) {
 			return true;
 		}
@@ -190,28 +179,39 @@ export function SettingsState({ children }) {
 
 		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
 		return !queries.every((query) => !!settingsCollection.findOne(query));
-	}, [collectionsRef]);
+	});
 
 	const contextValue = useMemo(() => ({
-		subscribers,
+		authorized: true,
+		loading: isLoading,
+		subscribers: subscribersRef.current,
 		stateRef,
 		hydrate,
 		isDisabled,
 	}), [
-		subscribers,
-		stateRef,
+		isLoading,
 		hydrate,
 		isDisabled,
 	]);
 
-	return <PrivateSettingsContext.Provider children={children} value={contextValue} />;
+	return <PrivilegedSettingsContext.Provider children={children} value={contextValue} />;
 }
 
-export {
-	usePrivateSettingsGroup as useGroup,
-	usePrivateSettingsSection as useSection,
-	usePrivateSettingActions as useSettingActions,
-	usePrivateSettingDisabledState as useSettingDisabledState,
-	usePrivateSettingsSectionChangedState as useSectionChangedState,
-	usePrivateSetting as useSetting,
-} from '../../contexts/PrivateSettingsContext';
+function PrivilegedSettingsProvider({ children }) {
+	const hasPermission = useAtLeastOnePermission([
+		'view-privileged-setting',
+		'edit-privileged-setting',
+		'manage-selected-settings',
+	]);
+
+	if (!hasPermission) {
+		return children;
+	}
+
+	return <AuthorizedPrivilegedSettingsProvider
+		cachedCollection={PrivateSettingsCachedCollection.get()}
+		children={children}
+	/>;
+}
+
+export default PrivilegedSettingsProvider;
