@@ -43,8 +43,6 @@ Template.sidebarItem.helpers({
 	badgeClass() {
 		const { unread, userMentions, groupMentions, tunread = [] } = this;
 
-		console.log(this);
-
 		if (userMentions) {
 			return 'badge badge--user-mentions';
 		}

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages, Subscriptions } from '../../../models/server';
+import { Messages } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
@@ -51,7 +51,7 @@ const processThreads = (message, room) => {
 	const replies = [
 		...new Set([
 			...(!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || [],
-			...!parentMessage.tcount && room.t === 'd' ? Subscriptions.findByRoomId(room._id, { fields: { 'u._id': 1 } }).fetch().map(({ u }) => u._id) : [],
+			...!parentMessage.tcount && room.t === 'd' ? room.uids : [],
 			...mentionIds,
 		]),
 	].filter((userId) => userId !== message.u._id);
