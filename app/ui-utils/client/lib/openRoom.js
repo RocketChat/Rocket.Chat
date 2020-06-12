@@ -38,7 +38,9 @@ function replaceCenterDomBy(dom) {
 				for (const child of Array.from(mainNode.children)) {
 					if (child) { mainNode.removeChild(child); }
 				}
-				mainNode.appendChild(dom);
+				const roomNode = dom();
+				mainNode.appendChild(roomNode);
+				return resolve([mainNode, roomNode]);
 			}
 			resolve(mainNode);
 		}, 1);
@@ -72,7 +74,7 @@ export const openRoom = async function(type, name) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
 					BlazeLayout.render('main');
 				}
-				await replaceCenterDomBy(getDomOfLoading());
+				await replaceCenterDomBy(() => getDomOfLoading());
 				return;
 			}
 
@@ -87,8 +89,7 @@ export const openRoom = async function(type, name) {
 				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 			}
 
-			const roomDom = RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate);
-			const mainNode = await replaceCenterDomBy(roomDom);
+			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
 			if (mainNode) {
 				if (roomDom.classList.contains('room-container')) {
