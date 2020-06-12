@@ -2,10 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-
-import { hasRole } from '../../../authorization';
-import { registerAdminRoute, registerAdminSidebarItem } from '../../../../client/admin';
 
 import './dashboard.html';
 import './dashboard.css';
@@ -64,22 +60,4 @@ Template.dashboard.onRendered(() => {
 	Tracker.autorun(updateData);
 
 	setInterval(updateData, 10000);
-});
-
-// Route setup
-
-registerAdminRoute('/federation-dashboard', {
-	name: 'federation-dashboard',
-	action() {
-		BlazeLayout.render('main', { center: 'dashboard', old: true });
-	},
-});
-
-registerAdminSidebarItem({
-	icon: 'discover',
-	href: 'federation-dashboard',
-	i18nLabel: 'Federation Dashboard',
-	permissionGranted() {
-		return hasRole(Meteor.userId(), 'admin');
-	},
 });
