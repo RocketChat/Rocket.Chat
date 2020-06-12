@@ -17,6 +17,16 @@ const getBundledIn = async (appId, appVersion) => {
 	}
 };
 
+const getSettings = async (appId, installed) => {
+	if (!installed) { return {}; }
+	try {
+		const settings = await Apps.getAppSettings(appId);
+		return settings;
+	} catch (e) {
+		handleAPIError(e);
+	}
+};
+
 export const useAppInfo = (appId) => {
 	const { data, dataCache } = useContext(AppDataContext);
 
@@ -26,9 +36,9 @@ export const useAppInfo = (appId) => {
 		(async () => {
 			if (!data.length) { return; }
 			const app = data.find(({ id }) => id === appId);
-			const bundledIn = await getBundledIn(app.id, app.version);
+			const [bundledIn, settings] = await Promise.all([getBundledIn(app.id, app.version), getSettings(app.id, app.installed)]);
 
-			setAppData({ ...app, bundledIn });
+			setAppData({ ...app, bundledIn, settings });
 		})();
 	}, [dataCache]);
 

@@ -1,16 +1,20 @@
-import React, { useState, useCallback } from 'react';
-import { Button, ButtonGroup, Icon, Box, Divider, Chip, Margins, Skeleton } from '@rocket.chat/fuselage';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { Button, ButtonGroup, Icon, Box, Divider, Chip, Margins, Skeleton, Throbber } from '@rocket.chat/fuselage';
 
 import Page from '../../components/basic/Page';
 import AppAvatar from '../../components/basic/avatar/AppAvatar';
 import ExternalLink from '../../components/basic/ExternalLink';
-import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import PriceDisplay from './PriceDisplay';
 import AppStatus from './AppStatus';
+import AppMenu from './AppMenu';
+import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useAppInfo } from './hooks/useAppInfo';
-import AppMenu from './AppMenu';
+import { Apps } from '../../../app/apps/client/orchestrator';
+import { useForm } from '../../hooks/useForm';
 import { useLoggedInCloud } from './hooks/useLoggedInCloud';
+import { handleAPIError } from './helpers';
+import { AppSettingsAssembler } from './AppSettings';
 
 function AppDetailsPageContent({ data, setModal, isLoggedIn }) {
 	const t = useTranslation();
@@ -29,7 +33,6 @@ function AppDetailsPageContent({ data, setModal, isLoggedIn }) {
 		installed,
 		bundledIn,
 	} = data;
-
 
 	return <>
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
@@ -96,6 +99,29 @@ function AppDetailsPageContent({ data, setModal, isLoggedIn }) {
 	</>;
 }
 
+const SettingsDisplay = ({ settings, setHasUnsavedChanges, settingsRef }) => {
+	const t = useTranslation();
+	const reducedSettings = useMemo(() => Object.values(settings).reduce((ret, { id, value, packageValue }) => {
+		ret = { ...ret, [id]: value ?? packageValue };
+		return ret;
+	}, {}), [JSON.stringify(settings)]);
+
+	const { values, handlers, hasUnsavedChanges } = useForm(reducedSettings);
+
+	useEffect(() => {
+		setHasUnsavedChanges(hasUnsavedChanges);
+		settingsRef.current = values;
+	}, [hasUnsavedChanges, JSON.stringify(values)]);
+
+	return <>
+		<Divider />
+		<Box display='flex' flexDirection='column'>
+			<Box fontScale='s2' mb='x12'>{t('Settings')}</Box>
+			<AppSettingsAssembler settings={settings} values={values} handlers={handlers}/>
+		</Box>
+	</>;
+};
+
 const LoadingDetails = () => <Box display='flex' flexDirection='row' mbe='x20' w='full'>
 	<Skeleton variant='rect' w='x120' h='x120' mie='x20'/>
 	<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
@@ -109,21 +135,39 @@ export default function AppDetailsPage({ id }) {
 	const t = useTranslation();
 	const [modal, setModal] = useState(null);
 
+	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+	const [isSaving, setIsSaving] = useState(false);
+	const settingsRef = useRef({});
+
 	const data = useAppInfo(id);
+
+	const isLoggedIn = useLoggedInCloud();
+	const isLoading = Object.values(data).length === 0;
+
+	const { settings = {} } = data;
+	const showSettings = Object.values(settings).length;
 
 	const currentRoute = useCurrentRoute();
 	const router = useRoute(currentRoute[0]);
 	const handleReturn = useCallback(() => router.push({}));
 
-	const isLoggedIn = useLoggedInCloud();
-
-	const isLoading = Object.values(data).length === 0;
+	const saveAppSettings = useCallback(async () => {
+		const { current } = settingsRef;
+		setIsSaving(true);
+		try {
+			await Apps.setAppSettings(id, Object.values(settings).map((value) => ({ ...value, value: current[value.id] })));
+		} catch (e) {
+			handleAPIError(e);
+		}
+		setIsSaving(false);
+	}, [Object.keys(settings).length]);
 
 	return <><Page flexDirection='column'>
 		<Page.Header title={t('App_Details')}>
 			<ButtonGroup>
-				<Button primary disabled>
-					{t('Save_changes')}
+				<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
+					{!isSaving && t('Save_changes')}
+					{isSaving && <Throbber inheritColor/>}
 				</Button>
 				<Button onClick={handleReturn}>
 					<Icon name='back'/>
@@ -131,9 +175,14 @@ export default function AppDetailsPage({ id }) {
 				</Button>
 			</ButtonGroup>
 		</Page.Header>
-		<Page.ScrollableContentWithShadow maxWidth='x600' w='full' alignSelf='center'>
-			{isLoading && <LoadingDetails />}
-			{!isLoading && <AppDetailsPageContent data={data} setModal={setModal} isLoggedIn={isLoggedIn}/>}
+		<Page.ScrollableContentWithShadow >
+			<Box maxWidth='x600' w='full' alignSelf='center'>
+				{isLoading && <LoadingDetails />}
+				{!isLoading && <>
+					<AppDetailsPageContent data={data} setModal={setModal} isLoggedIn={isLoggedIn}/>
+					{showSettings && <SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef}/>}
+				</>}
+			</Box>
 		</Page.ScrollableContentWithShadow>
 	</Page>{modal}</>;
 }
