@@ -1,9 +1,9 @@
 import { Box, Flex, Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { Growth } from './Growth';
+import Growth from './Growth';
 
-export function Counter({ count, variation = 0, description }) {
+function Counter({ count, variation = 0, description }) {
 	return <>
 		<Flex.Container alignItems='end'>
 			<Box>
@@ -22,3 +22,5 @@ export function Counter({ count, variation = 0, description }) {
 		</Margins>
 	</>;
 }
+
+export default Counter;
