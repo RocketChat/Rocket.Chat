@@ -5,9 +5,9 @@ import { kitContext, UiKitComponent, UiKitModal, modalParser } from '@rocket.cha
 import { uiKitText } from '@rocket.chat/ui-kit';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { renderMessageBody } from '../../../ui-utils/client';
-import { getURL } from '../../../utils/lib/getURL';
-import * as ActionManager from '../ActionManager';
+import { renderMessageBody } from '../../../app/ui-utils/client';
+import { getURL } from '../../../app/utils/lib/getURL';
+import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 
 // TODO: move this to fuselage-ui-kit itself
 modalParser.text = ({ text, type } = {}) => {
