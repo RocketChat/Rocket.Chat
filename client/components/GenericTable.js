@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect, useCallback, forwardRef } from 're
 import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useTranslation } from '../contexts/TranslationContext';
 
 function SortIcon({ direction }) {
 	return <Box is='svg' width='x16' height='x16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>

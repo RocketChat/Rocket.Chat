@@ -1,6 +1,6 @@
 import { HTML } from 'meteor/htmljs';
 
-import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import { createTemplateForComponent } from '../../reactAdapters';
 
 createTemplateForComponent('ModalBlock', () => import('./ModalBlock'), {
 	// eslint-disable-next-line new-cap

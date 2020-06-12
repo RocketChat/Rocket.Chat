@@ -1,14 +1,14 @@
 import React, { useEffect, useCallback } from 'react';
 import { Tabs } from '@rocket.chat/fuselage';
 
-import Page from '../../../../../../../client/components/basic/Page';
-import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
+import Page from '../../components/basic/Page';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { UserTab } from './UserTab';
 import { ChannelsTab } from './ChannelsTab';
-import { useRoute, useRouteParameter } from '../../../../../../../client/contexts/RouterContext';
-import { useSetting } from '../../../../../../../client/contexts/SettingsContext';
+import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
+import { useSetting } from '../../contexts/SettingsContext';
 
-export function DirectoryPage() {
+function DirectoryPage() {
 	const t = useTranslation();
 
 	const defaultTab = useSetting('Accounts_Directory_DefaultView');
