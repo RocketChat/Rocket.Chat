@@ -133,7 +133,7 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 				clearTimeout(addedActionTimer);
 				addedActionTimer = setTimeout(() => {
 					dispatch({ type: 'add', payload: addedQueue });
-				}, 70);
+				}, 300);
 			},
 			changed: (data) => {
 				dispatch({ type: 'change', payload: data });
