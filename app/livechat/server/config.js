@@ -18,6 +18,17 @@ Meteor.startup(function() {
 		section: 'Screen_Sharing',
 	});
 
+	settings.add('Livechat_screen_sharing_provider', 'Cobrowse.io', {
+		type: 'select',
+		group: 'Omnichannel',
+		public: true,
+		section: 'Screen_Sharing',
+		values: [
+			{ key: 'Cobrowse.io', i18nLabel: 'Cobrowse.io' },
+			{ key: 'Provider2', i18nLabel: 'Provider2' },
+		],
+	});
+
 	settings.add('Livechat_title', 'Rocket.Chat', {
 		type: 'string',
 		group: 'Omnichannel',

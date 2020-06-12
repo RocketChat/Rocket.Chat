@@ -11,10 +11,6 @@ export class ScreenSharingManager {
 
 	private screenShareProvider: IScreenSharingProvider | any = null;
 
-	constructor(providerName: string) {
-		this.providerName = providerName;
-	}
-
 	enabled(): any {
 		return settings.get('Livechat_screen_sharing_enabled');
 	}
