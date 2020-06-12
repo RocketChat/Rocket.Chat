@@ -8,6 +8,7 @@ import { Users } from '../../../models/server/raw';
 
 export interface IBusinessHour {
 	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void>;
+	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	getBusinessHour(id: string): Promise<ILivechatBusinessHour>;
 	findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
 	openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
@@ -31,5 +32,9 @@ export abstract class AbstractBusinessHour {
 		const businessHoursIds = await this.LivechatBusinessHourRepository.findActiveBusinessHoursIdsToClose(LivechatBussinessHourTypes.SINGLE, day, hour);
 		await this.UsersRepository.closeAgentsBusinessHours(businessHoursIds);
 		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+	}
+
+	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
+		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 }

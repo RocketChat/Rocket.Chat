@@ -341,4 +341,14 @@ export class UsersRaw extends BaseRaw {
 
 		return this.update(query, update, { multi: true });
 	}
+
+	async isAgentWithinBusinessHours(agentId) {
+		return await this.find({
+			_id: agentId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		}).count() > 0;
+	}
 }

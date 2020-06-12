@@ -8,6 +8,7 @@ import { IWorkHoursForCreateCronJobs } from '../../../models/server/raw/Livechat
 export interface IBusinessHoursManager {
 	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void>;
 	getBusinessHour(id?: string): Promise<ILivechatBusinessHour>;
+	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 }
 
 const cronJobDayDict: Record<string, number> = {
@@ -49,6 +50,10 @@ export class BusinessHourManager implements IBusinessHoursManager {
 
 	async getBusinessHour(id?: string): Promise<ILivechatBusinessHour> {
 		return this.businessHour.getBusinessHour(id as string);
+	}
+
+	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
+		return this.businessHour.allowAgentChangeServiceStatus(agentId);
 	}
 
 	private createCronJobsForWorkHours(businessHourData: ILivechatBusinessHour, workHours: IWorkHoursForCreateCronJobs[]): void {
