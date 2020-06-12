@@ -4,7 +4,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 Meteor.startup(() => {
 	if (FlowRouter.getQueryParam('resumeToken')) {
 		Meteor.loginWithToken(FlowRouter.getQueryParam('resumeToken'), () => {
-			FlowRouter.go('/home');
+			if (FlowRouter.getQueryParam('goto')) {
+				FlowRouter.go(decodeURIComponent(FlowRouter.getQueryParam('goto')));
+			} else {
+				FlowRouter.go('/home');
+			}
 		});
 	}
 });
