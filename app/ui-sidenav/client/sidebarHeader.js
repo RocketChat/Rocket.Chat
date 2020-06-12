@@ -66,7 +66,7 @@ const toolbarButtons = (/* user */) => [{
 	action: async (e) => {
 		const options = [];
 		const config = {
-			template: createTemplateForComponent('SortList', () => import('./SortList')),
+			template: createTemplateForComponent('SortList', () => import('../../../client/components/SortList')),
 			currentTarget: e.currentTarget,
 			data: {
 				options,

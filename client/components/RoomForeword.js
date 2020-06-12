@@ -1,11 +1,11 @@
 import React from 'react';
 import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
 
-import { Rooms } from '../../../../models';
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { useReactiveValue } from '../../../../../client/hooks/useReactiveValue';
-import { useUser } from '../../../../../client/contexts/UserContext';
-import { roomTypes } from '../../../../utils/client';
+import { Rooms } from '../../app/models';
+import { useTranslation } from '../contexts/TranslationContext';
+import { useReactiveValue } from '../hooks/useReactiveValue';
+import { useUser } from '../contexts/UserContext';
+import { roomTypes } from '../../app/utils/client';
 
 const RoomForeword = ({ _id: rid }) => {
 	const t = useTranslation();
