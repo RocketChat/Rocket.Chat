@@ -102,6 +102,10 @@ export const useMenuOptions = ({ app, setModal, isLoggedIn }) => {
 			} catch (error) {
 				handleAPIError(error);
 			}
+
+			if (app.marketplace === false) {
+				router.push({});
+			}
 		};
 
 		if (isSubscribed) {

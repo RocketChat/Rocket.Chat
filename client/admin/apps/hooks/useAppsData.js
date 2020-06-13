@@ -52,13 +52,18 @@ export function useAppsData() {
 		APP_UPDATED: handleAppAddedOrUpdated,
 		APP_REMOVED: (appId) => {
 			const updatedData = getDataCopy();
-			const app = updatedData.find(({ id }) => id === appId);
-			if (!app) {
+			const index = updatedData.findIndex(({ id }) => id === appId);
+			if (!updatedData[index]) {
 				return;
 			}
-			delete app.installed;
-			delete app.status;
-			app.version = app.marketplaceVersion;
+
+			if (updatedData[index].marketplace !== false) {
+				updatedData.splice(index, 1);
+			} else {
+				delete updatedData[index].installed;
+				delete updatedData[index].status;
+				updatedData[index].version = updatedData[index].marketplaceVersion;
+			}
 
 			setData(updatedData);
 			invalidateData();
@@ -74,16 +79,19 @@ export function useAppsData() {
 			setData(updatedData);
 			invalidateData();
 		},
+		APP_SETTING_UPDATED: () => {
+			invalidateData();
+		},
 	};
 
 	useEffect(() => {
 		const unregisterListeners = registerListeners(listeners);
 		(async () => {
 			try {
-				const marketAndInstalledApps = await Promise.all([Apps.getAppsFromMarketplace(), Apps.getApps()]);
-				const appsData = marketAndInstalledApps[0].map((app) => {
-					const installedApp = marketAndInstalledApps[1].find(({ id }) => id === app.id);
-					if (!installedApp) {
+				const [marketplaceApps, installedApps] = await Promise.all([Apps.getAppsFromMarketplace(), Apps.getApps()]);
+				const appsData = marketplaceApps.map((app) => {
+					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
+					if (!installedApps[appIndex]) {
 						return {
 							...app,
 							status: undefined,
@@ -92,6 +100,7 @@ export function useAppsData() {
 						};
 					}
 
+					const installedApp = installedApps.splice(appIndex, 1).pop();
 					return {
 						...app,
 						installed: true,
@@ -101,6 +110,10 @@ export function useAppsData() {
 						marketplaceVersion: app.version,
 					};
 				});
+
+				if (installedApps.length) {
+					appsData.push(...installedApps.map((current) => ({ ...current, installed: true, marketplace: false })));
+				}
 
 				setData(appsData.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)));
 				invalidateData();

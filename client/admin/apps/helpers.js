@@ -16,6 +16,37 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
+export function handleInstallError(apiError) {
+	if (!apiError.xhr || !apiError.xhr.responseJSON) { return; }
+
+	const { status, messages, error, payload = null } = apiError.xhr.responseJSON;
+
+	let message;
+
+	switch (status) {
+		case 'storage_error':
+			message = messages.join('');
+			break;
+		case 'compiler_error':
+			message = 'There has been compiler errors. App cannot be installed';
+			break;
+		case 'app_user_error':
+			message = messages.join('');
+			if (payload && payload.username) {
+				message = t('Apps_User_Already_Exists', { username: payload.username });
+			}
+			break;
+		default:
+			if (error) {
+				message = error;
+			} else {
+				message = 'There has been an error installing the app';
+			}
+	}
+
+	toastr.error(message);
+}
+
 export const handleAPIError = (error) => {
 	console.error(error);
 	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;

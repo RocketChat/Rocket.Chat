@@ -90,32 +90,32 @@ export function MarketplaceTable({ setModal }) {
 		const handler = onClick(id, marketplaceVersion);
 		const preventDefault = useCallback((e) => { e.preventDefault(); e.stopPropagation(); }, []);
 
-		return useMemo(() => <Table.Row key={id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
-			<Table.Cell withTruncatedText display='flex' flexDirection='row'>
+		return <Table.Row key={id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
+			{useMemo(() => <Table.Cell withTruncatedText display='flex' flexDirection='row'>
 				<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
 				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
 					<Box color='default' fontScale='p2'>{name}</Box>
 					<Box color='default' fontScale='p2'>{`${ t('By') } ${ authorName }`}</Box>
 				</Box>
-			</Table.Cell>
-			{isBig && <Table.Cell>
+			</Table.Cell>, [iconFileContent, iconFileData, name, authorName])}
+			{useMemo(() => isBig && <Table.Cell>
 				<Box display='flex' flexDirection='column'>
 					<Box color='default' withTruncatedText>{description}</Box>
 					{categories && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
 						{categories.map((current) => <Tag disabled key={current} mie='x4'>{current}</Tag>)}
 					</Box>}
 				</Box>
-			</Table.Cell>}
-			{isMedium && <Table.Cell >
+			</Table.Cell>, [JSON.stringify(categories), description])}
+			{useMemo(() => isMedium && <Table.Cell >
 				<PriceDisplay {...{ purchaseType, pricingPlans, price }} />
-			</Table.Cell>}
-			<Table.Cell withTruncatedText>
+			</Table.Cell>, [purchaseType, pricingPlans, price])}
+			{useMemo(() => <Table.Cell withTruncatedText>
 				<Box display='flex' flexDirection='row' alignItems='center' onClick={preventDefault}>
 					<AppStatus app={props} setModal={setModal} isLoggedIn={isLoggedIn} showStatus={showStatus} mie='x4'/>
 					{installed && <AppMenu display={showStatus ? 'block' : 'none'} app={props} setModal={setModal} isLoggedIn={isLoggedIn} mis='x4'/>}
 				</Box>
-			</Table.Cell>
-		</Table.Row>, [showStatus, isMedium, isBig, JSON.stringify(props)]);
+			</Table.Cell>, [showStatus, JSON.stringify(props), isLoggedIn, showStatus])}
+		</Table.Row>;
 	}, [isMedium, isBig, isLoggedIn]);
 
 	return <GenericTable

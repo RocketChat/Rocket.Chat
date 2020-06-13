@@ -180,7 +180,7 @@ export default function AppDetailsPage({ id }) {
 				{isLoading && <LoadingDetails />}
 				{!isLoading && <>
 					<AppDetailsPageContent data={data} setModal={setModal} isLoggedIn={isLoggedIn}/>
-					{showSettings && <SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef}/>}
+					{!!showSettings && <SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef}/>}
 				</>}
 			</Box>
 		</Page.ScrollableContentWithShadow>

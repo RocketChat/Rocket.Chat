@@ -9,7 +9,7 @@ import AppDetailsPage from './AppDetailsPage';
 import MarketplacePage from './MarketplacePage';
 import AppsPage from './AppsPage';
 import AppLogsPage from './AppLogsPage';
-// import AppsWhatIsIt from './AppsWhatIsIt';
+import AppInstallPage from './AppInstallPage';
 import PageSkeleton from '../PageSkeleton';
 
 export default function AppsRoute() {
@@ -47,5 +47,6 @@ export default function AppsRoute() {
 		{!context && !isMarketPlace && <AppsPage />}
 		{context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version}/>}
 		{context === 'logs' && <AppLogsPage id={id}/>}
+		{context === 'install' && <AppInstallPage />}
 	</AppProvider>;
 }

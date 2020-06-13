@@ -4,24 +4,28 @@ import React, { useState } from 'react';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useLoggedInCloud } from './hooks/useLoggedInCloud';
+import { useSetting } from '../../contexts/SettingsContext';
 import AppsTable from './AppsTable';
 
 function AppsPage() {
 	const t = useTranslation();
 	const [modal, setModal] = useState(null);
 
-	const markeplaceRouter = useRoute('admin-markeplace');
+	const marketplaceRouter = useRoute('admin-marketplace');
+	const appsRouter = useRoute('admin-apps');
 
-	const isLoggedIn = useLoggedInCloud();
+	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
 
 	return <><Page flexDirection='column'>
-		<Page.Header title={t('Marketplace')}>
-			{!isLoggedIn && <ButtonGroup>
-				<Button primary onClick={() => { markeplaceRouter.push({}); }}>
-					<Icon name='download'/> {t('View_Markeplace')}
+		<Page.Header title={t('Apps')}>
+			<ButtonGroup>
+				{isDevelopmentMode && <Button primary onClick={() => { appsRouter.push({ context: 'install' }); }}>
+					<Icon size='x20' name='upload'/> {t('Upload_app')}
+				</Button>}
+				<Button primary onClick={() => { marketplaceRouter.push({}); }}>
+					<Icon size='x20' name='download'/> {t('Marketplace_view_marketplace')}
 				</Button>
-			</ButtonGroup>}
+			</ButtonGroup>
 		</Page.Header>
 		<Page.Content>
 			<AppsTable setModal={setModal}/>

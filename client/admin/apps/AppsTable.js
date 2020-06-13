@@ -30,7 +30,7 @@ const FilterByText = React.memo(({ setFilter, ...props }) => {
 
 export function AppsTable({ setModal }) {
 	const t = useTranslation();
-	const [ref, isBig, isMedium] = useResizeInlineBreakpoint([800, 600], 200);
+	const [ref, isMedium] = useResizeInlineBreakpoint([600], 200);
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
@@ -64,7 +64,7 @@ export function AppsTable({ setModal }) {
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w={isMedium ? 'x240' : 'x180'}>{t('Name')}</Th>,
 		isMedium && <Th key={'details'}>{t('Details')}</Th>,
 		<Th key={'status'} w='x160'>{t('Status')}</Th>,
-	].filter(Boolean), [sort, isBig, isMedium]);
+	].filter(Boolean), [sort, isMedium]);
 
 	const renderRow = useCallback((props) => {
 		const {
@@ -85,30 +85,30 @@ export function AppsTable({ setModal }) {
 		const handler = onClick(id, marketplaceVersion);
 		const preventDefault = useCallback((e) => { e.preventDefault(); e.stopPropagation(); }, []);
 
-		return useMemo(() => <Table.Row key={id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
-			<Table.Cell withTruncatedText display='flex' flexDirection='row'>
+		return <Table.Row key={id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
+			{useMemo(() => <Table.Cell withTruncatedText display='flex' flexDirection='row'>
 				<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
 				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
 					<Box color='default' fontScale='p2'>{name}</Box>
 					<Box color='default' fontScale='p2'>{`${ t('By') } ${ authorName }`}</Box>
 				</Box>
-			</Table.Cell>
-			{isBig && <Table.Cell>
+			</Table.Cell>, [iconFileContent, iconFileData, name, authorName])}
+			{useMemo(() => isMedium && <Table.Cell>
 				<Box display='flex' flexDirection='column'>
 					<Box color='default' withTruncatedText>{description}</Box>
 					{categories && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
 						{categories.map((current) => <Tag disabled key={current} mie='x4'>{current}</Tag>)}
 					</Box>}
 				</Box>
-			</Table.Cell>}
-			<Table.Cell withTruncatedText>
+			</Table.Cell>, [JSON.stringify(categories), description])}
+			{useMemo(() => <Table.Cell withTruncatedText>
 				<Box display='flex' flexDirection='row' alignItems='center' onClick={preventDefault}>
 					<AppStatus app={props} setModal={setModal} isLoggedIn={isLoggedIn} showStatus={showStatus} mie='x4'/>
 					{installed && <AppMenu display={showStatus ? 'block' : 'none'} app={props} setModal={setModal} isLoggedIn={isLoggedIn} mis='x4'/>}
 				</Box>
-			</Table.Cell>
-		</Table.Row>, [showStatus, isMedium, isBig, JSON.stringify(props)]);
-	}, [isMedium, isBig]);
+			</Table.Cell>, [showStatus, JSON.stringify(props), isLoggedIn, showStatus])}
+		</Table.Row>;
+	}, [isMedium]);
 
 	return <GenericTable
 		ref={ref}

@@ -1,12 +1,23 @@
 import { useMemo } from 'react';
 
-export const useFilteredApps = ({ text, sort, current, itemsPerPage, data = [], dataCache }) => {
+export const useFilteredApps = ({
+	filterFunction = (text) => {
+		if (!text) { return () => true; }
+		return (app) => app.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+	},
+	text,
+	sort,
+	current,
+	itemsPerPage,
+	data = [],
+	dataCache,
+}) => {
 	const filteredValues = useMemo(() => {
 		if (data.length) {
 			const dataCopy = data.slice(0);
 			let filtered = sort[1] === 'asc' ? dataCopy : dataCopy.reverse();
 
-			filtered = text ? filtered.filter((app) => app.name.toLowerCase().indexOf(text.toLowerCase()) > -1) : filtered;
+			filtered = filtered.filter(filterFunction(text));
 
 			const filteredLength = filtered.length;
 

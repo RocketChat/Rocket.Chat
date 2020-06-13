@@ -34,13 +34,25 @@ export const useAppInfo = (appId) => {
 
 	useEffect(() => {
 		(async () => {
-			if (!data.length) { return; }
-			const app = data.find(({ id }) => id === appId);
+			if (!data.length || !appId) { return; }
+
+			let app = data.find(({ id }) => id === appId);
+
+			if (!app) {
+				const localApp = await Apps.getApp(appId);
+				app = { ...localApp, installed: true, marketplace: false };
+			}
+
+			if (app.marketplace === false) {
+				const settings = await getSettings(app.id, app.installed);
+				return setAppData({ ...app, settings });
+			}
+
 			const [bundledIn, settings] = await Promise.all([getBundledIn(app.id, app.version), getSettings(app.id, app.installed)]);
 
 			setAppData({ ...app, bundledIn, settings });
 		})();
-	}, [dataCache]);
+	}, [dataCache, appId]);
 
 	return appData;
 };
