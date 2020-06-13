@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { CounterSet } from './CounterSet';
+import CounterSet from './CounterSet';
 
 export default {
-	title: 'admin/enterprise/engagement/data/CounterSet',
+	title: 'components/data/CounterSet',
 	component: CounterSet,
 };
 
