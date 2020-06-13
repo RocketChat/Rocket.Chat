@@ -123,7 +123,6 @@ export const SideNav = new class {
 		if (this.animating === true) {
 			return;
 		}
-		AccountBox.close();
 		this.toggleFlex(1, callback);
 		return this.focusInput();
 	}

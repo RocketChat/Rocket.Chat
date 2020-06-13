@@ -91,7 +91,7 @@ settings.addGroup('Accounts', function() {
 	this.add('Accounts_ConfirmPasswordPlaceholder', '', {
 		type: 'string',
 		public: true,
-		i18nLabel: 'Placeholder_for_password_login_field',
+		i18nLabel: 'Placeholder_for_password_login_confirm_field',
 	});
 	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',

@@ -7,7 +7,7 @@ import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../hooks/useFormatDuration';
 import { DescriptionList } from './DescriptionList';
 
-export function RocketChatSection({ info, statistics, isLoading }) {
+export const RocketChatSection = React.memo(function RocketChatSection({ info, statistics, isLoading }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatDuration = useFormatDuration();
@@ -31,4 +31,4 @@ export function RocketChatSection({ info, statistics, isLoading }) {
 		<DescriptionList.Entry label={t('Running_Instances')}>{s(() => statistics.instanceCount)}</DescriptionList.Entry>
 		<DescriptionList.Entry label={t('OpLog')}>{s(() => (statistics.oplogEnabled ? t('Enabled') : t('Disabled')))}</DescriptionList.Entry>
 	</DescriptionList>;
-}
+});

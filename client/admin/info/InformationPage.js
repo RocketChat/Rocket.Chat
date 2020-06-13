@@ -10,7 +10,7 @@ import { BuildEnvironmentSection } from './BuildEnvironmentSection';
 import { UsageSection } from './UsageSection';
 import { InstancesSection } from './InstancesSection';
 
-export function InformationPage({
+export const InformationPage = React.memo(function InformationPage({
 	canViewStatistics,
 	isLoading,
 	info,
@@ -72,4 +72,4 @@ export function InformationPage({
 			</Box>
 		</Page.ScrollableContentWithShadow>
 	</Page>;
-}
+});
