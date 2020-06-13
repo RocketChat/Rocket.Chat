@@ -1,9 +1,9 @@
 import { Grid } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { Counter } from './Counter';
+import Counter from './Counter';
 
-export function CounterSet({ counters = [] }) {
+function CounterSet({ counters = [] }) {
 	return <Grid>
 		{counters.map(({ count, variation, description }, i) => <Grid.Item key={i}>
 			<Counter
@@ -14,3 +14,5 @@ export function CounterSet({ counters = [] }) {
 		</Grid.Item>)}
 	</Grid>;
 }
+
+export default CounterSet;
