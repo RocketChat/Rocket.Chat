@@ -10,7 +10,6 @@ Template.pushMessage.helpers({
 			title,
 			...options,
 		};
-		console.log(data);
 		return data;
 	},
 	timeAgo(date) {
