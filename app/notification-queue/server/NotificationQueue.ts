@@ -4,6 +4,7 @@ import { INotification, INotificationItemPush, INotificationItemEmail, Notificat
 import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
+import { IUser } from '../../../definition/IUser';
 
 const {
 	NOTIFICATIONS_WORKER_TIMEOUT = 2000,
@@ -97,31 +98,27 @@ class NotificationClass {
 		sendEmailFromData(item.data);
 	}
 
-	async scheduleItem({ uid, rid, mid, items }: {uid: string; rid: string; mid: string; items: NotificationItem[]}): Promise<void> {
-		const user = await Users.findOneById(uid, {
+	async scheduleItem({ uid, rid, mid, items, user }: { uid: string; rid: string; mid: string; items: NotificationItem[]; user?: Partial<IUser> }): Promise<void> {
+		const receiver = user || await Users.findOneById(uid, {
 			projection: {
 				statusConnection: 1,
-				_updatedAt: 1,
 			},
 		});
 
-		if (!user) {
+		if (!receiver) {
 			return;
 		}
+
+		const { statusConnection } = receiver;
 
 		const delay = this.maxScheduleDelaySeconds;
 
 		let schedule: Date | undefined;
 
-		if (user.statusConnection === 'online') {
+		// schedule the notification to be sent after some time if user is current online
+		if (statusConnection === 'online') {
 			schedule = new Date();
 			schedule.setSeconds(schedule.getSeconds() + delay);
-		} else if (user.statusConnection === 'away') {
-			const elapsedSeconds = Math.floor((Date.now() - user._updatedAt) / 1000);
-			if (elapsedSeconds < delay) {
-				schedule = new Date();
-				schedule.setSeconds(schedule.getSeconds() + delay - elapsedSeconds);
-			}
 		}
 
 		await NotificationQueue.insertOne({
