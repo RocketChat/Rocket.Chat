@@ -9,7 +9,9 @@ import { IUser } from '../../../definition/IUser';
 const {
 	NOTIFICATIONS_WORKER_TIMEOUT = 2000,
 	NOTIFICATIONS_BATCH_SIZE = 100,
-	NOTIFICATIONS_SCHEDULE_DELAY = 120,
+	NOTIFICATIONS_SCHEDULE_DELAY_ONLINE = -1,
+	NOTIFICATIONS_SCHEDULE_DELAY_AWAY = 120,
+	NOTIFICATIONS_SCHEDULE_DELAY_OFFLINE = 0,
 } = process.env;
 
 class NotificationClass {
@@ -19,7 +21,11 @@ class NotificationClass {
 
 	private maxBatchSize = Number(NOTIFICATIONS_BATCH_SIZE);
 
-	private maxScheduleDelaySeconds = Number(NOTIFICATIONS_SCHEDULE_DELAY);
+	private maxScheduleDelaySecondsOnline = Number(NOTIFICATIONS_SCHEDULE_DELAY_ONLINE);
+
+	private maxScheduleDelaySecondsAway = Number(NOTIFICATIONS_SCHEDULE_DELAY_AWAY);
+
+	private maxScheduleDelaySecondsOffline = Number(NOTIFICATIONS_SCHEDULE_DELAY_OFFLINE);
 
 	initWorker(): void {
 		this.running = true;
@@ -109,16 +115,32 @@ class NotificationClass {
 			return;
 		}
 
-		const { statusConnection } = receiver;
-
-		const delay = this.maxScheduleDelaySeconds;
-
 		let schedule: Date | undefined;
 
-		// schedule the notification to be sent after some time if user is current online
-		if (statusConnection === 'online') {
+		if (receiver.statusConnection === 'online') {
+			if (this.maxScheduleDelaySecondsOnline === -1) {
+				return;
+			}
+
 			schedule = new Date();
-			schedule.setSeconds(schedule.getSeconds() + delay);
+			schedule.setSeconds(schedule.getSeconds() + this.maxScheduleDelaySecondsOnline);
+		} else if (receiver.statusConnection === 'away') {
+			if (this.maxScheduleDelaySecondsAway === -1) {
+				return;
+			}
+
+			const elapsedSeconds = Math.floor((Date.now() - receiver._updatedAt) / 1000);
+			if (elapsedSeconds < this.maxScheduleDelaySecondsAway) {
+				schedule = new Date();
+				schedule.setSeconds(schedule.getSeconds() + this.maxScheduleDelaySecondsAway - elapsedSeconds);
+			}
+		} else if (receiver.statusConnection === 'offline') {
+			if (this.maxScheduleDelaySecondsOffline === -1) {
+				return;
+			}
+
+			schedule = new Date();
+			schedule.setSeconds(schedule.getSeconds() + this.maxScheduleDelaySecondsOffline);
 		}
 
 		await NotificationQueue.insertOne({
