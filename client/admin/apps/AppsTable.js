@@ -4,7 +4,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import AppAvatar from '../../components/basic/avatar/AppAvatar';
 import AppStatus from './AppStatus';
-import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { GenericTable, Th } from '../../components/GenericTable';
 import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
@@ -85,7 +85,7 @@ export function AppsTable({ setModal }) {
 		const handler = onClick(id, marketplaceVersion);
 		const preventDefault = useCallback((e) => { e.preventDefault(); e.stopPropagation(); }, []);
 
-		return <Table.Row key={id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
+		return <Table.Row key={id} data-id={id} data-version={marketplaceVersion} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
 			{useMemo(() => <Table.Cell withTruncatedText display='flex' flexDirection='row'>
 				<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
 				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
