@@ -7,18 +7,10 @@ import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
 import { PrivateSettingsCachedCollection } from './PrivateSettingsCachedCollection';
 
-const compareStrings = (a = '', b = '') => {
-	if (a === b || (!a && !b)) {
-		return 0;
-	}
-
-	return a > b ? 1 : -1;
-};
-
 const compareSettings = (a, b) =>
-	compareStrings(a.section, b.section)
-	|| compareStrings(a.sorter, b.sorter)
-	|| compareStrings(a.i18nLabel, b.i18nLabel);
+	(a.section ?? '').localeCompare(b.section ?? '')
+	|| (a.sorter ?? 0 - b.sorter ?? 0)
+	|| (a.i18nLabel ?? '').localeCompare(b.i18nLabel ?? '');
 
 const settingsReducer = (states, { type, payload }) => {
 	const {
@@ -107,7 +99,7 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 			persistedSettingsCollection,
 			settingsCollection,
 		};
-	}, [collectionsRef]);
+	}, []);
 
 	useEffect(() => {
 		if (isLoading) {
