@@ -239,24 +239,29 @@ export const usePrivilegedSettingsSection = (groupId: string, sectionName?: stri
 	};
 };
 
-export const usePrivilegedSettingActions = (persistedSetting: PrivilegedSetting | null | undefined): {
+export const usePrivilegedSettingActions = (_id: string): {
 	update: () => void;
 	reset: () => void;
 } => {
-	const { hydrate } = useContext(PrivilegedSettingsContext);
+	const { stateRef, hydrate } = useContext(PrivilegedSettingsContext);
 
-	const update = useDebouncedCallback(({ value, editor }) => {
+	const update: (() => void) = useDebouncedCallback(({ value, editor }) => {
+		const selectSetting = (settings: PrivilegedSetting[]): PrivilegedSetting | undefined => settings.find((setting) => setting._id === _id);
+		const persistedSetting = selectSetting(stateRef.current?.persistedSettings ?? []);
+
 		const changes = [{
-			_id: persistedSetting?._id,
+			_id,
 			...value !== undefined && { value },
 			...editor !== undefined && { editor },
 			changed: JSON.stringify(persistedSetting?.value) !== JSON.stringify(value) || JSON.stringify(editor) !== JSON.stringify(persistedSetting?.editor),
 		}];
 
 		hydrate(changes);
-	}, 100, [hydrate, persistedSetting]) as () => void;
+	}, 100, [hydrate, _id]);
 
-	const reset = useDebouncedCallback(() => {
+	const reset: (() => void) = useDebouncedCallback(() => {
+		const selectSetting = (settings: PrivilegedSetting[]): PrivilegedSetting | undefined => settings.find((setting) => setting._id === _id);
+		const persistedSetting = selectSetting(stateRef.current?.persistedSettings ?? []);
 		const changes = [{
 			_id: persistedSetting?._id,
 			value: persistedSetting?.packageValue,
@@ -265,7 +270,7 @@ export const usePrivilegedSettingActions = (persistedSetting: PrivilegedSetting 
 		}];
 
 		hydrate(changes);
-	}, 100, [hydrate, persistedSetting]) as () => void;
+	}, 100, [hydrate, _id]);
 
 	return { update, reset };
 };
@@ -286,7 +291,6 @@ export const usePrivilegedSetting = (_id: string): PrivilegedSetting | null | un
 	const setting = useSelector((state) => selectSetting(state.settings));
 	const persistedSetting = useSelector((state) => selectSetting(state.persistedSettings));
 
-	const { update, reset } = usePrivilegedSettingActions(persistedSetting);
 	const disabled = usePrivilegedSettingDisabledState(persistedSetting);
 
 	if (!setting) {
@@ -296,7 +300,5 @@ export const usePrivilegedSetting = (_id: string): PrivilegedSetting | null | un
 	return {
 		...setting,
 		disabled,
-		update,
-		reset,
 	};
 };

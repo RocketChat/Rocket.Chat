@@ -2,7 +2,7 @@ import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/
 import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../components/basic/MarkdownText';
-import { usePrivilegedSetting } from '../../contexts/PrivilegedSettingsContext';
+import { usePrivilegedSetting, usePrivilegedSettingActions } from '../../contexts/PrivilegedSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
@@ -67,11 +67,9 @@ export function Setting({ settingId, sectionChanged }) {
 		value: contextValue,
 		editor: contextEditor,
 		packageEditor,
-		update,
-		reset,
 		...setting
 	} = usePrivilegedSetting(settingId);
-
+	const { update, reset } = usePrivilegedSettingActions(settingId);
 
 	const t = useTranslation();
 
