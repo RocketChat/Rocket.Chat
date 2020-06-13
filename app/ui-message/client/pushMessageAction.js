@@ -6,7 +6,7 @@ Template.pushMessage.helpers({
 });
 
 Template.pushMessage.events({
-	'click .action-button'(event) {
+	'click .push-message-action-button'(event) {
 		alert(this.action);
 		event.stopPropagation();
 		event.preventDefault();

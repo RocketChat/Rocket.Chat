@@ -19,13 +19,13 @@ Template.pushMessage.helpers({
 });
 
 Template.pushMessage.events({
-	'click .collapse': (e) => {
-		$(e.delegateTarget).find('.button-down').removeClass('collapse').addClass('expand');
+	'click .button-collapse': (e) => {
+		$(e.delegateTarget).find('.button-down').removeClass('button-collapse').addClass('button-expand');
 		$(e.delegateTarget).find('.push-message-body').removeClass('body-collapsed');
 	},
 
-	'click .expand': (e) => {
-		$(e.delegateTarget).find('.button-down').removeClass('expand').addClass('collapse');
+	'click .button-expand': (e) => {
+		$(e.delegateTarget).find('.button-down').removeClass('button-expand').addClass('button-collapse');
 		$(e.delegateTarget).find('.push-message-body').addClass('body-collapsed');
 	},
 });

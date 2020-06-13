@@ -1,92 +1,46 @@
 <template name="pushMessage">
 	{{#with data}}
-		<div class="" style=" 
-			border-radius: 10px;
-			border: 1px solid;
-			border-color: grey;
-			min-height: 40px;
-			padding: 8px;
-			margin-top: 4px;
-			line-height: 20px;
-			overflow: hidden;">
-
-			{{#if icon}}
-				<div class="" style="width: 36px; height: 36px; float: left; margin: 0px 8px;">
-					<img src="{{icon}}" style="
-						width: 100%;
-						height: 100%;
-						background-repeat: no-repeat;
-						background-position: center;
-						background-size: cover;" alt=""/>
-				</div>
-			{{/if}}
-
-			<div class="" style="margin: 0px 8px;">
-
-				<div class="" style="display: flex;
-				justify-content: space-between;">
+		<div class="push-message-container">
+			<div class="push-message-content-container">
+				{{#if icon}}
+					<div class="push-message-icon-container">
+						<img class="push-message-icon" src="{{icon}}" alt="" />
+					</div>
+				{{/if}}
+				<div class="push-message-header">
 					{{#if title}}
-						<span class="" style="font-size: 15px;
-							font-weight: bold;
-							white-space: nowrap;
-							overflow: hidden;
-							text-overflow: ellipsis;">
+						<span class="push-message-title">
 							{{title}}
-						</span>	
+						</span>
 					{{/if}}
 
-					<div style="display: flex;">
+					<div class="push-message-timestamp-container">
 						{{#if timestamp}}
-							<span class="" style="
-								flex-shrink: 0;
-								font-size: 13px;
-								white-space: nowrap;
-								overflow: hidden;
-								text-overflow: ellipsis;">
+							<span class="push-message-timestamp">
 								{{timeAgo(timestamp)}}
-							</span>	
+							</span>
 						{{/if}}
 
-						<style type="text/css">
-							.expand {
-								transition: transform 0.2s;
-								transform: rotate(180deg);		
-							}
-							.collapse {
-								transition: transform 0.2s;
-								transform: rotate(0deg);
-							}
-							.body-collapsed {
-								max-height: 20px;
-								display: block;
-								white-space: nowrap;
-							}
-						</style>
-						<button class="button-down expand">
+						<button class="button-down button-expand">
 							{{> icon icon="arrow-down" block="rc-icon--default-size"}}
 						</button>
 					</div>
 				</div>
-				
+
 				{{#if body}}
-					<span class="push-message-body" style="
-						font-size: 14px;
-						overflow: hidden;
-						text-overflow: ellipsis">
+					<span class="push-message-body">
 						{{body}}
-					</span>	
+					</span>
 				{{/if}}
 			</div>
 
 			{{#if actions}}
-					<div class="" style="
-						display: flex;
-						overflow: hidden;">
-						{{#each action in actions}}
-							{{> pushMessageAction data=action}}
-						{{/each}}
-					</div>
-				{{/if}}	
+				<div class="push-message-actions-container">
+					{{#each action in actions}}
+						{{> pushMessageAction data=action}}
+					{{/each}}
+				</div>
+			{{/if}}
 		</div>
 	{{/with}}
 </template>

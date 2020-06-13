@@ -271,40 +271,11 @@ export class ChatMessages {
 			readMessage.readNow(rid);
 			readMessage.refreshUnreadMark(rid);
 
-			// For testing of Push Rich Message
-			const isPushMessage = true;
-			let pushMessage = Session.get('pushMessage');
-
-			if (!pushMessage) {
-				pushMessage = {
-					title: 'Title',
-					options: {
-						body: 'Description',
-						icon: 'https://awsmp-logos.s3.amazonaws.com/dcb2092b-ef39-40bd-bc7c-f2394fa75ba7/16a827701bdfc7ae7ddf389f61507024.png',
-						timestamp: new Date().getTime(),
-						actions: [
-							{
-								action: 'yes',
-								title: 'Yes',
-								icon: 'https://image.flaticon.com/icons/svg/60/60731.svg',
-							},
-							{
-								action: 'no',
-								title: 'No',
-								icon: 'https://image.flaticon.com/icons/svg/1828/1828778.svg',
-							},
-						],
-					},
-				};
-			}
-
 			const message = await promises.run('onClientBeforeSendMessage', {
 				_id: Random.id(),
 				rid,
 				tmid,
 				msg,
-				isPushMessage,
-				pushMessage,
 			});
 
 			try {
