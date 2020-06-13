@@ -64,9 +64,9 @@ Rocket.Chat is moving to a single codebase. Get to know the reasons and how the 
 
 # Help Wanted
 
-At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
+At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github community.
 
-If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
+If you are passionate about our project, want to work with a world-leading open-source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
 Get to know more about us and explore current openings at https://jobs.rocket.chat/"
 
@@ -114,11 +114,11 @@ Deploy to a DigitalOcean droplet with our one-click install listing from the Dig
 
 ## Layershift
 
-Instantly deploy your Rocket.Chat server for free on next generation auto-scaling PaaS.
+Instantly deploy your Rocket.Chat server for free on next-generation auto-scaling PaaS.
 
 [![Layershift Hosting](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
 
-Painless SSL. Automatically scale your server cluster based on usage demand.
+Painless SSL. Automatically scale your server cluster based on user demand.
 
 ## Yunohost.org
 Host your own Rocket.Chat server in a few seconds.
@@ -182,13 +182,13 @@ Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 
 [![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://rocket.chat/docs/installation/automation-tools/ansible/)
 
 ## Raspberry Pi 4
-Run Rocket.Chat on this world famous $35 quad-core server.
+Run Rocket.Chat on this world-famous $35 quad-core server.
 
 [![Raspberry Pi 4](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
 
 ## Koozali SME
 
-Add Rocket.Chat to this world famous time tested small enterprise server today.
+Add Rocket.Chat to this world-famous time tested small enterprise server today.
 
 [![Koozali SME](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/koozali.png)](https://wiki.contribs.org/Rocket_Chat)
 
@@ -206,15 +206,15 @@ Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with 
 [![Deploy](https://github.com/mastappl/images/blob/master/deployTo.png)](https://panel.d2c.io/?import=https://github.com/d2cio/rocketchat-stack/archive/master.zip/)
 
 ## Syncloud.org
-Run Rocket.Chat on your easy to use personal device.
+Run Rocket.Chat on your easy to use a personal device.
 
 [![Deploy](https://syncloud.org/images/logo_min.svg)](https://syncloud.org)
 
 # About Rocket.Chat
 
-Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) full stack framework.
+Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) full-stack framework.
 
-It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.
+It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to building and evolve their own chat platforms.
 
 ## In the News
 
@@ -228,7 +228,7 @@ It is a great solution for communities and companies wanting to privately host t
 > Your own open source Slack-like chat
 
 ##### [JavaScript Weekly](http://javascriptweekly.com/issues/234)
-> An open source Web based, channel based chat system (a la Slack) built using Meteor, the full stack JavaScript development platform.
+> An open-source Web-based, channel-based chat system (a la Slack) built using Meteor, the full stack JavaScript development platform.
 
 ##### [Open Source China](http://www.oschina.net/p/rocket-chat)
 > Rocket.Chat 是特性最丰富的 Slack 开源替代品之一。 主要功能：群组聊天，直接通信，私聊群，桌面通知，媒体嵌入，链接预览，文件上传，语音/视频 聊天，截图等等。
@@ -260,7 +260,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Emojis
 - Custom Emojis
 - Reactions
-- One touch Geolocation
+- One-touch Geolocation
 - TeX Math Rendering - inline math typesetting
 - Media Embeds
 - Link Previews
@@ -268,9 +268,9 @@ It is a great solution for communities and companies wanting to privately host t
 - Transcripts / History
 - File Upload / Sharing
 - Scalable file sharing - S3 uploads with CDN downloads
-- Full text search
+- Full-text search
 - Global search (from all channels/rooms at once)
-- Live chat / Messaging call center
+- Live chat / Messaging call centre
 - LDAP Authentication
 - CAS 1.0, 2.0 support for educational institutions and hosting providers worldwide
 - Support for Okta SSO through SAML v2
@@ -352,7 +352,7 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 
 # Development
 
-## Quick start for code developers
+## Quickstart for code developers
 Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
@@ -369,7 +369,7 @@ meteor npm install
 meteor npm start
 ```
 
-To debug the server part, use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
+To debug the server part, use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for the best debugging experience:
 
 ```sh
 meteor debug
@@ -432,3 +432,4 @@ Rocket.Chat will be free forever, but you can help us speed up the development!
 
 
 [BountySource](https://www.bountysource.com/teams/rocketchat)
+
