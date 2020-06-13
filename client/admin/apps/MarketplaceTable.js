@@ -5,12 +5,12 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import PriceDisplay from './PriceDisplay';
 import AppAvatar from '../../components/basic/avatar/AppAvatar';
 import AppStatus from './AppStatus';
-import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
 import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useFilteredMarketplaceApps } from './hooks/useFilteredMarketplaceApps';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
+import { Th, GenericTable } from '../../components/GenericTable';
 import AppMenu from './AppMenu';
 
 const FilterByText = React.memo(({ setFilter, ...props }) => {
@@ -45,11 +45,20 @@ export function MarketplaceTable({ setModal }) {
 
 	const router = useRoute('admin-marketplace');
 
-	const onClick = (id, version) => () => router.push({
-		context: 'details',
-		version,
-		id,
-	});
+	const handler = useCallback((e) => {
+		if (e.type !== 'click' && !['Enter', ' '].includes(e.key)) {
+			return;
+		}
+
+		const { id, version } = e.currentTarget.dataset;
+
+
+		router.push({
+			context: 'details',
+			version,
+			id,
+		});
+	}, []);
 
 	const onHeaderClick = useCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -87,10 +96,10 @@ export function MarketplaceTable({ setModal }) {
 		const [showStatus, setShowStatus] = useState(false);
 
 		const toggleShow = (state) => () => setShowStatus(state);
-		const handler = onClick(id, marketplaceVersion);
+
 		const preventDefault = useCallback((e) => { e.preventDefault(); e.stopPropagation(); }, []);
 
-		return <Table.Row key={id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
+		return <Table.Row key={id} data-id={id} data-version={marketplaceVersion} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
 			{useMemo(() => <Table.Cell withTruncatedText display='flex' flexDirection='row'>
 				<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
 				<Box display='flex' flexDirection='column' alignSelf='flex-start'>

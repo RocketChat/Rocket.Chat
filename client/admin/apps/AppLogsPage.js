@@ -80,16 +80,19 @@ export default function AppLogsPage({ id, ...props }) {
 						t={t}
 					/>)}
 				</Accordion>
-				<Pagination
-					current={current}
-					itemsPerPage={itemsPerPage}
-					itemsPerPageLabel={itemsPerPageLabel}
-					showingResultsLabel={showingResultsLabel}
-					count={total}
-					onSetItemsPerPage={setItemsPerPage}
-					onSetCurrent={setCurrent}
-				/>
 			</>}
 		</Page.ScrollableContent>
+
+		<Pagination
+			mi='x24'
+			divider
+			current={current}
+			itemsPerPage={itemsPerPage}
+			itemsPerPageLabel={itemsPerPageLabel}
+			showingResultsLabel={showingResultsLabel}
+			count={total}
+			onSetItemsPerPage={setItemsPerPage}
+			onSetCurrent={setCurrent}
+		/>
 	</Page>;
 }
