@@ -1,7 +1,7 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLazyRef, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
@@ -64,19 +64,18 @@ const settingsReducer = (states, { type, payload }) => {
 
 function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	const [isLoading, setLoading] = useState(true);
-
-	const subscribersRef = useRef();
-	if (!subscribersRef.current) {
-		subscribersRef.current = new Set();
-	}
+	const subscribersRef = useLazyRef(() => new Set());
 
 	const stateRef = useRef({ settings: [], persistedSettings: [] });
-
-	const [state, dispatch] = useReducer(settingsReducer, { settings: [], persistedSettings: [] });
-	stateRef.current = state;
+	const dispatch = useMutableCallback((action) => {
+		stateRef.current = settingsReducer(stateRef.current, action);
+		subscribersRef.current.forEach((subscriber) => {
+			subscriber(stateRef.current);
+		});
+	});
 
 	subscribersRef.current.forEach((subscriber) => {
-		subscriber(state);
+		subscriber(stateRef.current);
 	});
 
 	const collectionsRef = useRef({});
