@@ -8,7 +8,7 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import toastr from 'toastr';
 
-import { KonchatNotification } from '../app/ui';
+// import { KonchatNotification } from '../app/ui';
 import { ChatSubscription } from '../app/models';
 import { roomTypes, handleError } from '../app/utils';
 import { call } from '../app/ui-utils';
@@ -70,7 +70,7 @@ FlowRouter.route('/home', {
 	name: 'home',
 
 	action(params, queryParams) {
-		KonchatNotification.getDesktopPermission();
+		// KonchatNotification.getDesktopPermission();
 		if (queryParams.saml_idp_credentialToken !== undefined) {
 			Accounts.callLoginMethod({
 				methodArguments: [{

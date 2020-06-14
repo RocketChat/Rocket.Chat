@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../app/settings';
-import { handleError } from '../app/utils/client';
+import { handleError, t } from '../app/utils/client';
+import { modal } from '../app/ui-utils/client';
 
 function urlBase64ToUint8Array(base64String) {
 	const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -28,8 +29,7 @@ function subscribeUser() {
 						applicationServerKey: urlBase64ToUint8Array(vapidKey),
 					});
 				Meteor.call('savePushNotificationSubscription', JSON.stringify(subscription));
-			}
-			catch (e) {
+			} catch (e) {
 				handleError(e);
 			}
 		});
@@ -47,14 +47,26 @@ Meteor.startup(() => {
 				.then(function(reg) {
 					reg.pushManager.getSubscription().then(function(sub) {
 						if (sub === null) {
-							// Update UI to ask user to register for Push
 							console.log('Not subscribed to push service!');
 							if (settingsReady) {
-								subscribeUser();
+								modal.open({
+									title: t('Important'),
+									type: 'info',
+									text: t('Please subscribe to push notifications to continue'),
+									showCancelButton: true,
+									confirmButtonText: t('Subscribe'),
+									cancelButtonText: t('Cancel'),
+									closeOnConfirm: true,
+								}, () => {
+									Notification.requestPermission().then(function(permission) {
+										if (permission === 'granted') {
+											subscribeUser();
+										}
+									});
+								});
 								computation.stop();
 							}
 						} else {
-							// We have a subscription, update the database
 							console.log('Subscribed to push service');
 							computation.stop();
 						}

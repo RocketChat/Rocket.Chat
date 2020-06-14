@@ -1317,6 +1317,10 @@ settings.addGroup('Push', function() {
 			type: 'string',
 			secret: true,
 		});
+		this.add('Gcm_sender_id', '', {
+			type: 'string',
+			public: true,
+		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			public: true,
