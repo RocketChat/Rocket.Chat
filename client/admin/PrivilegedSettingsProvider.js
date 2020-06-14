@@ -64,11 +64,22 @@ const settingsReducer = (states, { type, payload }) => {
 
 function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	const [isLoading, setLoading] = useState(true);
+	const persistedSettingsRef = useLazyRef(() => new Map());
+	const settingsRef = useLazyRef(() => new Map());
 	const subscribersRef = useLazyRef(() => new Set());
 
 	const stateRef = useRef({ settings: [], persistedSettings: [] });
 	const dispatch = useMutableCallback((action) => {
 		stateRef.current = settingsReducer(stateRef.current, action);
+
+		stateRef.current.persistedSettings.forEach((setting) => {
+			persistedSettingsRef.current.set(setting._id, setting);
+		});
+
+		stateRef.current.settings.forEach((setting) => {
+			settingsRef.current.set(setting._id, setting);
+		});
+
 		subscribersRef.current.forEach((subscriber) => {
 			subscriber(stateRef.current);
 		});
@@ -175,8 +186,9 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	const contextValue = useMemo(() => ({
 		authorized: true,
 		loading: isLoading,
+		persistedSettings: persistedSettingsRef.current,
+		settings: settingsRef.current,
 		subscribers: subscribersRef.current,
-		stateRef,
 		hydrate,
 		isDisabled,
 	}), [
