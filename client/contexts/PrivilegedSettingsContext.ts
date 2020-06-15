@@ -1,5 +1,4 @@
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Tracker } from 'meteor/tracker';
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -9,14 +8,16 @@ import { useTranslation, useLoadLanguage } from './TranslationContext';
 import { useUser } from './UserContext';
 
 type PrivilegedSettingId = string;
+type PrivilegedSettingSectionName = string | null | undefined;
+type PrivilegedSettingGroupId = string;
 
 type PrivilegedSetting = {
 	_id: PrivilegedSettingId;
 	type: string;
 	blocked: boolean;
 	enableQuery: unknown;
-	group: PrivilegedSettingId;
-	section: string;
+	group: PrivilegedSettingGroupId;
+	section: PrivilegedSettingSectionName;
 	changed: boolean;
 	value: unknown;
 	packageValue: unknown;
@@ -25,6 +26,14 @@ type PrivilegedSetting = {
 	sorter: string;
 	i18nLabel: string;
 	disabled?: boolean;
+};
+
+type SectionDescriptor = {
+	name: PrivilegedSettingSectionName;
+	editableSettings: PrivilegedSetting[];
+	settings: PrivilegedSettingId[];
+	changed: boolean;
+	canReset: boolean;
 };
 
 type EqualityFunction<T> = (a: T, b: T) => boolean;
@@ -38,6 +47,8 @@ type PrivilegedSettingsContextValue = {
 	subscribers: Set<() => void>;
 	hydrate: (changes: any[]) => void;
 	isDisabled: (setting: PrivilegedSetting) => boolean;
+	getSettingsSection: (groupId: PrivilegedSettingGroupId, sectionName: PrivilegedSettingSectionName) => SectionDescriptor | null;
+	subscribeToSettingsSection: (groupId: PrivilegedSettingGroupId, sectionName: PrivilegedSettingSectionName, cb: (sectionDescriptor: SectionDescriptor) => void) => (() => void);
 	getSetting: (_id: PrivilegedSettingId) => PrivilegedSetting | null;
 	subscribeToSetting: (_id: PrivilegedSettingId, cb: (setting: PrivilegedSetting) => void) => (() => void);
 	getEditableSetting: (_id: PrivilegedSettingId) => PrivilegedSetting | null;
@@ -52,6 +63,8 @@ export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContext
 	subscribers: new Set(),
 	hydrate: () => undefined,
 	isDisabled: () => false,
+	getSettingsSection: () => null,
+	subscribeToSettingsSection: () => (): void => undefined,
 	getSetting: () => null,
 	subscribeToSetting: () => (): void => undefined,
 	getEditableSetting: () => null,
@@ -206,48 +219,46 @@ export const usePrivilegedSettingsGroup = (groupId: PrivilegedSettingId): any =>
 	return group && { ...group, sections, changed, save, cancel };
 };
 
-export const usePrivilegedSettingsSection = (groupId: string, sectionName?: string): any => {
-	const { persistedSettings, settings, hydrate, isDisabled } = useContext(PrivilegedSettingsContext);
+export const usePrivilegedSettingsSection = (groupId: PrivilegedSettingGroupId, sectionName: PrivilegedSettingSectionName): SectionDescriptor | null => {
+	const { getSettingsSection, subscribeToSettingsSection } = useContext(PrivilegedSettingsContext);
 
-	sectionName = sectionName || '';
+	const subscription = useMemo(() => ({
+		getCurrentValue: (): (SectionDescriptor | null) => getSettingsSection(groupId, sectionName),
+		subscribe: (cb: (setting: SectionDescriptor | null) => void): (() => void) => subscribeToSettingsSection(groupId, sectionName, cb),
+	}), [groupId, sectionName, getSettingsSection, subscribeToSettingsSection]);
 
-	const filterSettings = (settings: any[]): any[] =>
-		settings.filter(({ group, section }) => group === groupId && ((!sectionName && !section) || (sectionName === section)));
+	return useSubscription(subscription);
+};
 
-	const canReset = useSelector(() => filterSettings(Array.from(settings.values())).some(({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue)));
-	const settingsIds = useSelector(() => filterSettings(Array.from(settings.values())).map(({ _id }) => _id), (a, b) => a.length === b.length && a.join() === b.join());
+export const usePrivilegedSettingsSectionActions = (groupId: PrivilegedSettingGroupId, sectionName?: PrivilegedSettingSectionName): {
+	reset: () => void;
+} => {
+	const { getSettingsSection, hydrate } = useContext(PrivilegedSettingsContext);
 
 	const reset = useMutableCallback(() => {
-		const sectionSettings = filterSettings(Array.from(settings.values()))
-			.filter((setting) => Tracker.nonreactive(() => !isDisabled(setting))); // Ignore disabled settings
-		const sectionPersistedSettings = filterSettings(Array.from(persistedSettings.values()));
+		const sectionDescriptor = getSettingsSection(groupId, sectionName);
 
-		const changes = sectionSettings.map((setting) => {
-			const { _id, value, packageValue, packageEditor } = sectionPersistedSettings.find(({ _id }) => _id === setting._id);
-			return {
-				_id,
-				value: packageValue,
-				editor: packageEditor,
-				changed: JSON.stringify(packageValue) !== JSON.stringify(value),
-			};
-		});
+		if (!sectionDescriptor) {
+			return;
+		}
 
-		hydrate(changes);
+		hydrate(
+			sectionDescriptor.editableSettings
+				.filter(({ disabled }) => !disabled)
+				.map(({ _id, value, packageValue, editor, packageEditor }) => ({
+					_id,
+					value: packageValue,
+					editor: packageEditor,
+					changed:
+						JSON.stringify(value) !== JSON.stringify(packageValue)
+						|| JSON.stringify(editor) !== JSON.stringify(packageEditor),
+				})),
+		);
 	});
 
 	return {
-		name: sectionName,
-		canReset,
-		settings: settingsIds,
 		reset,
 	};
-};
-
-export const usePrivilegedSettingsSectionChangedState = (groupId: PrivilegedSettingId, sectionName: string): boolean => {
-	const { settings } = useContext(PrivilegedSettingsContext);
-	return !!useSelector(() =>
-		Array.from(settings.values()).some(({ group, section, changed }) =>
-			group === groupId && ((!sectionName && !section) || (sectionName === section)) && changed));
 };
 
 export const usePrivilegedSetting = (_id: PrivilegedSettingId): PrivilegedSetting | null => {
@@ -256,7 +267,7 @@ export const usePrivilegedSetting = (_id: PrivilegedSettingId): PrivilegedSettin
 	const subscription = useMemo(() => ({
 		getCurrentValue: (): (PrivilegedSetting | null) => getEditableSetting(_id),
 		subscribe: (cb: (setting: PrivilegedSetting | null) => void): (() => void) => subscribeToEditableSetting(_id, cb),
-	}), [getEditableSetting, subscribeToEditableSetting]);
+	}), [_id, getEditableSetting, subscribeToEditableSetting]);
 
 	return useSubscription(subscription);
 };

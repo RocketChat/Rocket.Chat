@@ -3,19 +3,19 @@ import React from 'react';
 
 import {
 	usePrivilegedSettingsSection,
-	usePrivilegedSettingsSectionChangedState,
+	usePrivilegedSettingsSectionActions,
 } from '../../contexts/PrivilegedSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Setting } from './Setting';
 
 export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
 	const section = usePrivilegedSettingsSection(groupId, sectionName);
-	const changed = usePrivilegedSettingsSectionChangedState(groupId, sectionName);
+	const { reset } = usePrivilegedSettingsSectionActions(groupId, sectionName);
 
 	const t = useTranslation();
 
 	const handleResetSectionClick = () => {
-		section.reset();
+		reset();
 	};
 
 	return <Accordion.Item
@@ -26,7 +26,7 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		{help && <Box is='p' color='hint' fontScale='p1'>{help}</Box>}
 
 		<FieldGroup>
-			{section.settings.map((settingId) => <Setting key={settingId} settingId={settingId} sectionChanged={changed} />)}
+			{section.editableSettings.map((setting) => <Setting key={setting} settingId={setting._id} sectionChanged={section.changed} />)}
 
 			{hasReset && section.canReset && <Button
 				children={t('Reset_section_settings')}

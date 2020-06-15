@@ -1,7 +1,7 @@
 import { useLazyRef, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 
 import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
@@ -216,18 +216,60 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		Tracker.flush();
 	});
 
-	const getSetting = useMutableCallback((_id) =>
-		Tracker.nonreactive(() => collectionsRef.current.persistedSettingsCollection.findOne(_id)));
+	const findSettingsSection = useMutableCallback((groupId, sectionName) => {
+		const editableSettings = collectionsRef.current.settingsCollection.find({
+			group: groupId,
+			...sectionName
+				? { section: sectionName }
+				: {
+					$or: [
+						{ section: { $exists: false } },
+						{ section: null },
+					],
+				},
+		}, {
+			sort: {
+				sorter: 1,
+				i18nLabel: 1,
+			},
+		}).fetch();
 
-	const subscribeToSetting = useMutableCallback((_id, cb) => {
+		return {
+			name: sectionName,
+			editableSettings,
+			settings: editableSettings.map(({ _id }) => _id),
+			changed: editableSettings.some(({ changed }) => changed),
+			canReset: editableSettings.some(({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue)),
+		};
+	});
+
+	const getSettingsSection = useMutableCallback((groupId, sectionName) =>
+		Tracker.nonreactive(() => findSettingsSection(groupId, sectionName)));
+
+	const subscribeToSettingsSection = useMutableCallback((groupId, sectionName, callback) => {
 		const computation = Tracker.autorun(() => {
-			cb(collectionsRef.current.persistedSettingsCollection.findOne(_id));
+			callback(findSettingsSection(groupId, sectionName));
 		});
 
 		return () => {
 			computation.stop();
 		};
 	});
+
+	const findSetting = useCallback((_id) => cachedCollection.collection.findOne(_id), [cachedCollection]);
+
+	const getSetting = useCallback((_id) =>
+		Tracker.nonreactive(() => findSetting(_id)), [findSetting]);
+
+	const subscribeToSetting = useCallback((_id, callback) => {
+		const computation = Tracker.autorun(() => {
+			callback(findSetting(_id));
+		});
+
+		return () => {
+			computation.stop();
+		};
+	}, [findSetting]);
 
 	const isDisabled = useMutableCallback(({ blocked, enableQuery }) => {
 		if (blocked) {
@@ -242,18 +284,18 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		return !queries.every((query) => collectionsRef.current.settingsCollection.find(query).count() > 0);
 	});
 
+	const findEditableSetting = (_id) => {
+		const editableSetting = collectionsRef.current.settingsCollection.findOne(_id);
+		editableSetting.disabled = isDisabled(editableSetting);
+		return editableSetting;
+	};
+
 	const getEditableSetting = useMutableCallback((_id) =>
-		Tracker.nonreactive(() => {
-			const editableSetting = collectionsRef.current.settingsCollection.findOne(_id);
-			editableSetting.disabled = isDisabled(editableSetting);
-			return editableSetting;
-		}));
+		Tracker.nonreactive(() => findEditableSetting(_id)));
 
 	const subscribeToEditableSetting = useMutableCallback((_id, cb) => {
 		const computation = Tracker.autorun(() => {
-			const editableSetting = collectionsRef.current.settingsCollection.findOne(_id);
-			editableSetting.disabled = isDisabled(editableSetting);
-			cb(editableSetting);
+			cb(findEditableSetting(_id));
 		});
 
 		return () => {
@@ -269,6 +311,8 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		subscribers: subscribersRef.current,
 		hydrate,
 		isDisabled,
+		getSettingsSection,
+		subscribeToSettingsSection,
 		getSetting,
 		subscribeToSetting,
 		getEditableSetting,
