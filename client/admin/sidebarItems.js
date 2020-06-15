@@ -1,6 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { hasPermission } from '../../app/authorization/client';
+import { hasPermission, hasRole } from '../../app/authorization/client';
 import { createTemplateForComponent } from '../reactAdapters';
 
 export const sidebarItems = new ReactiveVar([]);
@@ -63,7 +64,12 @@ registerAdminSidebarItem({
 	href: 'custom-sounds',
 	i18nLabel: 'Custom_Sounds',
 	icon: 'volume',
-	permissionGranted() {
-		return hasPermission(['manage-sounds']);
-	},
+	permissionGranted: () => hasPermission(['manage-sounds']),
+});
+
+registerAdminSidebarItem({
+	icon: 'discover',
+	href: 'federation-dashboard',
+	i18nLabel: 'Federation Dashboard',
+	permissionGranted: () => hasRole(Meteor.userId(), 'admin'),
 });

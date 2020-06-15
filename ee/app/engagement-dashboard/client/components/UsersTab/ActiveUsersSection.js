@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { CounterSet } from '../data/CounterSet';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
 import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
