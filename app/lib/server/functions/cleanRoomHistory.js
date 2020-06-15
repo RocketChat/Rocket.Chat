@@ -34,7 +34,8 @@ function queryBuilder({ rid, ts, excludePinned, fromUsers, filesOnly, ignoreDisc
 	return query;
 }
 
-export const cleanRoomHistory = async function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [] }) {
+export const cleanRoomHistory = async function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], userId = '' }) {
+	console.log('userId', userId);
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -47,7 +48,7 @@ export const cleanRoomHistory = async function({ rid, latest = new Date(), oldes
 		ignoreDiscussion,
 	});
 
-	const result = await RoomEvents.createPruneMessagesEvent(query, rid);
+	const result = await RoomEvents.createPruneMessagesEvent(query, rid, userId);
 
 	// deleting files from storage
 	for (let f = 0; result.filesIds.length > f; f++) {

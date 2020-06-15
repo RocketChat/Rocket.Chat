@@ -122,7 +122,7 @@ class RoomEventsModel extends EventsModel {
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
-	public async createPruneMessagesEvent(query: any, roomId: string): Promise<{
+	public async createPruneMessagesEvent(query: any, roomId: string, userId: string): Promise<{
 		count: number;
 		filesIds: Array<string>;
 		discussionsIds: Array<string>;
@@ -131,6 +131,9 @@ class RoomEventsModel extends EventsModel {
 			t: EventTypeDescriptor.PRUNE_ROOM_MESSAGES,
 			d: {
 				query: JSON.stringify(query),
+				u: {
+					_id: userId,
+				},
 			},
 		});
 
