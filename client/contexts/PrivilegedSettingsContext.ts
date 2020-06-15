@@ -3,7 +3,6 @@ import { Tracker } from 'meteor/tracker';
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useBatchSettingsDispatch } from './SettingsContext';
 import { useToastMessageDispatch } from './ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from './TranslationContext';
@@ -39,6 +38,10 @@ type PrivilegedSettingsContextValue = {
 	subscribers: Set<() => void>;
 	hydrate: (changes: any[]) => void;
 	isDisabled: (setting: PrivilegedSetting) => boolean;
+	getSetting: (_id: PrivilegedSettingId) => PrivilegedSetting | null;
+	subscribeToSetting: (_id: PrivilegedSettingId, cb: (setting: PrivilegedSetting) => void) => (() => void);
+	getEditableSetting: (_id: PrivilegedSettingId) => PrivilegedSetting | null;
+	subscribeToEditableSetting: (_id: PrivilegedSettingId, cb: (setting: PrivilegedSetting) => void) => (() => void);
 };
 
 export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContextValue>({
@@ -49,6 +52,10 @@ export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContext
 	subscribers: new Set(),
 	hydrate: () => undefined,
 	isDisabled: () => false,
+	getSetting: () => null,
+	subscribeToSetting: () => (): void => undefined,
+	getEditableSetting: () => null,
+	subscribeToEditableSetting: () => (): void => undefined,
 });
 
 export const usePrivilegedSettingsAuthorized = (): boolean =>
@@ -236,27 +243,45 @@ export const usePrivilegedSettingsSection = (groupId: string, sectionName?: stri
 	};
 };
 
+export const usePrivilegedSettingsSectionChangedState = (groupId: PrivilegedSettingId, sectionName: string): boolean => {
+	const { settings } = useContext(PrivilegedSettingsContext);
+	return !!useSelector(() =>
+		Array.from(settings.values()).some(({ group, section, changed }) =>
+			group === groupId && ((!sectionName && !section) || (sectionName === section)) && changed));
+};
+
+export const usePrivilegedSetting = (_id: PrivilegedSettingId): PrivilegedSetting | null => {
+	const { getEditableSetting, subscribeToEditableSetting } = useContext(PrivilegedSettingsContext);
+
+	const subscription = useMemo(() => ({
+		getCurrentValue: (): (PrivilegedSetting | null) => getEditableSetting(_id),
+		subscribe: (cb: (setting: PrivilegedSetting | null) => void): (() => void) => subscribeToEditableSetting(_id, cb),
+	}), [getEditableSetting, subscribeToEditableSetting]);
+
+	return useSubscription(subscription);
+};
+
 export const usePrivilegedSettingActions = (_id: PrivilegedSettingId): {
 	update: () => void;
 	reset: () => void;
 } => {
-	const { persistedSettings, hydrate } = useContext(PrivilegedSettingsContext);
+	const { getSetting, hydrate } = useContext(PrivilegedSettingsContext);
 
 	const update: (() => void) = useDebouncedCallback(({ value, editor }) => {
-		const persistedSetting = persistedSettings.get(_id);
+		const persistedSetting = getSetting(_id);
 
 		const changes = [{
 			_id,
 			...value !== undefined && { value },
 			...editor !== undefined && { editor },
-			changed: JSON.stringify(persistedSetting?.value) !== JSON.stringify(value) || JSON.stringify(editor) !== JSON.stringify(persistedSetting?.editor),
+			changed: JSON.stringify(persistedSetting?.value) !== JSON.stringify(value) || JSON.stringify(persistedSetting?.editor) !== JSON.stringify(editor),
 		}];
 
 		hydrate(changes);
-	}, 100, [hydrate, persistedSettings, _id]);
+	}, 100, [hydrate, getSetting, _id]);
 
 	const reset: (() => void) = useDebouncedCallback(() => {
-		const persistedSetting = persistedSettings.get(_id);
+		const persistedSetting = getSetting(_id);
 		const changes = [{
 			_id: persistedSetting?._id,
 			value: persistedSetting?.packageValue,
@@ -265,30 +290,7 @@ export const usePrivilegedSettingActions = (_id: PrivilegedSettingId): {
 		}];
 
 		hydrate(changes);
-	}, 100, [hydrate, persistedSettings, _id]);
+	}, 100, [hydrate, getSetting, _id]);
 
 	return { update, reset };
-};
-
-export const usePrivilegedSettingsSectionChangedState = (groupId: PrivilegedSettingId, sectionName: string): boolean => {
-	const { settings } = useContext(PrivilegedSettingsContext);
-	return !!useSelector(() =>
-		Array.from(settings.values()).some(({ group, section, changed }) =>
-			group === groupId && ((!sectionName && !section) || (sectionName === section)) && changed));
-};
-
-export const usePrivilegedSetting = (_id: PrivilegedSettingId): PrivilegedSetting | null | undefined => {
-	const { settings, isDisabled } = useContext(PrivilegedSettingsContext);
-
-	const setting = useSelector(() => settings.get(_id));
-	const disabled = useReactiveValue(() => (setting ? isDisabled(setting) : false), [setting?.blocked, setting?.enableQuery]) as unknown as boolean;
-
-	if (!setting) {
-		return null;
-	}
-
-	return {
-		...setting,
-		disabled,
-	};
 };

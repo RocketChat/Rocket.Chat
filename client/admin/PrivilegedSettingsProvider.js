@@ -205,14 +205,28 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		const { current: { settingsCollection } } = collectionsRef;
 		const { current: updateTimers } = updateTimersRef;
 		clearTimeout(updateTimers[_id]);
-		updateTimers[_id] = setTimeout(() => {
-			settingsCollection.update(_id, { $set: data });
-		}, 70);
+		// updateTimers[_id] = setTimeout(() => {
+		settingsCollection.update(_id, { $set: data });
+		// }, 70);
 	});
 
 	const hydrate = useMutableCallback((changes) => {
 		changes.forEach(updateAtCollection);
 		dispatch({ type: 'hydrate', payload: changes });
+		Tracker.flush();
+	});
+
+	const getSetting = useMutableCallback((_id) =>
+		Tracker.nonreactive(() => collectionsRef.current.persistedSettingsCollection.findOne(_id)));
+
+	const subscribeToSetting = useMutableCallback((_id, cb) => {
+		const computation = Tracker.autorun(() => {
+			cb(collectionsRef.current.persistedSettingsCollection.findOne(_id));
+		});
+
+		return () => {
+			computation.stop();
+		};
 	});
 
 	const isDisabled = useMutableCallback(({ blocked, enableQuery }) => {
@@ -224,10 +238,27 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 			return false;
 		}
 
-		const { current: { settingsCollection } } = collectionsRef;
-
 		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(enableQuery) : enableQuery);
-		return !queries.every((query) => !!settingsCollection.findOne(query));
+		return !queries.every((query) => collectionsRef.current.settingsCollection.find(query).count() > 0);
+	});
+
+	const getEditableSetting = useMutableCallback((_id) =>
+		Tracker.nonreactive(() => {
+			const editableSetting = collectionsRef.current.settingsCollection.findOne(_id);
+			editableSetting.disabled = isDisabled(editableSetting);
+			return editableSetting;
+		}));
+
+	const subscribeToEditableSetting = useMutableCallback((_id, cb) => {
+		const computation = Tracker.autorun(() => {
+			const editableSetting = collectionsRef.current.settingsCollection.findOne(_id);
+			editableSetting.disabled = isDisabled(editableSetting);
+			cb(editableSetting);
+		});
+
+		return () => {
+			computation.stop();
+		};
 	});
 
 	const contextValue = useMemo(() => ({
@@ -238,6 +269,10 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		subscribers: subscribersRef.current,
 		hydrate,
 		isDisabled,
+		getSetting,
+		subscribeToSetting,
+		getEditableSetting,
+		subscribeToEditableSetting,
 	}), [
 		isLoading,
 		hydrate,
