@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import {
 	ILivechatBusinessHourRepository,
@@ -11,8 +13,10 @@ export interface IBusinessHour {
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	getBusinessHour(id: string): Promise<ILivechatBusinessHour>;
 	findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
-	openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
-	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
+	openBusinessHoursByDayHourAndUTC(day: string, hour: string, utc: string): Promise<void>;
+	closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void>;
+	removeBusinessHoursFromUsers(): Promise<void>;
+	openBusinessHoursIfNeeded(): Promise<void>;
 }
 
 export abstract class AbstractBusinessHour {
@@ -28,13 +32,40 @@ export abstract class AbstractBusinessHour {
 		return this.LivechatBusinessHourRepository.findHoursToScheduleJobs();
 	}
 
-	async closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
-		const businessHoursIds = await this.LivechatBusinessHourRepository.findActiveBusinessHoursIdsToClose(LivechatBussinessHourTypes.SINGLE, day, hour);
+	async closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void> {
+		const businessHoursIds = await this.LivechatBusinessHourRepository.findActiveBusinessHoursIdsToClose(LivechatBussinessHourTypes.SINGLE, day, hour, utc);
 		await this.UsersRepository.closeAgentsBusinessHours(businessHoursIds);
 		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
+	}
+
+	async removeBusinessHoursFromUsers(): Promise<void> {
+		await this.UsersRepository.removeBusinessHoursFromUsers();
+		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+	}
+
+	async openBusinessHoursIfNeeded(): Promise<void> {
+		await this.removeBusinessHoursFromUsers();
+		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
+		const day = currentTime.format('dddd');
+		const businessHoursToOpenIds = await this.getBusinessHoursThatMustBeOpen(day, currentTime);
+		await this.UsersRepository.openAgentsBusinessHours(businessHoursToOpenIds);
+		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+	}
+
+	private async getBusinessHoursThatMustBeOpen(day: string, currentTime: any): Promise<string[]> {
+		const activeBusinessHours = await this.LivechatBusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, { fields: { workHours: 1 } });
+		return activeBusinessHours
+			.filter((businessHour) => businessHour.workHours
+				.filter((hour) => hour.day === day)
+				.some((hour) => {
+					const start = moment.utc(`${ hour.start }`, 'HH:mm');
+					const finish = moment.utc(`${ hour.finish }`, 'HH:mm');
+					return currentTime.isSameOrAfter(start) && currentTime.isSameOrBefore(finish);
+				}))
+			.map((businessHour) => businessHour._id);
 	}
 }

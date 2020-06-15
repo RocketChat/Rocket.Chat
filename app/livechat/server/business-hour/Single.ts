@@ -19,8 +19,8 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 		return this.LivechatBusinessHourRepository.findOneDefaultBusinessHour();
 	}
 
-	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
-		const businessHoursIds = await this.LivechatBusinessHourRepository.findActiveBusinessHoursIdsToOpen(LivechatBussinessHourTypes.SINGLE, day, hour);
+	async openBusinessHoursByDayHourAndUTC(day: string, hour: string, utc: string): Promise<void> {
+		const businessHoursIds = await this.LivechatBusinessHourRepository.findActiveBusinessHoursIdsToOpen(LivechatBussinessHourTypes.SINGLE, day, hour, utc);
 		this.UsersRepository.openAgentsBusinessHours(businessHoursIds);
 	}
 }

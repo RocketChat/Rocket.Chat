@@ -327,10 +327,8 @@ export class UsersRaw extends BaseRaw {
 
 	updateLivechatStatusBasedOnBusinessHours() {
 		const query = {
-			openBusinessHours: {
-				$exists: true,
-				$size: 0,
-			},
+			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
+			roles: 'livechat-agent',
 		};
 
 		const update = {
@@ -350,5 +348,21 @@ export class UsersRaw extends BaseRaw {
 				$not: { $size: 0 },
 			},
 		}).count() > 0;
+	}
+
+	removeBusinessHoursFromUsers() {
+		const query = {
+			openBusinessHours: {
+				$exists: true,
+			},
+		};
+
+		const update = {
+			$unset: {
+				openBusinessHours: 1,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 }

@@ -3,12 +3,16 @@ import moment from 'moment';
 import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
 import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHour } from './AbstractBusinessHour';
-import { IWorkHoursForCreateCronJobs } from '../../../models/server/raw/LivechatBusinessHours';
+import { settings } from '../../../settings/server';
 
 export interface IBusinessHoursManager {
 	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void>;
 	getBusinessHour(id?: string): Promise<ILivechatBusinessHour>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
+	removeCronJobs(): void;
+	createCronJobsForWorkHours(): Promise<void>;
+	removeBusinessHoursFromAgents(): Promise<void>;
+	openBusinessHoursIfNeeded(): Promise<void>;
 }
 
 const cronJobDayDict: Record<string, number> = {
@@ -45,7 +49,11 @@ export class BusinessHourManager implements IBusinessHoursManager {
 			hour.finish = moment(hour.finish, 'HH:mm').utc().format('HH:mm');
 		});
 		await this.businessHour.saveBusinessHour(businessHourData);
-		this.createCronJobsForWorkHours(businessHourData, await this.businessHour.findHoursToCreateJobs());
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+		await this.createCronJobsForWorkHours();
+		await this.openBusinessHoursIfNeeded();
 	}
 
 	async getBusinessHour(id?: string): Promise<ILivechatBusinessHour> {
@@ -53,24 +61,32 @@ export class BusinessHourManager implements IBusinessHoursManager {
 	}
 
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return true;
+		}
 		return this.businessHour.allowAgentChangeServiceStatus(agentId);
 	}
 
-	private createCronJobsForWorkHours(businessHourData: ILivechatBusinessHour, workHours: IWorkHoursForCreateCronJobs[]): void {
+	removeCronJobs(): void {
+		this.cronJobsCache.forEach((jobName) => this.cronJobs.remove(jobName));
+	}
+
+	async createCronJobsForWorkHours(): Promise<void> {
 		this.removeCronJobs();
 		this.clearCronJobsCache();
+		const workHours = await this.businessHour.findHoursToCreateJobs();
 		workHours.forEach((workHour) => {
-			const { start, finish, day } = workHour;
+			const { start, finish, day, utc } = workHour;
 			start.forEach((hour) => {
-				const jobName = `${ workHour.day }-${ hour }`;
-				const duration = moment.duration(hour).add(businessHourData.timezone.utc, 'hours');
+				const jobName = `${ workHour.day }/${ hour }/${ utc }/open`;
+				const duration = moment.duration(hour).add(utc, 'hours');
 				const scheduleAt = `${ duration.minutes() } ${ duration.hours() } * * ${ cronJobDayDict[day] }`;
 				this.addToCache(jobName);
 				this.cronJobs.add(jobName, scheduleAt, this.openWorkHoursCallback);
 			});
 			finish.forEach((hour) => {
-				const jobName = `${ workHour.day }-${ hour }`;
-				const duration = moment.duration(hour).add(businessHourData.timezone.utc, 'hours');
+				const jobName = `${ workHour.day }/${ hour }/${ utc }/close`;
+				const duration = moment.duration(hour).add(utc, 'hours');
 				const scheduleAt = `${ duration.minutes() } ${ duration.hours() } * * ${ cronJobDayDict[day] }`;
 				this.addToCache(jobName);
 				this.cronJobs.add(jobName, scheduleAt, this.closeWorkHoursCallback);
@@ -78,20 +94,24 @@ export class BusinessHourManager implements IBusinessHoursManager {
 		});
 	}
 
-	private async openWorkHoursCallback(day: string, hour: string): Promise<void> {
-		this.businessHour.openBusinessHoursByDayAndHour(day, hour);
+	async removeBusinessHoursFromAgents(): Promise<void> {
+		this.businessHour.removeBusinessHoursFromUsers();
 	}
 
-	private async closeWorkHoursCallback(day: string, hour: string): Promise<void> {
-		this.businessHour.closeBusinessHoursByDayAndHour(day, hour);
+	async openBusinessHoursIfNeeded(): Promise<void> {
+		this.businessHour.openBusinessHoursIfNeeded();
+	}
+
+	private async openWorkHoursCallback(day: string, hour: string, utc: string): Promise<void> {
+		this.businessHour.openBusinessHoursByDayHourAndUTC(day, hour, utc);
+	}
+
+	private async closeWorkHoursCallback(day: string, hour: string, utc: string): Promise<void> {
+		this.businessHour.closeBusinessHoursByDayAndHour(day, hour, utc);
 	}
 
 	private addToCache(jobName: string): void {
 		this.cronJobsCache.push(jobName);
-	}
-
-	private removeCronJobs(): void {
-		this.cronJobsCache.forEach((jobName) => this.cronJobs.remove(jobName));
 	}
 
 	private clearCronJobsCache(): void {

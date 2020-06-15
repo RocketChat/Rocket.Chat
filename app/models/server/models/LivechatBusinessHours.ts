@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { ObjectId } from 'mongodb';
 
 import { Base } from './_Base';
@@ -23,6 +24,10 @@ export class LivechatBusinessHours extends Base {
 					{ day: 'Saturday', start: '08:00', finish: '20:00', code: 2, open: true },
 					{ day: 'Sunday', start: '08:00', finish: '20:00', code: 2, open: true },
 				],
+				timezone: {
+					name: '',
+					utc: moment().utcOffset() / 60,
+				},
 			});
 		}
 	}

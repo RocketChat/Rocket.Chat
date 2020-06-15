@@ -1053,10 +1053,6 @@ export const Livechat = {
 	},
 
 	allowAgentChangeServiceStatus(statusLivechat, agentId) {
-		if (!settings.get('Livechat_enable_business_hours')) {
-			return true;
-		}
-
 		if (statusLivechat !== 'available') {
 			return true;
 		}

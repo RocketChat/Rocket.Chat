@@ -10,14 +10,16 @@ import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
 
 export interface IWorkHoursForCreateCronJobs {
 	day: string;
+	utc: string;
 	start: string[];
 	finish: string[];
 }
 
 export interface ILivechatBusinessHourRepository {
 	insertOne(data: ILivechatBusinessHour): Promise<any>;
-	findActiveBusinessHoursIdsToOpen(type: LivechatBussinessHourTypes, day: string, start: string): Promise<string[]>;
-	findActiveBusinessHoursIdsToClose(type: LivechatBussinessHourTypes, day: string, finish: string): Promise<string[]>;
+	findActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]>;
+	findActiveBusinessHoursIdsToOpen(type: LivechatBussinessHourTypes, day: string, start: string, utc: string): Promise<string[]>;
+	findActiveBusinessHoursIdsToClose(type: LivechatBussinessHourTypes, day: string, finish: string, utc: string): Promise<string[]>;
 	findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour>;
 	findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
 	updateOne(id: string, data: ILivechatBusinessHour): Promise<any>;
@@ -27,8 +29,20 @@ export interface ILivechatBusinessHourRepository {
 class LivechatBusinessHoursRaw extends BaseRaw implements ILivechatBusinessHourRepository {
 	public readonly col!: Collection<ILivechatBusinessHour>;
 
-	async findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour> {
+	findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour> {
 		return this.findOne({ type: LivechatBussinessHourTypes.SINGLE });
+	}
+
+	findActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
+		return this.find({
+			active: true,
+			workHours: {
+				$elemMatch: {
+					day,
+					open: true,
+				},
+			},
+		}, options).toArray();
 	}
 
 	async insertOne(data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
@@ -66,17 +80,18 @@ class LivechatBusinessHoursRaw extends BaseRaw implements ILivechatBusinessHourR
 		});
 	}
 
-	async findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
-		return await this.col.aggregate([
+	findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
+		return this.col.aggregate([
 			{
-				$project: { _id: 0, workHours: 1 },
+				$project: { _id: 0, workHours: 1, timezone: 1 },
 			},
 			{
 				$unwind: { path: '$workHours' },
 			},
+			{ $match: { 'workHours.open': true } },
 			{
 				$group: {
-					_id: '$workHours.day',
+					_id: { hour: '$workHours.day', utc: '$timezone.utc' },
 					start: { $addToSet: '$workHours.start' },
 					finish: { $addToSet: '$workHours.finish' },
 				},
@@ -84,7 +99,8 @@ class LivechatBusinessHoursRaw extends BaseRaw implements ILivechatBusinessHourR
 			{
 				$project: {
 					_id: 0,
-					day: '$_id',
+					day: '$_id.hour',
+					utc: '$_id.utc',
 					start: 1,
 					finish: 1,
 				},
@@ -92,14 +108,16 @@ class LivechatBusinessHoursRaw extends BaseRaw implements ILivechatBusinessHourR
 		]).toArray() as any;
 	}
 
-	async findActiveBusinessHoursIdsToOpen(type: LivechatBussinessHourTypes, day: string, start: string): Promise<string[]> {
+	async findActiveBusinessHoursIdsToOpen(type: LivechatBussinessHourTypes, day: string, start: string, utc: string): Promise<string[]> {
 		return (await this.col.find({
 			type,
 			active: true,
+			'timezone.utc': parseInt(utc),
 			workHours: {
 				$elemMatch: {
 					day,
 					start,
+					open: true,
 				},
 			},
 		},
@@ -110,14 +128,16 @@ class LivechatBusinessHoursRaw extends BaseRaw implements ILivechatBusinessHourR
 		}).toArray()).map((businessHour) => businessHour._id);
 	}
 
-	async findActiveBusinessHoursIdsToClose(type: LivechatBussinessHourTypes, day: string, finish: string): Promise<string[]> {
+	async findActiveBusinessHoursIdsToClose(type: LivechatBussinessHourTypes, day: string, finish: string, utc: string): Promise<string[]> {
 		return (await this.col.find({
 			type,
 			active: true,
+			'timezone.utc': parseInt(utc),
 			workHours: {
 				$elemMatch: {
 					day,
 					finish,
+					open: true,
 				},
 			},
 		},

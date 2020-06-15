@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { ObjectId } from 'mongodb';
 import { Mongo } from 'meteor/mongo';
 
@@ -20,6 +21,10 @@ const migrateCollection = () => {
 			finish: officeHour.finish,
 			open: officeHour.open,
 		})),
+		timezone: {
+			name: '',
+			utc: moment().utcOffset() / 60,
+		},
 	};
 	if (LivechatBusinessHours.find({ type: LivechatBussinessHourTypes.SINGLE }).count() === 0) {
 		businessHour._id = new ObjectId().toHexString();
