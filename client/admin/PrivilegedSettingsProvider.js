@@ -63,53 +63,100 @@ const settingsReducer = (states, { type, payload }) => {
 };
 
 function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
-	const [isLoading, setLoading] = useState(true);
+	const [isLoading, setLoading] = useState(() => Tracker.nonreactive(() => !cachedCollection.ready.get()));
 	const persistedSettingsRef = useLazyRef(() => new Map());
-	const settingsRef = useLazyRef(() => new Map());
 	const subscribersRef = useLazyRef(() => new Set());
 
-	const stateRef = useRef({ settings: [], persistedSettings: [] });
-	const dispatch = useMutableCallback((action) => {
-		stateRef.current = settingsReducer(stateRef.current, action);
+	useEffect(() => {
+		const { current: persistedSettings } = persistedSettingsRef;
+		const { current: subscribers } = subscribersRef;
 
-		stateRef.current.persistedSettings.forEach((setting) => {
+		let mounted = true;
+		let observer;
+
+		const initialize = async () => {
+			if (!Tracker.nonreactive(() => cachedCollection.ready.get())) {
+				await cachedCollection.init();
+			}
+
+			if (!mounted) {
+				return;
+			}
+
+			const query = cachedCollection.collection.find();
+
+			const observerConfig = {}; // avoid some `added` callback triggers after the first fetch
+			observer = query.observe(observerConfig);
+
+			Tracker.nonreactive(() => query.fetch()).forEach((setting) => {
+				persistedSettings.set(setting._id, setting);
+			});
+
+			observerConfig.added = (setting) => {
+				persistedSettings.set(setting._id, setting);
+			};
+			observerConfig.changed = (setting) => {
+				persistedSettings.set(setting._id, setting);
+			};
+			observerConfig.removed = (setting) => {
+				persistedSettings.delete(setting._id);
+			};
+
+			setLoading(false);
+
+			subscribers.forEach((subscriber) => {
+				subscriber();
+			});
+		};
+
+		initialize();
+
+		return () => {
+			mounted = false;
+			if (observer) {
+				observer.stop();
+			}
+		};
+	}, [cachedCollection]);
+
+	const settingsRef = useLazyRef(() => new Map());
+
+	const dispatch = useMutableCallback((action) => {
+		const {
+			persistedSettings,
+			settings,
+		} = settingsReducer({
+			persistedSettings: Array.from(persistedSettingsRef.current.values()),
+			settings: Array.from(settingsRef.current.values()),
+		}, action);
+
+		persistedSettings.forEach((setting) => {
 			persistedSettingsRef.current.set(setting._id, setting);
 		});
 
-		stateRef.current.settings.forEach((setting) => {
+		settings.forEach((setting) => {
 			settingsRef.current.set(setting._id, setting);
 		});
 
 		subscribersRef.current.forEach((subscriber) => {
-			subscriber(stateRef.current);
+			subscriber();
 		});
 	});
 
 	subscribersRef.current.forEach((subscriber) => {
-		subscriber(stateRef.current);
+		subscriber();
 	});
 
 	const collectionsRef = useRef({});
 
 	useEffect(() => {
-		const stopLoading = () => {
-			setLoading(false);
-		};
-
-		if (!Tracker.nonreactive(() => cachedCollection.ready.get())) {
-			cachedCollection.init().then(stopLoading, stopLoading);
-		} else {
-			stopLoading();
-		}
-
-		const { collection: persistedSettingsCollection } = cachedCollection;
 		const settingsCollection = new Mongo.Collection(null);
 
 		collectionsRef.current = {
-			persistedSettingsCollection,
+			persistedSettingsCollection: cachedCollection.collection,
 			settingsCollection,
 		};
-	}, []);
+	}, [cachedCollection]);
 
 	useEffect(() => {
 		if (isLoading) {
