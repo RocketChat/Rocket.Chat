@@ -2,6 +2,7 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import semver from 'semver';
 import toastr from 'toastr';
 
+import { Utilities } from '../../../app/apps/lib/misc/Utilities';
 import { t } from '../../../app/utils/client';
 
 export const appEnabledStatuses = [
@@ -15,6 +16,18 @@ const appErroredStatuses = [
 	AppStatus.INVALID_SETTINGS_DISABLED,
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
+
+export const apiCurlGetter = (absoluteUrl) => (method, api) => {
+	const example = api.examples[method] || {};
+	return Utilities.curl({
+		url: absoluteUrl(api.computedPath),
+		method,
+		params: example.params,
+		query: example.query,
+		content: example.content,
+		headers: example.headers,
+	}).split('\n');
+};
 
 export function handleInstallError(apiError) {
 	if (!apiError.xhr || !apiError.xhr.responseJSON) { return; }

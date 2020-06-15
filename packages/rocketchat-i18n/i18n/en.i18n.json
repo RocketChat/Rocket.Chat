@@ -315,6 +315,7 @@
   "Animals_and_Nature": "Animals & Nature",
   "Announcement": "Announcement",
   "API": "API",
+  "APIs": "APIs",
   "API_Add_Personal_Access_Token": "Add new Personal Access Token",
   "API_Allow_Infinite_Count": "Allow Getting Everything",
   "API_Allow_Infinite_Count_Description": "Should calls to the REST API be allowed to return everything in one call?",

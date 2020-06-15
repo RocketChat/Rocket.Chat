@@ -27,6 +27,16 @@ const getSettings = async (appId, installed) => {
 	}
 };
 
+const getApis = async (appId, installed) => {
+	if (!installed) { return {}; }
+	try {
+		const apis = await Apps.getAppApis(appId);
+		return apis;
+	} catch (e) {
+		handleAPIError(e);
+	}
+};
+
 export const useAppInfo = (appId) => {
 	const { data, dataCache } = useContext(AppDataContext);
 
@@ -44,13 +54,21 @@ export const useAppInfo = (appId) => {
 			}
 
 			if (app.marketplace === false) {
-				const settings = await getSettings(app.id, app.installed);
-				return setAppData({ ...app, settings });
+				const [settings, apis] = await [getSettings(app.id, app.installed), getApis(app.id, app.installed)];
+				return setAppData({ ...app, settings, apis });
 			}
 
-			const [bundledIn, settings] = await Promise.all([getBundledIn(app.id, app.version), getSettings(app.id, app.installed)]);
+			const [
+				bundledIn,
+				settings,
+				apis,
+			] = await Promise.all([
+				getBundledIn(app.id, app.version),
+				getSettings(app.id, app.installed),
+				getApis(app.id, app.installed),
+			]);
 
-			setAppData({ ...app, bundledIn, settings });
+			setAppData({ ...app, bundledIn, settings, apis });
 		})();
 	}, [dataCache, appId]);
 

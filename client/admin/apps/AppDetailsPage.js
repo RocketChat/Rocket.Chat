@@ -10,10 +10,11 @@ import AppMenu from './AppMenu';
 import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useAppInfo } from './hooks/useAppInfo';
+import { useAbsoluteUrl } from '../../contexts/ServerContext';
 import { Apps } from '../../../app/apps/client/orchestrator';
 import { useForm } from '../../hooks/useForm';
 import { useLoggedInCloud } from './hooks/useLoggedInCloud';
-import { handleAPIError } from './helpers';
+import { handleAPIError, apiCurlGetter } from './helpers';
 import { AppSettingsAssembler } from './AppSettings';
 
 function AppDetailsPageContent({ data, setModal, isLoggedIn }) {
@@ -122,6 +123,29 @@ const SettingsDisplay = ({ settings, setHasUnsavedChanges, settingsRef }) => {
 	</>;
 };
 
+const APIsDisplay = ({ apis }) => {
+	const t = useTranslation();
+
+	const absoluteUrl = useAbsoluteUrl();
+
+	const getApiCurl = apiCurlGetter(absoluteUrl);
+
+	return <>
+		<Divider />
+		<Box display='flex' flexDirection='column'>
+			<Box fontScale='s2' mb='x12'>{t('APIs')}</Box>
+			{apis.map((api) => <Box mb='x8'>
+				<Box fontScale='p2'>{api.methods.join(' | ').toUpperCase()} {api.path}</Box>
+				{api.methods.map((method) => <Box>
+					<Box withRichContent><pre><code>
+						{getApiCurl(method, api).map((curlAddress) => <>{curlAddress}<br /></>)}
+					</code></pre></Box>
+				</Box>)}
+			</Box>)}
+		</Box>
+	</>;
+};
+
 const LoadingDetails = () => <Box display='flex' flexDirection='row' mbe='x20' w='full'>
 	<Skeleton variant='rect' w='x120' h='x120' mie='x20'/>
 	<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
@@ -144,8 +168,10 @@ export default function AppDetailsPage({ id }) {
 	const isLoggedIn = useLoggedInCloud();
 	const isLoading = Object.values(data).length === 0;
 
-	const { settings = {} } = data;
+	const { settings = {}, apis = {} } = data;
+
 	const showSettings = Object.values(settings).length;
+	const showApis = apis.length;
 
 	const currentRoute = useCurrentRoute();
 	const router = useRoute(currentRoute[0]);
@@ -180,6 +206,7 @@ export default function AppDetailsPage({ id }) {
 				{isLoading && <LoadingDetails />}
 				{!isLoading && <>
 					<AppDetailsPageContent data={data} setModal={setModal} isLoggedIn={isLoggedIn}/>
+					{!!showApis && <APIsDisplay apis={apis}/>}
 					{!!showSettings && <SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef}/>}
 				</>}
 			</Box>
