@@ -3,7 +3,9 @@ import { Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { MemoizedSetting } from '../settings/Setting';
+import { useGetAppKey } from './hooks/useGetAppKey';
 import { capitalize } from '../../helpers/capitalize';
+import { useRouteParameter } from '../../contexts/RouterContext';
 import MarkdownText from '../../components/basic/MarkdownText';
 
 export const AppSettingsAssembler = ({ settings, values, handlers }) => <Box>
@@ -15,6 +17,8 @@ export const AppSettingsAssembler = ({ settings, values, handlers }) => <Box>
 
 function AppSetting({ appSetting, onChange, value, ...props }) {
 	const t = useTranslation();
+	const appId = useRouteParameter('id');
+	const getAppKey = useGetAppKey(appId);
 
 	const {
 		id,
@@ -23,8 +27,8 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 		i18nDescription,
 	} = appSetting;
 
-	const label = (i18nLabel && t(i18nLabel)) || (id || t(id));
-	const hint = useMemo(() => i18nDescription && <MarkdownText content={t(i18nDescription)} />, [i18nDescription]);
+	const label = (i18nLabel && t(getAppKey(i18nLabel))) || (id || t(getAppKey(id)));
+	const hint = useMemo(() => i18nDescription && <MarkdownText content={t(getAppKey(i18nDescription))} />, [i18nDescription]);
 
 	return useMemo(() => <MemoizedSetting
 		type={type}
