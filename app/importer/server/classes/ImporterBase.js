@@ -233,6 +233,9 @@ export class Base {
 				this.oldSettings.FileUpload_MediaTypeWhiteList = Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
 
+				this.oldSettings.FileUpload_MediaTypeBlackList = Settings.findOneById('FileUpload_MediaTypeBlackList').value;
+				Settings.updateValueById('FileUpload_MediaTypeBlackList', '');
+
 				this.oldSettings.UI_Allow_room_names_with_special_chars = Settings.findOneById('UI_Allow_room_names_with_special_chars').value;
 				Settings.updateValueById('UI_Allow_room_names_with_special_chars', true);
 				break;
@@ -243,6 +246,7 @@ export class Base {
 				Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
 				Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
+				Settings.updateValueById('FileUpload_MediaTypeBlackList', this.oldSettings.FileUpload_MediaTypeBlackList);
 				Settings.updateValueById('UI_Allow_room_names_with_special_chars', this.oldSettings.UI_Allow_room_names_with_special_chars);
 				break;
 		}
@@ -291,9 +295,13 @@ export class Base {
 		// Or the completed is greater than or equal to the total amount
 		if (((this.progress.count.completed % 500) === 0) || (this.progress.count.completed >= this.progress.count.total)) {
 			this.updateRecord({ 'count.completed': this.progress.count.completed });
+			this.reportProgress();
+		} else if (!this._reportProgressHandler) {
+			this._reportProgressHandler = setTimeout(() => {
+				this.reportProgress();
+			}, 250);
 		}
 
-		this.reportProgress();
 		this.logger.log(`${ this.progress.count.completed } messages imported`);
 
 		return this.progress;
@@ -303,6 +311,10 @@ export class Base {
 	 * Sends an updated progress to the websocket
 	 */
 	reportProgress() {
+		if (this._reportProgressHandler) {
+			clearTimeout(this._reportProgressHandler);
+			this._reportProgressHandler = false;
+		}
 		ImporterWebsocket.progressUpdated(this.progress);
 	}
 
