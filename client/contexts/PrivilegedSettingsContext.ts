@@ -61,20 +61,20 @@ export const usePrivilegedSettingsGroups = (filter?: string): any => {
 	const { persistedSettings, subscribers } = useContext(PrivilegedSettingsContext);
 	const t = useTranslation();
 
+	const filterPredicate = useMemo((): ((setting: PrivilegedSetting) => boolean) => {
+		if (!filter) {
+			return (): boolean => true;
+		}
+
+		try {
+			const filterRegex = new RegExp(filter, 'i');
+			return (setting: PrivilegedSetting): boolean => filterRegex.test(t(setting.i18nLabel || setting._id));
+		} catch (e) {
+			return (setting: PrivilegedSetting): boolean => t(setting.i18nLabel || setting._id).slice(0, filter.length) === filter;
+		}
+	}, []);
+
 	const getCurrentValue = useCallback(() => {
-		const filterPredicate = ((): ((setting: PrivilegedSetting) => boolean) => {
-			if (!filter) {
-				return (): boolean => true;
-			}
-
-			try {
-				const filterRegex = new RegExp(filter, 'i');
-				return (setting: PrivilegedSetting): boolean => filterRegex.test(t(setting.i18nLabel || setting._id));
-			} catch (e) {
-				return (setting: PrivilegedSetting): boolean => t(setting.i18nLabel || setting._id).slice(0, filter.length) === filter;
-			}
-		})();
-
 		const groupIds = Array.from(new Set(
 			Array.from(persistedSettings.values())
 				.filter(filterPredicate)
@@ -84,7 +84,7 @@ export const usePrivilegedSettingsGroups = (filter?: string): any => {
 		return Array.from(persistedSettings.values())
 			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
 			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
-	}, [persistedSettings, filter]);
+	}, [persistedSettings, filterPredicate]);
 
 	const subscribe = useCallback((cb) => {
 		const handleUpdate = (): void => {
