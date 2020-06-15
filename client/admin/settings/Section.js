@@ -1,13 +1,16 @@
 import { Accordion, Box, Button, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import {
+	usePrivilegedSettingsSection,
+	usePrivilegedSettingsSectionChangedState,
+} from '../../contexts/PrivilegedSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Setting } from './Setting';
-import { useSection, useSectionChangedState } from './SettingsState';
 
 export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
-	const section = useSection(groupId, sectionName);
-	const changed = useSectionChangedState(groupId, sectionName);
+	const section = usePrivilegedSettingsSection(groupId, sectionName);
+	const changed = usePrivilegedSettingsSectionChangedState(groupId, sectionName);
 
 	const t = useTranslation();
 
