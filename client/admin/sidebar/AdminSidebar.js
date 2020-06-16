@@ -10,7 +10,8 @@ import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { sidebarItems } from '../sidebarItems';
 import PrivilegedSettingsProvider from '../PrivilegedSettingsProvider';
-import { usePrivilegedSettingsGroups } from '../../contexts/PrivilegedSettingsContext';
+import { useSettings } from '../../contexts/PrivilegedSettingsContext';
+import { SettingType } from '../../../definition/ISetting';
 
 const SidebarItem = React.memo(({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
@@ -79,12 +80,57 @@ const AdminSidebarPages = React.memo(({ currentPath }) => {
 	</Box>;
 });
 
+const useSettingsGroups = (filter) => {
+	const settings = useSettings();
+
+	const t = useTranslation();
+
+	const filterPredicate = useMemo(() => {
+		if (!filter) {
+			return () => true;
+		}
+
+		const getMatchableStrings = (setting) => [
+			setting.i18nLabel && t(setting.i18nLabel),
+			t(setting._id),
+			setting._id,
+		].filter(Boolean);
+
+		try {
+			const filterRegex = new RegExp(filter, 'i');
+			return (setting) =>
+				getMatchableStrings(setting).some((text) => filterRegex.test(text));
+		} catch (e) {
+			return (setting) =>
+				getMatchableStrings(setting).some((text) => text.slice(0, filter.length) === filter);
+		}
+	}, [filter, t]);
+
+	return useMemo(() => {
+		const groupIds = Array.from(new Set(
+			settings
+				.filter(filterPredicate)
+				.map((setting) => {
+					if (setting.type === SettingType.GROUP) {
+						return setting._id;
+					}
+
+					return setting.group;
+				}),
+		));
+
+		return settings
+			.filter(({ type, group, _id }) => type === SettingType.GROUP && groupIds.includes(group || _id))
+			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
+	}, [settings, filterPredicate, t]);
+};
+
 const AdminSidebarSettings = ({ currentPath }) => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
 
-	const groups = usePrivilegedSettingsGroups(useDebouncedValue(filter, 400));
+	const groups = useSettingsGroups(useDebouncedValue(filter, 400));
 	const isLoadingGroups = false; // TODO: get from PrivilegedSettingsContext
 
 	return <Box is='section' display='flex' flexDirection='column' flexShrink={0} pb='x24'>

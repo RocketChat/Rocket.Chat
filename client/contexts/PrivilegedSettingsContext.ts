@@ -7,7 +7,6 @@ import {
 	SectionName,
 	SettingId,
 	GroupId,
-	SettingType,
 } from '../../definition/ISetting';
 import { useBatchSettingsDispatch } from './SettingsContext';
 import { useToastMessageDispatch } from './ToastMessagesContext';
@@ -93,51 +92,6 @@ export const useSettings = (query?: ISettingsQuery): ISetting[] => {
 	const { querySettings } = useContext(PrivilegedSettingsContext);
 	const subscription = useMemo(() => querySettings(query ?? {}), [querySettings, query]);
 	return useSubscription(subscription);
-};
-
-export const usePrivilegedSettingsGroups = (filter?: string): any => {
-	const settings = useSettings();
-
-	const t = useTranslation();
-
-	const filterPredicate = useMemo((): ((setting: ISetting) => boolean) => {
-		if (!filter) {
-			return (): boolean => true;
-		}
-
-		const getMatchableStrings = (setting: ISetting): string[] => [
-			setting.i18nLabel && t(setting.i18nLabel),
-			t(setting._id),
-			setting._id,
-		].filter(Boolean);
-
-		try {
-			const filterRegex = new RegExp(filter, 'i');
-			return (setting: ISetting): boolean =>
-				getMatchableStrings(setting).some((text: string) => filterRegex.test(text));
-		} catch (e) {
-			return (setting: ISetting): boolean =>
-				getMatchableStrings(setting).some((text: string) => text.slice(0, filter.length) === filter);
-		}
-	}, [filter, t]);
-
-	return useMemo(() => {
-		const groupIds = Array.from(new Set(
-			settings
-				.filter(filterPredicate)
-				.map((setting) => {
-					if (setting.type === SettingType.GROUP) {
-						return setting._id;
-					}
-
-					return setting.group;
-				}),
-		));
-
-		return settings
-			.filter(({ type, group, _id }) => type === SettingType.GROUP && groupIds.includes(group || _id))
-			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
-	}, [settings, filterPredicate, t]);
 };
 
 export const usePrivilegedSettingsGroup = (groupId: GroupId): GroupDescriptor | null => {
