@@ -837,18 +837,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findClosedByVisitorId(visitorId, options) {
-		const query = {
-			t: 'l',
-			'v._id': visitorId,
-			closedAt: {
-				$exists: true,
-			},
-		};
-		return this.find(query, options);
-	}
-
-	findRoomsWithCriteria({ agents, roomName, departmentId, open, createdAt, closedAt, tags, customFields, options = {} }) {
+	findRoomsWithCriteria({ agents, roomName, departmentId, open, served, createdAt, closedAt, tags, customFields, visitorId, options = {} }) {
 		const query = {
 			t: 'l',
 		};
@@ -863,6 +852,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		if (open !== undefined) {
 			query.open = { $exists: open };
+		}
+		if (served !== undefined) {
+			query.servedBy = { $exists: served };
+		}
+		if (visitorId && visitorId !== 'undefined') {
+			query['v._id'] = visitorId;
 		}
 		if (createdAt) {
 			query.ts = {};

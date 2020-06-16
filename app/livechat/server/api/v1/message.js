@@ -5,7 +5,7 @@ import { Random } from 'meteor/random';
 import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
-import { loadMessageHistory, loadClosingMessage } from '../../../../lib';
+import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
@@ -204,8 +204,10 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				rid: String,
 			});
 
+			const { offset } = this.getPaginationItems();
+			const { searchText: text, token } = this.queryParams;
 			const { rid } = this.urlParams;
-			const { token } = this.queryParams;
+			const { sort } = this.parseJsonQuery();
 
 			if (!token) {
 				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
@@ -236,7 +238,7 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				limit = parseInt(this.queryParams.limit);
 			}
 
-			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls })
+			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls, sort, offset, text })
 				.messages
 				.map(normalizeMessageFileUpload);
 			return API.v1.success({ messages });
@@ -245,44 +247,6 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 		}
 	},
 });
-
-API.v1.addRoute('livechat/messages.closingMessage/:rid', {
-	get() {
-		try {
-			check(this.urlParams, {
-				rid: String,
-			});
-
-			const { rid } = this.urlParams;
-			const { token } = this.queryParams;
-			if (!token) {
-				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
-			}
-
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			const room = findRoom(token, rid);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			let limit = 20;
-			if (this.queryParams.limit) {
-				limit = parseInt(this.queryParams.limit);
-			}
-			const messages = loadClosingMessage({ userId: guest._id, rid, limit })
-				.messages
-				.map(normalizeMessageFileUpload);
-			return API.v1.success({ messages });
-		} catch (e) {
-			return API.v1.failure(e);
-		}
-	},
-});
-
 
 API.v1.addRoute('livechat/messages', { authRequired: true }, {
 	post() {

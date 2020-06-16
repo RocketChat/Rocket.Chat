@@ -32,8 +32,10 @@ export class Rooms extends Base {
 				name: _idOrName,
 			}],
 		};
+
 		return this.findOne(query, options);
 	}
+
 
 	setJitsiTimeout(_id, time) {
 		const query = {

@@ -1,11 +1,11 @@
 import moment from 'moment';
-import './customerChatRoomHistoryItem.html';
+import './contactChatHistoryItem.html';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { APIClient } from '../../../../../utils/client';
 
-Template.chatRoomHistoryItem.helpers({
+Template.contactChatHistoryItem.helpers({
 	closedAt() {
 		const { closedAt } = Template.instance().room.get();
 		return moment(closedAt).format('LT');
@@ -19,18 +19,21 @@ Template.chatRoomHistoryItem.helpers({
 	},
 });
 
-Template.chatRoomHistoryItem.onCreated(function() {
+Template.contactChatHistoryItem.onCreated(function() {
 	this.room = new ReactiveVar();
 	this.hasClosingRoomMessage = new ReactiveVar(false);
 	this.closingRoomMessage = new ReactiveVar();
 	this.autorun(async () => {
 		const currentData = Template.currentData();
 		this.room.set(currentData);
+
+		/*
 		const { token } = currentData.v;
 		const { messages } = await APIClient.v1.get(`livechat/messages.closingMessage/${ currentData._id }?token=${ token }`);
 		if (messages.length > 0) {
 			this.closingRoomMessage.set(messages[0]);
 			this.hasClosingRoomMessage.set(true);
 		}
+		*/
 	});
 });

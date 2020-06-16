@@ -1,0 +1,24 @@
+<template name='contactChatHistoryItem'>
+	<li class='list-chat-item' id='{{_id}}'>
+		<div class="history-div">
+			<div class="visitor-img">
+				<img src="/avatar/{{servedBy.username}}" alt="">
+			</div>
+			<div class="visitor-history-details">
+				<div class="visitor-details">
+					<h1>{{servedBy.username}}</h1>
+					<p>{{_ "Closed_At"}} {{closedAt}}</p>
+				</div>
+				<div class="total-messages">
+					<p>{{msgs}} messages</p>
+				</div>
+				{{#if hasClosingRoomMessage }}
+					<div class="agent-comment">
+						<p class="comment-heading">{{_ "Closing_chat_message"}}:</p>
+						<p class="comment-text">"{{closingRoomMessage}}"</p>
+					</div>
+				{{/if}}
+			</div>
+		</div>
+	</li>
+</template>
