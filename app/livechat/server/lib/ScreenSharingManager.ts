@@ -38,7 +38,7 @@ export class ScreenSharingManager {
 	}
 
 	getConfig(): any {
-		return this.screenShareProvider.config || {};
+		return { enabled: this.enabled(), ...this.screenShareProvider.config } || {};
 	}
 
 	getProviderInfo(): any {

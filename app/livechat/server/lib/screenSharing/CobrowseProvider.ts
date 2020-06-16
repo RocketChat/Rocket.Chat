@@ -3,11 +3,8 @@ import { ScreensharingManager } from '../ScreenSharingManager';
 
 export class CobrowseProvider implements IScreenSharingProvider {
 	config = {
-		name: 'cobrowse.io',
-	}
-
-	constructor() {
-		this.config.name = 'cobrowse.io';
+		name: 'Cobrowse.io',
+		providerBundle: 'https://ashwaniYDV.github.io/sstest/ssbundle.js',
 	}
 
 	getInfo(): any {
