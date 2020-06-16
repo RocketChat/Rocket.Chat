@@ -68,7 +68,7 @@ Template.contactChatHistoryMessages.onCreated(function() {
 	this.limit = new ReactiveVar(0);
 	this.searchTerm = new ReactiveVar('');
 
-	this.displayMessages = ({ messages, total }) => {
+	this.displayMessages = ({ messages /* , total */ }) => {
 		this.messages.set(messages);
 		// this.hasMore.set(total > limit);
 		this.hasMore.set(false);
