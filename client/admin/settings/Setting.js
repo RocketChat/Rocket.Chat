@@ -28,6 +28,7 @@ export const MemoizedSetting = memo(function MemoizedSetting({
 	editor,
 	onChangeValue = () => {},
 	onChangeEditor = () => {},
+	className,
 	...inputProps
 }) {
 	const InputComponent = {
@@ -47,7 +48,7 @@ export const MemoizedSetting = memo(function MemoizedSetting({
 		roomPick: RoomPickSettingInput,
 	}[type] || GenericSettingInput;
 
-	return <Field>
+	return <Field className={className}>
 		<InputComponent
 			value={value}
 			editor={editor}
@@ -62,7 +63,7 @@ export const MemoizedSetting = memo(function MemoizedSetting({
 	</Field>;
 });
 
-export function Setting({ settingId, sectionChanged }) {
+export function Setting({ settingId, sectionChanged, ...props }) {
 	const {
 		value: contextValue,
 		editor: contextEditor,
@@ -132,6 +133,7 @@ export function Setting({ settingId, sectionChanged }) {
 		onChangeValue={onChangeValue}
 		onChangeEditor={onChangeEditor}
 		onResetButtonClick={onResetButtonClick}
+		{...props}
 	/>;
 }
 
