@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ScreensharingManager } from '../lib/screenSharing';
+import { ScreensharingManager } from '../lib/ScreenSharingManager';
 
 Meteor.methods({
 	async 'livechat:requestScreenSharing'(roomId) {

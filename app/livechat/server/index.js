@@ -79,7 +79,7 @@ import './lib/routing/External';
 import './lib/routing/ManualSelection';
 import './lib/routing/AutoSelection';
 import './lib/ScreenSharingManager';
-import './lib/screenSharing';
+import './lib/screenSharing/CobrowseProvider';
 import './lib/stream/agentStatus';
 import './lib/stream/departmentAgents';
 import './lib/stream/queueManager';

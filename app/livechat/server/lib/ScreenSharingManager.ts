@@ -21,6 +21,9 @@ export class ScreenSharingManager {
 
 	registerProvider(name: string, Provider: IScreenSharingProvider): void {
 		this.providers.set(name, Provider);
+		if (name === this.providerName) {
+			this.setProvider();
+		}
 	}
 
 	getProvider(): IScreenSharingProvider | any {
@@ -46,3 +49,9 @@ export class ScreenSharingManager {
 		Messages.createWithTypeRoomIdMessageAndUser('request_screen_sharing_access', roomId, '', user, {});
 	}
 }
+
+export const ScreensharingManager = new ScreenSharingManager();
+
+settings.get('Livechat_screen_sharing_provider', function(key, value) {
+	ScreensharingManager.setProviderName(value);
+});
