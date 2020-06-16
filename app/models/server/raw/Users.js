@@ -215,7 +215,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 		const params = [match];
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			params.push(lookup);
 			params.push(unwind);
 			params.push(departmentsMatch);

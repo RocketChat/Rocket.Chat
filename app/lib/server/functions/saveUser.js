@@ -10,6 +10,7 @@ import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
+import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
 
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
@@ -95,6 +96,10 @@ function validateUserData(userId, userData) {
 			method: 'insertOrUpdateUser',
 			field: 'Username',
 		});
+	}
+
+	if (userData.roles) {
+		validateUserRoles(userId, userData);
 	}
 
 	let nameValidation;

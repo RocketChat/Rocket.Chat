@@ -4,9 +4,9 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { CounterSet } from '../data/CounterSet';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
-import { useEndpointData } from '../../hooks/useEndpointData';
 
 export function MessagesSentSection() {
 	const t = useTranslation();
@@ -48,7 +48,7 @@ export function MessagesSentSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/messages/messages-sent', params);
+	const data = useEndpointData('engagement-dashboard/messages/messages-sent', params);
 
 	const [
 		countFromPeriod,
@@ -157,7 +157,7 @@ export function MessagesSentSection() {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 										{t('Value_messages', { value })}
 									</Box>}
 								/>

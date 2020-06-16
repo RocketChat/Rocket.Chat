@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"module": "esNext",
+		"module": "CommonJS",
 		"target": "es2018",
 		"lib": ["esnext", "dom"],
 
@@ -29,7 +29,6 @@
 		},
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
-		"types": ["node", "mocha"],
 		"esModuleInterop": true,
 		"preserveSymlinks": true,
 

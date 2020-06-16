@@ -16,7 +16,7 @@ import {
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
-import { getFullUserData, getFullUserDataById } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
@@ -30,6 +30,8 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			password: String,
 			username: String,
 			active: Match.Maybe(Boolean),
+			bio: Match.Maybe(String),
+			statusText: Match.Maybe(String),
 			roles: Match.Maybe(Array),
 			joinDefaultChannels: Match.Maybe(Boolean),
 			requirePasswordChange: Match.Maybe(Boolean),
@@ -74,9 +76,10 @@ API.v1.addRoute('users.delete', { authRequired: true }, {
 		}
 
 		const user = this.getUserFromParams();
+		const { confirmRelinquish = false } = this.requestParams();
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('deleteUser', user._id);
+			Meteor.call('deleteUser', user._id, confirmRelinquish);
 		});
 
 		return API.v1.success();
@@ -120,6 +123,7 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 		check(this.bodyParams, {
 			userId: String,
 			activeStatus: Boolean,
+			confirmRelinquish: Match.Maybe(Boolean),
 		});
 
 		if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
@@ -127,7 +131,7 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus);
+			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus, this.bodyParams.confirmRelinquish);
 		});
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
 	},
@@ -180,20 +184,12 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
 		const { username, userId } = this.requestParams();
 		const { fields } = this.parseJsonQuery();
-		const params = {
-			userId: this.userId,
-			filter: username,
-			limit: 1,
-		};
 
-		const result = userId
-			? getFullUserDataById({ userId: this.userId, filterId: userId })
-			: getFullUserData(params);
+		const user = getFullUserDataByIdOrUsername({ userId: this.userId, filterId: userId, filterUsername: username });
 
-		if (!result || result.count() !== 1) {
+		if (!user) {
 			return API.v1.failure('User not found.');
 		}
-		const [user] = result.fetch();
 		const myself = user._id === this.userId;
 		if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
 			user.rooms = Subscriptions.findByUserId(user._id, {
@@ -439,6 +435,7 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 				name: Match.Maybe(String),
 				password: Match.Maybe(String),
 				username: Match.Maybe(String),
+				bio: Match.Maybe(String),
 				statusText: Match.Maybe(String),
 				active: Match.Maybe(Boolean),
 				roles: Match.Maybe(Array),
@@ -544,7 +541,6 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				mobileNotifications: Match.Maybe(String),
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
-				desktopNotificationDuration: Match.Maybe(Number),
 				desktopNotificationRequireInteraction: Match.Maybe(Boolean),
 				messageViewMode: Match.Maybe(Number),
 				hideUsernames: Match.Maybe(Boolean),

@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
+import moment from 'moment';
 
 import { settings } from '../../settings';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models';
@@ -47,7 +48,7 @@ const loadUserSubscriptions = function(exportOperation) {
 		const roomId = subscription.rid;
 		const roomData = Rooms.findOneById(roomId);
 		const roomName = roomData && roomData.name && subscription.t !== 'd' ? roomData.name : roomId;
-		const [userId] = subscription.t === 'd' ? roomId.uids.filter((uid) => uid !== exportUserId) : [null];
+		const [userId] = subscription.t === 'd' ? roomData.uids.filter((uid) => uid !== exportUserId) : [null];
 		const fileName = exportOperation.fullExport ? roomId : roomName;
 		const fileType = exportOperation.fullExport ? 'json' : 'html';
 		const targetFile = `${ fileName }.${ fileType }`;
@@ -562,6 +563,15 @@ async function processDataDownloads() {
 
 	if (operation.status === 'completed') {
 		return;
+	}
+
+	if (operation.status !== 'pending') {
+		// If the operation has started but was not updated in over a day, then skip it
+		if (operation._updatedAt && moment().diff(moment(operation._updatedAt), 'days') > 1) {
+			operation.status = 'skipped';
+			await ExportOperations.updateOperation(operation);
+			return processDataDownloads();
+		}
 	}
 
 	await continueExportOperation(operation);

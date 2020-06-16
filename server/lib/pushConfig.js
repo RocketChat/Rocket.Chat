@@ -61,9 +61,7 @@ Meteor.methods({
 				text: `@${ user.username }:\n${ TAPi18n.__('This_is_a_push_test_messsage') }`,
 			},
 			sound: 'default',
-			query: {
-				userId: user._id,
-			},
+			userId: user._id,
 		});
 
 		return {
@@ -112,8 +110,6 @@ function configurePush() {
 			apn,
 			gcm,
 			production: settings.get('Push_production'),
-			sendInterval: settings.get('Push_send_interval'),
-			sendBatchSize: settings.get('Push_send_batch_size'),
 			gateways: settings.get('Push_enable_gateway') === true ? settings.get('Push_gateway').split('\n') : undefined,
 			uniqueId: settings.get('uniqueID'),
 			getAuthorization() {

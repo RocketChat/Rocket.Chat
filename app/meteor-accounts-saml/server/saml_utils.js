@@ -373,8 +373,10 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 			return callback(err, null);
 		}
 
-		debugLog(`LogoutRequest: ${ decoded }`);
-		const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
+		const xmlString = array2string(decoded);
+		debugLog(`LogoutRequest: ${ xmlString }`);
+
+		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');
 		if (!doc) {
 			return callback('No Doc Found');
 		}
@@ -385,14 +387,19 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 		}
 
 		try {
-			const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
-			const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
+			const sessionNode = request.getElementsByTagNameNS('*', 'SessionIndex')[0];
+			const nameIdNode = request.getElementsByTagNameNS('*', 'NameID')[0];
+
+			if (!nameIdNode) {
+				throw new Error('SAML Logout Request: No NameID node found');
+			}
 
 			const idpSession = sessionNode.childNodes[0].nodeValue;
 			const nameID = nameIdNode.childNodes[0].nodeValue;
 
 			return callback(null, { idpSession, nameID });
 		} catch (e) {
+			console.error(e);
 			debugLog(`Caught error: ${ e }`);
 
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
@@ -772,23 +779,13 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 
 	const metadata = {
 		EntityDescriptor: {
+			'@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+			'@xsi:schemaLocation': 'urn:oasis:names:tc:SAML:2.0:metadata https://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd',
 			'@xmlns': 'urn:oasis:names:tc:SAML:2.0:metadata',
 			'@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
 			'@entityID': this.options.issuer,
 			SPSSODescriptor: {
 				'@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-				SingleLogoutService: {
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-					'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-					'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-				},
-				NameIDFormat: this.options.identifierFormat,
-				AssertionConsumerService: {
-					'@index': '1',
-					'@isDefault': 'true',
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-					'@Location': callbackUrl,
-				},
 			},
 		},
 	};
@@ -825,6 +822,19 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 			],
 		};
 	}
+
+	metadata.EntityDescriptor.SPSSODescriptor.SingleLogoutService = {
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+		'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+		'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+	};
+	metadata.EntityDescriptor.SPSSODescriptor.NameIDFormat = this.options.identifierFormat;
+	metadata.EntityDescriptor.SPSSODescriptor.AssertionConsumerService = {
+		'@index': '1',
+		'@isDefault': 'true',
+		'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+		'@Location': callbackUrl,
+	};
 
 	return xmlbuilder.create(metadata).end({
 		pretty: true,

@@ -78,6 +78,20 @@ export class LivechatVisitors extends Base {
 		return this.update(query, update);
 	}
 
+	updateLastAgentByToken(token, lastAgent) {
+		const query = {
+			token,
+		};
+
+		const update = {
+			$set: {
+				lastAgent,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	/**
 	 * Find a visitor by their phone number
 	 * @return {object} User from db
