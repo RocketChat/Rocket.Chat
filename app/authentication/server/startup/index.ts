@@ -302,12 +302,12 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 Accounts.validateLoginAttempt(function(login: ILoginAttempt) {
 	login = callbacks.run('beforeValidateLogin', login);
 	if (!Promise.await(isValidLoginAttemptByIp(login.connection.clientAddress))) {
-		throw new Meteor.Error('error-login-blocked-by-ip', 'Login has been temporarily blocked By IP', {
+		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}
 	if (!Promise.await(isValidAttemptByUser(login))) {
-		throw new Meteor.Error('error-login-blocked-by-user', 'Login has been temporarily blocked By User', {
+		throw new Meteor.Error('error-login-blocked-for-user', 'Login has been temporarily blocked For User', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}

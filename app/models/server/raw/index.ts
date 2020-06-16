@@ -50,7 +50,6 @@ import NotificationQueueModel from '../models/NotificationQueue';
 import { NotificationQueueRaw } from './NotificationQueue';
 import ServerEventModel from '../models/ServerEvents';
 import { ServerEventsRaw } from './ServerEvents';
-import { IServerEventsRepository } from '../definition/IServerEventsRepository';
 
 export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection());
 export const Roles = new RolesRaw(RolesModel.model.rawCollection());
@@ -77,4 +76,4 @@ export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.mo
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection());
 export const Statistics = new StatisticsRaw(StatisticsModel.model.rawCollection());
 export const NotificationQueue = new NotificationQueueRaw(NotificationQueueModel.model.rawCollection());
-export const ServerEvents: IServerEventsRepository = new ServerEventsRaw(ServerEventModel.model.rawCollection());
+export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollection());

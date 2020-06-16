@@ -2,10 +2,9 @@ import { Collection, ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { IServerEvent, IServerEventType } from '../../../../definition/IServerEvent';
-import { IServerEventsRepository } from '../definition/IServerEventsRepository';
 import { IUser } from '../../../../definition/IUser';
 
-export class ServerEventsRaw extends BaseRaw implements IServerEventsRepository {
+export class ServerEventsRaw extends BaseRaw {
 	public readonly col!: Collection<IServerEvent>;
 
 	async insertOne(data: Omit<IServerEvent, '_id'>): Promise<any> {

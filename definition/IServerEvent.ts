@@ -9,6 +9,6 @@ export interface IServerEvent {
 	_id: string;
 	t: IServerEventType;
 	ts: Date;
-	ip?: string;
-	u?: IUser;
+	ip: string;
+	u: IUser;
 }
