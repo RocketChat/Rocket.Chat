@@ -40,26 +40,29 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		),
 	);
 
-	const findSettings = useCallback(() => cachedCollection.collection.find({}, {
-		sort: {
-			section: 1,
-			sorter: 1,
-			i18nLabel: 1,
-		},
-	}).fetch(), [cachedCollection]);
-
-	const getSettings = useCallback(() =>
-		Tracker.nonreactive(() => findSettings()), [findSettings]);
-
-	const subscribeToSettings = useCallback((callback) => {
-		const computation = Tracker.autorun(() => {
-			callback(findSettings());
-		});
-
-		return () => {
-			computation.stop();
-		};
-	}, [findSettings]);
+	const querySettings = useReactiveSubscriptionFactory(
+		useCallback(
+			({ _id, group, section } = {}) => cachedCollection.collection.find({
+				..._id && { _id: { $in: _id } },
+				...group && { group },
+				...section
+					? { section }
+					: {
+						$or: [
+							{ section: { $exists: false } },
+							{ section: null },
+						],
+					},
+			}, {
+				sort: {
+					section: 1,
+					sorter: 1,
+					i18nLabel: 1,
+				},
+			}).fetch(),
+			[cachedCollection],
+		),
+	);
 
 	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection(null));
 
@@ -198,11 +201,10 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	});
 
 	const contextValue = useMemo(() => ({
-		authorized: true,
+		isAuthorized: true,
 		isLoading,
-		getSetting: querySetting,
-		getSettings,
-		subscribeToSettings,
+		querySetting,
+		querySettings,
 		getSettingsGroup,
 		subscribeToSettingsGroup,
 		getSettingsSection,
@@ -213,8 +215,7 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	}), [
 		isLoading,
 		querySetting,
-		getSettings,
-		subscribeToSettings,
+		querySettings,
 		getSettingsGroup,
 		subscribeToSettingsGroup,
 		getSettingsSection,

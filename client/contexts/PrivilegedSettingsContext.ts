@@ -33,21 +33,18 @@ type GroupDescriptor = IEditableSetting & {
 	changed: boolean;
 };
 
-interface IEditableSettingsQuery {
-	_id?: SettingId[];
-	group?: GroupId;
-	section?: SectionName;
-	changed?: boolean;
+interface ISettingsQuery {
+	readonly _id?: SettingId[];
+	readonly group?: GroupId;
+	readonly section?: SectionName;
 }
 
 // TODO: split editing into another context
 type PrivilegedSettingsContextValue = {
-	authorized: boolean;
+	isAuthorized: boolean;
 	isLoading: boolean;
-	querySetting: (_id: SettingId) => Subscription<IEditableSetting | undefined>;
-	querySettings: (query: IEditableSettingsQuery) => Subscription<IEditableSetting[]>;
-	getSettings: () => IEditableSetting[];
-	subscribeToSettings: (cb: (settings: IEditableSetting[]) => void) => (() => void);
+	querySetting: (_id: SettingId) => Subscription<ISetting | undefined>;
+	querySettings: (query: ISettingsQuery) => Subscription<ISetting[]>;
 	getSettingsGroup: (groupId: GroupId) => GroupDescriptor | null;
 	subscribeToSettingsGroup: (groupId: GroupId, cb: (groupDescriptor: GroupDescriptor) => void) => (() => void);
 	getSettingsSection: (groupId: GroupId, sectionName: SectionName) => SectionDescriptor | null;
@@ -58,18 +55,16 @@ type PrivilegedSettingsContextValue = {
 };
 
 export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContextValue>({
-	authorized: false,
+	isAuthorized: false,
 	isLoading: false,
 	querySetting: () => ({
 		getCurrentValue: (): undefined => undefined,
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
 	querySettings: () => ({
-		getCurrentValue: (): IEditableSetting[] => [],
+		getCurrentValue: (): ISetting[] => [],
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
-	getSettings: () => [],
-	subscribeToSettings: () => (): void => undefined,
 	getSettingsGroup: () => null,
 	subscribeToSettingsGroup: () => (): void => undefined,
 	getSettingsSection: () => null,
@@ -79,39 +74,50 @@ export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContext
 	patch: () => undefined,
 });
 
-export const usePrivilegedSettingsAuthorized = (): boolean =>
-	useContext(PrivilegedSettingsContext).authorized;
+export const useIsPrivilegedSettingsContextAuthorized = (): boolean =>
+	useContext(PrivilegedSettingsContext).isAuthorized;
 
-export const useIsPrivilegedSettingsLoading = (): boolean =>
+export const useIsSettingsContextLoading = (): boolean =>
 	useContext(PrivilegedSettingsContext).isLoading;
 
-export const useSetting = (_id: SettingId): unknown => {
+export const useSettingStructure = (_id: SettingId): ISetting | undefined => {
 	const { querySetting } = useContext(PrivilegedSettingsContext);
-	return useSubscription(useMemo(() => querySetting(_id), [querySetting, _id]))?.value;
+	const subscription = useMemo(() => querySetting(_id), [querySetting, _id]);
+	return useSubscription(subscription);
+};
+
+export const useSetting = (_id: SettingId): unknown | undefined =>
+	useSettingStructure(_id)?.value;
+
+export const useSettings = (query?: ISettingsQuery): ISetting[] => {
+	const { querySettings } = useContext(PrivilegedSettingsContext);
+	const subscription = useMemo(() => querySettings(query ?? {}), [querySettings, query]);
+	return useSubscription(subscription);
 };
 
 export const usePrivilegedSettingsGroups = (filter?: string): any => {
-	const { getSettings, subscribeToSettings } = useContext(PrivilegedSettingsContext);
-
-	const subscription = useMemo(() => ({
-		getCurrentValue: (): IEditableSetting[] => getSettings(),
-		subscribe: (cb: (setting: IEditableSetting[]) => void): (() => void) => subscribeToSettings(cb),
-	}), [getSettings, subscribeToSettings]);
-
-	const settings = useSubscription(subscription);
+	const settings = useSettings();
 
 	const t = useTranslation();
 
-	const filterPredicate = useMemo((): ((setting: IEditableSetting) => boolean) => {
+	const filterPredicate = useMemo((): ((setting: ISetting) => boolean) => {
 		if (!filter) {
 			return (): boolean => true;
 		}
 
+		const getMatchableStrings = (setting: ISetting): string[] => [
+			setting.i18nLabel && t(setting.i18nLabel),
+			t(setting._id),
+			setting._id,
+		].filter(Boolean);
+
 		try {
 			const filterRegex = new RegExp(filter, 'i');
-			return (setting: IEditableSetting): boolean => filterRegex.test(t(setting.i18nLabel || setting._id));
+			return (setting: ISetting): boolean =>
+				getMatchableStrings(setting).some((text: string) => filterRegex.test(text));
 		} catch (e) {
-			return (setting: IEditableSetting): boolean => t(setting.i18nLabel || setting._id).slice(0, filter.length) === filter;
+			return (setting: ISetting): boolean =>
+				getMatchableStrings(setting).some((text: string) => text.slice(0, filter.length) === filter);
 		}
 	}, [filter, t]);
 
@@ -119,7 +125,13 @@ export const usePrivilegedSettingsGroups = (filter?: string): any => {
 		const groupIds = Array.from(new Set(
 			settings
 				.filter(filterPredicate)
-				.map((setting) => setting.group || setting._id),
+				.map((setting) => {
+					if (setting.type === SettingType.GROUP) {
+						return setting._id;
+					}
+
+					return setting.group;
+				}),
 		));
 
 		return settings
