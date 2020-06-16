@@ -170,6 +170,7 @@ export const sendNotification = async ({
 
 	if (queueItems.length) {
 		Notification.scheduleItem({
+			user: receiver,
 			uid: subscription.u._id,
 			rid: room._id,
 			mid: message._id,
