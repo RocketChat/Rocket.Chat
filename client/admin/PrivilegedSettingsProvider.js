@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
+import { useReactiveSubscriptionFactory } from '../hooks/useReactiveSubscriptionFactory';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 
 function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
@@ -32,6 +33,13 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		};
 	}, [cachedCollection]);
 
+	const querySetting = useReactiveSubscriptionFactory(
+		useCallback(
+			(_id) => ({ ...cachedCollection.collection.findOne(_id) }),
+			[cachedCollection],
+		),
+	);
+
 	const findSettings = useCallback(() => cachedCollection.collection.find({}, {
 		sort: {
 			section: 1,
@@ -52,21 +60,6 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 			computation.stop();
 		};
 	}, [findSettings]);
-
-	const findSetting = useCallback((_id) => ({ ...cachedCollection.collection.findOne(_id) }), [cachedCollection]);
-
-	const getSetting = useCallback((_id) =>
-		Tracker.nonreactive(() => findSetting(_id)), [findSetting]);
-
-	const subscribeToSetting = useCallback((_id, callback) => {
-		const computation = Tracker.autorun(() => {
-			callback(findSetting(_id));
-		});
-
-		return () => {
-			computation.stop();
-		};
-	}, [findSetting]);
 
 	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection(null));
 
@@ -207,27 +200,25 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	const contextValue = useMemo(() => ({
 		authorized: true,
 		isLoading,
+		getSetting: querySetting,
 		getSettings,
 		subscribeToSettings,
 		getSettingsGroup,
 		subscribeToSettingsGroup,
 		getSettingsSection,
 		subscribeToSettingsSection,
-		getSetting,
-		subscribeToSetting,
 		getEditableSetting,
 		subscribeToEditableSetting,
 		patch,
 	}), [
 		isLoading,
+		querySetting,
 		getSettings,
 		subscribeToSettings,
 		getSettingsGroup,
 		subscribeToSettingsGroup,
 		getSettingsSection,
 		subscribeToSettingsSection,
-		getSetting,
-		subscribeToSetting,
 		getEditableSetting,
 		subscribeToEditableSetting,
 		patch,

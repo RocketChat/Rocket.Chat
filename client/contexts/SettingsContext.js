@@ -1,16 +1,18 @@
-import { createContext, useCallback, useContext } from 'react';
-
-import { useObservableValue } from '../hooks/useObservableValue';
+import { createContext, useCallback, useContext, useMemo } from 'react';
+import { useSubscription } from 'use-subscription';
 
 export const SettingsContext = createContext({
-	get: () => {},
+	querySetting: () => ({
+		getCurrentValue: () => undefined,
+		subscribe: () => undefined,
+	}),
 	set: async () => {},
 	batchSet: async () => {},
 });
 
 export const useSetting = (name) => {
-	const { get } = useContext(SettingsContext);
-	return useObservableValue((listener) => get(name, listener));
+	const { querySetting } = useContext(SettingsContext);
+	return useSubscription(useMemo(() => querySetting(name), [querySetting, name]))?.value;
 };
 
 export const useSettingDispatch = (name) => {
@@ -20,5 +22,5 @@ export const useSettingDispatch = (name) => {
 
 export const useBatchSettingsDispatch = () => {
 	const { batchSet } = useContext(SettingsContext);
-	return useCallback((entries) => batchSet(entries), []);
+	return useCallback((entries) => batchSet(entries), [batchSet]);
 };
