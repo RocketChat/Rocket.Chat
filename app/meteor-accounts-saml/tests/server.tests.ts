@@ -146,7 +146,7 @@ describe('SAML', () => {
 	describe('[LogoutResponse]', () => {
 		describe('LogoutResponse.generate', () => {
 			it('should use the custom template to generate the response', () => {
-				const logoutResponse = LogoutResponse.generate(serviceProviderOptions, 'NameID', 'sessionIndex');
+				const logoutResponse = LogoutResponse.generate(serviceProviderOptions, 'NameID', 'sessionIndex', 'inResponseToId');
 				expect(logoutResponse.response).to.be.equal('[logout-response-template]');
 			});
 
@@ -156,7 +156,7 @@ describe('SAML', () => {
 					logoutResponseTemplate: '__uniqueId__',
 				};
 
-				const logoutResponse = LogoutResponse.generate(customOptions, 'NameID', 'sessionIndex');
+				const logoutResponse = LogoutResponse.generate(customOptions, 'NameID', 'sessionIndex', 'inResponseToId');
 				expect(logoutResponse.response).to.be.equal(logoutResponse.id);
 			});
 
@@ -166,7 +166,7 @@ describe('SAML', () => {
 					logoutResponseTemplate: '__idpSLORedirectURL__ __issuer__',
 				};
 
-				const logoutResponse = LogoutResponse.generate(customOptions, 'NameID', 'sessionIndex');
+				const logoutResponse = LogoutResponse.generate(customOptions, 'NameID', 'sessionIndex', 'inResponseToId');
 				expect(logoutResponse.response).to.be.equal('[idpSLORedirectURL] [issuer]');
 			});
 		});
