@@ -265,7 +265,7 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && '${{ secrets.DOCKER_USER }}' != ''
+    if: github.event_name == 'pull_request' && secrets.DOCKER_USER != ''
 
     steps:
     - uses: actions/checkout@v2
