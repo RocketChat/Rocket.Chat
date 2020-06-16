@@ -2,7 +2,7 @@ import React from 'react';
 
 const style = { width: '1.5em', height: '1.5em', verticalAlign: '-0.5em' };
 
-export const PositiveGrowthSymbol = (props) =>
+const PositiveGrowthSymbol = (props) =>
 	<svg
 		xmlns='http://www.w3.org/2000/svg'
 		viewBox='0 0 24 24'
@@ -24,3 +24,5 @@ export const PositiveGrowthSymbol = (props) =>
 			16.3502 4.3166 15.7171 4.70712 15.3265Z`}
 		/>
 	</svg>;
+
+export default PositiveGrowthSymbol;

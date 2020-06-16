@@ -6,14 +6,13 @@ import PageSkeleton from './PageSkeleton';
 
 function AdministrationRouter({ lazyRouteComponent, ...props }) {
 	const LazyRouteComponent = useMemo(() => lazy(lazyRouteComponent), [lazyRouteComponent]);
-
-	return <PrivilegedSettingsProvider>
-		<AdministrationLayout>
+	return <AdministrationLayout>
+		<PrivilegedSettingsProvider>
 			<Suspense fallback={<PageSkeleton />}>
 				<LazyRouteComponent {...props} />
 			</Suspense>
-		</AdministrationLayout>
-	</PrivilegedSettingsProvider>;
+		</PrivilegedSettingsProvider>
+	</AdministrationLayout>;
 }
 
 export default AdministrationRouter;
