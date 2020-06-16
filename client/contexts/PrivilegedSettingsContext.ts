@@ -2,43 +2,34 @@ import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
+import {
+	ISetting,
+	SectionName,
+	SettingId,
+	GroupId,
+	SettingType,
+} from '../../definition/ISetting';
 import { useBatchSettingsDispatch } from './SettingsContext';
 import { useToastMessageDispatch } from './ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from './TranslationContext';
 import { useUser } from './UserContext';
 
-type PrivilegedSettingId = string;
-type PrivilegedSettingSectionName = string | null | undefined;
-type PrivilegedSettingGroupId = string;
-
-type PrivilegedSetting = {
-	_id: PrivilegedSettingId;
-	type: string;
-	blocked: boolean;
-	enableQuery: unknown;
-	group: PrivilegedSettingGroupId;
-	section: PrivilegedSettingSectionName;
+interface IEditableSetting extends ISetting {
+	disabled: boolean;
 	changed: boolean;
-	value: unknown;
-	packageValue: unknown;
-	packageEditor: unknown;
-	editor: unknown;
-	sorter: string;
-	i18nLabel: string;
-	disabled?: boolean;
-};
+}
 
 type SectionDescriptor = {
-	name: PrivilegedSettingSectionName;
-	editableSettings: PrivilegedSetting[];
-	settings: PrivilegedSettingId[];
+	name: SectionName;
+	editableSettings: IEditableSetting[];
+	settings: SettingId[];
 	changed: boolean;
 	canReset: boolean;
 };
 
-type GroupDescriptor = PrivilegedSetting & {
-	editableSettings: PrivilegedSetting[];
-	sections: PrivilegedSettingSectionName[];
+type GroupDescriptor = IEditableSetting & {
+	editableSettings: IEditableSetting[];
+	sections: SectionName[];
 	changed: boolean;
 };
 
@@ -46,16 +37,16 @@ type GroupDescriptor = PrivilegedSetting & {
 type PrivilegedSettingsContextValue = {
 	authorized: boolean;
 	isLoading: boolean;
-	getSettings: () => PrivilegedSetting[];
-	subscribeToSettings: (cb: (settings: PrivilegedSetting[]) => void) => (() => void);
-	getSettingsGroup: (groupId: PrivilegedSettingGroupId) => GroupDescriptor | null;
-	subscribeToSettingsGroup: (groupId: PrivilegedSettingGroupId, cb: (groupDescriptor: GroupDescriptor) => void) => (() => void);
-	getSettingsSection: (groupId: PrivilegedSettingGroupId, sectionName: PrivilegedSettingSectionName) => SectionDescriptor | null;
-	subscribeToSettingsSection: (groupId: PrivilegedSettingGroupId, sectionName: PrivilegedSettingSectionName, cb: (sectionDescriptor: SectionDescriptor) => void) => (() => void);
-	getSetting: (_id: PrivilegedSettingId) => PrivilegedSetting | null;
-	subscribeToSetting: (_id: PrivilegedSettingId, cb: (setting: PrivilegedSetting) => void) => (() => void);
-	getEditableSetting: (_id: PrivilegedSettingId) => PrivilegedSetting | null;
-	subscribeToEditableSetting: (_id: PrivilegedSettingId, cb: (setting: PrivilegedSetting) => void) => (() => void);
+	getSettings: () => IEditableSetting[];
+	subscribeToSettings: (cb: (settings: IEditableSetting[]) => void) => (() => void);
+	getSettingsGroup: (groupId: GroupId) => GroupDescriptor | null;
+	subscribeToSettingsGroup: (groupId: GroupId, cb: (groupDescriptor: GroupDescriptor) => void) => (() => void);
+	getSettingsSection: (groupId: GroupId, sectionName: SectionName) => SectionDescriptor | null;
+	subscribeToSettingsSection: (groupId: GroupId, sectionName: SectionName, cb: (sectionDescriptor: SectionDescriptor) => void) => (() => void);
+	getSetting: (_id: SettingId) => IEditableSetting | null;
+	subscribeToSetting: (_id: SettingId, cb: (setting: IEditableSetting) => void) => (() => void);
+	getEditableSetting: (_id: SettingId) => IEditableSetting | null;
+	subscribeToEditableSetting: (_id: SettingId, cb: (setting: IEditableSetting) => void) => (() => void);
 	patch: (changes: any[]) => void;
 };
 
@@ -85,24 +76,24 @@ export const usePrivilegedSettingsGroups = (filter?: string): any => {
 	const { getSettings, subscribeToSettings } = useContext(PrivilegedSettingsContext);
 
 	const subscription = useMemo(() => ({
-		getCurrentValue: (): PrivilegedSetting[] => getSettings(),
-		subscribe: (cb: (setting: PrivilegedSetting[]) => void): (() => void) => subscribeToSettings(cb),
+		getCurrentValue: (): IEditableSetting[] => getSettings(),
+		subscribe: (cb: (setting: IEditableSetting[]) => void): (() => void) => subscribeToSettings(cb),
 	}), [getSettings, subscribeToSettings]);
 
 	const settings = useSubscription(subscription);
 
 	const t = useTranslation();
 
-	const filterPredicate = useMemo((): ((setting: PrivilegedSetting) => boolean) => {
+	const filterPredicate = useMemo((): ((setting: IEditableSetting) => boolean) => {
 		if (!filter) {
 			return (): boolean => true;
 		}
 
 		try {
 			const filterRegex = new RegExp(filter, 'i');
-			return (setting: PrivilegedSetting): boolean => filterRegex.test(t(setting.i18nLabel || setting._id));
+			return (setting: IEditableSetting): boolean => filterRegex.test(t(setting.i18nLabel || setting._id));
 		} catch (e) {
-			return (setting: PrivilegedSetting): boolean => t(setting.i18nLabel || setting._id).slice(0, filter.length) === filter;
+			return (setting: IEditableSetting): boolean => t(setting.i18nLabel || setting._id).slice(0, filter.length) === filter;
 		}
 	}, [filter]);
 
@@ -114,12 +105,12 @@ export const usePrivilegedSettingsGroups = (filter?: string): any => {
 		));
 
 		return settings
-			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
+			.filter(({ type, group, _id }) => type === SettingType.GROUP && groupIds.includes(group || _id))
 			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
 	}, [settings, filterPredicate]);
 };
 
-export const usePrivilegedSettingsGroup = (groupId: PrivilegedSettingId): GroupDescriptor | null => {
+export const usePrivilegedSettingsGroup = (groupId: GroupId): GroupDescriptor | null => {
 	const { getSettingsGroup, subscribeToSettingsGroup } = useContext(PrivilegedSettingsContext);
 
 	const subscription = useMemo(() => ({
@@ -130,7 +121,7 @@ export const usePrivilegedSettingsGroup = (groupId: PrivilegedSettingId): GroupD
 	return useSubscription(subscription);
 };
 
-export const usePrivilegedSettingsGroupActions = (groupId: PrivilegedSettingId): {
+export const usePrivilegedSettingsGroupActions = (groupId: GroupId): {
 	save: () => void;
 	cancel: () => void;
 } => {
@@ -193,7 +184,7 @@ export const usePrivilegedSettingsGroupActions = (groupId: PrivilegedSettingId):
 	return { save, cancel };
 };
 
-export const usePrivilegedSettingsSection = (groupId: PrivilegedSettingGroupId, sectionName: PrivilegedSettingSectionName): SectionDescriptor | null => {
+export const usePrivilegedSettingsSection = (groupId: GroupId, sectionName: SectionName): SectionDescriptor | null => {
 	const { getSettingsSection, subscribeToSettingsSection } = useContext(PrivilegedSettingsContext);
 
 	const subscription = useMemo(() => ({
@@ -204,7 +195,7 @@ export const usePrivilegedSettingsSection = (groupId: PrivilegedSettingGroupId, 
 	return useSubscription(subscription);
 };
 
-export const usePrivilegedSettingsSectionActions = (groupId: PrivilegedSettingGroupId, sectionName?: PrivilegedSettingSectionName): {
+export const usePrivilegedSettingsSectionActions = (groupId: GroupId, sectionName: SectionName): {
 	reset: () => void;
 } => {
 	const { getSettingsSection, patch } = useContext(PrivilegedSettingsContext);
@@ -235,18 +226,18 @@ export const usePrivilegedSettingsSectionActions = (groupId: PrivilegedSettingGr
 	};
 };
 
-export const usePrivilegedSetting = (_id: PrivilegedSettingId): PrivilegedSetting | null => {
+export const usePrivilegedSetting = (_id: SettingId): IEditableSetting | null => {
 	const { getEditableSetting, subscribeToEditableSetting } = useContext(PrivilegedSettingsContext);
 
 	const subscription = useMemo(() => ({
-		getCurrentValue: (): (PrivilegedSetting | null) => getEditableSetting(_id),
-		subscribe: (cb: (setting: PrivilegedSetting | null) => void): (() => void) => subscribeToEditableSetting(_id, cb),
-	}), [_id, getEditableSetting, subscribeToEditableSetting]);
+		getCurrentValue: (): (IEditableSetting | null) => getEditableSetting(_id),
+		subscribe: (cb: (setting: IEditableSetting | null) => void): (() => void) => subscribeToEditableSetting(_id, cb),
+	}), [getEditableSetting, subscribeToEditableSetting, _id]);
 
 	return useSubscription(subscription);
 };
 
-export const usePrivilegedSettingActions = (_id: PrivilegedSettingId): {
+export const usePrivilegedSettingActions = (_id: SettingId): {
 	update: () => void;
 	reset: () => void;
 } => {
@@ -254,28 +245,35 @@ export const usePrivilegedSettingActions = (_id: PrivilegedSettingId): {
 
 	const update: (() => void) = useDebouncedCallback(({ value, editor }) => {
 		const persistedSetting = getSetting(_id);
+		if (!persistedSetting) {
+			return;
+		}
 
-		const changes = [{
+		patch([{
 			_id,
 			...value !== undefined && { value },
 			...editor !== undefined && { editor },
-			changed: JSON.stringify(persistedSetting?.value) !== JSON.stringify(value) || JSON.stringify(persistedSetting?.editor) !== JSON.stringify(editor),
-		}];
-
-		patch(changes);
-	}, 100, [patch, getSetting, _id]);
+			changed:
+				JSON.stringify(persistedSetting.value) !== JSON.stringify(value)
+				|| JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor),
+		}]);
+	}, 100, [getSetting, _id, patch]);
 
 	const reset: (() => void) = useDebouncedCallback(() => {
 		const persistedSetting = getSetting(_id);
-		const changes = [{
-			_id: persistedSetting?._id,
-			value: persistedSetting?.packageValue,
-			editor: persistedSetting?.packageEditor,
-			changed: JSON.stringify(persistedSetting?.packageValue) !== JSON.stringify(persistedSetting?.value) || JSON.stringify(persistedSetting?.packageEditor) !== JSON.stringify(persistedSetting?.editor),
-		}];
+		if (!persistedSetting) {
+			return;
+		}
 
-		patch(changes);
-	}, 100, [patch, getSetting, _id]);
+		patch([{
+			_id: persistedSetting._id,
+			value: persistedSetting.packageValue,
+			editor: persistedSetting.packageEditor,
+			changed:
+				JSON.stringify(persistedSetting.packageValue) !== JSON.stringify(persistedSetting.value)
+				|| JSON.stringify(persistedSetting.packageEditor) !== JSON.stringify(persistedSetting.editor),
+		}]);
+	}, 100, [getSetting, _id, patch]);
 
 	return { update, reset };
 };
