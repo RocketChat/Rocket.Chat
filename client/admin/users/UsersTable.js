@@ -26,7 +26,7 @@ const FilterByText = ({ setFilter, ...props }) => {
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
 const useQuery = (params, sort) => useMemo(() => ({
-	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1 }),
+	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1, avatarETag: 1 }),
 	query: JSON.stringify({
 		$or: [
 			{ 'emails.address': { $regex: params.text || '', $options: 'i' } },
