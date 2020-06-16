@@ -409,9 +409,9 @@ export function syncUserData(user, ldapUser, ldap) {
 			};
 
 			Meteor.runAsUser(user._id, () => {
-				fileStore.insert(file, rs, () => {
+				fileStore.insert(file, rs, (err, result) => {
 					Meteor.setTimeout(function() {
-						Users.setAvatarOrigin(user._id, 'ldap');
+						Users.setAvatarData(user._id, 'ldap', result.etag);
 						Notifications.notifyLogged('updateAvatar', { username: user.username });
 					}, 500);
 				});

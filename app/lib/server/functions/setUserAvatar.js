@@ -11,7 +11,7 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 	let image;
 
 	if (service === 'initials') {
-		return Users.setAvatarOrigin(user._id, service);
+		return Users.setAvatarData(user._id, service, null);
 	} if (service === 'url') {
 		let result = null;
 
@@ -61,9 +61,9 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 		size: buffer.length,
 	};
 
-	fileStore.insert(file, buffer, () => {
+	fileStore.insert(file, buffer, (err, result) => {
 		Meteor.setTimeout(function() {
-			Users.setAvatarOrigin(user._id, service);
+			Users.setAvatarData(user._id, service, result.etag);
 			Notifications.notifyLogged('updateAvatar', { username: user.username });
 		}, 500);
 	});

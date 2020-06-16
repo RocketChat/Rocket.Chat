@@ -42,7 +42,7 @@ Meteor.methods({
 		}
 
 		FileUpload.getStore('Avatars').deleteByName(user.username);
-		Users.unsetAvatarOrigin(user._id);
+		Users.unsetAvatarData(user._id);
 		Notifications.notifyLogged('updateAvatar', {
 			username: user.username,
 		});
