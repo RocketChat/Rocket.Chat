@@ -8,7 +8,7 @@ import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 
 const baseName = 'rocketchat_';
 
-const trash = new Mongo.Collection(`${ baseName }_trash`);
+export const trash = new Mongo.Collection(`${ baseName }_trash`);
 try {
 	trash._ensureIndex({ __collection__: 1 });
 	trash._ensureIndex(

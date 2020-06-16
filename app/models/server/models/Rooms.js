@@ -20,8 +20,6 @@ export class Rooms extends Base {
 		// Tokenpass
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
 		this.tryEnsureIndex({ tokenpass: 1 }, { sparse: true });
-		// livechat
-		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
