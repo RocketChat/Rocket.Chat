@@ -264,7 +264,7 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && env.GITHUB_HEAD_REF == ''
+    if: github.event_name == 'pull_request'
 
     - uses: actions/checkout@v2
 
