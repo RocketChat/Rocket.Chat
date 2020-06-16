@@ -15,13 +15,9 @@ import { addUserRoles } from '../../../authorization/server';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions';
 import {
 	isValidAttemptByUser,
-	saveFailedLoginAttempts,
-	saveSuccessfulLogin,
 	isValidLoginAttemptByIp,
 } from '../lib/restrictLoginAttempts';
-import { ILoginAttempt } from '../ILoginAttempt';
 import './settings';
-import { logFailedLoginAttemps } from '../lib/logLoginAttempts';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -299,7 +295,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	return _id;
 });
 
-Accounts.validateLoginAttempt(function(login: ILoginAttempt) {
+Accounts.validateLoginAttempt(function(login) {
 	login = callbacks.run('beforeValidateLogin', login);
 	if (!Promise.await(isValidLoginAttemptByIp(login.connection.clientAddress))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
@@ -406,9 +402,3 @@ Accounts.onLogin(async ({ user }) => {
 		Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
 	}
 });
-
-Accounts.onLoginFailure((login: ILoginAttempt) => {
-	saveFailedLoginAttempts(login);
-	logFailedLoginAttemps(login);
-});
-callbacks.add('afterValidateLogin', (login: ILoginAttempt) => saveSuccessfulLogin(login));

@@ -17,18 +17,18 @@ export class ServerEventsRaw extends BaseRaw {
 		});
 	}
 
-	async findLastFailedAttemptByIp(ip: string): Promise<IServerEvent> {
-		return this.findOne({
+	async findLastFailedAttemptByIp(ip: string): Promise<IServerEvent | null> {
+		return this.col.findOne({
 			ip,
 			t: IServerEventType.FAILED_LOGIN_ATTEMPT,
-		});
+		}, { sort: { ts: -1 } });
 	}
 
-	async findLastFailedAttemptByUsername(username: string): Promise<IServerEvent> {
-		return this.findOne({
+	async findLastFailedAttemptByUsername(username: string): Promise<IServerEvent | null> {
+		return this.col.findOne({
 			'u.username': username,
 			t: IServerEventType.FAILED_LOGIN_ATTEMPT,
-		});
+		}, { sort: { ts: -1 } });
 	}
 
 	async countFailedAttemptsByUsernameSince(username: string, since: Date): Promise<number> {

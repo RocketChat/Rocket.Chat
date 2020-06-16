@@ -51,6 +51,7 @@
   "Accounts_AvatarExternalProviderUrl_Description": "Exemplo: `https://acme.com/api/v1/ {username}`",
   "Accounts_BlockedDomainsList": "Lista de Domínios Bloqueados",
   "Accounts_BlockedDomainsList_Description": "Lista de domínios bloqueados, separados por vírgulas ",
+  "Accounts_Block_Failed_Login_Attempts_Enable_Collect_Login_data": "Habilitar a coleta de dados do login",
   "Accounts_Block_Failed_Attempts_Ip_Whitelist": "Lista de IPs para não verificar",
   "Accounts_Block_Failed_Attempts_Ip_Whitelist_Description": "Lista de IPs separados por vírgula",
   "Accounts_Block_Failed_Attempts_Time_To_Unblock_By_User_In_Minutes": "Tempo para desbloquear o Usuário (Em Minutos)",
