@@ -16,7 +16,7 @@ try {
 		{ expireAfterSeconds: 60 * 60 * 24 * 30 },
 	);
 
-	trash._ensureIndex({ __collection__: 1, _deletedAt: 1, rid: 1 });
+	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
 	console.log(e);
 }
