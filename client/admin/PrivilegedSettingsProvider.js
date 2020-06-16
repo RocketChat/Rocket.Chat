@@ -40,10 +40,10 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		},
 	}).fetch(), [cachedCollection]);
 
-	const getSettings = useMutableCallback(() =>
-		Tracker.nonreactive(() => findSettings()));
+	const getSettings = useCallback(() =>
+		Tracker.nonreactive(() => findSettings()), [findSettings]);
 
-	const subscribeToSettings = useMutableCallback((callback) => {
+	const subscribeToSettings = useCallback((callback) => {
 		const computation = Tracker.autorun(() => {
 			callback(findSettings());
 		});
@@ -51,7 +51,22 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		return () => {
 			computation.stop();
 		};
-	});
+	}, [findSettings]);
+
+	const findSetting = useCallback((_id) => ({ ...cachedCollection.collection.findOne(_id) }), [cachedCollection]);
+
+	const getSetting = useCallback((_id) =>
+		Tracker.nonreactive(() => findSetting(_id)), [findSetting]);
+
+	const subscribeToSetting = useCallback((_id, callback) => {
+		const computation = Tracker.autorun(() => {
+			callback(findSetting(_id));
+		});
+
+		return () => {
+			computation.stop();
+		};
+	}, [findSetting]);
 
 	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection(null));
 
@@ -71,7 +86,7 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		return () => {
 			syncCollectionsHandle.stop();
 		};
-	}, [isLoading, cachedCollection]);
+	}, [isLoading, cachedCollection, settingsCollectionRef]);
 
 	const findSettingsGroup = useMutableCallback((groupId) => {
 		const group = settingsCollectionRef.current.findOne({ _id: groupId, type: 'group' });
@@ -148,21 +163,6 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 			computation.stop();
 		};
 	});
-
-	const findSetting = useCallback((_id) => ({ ...cachedCollection.collection.findOne(_id) }), [cachedCollection]);
-
-	const getSetting = useCallback((_id) =>
-		Tracker.nonreactive(() => findSetting(_id)), [findSetting]);
-
-	const subscribeToSetting = useCallback((_id, callback) => {
-		const computation = Tracker.autorun(() => {
-			callback(findSetting(_id));
-		});
-
-		return () => {
-			computation.stop();
-		};
-	}, [findSetting]);
 
 	const findEditableSetting = (_id) => {
 		const editableSetting = settingsCollectionRef.current.findOne(_id);

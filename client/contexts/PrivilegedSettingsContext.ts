@@ -95,7 +95,7 @@ export const usePrivilegedSettingsGroups = (filter?: string): any => {
 		} catch (e) {
 			return (setting: IEditableSetting): boolean => t(setting.i18nLabel || setting._id).slice(0, filter.length) === filter;
 		}
-	}, [filter]);
+	}, [filter, t]);
 
 	return useMemo(() => {
 		const groupIds = Array.from(new Set(
@@ -107,7 +107,7 @@ export const usePrivilegedSettingsGroups = (filter?: string): any => {
 		return settings
 			.filter(({ type, group, _id }) => type === SettingType.GROUP && groupIds.includes(group || _id))
 			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
-	}, [settings, filterPredicate]);
+	}, [settings, filterPredicate, t]);
 };
 
 export const usePrivilegedSettingsGroup = (groupId: GroupId): GroupDescriptor | null => {
