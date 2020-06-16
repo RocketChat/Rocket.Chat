@@ -13,6 +13,9 @@ Migrations.add({
 
 		Messages.tryDropIndex({ rid: 1, ts: 1 });
 
+		Rooms.tryDropIndex({ 'tokenpass.tokens.token': 1 });
+		Rooms.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
+
 		Rooms.tryDropIndex({ default: 1 });
 		Rooms.tryEnsureIndex({ default: 1 }, { sparse: true });
 
