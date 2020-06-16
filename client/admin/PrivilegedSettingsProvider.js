@@ -32,26 +32,6 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		};
 	}, [cachedCollection]);
 
-	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection(null));
-
-	useEffect(() => {
-		if (isLoading) {
-			return;
-		}
-
-		const query = cachedCollection.collection.find();
-
-		const syncCollectionsHandle = query.observe({
-			added: (data) => settingsCollectionRef.current.insert(data),
-			changed: (data) => settingsCollectionRef.current.update(data._id, data),
-			removed: ({ _id }) => settingsCollectionRef.current.remove(_id),
-		});
-
-		return () => {
-			syncCollectionsHandle.stop();
-		};
-	}, [isLoading, cachedCollection]);
-
 	const findSettings = useCallback(() => cachedCollection.collection.find({}, {
 		sort: {
 			section: 1,
@@ -72,6 +52,26 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 			computation.stop();
 		};
 	});
+
+	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection(null));
+
+	useEffect(() => {
+		if (isLoading) {
+			return;
+		}
+
+		const query = cachedCollection.collection.find();
+
+		const syncCollectionsHandle = query.observe({
+			added: (setting) => settingsCollectionRef.current.insert({ ...setting }),
+			changed: (setting) => settingsCollectionRef.current.update(setting._id, { ...setting }),
+			removed: (setting) => settingsCollectionRef.current.remove(setting._id),
+		});
+
+		return () => {
+			syncCollectionsHandle.stop();
+		};
+	}, [isLoading, cachedCollection]);
 
 	const findSettingsGroup = useMutableCallback((groupId) => {
 		const group = settingsCollectionRef.current.findOne({ _id: groupId, type: 'group' });
@@ -149,7 +149,7 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		};
 	});
 
-	const findSetting = useCallback((_id) => cachedCollection.collection.findOne(_id), [cachedCollection]);
+	const findSetting = useCallback((_id) => ({ ...cachedCollection.collection.findOne(_id) }), [cachedCollection]);
 
 	const getSetting = useCallback((_id) =>
 		Tracker.nonreactive(() => findSetting(_id)), [findSetting]);
@@ -168,18 +168,20 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		const editableSetting = settingsCollectionRef.current.findOne(_id);
 
 		if (editableSetting.blocked) {
-			editableSetting.disabled = true;
-			return editableSetting;
+			return { ...editableSetting, disabled: true };
 		}
 
 		if (!editableSetting.enableQuery) {
-			editableSetting.disabled = false;
-			return editableSetting;
+			return { ...editableSetting, disabled: false };
 		}
 
-		const queries = [].concat(typeof enableQuery === 'string' ? JSON.parse(editableSetting.enableQuery) : editableSetting.enableQuery);
-		editableSetting.disabled = !queries.every((query) => settingsCollectionRef.current.find(query).count() > 0);
-		return editableSetting;
+		const queries = [].concat(typeof editableSetting.enableQuery === 'string'
+			? JSON.parse(editableSetting.enableQuery)
+			: editableSetting.enableQuery);
+		return {
+			...editableSetting,
+			disabled: !queries.every((query) => settingsCollectionRef.current.find(query).count() > 0),
+		};
 	};
 
 	const getEditableSetting = useMutableCallback((_id) =>
