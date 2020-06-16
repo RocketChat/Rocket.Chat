@@ -30,7 +30,7 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 	const label = (i18nLabel && t(getAppKey(i18nLabel))) || (id || t(getAppKey(id)));
 	const hint = useMemo(() => i18nDescription && <MarkdownText content={t(getAppKey(i18nDescription))} />, [i18nDescription]);
 
-	return useMemo(() => <MemoizedSetting
+	return <MemoizedSetting
 		type={type}
 		label={label}
 		hint={hint}
@@ -38,5 +38,5 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 		onChangeValue={onChange}
 		_id={id}
 		{...props}
-	/>, [value, onChange]);
+	/>;
 }
