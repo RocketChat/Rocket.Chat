@@ -79,15 +79,15 @@ export class BusinessHourManager implements IBusinessHoursManager {
 			const { start, finish, day, utc } = workHour;
 			start.forEach((hour) => {
 				const jobName = `${ workHour.day }/${ hour }/${ utc }/open`;
-				const duration = moment.duration(hour).add(utc, 'hours');
-				const scheduleAt = `${ duration.minutes() } ${ duration.hours() } * * ${ cronJobDayDict[day] }`;
+				const localTime = moment.utc(`${ day }:${ hour }`, 'dddd:HH:mm').add(utc, 'hours');
+				const scheduleAt = `${ localTime.minutes() } ${ localTime.hours() } * * ${ cronJobDayDict[day] }`;
 				this.addToCache(jobName);
 				this.cronJobs.add(jobName, scheduleAt, this.openWorkHoursCallback);
 			});
 			finish.forEach((hour) => {
 				const jobName = `${ workHour.day }/${ hour }/${ utc }/close`;
-				const duration = moment.duration(hour).add(utc, 'hours');
-				const scheduleAt = `${ duration.minutes() } ${ duration.hours() } * * ${ cronJobDayDict[day] }`;
+				const localTime = moment.utc(`${ day }:${ hour }`, 'dddd:HH:mm').add(utc, 'hours');
+				const scheduleAt = `${ localTime.minutes() } ${ localTime.hours() } * * ${ cronJobDayDict[day] }`;
 				this.addToCache(jobName);
 				this.cronJobs.add(jobName, scheduleAt, this.closeWorkHoursCallback);
 			});

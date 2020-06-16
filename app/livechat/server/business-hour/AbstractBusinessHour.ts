@@ -57,13 +57,28 @@ export abstract class AbstractBusinessHour {
 	}
 
 	private async getBusinessHoursThatMustBeOpen(day: string, currentTime: any): Promise<string[]> {
-		const activeBusinessHours = await this.LivechatBusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, { fields: { workHours: 1 } });
+		const activeBusinessHours = await this.LivechatBusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
+			fields: {
+				workHours: 1,
+				timezone: 1,
+			},
+		});
 		return activeBusinessHours
 			.filter((businessHour) => businessHour.workHours
 				.filter((hour) => hour.day === day)
 				.some((hour) => {
-					const start = moment.utc(`${ hour.start }`, 'HH:mm');
-					const finish = moment.utc(`${ hour.finish }`, 'HH:mm');
+					const localTimeStart = moment.utc(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').add(businessHour.timezone.utc, 'hours');
+					const localTimeFinish = moment.utc(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').add(businessHour.timezone.utc, 'hours');
+					const start = moment({
+						hour: localTimeStart.hours(),
+						minutes: localTimeStart.minutes(),
+						weekday: currentTime.weekday(),
+					});
+					const finish = moment({
+						hour: localTimeFinish.hours(),
+						minutes: localTimeFinish.minutes(),
+						weekday: currentTime.weekday(),
+					});
 					return currentTime.isSameOrAfter(start) && currentTime.isSameOrBefore(finish);
 				}))
 			.map((businessHour) => businessHour._id);
