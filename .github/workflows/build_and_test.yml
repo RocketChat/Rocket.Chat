@@ -29,6 +29,7 @@ jobs:
         echo "github.repository: ${{ github.repository }}"
         echo "github.repository_owner: ${{ github.repository_owner }}"
         echo "github.event_name: ${{ github.event_name }}"
+        echo "super secret ${{ secrets.DOCKER_USER }}"
 
     - name: Github Info
       run: |
@@ -264,7 +265,7 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && '${{ secrets.DOCKER_USER }}' != ''
 
     steps:
     - uses: actions/checkout@v2
