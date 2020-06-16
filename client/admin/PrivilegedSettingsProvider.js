@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
-import { PrivateSettingsCachedCollection } from './PrivateSettingsCachedCollection';
+import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 
 function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	const [isLoading, setLoading] = useState(() => Tracker.nonreactive(() => !cachedCollection.ready.get()));
