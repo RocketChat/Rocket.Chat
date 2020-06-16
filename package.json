@@ -119,8 +119,6 @@
 		"webpack": "^4.29.3"
 	},
 	"dependencies": {
-		"@accounts/mongo": "0.0.12",
-		"@accounts/server": "0.0.18",
 		"@babel/runtime": "^7.9.6",
 		"@google-cloud/language": "^3.7.0",
 		"@google-cloud/storage": "^2.3.1",
