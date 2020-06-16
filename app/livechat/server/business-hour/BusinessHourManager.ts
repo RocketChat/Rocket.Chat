@@ -5,16 +5,6 @@ import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHour } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 
-export interface IBusinessHoursManager {
-	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void>;
-	getBusinessHour(id?: string): Promise<ILivechatBusinessHour>;
-	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
-	removeCronJobs(): void;
-	createCronJobsForWorkHours(): Promise<void>;
-	removeBusinessHoursFromAgents(): Promise<void>;
-	openBusinessHoursIfNeeded(): Promise<void>;
-}
-
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,
 	Monday: 1,
@@ -25,7 +15,7 @@ const cronJobDayDict: Record<string, number> = {
 	Saturday: 6,
 };
 
-export class BusinessHourManager implements IBusinessHoursManager {
+export class BusinessHourManager {
 	private businessHour: IBusinessHour;
 
 	private cronJobs: ICronJobs;

@@ -1,13 +1,8 @@
-interface IBusinessHoursManager {
-	getTemplate(): string;
-	registerBusinessHour(businessHour: IBusinessHour): void;
-}
-
 export interface IBusinessHour {
 	getView(): string;
 }
 
-class BusinessHoursManager implements IBusinessHoursManager {
+class BusinessHoursManager {
 	private businessHour: IBusinessHour;
 
 	constructor(businessHour: IBusinessHour) {
@@ -29,4 +24,4 @@ class Single implements IBusinessHour {
 	}
 }
 
-export const businessHourManager: IBusinessHoursManager = new BusinessHoursManager(new Single());
+export const businessHourManager = new BusinessHoursManager(new Single());

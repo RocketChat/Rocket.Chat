@@ -2,11 +2,10 @@ import moment from 'moment';
 
 import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import {
-	ILivechatBusinessHourRepository,
-	IWorkHoursForCreateCronJobs,
+	IWorkHoursForCreateCronJobs, LivechatBusinessHoursRaw,
 } from '../../../models/server/raw/LivechatBusinessHours';
 import { UsersRaw } from '../../../models/server/raw/Users';
-import { Users } from '../../../models/server/raw';
+import { LivechatBusinessHours, Users } from '../../../models/server/raw';
 
 export interface IBusinessHour {
 	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void>;
@@ -20,13 +19,9 @@ export interface IBusinessHour {
 }
 
 export abstract class AbstractBusinessHour {
-	protected LivechatBusinessHourRepository: ILivechatBusinessHourRepository;
+	protected LivechatBusinessHourRepository: LivechatBusinessHoursRaw = LivechatBusinessHours;
 
 	protected UsersRepository: UsersRaw = Users;
-
-	constructor(LivechatBusinessHourRepository: ILivechatBusinessHourRepository) {
-		this.LivechatBusinessHourRepository = LivechatBusinessHourRepository;
-	}
 
 	async findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
 		return this.LivechatBusinessHourRepository.findHoursToScheduleJobs();

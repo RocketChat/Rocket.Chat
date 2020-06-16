@@ -6,7 +6,6 @@ import {
 	ILivechatBusinessHour,
 	LivechatBussinessHourTypes,
 } from '../../../../definition/ILivechatBusinessHour';
-import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
 
 export interface IWorkHoursForCreateCronJobs {
 	day: string;
@@ -15,18 +14,7 @@ export interface IWorkHoursForCreateCronJobs {
 	finish: string[];
 }
 
-export interface ILivechatBusinessHourRepository {
-	insertOne(data: ILivechatBusinessHour): Promise<any>;
-	findActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]>;
-	findActiveBusinessHoursIdsToOpen(type: LivechatBussinessHourTypes, day: string, start: string, utc: string): Promise<string[]>;
-	findActiveBusinessHoursIdsToClose(type: LivechatBussinessHourTypes, day: string, finish: string, utc: string): Promise<string[]>;
-	findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour>;
-	findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
-	updateOne(id: string, data: ILivechatBusinessHour): Promise<any>;
-	updateDayOfGlobalBusinessHour(day: IBusinessHourWorkHour): Promise<any>;
-}
-
-class LivechatBusinessHoursRaw extends BaseRaw implements ILivechatBusinessHourRepository {
+export class LivechatBusinessHoursRaw extends BaseRaw {
 	public readonly col!: Collection<ILivechatBusinessHour>;
 
 	findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour> {
@@ -148,5 +136,3 @@ class LivechatBusinessHoursRaw extends BaseRaw implements ILivechatBusinessHourR
 		}).toArray()).map((businessHour) => businessHour._id);
 	}
 }
-
-export const LivechatBusinessHours: ILivechatBusinessHourRepository = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection());

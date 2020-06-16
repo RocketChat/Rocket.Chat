@@ -46,6 +46,8 @@ import StatisticsModel from '../models/Statistics';
 import { StatisticsRaw } from './Statistics';
 import NotificationQueueModel from '../models/NotificationQueue';
 import { NotificationQueueRaw } from './NotificationQueue';
+import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
+import { LivechatBusinessHoursRaw } from './LivechatBusinessHours';
 
 export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection());
 export const Roles = new RolesRaw(RolesModel.model.rawCollection());
@@ -71,4 +73,4 @@ export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.mo
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection());
 export const Statistics = new StatisticsRaw(StatisticsModel.model.rawCollection());
 export const NotificationQueue = new NotificationQueueRaw(NotificationQueueModel.model.rawCollection());
-export * from './LivechatBusinessHours';
+export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection());
