@@ -2,10 +2,12 @@ import { Accordion, Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuse
 import React, { useMemo } from 'react';
 
 import Page from '../../components/basic/Page';
+import { usePrivilegedSettingsGroupActions } from '../../contexts/PrivilegedSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Section } from './Section';
 
-export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabel, i18nDescription, changed }) {
+export function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription, changed }) {
+	const { save, cancel } = usePrivilegedSettingsGroupActions(_id);
 	const t = useTranslation();
 
 	const handleSubmit = (event) => {

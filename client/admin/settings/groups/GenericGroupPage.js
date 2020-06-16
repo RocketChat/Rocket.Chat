@@ -8,7 +8,7 @@ export function GenericGroupPage({ _id, sections, ...group }) {
 
 	return <GroupPage _id={_id} {...group}>
 		{sections.map((sectionName) => <Section
-			key={sectionName}
+			key={sectionName || ''}
 			groupId={_id}
 			sectionName={sectionName}
 			solo={solo}
