@@ -41,8 +41,8 @@ export class SAMLServiceProvider {
 		return identifiedRequest.request;
 	}
 
-	generateLogoutResponse({ nameID, sessionIndex }: { nameID: string; sessionIndex: string }): Record<string, string> {
-		return LogoutResponse.generate(this.serviceProviderOptions, nameID, sessionIndex);
+	generateLogoutResponse({ nameID, sessionIndex, inResponseToId }: { nameID: string; sessionIndex: string; inResponseToId: string }): Record<string, string> {
+		return LogoutResponse.generate(this.serviceProviderOptions, nameID, sessionIndex, inResponseToId);
 	}
 
 	generateLogoutRequest({ nameID, sessionIndex }: { nameID: string; sessionIndex: string }): Record<string, string> {

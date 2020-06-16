@@ -34,8 +34,9 @@ export class LogoutRequestParser {
 
 			const idpSession = sessionNode.childNodes[0].nodeValue;
 			const nameID = nameIdNode.childNodes[0].nodeValue;
+			const id = request.getAttribute('ID');
 
-			return callback(null, { idpSession, nameID });
+			return callback(null, { idpSession, nameID, id });
 		} catch (e) {
 			console.error(e);
 			SAMLUtils.log(`Caught error: ${ e }`);

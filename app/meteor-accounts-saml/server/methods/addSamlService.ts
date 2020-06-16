@@ -258,7 +258,7 @@ Meteor.methods({
 			group: 'SAML',
 			section: 'SAML_Section_6_Advanced',
 			i18nLabel: 'SAML_LogoutResponse_Template',
-			i18nDescription: 'SAML_Logout_Template_Description',
+			i18nDescription: 'SAML_LogoutResponse_Template_Description',
 			multiline: true,
 		});
 

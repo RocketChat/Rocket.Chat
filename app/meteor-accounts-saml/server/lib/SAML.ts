@@ -134,6 +134,7 @@ export class SAML {
 					const { response } = serviceProvider.generateLogoutResponse({
 						nameID: result.nameID || '',
 						sessionIndex: result.idpSession || '',
+						inResponseToId: result.id || '',
 					});
 
 					serviceProvider.logoutResponseToUrl(response, (err, url) => {
