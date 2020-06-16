@@ -64,7 +64,7 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 	fileStore.insert(file, buffer, (err, result) => {
 		Meteor.setTimeout(function() {
 			Users.setAvatarData(user._id, service, result.etag);
-			Notifications.notifyLogged('updateAvatar', { username: user.username });
+			Notifications.notifyLogged('updateAvatar', { username: user.username, etag: result.etag });
 		}, 500);
 	});
 };

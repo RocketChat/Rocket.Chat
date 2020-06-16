@@ -45,6 +45,7 @@ Meteor.methods({
 		Users.unsetAvatarData(user._id);
 		Notifications.notifyLogged('updateAvatar', {
 			username: user.username,
+			etag: null,
 		});
 	},
 });

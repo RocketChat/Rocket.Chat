@@ -412,7 +412,7 @@ export function syncUserData(user, ldapUser, ldap) {
 				fileStore.insert(file, rs, (err, result) => {
 					Meteor.setTimeout(function() {
 						Users.setAvatarData(user._id, 'ldap', result.etag);
-						Notifications.notifyLogged('updateAvatar', { username: user.username });
+						Notifications.notifyLogged('updateAvatar', { username: user.username, etag: result.etag });
 					}, 500);
 				});
 			});
