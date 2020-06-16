@@ -19,6 +19,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: DEBUG
+        run: |
+          echo "env"
+          echo $GITHUB_HEAD_REF
+          echo "expression"
+          echo ${{ github.head_ref }}
+          echo "github.repository: ${{ github.repository }}"
+          echo "github.repository_owner: ${{ github.repository_owner }}"
+          echo "github.event_name: ${{ github.event_name }}"
+
     - name: Github Info
       run: |
         echo "GITHUB_ACTION: $GITHUB_ACTION"
@@ -254,14 +265,6 @@ jobs:
   build-image-pr:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && env.GITHUB_HEAD_REF == ''
-
-    steps:
-    - name: DEBUG
-      run: |
-        echo "env"
-        echo $GITHUB_HEAD_REF
-        echo "expression"
-        echo ${{ github.head_ref }}
 
     - uses: actions/checkout@v2
 
