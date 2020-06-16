@@ -18,17 +18,17 @@ export class ServerEventsRaw extends BaseRaw {
 	}
 
 	async findLastFailedAttemptByIp(ip: string): Promise<IServerEvent> {
-		return (await this.col.find({
+		return this.findOne({
 			ip,
 			t: IServerEventType.FAILED_LOGIN_ATTEMPT,
-		}, { sort: { ts: -1 }, limit: 1 }).toArray())[0];
+		});
 	}
 
 	async findLastFailedAttemptByUsername(username: string): Promise<IServerEvent> {
-		return (await this.col.find({
+		return this.findOne({
 			'u.username': username,
 			t: IServerEventType.FAILED_LOGIN_ATTEMPT,
-		}, { sort: { ts: -1 }, limit: 1 }).toArray())[0];
+		});
 	}
 
 	async countFailedAttemptsByUsernameSince(username: string, since: Date): Promise<number> {
