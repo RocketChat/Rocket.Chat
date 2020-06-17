@@ -20,17 +20,6 @@ jobs:
 
     steps:
 
-    - name: DEBUG
-      run: |
-        echo "env"
-        echo $GITHUB_HEAD_REF
-        echo "expression"
-        echo ${{ github.head_ref }}
-        echo "github.repository: ${{ github.repository }}"
-        echo "github.repository_owner: ${{ github.repository_owner }}"
-        echo "github.event_name: ${{ github.event_name }}"
-        echo "super secret ${{ secrets.DOCKER_USER }}"
-
     - name: Github Info
       run: |
         echo "GITHUB_ACTION: $GITHUB_ACTION"
@@ -335,6 +324,8 @@ jobs:
     - name: npm install
       if: steps.cache-nodemodules.outputs.cache-hit != 'true'
       run: |
+        [ -z "$DOCKER_USER" ] && exit 0; # prevent running from forks
+
         meteor npm install
 
     # To reduce memory need during actual build, build the packages solely first
@@ -349,7 +340,8 @@ jobs:
 
     - name: Build Rocket.Chat
       run: |
-        [ -z "$DOCKER_USER" ] && exit 0;
+        [ -z "$DOCKER_USER" ] && exit 0; # prevent running from forks
+
         meteor build --server-only --directory /tmp/build-pr
 
     - name: Build Docker image for PRs
@@ -357,7 +349,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VERSION: pr-${{ github.event.number }}
       run: |
-        [ -z "$DOCKER_USER" ] && exit 0;
+        [ -z "$DOCKER_USER" ] && exit 0; # prevent running from forks
 
         cd /tmp/build-pr
 
