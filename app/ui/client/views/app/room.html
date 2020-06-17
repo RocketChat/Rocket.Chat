@@ -1,5 +1,8 @@
 <template name='roomWrapper'>
-	{{> room rid=rid _id=_id }}
+	{{#unless pageChanged }}
+		{{> room rid=rid _id=_id }}
+	{{/unless}}
+
 </template>
 
 <template name="room">
@@ -131,11 +134,9 @@
 									{{/if}}
 								{{/if}}
 
-								{{#unless pageChanged }}
-									{{# with messageContext}}
-										{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
-									{{/with}}
-								{{/unless}}
+								{{# with messageContext}}
+									{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+								{{/with}}
 
 								{{#if hasMoreNext}}
 									<li class="load-more">
