@@ -1,29 +1,30 @@
 import { useLazyRef, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, FunctionComponent } from 'react';
 
-import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
+import { SettingId } from '../../definition/ISetting';
+import { EditableSettingsContext, IEditableSetting } from '../contexts/EditableSettingsContext';
 import { useSettings } from '../contexts/SettingsContext';
 
-function PrivilegedSettingsProvider({ children }) {
-	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection(null));
+const EditableSettingsProvider: FunctionComponent = ({ children }) => {
+	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection<any>(null));
 	const persistedSettings = useSettings();
 
 	useEffect(() => {
-		settingsCollectionRef.current.remove({ _id: { $nin: persistedSettings.map(({ _id }) => _id) } });
+		settingsCollectionRef.current?.remove({ _id: { $nin: persistedSettings.map(({ _id }) => _id) } });
 		persistedSettings.forEach((setting) => {
-			settingsCollectionRef.current.upsert(setting._id, { ...setting });
+			settingsCollectionRef.current?.upsert(setting._id, { ...setting });
 		});
 	}, [persistedSettings, settingsCollectionRef]);
 
 	const findSettingsGroup = useMutableCallback((groupId) => {
-		const group = settingsCollectionRef.current.findOne({ _id: groupId, type: 'group' });
+		const group = settingsCollectionRef.current?.findOne({ _id: groupId, type: 'group' });
 		if (!group) {
 			return null;
 		}
 
-		const editableSettings = settingsCollectionRef.current.find({
+		const editableSettings = settingsCollectionRef.current?.find({
 			group: groupId,
 		}, {
 			sort: {
@@ -31,7 +32,7 @@ function PrivilegedSettingsProvider({ children }) {
 				sorter: 1,
 				i18nLabel: 1,
 			},
-		}).fetch();
+		}).fetch() ?? [];
 
 		return Object.assign(group, {
 			editableSettings,
@@ -48,13 +49,13 @@ function PrivilegedSettingsProvider({ children }) {
 			callback(findSettingsGroup(groupId));
 		});
 
-		return () => {
+		return (): void => {
 			computation.stop();
 		};
 	});
 
 	const findSettingsSection = useMutableCallback((groupId, sectionName) => {
-		const editableSettings = settingsCollectionRef.current.find({
+		const editableSettings = settingsCollectionRef.current?.find({
 			group: groupId,
 			...sectionName
 				? { section: sectionName }
@@ -69,7 +70,7 @@ function PrivilegedSettingsProvider({ children }) {
 				sorter: 1,
 				i18nLabel: 1,
 			},
-		}).fetch();
+		}).fetch() ?? [];
 
 		return {
 			name: sectionName,
@@ -88,13 +89,13 @@ function PrivilegedSettingsProvider({ children }) {
 			callback(findSettingsSection(groupId, sectionName));
 		});
 
-		return () => {
+		return (): void => {
 			computation.stop();
 		};
 	});
 
-	const findEditableSetting = (_id) => {
-		const editableSetting = settingsCollectionRef.current.findOne(_id);
+	const findEditableSetting = (_id: SettingId): IEditableSetting => {
+		const editableSetting = settingsCollectionRef.current?.findOne(_id);
 
 		if (editableSetting.blocked) {
 			return { ...editableSetting, disabled: true };
@@ -109,7 +110,7 @@ function PrivilegedSettingsProvider({ children }) {
 			: editableSetting.enableQuery);
 		return {
 			...editableSetting,
-			disabled: !queries.every((query) => settingsCollectionRef.current.find(query).count() > 0),
+			disabled: !queries.every((query) => (settingsCollectionRef.current?.find(query)?.count() ?? 0) > 0),
 		};
 	};
 
@@ -121,14 +122,18 @@ function PrivilegedSettingsProvider({ children }) {
 			cb(findEditableSetting(_id));
 		});
 
-		return () => {
+		return (): void => {
 			computation.stop();
 		};
 	});
 
 	const dispatchToEditableSettings = useMutableCallback((changes) => {
-		changes.forEach(({ _id, ...data }) => {
-			settingsCollectionRef.current.update(_id, { $set: data });
+		changes.forEach(({ _id, ...data }: Partial<IEditableSetting>) => {
+			if (!_id) {
+				return;
+			}
+
+			settingsCollectionRef.current?.update(_id, { $set: data });
 		});
 		Tracker.flush();
 	});
@@ -151,7 +156,7 @@ function PrivilegedSettingsProvider({ children }) {
 		dispatchToEditableSettings,
 	]);
 
-	return <PrivilegedSettingsContext.Provider children={children} value={contextValue} />;
-}
+	return <EditableSettingsContext.Provider children={children} value={contextValue} />;
+};
 
-export default PrivilegedSettingsProvider;
+export default EditableSettingsProvider;

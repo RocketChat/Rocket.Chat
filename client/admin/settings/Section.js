@@ -4,7 +4,7 @@ import React from 'react';
 import {
 	usePrivilegedSettingsSection,
 	usePrivilegedSettingsSectionActions,
-} from '../../contexts/PrivilegedSettingsContext';
+} from '../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Setting } from './Setting';
 

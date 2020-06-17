@@ -2,7 +2,7 @@ import { Accordion, Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuse
 import React, { useMemo } from 'react';
 
 import Page from '../../components/basic/Page';
-import { usePrivilegedSettingsGroupActions } from '../../contexts/PrivilegedSettingsContext';
+import { usePrivilegedSettingsGroupActions } from '../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Section } from './Section';
 
@@ -24,6 +24,8 @@ export function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescrip
 		event.preventDefault();
 		save();
 	};
+
+	const style = useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), []);
 
 	if (!_id) {
 		return <Page>
@@ -49,7 +51,7 @@ export function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescrip
 		</Page.Header>
 
 		<Page.ScrollableContentWithShadow>
-			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
+			<Box style={style}>
 				{t.has(i18nDescription) && <Box is='p' color='hint' fontScale='p1'>{t(i18nDescription)}</Box>}
 
 				<Accordion className='page-settings'>

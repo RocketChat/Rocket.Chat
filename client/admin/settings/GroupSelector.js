@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { usePrivilegedSettingsGroup } from '../../contexts/PrivilegedSettingsContext';
+import { usePrivilegedSettingsGroup } from '../../contexts/EditableSettingsContext';
 import { AssetsGroupPage } from './groups/AssetsGroupPage';
 import { OAuthGroupPage } from './groups/OAuthGroupPage';
 import { GenericGroupPage } from './groups/GenericGroupPage';
