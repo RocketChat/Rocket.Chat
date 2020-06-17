@@ -5,17 +5,30 @@ import React, { useEffect, useMemo, FunctionComponent } from 'react';
 
 import { SettingId } from '../../definition/ISetting';
 import { EditableSettingsContext, IEditableSetting } from '../contexts/EditableSettingsContext';
-import { useSettings } from '../contexts/SettingsContext';
+import { useSettings, SettingsContextQuery } from '../contexts/SettingsContext';
 
-const EditableSettingsProvider: FunctionComponent = ({ children }) => {
+const defaultQuery: SettingsContextQuery = {};
+
+type EditableSettingsProviderProps = {
+	query: SettingsContextQuery;
+};
+
+const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps> = ({
+	children,
+	query = defaultQuery,
+}) => {
 	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection<any>(null));
-	const persistedSettings = useSettings();
+	const persistedSettings = useSettings(query);
 
 	useEffect(() => {
-		settingsCollectionRef.current?.remove({ _id: { $nin: persistedSettings.map(({ _id }) => _id) } });
-		persistedSettings.forEach((setting) => {
-			settingsCollectionRef.current?.upsert(setting._id, { ...setting });
-		});
+		if (!settingsCollectionRef.current) {
+			return;
+		}
+
+		settingsCollectionRef.current.remove({ _id: { $nin: persistedSettings.map(({ _id }) => _id) } });
+		for (const setting of persistedSettings) {
+			settingsCollectionRef.current.upsert(setting._id, { ...setting });
+		}
 	}, [persistedSettings, settingsCollectionRef]);
 
 	const findSettingsGroup = useMutableCallback((groupId) => {

@@ -1,8 +1,9 @@
 import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/fuselage';
 import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 
 import MarkdownText from '../../components/basic/MarkdownText';
-import { usePrivilegedSetting, usePrivilegedSettingActions } from '../../contexts/EditableSettingsContext';
+import { usePrivilegedSetting, useEditableSettingsDispatch } from '../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
@@ -19,6 +20,7 @@ import { CodeSettingInput } from './inputs/CodeSettingInput';
 import { ActionSettingInput } from './inputs/ActionSettingInput';
 import { AssetSettingInput } from './inputs/AssetSettingInput';
 import { RoomPickSettingInput } from './inputs/RoomPickSettingInput';
+import { useSettingStructure } from '../../contexts/SettingsContext';
 
 export const MemoizedSetting = memo(function MemoizedSetting({
 	type,
@@ -63,26 +65,38 @@ export const MemoizedSetting = memo(function MemoizedSetting({
 });
 
 export function Setting({ settingId, sectionChanged }) {
-	const {
-		value: contextValue,
-		editor: contextEditor,
-		packageEditor,
-		...setting
-	} = usePrivilegedSetting(settingId);
-	const { update, reset } = usePrivilegedSettingActions(settingId);
+	const setting = usePrivilegedSetting(settingId);
+
+	const persistedSetting = useSettingStructure(settingId);
+	const dispatch = useEditableSettingsDispatch();
+
+	const update = useDebouncedCallback(({ value, editor }) => {
+		if (!persistedSetting) {
+			return;
+		}
+
+		dispatch([{
+			_id: persistedSetting._id,
+			...value !== undefined && { value },
+			...editor !== undefined && { editor },
+			changed:
+				JSON.stringify(persistedSetting.value) !== JSON.stringify(value)
+				|| JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor),
+		}]);
+	}, 100, [persistedSetting, dispatch]);
 
 	const t = useTranslation();
 
-	const [value, setValue] = useState(contextValue);
-	const [editor, setEditor] = useState(contextEditor);
+	const [value, setValue] = useState(setting.value);
+	const [editor, setEditor] = useState(setting.editor);
 
 	useEffect(() => {
-		setValue(contextValue);
-	}, [contextValue]);
+		setValue(setting.value);
+	}, [setting.value]);
 
 	useEffect(() => {
-		setEditor(contextEditor);
-	}, [contextEditor]);
+		setEditor(setting.editor);
+	}, [setting.editor]);
 
 	const onChangeValue = useCallback((value) => {
 		setValue(value);
@@ -95,10 +109,13 @@ export function Setting({ settingId, sectionChanged }) {
 	}, [update]);
 
 	const onResetButtonClick = useCallback(() => {
-		setValue(contextValue);
-		setEditor(contextEditor);
-		reset();
-	}, [contextValue, contextEditor, reset]);
+		setValue(setting.value);
+		setEditor(setting.editor);
+		update({
+			value: persistedSetting.packageValue,
+			editor: persistedSetting.packageEditor,
+		});
+	}, [setting.value, setting.editor, update, persistedSetting]);
 
 	const {
 		_id,
@@ -106,6 +123,7 @@ export function Setting({ settingId, sectionChanged }) {
 		disableReset,
 		readonly,
 		type,
+		packageEditor,
 		packageValue,
 		i18nLabel,
 		i18nDescription,
@@ -113,8 +131,8 @@ export function Setting({ settingId, sectionChanged }) {
 	} = setting;
 
 	const label = (i18nLabel && t(i18nLabel)) || (_id || t(_id));
-	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText content={t(i18nDescription)} />, [i18nDescription]);
-	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t(alert) }} />, [alert]);
+	const hint = useMemo(() => t.has(i18nDescription) && <MarkdownText content={t(i18nDescription)} />, [i18nDescription, t]);
+	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t(alert) }} />, [alert, t]);
 	const hasResetButton = !disableReset && !readonly && type !== 'asset' && (JSON.stringify(packageEditor) !== JSON.stringify(editor) || JSON.stringify(value) !== JSON.stringify(packageValue)) && !disabled;
 
 	return <MemoizedSetting

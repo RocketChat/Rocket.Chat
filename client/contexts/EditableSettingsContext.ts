@@ -1,4 +1,4 @@
-import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -40,7 +40,7 @@ type PrivilegedSettingsContextValue = {
 	subscribeToSettingsSection: (groupId: GroupId, sectionName: SectionName, cb: (sectionDescriptor: SectionDescriptor) => void) => (() => void);
 	getEditableSetting: (_id: SettingId) => IEditableSetting | null;
 	subscribeToEditableSetting: (_id: SettingId, cb: (setting: IEditableSetting) => void) => (() => void);
-	dispatchToEditableSettings: (changes: any[]) => void;
+	dispatchToEditableSettings: (changes: Partial<IEditableSetting>[]) => void;
 };
 
 export const EditableSettingsContext = createContext<PrivilegedSettingsContextValue>({
@@ -52,6 +52,9 @@ export const EditableSettingsContext = createContext<PrivilegedSettingsContextVa
 	subscribeToEditableSetting: () => (): void => undefined,
 	dispatchToEditableSettings: () => undefined,
 });
+
+export const useEditableSettingsDispatch = (): ((changes: Partial<IEditableSetting>[]) => void) =>
+	useContext(EditableSettingsContext).dispatchToEditableSettings;
 
 export const usePrivilegedSettingsGroup = (groupId: GroupId): GroupDescriptor | null => {
 	const { getSettingsGroup, subscribeToSettingsGroup } = useContext(EditableSettingsContext);
@@ -178,46 +181,4 @@ export const usePrivilegedSetting = (_id: SettingId): IEditableSetting | null =>
 	}), [getEditableSetting, subscribeToEditableSetting, _id]);
 
 	return useSubscription(subscription);
-};
-
-export const usePrivilegedSettingActions = (_id: SettingId): {
-	update: () => void;
-	reset: () => void;
-} => {
-	const { querySetting } = useContext(SettingsContext);
-	const { dispatchToEditableSettings } = useContext(EditableSettingsContext);
-
-	const update: (() => void) = useDebouncedCallback(({ value, editor }) => {
-		const persistedSetting = querySetting(_id).getCurrentValue();
-		if (!persistedSetting) {
-			return;
-		}
-
-		dispatchToEditableSettings([{
-			_id,
-			...value !== undefined && { value },
-			...editor !== undefined && { editor },
-			changed:
-				JSON.stringify(persistedSetting.value) !== JSON.stringify(value)
-				|| JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor),
-		}]);
-	}, 100, [querySetting, _id, dispatchToEditableSettings]);
-
-	const reset: (() => void) = useDebouncedCallback(() => {
-		const persistedSetting = querySetting(_id).getCurrentValue();
-		if (!persistedSetting) {
-			return;
-		}
-
-		dispatchToEditableSettings([{
-			_id: persistedSetting._id,
-			value: persistedSetting.packageValue,
-			editor: persistedSetting.packageEditor,
-			changed:
-				JSON.stringify(persistedSetting.packageValue) !== JSON.stringify(persistedSetting.value)
-				|| JSON.stringify(persistedSetting.packageEditor) !== JSON.stringify(persistedSetting.editor),
-		}]);
-	}, 100, [querySetting, _id, dispatchToEditableSettings]);
-
-	return { update, reset };
 };
