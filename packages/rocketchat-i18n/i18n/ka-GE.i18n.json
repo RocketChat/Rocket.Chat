@@ -362,7 +362,6 @@
   "API_Upper_Count_Limit": "ჩანაწერების მაქსიმალური რაოდენობა",
   "API_Upper_Count_Limit_Description": "რა არის ჩანაწერების მაქსიმალური რაოდენობა, რომელიც REST API-ის საშუალებით გაიცემა (როცა არ არის ლიმიტი)?",
   "API_Use_REST_For_DDP_Calls": "Meteor calls-სთვის გამოიყენეთ REST ვებ სოკეტის ნაცვლად",
-  "API_Use_REST_For_DDP_Calls_Alert": "ეს არის ექსპერიმენტული და დროებითი ოფცია. ეს აიძულებს ვებ – კლიენტს და მობილური აპლიკაციას გამოიყენოს REST მოთხოვნები ვებ სოკეტის ნაცვლად Meteor method calls-ებისთვის",
   "API_User_Limit": "მომხმარებლების რაოდენობის ლიმიტი არხზე დამატებისას",
   "API_Wordpress_URL": "Word Press-ის URL",
   "Apiai_Key": "Api.ai გასაღები",

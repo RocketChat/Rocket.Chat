@@ -361,7 +361,6 @@
   "API_Upper_Count_Limit": "最大記錄數量",
   "API_Upper_Count_Limit_Description": "REST API應該返回的最大記錄數是多少（何時不是無限的）？",
   "API_Use_REST_For_DDP_Calls": "使用 REST 代替 websocket 進行 Meteor 呼叫",
-  "API_Use_REST_For_DDP_Calls_Alert": "這是一項實驗性和臨時性功能。它強制網頁客戶端和手機應用程式使用 REST 請求，而不是將 Websocket 用於 Meteor 方式呼叫。",
   "API_User_Limit": "添加所有使用者到Channel的數量上限",
   "API_Wordpress_URL": "WordPress網址",
   "Apiai_Key": "Api.ai Key",

@@ -367,7 +367,6 @@
   "API_Upper_Count_Limit": "最大レコード量",
   "API_Upper_Count_Limit_Description": "REST APIが返すレコードの最大数は何ですか (無制限でない場合) 。",
   "API_Use_REST_For_DDP_Calls": "Meteor呼び出しにWebSocketではなくRESTを使用する",
-  "API_Use_REST_For_DDP_Calls_Alert": "これは実験的で一時的な機能です。 Meteorメソッド呼び出しにWebSocketを使用する代わりに、WebクライアントとモバイルアプリにRESTリクエストを使用するように強制します。",
   "API_User_Limit": "Channelに全ユーザーを追加するためのユーザー制限",
   "API_Wordpress_URL": "WordPress URL",
   "Apiai_Key": "Api.aiキー",
