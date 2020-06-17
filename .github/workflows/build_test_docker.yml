@@ -3,7 +3,7 @@ name: Build Test Docker Image
 on:
   pull_request:
     branches: '**'
-    types: [labeled]
+    types: [opened,synchronize,reopened,labeled]
 
 env:
   CI: true
@@ -13,7 +13,7 @@ env:
 jobs:
   build-image-pr:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'docker image')
+    if: contains(github.event.pull_request.labels.*.name, 'docker image')
 
     steps:
     - uses: actions/checkout@v2
