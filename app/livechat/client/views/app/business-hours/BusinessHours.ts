@@ -1,11 +1,13 @@
-export interface IBusinessHour {
-	getView(): string;
-}
+import { Meteor } from 'meteor/meteor';
+
+import { IBusinessHour } from './IBusinessHour';
+import { SingleBusinessHour } from './Single';
+import { callbacks } from '../../../../../callbacks/client';
 
 class BusinessHoursManager {
 	private businessHour: IBusinessHour;
 
-	constructor(businessHour: IBusinessHour) {
+	onStartBusinessHourManager(businessHour: IBusinessHour): void {
 		this.registerBusinessHour(businessHour);
 	}
 
@@ -18,10 +20,9 @@ class BusinessHoursManager {
 	}
 }
 
-class Single implements IBusinessHour {
-	getView(): string {
-		return 'livechatBusinessHoursForm';
-	}
-}
+export const businessHourManager = new BusinessHoursManager();
 
-export const businessHourManager = new BusinessHoursManager(new Single());
+Meteor.startup(() => {
+	const { BusinessHourClass } = callbacks.run('on-business-hour-start', { BusinessHourClass: SingleBusinessHour });
+	businessHourManager.onStartBusinessHourManager(new BusinessHourClass() as IBusinessHour);
+});

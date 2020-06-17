@@ -22,11 +22,14 @@ export class BusinessHourManager {
 
 	private cronJobsCache: string[] = [];
 
-	constructor(businessHour: IBusinessHour, cronJobs: ICronJobs) {
-		this.cronJobs = cronJobs;
-		this.registerBusinessHourMethod(businessHour);
+	constructor() {
 		this.openWorkHoursCallback = this.openWorkHoursCallback.bind(this);
 		this.closeWorkHoursCallback = this.closeWorkHoursCallback.bind(this);
+	}
+
+	onStartBusinessHourManager(businessHour: IBusinessHour, cronJobs: ICronJobs): void {
+		this.cronJobs = cronJobs;
+		this.registerBusinessHourMethod(businessHour);
 	}
 
 	registerBusinessHourMethod(businessHour: IBusinessHour): void {
@@ -85,19 +88,19 @@ export class BusinessHourManager {
 	}
 
 	async removeBusinessHoursFromAgents(): Promise<void> {
-		this.businessHour.removeBusinessHoursFromUsers();
+		return this.businessHour.removeBusinessHoursFromUsers();
 	}
 
 	async openBusinessHoursIfNeeded(): Promise<void> {
-		this.businessHour.openBusinessHoursIfNeeded();
+		return this.businessHour.openBusinessHoursIfNeeded();
 	}
 
 	private async openWorkHoursCallback(day: string, hour: string, utc: string): Promise<void> {
-		this.businessHour.openBusinessHoursByDayHourAndUTC(day, hour, utc);
+		return this.businessHour.openBusinessHoursByDayHourAndUTC(day, hour, utc);
 	}
 
 	private async closeWorkHoursCallback(day: string, hour: string, utc: string): Promise<void> {
-		this.businessHour.closeBusinessHoursByDayAndHour(day, hour, utc);
+		return this.businessHour.closeBusinessHoursByDayAndHour(day, hour, utc);
 	}
 
 	private addToCache(jobName: string): void {

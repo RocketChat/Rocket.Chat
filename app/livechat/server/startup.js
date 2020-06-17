@@ -98,12 +98,12 @@ Meteor.startup(() => {
 		monitor.start();
 	});
 
-	settings.get('Livechat_enable_business_hours', (key, value) => {
+	settings.get('Livechat_enable_business_hours', async (key, value) => {
 		if (value) {
-			Promise.await(businessHourManager.openBusinessHoursIfNeeded());
-			return Promise.await(businessHourManager.createCronJobsForWorkHours());
+			await businessHourManager.openBusinessHoursIfNeeded();
+			return businessHourManager.createCronJobsForWorkHours();
 		}
-		businessHourManager.removeBusinessHoursFromAgents();
+		await businessHourManager.removeBusinessHoursFromAgents();
 		businessHourManager.removeCronJobs();
 	});
 });

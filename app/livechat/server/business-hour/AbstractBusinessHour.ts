@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
 import {
 	IWorkHoursForCreateCronJobs, LivechatBusinessHoursRaw,
 } from '../../../models/server/raw/LivechatBusinessHours';
@@ -19,18 +19,12 @@ export interface IBusinessHour {
 }
 
 export abstract class AbstractBusinessHour {
-	protected LivechatBusinessHourRepository: LivechatBusinessHoursRaw = LivechatBusinessHours;
+	protected BusinessHourRepository: LivechatBusinessHoursRaw = LivechatBusinessHours;
 
 	protected UsersRepository: UsersRaw = Users;
 
 	async findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
-		return this.LivechatBusinessHourRepository.findHoursToScheduleJobs();
-	}
-
-	async closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void> {
-		const businessHoursIds = await this.LivechatBusinessHourRepository.findActiveBusinessHoursIdsToClose(LivechatBussinessHourTypes.SINGLE, day, hour, utc);
-		await this.UsersRepository.closeAgentsBusinessHours(businessHoursIds);
-		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+		return this.BusinessHourRepository.findHoursToScheduleJobs();
 	}
 
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
@@ -52,7 +46,7 @@ export abstract class AbstractBusinessHour {
 	}
 
 	private async getBusinessHoursThatMustBeOpen(day: string, currentTime: any): Promise<string[]> {
-		const activeBusinessHours = await this.LivechatBusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
+		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
 			fields: {
 				workHours: 1,
 				timezone: 1,
