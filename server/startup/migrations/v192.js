@@ -1,50 +1,28 @@
-import moment from 'moment';
-import { ObjectId } from 'mongodb';
-import { Mongo } from 'meteor/mongo';
-
 import { Migrations } from '../../../app/migrations/server';
-import { Permissions, Settings } from '../../../app/models/server';
-import { LivechatBusinessHours } from '../../../app/models/server/raw';
-import { LivechatBussinessHourTypes } from '../../../definition/ILivechatBusinessHour';
-
-const migrateCollection = () => {
-	const LivechatOfficeHour = new Mongo.Collection('rocketchat_livechat_office_hour');
-	const officeHours = Promise.await(LivechatOfficeHour.rawCollection().find().toArray());
-	const businessHour = {
-		name: '',
-		active: true,
-		type: LivechatBussinessHourTypes.SINGLE,
-		ts: new Date(),
-		workHours: officeHours.map((officeHour) => ({
-			day: officeHour.day,
-			start: officeHour.start,
-			finish: officeHour.finish,
-			open: officeHour.open,
-		})),
-		timezone: {
-			name: '',
-			utc: moment().utcOffset() / 60,
-		},
-	};
-	if (LivechatBusinessHours.find({ type: LivechatBussinessHourTypes.SINGLE }).count() === 0) {
-		businessHour._id = new ObjectId().toHexString();
-		LivechatBusinessHours.insertOne(businessHour);
-	} else {
-		LivechatBusinessHours.update({ type: LivechatBussinessHourTypes.SINGLE }, businessHour);
-	}
-	return LivechatOfficeHour.rawCollection().drop();
-};
+import { Messages, Rooms } from '../../../app/models/server';
+import { trash } from '../../../app/models/server/models/_BaseDb';
 
 Migrations.add({
 	version: 192,
 	up() {
-		Settings.remove({ _id: 'Livechat_enable_office_hours' });
-		Settings.remove({ _id: 'Livechat_allow_online_agents_outside_office_hours' });
-		const permission = Permissions.findOneById('view-livechat-officeHours');
-		if (permission) {
-			Permissions.upsert({ _id: 'view-livechat-business-hours' }, { $set: { roles: permission.roles } });
-			Permissions.remove({ _id: 'view-livechat-officeHours' });
+		try {
+			trash._dropIndex({ collection: 1 });
+		} catch {
+			//
 		}
-		Promise.await(migrateCollection());
+
+		Messages.tryDropIndex({ rid: 1, ts: 1 });
+
+		Rooms.tryDropIndex({ 'tokenpass.tokens.token': 1 });
+		Rooms.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
+
+		Rooms.tryDropIndex({ default: 1 });
+		Rooms.tryEnsureIndex({ default: 1 }, { sparse: true });
+
+		Rooms.tryDropIndex({ featured: 1 });
+		Rooms.tryEnsureIndex({ featured: 1 }, { sparse: true });
+
+		Rooms.tryDropIndex({ muted: 1 });
+		Rooms.tryEnsureIndex({ muted: 1 }, { sparse: true });
 	},
 });
