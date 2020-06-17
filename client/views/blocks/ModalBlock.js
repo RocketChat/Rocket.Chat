@@ -77,7 +77,7 @@ export function ModalBlock({
 	// save focus to restore after close
 	const previousFocus = useMemo(() => document.activeElement, []);
 	// restore the focus after the component unmount
-	useEffect(() => () => previousFocus && previousFocus.focus(), []);
+	useEffect(() => () => previousFocus && previousFocus.focus(), [previousFocus]);
 	// Handle Tab, Shift + Tab, Enter and Escape
 	const handleKeyDown = useCallback((event) => {
 		if (event.keyCode === 13) { // ENTER
@@ -115,7 +115,7 @@ export function ModalBlock({
 				event.preventDefault();
 			}
 		}
-	}, [onSubmit]);
+	}, [onClose, onSubmit]);
 	// Clean the events
 	useEffect(() => {
 		const element = document.querySelector('.rc-modal-wrapper');
@@ -143,7 +143,7 @@ export function ModalBlock({
 			document.removeEventListener('keydown', ignoreIfnotContains);
 			element.removeEventListener('click', close);
 		};
-	}, handleKeyDown);
+	}, [handleKeyDown, onClose]);
 
 	return (
 		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>

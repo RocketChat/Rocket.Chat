@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useCallback } from 'react';
 
 import { capitalize } from '../helpers/capitalize';

@@ -47,10 +47,10 @@ function ImportHistoryPage() {
 		};
 
 		loadData();
-	}, []);
+	}, [dispatchToastMessage, getCurrentImportOperation, getLatestImportOperations, setCurrentOperation, setLatestOperations, setLoading, t]);
 
 	const hasAnySuccessfulSlackImport = useMemo(() =>
-		latestOperations?.some(({ importerKey, status }) => importerKey === 'slack' && status === ProgressStep.DONE), [latestOperations]);
+		latestOperations?.some(({ importerKey, status }) => importerKey === 'slack' && status === ProgressStep.DONE), [latestOperations?.some]);
 
 	const handleNewImportClick = () => {
 		newImportRoute.push();

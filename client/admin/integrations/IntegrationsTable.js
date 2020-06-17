@@ -19,24 +19,24 @@ const FilterByTypeAndText = React.memo(({ setFilter, ...props }) => {
 
 	useEffect(() => {
 		setFilter({ text });
-	}, [text]);
+	}, [setFilter, text]);
 
 	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 		<TextInput placeholder={t('Search_Integrations')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 });
 
-const useQuery = (params, sort) => useMemo(() => ({
-	query: JSON.stringify({ name: { $regex: params.text || '', $options: 'i' }, type: params.type }),
-	sort: JSON.stringify({ [sort[0]]: sort[1] === 'asc' ? 1 : -1 }),
-	...params.itemsPerPage && { count: params.itemsPerPage },
-	...params.current && { offset: params.current },
-}), [JSON.stringify(params), JSON.stringify(sort)]);
+const useQuery = ({ text, type, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
+	query: JSON.stringify({ name: { $regex: text || '', $options: 'i' }, type }),
+	sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
+	...itemsPerPage && { count: itemsPerPage },
+	...current && { offset: current },
+}), [column, current, direction, itemsPerPage, text, type]);
 
 const useResizeInlineBreakpoint = (sizes = [], debounceDelay = 0) => {
 	const { ref, borderBoxSize } = useResizeObserver({ debounceDelay });
 	const inlineSize = borderBoxSize ? borderBoxSize.inlineSize : 0;
-	sizes = useMemo(() => sizes.map((current) => (inlineSize ? inlineSize > current : true)), [inlineSize]);
+	sizes = useMemo(() => sizes.map((current) => (inlineSize ? inlineSize > current : true)), [inlineSize, sizes]);
 	return [ref, ...sizes];
 };
 
@@ -56,11 +56,11 @@ export function IntegrationsTable({ type }) {
 
 	const router = useRoute('admin-integrations');
 
-	const onClick = (_id, type) => () => router.push({
+	const onClick = useCallback((_id, type) => () => router.push({
 		context: 'edit',
 		type: type === 'webhook-incoming' ? 'incoming' : 'outgoing',
 		id: _id,
-	});
+	}), [router]);
 
 	const onHeaderClick = useCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -78,10 +78,10 @@ export function IntegrationsTable({ type }) {
 		<Th key={'_createdBy'} direction={sort[1]} active={sort[0] === '_createdBy'} onClick={onHeaderClick} sort='_createdBy'>{t('Created_by')}</Th>,
 		isBig && <Th key={'_createdAt'} direction={sort[1]} active={sort[0] === '_createdAt'} onClick={onHeaderClick} sort='_createdAt'>{t('Created_at')}</Th>,
 		<Th key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Post_as')}</Th>,
-	].filter(Boolean), [sort, isBig]);
+	].filter(Boolean), [sort, onHeaderClick, isBig, t]);
 
-	const renderRow = useCallback(({ name, _id, type, username, _createdAt, _createdBy: { username: createdBy }, channel = [] }) => {
-		const handler = useMemo(() => onClick(_id, type), []);
+	const renderRow = useCallback(function IntegrationRow({ name, _id, type, username, _createdAt, _createdBy: { username: createdBy }, channel = [] }) {
+		const handler = useMemo(() => onClick(_id, type), [_id, type]);
 		return <Table.Row key={_id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action>
 			<Table.Cell style={style} color='default' fontScale='p2'>{name}</Table.Cell>
 			<Table.Cell style={style}>{channel.join(', ')}</Table.Cell>
@@ -89,7 +89,7 @@ export function IntegrationsTable({ type }) {
 			{isBig && <Table.Cell style={style}>{formatDateAndTime(_createdAt)}</Table.Cell>}
 			<Table.Cell style={style}>{username}</Table.Cell>
 		</Table.Row>;
-	}, []);
+	}, [formatDateAndTime, isBig, onClick]);
 
 	return <GenericTable ref={ref} FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data && data.integrations} total={data && data.total} setParams={setParams} params={params} />;
 }
