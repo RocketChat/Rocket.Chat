@@ -46,14 +46,14 @@ API.v1.addRoute('livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId',
 			roomId: String,
 		});
 		const { roomId, visitorId } = this.urlParams;
-		const { searchText: text, closedChatsOnly, servedChatsOnly } = this.queryParams;
+		const { searchText, closedChatsOnly, servedChatsOnly } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 		const history = Promise.await(findChatHistory({
 			userId: this.userId,
 			roomId,
 			visitorId,
-			text,
+			searchText,
 			closedChatsOnly,
 			servedChatsOnly,
 			pagination: {

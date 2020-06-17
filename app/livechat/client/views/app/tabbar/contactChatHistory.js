@@ -17,14 +17,6 @@ Template.contactChatHistory.helpers({
 	history() {
 		return Template.instance().history.get();
 	},
-	title() {
-		let title = moment(this.ts).format('L LTS');
-
-		if (this.label) {
-			title += ` - ${ this.label }`;
-		}
-		return title;
-	},
 	isLoading() {
 		return Template.instance().isLoading.get();
 	},
@@ -43,7 +35,6 @@ Template.contactChatHistory.helpers({
 Template.contactChatHistory.onCreated(async function() {
 	const currentData = Template.currentData();
 	this.offset = new ReactiveVar(0);
-	this.total = new ReactiveVar(0);
 	this.visitorId = new ReactiveVar();
 	this.history = new ReactiveVar([]);
 	this.searchTerm = new ReactiveVar();
@@ -64,7 +55,7 @@ Template.contactChatHistory.onCreated(async function() {
 		});
 	};
 
-	this.loadHistory = async () => {
+	this.autorun(async () => {
 		if (!this.visitorId.get() || !currentData || !currentData.rid) {
 			return;
 		}
@@ -77,19 +68,18 @@ Template.contactChatHistory.onCreated(async function() {
 		if (searchTerm) {
 			baseUrl += `&searchText=${ searchTerm }`;
 		}
+
 		const { history, total } = await APIClient.v1.get(baseUrl);
 		this.history.set(history);
 
-		this.total.set(total);
 		this.hasMore.set(total > offset);
 		this.isLoading.set(false);
-	};
+	});
 
 	this.autorun(async () => {
 		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ currentData.rid }`);
 		if (room?.v) {
 			this.visitorId.set(room.v._id);
-			this.loadHistory();
 		}
 	});
 });
@@ -116,4 +106,18 @@ Template.contactChatHistory.events({
 
 		instance.showChatHistoryMessages.set(true);
 	},
+	'keyup #chat-search': _.debounce(function(e, instance) {
+		if (e.keyCode === 13) {
+			return e.preventDefault();
+		}
+
+		const { value } = e.target;
+
+		if (e.keyCode === 40 || e.keyCode === 38) {
+			return e.preventDefault();
+		}
+
+		instance.offset.set(0);
+		instance.searchTerm.set(value);
+	}, 300),
 });

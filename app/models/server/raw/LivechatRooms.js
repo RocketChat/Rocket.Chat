@@ -837,7 +837,33 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findRoomsWithCriteria({ agents, roomName, departmentId, open, served, createdAt, closedAt, tags, customFields, visitorId, options = {} }) {
+	findRoomIdsByVisitorIdAndMessage({ visitorId, searchText, open, served, options = {} }) {
+		const match = {
+			$match: {
+				'v._id': visitorId,
+				...open !== undefined && { open: { $exists: open } },
+				...served !== undefined && { servedBy: { $exists: served } },
+			},
+		};
+		const lookup = { $lookup: { from: 'rocketchat_message', localField: '_id', foreignField: 'rid', as: 'messages' } };
+		const unwind = { $unwind: { path: '$messages' } };
+		const matchMessages = { $match: { 'messages.msg': { $regex: `.*${ searchText }.*` } } };
+		const group = { $group: { _id: '$_id' } };
+		const sort = { $sort: options.sort || { ts: -1 } };
+		const params = [match, lookup, unwind, matchMessages, group, sort];
+
+		if (options.offset) {
+			params.push({ $skip: options.offset });
+		}
+
+		if (options.count) {
+			params.push({ $limit: options.count });
+		}
+
+		return this.col.aggregate(params);
+	}
+
+	findRoomsWithCriteria({ agents, roomName, departmentId, open, served, createdAt, closedAt, tags, customFields, visitorId, roomIds, options = {} }) {
 		const query = {
 			t: 'l',
 		};
@@ -883,6 +909,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (customFields) {
 			query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
 		}
+
+		if (roomIds) {
+			query._id = { $in: roomIds };
+		}
+		console.log(query);
 		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
 	}
 
