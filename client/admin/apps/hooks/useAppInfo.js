@@ -30,8 +30,7 @@ const getSettings = async (appId, installed) => {
 const getApis = async (appId, installed) => {
 	if (!installed) { return {}; }
 	try {
-		const apis = await Apps.getAppApis(appId);
-		return apis;
+		return await Apps.getAppApis(appId);
 	} catch (e) {
 		handleAPIError(e);
 	}
