@@ -4,14 +4,14 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
+import { SettingType } from '../../../definition/ISetting';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { useSettings } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
+import SettingsProvider from '../../providers/SettingsProvider';
 import { sidebarItems } from '../sidebarItems';
-import PrivilegedSettingsProvider from '../PrivilegedSettingsProvider';
-import { useSettings } from '../../contexts/PrivilegedSettingsContext';
-import { SettingType } from '../../../definition/ISetting';
 
 const SidebarItem = React.memo(({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
@@ -180,10 +180,10 @@ export default React.memo(function AdminSidebar() {
 		if (!currentPath.startsWith('/admin/')) {
 			SideNav.closeFlex();
 		}
-	}, [currentRoute]);
+	}, [currentRoute, currentPath]);
 
 	// TODO: uplift this provider
-	return <PrivilegedSettingsProvider>
+	return <SettingsProvider privileged>
 		<Box display='flex' flexDirection='column' h='100vh'>
 			<Box is='header' pb='x16' pi='x24' display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 				<Box color='neutral-800' fontSize='p1' fontWeight='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{t('Administration')}</Box>
@@ -196,5 +196,5 @@ export default React.memo(function AdminSidebar() {
 				</Box>
 			</Scrollable>
 		</Box>
-	</PrivilegedSettingsProvider>;
+	</SettingsProvider>;
 });

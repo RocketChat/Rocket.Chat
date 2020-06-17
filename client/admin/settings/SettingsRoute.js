@@ -1,12 +1,13 @@
 import React from 'react';
 
-import { useIsPrivilegedSettingsContextAuthorized } from '../../contexts/PrivilegedSettingsContext';
 import { useRouteParameter } from '../../contexts/RouterContext';
-import { GroupSelector } from './GroupSelector';
+import { useIsPrivilegedSettingsContext } from '../../contexts/SettingsContext';
 import NotAuthorizedPage from '../NotAuthorizedPage';
+import PrivilegedSettingsProvider from '../PrivilegedSettingsProvider';
+import { GroupSelector } from './GroupSelector';
 
 export function SettingsRoute() {
-	const hasPermission = useIsPrivilegedSettingsContextAuthorized();
+	const hasPermission = useIsPrivilegedSettingsContext();
 
 	const groupId = useRouteParameter('group');
 
@@ -14,7 +15,9 @@ export function SettingsRoute() {
 		return <NotAuthorizedPage />;
 	}
 
-	return <GroupSelector groupId={groupId} />;
+	return <PrivilegedSettingsProvider>
+		<GroupSelector groupId={groupId} />
+	</PrivilegedSettingsProvider>;
 }
 
 export default SettingsRoute;

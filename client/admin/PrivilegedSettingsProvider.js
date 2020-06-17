@@ -1,92 +1,21 @@
 import { useLazyRef, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext';
-import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
-import { useReactiveSubscriptionFactory } from '../hooks/useReactiveSubscriptionFactory';
-import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
-import { useMethod } from '../contexts/ServerContext';
+import { useSettings } from '../contexts/SettingsContext';
 
-function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
-	const [isLoading, setLoading] = useState(() => Tracker.nonreactive(() => !cachedCollection.ready.get()));
-
-	useEffect(() => {
-		let mounted = true;
-
-		const initialize = async () => {
-			if (!Tracker.nonreactive(() => cachedCollection.ready.get())) {
-				await cachedCollection.init();
-			}
-
-			if (!mounted) {
-				return;
-			}
-
-			setLoading(false);
-		};
-
-		initialize();
-
-		return () => {
-			mounted = false;
-		};
-	}, [cachedCollection]);
-
-	const querySetting = useReactiveSubscriptionFactory(
-		useCallback(
-			(_id) => ({ ...cachedCollection.collection.findOne(_id) }),
-			[cachedCollection],
-		),
-	);
-
-	const querySettings = useReactiveSubscriptionFactory(
-		useCallback(
-			({ _id, group, section } = {}) => cachedCollection.collection.find({
-				..._id && { _id: { $in: _id } },
-				...group && { group },
-				...section
-					? { section }
-					: {
-						$or: [
-							{ section: { $exists: false } },
-							{ section: null },
-						],
-					},
-			}, {
-				sort: {
-					section: 1,
-					sorter: 1,
-					i18nLabel: 1,
-				},
-			}).fetch(),
-			[cachedCollection],
-		),
-	);
-
-	const saveSettings = useMethod('saveSettings');
-	const dispatch = useCallback((changes) => saveSettings(changes), [saveSettings]);
-
+function PrivilegedSettingsProvider({ children }) {
 	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection(null));
+	const persistedSettings = useSettings();
 
 	useEffect(() => {
-		if (isLoading) {
-			return;
-		}
-
-		const query = cachedCollection.collection.find();
-
-		const syncCollectionsHandle = query.observe({
-			added: (setting) => settingsCollectionRef.current.insert({ ...setting }),
-			changed: (setting) => settingsCollectionRef.current.update(setting._id, { ...setting }),
-			removed: (setting) => settingsCollectionRef.current.remove(setting._id),
+		settingsCollectionRef.current.remove({ _id: { $nin: persistedSettings.map(({ _id }) => _id) } });
+		persistedSettings.forEach((setting) => {
+			settingsCollectionRef.current.upsert(setting._id, { ...setting });
 		});
-
-		return () => {
-			syncCollectionsHandle.stop();
-		};
-	}, [isLoading, cachedCollection, settingsCollectionRef]);
+	}, [persistedSettings, settingsCollectionRef]);
 
 	const findSettingsGroup = useMutableCallback((groupId) => {
 		const group = settingsCollectionRef.current.findOne({ _id: groupId, type: 'group' });
@@ -205,11 +134,6 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	});
 
 	const contextValue = useMemo(() => ({
-		isAuthorized: true,
-		isLoading,
-		querySetting,
-		querySettings,
-		dispatch,
 		getSettingsGroup,
 		subscribeToSettingsGroup,
 		getSettingsSection,
@@ -218,10 +142,6 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		subscribeToEditableSetting,
 		dispatchToEditableSettings,
 	}), [
-		isLoading,
-		querySetting,
-		querySettings,
-		dispatch,
 		getSettingsGroup,
 		subscribeToSettingsGroup,
 		getSettingsSection,
@@ -232,23 +152,6 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	]);
 
 	return <PrivilegedSettingsContext.Provider children={children} value={contextValue} />;
-}
-
-function PrivilegedSettingsProvider({ children }) {
-	const hasPermission = useAtLeastOnePermission([
-		'view-privileged-setting',
-		'edit-privileged-setting',
-		'manage-selected-settings',
-	]);
-
-	if (!hasPermission) {
-		return children;
-	}
-
-	return <AuthorizedPrivilegedSettingsProvider
-		cachedCollection={PrivateSettingsCachedCollection.get()}
-		children={children}
-	/>;
 }
 
 export default PrivilegedSettingsProvider;

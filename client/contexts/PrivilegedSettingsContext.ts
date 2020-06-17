@@ -1,6 +1,6 @@
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { createContext, useCallback, useContext, useMemo } from 'react';
-import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
+import { createContext, useContext, useMemo } from 'react';
+import { useSubscription } from 'use-subscription';
 
 import {
 	ISetting,
@@ -11,6 +11,7 @@ import {
 import { useToastMessageDispatch } from './ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from './TranslationContext';
 import { useUser } from './UserContext';
+import { SettingsContext } from './SettingsContext';
 
 interface IEditableSetting extends ISetting {
 	disabled: boolean;
@@ -31,19 +32,8 @@ type GroupDescriptor = IEditableSetting & {
 	changed: boolean;
 };
 
-interface ISettingsQuery {
-	readonly _id?: SettingId[];
-	readonly group?: GroupId;
-	readonly section?: SectionName;
-}
-
 // TODO: split editing into another context
 type PrivilegedSettingsContextValue = {
-	isAuthorized: boolean;
-	isLoading: boolean;
-	querySetting: (_id: SettingId) => Subscription<ISetting | undefined>;
-	querySettings: (query: ISettingsQuery) => Subscription<ISetting[]>;
-	dispatch: (changes: Partial<ISetting>[]) => Promise<void>;
 	getSettingsGroup: (groupId: GroupId) => GroupDescriptor | null;
 	subscribeToSettingsGroup: (groupId: GroupId, cb: (groupDescriptor: GroupDescriptor) => void) => (() => void);
 	getSettingsSection: (groupId: GroupId, sectionName: SectionName) => SectionDescriptor | null;
@@ -54,17 +44,6 @@ type PrivilegedSettingsContextValue = {
 };
 
 export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContextValue>({
-	isAuthorized: false,
-	isLoading: false,
-	querySetting: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
-	querySettings: () => ({
-		getCurrentValue: (): ISetting[] => [],
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
-	dispatch: async () => undefined,
 	getSettingsGroup: () => null,
 	subscribeToSettingsGroup: () => (): void => undefined,
 	getSettingsSection: () => null,
@@ -73,35 +52,6 @@ export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContext
 	subscribeToEditableSetting: () => (): void => undefined,
 	dispatchToEditableSettings: () => undefined,
 });
-
-export const useIsPrivilegedSettingsContextAuthorized = (): boolean =>
-	useContext(PrivilegedSettingsContext).isAuthorized;
-
-export const useIsSettingsContextLoading = (): boolean =>
-	useContext(PrivilegedSettingsContext).isLoading;
-
-export const useSettingStructure = (_id: SettingId): ISetting | undefined => {
-	const { querySetting } = useContext(PrivilegedSettingsContext);
-	const subscription = useMemo(() => querySetting(_id), [querySetting, _id]);
-	return useSubscription(subscription);
-};
-
-export const useSetting = (_id: SettingId): unknown | undefined =>
-	useSettingStructure(_id)?.value;
-
-export const useSettings = (query?: ISettingsQuery): ISetting[] => {
-	const { querySettings } = useContext(PrivilegedSettingsContext);
-	const subscription = useMemo(() => querySettings(query ?? {}), [querySettings, query]);
-	return useSubscription(subscription);
-};
-
-export const useSettingsDispatch = (): ((changes: Partial<ISetting>[]) => Promise<void>) =>
-	useContext(PrivilegedSettingsContext).dispatch;
-
-export const useSettingSetValue = <T>(_id: SettingId): ((value: T) => Promise<void>) => {
-	const dispatch = useSettingsDispatch();
-	return useCallback((value: T) => dispatch([{ _id, value }]), [dispatch, _id]);
-};
 
 export const usePrivilegedSettingsGroup = (groupId: GroupId): GroupDescriptor | null => {
 	const { getSettingsGroup, subscribeToSettingsGroup } = useContext(PrivilegedSettingsContext);
@@ -118,7 +68,8 @@ export const usePrivilegedSettingsGroupActions = (groupId: GroupId): {
 	save: () => void;
 	cancel: () => void;
 } => {
-	const { querySetting, dispatch, getSettingsGroup, dispatchToEditableSettings } = useContext(PrivilegedSettingsContext);
+	const { querySetting, dispatch } = useContext(SettingsContext);
+	const { getSettingsGroup, dispatchToEditableSettings } = useContext(PrivilegedSettingsContext);
 
 	const dispatchToastMessage = useToastMessageDispatch() as any;
 	const t = useTranslation() as (key: string, ...args: any[]) => string;
@@ -233,7 +184,8 @@ export const usePrivilegedSettingActions = (_id: SettingId): {
 	update: () => void;
 	reset: () => void;
 } => {
-	const { querySetting, dispatchToEditableSettings } = useContext(PrivilegedSettingsContext);
+	const { querySetting } = useContext(SettingsContext);
+	const { dispatchToEditableSettings } = useContext(PrivilegedSettingsContext);
 
 	const update: (() => void) = useDebouncedCallback(({ value, editor }) => {
 		const persistedSetting = querySetting(_id).getCurrentValue();
