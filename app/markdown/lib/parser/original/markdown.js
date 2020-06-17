@@ -4,7 +4,6 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import s from 'underscore.string';
 
 import { settings } from '../../../../settings';
 
@@ -81,7 +80,7 @@ const parseNotEscaped = function(msg, message) {
 			return match;
 		}
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return addAsToken(message, `<a href="${ s.escapeHTML(url) }" title="${ s.escapeHTML(title) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ s.escapeHTML(url) });"></div></a>`);
+		return addAsToken(message, `<a href="${ url }" title="${ title }" target="${ target }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ url });"></div></a>`);
 	});
 
 	// Support [Text](http://link)
@@ -92,10 +91,10 @@ const parseNotEscaped = function(msg, message) {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
 		title = title.replace(/&amp;/g, '&');
 
-		let escapedUrl = s.escapeHTML(url);
+		let escapedUrl = url;
 		escapedUrl = escapedUrl.replace(/&amp;/g, '&');
 
-		return addAsToken(message, `<a href="${ escapedUrl }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
+		return addAsToken(message, `<a href="${ escapedUrl }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
 	});
 
 	// Support <http://link|Text>
@@ -104,7 +103,7 @@ const parseNotEscaped = function(msg, message) {
 			return match;
 		}
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return addAsToken(message, `<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
+		return addAsToken(message, `<a href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
 	});
 
 	return msg;
