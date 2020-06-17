@@ -57,6 +57,7 @@
   "Accounts_BlockedDomainsList": "Blocked Domains List",
   "Accounts_BlockedDomainsList_Description": "Comma-separated list of blocked domains",
   "Accounts_Block_Failed_Login_Attempts_Enable_Collect_Login_data": "Enable collect log in data",
+  "Accounts_Block_Failed_Login_Attempts_Enable_Collect_Login_data_Description": "Stores IP and username from log in attempts to a collection on database",
   "Accounts_Block_Failed_Attempts_Ip_Whitelist": "IP Whitelist",
   "Accounts_Block_Failed_Attempts_Ip_Whitelist_Description": "Comma-separated list of whitelisted IPs",
   "Accounts_Block_Failed_Attempts_Time_To_Unblock_By_Ip_In_Minutes": "Time to unblock IP (In Minutes)",

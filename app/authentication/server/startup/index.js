@@ -1,4 +1,3 @@
-/* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
@@ -90,7 +89,6 @@ Meteor.startup(() => {
 });
 
 Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url, name: userModel.name });
 };
 
