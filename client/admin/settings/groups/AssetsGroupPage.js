@@ -1,13 +1,15 @@
 import { Button } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
+import { useEditableSettingsGroupSections } from '../../../contexts/EditableSettingsContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import GroupPage from '../GroupPage';
 import { Section } from '../Section';
 
-function AssetsGroupPage({ _id, sections, ...group }) {
+function AssetsGroupPage({ _id, ...group }) {
+	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 	const t = useTranslation();
 

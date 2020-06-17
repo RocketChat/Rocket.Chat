@@ -1,16 +1,46 @@
 import { Accordion, Box, Button, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo } from 'react';
 
 import {
-	usePrivilegedSettingsSection,
-	usePrivilegedSettingsSectionActions,
+	useEditableSettings,
+	useEditableSettingsDispatch,
 } from '../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Setting } from './Setting';
 
 export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
-	const section = usePrivilegedSettingsSection(groupId, sectionName);
-	const { reset } = usePrivilegedSettingsSectionActions(groupId, sectionName);
+	const editableSettings = useEditableSettings(useMemo(() => ({
+		group: groupId,
+		section: sectionName,
+	}), [groupId, sectionName]));
+
+	const changed = useMemo(
+		() => editableSettings.some(({ changed }) => changed),
+		[editableSettings],
+	);
+
+	const canReset = useMemo(
+		() => editableSettings.some(({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue)),
+		[editableSettings],
+	);
+
+	const dispatch = useEditableSettingsDispatch();
+
+	const reset = useMutableCallback(() => {
+		dispatch(
+			editableSettings
+				.filter(({ disabled }) => !disabled)
+				.map(({ _id, value, packageValue, editor, packageEditor }) => ({
+					_id,
+					value: packageValue,
+					editor: packageEditor,
+					changed:
+						JSON.stringify(value) !== JSON.stringify(packageValue)
+						|| JSON.stringify(editor) !== JSON.stringify(packageEditor),
+				})),
+		);
+	});
 
 	const t = useTranslation();
 
@@ -20,18 +50,18 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 
 	return <Accordion.Item
 		data-qa-section={sectionName}
-		noncollapsible={solo || !section.name}
-		title={section.name && t(section.name)}
+		noncollapsible={solo || !sectionName}
+		title={sectionName && t(sectionName)}
 	>
 		{help && <Box is='p' color='hint' fontScale='p1'>{help}</Box>}
 
 		<FieldGroup>
-			{section.editableSettings.map((setting) => <Setting key={setting} settingId={setting._id} sectionChanged={section.changed} />)}
+			{editableSettings.map((setting) => <Setting key={setting} settingId={setting._id} sectionChanged={changed} />)}
 
-			{hasReset && section.canReset && <Button
+			{hasReset && canReset && <Button
 				children={t('Reset_section_settings')}
 				danger
-				data-section={section.name}
+				data-section={sectionName}
 				ghost
 				onClick={handleResetSectionClick}
 			/>}

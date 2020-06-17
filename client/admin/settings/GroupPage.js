@@ -11,12 +11,6 @@ import { useUser } from '../../contexts/UserContext';
 import { Section } from './Section';
 
 function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription }) {
-	const t = useTranslation();
-	const dispatch = useSettingsDispatch();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const loadLanguage = useLoadLanguage();
-	const user = useUser();
-
 	const changedEditableSettings = useEditableSettings(useMemo(() => ({
 		group: _id,
 		changed: true,
@@ -25,6 +19,13 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 	const originalSettings = useSettings(useMemo(() => ({
 		_id: changedEditableSettings.map(({ _id }) => _id),
 	}), [changedEditableSettings]));
+
+	const dispatch = useSettingsDispatch();
+
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
+	const loadLanguage = useLoadLanguage();
+	const user = useUser();
 
 	const save = useMutableCallback(async () => {
 		const changes = changedEditableSettings
@@ -157,6 +158,6 @@ function GroupPageSkeleton() {
 	</Page>;
 }
 
-GroupPage.Skeleton = GroupPageSkeleton;
-
-export default memo(GroupPage);
+export default Object.assign(memo(GroupPage), {
+	Skeleton: GroupPageSkeleton,
+});
