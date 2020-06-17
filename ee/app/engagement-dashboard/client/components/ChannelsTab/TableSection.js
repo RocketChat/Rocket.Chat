@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { Growth } from '../data/Growth';
+import Growth from '../../../../../../client/components/data/Growth';
 import { Section } from '../Section';
 
 export function TableSection() {
