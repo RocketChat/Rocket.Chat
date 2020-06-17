@@ -11,8 +11,7 @@ export const SettingsContext = createContext({
 		getCurrentValue: () => [],
 		subscribe: () => () => undefined,
 	}),
-	set: async () => {},
-	batchSet: async () => {},
+	dispatch: () => undefined,
 });
 
 export const useIsSettingsContextLoading = () =>
@@ -33,12 +32,10 @@ export const useSettings = (query) => {
 	return useSubscription(subscription);
 };
 
-export const useSettingDispatch = (name) => {
-	const { set } = useContext(SettingsContext);
-	return useCallback((value) => set(name, value), [set, name]);
-};
+export const useSettingsDispatch = () =>
+	useContext(SettingsContext).dispatch;
 
-export const useBatchSettingsDispatch = () => {
-	const { batchSet } = useContext(SettingsContext);
-	return useCallback((entries) => batchSet(entries), [batchSet]);
+export const useSettingSetValue = (_id) => {
+	const dispatch = useSettingsDispatch();
+	return useCallback((value) => dispatch([{ _id, value }]), [dispatch, _id]);
 };

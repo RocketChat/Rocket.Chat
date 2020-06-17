@@ -7,6 +7,7 @@ import { PrivilegedSettingsContext } from '../contexts/PrivilegedSettingsContext
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
 import { useReactiveSubscriptionFactory } from '../hooks/useReactiveSubscriptionFactory';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
+import { useMethod } from '../contexts/ServerContext';
 
 function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 	const [isLoading, setLoading] = useState(() => Tracker.nonreactive(() => !cachedCollection.ready.get()));
@@ -63,6 +64,9 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 			[cachedCollection],
 		),
 	);
+
+	const saveSettings = useMethod('saveSettings');
+	const dispatch = useCallback((changes) => saveSettings(changes), [saveSettings]);
 
 	const settingsCollectionRef = useLazyRef(() => new Mongo.Collection(null));
 
@@ -193,7 +197,7 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		};
 	});
 
-	const patch = useMutableCallback((changes) => {
+	const dispatchToEditableSettings = useMutableCallback((changes) => {
 		changes.forEach(({ _id, ...data }) => {
 			settingsCollectionRef.current.update(_id, { $set: data });
 		});
@@ -205,24 +209,26 @@ function AuthorizedPrivilegedSettingsProvider({ cachedCollection, children }) {
 		isLoading,
 		querySetting,
 		querySettings,
+		dispatch,
 		getSettingsGroup,
 		subscribeToSettingsGroup,
 		getSettingsSection,
 		subscribeToSettingsSection,
 		getEditableSetting,
 		subscribeToEditableSetting,
-		patch,
+		dispatchToEditableSettings,
 	}), [
 		isLoading,
 		querySetting,
 		querySettings,
+		dispatch,
 		getSettingsGroup,
 		subscribeToSettingsGroup,
 		getSettingsSection,
 		subscribeToSettingsSection,
 		getEditableSetting,
 		subscribeToEditableSetting,
-		patch,
+		dispatchToEditableSettings,
 	]);
 
 	return <PrivilegedSettingsContext.Provider children={children} value={contextValue} />;

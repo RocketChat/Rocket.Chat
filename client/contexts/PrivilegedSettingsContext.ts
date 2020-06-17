@@ -1,5 +1,5 @@
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useCallback, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 import {
@@ -8,7 +8,6 @@ import {
 	SettingId,
 	GroupId,
 } from '../../definition/ISetting';
-import { useBatchSettingsDispatch } from './SettingsContext';
 import { useToastMessageDispatch } from './ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from './TranslationContext';
 import { useUser } from './UserContext';
@@ -44,13 +43,14 @@ type PrivilegedSettingsContextValue = {
 	isLoading: boolean;
 	querySetting: (_id: SettingId) => Subscription<ISetting | undefined>;
 	querySettings: (query: ISettingsQuery) => Subscription<ISetting[]>;
+	dispatch: (changes: Partial<ISetting>[]) => Promise<void>;
 	getSettingsGroup: (groupId: GroupId) => GroupDescriptor | null;
 	subscribeToSettingsGroup: (groupId: GroupId, cb: (groupDescriptor: GroupDescriptor) => void) => (() => void);
 	getSettingsSection: (groupId: GroupId, sectionName: SectionName) => SectionDescriptor | null;
 	subscribeToSettingsSection: (groupId: GroupId, sectionName: SectionName, cb: (sectionDescriptor: SectionDescriptor) => void) => (() => void);
 	getEditableSetting: (_id: SettingId) => IEditableSetting | null;
 	subscribeToEditableSetting: (_id: SettingId, cb: (setting: IEditableSetting) => void) => (() => void);
-	patch: (changes: any[]) => void;
+	dispatchToEditableSettings: (changes: any[]) => void;
 };
 
 export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContextValue>({
@@ -64,13 +64,14 @@ export const PrivilegedSettingsContext = createContext<PrivilegedSettingsContext
 		getCurrentValue: (): ISetting[] => [],
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
+	dispatch: async () => undefined,
 	getSettingsGroup: () => null,
 	subscribeToSettingsGroup: () => (): void => undefined,
 	getSettingsSection: () => null,
 	subscribeToSettingsSection: () => (): void => undefined,
 	getEditableSetting: () => null,
 	subscribeToEditableSetting: () => (): void => undefined,
-	patch: () => undefined,
+	dispatchToEditableSettings: () => undefined,
 });
 
 export const useIsPrivilegedSettingsContextAuthorized = (): boolean =>
@@ -94,6 +95,14 @@ export const useSettings = (query?: ISettingsQuery): ISetting[] => {
 	return useSubscription(subscription);
 };
 
+export const useSettingsDispatch = (): ((changes: Partial<ISetting>[]) => Promise<void>) =>
+	useContext(PrivilegedSettingsContext).dispatch;
+
+export const useSettingSetValue = <T>(_id: SettingId): ((value: T) => Promise<void>) => {
+	const dispatch = useSettingsDispatch();
+	return useCallback((value: T) => dispatch([{ _id, value }]), [dispatch, _id]);
+};
+
 export const usePrivilegedSettingsGroup = (groupId: GroupId): GroupDescriptor | null => {
 	const { getSettingsGroup, subscribeToSettingsGroup } = useContext(PrivilegedSettingsContext);
 
@@ -109,9 +118,8 @@ export const usePrivilegedSettingsGroupActions = (groupId: GroupId): {
 	save: () => void;
 	cancel: () => void;
 } => {
-	const { getSettingsGroup, querySetting: getSetting, patch } = useContext(PrivilegedSettingsContext);
+	const { querySetting, dispatch, getSettingsGroup, dispatchToEditableSettings } = useContext(PrivilegedSettingsContext);
 
-	const batchSetSettings = useBatchSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch() as any;
 	const t = useTranslation() as (key: string, ...args: any[]) => string;
 	const loadLanguage = useLoadLanguage() as any;
@@ -127,7 +135,7 @@ export const usePrivilegedSettingsGroupActions = (groupId: GroupId): {
 		}
 
 		try {
-			await batchSetSettings(changes);
+			await dispatch(changes);
 
 			if (changes.some(({ _id }) => _id === 'Language')) {
 				const lng = user?.language
@@ -146,11 +154,11 @@ export const usePrivilegedSettingsGroupActions = (groupId: GroupId): {
 	});
 
 	const cancel = useMutableCallback(() => {
-		patch(
+		dispatchToEditableSettings(
 			(getSettingsGroup(groupId)?.editableSettings ?? [])
 				.filter(({ changed }) => changed)
 				.map((editableSetting) => {
-					const setting = getSetting(editableSetting._id).getCurrentValue();
+					const setting = querySetting(editableSetting._id).getCurrentValue();
 					if (!setting) {
 						return {};
 					}
@@ -182,7 +190,7 @@ export const usePrivilegedSettingsSection = (groupId: GroupId, sectionName: Sect
 export const usePrivilegedSettingsSectionActions = (groupId: GroupId, sectionName: SectionName): {
 	reset: () => void;
 } => {
-	const { getSettingsSection, patch } = useContext(PrivilegedSettingsContext);
+	const { getSettingsSection, dispatchToEditableSettings } = useContext(PrivilegedSettingsContext);
 
 	const reset = useMutableCallback(() => {
 		const sectionDescriptor = getSettingsSection(groupId, sectionName);
@@ -191,7 +199,7 @@ export const usePrivilegedSettingsSectionActions = (groupId: GroupId, sectionNam
 			return;
 		}
 
-		patch(
+		dispatchToEditableSettings(
 			sectionDescriptor.editableSettings
 				.filter(({ disabled }) => !disabled)
 				.map(({ _id, value, packageValue, editor, packageEditor }) => ({
@@ -225,7 +233,7 @@ export const usePrivilegedSettingActions = (_id: SettingId): {
 	update: () => void;
 	reset: () => void;
 } => {
-	const { querySetting, patch } = useContext(PrivilegedSettingsContext);
+	const { querySetting, dispatchToEditableSettings } = useContext(PrivilegedSettingsContext);
 
 	const update: (() => void) = useDebouncedCallback(({ value, editor }) => {
 		const persistedSetting = querySetting(_id).getCurrentValue();
@@ -233,7 +241,7 @@ export const usePrivilegedSettingActions = (_id: SettingId): {
 			return;
 		}
 
-		patch([{
+		dispatchToEditableSettings([{
 			_id,
 			...value !== undefined && { value },
 			...editor !== undefined && { editor },
@@ -241,7 +249,7 @@ export const usePrivilegedSettingActions = (_id: SettingId): {
 				JSON.stringify(persistedSetting.value) !== JSON.stringify(value)
 				|| JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor),
 		}]);
-	}, 100, [querySetting, _id, patch]);
+	}, 100, [querySetting, _id, dispatchToEditableSettings]);
 
 	const reset: (() => void) = useDebouncedCallback(() => {
 		const persistedSetting = querySetting(_id).getCurrentValue();
@@ -249,7 +257,7 @@ export const usePrivilegedSettingActions = (_id: SettingId): {
 			return;
 		}
 
-		patch([{
+		dispatchToEditableSettings([{
 			_id: persistedSetting._id,
 			value: persistedSetting.packageValue,
 			editor: persistedSetting.packageEditor,
@@ -257,7 +265,7 @@ export const usePrivilegedSettingActions = (_id: SettingId): {
 				JSON.stringify(persistedSetting.packageValue) !== JSON.stringify(persistedSetting.value)
 				|| JSON.stringify(persistedSetting.packageEditor) !== JSON.stringify(persistedSetting.editor),
 		}]);
-	}, 100, [querySetting, _id, patch]);
+	}, 100, [querySetting, _id, dispatchToEditableSettings]);
 
 	return { update, reset };
 };

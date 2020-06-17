@@ -1,11 +1,10 @@
 import { Tracker } from 'meteor/tracker';
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 
-import { settings } from '../../app/settings/client';
+import { useMethod } from '../contexts/ServerContext';
 import { SettingsContext } from '../contexts/SettingsContext';
 import { useReactiveSubscriptionFactory } from '../hooks/useReactiveSubscriptionFactory';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
-import { createObservableFromReactive } from './createObservableFromReactive';
 
 function SettingsProvider({ children, cachedCollection = PublicSettingsCachedCollection.get() }) {
 	const [isLoading, setLoading] = useState(() => Tracker.nonreactive(() => !cachedCollection.ready.get()));
@@ -63,35 +62,19 @@ function SettingsProvider({ children, cachedCollection = PublicSettingsCachedCol
 		),
 	);
 
+	const saveSettings = useMethod('saveSettings');
+	const dispatch = useCallback((changes) => saveSettings(changes), [saveSettings]);
+
 	const contextValue = useMemo(() => ({
 		isLoading,
 		querySetting,
 		querySettings,
-		get: createObservableFromReactive((name) => settings.get(name)),
-		set: (name, value) => new Promise((resolve, reject) => {
-			settings.set(name, value, (error, result) => {
-				if (error) {
-					reject(error);
-					return;
-				}
-
-				resolve(result);
-			});
-		}),
-		batchSet: (entries) => new Promise((resolve, reject) => {
-			settings.batchSet(entries, (error, result) => {
-				if (error) {
-					reject(error);
-					return;
-				}
-
-				resolve(result);
-			});
-		}),
+		dispatch,
 	}), [
 		isLoading,
 		querySetting,
 		querySettings,
+		dispatch,
 	]);
 
 	return <SettingsContext.Provider children={children} value={contextValue} />;
