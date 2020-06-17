@@ -102,7 +102,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		try {
 			await saveIntegration(data._id, {
 				...formValues,
-				triggerWords: triggerWords.split(';'),
+				triggerWords: triggerWords.split(/\s*(?:;|$)\s*/),
 				urls: urls.split('\n'),
 			});
 
