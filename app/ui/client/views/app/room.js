@@ -307,7 +307,8 @@ Template.room.helpers({
 		return state.get('subscribed');
 	},
 	messagesHistory() {
-		const rid = Template.instance().state.get('debounced_rid');
+		const showInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
+		const { rid } = Template.instance();
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
 		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
@@ -315,10 +316,12 @@ Template.room.helpers({
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			$or: [
-				{ tmid: { $exists: 0 } },
-				{ tshow: { $eq: true } },
-			],
+			...!showInMainThread && {
+				$or: [
+					{ tmid: { $exists: 0 } },
+					{ tshow: { $eq: true } },
+				],
+			},
 		};
 
 		if (hideMessagesOfType.size) {
@@ -570,7 +573,7 @@ Template.room.helpers({
 		const rid = Template.currentData()._id;
 		const jump = FlowRouter.getQueryParam('jump');
 
-		if (tab !== 'thread' || !mid) {
+		if (tab !== 'thread' || !mid || rid !== Session.get('openedRoom')) {
 			return;
 		}
 

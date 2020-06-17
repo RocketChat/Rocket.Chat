@@ -4,16 +4,36 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { Tracker } from 'meteor/tracker';
+import s from 'underscore.string';
 
 import { ChatMessage } from '../../../models/client';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { roomTypes, APIClient } from '../../../utils/client';
-import { call, normalizeThreadMessage } from '../../../ui-utils/client';
+import { call } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useLocalStorage } from '../hooks/useLocalstorage';
+import { useLocalStorage } from './hooks/useLocalstorage';
+import { filterMarkdown } from '../../../markdown/lib/markdown';
 
-export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
+export const normalizeThreadTitle = ({ ...message }) => {
+	if (message.msg) {
+		return filterMarkdown(message.msg);
+	}
+
+	if (message.attachments) {
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
+
+		if (attachment && attachment.description) {
+			return s.escapeHTML(attachment.description);
+		}
+
+		if (attachment && attachment.title) {
+			return s.escapeHTML(attachment.title);
+		}
+	}
+};
+
+export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	const t = useTranslation();
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 	const [mainMessage, setMainMessage] = useState({});
@@ -38,7 +58,7 @@ export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 	const actionId = useMemo(() => (following ? 'unfollow' : 'follow'), [uid, mainMessage && mainMessage.replies]);
 	const button = useMemo(() => (actionId === 'follow' ? 'bell-off' : 'bell'), [actionId]);
 	const actionLabel = t(actionId === 'follow' ? 'Not_Following' : 'Following');
-	const headerTitle = useMemo(() => normalizeThreadMessage(mainMessage), [mainMessage._updatedAt]);
+	const headerTitle = useMemo(() => normalizeThreadTitle(mainMessage), [mainMessage._updatedAt]);
 
 	const expandLabel = expanded ? 'collapse' : 'expand';
 	const expandIcon = expanded ? 'arrow-collapse' : 'arrow-expand';
@@ -74,7 +94,9 @@ export default function ThreadComponent({ mid, rid, jump, 	room, ...props }) {
 	if (!mainMessage.rid) {
 		return <>
 			{expanded && <Modal.Backdrop onClick={handleClose}/> }
-			<VerticalBar.Skeleton width='full' style={expanded ? style : null }/>
+			<Box width='380px' flexGrow={1} { ...!expanded && { position: 'relative' }}>
+				<VerticalBar.Skeleton rcx-thread-view width='full' style={style} display='flex' flexDirection='column' position='absolute' { ...!expanded && { width: '380px' } }/>
+			</Box>
 		</>;
 	}
 

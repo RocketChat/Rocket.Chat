@@ -198,8 +198,9 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 			oldest,
 			inclusive,
 			limit: this.bodyParams.limit,
-			excludePinned: this.bodyParams.excludePinned,
-			filesOnly: this.bodyParams.filesOnly,
+			excludePinned: [true, 'true', 1, '1'].includes(this.bodyParams.excludePinned),
+			filesOnly: [true, 'true', 1, '1'].includes(this.bodyParams.filesOnly),
+			ignoreThreads: [true, 'true', 1, '1'].includes(this.bodyParams.ignoreThreads),
 			fromUsers: this.bodyParams.users,
 		}));
 

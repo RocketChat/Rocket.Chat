@@ -1,7 +1,7 @@
 import { Messages, Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
-export const reply = ({ tmid }, message, parentMessage) => {
+export const reply = ({ tmid }, message, parentMessage, followers) => {
 	const { rid, ts, u, editedAt } = message;
 	if (!tmid || editedAt) {
 		return false;
@@ -11,6 +11,7 @@ export const reply = ({ tmid }, message, parentMessage) => {
 
 	const addToReplies = [
 		...new Set([
+			...followers,
 			...mentionIds,
 			...Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id],
 		]),

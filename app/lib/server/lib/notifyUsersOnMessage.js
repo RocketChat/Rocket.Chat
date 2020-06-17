@@ -103,9 +103,9 @@ export function updateUsersSubscriptions(message, room) {
 }
 
 export function updateThreadUsersSubscriptions(message, room, replies) {
-	const unreadCount = settings.get('Unread_Count');
+	// const unreadCount = settings.get('Unread_Count');
 
-	incUserMentions(room._id, room.t, replies, unreadCount);
+	// incUserMentions(room._id, room.t, replies, unreadCount);
 
 	Subscriptions.setAlertForRoomIdAndUserIds(message.rid, replies);
 

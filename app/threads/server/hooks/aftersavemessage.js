@@ -18,8 +18,8 @@ function notifyUsersOnReply(message, replies, room) {
 	return message;
 }
 
-const metaData = (message, parentMessage) => {
-	reply({ tmid: message.tmid }, message, parentMessage);
+const metaData = (message, parentMessage, followers) => {
+	reply({ tmid: message.tmid }, message, parentMessage, followers);
 
 	return message;
 };
@@ -51,12 +51,13 @@ const processThreads = (message, room) => {
 	const replies = [
 		...new Set([
 			...(!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || [],
+			...!parentMessage.tcount && room.t === 'd' ? room.uids : [],
 			...mentionIds,
 		]),
 	].filter((userId) => userId !== message.u._id);
 
 	notifyUsersOnReply(message, replies, room);
-	metaData(message, parentMessage);
+	metaData(message, parentMessage, replies);
 	notification(message, room, replies);
 
 	return message;

@@ -325,8 +325,8 @@
 	* Mention link
 	*/
 	--mention-link-radius: 4px;
-	--mention-link-background: #eeeff1;
-	--mention-link-text-color: #2f343d;
+	--mention-link-background: #fff6d6;
+	--mention-link-text-color: #b68d00;
 	--mention-link-me-background: #ffe9ec;
 	--mention-link-me-text-color: var(--color-red);
 	--mention-link-group-background: #fde8d7;

@@ -5,7 +5,7 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 
-import { ChatSubscription, Rooms } from '../../../models';
+import { Messages, ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
@@ -77,7 +77,15 @@ export const openRoom = async function(type, name) {
 			}
 
 			if (FlowRouter.getQueryParam('msg')) {
-				const msg = { _id: FlowRouter.getQueryParam('msg'), rid: room._id };
+				const messageId = FlowRouter.getQueryParam('msg');
+				const msg = { _id: messageId, rid: room._id };
+
+				const message = Messages.findOne({ ss_id: msg._id }) || (await call('getMessages', [msg._id]))[0];
+
+				if (message && (message.tmid || message.tcount)) {
+					return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
+				}
+
 				RoomHistoryManager.getSurroundingMessages(msg);
 			}
 

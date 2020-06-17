@@ -92,9 +92,6 @@
 					{{{body}}}
 				{{/if}}
 			</div>
-			{{# if unread }}
-				<div aria-label="{{_ 'Unread' }}" class="rc-tooltip message-unread"></div>
-			{{/if}}
 		</div>
 
 		{{#if hasOembed}}
@@ -125,6 +122,9 @@
 					</button>
 				{{/if}}
 				<span class="discussion-reply-lm">{{ formatDateAndTime msg.dlm }}</span>
+				{{# if unread }}
+					<div aria-label="{{_ 'Unread' }}" class="rc-tooltip message-unread"></div>
+				{{/if}}
 			</div>
 		{{/if}}
 
@@ -135,6 +135,9 @@
 					<span>{{{_ 'reply_counter' counter=i18nReplyCounter count=msg.tcount }}}</span>
 				</button>
 				<span class="discussion-reply-lm">{{ formatDateAndTime msg.tlm}}</span>
+				{{# if unread }}
+					<div aria-label="{{_ 'Unread' }}" class="rc-tooltip message-unread"></div>
+				{{/if}}
 			</div>
 		{{/if}}
 
