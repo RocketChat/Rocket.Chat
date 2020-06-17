@@ -265,7 +265,8 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && secrets.DOCKER_USER != '' }}
+    env:
+      DOCKER_USER: ${{ secrets.DOCKER_USER }}
 
     steps:
     - uses: actions/checkout@v2
@@ -348,6 +349,7 @@ jobs:
 
     - name: Build Rocket.Chat
       run: |
+        [ -z "$DOCKER_USER" ] && exit 0;
         meteor build --server-only --directory /tmp/build-pr
 
     - name: Build Docker image for PRs
@@ -355,6 +357,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VERSION: pr-${{ github.event.number }}
       run: |
+        [ -z "$DOCKER_USER" ] && exit 0;
+
         cd /tmp/build-pr
 
         docker login docker.pkg.github.com -u "${GITHUB_ACTOR}" -p "${GITHUB_TOKEN}"
