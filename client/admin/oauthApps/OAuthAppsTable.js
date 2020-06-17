@@ -1,7 +1,7 @@
 import { Table } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { GenericTable, Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
