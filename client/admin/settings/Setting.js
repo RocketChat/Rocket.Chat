@@ -3,7 +3,7 @@ import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 
 import MarkdownText from '../../components/basic/MarkdownText';
-import { usePrivilegedSetting, useEditableSettingsDispatch } from '../../contexts/EditableSettingsContext';
+import { useEditableSetting, useEditableSettingsDispatch } from '../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';
 import { BooleanSettingInput } from './inputs/BooleanSettingInput';
@@ -65,7 +65,7 @@ export const MemoizedSetting = memo(function MemoizedSetting({
 });
 
 export function Setting({ settingId, sectionChanged }) {
-	const setting = usePrivilegedSetting(settingId);
+	const setting = useEditableSetting(settingId);
 
 	const persistedSetting = useSettingStructure(settingId);
 	const dispatch = useEditableSettingsDispatch();
@@ -83,7 +83,7 @@ export function Setting({ settingId, sectionChanged }) {
 				JSON.stringify(persistedSetting.value) !== JSON.stringify(value)
 				|| JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor),
 		}]);
-	}, 100, [persistedSetting, dispatch]);
+	}, 230, [persistedSetting, dispatch]);
 
 	const t = useTranslation();
 

@@ -9,7 +9,7 @@ import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCa
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
 
 type SettingsProviderProps = {
-	privileged?: boolean;
+	readonly privileged?: boolean;
 };
 
 const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({

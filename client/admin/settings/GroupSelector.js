@@ -1,25 +1,43 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
-import { usePrivilegedSettingsGroup } from '../../contexts/EditableSettingsContext';
-import { AssetsGroupPage } from './groups/AssetsGroupPage';
-import { OAuthGroupPage } from './groups/OAuthGroupPage';
-import { GenericGroupPage } from './groups/GenericGroupPage';
-import { GroupPage } from './GroupPage';
+import { useSettingStructure } from '../../contexts/SettingsContext';
+import AssetsGroupPage from './groups/AssetsGroupPage';
+import OAuthGroupPage from './groups/OAuthGroupPage';
+import GenericGroupPage from './groups/GenericGroupPage';
+import GroupPage from './GroupPage';
+import { useEditableSettings } from '../../contexts/EditableSettingsContext';
 
-export function GroupSelector({ groupId }) {
-	const group = usePrivilegedSettingsGroup(groupId);
+const GroupSelector = ({ groupId }) => {
+	const group = useSettingStructure(groupId);
+	const query = useMemo(() => ({ group: groupId }), [groupId]);
+	const editableSettings = useEditableSettings(query);
+	const sections = useMemo(
+		() => Array.from(new Set(editableSettings.map(({ section }) => section))),
+		[editableSettings],
+	);
 
 	if (!group) {
 		return <GroupPage.Skeleton />;
 	}
 
 	if (groupId === 'Assets') {
-		return <AssetsGroupPage {...group} />;
+		return <AssetsGroupPage
+			{...group}
+			sections={sections}
+		/>;
 	}
 
 	if (groupId === 'OAuth') {
-		return <OAuthGroupPage {...group} />;
+		return <OAuthGroupPage
+			{...group}
+			sections={sections}
+		/>;
 	}
 
-	return <GenericGroupPage {...group} />;
-}
+	return <GenericGroupPage
+		{...group}
+		sections={sections}
+	/>;
+};
+
+export default GroupSelector;

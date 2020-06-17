@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-import { GroupPage } from '../GroupPage';
+import GroupPage from '../GroupPage';
 import { Section } from '../Section';
 
-export function GenericGroupPage({ _id, sections, ...group }) {
+function GenericGroupPage({ _id, sections, ...group }) {
 	const solo = sections.length === 1;
 
 	return <GroupPage _id={_id} {...group}>
@@ -15,3 +15,5 @@ export function GenericGroupPage({ _id, sections, ...group }) {
 		/>)}
 	</GroupPage>;
 }
+
+export default memo(GenericGroupPage);
