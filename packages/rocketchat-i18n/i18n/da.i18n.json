@@ -14,7 +14,7 @@
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ is no longer __role__ by __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ was set __role__ by __user_by__",
   "%_of_conversations": "% af samtaler",
-  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "En ny ejer tildeles automatisk til <span style=\"font-weight: bold;\"> __ count __ </span> rum.",
+  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "En ny ejer tildeles automatisk til <span style=\"font-weight: bold;\">__count__</span> rum.",
   "Accept": "Acceptér",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Acceptér indgående omnikanal-anmodninger, selvom der ikke er online agenter",
   "Accept_new_livechats_when_agent_is_idle": "Accepter nye anmodninger fra omnikanalen når agenten er ledig",
