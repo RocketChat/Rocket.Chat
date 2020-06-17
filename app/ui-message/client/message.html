@@ -60,6 +60,9 @@
 							<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
 						</span>
 					{{/if}}
+					{{#if msg.pinned}}
+						<span aria-label="{{_ "Message_has_been_pinned"}}" class="pinned rc-tooltip rc-tooltip--up rc-tooltip--start"><i class="icon-pin"></i></span>
+					{{/if}}
 					{{#if showStar}}
 						<span aria-label="{{_ "Message_has_been_starred"}}" class="starred rc-tooltip rc-tooltip--up rc-tooltip--start"><i class="icon-star"></i></span>
 					{{/if}}
