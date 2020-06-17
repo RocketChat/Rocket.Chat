@@ -166,6 +166,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 
 export function shouldNotifyEmail({
 	disableAllMessageNotifications,
+	statusConnection,
 	emailNotifications,
 	isHighlighted,
 	hasMentionToUser,
@@ -181,6 +182,11 @@ export function shouldNotifyEmail({
 
 	// user/room preference to nothing
 	if (emailNotifications === 'nothing') {
+		return false;
+	}
+
+	// user connected (don't need to send him an email)
+	if (statusConnection === 'online') {
 		return false;
 	}
 
