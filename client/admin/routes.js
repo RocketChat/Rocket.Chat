@@ -117,6 +117,11 @@ registerAdminRoute('/view-logs', {
 	lazyRouteComponent: () => import('./viewLogs/ViewLogsRoute'),
 });
 
+registerAdminRoute('/federation-dashboard', {
+	name: 'federation-dashboard',
+	lazyRouteComponent: () => import('./federationDashboard/FederationDashboardRoute'),
+});
+
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
 		name: 'admin',

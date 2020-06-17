@@ -43639,6 +43639,1365 @@
           ]
         }
       ]
+    },
+    "2.4.12": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17578",
+          "title": "[FIX] Email configs not updating after setting changes",
+          "userLogin": "rodrigok",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.0.13": {
+      "node_version": "12.14.0",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17578",
+          "title": "[FIX] Email configs not updating after setting changes",
+          "userLogin": "rodrigok",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.1.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17578",
+          "title": "[FIX] Email configs not updating after setting changes",
+          "userLogin": "rodrigok",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.3.0-rc.0": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "16537",
+          "title": "[FIX] Missing dropdown to select custom status color on user's profile",
+          "userLogin": "ritwizsinha",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ritwizsinha",
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "16331",
+          "title": "[FIX] Password reset/change accepting current password as new password",
+          "userLogin": "ashwaniYDV",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ashwaniYDV",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17692",
+          "title": "[NEW][ENTERPRISE] Support Omnichannel conversations auditing",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17710",
+          "title": "Upgrade Livechat Widget version to 1.5.0",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "16548",
+          "title": "[FIX] Can't click on room's actions menu of sidebar list when in search mode",
+          "userLogin": "ritvikjain99",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ritvikjain99"
+          ]
+        },
+        {
+          "pr": "17581",
+          "title": "[NEW][ENTERPRISE] Support for custom Livechat registration form fields",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17708",
+          "title": "Update Fuselage version",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17666",
+          "title": "[NEW][ENTERPRISE] Omnichannel Last-Chatted Agent Preferred option",
+          "userLogin": "renatobecker",
+          "description": "If activated, this feature will store the last agent that assisted each Omnichannel visitor when a conversation is taken. So, when a visitor returns(it works with any entry point, Livechat, Facebook, REST API, and so on) and starts a new chat, the routing system checks:\r\n\r\n1 - The visitor object for any stored agent that the visitor has previously talked to;\r\n2 - If a previous agent is not found, the system will try to find a previous conversation of the same visitor. If a room is found, the system will get the previous agent from the room;\r\n\r\nAfter this process, if an agent has been found, the system will check the agent's availability to assist the new chat. If it's not available, then the routing system will get the next available agent in the queue.",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17707",
+          "title": "Regression: Status presence  color",
+          "userLogin": "mariaeduardacunha",
+          "contributors": [
+            "ggazzo",
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "17607",
+          "title": "Improve: Remove index files from action-links, accounts and assets",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.3.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "15737",
+          "title": "[FIX] Remove a non working setting \"Notification Duration\"",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.3.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17706",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "3.3.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17705",
+          "title": "Regression: Click to join button not working",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "16394",
+          "title": "[IMPROVE] Always shows the exact match first on user's and room's autocomplete for mentions and on sidebar search",
+          "userLogin": "gabriellsh",
+          "milestone": "3.3.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "17694",
+          "title": "[NEW] API endpoint to fetch Omnichannel's room transfer history",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17498",
+          "title": "Fix typo \"You aren't part of any channel yet\"",
+          "userLogin": "huzaifahj",
+          "milestone": "3.3.0",
+          "contributors": [
+            "huzaifahj",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17701",
+          "title": "[IMPROVE] Display status information in the Omnichannel Agents list",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17619",
+          "title": "[NEW] Option to remove users from RocketChat if not found in Crowd",
+          "userLogin": "ocanema",
+          "contributors": [
+            "ocanema"
+          ]
+        },
+        {
+          "pr": "17129",
+          "title": "[FIX] Elements of  \"Personal Access Tokens\" section out of alignment and unusable on very small screens",
+          "userLogin": "Nikhil713",
+          "milestone": "3.3.0",
+          "contributors": [
+            "Nikhil713",
+            "engelgabriel",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17702",
+          "title": "Regression: Integrations edit/history crashing",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17687",
+          "title": "[FIX] Allow owners to react inside broadcast channels",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "3.3.0",
+          "contributors": [
+            "mariaeduardacunha",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17699",
+          "title": "Regression: User edit form missing fields",
+          "userLogin": "ggazzo",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17522",
+          "title": "[FIX] Default filters on Omnichannel Current Chats screen not showing on first load",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17700",
+          "title": "Regression:  Fix error when performing Omnichannel queue checking",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17697",
+          "title": "[FIX] UI KIT Modal Width",
+          "userLogin": "ggazzo",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17653",
+          "title": "Update Contributing Guide",
+          "userLogin": "rodrigok",
+          "milestone": "3.3.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17693",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17681",
+          "title": "[NEW] Added custom fields to Add/Edit user",
+          "userLogin": "gabriellsh",
+          "milestone": "3.3.0",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17695",
+          "title": "Regression: Fix incorrect imports of the Apps-Engine",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17654",
+          "title": "Improve: Remove uncessary RegExp query by email",
+          "userLogin": "rodrigok",
+          "milestone": "3.3.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17487",
+          "title": "[NEW] [Apps-Engine] New Room events",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16665",
+          "title": "[IMPROVE] Add env var to configure Chatpal URL and remove it from beta",
+          "userLogin": "tkurz",
+          "contributors": [
+            "tkurz",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17683",
+          "title": "Regression: Set retryWrites=false as default Mongo options",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.3.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17640",
+          "title": "[FIX] Agent's custom fields being leaked through the Livechat configuration endpoint",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17675",
+          "title": "[FIX] Avatar url provider ignoring subfolders",
+          "userLogin": "ggazzo",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17680",
+          "title": "[IMPROVE] Added divider between tables and paginations",
+          "userLogin": "ggazzo",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17685",
+          "title": "[IMPROVE] Starred Messages",
+          "userLogin": "gabriellsh",
+          "milestone": "3.3.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "17684",
+          "title": "Regression: status-color-online",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17611",
+          "title": "Add snapcraft files to be bumped with Houston",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.3.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17661",
+          "title": "[FIX] Queued Omnichannel webhook being triggered unnecessarily",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17667",
+          "title": "Regression: Outgoing List",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17664",
+          "title": "[FIX] Not redirecting to `First Channel After Login` on register",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17663",
+          "title": "Regression: Pressing enter on search reloads the page - admin pages",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "17551",
+          "title": "[NEW] Admin refactor  Second phase",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17554",
+          "title": "[IMPROVE] Unused styles",
+          "userLogin": "tassoevan",
+          "milestone": "3.3.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17652",
+          "title": "[FIX] Directory search user placeholder",
+          "userLogin": "zdumitru",
+          "contributors": [
+            "zdumitru",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16250",
+          "title": "[NEW] Added \"Add custom emoji\" link to emoji picker",
+          "userLogin": "gabriellsh",
+          "milestone": "3.3.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17644",
+          "title": "[FIX] Marketplace tiered pricing plan wording",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.3.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17618",
+          "title": "[FIX] Secret Registration not properly validating Invite Token",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.3.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "16968",
+          "title": "Improve: New PR Template",
+          "userLogin": "regalstreak",
+          "contributors": [
+            "regalstreak",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17403",
+          "title": "Add engine versions for houston with templates",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16480",
+          "title": "Use Users.findOneByAppId instead of querying directly",
+          "userLogin": "lolimay",
+          "contributors": [
+            "lolimay",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17587",
+          "title": "Remove unnecessary setting redefinition",
+          "userLogin": "rodrigok",
+          "milestone": "3.3.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17586",
+          "title": "Deprecate compatibility cordova setting",
+          "userLogin": "rodrigok",
+          "milestone": "3.3.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17622",
+          "title": "[FIX] Hyper.sh went out of business in early 2019",
+          "userLogin": "fbartels",
+          "contributors": [
+            "fbartels",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17580",
+          "title": "[NEW] Add Permissions to deal with Omnichannel visitor past chats history",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.3.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17567",
+          "title": "[NEW] Add permissions to deal with Omnichannel custom fields",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.3.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "9956",
+          "title": "Livechat iframe allow microphone and camera",
+          "userLogin": "kolorafa",
+          "milestone": "3.3.0",
+          "contributors": [
+            "kolorafa",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "15642",
+          "title": "[FIX] Do not allow passwords on private channels",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.3.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "17625",
+          "title": "[FIX] Mail Messages > Cannot mail own user",
+          "userLogin": "gabriellsh",
+          "milestone": "3.3.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "17514",
+          "title": "[FIX] remove multiple options from dontAskMeAgain",
+          "userLogin": "TaimurAzhar",
+          "contributors": [
+            "TaimurAzhar"
+          ]
+        },
+        {
+          "pr": "17616",
+          "title": "[FIX] Notification sounds",
+          "userLogin": "sampaiodiego",
+          "description": "* Global CDN config was ignored when loading the sound files\r\n* Upload of custom sounds wasn't getting the file extension correctly\r\n* Some translations were missing\r\n* Edit and delete of custom sounds were not working correctly",
+          "milestone": "3.3.0",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17544",
+          "title": "[FIX] Resolve 'app already exists' error on app update",
+          "userLogin": "thassiov",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "16862",
+          "title": "[NEW] Unread bars on sidebar (#16853)",
+          "userLogin": "juzser",
+          "milestone": "3.3.0",
+          "contributors": [
+            "juzser",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "15902",
+          "title": "[FIX] Relative image path in oembededUrlWidget",
+          "userLogin": "machester4",
+          "milestone": "3.3.0",
+          "contributors": [
+            "machester4",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17613",
+          "title": "Regression: Do not show custom status inside sequential messages",
+          "userLogin": "ggazzo",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17582",
+          "title": "[FIX] Push settings enabled when push gateway is selected",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.2.2",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17508",
+          "title": "[FIX] LDAP login on Enteprise Version",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17579",
+          "title": "[FIX] Login Forbidden on servers that had LDAP enabled in the past",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17578",
+          "title": "[FIX] Email configs not updating after setting changes",
+          "userLogin": "rodrigok",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17577",
+          "title": "[FIX] Error during data export for DMs",
+          "userLogin": "mtmr0x",
+          "milestone": "3.2.2",
+          "contributors": [
+            "mtmr0x"
+          ]
+        },
+        {
+          "pr": "17576",
+          "title": "Regression: Override via env for string settings not working",
+          "userLogin": "rodrigok",
+          "milestone": "3.3.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17570",
+          "title": "[FIX] Emoji picker search broken",
+          "userLogin": "ggazzo",
+          "milestone": "3.2.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17524",
+          "title": "Add some missing metadata information",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17486",
+          "title": "Bump jquery from 3.3.1 to 3.5.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14892",
+          "title": "[NEW] Show user's status description by the usernames in messages list",
+          "userLogin": "wreiske",
+          "description": "![image](https://user-images.githubusercontent.com/6295044/60321979-5d191580-994c-11e9-9cd6-15f4565ff0ae.png)",
+          "milestone": "3.3.0",
+          "contributors": [
+            "wreiske",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17040",
+          "title": "DPlatform is deprecated and the replacement does not support rocket.chat",
+          "userLogin": "ryjones",
+          "contributors": [
+            "ryjones"
+          ]
+        },
+        {
+          "pr": "17552",
+          "title": "Regression: RegExp callbacks of settings were not being called",
+          "userLogin": "rodrigok",
+          "milestone": "3.3.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17533",
+          "title": "Meteor update to version 1.10.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17553",
+          "title": "[FIX] Omnichannel departments are not saved when the offline channel name is not defined",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17523",
+          "title": "[NEW] Screen Lock settings - mobile client",
+          "userLogin": "djorkaeffalexandre",
+          "milestone": "3.3.0",
+          "contributors": [
+            "djorkaeffalexandre"
+          ]
+        },
+        {
+          "pr": "17542",
+          "title": "Regression: Fix Avatar Url Provider when CDN_PREFIX_ALL is false",
+          "userLogin": "ggazzo",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17541",
+          "title": "[FIX] Invalid CSS syntax",
+          "userLogin": "tassoevan",
+          "milestone": "3.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "17388",
+          "title": "[NEW] Rewrite admin pages",
+          "userLogin": "ggazzo",
+          "milestone": "3.3.0",
+          "contributors": [
+            "mariaeduardacunha",
+            "web-flow",
+            "tassoevan",
+            "ggazzo",
+            "gabriellsh",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "15929",
+          "title": "[FIX] Replace postcss Meteor package",
+          "userLogin": "tassoevan",
+          "milestone": "4.0.0",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17540",
+          "title": "[FIX] Increasing highlight time in 3 seconds",
+          "userLogin": "mariaeduardacunha",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "17503",
+          "title": "[IMPROVE] Add new webhooks to the Omnichannel integration feature",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17387",
+          "title": "[FIX] Remove deprecated Omnichannel Knowledge Base feature",
+          "userLogin": "renatobecker",
+          "milestone": "4.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17536",
+          "title": "[FIX] Reactions may present empty names of who reacted when using Real Names",
+          "userLogin": "rodrigok",
+          "description": "When changing usernames the reactions became outdated since it's not possible to update the usernames stored there, so when the server users Real Name setting enabled the system process all messages before return to the clients and get the names of the usernames to show since the usernames are outdated the names will not be found. Now the usernames will be displayed when the name can't be found as a temporary fix until we change the architecture of the data to fix the issue.",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17463",
+          "title": "[NEW] Allow filtering Omnichannel analytics dashboards by department",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "17160",
+          "title": "[FIX] Uncessary updates on Settings, Roles and Permissions on startup",
+          "userLogin": "rodrigok",
+          "milestone": "3.3.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17442",
+          "title": "[NEW] Add the ability to send Livechat offline messages to a channel",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "16430",
+          "title": "[FIX] Federation attachment URL for audio and video files",
+          "userLogin": "qwertiko",
+          "contributors": [
+            "qwertiko",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17429",
+          "title": "[NEW] Add Livechat website URL to the offline message e-mail",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17520",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17500",
+          "title": "RegExp improvements suggested by LGTM",
+          "userLogin": "rodrigok",
+          "milestone": "3.3.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17419",
+          "title": "[FIX] Replace obsolete X-FRAME-OPTIONS header on Livechat route",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.0",
+          "contributors": [
+            "renatobecker",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17497",
+          "title": "[FIX] LDAP login error on Enterprise version",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17050",
+          "title": "[IMPROVE] [Apps-Engine] App user as the default notifier",
+          "userLogin": "lolimay",
+          "contributors": [
+            "lolimay",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17033",
+          "title": "[NEW] [Apps-Engine] New Livechat event handlers",
+          "userLogin": "lolimay",
+          "contributors": [
+            "lolimay",
+            "web-flow",
+            "renatobecker",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17450",
+          "title": "[FIX] Change email verification label",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.3.0",
+          "contributors": [
+            "MartinSchoeler",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17468",
+          "title": "Merge master into develop & Set version to 3.3.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17479",
+          "title": "[FIX] Omnichannel room priorities system messages were create on every saved room info",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        }
+      ]
+    },
+    "3.2.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17506",
+          "title": "Release 3.2.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17497",
+          "title": "[FIX] LDAP login error on Enterprise version",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "3.2.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.13.4",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17600",
+          "title": "Release 3.2.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "ggazzo",
+            "mtmr0x",
+            "pierre-lehnen-rc",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "17582",
+          "title": "[FIX] Push settings enabled when push gateway is selected",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.2.2",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17508",
+          "title": "[FIX] LDAP login on Enteprise Version",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17579",
+          "title": "[FIX] Login Forbidden on servers that had LDAP enabled in the past",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17578",
+          "title": "[FIX] Email configs not updating after setting changes",
+          "userLogin": "rodrigok",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "17577",
+          "title": "[FIX] Error during data export for DMs",
+          "userLogin": "mtmr0x",
+          "milestone": "3.2.2",
+          "contributors": [
+            "mtmr0x"
+          ]
+        },
+        {
+          "pr": "17570",
+          "title": "[FIX] Emoji picker search broken",
+          "userLogin": "ggazzo",
+          "milestone": "3.2.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17536",
+          "title": "[FIX] Reactions may present empty names of who reacted when using Real Names",
+          "userLogin": "rodrigok",
+          "description": "When changing usernames the reactions became outdated since it's not possible to update the usernames stored there, so when the server users Real Name setting enabled the system process all messages before return to the clients and get the names of the usernames to show since the usernames are outdated the names will not be found. Now the usernames will be displayed when the name can't be found as a temporary fix until we change the architecture of the data to fix the issue.",
+          "milestone": "3.2.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "3.3.0-rc.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17716",
+          "title": "Regression: Threads list was fetching all threads",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17715",
+          "title": "Regression: Add missing return to afterSaveMessage callbacks",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.3.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.3.0-rc.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17726",
+          "title": "Regression: Fix error preventing creation of group DMs",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17482",
+          "title": "[FIX] SAML IDP initiated logout error",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "3.3.0-rc.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17711",
+          "title": "Regression: Scroll on admin user info",
+          "userLogin": "ggazzo",
+          "milestone": "3.3.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17741",
+          "title": "Regression: Removed status border on mentions list",
+          "userLogin": "mariaeduardacunha",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "17728",
+          "title": "Regression: Force unread-rooms bar to appears over the room list",
+          "userLogin": "mariaeduardacunha",
+          "contributors": [
+            "mariaeduardacunha",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17656",
+          "title": "[NEW][APPS-ENGINE] Essentials mechanism",
+          "userLogin": "d-gubert",
+          "milestone": "3.3.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.3.0-rc.4": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17750",
+          "title": "Regression: Fix Unread bar design",
+          "userLogin": "dudizilla",
+          "milestone": "3.3.0",
+          "contributors": [
+            "dudizilla",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "17745",
+          "title": "Regression: Adjusting spaces between OAuth login buttons",
+          "userLogin": "dudizilla",
+          "milestone": "3.3.0",
+          "contributors": [
+            "dudizilla"
+          ]
+        }
+      ]
+    },
+    "3.3.0": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17595",
+          "title": "[FIX] Slack importer Link handling",
+          "userLogin": "lpilz",
+          "contributors": [
+            "lpilz",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17600",
+          "title": "Release 3.2.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "ggazzo",
+            "mtmr0x",
+            "pierre-lehnen-rc",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "17497",
+          "title": "[FIX] LDAP login error on Enterprise version",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.2.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
