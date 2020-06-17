@@ -26,3 +26,9 @@ declare module 'meteor/meteor' {
 		const connection: IMeteorConnection;
 	}
 }
+
+declare module 'meteor/tracker' {
+	namespace Tracker {
+		function nonreactive<T>(func: () => T): T;
+	}
+}
