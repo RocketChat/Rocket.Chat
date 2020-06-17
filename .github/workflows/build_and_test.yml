@@ -267,7 +267,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
-    if: github.event_name == 'pull_request' && $DOCKER_USER != ''
+    if: ${{ github.event_name == 'pull_request' && $DOCKER_USER != '' }}
 
     steps:
     - uses: actions/checkout@v2
