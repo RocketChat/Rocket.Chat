@@ -30,6 +30,8 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			password: String,
 			username: String,
 			active: Match.Maybe(Boolean),
+			bio: Match.Maybe(String),
+			statusText: Match.Maybe(String),
 			roles: Match.Maybe(Array),
 			joinDefaultChannels: Match.Maybe(Boolean),
 			requirePasswordChange: Match.Maybe(Boolean),
@@ -74,9 +76,10 @@ API.v1.addRoute('users.delete', { authRequired: true }, {
 		}
 
 		const user = this.getUserFromParams();
+		const { confirmRelinquish = false } = this.requestParams();
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('deleteUser', user._id);
+			Meteor.call('deleteUser', user._id, confirmRelinquish);
 		});
 
 		return API.v1.success();
@@ -120,6 +123,7 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 		check(this.bodyParams, {
 			userId: String,
 			activeStatus: Boolean,
+			confirmRelinquish: Match.Maybe(Boolean),
 		});
 
 		if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
@@ -127,7 +131,7 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus);
+			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus, this.bodyParams.confirmRelinquish);
 		});
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
 	},
@@ -431,6 +435,7 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 				name: Match.Maybe(String),
 				password: Match.Maybe(String),
 				username: Match.Maybe(String),
+				bio: Match.Maybe(String),
 				statusText: Match.Maybe(String),
 				active: Match.Maybe(Boolean),
 				roles: Match.Maybe(Array),
@@ -536,7 +541,6 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				mobileNotifications: Match.Maybe(String),
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
-				desktopNotificationDuration: Match.Maybe(Number),
 				desktopNotificationRequireInteraction: Match.Maybe(Boolean),
 				messageViewMode: Match.Maybe(Number),
 				hideUsernames: Match.Maybe(Boolean),

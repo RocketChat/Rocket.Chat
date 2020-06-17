@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { searchProviderService, SearchProvider } from '../../../search/server';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions } from '../../../models';
+import { baseUrl } from '../utils/settings';
 
 import Index from './index';
 
@@ -16,7 +17,9 @@ class ChatpalProvider extends SearchProvider {
 	constructor() {
 		super('chatpalProvider');
 
-		this.chatpalBaseUrl = 'https://beta.chatpal.io/v1';
+		this.chatpalBaseUrl = `${ baseUrl }`;
+
+		ChatpalLogger.debug(`Using ${ this.chatpalBaseUrl } as chatpal base url`);
 
 		this._settings.add('Backend', 'select', 'cloud', {
 			values: [
@@ -78,8 +81,9 @@ class ChatpalProvider extends SearchProvider {
 		});
 		this._settings.add('DefaultResultType', 'select', 'All', {
 			values: [
-				{ key: 'All', i18nLabel: 'All' },
-				{ key: 'Messages', i18nLabel: 'Messages' },
+				{ key: 'All', i18nLabel: 'Chatpal_All_Results' },
+				{ key: 'Room', i18nLabel: 'Chatpal_Current_Room_Only' },
+				{ key: 'Messages', i18nLabel: 'Chatpal_Messages_Only' },
 			],
 			i18nLabel: 'Chatpal_Default_Result_Type',
 			i18nDescription: 'Chatpal_Default_Result_Type_Description',
@@ -220,24 +224,24 @@ class ChatpalProvider extends SearchProvider {
 			if (this._settings.get('Backend') === 'cloud') {
 				config.baseurl = this.chatpalBaseUrl;
 				config.language = this._settings.get('Main_Language');
-				config.searchpath = '/search/search';
-				config.updatepath = '/search/update';
-				config.pingpath = '/search/ping';
-				config.clearpath = '/search/clear';
-				config.suggestionpath = '/search/suggest';
+				config.searchpath = 'search/search';
+				config.updatepath = 'search/update';
+				config.pingpath = 'search/ping';
+				config.clearpath = 'search/clear';
+				config.suggestionpath = 'search/suggest';
 				config.httpOptions = {
 					headers: {
 						'X-Api-Key': this._settings.get('API_Key'),
 					},
 				};
 			} else {
-				config.baseurl = this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL');
+				config.baseurl = this._settings.get('Base_URL').replace(/\/?$/, '/');
 				config.language = this._settings.get('Main_Language');
-				config.searchpath = '/chatpal/search';
-				config.updatepath = '/chatpal/update';
-				config.pingpath = '/chatpal/ping';
-				config.clearpath = '/chatpal/clear';
-				config.suggestionpath = '/chatpal/suggest';
+				config.searchpath = 'chatpal/search';
+				config.updatepath = 'chatpal/update';
+				config.pingpath = 'chatpal/ping';
+				config.clearpath = 'chatpal/clear';
+				config.suggestionpath = 'chatpal/suggest';
 				config.httpOptions = {
 					headers: this._parseHeaders(),
 				};
@@ -310,7 +314,7 @@ class ChatpalProvider extends SearchProvider {
 		this.index.query(
 			text,
 			this._settings.get('Main_Language'),
-			this._getAcl(context),
+			payload.resultType === 'Room' ? [context.rid] : this._getAcl(context),
 			type,
 			payload.start || 0,
 			payload.rows || this._settings.get('PageSize'),

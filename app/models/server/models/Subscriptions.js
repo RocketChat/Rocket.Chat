@@ -19,6 +19,7 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ rid: 1, alert: 1, 'u._id': 1 });
 		this.tryEnsureIndex({ rid: 1, roles: 1 });
 		this.tryEnsureIndex({ 'u._id': 1, name: 1, t: 1 });
+		this.tryEnsureIndex({ name: 1, t: 1 });
 		this.tryEnsureIndex({ open: 1 });
 		this.tryEnsureIndex({ alert: 1 });
 		this.tryEnsureIndex({ ts: 1 });
@@ -176,20 +177,6 @@ export class Subscriptions extends Base {
 				desktopPrefOrigin: desktopNotifications.origin,
 			};
 		}
-
-		return this.update(query, update);
-	}
-
-	updateDesktopNotificationDurationById(_id, value) {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				desktopNotificationDuration: parseInt(value),
-			},
-		};
 
 		return this.update(query, update);
 	}
@@ -366,7 +353,6 @@ export class Subscriptions extends Base {
 				ignored: 1,
 				audioNotifications: 1,
 				audioNotificationValue: 1,
-				desktopNotificationDuration: 1,
 				desktopNotifications: 1,
 				mobilePushNotifications: 1,
 				emailNotifications: 1,
@@ -393,7 +379,6 @@ export class Subscriptions extends Base {
 				'u._id': 1,
 				audioNotifications: 1,
 				audioNotificationValue: 1,
-				desktopNotificationDuration: 1,
 				desktopNotifications: 1,
 				mobilePushNotifications: 1,
 				emailNotifications: 1,
@@ -484,6 +469,15 @@ export class Subscriptions extends Base {
 	// FIND
 	findByUserId(userId, options) {
 		const query =			{ 'u._id': userId };
+
+		return this.find(query, options);
+	}
+
+	findByUserIdExceptType(userId, typeException, options) {
+		const query = {
+			'u._id': userId,
+			t: { $ne: typeException },
+		};
 
 		return this.find(query, options);
 	}
