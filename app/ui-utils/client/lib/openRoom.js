@@ -31,15 +31,18 @@ const getDomOfLoading = mem(function getDomOfLoading() {
 function replaceCenterDomBy(dom) {
 	document.dispatchEvent(new CustomEvent('main-content-destroyed'));
 
-	const mainNode = document.querySelector('.main-content');
-	if (mainNode) {
-		for (const child of Array.from(mainNode.children)) {
-			if (child) { mainNode.removeChild(child); }
-		}
-		mainNode.appendChild(dom);
-	}
-
-	return mainNode;
+	return new Promise((resolve) => {
+		setTimeout(() => {
+			const mainNode = document.querySelector('.main-content');
+			if (mainNode) {
+				for (const child of Array.from(mainNode.children)) {
+					if (child) { mainNode.removeChild(child); }
+				}
+				mainNode.appendChild(dom);
+			}
+			resolve(mainNode);
+		}, 1);
+	});
 }
 
 const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
@@ -69,7 +72,7 @@ export const openRoom = async function(type, name) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
 					BlazeLayout.render('main');
 				}
-				replaceCenterDomBy(getDomOfLoading());
+				await replaceCenterDomBy(getDomOfLoading());
 				return;
 			}
 
@@ -85,7 +88,7 @@ export const openRoom = async function(type, name) {
 			}
 
 			const roomDom = RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate);
-			const mainNode = replaceCenterDomBy(roomDom);
+			const mainNode = await replaceCenterDomBy(roomDom);
 
 			if (mainNode) {
 				if (roomDom.classList.contains('room-container')) {
