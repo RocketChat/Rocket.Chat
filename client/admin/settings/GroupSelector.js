@@ -1,13 +1,13 @@
 import React from 'react';
 
+import { usePrivilegedSettingsGroup } from '../../contexts/PrivilegedSettingsContext';
 import { AssetsGroupPage } from './groups/AssetsGroupPage';
 import { OAuthGroupPage } from './groups/OAuthGroupPage';
 import { GenericGroupPage } from './groups/GenericGroupPage';
 import { GroupPage } from './GroupPage';
-import { useGroup } from './SettingsState';
 
 export function GroupSelector({ groupId }) {
-	const group = useGroup(groupId);
+	const group = usePrivilegedSettingsGroup(groupId);
 
 	if (!group) {
 		return <GroupPage.Skeleton />;

@@ -4,7 +4,6 @@ import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, Bu
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { isJSON } from '../../../app/utils/lib/isJSON.js';
 import Page from '../../components/basic/Page';
-import RawText from '../../components/basic/RawText';
 import { useTranslation } from '../../contexts/TranslationContext';
 
 export function Mailer({ sendMail = () => {} }) {
@@ -95,9 +94,7 @@ export function Mailer({ sendMail = () => {} }) {
 							onChange={(e) => setEmailBody(e.currentTarget.value)}
 						/>
 					</Field.Row>
-					<Field.Hint>
-						<RawText>{t('Mailer_body_tags')}</RawText>
-					</Field.Hint>
+					<Field.Hint dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }} />
 				</Field>
 			</FieldGroup>
 		</Page.ScrollableContentWithShadow>
