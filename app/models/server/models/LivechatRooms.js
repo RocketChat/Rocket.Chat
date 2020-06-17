@@ -18,6 +18,7 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {

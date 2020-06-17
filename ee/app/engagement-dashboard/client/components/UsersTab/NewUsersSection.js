@@ -5,7 +5,7 @@ import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { CounterSet } from '../data/CounterSet';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
 
 export function NewUsersSection() {

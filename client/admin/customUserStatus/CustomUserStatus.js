@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
 
-import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { GenericTable, Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
