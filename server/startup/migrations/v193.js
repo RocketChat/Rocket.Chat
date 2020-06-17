@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Rooms } from '../../../app/models/server/raw'
+import { Rooms } from '../../../app/models/server/raw';
 
 Migrations.add({
 	version: 193,
