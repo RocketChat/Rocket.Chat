@@ -19,6 +19,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: DEBUG
+      run: |
+        echo "env"
+        echo $GITHUB_HEAD_REF
+        echo "expression"
+        echo ${{ github.head_ref }}
+        echo "github.repository: ${{ github.repository }}"
+        echo "github.repository_owner: ${{ github.repository_owner }}"
+        echo "github.event_name: ${{ github.event_name }}"
+        echo "github.event.pull_request.head.repo.full_name: ${{ github.event.pull_request.head.repo.full_name }}"
 
     - name: Github Info
       run: |
