@@ -6,9 +6,9 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useMethod } from '../../contexts/ServerContext';
+import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
+import RawText from '../../components/basic/RawText';
 
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
@@ -28,6 +28,52 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 			<ButtonGroup align='end'>
 				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
 				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
+			</ButtonGroup>
+		</Modal.Footer>
+	</Modal>;
+};
+
+const ConfirmOwnerChangeWarningModal = ({ onConfirm, onCancel, contentTitle = '', confirmLabel = '', shouldChangeOwner, shouldBeRemoved, ...props }) => {
+	const t = useTranslation();
+
+	let changeOwnerRooms = '';
+	if (shouldChangeOwner.length > 0) {
+		if (shouldChangeOwner.length === 1) {
+			changeOwnerRooms = t('A_new_owner_will_be_assigned_automatically_to_the__roomName__room', { roomName: shouldChangeOwner.pop() });
+		} else if (shouldChangeOwner.length <= 5) {
+			changeOwnerRooms = t('A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__', { count: shouldChangeOwner.length, rooms: shouldChangeOwner.join(', ') });
+		} else {
+			changeOwnerRooms = t('A_new_owner_will_be_assigned_automatically_to__count__rooms', { count: shouldChangeOwner.length });
+		}
+	}
+
+	let removedRooms = '';
+	if (shouldBeRemoved.length > 0) {
+		if (shouldBeRemoved.length === 1) {
+			removedRooms = t('The_empty_room__roomName__will_be_removed_automatically', { roomName: shouldBeRemoved.pop() });
+		} else if (shouldBeRemoved.length <= 5) {
+			removedRooms = t('__count__empty_rooms_will_be_removed_automatically__rooms__', { count: shouldBeRemoved.length, rooms: shouldBeRemoved.join(', ') });
+		} else {
+			removedRooms = t('__count__empty_rooms_will_be_removed_automatically', { count: shouldBeRemoved.length });
+		}
+	}
+
+	return <Modal {...props}>
+		<Modal.Header>
+			<Icon color='danger' name='modal-warning' size={20}/>
+			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
+			<Modal.Close onClick={onCancel}/>
+		</Modal.Header>
+		<Modal.Content fontScale='p1'>
+			{contentTitle}
+
+			{ changeOwnerRooms && <Box marginBlock='x16'><RawText>{changeOwnerRooms}</RawText></Box> }
+			{ removedRooms && <Box marginBlock='x16'><RawText>{removedRooms}</RawText></Box> }
+		</Modal.Content>
+		<Modal.Footer>
+			<ButtonGroup align='end'>
+				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
+				<Button primary danger onClick={onConfirm}>{confirmLabel}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;
@@ -67,20 +113,52 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 	const canEditOtherUserActiveStatus = usePermission('edit-other-user-active-status');
 	const canDeleteUser = usePermission('delete-user');
 
-	const deleteUserQuery = useMemo(() => ({ userId: _id }), [_id]);
-	const deleteUser = useEndpointAction('POST', 'users.delete', deleteUserQuery);
+	const confirmOwnerChanges = (action, modalProps = {}) => async () => {
+		try {
+			return await action();
+		} catch (error) {
+			if (error.xhr?.responseJSON?.errorType === 'user-last-owner') {
+				const { shouldChangeOwner, shouldBeRemoved } = error.xhr.responseJSON.details;
+				setModal(<ConfirmOwnerChangeWarningModal
+					shouldChangeOwner={shouldChangeOwner}
+					shouldBeRemoved={shouldBeRemoved}
+					{...modalProps}
+					onConfirm={async () => {
+						await action(true);
+						setModal();
+					}}
+					onCancel={() => { setModal(); onChange(); }}
+				/>);
+				return;
+			}
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	};
 
-	const willDeleteUser = useCallback(async () => {
-		const result = await deleteUser();
+	const deleteUserQuery = useMemo(() => ({ userId: _id }), [_id]);
+	const deleteUserEndpoint = useEndpoint('POST', 'users.delete');
+
+	const erasureType = useSetting('Message_ErasureType');
+
+	const deleteUser = confirmOwnerChanges(async (confirm = false) => {
+		if (confirm) {
+			deleteUserQuery.confirmRelinquish = confirm;
+		}
+
+		const result = await deleteUserEndpoint(deleteUserQuery);
 		if (result.success) {
 			setModal(<SuccessModal onClose={() => { setModal(); onChange(); }}/>);
 		} else {
 			setModal();
 		}
-	}, [deleteUser]);
+	}, {
+		contentTitle: t(`Delete_User_Warning_${ erasureType }`),
+		confirmLabel: t('Delete'),
+	});
+
 	const confirmDeleteUser = useCallback(() => {
-		setModal(<DeleteWarningModal onDelete={willDeleteUser} onCancel={() => setModal()}/>);
-	}, [deleteUser]);
+		setModal(<DeleteWarningModal onDelete={deleteUser} onCancel={() => setModal()}/>);
+	}, [deleteUserEndpoint]);
 
 	const setAdminStatus = useMethod('setAdminStatus');
 	const changeAdminStatus = useCallback(() => {
@@ -99,7 +177,25 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		activeStatus: !isActive,
 	}), [_id, isActive]);
 	const changeActiveStatusMessage = isActive ? 'User_has_been_deactivated' : 'User_has_been_activated';
-	const changeActiveStatus = useEndpointAction('POST', 'users.setActiveStatus', activeStatusQuery, t(changeActiveStatusMessage));
+	const changeActiveStatusRequest = useEndpoint('POST', 'users.setActiveStatus');
+
+	const changeActiveStatus = confirmOwnerChanges(async (confirm = false) => {
+		if (confirm) {
+			activeStatusQuery.confirmRelinquish = confirm;
+		}
+
+		try {
+			const result = await changeActiveStatusRequest(activeStatusQuery);
+			if (result.success) {
+				dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
+				onChange();
+			}
+		} catch (error) {
+			throw error;
+		}
+	}, {
+		confirmLabel: t('Yes_deactivate_it'),
+	});
 
 	const directMessageClick = () => directRoute.push({
 		rid: username,
@@ -129,10 +225,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		} },
 		...canEditOtherUserActiveStatus && { changeActiveStatus: {
 			label: <><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Deactivate') : t('Activate')}</>,
-			action: async () => {
-				const result = await changeActiveStatus();
-				result.success ? onChange() : undefined;
-			},
+			action: changeActiveStatus,
 		} },
 	}), [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus, canEditOtherUserInfo, canDirectMessage, isActive, isAdmin]);
 
