@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "ஒவ்வொரு பயனரின் வாசிப்பு ரசீதுகளையும் காட்டுகிறது",
   "Message_removed": "செய்தி நீக்கப்பட்டது",
   "Message_sent_by_email": "மின்னஞ்சல் அனுப்பிய செய்தி",
-  "Message_SetNameToAliasEnabled": "செய்தியில் அலிஸ் ஒரு பயனர் பெயர் அமைக்கவும்",
-  "Message_SetNameToAliasEnabled_Description": "ஏற்கனவே மாற்று இல்லையென்றால் மட்டும். பயனர் பெயர் மாற்றப்பட்டால் பழைய செய்திகள் மாற்று மாறாது.",
   "Message_ShowDeletedStatus": "நீக்கப்பட்ட நிலையை காட்ட",
   "Message_ShowEditedStatus": "திருத்தப்பட்ட நிலையை காட்ட",
   "Message_ShowFormattingTips": "ஃபார்மாட்டிங் டிப்ஸ் காட்டு",

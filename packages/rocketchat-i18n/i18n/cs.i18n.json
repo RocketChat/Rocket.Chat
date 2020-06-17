@@ -2415,8 +2415,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Zobrazuje potvrzení o přečtení každého uživatele",
   "Message_removed": "Zpráva odstraněna",
   "Message_sent_by_email": "Zpráva odeslaná emailem",
-  "Message_SetNameToAliasEnabled": "Změnit uživatelské jméno ve zprávě na alias",
-  "Message_SetNameToAliasEnabled_Description": "Jen pokud již není nastaven alias. Alias u starých zpráv nebude změněn",
   "Message_ShowDeletedStatus": "Zobrazit informaci o smazání",
   "Message_ShowEditedStatus": "Zobrazit informaci o editaci",
   "Message_ShowFormattingTips": "Zobrazit tipy na formátování",

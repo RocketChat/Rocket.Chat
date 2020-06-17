@@ -2051,8 +2051,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Mostra os recibos de leitura de cada utilizador ",
   "Message_removed": "Mensagem removida",
   "Message_sent_by_email": "Mensagem enviada por Email",
-  "Message_SetNameToAliasEnabled": "Definir um nome de utilizador para alias na mensagem",
-  "Message_SetNameToAliasEnabled_Description": "Somente se não estiver já definido como um alias. O alias de mensagens antigas não foi alterado se o utilizador alterou o nome.",
   "Message_ShowDeletedStatus": "Mostrar Status Excluído",
   "Message_ShowEditedStatus": "Mostrar Status Editado",
   "Message_ShowFormattingTips": "Exibir dicas de formatação",

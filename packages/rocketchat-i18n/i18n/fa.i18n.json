@@ -1988,8 +1988,6 @@
   "Message_Read_Receipt_Store_Users_Description": "هر رسید خواسته کاربر را نشان می دهد",
   "Message_removed": "پیام حذف",
   "Message_sent_by_email": "پیام فرستاده شده توسط ایمیل",
-  "Message_SetNameToAliasEnabled": "نام کاربری را به نام مستعار در پیام تنظیم کنید",
-  "Message_SetNameToAliasEnabled_Description": "فقط اگر نام مستعار را قبلا تنظیم نکنید. نام کاربری پیام های قدیمی تغییر نکرده است اگر کاربر نام را تغییر داده است.",
   "Message_ShowDeletedStatus": "نمایش وضعیت حذف",
   "Message_ShowEditedStatus": "نمایش وضعیت ویرایش",
   "Message_ShowFormattingTips": "نمایش قالب گذاری",

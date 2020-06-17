@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Näyttää kunkin käyttäjän lukeman kuitit",
   "Message_removed": "Viesti poistettu",
   "Message_sent_by_email": "Viesti lähetetään sähköpostilla",
-  "Message_SetNameToAliasEnabled": "Aseta käyttäjänimi aliakseen viestissä",
-  "Message_SetNameToAliasEnabled_Description": "Ainoastaan jos aliasta ei vielä asetettu. Vanhojen viestien aliasta ei muuteta käyttäjänimen vaihdon yhteydessä.",
   "Message_ShowDeletedStatus": "Näytä poistotila",
   "Message_ShowEditedStatus": "Näytä muokkaustila",
   "Message_ShowFormattingTips": "Näytä muotoiluvihjeet",

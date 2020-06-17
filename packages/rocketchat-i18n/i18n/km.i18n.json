@@ -2044,8 +2044,6 @@
   "Message_Read_Receipt_Store_Users_Description": "បង្ហាញលេខបង្កាន់ដៃអានរបស់អ្នកប្រើនីមួយៗ",
   "Message_removed": "សារ​បាន​លប់",
   "Message_sent_by_email": "សារបានផ្ញើដោយអ៊ីម៉ែល",
-  "Message_SetNameToAliasEnabled": "កំណត់ឈ្មោះអ្នកប្រើទៅឈ្មោះក្លែងក្លាយក្នុងសារ",
-  "Message_SetNameToAliasEnabled_Description": "តែប៉ុណ្ណោះប្រសិនបើមិនទាន់កំណត់ឈ្មោះក្លែងក្លាយទេ។ ឈ្មោះក្លែងក្លាយសារចាស់មិនបានផ្លាស់ប្តូរទេប្រសិនបើអ្នកប្រើបានប្តូរឈ្មោះ។",
   "Message_ShowDeletedStatus": "បង្ហាញ​ស្ថានភាព​ដែល​បាន​លុប",
   "Message_ShowEditedStatus": "បង្ហាញ​ស្ថានភាព​អត្ថបទ​​ដែល​បាន​កែ​សម្រួល",
   "Message_ShowFormattingTips": "បង្ហាញទ្រង់ទ្រាយដំបូន្មាន",

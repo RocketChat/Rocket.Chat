@@ -1844,8 +1844,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Visar varje användares läskvitton",
   "Message_removed": "Meddelandet borttaget",
   "Message_sent_by_email": "Meddelande skickat via e-post",
-  "Message_SetNameToAliasEnabled": "Ange ett användarnamn till alias i meddelande",
-  "Message_SetNameToAliasEnabled_Description": "Endast om inte redan angivet alias. De gamla meddelandena alias ändras inte om användaren har ändrat namnet.",
   "Message_ShowDeletedStatus": "Visa borttagen status",
   "Message_ShowEditedStatus": "Visa Redigerad status",
   "Message_ShowFormattingTips": "Visa formateringstips",

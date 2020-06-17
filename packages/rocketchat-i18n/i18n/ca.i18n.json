@@ -1941,8 +1941,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Mostra els rebuts llegits de cada usuari",
   "Message_removed": "Missatge eliminat",
   "Message_sent_by_email": "Missatge enviat via correu-e",
-  "Message_SetNameToAliasEnabled": "Establir un nom d'usuari com àlies al missatge",
-  "Message_SetNameToAliasEnabled_Description": "Només si encara no s'ha establert àlies. Els àlies dels missatges antics no es canvien si l'usuari ha canviat el nom.",
   "Message_ShowDeletedStatus": "Mostra l'estat 'eliminat'",
   "Message_ShowEditedStatus": "Mostra l'estat 'editat'",
   "Message_ShowFormattingTips": "Mostra suggeriments de formatació",

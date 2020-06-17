@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Montras legxajn ricevojn de ĉiu uzanto",
   "Message_removed": "Mesaĝo forigita",
   "Message_sent_by_email": "Mesaĝo sendita de retpoŝto",
-  "Message_SetNameToAliasEnabled": "Ŝanĝu Uzantnomo al Alias ​​en Mesaĝo",
-  "Message_SetNameToAliasEnabled_Description": "Nur se ne jam starigis alias. La malnovaj mesaĝoj alias ne ŝanĝis se uzanto ŝanĝis la nomon.",
   "Message_ShowDeletedStatus": "Montri forigitan staton",
   "Message_ShowEditedStatus": "Montri redaktitan staton",
   "Message_ShowFormattingTips": "Montri Konsiletojn de formado",

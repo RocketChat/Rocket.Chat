@@ -2362,7 +2362,6 @@
   "Message_Read_Receipt_Store_Users_Description": "თითოეული მომხმარებლის \"წაკითხულია\" შეტყობინების ჩვენება",
   "Message_removed": "შეტყობინება წაშლილია",
   "Message_sent_by_email": "შეტყობინება გაგზავნილია ელ.ფოსტით",
-  "Message_SetNameToAliasEnabled": "შეტყობინებაში ფსევდონიმისტვის სახელის დარქმევა",
   "Message_ShowDeletedStatus": "წაშლილი სტატუსის ჩვენება",
   "Message_ShowEditedStatus": "რედაქტირებული სტატუსის ჩვენება",
   "Message_ShowFormattingTips": "ფორმატრების რჩევების ჩვენება",

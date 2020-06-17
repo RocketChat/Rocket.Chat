@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Rodo kiekvieno vartotojo skaitymo kvitus",
   "Message_removed": "Pranešimas pašalintas",
   "Message_sent_by_email": "Pranešimas išsiųstas el. Paštu",
-  "Message_SetNameToAliasEnabled": "Nustatykite žinutės pavadinimą slapyvardžiu",
-  "Message_SetNameToAliasEnabled_Description": "Tik tada, jei dar nenustatėte slapyvardžio. Senieji pranešimų slapyvardžiai nepakeitė, jei naudotojas pakeitė pavadinimą.",
   "Message_ShowDeletedStatus": "Rodyti ištrintą būseną",
   "Message_ShowEditedStatus": "Rodyti redaguotą būseną",
   "Message_ShowFormattingTips": "Rodyti formatavimo patarimus",

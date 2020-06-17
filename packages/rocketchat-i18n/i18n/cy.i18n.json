@@ -1770,8 +1770,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Yn dangos derbynebau darllen pob defnyddiwr",
   "Message_removed": "Neges wedi'i dynnu",
   "Message_sent_by_email": "Neges a anfonwyd trwy E-bost",
-  "Message_SetNameToAliasEnabled": "Gosod Enw Defnyddiwr i Alias ​​yn Neges",
-  "Message_SetNameToAliasEnabled_Description": "Dim ond os nad yw eisoes yn gosod alias. Nid yw'r hen negeseuon yn wahanol i newid os yw'r defnyddiwr wedi newid yr enw.",
   "Message_ShowDeletedStatus": "Dangos Statws wedi'i Dileu",
   "Message_ShowEditedStatus": "Dangos Statws wedi'i Golygu",
   "Message_ShowFormattingTips": "Dangos Cynghorion Fformatio",

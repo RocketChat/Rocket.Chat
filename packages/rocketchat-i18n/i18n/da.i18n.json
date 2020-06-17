@@ -2321,8 +2321,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Viser hver brugers læsekvitteringer",
   "Message_removed": "Beskeden er fjernet",
   "Message_sent_by_email": "Besked sendt via e-mail",
-  "Message_SetNameToAliasEnabled": "Indstil et brugernavn til alias i besked",
-  "Message_SetNameToAliasEnabled_Description": "Kun hvis ikke allerede angivet alias. De gamle beskeder alias ændres ikke, hvis brugeren har ændret navnet.",
   "Message_ShowDeletedStatus": "Vis slettet status",
   "Message_ShowEditedStatus": "Vis redigeret status",
   "Message_ShowFormattingTips": "Vis formateringstips",

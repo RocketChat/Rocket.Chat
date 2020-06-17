@@ -2242,8 +2242,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Zeigt die Lesebestätigungen jedes Benutzers an",
   "Message_removed": "Die Nachricht wurde entfernt",
   "Message_sent_by_email": "Nachricht per E-Mail versendet",
-  "Message_SetNameToAliasEnabled": "Benutzernamen als Alias verwenden",
-  "Message_SetNameToAliasEnabled_Description": "Hat nur einen Effekt auf neue Nachrichten und falls kein expliziter Alias gesetzt wurde",
   "Message_ShowDeletedStatus": "Löschstatus anzeigen",
   "Message_ShowEditedStatus": "Bearbeitungsstatus anzeigen",
   "Message_ShowFormattingTips": "Formatierungshilfe anzeigen",

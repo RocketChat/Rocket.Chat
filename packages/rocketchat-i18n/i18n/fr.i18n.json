@@ -1932,8 +1932,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Affiche les reçus de lecture de chaque utilisateur",
   "Message_removed": "Message supprimé",
   "Message_sent_by_email": "Message envoyé par Email",
-  "Message_SetNameToAliasEnabled": "Définir un nom d'utilisateur utilisé comme alias dans les messages",
-  "Message_SetNameToAliasEnabled_Description": "Seulement si vous n'avez pas mis un alias. Les anciens messages alias ne sont pas changé si l'utilisateur a changé le nom",
   "Message_ShowDeletedStatus": "Afficher le statut de suppression",
   "Message_ShowEditedStatus": "Afficher le statut de modification",
   "Message_ShowFormattingTips": "Afficher les astuces de mise en forme",

@@ -2231,8 +2231,6 @@
   "Message_Read_Receipt_Store_Users_Description": "显示每个用户的阅读收据",
   "Message_removed": "消息已删除",
   "Message_sent_by_email": "邮件发送的消息",
-  "Message_SetNameToAliasEnabled": "在消息中使用别名作为用户名称",
-  "Message_SetNameToAliasEnabled_Description": "只有在尚未设置别名的情况下。如果用户更改了名称，旧的消息别名不会更改。",
   "Message_ShowDeletedStatus": "显示删除状态",
   "Message_ShowEditedStatus": "显示编辑状态",
   "Message_ShowFormattingTips": "显示排版提示",

@@ -1847,8 +1847,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Viser hver brukers leserkvitteringer",
   "Message_removed": "Melding fjernet",
   "Message_sent_by_email": "Melding sendt via e-post",
-  "Message_SetNameToAliasEnabled": "Angi et brukernavn til alias i melding",
-  "Message_SetNameToAliasEnabled_Description": "Bare hvis ikke allerede satt alias. De gamle meldingene blir ikke endret hvis brukeren har endret navnet.",
   "Message_ShowDeletedStatus": "Vis slettet status",
   "Message_ShowEditedStatus": "Vis redigert status",
   "Message_ShowFormattingTips": "Vis formateringstips",

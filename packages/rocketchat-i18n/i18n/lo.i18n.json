@@ -1772,8 +1772,6 @@
   "Message_Read_Receipt_Store_Users_Description": "ສະແດງໃບຮັບເງິນຂອງຜູ້ອ່ານແຕ່ລະຄົນ",
   "Message_removed": "ຂໍ້ຄວາມການໂຍກຍ້າຍອອກ",
   "Message_sent_by_email": "ຂໍ້ຄວາມທີ່ສົ່ງໂດຍອີເມວ",
-  "Message_SetNameToAliasEnabled": "ຕັ້ງຊື່ຜູ້ໃຊ້ໄປຍັງ Alias ​​ໃນຂໍ້ຄວາມ",
-  "Message_SetNameToAliasEnabled_Description": "ພຽງແຕ່ຖ້າບໍ່ໄດ້ກໍານົດ alias ແລ້ວ. ຊື່ alias ເກົ່າບໍ່ປ່ຽນແປງຖ້າຜູ້ໃຊ້ປ່ຽນຊື່.",
   "Message_ShowDeletedStatus": "ສະແດງໃຫ້ເຫັນສະຖານະທີ່ຖືກລົບ",
   "Message_ShowEditedStatus": "ສະແດງໃຫ້ເຫັນສະຖານະ Edited",
   "Message_ShowFormattingTips": "ສະແດງໃຫ້ເຫັນສິ່ງທີ່ຄວນຮູ້ການຈັດຮູບແບບ",

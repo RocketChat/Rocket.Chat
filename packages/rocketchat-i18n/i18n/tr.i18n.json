@@ -2089,8 +2089,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Her kullanıcının okundu bilgisi bilgilerini gösterir",
   "Message_removed": "İleti silindi",
   "Message_sent_by_email": "İleti e-posta aracılığıyla gönderildi",
-  "Message_SetNameToAliasEnabled": "Mesajda Diğer Adları Diğerine Ayarlayın",
-  "Message_SetNameToAliasEnabled_Description": "Yalnızca zaten takma ad ayarlamadıysa. Kullanıcı, adını değiştirirse eski iletilerdeki takma ad değişmez.",
   "Message_ShowDeletedStatus": "Silinen Durumu Göster",
   "Message_ShowEditedStatus": "Düzenlenen Durumu Göster",
   "Message_ShowFormattingTips": "Biçimlendirme İpuçlarını göster",

@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Afișează chitanțele de citire ale fiecărui utilizator",
   "Message_removed": "Mesaj eliminat",
   "Message_sent_by_email": "Mesajul trimis prin e-mail",
-  "Message_SetNameToAliasEnabled": "Setați un nume de utilizator în alias în mesaj",
-  "Message_SetNameToAliasEnabled_Description": "Numai dacă nu este deja setat un alias. Vechiul mesaj alias nu sa schimbat dacă utilizatorul a schimbat numele.",
   "Message_ShowDeletedStatus": "Afișare starea de ștergere",
   "Message_ShowEditedStatus": "Afișează starea de editare",
   "Message_ShowFormattingTips": "Arată sugestii de formatare",

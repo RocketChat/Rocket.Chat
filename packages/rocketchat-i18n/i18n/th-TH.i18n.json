@@ -1772,8 +1772,6 @@
   "Message_Read_Receipt_Store_Users_Description": "แสดงรายรับการอ่านของผู้ใช้แต่ละราย",
   "Message_removed": "ลบข้อความแล้ว",
   "Message_sent_by_email": "ข้อความที่ส่งทางอีเมล",
-  "Message_SetNameToAliasEnabled": "ตั้งชื่อผู้ใช้เป็นนามแฝงในข้อความ",
-  "Message_SetNameToAliasEnabled_Description": "เฉพาะในกรณีที่ยังไม่ได้ตั้งค่านามแฝง ชื่อแทนของข้อความเก่าไม่มีการเปลี่ยนแปลงหากผู้ใช้เปลี่ยนชื่อ",
   "Message_ShowDeletedStatus": "แสดงสถานะที่ถูกลบ",
   "Message_ShowEditedStatus": "แสดงสถานะที่แก้ไข",
   "Message_ShowFormattingTips": "แสดงเคล็ดลับการฟอร์แมต",

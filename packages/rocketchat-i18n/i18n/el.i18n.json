@@ -1779,8 +1779,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Εμφανίζει τις αποδείξεις ανάγνωσης κάθε χρήστη",
   "Message_removed": "Το μήνυμα αφαιρέθηκε",
   "Message_sent_by_email": "Μήνυμα αποστέλλεται με Email",
-  "Message_SetNameToAliasEnabled": "Ορίστε ένα όνομα χρήστη σε ψευδώνυμο στο μήνυμα",
-  "Message_SetNameToAliasEnabled_Description": "Μόνο αν δεν έχει ήδη οριστεί ψευδώνυμο. Τα παλιά ψευδώνυμα μηνυμάτων δεν αλλάζουν αν ο χρήστης έχει αλλάξει το όνομα.",
   "Message_ShowDeletedStatus": "Εμφάνιση Διαγραμμένης Κατάστασης",
   "Message_ShowEditedStatus": "Εμφάνιση Επεξεργασμένης Κατάστασης",
   "Message_ShowFormattingTips": "Εμφάνιση μορφοποίηση Συμβουλές",

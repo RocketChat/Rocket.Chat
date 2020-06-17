@@ -2086,8 +2086,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Megjeleníti az egyes felhasználók olvasott beérkezéseit",
   "Message_removed": "üzenet eltávolított",
   "Message_sent_by_email": "Az e-mailben küldött üzenet",
-  "Message_SetNameToAliasEnabled": "Állítsa be a felhasználónevet az alias üzenetben",
-  "Message_SetNameToAliasEnabled_Description": "Csak akkor, ha még nem adta meg az álnevet. A régi üzenet alias nem változik, ha a felhasználó megváltoztatta a nevet.",
   "Message_ShowDeletedStatus": "Törölt állapota",
   "Message_ShowEditedStatus": "Mutasd Szerkesztette állapota",
   "Message_ShowFormattingTips": "Itt található Formázási tippek",

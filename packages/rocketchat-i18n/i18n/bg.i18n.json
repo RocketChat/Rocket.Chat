@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Показва разписките за четене на всеки потребител",
   "Message_removed": "Съобщението бе премахнато",
   "Message_sent_by_email": "Съобщението е изпратено по имейл",
-  "Message_SetNameToAliasEnabled": "Задайте потребителско име на псевдоним в съобщението",
-  "Message_SetNameToAliasEnabled_Description": "Само ако не е зададен псевдоним. Старият псевдоним на съобщенията не се променя, ако потребителят е променил името.",
   "Message_ShowDeletedStatus": "Показване на изтрит статус",
   "Message_ShowEditedStatus": "Показване на редактираното състояние",
   "Message_ShowFormattingTips": "Показване на съвети за форматиране",

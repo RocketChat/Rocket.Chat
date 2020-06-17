@@ -1777,8 +1777,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Parāda katra lietotāja izlasītos ienākošos ziņojumus",
   "Message_removed": "Ziņojums ir noņemts",
   "Message_sent_by_email": "Ziņojums nosūtīts pa e-pastu",
-  "Message_SetNameToAliasEnabled": "Iestatiet lietotāja vārdu uz aizstājvārdu ziņojumā",
-  "Message_SetNameToAliasEnabled_Description": "Tikai tad, ja vēl neesat iestatījis aizstājvārdu. Vecais ziņu aizstajvārds nemainās, ja lietotājs ir nomainījis vārdu.",
   "Message_ShowDeletedStatus": "Rādīt izdzēsto statusu",
   "Message_ShowEditedStatus": "Rādīt laboto statusu",
   "Message_ShowFormattingTips": "Parādīt formatēšanas padomus",

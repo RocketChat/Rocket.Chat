@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "لعرض إيصالات القراءة لكل مستخدم",
   "Message_removed": "تم حذف الرسالة",
   "Message_sent_by_email": "الرسالة المرسلة بالبريد الإلكتروني",
-  "Message_SetNameToAliasEnabled": "تعيين اسم المستخدم إلى الاسم المستعار في الرسالة",
-  "Message_SetNameToAliasEnabled_Description": "فقط إذا لم يتم تعيين الاسم المستعار بالفعل. لم يتم تغيير الاسم المستعار للرسائل القديمة إذا غير المستخدم الاسم.",
   "Message_ShowDeletedStatus": "عرض حالة التعديل",
   "Message_ShowEditedStatus": "عرض حالة الحذف",
   "Message_ShowFormattingTips": "اظهار نصائح التنسيق",

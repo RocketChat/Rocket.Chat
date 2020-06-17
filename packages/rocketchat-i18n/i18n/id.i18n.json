@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Menampilkan tanda terima setiap pengguna",
   "Message_removed": "Pesan telah dihapus",
   "Message_sent_by_email": "Pesan dikirim melalui Email",
-  "Message_SetNameToAliasEnabled": "Tetapkan Nama Pengguna ke Alias ​​di Pesan",
-  "Message_SetNameToAliasEnabled_Description": "Hanya kalau belum sudah set alias. Pesan lama alias tidak berubah jika pengguna telah mengganti namanya.",
   "Message_ShowDeletedStatus": "Tampilkan Status Penghapusan",
   "Message_ShowEditedStatus": "Tampilkan Status Perubahan",
   "Message_ShowFormattingTips": "Tampilkan tips formatting",

@@ -1497,8 +1497,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Показује приходе за читање сваког корисника",
   "Message_removed": "Порука уклоњена",
   "Message_sent_by_email": "Порука послата путем е-поште",
-  "Message_SetNameToAliasEnabled": "Подешавање корисничког имена у име псеудоним у поруци",
-  "Message_SetNameToAliasEnabled_Description": "Само ако није већ постављено псеудоним. Стара звучна порука није промењена ако је корисник променио име.",
   "Message_ShowDeletedStatus": "Схов Делетед статус",
   "Message_ShowEditedStatus": "Схов Измењено Статус",
   "Message_ShowFormattingTips": "Схов Савети за обликовање",

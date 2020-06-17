@@ -1764,8 +1764,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Hiển thị biên nhận đã đọc của mỗi người dùng",
   "Message_removed": "Đã xoá tin nhắn",
   "Message_sent_by_email": "Tin nhắn được gửi bằng Email",
-  "Message_SetNameToAliasEnabled": "Đặt tên người dùng thành Bí danh trong tin nhắn",
-  "Message_SetNameToAliasEnabled_Description": "Chỉ khi chưa được đặt bí danh. Bí danh bí thư cũ không bị thay đổi nếu người dùng thay đổi tên.",
   "Message_ShowDeletedStatus": "Hiển thị trạng thái đã Xóa",
   "Message_ShowEditedStatus": "Hiển thị trạng thái đã chỉnh sửa",
   "Message_ShowFormattingTips": "Hiển thị Mẹo Định dạng",

@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Hər bir istifadəçinin oxunuşun daxilolmalarını göstərir",
   "Message_removed": "Mesaj silindi",
   "Message_sent_by_email": "E-poçt ilə göndərilən mesaj",
-  "Message_SetNameToAliasEnabled": "İstifadəçi adını mesajda alias təyin edin",
-  "Message_SetNameToAliasEnabled_Description": "Yalnız artıq alias olmadıqda. İstifadəçi adını dəyişdirsə köhnə mesajların takma adı dəyişdirilməyib.",
   "Message_ShowDeletedStatus": "Silinmiş vəziyyəti göstər",
   "Message_ShowEditedStatus": "Edilmiş status göstər",
   "Message_ShowFormattingTips": "Formatlaşdırma haqqında göstərişləri göstərin",

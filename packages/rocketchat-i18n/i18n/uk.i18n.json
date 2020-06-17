@@ -2239,8 +2239,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Показує квитанції читання кожного користувача",
   "Message_removed": "повідомлення видалено",
   "Message_sent_by_email": "Повідомлення надіслано по електронній пошті",
-  "Message_SetNameToAliasEnabled": "Встановити ім'я користувача псевдонім у повідомленні",
-  "Message_SetNameToAliasEnabled_Description": "Тільки якщо ще не встановлено псевдонім. Старий псевдонім повідомлень не змінюється, якщо користувач змінив ім'я.",
   "Message_ShowDeletedStatus": "виключають Статус",
   "Message_ShowEditedStatus": "Показати відредагованого стану",
   "Message_ShowFormattingTips": "Показати Поради щодо форматування",

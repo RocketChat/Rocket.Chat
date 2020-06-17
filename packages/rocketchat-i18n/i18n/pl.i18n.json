@@ -2404,8 +2404,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Pokazuje potwierdzenia odczytu każdego użytkownika",
   "Message_removed": "Wiadomość usunięta",
   "Message_sent_by_email": "Wiadomość wysłana przez e-mail",
-  "Message_SetNameToAliasEnabled": "Ustaw nazwę użytkownika na alias w wiadomości",
-  "Message_SetNameToAliasEnabled_Description": "Tylko jeśli nie masz już ustawionego aliasu. Stary alias wiadomości nie został zmieniony, jeśli użytkownik zmienił nazwę.",
   "Message_ShowDeletedStatus": "Pokaż informację o usunięciu",
   "Message_ShowEditedStatus": "Pokaż informację o edycji",
   "Message_ShowFormattingTips": "Pokaż porady formatowania wiadomości",

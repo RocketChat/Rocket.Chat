@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Menunjukkan setiap resit baca pengguna",
   "Message_removed": "Mesej dipadam",
   "Message_sent_by_email": "Mesej dihantar melalui E-mel",
-  "Message_SetNameToAliasEnabled": "Tetapkan Nama Pengguna kepada Alias ​​dalam Mesej",
-  "Message_SetNameToAliasEnabled_Description": "Hanya jika tidak sudah menetapkan alias. Mesej lama alias tidak diubah jika pengguna telah mengubah nama.",
   "Message_ShowDeletedStatus": "Tunjuk Status Pemadaman",
   "Message_ShowEditedStatus": "Tunjuk Status Penyuntingan",
   "Message_ShowFormattingTips": "Tunjuk Tip Pemformatan",

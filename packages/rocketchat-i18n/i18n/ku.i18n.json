@@ -1772,8 +1772,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Hemî bikarhênerên xwendina xwendina xwendinê nîşan dide",
   "Message_removed": "Message rakirin",
   "Message_sent_by_email": "Peyama şandin Email",
-  "Message_SetNameToAliasEnabled": "Navê Peyama Alî ya Navnîşek bikar bîne",
-  "Message_SetNameToAliasEnabled_Description": "Tenê heke hema bi navê berê nehatiye sazkirin. Peyamên kevnên ku navê bikarhêner navekî guhertin nayê guhertin.",
   "Message_ShowDeletedStatus": "Show Status Deleted",
   "Message_ShowEditedStatus": "Nîşan Status Edited",
   "Message_ShowFormattingTips": "Nîşan Tips Meriv",

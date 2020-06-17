@@ -2372,8 +2372,6 @@
   "Message_Read_Receipt_Store_Users_Description": "顯示每個使用者的讀取收件人",
   "Message_removed": "訊息已刪除",
   "Message_sent_by_email": "由電子郵件發送訊息",
-  "Message_SetNameToAliasEnabled": "在訊息中將使用者名稱設定為別名",
-  "Message_SetNameToAliasEnabled_Description": "只有在尚未設定別名的情況下。如果使用者更改了名稱，舊的訊息別名不會更改。",
   "Message_ShowDeletedStatus": "顯示刪除狀態",
   "Message_ShowEditedStatus": "顯示編輯狀態",
   "Message_ShowFormattingTips": "顯示格式編排提醒",

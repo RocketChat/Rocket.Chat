@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Toon elke gebruiker se leesontvangste",
   "Message_removed": "Boodskap verwyder",
   "Message_sent_by_email": "Boodskap gestuur per e-pos",
-  "Message_SetNameToAliasEnabled": "Stel 'n gebruikersnaam op alias in Boodskap",
-  "Message_SetNameToAliasEnabled_Description": "Slegs indien nie alias alreeds ingestel nie. Die ou boodskappe alias word nie verander as die gebruiker die naam verander het nie.",
   "Message_ShowDeletedStatus": "Wys uitgevee status",
   "Message_ShowEditedStatus": "Wys gewysigde status",
   "Message_ShowFormattingTips": "Wys formatering wenke",

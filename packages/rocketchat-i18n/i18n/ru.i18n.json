@@ -2227,8 +2227,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Показывает квитанции каждого пользователя",
   "Message_removed": "Сообщение удалено",
   "Message_sent_by_email": "Сообщение отправлено по электронной почте",
-  "Message_SetNameToAliasEnabled": "Установить имя пользователя в качестве псевдонима в сообщении",
-  "Message_SetNameToAliasEnabled_Description": "Только если не установлен псевдоним. Псевдоним в старых сообщениях не изменится, если пользователь изменит имя.",
   "Message_ShowDeletedStatus": "Отображать статус \"Удалено\"",
   "Message_ShowEditedStatus": "Отображать статус \"Отредактировано\"",
   "Message_ShowFormattingTips": "Показывать советы по форматированию",

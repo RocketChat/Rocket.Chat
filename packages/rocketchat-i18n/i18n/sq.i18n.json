@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Tregon faturat e lexuara të secilit përdorues",
   "Message_removed": "Masazhi është fshirë",
   "Message_sent_by_email": "Mesazhi i dërguar nga Email",
-  "Message_SetNameToAliasEnabled": "Vendosni një emër përdoruesi në Alias ​​në mesazh",
-  "Message_SetNameToAliasEnabled_Description": "Vetëm nëse nuk është vendosur tashmë alias. Mesazhet e vjetra nuk ndryshojnë nëse përdoruesi ka ndryshuar emrin.",
   "Message_ShowDeletedStatus": "Shiko statusin e fshirë",
   "Message_ShowEditedStatus": "Shiko statusin e rregulluar",
   "Message_ShowFormattingTips": "Trego këshilat e formatimit",

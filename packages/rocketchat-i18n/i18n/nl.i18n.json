@@ -1902,8 +1902,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Toont de leesbevestigingen van elke gebruiker",
   "Message_removed": "Bericht verwijderd",
   "Message_sent_by_email": "Bericht verzonden per e-mail",
-  "Message_SetNameToAliasEnabled": "Stel een gebruikersnaam in op Alias ​​in bericht",
-  "Message_SetNameToAliasEnabled_Description": "Alleen als dit nog niet alias is ingesteld. De alias van de oude berichten is niet gewijzigd als de gebruiker de naam heeft gewijzigd.",
   "Message_ShowDeletedStatus": "Toon Verwijderde Status",
   "Message_ShowEditedStatus": "Toon Gewijzigde Status",
   "Message_ShowFormattingTips": "Toon opmaaktips",

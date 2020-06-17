@@ -1771,8 +1771,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Prikazuje primitke čitanja svakog korisnika",
   "Message_removed": "Poruka je maknuta",
   "Message_sent_by_email": "Poruka poslana putem e-pošte",
-  "Message_SetNameToAliasEnabled": "Namjesti pseudonim kao korisničko ime u poruci",
-  "Message_SetNameToAliasEnabled_Description": "Samo ako već niste namjestili pseudonim. Pseudonim u starim porukama neće biti promjenjen ako je korisnik mijenjao ime.",
   "Message_ShowDeletedStatus": "Pokaži Izbrisan status",
   "Message_ShowEditedStatus": "Prikaži uređeni status",
   "Message_ShowFormattingTips": "Prikaži Savjete za oblikovanje",

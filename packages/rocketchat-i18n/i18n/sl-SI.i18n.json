@@ -1771,8 +1771,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Prikaži potrdila o prebranem sporočilu za vsakega uporabnika",
   "Message_removed": "Sporočilo odstranjeno",
   "Message_sent_by_email": "Sporočilo poslano po e-pošti",
-  "Message_SetNameToAliasEnabled": "Nastavite uporabniško ime za vzdevek v sporočilu",
-  "Message_SetNameToAliasEnabled_Description": "Samo, če še ni določen vzdevek. Stari vzdevek sporočil ni spremenjen, če je uporabnik spremenil ime.",
   "Message_ShowDeletedStatus": "Pokaži izbrisano stanje",
   "Message_ShowEditedStatus": "Prikaži spremenjeno stanje",
   "Message_ShowFormattingTips": "Prikaži nasvete za oblikovanje",

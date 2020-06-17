@@ -1966,8 +1966,6 @@
   "Message_Read_Receipt_Store_Users_Description": "각 사용자의 읽음 확인 정보를 표시합니다.",
   "Message_removed": "메시지 삭제",
   "Message_sent_by_email": "이메일로 보낸 메시지",
-  "Message_SetNameToAliasEnabled": "메시지에서 사용자명을 별칭으로 설정",
-  "Message_SetNameToAliasEnabled_Description": "칭별명을 설정하지 않은 경우에만. 사용자가 이름을 변경해도 이전 메시지의 별명은 변경되지 않습니다.",
   "Message_ShowDeletedStatus": "삭제 상태 확인",
   "Message_ShowEditedStatus": "수정 상태 확인",
   "Message_ShowFormattingTips": "메시지 형식 도움말 표시",

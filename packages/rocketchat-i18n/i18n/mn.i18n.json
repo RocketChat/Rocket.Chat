@@ -1773,8 +1773,6 @@
   "Message_Read_Receipt_Store_Users_Description": "Хэрэглэгчийн уншсан орлого бүрийг харуулна",
   "Message_removed": "Мессежийг устгасан",
   "Message_sent_by_email": "Имэйлээр илгээгдсэн зурвас",
-  "Message_SetNameToAliasEnabled": "Мессеж дэх нэрийг тохируулах",
-  "Message_SetNameToAliasEnabled_Description": "Аль хэдийн alias гэж тохируулаагүй л бол. Хэрэглэгч нэрээ сольсон тохиолдолд хуучин зурвасууд өөрчилөгдөхгүй.",
   "Message_ShowDeletedStatus": "Устсан статусыг харуулах",
   "Message_ShowEditedStatus": "Эдэлгээний статусыг харуулах",
   "Message_ShowFormattingTips": "Форматлах зөвлөмжийг харуулах",
