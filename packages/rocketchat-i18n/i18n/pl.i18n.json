@@ -362,7 +362,6 @@
   "API_Upper_Count_Limit": "Maksymalna ilość rekordów",
   "API_Upper_Count_Limit_Description": "Jaka jest maksymalna liczba rekordów, które powinien zwrócić interfejs REST API (jeśli nie są nieograniczone)?",
   "API_Use_REST_For_DDP_Calls": "Użyj REST zamiast websocketów dla wywołań metod Meteor",
-  "API_Use_REST_For_DDP_Calls_Alert": "To jest eksperymentalna i tymczasowa funkcja. Wymusza dla klienta web i aplikacji mobilnej wykorzystywanie requestów REST zamiast websocketów przy wywołaniach metod Meteor",
   "API_User_Limit": "Limit użytkownika dotyczący dodawania wszystkich użytkowników do kanału",
   "API_Wordpress_URL": "WordPress URL",
   "Apiai_Key": "Klucz Api.ai",

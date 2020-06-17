@@ -368,7 +368,6 @@
   "API_Upper_Count_Limit": "Maximální počet",
   "API_Upper_Count_Limit_Description": "Kolik nejvíce záznamů smí REST API vrátit (pokud není limitovaná)",
   "API_Use_REST_For_DDP_Calls": "Použít místo websocketů REST",
-  "API_Use_REST_For_DDP_Calls_Alert": "Experimentální a dočasné nastavení. Donutí webové a mobilní aplikace použít REST rozhraní místo websocketů.",
   "API_Wordpress_URL": "WordPress URL",
   "Apiai_Key": "Api.ai Klíč",
   "Apiai_Language": "Api.ai Jazyk",
