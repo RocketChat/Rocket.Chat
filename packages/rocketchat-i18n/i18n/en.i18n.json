@@ -2408,6 +2408,7 @@
   "Message_HideType_subscription_role_removed": "Hide \"Role No Longer Defined\" messages",
   "Message_HideType_room_archived": "Hide \"Room Archived\" messages",
   "Message_HideType_room_unarchived": "Hide \"Room Unarchived\" messages",
+  "Message_HideType_room_changed_privacy": "Hide \"Room type changed\" messages",
   "Hide_System_Messages": "Hide System Messages",
   "Message_Id": "Message Id",
   "Message_Ignored": "This message was ignored",
