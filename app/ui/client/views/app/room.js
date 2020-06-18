@@ -673,11 +673,15 @@ Template.room.events({
 			button.action.call(this, event, template);
 		}
 	},
-	'click .js-follow-thread'() {
+	'click .js-follow-thread'(e) {
+		e.preventDefault();
+		e.stopPropagation();
 		const { msg } = messageArgs(this);
 		call('followMessage', { mid: msg._id });
 	},
-	'click .js-unfollow-thread'() {
+	'click .js-unfollow-thread'(e) {
+		e.preventDefault();
+		e.stopPropagation();
 		const { msg } = messageArgs(this);
 		call('unfollowMessage', { mid: msg._id });
 	},

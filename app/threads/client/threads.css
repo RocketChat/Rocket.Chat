@@ -101,10 +101,11 @@
 	}
 
 	& .thread-quote {
+		font-size: 12px;
 
 		display: flex;
 
-		margin: calc((var(--default-padding) /2) - 2px) 0 2px 0;
+		margin: 0 -24px 8px -24px;
 		align-items: center;
 	}
 
@@ -133,7 +134,7 @@
 	}
 
 	& .thread-reply-preview {
-		display: none;
+		font-size: 12px;
 		overflow: hidden;
 
 		white-space: nowrap;
@@ -154,7 +155,7 @@
 	margin-top: calc(var(--default-padding) / 2);
 }
 
-.message.collapsed > .thread-replied > .thumb {
+.message > .thread-replied > .thumb {
 	bottom: 0;
 	left: 40px;
 
@@ -164,9 +165,9 @@
 	margin-bottom: auto;
 	margin-left: 0;
 
-	& .avatar {
-		width: 20px;
-		height: 20px;
+	& > .avatar {
+		width: 20px !important;
+		height: 20px !important;
 	}
 }
 
