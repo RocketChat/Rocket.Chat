@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Button, ButtonGroup, Icon, Box, Divider, Chip, Margins, Skeleton } from '@rocket.chat/fuselage';
 
 import Page from '../../components/basic/Page';
@@ -112,7 +112,7 @@ export default function AppDetailsPage({ id }) {
 	const data = useAppInfo(id);
 
 	const router = useRoute('admin-apps');
-	const handleReturn = useCallback(() => router.push({}));
+	const handleReturn = () => router.push({});
 
 	const isLoggedIn = useLoggedInCloud();
 

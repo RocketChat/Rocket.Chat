@@ -21,7 +21,7 @@ export const useFilteredMarketplaceApps = ({ text, sort, current, itemsPerPage }
 			return [filtered, filteredLength];
 		}
 		return [null, 0];
-	}, [text, sort[1], dataCache, current, itemsPerPage]);
+	}, [text, sort, data, dataCache, current, itemsPerPage]);
 
 	return [...filteredValues];
 };

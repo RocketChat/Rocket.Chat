@@ -30,7 +30,7 @@ export const useAppInfo = (appId) => {
 
 			setAppData({ ...app, bundledIn });
 		})();
-	}, [dataCache]);
+	}, [appId, data, dataCache]);
 
 	return appData;
 };

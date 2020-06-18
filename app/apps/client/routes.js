@@ -4,26 +4,13 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { registerAdminRoute } from '../../../client/admin';
 import { Apps } from './orchestrator';
 
-registerAdminRoute('/apps/what-is-it', {
-	name: 'apps-what-is-it',
-	action: async () => {
-		// TODO: render loading indicator
-		await import('./admin/views');
-		if (await Apps.isEnabled()) {
-			FlowRouter.go('apps');
-		} else {
-			BlazeLayout.render('main', { center: 'appWhatIsIt' });
-		}
-	},
-});
-
 const createAppsRouteAction = (centerTemplate) => async () => {
 	// TODO: render loading indicator
 	if (await Apps.isEnabled()) {
 		await import('./admin/views');
 		BlazeLayout.render('main', { center: centerTemplate, old: true }); // TODO remove old
 	} else {
-		FlowRouter.go('apps-what-is-it');
+		FlowRouter.go('admin-apps-disabled');
 	}
 };
 

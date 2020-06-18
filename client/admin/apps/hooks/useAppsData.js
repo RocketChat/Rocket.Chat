@@ -27,57 +27,58 @@ export function useAppsData() {
 
 	const getDataCopy = () => ref.current.slice(0);
 
-	const handleAppAddedOrUpdated = async (appId) => {
-		try {
-			const { status, version } = await Apps.getApp(appId);
-			const app = await Apps.getAppFromMarketplace(appId, version);
-			const updatedData = getDataCopy();
-			const index = updatedData.findIndex(({ id }) => id === appId);
-			updatedData[index] = {
-				...app,
-				installed: true,
-				status,
-				version,
-				marketplaceVersion: app.version,
-			};
-			setData(updatedData);
-			invalidateData();
-		} catch (error) {
-			handleAPIError(error);
-		}
-	};
-
-	const listeners = {
-		APP_ADDED: handleAppAddedOrUpdated,
-		APP_UPDATED: handleAppAddedOrUpdated,
-		APP_REMOVED: (appId) => {
-			const updatedData = getDataCopy();
-			const app = updatedData.find(({ id }) => id === appId);
-			if (!app) {
-				return;
-			}
-			delete app.installed;
-			delete app.status;
-			app.version = app.marketplaceVersion;
-
-			setData(updatedData);
-			invalidateData();
-		},
-		APP_STATUS_CHANGE: ({ appId, status }) => {
-			const updatedData = getDataCopy();
-			const app = updatedData.find(({ id }) => id === appId);
-
-			if (!app) {
-				return;
-			}
-			app.status = status;
-			setData(updatedData);
-			invalidateData();
-		},
-	};
-
 	useEffect(() => {
+		const handleAppAddedOrUpdated = async (appId) => {
+			try {
+				const { status, version } = await Apps.getApp(appId);
+				const app = await Apps.getAppFromMarketplace(appId, version);
+				const updatedData = getDataCopy();
+				const index = updatedData.findIndex(({ id }) => id === appId);
+				updatedData[index] = {
+					...app,
+					installed: true,
+					status,
+					version,
+					marketplaceVersion: app.version,
+				};
+				setData(updatedData);
+				invalidateData();
+			} catch (error) {
+				handleAPIError(error);
+			}
+		};
+
+		const listeners = {
+			APP_ADDED: handleAppAddedOrUpdated,
+			APP_UPDATED: handleAppAddedOrUpdated,
+			APP_REMOVED: (appId) => {
+				const updatedData = getDataCopy();
+				const app = updatedData.find(({ id }) => id === appId);
+				if (!app) {
+					return;
+				}
+				delete app.installed;
+				delete app.status;
+				app.version = app.marketplaceVersion;
+
+				setData(updatedData);
+				invalidateData();
+			},
+			APP_STATUS_CHANGE: ({ appId, status }) => {
+				const updatedData = getDataCopy();
+				const app = updatedData.find(({ id }) => id === appId);
+
+				if (!app) {
+					return;
+				}
+				app.status = status;
+				setData(updatedData);
+				invalidateData();
+			},
+		};
+
 		const unregisterListeners = registerListeners(listeners);
+
 		(async () => {
 			try {
 				const marketAndInstalledApps = await Promise.all([Apps.getAppsFromMarketplace(), Apps.getApps()]);

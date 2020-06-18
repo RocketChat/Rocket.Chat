@@ -22,12 +22,83 @@ const FilterByText = React.memo(({ setFilter, ...props }) => {
 
 	useEffect(() => {
 		setFilter({ text });
-	}, [text]);
+	}, [setFilter, text]);
 
 	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 		<TextInput placeholder={t('Search_Apps')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 });
+
+const MarketplaceRow = ({
+	handler,
+	isBig,
+	isLoggedIn,
+	isMedium,
+	setModal,
+	...props
+}) => {
+	const {
+		author: { name: authorName },
+		name,
+		id,
+		description,
+		categories,
+		purchaseType,
+		pricingPlans,
+		price,
+		iconFileData,
+		marketplaceVersion,
+		iconFileContent,
+		installed,
+	} = props;
+	const t = useTranslation();
+	const [showStatus, setShowStatus] = useState(false);
+
+	const toggleShow = (state) => () => setShowStatus(state);
+
+	const preventDefault = useCallback((e) => {
+		e.preventDefault();
+		e.stopPropagation();
+	}, []);
+
+	return <Table.Row
+		key={id}
+		data-id={id}
+		data-version={marketplaceVersion}
+		onKeyDown={handler}
+		onClick={handler}
+		tabIndex={0}
+		role='link'
+		action
+		onMouseEnter={toggleShow(true)}
+		onMouseLeave={toggleShow(false)}
+	>
+		<Table.Cell withTruncatedText display='flex' flexDirection='row'>
+			<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
+			<Box display='flex' flexDirection='column' alignSelf='flex-start'>
+				<Box color='default' fontScale='p2'>{name}</Box>
+				<Box color='default' fontScale='p2'>{`${ t('By') } ${ authorName }`}</Box>
+			</Box>
+		</Table.Cell>
+		{isBig && <Table.Cell>
+			<Box display='flex' flexDirection='column'>
+				<Box color='default' withTruncatedText>{description}</Box>
+				{categories && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
+					{categories.map((current) => <Tag disabled key={current} mie='x4'>{current}</Tag>)}
+				</Box>}
+			</Box>
+		</Table.Cell>}
+		{isMedium && <Table.Cell >
+			<PriceDisplay {...{ purchaseType, pricingPlans, price }} />
+		</Table.Cell>}
+		<Table.Cell withTruncatedText>
+			<Box display='flex' flexDirection='row' alignItems='center' onClick={preventDefault}>
+				<AppStatus app={props} setModal={setModal} isLoggedIn={isLoggedIn} showStatus={showStatus} mie='x4'/>
+				{installed && <AppMenu display={showStatus ? 'block' : 'none'} app={props} setModal={setModal} isLoggedIn={isLoggedIn} mis='x4'/>}
+			</Box>
+		</Table.Cell>
+	</Table.Row>;
+};
 
 export function MarketplaceTable({ setModal }) {
 	const t = useTranslation();
@@ -52,13 +123,12 @@ export function MarketplaceTable({ setModal }) {
 
 		const { id, version } = e.currentTarget.dataset;
 
-
 		router.push({
 			context: 'details',
 			version,
 			id,
 		});
-	}, []);
+	}, [router]);
 
 	const onHeaderClick = useCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -75,57 +145,16 @@ export function MarketplaceTable({ setModal }) {
 		isBig && <Th key={'details'}>{t('Details')}</Th>,
 		isMedium && <Th key={'price'}>{t('Price')}</Th>,
 		<Th key={'status'} w='x160'>{t('Status')}</Th>,
-	].filter(Boolean), [sort, isBig, isMedium]);
+	].filter(Boolean), [sort, onHeaderClick, isMedium, t, isBig]);
 
-	const renderRow = useCallback((props) => {
-		const {
-			author: { name: authorName },
-			name,
-			id,
-			description,
-			categories,
-			purchaseType,
-			pricingPlans,
-			price,
-			iconFileData,
-			marketplaceVersion,
-			iconFileContent,
-			installed,
-		} = props;
-
-		const [showStatus, setShowStatus] = useState(false);
-
-		const toggleShow = (state) => () => setShowStatus(state);
-
-		const preventDefault = useCallback((e) => { e.preventDefault(); e.stopPropagation(); }, []);
-
-		return useMemo(() => <Table.Row key={id} data-id={id} data-version={marketplaceVersion} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
-			<Table.Cell withTruncatedText display='flex' flexDirection='row'>
-				<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
-				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
-					<Box color='default' fontScale='p2'>{name}</Box>
-					<Box color='default' fontScale='p2'>{`${ t('By') } ${ authorName }`}</Box>
-				</Box>
-			</Table.Cell>
-			{isBig && <Table.Cell>
-				<Box display='flex' flexDirection='column'>
-					<Box color='default' withTruncatedText>{description}</Box>
-					{categories && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
-						{categories.map((current) => <Tag disabled key={current} mie='x4'>{current}</Tag>)}
-					</Box>}
-				</Box>
-			</Table.Cell>}
-			{isMedium && <Table.Cell >
-				<PriceDisplay {...{ purchaseType, pricingPlans, price }} />
-			</Table.Cell>}
-			<Table.Cell withTruncatedText>
-				<Box display='flex' flexDirection='row' alignItems='center' onClick={preventDefault}>
-					<AppStatus app={props} setModal={setModal} isLoggedIn={isLoggedIn} showStatus={showStatus} mie='x4'/>
-					{installed && <AppMenu display={showStatus ? 'block' : 'none'} app={props} setModal={setModal} isLoggedIn={isLoggedIn} mis='x4'/>}
-				</Box>
-			</Table.Cell>
-		</Table.Row>, [showStatus, isMedium, isBig, JSON.stringify(props)]);
-	}, [isMedium, isBig, isLoggedIn]);
+	const renderRow = useCallback((props) => <MarketplaceRow
+		handler={handler}
+		isBig={isBig}
+		isLoggedIn={isLoggedIn}
+		isMedium={isMedium}
+		setModal={setModal}
+		{...props}
+	/>, [handler, isBig, isLoggedIn, isMedium, setModal]);
 
 	return <GenericTable
 		ref={ref}

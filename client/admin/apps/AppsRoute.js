@@ -2,39 +2,57 @@ import React, { useState, useEffect } from 'react';
 
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { Apps } from '../../../app/apps/client/orchestrator';
-import AppProvider from './AppProvider';
 import NotAuthorizedPage from '../NotAuthorizedPage';
-import AppDetailsPage from './AppDetailsPage';
-import MarketplacePage from './MarketplacePage';
-import AppLogsPage from './AppLogsPage';
-// import AppsWhatIsIt from './AppsWhatIsIt';
 import PageSkeleton from '../PageSkeleton';
+import AppDetailsPage from './AppDetailsPage';
+import AppProvider from './AppProvider';
+import AppLogsPage from './AppLogsPage';
+import MarketplacePage from './MarketplacePage';
+import { useMethod } from '../../contexts/ServerContext';
 
 export default function AppsRoute() {
+	const [isLoading, setLoading] = useState(true);
 	const canViewAppsAndMarketplace = usePermission('manage-apps');
-	const [isEnabled, setEnabled] = useState();
+	const isAppsEngineEnabled = useMethod('apps/is-enabled');
+	const appsWhatIsItRoute = useRoute('admin-apps-disabled');
 
-	const appsWhatIsItRouter = useRoute('admin-apps-disabled');
+	useEffect(() => {
+		let mounted = true;
+
+		const initialize = async () => {
+			if (!canViewAppsAndMarketplace) {
+				return;
+			}
+
+			if (!await isAppsEngineEnabled()) {
+				appsWhatIsItRoute.push();
+				return;
+			}
+
+			if (!mounted) {
+				return;
+			}
+
+			setLoading(false);
+		};
+
+		initialize();
+
+		return () => {
+			mounted = false;
+		};
+	}, [canViewAppsAndMarketplace, isAppsEngineEnabled, appsWhatIsItRoute]);
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const version = useRouteParameter('version');
 
-	useEffect(() => {
-		(async () => setEnabled(await Apps.isEnabled()))();
-	}, []);
-
 	if (!canViewAppsAndMarketplace) {
 		return <NotAuthorizedPage />;
 	}
 
-	if (isEnabled === undefined) {
+	if (isLoading) {
 		return <PageSkeleton />;
-	}
-
-	if (!isEnabled) {
-		appsWhatIsItRouter.push({});
 	}
 
 	return <AppProvider>
