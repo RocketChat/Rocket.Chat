@@ -1,10 +1,12 @@
 import s from 'underscore.string';
 
 export class MentionsParser {
-	constructor({ pattern, useRealName, me }) {
+	constructor({ pattern, useRealName, me, roomTemplate = ({ prefix, reference, mention }) => `${ prefix }<a class="mention-link mention-link--room" data-channel="${ reference }">${ `#${ mention }` }</a>`, userTemplate = ({ prefix, className, mention, title, label, type = 'username' }) => `${ prefix }<a class="${ className }" data-${ type }="${ mention }"${ title ? ` title="${ title }"` : '' }>${ label }</a>` }) {
 		this.pattern = pattern;
 		this.useRealName = useRealName;
 		this.me = me;
+		this.userTemplate = userTemplate;
+		this.roomTemplate = roomTemplate;
 	}
 
 	set me(m) {
@@ -59,7 +61,7 @@ export class MentionsParser {
 			const className = classNames.join(' ');
 
 			if (mention === 'all' || mention === 'here') {
-				return `${ prefix }<a class="${ className }" data-group="${ mention }">${ mention }</a>`;
+				return this.userTemplate({ prefix, className, mention, label: mention, type: 'group' });
 			}
 
 			const label = temp
@@ -73,7 +75,7 @@ export class MentionsParser {
 				return match;
 			}
 
-			return `${ prefix }<a class="${ className }" data-username="${ mention }" title="${ this.useRealName ? mention : label }">${ label }</a>`;
+			return this.userTemplate({ prefix, className, mention, label, title: this.useRealName ? mention : label });
 		})
 
 	replaceChannels = (msg, { temp, channels }) => msg
@@ -85,7 +87,7 @@ export class MentionsParser {
 
 			const channel = channels && channels.find(({ name }) => name === mention);
 			const reference = channel ? channel._id : mention;
-			return `${ prefix }<a class="mention-link mention-link--room" data-channel="${ reference }">${ `#${ mention }` }</a>`;
+			return this.roomTemplate({ prefix, reference, channel, mention });
 		})
 
 	getUserMentions(str) {

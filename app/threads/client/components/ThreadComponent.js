@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { Tracker } from 'meteor/tracker';
-import s from 'underscore.string';
 
 import { ChatMessage } from '../../../models/client';
 import { useRoute } from '../../../../client/contexts/RouterContext';
@@ -13,25 +12,7 @@ import { call } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import { useLocalStorage } from './hooks/useLocalstorage';
-import { filterMarkdown } from '../../../markdown/lib/markdown';
-
-export const normalizeThreadTitle = ({ ...message }) => {
-	if (message.msg) {
-		return filterMarkdown(message.msg);
-	}
-
-	if (message.attachments) {
-		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
-
-		if (attachment && attachment.description) {
-			return s.escapeHTML(attachment.description);
-		}
-
-		if (attachment && attachment.title) {
-			return s.escapeHTML(attachment.title);
-		}
-	}
-};
+import { normalizeThreadTitle } from '../lib/normalizeThreadTitle';
 
 export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	const t = useTranslation();

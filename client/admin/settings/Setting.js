@@ -149,7 +149,6 @@ export function Setting({ settingId, sectionChanged }) {
 		onChangeValue={onChangeValue}
 		onChangeEditor={onChangeEditor}
 		onResetButtonClick={onResetButtonClick}
-		{...props}
 	/>;
 }
 

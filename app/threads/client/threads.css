@@ -101,11 +101,12 @@
 	}
 
 	& .thread-quote {
-		font-size: 12px;
-
 		display: flex;
 
 		margin: 0 -24px 8px -24px;
+
+		font-size: 12px;
+
 		align-items: center;
 	}
 
@@ -134,11 +135,12 @@
 	}
 
 	& .thread-reply-preview {
-		font-size: 12px;
 		overflow: hidden;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
+
+		font-size: 12px;
 	}
 
 	&.collapsed .thread-reply-preview {
