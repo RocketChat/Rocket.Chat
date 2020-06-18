@@ -1,10 +1,25 @@
-import React from 'react';
+import { Modal } from '@rocket.chat/fuselage';
+import React, { useState, useMemo, memo } from 'react';
 
-import { ModalContext } from '../contexts/ModalContext';
 import { modal } from '../../app/ui-utils/client/lib/modal';
+import ModalPortal from '../components/ModalPortal';
+import { ModalContext } from '../contexts/ModalContext';
 
 function ModalProvider({ children }) {
-	return <ModalContext.Provider children={children} value={modal} />;
+	const [currentModal, setCurrentModal] = useState(null);
+
+	const contextValue = useMemo(() => Object.assign(modal, {
+		setModal: setCurrentModal,
+	}), []);
+
+	return <>
+		<ModalContext.Provider children={children} value={contextValue} />
+		{currentModal && <ModalPortal>
+			<Modal.Backdrop>
+				{currentModal}
+			</Modal.Backdrop>
+		</ModalPortal>}
+	</>;
 }
 
-export default ModalProvider;
+export default memo(ModalProvider);

@@ -1,7 +1,5 @@
+import { Box, Modal } from '@rocket.chat/fuselage';
 import React, { useEffect } from 'react';
-import { Box } from '@rocket.chat/fuselage';
-
-import { Modal } from '../../components/basic/Modal';
 
 const iframeMsgListener = (confirm, cancel) => (e) => {
 	let data;

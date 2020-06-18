@@ -1,7 +1,6 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { Modal } from '../../components/basic/Modal';
 import { useTranslation } from '../../contexts/TranslationContext';
 
 const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }) => {

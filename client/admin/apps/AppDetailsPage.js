@@ -16,6 +16,7 @@ import { useForm } from '../../hooks/useForm';
 import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import { handleAPIError, apiCurlGetter } from './helpers';
 import { AppSettingsAssembler } from './AppSettings';
+import { useSetModal } from '../../contexts/ModalContext';
 
 function AppDetailsPageContent({ data, setModal, isLoggedIn }) {
 	const t = useTranslation();
@@ -157,7 +158,7 @@ const LoadingDetails = () => <Box display='flex' flexDirection='row' mbe='x20' w
 
 export default function AppDetailsPage({ id }) {
 	const t = useTranslation();
-	const [modal, setModal] = useState(null);
+	const setModal = useSetModal();
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
@@ -186,7 +187,7 @@ export default function AppDetailsPage({ id }) {
 		setIsSaving(false);
 	}, [id, settings]);
 
-	return <><Page flexDirection='column'>
+	return <Page flexDirection='column'>
 		<Page.Header title={t('App_Details')}>
 			<ButtonGroup>
 				<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
@@ -209,5 +210,5 @@ export default function AppDetailsPage({ id }) {
 				</>}
 			</Box>
 		</Page.ScrollableContentWithShadow>
-	</Page>{modal}</>;
+	</Page>;
 }

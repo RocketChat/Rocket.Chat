@@ -1,9 +1,7 @@
-
+import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React from 'react';
-import { Icon, Button, ButtonGroup } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { Modal } from '../../components/basic/Modal';
 import { useRoute } from '../../contexts/RouterContext';
 
 export const CloudLoginModal = ({ cancel, ...props }) => {
