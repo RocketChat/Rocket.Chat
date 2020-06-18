@@ -1,5 +1,5 @@
 import { Button, Box, Throbber } from '@rocket.chat/fuselage';
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 
 import Page from '../../components/basic/Page';
 import { useRoute } from '../../contexts/RouterContext';
@@ -15,7 +15,7 @@ function AppsWhatIsIt() {
 
 	const appsRouter = useRoute('admin-apps');
 
-	const handleClick = useCallback(async () => {
+	const handleClick = async () => {
 		try {
 			setLoading(true);
 			await enable();
@@ -23,18 +23,25 @@ function AppsWhatIsIt() {
 		} catch (error) {
 			setError(error);
 		}
-	}, []);
+	};
 
 	return <Page flexDirection='column'>
 		<Page.Header title={t('Apps_WhatIsIt')} />
 		<Page.ScrollableContent>
 			{error && <Box fontScale='s1' maxWidth='x600' alignSelf='center'>{error.message}</Box>}
-			{!error && <Box withRichContent maxWidth='x600' alignSelf='center'>
+			{!error && <Box alignSelf='center' maxWidth='x600' width='full' withRichContent>
 				<p>{t('Apps_WhatIsIt_paragraph1')}</p>
 				<p>{t('Apps_WhatIsIt_paragraph2')}</p>
 				<p>
 					{t('Apps_WhatIsIt_paragraph3')}
-					<a href='https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md' target='_blank'>https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md</a>
+					{' '}
+					<a
+						href='https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md'
+						target='_blank'
+						rel='noopener noreferrer'
+					>
+						https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md
+					</a>
 				</p>
 				<p>{t('Apps_WhatIsIt_paragraph4')}</p>
 				<Button primary disabled={loading} onClick={handleClick}>{loading ? <Throbber inheritColor /> : t('Enable')}</Button>
