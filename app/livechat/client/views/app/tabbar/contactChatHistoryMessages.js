@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { messageContext } from '../../../../../ui-utils/client/lib/messageContext';
 import { APIClient } from '../../../../../utils/client';
 
-const LIMIT_DEFAULT = 50;
+const MESSAGES_LIMIT = 10;
 
 Template.contactChatHistoryMessages.helpers({
 	messages() {
@@ -27,7 +27,10 @@ Template.contactChatHistoryMessages.helpers({
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
-	searching() {
+	isLoading() {
+		return Template.instance().isLoading.get();
+	},
+	isSearching() {
 		return Template.instance().searchTerm.get().length > 0;
 	},
 	empty() {
@@ -41,7 +44,7 @@ Template.contactChatHistoryMessages.events({
 	},
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
-			instance.limit.set(instance.limit.get() + LIMIT_DEFAULT);
+			instance.offset.set(instance.offset.get() + instance.limit.get());
 		}
 	}, 200),
 	'keyup #message-search': _.debounce(function(e, instance) {
@@ -55,7 +58,7 @@ Template.contactChatHistoryMessages.events({
 			return e.preventDefault();
 		}
 
-		instance.limit.set(0);
+		instance.offset.set(0);
 		instance.searchTerm.set(value);
 	}, 300),
 });
@@ -65,24 +68,31 @@ Template.contactChatHistoryMessages.onCreated(function() {
 	this.rid = currentData.rid;
 	this.messages = new ReactiveVar([]);
 	this.hasMore = new ReactiveVar(true);
-	this.limit = new ReactiveVar(0);
+	this.offset = new ReactiveVar(0);
 	this.searchTerm = new ReactiveVar('');
+	this.isLoading = new ReactiveVar(true);
+	this.limit = new ReactiveVar(MESSAGES_LIMIT);
 
-	this.displayMessages = ({ messages /* , total */ }) => {
-		this.messages.set(messages);
-		// this.hasMore.set(total > limit);
-		this.hasMore.set(false);
+	this.loadMessages = async (url) => {
+		this.isLoading.set(true);
+		const offset = this.offset.get();
+
+		const { messages, total } = await APIClient.v1.get(url);
+		this.messages.set(offset === 0 ? messages : this.messages.get().concat(messages));
+		this.hasMore.set(total > this.messages.get().length);
+		this.isLoading.set(false);
 	};
 
-	this.autorun(async () => {
+	this.autorun(() => {
 		const limit = this.limit.get();
+		const offset = this.offset.get();
 		const searchTerm = this.searchTerm.get();
 
 		if (searchTerm !== '') {
-			return this.displayMessages(await APIClient.v1.get(`chat.search/?roomId=${ this.rid }&searchText=${ searchTerm }&count=${ LIMIT_DEFAULT }&offset=${ 0 }&sort={"ts": 1}`));
+			return this.loadMessages(`chat.search/?roomId=${ this.rid }&searchText=${ searchTerm }&count=${ limit }&offset=${ offset }&sort={"ts": 1}`);
 		}
 
-		return this.displayMessages(await APIClient.v1.get(`channels.messages/?roomId=${ this.rid }&count=${ LIMIT_DEFAULT }&offset=${ limit }&sort={"ts": 1}&query={"$or": [ {"t": {"$exists": false} }, {"t": "livechat-close"} ] }`));
+		this.loadMessages(`channels.messages/?roomId=${ this.rid }&count=${ limit }&offset=${ offset }&sort={"ts": 1}&query={"$or": [ {"t": {"$exists": false} }, {"t": "livechat-close"} ] }`);
 	});
 
 	this.autorun(() => {

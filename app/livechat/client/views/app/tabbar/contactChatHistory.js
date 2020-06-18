@@ -1,3 +1,4 @@
+import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -8,9 +9,12 @@ import _ from 'underscore';
 import { t, APIClient } from '../../../../../utils/client';
 
 
-const HISTORY_COUNT = 50;
+const HISTORY_LIMIT = 50;
 
 Template.contactChatHistory.helpers({
+	isReady() {
+		return Template.instance().isReady.get();
+	},
 	hasChatHistory() {
 		return Template.instance().history.get().length > 0;
 	},
@@ -20,15 +24,21 @@ Template.contactChatHistory.helpers({
 	isLoading() {
 		return Template.instance().isLoading.get();
 	},
+	isSearching() {
+		return Template.instance().searchTerm.get().length > 0;
+	},
 	showChatHistoryMessages() {
 		return Template.instance().showChatHistoryMessages.get();
 	},
-	chatHistoryMessagesDetail() {
+	chatHistoryMessagesContext() {
 		return {
 			tabBar: Template.instance().tabBar,
 			clear: Template.instance().returnChatHistoryList,
-			...Template.instance().chatHistoryMessagesDetail.get(),
+			...Template.instance().chatHistoryMessagesContext.get(),
 		};
+	},
+	canSearch() {
+		return Template.instance().canSearch.get();
 	},
 });
 
@@ -37,17 +47,19 @@ Template.contactChatHistory.onCreated(async function() {
 	this.offset = new ReactiveVar(0);
 	this.visitorId = new ReactiveVar();
 	this.history = new ReactiveVar([]);
-	this.searchTerm = new ReactiveVar();
+	this.searchTerm = new ReactiveVar('');
 	this.hasMore = new ReactiveVar(true);
 	this.isLoading = new ReactiveVar(true);
-	this.chatHistoryMessagesDetail = new ReactiveVar();
+	this.chatHistoryMessagesContext = new ReactiveVar();
 	this.showChatHistoryMessages = new ReactiveVar(false);
-
+	this.limit = new ReactiveVar(HISTORY_LIMIT);
+	this.isReady = new ReactiveVar(false);
+	this.canSearch = new ReactiveVar(false);
 	this.tabBar = currentData.tabBar;
 
 	this.returnChatHistoryList = () => {
 		this.showChatHistoryMessages.set(false);
-		this.chatHistoryMessagesDetail.set();
+		this.chatHistoryMessagesContext.set();
 
 		this.tabBar.setData({
 			label: 'Contact_Chat_History',
@@ -60,19 +72,19 @@ Template.contactChatHistory.onCreated(async function() {
 			return;
 		}
 
-		this.isLoading.set(true);
+		const limit = this.limit.get();
 		const offset = this.offset.get();
 		const searchTerm = this.searchTerm.get();
 
-		let baseUrl = `livechat/visitors.searchHistory/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ HISTORY_COUNT }&offset=${ offset }&closedChatsOnly=true&servedChatsOnly=true`;
+		let baseUrl = `livechat/visitors.searchChats/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ limit }&offset=${ offset }&closedChatsOnly=true&servedChatsOnly=true`;
 		if (searchTerm) {
 			baseUrl += `&searchText=${ searchTerm }`;
 		}
 
+		this.isLoading.set(true);
 		const { history, total } = await APIClient.v1.get(baseUrl);
-		this.history.set(history);
-
-		this.hasMore.set(total > offset);
+		this.history.set(offset === 0 ? history : this.history.get().concat(history));
+		this.hasMore.set(total > this.history.get().length);
 		this.isLoading.set(false);
 	});
 
@@ -84,10 +96,25 @@ Template.contactChatHistory.onCreated(async function() {
 	});
 });
 
+Template.contactChatHistory.onRendered(function() {
+	Tracker.autorun((computation) => {
+		if (this.isLoading.get()) {
+			return;
+		}
+
+		const history = this.history.get();
+		this.canSearch.set(history && history.length > 0);
+		this.isReady.set(true);
+
+		computation.stop();
+	});
+});
+
+
 Template.contactChatHistory.events({
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight - 10 && instance.hasMore.get()) {
-			instance.offset.set(instance.offset.get() + HISTORY_COUNT);
+			instance.offset.set(instance.offset.get() + instance.limit.get());
 		}
 	}, 200),
 	'click .contact-chat-history-item'(event, instance) {
@@ -99,7 +126,7 @@ Template.contactChatHistory.events({
 		const closedAtLabel = t('Closed_At');
 		const closedDay = moment(closedAt).format('MMM D YYYY');
 
-		instance.chatHistoryMessagesDetail.set({
+		instance.chatHistoryMessagesContext.set({
 			label: `${ name || username }, ${ closedAtLabel } ${ closedDay }`,
 			rid,
 		});

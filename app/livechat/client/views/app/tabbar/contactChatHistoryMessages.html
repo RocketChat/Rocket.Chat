@@ -26,7 +26,7 @@
                 </div>
             </form>
         </div>
-        {{#if $and searching empty }}
+        {{#if $and isSearching empty }}
             <div class="rocket-search-result">
                 <h2>{{_ "No_results_found"}}</h2>
             </div>
@@ -36,12 +36,11 @@
                     {{# with messageContext}}
                         {{#each msg in messages}}{{> message msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
                     {{/with}}
+
+                    {{#if isLoading}}
+                        {{> loading}}
+                    {{/if}}
                 </ul>
-                {{#if hasMore}}
-                <div class="load-more">
-                    {{> loading}}
-                </div>
-                {{/if}}
             </div>
         {{/if}}
 	</section>

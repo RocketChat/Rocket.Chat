@@ -72,7 +72,7 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 		total,
 	};
 }
-export async function searchHistory({ userId, roomId, visitorId, searchText, closedChatsOnly, servedChatsOnly: served, pagination: { offset, count, sort } }) {
+export async function searchChats({ userId, roomId, visitorId, searchText, closedChatsOnly, servedChatsOnly: served, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
@@ -91,9 +91,8 @@ export async function searchHistory({ userId, roomId, visitorId, searchText, clo
 		limit: count,
 	};
 
+	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, open: !closedChatsOnly, served, searchText, onlyCount: true }).toArray();
 	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, open: !closedChatsOnly, served, searchText, options });
-
-	// const total = await cursor.count();
 
 	const history = await cursor.toArray();
 
@@ -101,7 +100,7 @@ export async function searchHistory({ userId, roomId, visitorId, searchText, clo
 		history,
 		count: history.length,
 		offset,
-		total: 0, // trocar
+		total: (total && total.count) || 0,
 	};
 }
 

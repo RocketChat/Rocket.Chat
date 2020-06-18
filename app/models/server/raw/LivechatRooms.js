@@ -837,7 +837,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, options = {} }) {
+	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {
 				'v._id': visitorId,
@@ -880,12 +880,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 		params.push(project, unwindClosingMsg, sort);
 
-		if (options.offset) {
-			params.push({ $skip: options.offset });
+		if (onlyCount) {
+			params.push({ $count: 'count' });
+			return this.col.aggregate(params);
 		}
 
-		if (options.count) {
-			params.push({ $limit: options.count });
+		if (options.skip) {
+			params.push({ $skip: options.skip });
+		}
+
+		if (options.limit) {
+			params.push({ $limit: options.limit });
 		}
 
 		return this.col.aggregate(params);
