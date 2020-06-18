@@ -6,6 +6,8 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 
+const readMeUrl = 'https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md';
+
 function AppsWhatIsIt() {
 	const t = useTranslation();
 	const [loading, setLoading] = useState(false);
@@ -35,13 +37,7 @@ function AppsWhatIsIt() {
 				<p>
 					{t('Apps_WhatIsIt_paragraph3')}
 					{' '}
-					<a
-						href='https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md'
-						target='_blank'
-						rel='noopener noreferrer'
-					>
-						https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md
-					</a>
+					<a href={readMeUrl} target='_blank' rel='noopener noreferrer'>{readMeUrl}</a>
 				</p>
 				<p>{t('Apps_WhatIsIt_paragraph4')}</p>
 				<Button primary disabled={loading} onClick={handleClick}>{loading ? <Throbber inheritColor /> : t('Enable')}</Button>
