@@ -10,6 +10,7 @@ import { useQuery } from './hooks';
 import { roomTypes } from '../../../app/utils/client';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
+import NotAuthorizedPage from '../../admin/NotAuthorizedPage';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -20,14 +21,14 @@ const FilterByText = ({ setFilter, ...props }) => {
 
 	useEffect(() => {
 		setFilter({ text });
-	}, [text]);
+	}, [text, setFilter]);
 
 	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
 		<TextInput flexShrink={0} placeholder={t('Search_Users')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 };
 
-export function UserTab({
+function UserTable({
 	workspace = 'local',
 }) {
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
@@ -41,7 +42,7 @@ export function UserTab({
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const onHeaderClick = (id) => {
+	const onHeaderClick = useCallback((id) => {
 		const [sortBy, sortDirection] = sort;
 
 		if (sortBy === id) {
@@ -49,23 +50,20 @@ export function UserTab({
 			return;
 		}
 		setSort([id, 'asc']);
-	};
+	}, [sort]);
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
 		mediaQuery && canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email' style={{ width: '200px' }} >{t('Email')}</Th>,
 		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin' style={{ width: '200px' }} >{t('Domain')}</Th>,
 		mediaQuery && <Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '200px' }}>{t('Joined_at')}</Th>,
-	].filter(Boolean), [sort, federation, canViewFullOtherUserInfo, mediaQuery]);
+	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery, canViewFullOtherUserInfo, federation]);
 
 	const directRoute = useRoute('direct');
 
-	const canViewOutsideRoom = usePermission('view-outside-room');
-	const canViewDM = usePermission('view-d-room');
+	const data = useEndpointData('directory', query) || {};
 
-	const data = (canViewOutsideRoom && canViewDM && useEndpointData('directory', query)) || { result: [] };
-
-	const onClick = useMemo(() => (username) => (e) => {
+	const onClick = useCallback((username) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {
 			directRoute.push({ rid: username });
 		}
@@ -105,7 +103,18 @@ export function UserTab({
 				{formatDate(createdAt)}
 			</Table.Cell>}
 		</Table.Row>;
-	}, [mediaQuery, federation, canViewFullOtherUserInfo]);
+	}, [mediaQuery, federation, canViewFullOtherUserInfo, formatDate, onClick]);
 
 	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
+}
+
+export default function UserTab(props) {
+	const canViewOutsideRoom = usePermission('view-outside-room');
+	const canViewDM = usePermission('view-d-room');
+
+	if (canViewOutsideRoom && canViewDM) {
+		return <UserTable {...props} />;
+	}
+
+	return <NotAuthorizedPage />;
 }

@@ -75,7 +75,7 @@ export function UsersByTimeOfTheDaySection() {
 			dates.map((date) => date.toISOString()),
 			values,
 		];
-	}, [data]);
+	}, [data, period.end, period.start]);
 
 	return <Section
 		title={t('Users_by_time_of_day')}

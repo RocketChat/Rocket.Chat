@@ -15,12 +15,13 @@ import NotAuthorizedPage from '../NotAuthorizedPage';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-export const useQuery = (params, sort, cache) => useMemo(() => ({
-	query: JSON.stringify({ name: { $regex: params.text || '', $options: 'i' } }),
-	sort: JSON.stringify({ [sort[0]]: sortDir(sort[1]) }),
-	...params.itemsPerPage && { count: params.itemsPerPage },
-	...params.current && { offset: params.current },
-}), [JSON.stringify(params), JSON.stringify(sort), cache]);
+export const useQuery = ({ text, itemsPerPage, current }, [column, direction], cache) => useMemo(() => ({
+	query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
+	sort: JSON.stringify({ [column]: sortDir(direction) }),
+	...itemsPerPage && { count: itemsPerPage },
+	...current && { offset: current },
+	// TODO: remove cache. Is necessary for data invalidation
+}), [text, itemsPerPage, current, column, direction, cache]);
 
 export default function CustomUserStatusRoute({ props }) {
 	const t = useTranslation();
@@ -68,17 +69,17 @@ export default function CustomUserStatusRoute({ props }) {
 		router.push({ context });
 	}, [router]);
 
-	const close = () => {
+	const close = useCallback(() => {
 		router.push({});
-	};
-
-	if (!canManageUserStatus) {
-		return <NotAuthorizedPage />;
-	}
+	}, [router]);
 
 	const onChange = useCallback(() => {
 		setCache(new Date());
 	}, []);
+
+	if (!canManageUserStatus) {
+		return <NotAuthorizedPage />;
+	}
 
 	return <Page {...props} flexDirection='row'>
 		<Page name='admin-custom-user-status'>
