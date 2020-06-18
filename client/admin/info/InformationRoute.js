@@ -50,7 +50,7 @@ export const InformationRoute = React.memo(function InformationRoute() {
 		return () => {
 			didCancel = true;
 		};
-	}, [canViewStatistics]);
+	}, [canViewStatistics, getInstances, getStatistics]);
 
 	const info = useServerInformation();
 

@@ -158,7 +158,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 
 	const confirmDeleteUser = useCallback(() => {
 		setModal(<DeleteWarningModal onDelete={deleteUser} onCancel={() => setModal()}/>);
-	}, [deleteUserEndpoint]);
+	}, [deleteUser]);
 
 	const setAdminStatus = useMethod('setAdminStatus');
 	const changeAdminStatus = useCallback(() => {
@@ -170,7 +170,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [isAdmin]);
+	}, [_id, dispatchToastMessage, isAdmin, onChange, setAdminStatus, t]);
 
 	const activeStatusQuery = useMemo(() => ({
 		userId: _id,
@@ -197,14 +197,14 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		confirmLabel: t('Yes_deactivate_it'),
 	});
 
-	const directMessageClick = () => directRoute.push({
+	const directMessageClick = useCallback(() => directRoute.push({
 		rid: username,
-	});
+	}), [directRoute, username]);
 
-	const editUserClick = () => userRoute.push({
+	const editUserClick = useCallback(() => userRoute.push({
 		context: 'edit',
 		id: _id,
-	});
+	}), [_id, userRoute]);
 
 	const menuOptions = useMemo(() => ({
 		...canDirectMessage && { directMessage: {
@@ -227,7 +227,21 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 			label: <><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Deactivate') : t('Activate')}</>,
 			action: changeActiveStatus,
 		} },
-	}), [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus, canEditOtherUserInfo, canDirectMessage, isActive, isAdmin]);
+	}), [
+		t,
+		canDirectMessage,
+		directMessageClick,
+		canEditOtherUserInfo,
+		editUserClick,
+		canAssignAdminRole,
+		isAdmin,
+		changeAdminStatus,
+		canDeleteUser,
+		confirmDeleteUser,
+		canEditOtherUserActiveStatus,
+		isActive,
+		changeActiveStatus,
+	]);
 
 	const [actions, moreActions] = useMemo(() => {
 		const keys = Object.keys(menuOptions);
@@ -236,7 +250,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		const secondHalf = keys.slice(2, keys.length);
 
 		return [firstHalf.length && firstHalf.map((key) => menuOptions[key]), secondHalf.length && Object.fromEntries(secondHalf.map((key) => [key, menuOptions[key]]))];
-	}, menuOptions);
+	}, [menuOptions]);
 
 	return <>
 		<Box display='flex' flexDirection='row' {...props}>
