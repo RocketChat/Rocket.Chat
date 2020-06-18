@@ -30,7 +30,7 @@ export class ResponseParser {
 		}
 		SAMLUtils.log('Status ok');
 
-		// #ToDo: Check if this situation is still used
+		// @ToDo: Check if this situation is still used
 		return callback(null, null, true);
 	}
 

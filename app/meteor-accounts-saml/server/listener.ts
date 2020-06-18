@@ -60,7 +60,7 @@ const middleware = function(req: IIncomingMessage, res: ServerResponse, next: (e
 
 		SAML.processRequest(req, res, service, samlObject);
 	} catch (err) {
-		// #ToDo: Ideally we should send some error message to the client, but there's no way to do it on a redirect right now.
+		// @ToDo: Ideally we should send some error message to the client, but there's no way to do it on a redirect right now.
 		console.log(err);
 
 		const url = Meteor.absoluteUrl('home');
