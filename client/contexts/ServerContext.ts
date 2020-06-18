@@ -47,7 +47,7 @@ export const useUpload = (endpoint: string): () => Promise<void> => {
 
 export const useStream = (streamName: string, options?: object): IServerStream => {
 	const { getStream } = useContext(ServerContext);
-	return useMemo(() => getStream(streamName, options), [streamName, options]);
+	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
 };
 
 export enum AsyncState {
@@ -105,7 +105,7 @@ export const usePolledMethodData = <T>(methodName: string, args: any[] = [], int
 		return (): void => {
 			clearInterval(timer);
 		};
-	}, []);
+	}, [fetchData, intervalMs]);
 
 	return [data, state, fetchData];
 };

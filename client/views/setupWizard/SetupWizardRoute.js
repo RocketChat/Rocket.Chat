@@ -36,7 +36,7 @@ const useRouteLock = () => {
 		}
 
 		setLocked(false);
-	}, [homeRoute, setupWizardState, userId, user, hasAdminRole]);
+	}, [homeRoute, setupWizardState, userId, user, hasAdminRole, locked]);
 
 	return locked;
 };
