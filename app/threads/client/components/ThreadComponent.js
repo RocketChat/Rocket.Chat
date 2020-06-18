@@ -52,10 +52,10 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 		overflow: 'hidden',
 		bottom: 0,
 		zIndex: 100,
-	}), [document.dir, expanded]);
+	}), [document.dir]);
 
 	const following = mainMessage.replies && mainMessage.replies.includes(uid);
-	const actionId = useMemo(() => (following ? 'unfollow' : 'follow'), [uid, mainMessage && mainMessage.replies]);
+	const actionId = useMemo(() => (following ? 'unfollow' : 'follow'), [following]);
 	const button = useMemo(() => (actionId === 'follow' ? 'bell-off' : 'bell'), [actionId]);
 	const actionLabel = t(actionId === 'follow' ? 'Not_Following' : 'Following');
 	const headerTitle = useMemo(() => normalizeThreadTitle(mainMessage), [mainMessage._updatedAt]);
@@ -67,7 +67,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 		setExpand(!expanded);
 	}, [expanded]);
 
-	const handleFollowButton = useCallback(() => call(actionId === 'follow' ? 'followMessage' : 'unfollowMessage', { mid }), [actionId]);
+	const handleFollowButton = useCallback(() => call(actionId === 'follow' ? 'followMessage' : 'unfollowMessage', { mid }), [actionId, mid]);
 	const handleClose = useCallback(() => {
 		channelRoute.push(room.t === 'd' ? { rid } : { name: room.name });
 	}, [channelRoute, room.t, room.name]);
