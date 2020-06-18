@@ -21,8 +21,8 @@ export const normalizeThreadTitle = ({ ...message }) => {
 			pattern: () => pattern,
 			useRealName: () => useRealName,
 			me: () => me,
-			userTemplate: ({ label }) => `<strong>${ label }</strong>`,
-			roomTemplate: ({ channel }) => `<strong>${ channel }</strong>`,
+			userTemplate: ({ label }) => `<strong> ${ label } </strong>`,
+			roomTemplate: ({ channel }) => `<strong> ${ channel } </strong>`,
 		});
 
 		return instance.parse({ ...message, msg: filteredMessage, html: filteredMessage }).html;

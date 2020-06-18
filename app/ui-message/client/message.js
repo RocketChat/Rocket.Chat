@@ -415,6 +415,10 @@ Template.message.helpers({
 		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
 		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
+	shouldHideBody() {
+		const { msg: { tmid }, settings: { showreply } } = this;
+		return showreply && tmid;
+	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
 		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;

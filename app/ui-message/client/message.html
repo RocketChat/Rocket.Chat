@@ -11,7 +11,7 @@
 				</span>
 			</div>
 		{{/if}}
-		{{#unless msg.tmid}}
+		{{#unless shouldHideBody}}
 			{{#if msg.avatar}}
 				{{#if avatarFromUsername}}
 					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
