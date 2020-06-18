@@ -36,6 +36,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 	async insertOne(data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
 		return this.col.insertOne({
 			_id: new ObjectId().toHexString(),
+			ts: new Date(),
 			...data,
 		});
 	}

@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { IBusinessHour } from './IBusinessHour';
 import { SingleBusinessHour } from './Single';
 import { callbacks } from '../../../../../callbacks/client';
+import { ILivechatBusinessHour } from '../../../../../../definition/ILivechatBusinessHour';
 
 class BusinessHoursManager {
 	private businessHour: IBusinessHour;
@@ -17,6 +18,10 @@ class BusinessHoursManager {
 
 	getTemplate(): string {
 		return this.businessHour.getView();
+	}
+
+	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
+		return this.businessHour.shouldShowCustomTemplate(businessHourData);
 	}
 }
 

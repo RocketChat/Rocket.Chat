@@ -42,12 +42,18 @@
                                             name}}{{name}}{{else}}{{_ "Default"}}{{/if}}</span></div>
                                 </div>
                             </td>
-                            <td>{{#if active}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
-                            <td>
-                                {{#requiresPermission 'manage-livechat-departments'}}
-                                    <a href="#remove" class="remove-business-hour"><i class="icon-trash"></i></a>
+                            <td>{{#if active}}
+                                    {{_ "Yes"}}
+                                    {{#if isDefault}}
+                                        / {{_ "Default"}}
+                                    {{/if}}
                                 {{else}}
-                                {{/requiresPermission}}
+                                {{_ "No"}}
+                                {{/if}}</td>
+                            <td>
+                                {{#unless isDefault}}
+                                    <a href="#remove" class="remove-business-hour"><i class="icon-trash"></i></a>
+                                {{/unless}}
                             </td>
                         </tr>
                     {{/each}}

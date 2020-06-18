@@ -3,6 +3,10 @@
 		<div class="livechat-businessHours-div">
 			<form class="rocket-form" id="businessHoursForm">
 
+                {{#if customFieldsTemplate}}
+                    {{> Template.dynamic template=customFieldsTemplate data=data }}
+                {{/if}}
+
 				<!-- days open -->
 				<fieldset>
 					<legend>{{_ "Open_days_of_the_week"}}</legend>

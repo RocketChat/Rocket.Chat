@@ -8,6 +8,8 @@ import moment from 'moment';
 
 import { t, handleError, APIClient } from '../../../../../utils/client';
 import './livechatBusinessHoursForm.html';
+import { getCustomFormTemplate } from '../customTemplates/register';
+import { businessHourManager } from './BusinessHours';
 
 Template.livechatBusinessHoursForm.helpers({
 	days() {
@@ -33,6 +35,12 @@ Template.livechatBusinessHoursForm.helpers({
 	},
 	open(day) {
 		return Template.instance().dayVars[day.day].open.get();
+	},
+	customFieldsTemplate() {
+		return businessHourManager.shouldShowCustomTemplate(Template.instance().businessHour.get()) && getCustomFormTemplate('livechatBusinessHoursForm');
+	},
+	data() {
+		return Template.instance().businessHour;
 	},
 });
 
@@ -88,10 +96,18 @@ Template.livechatBusinessHoursForm.events({
 				});
 			}
 		}
-		Meteor.call('livechat:saveBusinessHour', {
+
+		const businessHourData = {
 			...instance.businessHour.get(),
 			workHours: days,
-		}, function(err /* ,result*/) {
+		};
+
+		instance.$('.customFormField').each((i, el) => {
+			const elField = instance.$(el);
+			const name = elField.attr('name');
+			businessHourData[name] = elField.val();
+		});
+		Meteor.call('livechat:saveBusinessHour', businessHourData, function(err /* ,result*/) {
 			if (err) {
 				return handleError(err);
 			}

@@ -23,7 +23,7 @@ const migrateCollection = () => {
 		})),
 		timezone: {
 			name: '',
-			utc: moment().utcOffset() / 60,
+			utc: String(moment().utcOffset() / 60),
 		},
 	};
 	if (LivechatBusinessHours.find({ type: LivechatBussinessHourTypes.SINGLE }).count() === 0) {

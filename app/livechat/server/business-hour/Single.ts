@@ -10,7 +10,7 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 		}
 		businessHourData.timezone = {
 			name: '',
-			utc: moment().utcOffset() / 60,
+			utc: String(moment().utcOffset() / 60),
 		};
 		this.BusinessHourRepository.updateOne(businessHourData._id, businessHourData);
 	}
