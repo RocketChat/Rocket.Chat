@@ -57,8 +57,7 @@ Meteor.methods({
 
 		Users.setSamlInResponseTo(Meteor.userId(), request.id);
 
-		const _syncRequestToUrl = Meteor.wrapAsync(_saml.requestToUrl, _saml);
-		const result = _syncRequestToUrl(request.request, 'logout');
+		const result = _saml.syncRequestToUrl(request.request, 'logout');
 		SAMLUtils.log(`SAML Logout Request ${ result }`);
 
 		return result;

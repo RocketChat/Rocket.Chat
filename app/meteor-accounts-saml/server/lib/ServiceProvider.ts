@@ -149,6 +149,10 @@ export class SAMLServiceProvider {
 		});
 	}
 
+	syncRequestToUrl(request: string, operation: string): void {
+		return Meteor.wrapAsync(this.requestToUrl, this)(request, operation);
+	}
+
 	getAuthorizeUrl(callback: (err: string | object | null, url?: string) => void): void {
 		const request = this.generateAuthorizeRequest();
 		SAMLUtils.log('-----REQUEST------');
