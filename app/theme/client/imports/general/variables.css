@@ -40,7 +40,7 @@
 	/* #region colors Colors */
 	--rc-color-error: var(--color-red);
 	--rc-color-error-light: #e1364c;
-	--rc-color-alert: var(--color-orange);
+	--rc-color-alert: var(--color-yellow);
 	--rc-color-alert-light: var(--color-dark-yellow);
 	--rc-color-success: var(--color-green);
 	--rc-color-success-light: #25d198;

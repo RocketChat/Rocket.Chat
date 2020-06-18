@@ -5,7 +5,7 @@
 	&::before,
 	&::after {
 		position: absolute;
-		z-index: 10;
+		z-index: 1000;
 		bottom: 100%;
 		left: 50%;
 
