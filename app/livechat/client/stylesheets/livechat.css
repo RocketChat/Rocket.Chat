@@ -757,6 +757,7 @@
 	}
 }
 
+/*
 #conten {
 	position: absolute;
 	left: 0px;
@@ -764,6 +765,7 @@
 	padding-right: 0px !important;
 	padding-left: 0px !important;
 }
+*/
 
 .open {
 	padding-left: 4% !important;
@@ -847,10 +849,10 @@
 	color: #6c727a;
 
 	font-family: Inter;
-	font-size: 12px;  /*10px;*/
-	font-weight: bold; /*600;*/
+	font-size: 12px;
+	font-weight: bold;
 	font-style: normal;
-	line-height: 16px; /*12px;*/
+	line-height: 16px;
 }
 
 .contact-chat-history-item-comment-text {
