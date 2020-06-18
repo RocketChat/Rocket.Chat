@@ -57,7 +57,7 @@ Template.videoFlexTab.onRendered(function() {
 
 	this.stop = stop;
 
-	const start = () => {
+	const start = () => new Promise((resolve, reject) => {
 		const update = () => {
 			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 } });
 
@@ -70,10 +70,17 @@ Template.videoFlexTab.onRendered(function() {
 			closePanel();
 			return this.stop();
 		};
-		update();
-		this.intervalHandler = setInterval(update, CONSTANTS.HEARTBEAT);
-		TabBar.updateButton('video', { class: 'red' });
-	};
+		// update();
+		Meteor.call('jitsi:updateTimeout', rid, (error, jitsiTimeout) => {
+			if (error) {
+				console.error(error);
+				return reject(error);
+			}
+			this.intervalHandler = setInterval(update, CONSTANTS.HEARTBEAT);
+			TabBar.updateButton('video', { class: 'red' });
+			resolve(jitsiTimeout);
+		});
+	});
 
 	modal.open({
 		title: t('Video_Conference'),
@@ -126,39 +133,45 @@ Template.videoFlexTab.onRendered(function() {
 			jitsiRoomActive = jitsiRoom;
 
 			if (settings.get('Jitsi_Open_New_Window')) {
-				Tracker.nonreactive(() => start());
-				let queryString = '';
-				if (accessToken) {
-					queryString = `?jwt=${ accessToken }`;
-				}
+				Tracker.nonreactive(async () => {
+					await start();
 
-				const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, jitsiRoom);
-				if (newWindow) {
-					const closeInterval = setInterval(() => {
-						if (newWindow.closed === false) {
-							return;
-						}
-						closePanel();
-						stop();
-						clearInterval(closeInterval);
-					}, 300);
-					return newWindow.focus();
-				}
+					let queryString = '';
+					if (accessToken) {
+						queryString = `?jwt=${ accessToken }`;
+					}
+
+					const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, jitsiRoom);
+					if (newWindow) {
+						const closeInterval = setInterval(() => {
+							if (newWindow.closed === false) {
+								return;
+							}
+							closePanel();
+							stop();
+							clearInterval(closeInterval);
+						}, 300);
+						return newWindow.focus();
+					}
+				});
 			}
 
 			if (typeof JitsiMeetExternalAPI !== 'undefined') {
 				// Keep it from showing duplicates when re-evaluated on variable change.
 				const name = Users.findOne(Meteor.userId(), { fields: { name: 1 } });
 				if (!$('[id^=jitsiConference]').length) {
-					this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl, accessToken);
+					Tracker.nonreactive(async () => {
+						await start();
 
-					/*
-					* Hack to send after frame is loaded.
-					* postMessage converts to events in the jitsi meet iframe.
-					* For some reason those aren't working right.
-					*/
-					Meteor.setTimeout(() => this.api.executeCommand('displayName', [name]), 5000);
-					return Tracker.nonreactive(() => start());
+						this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl, accessToken);
+
+						/*
+						* Hack to send after frame is loaded.
+						* postMessage converts to events in the jitsi meet iframe.
+						* For some reason those aren't working right.
+						*/
+						Meteor.setTimeout(() => this.api.executeCommand('displayName', [name]), 5000);
+					});
 				}
 
 				// Execute any commands that might be reactive.  Like name changing.
