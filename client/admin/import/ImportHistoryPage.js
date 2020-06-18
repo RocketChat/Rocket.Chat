@@ -50,7 +50,7 @@ function ImportHistoryPage() {
 	}, [dispatchToastMessage, getCurrentImportOperation, getLatestImportOperations, setCurrentOperation, setLatestOperations, setLoading, t]);
 
 	const hasAnySuccessfulSlackImport = useMemo(() =>
-		latestOperations?.some(({ importerKey, status }) => importerKey === 'slack' && status === ProgressStep.DONE), [latestOperations?.some]);
+		latestOperations?.some(({ importerKey, status }) => importerKey === 'slack' && status === ProgressStep.DONE), [latestOperations]);
 
 	const handleNewImportClick = () => {
 		newImportRoute.push();
