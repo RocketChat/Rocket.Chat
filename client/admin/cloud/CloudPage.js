@@ -58,7 +58,7 @@ function CloudPage() {
 		};
 
 		acceptOAuthAuthorization();
-	}, [errorCode, code, state]);
+	}, [errorCode, code, state, page, dispatchToastMessage, t, cloudRoute, finishOAuthAuthorization]);
 
 	const [registerStatus, setRegisterStatus] = useSafely(useState());
 	const [modal, setModal] = useState(null);
@@ -92,7 +92,7 @@ function CloudPage() {
 		};
 
 		acceptWorkspaceToken();
-	}, [token]);
+	}, [connectWorkspace, dispatchToastMessage, fetchRegisterStatus, t, token]);
 
 	const handleManualWorkspaceRegistrationButtonClick = () => {
 		const handleModalClose = () => {

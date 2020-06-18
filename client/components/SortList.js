@@ -47,10 +47,10 @@ function SortModeList() {
 	const saveUserPreferences = useMethod('saveUserPreferences');
 	const sidebarSortBy = useUserPreference('sidebarSortby', 'activity');
 
-	const handleChange = (value) => () => saveUserPreferences({ sidebarSortby: value });
+	const useHandleChange = (value) => useCallback(() => saveUserPreferences({ sidebarSortby: value }), [value]);
 
-	const setToAlphabetical = useCallback(handleChange('alphabetical'), []);
-	const setToActivity = useCallback(handleChange('activity'), []);
+	const setToAlphabetical = useHandleChange('alphabetical');
+	const setToActivity = useHandleChange('activity');
 
 	return <>
 		<Margins block='x8'>
@@ -71,16 +71,16 @@ function ViewModeList() {
 
 	const saveUserPreferences = useMethod('saveUserPreferences');
 
-	const handleChange = (value) => () => saveUserPreferences({ sidebarViewMode: value });
+	const useHandleChange = (value) => useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode', 'extended');
 	const sidebarHideAvatar = useUserPreference('sidebarHideAvatar', false);
 
-	const setToExtended = useCallback(handleChange('extended'), []);
-	const setToMedium = useCallback(handleChange('medium'), []);
-	const setToCondensed = useCallback(handleChange('condensed'), []);
+	const setToExtended = useHandleChange('extended');
+	const setToMedium = useHandleChange('medium');
+	const setToCondensed = useHandleChange('condensed');
 
-	const handleChangeSidebarHideAvatar = useCallback(() => saveUserPreferences({ sidebarHideAvatar: !sidebarHideAvatar }), [sidebarHideAvatar]);
+	const handleChangeSidebarHideAvatar = useCallback(() => saveUserPreferences({ sidebarHideAvatar: !sidebarHideAvatar }), [saveUserPreferences, sidebarHideAvatar]);
 
 	return <>
 		<Margins block='x8'>
@@ -106,12 +106,12 @@ function GroupingList() {
 
 	const saveUserPreferences = useMethod('saveUserPreferences');
 
-	const handleChange = (key, value) => () => saveUserPreferences({ [key]: value });
+	const useHandleChange = (key, value) => useCallback(() => saveUserPreferences({ [key]: value }), [key, value]);
 
-	const handleChangeShowDicussion = useCallback(handleChange('sidebarShowDiscussion', !sidebarShowDiscussion), [sidebarShowDiscussion]);
-	const handleChangeGroupByType = useCallback(handleChange('sidebarGroupByType', !sidebarGroupByType), [sidebarGroupByType]);
-	const handleChangeShoFavorite = useCallback(handleChange('sidebarShowFavorites', !sidebarShowFavorites), [sidebarShowFavorites]);
-	const handleChangeShowUnread = useCallback(handleChange('sidebarShowUnread', !sidebarShowUnread), [sidebarShowUnread]);
+	const handleChangeShowDicussion = useHandleChange('sidebarShowDiscussion', !sidebarShowDiscussion);
+	const handleChangeGroupByType = useHandleChange('sidebarGroupByType', !sidebarGroupByType);
+	const handleChangeShoFavorite = useHandleChange('sidebarShowFavorites', !sidebarShowFavorites);
+	const handleChangeShowUnread = useHandleChange('sidebarShowUnread', !sidebarShowUnread);
 
 
 	const t = useTranslation();

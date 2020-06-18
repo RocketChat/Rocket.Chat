@@ -72,7 +72,7 @@ function CodeMirror({
 
 			editor.toTextArea();
 		};
-	}, [ref]);
+	}, [autoCloseBrackets, foldGutter, gutters, highlightSelectionMatches, lineNumbers, lineWrapping, matchBrackets, matchTags, mode, onChange, readOnly, ref, showTrailingSpace]);
 
 	useEffect(() => {
 		setValue(valueProp);

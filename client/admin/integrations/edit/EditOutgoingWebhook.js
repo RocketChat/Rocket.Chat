@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
 	Field,
 	Box,
@@ -21,6 +21,7 @@ export default function EditOutgoingWebhookWithData({ integrationId, ...props })
 	const t = useTranslation();
 	const [cache, setCache] = useState();
 
+	// TODO: remove cache. Is necessary for data validation
 	const { data, state, error } = useEndpointDataExperimental('integrations.get', useMemo(() => ({ integrationId }), [integrationId, cache]));
 
 	const onChange = () => setCache(new Date());
@@ -83,7 +84,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 	const deleteQuery = useMemo(() => ({ type: 'webhook-outgoing', integrationId: data._id }), [data._id]);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
 
-	const handleDeleteIntegration = () => {
+	const handleDeleteIntegration = useCallback(() => {
 		const closeModal = () => setModal();
 		const onDelete = async () => {
 			const result = await deleteIntegration();
@@ -91,14 +92,14 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		};
 
 		setModal(<DeleteWarningModal onDelete={onDelete} onCancel={closeModal} />);
-	};
+	}, [deleteIntegration, router]);
 
 	const {
 		urls,
 		triggerWords,
 	} = formValues;
 
-	const handleSave = async () => {
+	const handleSave = useCallback(async () => {
 		try {
 			await saveIntegration(data._id, {
 				...formValues,
@@ -111,7 +112,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
 		}
-	};
+	}, [data._id, dispatchToastMessage, formValues, onChange, saveIntegration, t, triggerWords, urls]);
 
 	const actionButtons = useMemo(() => <Field>
 		<Field.Row display='flex' flexDirection='column'>
@@ -123,7 +124,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 			</Box>
 			<Button mbs='x4' primary danger w='full' onClick={handleDeleteIntegration}>{t('Delete')}</Button>
 		</Field.Row>
-	</Field>);
+	</Field>, [handleDeleteIntegration, handleSave, reset, t]);
 
 
 	return <>

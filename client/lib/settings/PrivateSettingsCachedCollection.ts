@@ -1,5 +1,5 @@
-import { CachedCollection } from '../../app/ui-cached-collection/client';
-import { Notifications } from '../../app/notifications/client';
+import { CachedCollection } from '../../../app/ui-cached-collection/client';
+import { Notifications } from '../../../app/notifications/client';
 
 export class PrivateSettingsCachedCollection extends CachedCollection {
 	constructor() {
