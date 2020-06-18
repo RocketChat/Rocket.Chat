@@ -56,7 +56,6 @@ export function EditCustomSound({ _id, cache, ...props }) {
 
 	const { data, state, error } = useEndpointDataExperimental('custom-sounds.list', query);
 
-	console.count('EditCustomSound');
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
