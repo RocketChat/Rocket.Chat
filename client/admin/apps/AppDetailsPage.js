@@ -7,7 +7,7 @@ import ExternalLink from '../../components/basic/ExternalLink';
 import PriceDisplay from './PriceDisplay';
 import AppStatus from './AppStatus';
 import AppMenu from './AppMenu';
-import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useAppInfo } from './hooks/useAppInfo';
 import { useAbsoluteUrl } from '../../contexts/ServerContext';
