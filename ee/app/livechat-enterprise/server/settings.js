@@ -58,5 +58,19 @@ export const createSettings = () => {
 		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } },
 	});
 
+	settings.add('Livechat_business_hour_type', 'Single', {
+		type: 'select',
+		group: 'Omnichannel',
+		values: [{
+			key: 'Single',
+			i18nLabel: 'Single',
+		}, {
+			key: 'Multiple',
+			i18nLabel: 'Multiple',
+		}],
+		public: true,
+		i18nLabel: 'Livechat_business_hour_type',
+	});
+
 	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
 };

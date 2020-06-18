@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import toastr from 'toastr';
 import moment from 'moment';
 
@@ -112,7 +113,6 @@ const createDefaultBusinessHour = () => {
 	};
 };
 
-
 Template.livechatBusinessHoursForm.onCreated(async function() {
 	this.dayVars = createDefaultBusinessHour().workHours.reduce((acc, day) => {
 		acc[day.day] = {
@@ -124,21 +124,25 @@ Template.livechatBusinessHoursForm.onCreated(async function() {
 	}, {});
 	this.businessHour = new ReactiveVar({});
 
-	const { businessHour } = await APIClient.v1.get('livechat/business-hour');
 	this.businessHour.set({
 		...createDefaultBusinessHour(),
 	});
-	if (businessHour) {
-		this.businessHour.set(businessHour);
-		businessHour.workHours.forEach((d) => {
-			if (businessHour.timezone.name) {
-				this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
-				this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
-			} else {
-				this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
-				this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
-			}
-			this.dayVars[d.day].open.set(d.open);
-		});
-	}
+
+	this.autorun(async () => {
+		const id = FlowRouter.getParam('_id');
+		const { businessHour } = await APIClient.v1.get(`livechat/business-hour?_id=${ id }`);
+		if (businessHour) {
+			this.businessHour.set(businessHour);
+			businessHour.workHours.forEach((d) => {
+				if (businessHour.timezone.name) {
+					this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+					this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+				} else {
+					this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
+					this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
+				}
+				this.dayVars[d.day].open.set(d.open);
+			});
+		}
+	});
 });

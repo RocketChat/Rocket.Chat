@@ -8,10 +8,10 @@ class BusinessHoursManager {
 	private businessHour: IBusinessHour;
 
 	onStartBusinessHourManager(businessHour: IBusinessHour): void {
-		this.registerBusinessHour(businessHour);
+		this.registerBusinessHourMethod(businessHour);
 	}
 
-	registerBusinessHour(businessHour: IBusinessHour): void {
+	registerBusinessHourMethod(businessHour: IBusinessHour): void {
 		this.businessHour = businessHour;
 	}
 

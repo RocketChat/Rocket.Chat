@@ -80,3 +80,19 @@ AccountBox.addRoute({
 	i18nPageTitle: 'New_Priority',
 	pageTemplate: 'livechatPriorityForm',
 }, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-business-hour-edit',
+	path: '/business-hours/:_id/edit',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Edit_BusinessHour',
+	pageTemplate: 'livechatBusinessHoursForm',
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-business-hour-new',
+	path: '/business-hours/new',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'New_BusinessHour',
+	pageTemplate: 'livechatBusinessHoursForm',
+}, livechatManagerRoutes);
