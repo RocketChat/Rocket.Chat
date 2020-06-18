@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 
-import { AppWebsocketReceiver } from './communication';
-import { APIClient } from '../../utils';
-import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
+import { settings } from '../../settings/client';
+import { CachedCollectionManager } from '../../ui-cached-collection';
+import { APIClient } from '../../utils';
+import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
-import { settings } from '../../settings/client';
 
 const createDeferredValue = () => {
 	let resolve;
