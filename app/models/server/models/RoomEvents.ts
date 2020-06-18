@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { IEDataRoom } from '../../../events/definitions/data/IEDataRoom';
 import { IEDataMessage } from '../../../events/definitions/data/IEDataMessage';
@@ -119,6 +120,99 @@ class RoomEventsModel extends EventsModel {
 		};
 
 		return super.createEvent(src, getContextQuery(roomId), stub);
+	}
+
+	public async createPruneMessagesEvent(query: any, roomId: string, userId: string): Promise<{
+		count: number;
+		filesIds: Array<string>;
+		discussionsIds: Array<string>;
+	}> {
+		const pruneEvent = await super.createEvent(getLocalSrc(), getContextQuery(roomId), {
+			t: EventTypeDescriptor.PRUNE_ROOM_MESSAGES,
+			d: {
+				query: JSON.stringify(query),
+				u: {
+					_id: userId,
+				},
+			},
+		});
+
+		this.addRoomEvent(pruneEvent);
+
+		const filesIds: Array<string> = [];
+		const discussionsIds: Array<string> = [];
+		const modifier = (event: IEvent<IEDataMessage>): {[key: string]: Function} => ({
+			msg: (): void => {
+				this.update({
+					_id: event._id,
+				}, {
+					$set: {
+						'd.msg': '',
+					},
+					$currentDate: { _deletedAt: true },
+				});
+			},
+			discussion: (): void => {
+				const { d } = event;
+				const { drid = '' } = d;
+				discussionsIds.push(drid);
+				this.update({
+					_id: event._id,
+				}, {
+					$currentDate: { _deletedAt: true },
+				});
+
+				this.model.rawCollection().updateMany({
+					rid: { $eq: drid },
+					t: { $eq: 'msg' },
+				}, {
+					$set: {
+						'd.msg': '',
+						'd.attachments': [],
+					},
+					$unset: { 'd.file': 1 },
+					$currentDate: { _deletedAt: true },
+				});
+			},
+			file: (): void => {
+				const { d } = event;
+				const { file = { _id: '' } } = d;
+				filesIds.push(file._id);
+				this.update({
+					_id: event._id,
+				}, {
+					$unset: { 'd.file': 1 },
+					$set: { 'd.attachments': [{ color: '#FD745E', prunedText: `_${ TAPi18n.__('File_removed_by_prune') }_` }] },
+					$currentDate: { _deletedAt: true },
+				});
+			},
+		});
+
+		const results: Array<IEvent<IEDataMessage>> = await this.model.rawCollection().find({
+			'd.msg': { $exists: true },
+			...query,
+		}).toArray();
+
+		for (let i = 0; results.length > i; i++) {
+			// identify what type of data is the current one
+			const { d: data } = results[i];
+			if (data && data.file && data.file._id) {
+				modifier(results[i]).file();
+				continue;
+			} else if (data && data.drid) {
+				modifier(results[i]).discussion();
+				continue;
+			} else {
+				modifier(results[i]).msg();
+				continue;
+			}
+		}
+
+		return {
+			count: results.length,
+			filesIds,
+			discussionsIds,
+		};
 	}
 
 	// async createAddUserEvent(src, roomId, user, subscription, domainsAfterAdd) {
