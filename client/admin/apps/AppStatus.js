@@ -36,13 +36,14 @@ const AppStatus = React.memo(({ app, setModal, isLoggedIn, showStatus = true, ..
 	const button = appButtonProps(app);
 	const status = !button && appStatusSpanProps(app);
 
+	const action = button?.action || '';
 	const confirmAction = useCallback(() => {
 		setModal(null);
 
-		actions[button.action](app).then(() => {
+		actions[action](app).then(() => {
 			setLoading(false);
 		});
-	}, [app, button.action, setModal]);
+	}, [app, action, setModal]);
 
 	const cancelAction = useCallback(() => {
 		setModal(null);
@@ -65,11 +66,11 @@ const AppStatus = React.memo(({ app, setModal, isLoggedIn, showStatus = true, ..
 		if (isLoggedIn) {
 			setLoading(true);
 
-			button.action === 'purchase' ? openModal() : confirmAction();
+			action === 'purchase' ? openModal() : confirmAction();
 			return;
 		}
 		setModal(<CloudLoginModal cancel={() => setModal(null)} />);
-	}, [isLoggedIn, button.action, openModal, confirmAction, setModal]);
+	}, [isLoggedIn, action, openModal, confirmAction, setModal]);
 
 	return <Box {...props}>
 		{button && <Button primary disabled={loading} onClick={handleClick} display={showStatus || loading ? 'block' : 'none'}>
