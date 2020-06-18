@@ -70,7 +70,7 @@ providers.registerProvider({
 
 providers.registerProvider({
 	urls: [new RegExp('https?://twitter\\.com/[^/]+/status/\\S+')],
-	endPoint: 'https://publish.twitter.com/oembed'
+	endPoint: 'https://publish.twitter.com/oembed',
 });
 
 export const oembed = {};
