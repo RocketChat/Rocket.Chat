@@ -24,27 +24,6 @@ describe('[Incoming Integrations]', function() {
 			.then(done);
 	});
 
-	before((done) => {
-		request.put(api('integrations.update'))
-			.set(credentials)
-			.send({
-				type: 'webhook-incoming',
-				name: 'Incoming test',
-				enabled: true,
-				alias: 'test',
-				username: 'rocket.cat',
-				scriptEnabled: true,
-				channel: '#general',
-				integrationId: integration._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				integration = res.body.integration;
-			})
-			.end(done);
-	});
-
 	after((done) => {
 		updatePermission('manage-incoming-integrations', ['admin'])
 			.then(() => updatePermission('manage-own-incoming-integrations', ['admin']))
@@ -366,6 +345,48 @@ describe('[Incoming Integrations]', function() {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('[/integrations.update]', () => {
+		it('should update an integration by id and return the new data', (done) => {
+			request.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test updated',
+					enabled: true,
+					alias: 'test updated',
+					username: 'rocket.cat',
+					scriptEnabled: true,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration');
+					expect(res.body.integration._id).to.be.equal(integration._id);
+					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.alias).to.be.equal('test updated');
+				})
+				.end(done);
+		});
+
+		it('should have integration updated on subsequent gets', (done) => {
+			request.get(api(`integrations.get?integrationId=${ integration._id }`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration');
+					expect(res.body.integration._id).to.be.equal(integration._id);
+					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.alias).to.be.equal('test updated');
+				})
+				.end(done);
 		});
 	});
 
