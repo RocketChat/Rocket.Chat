@@ -4,7 +4,6 @@ import toastr from 'toastr';
 
 import { AppWebsocketReceiver } from './communication';
 import { APIClient } from '../../utils';
-import { registerAdminSidebarItem } from '../../../client/admin';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { handleI18nResources } from './i18n';
@@ -33,7 +32,6 @@ class AppClientOrchestrator {
 	load = async (isEnabled) => {
 		if (!this.isLoaded) {
 			this.ws = new AppWebsocketReceiver();
-			this.registerAdminMenuItems();
 			this.isLoaded = true;
 		}
 
@@ -50,22 +48,6 @@ class AppClientOrchestrator {
 	getWsListener = () => this.ws;
 
 	getAppClientManager = () => this._manager;
-
-	registerAdminMenuItems = () => {
-		registerAdminSidebarItem({
-			icon: 'cube',
-			href: 'apps',
-			i18nLabel: 'Apps',
-			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
-		});
-
-		registerAdminSidebarItem({
-			icon: 'cube',
-			href: 'admin-apps',
-			i18nLabel: 'Marketplace',
-			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
-		});
-	}
 
 	handleError = (error) => {
 		console.error(error);
