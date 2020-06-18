@@ -7,13 +7,7 @@ import { SAMLUtils } from './lib/Utils';
 
 settings.addGroup('SAML');
 
-export const logger = new Logger('steffo:meteor-accounts-saml', {
-	methods: {
-		updated: {
-			type: 'info',
-		},
-	},
-});
+export const logger = new Logger('steffo:meteor-accounts-saml', {});
 SAMLUtils.setLoggerInstance(logger);
 
 const debounce = (fn: Function, delay: number): () => number => {

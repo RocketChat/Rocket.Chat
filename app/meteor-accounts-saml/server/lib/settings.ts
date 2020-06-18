@@ -102,7 +102,7 @@ export const loadSamlServiceProviders = function(): void {
 	const providers = services.map((service) => {
 		if (service.value === true) {
 			const samlConfigs = getSamlConfigs(service.key);
-			SAMLUtils.logUpdated(service.key);
+			SAMLUtils.log(service.key);
 			ServiceConfiguration.configurations.upsert({
 				service: serviceName.toLowerCase(),
 			}, {

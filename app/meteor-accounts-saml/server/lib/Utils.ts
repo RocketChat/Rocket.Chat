@@ -146,12 +146,6 @@ export class SAMLUtils {
 		}
 	}
 
-	static logUpdated(key: string): void {
-		if (logger) {
-			logger.updated(key);
-		}
-	}
-
 	static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: string | object | null) => void): void {
 		const buffer = new Buffer(base64Data, 'base64');
 		zlib.inflateRaw(buffer, (err, decoded) => {
