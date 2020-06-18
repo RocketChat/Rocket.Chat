@@ -112,7 +112,7 @@ const SettingsDisplay = ({ settings, setHasUnsavedChanges, settingsRef }) => {
 	useEffect(() => {
 		setHasUnsavedChanges(hasUnsavedChanges);
 		settingsRef.current = values;
-	}, [hasUnsavedChanges, JSON.stringify(values)]);
+	}, [hasUnsavedChanges, JSON.stringify(values), setHasUnsavedChanges]);
 
 	return <>
 		<Divider />
@@ -164,6 +164,8 @@ export default function AppDetailsPage({ id }) {
 	const settingsRef = useRef({});
 
 	const data = useAppInfo(id);
+	const router = useRoute('admin-apps');
+	const handleReturn = () => router.push({});
 
 	const isLoggedIn = useLoggedInCloud();
 	const isLoading = Object.values(data).length === 0;
@@ -172,10 +174,6 @@ export default function AppDetailsPage({ id }) {
 
 	const showSettings = Object.values(settings).length;
 	const showApis = apis.length;
-
-	const currentRoute = useCurrentRoute();
-	const router = useRoute(currentRoute[0]);
-	const handleReturn = useCallback(() => router.push({}));
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
@@ -186,7 +184,7 @@ export default function AppDetailsPage({ id }) {
 			handleAPIError(e);
 		}
 		setIsSaving(false);
-	}, [Object.keys(settings).length]);
+	}, [id, settings]);
 
 	return <><Page flexDirection='column'>
 		<Page.Header title={t('App_Details')}>

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { GroupSelector } from './GroupSelector';
+import GroupSelector from './GroupSelector';
 
 export default {
 	title: 'admin/settings/GroupSelector',

@@ -69,7 +69,7 @@ export const useAppInfo = (appId) => {
 
 			setAppData({ ...app, bundledIn, settings, apis });
 		})();
-	}, [dataCache, appId]);
+	}, [appId, data, dataCache]);
 
 	return appData;
 };

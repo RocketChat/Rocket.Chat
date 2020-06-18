@@ -61,7 +61,7 @@ function ViewLogs() {
 		};
 
 		fetchLines();
-	}, []);
+	}, [dispatchToastMessage, getStdoutQueue]);
 
 	useEffect(() => {
 		const stdoutStreamer = new Meteor.Streamer('stdout');
@@ -117,13 +117,14 @@ function ViewLogs() {
 	}, [isAtBottom, sendToBottom]);
 
 	useEffect(() => {
+		const wrapper = wrapperRef.current;
 		if (window.MutationObserver) {
 			const observer = new MutationObserver((mutations) => {
 				mutations.forEach(() => {
 					sendToBottomIfNecessary();
 				});
 			});
-			observer.observe(wrapperRef.current, { childList: true });
+			observer.observe(wrapper, { childList: true });
 
 			return () => {
 				observer.disconnect();
@@ -133,10 +134,10 @@ function ViewLogs() {
 		const handleSubtreeModified = () => {
 			sendToBottomIfNecessary();
 		};
-		wrapperRef.current.addEventListener('DOMSubtreeModified', handleSubtreeModified);
+		wrapper.addEventListener('DOMSubtreeModified', handleSubtreeModified);
 
 		return () => {
-			wrapperRef.current.removeEventListener('DOMSubtreeModified', handleSubtreeModified);
+			wrapper.removeEventListener('DOMSubtreeModified', handleSubtreeModified);
 		};
 	}, [sendToBottomIfNecessary]);
 

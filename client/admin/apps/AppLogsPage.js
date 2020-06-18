@@ -5,22 +5,35 @@ import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import { useAppWithLogs } from './hooks/useAppWithLogs';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useHilightCode } from '../../hooks/useHilightCode';
+import { useHighlightedCode } from '../../hooks/useHighlightedCode';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 
-const LogItem = ({ entries, instanceId, title, t, ...props }) => {
-	const hilightCode = useHilightCode();
-
-	return <Accordion.Item title={title} {...props}>
-		{instanceId && <Box>{t('Instance')}: {instanceId}</Box>}
-		{entries.map((entry, i) => <Box key={i}>
-			<Box>{ entry.severity }: { entry.timestamp } { t('Caller') }: { entry.caller }</Box>
-			<Box withRichContent w='full'>
-				<pre><code dangerouslySetInnerHTML={{ __html: hilightCode('json', JSON.stringify(entry.args, null, 2)) }}></code></pre>
-			</Box>
-		</Box>)}
-	</Accordion.Item>;
+const LogEntry = ({ severity, timestamp, caller, args }) => {
+	const t = useTranslation();
+	return <Box>
+		<Box>{severity}: {timestamp} {t('Caller')}: {caller}</Box>
+		<Box withRichContent width='full'>
+			<pre>
+				<code
+					dangerouslySetInnerHTML={{
+						__html: useHighlightedCode('json', JSON.stringify(args, null, 2)),
+					}}
+				/>
+			</pre>
+		</Box>
+	</Box>;
 };
+
+const LogItem = ({ entries, instanceId, title, t, ...props }) => <Accordion.Item title={title} {...props}>
+	{instanceId && <Box>{t('Instance')}: {instanceId}</Box>}
+	{entries.map(({ severity, timestamp, caller, args }, i) => <LogEntry
+		key={i}
+		severity={severity}
+		timestamp={timestamp}
+		caller={caller}
+		args={args}
+	/>)}
+</Accordion.Item>;
 
 const LogsLoading = () => <Box maxWidth='x600' w='full' alignSelf='center'>
 	<Margins block='x2'>
@@ -30,7 +43,6 @@ const LogsLoading = () => <Box maxWidth='x600' w='full' alignSelf='center'>
 	</Margins>
 </Box>;
 
-
 export default function AppLogsPage({ id, ...props }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
@@ -38,13 +50,18 @@ export default function AppLogsPage({ id, ...props }) {
 	const [current, setCurrent] = useState(0);
 	const [cache, setCache] = useState(0);
 
-	const reset = useCallback(() => setCache(new Date()), []);
-
 	const [data, total] = useAppWithLogs({ id, cache, itemsPerPage, current });
 
 	const currentRoute = useCurrentRoute();
 	const router = useRoute(currentRoute[0]);
-	const handleReturn = useCallback(() => router.push({}), []);
+
+	const handleResetButtonClick = () => {
+		setCache(new Date());
+	};
+
+	const handleBackButtonClick = () => {
+		router.push({});
+	};
 
 	const {
 		name,
@@ -53,16 +70,16 @@ export default function AppLogsPage({ id, ...props }) {
 	const loading = !Object.values(data).length;
 	const showData = !loading && !data.error;
 
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), []);
-	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
+	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={t('View_the_Logs_for', { name: name || '' })}>
 			<ButtonGroup>
-				<Button primary onClick={reset}>
+				<Button primary onClick={handleResetButtonClick}>
 					<Icon name='undo'/> {t('Refresh')}
 				</Button>
-				<Button onClick={handleReturn}>
+				<Button onClick={handleBackButtonClick}>
 					<Icon name='back'/> {t('Back')}
 				</Button>
 			</ButtonGroup>

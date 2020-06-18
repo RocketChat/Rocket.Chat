@@ -27,65 +27,66 @@ export function useAppsData() {
 
 	const getDataCopy = () => ref.current.slice(0);
 
-	const handleAppAddedOrUpdated = async (appId) => {
-		try {
-			const { status, version } = await Apps.getApp(appId);
-			const app = await Apps.getAppFromMarketplace(appId, version);
-			const updatedData = getDataCopy();
-			const index = updatedData.findIndex(({ id }) => id === appId);
-			updatedData[index] = {
-				...app,
-				installed: true,
-				status,
-				version,
-				marketplaceVersion: app.version,
-			};
-			setData(updatedData);
-			invalidateData();
-		} catch (error) {
-			handleAPIError(error);
-		}
-	};
-
-	const listeners = {
-		APP_ADDED: handleAppAddedOrUpdated,
-		APP_UPDATED: handleAppAddedOrUpdated,
-		APP_REMOVED: (appId) => {
-			const updatedData = getDataCopy();
-			const index = updatedData.findIndex(({ id }) => id === appId);
-			if (!updatedData[index]) {
-				return;
-			}
-
-			if (updatedData[index].marketplace !== false) {
-				updatedData.splice(index, 1);
-			} else {
-				delete updatedData[index].installed;
-				delete updatedData[index].status;
-				updatedData[index].version = updatedData[index].marketplaceVersion;
-			}
-
-			setData(updatedData);
-			invalidateData();
-		},
-		APP_STATUS_CHANGE: ({ appId, status }) => {
-			const updatedData = getDataCopy();
-			const app = updatedData.find(({ id }) => id === appId);
-
-			if (!app) {
-				return;
-			}
-			app.status = status;
-			setData(updatedData);
-			invalidateData();
-		},
-		APP_SETTING_UPDATED: () => {
-			invalidateData();
-		},
-	};
-
 	useEffect(() => {
+		const handleAppAddedOrUpdated = async (appId) => {
+			try {
+				const { status, version } = await Apps.getApp(appId);
+				const app = await Apps.getAppFromMarketplace(appId, version);
+				const updatedData = getDataCopy();
+				const index = updatedData.findIndex(({ id }) => id === appId);
+				updatedData[index] = {
+					...app,
+					installed: true,
+					status,
+					version,
+					marketplaceVersion: app.version,
+				};
+				setData(updatedData);
+				invalidateData();
+			} catch (error) {
+				handleAPIError(error);
+			}
+		};
+
+		const listeners = {
+			APP_ADDED: handleAppAddedOrUpdated,
+			APP_UPDATED: handleAppAddedOrUpdated,
+			APP_REMOVED: (appId) => {
+				const updatedData = getDataCopy();
+				const index = updatedData.findIndex(({ id }) => id === appId);
+				if (!updatedData[index]) {
+					return;
+				}
+
+				if (updatedData[index].marketplace !== false) {
+					updatedData.splice(index, 1);
+				} else {
+					delete updatedData[index].installed;
+					delete updatedData[index].status;
+					updatedData[index].version = updatedData[index].marketplaceVersion;
+				}
+
+				setData(updatedData);
+				invalidateData();
+			},
+			APP_STATUS_CHANGE: ({ appId, status }) => {
+				const updatedData = getDataCopy();
+				const app = updatedData.find(({ id }) => id === appId);
+
+				if (!app) {
+					return;
+				}
+				app.status = status;
+				setData(updatedData);
+				invalidateData();
+			},
+			APP_SETTING_UPDATED: () => {
+				invalidateData();
+			},
+		};
+
 		const unregisterListeners = registerListeners(listeners);
+
 		(async () => {
 			try {
 				const [marketplaceApps, installedApps] = await Promise.all([Apps.getAppsFromMarketplace(), Apps.getApps()]);
