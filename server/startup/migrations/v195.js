@@ -11,7 +11,7 @@ Migrations.add({
 			_id: 'SAML_Custom_Default_LogoutResponse_template',
 		}, {
 			$set: {
-				value: `<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__uniqueId__" Version="2.0" IssueInstant="__instant__" Destination="__idpSLORedirectURL__">
+				value: `<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__newId__" Version="2.0" IssueInstant="__instant__" Destination="__idpSLORedirectURL__">
   <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">__issuer__</saml:Issuer>
   <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
 </samlp:LogoutResponse>`,
