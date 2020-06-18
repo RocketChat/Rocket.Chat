@@ -2,19 +2,16 @@ import { FieldGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { Setting } from './Setting';
-import { SettingsState } from './SettingsState';
 
 export default {
 	title: 'admin/settings/Setting',
 	component: Setting,
 	decorators: [
-		(storyFn) => <SettingsState>
-			<div className='rc-old'>
-				<div className='page-settings'>
-					{storyFn()}
-				</div>
+		(storyFn) => <div className='rc-old'>
+			<div className='page-settings'>
+				{storyFn()}
 			</div>
-		</SettingsState>,
+		</div>,
 	],
 };
 
