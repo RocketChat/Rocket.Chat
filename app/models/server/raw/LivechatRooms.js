@@ -837,7 +837,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findRoomIdsByVisitorIdAndMessage({ visitorId, searchText, open, served, options = {} }) {
+	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, options = {} }) {
 		const match = {
 			$match: {
 				'v._id': visitorId,
@@ -846,11 +846,39 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 		const lookup = { $lookup: { from: 'rocketchat_message', localField: '_id', foreignField: 'rid', as: 'messages' } };
-		const unwind = { $unwind: { path: '$messages' } };
-		const matchMessages = { $match: { 'messages.msg': { $regex: `.*${ searchText }.*` } } };
-		const group = { $group: { _id: '$_id' } };
+		const matchMessages = searchText && { $match: { 'messages.msg': { $regex: `.*${ searchText }.*` } } };
+
+		const params = [match, lookup];
+
+		if (matchMessages) {
+			params.push(matchMessages);
+		}
+
+		const project = {
+			$project: {
+				fname: 1,
+				ts: 1,
+				v: 1,
+				msgs: 1,
+				servedBy: 1,
+				closedAt: 1,
+				closedBy: 1,
+				closer: 1,
+				tags: 1,
+				closingMessage: {
+					$filter: {
+						input: '$messages',
+						as: 'messages',
+						cond: { $eq: ['$$messages.t', 'livechat-close'] },
+					},
+				},
+			},
+		};
+
+		const unwindClosingMsg = { $unwind: { path: '$closingMessage', preserveNullAndEmptyArrays: true } };
 		const sort = { $sort: options.sort || { ts: -1 } };
-		const params = [match, lookup, unwind, matchMessages, group, sort];
+
+		params.push(project, unwindClosingMsg, sort);
 
 		if (options.offset) {
 			params.push({ $skip: options.offset });

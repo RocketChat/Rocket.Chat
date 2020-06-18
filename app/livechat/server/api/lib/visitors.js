@@ -43,7 +43,7 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	};
 }
 
-export async function findChatHistory({ userId, roomId, visitorId, searchText, closedChatsOnly, servedChatsOnly: served, pagination: { offset, count, sort } }) {
+export async function findChatHistory({ userId, roomId, visitorId, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
@@ -55,15 +55,11 @@ export async function findChatHistory({ userId, roomId, visitorId, searchText, c
 		throw new Error('error-not-allowed');
 	}
 
-	const options = {
+	const cursor = LivechatRooms.findByVisitorId(visitorId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
-	};
-
-	const roomIds = searchText && searchText !== '' && (await LivechatRooms.findRoomIdsByVisitorIdAndMessage({ visitorId, open: !closedChatsOnly, served, searchText }).toArray()).map((r) => r._id);
-
-	const cursor = LivechatRooms.findRoomsWithCriteria({ visitorId, open: !closedChatsOnly, served, roomIds, options });
+	});
 
 	const total = await cursor.count();
 
@@ -74,6 +70,38 @@ export async function findChatHistory({ userId, roomId, visitorId, searchText, c
 		count: history.length,
 		offset,
 		total,
+	};
+}
+export async function searchHistory({ userId, roomId, visitorId, searchText, closedChatsOnly, servedChatsOnly: served, pagination: { offset, count, sort } }) {
+	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+	const room = await LivechatRooms.findOneById(roomId);
+	if (!room) {
+		throw new Error('invalid-room');
+	}
+
+	if (!await canAccessRoomAsync(room, { _id: userId })) {
+		throw new Error('error-not-allowed');
+	}
+
+	const options = {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+	};
+
+	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, open: !closedChatsOnly, served, searchText, options });
+
+	// const total = await cursor.count();
+
+	const history = await cursor.toArray();
+
+	return {
+		history,
+		count: history.length,
+		offset,
+		total: 0, // trocar
 	};
 }
 

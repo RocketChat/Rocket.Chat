@@ -1,37 +1,32 @@
 <template name='contactChatHistory'>
-	<div class="content" id='conten'>
-		<div class="list-view">
-			{{#unless hasChatHistory}}
-				<h2>{{_ "No_results_found"}}</h2>
-			{{else}}
-				<div class="control rocket-search-input">
-					<form class="search-form" role="form">
-						<div class="rc-input">
-							<label class="rc-input__label">
-								<div class="rc-input__wrapper">
-									<div class="rc-input__icon">
-										{{> icon block="rc-input__icon-svg" icon='magnifier'}}
-									</div>
-									<input type="text" class="rc-input__element" name="chat-search" id="chat-search" placeholder="{{_ 'Search_Chats'}}" autocomplete="off" aria-label="{{_ 'Search_Chats'}}" />
-								</div>
-							</label>
+	{{#unless hasChatHistory}}
+		<h2>{{_ "No_results_found"}}</h2>
+	{{else}}
+		<div class="control rocket-search-input">
+			<form class="search-form" role="form">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon block="rc-input__icon-svg" icon='magnifier'}}
+							</div>
+							<input type="text" class="rc-input__element" name="chat-search" id="chat-search" placeholder="{{_ 'Search_Chats'}}" autocomplete="off" aria-label="{{_ 'Search_Chats'}}" />
 						</div>
-					</form>
+					</label>
 				</div>
-				<div class="visitor-history-block">
-					<ul id='allist'>
-						{{#each item in history}}
-							{{> contactChatHistoryItem item}}
-						{{/each}}
-					</ul>
-				</div>
-			{{/unless}}
+			</form>
 		</div>
-	</div>
+		<div class="flex-tab__result js-list contact-chat-history-container">
+			<ul class='list clearfix contact-chat-history-list'>
+				{{#each item in history}}
+					{{> contactChatHistoryItem item}}
+				{{/each}}
+			</ul>
+		</div>
+	{{/unless}}
 	{{#if showChatHistoryMessages}}
 		<div class="rc-user-info-container flex-nav">
 			{{> contactChatHistoryMessages (chatHistoryMessagesDetail)}}
 		</div>
 	{{/if}}
 </template>
-

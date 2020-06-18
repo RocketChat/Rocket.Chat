@@ -1,23 +1,27 @@
 <template name='contactChatHistoryItem'>
-	<li class='list-chat-item' id='{{_id}}'>
-		<div class="history-div">
+	<li class='contact-chat-history-item' id='{{_id}}'>
+		<div class="contact-chat-history-item-content">
 			<div class="visitor-img">
 				<img src="/avatar/{{servedBy.username}}" alt="">
 			</div>
-			<div class="visitor-history-details">
-				<div class="visitor-details">
+			<div class="contact-chat-history-item-details">
+				<div class="contact-chat-history-item-header">
 					<h1>{{servedBy.username}}</h1>
-					<p>{{_ "Closed_At"}} {{closedAt}}</p>
+					<p>{{closedAt}}</p>
 				</div>
-				<div class="total-messages">
-					<p>{{msgs}} messages</p>
+				<div class="contact-chat-history-item-total-messages">
+					{{#if $gt msgs 0}}
+						<p>{{{_ 'message_counter' counter=i18nMessageCounter count=msgs }}}</p>
+					{{else}}
+						<p>{{_ "No_messages_yet" }}</p>
+					{{/if}}
 				</div>
-				{{#if hasClosingRoomMessage }}
-					<div class="agent-comment">
-						<p class="comment-heading">{{_ "Closing_chat_message"}}:</p>
-						<p class="comment-text">"{{closingRoomMessage}}"</p>
+				{{#with closingMessage }}
+					<div class="contact-chat-history-item-agent-comment">
+						<p class="contact-chat-history-item-comment-heading">{{_ "Closing_chat_message"}}:</p>
+						<p class="contact-chat-history-item-comment-text">"{{msg}}"</p>
 					</div>
-				{{/if}}
+				{{/with}}
 			</div>
 		</div>
 	</li>

@@ -64,7 +64,7 @@ Template.contactChatHistory.onCreated(async function() {
 		const offset = this.offset.get();
 		const searchTerm = this.searchTerm.get();
 
-		let baseUrl = `livechat/visitors.chatHistory/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ HISTORY_COUNT }&offset=${ offset }&closedChatsOnly=true&servedChatsOnly=true`;
+		let baseUrl = `livechat/visitors.searchHistory/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ HISTORY_COUNT }&offset=${ offset }&closedChatsOnly=true&servedChatsOnly=true`;
 		if (searchTerm) {
 			baseUrl += `&searchText=${ searchTerm }`;
 		}
@@ -90,7 +90,7 @@ Template.contactChatHistory.events({
 			instance.offset.set(instance.offset.get() + HISTORY_COUNT);
 		}
 	}, 200),
-	'click .list-chat-item'(event, instance) {
+	'click .contact-chat-history-item'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
