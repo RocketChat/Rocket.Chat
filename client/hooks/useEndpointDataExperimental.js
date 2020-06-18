@@ -60,7 +60,7 @@ export const useEndpointDataExperimental = (endpoint, params = {}, { delayTimeou
 		return () => {
 			mounted = false;
 		};
-	}, [getData, params]);
+	}, [delayTimeout, dispatchToastMessage, getData, params]);
 
 	return data;
 };

@@ -42,7 +42,7 @@ export default function OAuthAddApp(props) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [JSON.stringify(newData)]);
+	}, [close, dispatchToastMessage, newData, saveApp, t]);
 
 	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) => setNewData({ ...newData, [field]: getValue(e) });
 
