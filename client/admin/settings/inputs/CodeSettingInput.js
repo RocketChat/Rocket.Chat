@@ -5,11 +5,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { ResetSettingButton } from '../ResetSettingButton';
 
+const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
+
 function CodeMirror({
 	lineNumbers = true,
 	lineWrapping = true,
 	mode = 'javascript',
-	gutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+	gutters = defaultGutters,
 	foldGutter = true,
 	matchBrackets = true,
 	autoCloseBrackets = true,
@@ -72,7 +74,21 @@ function CodeMirror({
 
 			editor.toTextArea();
 		};
-	}, [autoCloseBrackets, foldGutter, gutters, highlightSelectionMatches, lineNumbers, lineWrapping, matchBrackets, matchTags, mode, onChange, readOnly, ref, showTrailingSpace]);
+	}, [
+		autoCloseBrackets,
+		foldGutter,
+		gutters,
+		highlightSelectionMatches,
+		lineNumbers,
+		lineWrapping,
+		matchBrackets,
+		matchTags,
+		mode,
+		onChange,
+		readOnly,
+		ref,
+		showTrailingSpace,
+	]);
 
 	useEffect(() => {
 		setValue(valueProp);
