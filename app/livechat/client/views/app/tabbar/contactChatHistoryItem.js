@@ -10,9 +10,6 @@ Template.contactChatHistoryItem.helpers({
 		const { closedAt } = Template.instance().room.get();
 		return moment(closedAt).format('lll');
 	},
-	hasClosingRoomMessage() {
-		return Template.instance().hasClosingRoomMessage.get();
-	},
 	closingRoomMessage() {
 		const closingObj = Template.instance().closingRoomMessage.get();
 		return closingObj.msg;
