@@ -82,7 +82,7 @@ function WorkspaceLoginSection({
 		};
 
 		checkLoginState();
-	}, []);
+	}, [checkUserLoggedIn, dispatchToastMessage, setLoading, setLoggedIn]);
 
 	return <Box is='section' {...props}>
 		<Box withRichContent>

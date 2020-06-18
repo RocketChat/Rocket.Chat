@@ -19,6 +19,7 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ rid: 1, alert: 1, 'u._id': 1 });
 		this.tryEnsureIndex({ rid: 1, roles: 1 });
 		this.tryEnsureIndex({ 'u._id': 1, name: 1, t: 1 });
+		this.tryEnsureIndex({ name: 1, t: 1 });
 		this.tryEnsureIndex({ open: 1 });
 		this.tryEnsureIndex({ alert: 1 });
 		this.tryEnsureIndex({ ts: 1 });

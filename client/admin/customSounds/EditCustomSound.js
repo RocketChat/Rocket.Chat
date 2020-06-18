@@ -56,7 +56,6 @@ export function EditCustomSound({ _id, cache, ...props }) {
 
 	const { data, state, error } = useEndpointDataExperimental('custom-sounds.list', query);
 
-
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
@@ -100,13 +99,13 @@ function EditSound({ close, onChange, data, ...props }) {
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
-	const handleChangeFile = (soundFile) => {
+	const handleChangeFile = useCallback((soundFile) => {
 		setSound(soundFile);
-	};
+	}, []);
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, sound]);
+	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
-	const saveAction = async (sound) => {
+	const saveAction = useCallback(async (sound) => {
 		const soundData = createSoundData(sound, name, { previousName, previousSound, _id });
 		const validation = validate(soundData, sound);
 		if (validation.length === 0) {
@@ -137,12 +136,12 @@ function EditSound({ close, onChange, data, ...props }) {
 		}
 
 		validation.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', { field: t(error) }) }));
-	};
+	}, [_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound]);
 
 	const handleSave = useCallback(async () => {
 		saveAction(sound);
 		onChange();
-	}, [name, _id, sound]);
+	}, [saveAction, sound, onChange]);
 
 	const onDeleteConfirm = useCallback(async () => {
 		try {
@@ -152,13 +151,11 @@ function EditSound({ close, onChange, data, ...props }) {
 			dispatchToastMessage({ type: 'error', message: error });
 			onChange();
 		}
-	}, [_id]);
+	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange]);
 
 	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
 
-
 	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
-
 
 	return <>
 		<VerticalBar.ScrollableContent {...props}>

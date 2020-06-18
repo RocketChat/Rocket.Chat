@@ -5,11 +5,11 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useAppWithLogs } from './hooks/useAppWithLogs';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useHilightCode } from '../../hooks/useHilightCode';
+import { useHighlightedCode } from '../../hooks/useHighlightedCode';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 
 const LogItem = ({ entries, instanceId, title, t, ...props }) => {
-	const hilightCode = useHilightCode();
+	const hilightCode = useHighlightedCode();
 
 	return <Accordion.Item title={title} {...props}>
 		{instanceId && <Box>{t('Instance')}: {instanceId}</Box>}
