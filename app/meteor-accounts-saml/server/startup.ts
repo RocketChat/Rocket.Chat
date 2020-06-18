@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
 import { settings } from '../../settings/server';
 import { loadSamlServiceProviders } from './lib/settings';
@@ -10,20 +11,9 @@ settings.addGroup('SAML');
 export const logger = new Logger('steffo:meteor-accounts-saml', {});
 SAMLUtils.setLoggerInstance(logger);
 
-const debounce = (fn: Function, delay: number): () => number => {
-	let timer: number | null = null;
-	return (): number => {
-		if (timer != null) {
-			Meteor.clearTimeout(timer);
-		}
-		timer = Meteor.setTimeout(fn, delay);
-		return timer;
-	};
-};
-
-const updateServices = debounce(() => {
+const updateServices = _.debounce(Meteor.bindEnvironment(() => {
 	loadSamlServiceProviders();
-}, 2000);
+}), 2000);
 
 
 settings.get(/^SAML_.+/, updateServices);
