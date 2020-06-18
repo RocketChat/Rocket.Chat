@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Field, Box, Margins, Button, useCallback } from '@rocket.chat/fuselage';
+import React, { useCallback, useMemo } from 'react';
+import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute } from '../../../contexts/RouterContext';
