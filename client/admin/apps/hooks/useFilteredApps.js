@@ -9,11 +9,11 @@ export const useFilteredApps = ({
 	sort,
 	current,
 	itemsPerPage,
-	data = [],
+	data,
 	dataCache,
 }) => {
 	const filteredValues = useMemo(() => {
-		if (data.length) {
+		if (Array.isArray(data)) {
 			const dataCopy = data.slice(0);
 			let filtered = sort[1] === 'asc' ? dataCopy : dataCopy.reverse();
 
