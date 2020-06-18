@@ -10,7 +10,7 @@ import { useAutoFocus, useMergedRefs, useUniqueId } from '@rocket.chat/fuselage-
 import React, { useRef, useState } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
-import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
+import { useSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { Pager } from '../Pager';
@@ -91,7 +91,7 @@ function RegisterServerStep({ step, title, active }) {
 
 	const [commiting, setComitting] = useState(false);
 
-	const batchSetSettings = useBatchSettingsDispatch();
+	const dispatchSettings = useSettingsDispatch();
 
 	const registerCloudWorkspace = useMethod('cloud:registerWorkspace');
 
@@ -111,7 +111,7 @@ function RegisterServerStep({ step, title, active }) {
 				throw new Object({ error: 'Register_Server_Terms_Alert' });
 			}
 
-			await batchSetSettings([
+			await dispatchSettings([
 				{
 					_id: 'Statistics_reporting',
 					value: registerServer,
