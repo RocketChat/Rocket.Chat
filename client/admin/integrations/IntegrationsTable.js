@@ -40,9 +40,31 @@ const useResizeInlineBreakpoint = (sizes = [], debounceDelay = 0) => {
 	return [ref, ...sizes];
 };
 
+function IntegrationRow({
+	name,
+	_id,
+	type,
+	username,
+	_createdAt,
+	_createdBy: { username: createdBy },
+	channel = [],
+	onClick,
+	isBig,
+}) {
+	const formatDateAndTime = useFormatDateAndTime();
+
+	const handler = useMemo(() => onClick(_id, type), [onClick, _id, type]);
+	return <Table.Row key={_id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action>
+		<Table.Cell style={style} color='default' fontScale='p2'>{name}</Table.Cell>
+		<Table.Cell style={style}>{channel.join(', ')}</Table.Cell>
+		<Table.Cell style={style}>{createdBy}</Table.Cell>
+		{isBig && <Table.Cell style={style}>{formatDateAndTime(_createdAt)}</Table.Cell>}
+		<Table.Cell style={style}>{username}</Table.Cell>
+	</Table.Row>;
+}
+
 export function IntegrationsTable({ type }) {
 	const t = useTranslation();
-	const formatDateAndTime = useFormatDateAndTime();
 	const [ref, isBig] = useResizeInlineBreakpoint([700], 200);
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
@@ -80,16 +102,7 @@ export function IntegrationsTable({ type }) {
 		<Th key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Post_as')}</Th>,
 	].filter(Boolean), [sort, onHeaderClick, isBig, t]);
 
-	const renderRow = useCallback(function IntegrationRow({ name, _id, type, username, _createdAt, _createdBy: { username: createdBy }, channel = [] }) {
-		const handler = useMemo(() => onClick(_id, type), [_id, type]);
-		return <Table.Row key={_id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action>
-			<Table.Cell style={style} color='default' fontScale='p2'>{name}</Table.Cell>
-			<Table.Cell style={style}>{channel.join(', ')}</Table.Cell>
-			<Table.Cell style={style}>{createdBy}</Table.Cell>
-			{isBig && <Table.Cell style={style}>{formatDateAndTime(_createdAt)}</Table.Cell>}
-			<Table.Cell style={style}>{username}</Table.Cell>
-		</Table.Row>;
-	}, [formatDateAndTime, isBig, onClick]);
+	const renderRow = useCallback((props) => <IntegrationRow {...props} isBig={isBig} onClick={onClick} />, [isBig, onClick]);
 
 	return <GenericTable ref={ref} FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data && data.integrations} total={data && data.total} setParams={setParams} params={params} />;
 }
