@@ -95,6 +95,10 @@ export class BusinessHourManager {
 		return this.businessHour.openBusinessHoursIfNeeded();
 	}
 
+	async removeBusinessHourById(id: string): Promise<void> {
+		return this.businessHour.removeBusinessHourById(id);
+	}
+
 	private async openWorkHoursCallback(day: string, hour: string, utc: string): Promise<void> {
 		return this.businessHour.openBusinessHoursByDayHourAndUTC(day, hour, utc);
 	}

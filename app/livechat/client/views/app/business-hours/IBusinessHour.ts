@@ -3,4 +3,5 @@ import { ILivechatBusinessHour } from '../../../../../../definition/ILivechatBus
 export interface IBusinessHour {
 	getView(): string;
 	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean;
+	shouldShowBackButton(): boolean;
 }

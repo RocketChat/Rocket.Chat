@@ -37,6 +37,14 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 		return this.BusinessHourRepository.insertOne(businessHourData);
 	}
 
+	async removeBusinessHourById(id: string): Promise<void> {
+		const businessHour = await this.BusinessHourRepository.findOneById(id);
+		if (!businessHour || businessHour.type !== LivechatBussinessHourTypes.MULTIPLE) {
+			return;
+		}
+		this.BusinessHourRepository.removeById(id);
+	}
+
 	private getUTCFromTimezone(timezone: string): string {
 		if (!timezone) {
 			return String(moment().utcOffset() / 60);

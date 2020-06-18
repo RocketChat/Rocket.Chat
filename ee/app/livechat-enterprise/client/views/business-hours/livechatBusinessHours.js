@@ -64,14 +64,14 @@ Template.livechatBusinessHours.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('livechat:removeDepartment', this._id, (error/* , result*/) => {
+			Meteor.call('livechat:removeBusinessHour', this._id, (error/* , result*/) => {
 				if (error) {
 					return handleError(error);
 				}
-				instance.departments.set(instance.departments.curValue.filter((department) => department._id !== this._id));
+				instance.businessHours.set(instance.businessHours.curValue.filter((businessHour) => businessHour._id !== this._id));
 				modal.open({
 					title: t('Removed'),
-					text: t('Department_removed'),
+					text: t('Business_Hour_Removed'),
 					type: 'success',
 					timer: 1000,
 					showConfirmButton: false,

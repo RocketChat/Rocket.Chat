@@ -37,7 +37,13 @@ Template.livechatBusinessHoursForm.helpers({
 		return Template.instance().dayVars[day.day].open.get();
 	},
 	customFieldsTemplate() {
-		return businessHourManager.shouldShowCustomTemplate(Template.instance().businessHour.get()) && getCustomFormTemplate('livechatBusinessHoursForm');
+		if (!businessHourManager.shouldShowCustomTemplate(Template.instance().businessHour.get())) {
+			return;
+		}
+		return getCustomFormTemplate('livechatBusinessHoursForm');
+	},
+	showBackButton() {
+		return businessHourManager.shouldShowBackButton();
 	},
 	data() {
 		return Template.instance().businessHour;
@@ -78,6 +84,12 @@ Template.livechatBusinessHoursForm.events({
 			instance[e.currentTarget.name].set(value);
 		}
 	},
+
+	'click button.back'(e/* , instance*/) {
+		e.preventDefault();
+		FlowRouter.go('livechat-business-hours');
+	},
+
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
 
@@ -112,6 +124,7 @@ Template.livechatBusinessHoursForm.events({
 				return handleError(err);
 			}
 			toastr.success(t('Business_hours_updated'));
+			FlowRouter.go('livechat-business-hours');
 		});
 	},
 });

@@ -8,4 +8,8 @@ export class SingleBusinessHour implements IBusinessHour {
 	shouldShowCustomTemplate(): boolean {
 		return false;
 	}
+
+	shouldShowBackButton(): boolean {
+		return false;
+	}
 }

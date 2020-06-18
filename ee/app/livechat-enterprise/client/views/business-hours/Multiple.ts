@@ -7,6 +7,10 @@ export class MultipleBusinessHours implements IBusinessHour {
 	}
 
 	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
-		return businessHourData.type !== LivechatBussinessHourTypes.SINGLE;
+		return !businessHourData._id || businessHourData.type !== LivechatBussinessHourTypes.SINGLE;
+	}
+
+	shouldShowBackButton(): boolean {
+		return true;
 	}
 }

@@ -23,6 +23,10 @@ class BusinessHoursManager {
 	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
 		return this.businessHour.shouldShowCustomTemplate(businessHourData);
 	}
+
+	shouldShowBackButton(): boolean {
+		return this.businessHour.shouldShowBackButton();
+	}
 }
 
 export const businessHourManager = new BusinessHoursManager();

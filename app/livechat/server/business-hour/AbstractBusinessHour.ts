@@ -15,6 +15,7 @@ export interface IBusinessHour {
 	openBusinessHoursByDayHourAndUTC(day: string, hour: string, utc: string): Promise<void>;
 	closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void>;
 	removeBusinessHoursFromUsers(): Promise<void>;
+	removeBusinessHourById(id: string): Promise<void>;
 	openBusinessHoursIfNeeded(): Promise<void>;
 }
 

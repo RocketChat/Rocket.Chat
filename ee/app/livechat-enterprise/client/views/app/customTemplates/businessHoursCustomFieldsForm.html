@@ -2,8 +2,8 @@
     <div class="input-line">
         <label>{{_ "Enabled"}}</label>
         <div>
-            <label><input class="js-active-business-hour" type="radio" name="enabled" value="1" checked="{{$eq data.active true}}" /> {{_ "Yes"}}</label>
-            <label><input class="js-active-business-hour" type="radio" name="enabled" value="0" checked="{{$eq data.active false}}" /> {{_ "No"}}</label>
+            <label><input class="js-active-business-hour" type="radio" name="enabled" value="1" checked="{{showBusinessHourActiveFormTrueChecked}}" /> {{_ "Yes"}}</label>
+            <label><input class="js-active-business-hour" type="radio" name="enabled" value="0" checked="{{showBusinessHourActiveFormFalseChecked}}" /> {{_ "No"}}</label>
             <input class="customFormField" type="hidden" name="active" value="{{active}}" />
         </div>
     </div>

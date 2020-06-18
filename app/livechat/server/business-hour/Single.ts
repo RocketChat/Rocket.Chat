@@ -29,4 +29,8 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 		await this.UsersRepository.closeAgentsBusinessHours(businessHoursIds);
 		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
+
+	removeBusinessHourById(): Promise<void> {
+		return Promise.resolve();
+	}
 }

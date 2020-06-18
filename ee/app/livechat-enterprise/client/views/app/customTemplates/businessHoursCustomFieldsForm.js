@@ -12,7 +12,18 @@ Template.businessHoursCustomFieldsForm.helpers({
 		}));
 	},
 	data() {
+		console.log(Template.instance().businessHour.get());
 		return Template.instance().businessHour.get();
+	},
+	showBusinessHourActiveFormTrueChecked() {
+		if (Template.instance().businessHour.get().active) {
+			return 'checked';
+		}
+	},
+	showBusinessHourActiveFormFalseChecked() {
+		if (!Template.instance().businessHour.get().active) {
+			return 'checked';
+		}
 	},
 	active() {
 		return Template.instance().active.get();
@@ -34,7 +45,9 @@ Template.businessHoursCustomFieldsForm.events({
 
 Template.businessHoursCustomFieldsForm.onCreated(function() {
 	this.active = new ReactiveVar(false);
-	this.businessHour = new ReactiveVar({});
+	this.businessHour = new ReactiveVar({
+		active: false,
+	});
 
 	this.autorun(() => {
 		// To make this template reactive we expect a ReactiveVar through the data property,

@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { settings } from '../../../../../app/settings/server';
-import { MultipleBusinessHours } from '../views/business-hours/MultipleBusinessHours';
+import { MultipleBusinessHours } from '../views/business-hours/Multiple';
 
 callbacks.add('on-business-hour-start', (options: any = {}) => {
 	const { BusinessHourClass } = options;
