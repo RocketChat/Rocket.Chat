@@ -91,8 +91,6 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 		save();
 	};
 
-	const style = useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), []);
-
 	if (!_id) {
 		return <Page>
 			<Page.Header />
@@ -117,7 +115,7 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 		</Page.Header>
 
 		<Page.ScrollableContentWithShadow>
-			<Box style={style}>
+			<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
 				{t.has(i18nDescription) && <Box is='p' color='hint' fontScale='p1'>{t(i18nDescription)}</Box>}
 
 				<Accordion className='page-settings'>

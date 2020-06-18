@@ -35,6 +35,7 @@ export function UserInfoWithData({ uid, ...props }) {
 
 	const onChange = () => setCache(new Date());
 
+	// TODO: remove cache. Is necessary for data invalidation
 	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId: uid }), [uid, cache]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
