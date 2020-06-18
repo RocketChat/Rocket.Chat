@@ -5,8 +5,8 @@ import { Template } from 'meteor/templating';
 import { TimeSync } from 'meteor/mizzao:timesync';
 
 import { settings } from '../../../settings';
-import { modal, TabBar } from '../../../ui-utils';
-import { t } from '../../../utils';
+import { modal, TabBar, call } from '../../../ui-utils/client';
+import { t } from '../../../utils/client';
 import { Users, Rooms } from '../../../models';
 import * as CONSTANTS from '../../constants';
 
@@ -57,30 +57,34 @@ Template.videoFlexTab.onRendered(function() {
 
 	this.stop = stop;
 
-	const start = () => new Promise((resolve, reject) => {
-		const update = () => {
-			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 } });
+	const update = async () => {
+		const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 } });
 
-			if (jitsiTimeout && (TimeSync.serverTime() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
+		if (jitsiTimeout && (TimeSync.serverTime() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
+			return;
+		}
+		if (Meteor.status().connected) {
+			return call('jitsi:updateTimeout', rid);
+		}
+		closePanel();
+		return this.stop();
+	};
+
+	const start = async () => {
+		try {
+			const jitsiTimeout = await update();
+			if (!jitsiTimeout) {
 				return;
-			}
-			if (Meteor.status().connected) {
-				return Meteor.call('jitsi:updateTimeout', rid);
-			}
-			closePanel();
-			return this.stop();
-		};
-		// update();
-		Meteor.call('jitsi:updateTimeout', rid, (error, jitsiTimeout) => {
-			if (error) {
-				console.error(error);
-				return reject(error);
 			}
 			this.intervalHandler = setInterval(update, CONSTANTS.HEARTBEAT);
 			TabBar.updateButton('video', { class: 'red' });
-			resolve(jitsiTimeout);
-		});
-	});
+			return jitsiTimeout;
+		} catch (error) {
+			console.error(error);
+			closePanel();
+			throw error;
+		}
+	};
 
 	modal.open({
 		title: t('Video_Conference'),
@@ -118,17 +122,7 @@ Template.videoFlexTab.onRendered(function() {
 				return stop();
 			}
 
-			let accessToken = null;
-			if (isEnabledTokenAuth) {
-				accessToken = await new Promise((resolve, reject) => {
-					Meteor.call('jitsi:generateAccessToken', rid, (error, result) => {
-						if (error) {
-							return reject(error);
-						}
-						resolve(result);
-					});
-				});
-			}
+			const accessToken = isEnabledTokenAuth && await call('jitsi:generateAccessToken', rid);
 
 			jitsiRoomActive = jitsiRoom;
 
@@ -136,10 +130,7 @@ Template.videoFlexTab.onRendered(function() {
 				Tracker.nonreactive(async () => {
 					await start();
 
-					let queryString = '';
-					if (accessToken) {
-						queryString = `?jwt=${ accessToken }`;
-					}
+					const queryString = accessToken && `?jwt=${ accessToken }`;
 
 					const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, jitsiRoom);
 					if (newWindow) {

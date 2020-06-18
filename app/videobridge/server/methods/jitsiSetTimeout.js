@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Random } from 'meteor/random';
 
 import { Rooms, Messages, Users } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
@@ -8,7 +7,6 @@ import { metrics } from '../../../metrics/server';
 import * as CONSTANTS from '../../constants';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
-import { Notifications } from '../../../notifications/server';
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid) => {
@@ -56,18 +54,9 @@ Meteor.methods({
 
 			return jitsiTimeout;
 		} catch (error) {
-			if (error === 'error-not-allowed') {
-				throw new Meteor.Error('error-not-allowed', 'not allowed', { method: 'jitsi:updateTimeout' });
-			}
-
 			SystemLogger.error('Error starting video call:', error);
 
-			Notifications.notifyUser(uid, 'message', {
-				_id: Random.id(),
-				rid,
-				ts: new Date(),
-				msg: TAPi18n.__(error, {}, user.language),
-			});
+			throw new Meteor.Error('error-starting-video-call', error.message);
 		}
 	},
 });
