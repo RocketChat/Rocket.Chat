@@ -70,7 +70,7 @@ export function UserInfo({ data, onChange, ...props }) {
 		</Box>
 
 		<UserInfoActions isActive={data.active} isAdmin={data.roles.includes('admin')} _id={data._id} username={data.username} onChange={onChange}/>
-		<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16' withTruncatedTex flexShrink={0}t>
+		<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16' withTruncatedText flexShrink={0}>
 			<Margins blockEnd='x4'>
 				{data.bio && data.bio.trim().length > 0 && <MarkdownText withTruncatedText fontScale='s1' content={data.bio} />}
 				{!!data.roles.length && <>

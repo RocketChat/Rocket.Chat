@@ -4,7 +4,7 @@ import { AuthorizationProvider } from './AuthorizationProvider';
 import { ConnectionStatusProvider } from './ConnectionStatusProvider';
 import { RouterProvider } from './RouterProvider';
 import { SessionProvider } from './SessionProvider';
-import { SettingsProvider } from './SettingsProvider';
+import SettingsProvider from './SettingsProvider';
 import { ServerProvider } from './ServerProvider';
 import { SidebarProvider } from './SidebarProvider';
 import { TranslationProvider } from './TranslationProvider';
