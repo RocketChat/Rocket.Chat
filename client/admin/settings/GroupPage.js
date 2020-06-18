@@ -5,6 +5,7 @@ import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Section } from './Section';
 
+const style = { margin: '0 auto', width: '100%', maxWidth: '590px' };
 export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabel, i18nDescription, changed }) {
 	const t = useTranslation();
 
@@ -47,7 +48,7 @@ export function GroupPage({ children, headerButtons, save, cancel, _id, i18nLabe
 		</Page.Header>
 
 		<Page.ScrollableContentWithShadow>
-			<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
+			<Box style={style}>
 				{t.has(i18nDescription) && <Box is='p' color='hint' fontScale='p1'>{t(i18nDescription)}</Box>}
 
 				<Accordion className='page-settings'>

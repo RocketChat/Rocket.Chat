@@ -56,13 +56,13 @@ export const GenericTable = forwardRef(function GenericTable({
 
 	useEffect(() => {
 		setParams({ ...params, current, itemsPerPage });
-	}, [params, current, itemsPerPage]);
+	}, [params, current, itemsPerPage, setParams]);
 
-	const Loading = useCallback(() => Array.from({ length: 10 }, (_, i) => <LoadingRow cols={header.length} key={i}/>), [header && header.length]);
+	const Loading = useCallback(() => Array.from({ length: 10 }, (_, i) => <LoadingRow cols={header.length} key={i}/>), [header.length]);
 
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), []);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 
-	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
+	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <>
 		<FilterComponent setFilter={setFilter} />
