@@ -18,7 +18,7 @@ export class AuthorizeRequest {
 
 		return {
 			request,
-			id: data.uniqueId,
+			id: data.newId,
 		};
 	}
 
@@ -61,7 +61,7 @@ export class AuthorizeRequest {
 		}
 
 		return {
-			uniqueId: id,
+			newId: id,
 			instant,
 			callbackUrl: serviceProviderOptions.callbackUrl,
 			entryPoint: serviceProviderOptions.entryPoint,

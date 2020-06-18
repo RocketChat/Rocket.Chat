@@ -53,7 +53,7 @@ describe('SAML', () => {
 			it('should include the unique ID on the request', () => {
 				const customOptions = {
 					...serviceProviderOptions,
-					authRequestTemplate: '__uniqueId__',
+					authRequestTemplate: '__newId__',
 				};
 
 				const authorizeRequest = AuthorizeRequest.generate(customOptions);
@@ -82,7 +82,7 @@ describe('SAML', () => {
 			it('should include the unique ID on the request', () => {
 				const customOptions = {
 					...serviceProviderOptions,
-					logoutRequestTemplate: '__uniqueId__',
+					logoutRequestTemplate: '__newId__',
 				};
 
 				const logoutRequest = LogoutRequest.generate(customOptions, 'NameID', 'sessionIndex');
@@ -153,7 +153,7 @@ describe('SAML', () => {
 			it('should include the unique ID on the response', () => {
 				const customOptions = {
 					...serviceProviderOptions,
-					logoutResponseTemplate: '__uniqueId__',
+					logoutResponseTemplate: '__newId__',
 				};
 
 				const logoutResponse = LogoutResponse.generate(customOptions, 'NameID', 'sessionIndex', 'inResponseToId');

@@ -18,7 +18,7 @@ export class LogoutResponse {
 
 		return {
 			response,
-			id: data.uniqueId,
+			id: data.newId,
 			inResponseToId: data.inResponseToId,
 		};
 	}
@@ -28,7 +28,7 @@ export class LogoutResponse {
 		const instant = SAMLUtils.generateInstant();
 
 		return {
-			uniqueId: id,
+			newId: id,
 			instant,
 			idpSLORedirectURL: serviceProviderOptions.idpSLORedirectURL,
 			issuer: serviceProviderOptions.issuer,

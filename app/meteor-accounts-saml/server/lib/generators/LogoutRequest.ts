@@ -18,7 +18,7 @@ export class LogoutRequest {
 
 		return {
 			request,
-			id: data.uniqueId,
+			id: data.newId,
 		};
 	}
 
@@ -31,7 +31,7 @@ export class LogoutRequest {
 		const instant = SAMLUtils.generateInstant();
 
 		return {
-			uniqueId: id,
+			newId: id,
 			instant,
 			idpSLORedirectURL: serviceProviderOptions.idpSLORedirectURL,
 			issuer: serviceProviderOptions.issuer,
