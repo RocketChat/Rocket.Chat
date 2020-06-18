@@ -9,6 +9,7 @@ import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
+import { settings } from '../../settings/client';
 
 const createDeferredValue = () => {
 	let resolve;
@@ -207,5 +208,9 @@ Meteor.startup(() => {
 			Apps.getAppClientManager().initialize();
 			Apps.load(isEnabled);
 		});
+	});
+
+	settings.get('Apps_Framework_enabled', (isEnabled) => {
+		Apps.load(isEnabled);
 	});
 });
