@@ -377,7 +377,6 @@ export class SAML {
 			};
 
 			if (customIdentifierAttributeName) {
-				newUser.services.saml = {};
 				newUser.services.saml[customIdentifierAttributeName] = userObject.attributeList.get(customIdentifierAttributeName);
 			}
 
