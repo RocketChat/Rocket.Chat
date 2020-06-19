@@ -226,12 +226,10 @@ API.v1.addRoute('integrations.update', { authRequired: true }, {
 					return API.v1.failure('No integration found.');
 				}
 
-				Meteor.runAsUser(this.userId, () => {
-					Meteor.call('updateOutgoingIntegration', integration._id, this.bodyParams);
-				});
+				Meteor.call('updateOutgoingIntegration', integration._id, this.bodyParams);
 
 				return API.v1.success({
-					integration,
+					integration: Integrations.findOne({ _id: integration._id }),
 				});
 			case 'webhook-incoming':
 				integration = Integrations.findOne({ _id: this.bodyParams.integrationId });
@@ -240,12 +238,10 @@ API.v1.addRoute('integrations.update', { authRequired: true }, {
 					return API.v1.failure('No integration found.');
 				}
 
-				Meteor.runAsUser(this.userId, () => {
-					Meteor.call('updateIncomingIntegration', integration._id, this.bodyParams);
-				});
+				Meteor.call('updateIncomingIntegration', integration._id, this.bodyParams);
 
 				return API.v1.success({
-					integration,
+					integration: Integrations.findOne({ _id: integration._id }),
 				});
 			default:
 				return API.v1.failure('Invalid integration type.');
