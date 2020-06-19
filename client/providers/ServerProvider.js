@@ -32,14 +32,17 @@ const callEndpoint = (httpMethod, endpoint, ...args) => {
 	return APIClient.v1[httpMethod.toLowerCase()](endpoint, ...args);
 };
 
-const upload = (endpoint, params, formData) => APIClient.v1.upload(endpoint, params, formData);
+const uploadToEndpoint = (endpoint, params, formData) => APIClient.v1.upload(endpoint, params, formData);
+
+const getStream = (streamName, options = {}) => new Meteor.Streamer(streamName, options);
 
 const contextValue = {
 	info,
 	absoluteUrl,
 	callMethod,
 	callEndpoint,
-	upload,
+	uploadToEndpoint,
+	getStream,
 };
 
 export function ServerProvider({ children }) {

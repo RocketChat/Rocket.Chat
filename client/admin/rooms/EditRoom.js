@@ -18,6 +18,7 @@ export function EditRoomContextBar({ rid }) {
 function EditRoomWithData({ rid }) {
 	const [cache, setState] = useState();
 
+	// TODO: remove cache. Is necessary for data invalidation
 	const { data = {}, state, error } = useEndpointDataExperimental('rooms.adminRooms.getRoom', useMemo(() => ({ rid }), [rid, cache]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
@@ -47,12 +48,12 @@ function EditRoom({ room, onChange }) {
 
 	const canDelete = usePermission(`delete-${ room.t }`);
 
-	const hasUnsavedChanges = useMemo(() => Object.values(newData).filter((current) => current === null).length < Object.keys(newData).length, [JSON.stringify(newData)]);
-	const saveQuery = useMemo(() => ({ rid: room._id, ...Object.fromEntries(Object.entries(newData).filter(([, value]) => value !== null)) }), [room._id, JSON.stringify(newData)]);
+	const hasUnsavedChanges = useMemo(() => Object.values(newData).filter((current) => current === null).length < Object.keys(newData).length, [newData]);
+	const saveQuery = useMemo(() => ({ rid: room._id, ...Object.fromEntries(Object.entries(newData).filter(([, value]) => value !== null)) }), [room._id, newData]);
 
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = archiveSelector === 'archive' ? 'Room_has_been_archived' : 'Room_has_been_archived';
-	const archiveQuery = useMemo(() => ({ rid: room._id, action: room.archived ? 'unarchive' : 'archive' }), [room.rid, changeArchivation]);
+	const archiveQuery = useMemo(() => ({ rid: room._id, action: room.archived ? 'unarchive' : 'archive' }), [room._id, room.archived]);
 
 	const saveAction = useEndpointAction('POST', 'rooms.saveRoomSettings', saveQuery, t('Room_updated_successfully'));
 	const archiveAction = useEndpointAction('POST', 'rooms.changeArchivationState', archiveQuery, t(archiveMessage));
@@ -71,7 +72,7 @@ function EditRoom({ room, onChange }) {
 	const handleDelete = useCallback(async () => {
 		await deleteRoom(room._id);
 		setDeleted(true);
-	}, [room]);
+	}, [deleteRoom, room._id]);
 
 	const roomName = room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, { type: room.t, ...room });
 	const roomType = newData.roomType ?? room.t;
@@ -108,7 +109,7 @@ function EditRoom({ room, onChange }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Public')}</Field.Label>
-						<RadioButton disabled={deleted} checked={roomType === 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
+						<RadioButton disabled={deleted} checked={roomType !== 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
 					</Box>
 				</Field.Row>
 			</Field>
@@ -116,7 +117,7 @@ function EditRoom({ room, onChange }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Private')}</Field.Label>
-						<RadioButton disabled={deleted} checked={roomType !== 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
+						<RadioButton disabled={deleted} checked={roomType === 'p'} onChange={handleChange('roomType', room.t, updateType(roomType))}/>
 					</Box>
 				</Field.Row>
 			</Field>

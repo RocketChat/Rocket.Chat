@@ -12,6 +12,10 @@ declare module 'meteor/accounts-base' {
 		function _bcryptRounds(): number;
 
 		function _getLoginToken(connectionId: string): string | undefined;
+
+		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): string;
+
+		function _generateStampedLoginToken(): {token: string; when: Date};
 	}
 }
 
@@ -24,7 +28,7 @@ declare module 'meteor/meteor' {
 		interface Error extends globalError {
 			error: string | number;
 			reason?: string;
-			details?: any;
+			details?: string | undefined;
 		}
 
 		const server: any;
@@ -39,6 +43,12 @@ declare module 'meteor/ddp-common' {
 	namespace DDPCommon {
 		function stringifyDDP(msg: EJSON): string;
 		function parseDDP(msg: string): EJSON;
+	}
+}
+
+declare module 'meteor/routepolicy' {
+	export class RoutePolicy {
+		static declare(urlPrefix: string, type: string): void;
 	}
 }
 
