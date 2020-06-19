@@ -4,7 +4,7 @@ import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import { GenericTable, Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { roomTypes } from '../../../app/utils/client';
+import { getUserAvatarURL } from '../../../app/utils/client';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 
@@ -26,7 +26,7 @@ const FilterByText = ({ setFilter, ...props }) => {
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
-	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1 }),
+	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1, avatarETag: 1 }),
 	query: JSON.stringify({
 		$or: [
 			{ 'emails.address': { $regex: text || '', $options: 'i' } },
@@ -78,8 +78,8 @@ export function UsersTable() {
 		<Th key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x100'>{t('Status')}</Th>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
-	const renderRow = useCallback(({ emails, _id, username, name, roles, status, ...args }) => {
-		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: username || name, type: 'd', _id, ...args });
+	const renderRow = useCallback(({ emails, _id, username, name, roles, status, avatarETag }) => {
+		const avatarUrl = getUserAvatarURL(username, avatarETag);
 
 		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
 			<Table.Cell style={style}>
