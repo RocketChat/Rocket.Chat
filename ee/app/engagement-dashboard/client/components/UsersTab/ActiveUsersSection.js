@@ -5,9 +5,14 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { CounterSet } from '../data/CounterSet';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
+import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
+import { saveFile } from '../../../../../../client/lib/saveFile';
+
+const convertDataToCSV = ({ countDailyActiveUsers, diffDailyActiveUsers, countWeeklyActiveUsers, diffWeeklyActiveUsers, countMonthlyActiveUsers, diffMonthlyActiveUsers, dauValues, wauValues, mauValues }) => `// countDailyActiveUsers, diffDailyActiveUsers, countWeeklyActiveUsers, diffWeeklyActiveUsers, countMonthlyActiveUsers, diffMonthlyActiveUsers, dauValues, wauValues, mauValues
+${ countDailyActiveUsers }, ${ diffDailyActiveUsers }, ${ countWeeklyActiveUsers }, ${ diffWeeklyActiveUsers }, ${ countMonthlyActiveUsers }, ${ diffMonthlyActiveUsers }, ${ dauValues }, ${ wauValues }, ${ mauValues }`;
 
 export function ActiveUsersSection() {
 	const t = useTranslation();
@@ -91,7 +96,22 @@ export function ActiveUsersSection() {
 		];
 	}, [period, data]);
 
-	return <Section title={t('Active_users')} filter={null}>
+	const downloadData = () => {
+		saveFile(convertDataToCSV({
+			countDailyActiveUsers,
+			diffDailyActiveUsers,
+			countWeeklyActiveUsers,
+			diffWeeklyActiveUsers,
+			countMonthlyActiveUsers,
+			diffMonthlyActiveUsers,
+			dauValues,
+			wauValues,
+			mauValues,
+		}), `ActiveUsersSection_start_${ params.start }_end_${ params.end }.csv`);
+	};
+
+
+	return <Section title={t('Active_users')} filter={<ActionButton disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/>}>
 		<CounterSet
 			counters={[
 				{

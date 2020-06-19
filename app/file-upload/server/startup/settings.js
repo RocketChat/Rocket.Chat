@@ -12,10 +12,16 @@ settings.addGroup('FileUpload', function() {
 		i18nDescription: 'FileUpload_MaxFileSizeDescription',
 	});
 
-	this.add('FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,application/zip,application/x-rar-compressed,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.text,application/vnd.oasis.opendocument.spreadsheet,application/vnd.oasis.opendocument.presentation', {
+	this.add('FileUpload_MediaTypeWhiteList', '', {
 		type: 'string',
 		public: true,
 		i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+	});
+
+	this.add('FileUpload_MediaTypeBlackList', 'image/svg+xml', {
+		type: 'string',
+		public: true,
+		i18nDescription: 'FileUpload_MediaTypeBlackListDescription',
 	});
 
 	this.add('FileUpload_ProtectFiles', true, {

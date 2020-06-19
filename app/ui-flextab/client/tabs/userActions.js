@@ -6,11 +6,11 @@ import toastr from 'toastr';
 import _ from 'underscore';
 
 import { WebRTC } from '../../../webrtc/client';
-import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models';
-import { modal } from '../../../ui-utils';
+import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models/client';
+import { modal } from '../../../ui-utils/client';
 import { t, handleError, roomTypes } from '../../../utils';
-import { settings } from '../../../settings';
-import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization';
+import { settings } from '../../../settings/client';
+import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization/client';
 import { RoomMemberActions } from '../../../utils/client';
 
 const canSetLeader = () => hasAllPermission('set-leader', Session.get('openedRoom'));
@@ -442,6 +442,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				this.editingUser.set(user._id);
 			}),
 		}, {
+			// deprecated, this action should not be called as this component is not used on admin pages anymore
 			icon: 'trash',
 			name: 'Delete',
 			action: prevent(getUser, ({ _id }) => {
@@ -502,6 +503,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				),
 			};
 		}, () => {
+			// deprecated, this action should not be called as this component is not used on admin pages anymore
 			if (hideAdminControls || !hasPermission('edit-other-user-active-status')) {
 				return;
 			}

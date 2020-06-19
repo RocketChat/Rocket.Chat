@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -26,14 +26,15 @@ export default function NewIncomingWebhook(props) {
 
 	const { values: formValues, handlers: formHandlers, reset } = useForm(initialState);
 
+	// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
 	const saveAction = useEndpointAction('POST', 'integrations.create', useMemo(() => ({ ...formValues, type: 'webhook-incoming' }), [JSON.stringify(formValues)]), t('Integration_added'));
 
-	const handleSave = async () => {
+	const handleSave = useCallback(async () => {
 		const result = await saveAction();
 		if (result.success) {
 			router.push({ context: 'edit', type: 'incoming', id: result.integration._id });
 		}
-	};
+	}, [router, saveAction]);
 
 	const actionButtons = useMemo(() => <Field>
 		<Field.Row>
@@ -44,7 +45,7 @@ export default function NewIncomingWebhook(props) {
 				</Margins>
 			</Box>
 		</Field.Row>
-	</Field>);
+	</Field>, [handleSave, reset, t]);
 
 	return <IncomingWebhookForm formValues={formValues} formHandlers={formHandlers} append={actionButtons} {...props}/>;
 }

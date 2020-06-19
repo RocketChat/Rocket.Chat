@@ -34,7 +34,7 @@
 				<ul class='list clearfix lines'>
 					{{#each users}}
 						<li class='rc-member-list__user'>
-							{{> avatar username=user.username}}
+							{{> avatar url=avatarUrl}}
 							<div class="rc-member-list__username">
 								{{# userPresence uid=user._id}}<div class="rc-member-list__status rc-member-list__status--{{status}}"></div>{{/userPresence}}
 								{{ignored}} {{displayName}} {{utcOffset}}
