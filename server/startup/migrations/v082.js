@@ -1,5 +1,5 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { getUsersInRole, removeUserFromRoles } from 'meteor/rocketchat:authorization';
+import { Migrations } from '../../../app/migrations';
+import { getUsersInRole, removeUserFromRoles } from '../../../app/authorization';
 
 Migrations.add({
 	version: 82,

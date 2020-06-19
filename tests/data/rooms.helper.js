@@ -13,8 +13,8 @@ export const createRoom = ({ name, type, username }) => {
 		d: 'im.create',
 	};
 	const params = type === 'd'
-		? ({ username })
-		: ({ name });
+		? { username }
+		: { name };
 
 	return request.post(api(endpoints[type]))
 		.set(credentials)

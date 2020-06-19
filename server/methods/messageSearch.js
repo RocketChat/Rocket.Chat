@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Subscriptions, Messages } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
 import s from 'underscore.string';
+
+import { Subscriptions, Messages } from '../../app/models';
+import { settings } from '../../app/settings';
 
 Meteor.methods({
 	messageSearch(text, rid, limit) {
@@ -13,7 +14,7 @@ Meteor.methods({
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
 			message: {
-				docs:[],
+				docs: [],
 			},
 		};
 
@@ -116,6 +117,16 @@ Meteor.methods({
 			return '';
 		}
 
+		function filterTitle(_, tag) {
+			query['attachments.title'] = new RegExp(s.escapeRegExp(tag), 'i');
+			return '';
+		}
+
+		function filterDescription(_, tag) {
+			query['attachments.description'] = new RegExp(s.escapeRegExp(tag), 'i');
+			return '';
+		}
+
 		function sortByTimestamp(_, direction) {
 			if (direction.startsWith('asc')) {
 				options.sort.ts = 1;
@@ -170,6 +181,10 @@ Meteor.methods({
 		text = text.replace(/has:location|has:map/g, filterLocation);
 		// Filter image tags
 		text = text.replace(/label:(\w+)/g, filterLabel);
+		// Filter on description of messages.
+		text = text.replace(/file-desc:(\w+)/g, filterDescription);
+		// Filter on title of messages.
+		text = text.replace(/file-title:(\w+)/g, filterTitle);
 		// Filtering before/after/on a date
 		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by before:, after: and on: respectively.
 		// Example: before:15/09/2016 after: 10-08-2016

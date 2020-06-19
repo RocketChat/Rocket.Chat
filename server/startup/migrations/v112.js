@@ -1,5 +1,5 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Settings, Users } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Settings, Users } from '../../../app/models';
 
 Migrations.add({
 	version: 112,
@@ -9,7 +9,7 @@ Migrations.add({
 			if (setting && setting.value) {
 				Settings.update(
 					{ _id: 'Accounts_Default_User_Preferences_idleTimeoutLimit' },
-					{ $set: { value: setting.value / 1000 } }
+					{ $set: { value: setting.value / 1000 } },
 				);
 			}
 		}
@@ -18,7 +18,7 @@ Migrations.add({
 			Users.find({ 'settings.preferences.idleTimeLimit': { $exists: 1 } }).forEach(function(user) {
 				Users.update(
 					{ _id: user._id },
-					{ $set: { 'settings.preferences.idleTimeLimit': user.settings.preferences.idleTimeLimit / 1000 } }
+					{ $set: { 'settings.preferences.idleTimeLimit': user.settings.preferences.idleTimeLimit / 1000 } },
 				);
 			});
 		}

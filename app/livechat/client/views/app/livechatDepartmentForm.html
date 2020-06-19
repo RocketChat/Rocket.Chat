@@ -1,0 +1,223 @@
+<template name="livechatDepartmentForm">
+	{{#requiresPermission 'view-livechat-departments'}}
+	<div class="main-content-flex">
+		<section class="page-container flex-tab-main-content">
+			{{> header sectionName=i18nPageTitle}}
+			<div class="content">
+				<form id="department-form" data-id="{{department._id}}">
+					<div class="rocket-form">
+						{{#if Template.subscriptionsReady}}
+							<fieldset>
+								{{#requiresPermission 'manage-livechat-departments'}}
+									<div class="input-line">
+										<label>{{_ "Enabled"}}</label>
+										<div>
+											<label><input type="radio" name="enabled" value="1" checked="{{$eq department.enabled true}}" /> {{_ "Yes"}}</label>
+											<label><input type="radio" name="enabled" value="0" checked="{{$eq department.enabled false}}" /> {{_ "No"}}</label>
+										</div>
+									</div>
+									<div class="input-line">
+										<label>{{_ "Name"}}</label>
+										<div>
+											<input type="text" class="rc-input__element" name="name" value="{{department.name}}" placeholder="{{_ "Name"}}" />
+										</div>
+									</div>
+									<div class="input-line">
+										<label>{{_ "Description"}}</label>
+										<div>
+											<textarea name="description" class="rc-input__element" rows="6">{{department.description}}</textarea>
+										</div>
+									</div>
+									<div class="input-line">
+										<label>{{_ "Show_on_registration_page"}}</label>
+										<div>
+											<label><input type="radio" name="showOnRegistration" value="1" checked="{{showOnRegistration true}}" /> {{_ "Yes"}}</label>
+											<label><input type="radio" name="showOnRegistration" value="0" checked="{{showOnRegistration false}}" /> {{_ "No"}}</label>
+										</div>
+									</div>
+									<div class="input-line">
+										<label>{{_ "Email"}}</label>
+										<div>
+											<input type="email" class="rc-input__element" name="email" value="{{department.email}}" placeholder="{{_ "Email"}}" />
+										</div>
+									</div>
+									<div class="input-line">
+										<label>{{_ "Show_on_offline_page"}}</label>
+										<div>
+											<label><input type="radio" name="showOnOfflineForm" value="1" checked="{{showOnOfflineForm true}}" /> {{_ "Yes"}}</label>
+											<label><input type="radio" name="showOnOfflineForm" value="0" checked="{{showOnOfflineForm false}}" /> {{_ "No"}}</label>
+										</div>
+									</div>
+									<div class="input-line">
+										{{> livechatAutocompleteUser
+											onClickTag=onClickTagOfflineMessageChannel
+											list=selectedOfflineMessageChannel
+											onSelect=onSelectOfflineMessageChannel
+											collection='CachedChannelList'
+											endpoint='rooms.autocomplete.channelAndPrivate'
+											field='name'
+											sort='name'
+											label="Livechat_DepartmentOfflineMessageToChannel"
+											placeholder="Channel_name"
+											name="offlineMessageChannelName"
+											noMatchTemplate="roomSearchEmpty"
+											templateItem="popupList_item_channel"
+											modifier=offlineMessageChannelModifier
+											showLabel=true
+											selector=channelSelector
+										}}
+									</div>
+									<div class="input-line">
+										<label>{{_ "Request_tag_before_closing_chat"}}</label>
+										<div>
+											<label><input type="radio" name="requestTagBeforeClosingChat" value="1" checked="{{$eq requestTagBeforeClosingChat true}}" /> {{_ "Yes"}}</label>
+											<label><input type="radio" name="requestTagBeforeClosingChat" value="0" checked="{{$eq requestTagBeforeClosingChat false}}" /> {{_ "No"}}</label>
+										</div>
+									</div>
+									<label>{{_ "Conversation_closing_tags"}}</label>
+									<div class="input-line form-inline">
+										<div class="form-group">
+											{{#if hasAvailableTags}}
+												<div class="rc-input__wrapper">
+													<select id="tagSelect" class="rc-input rc-input__element rc-input--small rc-form-item-inline">
+														<option value="placeholder" disabled selected>{{_ "Select_tag"}}</option>
+														{{#each availableDepartmentTags}}
+															<option value="{{_id}}">{{this}}</option>
+														{{/each}}
+													</select>
+												</div>
+											{{else}}
+												<div class="rc-input" id="add-tag-input">
+													<label class="rc-input__label">
+														<div class="rc-input__wrapper">
+															<div class="rc-input__icon">
+																{{> icon icon='edit' }}
+															</div>
+															<input id="tagInput" class="rc-input__element" type="text" name="tags" autocomplete="off" placeholder="{{_"Enter_a_tag"}}">
+														</div>
+													</label>
+												</div>
+											{{/if}}
+										</div>
+										<div class="form-group">
+											<button id="addTag" name="addTag" class="rc-button rc-button--primary add-tag">{{_ "Add"}}</button>
+										</div>
+										<div>
+											<small class="secondary-font-color">{{{_ "Conversation_closing_tags_description"}}}</small>
+										</div>
+									</div>
+									{{#if hasChatClosingTags}}
+										<div class="input-line">
+											<ul id="tags" class="chip-container department-fallback-tags">
+												{{#each chatClosingTags}}
+												<li class="remove-tag" title="{{this}}">
+													<i class="icon icon-cancel-circled"></i>
+													{{this}}
+												</li>
+												{{/each}}
+											</ul>
+										</div>
+									{{/if}}
+									{{#if customFieldsTemplate}}
+										{{> Template.dynamic template=customFieldsTemplate data=data }}
+									{{/if}}
+
+									{{#requiresPermission 'add-livechat-department-agents'}}
+										<hr />
+									{{else}}
+									{{/requiresPermission}}
+								{{else}}
+									<legend>{{department.name}}</legend>
+								{{/requiresPermission}}
+
+								{{#requiresPermission 'add-livechat-department-agents'}}
+									<h2>{{_ "Agents"}}</h2>
+
+									<fieldset>
+										<label>{{_ "Add_agent"}}</label>
+										<div class="input-line form-inline">
+											<div class="form-group">
+												{{> livechatAutocompleteUser
+													onClickTag=onClickTagAgents
+													list=selectedAgents
+													onSelect=onSelectAgents
+													collection='UserAndRoom'
+													endpoint='users.autocomplete'
+													field='username'
+													sort='username'
+													label="Search_by_username"
+													placeholder="Search_by_username"
+													name="username"
+													exceptions=exceptionsAgents
+													icon="at"
+													noMatchTemplate="userSearchEmpty"
+													templateItem="popupList_item_default"
+													modifier=agentModifier
+													conditions=agentConditions
+												}}
+											</div>
+											<div class="form-group">
+												<button name="add" class="rc-button rc-button--primary add-agent">{{_ "Add"}}</button>
+											</div>
+										</div>
+									</fieldset>
+
+									<fieldset>
+										<legend>{{_ "Selected_agents"}}</legend>
+
+										<div class="rc-table-content">
+											{{#table fixed='true'}}
+												<thead>
+													<tr>
+														<th width="25%"><div class="table-fake-th">{{_ "Username"}}</div></th>
+														<th><div class="table-fake-th">{{_ "Count"}}</div></th>
+														<th><div class="table-fake-th">{{_ "Order"}}</div></th>
+														<th width="40px">&nbsp;</th>
+													</tr>
+												</thead>
+												<tbody>
+													{{#each departmentAgents}}
+														<tr class="agent-info">
+															<td>
+																<div class="rc-table-wrapper">
+																	<div class="rc-table-info">
+																		<span class="rc-table-title">{{username}}</span>
+																	</div>
+																</div>
+															</td>
+															<td><input type="text" class="count-{{agentId}}" name="count" value="{{count}}" size="3"></td>
+															<td><input type="text" class="order-{{agentId}}" name="order" value="{{order}}" size="3"></td>
+															<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
+														</tr>
+													{{else}}
+														<tr>
+															<td colspan="4">{{_ "There_are_no_agents_added_to_this_department_yet"}}</td>
+														</tr>
+													{{/each}}
+												</tbody>
+											{{/table}}
+										</div>
+
+									</fieldset>
+								{{else}}
+								{{/requiresPermission}}
+							</fieldset>
+							<div class="rc-button__group">
+								<button class="rc-button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
+								<button class="rc-button rc-button--primary save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
+							</div>
+						{{else}}
+							{{> loading}}
+						{{/if}}
+					</div>
+				</form>
+			</div>
+		</section>
+		{{#if tabBarVisible}}
+			{{#with flexData}}
+				{{> flexTabBar}}
+			{{/with}}
+		{{/if}}
+	</div>
+	{{/requiresPermission}}
+</template>

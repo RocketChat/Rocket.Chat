@@ -3,7 +3,9 @@ set -euvo pipefail
 IFS=$'\n\t'
 
 # Add launchpad to known hosts
-ssh-keyscan -t rsa -H git.launchpad.net > ~/.ssh/known_hosts
+
+mkdir -p $HOME/.ssh
+ssh-keyscan -t rsa -H git.launchpad.net >> $HOME/.ssh/known_hosts
 
 echo "Preparing to trigger a snap release for $SNAP_CHANNEL channel"
 
@@ -13,7 +15,7 @@ cd $PWD/.snapcraft
 echo -e "Tag: $CIRCLE_TAG\r\nBranch: $CIRCLE_BRANCH\r\nBuild: $CIRCLE_BUILD_NUM\r\nCommit: $CIRCLE_SHA1" > buildinfo
 
 # Clone launchpad repo for the channel down.
-git clone -b $SNAP_CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad
+git clone -b $SNAP_CHANNEL --depth 1 git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad
 
 # Rarely will change, but just incase we copy it all
 cp -r resources buildinfo snap launchpad/

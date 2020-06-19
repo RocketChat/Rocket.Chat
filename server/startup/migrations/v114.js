@@ -1,5 +1,5 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Settings } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
 
 Migrations.add({
 	version: 114,
@@ -9,7 +9,7 @@ Migrations.add({
 			if (setting && setting.value) {
 				Settings.upsert(
 					{ _id: 'Search.defaultProvider.GlobalSearchEnabled' },
-					{ $set: { value: setting.value } }
+					{ $set: { value: setting.value } },
 				);
 
 				Settings.removeById('Message_GlobalSearch');

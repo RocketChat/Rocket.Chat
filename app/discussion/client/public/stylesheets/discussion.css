@@ -1,0 +1,22 @@
+.message-discussion {
+	display: flex;
+
+	padding: 0.5rem 0;
+	align-items: center;
+}
+
+.discussion-reply-lm {
+	padding: 4px 8px;
+
+	color: var(--color-gray);
+
+	font-size: 12px;
+}
+
+.discussions-list .load-more {
+	text-align: center;
+	text-transform: lowercase;
+
+	font-style: italic;
+	line-height: 40px;
+}

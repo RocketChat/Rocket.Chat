@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { ReadReceipt } from '../../imports/message-read-receipt/server/lib/ReadReceipt';
-import { Subscriptions } from 'meteor/rocketchat:models';
+
+import { callbacks } from '../../app/callbacks/server';
+import { Subscriptions } from '../../app/models/server';
+import { NotificationQueue } from '../../app/models/server/raw';
 
 Meteor.methods({
 	readMessages(rid) {
@@ -15,13 +17,23 @@ Meteor.methods({
 			});
 		}
 
-		// this prevents cache from updating object reference/pointer
-		const userSubscription = Object.assign({}, Subscriptions.findOneByRoomIdAndUserId(rid, userId));
+		callbacks.run('beforeReadMessages', rid, userId);
+
+		// TODO: move this calls to an exported function
+		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { ls: 1 } });
+
+		if (!userSubscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+				method: 'readMessages',
+			});
+		}
 
 		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
 
+		NotificationQueue.clearQueueByUserId(userId);
+
 		Meteor.defer(() => {
-			ReadReceipt.markMessagesAsRead(rid, userId, userSubscription.ls);
+			callbacks.run('afterReadMessages', rid, { userId, lastSeen: userSubscription.ls });
 		});
 	},
 });
