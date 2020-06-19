@@ -216,7 +216,7 @@ settings.addGroup('Email', function() {
 				value: 'IMAP',
 			},
 		});
-		this.add('Direct_Reply_Method', false, {
+		this.add('Direct_Reply_Method', 'to', {
 			type: 'select',
 			values: [
 				{
@@ -227,8 +227,6 @@ settings.addGroup('Email', function() {
 					i18nLabel: 'to',
 				},
 			],
-			env: true,
-			i18nLabel: 'Direct_Reply_Method',
 		});
 		this.add('Direct_Reply_Separator', '+', {
 			type: 'select',

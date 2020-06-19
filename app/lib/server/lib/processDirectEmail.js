@@ -2,8 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { EmailReplyParser as reply } from 'emailreplyparser';
 import moment from 'moment';
-import base64 from 'base-64';
-import utf8 from 'utf8';
 
 import { settings } from '../../../settings';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models';
@@ -33,30 +31,17 @@ export const processDirectEmail = function(email) {
 		// reduce new lines in multiline message
 		message.msg = message.msg.split('\n\n').join('\n');
 
-		// the message might be base64 encoded, try to decode
-		try {
-			const bytes = base64.decode(message.msg);
-			message.msg = utf8.decode(bytes);
-		} catch (e) {
-			// decoding the message has faild, take the original message
-		}
-
-		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
-			message.alias = userName;
-		}
-
 		message.rid = roomId;
 		return message;
 	}
 
 	function _getUserByEmailaddress(emailaddress) {
-		const user = Users.findOneByEmailAddress(emailaddress, {
+		return Users.findOneByEmailAddress(emailaddress, {
 			fields: {
 				username: 1,
 				name: 1,
 			},
 		});
-		return user;
 	}
 
 	function _canWriteToRoom(roomId, user) {
