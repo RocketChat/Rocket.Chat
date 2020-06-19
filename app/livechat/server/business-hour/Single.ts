@@ -24,12 +24,12 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 	}
 
 	async openBusinessHoursByDayHourAndUTC(day: string, hour: string, utc: string): Promise<void> {
-		const businessHoursIds = (await this.BusinessHourRepository.findActiveBusinessHoursToOpen(day, hour, utc, LivechatBussinessHourTypes.SINGLE, { fields: { _id: 1 }})).map((businessHour) => businessHour._id);
+		const businessHoursIds = (await this.BusinessHourRepository.findActiveBusinessHoursToOpen(day, hour, utc, LivechatBussinessHourTypes.SINGLE, { fields: { _id: 1 } })).map((businessHour) => businessHour._id);
 		this.UsersRepository.openAgentsBusinessHours(businessHoursIds);
 	}
 
 	async closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void> {
-		const businessHoursIds = await this.BusinessHourRepository.findActiveBusinessHoursIdsToClose(LivechatBussinessHourTypes.SINGLE, day, hour, utc);
+		const businessHoursIds = await this.BusinessHourRepository.findActiveBusinessHoursToClose(day, hour, utc, LivechatBussinessHourTypes.SINGLE);
 		await this.UsersRepository.closeAgentsBusinessHours(businessHoursIds);
 		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}

@@ -19,8 +19,16 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 
 	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
 
-	closeBusinessHoursByDayAndHour(/* day: string, hour: string, utc: string*/): Promise<void> {
-		return Promise.resolve(undefined);
+	async closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void> {
+		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToClose(day, hour, utc, undefined, {
+			fields: {
+				_id: 1,
+				type: 1,
+			},
+		});
+		for (const businessHour of businessHours) {
+			this.closeBusinessHour(businessHour);
+		}
 	}
 
 	async getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined> {
@@ -101,13 +109,34 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 	}
 
 	private async openBusinessHour(businessHour: Record<string, any>): Promise<void> {
-		if (businessHour.type !== LivechatBussinessHourTypes.SINGLE) {
-			const departmentIds = (await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
-			const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+		if (businessHour.type === LivechatBussinessHourTypes.MULTIPLE) {
+			const agentIds = await this.getAgentIdsFromBusinessHour(businessHour);
 			return this.UsersRepository.openBusinessHourByAgentIds(agentIds, businessHour._id);
 		}
-		const agentIdsWithDepartment = (await this.DepartmentsAgentsRepository.find({}, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+		const agentIdsWithDepartment = await this.getAgentIdsWithDepartment();
 		return this.UsersRepository.openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment, businessHour._id);
+	}
+
+	private async getAgentIdsFromBusinessHour(businessHour: Record<string, any>): Promise<string[]> {
+		const departmentIds = (await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
+		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+		return agentIds;
+	}
+
+	private async getAgentIdsWithDepartment(): Promise<string[]> {
+		const agentIdsWithDepartment = (await this.DepartmentsAgentsRepository.find({}, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+		return agentIdsWithDepartment;
+	}
+
+	private async closeBusinessHour(businessHour: Record<string, any>): Promise<void> {
+		if (businessHour.type === LivechatBussinessHourTypes.MULTIPLE) {
+			const agentIds = await this.getAgentIdsFromBusinessHour(businessHour);
+			await this.UsersRepository.closeBusinessHourByAgentIds(agentIds, businessHour._id);
+			return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+		}
+		const agentIdsWithDepartment = await this.getAgentIdsWithDepartment();
+		await this.UsersRepository.closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment, businessHour._id);
+		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
 	private getUTCFromTimezone(timezone: string): string {

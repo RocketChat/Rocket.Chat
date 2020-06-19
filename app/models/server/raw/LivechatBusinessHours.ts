@@ -129,23 +129,21 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 		return this.col.find(query, options).toArray();
 	}
 
-	async findActiveBusinessHoursIdsToClose(type: LivechatBussinessHourTypes, day: string, finish: string, utc: string): Promise<string[]> {
-		return (await this.col.find({
-				type,
-				active: true,
-				'timezone.utc': utc,
-				workHours: {
-					$elemMatch: {
-						day,
-						finish,
-						open: true,
-					},
+	async findActiveBusinessHoursToClose(day: string, finish: string, utc: string, type?: LivechatBussinessHourTypes, options?: any): Promise<ILivechatBusinessHour[]> {
+		const query: Record<string, any> = {
+			active: true,
+			'timezone.utc': utc,
+			workHours: {
+				$elemMatch: {
+					day,
+					finish,
+					open: true,
 				},
 			},
-			{
-				fields: {
-					_id: 1,
-				},
-			}).toArray()).map((businessHour) => businessHour._id);
+		};
+		if (type) {
+			query.type = type;
+		}
+		return this.col.find(query, options).toArray();
 	}
 }

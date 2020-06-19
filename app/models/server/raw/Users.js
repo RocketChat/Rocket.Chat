@@ -328,6 +328,20 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
+	closeBusinessHourByAgentIds(agentIds = [], businessHourId) {
+		const query = {
+			_id: { $in: agentIds },
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
 		const query = {
 			_id: { $nin: agentIdsWithDepartment },
@@ -338,6 +352,20 @@ export class UsersRaw extends BaseRaw {
 				statusLivechat: 'available',
 			},
 			$addToSet: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+		const query = {
+			_id: { $nin: agentIdsWithDepartment },
+		};
+
+		const update = {
+			$pull: {
 				openBusinessHours: businessHourId,
 			},
 		};
