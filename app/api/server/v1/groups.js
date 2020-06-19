@@ -827,7 +827,7 @@ API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
 			return API.v1.failure('The bodyParam "encrypted" is required');
 		}
 
-		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams() });
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
 
 		if (findResult.encrypted === this.bodyParams.encrypted) {
 			return API.v1.failure('The group encrypted is the same as what it would be changed to.');
