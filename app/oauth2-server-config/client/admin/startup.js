@@ -1,7 +1,7 @@
-import { AdminBox } from '../../../ui-utils';
 import { hasAllPermission } from '../../../authorization';
+import { registerAdminSidebarItem } from '../../../../client/admin';
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	href: 'admin-oauth-apps',
 	i18nLabel: 'OAuth Apps',
 	icon: 'discover',

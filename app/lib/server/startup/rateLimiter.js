@@ -5,6 +5,9 @@ import { RateLimiter } from 'meteor/rate-limit';
 
 import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
+import { Logger } from '../../../logger';
+
+const logger = new Logger('RateLimiter', {});
 
 // Get initial set of names already registered for rules
 const names = new Set(Object.values(DDPRateLimiter.printRules())
@@ -107,8 +110,8 @@ const ruleIds = {};
 
 const callback = (message, name) => (reply, input) => {
 	if (reply.allowed === false) {
-		console.warn('DDP RATE LIMIT:', message);
-		console.warn(JSON.stringify({ ...reply, ...input }, null, 2));
+		logger.info('DDP RATE LIMIT:', message);
+		logger.info(JSON.stringify({ ...reply, ...input }, null, 2));
 		metrics.ddpRateLimitExceeded.inc({
 			limit_name: name,
 			user_id: input.userId,

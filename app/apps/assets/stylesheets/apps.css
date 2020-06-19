@@ -370,6 +370,57 @@
 	}
 }
 
+.rc-game {
+	&__list {
+		.rc-table-title {
+			width: 135px;
+		}
+	}
+
+	&__container {
+		height: calc(100% - 79px);
+	}
+
+	&__close {
+		position: absolute;
+		top: -30px;
+		right: -25px;
+
+		cursor: pointer;
+
+		color: #e9ebee;
+
+		font-size: 20px;
+
+		&:hover {
+			color: white;
+		}
+	}
+
+	&__main {
+		min-width: 400px;
+		height: 100%;
+	}
+}
+
+.rc-game-modal {
+	&__container {
+		margin: -14px -14px -18px;
+	}
+
+	&__main {
+		min-height: 730px;
+	}
+}
+
+.rc-icon.game-center__invite-players-icon.game-center__invite-players-icon--plus {
+	font-size: 18px;
+
+	&:hover {
+		color: #1d74f5;
+	}
+}
+
 @keyframes play90 {
 	0% {
 		right: -798px;

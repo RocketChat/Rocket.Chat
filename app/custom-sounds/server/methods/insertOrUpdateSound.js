@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
 import { CustomSounds } from '../../../models';
@@ -32,6 +33,7 @@ Meteor.methods({
 		let matchingResults = [];
 
 		if (soundData._id) {
+			check(soundData._id, String);
 			matchingResults = CustomSounds.findByNameExceptId(soundData.name, soundData._id).fetch();
 		} else {
 			matchingResults = CustomSounds.findByName(soundData.name).fetch();

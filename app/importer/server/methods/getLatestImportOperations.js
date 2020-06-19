@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Imports } from '../models/Imports';
+import { Imports } from '../../../models';
 import { hasRole } from '../../../authorization';
 
 Meteor.methods({

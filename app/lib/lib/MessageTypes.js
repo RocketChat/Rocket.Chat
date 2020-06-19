@@ -160,3 +160,50 @@ Meteor.startup(function() {
 		},
 	});
 });
+
+export const MessageTypesValues = [
+	{
+		key: 'uj',
+		i18nLabel: 'Message_HideType_uj',
+	}, {
+		key: 'ul',
+		i18nLabel: 'Message_HideType_ul',
+	}, {
+		key: 'ru',
+		i18nLabel: 'Message_HideType_ru',
+	}, {
+		key: 'au',
+		i18nLabel: 'Message_HideType_au',
+	}, {
+		key: 'mute_unmute',
+		i18nLabel: 'Message_HideType_mute_unmute',
+	}, {
+		key: 'r',
+		i18nLabel: 'Message_HideType_r',
+	}, {
+		key: 'ut',
+		i18nLabel: 'Message_HideType_ut',
+	}, {
+		key: 'wm',
+		i18nLabel: 'Message_HideType_wm',
+	}, {
+		key: 'rm',
+		i18nLabel: 'Message_HideType_rm',
+	}, {
+		key: 'subscription-role-added',
+		i18nLabel: 'Message_HideType_subscription_role_added',
+	}, {
+		key: 'subscription-role-removed',
+		i18nLabel: 'Message_HideType_subscription_role_removed',
+	}, {
+		key: 'room_archived',
+		i18nLabel: 'Message_HideType_room_archived',
+	}, {
+		key: 'room_unarchived',
+		i18nLabel: 'Message_HideType_room_unarchived',
+	},
+	{
+		key: 'room_changed_privacy',
+		i18nLabel: 'Message_HideType_room_changed_privacy',
+	},
+];

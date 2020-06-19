@@ -87,7 +87,7 @@ const eventHandlers = {
 	//
 	// ROOM_ADD_USER
 	//
-	async [eventTypes.ROOM_ADD_USER0](event) {
+	async [eventTypes.ROOM_ADD_USER](event) {
 		const eventResult = await FederationRoomEvents.addEvent(event.context, event);
 
 		// If the event was successfully added, handle the event locally
@@ -156,6 +156,29 @@ const eventHandlers = {
 	},
 
 	//
+	// ROOM_USER_LEFT
+	//
+	async [eventTypes.ROOM_USER_LEFT](event) {
+		const eventResult = await FederationRoomEvents.addEvent(event.context, event);
+
+		// If the event was successfully added, handle the event locally
+		if (eventResult.success) {
+			const { data: { roomId, user, domainsAfterRemoval } } = event;
+
+			// Remove the user's subscription
+			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+
+			// Refresh the servers list
+			FederationServers.refreshServers();
+
+			// Update the room's federation property
+			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
+		}
+
+		return eventResult;
+	},
+
+	//
 	// ROOM_MESSAGE
 	//
 	async [eventTypes.ROOM_MESSAGE](event) {
@@ -202,10 +225,16 @@ const eventHandlers = {
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
 
-					// Update the message's attachments
+					// Update the message's attachments dependent on type
 					for (const attachment of denormalizedMessage.attachments) {
 						attachment.title_link = attachment.title_link.replace(oldUploadId, upload._id);
-						attachment.image_url = attachment.image_url.replace(oldUploadId, upload._id);
+						if (/^image\/.+/.test(denormalizedMessage.file.type)) {
+							attachment.image_url = attachment.image_url.replace(oldUploadId, upload._id);
+						} else if (/^audio\/.+/.test(denormalizedMessage.file.type)) {
+							attachment.audio_url = attachment.audio_url.replace(oldUploadId, upload._id);
+						} else if (/^video\/.+/.test(denormalizedMessage.file.type)) {
+							attachment.video_url = attachment.video_url.replace(oldUploadId, upload._id);
+						}
 					}
 				}
 
@@ -422,13 +451,19 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
 			}
 
 			// If there was an error handling the event, take action
-			if (!eventResult.success) {
-				logger.server.debug(`federation.events.dispatch => Event has missing parents -> event=${ JSON.stringify(event, null, 2) }`);
+			if (!eventResult || !eventResult.success) {
+				try {
+					logger.server.debug(`federation.events.dispatch => Event has missing parents -> event=${ JSON.stringify(event, null, 2) }`);
 
-				requestEventsFromLatest(event.origin, getFederationDomain(), contextDefinitions.defineType(event), event.context, eventResult.latestEventIds);
+					requestEventsFromLatest(event.origin, getFederationDomain(), contextDefinitions.defineType(event), event.context, eventResult.latestEventIds);
 
-				// And stop handling the events
-				break;
+					// And stop handling the events
+					break;
+				} catch (err) {
+					logger.server.error(() => `dispatch => event=${ JSON.stringify(event, null, 2) } eventResult=${ JSON.stringify(eventResult, null, 2) } error=${ err.toString() } ${ err.stack }`);
+
+					throw err;
+				}
 			}
 
 			/* eslint-enable no-await-in-loop */

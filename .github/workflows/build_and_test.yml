@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     - name: Github Info
       run: |
         echo "GITHUB_ACTION: $GITHUB_ACTION"
@@ -29,12 +30,20 @@ jobs:
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
-    - name: Use Node.js 12.14.0
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: "12.14.0"
+        node-version: "12.16.1"
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     - name: check package-lock
       run: |
@@ -146,13 +155,17 @@ jobs:
         cd /tmp
         tar czf Rocket.Chat.test.tar.gz ./build-test
 
-    - name: Store builds
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        aws s3 cp /tmp/Rocket.Chat.test.tar.gz s3://rocketchatbuild/builds/$GITHUB_SHA/
-        aws s3 cp /tmp/build/Rocket.Chat.tar.gz s3://rocketchatbuild/builds/$GITHUB_SHA/
+    - name: Store build for tests
+      uses: actions/upload-artifact@v1
+      with:
+        name: build-test
+        path: /tmp/Rocket.Chat.test.tar.gz
+
+    - name: Store build
+      uses: actions/upload-artifact@v1
+      with:
+        name: build
+        path: /tmp/build
 
   test:
     runs-on: ubuntu-16.04
@@ -160,7 +173,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["12.14.0"]
+        node-version: ["12.16.1"]
         mongodb-version: ["3.4", "3.6", "4.0"]
 
     steps:
@@ -170,10 +183,10 @@ jobs:
         mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
 
     - name: Restore build for tests
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/Rocket.Chat.test.tar.gz /tmp/
+      uses: actions/download-artifact@v1
+      with:
+        name: build-test
+        path: /tmp
 
     - name: Decompress build
       run: |
@@ -195,7 +208,7 @@ jobs:
         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
         docker exec mongo mongo --eval 'rs.status()'
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: Cache cypress
       id: cache-cypress
@@ -223,7 +236,7 @@ jobs:
         MONGO_URL: mongodb://localhost:27017/rocketchat
         MONGO_OPLOG_URL: mongodb://localhost:27017/local
       run: |
-        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && xvfb-run --auto-servernum npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && xvfb-run --auto-servernum npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
 #   notification:
 #     runs-on: ubuntu-latest
@@ -241,10 +254,18 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-latest
-    if: github.event_name == 'DEACTIVATED-pull_request'
+    if: github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     - name: Cache node modules
       id: cache-nodemodules
@@ -265,10 +286,10 @@ jobs:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Use Node.js 12.14.0
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: "12.14.0"
+        node-version: "12.16.1"
 
     - name: Install Meteor
       run: |
@@ -325,9 +346,7 @@ jobs:
       run: |
         cd /tmp/build-pr
 
-        export OWNER="${GITHUB_REPOSITORY%/*}"
-
-        docker login docker.pkg.github.com -u "${OWNER}" -p "${GITHUB_TOKEN}"
+        docker login docker.pkg.github.com -u "${GITHUB_ACTOR}" -p "${GITHUB_TOKEN}"
 
         cp $GITHUB_WORKSPACE/.docker/Dockerfile .
 
@@ -346,13 +365,13 @@ jobs:
     needs: test
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: Restore build
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/Rocket.Chat.tar.gz /tmp/build/
+      uses: actions/download-artifact@v1
+      with:
+        name: build
+        path: /tmp/build
 
     - name: Publish assets
       env:
@@ -365,11 +384,12 @@ jobs:
       run: |
         if [[ '${{ github.event_name }}' = 'release' ]]; then
           export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+          export CIRCLE_BRANCH=""
         else
+          export CIRCLE_TAG=""
           export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
         fi;
 
-        export CIRCLE_TAG=${CIRCLE_TAG:=}
         export CIRCLE_SHA1=$GITHUB_SHA
         export CIRCLE_BUILD_NUM=$GITHUB_SHA
 
@@ -398,13 +418,13 @@ jobs:
       IMAGE: "rocketchat/rocket.chat"
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: Restore build
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 cp s3://rocketchatbuild/builds/$GITHUB_SHA/Rocket.Chat.tar.gz /tmp/build/
+      uses: actions/download-artifact@v1
+      with:
+        name: build
+        path: /tmp/build
 
     - name: Unpack build
       env:
@@ -417,7 +437,6 @@ jobs:
 
         export DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
           export DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
@@ -435,6 +454,10 @@ jobs:
         cd /tmp/build
         export CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+        fi;
+
         docker build -t ${IMAGE}:$CIRCLE_TAG .
         docker push ${IMAGE}:$CIRCLE_TAG
 
@@ -451,5 +474,10 @@ jobs:
       if: github.ref == 'refs/heads/develop'
       run: |
         cd /tmp/build
+
+        if [[ '${{ matrix.release }}' = 'preview' ]]; then
+          export IMAGE="${IMAGE}.preview"
+        fi;
+
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop

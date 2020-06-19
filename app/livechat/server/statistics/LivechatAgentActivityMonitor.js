@@ -15,10 +15,21 @@ export class LivechatAgentActivityMonitor {
 		this._handleMeteorConnection = this._handleMeteorConnection.bind(this);
 		this._handleAgentStatusChanged = this._handleAgentStatusChanged.bind(this);
 		this._handleUserStatusLivechatChanged = this._handleUserStatusLivechatChanged.bind(this);
+		this._name = 'Livechat Agent Activity Monitor';
 	}
 
 	start() {
 		this._setupListeners();
+	}
+
+	stop() {
+		if (!this.isRunning()) {
+			return;
+		}
+
+		SyncedCron.remove(this._name);
+
+		this._started = false;
 	}
 
 	isRunning() {
@@ -38,7 +49,7 @@ export class LivechatAgentActivityMonitor {
 
 	_startMonitoring() {
 		SyncedCron.add({
-			name: 'Livechat Agent Activity Monitor',
+			name: this._name,
 			schedule: (parser) => parser.cron('0 0 * * *'),
 			job: () => {
 				this._updateActiveSessions();
@@ -52,11 +63,11 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 		const today = moment(new Date());
-		const yesterday = today.clone().subtract(1, 'days');
-		const stoppedAt = new Date(yesterday.year(), yesterday.month(), yesterday.date(), 23, 59, 59);
 		const startedAt = new Date(today.year(), today.month(), today.date());
 		for (const session of openLivechatAgentSessions) {
-			const data = { ...formatDate(yesterday), agentId: session.agentId };
+			const startDate = moment(session.lastStartedAt);
+			const stoppedAt = new Date(startDate.year(), startDate.month(), startDate.date(), 23, 59, 59);
+			const data = { ...formatDate(startDate.toDate()), agentId: session.agentId };
 			const availableTime = moment(stoppedAt).diff(moment(new Date(session.lastStartedAt)), 'seconds');
 			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
 			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: session.lastStartedAt, stoppedAt } });
@@ -65,6 +76,10 @@ export class LivechatAgentActivityMonitor {
 	}
 
 	_handleMeteorConnection(connection) {
+		if (!this.isRunning()) {
+			return;
+		}
+
 		const session = Sessions.findOne({ sessionId: connection.id });
 		if (!session) {
 			return;
@@ -81,6 +96,10 @@ export class LivechatAgentActivityMonitor {
 	}
 
 	_handleAgentStatusChanged({ userId, status }) {
+		if (!this.isRunning()) {
+			return;
+		}
+
 		const user = Users.findOneById(userId);
 		if (!user || user.statusLivechat !== 'available') {
 			return;
@@ -94,6 +113,10 @@ export class LivechatAgentActivityMonitor {
 	}
 
 	_handleUserStatusLivechatChanged({ userId, status }) {
+		if (!this.isRunning()) {
+			return;
+		}
+
 		const user = Users.findOneById(userId);
 		if (user && user.status === 'offline') {
 			return;

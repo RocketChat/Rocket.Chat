@@ -45,7 +45,7 @@ AccountBox.addRoute({
 	name: 'livechat-managers',
 	path: '/managers',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_managers',
+	i18nPageTitle: 'Livechat_Managers',
 	pageTemplate: 'livechatManagers',
 }, livechatManagerRoutes, load);
 

@@ -24,7 +24,9 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					text: 'Sample message',
+					alias: 'Gruggy',
 					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -40,8 +42,10 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					channel: 'general',
+					alias: 'Gruggy',
 					text: 'Sample message',
 					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -76,7 +80,9 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						channel: 'general',
+						alias: 'Gruggy',
 						text: 'Sample message',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						emoji: ':smirk:',
 						attachments: [{
 							color: '#ff0000',
@@ -100,7 +106,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -123,7 +131,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -146,7 +156,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -178,6 +190,7 @@ describe('[Chat]', function() {
 						text: 'Sample message',
 						emoji: ':smirk:',
 						avatar: 'javascript:alert("xss")',
+						alias: 'Gruggy',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -207,7 +220,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -239,6 +254,8 @@ describe('[Chat]', function() {
 						channel: 'general',
 						text: 'Sample message',
 						emoji: ':smirk:',
+						alias: 'Gruggy',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -263,6 +280,8 @@ describe('[Chat]', function() {
 						channel: 'general',
 						text: 'Sample message',
 						emoji: ':smirk:',
+						alias: 'Gruggy',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -286,7 +305,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -309,7 +330,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -331,8 +354,10 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						channel: 'general',
+						alias: 'Gruggy',
 						text: 'Sample message',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -358,6 +383,8 @@ describe('[Chat]', function() {
 					channel: 'general',
 					text: 'Sample message',
 					emoji: ':smirk:',
+					alias: 'Gruggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -390,7 +417,7 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
-		it('should throw an error when the user try to set alias and avatar and he is not a BOT user', (done) => {
+		it('should return statusCode 200 when postMessage successfully', (done) => {
 			request.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -399,42 +426,6 @@ describe('[Chat]', function() {
 					alias: 'Gruggy',
 					emoji: ':smirk:',
 					avatar: 'http://res.guggy.com/logo_128.png',
-					attachments: [{
-						color: '#ff0000',
-						text: 'Yay for gruggy!',
-						ts: '2016-12-09T16:53:06.761Z',
-						thumb_url: 'http://res.guggy.com/logo_128.png',
-						message_link: 12,
-						collapsed: false,
-						author_name: 'Bradley Hilton',
-						author_link: 'https://rocket.chat/',
-						author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
-						title: 'Attachment Example',
-						title_link: 'https://youtube.com',
-						title_link_download: 'https://youtube.com',
-						image_url: 'http://res.guggy.com/logo_128.png',
-						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
-						video_url: 'http://www.w3schools.com/tags/movie.mp4',
-						fields: '',
-					}],
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
-		});
-
-
-		it('should return statusCode 200 when postMessage successfully', (done) => {
-			request.post(api('chat.postMessage'))
-				.set(credentials)
-				.send({
-					channel: 'general',
-					text: 'Sample message',
-					emoji: ':smirk:',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -497,7 +488,9 @@ describe('[Chat]', function() {
 				.send({
 					message: {
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -515,8 +508,10 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						channel: 'general',
+						alias: 'Gruggy',
 						text: 'Sample message',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -539,7 +534,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -562,7 +559,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -585,7 +584,9 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -611,43 +612,6 @@ describe('[Chat]', function() {
 		});
 
 		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
-			request.post(api('chat.sendMessage'))
-				.set(credentials)
-				.send({
-					message: {
-						channel: 'general',
-						text: 'Sample message',
-						emoji: ':smirk:',
-						attachments: [{
-							color: '#ff0000',
-							text: 'Yay for gruggy!',
-							ts: '2016-12-09T16:53:06.761Z',
-							thumb_url: 'http://res.guggy.com/logo_128.png',
-							message_link: 12,
-							collapsed: false,
-							author_name: 'Bradley Hilton',
-							author_link: 'https://rocket.chat/',
-							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
-							title: 'Attachment Example',
-							title_link: 'https://youtube.com',
-							title_link_download: 'https://youtube.com',
-							image_url: 'http://res.guggy.com/logo_128.png',
-							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
-							video_url: 'http://www.w3schools.com/tags/movie.mp4',
-							fields: '',
-						}],
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
-		});
-
-		it('should throw an error when the user try to set alias and avatar and he is not a BOT user', (done) => {
 			request.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -695,7 +659,9 @@ describe('[Chat]', function() {
 						_id: message._id,
 						rid: 'GENERAL',
 						msg: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -736,6 +702,31 @@ describe('[Chat]', function() {
 		describe('Read only channel', () => {
 			let readOnlyChannel;
 
+			const userCredentials = {};
+			let user;
+			before((done) => {
+				const username = `user.test.readonly.${ Date.now() }`;
+				const email = `${ username }@rocket.chat`;
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({ email, name: username, username, password })
+					.end((err, res) => {
+						user = res.body.user;
+						request.post(api('login'))
+							.send({
+								user: username,
+								password,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								userCredentials['X-Auth-Token'] = res.body.data.authToken;
+								userCredentials['X-User-Id'] = res.body.data.userId;
+							})
+							.end(done);
+					});
+			});
+
 			it('Creating a read-only channel', (done) => {
 				request.post(api('channels.create'))
 					.set(credentials)
@@ -767,6 +758,60 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('message').and.to.be.an('object');
 					})
 					.end(done);
+			});
+			it('Inviting regular user to read-only channel', (done) => {
+				request.post(api('channels.invite'))
+					.set(credentials)
+					.send({
+						roomId: readOnlyChannel._id,
+						userId: user._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(() => {
+						done();
+					});
+			});
+
+			it('should fail to send message when the user lacks permission', (done) => {
+				request.post(api('chat.sendMessage'))
+					.set(userCredentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Sample blocked message',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+
+			it('should send a message when the user has permission to send messages on readonly channels', (done) => {
+				updatePermission('post-readonly', ['user']).then(() => {
+					request.post(api('chat.sendMessage'))
+						.set(userCredentials)
+						.send({
+							message: {
+								rid: readOnlyChannel._id,
+								msg: 'Sample message overwriting readonly status',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('message').and.to.be.an('object');
+						})
+						.end(done);
+				});
 			});
 		});
 	});

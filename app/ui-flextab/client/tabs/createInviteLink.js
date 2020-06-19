@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import Clipboard from 'clipboard';
+import { Session } from 'meteor/session';
 
 import { t, APIClient } from '../../../utils';
 import { formatDateAndTime } from '../../../lib/client/lib/formatDate';
@@ -93,10 +94,16 @@ Template.createInviteLink.onCreated(function() {
 	this.url = new ReactiveVar('');
 	this.inviteData = new ReactiveVar(null);
 
-	getInviteLink(this, this.data.rid);
+	const { rid } = this.data;
 
-	const clipboard = new Clipboard('.js-copy');
-	clipboard.on('success', function() {
-		toastr.success(TAPi18n.__('Copied'));
+	getInviteLink(this, rid);
+
+	this.clipboard = new Clipboard('.js-copy');
+	this.clipboard.on('success', () => {
+		Session.get('openedRoom') === rid && toastr.success(TAPi18n.__('Copied'));
 	});
+});
+
+Template.createInviteLink.onDestroyed(function() {
+	this.clipboard.destroy();
 });

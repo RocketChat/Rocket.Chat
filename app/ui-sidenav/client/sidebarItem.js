@@ -5,10 +5,11 @@ import { Template } from 'meteor/templating';
 
 import { t, getUserPreference, roomTypes } from '../../utils';
 import { popover, renderMessageBody, menu } from '../../ui-utils';
-import { Users, ChatSubscription } from '../../models';
+import { Users, ChatSubscription } from '../../models/client';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { timeAgo } from '../../lib/client/lib/formatDate';
+import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 
 Template.sidebarItem.helpers({
 	streaming() {
@@ -97,7 +98,7 @@ Template.sidebarItem.onCreated(function() {
 		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
 		const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
 
-		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
+		if (!currentData.isGroupChat && Meteor.userId() !== currentData.lastMessage.u._id) {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
 		} else {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
@@ -201,6 +202,12 @@ Template.sidebarItem.events({
 });
 
 Template.sidebarItemIcon.helpers({
+	uid() {
+		if (!this.rid) {
+			return this._id;
+		}
+		return getUidDirectMessage(this.rid);
+	},
 	isRoom() {
 		return this.rid || this._id;
 	},
