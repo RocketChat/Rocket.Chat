@@ -211,7 +211,9 @@ export class SAMLUtils {
 		try {
 			map = JSON.parse(userDataFieldMap);
 		} catch (e) {
-			map = {};
+			SAMLUtils.log(userDataFieldMap);
+			SAMLUtils.log(e);
+			throw new Error('Failed to parse custom user field map');
 		}
 
 		const parsedMap: IUserDataMap = {
@@ -398,6 +400,7 @@ export class SAMLUtils {
 
 	public static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
 		const userDataMap = this.getUserDataMapping();
+		SAMLUtils.log('parsed userDataMap', userDataMap);
 		const { defaultUserRole = 'user', roleAttributeName } = this.globalSettings;
 
 		if (userDataMap.identifier.type === 'custom') {
