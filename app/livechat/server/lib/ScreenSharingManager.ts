@@ -47,6 +47,7 @@ export class ScreenSharingManager {
 
 	requestScreenSharing(roomId: string, user: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('request_screen_sharing_access', roomId, '', user, {});
+		console.log(this.screenShareProvider.getJWT('agent1', 'agent1@gmail.com'));
 	}
 }
 

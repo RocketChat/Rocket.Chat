@@ -178,6 +178,7 @@
 		"ip-range-check": "^0.0.2",
 		"jquery": "^3.5.0",
 		"jschardet": "^1.6.0",
+		"jsonwebtoken": "^8.5.1",
 		"jsrsasign": "^8.0.12",
 		"juice": "^5.2.0",
 		"katex": "^0.11.1",
