@@ -11,6 +11,10 @@ const subscriptionOptions = {
 };
 
 export const validateRoomMessagePermissionsAsync = async (room, { uid, username, type }, extraData) => {
+	if (!room) {
+		throw new Error('error-invalid-room');
+	}
+
 	if (type !== 'app' && !await canAccessRoomAsync(room, { _id: uid, username }, extraData)) {
 		throw new Error('error-not-allowed');
 	}
