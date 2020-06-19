@@ -95,6 +95,7 @@ Meteor.startup(function() {
 					_id: 'Jitsi_Enabled',
 					value: true,
 				},
+				i18nLabel: 'URL_room_suffix',
 				public: true,
 			});
 
