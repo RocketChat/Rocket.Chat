@@ -42,6 +42,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
 	}
 
 	getLoginTokensByUserId(userId) {
