@@ -66,11 +66,11 @@ function AppDetailsPageContent({ data }) {
 				<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap'>
 					<Box display='flex' flexDirection='column' mie='x12' flexGrow={1}>
 						<Box fontScale='s1' color='hint'>{t('Author_Site')}</Box>
-						<ExternalLink url={homepage}/>
+						<ExternalLink to={homepage} />
 					</Box>
 					<Box display='flex' flexDirection='column' flexGrow={1}>
 						<Box fontScale='s1' color='hint'>{t('Support')}</Box>
-						<ExternalLink url={support}/>
+						<ExternalLink to={support} />
 					</Box>
 				</Box>
 

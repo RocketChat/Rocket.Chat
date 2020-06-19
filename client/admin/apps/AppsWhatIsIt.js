@@ -2,6 +2,7 @@ import { Button, Box, Throbber } from '@rocket.chat/fuselage';
 import React, { useState } from 'react';
 
 import { Apps } from '../../../app/apps/client';
+import ExternalLink from '../../components/basic/ExternalLink';
 import Page from '../../components/basic/Page';
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -43,7 +44,7 @@ function AppsWhatIsIt() {
 					<p>
 						{t('Apps_WhatIsIt_paragraph3')}
 						{' '}
-						<a href={readMeUrl} target='_blank' rel='noopener noreferrer'>{readMeUrl}</a>
+						<ExternalLink to={readMeUrl} />
 					</p>
 					<p>{t('Apps_WhatIsIt_paragraph4')}</p>
 					<Button primary disabled={loading} minHeight='x40' onClick={handleClick}>

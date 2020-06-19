@@ -1,6 +1,10 @@
-import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import React from 'react';
 
-export default function ExternalLink({ is = 'a', url, ...props }) {
-	return <Box is={is} href={url} target='_blank' rel='noopener noreferrer' {...props}>{url}</Box>;
+function ExternalLink({ children, to, ...props }) {
+	return <Box is='a' href={to} target='_blank' rel='noopener noreferrer' {...props}>
+		{children || to}
+	</Box>;
 }
+
+export default ExternalLink;
