@@ -34,6 +34,14 @@ Template.livechatBusinessHours.helpers({
 	isDefault() {
 		return this.type === LivechatBussinessHourTypes.SINGLE;
 	},
+	openDays() {
+		return this
+			.workHours
+			.filter((hour) => hour.open)
+			.map((hour) => hour.day)
+			.map((day) => day?.slice(0, 3))
+			.join(', ');
+	},
 	onTableScroll() {
 		const instance = Template.instance();
 		return function(currentTarget) {

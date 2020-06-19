@@ -26,6 +26,12 @@
                             <div class="table-fake-th">{{_ "Name"}}</div>
                         </th>
                         <th>
+                            <div class="table-fake-th">{{_ "Timezone"}}</div>
+                        </th>
+                        <th>
+                            <div class="table-fake-th">{{_ "Open_Days"}}</div>
+                        </th>
+                        <th>
                             <div class="table-fake-th">{{_ "Enabled"}}</div>
                         </th>
                         <th width='40px'>
@@ -40,6 +46,16 @@
                                 <div class="rc-table-wrapper">
                                     <div class="rc-table-info"><span class="rc-table-title">{{#if
                                             name}}{{name}}{{else}}{{_ "Default"}}{{/if}}</span></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="rc-table-wrapper">
+                                    <div class="rc-table-info"><span class="rc-table-title">{{timezone.name}}</span></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="rc-table-wrapper">
+                                    <div class="rc-table-info"><span class="rc-table-title">{{openDays}}</span></div>
                                 </div>
                             </td>
                             <td>{{#if active}}

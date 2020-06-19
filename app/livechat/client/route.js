@@ -7,7 +7,7 @@ export const livechatManagerRoutes = FlowRouter.group({
 	name: 'livechat-manager',
 });
 
-const load = () => import('./views/admin');
+export const load = () => import('./views/admin');
 
 AccountBox.addRoute({
 	name: 'livechat-dashboard',
