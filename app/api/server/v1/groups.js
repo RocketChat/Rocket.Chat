@@ -829,11 +829,7 @@ API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
 
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
 
-		if (findResult.encrypted === this.bodyParams.encrypted) {
-			return API.v1.failure('The group encrypted is the same as what it would be changed to.');
-		}
-
-		Meteor.call('saveRoomSettings', findResult._id, 'encrypted', this.bodyParams.encrypted);
+		Meteor.call('saveRoomSettings', findResult.rid, 'encrypted', this.bodyParams.encrypted);
 
 		return API.v1.success({
 			group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
