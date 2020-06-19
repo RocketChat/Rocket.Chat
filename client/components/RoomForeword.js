@@ -1,11 +1,11 @@
 import React from 'react';
 import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
 
-import { Rooms } from '../../app/models';
+import { Rooms, Users } from '../../app/models/client';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useUser } from '../contexts/UserContext';
-import { roomTypes } from '../../app/utils/client';
+import { getUserAvatarURL } from '../../app/utils/client';
 
 const RoomForeword = ({ _id: rid }) => {
 	const t = useTranslation();
@@ -17,8 +17,8 @@ const RoomForeword = ({ _id: rid }) => {
 		return t('Start_of_conversation');
 	}
 
-	const users = room.usernames.filter((username) => username !== user.username);
-	if (users.length < 1) {
+	const usernames = room.usernames.filter((username) => username !== user.username);
+	if (usernames.length < 1) {
 		return null;
 	}
 
@@ -26,9 +26,12 @@ const RoomForeword = ({ _id: rid }) => {
 		<Flex.Item grow={1}>
 			<Margins block='x24'>
 				<Avatar.Stack>
-					{users.map(
+					{usernames.map(
 						(username, index) => {
-							const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: username, type: 'd' });
+							const user = Users.findOne({ username }, { fields: { avatarETag: 1 } });
+
+							const avatarUrl = getUserAvatarURL(username, user?.avatarETag);
+
 							return <Avatar size='x48' title={username} url={avatarUrl} key={index} data-username={username} />;
 						})}
 				</Avatar.Stack>
@@ -36,7 +39,7 @@ const RoomForeword = ({ _id: rid }) => {
 		</Flex.Item>
 		<Box color='default' fontScale='h1' flexGrow={1}>{t('Direct_message_you_have_joined')}</Box>
 		<Box is='div' mb='x8' flexGrow={1}>
-			{users.map((username, index) => <Margins inline='x4' key={index}>
+			{usernames.map((username, index) => <Margins inline='x4' key={index}>
 				<Tag
 					is='a'
 					fontScale='p2'
