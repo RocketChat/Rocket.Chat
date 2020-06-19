@@ -65,8 +65,8 @@ export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData
 	const { values, handlers } = useForm({ ...defaultFields, ...customFieldsData });
 
 	useEffect(() => {
-		setCustomFieldsData(values);
-	// TODO: remove stringify. Is needed to avoid infinite rendering
+		setCustomFieldsData(values ?? {});
+		// TODO: remove stringify. Is needed to avoid infinite rendering
 	}, [JSON.stringify(values)]);
 
 	if (!Object.values(customFields).length) {
