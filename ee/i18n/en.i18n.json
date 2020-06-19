@@ -33,6 +33,7 @@
   "LDAP_Roles_To_Rocket_Chat_Roles_Description": "Role mapping in object format where the object key must be the LDAP role and the object value must be an array of RC roles. Example: { 'ldapRole': ['rcRole', 'anotherRCRole'] }",
   "LDAP_Validate_Roles_For_Each_Login": "Validate mapping for each login",
   "LDAP_Validate_Roles_For_Each_Login_Description": "If the validation should occurs for each login (Be careful with this setting because it will overwrite the user roles in each login, otherwise this will be validated only at the moment of user creation).",
+  "List_of_departments_to_apply_this_business_hour": "List of departments to apply this business hour",
   "List_of_departments_for_forward": "List of departments allowed for forwarding (Optional)",
   "List_of_departments_for_forward_description": "Allow to set a restricted list of departments that can receive chats from this department",
   "Livechat_abandoned_rooms_closed_custom_message": "Custom message when room is automatically closed by visitor inactivity",

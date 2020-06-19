@@ -311,6 +311,40 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
+	openBusinessHourByAgentIds(agentIds = [], businessHourId) {
+		const query = {
+			_id: { $in: agentIds },
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+		const query = {
+			_id: { $nin: agentIdsWithDepartment },
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	closeAgentsBusinessHours(businessHourIds) {
 		const query = {
 			roles: 'livechat-agent',

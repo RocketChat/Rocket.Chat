@@ -37,10 +37,6 @@ export class BusinessHourManager {
 	}
 
 	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
-		businessHourData.workHours.forEach((hour) => {
-			hour.start = moment(hour.start, 'HH:mm').utc().format('HH:mm');
-			hour.finish = moment(hour.finish, 'HH:mm').utc().format('HH:mm');
-		});
 		await this.businessHour.saveBusinessHour(businessHourData);
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
@@ -49,7 +45,7 @@ export class BusinessHourManager {
 		await this.openBusinessHoursIfNeeded();
 	}
 
-	async getBusinessHour(id?: string): Promise<ILivechatBusinessHour> {
+	async getBusinessHour(id?: string): Promise<ILivechatBusinessHour | undefined> {
 		return this.businessHour.getBusinessHour(id as string);
 	}
 
@@ -72,15 +68,17 @@ export class BusinessHourManager {
 			const { start, finish, day, utc } = workHour;
 			start.forEach((hour) => {
 				const jobName = `${ workHour.day }/${ hour }/${ utc }/open`;
-				const localTime = moment.utc(`${ day }:${ hour }`, 'dddd:HH:mm').add(utc, 'hours');
-				const scheduleAt = `${ localTime.minutes() } ${ localTime.hours() } * * ${ cronJobDayDict[day] }`;
+				const localTime = moment.utc(`${ day }:${ hour }`, 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours');
+				const dayOfTheWeek = parseInt(utc) >= 0 ? localTime.clone().day(localTime.day()).format('dddd') : day;
+				const scheduleAt = `${ localTime.minutes() } ${ localTime.hours() } * * ${ cronJobDayDict[dayOfTheWeek] }`;
 				this.addToCache(jobName);
 				this.cronJobs.add(jobName, scheduleAt, this.openWorkHoursCallback);
 			});
 			finish.forEach((hour) => {
 				const jobName = `${ workHour.day }/${ hour }/${ utc }/close`;
-				const localTime = moment.utc(`${ day }:${ hour }`, 'dddd:HH:mm').add(utc, 'hours');
-				const scheduleAt = `${ localTime.minutes() } ${ localTime.hours() } * * ${ cronJobDayDict[day] }`;
+				const localTime = moment.utc(`${ day }:${ hour }`, 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours');
+				const dayOfTheWeek = parseInt(utc) >= 0 ? localTime.clone().day(localTime.day()).format('dddd') : day;
+				const scheduleAt = `${ localTime.minutes() } ${ localTime.hours() } * * ${ cronJobDayDict[dayOfTheWeek] }`;
 				this.addToCache(jobName);
 				this.cronJobs.add(jobName, scheduleAt, this.closeWorkHoursCallback);
 			});
@@ -96,7 +94,12 @@ export class BusinessHourManager {
 	}
 
 	async removeBusinessHourById(id: string): Promise<void> {
-		return this.businessHour.removeBusinessHourById(id);
+		await this.businessHour.removeBusinessHourById(id);
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+		await this.createCronJobsForWorkHours();
+		await this.openBusinessHoursIfNeeded();
 	}
 
 	private async openWorkHoursCallback(day: string, hour: string, utc: string): Promise<void> {

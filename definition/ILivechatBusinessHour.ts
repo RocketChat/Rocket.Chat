@@ -1,3 +1,5 @@
+import { ILivechatDepartment } from './ILivechatDepartment';
+
 export enum LivechatBussinessHourTypes {
 	SINGLE = 'single',
 	MULTIPLE = 'multiple',
@@ -24,4 +26,5 @@ export interface ILivechatBusinessHour {
 	ts: Date;
 	workHours: IBusinessHourWorkHour[];
 	_updatedAt?: Date;
+	departments?: ILivechatDepartment[];
 }

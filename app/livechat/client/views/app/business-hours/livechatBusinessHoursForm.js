@@ -159,7 +159,11 @@ Template.livechatBusinessHoursForm.onCreated(async function() {
 
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');
-		const { businessHour } = await APIClient.v1.get(`livechat/business-hour?_id=${ id }`);
+		let url = 'livechat/business-hour';
+		if (id) {
+			url += `?_id=${ id }`;
+		}
+		const { businessHour } = await APIClient.v1.get(url);
 		if (businessHour) {
 			this.businessHour.set(businessHour);
 			businessHour.workHours.forEach((d) => {

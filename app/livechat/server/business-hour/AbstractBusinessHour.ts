@@ -10,7 +10,7 @@ import { LivechatBusinessHours, Users } from '../../../models/server/raw';
 export interface IBusinessHour {
 	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
-	getBusinessHour(id: string): Promise<ILivechatBusinessHour>;
+	getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined>;
 	findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
 	openBusinessHoursByDayHourAndUTC(day: string, hour: string, utc: string): Promise<void>;
 	closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void>;
@@ -37,28 +37,13 @@ export abstract class AbstractBusinessHour {
 		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
-	async openBusinessHoursIfNeeded(): Promise<void> {
-		await this.removeBusinessHoursFromUsers();
-		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
-		const day = currentTime.format('dddd');
-		const businessHoursToOpenIds = await this.getBusinessHoursThatMustBeOpen(day, currentTime);
-		await this.UsersRepository.openAgentsBusinessHours(businessHoursToOpenIds);
-		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
-	}
-
-	private async getBusinessHoursThatMustBeOpen(day: string, currentTime: any): Promise<string[]> {
-		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
-			fields: {
-				workHours: 1,
-				timezone: 1,
-			},
-		});
+	protected async getBusinessHoursThatMustBeOpen(day: string, currentTime: any, activeBusinessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> {
 		return activeBusinessHours
 			.filter((businessHour) => businessHour.workHours
 				.filter((hour) => hour.day === day)
 				.some((hour) => {
-					const localTimeStart = moment.utc(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').add(businessHour.timezone.utc, 'hours');
-					const localTimeFinish = moment.utc(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').add(businessHour.timezone.utc, 'hours');
+					const localTimeStart = moment.utc(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours');
+					const localTimeFinish = moment.utc(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours');
 					const start = moment({
 						hour: localTimeStart.hours(),
 						minutes: localTimeStart.minutes(),
@@ -71,6 +56,9 @@ export abstract class AbstractBusinessHour {
 					});
 					return currentTime.isSameOrAfter(start) && currentTime.isSameOrBefore(finish);
 				}))
-			.map((businessHour) => businessHour._id);
+			.map((businessHour) => ({
+				_id: businessHour._id,
+				type: businessHour.type,
+			}));
 	}
 }

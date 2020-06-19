@@ -25,6 +25,7 @@
   "LDAP_Roles_To_Rocket_Chat_Roles_Description": "Mapeamento dos papéis que deve ser em formato de objeto onde a chave do objeto precisa ser o nome do papel LDAP e o valor deve ser um array de papéis Rocket.Chat. Exemplo: { 'ldapRole': ['rcRole', 'anotherRCRole'] }",
   "LDAP_Validate_Roles_For_Each_Login": "Validar o mapeamento em cada login",
   "LDAP_Validate_Roles_For_Each_Login_Description": " Se a validação deve ser feita a cada login(Tenha cuidado com essa configuração, pois ela vai sobrescrever os papéis de usuário a cada login, caso esteja desabilitado, a validação será feita apenas no momento da criação do usuário).",
+  "List_of_departments_to_apply_this_business_hour": "Lista de departamentos para aplicar esse horário comercial",
   "List_of_departments_for_forward": "Lista de departamentos permitidos para o encaminhamento(Opcional).",
   "List_of_departments_for_forward_description": "Permite definir uma lista restrita de departamentos que podem receber conversas desse departamento.",
   "Livechat_abandoned_rooms_closed_custom_message": "Mensagem customizada para usar quando a sala for automaticamente fechada por abandono do visitante",
