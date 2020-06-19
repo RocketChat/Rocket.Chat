@@ -25,6 +25,7 @@ export const saveUser = (user, force = false) => {
 				// utcOffset: user.utcOffset,
 				status: user.status,
 				statusText: user.statusText,
+				...user.avatarETag && { avatarETag: user.avatarETag },
 			},
 		});
 	}

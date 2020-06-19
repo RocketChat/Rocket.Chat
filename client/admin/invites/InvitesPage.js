@@ -124,7 +124,7 @@ function InvitesPage() {
 		};
 
 		loadInvites();
-	}, []);
+	}, [listInvites]);
 
 	const handleInviteRemove = (_id) => {
 		setInvites((invites = []) => invites.filter((invite) => invite._id !== _id));

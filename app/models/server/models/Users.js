@@ -1018,20 +1018,22 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	setAvatarOrigin(_id, origin) {
+	setAvatarData(_id, origin, etag) {
 		const update = {
 			$set: {
 				avatarOrigin: origin,
+				avatarETag: etag,
 			},
 		};
 
 		return this.update(_id, update);
 	}
 
-	unsetAvatarOrigin(_id) {
+	unsetAvatarData(_id) {
 		const update = {
 			$unset: {
 				avatarOrigin: 1,
+				avatarETag: 1,
 			},
 		};
 

@@ -3,8 +3,8 @@ import { Tabs } from '@rocket.chat/fuselage';
 
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { UserTab } from './UserTab';
-import { ChannelsTab } from './ChannelsTab';
+import UserTab from './UserTab';
+import ChannelsTab from './ChannelsTab';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 
@@ -18,7 +18,7 @@ function DirectoryPage() {
 	const tab = useRouteParameter('tab');
 
 	const directoryRoute = useRoute('directory');
-	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [tab]);
+	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [directoryRoute]);
 
 	useEffect(() => {
 		if (!tab || (tab === 'external' && !federationEnabled)) {

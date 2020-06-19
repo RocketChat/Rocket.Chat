@@ -11,7 +11,7 @@ import {
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useReducer, useState } from 'react';
 
-import { useBatchSettingsDispatch } from '../../../contexts/SettingsContext';
+import { useSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation, useLanguages } from '../../../contexts/TranslationContext';
 import { Pager } from '../Pager';
@@ -57,11 +57,11 @@ function SettingsBasedStep({ step, title, active }) {
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
 				.map(({ value, ...field }) => ({ ...field, value: value != null ? value : '' })),
 		);
-	}, [settings, currentStep]);
+	}, [settings, currentStep, resetFields, step]);
 
 	const t = useTranslation();
 
-	const batchSetSettings = useBatchSettingsDispatch();
+	const dispatchSettings = useSettingsDispatch();
 
 	const autoFocusRef = useAutoFocus(active);
 
@@ -77,7 +77,7 @@ function SettingsBasedStep({ step, title, active }) {
 		setCommiting(true);
 
 		try {
-			await batchSetSettings(fields.map(({ _id, value }) => ({ _id, value })));
+			await dispatchSettings(fields.map(({ _id, value }) => ({ _id, value })));
 			goToNextStep();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

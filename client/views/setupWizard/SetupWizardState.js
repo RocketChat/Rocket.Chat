@@ -72,7 +72,7 @@ const useParameters = () => {
 		return () => {
 			mounted = false;
 		};
-	}, []);
+	}, [getSetupWizardParameters]);
 
 	return {
 		loaded,
@@ -110,12 +110,7 @@ function SetupWizardState() {
 		goToPreviousStep,
 		goToNextStep,
 		goToFinalStep,
-	}), [
-		currentStep,
-		loaded,
-		settings,
-		canDeclineServerRegistration,
-	]);
+	}), [currentStep, loaded, settings, canDeclineServerRegistration, goToPreviousStep, goToNextStep, goToFinalStep]);
 
 	return <SetupWizardContext.Provider value={value}>
 		<SetupWizardPage currentStep={currentStep} />
