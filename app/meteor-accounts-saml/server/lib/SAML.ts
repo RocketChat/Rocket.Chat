@@ -11,7 +11,7 @@ import { settings } from '../../../settings/server';
 import { Users, Rooms, CredentialTokens } from '../../../models/server';
 import { IUser } from '../../../../definition/IUser';
 import { IIncomingMessage } from '../../../../definition/IIncomingMessage';
-import { _setUsername, createRoom, generateUsernameSuggestion } from '../../../lib/server/functions';
+import { _setUsername, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
@@ -454,8 +454,14 @@ export class SAML {
 
 				const room = Rooms.findOneByNameAndType(roomName, 'c', {});
 				if (!room) {
-					createRoom('c', roomName, user.username);
+					// If the user doesn't have an username yet, we can't create new rooms for them
+					if (user.username) {
+						createRoom('c', roomName, user.username);
+					}
+					continue;
 				}
+
+				addUserToRoom(room._id, user);
 			}
 		} catch (err) {
 			console.error(err);
