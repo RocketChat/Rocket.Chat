@@ -360,7 +360,7 @@ const checkAvailability = _.debounce((username, { usernameAvaliable }) => {
 	Meteor.call('checkUsernameAvailability', username, function(error, data) {
 		usernameAvaliable.set(data);
 	});
-}, 300);
+}, 800);
 
 Template.accountProfile.events({
 	'change [data-customfield="true"], input [data-customfield="true"]': _.debounce((e, i) => {

@@ -4,6 +4,7 @@ import s from 'underscore.string';
 
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
+import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
 import { Subscriptions } from '../../../models';
 import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from './getDirectMessageByNameOrIdWithOptionToJoin';
 
@@ -60,6 +61,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
 			groupable: messageObj.groupable !== undefined ? messageObj.groupable : false,
+			tmid: messageObj.tmid !== undefined ? messageObj.tmid : '',
 		};
 
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {
@@ -81,6 +83,8 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 				}
 			}
 		}
+
+		validateRoomMessagePermissions(room, { uid: user._id, ...user });
 
 		const messageReturn = sendMessage(user, message, room);
 		sentData.push({ channel, message: messageReturn });
