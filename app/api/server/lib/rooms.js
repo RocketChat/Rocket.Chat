@@ -99,7 +99,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 		},
 	};
 
-	const rooms = await Rooms.findChannelAndPrivateByNameStarting(selector.term, options).toArray();
+	const rooms = await Rooms.findChannelAndPrivateByNameStarting(selector.name, options).toArray();
 
 	return {
 		items: rooms,
