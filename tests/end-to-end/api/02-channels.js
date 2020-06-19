@@ -1295,7 +1295,7 @@ describe('[Channels]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The channel encrypted is the same as what it would be changed to.');
+					expect(res.body).to.have.property('error', 'The bodyParam "encrypted" is required');
 				})
 				.end(done);
 		});
