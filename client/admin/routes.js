@@ -37,6 +37,11 @@ registerAdminRoute('/custom-sounds/:context?/:id?', {
 	lazyRouteComponent: () => import('./customSounds/AdminSoundsRoute'),
 });
 
+registerAdminRoute('/apps/what-is-it', {
+	name: 'admin-apps-disabled',
+	lazyRouteComponent: () => import('./apps/AppsWhatIsIt'),
+});
+
 registerAdminRoute('/marketplace/:context?/:id?/:version?', {
 	name: 'admin-marketplace',
 	lazyRouteComponent: () => import('./apps/AppsRoute'),
@@ -45,11 +50,6 @@ registerAdminRoute('/marketplace/:context?/:id?/:version?', {
 registerAdminRoute('/apps/:context?/:id?/:version?', {
 	name: 'admin-apps',
 	lazyRouteComponent: () => import('./apps/AppsRoute'),
-});
-
-registerAdminRoute('/apps/what-is-it', {
-	name: 'admin-apps-disabled',
-	lazyRouteComponent: () => import('./apps/AppsWhatIsIt'),
 });
 
 registerAdminRoute('/info', {

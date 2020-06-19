@@ -45,9 +45,9 @@ export default function AppsRoute() {
 		};
 	}, [canViewAppsAndMarketplace, isAppsEngineEnabled, appsWhatIsItRoute]);
 
-	const currentRoute = useCurrentRoute();
+	const [currentRouteName] = useCurrentRoute();
 
-	const isMarketPlace = currentRoute[0] === 'admin-marketplace';
+	const isMarketPlace = currentRouteName === 'admin-marketplace';
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
