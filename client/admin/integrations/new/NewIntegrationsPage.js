@@ -13,18 +13,15 @@ export default function NewIntegrationsPage({ ...props }) {
 
 	const router = useRoute('admin-integrations');
 
-	const handleClickTab = (type) => () => {
+	const handleClickTab = useCallback((type) => () => {
 		router.push({ context: 'new', type });
-	};
+	}, [router]);
 
 	const handleClickReturn = useCallback(() => {
 		router.push({ });
-	}, []);
+	}, [router]);
 
 	const tab = useRouteParameter('type');
-
-	const handleIncomingTab = useCallback(handleClickTab('incoming'), []);
-	const handleOutgoingTab = useCallback(handleClickTab('outgoing'), []);
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={t('Integrations')} >
@@ -37,13 +34,13 @@ export default function NewIntegrationsPage({ ...props }) {
 		<Tabs>
 			<Tabs.Item
 				selected={tab === 'incoming'}
-				onClick={handleIncomingTab}
+				onClick={handleClickTab('incoming')}
 			>
 				{t('Incoming')}
 			</Tabs.Item>
 			<Tabs.Item
 				selected={tab === 'outgoing'}
-				onClick={handleOutgoingTab}
+				onClick={handleClickTab('outgoing')}
 			>
 				{t('Outgoing')}
 			</Tabs.Item>

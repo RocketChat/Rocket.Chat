@@ -42,7 +42,6 @@ module.exports = async ({ config }) => {
 					},
 				},
 			},
-			'react-docgen-typescript-loader',
 		],
 	});
 

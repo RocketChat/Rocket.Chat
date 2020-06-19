@@ -1,13 +1,13 @@
 import { Box, Button, Tile } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useSetting, useSettingDispatch } from '../../../contexts/SettingsContext';
+import { useSetting, useSettingSetValue } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 function FinalStep() {
 	const t = useTranslation();
 	const siteUrl = useSetting('Site_Url');
-	const setShowSetupWizard = useSettingDispatch('Show_Setup_Wizard');
+	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 
 	const handleClick = () => {
 		setShowSetupWizard('completed');

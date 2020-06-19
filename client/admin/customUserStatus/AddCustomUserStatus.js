@@ -26,7 +26,7 @@ export function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [name, statusType]);
+	}, [dispatchToastMessage, goToNew, name, onChange, saveStatus, statusType, t]);
 
 	const presenceOptions = [
 		['online', t('Online')],

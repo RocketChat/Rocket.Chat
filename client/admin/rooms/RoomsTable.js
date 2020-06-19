@@ -2,7 +2,7 @@ import { Box, Table, Icon, TextInput, Field, CheckBox, Margins } from '@rocket.c
 import { useMediaQuery, useUniqueId, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
-import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { GenericTable, Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import RoomAvatar from '../../components/basic/avatar/RoomAvatar';
 import { roomTypes } from '../../../app/utils/client';
@@ -36,7 +36,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 		}
 		const _types = Object.entries(types).filter(([, value]) => Boolean(value)).map(([key]) => key);
 		setFilter({ text, types: _types });
-	}, [text, types]);
+	}, [setFilter, text, types]);
 
 	const idDirect = useUniqueId();
 	const idDPublic = useUniqueId();
@@ -75,13 +75,13 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	</Box>;
 };
 
-const useQuery = (params, sort) => useMemo(() => ({
-	filter: params.text || '',
-	types: params.types,
-	sort: JSON.stringify({ [sort[0]]: sort[1] === 'asc' ? 1 : -1 }),
-	...params.itemsPerPage && { count: params.itemsPerPage },
-	...params.current && { offset: params.current },
-}), [JSON.stringify(params), JSON.stringify(sort)]);
+const useQuery = ({ text, types, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
+	filter: text || '',
+	types,
+	sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
+	...itemsPerPage && { count: itemsPerPage },
+	...current && { offset: current },
+}), [text, types, itemsPerPage, current, column, direction]);
 
 function RoomsTable() {
 	const t = useTranslation();
@@ -102,12 +102,12 @@ function RoomsTable() {
 
 	const router = useRoute(routeName);
 
-	const onClick = (rid) => () => router.push({
+	const onClick = useCallback((rid) => () => router.push({
 		context: 'edit',
 		id: rid,
-	});
+	}), [router]);
 
-	const onHeaderClick = (id) => {
+	const onHeaderClick = useCallback((id) => {
 		const [sortBy, sortDirection] = sort;
 
 		if (sortBy === id) {
@@ -115,7 +115,7 @@ function RoomsTable() {
 			return;
 		}
 		setSort([id, 'asc']);
-	};
+	}, [sort]);
 
 	if (sort[0] === 'name' && data.rooms) {
 		data.rooms = data.rooms.sort((a, b) => {
@@ -134,7 +134,7 @@ function RoomsTable() {
 		mediaQuery && <Th key={'messages'} direction={sort[1]} active={sort[0] === 'msgs'} onClick={onHeaderClick} sort='msgs' w='x80'>{t('Msgs')}</Th>,
 		mediaQuery && <Th key={'default'} direction={sort[1]} active={sort[0] === 'default'} onClick={onHeaderClick} sort='default' w='x80' >{t('Default')}</Th>,
 		mediaQuery && <Th key={'featured'} direction={sort[1]} active={sort[0] === 'featured'} onClick={onHeaderClick} sort='featured' w='x80'>{t('Featured')}</Th>,
-	].filter(Boolean), [sort, mediaQuery]);
+	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const renderRow = useCallback(({ _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, ...args }) => {
 		const icon = roomTypes.getIcon({ t: type, usernames, ...args });
@@ -160,7 +160,7 @@ function RoomsTable() {
 			{mediaQuery && <Table.Cell style={style}>{isDefault ? t('True') : t('False')}</Table.Cell>}
 			{mediaQuery && <Table.Cell style={style}>{featured ? t('True') : t('False')}</Table.Cell>}
 		</Table.Row>;
-	}, [mediaQuery]);
+	}, [mediaQuery, onClick, t]);
 
 	return <GenericTable FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data.rooms} total={data.total} setParams={setParams} params={params}/>;
 }
