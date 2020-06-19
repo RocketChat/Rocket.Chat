@@ -30,43 +30,43 @@ const globalSettings: ISAMLGlobalSettings = {
 };
 
 export class SAMLUtils {
-	static get isDebugging(): boolean {
+	public static get isDebugging(): boolean {
 		return debug;
 	}
 
-	static get globalSettings(): ISAMLGlobalSettings {
+	public static get globalSettings(): ISAMLGlobalSettings {
 		return globalSettings;
 	}
 
-	static get serviceProviders(): Array<IServiceProviderOptions> {
+	public static get serviceProviders(): Array<IServiceProviderOptions> {
 		return providerList;
 	}
 
-	static get relayState(): string | null {
+	public static get relayState(): string | null {
 		return relayState;
 	}
 
-	static set relayState(value: string | null) {
+	public static set relayState(value: string | null) {
 		relayState = value;
 	}
 
-	static getServiceProviderOptions(providerName: string): IServiceProviderOptions | undefined {
+	public static getServiceProviderOptions(providerName: string): IServiceProviderOptions | undefined {
 		this.log(providerName);
 		this.log(providerList);
 
 		return _.find(providerList, (providerOptions) => providerOptions.provider === providerName);
 	}
 
-	static setServiceProvidersList(list: Array<IServiceProviderOptions>): void {
+	public static setServiceProvidersList(list: Array<IServiceProviderOptions>): void {
 		providerList = list;
 	}
 
-	static setLoggerInstance(instance: NullableLogger): void {
+	public static setLoggerInstance(instance: NullableLogger): void {
 		logger = instance;
 	}
 
 	// TODO: Some of those should probably not be global
-	static updateGlobalSettings(samlConfigs: Record<string, any>): void {
+	public static updateGlobalSettings(samlConfigs: Record<string, any>): void {
 		debug = Boolean(samlConfigs.debug);
 
 		globalSettings.generateUsername = Boolean(samlConfigs.generateUsername);
@@ -95,7 +95,7 @@ export class SAMLUtils {
 		}
 	}
 
-	static generateUniqueID(): string {
+	public static generateUniqueID(): string {
 		const chars = 'abcdef0123456789';
 		let uniqueID = 'id-';
 		for (let i = 0; i < 20; i++) {
@@ -104,11 +104,11 @@ export class SAMLUtils {
 		return uniqueID;
 	}
 
-	static generateInstant(): string {
+	public static generateInstant(): string {
 		return new Date().toISOString();
 	}
 
-	static certToPEM(cert: string): string {
+	public static certToPEM(cert: string): string {
 		const lines = cert.match(/.{1,64}/g);
 		if (!lines) {
 			throw new Error('Invalid Certificate');
@@ -120,7 +120,7 @@ export class SAMLUtils {
 		return lines.join('\n');
 	}
 
-	static fillTemplateData(template: string, data: Record<string, string>): string {
+	public static fillTemplateData(template: string, data: Record<string, string>): string {
 		let newTemplate = template;
 
 		for (const variable in data) {
@@ -135,19 +135,19 @@ export class SAMLUtils {
 		return newTemplate;
 	}
 
-	static log(...args: Array<any>): void {
+	public static log(...args: Array<any>): void {
 		if (debug && logger) {
 			logger.info(...args);
 		}
 	}
 
-	static error(...args: Array<any>): void {
+	public static error(...args: Array<any>): void {
 		if (logger) {
 			logger.error(...args);
 		}
 	}
 
-	static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: string | object | null) => void): void {
+	public static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: string | object | null) => void): void {
 		const buffer = new Buffer(base64Data, 'base64');
 		zlib.inflateRaw(buffer, (err, decoded) => {
 			if (err) {
@@ -164,7 +164,7 @@ export class SAMLUtils {
 		});
 	}
 
-	static validateStatus(doc: Document): { success: boolean; message: string; statusCode: string } {
+	public static validateStatus(doc: Document): { success: boolean; message: string; statusCode: string } {
 		let successStatus = false;
 		let status = null;
 		let messageText = '';
@@ -192,7 +192,7 @@ export class SAMLUtils {
 		};
 	}
 
-	static normalizeCert(cert: string): string {
+	public static normalizeCert(cert: string): string {
 		if (!cert) {
 			return cert;
 		}
@@ -203,7 +203,7 @@ export class SAMLUtils {
 			.trim();
 	}
 
-	static getUserDataMapping(): IUserDataMap {
+	public static getUserDataMapping(): IUserDataMap {
 		const { userDataFieldMap, immutableProperty } = globalSettings;
 
 		let map: Record<string, any>;
@@ -324,7 +324,7 @@ export class SAMLUtils {
 		return parsedMap;
 	}
 
-	static getProfileValue(profile: Record<string, any>, mapping: IAttributeMapping): any {
+	public static getProfileValue(profile: Record<string, any>, mapping: IAttributeMapping): any {
 		const values: Record<string, string> = {
 			regex: '',
 		};
@@ -375,11 +375,11 @@ export class SAMLUtils {
 		return mainValue;
 	}
 
-	static convertArrayBufferToString(buffer: ArrayBuffer, encoding = 'utf8'): string {
+	public static convertArrayBufferToString(buffer: ArrayBuffer, encoding = 'utf8'): string {
 		return Buffer.from(buffer).toString(encoding);
 	}
 
-	static normalizeUsername(name: string): string {
+	public static normalizeUsername(name: string): string {
 		const { globalSettings } = this;
 
 		switch (globalSettings.usernameNormalize) {
@@ -391,12 +391,12 @@ export class SAMLUtils {
 		return name;
 	}
 
-	static ensureArray<T>(param: T | Array<T>): Array<T> {
+	public static ensureArray<T>(param: T | Array<T>): Array<T> {
 		const emptyArray: Array<T> = [];
 		return emptyArray.concat(param);
 	}
 
-	static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
+	public static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
 		const userDataMap = this.getUserDataMapping();
 		const { defaultUserRole = 'user', roleAttributeName } = this.globalSettings;
 

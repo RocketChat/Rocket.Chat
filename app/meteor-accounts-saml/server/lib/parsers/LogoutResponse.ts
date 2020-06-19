@@ -11,7 +11,7 @@ export class LogoutResponseParser {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	validate(xmlString: string, callback: ILogoutResponseValidateCallback): void {
+	public validate(xmlString: string, callback: ILogoutResponseValidateCallback): void {
 		SAMLUtils.log(`LogoutResponse: ${ xmlString }`);
 
 		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');

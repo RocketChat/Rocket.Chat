@@ -7,6 +7,7 @@ import {
 } from '../constants';
 import { SAMLUtils } from '../Utils';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import { IMetadataVariables } from '../../definition/IMetadataVariables';
 
 /*
 	The metadata will be available at the following url:
@@ -14,12 +15,12 @@ import { IServiceProviderOptions } from '../../definition/IServiceProviderOption
 */
 
 export class ServiceProviderMetadata {
-	static generate(serviceProviderOptions: IServiceProviderOptions): string {
+	public static generate(serviceProviderOptions: IServiceProviderOptions): string {
 		const data = this.getData(serviceProviderOptions);
 		return SAMLUtils.fillTemplateData(this.metadataTemplate(serviceProviderOptions), data);
 	}
 
-	static certificateTagTemplate(serviceProviderOptions: IServiceProviderOptions): string {
+	private static certificateTagTemplate(serviceProviderOptions: IServiceProviderOptions): string {
 		if (!serviceProviderOptions.privateKey) {
 			return '';
 		}
@@ -31,7 +32,7 @@ export class ServiceProviderMetadata {
 		return serviceProviderOptions.metadataCertificateTemplate || defaultMetadataCertificateTemplate;
 	}
 
-	static metadataTemplate(serviceProviderOptions: IServiceProviderOptions): string {
+	private static metadataTemplate(serviceProviderOptions: IServiceProviderOptions): string {
 		const data = {
 			certificateTag: this.certificateTagTemplate(serviceProviderOptions),
 		};
@@ -40,7 +41,7 @@ export class ServiceProviderMetadata {
 		return SAMLUtils.fillTemplateData(template, data);
 	}
 
-	static getData(serviceProviderOptions: IServiceProviderOptions): Record<string, any> {
+	private static getData(serviceProviderOptions: IServiceProviderOptions): IMetadataVariables {
 		if (!serviceProviderOptions.callbackUrl) {
 			throw new Error('Unable to generate service provider metadata when callbackUrl option is not set');
 		}

@@ -13,6 +13,8 @@ import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { ISAMLRequest } from '../definition/ISAMLRequest';
+import { ILogoutResponse } from '../definition/ILogoutResponse';
 import {
 	ILogoutRequestValidateCallback,
 	ILogoutResponseValidateCallback,
@@ -30,29 +32,29 @@ export class SAMLServiceProvider {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	signRequest(xml: string): string {
+	private signRequest(xml: string): string {
 		const signer = crypto.createSign('RSA-SHA1');
 		signer.update(xml);
 		return signer.sign(this.serviceProviderOptions.privateKey, 'base64');
 	}
 
-	generateAuthorizeRequest(): string {
+	public generateAuthorizeRequest(): string {
 		const identifiedRequest = AuthorizeRequest.generate(this.serviceProviderOptions);
 		return identifiedRequest.request;
 	}
 
-	generateLogoutResponse({ nameID, sessionIndex, inResponseToId }: { nameID: string; sessionIndex: string; inResponseToId: string }): Record<string, string> {
+	public generateLogoutResponse({ nameID, sessionIndex, inResponseToId }: { nameID: string; sessionIndex: string; inResponseToId: string }): ILogoutResponse {
 		return LogoutResponse.generate(this.serviceProviderOptions, nameID, sessionIndex, inResponseToId);
 	}
 
-	generateLogoutRequest({ nameID, sessionIndex }: { nameID: string; sessionIndex: string }): Record<string, string> {
+	public generateLogoutRequest({ nameID, sessionIndex }: { nameID: string; sessionIndex: string }): ISAMLRequest {
 		return LogoutRequest.generate(this.serviceProviderOptions, nameID, sessionIndex);
 	}
 
 	/*
 		This method will generate the response URL with all the query string params and pass it to the callback
 	*/
-	logoutResponseToUrl(response: string, callback: (err: string | object | null, url?: string) => void): void {
+	public logoutResponseToUrl(response: string, callback: (err: string | object | null, url?: string) => void): void {
 		zlib.deflateRaw(response, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -93,7 +95,7 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
-	requestToUrl(request: string, operation: string, callback: (err: string | object | null, url?: string) => void): void {
+	public requestToUrl(request: string, operation: string, callback: (err: string | object | null, url?: string) => void): void {
 		zlib.deflateRaw(request, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -149,11 +151,11 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	syncRequestToUrl(request: string, operation: string): void {
+	public syncRequestToUrl(request: string, operation: string): void {
 		return Meteor.wrapAsync(this.requestToUrl, this)(request, operation);
 	}
 
-	getAuthorizeUrl(callback: (err: string | object | null, url?: string) => void): void {
+	public getAuthorizeUrl(callback: (err: string | object | null, url?: string) => void): void {
 		const request = this.generateAuthorizeRequest();
 		SAMLUtils.log('-----REQUEST------');
 		SAMLUtils.log(request);
@@ -161,7 +163,7 @@ export class SAMLServiceProvider {
 		this.requestToUrl(request, 'authorize', callback);
 	}
 
-	validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): void {
+	public validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): void {
 		SAMLUtils.inflateXml(samlRequest, (xml: string) => {
 			const parser = new LogoutRequestParser(this.serviceProviderOptions);
 			return parser.validate(xml, callback);
@@ -170,7 +172,7 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): void {
+	public validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): void {
 		SAMLUtils.inflateXml(samlResponse, (xml: string) => {
 			const parser = new LogoutResponseParser(this.serviceProviderOptions);
 			return parser.validate(xml, callback);
@@ -179,14 +181,14 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	validateResponse(samlResponse: string, callback: IResponseValidateCallback): void {
+	public validateResponse(samlResponse: string, callback: IResponseValidateCallback): void {
 		const xml = new Buffer(samlResponse, 'base64').toString('utf8');
 
 		const parser = new ResponseParser(this.serviceProviderOptions);
 		return parser.validate(xml, callback);
 	}
 
-	generateServiceProviderMetadata(): string {
+	public generateServiceProviderMetadata(): string {
 		return ServiceProviderMetadata.generate(this.serviceProviderOptions);
 	}
 }

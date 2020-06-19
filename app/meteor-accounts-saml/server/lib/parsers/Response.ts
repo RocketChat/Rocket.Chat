@@ -17,24 +17,7 @@ export class ResponseParser {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	_checkLogoutResponse(doc: Document, callback: IResponseValidateCallback): void {
-		const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
-		if (!logoutResponse.length) {
-			return callback(new Error('Unknown SAML response message'), null, false);
-		}
-
-		SAMLUtils.log('Verify status');
-		const statusValidateObj = SAMLUtils.validateStatus(doc);
-		if (!statusValidateObj.success) {
-			return callback(new Error(`Status is: ${ statusValidateObj.statusCode }`), null, false);
-		}
-		SAMLUtils.log('Status ok');
-
-		// @ToDo: Check if this situation is still used
-		return callback(null, null, true);
-	}
-
-	validate(xml: string, callback: IResponseValidateCallback): void {
+	public validate(xml: string, callback: IResponseValidateCallback): void {
 		// We currently use RelayState to save SAML provider
 		SAMLUtils.log(`Validating response with relay state: ${ xml }`);
 
@@ -161,7 +144,24 @@ export class ResponseParser {
 		return callback(null, profile, false);
 	}
 
-	getAssertion(response: Element, xml: string): ISAMLAssertion {
+	private _checkLogoutResponse(doc: Document, callback: IResponseValidateCallback): void {
+		const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
+		if (!logoutResponse.length) {
+			return callback(new Error('Unknown SAML response message'), null, false);
+		}
+
+		SAMLUtils.log('Verify status');
+		const statusValidateObj = SAMLUtils.validateStatus(doc);
+		if (!statusValidateObj.success) {
+			return callback(new Error(`Status is: ${ statusValidateObj.statusCode }`), null, false);
+		}
+		SAMLUtils.log('Status ok');
+
+		// @ToDo: Check if this situation is still used
+		return callback(null, null, true);
+	}
+
+	private getAssertion(response: Element, xml: string): ISAMLAssertion {
 		const allAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
 		const allEncrypedAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion');
 
@@ -205,7 +205,7 @@ export class ResponseParser {
 		};
 	}
 
-	verifySignatures(response: Element, assertionData: ISAMLAssertion, xml: string): void {
+	private verifySignatures(response: Element, assertionData: ISAMLAssertion, xml: string): void {
 		if (!this.serviceProviderOptions.cert) {
 			return;
 		}
@@ -249,15 +249,15 @@ export class ResponseParser {
 		}
 	}
 
-	validateResponseSignature(xml: string, cert: string, response: Element): boolean {
+	private validateResponseSignature(xml: string, cert: string, response: Element): boolean {
 		return this.validateSignatureChildren(xml, cert, response);
 	}
 
-	validateAssertionSignature(xml: string, cert: string, assertion: XmlParent): boolean {
+	private validateAssertionSignature(xml: string, cert: string, assertion: XmlParent): boolean {
 		return this.validateSignatureChildren(xml, cert, assertion);
 	}
 
-	validateSignatureChildren(xml: string, cert: string, parent: XmlParent): boolean {
+	private validateSignatureChildren(xml: string, cert: string, parent: XmlParent): boolean {
 		const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
 		const signatures = xmlCrypto.xpath(parent, xpathSigQuery) as Array<Element>;
 		let signature = null;
@@ -284,7 +284,7 @@ export class ResponseParser {
 		return this.validateSignature(xml, cert, signature);
 	}
 
-	validateSignature(xml: string, cert: string, signature: Element): any {
+	private validateSignature(xml: string, cert: string, signature: Element): any {
 		const sig = new xmlCrypto.SignedXml();
 
 		sig.keyInfoProvider = {
@@ -303,7 +303,7 @@ export class ResponseParser {
 		return result;
 	}
 
-	getIssuer(assertion: XmlParent): any {
+	private getIssuer(assertion: XmlParent): any {
 		const issuers = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer');
 		if (issuers.length > 1) {
 			throw new Error('Too many Issuers');
@@ -312,7 +312,7 @@ export class ResponseParser {
 		return issuers[0];
 	}
 
-	getSubject(assertion: XmlParent): XmlParent {
+	private getSubject(assertion: XmlParent): XmlParent {
 		let subject: XmlParent = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
 		const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
 
@@ -330,7 +330,7 @@ export class ResponseParser {
 	}
 
 
-	validateSubjectConditions(subject: XmlParent): void {
+	private validateSubjectConditions(subject: XmlParent): void {
 		const subjectConfirmation = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmation')[0];
 		if (subjectConfirmation) {
 			const subjectConfirmationData = subjectConfirmation.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmationData')[0];
@@ -340,7 +340,7 @@ export class ResponseParser {
 		}
 	}
 
-	validateNotBeforeNotOnOrAfterAssertions(element: Element): boolean {
+	private validateNotBeforeNotOnOrAfterAssertions(element: Element): boolean {
 		const sysnow = new Date();
 		const allowedclockdrift = this.serviceProviderOptions.allowedClockDrift;
 
@@ -375,14 +375,14 @@ export class ResponseParser {
 		return true;
 	}
 
-	validateAssertionConditions(assertion: XmlParent): void {
+	private validateAssertionConditions(assertion: XmlParent): void {
 		const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
 		if (conditions && !this.validateNotBeforeNotOnOrAfterAssertions(conditions)) {
 			throw new Error('NotBefore / NotOnOrAfter assertion failed');
 		}
 	}
 
-	mapAttributes(attributeStatement: Element, profile: Record<string, any>): void {
+	private mapAttributes(attributeStatement: Element, profile: Record<string, any>): void {
 		SAMLUtils.log(`Attribute Statement found in SAML response: ${ attributeStatement }`);
 		const attributes = attributeStatement.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute');
 		SAMLUtils.log(`Attributes will be processed: ${ attributes.length }`);
