@@ -28,7 +28,7 @@ export const createSettings = () => {
 		});
 
 		this.section('LDAP_Advanced_Sync', function() {
-			this.add('LDAP_Sync_User_Active_State', 'both', {
+			this.add('LDAP_Sync_User_Active_State', 'disable', {
 				type: 'select',
 				values: [
 					{ key: 'none', i18nLabel: 'LDAP_Sync_User_Active_State_Nothing' },
