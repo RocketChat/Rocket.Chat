@@ -117,7 +117,7 @@ Template.contactChatHistory.events({
 			instance.offset.set(instance.offset.get() + instance.limit.get());
 		}
 	}, 200),
-	'click .contact-chat-history-item'(event, instance) {
+	'click .chat-history-item'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
