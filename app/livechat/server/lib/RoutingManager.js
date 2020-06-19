@@ -159,12 +159,9 @@ export const RoutingManager = {
 			return forwardRoomToDepartment(room, guest, transferData);
 		}
 
-		// no target agent or department specified, transfer to any online agent
-		const agent = await Users.getNextAgent();
-		if (!agent) {
-			// handover couldn't take place, no agent might be online
-			return false;
-		}
+		const agent = await this.getMethod().getNextAgent();
+		if (!agent) { return false; }
+
 		return forwardRoomToAgent(room, { ...transferData, userId: agent.agentId });
 	},
 };
