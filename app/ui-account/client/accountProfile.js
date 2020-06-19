@@ -149,6 +149,13 @@ Template.accountProfile.helpers({
 			return ret;
 		}
 	},
+	canResendEmailConf(ret) {
+		const email = Template.instance().email.get();
+		const user = Meteor.user();
+		if (getUserEmailAddress(user) && getUserEmailAddress(user) !== email) {
+			return ret;
+		}
+	},
 	allowDeleteOwnAccount() {
 		return settings.get('Accounts_AllowDeleteOwnAccount');
 	},

@@ -52,6 +52,13 @@ export interface IUserServices {
 		changedAt: Date;
 	};
 	emailCode: IUserEmailCode[];
+	saml?: {
+		inResponseTo?: string;
+		provider?: string;
+		idp?: string;
+		idpSession?: string;
+		nameID?: string;
+	};
 }
 
 export interface IUserEmail {
