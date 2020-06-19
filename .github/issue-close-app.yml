@@ -1,7 +1,13 @@
 # Config for Close Issue app: https://probot.github.io/apps/close-issue/
 
 # Comment that will be sent if an issue is judged to be closed
-comment: "This issue was closed because it does not use any of our issue templates. Please make sure to use one of the suggested templates."
+comment: |
+  This issue was closed because it does not use any of our issue templates. Please make sure to use one of the suggested templates.
+
+  If you want to open a feature request, please do so on the following repository: https://github.com/RocketChat/feature-requests
+
+  If you have a question, please refrain from posting on GitHub, as we want to keep it mainly for bugs, to do so please use
+  Stack Overflow with the [rocket.chat tag](https://stackoverflow.com/questions/tagged/rocket.chat).
 issueConfigs:
 # There can be several configs for different kind of issues.
 - content:
