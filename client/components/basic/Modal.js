@@ -23,7 +23,7 @@ function ModalPortal({ children = '' }) {
 	useEffect(() => {
 		modalRoot.appendChild(node);
 		return () => modalRoot.removeChild(node);
-	}, [node]);
+	}, [modalRoot, node]);
 	return createPortal(
 		<div>{children}</div>,
 		node,

@@ -3,7 +3,7 @@ import React from 'react';
 import { EngagementDashboardPage } from './EngagementDashboardPage';
 
 export default {
-	title: 'admin/engagement/EngagementDashboardPage',
+	title: 'admin/enterprise/engagement/EngagementDashboardPage',
 	component: EngagementDashboardPage,
 	decorators: [(fn) => <div children={fn()} style={{ height: '100vh' }} />],
 };

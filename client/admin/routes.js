@@ -72,6 +72,16 @@ registerAdminRoute('/mailer', {
 	lazyRouteComponent: () => import('./mailer/MailerRoute'),
 });
 
+registerAdminRoute('/oauth-apps/:context?/:id?', {
+	name: 'admin-oauth-apps',
+	lazyRouteComponent: () => import('./oauthApps/OAuthAppsRoute'),
+});
+
+registerAdminRoute('/integrations/:context?/:type?/:id?', {
+	name: 'admin-integrations',
+	lazyRouteComponent: () => import('./integrations/IntegrationsRoute'),
+});
+
 registerAdminRoute('/custom-user-status/:context?/:id?', {
 	name: 'custom-user-status',
 	lazyRouteComponent: () => import('./customUserStatus/CustomUserStatusRoute'),
@@ -97,9 +107,19 @@ registerAdminRoute('/invites', {
 	lazyRouteComponent: () => import('./invites/InvitesRoute'),
 });
 
+registerAdminRoute('/cloud/:page?', {
+	name: 'cloud',
+	lazyRouteComponent: () => import('./cloud/CloudRoute'),
+});
+
 registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
 	lazyRouteComponent: () => import('./viewLogs/ViewLogsRoute'),
+});
+
+registerAdminRoute('/federation-dashboard', {
+	name: 'federation-dashboard',
+	lazyRouteComponent: () => import('./federationDashboard/FederationDashboardRoute'),
 });
 
 Meteor.startup(() => {
