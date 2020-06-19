@@ -30,9 +30,9 @@
 				<input type="hidden" name="redirect_uri" value="{{redirect_uri}}">
 				<input type="hidden" name="response_type" value="code">
 				<div class="buttons-group">
-					<button id="logout-oauth" class="button danger logout">{{_ "Logout"}}</button>
-					<button id="cancel-oauth" type="button" class="button cancel">{{_ "Cancel"}}</button>
-					<button type="submit" class="button primary save">{{_ "Authorize"}}</button>
+					<button id="logout-oauth" class="rc-button rc-button--danger logout">{{_ "Logout"}}</button>
+					<button id="cancel-oauth" type="button" class="rc-button rc-button--cancel">{{_ "Cancel"}}</button>
+					<button type="submit" class="rc-button rc-button--primary save">{{_ "Authorize"}}</button>
 				</div>
 			</form>
 			{{#unless Template.subscriptionsReady}}

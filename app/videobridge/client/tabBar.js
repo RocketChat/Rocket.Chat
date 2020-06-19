@@ -28,12 +28,12 @@ Meteor.startup(function() {
 		TabBar.addButton({
 			groups,
 			id: 'bbb_video',
-			i18nTitle: 'BBB Video Chat',
-			icon: 'video',
+			i18nTitle: 'BBB Video Call',
+			icon: 'phone',
 			iconColor: 'red',
 			template: 'videoFlexTabBbb',
 			width: 600,
-			order: live ? -1 : 15,
+			order: live ? -1 : 0,
 			class: () => live && 'live',
 		});
 	});
@@ -43,12 +43,12 @@ Meteor.startup(function() {
 			TabBar.addButton({
 				groups: ['direct', 'group'],
 				id: 'video',
-				i18nTitle: 'Video Chat',
-				icon: 'video',
+				i18nTitle: 'Call',
+				icon: 'phone',
 				iconColor: 'red',
 				template: 'videoFlexTab',
 				width: 600,
-				order: 12,
+				order: 0,
 			});
 		} else {
 			TabBar.removeButton('video');

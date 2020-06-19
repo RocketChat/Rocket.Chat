@@ -254,7 +254,7 @@ Template.marketplace.helpers({
 
 Template.marketplace.events({
 	'click .js-cloud-login'() {
-		FlowRouter.go('cloud-config');
+		FlowRouter.go('cloud');
 	},
 	'submit .js-search-form'(event) {
 		event.stopPropagation();
@@ -273,7 +273,7 @@ Template.marketplace.events({
 		} = instance.state.get('apps').find(({ id }) => id === currentTarget.dataset.id);
 		FlowRouter.go('marketplace-app', { appId }, { version: version || marketplaceVersion });
 	},
-	async 'click .js-install, click .js-update'(event, instance) {
+	async 'click .js-install'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -284,12 +284,38 @@ Template.marketplace.events({
 		}
 
 		const { currentTarget: button } = event;
+
 		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
 
 		instance.startAppWorking(app.id);
 
 		try {
 			const { status } = await Apps.installApp(app.id, app.marketplaceVersion);
+			warnStatusChange(app.name, status);
+		} catch (error) {
+			handleAPIError(error);
+		} finally {
+			instance.stopAppWorking(app.id);
+		}
+	},
+	async 'click .js-update'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const isLoggedInCloud = await checkCloudLogin();
+		instance.state.set('isLoggedInCloud', isLoggedInCloud);
+		if (!isLoggedInCloud) {
+			return;
+		}
+
+		const { currentTarget: button } = event;
+
+		const app = instance.state.get('apps').find(({ id }) => id === button.dataset.id);
+
+		instance.startAppWorking(app.id);
+
+		try {
+			const { status } = await Apps.updateApp(app.id, app.marketplaceVersion);
 			warnStatusChange(app.name, status);
 		} catch (error) {
 			handleAPIError(error);

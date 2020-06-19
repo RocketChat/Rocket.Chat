@@ -5,28 +5,51 @@ export class SlackAPI {
 		this.apiToken = apiToken;
 	}
 
-	getChannels() {
+	getChannels(cursor = null) {
+		let channels = [];
+
 		const response = HTTP.get('https://slack.com/api/conversations.list', {
 			params: {
 				token: this.apiToken,
 				types: 'public_channel',
+				exclude_archived: true,
+				limit: 1000,
+				cursor,
 			},
 		});
-		return response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0
-			? response.data.channels
-			: [];
+
+		if (response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0) {
+			channels = channels.concat(response.data.channels);
+			if (response.data.response_metadata && response.data.response_metadata.next_cursor) {
+				const nextChannels = this.getChannels(response.data.response_metadata.next_cursor);
+				channels = channels.concat(nextChannels);
+			}
+		}
+
+		return channels;
 	}
 
-	getGroups() {
+	getGroups(cursor = null) {
+		let groups = [];
 		const response = HTTP.get('https://slack.com/api/conversations.list', {
 			params: {
 				token: this.apiToken,
 				types: 'private_channel',
+				exclude_archived: true,
+				limit: 1000,
+				cursor,
 			},
 		});
-		return response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0
-			? response.data.channels
-			: [];
+
+		if (response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0) {
+			groups = groups.concat(response.data.channels);
+			if (response.data.response_metadata && response.data.response_metadata.next_cursor) {
+				const nextGroups = this.getGroups(response.data.response_metadata.next_cursor);
+				groups = groups.concat(nextGroups);
+			}
+		}
+
+		return groups;
 	}
 
 	getRoomInfo(roomId) {

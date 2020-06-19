@@ -43,6 +43,8 @@ class Twilio {
 				fromState: data.FromState,
 				fromCity: data.FromCity,
 				fromZip: data.FromZip,
+				fromLatitude: data.Latitude,
+				fromLongitude: data.Longitude,
 			},
 		};
 
@@ -77,12 +79,14 @@ class Twilio {
 
 	send(fromNumber, toNumber, message, extraData) {
 		const client = twilio(this.accountSid, this.authToken);
+		let body = message;
 
 		let mediaUrl;
+		const defaultLanguage = settings.get('Language') || 'en';
 		if (extraData && extraData.fileUpload) {
 			const { rid, userId, fileUpload: { size, type, publicFilePath } } = extraData;
 			const user = userId ? Meteor.users.findOne(userId) : null;
-			const lng = (user && user.language) || settings.get('Language') || 'en';
+			const lng = (user && user.language) || defaultLanguage;
 
 			let reason;
 			if (!this.fileUploadEnabled) {
@@ -103,12 +107,20 @@ class Twilio {
 
 			mediaUrl = [publicFilePath];
 		}
-		// return
+
+		let persistentAction;
+		if (extraData && extraData.location) {
+			const [longitude, latitude] = extraData.location.coordinates;
+			persistentAction = `geo:${ latitude },${ longitude }`;
+			body = TAPi18n.__('Location', { lng: defaultLanguage });
+		}
+
 		client.messages.create({
 			to: toNumber,
 			from: fromNumber,
-			body: message,
+			body,
 			...mediaUrl && { mediaUrl },
+			...persistentAction && { persistentAction },
 		});
 	}
 

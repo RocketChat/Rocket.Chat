@@ -69,7 +69,7 @@ export class AppRoomsConverter {
 		}
 
 		const newRoom = {
-			_id: room.id,
+			...room.id && { _id: room.id },
 			fname: room.displayName,
 			name: room.slugifiedName,
 			t: room.type,
@@ -79,6 +79,7 @@ export class AppRoomsConverter {
 			servedBy,
 			closedBy,
 			members: room.members,
+			uids: room.userIds,
 			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
 			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
 			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
@@ -90,6 +91,8 @@ export class AppRoomsConverter {
 			closedAt: room.closedAt,
 			lm: room.lastModifiedAt,
 			customFields: room.customFields,
+			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
+			...room._USERNAMES && { _USERNAMES: room._USERNAMES },
 		};
 
 		return Object.assign(newRoom, room._unmappedProperties_);
@@ -105,6 +108,7 @@ export class AppRoomsConverter {
 			displayName: 'fname',
 			slugifiedName: 'name',
 			members: 'members',
+			userIds: 'uids',
 			messageCount: 'msgs',
 			createdAt: 'ts',
 			updatedAt: '_updatedAt',
@@ -113,6 +117,7 @@ export class AppRoomsConverter {
 			customFields: 'customFields',
 			isWaitingResponse: 'waitingResponse',
 			isOpen: 'open',
+			_USERNAMES: '_USERNAMES',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;
@@ -193,7 +198,17 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(responseBy._id);
 			},
+			parentRoom: (room) => {
+				const { prid } = room;
 
+				if (!prid) {
+					return undefined;
+				}
+
+				delete room.prid;
+
+				return this.orch.getConverters().get('rooms').convertById(prid);
+			},
 		};
 
 		return transformMappedData(room, map);

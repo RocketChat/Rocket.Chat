@@ -10,8 +10,10 @@ import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
+import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
+import { saveUserIdentity } from './saveUserIdentity';
 
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusText } from '.';
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 
 let html = '';
 let passwordChangedHtml = '';
@@ -94,6 +96,10 @@ function validateUserData(userId, userData) {
 			method: 'insertOrUpdateUser',
 			field: 'Username',
 		});
+	}
+
+	if (userData.roles) {
+		validateUserRoles(userId, userData);
 	}
 
 	let nameValidation;
@@ -192,6 +198,23 @@ function validateUserEditing(userId, userData) {
 	}
 }
 
+const handleBio = (updateUser, bio) => {
+	if (bio) {
+		if (bio.trim()) {
+			if (typeof bio !== 'string' || bio.length > 260) {
+				throw new Meteor.Error('error-invalid-field', 'bio', {
+					method: 'saveUserProfile',
+				});
+			}
+			updateUser.$set = updateUser.$set || {};
+			updateUser.$set.bio = bio;
+		} else {
+			updateUser.$unset = updateUser.$unset || {};
+			updateUser.$unset.bio = 1;
+		}
+	}
+};
+
 export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
 	let sendPassword = false;
@@ -224,13 +247,10 @@ export const saveUser = function(userId, userData) {
 		const updateUser = {
 			$set: {
 				roles: userData.roles || ['user'],
+				...typeof userData.name !== 'undefined' && { name: userData.name },
 				settings: userData.settings || {},
 			},
 		};
-
-		if (typeof userData.name !== 'undefined') {
-			updateUser.$set.name = userData.name;
-		}
 
 		if (typeof userData.requirePasswordChange !== 'undefined') {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
@@ -240,10 +260,16 @@ export const saveUser = function(userId, userData) {
 			updateUser.$set['emails.0.verified'] = userData.verified;
 		}
 
+		handleBio(updateUser, userData.bio);
+
 		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
 			_sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
+		}
+
+		if (sendPassword) {
+			_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 		}
 
 		userData._id = _id;
@@ -264,12 +290,14 @@ export const saveUser = function(userId, userData) {
 	validateUserEditing(userId, userData);
 
 	// update user
-	if (userData.username) {
-		setUsername(userData._id, userData.username);
-	}
-
-	if (userData.hasOwnProperty('name')) {
-		setRealName(userData._id, userData.name);
+	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
+		if (!saveUserIdentity(userId, {
+			_id: userData._id,
+			username: userData.username,
+			name: userData.name,
+		})) {
+			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUser' });
+		}
 	}
 
 	if (typeof userData.statusText === 'string') {
@@ -290,6 +318,8 @@ export const saveUser = function(userId, userData) {
 	const updateUser = {
 		$set: {},
 	};
+
+	handleBio(updateUser, userData.bio);
 
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;

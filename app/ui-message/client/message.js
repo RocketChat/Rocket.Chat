@@ -3,6 +3,7 @@ import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
@@ -11,64 +12,14 @@ import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMe
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
-import { t, roomTypes, getURL } from '../../utils';
+import { t, roomTypes } from '../../utils';
 import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import './message.html';
 import './messageThread.html';
-
-async function renderPdfToCanvas(canvasId, pdfLink) {
-	const isSafari = /constructor/i.test(window.HTMLElement)
-		|| ((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari
-			|| (typeof window.safari !== 'undefined' && window.safari.pushNotification));
-
-	if (isSafari) {
-		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
-		if (version <= 12) {
-			return;
-		}
-	}
-
-	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) {
-		return;
-	}
-	pdfLink = getURL(pdfLink);
-
-	const canvas = document.getElementById(canvasId);
-	if (!canvas) {
-		return;
-	}
-
-	const pdfjsLib = await import('pdfjs-dist');
-	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }pdf.worker.min.js`;
-
-	const loader = document.getElementById(`js-loading-${ canvasId }`);
-
-	if (loader) {
-		loader.style.display = 'block';
-	}
-
-	const pdf = await pdfjsLib.getDocument(pdfLink);
-	const page = await pdf.getPage(1);
-	const scale = 0.5;
-	const viewport = page.getViewport(scale);
-	const context = canvas.getContext('2d');
-	canvas.height = viewport.height;
-	canvas.width = viewport.width;
-	await page.render({
-		canvasContext: context,
-		viewport,
-	}).promise;
-
-	if (loader) {
-		loader.style.display = 'none';
-	}
-
-	canvas.style.maxWidth = '-webkit-fill-available';
-	canvas.style.maxWidth = '-moz-available';
-	canvas.style.display = 'block';
-}
+import { AutoTranslate } from '../../autotranslate/client';
 
 const renderBody = (msg, settings) => {
+	const searchedText = msg.searchedText ? msg.searchedText : '';
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
 
@@ -90,6 +41,11 @@ const renderBody = (msg, settings) => {
 	if (isSystemMessage) {
 		msg.html = Markdown.parse(msg.html);
 	}
+
+	if (searchedText) {
+		msg = msg.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${ str }</mark>`);
+	}
+
 	return msg;
 };
 
@@ -97,9 +53,6 @@ Template.message.helpers({
 	body() {
 		const { msg, settings } = this;
 		return Tracker.nonreactive(() => renderBody(msg, settings));
-	},
-	and(a, b) {
-		return a && b;
 	},
 	i18nReplyCounter() {
 		const { msg } = this;
@@ -177,6 +130,10 @@ Template.message.helpers({
 			return msg.avatar.replace(/^@/, '');
 		}
 	},
+	getStatus() {
+		const { msg } = this;
+		return Session.get(`user_${ msg.u.username }_status_text`);
+	},
 	getName() {
 		const { msg, settings } = this;
 		if (msg.alias) {
@@ -250,20 +207,24 @@ Template.message.helpers({
 			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]);
 		}
 	},
+	translationProvider() {
+		const instance = Template.instance();
+		const { translationProvider } = instance.data.msg;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
+	},
 	edited() {
-		return Template.instance().wasEdited;
+		const { msg } = this;
+		return msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	},
 	editTime() {
 		const { msg } = this;
-		if (Template.instance().wasEdited) {
-			return DateFormat.formatDateAndTime(msg.editedAt);
-		}
+		return msg.editedAt ? DateFormat.formatDateAndTime(msg.editedAt) : '';
 	},
 	editedBy() {
-		if (!Template.instance().wasEdited) {
+		const { msg } = this;
+		if (!msg.editedAt) {
 			return '';
 		}
-		const { msg } = this;
 		// try to return the username of the editor,
 		// otherwise a special "?" character that will be
 		// rendered as a special avatar
@@ -410,7 +371,7 @@ Template.message.helpers({
 	},
 	isThreadReply() {
 		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
-		return !(groupable === false || _groupable === false) && !!(tmid && showreply && (!t || t === 'e2e'));
+		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
@@ -426,6 +387,10 @@ Template.message.helpers({
 	parentMessage() {
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
+	},
+	showStar() {
+		const { msg } = this;
+		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
 	},
 });
 
@@ -465,8 +430,6 @@ const findParentMessage = (() => {
 
 Template.message.onCreated(function() {
 	const { msg, shouldCollapseReplies } = Template.currentData();
-
-	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
@@ -553,12 +516,9 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	return false;
 };
 
-const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies }) => {
+const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, shouldCollapseReplies }) => {
 	if (!showDateSeparator && !groupable) {
 		return;
-	}
-	if (msg.file && msg.file.type === 'application/pdf') {
-		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
 	}
 	// const currentDataset = currentNode.dataset;
 	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);

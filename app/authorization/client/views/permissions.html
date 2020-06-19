@@ -27,7 +27,9 @@
 						<td class="permission-name border-component-color" title="{{permissionDescription permission}}">{{permissionName permission}}<br><span class = "id-styler">[ID: {{permission._id}}]</span></td>
 						{{#each role in allRoles}}
 						<td class="permission-checkbox border-component-color">
-							<input type="checkbox" name="perm[{{role._id}}][{{permission._id}}]" class="role-permission" value="1" checked="{{granted permission.roles role}}" data-role="{{role._id}}" data-permission="{{permission._id}}">
+							{{#if isRolePermissionEnabled role permission}}
+								<input type="checkbox" name="perm[{{role._id}}][{{permission._id}}]" class="role-permission" value="1" checked="{{granted permission.roles role}}" data-role="{{role._id}}" data-permission="{{permission._id}}">
+							{{/if}}
 						</td>
 						{{else}}
 						<tr class="table-no-click">

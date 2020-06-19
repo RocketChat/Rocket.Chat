@@ -1,13 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { FileUpload } from '../../../file-upload';
-import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models';
-import { hasRole, getUsersInRole } from '../../../authorization';
-import { settings } from '../../../settings';
-import { Notifications } from '../../../notifications';
+import { FileUpload } from '../../../file-upload/server';
+import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Notifications } from '../../../notifications/server';
+import { updateGroupDMsName } from './updateGroupDMsName';
+import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
+import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
+import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 
-export const deleteUser = function(userId) {
+export const deleteUser = function(userId, confirmRelinquish = false) {
 	const user = Users.findOneById(userId, {
 		fields: { username: 1, avatarOrigin: 1, federation: 1 },
 	});
@@ -24,47 +27,16 @@ export const deleteUser = function(userId) {
 		}
 	}
 
+	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
+
+	if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
+		const rooms = getUserSingleOwnedRooms(subscribedRooms);
+		throw new Meteor.Error('user-last-owner', '', rooms);
+	}
+
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
-		const roomCache = [];
-
-		// Iterate through all the rooms the user is subscribed to, to check if they are the last owner of any of them.
-		Subscriptions.db.findByUserId(userId).forEach((subscription) => {
-			const roomData = {
-				rid: subscription.rid,
-				t: subscription.t,
-				subscribers: null,
-			};
-
-			// DMs can always be deleted, so let's ignore it on this check
-			if (roomData.t !== 'd') {
-				// If the user is an owner on this room
-				if (hasRole(user._id, 'owner', subscription.rid)) {
-					// Fetch the number of owners
-					const numOwners = getUsersInRole('owner', subscription.rid).fetch().length;
-					// If it's only one, then this user is the only owner.
-					if (numOwners === 1) {
-						// If the user is the last owner of a public channel, then we need to abort the deletion
-						if (roomData.t === 'c') {
-							throw new Meteor.Error('error-user-is-last-owner', `To delete this user you'll need to set a new owner to the following room: ${ subscription.name }.`, {
-								method: 'deleteUser',
-							});
-						}
-
-						// For private groups, let's check how many subscribers it has. If the user is the only subscriber, then it will be eliminated and doesn't need to abort the deletion
-						roomData.subscribers = Subscriptions.findByRoomId(subscription.rid).count();
-
-						if (roomData.subscribers > 1) {
-							throw new Meteor.Error('error-user-is-last-owner', `To delete this user you'll need to set a new owner to the following room: ${ subscription.name }.`, {
-								method: 'deleteUser',
-							});
-						}
-					}
-				}
-			}
-
-			roomCache.push(roomData);
-		});
+		relinquishRoomOwnerships(userId, subscribedRooms);
 
 		const messageErasureType = settings.get('Message_ErasureType');
 		switch (messageErasureType) {
@@ -82,22 +54,10 @@ export const deleteUser = function(userId) {
 				break;
 		}
 
-		roomCache.forEach((roomData) => {
-			if (roomData.subscribers === null && roomData.t !== 'd' && roomData.t !== 'c') {
-				roomData.subscribers = Subscriptions.findByRoomId(roomData.rid).count();
-			}
-
-			// Remove DMs and non-channel rooms with only 1 user (the one being deleted)
-			if (roomData.t === 'd' || (roomData.t !== 'c' && roomData.subscribers === 1)) {
-				Subscriptions.removeByRoomId(roomData.rid);
-				FileUpload.removeFilesByRoomId(roomData.rid);
-				Messages.removeByRoomId(roomData.rid);
-				Rooms.removeById(roomData.rid);
-			}
-		});
+		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username); // Remove direct rooms with the user
+		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions
-		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
@@ -108,7 +68,11 @@ export const deleteUser = function(userId) {
 		Notifications.notifyLogged('Users:Deleted', { userId });
 	}
 
-	Users.removeById(userId); // Remove user from users database
+	// Remove user from users database
+	Users.removeById(userId);
+
+	// update name and fname of group direct messages
+	updateGroupDMsName(user);
 
 	// Refresh the servers list
 	FederationServers.refreshServers();

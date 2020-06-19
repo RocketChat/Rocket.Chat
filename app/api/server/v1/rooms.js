@@ -4,7 +4,7 @@ import Busboy from 'busboy';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms, findChannelAndPrivateAutocomplete } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom } from '../lib/rooms';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -59,6 +59,33 @@ API.v1.addRoute('rooms.get', { authRequired: true }, {
 	},
 });
 
+const getFiles = Meteor.wrapAsync(({ request }, callback) => {
+	const busboy = new Busboy({ headers: request.headers });
+	const files = [];
+
+	const fields = {};
+
+
+	busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+		if (fieldname !== 'file') {
+			return callback(new Meteor.Error('invalid-field'));
+		}
+
+		const fileDate = [];
+		file.on('data', (data) => fileDate.push(data));
+
+		file.on('end', () => {
+			files.push({ fieldname, file, filename, encoding, mimetype, fileBuffer: Buffer.concat(fileDate) });
+		});
+	});
+
+	busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
+
+	busboy.on('finish', Meteor.bindEnvironment(() => callback(null, { files, fields })));
+
+	request.pipe(busboy);
+});
+
 API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 	post() {
 		const room = Meteor.call('canAccessRoom', this.urlParams.rid, this.userId);
@@ -67,30 +94,10 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const busboy = new Busboy({ headers: this.request.headers });
-		const files = [];
-		const fields = {};
 
-		Meteor.wrapAsync((callback) => {
-			busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-				if (fieldname !== 'file') {
-					return callback(new Meteor.Error('invalid-field'));
-				}
-
-				const fileDate = [];
-				file.on('data', (data) => fileDate.push(data));
-
-				file.on('end', () => {
-					files.push({ fieldname, file, filename, encoding, mimetype, fileBuffer: Buffer.concat(fileDate) });
-				});
-			});
-
-			busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
-
-			busboy.on('finish', Meteor.bindEnvironment(() => callback()));
-
-			this.request.pipe(busboy);
-		})();
+		const { files, fields } = getFiles({
+			request: this.request,
+		});
 
 		if (files.length === 0) {
 			return API.v1.failure('File required');
@@ -102,8 +109,6 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 
 		const file = files[0];
 
-		const fileStore = FileUpload.getStore('Uploads');
-
 		const details = {
 			name: file.filename,
 			size: file.fileBuffer.length,
@@ -112,18 +117,17 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			userId: this.userId,
 		};
 
-		let fileData = {};
-
-		Meteor.runAsUser(this.userId, () => {
-			const uploadedFile = Meteor.wrapAsync(fileStore.insert.bind(fileStore))(details, file.fileBuffer);
+		const fileData = Meteor.runAsUser(this.userId, () => {
+			const fileStore = FileUpload.getStore('Uploads');
+			const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
 
 			uploadedFile.description = fields.description;
 
 			delete fields.description;
 
-			API.v1.success(Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields));
+			Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields);
 
-			fileData = uploadedFile;
+			return uploadedFile;
 		});
 
 		return API.v1.success({ message: Messages.getMessageByFileIdAndUsername(fileData._id, this.userId) });
@@ -295,6 +299,22 @@ API.v1.addRoute('rooms.adminRooms', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('rooms.adminRooms.getRoom', { authRequired: true }, {
+	get() {
+		const { rid } = this.requestParams();
+		const room = Promise.await(findAdminRoom({
+			uid: this.userId,
+			rid,
+		}));
+
+		if (!room) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
+		return API.v1.success(room);
+	},
+});
+
+
 API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, {
 	get() {
 		const { selector } = this.queryParams;
@@ -306,5 +326,30 @@ API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, 
 			uid: this.userId,
 			selector: JSON.parse(selector),
 		})));
+	},
+});
+
+API.v1.addRoute('rooms.saveRoomSettings', { authRequired: true }, {
+	post() {
+		const { rid, ...params } = this.bodyParams;
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('saveRoomSettings', rid, params));
+
+		return API.v1.success({ rid: result.rid });
+	},
+});
+
+API.v1.addRoute('rooms.changeArchivationState', { authRequired: true }, {
+	post() {
+		const { rid, action } = this.bodyParams;
+
+		let result;
+		if (action === 'archive') {
+			result = Meteor.runAsUser(this.userId, () => Meteor.call('archiveRoom', rid));
+		} else {
+			result = Meteor.runAsUser(this.userId, () => Meteor.call('unarchiveRoom', rid));
+		}
+
+		return API.v1.success({ result });
 	},
 });

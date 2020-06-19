@@ -20,16 +20,16 @@ Meteor.startup(function() {
 				const { msg } = messageArgs(this);
 				call('unfollowMessage', { mid: msg._id });
 			},
-			condition({ msg: { tmid, replies = [] }, u }) {
-				if (tmid) {
-					const parentMessage = Messages.findOne({ _id: tmid }, { fields: { replies: 1 } });
+			condition({ msg: { _id, tmid, replies = [] }, u }, context) {
+				if (tmid || context) {
+					const parentMessage = Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } });
 					if (parentMessage) {
 						replies = parentMessage.replies || [];
 					}
 				}
 				return replies.includes(u._id);
 			},
-			order: 0,
+			order: 2,
 			group: 'menu',
 		});
 	});

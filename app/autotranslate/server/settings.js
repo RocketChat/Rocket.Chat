@@ -20,6 +20,9 @@ Meteor.startup(function() {
 		}, {
 			key: 'deepl-translate',
 			i18nLabel: 'AutoTranslate_DeepL',
+		}, {
+			key: 'microsoft-translate',
+			i18nLabel: 'AutoTranslate_Microsoft',
 		}],
 		enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
 		i18nLabel: 'AutoTranslate_ServiceProvider',
@@ -30,7 +33,7 @@ Meteor.startup(function() {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_Google',
-		public: true,
+		public: false,
 		i18nLabel: 'AutoTranslate_APIKey',
 		enableQuery: [
 			{
@@ -45,13 +48,27 @@ Meteor.startup(function() {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_DeepL',
-		public: true,
+		public: false,
 		i18nLabel: 'AutoTranslate_APIKey',
 		enableQuery: [
 			{
 				_id: 'AutoTranslate_Enabled', value: true,
 			}, {
 				_id: 'AutoTranslate_ServiceProvider', value: 'deepl-translate',
+			}],
+	});
+
+	settings.add('AutoTranslate_MicrosoftAPIKey', '', {
+		type: 'string',
+		group: 'Message',
+		section: 'AutoTranslate_Microsoft',
+		public: false,
+		i18nLabel: 'AutoTranslate_Microsoft_API_Key',
+		enableQuery: [
+			{
+				_id: 'AutoTranslate_Enabled', value: true,
+			}, {
+				_id: 'AutoTranslate_ServiceProvider', value: 'microsoft-translate',
 			}],
 	});
 });

@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatRooms, Messages, Subscriptions } from '../../../models';
+import { LivechatRooms } from '../../../models';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:removeAllClosedRooms'(departmentIds) {
@@ -11,10 +12,7 @@ Meteor.methods({
 
 		let count = 0;
 		LivechatRooms.findClosedRooms(departmentIds).forEach(({ _id }) => {
-			Messages.removeByRoomId(_id);
-			Subscriptions.removeByRoomId(_id);
-			LivechatRooms.removeById(_id);
-
+			Livechat.removeRoom(_id);
 			count++;
 		});
 

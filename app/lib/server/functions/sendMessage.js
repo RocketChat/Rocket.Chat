@@ -136,6 +136,7 @@ const validateMessage = (message) => {
 		emoji: String,
 		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
+		blocks: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {

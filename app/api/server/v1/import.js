@@ -9,11 +9,7 @@ API.v1.addRoute('uploadImportFile', { authRequired: true }, {
 	post() {
 		const { binaryContent, contentType, fileName, importerKey } = this.bodyParams;
 
-		Meteor.runAsUser(this.userId, () => {
-			API.v1.success(Meteor.call('uploadImportFile', binaryContent, contentType, fileName, importerKey));
-		});
-
-		return API.v1.success();
+		return API.v1.success(Meteor.call('uploadImportFile', binaryContent, contentType, fileName, importerKey));
 	},
 
 });

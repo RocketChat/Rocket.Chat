@@ -119,6 +119,14 @@ export class Base {
 		}
 	}
 
+	findById(...args) {
+		try {
+			return this[this.origin].findById(...args);
+		} catch (e) {
+			console.error('Exception on find', e, ...args);
+		}
+	}
+
 	findOne(...args) {
 		try {
 			return this[this.origin].findOne(...args);
