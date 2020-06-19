@@ -135,11 +135,15 @@ export class AppLivechatBridge {
 		} = transferData;
 
 		const appUser = Users.findOneByAppId(appId);
+		if (!appUser) {
+			throw new Error('Invalid app user, cannot transfer');
+		}
+		const { _id, username, name, type } = appUser;
 		const transferredBy = {
-			_id: appUser._id,
-			username: appUser.username,
-			name: appUser.name,
-			type: appUser.type,
+			_id,
+			username,
+			name,
+			type,
 		};
 
 		return Livechat.transfer(
