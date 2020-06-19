@@ -2,14 +2,14 @@ name: Stale Questions
 
 on:
   schedule:
-  - cron: "0 0 * * *"
+  - cron: "0 */6 * * *"
 
 jobs:
   stale:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/stale@v2
+    - uses: actions/stale@v3
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-stale: 10
@@ -22,8 +22,9 @@ jobs:
           then it will be assumed that the question has been resolved and
           the issue will be automatically closed.
         stale-issue-label: 'stat: no response'
+        operations-per-run: 40
 
-    - uses: actions/stale@v2
+    - uses: actions/stale@v3
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-stale: 60
@@ -34,3 +35,4 @@ jobs:
           recent activity. It will be closed if no further activity occurs. Thank you
           for your contributions.
         stale-issue-label: 'stat: stale'
+        operations-per-run: 40
