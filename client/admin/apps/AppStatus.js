@@ -69,7 +69,7 @@ const AppStatus = React.memo(({ app, setModal, isLoggedIn, showStatus = true, ..
 			action === 'purchase' ? openModal() : confirmAction();
 			return;
 		}
-		setModal(<CloudLoginModal cancel={() => setModal(null)} />);
+		setModal(<CloudLoginModal />);
 	}, [isLoggedIn, action, openModal, confirmAction, setModal]);
 
 	return <Box {...props}>

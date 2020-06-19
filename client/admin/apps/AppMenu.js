@@ -36,7 +36,7 @@ export default function AppMenu({ app, setModal, isLoggedIn, ...props }) {
 
 	const handleSubscription = useCallback(async () => {
 		if (!isLoggedIn) {
-			setModal(<CloudLoginModal cancel={closeModal} />);
+			setModal(<CloudLoginModal />);
 			return;
 		}
 

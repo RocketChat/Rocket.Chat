@@ -12,14 +12,14 @@ function ModalProvider({ children }) {
 		setModal: setCurrentModal,
 	}), []);
 
-	return <>
-		<ModalContext.Provider children={children} value={contextValue} />
+	return <ModalContext.Provider value={contextValue}>
+		{children}
 		{currentModal && <ModalPortal>
 			<Modal.Backdrop>
 				{currentModal}
 			</Modal.Backdrop>
 		</ModalPortal>}
-	</>;
+	</ModalContext.Provider>;
 }
 
 export default memo(ModalProvider);
