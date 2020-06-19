@@ -1,9 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { MemoizedSetting } from '../settings/Setting';
-import { useGetAppKey } from './hooks/useGetAppKey';
 import { capitalize } from '../../helpers/capitalize';
 import { useRouteParameter } from '../../contexts/RouterContext';
 import MarkdownText from '../../components/basic/MarkdownText';
@@ -15,10 +14,32 @@ export const AppSettingsAssembler = ({ settings, values, handlers }) => <Box>
 	})}
 </Box>;
 
-function AppSetting({ appSetting, onChange, value, ...props }) {
+const useAppTranslation = (appId) => {
 	const t = useTranslation();
+
+	const tApp = useCallback((key, ...args) => {
+		if (!key) {
+			return '';
+		}
+
+		const appKey = `project:apps-${ appId }-${ key }`;
+		return t(t.has(appKey) ? appKey : key, ...args);
+	}, [t, appId]);
+
+	tApp.has = useCallback((key) => {
+		if (!key) {
+			return false;
+		}
+
+		return t.has(`project:apps-${ appId }-${ key }`) || t.has(key);
+	}, [t, appId]);
+
+	return tApp;
+};
+
+function AppSetting({ appSetting, onChange, value, ...props }) {
 	const appId = useRouteParameter('id');
-	const getAppKey = useGetAppKey(appId);
+	const tApp = useAppTranslation(appId);
 
 	const {
 		id,
@@ -27,8 +48,8 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 		i18nDescription,
 	} = appSetting;
 
-	const label = (i18nLabel && t(getAppKey(i18nLabel))) || (id || t(getAppKey(id)));
-	const hint = useMemo(() => i18nDescription && <MarkdownText content={t(getAppKey(i18nDescription))} />, [i18nDescription]);
+	const label = (i18nLabel && tApp(i18nLabel)) || (id || tApp(id));
+	const hint = useMemo(() => i18nDescription && <MarkdownText content={tApp(i18nDescription)} />, [i18nDescription, tApp]);
 
 	return <MemoizedSetting
 		type={type}
