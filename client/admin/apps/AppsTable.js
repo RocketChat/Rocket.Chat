@@ -8,7 +8,6 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useFilteredApps } from './hooks/useFilteredApps';
-import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
 import { AppDataContext } from './AppProvider';
@@ -31,7 +30,6 @@ const FilterByText = memo(({ setFilter, ...props }) => {
 
 const AppRow = memo(function AppRow({
 	medium,
-	isLoggedIn,
 	...props
 }) {
 	const {
@@ -102,8 +100,8 @@ const AppRow = memo(function AppRow({
 		</Table.Cell>}
 		<Table.Cell withTruncatedText>
 			<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
-				<AppStatus app={props} isLoggedIn={isLoggedIn} showStatus={isStatusVisible} marginInline='x8'/>
-				{installed && <AppMenu app={props} isLoggedIn={isLoggedIn} invisible={!isStatusVisible} marginInline='x8'/>}
+				<AppStatus app={props} showStatus={isStatusVisible} marginInline='x8'/>
+				{installed && <AppMenu app={props} invisible={!isStatusVisible} marginInline='x8'/>}
 			</Box>
 		</Table.Cell>
 	</Table.Row>;
@@ -116,8 +114,6 @@ function AppsTable() {
 
 	const [params, setParams] = useState(() => ({ text: '', current: 0, itemsPerPage: 25 }));
 	const [sort, setSort] = useState(() => ['name', 'asc']);
-
-	const isLoggedIn = useLoggedInCloud();
 
 	const { text, current, itemsPerPage } = params;
 	const { data, dataCache } = useContext(AppDataContext);
@@ -169,7 +165,7 @@ function AppsTable() {
 		setParams={setParams}
 		FilterComponent={FilterByText}
 	>
-		{(props) => <AppRow key={props.id} medium={onMediumBreakpoint} isLoggedIn={isLoggedIn} {...props} />}
+		{(props) => <AppRow key={props.id} medium={onMediumBreakpoint} {...props} />}
 	</GenericTable>;
 }
 

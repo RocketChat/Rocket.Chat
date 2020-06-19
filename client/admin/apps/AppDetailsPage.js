@@ -13,11 +13,10 @@ import { useAppInfo } from './hooks/useAppInfo';
 import { useAbsoluteUrl } from '../../contexts/ServerContext';
 import { Apps } from '../../../app/apps/client/orchestrator';
 import { useForm } from '../../hooks/useForm';
-import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import { handleAPIError, apiCurlGetter } from './helpers';
 import { AppSettingsAssembler } from './AppSettings';
 
-function AppDetailsPageContent({ data, isLoggedIn }) {
+function AppDetailsPageContent({ data }) {
 	const t = useTranslation();
 
 	const {
@@ -47,10 +46,10 @@ function AppDetailsPageContent({ data, isLoggedIn }) {
 				</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-						<AppStatus mie='x4' app={data} isLoggedIn={isLoggedIn}/>
+						<AppStatus mie='x4' app={data} />
 						{!installed && <PriceDisplay mis='x4' purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false}/>}
 					</Box>
-					{installed && <AppMenu app={data} isLoggedIn={isLoggedIn} />}
+					{installed && <AppMenu app={data} />}
 				</Box>
 			</Box>
 		</Box>
@@ -166,7 +165,6 @@ export default function AppDetailsPage({ id }) {
 	const router = useRoute('admin-apps');
 	const handleReturn = () => router.push({});
 
-	const isLoggedIn = useLoggedInCloud();
 	const isLoading = Object.values(data).length === 0;
 
 	const { settings = {}, apis = {} } = data;
@@ -202,7 +200,7 @@ export default function AppDetailsPage({ id }) {
 			<Box maxWidth='x600' w='full' alignSelf='center'>
 				{isLoading && <LoadingDetails />}
 				{!isLoading && <>
-					<AppDetailsPageContent data={data} isLoggedIn={isLoggedIn}/>
+					<AppDetailsPageContent data={data} />
 					{!!showApis && <APIsDisplay apis={apis}/>}
 					{!!showSettings && <SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef}/>}
 				</>}

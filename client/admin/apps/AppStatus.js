@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from 'react';
 import { Box, Button, Icon, Throbber } from '@rocket.chat/fuselage';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange } from './helpers';
@@ -7,6 +8,7 @@ import { Apps } from '../../../app/apps/client/orchestrator';
 import { IframeModal } from './IframeModal';
 import { CloudLoginModal } from './CloudLoginModal';
 import { useSetModal } from '../../contexts/ModalContext';
+import { useMethod } from '../../contexts/ServerContext';
 
 const installApp = async ({ id, name, version }) => {
 	try {
@@ -30,9 +32,9 @@ const actions = {
 	},
 };
 
-const AppStatus = React.memo(({ app, isLoggedIn, showStatus = true, ...props }) => {
+const AppStatus = React.memo(({ app, showStatus = true, ...props }) => {
 	const t = useTranslation();
-	const [loading, setLoading] = useState();
+	const [loading, setLoading] = useSafely(useState());
 	const setModal = useSetModal();
 
 	const button = appButtonProps(app);
@@ -45,12 +47,12 @@ const AppStatus = React.memo(({ app, isLoggedIn, showStatus = true, ...props }) 
 		actions[action](app).then(() => {
 			setLoading(false);
 		});
-	}, [app, action, setModal]);
+	}, [setModal, action, app, setLoading]);
 
 	const cancelAction = useCallback(() => {
-		setModal(null);
 		setLoading(false);
-	}, [setModal]);
+		setModal(null);
+	}, [setLoading, setModal]);
 
 	const openModal = useCallback(async () => {
 		try {
@@ -62,17 +64,29 @@ const AppStatus = React.memo(({ app, isLoggedIn, showStatus = true, ...props }) 
 		}
 	}, [app.id, app.purchaseType, cancelAction, confirmAction, setModal]);
 
-	const handleClick = useCallback((e) => {
+	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+
+	const handleClick = useCallback(async (e) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (isLoggedIn) {
-			setLoading(true);
 
-			action === 'purchase' ? openModal() : confirmAction();
+		setLoading(true);
+
+		const isLoggedIn = await checkUserLoggedIn();
+
+		if (!isLoggedIn) {
+			setLoading(false);
+			setModal(<CloudLoginModal />);
 			return;
 		}
-		setModal(<CloudLoginModal />);
-	}, [isLoggedIn, action, openModal, confirmAction, setModal]);
+
+		if (action === 'purchase') {
+			openModal();
+			return;
+		}
+
+		confirmAction();
+	}, [setLoading, checkUserLoggedIn, action, confirmAction, setModal, openModal]);
 
 	return <Box {...props}>
 		{button && <Button primary disabled={loading} onClick={handleClick} display={showStatus || loading ? 'block' : 'none'}>

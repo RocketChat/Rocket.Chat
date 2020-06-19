@@ -8,7 +8,6 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useFilteredApps } from './hooks/useFilteredApps';
-import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
 import PriceDisplay from './PriceDisplay';
@@ -31,7 +30,6 @@ const FilterByText = React.memo(({ setFilter, ...props }) => {
 });
 
 const MarketplaceRow = memo(function MarketplaceRow({
-	isLoggedIn,
 	medium,
 	large,
 	...props
@@ -110,8 +108,8 @@ const MarketplaceRow = memo(function MarketplaceRow({
 		</Table.Cell>}
 		<Table.Cell withTruncatedText>
 			<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
-				<AppStatus app={props} isLoggedIn={isLoggedIn} showStatus={isStatusVisible} marginInline='x8'/>
-				{installed && <AppMenu app={props} isLoggedIn={isLoggedIn} invisible={!isStatusVisible} marginInline='x8'/>}
+				<AppStatus app={props} showStatus={isStatusVisible} marginInline='x8'/>
+				{installed && <AppMenu app={props} invisible={!isStatusVisible} marginInline='x8'/>}
 			</Box>
 		</Table.Cell>
 	</Table.Row>;
@@ -121,8 +119,6 @@ function MarketplaceTable() {
 	const t = useTranslation();
 
 	const [ref, onLargeBreakpoint, onMediumBreakpoint] = useResizeInlineBreakpoint([800, 600], 200);
-
-	const isLoggedIn = useLoggedInCloud();
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
@@ -186,7 +182,6 @@ function MarketplaceTable() {
 	>
 		{(props) => <MarketplaceRow
 			key={props.id}
-			isLoggedIn={isLoggedIn}
 			medium={onMediumBreakpoint}
 			large={onLargeBreakpoint}
 			{...props}

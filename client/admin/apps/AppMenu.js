@@ -1,19 +1,21 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { Apps } from '../../../app/apps/client/orchestrator';
-import { appEnabledStatuses, warnStatusChange, handleAPIError } from './helpers';
-import { IframeModal } from './IframeModal';
-import { CloudLoginModal } from './CloudLoginModal';
-import { useRoute } from '../../contexts/RouterContext';
-import WarningModal from './WarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
+import { useRoute } from '../../contexts/RouterContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { appEnabledStatuses, warnStatusChange, handleAPIError } from './helpers';
+import { CloudLoginModal } from './CloudLoginModal';
+import { IframeModal } from './IframeModal';
+import WarningModal from './WarningModal';
 
-export default function AppMenu({ app, isLoggedIn, ...props }) {
+export default function AppMenu({ app, ...props }) {
 	const t = useTranslation();
 	const setModal = useSetModal();
-	const router = useRoute('admin-apps');
+	const appsRoute = useRoute('admin-apps');
+	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
@@ -33,11 +35,11 @@ export default function AppMenu({ app, isLoggedIn, ...props }) {
 	}, [app.id, app.name]);
 
 	const handleViewLogs = useCallback(() => {
-		router.push({ context: 'logs', id: app.id });
-	}, [app.id, router]);
+		appsRoute.push({ context: 'logs', id: app.id });
+	}, [app.id, appsRoute]);
 
 	const handleSubscription = useCallback(async () => {
-		if (!isLoggedIn) {
+		if (!await checkUserLoggedIn()) {
 			setModal(<CloudLoginModal />);
 			return;
 		}
@@ -59,7 +61,7 @@ export default function AppMenu({ app, isLoggedIn, ...props }) {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal}/>);
-	}, [app.id, app.purchaseType, closeModal, isLoggedIn, setModal]);
+	}, [checkUserLoggedIn, app.id, app.purchaseType, closeModal, setModal]);
 
 	const handleDisable = useCallback(() => {
 		const confirm = async () => {
@@ -114,23 +116,34 @@ export default function AppMenu({ app, isLoggedIn, ...props }) {
 
 	const menuOptions = useMemo(() => ({
 		...canAppBeSubscribed && { subscribe: {
-			label: <><Icon name='card' size='x16' mie='x8'/>{t('Subscription')}</>,
+			label: <Box>
+				<Icon name='card' size='x16' marginInlineEnd='x4' />{t('Subscription')}
+			</Box>,
 			action: handleSubscription,
 		} },
 		viewLogs: {
-			label: <><Icon name='list-alt' size='x16' mie='x8'/>{t('View_Logs')}</>,
+			label: <Box>
+				<Icon name='list-alt' size='x16' marginInlineEnd='x4' />{t('View_Logs')}
+			</Box>,
 			action: handleViewLogs,
 		},
-		...isAppEnabled && { disable: {
-			label: <Box color='warning'><Icon mie='x4' name='ban' size='x16'/>{t('Disable')}</Box>,
-			action: handleDisable,
-		} },
+		...isAppEnabled && {
+			disable: {
+				label: <Box color='warning'>
+					<Icon name='ban' size='x16' marginInlineEnd='x4' />{t('Disable')}</Box>,
+				action: handleDisable,
+			},
+		},
 		...!isAppEnabled && { enable: {
-			label: <><Icon mie='x4' name='check' size='x16'/>{t('Enable')}</>,
+			label: <Box>
+				<Icon name='check' size='x16' marginInlineEnd='x4' />{t('Enable')}
+			</Box>,
 			action: handleEnable,
 		} },
 		uninstall: {
-			label: <Box color='danger'><Icon mie='x4' name='trash' size='x16'/>{t('Uninstall')}</Box>,
+			label: <Box color='danger'>
+				<Icon name='trash' size='x16' marginInlineEnd='x4' />{t('Uninstall')}
+			</Box>,
 			action: handleUninstall,
 		},
 	}), [

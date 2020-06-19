@@ -1,16 +1,24 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Button, ButtonGroup, Icon, Skeleton } from '@rocket.chat/fuselage';
+import React, { useState, useEffect } from 'react';
 
 import Page from '../../components/basic/Page';
 import { useRoute } from '../../contexts/RouterContext';
+import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import MarketplaceTable from './MarketplaceTable';
 
 function MarketplacePage() {
 	const t = useTranslation();
 	const cloudRoute = useRoute('cloud');
-	const isLoggedIn = useLoggedInCloud();
+	const [isLoggedInCloud, setIsLoggedInCloud] = useState();
+	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+
+	useEffect(() => {
+		const initialize = async () => {
+			setIsLoggedInCloud(await checkUserLoggedIn());
+		};
+		initialize();
+	}, [checkUserLoggedIn]);
 
 	const handleLoginButtonClick = () => {
 		cloudRoute.push();
@@ -18,9 +26,13 @@ function MarketplacePage() {
 
 	return <Page>
 		<Page.Header title={t('Marketplace')}>
-			{!isLoggedIn && <ButtonGroup>
-				<Button onClick={handleLoginButtonClick}>
-					<Icon name='download'/> {t('Login')}
+			{!isLoggedInCloud && <ButtonGroup>
+				<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
+					{isLoggedInCloud === undefined
+						? <Skeleton width='x80' />
+						: <>
+							<Icon name='download'/> {t('Login')}
+						</>}
 				</Button>
 			</ButtonGroup>}
 		</Page.Header>
