@@ -1,0 +1,16 @@
+<template name="videoFlexTabBbb">
+	<div class="rc-user-info__flex rc-user-info__row">
+		{{#if live}}
+			<button type="button" class="rc-button rc-button--primary js-join-meeting">{{_ "Join Meeting"}}</button>
+			{{#if callManagement}}
+				<button type="button" class="rc-button rc-button--cancel js-end-meeting">{{_ "End Meeting"}}</button>
+			{{/if}}
+		{{else}}
+			{{#if callManagement}}
+				<button type="button" class="rc-button rc-button--primary js-join-meeting">{{_ "Start Meeting"}}</button>
+			{{else}}
+				<p>{{_ "You have no permission to start a call"}}</p>
+			{{/if}}
+		{{/if}}
+	</div>
+</template>

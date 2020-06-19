@@ -1,4 +1,0 @@
-type LoginResult {
-  accessToken: String!
-  refreshToken: String!
-}

@@ -1,49 +1,64 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+
+import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
+import { Users } from '../../app/models/server';
+import { settings as rcSettings } from '../../app/settings/server';
+import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
+import { compareUserPassword } from '../lib/compareUserPassword';
+
 Meteor.methods({
-	saveUserProfile(settings, customFields) {
+	saveUserProfile: twoFactorRequired(function(settings, customFields) {
 		check(settings, Object);
+		check(customFields, Match.Maybe(Object));
 
-		if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
+		if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'saveUserProfile'
+				method: 'saveUserProfile',
 			});
 		}
 
-		if (!Meteor.userId()) {
+		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'saveUserProfile'
+				method: 'saveUserProfile',
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(Meteor.userId());
+		const user = Users.findOneById(this.userId);
 
-		function checkPassword(user = {}, typedPassword) {
-			if (!(user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim())) {
-				return true;
+		if (settings.realname || settings.username) {
+			if (!saveUserIdentity(this.userId, {
+				_id: this.userId,
+				name: settings.realname,
+				username: settings.username,
+			})) {
+				throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUserProfile' });
 			}
-
-			const passCheck = Accounts._checkPassword(user, {
-				digest: typedPassword,
-				algorithm: 'sha-256'
-			});
-
-			if (passCheck.error) {
-				return false;
-			}
-			return true;
 		}
 
-		if (settings.realname) {
-			RocketChat.setRealName(Meteor.userId(), settings.realname);
+		if (settings.statusText || settings.statusText === '') {
+			Meteor.call('setUserStatus', null, settings.statusText);
 		}
 
-		if (settings.username) {
-			Meteor.call('setUsername', settings.username);
+		if (settings.statusType) {
+			Meteor.call('setUserStatus', settings.statusType, null);
+		}
+
+		if (settings.bio) {
+			if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
+				throw new Meteor.Error('error-invalid-field', 'bio', {
+					method: 'saveUserProfile',
+				});
+			}
+			Users.setBio(user._id, settings.bio.trim());
 		}
 
 		if (settings.email) {
-			if (!checkPassword(user, settings.typedPassword)) {
+			if (!compareUserPassword(user, { sha256: settings.typedPassword })) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
-					method: 'saveUserProfile'
+					method: 'saveUserProfile',
 				});
 			}
 
@@ -51,22 +66,39 @@ Meteor.methods({
 		}
 
 		// Should be the last check to prevent error when trying to check password for users without password
-		if ((settings.newPassword) && RocketChat.settings.get('Accounts_AllowPasswordChange') === true) {
-			if (!checkPassword(user, settings.typedPassword)) {
+		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
+			if (!compareUserPassword(user, { sha256: settings.typedPassword })) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
-					method: 'saveUserProfile'
+					method: 'saveUserProfile',
 				});
 			}
 
-			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
-				logout: false
+			// don't let user change to same password
+			if (compareUserPassword(user, { plain: settings.newPassword })) {
+				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
+					method: 'saveUserProfile',
+				});
+			}
+
+			passwordPolicy.validate(settings.newPassword);
+
+			Accounts.setPassword(this.userId, settings.newPassword, {
+				logout: false,
 			});
+
+			try {
+				Meteor.call('removeOtherTokens');
+			} catch (e) {
+				Accounts._clearAllLoginTokens(this.userId);
+			}
 		}
 
-		RocketChat.models.Users.setProfile(Meteor.userId(), {});
+		Users.setProfile(this.userId, {});
 
-		RocketChat.saveCustomFields(Meteor.userId(), customFields);
+		if (customFields && Object.keys(customFields).length) {
+			saveCustomFields(this.userId, customFields);
+		}
 
 		return true;
-	}
+	}),
 });

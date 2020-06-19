@@ -1,20 +1,33 @@
-FROM rocketchat/base:8
+FROM node:12.16.1-buster-slim
 
-ENV RC_VERSION 0.63.0-develop
+LABEL maintainer="buildmaster@rocket.chat"
 
-MAINTAINER buildmaster@rocket.chat
+# dependencies
+RUN groupadd -g 65533 -r rocketchat \
+    && useradd -u 65533 -r -g rocketchat rocketchat \
+    && mkdir -p /app/uploads \
+    && chown rocketchat:rocketchat /app/uploads \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends fontconfig
 
-RUN set -x \
- && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/download/" -o rocket.chat.tgz \
- && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
- && gpg --verify rocket.chat.tgz.asc \
- && mkdir -p /app \
- && tar -zxf rocket.chat.tgz -C /app \
- && rm rocket.chat.tgz rocket.chat.tgz.asc \
- && cd /app/bundle/programs/server \
- && npm install \
- && npm cache clear --force \
- && chown -R rocketchat:rocketchat /app
+ADD . /app
+
+RUN aptMark="$(apt-mark showmanual)" \
+    && apt-get install -y --no-install-recommends g++ make python ca-certificates \
+    && cd /app/bundle/programs/server \
+    && npm install \
+    && apt-mark auto '.*' > /dev/null \
+    && apt-mark manual $aptMark > /dev/null \
+    && find /usr/local -type f -executable -exec ldd '{}' ';' \
+       | awk '/=>/ { print $(NF-1) }' \
+       | sort -u \
+       | xargs -r dpkg-query --search \
+       | cut -d: -f1 \
+       | sort -u \
+       | xargs -r apt-mark manual \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && npm cache clear --force \
+    && chown -R rocketchat:rocketchat /app
 
 USER rocketchat
 

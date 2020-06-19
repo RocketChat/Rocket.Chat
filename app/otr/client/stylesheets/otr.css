@@ -1,0 +1,29 @@
+.flex-tab {
+	& .otr {
+		& ul {
+			& li {
+				margin-bottom: 20px;
+			}
+		}
+	}
+}
+
+.message {
+	&.otr,
+	&.otr-ack {
+		& .info::before {
+			display: inline-block;
+			visibility: visible;
+
+			content: "\e952";
+
+			font-family: 'fontello';
+		}
+	}
+
+	&.otr-ack {
+		& .info::before {
+			color: green;
+		}
+	}
+}

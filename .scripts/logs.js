@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+
 const semver = require('semver');
 const ProgressBar = require('progress');
 const _ = require('underscore');
@@ -14,7 +15,7 @@ const historyDataFile = path.join(__dirname, '../.github/history.json');
 
 let historyData = (() => {
 	try {
-		return require(historyDataFile);
+		return require(historyDataFile); // eslint-disable-line import/no-dynamic-require
 	} catch (error) {
 		return {};
 	}
@@ -22,7 +23,7 @@ let historyData = (() => {
 
 octokit.authenticate({
 	type: 'token',
-	token: process.env.GITHUB_TOKEN
+	token: process.env.GITHUB_TOKEN,
 });
 const owner = 'RocketChat';
 const repo = 'Rocket.Chat';
@@ -31,8 +32,8 @@ function promiseRetryRateLimit(promiseFn, retryWait = 60000) {
 	return new Promise((resolve, reject) => {
 		function exec() {
 			promiseFn()
-				.then(data => resolve(data))
-				.catch(error => {
+				.then((data) => resolve(data))
+				.catch((error) => {
 					if (error.headers['x-ratelimit-remaining'] === '0') {
 						let reset = error.headers['x-ratelimit-reset'];
 						if (reset) {
@@ -56,13 +57,13 @@ function getPRInfo(number, commit) {
 		process.exit(1);
 	}
 
-	return promiseRetryRateLimit(() => octokit.pullRequests.get({owner, repo, number}))
+	return promiseRetryRateLimit(() => octokit.pullRequests.get({ owner, repo, number }))
 		.catch(onError)
-		.then(pr => {
+		.then((pr) => {
 			const info = {
 				pr: number,
 				title: pr.data.title,
-				userLogin: pr.data.user.login
+				userLogin: pr.data.user.login,
 			};
 			// data.author_association: 'CONTRIBUTOR',
 
@@ -70,12 +71,12 @@ function getPRInfo(number, commit) {
 				info.milestone = pr.data.milestone.title;
 			}
 
-			return promiseRetryRateLimit(() => octokit.pullRequests.getCommits({owner, repo, number}))
+			return promiseRetryRateLimit(() => octokit.pullRequests.getCommits({ owner, repo, number }))
 				.catch(onError)
-				.then(commits => {
-					info.contributors = _.unique(_.flatten(commits.data.map(i => {
+				.then((commits) => {
+					info.contributors = _.unique(_.flatten(commits.data.map((i) => {
 						if (!i.author || !i.committer) {
-							return;
+							return null;
 						}
 
 						return [i.author.login, i.committer.login];
@@ -94,7 +95,7 @@ function getPRNumeberFromMessage(message, item) {
 	const number = match[2] || match[4];
 
 	if (!/^\d+$/.test(number)) {
-		console.error('Invalid number', {number, message});
+		console.error('Invalid number', { number, message });
 		process.exit(1);
 	}
 
@@ -108,17 +109,17 @@ function getPullRequests(from, to) {
 		date: '%ai',
 		message: '%s',
 		author_name: '%aN',
-		author_email: '%ae'
+		author_email: '%ae',
 	};
 
 	return git.log(logParams).then((log) => {
 		const items = log.all
-			.filter(item => /^(\*\s)[0-9a-z]+$/.test(item.hash))
-			.map(item => {
+			.filter((item) => /^(\*\s)[0-9a-z]+$/.test(item.hash))
+			.map((item) => {
 				item.hash = item.hash.replace(/^(\*\s)/, '');
 				return item;
 			})
-			.filter(item => commitRegex.test(item.message));
+			.filter((item) => commitRegex.test(item.message));
 
 		const data = [];
 
@@ -126,7 +127,7 @@ function getPullRequests(from, to) {
 			const bar = new ProgressBar('  [:bar] :current/:total :percent :etas', {
 				total: items.length,
 				incomplete: ' ',
-				width: 20
+				width: 20,
 			});
 
 			function process() {
@@ -137,18 +138,16 @@ function getPullRequests(from, to) {
 				const partItems = items.splice(0, 10);
 				bar.tick(partItems.length);
 
-				const promises = partItems.map(item => {
-					return getPRInfo(getPRNumeberFromMessage(item.message, item), item);
-				});
+				const promises = partItems.map((item) => getPRInfo(getPRNumeberFromMessage(item.message, item), item));
 
-				return Promise.all(promises).then(result => {
+				return Promise.all(promises).then((result) => {
 					data.push(..._.compact(result));
 					if (items.length) {
 						setTimeout(process, 100);
 					} else {
 						resolve(data);
 					}
-				}).catch(error => reject(error));
+				}).catch((error) => reject(error));
 			}
 
 			process();
@@ -158,7 +157,7 @@ function getPullRequests(from, to) {
 
 function getTags() {
 	return git.tags().then((tags) => {
-		tags = tags.all.filter(tag => /^\d+\.\d+\.\d+(-rc\.\d+)?$/.test(tag));
+		tags = tags.all.filter((tag) => /^\d+\.\d+\.\d+(-rc\.\d+)?$/.test(tag));
 
 		tags = tags.sort((a, b) => {
 			if (semver.gt(a, b)) {
@@ -173,13 +172,11 @@ function getTags() {
 		tags.push('HEAD');
 
 		return tags
-			.map((item, index) => {
-				return {
-					tag: item,
-					before: index ? tags[--index] : null
-				};
-			})
-			.filter(item => item.tag === 'HEAD' || semver.gte(item.tag, minTag))
+			.map((item, index) => ({
+				tag: item,
+				before: index ? tags[--index] : null,
+			}))
+			.filter((item) => item.tag === 'HEAD' || semver.gte(item.tag, minTag))
 			.reduce((value, item) => {
 				value[item.tag] = item;
 				return value;
@@ -188,14 +185,14 @@ function getTags() {
 }
 
 function getMissingTags() {
-	return getTags().then(tags => {
+	return getTags().then((tags) => {
 		const missingTags = _.difference(Object.keys(tags), Object.keys(historyData));
 		missingTags.push('HEAD');
 		return _.pick(tags, missingTags);
 	});
 }
 
-getMissingTags().then(missingTags => {
+getMissingTags().then((missingTags) => {
 	console.log('Missing tags:');
 	console.log(JSON.stringify(Object.keys(missingTags), null, 2));
 	missingTags = Object.values(missingTags);
@@ -209,10 +206,10 @@ getMissingTags().then(missingTags => {
 		const from = item.before;
 		const to = item.tag;
 		console.log('Fetching data for tag:', to, `(from ${ from })`);
-		getPullRequests(from, to).then(prs => {
+		getPullRequests(from, to).then((prs) => {
 			// console.log('  ', prs.length, 'item(s) found');
 			historyData = Object.assign(historyData, {
-				[to]: prs
+				[to]: prs,
 			});
 			fs.writeFileSync(historyDataFile, JSON.stringify(historyData, null, 2));
 			loadMissingTag();
