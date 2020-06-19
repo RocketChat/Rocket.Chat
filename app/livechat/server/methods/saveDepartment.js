@@ -5,7 +5,7 @@ import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:saveDepartment'(_id, departmentData, departmentAgents) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'manage-livechat-departments')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveDepartment' });
 		}
 

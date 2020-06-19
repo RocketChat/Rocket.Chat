@@ -31,7 +31,7 @@ export class ExportOperations extends Base {
 		const query = {
 			userId,
 			status: {
-				$nin: ['completed'],
+				$nin: ['completed', 'skipped'],
 			},
 		};
 
@@ -40,7 +40,24 @@ export class ExportOperations extends Base {
 
 	findAllPending(options) {
 		const query = {
-			status: { $nin: ['completed'] },
+			status: { $nin: ['completed', 'skipped'] },
+		};
+
+		return this.find(query, options);
+	}
+
+	findOnePending(options) {
+		const query = {
+			status: { $nin: ['completed', 'skipped'] },
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findAllPendingBeforeMyRequest(requestDay, options) {
+		const query = {
+			status: { $nin: ['completed', 'skipped'] },
+			createdAt: { $lt: requestDay },
 		};
 
 		return this.find(query, options);
@@ -54,6 +71,13 @@ export class ExportOperations extends Base {
 				status: data.status,
 				fileList: data.fileList,
 				generatedFile: data.generatedFile,
+				fileId: data.fileId,
+				userNameTable: data.userNameTable,
+				userData: data.userData,
+				generatedUserFile: data.generatedUserFile,
+				generatedAvatar: data.generatedAvatar,
+				exportPath: data.exportPath,
+				assetsPath: data.assetsPath,
 			},
 		};
 
@@ -69,7 +93,9 @@ export class ExportOperations extends Base {
 
 		_.extend(exportOperation, data);
 
-		return this.insert(exportOperation);
+		this.insert(exportOperation);
+
+		return exportOperation._id;
 	}
 
 

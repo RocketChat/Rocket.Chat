@@ -1,6 +1,7 @@
+import { Base } from './_Base';
+
 import * as Models from '..';
 
-import { Base } from './_Base';
 
 export class Roles extends Base {
 	constructor(...args) {
@@ -28,21 +29,26 @@ export class Roles extends Base {
 		});
 	}
 
-	createOrUpdate(name, scope = 'Users', description, protectedRole, mandatory2fa) {
-		const updateData = {};
-		updateData.name = name;
-		updateData.scope = scope;
+	createOrUpdate(name, scope = 'Users', description = '', protectedRole = true, mandatory2fa = false) {
+		const queryData = {
+			name,
+			scope,
+			protected: protectedRole,
+		};
 
-		if (description != null) {
-			updateData.description = description;
-		}
+		const updateData = {
+			...queryData,
+			description,
+			mandatory2fa,
+		};
 
-		if (protectedRole) {
-			updateData.protected = protectedRole;
-		}
+		const exists = this.findOne({
+			_id: name,
+			...queryData,
+		}, { fields: { _id: 1 } });
 
-		if (mandatory2fa != null) {
-			updateData.mandatory2fa = mandatory2fa;
+		if (exists) {
+			return exists._id;
 		}
 
 		this.upsert({ _id: name }, { $set: updateData });
@@ -82,6 +88,29 @@ export class Roles extends Base {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findByUpdatedDate(updatedAfterDate, options) {
+		const query = {
+			_updatedAt: { $gte: new Date(updatedAfterDate) },
+		};
+
+		return this.find(query, options);
+	}
+
+	canAddUserToRole(uid, roleName, scope) {
+		const role = this.findOne({ _id: roleName }, { fields: { scope: 1 } });
+		if (!role) {
+			return false;
+		}
+
+		const model = Models[role.scope];
+		if (!model) {
+			return;
+		}
+
+		const user = model.isUserInRoleScope(uid, scope);
+		return !!user;
 	}
 }
 

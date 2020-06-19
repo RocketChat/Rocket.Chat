@@ -1,7 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-
 import { callbacks } from '../../../callbacks';
-import { Rooms } from '../../../models';
+import { LivechatRooms } from '../../../models';
+import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -14,54 +13,55 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	Meteor.defer(() => {
-		const now = new Date();
-		let analyticsData;
+	if (message.file) {
+		message = normalizeMessageFileUpload(message);
+	}
 
-		// if the message has a token, it was sent by the visitor
-		if (!message.token) {
-			const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
-			const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
-			const agentJoinTime = room.servedBy && room.servedBy.ts ? room.servedBy.ts : room.ts;
+	const now = new Date();
+	let analyticsData;
 
-			const isResponseTt = room.metrics && room.metrics.response && room.metrics.response.tt;
-			const isResponseTotal = room.metrics && room.metrics.response && room.metrics.response.total;
+	// if the message has a token, it was sent by the visitor
+	if (!message.token) {
+		const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
+		const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
+		const agentJoinTime = room.servedBy && room.servedBy.ts ? room.servedBy.ts : room.ts;
 
-			if (agentLastReply === room.ts) {		// first response
-				const firstResponseDate = now;
-				const firstResponseTime = (now.getTime() - visitorLastQuery) / 1000;
-				const responseTime = (now.getTime() - visitorLastQuery) / 1000;
-				const avgResponseTime = ((isResponseTt ? room.metrics.response.tt : 0) + responseTime) / ((isResponseTotal ? room.metrics.response.total : 0) + 1);
+		const isResponseTt = room.metrics && room.metrics.response && room.metrics.response.tt;
+		const isResponseTotal = room.metrics && room.metrics.response && room.metrics.response.total;
 
-				const firstReactionDate = now;
-				const firstReactionTime = (now.getTime() - agentJoinTime) / 1000;
-				const reactionTime = (now.getTime() - agentJoinTime) / 1000;
+		if (agentLastReply === room.ts) {		// first response
+			const firstResponseDate = now;
+			const firstResponseTime = (now.getTime() - visitorLastQuery) / 1000;
+			const responseTime = (now.getTime() - visitorLastQuery) / 1000;
+			const avgResponseTime = ((isResponseTt ? room.metrics.response.tt : 0) + responseTime) / ((isResponseTotal ? room.metrics.response.total : 0) + 1);
 
-				analyticsData = {
-					firstResponseDate,
-					firstResponseTime,
-					responseTime,
-					avgResponseTime,
-					firstReactionDate,
-					firstReactionTime,
-					reactionTime,
-				};
-			} else if (visitorLastQuery > agentLastReply) {		// response, not first
-				const responseTime = (now.getTime() - visitorLastQuery) / 1000;
-				const avgResponseTime = ((isResponseTt ? room.metrics.response.tt : 0) + responseTime) / ((isResponseTotal ? room.metrics.response.total : 0) + 1);
+			const firstReactionDate = now;
+			const firstReactionTime = (now.getTime() - agentJoinTime) / 1000;
+			const reactionTime = (now.getTime() - agentJoinTime) / 1000;
 
-				const reactionTime = (now.getTime() - visitorLastQuery) / 1000;
+			analyticsData = {
+				firstResponseDate,
+				firstResponseTime,
+				responseTime,
+				avgResponseTime,
+				firstReactionDate,
+				firstReactionTime,
+				reactionTime,
+			};
+		} else if (visitorLastQuery > agentLastReply) {		// response, not first
+			const responseTime = (now.getTime() - visitorLastQuery) / 1000;
+			const avgResponseTime = ((isResponseTt ? room.metrics.response.tt : 0) + responseTime) / ((isResponseTotal ? room.metrics.response.total : 0) + 1);
 
-				analyticsData = {
-					responseTime,
-					avgResponseTime,
-					reactionTime,
-				};
-			}	// ignore, its continuing response
-		}
+			const reactionTime = (now.getTime() - visitorLastQuery) / 1000;
 
-		Rooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
-	});
+			analyticsData = {
+				responseTime,
+				avgResponseTime,
+				reactionTime,
+			};
+		}	// ignore, its continuing response
+	}
 
+	LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
 	return message;
 }, callbacks.priority.LOW, 'saveAnalyticsData');

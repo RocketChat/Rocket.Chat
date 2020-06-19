@@ -15,8 +15,9 @@ import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
-import { tooltip } from '../../tooltip';
+import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
+import { isSyncReady } from '../../../client/lib/userData';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -28,8 +29,6 @@ function customScriptsOnLogout() {
 		executeCustomScript(script);
 	}
 }
-
-settings.collection.find({ _id: /theme-color-rc/i }, { fields: { value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
 
 callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
 
@@ -86,14 +85,19 @@ Template.body.onRendered(function() {
 			return;
 		}
 
-		popover.close();
-
 		if (/input|textarea|select/i.test(target.tagName)) {
 			return;
 		}
 		if (target.id === 'pswp') {
 			return;
 		}
+
+		popover.close();
+
+		if (document.querySelector('.rc-modal-wrapper dialog[open]')) {
+			return;
+		}
+
 		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
 		if (!inputMessage) {
 			return;
@@ -101,19 +105,18 @@ Template.body.onRendered(function() {
 		inputMessage.focus();
 	});
 
-	$(document.body).on('click', function(e) {
-		if (e.target.tagName === 'A') {
-			const link = e.currentTarget;
-			if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
-				e.preventDefault();
-				e.stopPropagation();
-				if (Layout.isEmbedded()) {
-					return fireGlobalEvent('click-message-link', {
-						link: link.pathname + link.search,
-					});
-				}
-				return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
-			}
+	const handleMessageLinkClick = (event) => {
+		const link = event.currentTarget;
+		if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
+			fireGlobalEvent('click-message-link', { link: link.pathname + link.search });
+		}
+	};
+
+	this.autorun(() => {
+		if (Layout.isEmbedded()) {
+			$(document.body).on('click', 'a', handleMessageLinkClick);
+		} else {
+			$(document.body).off('click', 'a', handleMessageLinkClick);
 		}
 	});
 
@@ -170,11 +173,9 @@ Template.main.helpers({
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const routerReady = FlowRouter.subsReady('userData');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
-
-		const ready = (routerReady && subscriptionsReady && settingsReady) || !Meteor.userId();
+		const ready = !Meteor.userId() || (isSyncReady.get() && subscriptionsReady && settingsReady);
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
@@ -184,7 +185,7 @@ Template.main.helpers({
 	hasUsername() {
 		const uid = Meteor.userId();
 		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
-		return (user && user.username) || settings.get('Accounts_AllowAnonymousRead');
+		return (user && user.username) || (!uid && settings.get('Accounts_AllowAnonymousRead'));
 	},
 	requirePasswordChange() {
 		const user = Meteor.user();
@@ -194,7 +195,7 @@ Template.main.helpers({
 		const user = Meteor.user();
 
 		// User is already using 2fa
-		if (user.services.totp !== undefined && user.services.totp.enabled) {
+		if (!user || (user.services.totp !== undefined && user.services.totp.enabled)) {
 			return false;
 		}
 
@@ -227,7 +228,7 @@ Template.main.helpers({
 });
 
 Template.main.events({
-	'click .burger'() {
+	'click div.burger'() {
 		return menu.toggle();
 	},
 });

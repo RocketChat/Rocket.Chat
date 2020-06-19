@@ -91,9 +91,11 @@ export class AppCommandsBridge {
 		this._verifyCommand(command);
 
 		const item = {
+			appId,
 			command: command.command.toLowerCase(),
 			params: Utilities.getI18nKeyForApp(command.i18nParamsExample, appId),
 			description: Utilities.getI18nKeyForApp(command.i18nDescription, appId),
+			permission: command.permission,
 			callback: this._appCommandExecutor.bind(this),
 			providesPreview: command.providesPreview,
 			previewer: !command.previewer ? undefined : this._appCommandPreviewer.bind(this),
@@ -144,30 +146,52 @@ export class AppCommandsBridge {
 		}
 	}
 
-	_appCommandExecutor(command, parameters, message) {
+	_appCommandExecutor(command, parameters, message, triggerId) {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
+		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
-		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params));
+		const context = new SlashCommandContext(
+			Object.freeze(user),
+			Object.freeze(room),
+			Object.freeze(params),
+			threadId,
+			triggerId,
+		);
+
 		Promise.await(this.orch.getManager().getCommandManager().executeCommand(command, context));
 	}
 
 	_appCommandPreviewer(command, parameters, message) {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
+		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
-		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params));
+		const context = new SlashCommandContext(
+			Object.freeze(user),
+			Object.freeze(room),
+			Object.freeze(params),
+			threadId,
+		);
 		return Promise.await(this.orch.getManager().getCommandManager().getPreviews(command, context));
 	}
 
-	_appCommandPreviewExecutor(command, parameters, message, preview) {
+	_appCommandPreviewExecutor(command, parameters, message, preview, triggerId) {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
+		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
-		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params));
+		const context = new SlashCommandContext(
+			Object.freeze(user),
+			Object.freeze(room),
+			Object.freeze(params),
+			threadId,
+			triggerId,
+		);
+
 		Promise.await(this.orch.getManager().getCommandManager().executePreview(command, preview, context));
 	}
 }

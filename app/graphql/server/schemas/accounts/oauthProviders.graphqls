@@ -1,3 +1,0 @@
-type Query {
-  oauthProviders: [OauthProvider]
-}

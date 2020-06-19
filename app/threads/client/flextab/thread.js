@@ -1,18 +1,19 @@
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 
-import { ChatMessages } from '../../../ui';
+import { chatMessages, ChatMessages } from '../../../ui';
 import { normalizeThreadMessage, call } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
-import { lazyloadtick } from '../../../lazy-load';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
-import { dropzoneEvents } from '../../../ui/client/views/app/room';
+import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
+import { getUserPreference } from '../../../utils';
 
 const sort = { ts: 1 };
 
@@ -25,7 +26,6 @@ Template.thread.events({
 		return close && close();
 	},
 	'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }, i) => {
-		lazyloadtick();
 		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
 	}, 50),
 	'load img'() {
@@ -39,6 +39,7 @@ Template.thread.events({
 });
 
 Template.thread.helpers({
+	...dropzoneHelpers,
 	threadTitle() {
 		return normalizeThreadMessage(Template.currentData().mainMessage);
 	},
@@ -76,6 +77,9 @@ Template.thread.helpers({
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
 			onKeyDown: (...args) => instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args),
 		};
+	},
+	hideUsername() {
+		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
 });
 
@@ -127,6 +131,9 @@ Template.thread.onRendered(function() {
 		const rid = this.state.get('rid');
 		const tmid = this.state.get('tmid');
 		this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
+		if (rid && tmid) {
+			chatMessages[`${ rid }-${ tmid }`] = this.chatMessages;
+		}
 	});
 
 

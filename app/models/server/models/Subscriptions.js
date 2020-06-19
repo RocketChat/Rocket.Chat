@@ -11,16 +11,17 @@ export class Subscriptions extends Base {
 	constructor(...args) {
 		super(...args);
 
+		this.tryEnsureIndex({ rid: 1 });
+		this.tryEnsureIndex({ rid: 1, ls: 1 });
 		this.tryEnsureIndex({ rid: 1, 'u._id': 1 }, { unique: 1 });
+		this.tryEnsureIndex({ rid: 1, 'u._id': 1, open: 1 });
 		this.tryEnsureIndex({ rid: 1, 'u.username': 1 });
 		this.tryEnsureIndex({ rid: 1, alert: 1, 'u._id': 1 });
 		this.tryEnsureIndex({ rid: 1, roles: 1 });
 		this.tryEnsureIndex({ 'u._id': 1, name: 1, t: 1 });
+		this.tryEnsureIndex({ name: 1, t: 1 });
 		this.tryEnsureIndex({ open: 1 });
 		this.tryEnsureIndex({ alert: 1 });
-
-		this.tryEnsureIndex({ rid: 1, 'u._id': 1, open: 1 });
-
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ ls: 1 });
 		this.tryEnsureIndex({ audioNotifications: 1 }, { sparse: 1 });
@@ -176,20 +177,6 @@ export class Subscriptions extends Base {
 				desktopPrefOrigin: desktopNotifications.origin,
 			};
 		}
-
-		return this.update(query, update);
-	}
-
-	updateDesktopNotificationDurationById(_id, value) {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				desktopNotificationDuration: parseInt(value),
-			},
-		};
 
 		return this.update(query, update);
 	}
@@ -366,7 +353,6 @@ export class Subscriptions extends Base {
 				ignored: 1,
 				audioNotifications: 1,
 				audioNotificationValue: 1,
-				desktopNotificationDuration: 1,
 				desktopNotifications: 1,
 				mobilePushNotifications: 1,
 				emailNotifications: 1,
@@ -393,7 +379,6 @@ export class Subscriptions extends Base {
 				'u._id': 1,
 				audioNotifications: 1,
 				audioNotificationValue: 1,
-				desktopNotificationDuration: 1,
 				desktopNotifications: 1,
 				mobilePushNotifications: 1,
 				emailNotifications: 1,
@@ -484,6 +469,15 @@ export class Subscriptions extends Base {
 	// FIND
 	findByUserId(userId, options) {
 		const query =			{ 'u._id': userId };
+
+		return this.find(query, options);
+	}
+
+	findByUserIdExceptType(userId, typeException, options) {
+		const query = {
+			'u._id': userId,
+			t: { $ne: typeException },
+		};
 
 		return this.find(query, options);
 	}
@@ -644,6 +638,9 @@ export class Subscriptions extends Base {
 	getMinimumLastSeenByRoomId(rid) {
 		return this.db.findOne({
 			rid,
+			ls: {
+				$exists: true,
+			},
 		}, {
 			sort: {
 				ls: 1,
@@ -807,6 +804,31 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	updateFnameByRoomId(rid, fname) {
+		const query = { rid };
+
+		const update = {
+			$set: {
+				fname,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateNameAndFnameById(_id, name, fname) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				name,
+				fname,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	setUserUsernameByUserId(userId, username) {
 		const query =			{ 'u._id': userId };
 
@@ -828,6 +850,22 @@ export class Subscriptions extends Base {
 		const update = {
 			$set: {
 				name,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateDirectNameAndFnameByName(name, newName, newFname) {
+		const query = {
+			name,
+			t: 'd',
+		};
+
+		const update = {
+			$set: {
+				...newName && { name: newName },
+				...newFname && { fname: newFname },
 			},
 		};
 
@@ -1252,7 +1290,7 @@ export class Subscriptions extends Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			Rooms.incUsersCountByIds(roomIds, -1);
+			Rooms.incUsersCountNotDMsByIds(roomIds, -1);
 		}
 
 		return result;
@@ -1285,6 +1323,10 @@ export class Subscriptions extends Base {
 		}
 
 		return result;
+	}
+
+	removeByRoomIds(rids) {
+		return this.remove({ rid: { $in: rids } });
 	}
 
 	// //////////////////////////////////////////////////////////////////

@@ -24,11 +24,13 @@ const eventService = new EventService();
  */
 callbacks.add('afterSaveMessage', function(m) {
 	eventService.promoteEvent('message.save', m._id, m);
-});
+	return m;
+}, callbacks.priority.MEDIUM, 'search-events');
 
 callbacks.add('afterDeleteMessage', function(m) {
 	eventService.promoteEvent('message.delete', m._id);
-});
+	return m;
+}, callbacks.priority.MEDIUM, 'search-events-delete');
 
 /**
  * Listen to user and room changes via cursor

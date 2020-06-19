@@ -21,6 +21,7 @@ export class AppMessagesConverter {
 
 		const map = {
 			id: '_id',
+			threadId: 'tmid',
 			reactions: 'reactions',
 			parseUrls: 'parseUrls',
 			text: 'msg',
@@ -30,8 +31,11 @@ export class AppMessagesConverter {
 			emoji: 'emoji',
 			avatarUrl: 'avatar',
 			alias: 'alias',
+			file: 'file',
 			customFields: 'customFields',
 			groupable: 'groupable',
+			token: 'token',
+			blocks: 'blocks',
 			room: (message) => {
 				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
 				delete message.rid;
@@ -74,7 +78,7 @@ export class AppMessagesConverter {
 	}
 
 	convertAppMessage(message) {
-		if (!message) {
+		if (!message || !message.room) {
 			return undefined;
 		}
 
@@ -116,6 +120,7 @@ export class AppMessagesConverter {
 
 		const newMessage = {
 			_id: message.id || Random.id(),
+			tmid: message.threadId,
 			rid: room._id,
 			u,
 			msg: message.text,
@@ -131,6 +136,8 @@ export class AppMessagesConverter {
 			attachments,
 			reactions: message.reactions,
 			parseUrls: message.parseUrls,
+			blocks: message.blocks,
+			token: message.token,
 		};
 
 		return Object.assign(newMessage, message._unmappedProperties_);

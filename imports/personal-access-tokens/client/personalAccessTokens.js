@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
@@ -9,20 +8,26 @@ import moment from 'moment';
 import { t } from '../../../app/utils';
 import { modal, SideNav } from '../../../app/ui-utils';
 import { hasAllPermission } from '../../../app/authorization';
-
 import './personalAccessTokens.html';
+import { APIClient, handleError } from '../../../app/utils/client';
 
-const PersonalAccessTokens = new Mongo.Collection('personal_access_tokens');
+const loadTokens = async (instance) => {
+	const { tokens } = await APIClient.v1.get('users.getPersonalAccessTokens');
+	instance.personalAccessTokens.set(tokens);
+};
 
 Template.accountTokens.helpers({
 	isAllowed() {
 		return hasAllPermission(['create-personal-access-tokens']);
 	},
 	tokens() {
-		return (PersonalAccessTokens.find({}).fetch()[0] && PersonalAccessTokens.find({}).fetch()[0].tokens) || [];
+		return Template.instance().personalAccessTokens.get();
 	},
 	dateFormated(date) {
 		return moment(date).format('L LT');
+	},
+	twoFactor(bypassTwoFactor) {
+		return bypassTwoFactor ? t('Ignore') : t('Require');
 	},
 });
 
@@ -38,6 +43,7 @@ const showSuccessModal = (token) => {
 	}, () => {
 	});
 };
+
 Template.accountTokens.events({
 	'submit #form-tokens'(e, instance) {
 		e.preventDefault();
@@ -45,15 +51,17 @@ Template.accountTokens.events({
 		if (tokenName === '') {
 			return toastr.error(t('Please_fill_a_token_name'));
 		}
-		Meteor.call('personalAccessTokens:generateToken', { tokenName }, (error, token) => {
+		const bypassTwoFactor = $('#bypassTwoFactor').val() === 'true';
+		Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor }, (error, token) => {
 			if (error) {
-				return toastr.error(t(error.error));
+				return handleError(error);
 			}
 			showSuccessModal(token);
+			loadTokens(instance);
 			instance.find('#tokenName').value = '';
 		});
 	},
-	'click .remove-personal-access-token'() {
+	'click .remove-personal-access-token'(e, instance) {
 		modal.open({
 			title: t('Are_you_sure'),
 			text: t('API_Personal_Access_Tokens_Remove_Modal'),
@@ -69,13 +77,14 @@ Template.accountTokens.events({
 				tokenName: this.name,
 			}, (error) => {
 				if (error) {
-					return toastr.error(t(error.error));
+					return handleError(error);
 				}
+				loadTokens(instance);
 				toastr.success(t('Removed'));
 			});
 		});
 	},
-	'click .regenerate-personal-access-token'() {
+	'click .regenerate-personal-access-token'(e, instance) {
 		modal.open({
 			title: t('Are_you_sure'),
 			text: t('API_Personal_Access_Tokens_Regenerate_Modal'),
@@ -91,8 +100,9 @@ Template.accountTokens.events({
 				tokenName: this.name,
 			}, (error, token) => {
 				if (error) {
-					return toastr.error(t(error.error));
+					return handleError(error);
 				}
+				loadTokens(instance);
 				showSuccessModal(token);
 			});
 		});
@@ -100,11 +110,9 @@ Template.accountTokens.events({
 });
 
 Template.accountTokens.onCreated(function() {
-	this.ready = new ReactiveVar(true);
-	const subscription = this.subscribe('personalAccessTokens');
-	this.autorun(() => {
-		this.ready.set(subscription.ready());
-	});
+	this.personalAccessTokens = new ReactiveVar([]);
+
+	loadTokens(this);
 });
 
 Template.accountTokens.onRendered(function() {

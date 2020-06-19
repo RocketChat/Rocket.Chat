@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Notifications } from '../../notifications';
 import { slashCommands } from '../../utils';
@@ -26,5 +26,11 @@ function Leave(command, params, item) {
 	}
 }
 
-slashCommands.add('leave', Leave, { description: 'Leave_the_current_channel' });
-slashCommands.add('part', Leave, { description: 'Leave_the_current_channel' });
+slashCommands.add('leave', Leave, {
+	description: 'Leave_the_current_channel',
+	permission: ['leave-c', 'leave-p'],
+});
+slashCommands.add('part', Leave, {
+	description: 'Leave_the_current_channel',
+	permission: ['leave-c', 'leave-p'],
+});

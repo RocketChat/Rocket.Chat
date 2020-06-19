@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import s from 'underscore.string';
 
@@ -10,8 +10,9 @@ import { t, handleError } from '../../../utils';
 import { Roles } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { settings } from '../../../settings/client';
+import { callbacks } from '../../../callbacks/client';
+import { modal } from '../../../ui-utils/client';
 
 Template.userEdit.helpers({
 
@@ -41,6 +42,15 @@ Template.userEdit.helpers({
 
 	requirePasswordChange() {
 		return !Template.instance().user || Template.instance().user.requirePasswordChange;
+	},
+
+	requirePasswordChangeDisabled() {
+		// when setting a random password, requiring a password change is mandatory
+		return Template.instance().setRandomPassword.get();
+	},
+
+	setRandomPassword() {
+		return !Template.instance().user || Template.instance().user.setRandomPassword;
 	},
 
 	role() {
@@ -83,6 +93,27 @@ Template.userEdit.events({
 		template.url.set(text);
 	},
 
+	'change #setRandomPassword'(e, template) {
+		const requiring = e.currentTarget.checked;
+		template.setRandomPassword.set(requiring);
+
+		if (requiring) {
+			$(e.currentTarget.form).find('#changePassword')[0].checked = true;
+			$(e.currentTarget.form).find('#password')[0].value = '';
+		}
+	},
+
+	'click #randomPassword'(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		e.target.classList.add('loading');
+		$('#password').val('');
+		setTimeout(() => {
+			$('#password').val(Random.id());
+			e.target.classList.remove('loading');
+		}, 1000);
+	},
+
 	'change .js-select-avatar-upload [type=file]'(event, template) {
 		const e = event.originalEvent || event;
 		let { files } = e.target;
@@ -122,17 +153,6 @@ Template.userEdit.events({
 		$(`[title=${ this }]`).remove();
 	},
 
-	'click #randomPassword'(e) {
-		e.stopPropagation();
-		e.preventDefault();
-		e.target.classList.add('loading');
-		$('#password').val('');
-		setTimeout(() => {
-			$('#password').val(Random.id());
-			e.target.classList.remove('loading');
-		}, 1000);
-	},
-
 	'mouseover #password'(e) {
 		e.target.type = 'text';
 	},
@@ -141,16 +161,17 @@ Template.userEdit.events({
 		e.target.type = 'password';
 	},
 
-	'click #addRole'(e, instance) {
+	'change #roleSelect'(e, instance) {
+		const select = $('#roleSelect');
 		e.stopPropagation();
 		e.preventDefault();
-		if ($('#roleSelect').find(':selected').is(':disabled')) {
+		if (select.find(':selected').is(':disabled')) {
 			return;
 		}
 		const userRoles = [...instance.roles.get()];
-		userRoles.push($('#roleSelect').val());
+		userRoles.push(select.val());
 		instance.roles.set(userRoles);
-		$('#roleSelect').val('placeholder');
+		select.val('placeholder');
 	},
 
 	'submit form'(e, t) {
@@ -165,15 +186,17 @@ Template.userEdit.onCreated(function() {
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
 	this.avatar = new ReactiveVar();
 	this.url = new ReactiveVar('');
+	this.setRandomPassword = new ReactiveVar(!this.user);
+
 	Notifications.onLogged('updateAvatar', () => this.avatar.set());
 
 	const { tabBar } = Template.currentData();
 
-	this.cancel = (form, username) => {
+	this.cancel = (form, data) => {
 		form.reset();
 		this.$('input[type=checkbox]').prop('checked', true);
 		if (this.user) {
-			return this.data.back(username);
+			return this.data.back(data);
 		}
 		return tabBar.close();
 	};
@@ -182,9 +205,12 @@ Template.userEdit.onCreated(function() {
 		const userData = { _id: this.user != null ? this.user._id : undefined };
 		userData.name = s.trim(this.$('#name').val());
 		userData.username = s.trim(this.$('#username').val());
+		userData.statusText = s.trim(this.$('#status').val());
+		userData.bio = s.trim(this.$('#bio').val());
 		userData.email = s.trim(this.$('#email').val());
 		userData.verified = this.$('#verified:checked').length > 0;
 		userData.password = s.trim(this.$('#password').val());
+		userData.setRandomPassword = this.$('#setRandomPassword:checked').length > 0;
 		userData.requirePasswordChange = this.$('#changePassword:checked').length > 0;
 		userData.joinDefaultChannels = this.$('#joinDefaultChannels:checked').length > 0;
 		userData.sendWelcomeEmail = this.$('#sendWelcomeEmail:checked').length > 0;
@@ -265,10 +291,26 @@ Template.userEdit.onCreated(function() {
 
 		Meteor.call('insertOrUpdateUser', userData, (error) => {
 			if (error) {
+				if (error.error === 'error-max-guests-number-reached') {
+					const message = TAPi18n.__('You_reached_the_maximum_number_of_guest_users_allowed_by_your_license.');
+					const url = 'https://go.rocket.chat/i/guest-limit-exceeded';
+					const email = 'sales@rocket.chat';
+					const linkText = TAPi18n.__('Click_here_for_more_details_or_contact_sales_for_a_new_license', { url, email });
+
+					modal.open({
+						type: 'error',
+						title: TAPi18n.__('Maximum_number_of_guests_reached'),
+						text: `${ message } ${ linkText }`,
+						html: true,
+					});
+
+					return true;
+				}
+
 				return handleError(error);
 			}
 			toastr.success(userData._id ? t('User_updated_successfully') : t('User_added_successfully'));
-			this.cancel(form, userData.username);
+			this.cancel(form, userData);
 		});
 	};
 });

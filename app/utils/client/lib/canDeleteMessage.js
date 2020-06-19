@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { hasAtLeastOnePermission } from '../../../authorization/client';
+import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 
 export const canDeleteMessage = ({ rid, ts, uid }) => {
 	const userId = Meteor.userId();
 
-	const forceDelete = hasAtLeastOnePermission('force-delete-message', rid);
+	const forceDelete = hasPermission('force-delete-message', rid);
 	if (forceDelete) {
 		return true;
 	}
@@ -17,9 +17,10 @@ export const canDeleteMessage = ({ rid, ts, uid }) => {
 		return false;
 	}
 
-	const hasPermission = hasAtLeastOnePermission('delete-message', rid);
-	const deleteOwn = uid === userId;
-	if (!hasPermission && !deleteOwn) {
+	const allowed = hasPermission('delete-message', rid);
+
+	const deleteOwn = allowed || (uid === userId && hasPermission('delete-own-message'));
+	if (!allowed && !deleteOwn) {
 		return false;
 	}
 

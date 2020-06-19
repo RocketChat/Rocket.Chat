@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
@@ -35,7 +35,7 @@ class GoogleVision {
 				callbacks.remove('beforeSaveMessage', 'googlevision-blockunsafe');
 			}
 		});
-		callbacks.add('afterFileUpload', this.annotate.bind(this));
+		callbacks.add('afterFileUpload', this.annotate.bind(this), callbacks.priority.MEDIUM, 'GoogleVision');
 	}
 
 	incCallCount(count) {

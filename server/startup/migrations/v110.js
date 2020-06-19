@@ -9,11 +9,11 @@ Migrations.add({
 			if (setting && setting.value) {
 				Settings.update(
 					{ _id: 'Accounts_Default_User_Preferences_messageViewMode' },
-					{ $set: { value: setting.value } }
+					{ $set: { value: setting.value } },
 				);
 
 				Settings.remove(
-					{ _id: 'Accounts_Default_User_Preferences_viewMode' }
+					{ _id: 'Accounts_Default_User_Preferences_viewMode' },
 				);
 			}
 		}
@@ -31,11 +31,11 @@ Migrations.add({
 			if (setting && setting.value) {
 				Settings.update(
 					{ _id: 'Accounts_Default_User_Preferences_viewMode' },
-					{ $set: { value: setting.value } }
+					{ $set: { value: setting.value } },
 				);
 
 				Settings.remove(
-					{ _id: 'Accounts_Default_User_Preferences_messageViewMode' }
+					{ _id: 'Accounts_Default_User_Preferences_messageViewMode' },
 				);
 			}
 		}

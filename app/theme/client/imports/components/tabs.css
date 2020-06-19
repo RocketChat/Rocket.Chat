@@ -13,8 +13,9 @@
 }
 
 .tab {
+	display: flex;
+
 	margin: 0 1rem;
-	padding: 1rem 0;
 
 	cursor: pointer;
 
@@ -24,13 +25,25 @@
 
 	border-bottom: 2px solid transparent;
 
+	font-family: inherit;
 	font-size: 1rem;
-
 	font-weight: 500;
 	line-height: 1.25rem;
+	align-items: stretch;
+	flex-flow: row nowrap;
 
 	&.active {
 		color: var(--rc-color-button-primary);
 		border-bottom-color: var(--rc-color-button-primary);
+	}
+
+	&:focus {
+		text-decoration: underline;
+	}
+
+	& > span {
+		flex: 1;
+
+		padding: 1rem 0;
 	}
 }

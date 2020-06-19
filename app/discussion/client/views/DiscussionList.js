@@ -10,7 +10,7 @@ import './DiscussionList.html';
 Template.DiscussionList.helpers({
 	rooms() {
 		const user = Meteor.userId();
-		const sortBy = getUserPreference(user, 'sidebarSortby') || 'alphabetical';
+		const sortBy = getUserPreference(user, 'sidebarSortby') || 'activity';
 		const query = {
 			open: true,
 		};
@@ -25,5 +25,9 @@ Template.DiscussionList.helpers({
 
 		query.prid = { $exists: true };
 		return ChatSubscription.find(query, { sort });
+	},
+
+	shouldAppear() {
+		return settings.get('Discussion_enabled');
 	},
 });

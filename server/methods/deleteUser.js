@@ -3,10 +3,10 @@ import { check } from 'meteor/check';
 
 import { Users } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
-import { deleteUser } from '../../app/lib';
+import { deleteUser } from '../../app/lib/server';
 
 Meteor.methods({
-	deleteUser(userId) {
+	deleteUser(userId, confirmRelinquish = false) {
 		check(userId, String);
 
 		if (!Meteor.userId()) {
@@ -28,6 +28,12 @@ Meteor.methods({
 			});
 		}
 
+		if (user.type === 'app') {
+			throw new Meteor.Error('error-cannot-delete-app-user', 'Deleting app user is not allowed', {
+				method: 'deleteUser',
+			});
+		}
+
 		const adminCount = Meteor.users.find({ roles: 'admin' }).count();
 
 		const userIsAdmin = user.roles.indexOf('admin') > -1;
@@ -39,7 +45,7 @@ Meteor.methods({
 			});
 		}
 
-		deleteUser(userId);
+		deleteUser(userId, confirmRelinquish);
 
 		return true;
 	},

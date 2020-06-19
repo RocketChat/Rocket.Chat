@@ -4,11 +4,14 @@ import { Match, check } from 'meteor/check';
 import { Messages } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { processWebhookMessage } from '../../../lib';
+import { processWebhookMessage } from '../../../lib/server';
+import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
+import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
 import { settings } from '../../../settings';
+import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsFromRoom } from '../lib/messages';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
@@ -70,7 +73,7 @@ API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
 		return API.v1.success({
 			result: {
 				updated: normalizeMessagesForUser(result.updated, this.userId),
-				deleted: normalizeMessagesForUser(result.deleted, this.userId),
+				deleted: result.deleted,
 			},
 		});
 	},
@@ -171,8 +174,7 @@ API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 		}
 
-		const sent = Meteor.runAsUser(this.userId, () => Meteor.call('sendMessage', this.bodyParams.message));
-
+		const sent = executeSendMessage(this.userId, this.bodyParams.message);
 		const [message] = normalizeMessagesForUser([sent], this.userId);
 
 		return API.v1.success({
@@ -293,7 +295,7 @@ API.v1.addRoute('chat.react', { authRequired: true }, {
 			throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
 		}
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id, this.bodyParams.shouldReact));
+		Meteor.runAsUser(this.userId, () => Promise.await(executeSetReaction(emoji, msg._id, this.bodyParams.shouldReact)));
 
 		return API.v1.success();
 	},
@@ -377,6 +379,37 @@ API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
 			skip: offset,
 			limit: count,
 			fields: { _id: 1 },
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total,
+		});
+	},
+});
+
+API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+		}
+		const room = Meteor.call('canAccessRoom', roomId, this.userId);
+		if (!room) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		const cursor = Messages.findPinnedByRoom(room._id, {
+			skip: offset,
+			limit: count,
 		});
 
 		const total = cursor.count();
@@ -566,5 +599,107 @@ API.v1.addRoute('chat.unfollowMessage', { authRequired: true }, {
 		}
 		Meteor.runAsUser(this.userId, () => Meteor.call('unfollowMessage', { mid }));
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('chat.getMentionedMessages', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { sort } = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+		if (!roomId) {
+			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+		}
+		const messages = Promise.await(findMentionedMessages({
+			uid: this.userId,
+			roomId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+		return API.v1.success(messages);
+	},
+});
+
+API.v1.addRoute('chat.getStarredMessages', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { sort } = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+		}
+		const messages = Promise.await(findStarredMessages({
+			uid: this.userId,
+			roomId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+		return API.v1.success(messages);
+	},
+});
+
+API.v1.addRoute('chat.getSnippetedMessageById', { authRequired: true }, {
+	get() {
+		const { messageId } = this.queryParams;
+
+		if (!messageId) {
+			throw new Meteor.Error('error-invalid-params', 'The required "messageId" query param is missing.');
+		}
+		const message = Promise.await(findSnippetedMessageById({
+			uid: this.userId,
+			messageId,
+		}));
+		return API.v1.success(message);
+	},
+});
+
+API.v1.addRoute('chat.getSnippetedMessages', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { sort } = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+		}
+		const messages = Promise.await(findSnippetedMessages({
+			uid: this.userId,
+			roomId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+		return API.v1.success(messages);
+	},
+});
+
+API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { sort } = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+		}
+		const messages = Promise.await(findDiscussionsFromRoom({
+			uid: this.userId,
+			roomId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+		return API.v1.success(messages);
 	},
 });

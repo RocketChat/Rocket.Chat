@@ -1,9 +1,10 @@
 import _ from 'underscore';
-import { Blaze } from 'meteor/blaze';
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { Session } from 'meteor/session';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -11,65 +12,14 @@ import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMe
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
-import { t, roomTypes, getURL } from '../../utils';
+import { t, roomTypes } from '../../utils';
 import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import './message.html';
 import './messageThread.html';
-
-async function renderPdfToCanvas(canvasId, pdfLink) {
-	const isSafari = /constructor/i.test(window.HTMLElement)
-		|| ((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari
-			|| (typeof window.safari !== 'undefined' && window.safari.pushNotification));
-
-	if (isSafari) {
-		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
-		if (version <= 12) {
-			return;
-		}
-	}
-
-	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) {
-		return;
-	}
-	pdfLink = getURL(pdfLink);
-
-	const canvas = document.getElementById(canvasId);
-	if (!canvas) {
-		return;
-	}
-
-	const pdfjsLib = await import('pdfjs-dist');
-	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }pdf.worker.min.js`;
-
-	const loader = document.getElementById(`js-loading-${ canvasId }`);
-
-	if (loader) {
-		loader.style.display = 'block';
-	}
-
-	const pdf = await pdfjsLib.getDocument(pdfLink);
-	const page = await pdf.getPage(1);
-	const scale = 0.5;
-	const viewport = page.getViewport(scale);
-	const context = canvas.getContext('2d');
-	canvas.height = viewport.height;
-	canvas.width = viewport.width;
-	await page.render({
-		canvasContext: context,
-		viewport,
-	}).promise;
-
-	if (loader) {
-		loader.style.display = 'none';
-	}
-
-	canvas.style.maxWidth = '-webkit-fill-available';
-	canvas.style.maxWidth = '-moz-available';
-	canvas.style.display = 'block';
-}
+import { AutoTranslate } from '../../autotranslate/client';
 
 const renderBody = (msg, settings) => {
+	const searchedText = msg.searchedText ? msg.searchedText : '';
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
 
@@ -78,6 +28,7 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
+		msg.msg = s.escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
@@ -90,6 +41,11 @@ const renderBody = (msg, settings) => {
 	if (isSystemMessage) {
 		msg.html = Markdown.parse(msg.html);
 	}
+
+	if (searchedText) {
+		msg = msg.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${ str }</mark>`);
+	}
+
 	return msg;
 };
 
@@ -97,9 +53,6 @@ Template.message.helpers({
 	body() {
 		const { msg, settings } = this;
 		return Tracker.nonreactive(() => renderBody(msg, settings));
-	},
-	and(a, b) {
-		return a && b;
 	},
 	i18nReplyCounter() {
 		const { msg } = this;
@@ -170,19 +123,16 @@ Template.message.helpers({
 			return 'false';
 		}
 	},
-	sequentialClass() {
-		const { msg, groupable } = this;
-		if (MessageTypes.isSystemMessage(msg) && !msg.tmid) {
-			return;
-		}
-		return groupable !== false && msg.groupable !== false && 'sequential';
-	},
 	avatarFromUsername() {
 		const { msg } = this;
 
 		if (msg.avatar != null && msg.avatar[0] === '@') {
 			return msg.avatar.replace(/^@/, '');
 		}
+	},
+	getStatus() {
+		const { msg } = this;
+		return Session.get(`user_${ msg.u.username }_status_text`);
 	},
 	getName() {
 		const { msg, settings } = this;
@@ -203,6 +153,10 @@ Template.message.helpers({
 		if (msg.u && msg.u._id === u._id) {
 			return 'own';
 		}
+	},
+	t() {
+		const { msg } = this;
+		return msg.t;
 	},
 	timestamp() {
 		const { msg } = this;
@@ -253,20 +207,24 @@ Template.message.helpers({
 			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]);
 		}
 	},
+	translationProvider() {
+		const instance = Template.instance();
+		const { translationProvider } = instance.data.msg;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
+	},
 	edited() {
-		return Template.instance().wasEdited;
+		const { msg } = this;
+		return msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	},
 	editTime() {
 		const { msg } = this;
-		if (Template.instance().wasEdited) {
-			return DateFormat.formatDateAndTime(msg.editedAt);
-		}
+		return msg.editedAt ? DateFormat.formatDateAndTime(msg.editedAt) : '';
 	},
 	editedBy() {
-		if (!Template.instance().wasEdited) {
+		const { msg } = this;
+		if (!msg.editedAt) {
 			return '';
 		}
-		const { msg } = this;
 		// try to return the username of the editor,
 		// otherwise a special "?" character that will be
 		// rendered as a special avatar
@@ -310,7 +268,7 @@ Template.message.helpers({
 				let usernames;
 
 				if (displayNames.length > 15) {
-					usernames = `${ selectedDisplayNames.join(', ') }${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
+					usernames = `${ selectedDisplayNames.join(', ') } ${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
 				} else if (displayNames.length > 1) {
 					usernames = `${ selectedDisplayNames.slice(0, -1).join(', ') } ${ t('and') } ${ selectedDisplayNames[selectedDisplayNames.length - 1] }`;
 				} else {
@@ -359,8 +317,14 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	injectMessage(data, { _id, rid }) {
+		data.msg = { _id, rid };
+	},
 	injectIndex(data, index) {
 		data.index = index;
+	},
+	injectSettings(data, settings) {
+		data.settings = settings;
 	},
 	channelName() {
 		const { subscription } = this;
@@ -406,8 +370,8 @@ Template.message.helpers({
 		return msg.actionContext === 'snippeted';
 	},
 	isThreadReply() {
-		const { msg: { tmid, t }, settings: { showreply } } = this;
-		return !!(tmid && showreply && (!t || t === 'e2e'));
+		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
+		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
@@ -424,45 +388,48 @@ Template.message.helpers({
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
+	showStar() {
+		const { msg } = this;
+		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+	},
 });
 
 
 const findParentMessage = (() => {
 	const waiting = [];
-
+	const uid = Tracker.nonreactive(() => Meteor.userId());
 	const getMessages = _.debounce(async function() {
-		const uid = Tracker.nonreactive(() => Meteor.userId());
 		const _tmp = [...waiting];
 		waiting.length = 0;
-		(await call('getMessages', _tmp)).map((msg) => upsertMessage({ msg, uid }));
+		(await call('getMessages', _tmp)).map((msg) => Messages.findOne({ _id: msg._id }) || upsertMessage({ msg: { ...msg, _hidden: true }, uid }));
 	}, 500);
+
 
 	return (tmid) => {
 		if (waiting.indexOf(tmid) > -1) {
 			return;
 		}
-
 		const message = Messages.findOne({ _id: tmid });
-		if (message) {
-			const uid = Tracker.nonreactive(() => Meteor.userId());
-			return Messages.update({ tmid, repliesCount: { $exists: 0 } }, {
+		if (!message) {
+			waiting.push(tmid);
+			return getMessages();
+		}
+		return Messages.update(
+			{ tmid, repliesCount: { $exists: 0 } },
+			{
 				$set: {
 					following: message.replies && message.replies.indexOf(uid) > -1,
 					threadMsg: normalizeThreadMessage(message),
 					repliesCount: message.tcount,
 				},
-			}, { multi: true });
-		}
-
-		waiting.push(tmid);
-		getMessages();
+			},
+			{ multi: true },
+		);
 	};
 })();
 
 Template.message.onCreated(function() {
 	const { msg, shouldCollapseReplies } = Template.currentData();
-
-	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
@@ -549,15 +516,12 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	return false;
 };
 
-const processSequentials = ({ currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies }) => {
+const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, shouldCollapseReplies }) => {
 	if (!showDateSeparator && !groupable) {
 		return;
 	}
-	if (msg.file && msg.file.type === 'application/pdf') {
-		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
-	}
 	// const currentDataset = currentNode.dataset;
-	const previousNode = getPreviousSentMessage(currentNode);
+	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
 
 	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
@@ -584,33 +548,10 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		} else {
 			nextNode.classList.remove('new-day');
 		}
-	} else if (shouldCollapseReplies) {
-		const [el] = $(`#chat-window-${ msg.rid }`);
-		const view = el && Blaze.getView(el);
-		const templateInstance = view && view.templateInstance();
-		if (!templateInstance) {
-			return;
-		}
-
-		if (currentNode.classList.contains('own') === true) {
-			templateInstance.atBottom = true;
-		}
-		templateInstance.sendToBottomIfNecessary();
 	}
 };
 
-Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
-	this.autorun(() => {
-		const currentNode = this.firstNode;
-		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	});
+Template.message.onRendered(function() {
+	const currentNode = this.firstNode;
+	this.autorun(() => processSequentials({ currentNode, ...Template.currentData() }));
 });
-
-Template.message.onViewRendered = function() {
-	const args = messageArgs(Template.currentData());
-	// processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
-	return this._domrange.onAttached((domRange) => {
-		const currentNode = domRange.lastNode();
-		processSequentials({ currentNode, ...args });
-	});
-};

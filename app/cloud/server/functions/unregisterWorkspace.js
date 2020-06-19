@@ -13,6 +13,7 @@ export function unregisterWorkspace() {
 	Settings.updateValueById('Cloud_Workspace_Client_Id', null);
 	Settings.updateValueById('Cloud_Workspace_Client_Secret', null);
 	Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', null);
+	Settings.updateValueById('Cloud_Workspace_PublicKey', null);
 	Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', null);
 
 	return true;

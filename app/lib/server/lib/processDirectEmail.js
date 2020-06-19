@@ -170,6 +170,27 @@ export const processDirectEmail = function(email) {
 		// add reply message link
 		message.msg = prevMessageLink + message.msg;
 
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
+		if (subscription && (subscription.blocked || subscription.blocker)) {
+			// room is blocked
+			return false;
+		}
+
+		if ((room.muted || []).includes(user.username)) {
+			// user is muted
+			return false;
+		}
+
+		// room is readonly
+		if (room.ro === true) {
+			if (!hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
+				// Check if the user was manually unmuted
+				if (!(room.unmuted || []).includes(user.username)) {
+					return false;
+				}
+			}
+		}
+
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return _sendMessage(user, message, room);
 	}

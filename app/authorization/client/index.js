@@ -1,13 +1,11 @@
 import { hasAllPermission, hasAtLeastOnePermission, hasPermission, userHasAllPermission } from './hasPermission';
 import { hasRole } from './hasRole';
+import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 import './usersNameChanged';
 import './requiresPermission.html';
 import './route';
 import './startup';
-import './views/permissions.html';
-import './views/permissions';
-import './views/permissionsRole.html';
-import './views/permissionsRole';
+import './stylesheets/permissions.css';
 
 export {
 	hasAllPermission,
@@ -15,4 +13,5 @@ export {
 	hasRole,
 	hasPermission,
 	userHasAllPermission,
+	AuthorizationUtils,
 };

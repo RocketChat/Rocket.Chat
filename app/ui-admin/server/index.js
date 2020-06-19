@@ -1,1 +1,0 @@
-import './publications/adminRooms';

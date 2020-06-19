@@ -2,13 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
-import qrcode from 'yaqrcode';
 
 import { modal } from '../../ui-utils';
 import { settings } from '../../settings';
-import { t } from '../../utils';
-
-window.qrcode = qrcode;
+import { t, handleError, APIClient } from '../../utils/client';
 
 Template.accountSecurity.helpers({
 	showImage() {
@@ -35,15 +32,20 @@ Template.accountSecurity.helpers({
 			return t('You_have_n_codes_remaining', { number: Template.instance().codesRemaining.get() });
 		}
 	},
+	isEmailEnabled() {
+		const user = Meteor.user();
+		return user && user.services && user.services.email2fa && user.services.email2fa.enabled;
+	},
 });
 
 Template.accountSecurity.events({
 	'click .enable-2fa'(event, instance) {
 		event.preventDefault();
 
-		Meteor.call('2fa:enable', (error, result) => {
+		Meteor.call('2fa:enable', async (error, result) => {
+			const qrcode = await import('yaqrcode');
 			instance.imageSecret.set(result.secret);
-			instance.imageData.set(qrcode(result.url, { size: 200 }));
+			instance.imageData.set(qrcode.default(result.url, { size: 200 }));
 
 			instance.state.set('registering');
 
@@ -82,6 +84,28 @@ Template.accountSecurity.events({
 				}
 			});
 		});
+	},
+
+	async 'click .enable-2fa-email'(event) {
+		event.preventDefault();
+
+		try {
+			await APIClient.v1.post('users.2fa.enableEmail');
+			toastr.success(t('Two-factor_authentication_enabled'));
+		} catch (error) {
+			handleError(error);
+		}
+	},
+
+	async 'click .disable-2fa-email'(event) {
+		event.preventDefault();
+
+		try {
+			await APIClient.v1.post('users.2fa.disableEmail');
+			toastr.success(t('Two-factor_authentication_disabled'));
+		} catch (error) {
+			handleError(error);
+		}
 	},
 
 	'click .verify-code'(event, instance) {

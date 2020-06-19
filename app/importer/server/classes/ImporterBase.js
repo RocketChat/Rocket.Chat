@@ -10,10 +10,9 @@ import { Progress } from './ImporterProgress';
 import { Selection } from './ImporterSelection';
 import { ImporterWebsocket } from './ImporterWebsocket';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { Imports } from '../models/Imports';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
-import { Settings } from '../../../models';
+import { Settings, Imports } from '../../../models';
 import { Logger } from '../../../logger';
 import { FileUpload } from '../../../file-upload';
 import { sendMessage } from '../../../lib';
@@ -76,7 +75,7 @@ export class Base {
 	 * @param {string} description The i18n string which describes the importer
 	 * @param {string} mimeType The expected file type.
 	 */
-	constructor(info) {
+	constructor(info, importRecord) {
 		if (!(info instanceof ImporterInfo)) {
 			throw new Error('Information passed in must be a valid ImporterInfo instance.');
 		}
@@ -88,7 +87,6 @@ export class Base {
 
 		this.prepare = this.prepare.bind(this);
 		this.startImport = this.startImport.bind(this);
-		this.getSelection = this.getSelection.bind(this);
 		this.getProgress = this.getProgress.bind(this);
 		this.updateProgress = this.updateProgress.bind(this);
 		this.addCountToTotal = this.addCountToTotal.bind(this);
@@ -103,7 +101,6 @@ export class Base {
 		this.collection = RawImports;
 
 		const userId = Meteor.userId();
-		const importRecord = Imports.findPendingImport(this.info.key);
 
 		if (importRecord) {
 			this.logger.debug('Found existing import operation');
@@ -203,15 +200,6 @@ export class Base {
 	}
 
 	/**
-	 * Gets the Selection object for the import.
-	 *
-	 * @returns {Selection} The users and channels selection
-	 */
-	getSelection() {
-		throw new Error(`Invalid 'getSelection' called on ${ this.info.name }, it must be overridden and super can not be called.`);
-	}
-
-	/**
 	 * Gets the progress of this import.
 	 *
 	 * @returns {Progress} The progress record of the import.
@@ -245,6 +233,9 @@ export class Base {
 				this.oldSettings.FileUpload_MediaTypeWhiteList = Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
 
+				this.oldSettings.FileUpload_MediaTypeBlackList = Settings.findOneById('FileUpload_MediaTypeBlackList').value;
+				Settings.updateValueById('FileUpload_MediaTypeBlackList', '');
+
 				this.oldSettings.UI_Allow_room_names_with_special_chars = Settings.findOneById('UI_Allow_room_names_with_special_chars').value;
 				Settings.updateValueById('UI_Allow_room_names_with_special_chars', true);
 				break;
@@ -255,6 +246,7 @@ export class Base {
 				Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
 				Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
+				Settings.updateValueById('FileUpload_MediaTypeBlackList', this.oldSettings.FileUpload_MediaTypeBlackList);
 				Settings.updateValueById('UI_Allow_room_names_with_special_chars', this.oldSettings.UI_Allow_room_names_with_special_chars);
 				break;
 		}
@@ -262,9 +254,19 @@ export class Base {
 		this.logger.debug(`${ this.info.name } is now at ${ step }.`);
 		this.updateRecord({ status: this.progress.step });
 
-		ImporterWebsocket.progressUpdated(this.progress);
+		this.reportProgress();
 
 		return this.progress;
+	}
+
+	reloadCount() {
+		if (!this.importRecord.count) {
+			this.progress.count.total = 0;
+			this.progress.count.completed = 0;
+		}
+
+		this.progress.count.total = this.importRecord.count.total || 0;
+		this.progress.count.completed = this.importRecord.count.completed || 0;
 	}
 
 	/**
@@ -274,7 +276,7 @@ export class Base {
 	 * @returns {Progress} The progress record of the import.
 	 */
 	addCountToTotal(count) {
-		this.progress.count.total = this.progress.count.total + count;
+		this.progress.count.total += count;
 		this.updateRecord({ 'count.total': this.progress.count.total });
 
 		return this.progress;
@@ -287,18 +289,33 @@ export class Base {
 	 * @returns {Progress} The progress record of the import.
 	 */
 	addCountCompleted(count) {
-		this.progress.count.completed = this.progress.count.completed + count;
+		this.progress.count.completed += count;
 
 		// Only update the database every 500 records
 		// Or the completed is greater than or equal to the total amount
 		if (((this.progress.count.completed % 500) === 0) || (this.progress.count.completed >= this.progress.count.total)) {
 			this.updateRecord({ 'count.completed': this.progress.count.completed });
+			this.reportProgress();
+		} else if (!this._reportProgressHandler) {
+			this._reportProgressHandler = setTimeout(() => {
+				this.reportProgress();
+			}, 250);
 		}
 
-		ImporterWebsocket.progressUpdated(this.progress);
 		this.logger.log(`${ this.progress.count.completed } messages imported`);
 
 		return this.progress;
+	}
+
+	/**
+	 * Sends an updated progress to the websocket
+	 */
+	reportProgress() {
+		if (this._reportProgressHandler) {
+			clearTimeout(this._reportProgressHandler);
+			this._reportProgressHandler = false;
+		}
+		ImporterWebsocket.progressUpdated(this.progress);
 	}
 
 	/**
@@ -388,7 +405,7 @@ export class Base {
 					if (err) {
 						throw new Error(err);
 					} else {
-						const url = file.url.replace(Meteor.absoluteUrl(), '/');
+						const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 
 						const attachment = {
 							title: file.name,

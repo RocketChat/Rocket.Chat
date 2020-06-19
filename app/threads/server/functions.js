@@ -5,7 +5,9 @@ export const reply = ({ tmid }, { rid, ts, u, editedAt }, parentMessage) => {
 		return false;
 	}
 
-	Messages.updateRepliesByThreadId(tmid, [parentMessage.u._id, u._id], ts);
+	const addToReplies = Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id];
+
+	Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
 	const replies = Messages.getThreadFollowsByThreadId(tmid);
 

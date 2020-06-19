@@ -19,7 +19,14 @@
 												{{> icon block="rc-popover__icon-element" icon=item.icon }}
 											</span>
 										{{/if}}
-										<span class="rc-popover__item-text">{{_ item.name}}</span>
+										{{#if item.name}}
+											<span class="rc-popover__item-text">{{item.name}}</span>
+										{{/if}}
+										{{#if item.select}}
+											<span class="rc-popover__input">
+												{{> selectDropdown title=item.selectTitle name=item.selectName options=item.selectOptions}}
+											</span>
+										{{/if}}
 									</li>
 									{{/with}}
 								{{/each}}

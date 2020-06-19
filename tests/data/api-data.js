@@ -7,6 +7,10 @@ import { username, email, adminUsername, adminPassword } from './user.js';
 export const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
 
+export function wait(cb, time) {
+	return () => setTimeout(cb, time);
+}
+
 export const apiUsername = `api${ username }`;
 export const apiEmail = `api${ email }`;
 export const apiPublicChannelName = `api${ publicChannelName }`;

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Messages } from '../../models';
 import { slashCommands } from '../../utils';
@@ -73,4 +73,5 @@ function Archive(command, params, item) {
 slashCommands.add('archive', Archive, {
 	description: 'Archive',
 	params: '#channel',
+	permission: 'archive-room',
 });

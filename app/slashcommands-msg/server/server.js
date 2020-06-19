@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { slashCommands } from '../../utils';
 import { Notifications } from '../../notifications';
@@ -54,4 +54,5 @@ function Msg(command, params, item) {
 slashCommands.add('msg', Msg, {
 	description: 'Direct_message_someone',
 	params: '@username <message>',
+	permission: 'create-d',
 });

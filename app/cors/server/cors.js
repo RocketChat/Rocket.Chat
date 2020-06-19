@@ -44,18 +44,38 @@ WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 	});
 }));
 
+// Deprecated setting
+let Support_Cordova_App = false;
+settings.get('Support_Cordova_App', (key, value) => {
+	Support_Cordova_App = value;
+});
+
 WebApp.rawConnectHandlers.use(function(req, res, next) {
-	if (/^\/(api|_timesync|sockjs|tap-i18n)(\/|$)/.test(req.url)) {
-		res.setHeader('Access-Control-Allow-Origin', '*');
+	// XSS Protection for old browsers (IE)
+	res.setHeader('X-XSS-Protection', '1');
+
+	// X-Content-Type-Options header to prevent MIME Sniffing
+	res.setHeader('X-Content-Type-Options', 'nosniff');
+
+	if (settings.get('Iframe_Restrict_Access')) {
+		res.setHeader('X-Frame-Options', settings.get('Iframe_X_Frame_Options'));
 	}
 
-	const { setHeader } = res;
-	res.setHeader = function(key, val, ...args) {
-		if (key.toLowerCase() === 'access-control-allow-origin' && val === 'http://meteor.local') {
-			return;
+	// Deprecated behavior
+	if (Support_Cordova_App === true) {
+		if (/^\/(api|_timesync|sockjs|tap-i18n)(\/|$)/.test(req.url)) {
+			res.setHeader('Access-Control-Allow-Origin', '*');
 		}
-		return setHeader.apply(this, [key, val, ...args]);
-	};
+
+		const { setHeader } = res;
+		res.setHeader = function(key, val, ...args) {
+			if (key.toLowerCase() === 'access-control-allow-origin' && val === 'http://meteor.local') {
+				return;
+			}
+			return setHeader.apply(this, [key, val, ...args]);
+		};
+	}
+
 	return next();
 });
 

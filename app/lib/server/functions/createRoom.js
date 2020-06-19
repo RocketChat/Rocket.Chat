@@ -1,62 +1,21 @@
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { Users, Rooms, Subscriptions } from '../../../models';
-import { callbacks } from '../../../callbacks';
-import { addUserRoles } from '../../../authorization';
-import { getValidRoomName } from '../../../utils';
 import { Apps } from '../../../apps/server';
+import { addUserRoles } from '../../../authorization';
+import { callbacks } from '../../../callbacks';
+import { Rooms, Subscriptions, Users } from '../../../models';
+import { getValidRoomName } from '../../../utils';
+import { createDirectRoom } from './createDirectRoom';
 
-function createDirectRoom(source, target, extraData, options) {
-	const rid = [source._id, target._id].sort().join('');
 
-	Rooms.upsert({ _id: rid }, {
-		$setOnInsert: Object.assign({
-			t: 'd',
-			usernames: [source.username, target.username],
-			msgs: 0,
-			ts: new Date(),
-		}, extraData),
-	});
+export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}) {
+	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
 
-	Subscriptions.upsert({ rid, 'u._id': target._id }, {
-		$setOnInsert: Object.assign({
-			name: source.username,
-			t: 'd',
-			open: true,
-			alert: true,
-			unread: 0,
-			u: {
-				_id: target._id,
-				username: target.username,
-			},
-		}, options.subscriptionExtra),
-	});
-
-	Subscriptions.upsert({ rid, 'u._id': source._id }, {
-		$setOnInsert: Object.assign({
-			name: target.username,
-			t: 'd',
-			open: true,
-			alert: true,
-			unread: 0,
-			u: {
-				_id: source._id,
-				username: source.username,
-			},
-		}, options.subscriptionExtra),
-	});
-
-	return {
-		_id: rid,
-		t: 'd',
-	};
-}
-
-export const createRoom = function(type, name, owner, members, readOnly, extraData = {}, options = {}) {
 	if (type === 'd') {
-		return createDirectRoom(members[0], members[1], extraData, options);
+		return createDirectRoom(members, extraData, options);
 	}
 
 	name = s.trim(name);
@@ -68,6 +27,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 	}
 
 	owner = Users.findOneByUsernameIgnoringCase(owner, { fields: { username: 1 } });
+
 	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
@@ -89,7 +49,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		validRoomNameOptions.nameValidationRegex = options.nameValidationRegex;
 	}
 
-	let room = Object.assign({
+	let room = {
 		name: getValidRoomName(name, null, validRoomNameOptions),
 		fname: name,
 		t: type,
@@ -99,30 +59,34 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 			_id: owner._id,
 			username: owner.username,
 		},
-	}, extraData, {
+		...extraData,
 		ts: now,
 		ro: readOnly === true,
-		sysMes: readOnly !== true,
-	});
+	};
 
-	if (type === 'd') {
-		room.usernames = members;
-	}
+	room._USERNAMES = members;
 
-	if (Apps && Apps.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));
-		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
+	const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', room).catch((error) => {
+		if (error instanceof AppsEngineException) {
+			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
-		let result;
-		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateExtend', room));
-		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateModify', result));
+		throw error;
+	}));
 
-		if (typeof result === 'object') {
-			room = Object.assign(room, result);
-		}
+	if (prevent) {
+		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 	}
+
+	let result;
+	result = Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', room));
+	result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', result));
+
+	if (typeof result === 'object') {
+		Object.assign(room, result);
+	}
+
+	delete room._USERNAMES;
 
 	if (type === 'c') {
 		callbacks.run('beforeCreateChannel', owner, room);
@@ -166,11 +130,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		callbacks.run('afterCreateRoom', owner, room);
 	});
 
-	if (Apps && Apps.isLoaded()) {
-		// This returns a promise, but it won't mutate anything about the message
-		// so, we don't really care if it is successful or fails
-		Apps.getBridges().getListenerBridge().roomEvent('IPostRoomCreate', room);
-	}
+	Apps.triggerEvent('IPostRoomCreate', room);
 
 	return {
 		rid: room._id, // backwards compatible

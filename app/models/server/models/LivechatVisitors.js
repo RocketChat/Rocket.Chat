@@ -8,6 +8,9 @@ import Settings from './Settings';
 export class LivechatVisitors extends Base {
 	constructor() {
 		super('livechat_visitor');
+
+		this.tryEnsureIndex({ token: 1 });
+		this.tryEnsureIndex({ 'phone.phoneNumber': 1 }, { sparse: true });
 	}
 
 	/**
@@ -72,6 +75,20 @@ export class LivechatVisitors extends Base {
 		const update = {
 			$set: {
 				[`livechatData.${ key }`]: value,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateLastAgentByToken(token, lastAgent) {
+		const query = {
+			token,
+		};
+
+		const update = {
+			$set: {
+				lastAgent,
 			},
 		};
 
@@ -158,6 +175,17 @@ export class LivechatVisitors extends Base {
 			} else {
 				unsetData.phone = 1;
 			}
+		}
+
+		if (data.livechatData) {
+			Object.keys(data.livechatData).forEach((key) => {
+				const value = s.trim(data.livechatData[key]);
+				if (value) {
+					setData[`livechatData.${ key }`] = value;
+				} else {
+					unsetData[`livechatData.${ key }`] = 1;
+				}
+			});
 		}
 
 		const update = {};

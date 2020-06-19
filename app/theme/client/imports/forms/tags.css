@@ -2,7 +2,7 @@
 	display: flex;
 
 	width: 100%;
-	min-height: 43px;
+	min-height: 40px;
 
 	padding: 0 1rem 0 2.25rem;
 
@@ -20,7 +20,7 @@
 	&__tag {
 		display: flex;
 
-		margin: 0.25rem;
+		margin: 0.15rem;
 		padding: 0.35rem 0.5rem;
 
 		color: var(--tags-text-color);

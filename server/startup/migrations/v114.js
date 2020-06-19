@@ -9,7 +9,7 @@ Migrations.add({
 			if (setting && setting.value) {
 				Settings.upsert(
 					{ _id: 'Search.defaultProvider.GlobalSearchEnabled' },
-					{ $set: { value: setting.value } }
+					{ $set: { value: setting.value } },
 				);
 
 				Settings.removeById('Message_GlobalSearch');

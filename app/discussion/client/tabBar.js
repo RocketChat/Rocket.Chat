@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { TabBar } from '../../ui-utils/client';
+import { settings } from '../../settings';
 
 Meteor.startup(function() {
 	return TabBar.addButton({
@@ -9,6 +10,7 @@ Meteor.startup(function() {
 		i18nTitle: 'Discussions',
 		icon: 'discussion',
 		template: 'discussionsTabbar',
-		order: 10,
+		order: 1,
+		condition: () => settings.get('Discussion_enabled'),
 	});
 });

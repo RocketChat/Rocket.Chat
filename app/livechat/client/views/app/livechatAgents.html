@@ -1,0 +1,103 @@
+<template name="livechatAgents">
+	{{#requiresPermission 'manage-livechat-agents'}}
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			{{> header sectionName="Livechat_Agents"}}
+			<div class="content">
+				<form id="form-agent" class="form-inline">
+					<div class="form-group">
+						{{> livechatAutocompleteUser
+							onClickTag=onClickTagAgents
+							list=selectedAgents
+							deleteLastItem=deleteLastAgent
+							onSelect=onSelectAgents
+							collection='UserAndRoom'
+							endpoint='users.autocomplete'
+							field='username'
+							sort='username'
+							label="Search_by_username"
+							placeholder="Search_by_username"
+							name="username"
+							exceptions=exceptionsAgents
+							icon="at"
+							noMatchTemplate="userSearchEmpty"
+							templateItem="popupList_item_default"
+							modifier=agentModifier
+						}}
+					</div>
+					<div class="form-group">
+						<button name="add" class="rc-button rc-button--primary add" disabled='{{isloading}}'>{{_ "Add"}}</button>
+					</div>
+				</form>
+
+				<div class="rc-table-content">
+					<form class="search-form" role="form">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{#if isReady}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+								{{else}}
+									{{> loading }}
+								{{/if}}
+							</div>
+							<input id="agents-filter" type="text" class="rc-input__element"
+									placeholder="{{_ "Search"}}" autofocus dir="auto">
+						</div>
+					</form>
+					<div class="results">
+						{{{_ "Showing_results" agents.length}}}
+					</div>
+
+					{{#table fixed='true' onScroll=onTableScroll}}
+						<thead>
+							<tr>
+								<th width="30%"><div class="table-fake-th">{{_ "Name"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Username"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Email"}}</div></th>
+								<th><div class="table-fake-th">{{_ "Status"}}</div></th>
+								<th><div class="table-fake-th">{{_ "Service"}}</div></th>
+								<th width='40px'><div class="table-fake-th">&nbsp;</div></th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each agents}}
+								<tr class="rc-table-tr user-info row-link" data-id="{{_id}}">
+									<td>
+										<div class="rc-table-wrapper">
+											<div class="rc-table-avatar">{{> avatar username=username}}</div>
+											<div class="rc-table-info">
+												<span class="rc-table-title">
+													{{name}}
+												</span>
+											</div>
+										</div>
+										<div class="rc-table-wrapper">
+											<div class="rc-table-info">
+												<span class="rc-table-title">
+													{{fname}}
+												</span>
+											</div>
+										</div>
+									</td>
+									<td>{{username}}</td>
+									<td>{{emailAddress}}</td>
+									<td>{{status}}</td>
+									<td>{{statusService}}</td>
+									<td>
+										<a href="#remove" class="remove-agent">
+											<i class="icon-trash"></i>
+										</a>
+									</td>
+								</tr>
+							{{/each}}
+						</tbody>
+					{{/table}}
+				</div>
+			</div>
+		</section>
+		{{#with flexData}}
+			{{> flexTabBar}}
+		{{/with}}
+	</div>
+	{{/requiresPermission}}
+</template>

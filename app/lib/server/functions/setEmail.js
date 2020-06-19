@@ -4,8 +4,39 @@ import s from 'underscore.string';
 import { Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter, validateEmailDomain } from '../lib';
+import * as Mailer from '../../../mailer';
+import { settings } from '../../../settings';
 
 import { checkEmailAvailability } from '.';
+
+let html = '';
+Meteor.startup(() => {
+	Mailer.getTemplate('Email_Changed_Email', (template) => {
+		html = template;
+	});
+});
+
+const _sendEmailChangeNotification = function(to, newEmail) {
+	const subject = settings.get('Email_Changed_Email_Subject');
+	const email = {
+		to,
+		from: settings.get('From_Email'),
+		subject,
+		html,
+		data: {
+			email: s.escapeHTML(newEmail),
+		},
+	};
+
+	try {
+		Mailer.send(email);
+	} catch (error) {
+		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
+			function: 'setEmail',
+			message: error.message,
+		});
+	}
+};
 
 const _setEmail = function(userId, email, shouldSendVerificationEmail = true) {
 	email = s.trim(email);
@@ -29,6 +60,12 @@ const _setEmail = function(userId, email, shouldSendVerificationEmail = true) {
 	// Check email availability
 	if (!checkEmailAvailability(email)) {
 		throw new Meteor.Error('error-field-unavailable', `${ email } is already in use :(`, { function: '_setEmail', field: email });
+	}
+
+	const oldEmail = user.emails && user.emails[0];
+
+	if (oldEmail) {
+		_sendEmailChangeNotification(oldEmail.address, email);
 	}
 
 	// Set new email

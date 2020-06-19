@@ -62,6 +62,7 @@ export const VideoRecorder = new class VideoRecorder {
 			this.videoel.src = URL.createObjectURL(stream);
 		}
 
+		this.videoel.muted = true;
 		this.videoel.onloadedmetadata = () => {
 			this.videoel && this.videoel.play();
 		};

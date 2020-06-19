@@ -18,6 +18,25 @@ const send = function(self, msg) {
 };
 
 class MessageStream extends Meteor.Streamer {
+	getSubscriptionByUserIdAndRoomId(userId, rid) {
+		return this.subscriptions.find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
+	}
+
+	_publish(publication, eventName, options) {
+		super._publish(publication, eventName, options);
+		const uid = Meteor.userId();
+
+		const userEvent = (clientAction, { rid }) => {
+			switch (clientAction) {
+				case 'removed':
+					this.removeListener(uid, userEvent);
+					this.removeSubscription(this.getSubscriptionByUserIdAndRoomId(uid, rid), eventName);
+					break;
+			}
+		};
+		this.on(uid, userEvent);
+	}
+
 	mymessage = (eventName, args) => {
 		const subscriptions = this.subscriptionsByEventName[eventName];
 		if (!Array.isArray(subscriptions)) {

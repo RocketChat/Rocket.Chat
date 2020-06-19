@@ -1,0 +1,10 @@
+{
+  "error-guests-cant-have-other-roles": "Les invités ne peuvent pas avoir d'autre rôle.",
+  "error-invalid-priority": "Priorité non valable",
+  "error-max-guests-number-reached": "Vous avez atteint le nombre maximal d'invités autorisé par votre licence. Contactez sale@rocket.chat pour obtenir une nouvelle licence.",
+  "error-max-number-simultaneous-chats-reached": "Le nombre maximum de chats simultanés par agent a été atteint.",
+  "Closed_automatically": "Fermé automatiquement par le système",
+  "Default_value": "Valeur par défaut",
+  "Edit_Tag": "Modifier le tag",
+  "Waiting_queue": "File d'attente"
+}

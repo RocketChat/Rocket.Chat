@@ -22,49 +22,48 @@ Meteor.startup(function() {
 
 Template.loginServices.helpers({
 	loginService() {
-		const services = [];
-		const authServices = ServiceConfiguration.configurations.find({}, {
+		return ServiceConfiguration.configurations.find({
+			showButton: { $ne: false },
+		}, {
 			sort: {
 				service: 1,
 			},
-		}).fetch();
-		authServices.forEach(function(service) {
+		}).fetch().map(function(service) {
 			let icon;
-			let serviceName;
+			let displayName;
 			switch (service.service) {
 				case 'meteor-developer':
-					serviceName = 'Meteor';
+					displayName = 'Meteor';
 					icon = 'meteor';
 					break;
 				case 'github':
-					serviceName = 'GitHub';
+					displayName = 'GitHub';
 					icon = 'github-circled';
 					break;
 				case 'gitlab':
-					serviceName = 'GitLab';
+					displayName = 'GitLab';
 					icon = service.service;
 					break;
 				case 'wordpress':
-					serviceName = 'WordPress';
+					displayName = 'WordPress';
 					icon = service.service;
 					break;
 				default:
-					serviceName = s.capitalize(service.service);
+					displayName = s.capitalize(service.service);
 					icon = service.service;
 			}
-			return services.push({
+			return {
 				service,
-				displayName: serviceName,
+				displayName,
 				icon,
-			});
+			};
 		});
-		return services;
 	},
 });
 
-const longinMethods = {
+const loginMethods = {
 	'meteor-developer': 'MeteorDeveloperAccount',
-	linkedin: 'LinkedIn',
+	linkedin: 'Linkedin',
 };
 
 Template.loginServices.events({
@@ -77,7 +76,7 @@ Template.loginServices.events({
 		loadingIcon.removeClass('hidden');
 		serviceIcon.addClass('hidden');
 
-		const loginWithService = `loginWith${ longinMethods[this.service.service] || s.capitalize(this.service.service) }`;
+		const loginWithService = `loginWith${ loginMethods[this.service.service] || s.capitalize(this.service.service) }`;
 		const serviceConfig = this.service.clientConfig || {};
 		return Meteor[loginWithService](serviceConfig, function(error) {
 			loadingIcon.addClass('hidden');

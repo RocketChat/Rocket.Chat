@@ -92,14 +92,12 @@
 								{{/if}}
 							</div>
 						</div>
-						<div class="input-line double-col">
-							<label class="setting-label">{{_ "Notification_Duration"}}</label>
+						<div class="input-line double-col" id="desktopNotificationRequireInteraction">
+							<label class="setting-label">{{_ "Notification_RequireInteraction"}}</label>
 							<div class="setting-field">
-								{{#if desktopNotificationDuration}}
-									<input type="number" class="rc-input__element" name="desktopNotificationDuration" min="0" value="{{desktopNotificationDuration}}">
-								{{else}}
-									<input type="number" class="rc-input__element" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultDesktopNotificationDuration}})">
-								{{/if}}
+								<label><input type="radio" name="desktopNotificationRequireInteraction" value="true" checked="{{checked 'desktopNotificationRequireInteraction' true}}"/> {{_ "On"}}</label>
+								<label><input type="radio" name="desktopNotificationRequireInteraction" value="false" checked="{{checked 'desktopNotificationRequireInteraction' false}}"/> {{_ "Off"}}</label>
+								<div class="settings-description secondary-font-color">{{_ "Only_works_with_chrome_version_greater_50"}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col" id="desktopNotifications">
@@ -129,15 +127,21 @@
 						<div class="input-line double-col" id="emailNotificationMode">
 							<label class="setting-label">{{_ "Email_Notification_Mode"}}</label>
 							<div class="setting-field">
-								<div class="rc-select">
-									<select class="input-monitor rc-select__element" name="emailNotificationMode">
-										<option value="default" selected="{{selected 'emailNotificationMode' 'default' 'default'}}">{{_ "Default"}} ({{_ defaultEmailNotification}})</option>
-										<option value="nothing" selected="{{selected 'emailNotificationMode' 'nothing'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
-										<option value="mentions" selected="{{selected 'emailNotificationMode' 'mentions'}}">{{_ "Email_Notification_Mode_All"}}</option>
-									</select>
-									{{> icon block="rc-select__arrow" icon="arrow-down" }}
-								</div>
-								<div class="settings-description secondary-font-color">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+								{{#with canChange=emailNotificationsAllowed}}
+									<div class="rc-select">
+										<select class="input-monitor rc-select__element" name="emailNotificationMode" {{ifThenElse canChange '' 'disabled'}}>
+											<option value="default" selected="{{selected 'emailNotificationMode' 'default' 'default'}}">{{_ "Default"}} ({{_ defaultEmailNotification}})</option>
+											<option value="nothing" selected="{{selected 'emailNotificationMode' 'nothing'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+											<option value="mentions" selected="{{selected 'emailNotificationMode' 'mentions'}}">{{_ "Email_Notification_Mode_All"}}</option>
+										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									</div>
+									{{#if canChange}}
+										<div class="settings-description secondary-font-color">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+									{{else}}
+										<div class="info">{{_ "Email_Notifications_Change_Disabled"}}</div>
+									{{/if}}
+								{{/with}}
 							</div>
 						</div>
 					</div>
@@ -230,6 +234,14 @@
 								<label><input type="radio" name="hideAvatars" value="false" checked="{{checked 'hideAvatars' false}}"/> {{_ "False"}}</label>
 							</div>
 						</div>
+
+						<div class="input-line double-col" id="sidebarHideAvatar">
+							<label class="setting-label">{{_ "Hide_Avatars_Sidebar"}}</label>
+							<div class="setting-field">
+								<label><input type="radio" name="sidebarHideAvatar" value="true" checked="{{checked 'sidebarHideAvatar' true}}"/> {{_ "True"}}</label>
+								<label><input type="radio" name="sidebarHideAvatar" value="false" checked="{{checked 'sidebarHideAvatar' false}}"/> {{_ "False"}}</label>
+							</div>
+						</div>
 						<div class="input-line double-col" id="messageViewMode">
 							<label class="setting-label">{{_ "View_mode"}}</label>
 							<div class="setting-field">
@@ -263,14 +275,6 @@
 				<div class="section">
 					<h1>{{_ "Sidebar"}}</h1>
 					<div class="section-content border-component-color">
-						<div class="input-line double-col" id="roomCounterSidebar">
-							<label class="setting-label">{{_ "Show_room_counter_on_sidebar"}}</label>
-							<div class="setting-field">
-								<label><input type="radio" name="roomCounterSidebar" value="true" checked="{{checked 'roomCounterSidebar' true}}"/> {{_ "True"}}</label>
-								<label><input type="radio" name="roomCounterSidebar" value="false" checked="{{checked 'roomCounterSidebar' false}}"/> {{_ "False"}}</label>
-							</div>
-						</div>
-
 						<div class="input-line double-col" id="sidebarShowDiscussion">
 							<label class="setting-label">{{_ "Group_discussions"}}</label>
 							<div>

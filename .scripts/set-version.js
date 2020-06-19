@@ -13,7 +13,7 @@ let pkgJson = {};
 try {
 	pkgJson = require(path.resolve( // eslint-disable-line import/no-dynamic-require
 		process.cwd(),
-		'./package.json'
+		'./package.json',
 	));
 } catch (err) {
 	console.error('no root package.json found');
@@ -21,7 +21,6 @@ try {
 
 const files = [
 	'./package.json',
-	'./.travis/snap.sh',
 	'./.circleci/snap.sh',
 	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',
@@ -88,7 +87,7 @@ git.status()
 			type: 'confirm',
 			message: 'Commit files?',
 			name: 'commit',
-		}])
+		}]),
 	)
 	.then((answers) => {
 		if (!answers.commit) {

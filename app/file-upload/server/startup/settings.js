@@ -12,16 +12,46 @@ settings.addGroup('FileUpload', function() {
 		i18nDescription: 'FileUpload_MaxFileSizeDescription',
 	});
 
-	this.add('FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,application/zip,application/x-rar-compressed,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', {
+	this.add('FileUpload_MediaTypeWhiteList', '', {
 		type: 'string',
 		public: true,
 		i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+	});
+
+	this.add('FileUpload_MediaTypeBlackList', 'image/svg+xml', {
+		type: 'string',
+		public: true,
+		i18nDescription: 'FileUpload_MediaTypeBlackListDescription',
 	});
 
 	this.add('FileUpload_ProtectFiles', true, {
 		type: 'boolean',
 		public: true,
 		i18nDescription: 'FileUpload_ProtectFilesDescription',
+	});
+
+	this.add('FileUpload_RotateImages', true, {
+		type: 'boolean',
+	});
+
+	this.add('FileUpload_Enable_json_web_token_for_files', true, {
+		type: 'boolean',
+		i18nLabel: 'FileUpload_Enable_json_web_token_for_files',
+		i18nDescription: 'FileUpload_Enable_json_web_token_for_files_description',
+		enableQuery: {
+			_id: 'FileUpload_ProtectFiles',
+			value: true,
+		},
+	});
+
+	this.add('FileUpload_json_web_token_secret_for_files', '', {
+		type: 'string',
+		i18nLabel: 'FileUpload_json_web_token_secret_for_files',
+		i18nDescription: 'FileUpload_json_web_token_secret_for_files_description',
+		enableQuery: {
+			_id: 'FileUpload_Enable_json_web_token_for_files',
+			value: true,
+		},
 	});
 
 	this.add('FileUpload_Storage_Type', 'GridFS', {

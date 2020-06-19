@@ -30,7 +30,7 @@ Template.roomList.helpers({
 			},
 		});
 
-		const sortBy = getUserPreference(user, 'sidebarSortby') || 'alphabetical';
+		const sortBy = getUserPreference(user, 'sidebarSortby') || 'activity';
 		const query = {
 			open: true,
 		};
@@ -125,11 +125,10 @@ Template.roomList.helpers({
 
 	noSubscriptionText() {
 		const instance = Template.instance();
-		return roomTypes.roomTypes[instance.data.identifier].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
-	},
-
-	showRoomCounter() {
-		return getUserPreference(Meteor.userId(), 'roomCounterSidebar');
+		if (instance.data.anonymous) {
+			return 'No_channels_yet';
+		}
+		return roomTypes.getConfig(instance.data.identifier).getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 });
 
@@ -137,8 +136,8 @@ const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
 	return {
-		lowerCaseName: name.toLowerCase(),
-		lowerCaseFName: fname.toLowerCase(),
+		lowerCaseName: String(name).toLowerCase(),
+		lowerCaseFName: String(fname).toLowerCase(),
 	};
 };
 

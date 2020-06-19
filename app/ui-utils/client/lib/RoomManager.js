@@ -9,12 +9,14 @@ import _ from 'underscore';
 import { fireGlobalEvent } from './fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
+import { menu } from './menu';
 import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
+import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 
 import { call } from '..';
 
@@ -44,12 +46,14 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 export const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
+	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
 	const Cls = class {
 		static initClass() {
 			this.prototype.openedRooms = openedRooms;
 			this.prototype.onlineUsers = onlineUsers;
+			this.prototype.roomStream = roomStream;
 			this.prototype.computation = Tracker.autorun(() => {
 				const ready = CachedChatRoom.ready.get() && mainReady.get();
 				if (ready !== true) { return; }
@@ -65,7 +69,6 @@ export const RoomManager = new function() {
 					if (room != null) {
 						record.rid = room._id;
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
-
 						if (record.streamActive !== true) {
 							record.streamActive = true;
 							msgStream.on(record.rid, async (msg) => {
@@ -76,20 +79,26 @@ export const RoomManager = new function() {
 								// Do not load command messages into channel
 								if (msg.t !== 'command') {
 									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+									const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
 									upsertMessage({ msg, subscription });
+
 									msg.room = {
 										type,
 										name,
 									};
+									if (isNew) {
+										menu.updateUnreadBars();
+										callbacks.run('streamNewMessage', msg);
+									}
 								}
+
 								msg.name = room.name;
-								RoomManager.updateMentionsMarksOfRoom(typeName);
+								Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 								callbacks.run('streamMessage', msg);
 
 								return fireGlobalEvent('new-message', msg);
 							});
-
 							Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 						}
@@ -105,7 +114,7 @@ export const RoomManager = new function() {
 			return Object.keys(openedRooms).map((typeName) => openedRooms[typeName]).find((openedRoom) => openedRoom.rid === rid);
 		}
 
-		getDomOfRoom(typeName, rid) {
+		getDomOfRoom(typeName, rid, templateName) {
 			const room = openedRooms[typeName];
 			if (room == null) {
 				return;
@@ -116,7 +125,7 @@ export const RoomManager = new function() {
 				room.dom.classList.add('room-container');
 				const contentAsFunc = (content) => () => content;
 
-				room.template = Blaze._TemplateWith({ _id: rid }, contentAsFunc(Template.room));
+				room.template = Blaze._TemplateWith({ _id: rid }, contentAsFunc(Template[templateName || 'room']));
 				Blaze.render(room.template, room.dom); // , nextNode, parentView
 			}
 
@@ -134,7 +143,11 @@ export const RoomManager = new function() {
 				openedRooms[typeName].ready = false;
 				openedRooms[typeName].active = false;
 				if (openedRooms[typeName].template != null) {
-					Blaze.remove(openedRooms[typeName].template);
+					try {
+						Blaze.remove(openedRooms[typeName].template);
+					} catch (e) {
+						console.error('Error removing template from DOM', e);
+					}
 				}
 				delete openedRooms[typeName].dom;
 				delete openedRooms[typeName].template;

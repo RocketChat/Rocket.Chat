@@ -18,7 +18,7 @@ const recursiveRemove = (msg, deep = 1) => {
 	}
 
 	msg.attachments = Array.isArray(msg.attachments) ? msg.attachments.map(
-		(nestedMsg) => recursiveRemove(nestedMsg, deep + 1)
+		(nestedMsg) => recursiveRemove(nestedMsg, deep + 1),
 	) : null;
 
 	return msg;
@@ -106,7 +106,7 @@ Meteor.methods({
 						attachments: recursiveRemove(attachments),
 					},
 				],
-			}
+			},
 		);
 	},
 	unpinMessage(message) {

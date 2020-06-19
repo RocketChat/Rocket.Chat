@@ -4,6 +4,6 @@ import { Permissions } from '../../../models';
 
 Meteor.startup(() => {
 	if (Permissions) {
-		Permissions.createOrUpdate('manage-sounds', ['admin']);
+		Permissions.create('manage-sounds', ['admin']);
 	}
 });

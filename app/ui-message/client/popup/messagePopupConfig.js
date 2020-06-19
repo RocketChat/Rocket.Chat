@@ -5,13 +5,14 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Messages, Subscriptions, Users } from '../../../models';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { EmojiPicker, emoji } from '../../../emoji';
 import { call } from '../../../ui-utils';
 import { t, getUserPreference, slashCommands } from '../../../utils';
+import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
@@ -66,13 +67,14 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 
 	users
 		.slice(0, 5)
-		.forEach(({ username, name, status }) => {
+		.forEach(({ username, name, status, avatarETag }) => {
 			if (records.length < 5) {
 				records.push({
 					_id: username,
 					username,
 					name,
 					status,
+					avatarETag,
 					sort: 3,
 				});
 			}
@@ -178,6 +180,15 @@ Template.messagePopupConfig.onCreated(function() {
 });
 
 Template.messagePopupConfig.helpers({
+	customMessagePopups() {
+		return customMessagePopups.get();
+	},
+
+	getCustomConfig() {
+		const template = Template.instance();
+		return this.configGetter(template);
+	},
+
 	popupUserConfig() {
 		const template = Template.instance();
 		return {
@@ -208,7 +219,7 @@ Template.messagePopupConfig.helpers({
 						{
 							limit: 5,
 							sort: { ts: -1 },
-						}
+						},
 					)
 					.fetch();
 
@@ -236,7 +247,7 @@ Template.messagePopupConfig.helpers({
 								},
 								{
 									fields: { name: 1 },
-								}
+								},
 							)
 							.map(({ name }) => name);
 						const newItems = Users
@@ -253,7 +264,7 @@ Template.messagePopupConfig.helpers({
 										status: 1,
 									},
 									limit: 5 - usernamesAlreadyFetched.length,
-								}
+								},
 							)
 							.fetch()
 							.map(({ username, name, status }) => ({

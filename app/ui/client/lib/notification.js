@@ -14,6 +14,7 @@ import { getUserPreference } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { getAvatarAsPng } from '../../../ui-utils';
 import { promises } from '../../../promises/client';
+import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar(),
@@ -40,9 +41,10 @@ export const KonchatNotification = {
 					tag: notification.payload._id,
 					silent: true,
 					canReply: true,
+					requireInteraction: getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction'),
 				});
 
-				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
+				const notificationDuration = notification.duration - 0 || 10;
 				if (notificationDuration > 0) {
 					setTimeout(() => n.close(), notificationDuration * 1000);
 				}
@@ -54,7 +56,7 @@ export const KonchatNotification = {
 								_id: Random.id(),
 								rid: notification.payload.rid,
 								msg: response,
-							})
+							}),
 						);
 					}
 
@@ -63,7 +65,7 @@ export const KonchatNotification = {
 						window.focus();
 						switch (notification.payload.type) {
 							case 'd':
-								return FlowRouter.go('direct', { username: notification.payload.sender.username }, FlowRouter.current().queryParams);
+								return FlowRouter.go('direct', { rid: notification.payload.rid }, FlowRouter.current().queryParams);
 							case 'c':
 								return FlowRouter.go('channel', { name: notification.payload.name }, FlowRouter.current().queryParams);
 							case 'p':
@@ -106,18 +108,14 @@ export const KonchatNotification = {
 			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
 			if (sub && sub.audioNotificationValue !== 'none') {
-				if (sub && sub.audioNotificationValue) {
-					const [audio] = $(`audio#${ sub.audioNotificationValue }`);
-					if (audio && audio.play) {
-						audio.volume = Number((audioVolume / 100).toPrecision(2));
-						return audio.play();
-					}
+				if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
+					CustomSounds.play(sub.audioNotificationValue, {
+						volume: Number((audioVolume / 100).toPrecision(2)),
+					});
 				} else if (newMessageNotification !== 'none') {
-					const [audio] = $(`audio#${ newMessageNotification }`);
-					if (audio && audio.play) {
-						audio.volume = Number((audioVolume / 100).toPrecision(2));
-						return audio.play();
-					}
+					CustomSounds.play(newMessageNotification, {
+						volume: Number((audioVolume / 100).toPrecision(2)),
+					});
 				}
 			}
 		}
@@ -161,22 +159,13 @@ Meteor.startup(() => {
 		if ((Session.get('newRoomSound') || []).length > 0) {
 			Meteor.defer(function() {
 				if (newRoomNotification !== 'none') {
-					const [audio] = $(`audio#${ newRoomNotification }`);
-					if (audio && audio.play) {
-						audio.volume = Number((audioVolume / 100).toPrecision(2));
-						return audio.play();
-					}
+					CustomSounds.play(newRoomNotification, {
+						volume: Number((audioVolume / 100).toPrecision(2)),
+					});
 				}
 			});
 		} else {
-			const [room] = $(`audio#${ newRoomNotification }`);
-			if (!room) {
-				return;
-			}
-			if (room.pause) {
-				room.pause();
-				room.currentTime = 0;
-			}
+			CustomSounds.pause(newRoomNotification);
 		}
 	});
 });

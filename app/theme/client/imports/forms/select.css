@@ -65,6 +65,15 @@
 	}
 }
 
+.rc-select-wrapper {
+	display: flex;
+
+	flex: 0 0 auto;
+
+	padding: 0.5rem 0;
+	align-items: flex-end;
+}
+
 .rtl .rc-select__element {
 	padding: 0 1rem 0 2rem;
 }

@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import _ from 'underscore';
 
@@ -176,6 +177,12 @@ Template.RocketSearch.onRendered(function() {
 		// if (e.target.id !== 'rocket-search-suggestions' && !$(e.target).parents('#rocket-search-suggestions').length) {
 		this.suggestions.set();
 		// }
+	});
+	Tracker.autorun((c) => {
+		if (this.isActive.get() === true) {
+			Tracker.afterFlush(() => { document.querySelector('#message-search').focus(); });
+			c.stop();
+		}
 	});
 });
 

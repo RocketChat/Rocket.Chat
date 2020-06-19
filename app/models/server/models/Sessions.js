@@ -159,8 +159,8 @@ export const aggregates = {
 	},
 
 	getMatchOfLastMonthToday({ year, month, day }) {
-		const pastMonthLastDay = (new Date(year, month - 1, 0)).getDate();
-		const currMonthLastDay = (new Date(year, month, 0)).getDate();
+		const pastMonthLastDay = new Date(year, month - 1, 0).getDate();
+		const currMonthLastDay = new Date(year, month, 0).getDate();
 
 		const lastMonthToday = new Date(year, month - 1, day);
 		lastMonthToday.setMonth(lastMonthToday.getMonth() - 1, (currMonthLastDay === day ? pastMonthLastDay : Math.min(pastMonthLastDay, day)) + 1);
@@ -376,6 +376,7 @@ export class Sessions extends Base {
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 });
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, userId: 1 });
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1 });
+		this.tryEnsureIndex({ sessionId: 1 });
 		this.tryEnsureIndex({ year: 1, month: 1, day: 1, type: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ _computedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 45 });

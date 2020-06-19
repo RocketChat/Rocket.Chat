@@ -10,6 +10,7 @@ import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { call } from './callMethod';
 
 export const normalizeThreadMessage = (message) => {
 	if (message.msg) {
@@ -77,6 +78,8 @@ export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessa
 
 const defaultLimit = parseInt(getConfig('roomListLimit')) || 50;
 
+const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 70);
+
 export const RoomHistoryManager = new class {
 	constructor() {
 		this.histories = {};
@@ -97,7 +100,7 @@ export const RoomHistoryManager = new class {
 		return this.histories[rid];
 	}
 
-	getMore(rid, limit = defaultLimit) {
+	async getMore(rid, limit = defaultLimit) {
 		let ts;
 		const room = this.getRoom(rid);
 
@@ -129,46 +132,49 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		Meteor.call('loadHistory', rid, ts, limit, ls, (err, result) => {
-			if (err) {
-				return;
-			}
+		const result = await call('loadHistory', rid, ts, limit, ls);
 
-			let previousHeight;
-			const { messages = [] } = result;
-			room.unreadNotLoaded.set(result.unreadNotLoaded);
-			room.firstUnread.set(result.firstUnread);
 
-			const wrapper = $('.messages-box .wrapper').get(0);
-			if (wrapper) {
-				previousHeight = wrapper.scrollHeight;
-			}
+		let previousHeight;
+		let scroll;
+		const { messages = [] } = result;
+		room.unreadNotLoaded.set(result.unreadNotLoaded);
+		room.firstUnread.set(result.firstUnread);
 
-			upsertMessageBulk({
-				msgs: messages.filter((msg) => msg.t !== 'command'),
-				subscription,
-			});
+		const wrapper = $('.messages-box .wrapper').get(0);
+		if (wrapper) {
+			previousHeight = wrapper.scrollHeight;
+			scroll = wrapper.scrollTop;
+		}
 
-			if (!room.loaded) {
-				room.loaded = 0;
-			}
+		upsertMessageBulk({
+			msgs: messages.filter((msg) => msg.t !== 'command'),
+			subscription,
+		});
 
-			room.loaded += messages.length;
+		if (!room.loaded) {
+			room.loaded = 0;
+		}
 
-			if (messages.length < limit) {
-				return room.hasMore.set(false);
-			}
+		room.loaded += messages.length;
 
-			if (wrapper) {
+		if (messages.length < limit) {
+			room.hasMore.set(false);
+		}
+
+		if (wrapper) {
+			waitAfterFlush(() => {
 				if (wrapper.scrollHeight <= wrapper.offsetHeight) {
 					return this.getMore(rid);
 				}
 				const heightDiff = wrapper.scrollHeight - previousHeight;
-				wrapper.scrollTop += heightDiff;
-			}
+				wrapper.scrollTop = scroll + heightDiff;
+			});
+		}
 
-			room.isLoading.set(false);
-			readMessage.refreshUnreadMark(rid, true);
+		room.isLoading.set(false);
+		waitAfterFlush(() => {
+			readMessage.refreshUnreadMark(rid);
 			return RoomManager.updateMentionsMarksOfRoom(typeName);
 		});
 	}
@@ -249,8 +255,6 @@ export const RoomHistoryManager = new class {
 		}
 		const room = this.getRoom(message.rid);
 		room.isLoading.set(true);
-		ChatMessage.remove({ rid: message.rid });
-
 		let typeName = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
@@ -266,15 +270,17 @@ export const RoomHistoryManager = new class {
 			if (!result || !result.messages) {
 				return;
 			}
+			ChatMessage.remove({ rid: message.rid });
 			for (const msg of Array.from(result.messages)) {
 				if (msg.t !== 'command') {
 					upsertMessage({ msg, subscription });
 				}
 			}
 
-			Meteor.defer(function() {
-				readMessage.refreshUnreadMark(message.rid, true);
-				RoomManager.updateMentionsMarksOfRoom(typeName);
+			readMessage.refreshUnreadMark(message.rid);
+			RoomManager.updateMentionsMarksOfRoom(typeName);
+
+			Tracker.afterFlush(() => {
 				const wrapper = $('.messages-box .wrapper');
 				const msgElement = $(`#${ message._id }`, wrapper);
 				const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
@@ -283,16 +289,12 @@ export const RoomHistoryManager = new class {
 				}, 500);
 
 				msgElement.addClass('highlight');
-
-				setTimeout(function() {
-					room.isLoading.set(false);
-					const messages = wrapper[0];
-					instance.atBottom = !result.moreAfter && (messages.scrollTop >= (messages.scrollHeight - messages.clientHeight));
-					return 500;
-				});
-
-				return setTimeout(() => msgElement.removeClass('highlight'), 500);
+				room.isLoading.set(false);
+				const messages = wrapper[0];
+				instance.atBottom = !result.moreAfter && (messages.scrollTop >= (messages.scrollHeight - messages.clientHeight));
+				setTimeout(() => msgElement.removeClass('highlight'), 500);
 			});
+
 			if (!room.loaded) {
 				room.loaded = 0;
 			}

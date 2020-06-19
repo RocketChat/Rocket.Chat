@@ -2,16 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 
-import { FileUpload } from '../../../file-upload';
 import { settings } from '../../../settings';
-import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from '../../../models';
+import { Users, Invites } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { Notifications } from '../../../notifications/server';
+import { addUserToRoom } from './addUserToRoom';
 
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
-export const _setUsername = function(userId, u) {
+export const _setUsername = function(userId, u, fullUser) {
 	const username = s.trim(u);
 	if (!userId || !username) {
 		return false;
@@ -25,7 +25,7 @@ export const _setUsername = function(userId, u) {
 	if (!nameValidation.test(username)) {
 		return false;
 	}
-	const user = Users.findOneById(userId);
+	const user = fullUser || Users.findOneById(userId);
 	// User already has desired username, return
 	if (user.username === username) {
 		return user;
@@ -40,7 +40,9 @@ export const _setUsername = function(userId, u) {
 	// If first time setting username, send Enrollment Email
 	try {
 		if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
-			Accounts.sendEnrollmentEmail(user._id);
+			Meteor.defer(() => {
+				Accounts.sendEnrollmentEmail(user._id);
+			});
 		}
 	} catch (e) {
 		console.error(e);
@@ -65,25 +67,12 @@ export const _setUsername = function(userId, u) {
 			setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');
 		}
 	}
-	// Username is available; if coming from old username, update all references
-	if (previousUsername) {
-		Messages.updateAllUsernamesByUserId(user._id, username);
-		Messages.updateUsernameOfEditByUserId(user._id, username);
-		Messages.findByMention(previousUsername).forEach(function(msg) {
-			const updatedMsg = msg.msg.replace(new RegExp(`@${ previousUsername }`, 'ig'), `@${ username }`);
-			return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
-		});
-		Rooms.replaceUsername(previousUsername, username);
-		Rooms.replaceMutedUsername(previousUsername, username);
-		Rooms.replaceUsernameOfUserByUserId(user._id, username);
-		Subscriptions.setUserUsernameByUserId(user._id, username);
-		Subscriptions.setNameForDirectRoomsWithOldName(previousUsername, username);
-		LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
-		const fileStore = FileUpload.getStore('Avatars');
-		const file = fileStore.model.findOneByName(previousUsername);
-		if (file) {
-			fileStore.model.updateFileNameById(file._id, username);
+	// If it's the first username and the user has an invite Token, then join the invite room
+	if (!previousUsername && user.inviteToken) {
+		const inviteData = Invites.findOneById(user.inviteToken);
+		if (inviteData && inviteData.rid) {
+			addUserToRoom(inviteData.rid, user);
 		}
 	}
 

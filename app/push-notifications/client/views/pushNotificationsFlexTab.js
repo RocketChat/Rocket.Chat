@@ -15,6 +15,18 @@ const notificationLabels = {
 	nothing: 'Nothing',
 };
 
+const getAudioAssetsArray = () => CustomSounds.getList().map((audio) => ({
+	id: `audioNotificationValue${ audio.name }`,
+	name: 'audioNotificationValue',
+	label: audio.name,
+	value: `${ audio._id } ${ audio.name }`,
+}));
+
+const getAudioAssetValue = (value) => {
+	const asset = CustomSounds.getList().find((audio) => audio._id === value);
+	return asset ? `${ asset._id } ${ asset.name }` : '0 Default';
+};
+
 const call = (method, ...params) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...params, (err, result) => {
 		if (err) {
@@ -45,8 +57,9 @@ Template.pushNotificationsFlexTab.helpers({
 		return Template.instance().form.audioNotifications.get();
 	},
 	audioNotificationValue() {
-		const value = Template.instance().form.audioNotificationValue.get().split(' ');
-		if (value[0] === '0') {
+		const audioNotificationValue = Template.instance().form.audioNotificationValue.get();
+		const value = audioNotificationValue && audioNotificationValue.split(' ');
+		if (!value || value[0] === '0') {
 			return t('Use_account_preference');
 		}
 
@@ -60,9 +73,6 @@ Template.pushNotificationsFlexTab.helpers({
 	},
 	emailNotifications() {
 		return Template.instance().form.emailNotifications.get();
-	},
-	desktopNotificationDuration() {
-		return Template.instance().form.desktopNotificationDuration.get();
 	},
 	subValue(field) {
 		const { form } = Template.instance();
@@ -118,7 +128,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			desktopNotifications: 1,
 			mobilePushNotifications: 1,
 			emailNotifications: 1,
-			desktopNotificationDuration: 1,
 			audioNotificationValue: 1,
 			muteGroupMentions: 1,
 		},
@@ -131,10 +140,10 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotifications = 'default',
 		mobilePushNotifications = 'default',
 		emailNotifications = 'default',
-		desktopNotificationDuration = 0,
-		audioNotificationValue = null,
 		muteGroupMentions = false,
 	} = sub;
+
+	const audioNotificationValue = sub.audioNotificationValue && getAudioAssetValue(sub.audioNotificationValue);
 
 	this.original = {
 		disableNotifications: new ReactiveVar(disableNotifications),
@@ -143,7 +152,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotifications: new ReactiveVar(desktopNotifications),
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),
-		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
 		muteGroupMentions: new ReactiveVar(muteGroupMentions),
 	};
@@ -155,7 +163,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotifications: new ReactiveVar(desktopNotifications),
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),
-		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
 		muteGroupMentions: new ReactiveVar(muteGroupMentions),
 	};
@@ -172,11 +179,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			}
 			const rid = Session.get('openedRoom');
 			switch (field) {
-				case 'desktopNotificationDuration':
-					await call('saveDesktopNotificationDuration', rid, value);
-					break;
 				case 'audioNotificationValue':
-					await call('saveAudioNotificationValue', rid, value);
+					await call('saveAudioNotificationValue', rid, value.split(' ')[0]);
 					break;
 				default:
 					await call('saveNotificationSettings', rid, field, value);
@@ -198,22 +202,22 @@ Template.pushNotificationsFlexTab.events({
 
 	'click [data-play]'(e) {
 		e.preventDefault();
-		const user = Meteor.userId();
 
-		const value = Template.instance().form.audioNotificationValue.get().split(' ');
-		if (value[0] === '0') {
-			value[0] = getUserPreference(user, 'newMessageNotification');
+		const uid = Meteor.userId();
+		const formValue = Template.instance().form.audioNotificationValue.get();
+
+		const value = formValue && formValue.split(' ')[0] && formValue.split(' ')[0] !== '0'
+			? formValue.split(' ')[0]
+			: getUserPreference(uid, 'newMessageNotification');
+
+		if (!value || value === 'none') {
+			return;
 		}
 
-		if (value && value[0] !== 'none') {
-			const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
-			const $audio = $(`audio#${ value[0] }`);
-
-			if ($audio && $audio[0] && $audio[0].play) {
-				$audio[0].volume = Number((audioVolume / 100).toPrecision(2));
-				$audio[0].play();
-			}
-		}
+		const audioVolume = getUserPreference(uid, 'notificationsSoundVolume');
+		CustomSounds.play(value, {
+			volume: Number((audioVolume / 100).toPrecision(2)),
+		});
 	},
 
 	'change input[type=checkbox]'(e, instance) {
@@ -231,13 +235,7 @@ Template.pushNotificationsFlexTab.events({
 
 		switch (key) {
 			case 'audioNotificationValue':
-				const audioAssets = (CustomSounds && CustomSounds.getList && CustomSounds.getList()) || [];
-				const audioAssetsArray = audioAssets.map((audio) => ({
-					id: `audioNotificationValue${ audio.name }`,
-					name: 'audioNotificationValue',
-					label: audio.name,
-					value: `${ audio._id } ${ audio.name }`,
-				}));
+				const audioAssetsArray = getAudioAssetsArray();
 				options = [
 					{
 						id: 'audioNotificationValueNone',
@@ -253,44 +251,6 @@ Template.pushNotificationsFlexTab.events({
 					},
 					...audioAssetsArray,
 				];
-				break;
-			case 'desktopNotificationDuration':
-				options = [{
-					id: 'desktopNotificationDuration',
-					name: 'desktopNotificationDuration',
-					label: 'Default',
-					value: 0,
-				},
-				{
-					id: 'desktopNotificationDuration1s',
-					name: 'desktopNotificationDuration',
-					label: `1 ${ t('seconds') }`,
-					value: 1,
-				},
-				{
-					id: 'desktopNotificationDuration2s',
-					name: 'desktopNotificationDuration',
-					label: `2 ${ t('seconds') }`,
-					value: 2,
-				},
-				{
-					id: 'desktopNotificationDuration3s',
-					name: 'desktopNotificationDuration',
-					label: `3 ${ t('seconds') }`,
-					value: 3,
-				},
-				{
-					id: 'desktopNotificationDuration4s',
-					name: 'desktopNotificationDuration',
-					label: `4 ${ t('seconds') }`,
-					value: 4,
-				},
-				{
-					id: 'desktopNotificationDuration5s',
-					name: 'desktopNotificationDuration',
-					label: `5 ${ t('seconds') }`,
-					value: 5,
-				}];
 				break;
 			default:
 				options = [{
@@ -323,7 +283,7 @@ Template.pushNotificationsFlexTab.events({
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
-				change: (value) => instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value),
+				change: (value) => instance.form[key].set(value),
 				value: instance.form[key].get(),
 				options,
 			},

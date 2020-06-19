@@ -1,9 +1,14 @@
-import { AdminBox } from '../../ui-utils';
 import { hasAtLeastOnePermission } from '../../authorization';
+import { registerAdminSidebarItem } from '../../../client/admin';
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	href: 'admin-integrations',
 	i18nLabel: 'Integrations',
 	icon: 'code',
-	permissionGranted: () => hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']),
+	permissionGranted: () => hasAtLeastOnePermission([
+		'manage-outgoing-integrations',
+		'manage-own-outgoing-integrations',
+		'manage-incoming-integrations',
+		'manage-own-incoming-integrations',
+	]),
 });

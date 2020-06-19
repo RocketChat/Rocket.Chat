@@ -2,9 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
-import { hasPermission } from '../../../authorization';
+import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
+import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
+import { settings } from '../../../settings';
+
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
@@ -21,7 +24,7 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 		room = Rooms.findOneByName(params.roomName, { fields });
 	}
 
-	if (!room || room.t !== 'c') {
+	if (!room || (room.t !== 'c' && room.t !== 'l')) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 
@@ -284,7 +287,12 @@ API.v1.addRoute('channels.files', { authRequired: true }, {
 
 API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'manage-integrations')) {
+		if (!hasAtLeastOnePermission(this.userId, [
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		])) {
 			return API.v1.unauthorized();
 		}
 
@@ -308,8 +316,7 @@ API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		ourQuery = Object.assign({}, query, ourQuery);
-
+		ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
 		const integrations = Integrations.find(ourQuery, {
 			sort: sort || { _createdAt: 1 },
 			skip: offset,
@@ -537,7 +544,7 @@ API.v1.addRoute('channels.members', { authRequired: true }, {
 		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
 
 		const users = Users.find({ _id: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
+			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
 			sort: { username: sort.username != null ? sort.username : 1 },
 		}).fetch();
 
@@ -751,7 +758,7 @@ API.v1.addRoute('channels.setDefault', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('saveRoomSettings', findResult._id, 'default', this.bodyParams.default.toString());
+			Meteor.call('saveRoomSettings', findResult._id, 'default', ['true', '1'].includes(this.bodyParams.default.toString().toLowerCase()));
 		});
 
 		return API.v1.success({
@@ -1005,5 +1012,41 @@ API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
 		});
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('channels.anonymousread', { authRequired: false }, {
+	get() {
+		const findResult = findChannelByIdOrName({
+			params: this.requestParams(),
+			checkedArchived: false,
+		});
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		if (!settings.get('Accounts_AllowAnonymousRead')) {
+			throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
+				method: 'channels.anonymousread',
+			});
+		}
+
+		const cursor = Messages.find(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			fields,
+		});
+
+		const total = cursor.count();
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages: normalizeMessagesForUser(messages, this.userId),
+			count: messages.length,
+			offset,
+			total,
+		});
 	},
 });

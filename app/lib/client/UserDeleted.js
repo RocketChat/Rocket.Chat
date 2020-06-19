@@ -7,6 +7,6 @@ Meteor.startup(function() {
 	Notifications.onLogged('Users:Deleted', ({ userId }) =>
 		ChatMessage.remove({
 			'u._id': userId,
-		})
+		}),
 	);
 });

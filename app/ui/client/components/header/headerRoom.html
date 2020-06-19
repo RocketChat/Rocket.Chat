@@ -12,9 +12,11 @@
 				</div>
 			{{/if}}
 
-			{{#if showToggleFavorite}}
+			{{#if isToggleFavoriteButtonVisible}}
 				<div class="rc-header__block rc-header__favorite rc-header__block--action">
-					<a href="#favorite" class="rc-header__toggle-favorite rc-header__first-icon {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
+					<button aria-label="{{toggleFavoriteButtonIconLabel}}" type="button" class="rc-header__toggle-favorite {{#if isToggleFavoriteButtonChecked}}rc-header__toggle-favorite--checked{{/if}} rc-header__first-icon rc-tooltip rc-tooltip--down rc-tooltip--start js-favorite">
+						{{> icon block="rc-header__icon" icon=toggleFavoriteButtonIcon}}
+					</button>
 				</div>
 			{{/if}}
 
@@ -27,7 +29,7 @@
 				{{#if isDirect}}
 				<div class="rc-header__block">
 					<div class="rc-header__image">
-						{{> avatar username=avatarBackground}}
+						{{> avatar url=avatarBackground}}
 					</div>
 				</div>
 				{{/if}}
@@ -39,11 +41,11 @@
 					<div class="rc-header__name">{{roomName}} <div class="rc-header__username">@{{secondaryName}}</div></div>
 					{{/unless}}
 
-					{{#if isDirect}}
-					<span class="rc-header__status">
+					{{#if hasPresence}}
+					{{# userPresence uid=uid}}<span class="rc-header__status">
 						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>
-						<div class="rc-header__visual-status">{{_ userStatus}}</div>
-					</span>
+						<div class="rc-header__visual-status">{{userStatusText}}</div>
+					</span>{{/userPresence}}
 					{{else}}
 					{{#if roomTopic}}<span class="rc-header__topic">{{{roomTopic}}}</span>{{/if}}
 					{{/if}}

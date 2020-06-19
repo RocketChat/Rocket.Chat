@@ -1,4 +1,4 @@
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload';
@@ -20,7 +20,7 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 		ignoreDiscussion,
 		ts,
 		fromUsers,
-		{ fields: { 'file._id': 1, pinned: 1 }, limit }
+		{ fields: { 'file._id': 1, pinned: 1 }, limit },
 	).forEach((document) => {
 		FileUpload.getStore('Uploads').deleteById(document.file._id);
 		fileCount++;

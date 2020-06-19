@@ -10,19 +10,19 @@ Migrations.add({
 
 		Settings.update(
 			{ _id: 'LDAP_Connect_Timeout', value: 600000 },
-			{ $set: { value: 1000 } }
+			{ $set: { value: 1000 } },
 		);
 
 		Settings.update(
 			{ _id: 'LDAP_Idle_Timeout', value: 600000 },
-			{ $set: { value: 1000 } }
+			{ $set: { value: 1000 } },
 		);
 
 		const LDAP_Domain_Base = Settings.findOne({ _id: 'LDAP_Domain_Base' });
 		if (LDAP_Domain_Base) {
 			Settings.update(
 				{ _id: 'LDAP_BaseDN' },
-				{ $set: { value: LDAP_Domain_Base.value } }
+				{ $set: { value: LDAP_Domain_Base.value } },
 			);
 		}
 		Settings.remove({ _id: 'LDAP_Domain_Base' });
@@ -31,7 +31,7 @@ Migrations.add({
 		if (LDAP_Domain_Search_User_ID) {
 			Settings.update(
 				{ _id: 'LDAP_User_Search_Field' },
-				{ $set: { value: LDAP_Domain_Search_User_ID.value } }
+				{ $set: { value: LDAP_Domain_Search_User_ID.value } },
 			);
 		}
 		Settings.remove({ _id: 'LDAP_Domain_Search_User_ID' });
@@ -84,7 +84,7 @@ Migrations.add({
 		if (LDAP_Domain_Search_Filter && LDAP_Domain_Search_Filter.value) {
 			Settings.update(
 				{ _id: 'LDAP_User_Search_Filter' },
-				{ $set: { value: LDAP_Domain_Search_Filter.value } }
+				{ $set: { value: LDAP_Domain_Search_Filter.value } },
 			);
 		}
 		Settings.remove({ _id: 'LDAP_Domain_Search_Filter' });
@@ -92,7 +92,7 @@ Migrations.add({
 		if (LDAP_Domain_Search_User && LDAP_Domain_Search_User.value) {
 			Settings.update(
 				{ _id: 'LDAP_Authentication_UserDN' },
-				{ $set: { value: LDAP_Domain_Search_User.value } }
+				{ $set: { value: LDAP_Domain_Search_User.value } },
 			);
 		}
 		Settings.remove({ _id: 'LDAP_Domain_Search_User' });
@@ -101,7 +101,7 @@ Migrations.add({
 		if (LDAP_Domain_Search_Password && LDAP_Domain_Search_Password.value) {
 			Settings.update(
 				{ _id: 'LDAP_Authentication_Password' },
-				{ $set: { value: LDAP_Domain_Search_Password.value } }
+				{ $set: { value: LDAP_Domain_Search_Password.value } },
 			);
 		}
 		Settings.remove({ _id: 'LDAP_Domain_Search_Password' });
@@ -109,7 +109,7 @@ Migrations.add({
 		if (LDAP_Domain_Search_User && LDAP_Domain_Search_User.value && LDAP_Domain_Search_Password && LDAP_Domain_Search_Password.value) {
 			Settings.update(
 				{ _id: 'LDAP_Authentication' },
-				{ $set: { value: true } }
+				{ $set: { value: true } },
 			);
 		}
 
@@ -123,7 +123,7 @@ Migrations.add({
 		if (LDAP_Sync_User_Data && LDAP_Sync_User_Data.value) {
 			Settings.update(
 				{ _id: 'LDAP_Background_Sync' },
-				{ $set: { value: true } }
+				{ $set: { value: true } },
 			);
 		}
 
@@ -131,7 +131,7 @@ Migrations.add({
 		if (LDAP_Import_Users && LDAP_Import_Users.value === false) {
 			Settings.update(
 				{ _id: 'LDAP_Background_Sync_Import_New_Users' },
-				{ $set: { value: false } }
+				{ $set: { value: false } },
 			);
 		}
 		Settings.remove({ _id: 'LDAP_Import_Users' });

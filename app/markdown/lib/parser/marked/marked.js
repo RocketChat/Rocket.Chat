@@ -1,9 +1,9 @@
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
-import hljs from 'highlight.js';
 import _marked from 'marked';
 
+import hljs from '../../hljs';
 import { settings } from '../../../../settings';
 
 const renderer = new _marked.Renderer();
@@ -22,9 +22,9 @@ renderer.code = function(code, lang, escaped) {
 	let text = null;
 
 	if (!lang) {
-		text = `<pre><code class="code-colors hljs">${ (escaped ? code : s.escapeHTML(code, true)) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs">${ escaped ? code : s.escapeHTML(code, true) }</code></pre>`;
 	} else {
-		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ (escaped ? code : s.escapeHTML(code, true)) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ escaped ? code : s.escapeHTML(code, true) }</code></pre>`;
 	}
 
 	if (_.isString(msg)) {

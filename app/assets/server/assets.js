@@ -488,14 +488,18 @@ WebApp.connectHandlers.use('/assets/', Meteor.bindEnvironment(function(req, res,
 
 	const file = assets[params.asset] && assets[params.asset].cache;
 
-	const format = req.url.replace(/.*\.([a-z]+)$/, '$1');
+	const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
 
+	if (assets[params.asset] && Array.isArray(assets[params.asset].constraints.extensions) && !assets[params.asset].constraints.extensions.includes(format)) {
+		res.writeHead(403);
+		return res.end();
+	}
 	if (!file) {
 		const defaultUrl = assets[params.asset] && assets[params.asset].defaultUrl;
 		if (defaultUrl) {
 			const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
 			req.url = `/${ assetUrl }`;
-			WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFiles, req, res, next);
+			WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFilesByArch, req, res, next);
 		} else {
 			res.writeHead(404);
 			res.end();

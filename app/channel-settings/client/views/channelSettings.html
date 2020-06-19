@@ -122,9 +122,9 @@
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
 					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
-						{{_ "React_when_read_only"}}
+						{{_ "Disallow_reacting"}}
 						<div class="rc-switch-double__description">
-							{{_ "React_when_read_only"}}
+							{{_ "Disallow_reacting_Description"}}
 						</div>
 					</div>
 					<div class="rc-switch rc-switch--blue">
@@ -136,15 +136,42 @@
 						</label>
 					</div>
 					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
-						{{_ "Disallow_reacting"}}
+						{{_ "React_when_read_only"}}
 						<div class="rc-switch-double__description">
-							{{_ "Disallow_reacting_Description"}}
+							{{_ "React_when_read_only"}}
 						</div>
 					</div>
 				</div>
 			</div>
 			{{/if}}
 		{{/with}}
+
+		{{#with settings.sysMes}}
+			{{#if canView}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-toggle" name="sysMes" checked="{{c}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+						<span class="rc-switch__description">{{# unless c}} {{_ "Use_Server_configuration" }} {{else}} {{_ "Use_Room_configuration"}} {{/unless}}</span>
+					</div>
+				</div>
+				{{# if c}}
+					<div class="rc-user-info__row">
+						{{> Multiselect values=values onChangeValue=onChangeValue value=get }}
+					</div>
+				{{/if}}
+			</div>
+			{{/if}}
+		{{/with}}
+
 		{{#with settings.archived}}
 			{{#if canView}}
 			<div class="rc-user-info__row">
@@ -160,24 +187,6 @@
 					</label>
 				</div>
 			</div>
-			{{/if}}
-		{{/with}}
-
-		{{#with settings.sysMes}}
-			{{#if canView}}
-				<div class="rc-user-info__row">
-					<div class="rc-switch rc-switch--blue">
-						<label class="rc-switch__label">
-							<span class="rc-switch__text">
-								{{_ label}}{{equal default value '*'}}
-							</span>
-							<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled="{{./disabled}}">
-							<span class="rc-switch__button">
-								<span class="rc-switch__button-inside"></span>
-							</span>
-						</label>
-					</div>
-				</div>
 			{{/if}}
 		{{/with}}
 
@@ -217,6 +226,7 @@
 			{{/if}}
 		{{/with}}
 		{{#with settings.joinCode}}
+			{{#if canView}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-input">
 					<label class="rc-input__label">
@@ -227,6 +237,7 @@
 					</label>
 				</div>
 			</div>
+			{{/if}}
 		{{/with}}
 
 		{{#if hasRetentionPermission}}
@@ -406,7 +417,7 @@
 		{{/each}}
 	</section>
 
-	<div class="rc-user-info__flex rc-user-info__row">
+	<div class="rc-user-info__flex rc-user-info__row rc-user-info__room">
 		{{#if canEditRoom}}
 		<button class="rc-button rc-button--icon rc-button--outline js-edit" type="submit">{{> icon icon='edit'}}{{_ "Edit"}}</button>
 		{{/if}}

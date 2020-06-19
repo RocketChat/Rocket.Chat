@@ -9,6 +9,7 @@ import { _setRealName } from '../../lib';
 import { Users } from '../../models';
 import { settings } from '../../settings';
 import { hasRole } from '../../authorization';
+import { deleteUser } from '../../lib/server/functions';
 
 const logger = new Logger('CROWD', {});
 
@@ -151,7 +152,7 @@ export class CROWD {
 			crowd_username: crowdUser.crowd_username,
 			emails: [{
 				address: crowdUser.email,
-				verified: true,
+				verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 			}],
 			active: crowdUser.active,
 			crowd: true,
@@ -203,6 +204,13 @@ export class CROWD {
 				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
 				if (!response || response.users.length === 0) {
 					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
+					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
+						logger.info('Removing user:', crowd_username);
+						Meteor.defer(function() {
+							deleteUser(user._id);
+							logger.info('User removed:', crowd_username);
+						});
+					}
 					return;
 				}
 				crowd_username = response.users[0].name;
@@ -322,7 +330,6 @@ const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounce
 				crowd.sync();
 			},
 		});
-		SyncedCron.start();
 	}
 }), 500);
 

@@ -1,0 +1,135 @@
+<template name="livechatUnitForm">
+	{{#if hasLicense}}
+		{{#requiresPermission 'manage-livechat-units'}}
+			<form id="unit-form" data-id="{{unit._id}}">
+				<div class="rocket-form">
+					{{#if Template.subscriptionsReady}}
+						<fieldset>
+							<div class="input-line">
+								<label>{{_ "Name"}}</label>
+								<div>
+									<input type="text" class="rc-input__element" name="name" value="{{unit.name}}" placeholder="{{_ "Name"}}" />
+								</div>
+							</div>
+							<div class="input-line">
+								<label>{{_ "Visibility"}}</label>
+								<div>
+									<label><input type="radio" name="visibility" value="public" checked="{{$eq unit.visibility 'public'}}" /> {{_ "Public"}}</label>
+									<label><input type="radio" name="visibility" value="private" checked="{{$eq unit.visibility 'private'}}" /> {{_ "Private"}}</label>
+								</div>
+							</div>
+							<hr />
+						</fieldset>
+						<h2>{{_ "Monitors"}}</h2>
+							<fieldset>
+								<label>{{_ "Add_monitor"}}</label>
+								<span>
+									{{> livechatAutocompleteUser
+										collection="UserAndRoom"
+										endpoint="users.autocomplete"
+										field="username"
+										sort='username'
+										label="Search_by_username"
+										placeholder="Search_by_username"
+										name="username"
+										exceptions=monitorAutocompleteExceptions
+										noMatchTemplate="userSearchEmpty"
+										templateItem="popupList_item_default"
+										icon="at"
+										modifier=monitorModifier
+										onSelect=onSelectMonitors
+										deleteLastItem=deleteLastMonitor
+										list=monitorsBeingSelected
+										onClickTag=onClickTagMonitors
+									}}
+									<button name="add" class="rc-button rc-button--secondary add-monitor">{{_ "Add"}}</button>
+								</span>
+							</fieldset>
+
+							<fieldset>
+								<legend>{{_ "Selected_monitors"}}</legend>
+
+								{{#if selectedMonitors}}
+									<div class="list">
+										<table>
+											<thead>
+												<tr>
+													<th width="75%"></th>
+													<th>&nbsp;</th>
+												</tr>
+											</thead>
+											<tbody>
+												{{#each selectedMonitors}}
+													<tr class="monitor-info">
+														<td>{{username}}</td>
+														<td><a href="#remove" class="remove-monitor"><i class="icon-trash"></i></a></td>
+													</tr>
+												{{/each}}
+											</tbody>
+										</table>
+									</div>
+								{{else}}
+									<tr>
+										<td colspan="2">{{_ "There_are_no_monitors_added_to_this_unit_yet"}}</td>
+									</tr>
+								{{/if}}
+								<hr />
+							</fieldset>
+
+						<h2>{{_ "Departments"}}</h2>
+
+							<fieldset>
+								<legend>{{_ "Available_departments"}}</legend>
+
+								{{#if hasAvailableDepartments }}
+									<ul class="unit-departments available-departments">
+										{{#each availableDepartments}}
+											<li><i class="icon-plus-circled"></i>{{name}}</li>
+										{{/each}}
+									</ul>
+								{{else}}
+									{{_ "There_are_no_departments_available"}}
+								{{/if}}
+							</fieldset>
+
+							<fieldset>
+								<legend>{{_ "Selected_departments"}}</legend>
+
+								{{#if selectedDepartments}}
+									<div class="list">
+										<table>
+											<thead>
+												<tr>
+													<th width="75%">{{_ "Name"}}</th>
+													<th>&nbsp;</th>
+												</tr>
+											</thead>
+											<tbody>
+												{{#each selectedDepartments}}
+													<tr class="department-info">
+														<td>{{name}}</td>
+														<td><a href="#remove" class="remove-department"><i class="icon-trash"></i></a></td>
+													</tr>
+												{{/each}}
+											</tbody>
+										</table>
+									</div>
+								{{else}}
+									{{_ "There_are_no_departments_added_to_this_unit_yet"}}
+								{{/if}}
+
+							</fieldset>
+
+
+						<div class="rc-button__group">
+							<button class="rc-button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
+							<button class="rc-button rc-button--primary save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
+						</div>
+					{{else}}
+						{{> loading}}
+					{{/if}}
+				</div>
+			</form>
+		{{/requiresPermission}}
+	{{/if}}
+</template>

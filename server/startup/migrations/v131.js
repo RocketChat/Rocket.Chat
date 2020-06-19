@@ -1,5 +1,6 @@
 import { Migrations } from '../../../app/migrations';
 import { Users, Subscriptions, Rooms, Messages } from '../../../app/models';
+import { FileUpload } from '../../../app/file-upload/server';
 
 Migrations.add({
 	version: 131,
@@ -35,7 +36,7 @@ Migrations.add({
 				// Remove direct messages and also non-channel rooms with only 1 user (the one being deleted)
 				if (room.t === 'd' || (room.t !== 'c' && Subscriptions.findByRoomId(room._id).count() === 1)) {
 					Subscriptions.removeByRoomId(subscription.rid);
-					Messages.removeFilesByRoomId(subscription.rid);
+					FileUpload.removeFilesByRoomId(subscription.rid);
 					Messages.removeByRoomId(subscription.rid);
 					Rooms.removeById(subscription.rid);
 				}

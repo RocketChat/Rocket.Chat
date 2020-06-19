@@ -8,23 +8,26 @@ import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
 
 const get = function(file, req, res) {
-	const fileUrl = this.store.getRedirectURL(file);
+	const forceDownload = typeof req.query.download !== 'undefined';
 
-	if (fileUrl) {
+	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
+		if (err) {
+			return console.error(err);
+		}
+
+		if (!fileUrl) {
+			return res.end();
+		}
+
 		const storeType = file.store.split(':').pop();
 		if (settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
 			const request = /^https:/.test(fileUrl) ? https : http;
-			request.get(fileUrl, (fileRes) => fileRes.pipe(res));
-		} else {
-			res.removeHeader('Content-Length');
-			res.removeHeader('Cache-Control');
-			res.setHeader('Location', fileUrl);
-			res.writeHead(302);
-			res.end();
+
+			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
 		}
-	} else {
-		res.end();
-	}
+
+		return FileUpload.redirectToFile(fileUrl, req, res);
+	});
 };
 
 const copy = function(file, out) {

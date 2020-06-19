@@ -50,12 +50,12 @@ class PasswordPolicy {
 	}
 
 	validate(password) {
-		if (!this.enabled) {
-			return true;
+		if (typeof password !== 'string' || !password.trim().length) {
+			return this.error('error-password-policy-not-met', 'The password provided does not meet the server\'s password policy.');
 		}
 
-		if (!password || typeof password !== 'string' || !password.length) {
-			return this.error('error-password-policy-not-met', 'The password provided does not meet the server\'s password policy.');
+		if (!this.enabled) {
+			return true;
 		}
 
 		if (this.minLength >= 1 && password.length < this.minLength) {

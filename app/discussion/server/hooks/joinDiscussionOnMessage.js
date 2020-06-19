@@ -19,4 +19,4 @@ callbacks.add('beforeSaveMessage', (message, room) => {
 	Meteor.runAsUser(message.u._id, () => Meteor.call('joinRoom', room._id));
 
 	return message;
-});
+}, callbacks.priority.MEDIUM, 'joinDiscussionOnMessage');

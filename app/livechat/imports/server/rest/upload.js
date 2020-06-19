@@ -3,10 +3,10 @@ import Busboy from 'busboy';
 import filesize from 'filesize';
 
 import { settings } from '../../../../settings';
-import { Settings, Rooms, LivechatVisitors } from '../../../../models';
+import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { fileUploadIsValidContentType } from '../../../../utils';
 import { FileUpload } from '../../../../file-upload';
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 
 let maxFileSize;
 
@@ -31,7 +31,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const room = Rooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
+		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
 		if (!room) {
 			return API.v1.unauthorized();
 		}

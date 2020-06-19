@@ -44,11 +44,7 @@ export class AppRealStorage extends AppStorage {
 				return reject(e);
 			}
 
-			if (doc) {
-				resolve(doc);
-			} else {
-				reject(new Error(`No App found by the id: ${ id }`));
-			}
+			resolve(doc);
 		});
 	}
 
@@ -74,12 +70,11 @@ export class AppRealStorage extends AppStorage {
 		return new Promise((resolve, reject) => {
 			try {
 				this.db.update({ id: item.id }, item);
+				resolve(item.id);
 			} catch (e) {
 				return reject(e);
 			}
-
-			this.retrieveOne(item.id).then((updated) => resolve(updated)).catch((err) => reject(err));
-		});
+		}).then(this.retrieveOne.bind(this));
 	}
 
 	remove(id) {

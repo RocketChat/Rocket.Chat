@@ -3,7 +3,8 @@ import { HTTP } from 'meteor/http';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
-
+import { callbacks } from '../../../callbacks';
+import { LICENSE_VERSION } from '../license';
 
 export function getWorkspaceLicense() {
 	const token = getWorkspaceAccessToken();
@@ -12,10 +13,9 @@ export function getWorkspaceLicense() {
 		return { updated: false, license: '' };
 	}
 
-
 	let licenseResult;
 	try {
-		licenseResult = HTTP.get(`${ settings.get('Cloud_Workspace_Registration_Client_Uri') }/license`, {
+		licenseResult = HTTP.get(`${ settings.get('Cloud_Workspace_Registration_Client_Uri') }/license?version=${ LICENSE_VERSION }`, {
 			headers: {
 				Authorization: `Bearer ${ token }`,
 			},
@@ -38,6 +38,8 @@ export function getWorkspaceLicense() {
 	}
 
 	Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
+
+	callbacks.run('workspaceLicenseChanged', remoteLicense.license);
 
 	return { updated: true, license: remoteLicense.license };
 }

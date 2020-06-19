@@ -198,4 +198,8 @@ new FileUploadClass({
 
 		return readFromGridFS(file.store, file._id, file, req, res);
 	},
+
+	copy(file, out) {
+		copyFromGridFS(file.store, file._id, file, out);
+	},
 });

@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Messages } from '../../models';
 import { slashCommands } from '../../utils';
 import { Notifications } from '../../notifications';
+import { roomTypes, RoomMemberActions } from '../../utils/server';
 
 function Unarchive(command, params, item) {
 	if (command !== 'unarchive' || !Match.test(params, String)) {
@@ -38,7 +39,7 @@ function Unarchive(command, params, item) {
 	}
 
 	// You can not archive direct messages.
-	if (room.t === 'd') {
+	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
 		return;
 	}
 
@@ -74,4 +75,5 @@ function Unarchive(command, params, item) {
 slashCommands.add('unarchive', Unarchive, {
 	description: 'Unarchive',
 	params: '#channel',
+	permission: 'unarchive-room',
 });

@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 
 import {
+	RawImports,
 	Base,
 	ProgressStep,
 	Selection,
@@ -12,8 +13,8 @@ import { RocketChatFile } from '../../file';
 import { Users } from '../../models';
 
 export class SlackUsersImporter extends Base {
-	constructor(info) {
-		super(info);
+	constructor(info, importRecord) {
+		super(info, importRecord);
 
 		this.csvParser = require('csv-parse/lib/sync');
 		this.userMap = new Map();
@@ -68,11 +69,35 @@ export class SlackUsersImporter extends Base {
 			return super.getProgress();
 		}
 
+		this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'admins', admins: this.admins });
+
 		super.updateProgress(ProgressStep.USER_SELECTION);
 		return new Selection(this.name, userArray, [], 0);
 	}
 
 	startImport(importSelection) {
+		const admins = this.collection.findOne({ import: this.importRecord._id, type: 'admins' });
+		if (admins) {
+			this.admins = admins.admins || [];
+		} else {
+			this.admins = [];
+		}
+
+		this.users = RawImports.findOne({ import: this.importRecord._id, type: 'users' });
+		// Recreate the userMap from the collection data
+		this.userMap = new Map();
+		for (const user of this.users.users) {
+			const obj = new SelectionUser();
+			for (const propName in user) {
+				if (user.hasOwnProperty(propName)) {
+					obj[propName] = user[propName];
+				}
+			}
+			this.userMap.set(user.user_id, obj);
+		}
+
+		this.reloadCount();
+
 		super.startImport(importSelection);
 		const started = Date.now();
 
@@ -102,7 +127,7 @@ export class SlackUsersImporter extends Base {
 							// since we have an existing user, let's try a few things
 							userId = existantUser._id;
 							u.rocketId = existantUser._id;
-							Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
+							Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.user_id } });
 
 							Users.setEmail(existantUser._id, u.email);
 							Users.setEmailVerified(existantUser._id, u.email);
@@ -117,7 +142,7 @@ export class SlackUsersImporter extends Base {
 							Meteor.runAsUser(userId, () => {
 								Meteor.call('setUsername', u.username, { joinDefaultChannelsSilenced: true });
 								Users.setName(userId, u.name);
-								Users.update({ _id: userId }, { $addToSet: { importIds: u.id } });
+								Users.update({ _id: userId }, { $addToSet: { importIds: u.user_id } });
 								Users.setEmail(userId, u.email);
 								Users.setEmailVerified(userId, u.email);
 								u.rocketId = userId;

@@ -26,14 +26,6 @@ class VersionCompiler {
 				cpus: os.cpus().length,
 			};
 
-			if (process.env.TRAVIS_BUILD_NUMBER) {
-				output.travis = {
-					buildNumber: process.env.TRAVIS_BUILD_NUMBER,
-					branch: process.env.TRAVIS_BRANCH,
-					tag: process.env.TRAVIS_TAG,
-				};
-			}
-
 			exec('git log --pretty=format:\'%H%n%ad%n%an%n%s\' -n 1', function(err, result) {
 				if (err == null) {
 					result = result.split('\n');
@@ -55,7 +47,7 @@ class VersionCompiler {
 						}
 
 						const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
-						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/[^0-9.]/g, '');
+						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/^[^0-9]/g, '');
 
 						output = `exports.Info = ${ JSON.stringify(output, null, 4) };`;
 						file.addJavaScript({

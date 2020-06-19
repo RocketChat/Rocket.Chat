@@ -41,7 +41,7 @@
 												<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
 													{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
 												</label>
-												<input type="file" name="" value="" id="upload-avatar" style="display:none;" accept="image/x-png,image/gif,image/jpeg">
+												<input type="file" name="" value="" id="upload-avatar" style="display:none;" accept="image/x-png,image/gif,image/jpeg,image/svg+xml">
 											</div>
 											<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectUrl}}"	aria-label="{{_ "Use_url_for_avatar" }}">
 												<label class="rc-select-avatar__upload-label avatar">
@@ -110,6 +110,36 @@
 							{{/with}}
 						</div>
 						<div class="rc-form-group rc-grid">
+							{{# with canChange=allowStatusMessageChange}}
+								<div class="rc-input rc-w100 padded {{#if statusMessageInvalid}}rc-input--error{{/if}}">
+									<label class="rc-input__label">
+										<div class="rc-input__title">{{_ "StatusMessage"}}</div>
+										<div class="rc-input__wrapper">
+											<div class="rc-input__icon js-status-type edit-status-type-icon--{{statusType}}">
+												{{> icon block="rc-input__icon-svg" icon="circle"}}
+												{{> icon block="rc-input__icon-svg" icon="arrow-down"}}
+											</div>
+
+											<input type="text" class="rc-input__element" maxlength="120" name="statusText" id="statusText" placeholder="{{_ "StatusMessage_Placeholder" }}" value="{{get 'statusText'}}" {{ifThenElse canChange '' 'disabled'}}>
+										</div>
+									</label>
+									{{# unless canChange}}
+										<div class="rc-input__description">{{_ 'StatusMessage_Change_Disabled'}}</div>
+									{{/unless}}
+								</div>
+							{{/with}}
+						</div>
+						<div class="rc-form-group">
+							<div class="rc-input rc-w100 padded">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Bio"}}</div>
+									<div class="rc-input__wrapper">
+										<textarea type="text" class="rc-input__element" name="bio" id="bio" maxlength="260" rows="4" style="height: auto" placeholder="{{_ "Bio_Placeholder" }}" value="{{get 'bio'}}"></textarea>
+									</div>
+								</label>
+							</div>
+						</div>
+						<div class="rc-form-group rc-grid">
 							{{#with canChange=allowEmailChange}}
 							<div class="rc-input rc-w50 padded {{#if emailInvalid}}rc-input--error{{/if}}">
 								<label class="rc-input__label">
@@ -132,7 +162,7 @@
 								{{/unless}}
 								{{#unless emailVerified}}
 									<div class="rc-input__error">
-										<button class="rc-button rc-button--small" id="resend-verification-email">{{_ "Resend_verification_email"}}</button>
+										<button class="rc-button rc-button--small" id="resend-verification-email"  {{canResendEmailConf 'disabled'}}>{{_ "Resend_verification_email"}}</button>
 									</div>
 								{{/unless}}
 							</div>
@@ -156,6 +186,14 @@
 									{{# unless canChange}}
 										<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>
 									{{/unless}}
+									{{#if confirmationPasswordInvalid}}
+										<div class="rc-input__error">
+											<div class="rc-input__error-icon">
+												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+											</div>
+											<div class="rc-input__error-message">{{_ 'Passwords_do_not_match'}}</div>
+										</div>
+									{{/if}}
 								{{/with}}
 							</div>
 						</div>
@@ -176,10 +214,6 @@
 					{{/if}}
 				</div>
 			</form>
-
-			<!-- <div class="rocket-form">
-				<button class="button" id="resend-verification-email">{{_ "Resend_verification_email"}}</button>
-			</div> -->
 		</div>
 	</section>
 </template>

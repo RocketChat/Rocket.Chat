@@ -1,12 +1,9 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session';
-import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
-import { fileUploadHandler } from '../../../file-upload';
+import { uploadFileWithMessage } from '../../../ui/client/lib/fileUpload';
 import { settings } from '../../../settings';
 import { AudioRecorder } from '../../../ui';
-import { call } from '../../../ui-utils';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
@@ -15,92 +12,39 @@ const startRecording = () => new Promise((resolve, reject) =>
 
 const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve));
 
-const registerUploadProgress = (upload) => {
-	const uploads = Session.get('uploading') || [];
-	Session.set('uploading', [...uploads, {
-		id: upload.id,
-		name: upload.getFileName(),
-		percentage: 0,
-	}]);
-};
-
-const updateUploadProgress = (upload, { progress, error: { message: error } = {} }) => {
-	const uploads = Session.get('uploading') || [];
-	const item = uploads.find(({ id }) => id === upload.id) || {
-		id: upload.id,
-		name: upload.getFileName(),
-	};
-	item.percentage = Math.round(progress * 100) || 0;
-	item.error = error;
-	Session.set('uploading', uploads);
-};
-
-const unregisterUploadProgress = (upload) => setTimeout(() => {
-	const uploads = Session.get('uploading') || [];
-	Session.set('uploading', uploads.filter(({ id }) => id !== upload.id));
-}, 2000);
-
-const uploadRecord = async ({ rid, tmid, blob }) => {
-	const upload = fileUploadHandler('Uploads', {
-		name: `${ t('Audio record') }.mp3`,
-		size: blob.size,
-		type: 'audio/mpeg',
-		rid,
-		description: '',
-	}, blob);
-
-	upload.onProgress = (progress) => {
-		updateUploadProgress(upload, { progress });
-	};
-
-	registerUploadProgress(upload);
-
-	try {
-		const [file, storage] = await new Promise((resolve, reject) => {
-			upload.start((error, ...args) => (error ? reject(error) : resolve(args)));
-		});
-
-		await call('sendFileMessage', rid, storage, file, { tmid });
-
-		unregisterUploadProgress(upload);
-	} catch (error) {
-		updateUploadProgress(upload, { error, progress: 0 });
-		unregisterUploadProgress(upload);
-	}
-
-	Tracker.autorun((c) => {
-		const cancel = Session.get(`uploading-cancel-${ upload.id }`);
-
-		if (!cancel) {
-			return;
-		}
-
-		upload.stop();
-		c.stop();
-
-		updateUploadProgress(upload, { progress: 0 });
-		unregisterUploadProgress(upload);
-	});
-};
-
 const recordingInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
 
-Template.messageBoxAudioMessage.onCreated(function() {
+Template.messageBoxAudioMessage.onCreated(async function() {
 	this.state = new ReactiveVar(null);
 	this.time = new ReactiveVar('00:00');
-	this.isMicrophoneDenied = new ReactiveVar(true);
+	this.isMicrophoneDenied = new ReactiveVar(false);
 
 	if (navigator.permissions) {
-		navigator.permissions.query({ name: 'microphone' })
-			.then((permissionStatus) => {
+		try {
+			const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+			this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
+			permissionStatus.onchange = () => {
 				this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
-				permissionStatus.onchange = () => {
-					this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
-				};
-			});
-	} else {
-		this.isMicrophoneDenied.set(false);
+			};
+			return;
+		} catch (error) {
+			console.warn(error);
+		}
+	}
+
+	if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+		this.isMicrophoneDenied.set(true);
+		return;
+	}
+
+	try {
+		if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === 'audioinput')) {
+			this.isMicrophoneDenied.set(true);
+			return;
+		}
+	} catch (error) {
+		console.warn(error);
 	}
 });
 
@@ -110,6 +54,8 @@ Template.messageBoxAudioMessage.helpers({
 			&& !Template.instance().isMicrophoneDenied.get()
 			&& settings.get('FileUpload_Enabled')
 			&& settings.get('Message_AudioRecorderEnabled')
+			&& (!settings.get('FileUpload_MediaTypeBlackList')
+				|| !settings.get('FileUpload_MediaTypeBlackList').match(/audio\/mp3|audio\/\*/i))
 			&& (!settings.get('FileUpload_MediaTypeWhiteList')
 				|| settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	},
@@ -151,8 +97,9 @@ Template.messageBoxAudioMessage.events({
 			}, 1000));
 			recordingRoomId.set(this.rid);
 		} catch (error) {
-			instance.state.set(null);
+			console.log(error);
 			instance.isMicrophoneDenied.set(true);
+			instance.state.set(null);
 		}
 	},
 
@@ -190,6 +137,7 @@ Template.messageBoxAudioMessage.events({
 		instance.state.set(null);
 
 		const { rid, tmid } = this;
-		await uploadRecord({ rid, tmid, blob });
+
+		await uploadFileWithMessage(rid, tmid, { file: { file: blob }, fileName: `${ t('Audio record') }.mp3` });
 	},
 });

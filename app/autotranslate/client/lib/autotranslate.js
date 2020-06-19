@@ -64,10 +64,14 @@ export const AutoTranslate = {
 			this.supportedLanguages = languages || [];
 		});
 
+		Meteor.call('autoTranslate.getProviderUiMetadata', (err, metadata) => {
+			this.providersMetadata = metadata;
+		});
+
 		Tracker.autorun(() => {
 			Subscriptions.find().observeChanges({
 				changed: (id, fields) => {
-					if (fields.hasOwnProperty('autoTranslate')) {
+					if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
 						mem.clear(this.findSubscriptionByRid);
 					}
 				},

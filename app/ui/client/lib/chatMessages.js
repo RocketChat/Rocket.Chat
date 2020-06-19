@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
@@ -27,17 +27,18 @@ import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
+import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
 		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-		value ? localStorage.setItem(key, value) : localStorage.removeItem(key);
+		value ? Meteor._localStorage.setItem(key, value) : Meteor._localStorage.removeItem(key);
 	}, 1000),
 
 	restoreValue: ({ rid, tmid }) => {
 		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-		return localStorage.getItem(key);
+		return Meteor._localStorage.getItem(key);
 	},
 
 	restore: ({ rid, tmid }, input) => {
@@ -57,9 +58,9 @@ const messageBoxState = {
 	},
 
 	purgeAll: () => {
-		Object.keys(localStorage)
+		Object.keys(Meteor._localStorage)
 			.filter((key) => key.indexOf('messagebox_') === 0)
-			.forEach((key) => localStorage.removeItem(key));
+			.forEach((key) => Meteor._localStorage.removeItem(key));
 	},
 };
 
@@ -138,18 +139,22 @@ export class ChatMessages {
 
 	toPrevMessage() {
 		const { element } = this.editing;
-		if (element) {
-			let previous;
-			for (previous = element.previousElementSibling; previous; previous = previous.previousElementSibling) {
-				if (previous.matches('.own:not(.system)')) {
-					break;
-				}
-			}
-
-			previous ? this.edit(previous, false) : this.clearEditing();
-		} else {
-			this.edit(this.wrapper.querySelector('.own:not(.system):last-child'), false);
+		if (!element) {
+			const messages = Array.from(this.wrapper.querySelectorAll('.own:not(.system)'));
+			const message = messages.pop();
+			return message && this.edit(message, false);
 		}
+
+		for (
+			let previous = element.previousElementSibling;
+			previous;
+			previous = previous.previousElementSibling
+		) {
+			if (previous.matches('.own:not(.system)')) {
+				return this.edit(previous, false);
+			}
+		}
+		this.clearEditing();
 	}
 
 	toNextMessage() {
@@ -263,9 +268,8 @@ export class ChatMessages {
 		}
 
 		if (msg) {
-			readMessage.enable();
-			readMessage.readNow();
-			$('.message.first-unread').removeClass('first-unread');
+			readMessage.readNow(rid);
+			readMessage.refreshUnreadMark(rid);
 
 			const message = await promises.run('onClientBeforeSendMessage', {
 				_id: Random.id(),
@@ -295,10 +299,13 @@ export class ChatMessages {
 
 				this.resetToDraft(this.editing.id);
 				this.confirmDeleteMsg(message, done);
+				return;
 			} catch (error) {
 				handleError(error);
 			}
 		}
+
+		return done();
 	}
 
 	async processMessageSend(message) {
@@ -367,6 +374,7 @@ export class ChatMessages {
 			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
 			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
 		} catch (e) {
+			messageBoxState.set(this.input, msg);
 			return true;
 		}
 		return true;
@@ -381,8 +389,8 @@ export class ChatMessages {
 			return false;
 		}
 
-		await call('updateMessage', message);
 		this.clearEditing();
+		await call('updateMessage', message);
 		return true;
 	}
 
@@ -400,7 +408,8 @@ export class ChatMessages {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
-							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => {
+							const triggerId = generateTriggerId(slashCommands.commands[command].appId);
+							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err, result) => {
 								typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject });
 							});
 						}
@@ -416,7 +425,7 @@ export class ChatMessages {
 						ts: new Date(),
 						msg: TAPi18n.__('No_such_command', { command: s.escapeHTML(match[1]) }),
 						u: {
-							username: settings.get('InternalHubot_Username'),
+							username: settings.get('InternalHubot_Username') || 'rocket.cat',
 						},
 						private: true,
 					};
@@ -466,6 +475,12 @@ export class ChatMessages {
 
 			this.$input.focus();
 			done();
+		}, () => {
+			if (this.editing.id === message._id) {
+				this.clearEditing();
+			}
+			this.$input.focus();
+			done();
 		});
 	}
 
@@ -487,12 +502,8 @@ export class ChatMessages {
 			}
 		}
 
-		try {
-			await call('deleteMessage', { _id });
-		} catch (error) {
-			console.error(error);
-			handleError(error);
-		}
+
+		await call('deleteMessage', { _id });
 	}
 
 	keydown(event) {
