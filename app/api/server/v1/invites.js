@@ -35,6 +35,7 @@ API.v1.addRoute('removeInvite/:_id', { authRequired: true }, {
 API.v1.addRoute('useInviteToken', { authRequired: true }, {
 	post() {
 		const { token } = this.bodyParams;
+		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const result = useInviteToken(this.userId, token);
 
 		return API.v1.success(result);

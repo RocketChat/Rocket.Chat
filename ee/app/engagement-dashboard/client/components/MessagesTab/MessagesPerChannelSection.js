@@ -7,6 +7,11 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
+import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
+import { saveFile } from '../../../../../../client/lib/saveFile';
+
+const convertDataToCSV = (data) => `// type, messagesSent
+${ data.map(({ t, messages }) => `${ t }, ${ messages }`).join('\n') }`;
 
 export function MessagesPerChannelSection() {
 	const t = useTranslation();
@@ -64,9 +69,14 @@ export function MessagesPerChannelSection() {
 		return [pie, table];
 	}, [period, pieData, tableData]);
 
+	const downloadData = () => {
+		saveFile(convertDataToCSV(pieData.origins), `MessagesPerChannelSection_start_${ params.start }_end_${ params.end }.csv`);
+	};
+
+
 	return <Section
 		title={t('Where_are_the_messages_being_sent?')}
-		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
+		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!pieData} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
 	>
 		<Flex.Container>
 			<Margins inline='neg-x12'>
