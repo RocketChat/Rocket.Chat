@@ -2174,6 +2174,8 @@
   "LDAP_User_Search_Scope": "Scope",
   "LDAP_Username_Field": "Username Field",
   "LDAP_Username_Field_Description": "Which field will be used as *username* for new users. Leave empty to use the username informed on login page.<br/>You can use template tags too, like `#{givenName}.#{sn}`.<br/>Default value is `sAMAccountName`.",
+  "LDAP_Avatar_Field": "User Avatar Field",
+  "LDAP_Avatar_Field_Description": " Which field will be used as *avatar* for users. Leave empty to use `thumbnailPhoto` first and `jpegPhoto` as fallback.",
   "Lead_capture_email_regex": "Lead capture email regex",
   "Lead_capture_phone_regex": "Lead capture phone regex",
   "leave-c": "Leave Channels",

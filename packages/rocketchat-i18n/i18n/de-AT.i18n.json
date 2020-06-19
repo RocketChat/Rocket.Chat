@@ -1601,6 +1601,8 @@
   "LDAP_User_Search_Scope": "Umfang",
   "LDAP_Username_Field": "Nutzernamenfeld",
   "LDAP_Username_Field_Description": "Geben Sie an, welches Feld als *Nutzername* für neue Benutzer verwendet werden soll. Lassen Sie das Feld leer, um den Nutzernamen zu verwenden, der auf der Anmeldeseite verwendet wird.<br/>Es können auch Template-Tags wie `#{givenNamen}.#{sn}` verwendet werden.<br/>Der Standardwert ist `sAMAccountName`.",
+  "LDAP_Avatar_Field": "Feld für das Benutzer Avatar",
+  "LDAP_Avatar_Field_Description": "Geben Sie an, welches Feld als *Benutzer Avatar* verwendet werden soll. Lassen Sie das Feld leer um das Feld `thumbnailPhoto` als primäres und `jpegPhoto` als alternatives Feld zu verwenden.",
   "Lead_capture_email_regex": "Lead Capture E-Mail Regex",
   "Lead_capture_phone_regex": "Lead Capture Telefon Regex",
   "leave-c": "Kanäle verlassen",
