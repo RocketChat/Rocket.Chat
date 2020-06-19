@@ -8,15 +8,19 @@ Accounts.registerLoginHandler('totp', function(options) {
 		return;
 	}
 
+	console.log(options.totp.login);
 	return Accounts._runLoginHandlers(this, options.totp.login);
 });
 
 callbacks.add('onValidateLogin', (login) => {
-	if (login.type !== 'password') {
+	console.log(1, login);
+	if (login.type === 'resume') {
 		return;
 	}
 
 	const { totp } = login.methodArguments[0];
 
+	console.log(2);
 	checkCodeForUser({ user: login.user, code: totp && totp.code, options: { disablePasswordFallback: true } });
+	console.log(3);
 }, callbacks.priority.MEDIUM, '2fa');
