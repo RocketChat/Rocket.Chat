@@ -57,11 +57,11 @@ export default function NewIntegrationsPage({ ...props }) {
 
 	const handleClickReturn = useCallback(() => {
 		router.push({ });
-	}, []);
+	}, [router]);
 
 	const handleClickHistory = useCallback(() => {
 		router.push({ context: 'history', type: 'outgoing', id: integrationId });
-	}, [integrationId]);
+	}, [integrationId, router]);
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={type === 'incoming' ? t('Integration_Incoming_WebHook') : t('Integration_Outgoing_WebHook')} >

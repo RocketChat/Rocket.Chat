@@ -1,16 +1,17 @@
 import { Button } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 import s from 'underscore.string';
 
-import RawText from '../../../components/basic/RawText';
+import { useEditableSettingsGroupSections } from '../../../contexts/EditableSettingsContext';
+import { useModal } from '../../../contexts/ModalContext';
 import { useAbsoluteUrl, useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useModal } from '../../../hooks/useModal';
-import { GroupPage } from '../GroupPage';
+import GroupPage from '../GroupPage';
 import { Section } from '../Section';
 
-export function OAuthGroupPage({ _id, sections, ...group }) {
+function OAuthGroupPage({ _id, ...group }) {
+	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 	const t = useTranslation();
 
@@ -92,7 +93,7 @@ export function OAuthGroupPage({ _id, sections, ...group }) {
 				return <Section
 					key={sectionName}
 					groupId={_id}
-					help={<RawText>{t('Custom_oauth_helper', callbackURL(sectionName))}</RawText>}
+					help={<span dangerouslySetInnerHTML={{ __html: t('Custom_oauth_helper', callbackURL(sectionName)) }} />}
 					sectionName={sectionName}
 					solo={solo}
 				>
@@ -106,3 +107,5 @@ export function OAuthGroupPage({ _id, sections, ...group }) {
 		})}
 	</GroupPage>;
 }
+
+export default memo(OAuthGroupPage);

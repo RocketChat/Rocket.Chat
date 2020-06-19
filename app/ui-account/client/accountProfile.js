@@ -149,6 +149,13 @@ Template.accountProfile.helpers({
 			return ret;
 		}
 	},
+	canResendEmailConf(ret) {
+		const email = Template.instance().email.get();
+		const user = Meteor.user();
+		if (getUserEmailAddress(user) && getUserEmailAddress(user) !== email) {
+			return ret;
+		}
+	},
 	allowDeleteOwnAccount() {
 		return settings.get('Accounts_AllowDeleteOwnAccount');
 	},
@@ -360,7 +367,7 @@ const checkAvailability = _.debounce((username, { usernameAvaliable }) => {
 	Meteor.call('checkUsernameAvailability', username, function(error, data) {
 		usernameAvaliable.set(data);
 	});
-}, 300);
+}, 800);
 
 Template.accountProfile.events({
 	'change [data-customfield="true"], input [data-customfield="true"]': _.debounce((e, i) => {
