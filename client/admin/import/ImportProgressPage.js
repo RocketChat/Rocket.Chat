@@ -53,7 +53,7 @@ function ImportProgressPage() {
 		};
 
 		loadCurrentOperation();
-	}, []);
+	}, [getCurrentImportOperation, handleError, importHistoryRoute, prepareImportRoute, setCompleted, setImporterKey, setTotal, t]);
 
 	useEffect(() => {
 		if (!importerKey) {
@@ -110,7 +110,7 @@ function ImportProgressPage() {
 		return () => {
 			streamer.removeListener('progress', handleProgressUpdated);
 		};
-	}, [importerKey]);
+	}, [dispatchToastMessage, getImportProgress, handleError, importHistoryRoute, importerKey, prepareImportRoute, setCompleted, setStep, setTotal, t]);
 
 	const progressRate = useMemo(() => {
 		if (total === 0) {
@@ -118,7 +118,7 @@ function ImportProgressPage() {
 		}
 
 		return completed / total * 100;
-	});
+	}, [completed, total]);
 
 	return <Page>
 		<Page.Header title={t('Importing_Data')} />

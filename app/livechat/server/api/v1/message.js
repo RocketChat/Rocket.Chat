@@ -204,8 +204,10 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				rid: String,
 			});
 
+			const { offset } = this.getPaginationItems();
+			const { searchText: text, token } = this.queryParams;
 			const { rid } = this.urlParams;
-			const { token } = this.queryParams;
+			const { sort } = this.parseJsonQuery();
 
 			if (!token) {
 				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
@@ -236,7 +238,7 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				limit = parseInt(this.queryParams.limit);
 			}
 
-			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls })
+			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls, sort, offset, text })
 				.messages
 				.map(normalizeMessageFileUpload);
 			return API.v1.success({ messages });

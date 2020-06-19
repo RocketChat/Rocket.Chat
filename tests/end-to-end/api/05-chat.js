@@ -702,6 +702,31 @@ describe('[Chat]', function() {
 		describe('Read only channel', () => {
 			let readOnlyChannel;
 
+			const userCredentials = {};
+			let user;
+			before((done) => {
+				const username = `user.test.readonly.${ Date.now() }`;
+				const email = `${ username }@rocket.chat`;
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({ email, name: username, username, password })
+					.end((err, res) => {
+						user = res.body.user;
+						request.post(api('login'))
+							.send({
+								user: username,
+								password,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								userCredentials['X-Auth-Token'] = res.body.data.authToken;
+								userCredentials['X-User-Id'] = res.body.data.userId;
+							})
+							.end(done);
+					});
+			});
+
 			it('Creating a read-only channel', (done) => {
 				request.post(api('channels.create'))
 					.set(credentials)
@@ -733,6 +758,60 @@ describe('[Chat]', function() {
 						expect(res.body).to.have.property('message').and.to.be.an('object');
 					})
 					.end(done);
+			});
+			it('Inviting regular user to read-only channel', (done) => {
+				request.post(api('channels.invite'))
+					.set(credentials)
+					.send({
+						roomId: readOnlyChannel._id,
+						userId: user._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(() => {
+						done();
+					});
+			});
+
+			it('should fail to send message when the user lacks permission', (done) => {
+				request.post(api('chat.sendMessage'))
+					.set(userCredentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Sample blocked message',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+
+			it('should send a message when the user has permission to send messages on readonly channels', (done) => {
+				updatePermission('post-readonly', ['user']).then(() => {
+					request.post(api('chat.sendMessage'))
+						.set(userCredentials)
+						.send({
+							message: {
+								rid: readOnlyChannel._id,
+								msg: 'Sample message overwriting readonly status',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('message').and.to.be.an('object');
+						})
+						.end(done);
+				});
 			});
 		});
 	});

@@ -5,8 +5,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { DateFormat } from '../../../lib';
 import { roomTypes, getURL } from '../../../utils';
 import { Subscriptions } from '../../../models';
+import { getUserAvatarURL as getAvatarUrl } from '../../../utils/lib/getUserAvatarURL';
 
-const getAvatarUrl = (username) => getURL(`/avatar/${ username }?_dc=undefined`);
 const getDMUrl = (username) => getURL(`/direct/${ username }`);
 
 Template.ChatpalSearchResultTemplate.onCreated(function() {
@@ -77,6 +77,10 @@ Template.ChatpalSearchResultTemplate.helpers({
 			}
 		}
 	},
+	resultMessagesOnly() {
+		return Template.instance().resultType.get() === 'Messages'
+			|| Template.instance().resultType.get() === 'Room';
+	},
 	resultPaging() {
 		const result = Template.instance().data.result.get();
 		const pageSize = Template.instance().data.settings.PageSize;
@@ -138,7 +142,8 @@ Template.ChatpalSearchSingleRoom.helpers({
 
 Template.ChatpalSearchSingleUser.helpers({
 	cleanUsername() {
-		return this.user_username.replace(/<\/?em>/ig, '');
+		const username = this.user_username || this.username; // varies whether users or messages of users are displayed
+		return username.replace(/<\/?em>/ig, '');
 	},
 	getAvatarUrl,
 	getDMUrl,

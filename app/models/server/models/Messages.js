@@ -9,7 +9,7 @@ export class Messages extends Base {
 	constructor() {
 		super('message');
 
-		this.tryEnsureIndex({ rid: 1, ts: 1 });
+		this.tryEnsureIndex({ rid: 1, ts: 1, _updatedAt: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ editedAt: 1 }, { sparse: true });
@@ -251,7 +251,6 @@ export class Messages extends Base {
 			_hidden: {
 				$ne: true,
 			},
-
 			rid: roomId,
 		};
 

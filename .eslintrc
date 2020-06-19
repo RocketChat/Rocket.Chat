@@ -11,7 +11,8 @@
     "jscolor": false
   },
   "plugins": [
-    "react"
+    "react",
+    "react-hooks"
   ],
   "rules": {
     "jsx-quotes": [
@@ -24,7 +25,9 @@
     "react/jsx-fragments": [
       "error",
       "syntax"
-    ]
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "settings": {
     "import/resolver": {

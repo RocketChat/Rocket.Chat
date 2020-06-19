@@ -81,8 +81,9 @@ class ChatpalProvider extends SearchProvider {
 		});
 		this._settings.add('DefaultResultType', 'select', 'All', {
 			values: [
-				{ key: 'All', i18nLabel: 'All' },
-				{ key: 'Messages', i18nLabel: 'Messages' },
+				{ key: 'All', i18nLabel: 'Chatpal_All_Results' },
+				{ key: 'Room', i18nLabel: 'Chatpal_Current_Room_Only' },
+				{ key: 'Messages', i18nLabel: 'Chatpal_Messages_Only' },
 			],
 			i18nLabel: 'Chatpal_Default_Result_Type',
 			i18nDescription: 'Chatpal_Default_Result_Type_Description',
@@ -328,7 +329,7 @@ class ChatpalProvider extends SearchProvider {
 		this.index.query(
 			text,
 			this._settings.get('Main_Language'),
-			this._getAcl(context),
+			payload.resultType === 'Room' ? [context.rid] : this._getAcl(context),
 			type,
 			payload.start || 0,
 			payload.rows || this._settings.get('PageSize'),

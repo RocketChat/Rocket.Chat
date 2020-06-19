@@ -1,5 +1,6 @@
 {
   "error-canned-response-not-found": "Modelo de respuesta no encontrado",
+  "error-guests-cant-have-other-roles": "Los usuarios invitados no pueden tener ningún otro rol.",
   "error-max-number-simultaneous-chats-reached": "Se ha alcanzado el máximo de chats simultáneos por agente.",
   "Add_monitor": "Añadir monitor",
   "Available_departments": "Departamentos disponibles",

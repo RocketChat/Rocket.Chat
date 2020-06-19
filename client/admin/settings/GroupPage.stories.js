@@ -1,16 +1,10 @@
 import React from 'react';
 
-import { GroupPage } from './GroupPage';
-import { SettingsState } from './SettingsState';
+import GroupPage from './GroupPage';
 
 export default {
 	title: 'admin/settings/GroupPage',
 	component: GroupPage,
-	decorators: [
-		(storyFn) => <SettingsState>
-			{storyFn()}
-		</SettingsState>,
-	],
 };
 
 export const _default = () =>
