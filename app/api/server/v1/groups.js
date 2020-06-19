@@ -823,7 +823,7 @@ API.v1.addRoute('groups.moderators', { authRequired: true }, {
 
 API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
 	post() {
-		if (!Match.test(this.bodyParams, { encrypted: Boolean })) {
+		if (!Match.test(this.bodyParams, Match.ObjectIncluding({ encrypted: Boolean }))) {
 			return API.v1.failure('The bodyParam "encrypted" is required');
 		}
 
