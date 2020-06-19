@@ -394,8 +394,11 @@ export function syncUserData(user, ldapUser, ldap) {
 		}
 	}
 
+	const avatarField = (settings.get('LDAP_Avatar_Field') || 'thumbnailPhoto').trim();
+
 	if (user && user._id && settings.get('LDAP_Sync_User_Avatar') === true) {
-		const avatar = ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
+		const avatar = ldapUser._raw[avatarField] || ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
+
 		if (avatar) {
 			logger.info('Syncing user avatar');
 

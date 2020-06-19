@@ -33,7 +33,7 @@ Meteor.methods({
 		return {
 			roomId: room._id,
 			domain: settings.get('Jitsi_Domain'),
-			jitsiRoom: settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + roomId,
+			jitsiRoom: settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + roomId + settings.get('Jitsi_URL_Room_Suffix'),
 		};
 	},
 });

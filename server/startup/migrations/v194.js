@@ -1,50 +1,112 @@
-import moment from 'moment';
-import { ObjectId } from 'mongodb';
-import { Mongo } from 'meteor/mongo';
-
+import {
+	Settings,
+	Users,
+} from '../../../app/models/server';
 import { Migrations } from '../../../app/migrations/server';
-import { Permissions, Settings } from '../../../app/models/server';
-import { LivechatBusinessHours } from '../../../app/models/server/raw';
-import { LivechatBussinessHourTypes } from '../../../definition/ILivechatBusinessHour';
 
-const migrateCollection = () => {
-	const LivechatOfficeHour = new Mongo.Collection('rocketchat_livechat_office_hour');
-	const officeHours = Promise.await(LivechatOfficeHour.rawCollection().find().toArray());
-	const businessHour = {
-		name: '',
-		active: true,
-		type: LivechatBussinessHourTypes.SINGLE,
-		ts: new Date(),
-		workHours: officeHours.map((officeHour) => ({
-			day: officeHour.day,
-			start: officeHour.start,
-			finish: officeHour.finish,
-			open: officeHour.open,
-		})),
-		timezone: {
-			name: '',
-			utc: moment().utcOffset() / 60,
-		},
-	};
-	if (LivechatBusinessHours.find({ type: LivechatBussinessHourTypes.SINGLE }).count() === 0) {
-		businessHour._id = new ObjectId().toHexString();
-		LivechatBusinessHours.insertOne(businessHour);
-	} else {
-		LivechatBusinessHours.update({ type: LivechatBussinessHourTypes.SINGLE }, businessHour);
+function updateFieldMap() {
+	const _id = 'SAML_Custom_Default_user_data_fieldmap';
+	const setting = Settings.findOne({ _id });
+	if (!setting.value) {
+		return;
 	}
-	return LivechatOfficeHour.rawCollection().drop();
-};
+
+	// Check if there's any user with an 'eppn' attribute. This is a custom identifier that was hardcoded on the old version
+	// If there's any user with the eppn attribute stored on mongo, we will include it on the new json so that it'll continue to be used.
+	const usedEppn = Boolean(Users.findOne({ eppn: { $exists: true } }, { fields: { eppn: 1 } }));
+
+	// if it's using the old default value, simply switch to the new default
+	if (setting.value === '{"username":"username", "email":"email", "cn": "name"}') {
+		// include de eppn identifier if it was used
+		const value = `{"username":"username", "email":"email", "name": "cn"${ usedEppn ? ', "__identifier__": "eppn"' : '' }}`;
+		Settings.update({ _id }, {
+			$set: {
+				value,
+			},
+		});
+		return;
+	}
+
+	let oldMap;
+
+	try {
+		oldMap = JSON.parse(setting.value);
+	} catch (e) {
+		// If the current value wasn't even a proper JSON, we don't need to worry about changing it.
+		return;
+	}
+
+	const newMap = {};
+	for (const key in oldMap) {
+		if (!oldMap.hasOwnProperty(key)) {
+			continue;
+		}
+
+		const value = oldMap[key];
+		// A simple idpField->spField is converted to spField->idpField
+		if (typeof value === 'string') {
+			newMap[value] = key;
+		} else if (typeof value === 'object') {
+			const { field, regex } = value;
+
+			// If it didn't have a 'field' attribute, it was ignored by SAML, but let's keep it on the JSON anyway
+			if (!field) {
+				newMap[`_${ key }`] = {
+					attribute: key,
+					regex,
+				};
+				continue;
+			}
+
+			// { idpField: { field: spField, regex} }  becomes { spField: { attribute: idpField, regex } }
+			newMap[field] = {
+				attribute: key,
+				regex,
+			};
+		}
+	}
+
+	// eppn was a hardcoded custom identifier, we need to add it to the fieldmap to ensure any existing instances won't break
+	if (usedEppn) {
+		newMap.__identifier__ = 'eppn';
+	}
+
+	const value = JSON.stringify(newMap);
+
+	Settings.update({ _id }, {
+		$set: {
+			value,
+		},
+	});
+}
+
+function updateIdentifierLocation() {
+	Users.update(
+		{ eppn: { $exists: 1 } },
+		{ $rename: { eppn: 'services.saml.eppn' } },
+		{ multi: true },
+	);
+}
+
+function setOldLogoutResponseTemplate() {
+	// For existing users, use a template compatible with the old SAML implementation instead of the default
+	Settings.upsert({
+		_id: 'SAML_Custom_Default_LogoutResponse_template',
+	}, {
+		$set: {
+			value: `<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__newId__" Version="2.0" IssueInstant="__instant__" Destination="__idpSLORedirectURL__">
+  <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">__issuer__</saml:Issuer>
+  <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+</samlp:LogoutResponse>`,
+		},
+	});
+}
 
 Migrations.add({
 	version: 194,
 	up() {
-		Settings.remove({ _id: 'Livechat_enable_office_hours' });
-		Settings.remove({ _id: 'Livechat_allow_online_agents_outside_office_hours' });
-		const permission = Permissions.findOneById('view-livechat-officeHours');
-		if (permission) {
-			Permissions.upsert({ _id: 'view-livechat-business-hours' }, { $set: { roles: permission.roles } });
-			Permissions.remove({ _id: 'view-livechat-officeHours' });
-		}
-		Promise.await(migrateCollection());
+		updateFieldMap();
+		updateIdentifierLocation();
+		setOldLogoutResponseTemplate();
 	},
 });
