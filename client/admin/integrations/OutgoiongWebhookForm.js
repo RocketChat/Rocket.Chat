@@ -12,12 +12,13 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import { useHilightCode } from '../../hooks/useHilightCode';
+import { useHighlightedCode } from '../../hooks/useHighlightedCode';
 import { useExampleData } from './exampleIncomingData';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/basic/Page';
 import { integrations as eventList } from '../../../app/integrations/lib/rocketchat';
 
+const { outgoingEvents } = eventList;
 
 export default function OutgoingWebhookForm({ formValues, formHandlers, append, ...props }) {
 	const t = useTranslation();
@@ -72,28 +73,26 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		['powers-of-ten', t('powers-of-ten')],
 		['powers-of-two', t('powers-of-two')],
 		['increments-of-two', t('increments-of-two')],
-	], []);
+	], [t]);
 
-	const { outgoingEvents } = eventList;
-
-	const eventOptions = useMemo(() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]), []);
-
-	const hilightCode = useHilightCode();
+	const eventOptions = useMemo(() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]), [t]);
 
 	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
 	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);
 	const showTargetRoom = useMemo(() => outgoingEvents[event].use.targetRoom, [event]);
 
-	const [exampleData] = useExampleData({
-		aditionalFields: {
-			...alias && { alias },
-			...emoji && { emoji },
-			...avatarUrl && { avatar: avatarUrl },
-		},
-		url: null,
-	}, [alias, emoji, avatarUrl]);
+	const additionalFields = useMemo(() => ({
+		...alias && { alias },
+		...emoji && { emoji },
+		...avatarUrl && { avatar: avatarUrl },
+	}), [alias, avatarUrl, emoji]);
 
-	const hilightedExampleJson = hilightCode('json', JSON.stringify(exampleData, null, 2));
+	const [exampleData] = useExampleData({
+		additionalFields,
+		url: null,
+	});
+
+	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
 	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
@@ -105,20 +104,20 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 							<Select flexGrow={1} value={event} options={eventOptions} onChange={handleEvent}/>
 						</Field.Row>
 						<Field.Hint>{t('Event_Trigger_Description')}</Field.Hint>
-					</Field>, [event]) }
+					</Field>, [event, eventOptions, handleEvent, t]) }
 					{ useMemo(() => <Field>
 						<Field.Label display='flex' justifyContent='space-between' w='full'>
 							{t('Enabled')}
 							<ToggleSwitch checked={enabled} onChange={handleEnabled} />
 						</Field.Label>
-					</Field>, [enabled]) }
+					</Field>, [enabled, handleEnabled, t]) }
 					{ useMemo(() => <Field>
 						<Field.Label>{t('Name_optional')}</Field.Label>
 						<Field.Row>
 							<TextInput flexGrow={1} value={name} onChange={handleName}/>
 						</Field.Row>
 						<Field.Hint>{t('You_should_name_it_to_easily_manage_your_integrations')}</Field.Hint>
-					</Field>, [name])}
+					</Field>, [handleName, name, t])}
 					{ useMemo(() => showChannel && <Field>
 						<Field.Label>{t('Channel')}</Field.Label>
 						<Field.Row>
@@ -127,7 +126,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 						<Field.Hint>{t('Channel_to_listen_on')}</Field.Hint>
 						<Field.Hint dangerouslySetInnerHTML={{ __html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general') }} />
 						<Field.Hint dangerouslySetInnerHTML={{ __html: t('Integrations_for_all_channels') }} />
-					</Field>, [showChannel, channel])}
+					</Field>, [showChannel, t, channel, handleChannel])}
 					{ useMemo(() => showTriggerWords && <Field>
 						<Field.Label>{t('Trigger_Words')}</Field.Label>
 						<Field.Row>
@@ -135,7 +134,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 						</Field.Row>
 						<Field.Hint>{t('When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below')}</Field.Hint>
 						<Field.Hint>{t('Separate_multiple_words_with_commas')}</Field.Hint>
-					</Field>, [triggerWords])}
+					</Field>, [handleTriggerWords, showTriggerWords, t, triggerWords])}
 					{ useMemo(() => showTargetRoom && <Field>
 						<Field.Label>{t('TargetRoom')}</Field.Label>
 						<Field.Row>
@@ -143,19 +142,19 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 						</Field.Row>
 						<Field.Hint>{t('TargetRoom_Description')}</Field.Hint>
 						<Field.Hint dangerouslySetInnerHTML={{ __html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general') }} />
-					</Field>, [showTargetRoom, targetRoom])}
+					</Field>, [handleTargetRoom, showTargetRoom, t, targetRoom])}
 					{ useMemo(() => <Field>
 						<Field.Label>{t('URLs')}</Field.Label>
 						<Field.Row>
 							<TextAreaInput rows={10} flexGrow={1} value={urls} onChange={handleUrls} addon={<Icon name='permalink' size='x20'/>}/>
 						</Field.Row>
-					</Field>, [urls])}
+					</Field>, [handleUrls, t, urls])}
 					{ useMemo(() => <Field>
 						<Field.Label display='flex' justifyContent='space-between' w='full'>
 							{t('Impersonate_user')}
 							<ToggleSwitch checked={impersonateUser} onChange={handleImpersonateUser} />
 						</Field.Label>
-					</Field>, [impersonateUser])}
+					</Field>, [handleImpersonateUser, impersonateUser, t])}
 					{ useMemo(() => <Field>
 						<Field.Label>{t('Post_as')}</Field.Label>
 						<Field.Row>
@@ -163,14 +162,14 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 						</Field.Row>
 						<Field.Hint>{t('Choose_the_username_that_this_integration_will_post_as')}</Field.Hint>
 						<Field.Hint>{t('Should_exists_a_user_with_this_username')}</Field.Hint>
-					</Field>, [username])}
+					</Field>, [handleUsername, t, username])}
 					{ useMemo(() => <Field>
 						<Field.Label>{`${ t('Alias') } (${ t('optional') })`}</Field.Label>
 						<Field.Row>
 							<TextInput flexGrow={1} value={alias} onChange={handleAlias} addon={<Icon name='edit' size='x20'/>}/>
 						</Field.Row>
 						<Field.Hint>{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}</Field.Hint>
-					</Field>, [alias])}
+					</Field>, [alias, handleAlias, t])}
 					{ useMemo(() => <Field>
 						<Field.Label>{`${ t('Avatar_URL') } (${ t('optional') })`}</Field.Label>
 						<Field.Row>
@@ -178,7 +177,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 						</Field.Row>
 						<Field.Hint>{t('You_can_change_a_different_avatar_too')}</Field.Hint>
 						<Field.Hint>{t('Should_be_a_URL_of_an_image')}</Field.Hint>
-					</Field>, [avatarUrl])}
+					</Field>, [avatarUrl, handleAvatar, t])}
 					{ useMemo(() => <Field>
 						<Field.Label>{`${ t('Emoji') } (${ t('optional') })`}</Field.Label>
 						<Field.Row>
@@ -186,25 +185,25 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 						</Field.Row>
 						<Field.Hint>{t('You_can_use_an_emoji_as_avatar')}</Field.Hint>
 						<Field.Hint dangerouslySetInnerHTML={{ __html: t('Example_s', ':ghost:') }} />
-					</Field>, [emoji])}
+					</Field>, [emoji, handleEmoji, t])}
 					{ useMemo(() => <Field>
 						<Field.Label>{`${ t('Token') } (${ t('Optional') })`}</Field.Label>
 						<Field.Row>
 							<TextInput flexGrow={1} value={token} onChange={handleToken} addon={<Icon name='key' size='x20'/>}/>
 						</Field.Row>
-					</Field>, [token])}
+					</Field>, [handleToken, t, token])}
 					{ useMemo(() => <Field>
 						<Field.Label display='flex' justifyContent='space-between' w='full'>
 							{t('Script_Enabled')}
 							<ToggleSwitch checked={scriptEnabled} onChange={handleScriptEnabled} />
 						</Field.Label>
-					</Field>, [scriptEnabled])}
+					</Field>, [handleScriptEnabled, scriptEnabled, t])}
 					{ useMemo(() => <Field>
 						<Field.Label>{t('Script')}</Field.Label>
 						<Field.Row>
 							<TextAreaInput rows={10} flexGrow={1} value={script} onChange={handleScript} addon={<Icon name='code' size='x20' alignSelf='center'/>}/>
 						</Field.Row>
-					</Field>, [script])}
+					</Field>, [handleScript, script, t])}
 					{ useMemo(() => <Field>
 						<Field.Label>{t('Responding')}</Field.Label>
 						<Field.Hint>{t('Response_description_pre')}</Field.Hint>
@@ -214,7 +213,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 							</Box>
 						</Field.Row>
 						<Field.Hint>{t('Response_description_post')}</Field.Hint>
-					</Field>, [hilightedExampleJson])}
+					</Field>, [hilightedExampleJson, t])}
 				</FieldGroup>
 				<Accordion.Item title={t('Integration_Advanced_Settings')}>
 					<FieldGroup>
@@ -224,21 +223,21 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 								<ToggleSwitch checked={retryFailedCalls} onChange={handleRetryFailedCalls} />
 							</Field.Label>
 							<Field.Hint>{t('Integration_Retry_Failed_Url_Calls_Description')}</Field.Hint>
-						</Field>, [retryFailedCalls])}
+						</Field>, [handleRetryFailedCalls, retryFailedCalls, t])}
 						{ useMemo(() => <Field>
 							<Field.Label>{t('Retry_Count')}</Field.Label>
 							<Field.Row>
 								<TextInput flexGrow={1} value={retryCount} onChange={handleRetryCount}/>
 							</Field.Row>
 							<Field.Hint>{t('Integration_Retry_Count_Description')}</Field.Hint>
-						</Field>, [retryCount])}
+						</Field>, [handleRetryCount, retryCount, t])}
 						{ useMemo(() => <Field>
 							<Field.Label>{t('Integration_Retry_Delay')}</Field.Label>
 							<Field.Row>
 								<Select flexGrow={1} value={retryDelay} options={retryDelayOptions} onChange={handleRetryDelay}/>
 							</Field.Row>
 							<Field.Hint dangerouslySetInnerHTML={{ __html: t('Integration_Retry_Delay_Description') }}/>
-						</Field>, [retryDelay])}
+						</Field>, [handleRetryDelay, retryDelay, retryDelayOptions, t])}
 						{ useMemo(() => event === 'sendMessage' && <FieldGroup>
 							<Field>
 								<Field.Label display='flex' justifyContent='space-between' w='full'>
@@ -249,12 +248,12 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 							</Field>
 							<Field>
 								<Field.Label display='flex' justifyContent='space-between' w='full'>
-									{t('Integration_Word_Trigger_Placement')}
+									{t('Integration_Run_When_Message_Is_Edited')}
 									<ToggleSwitch checked={runOnEdits} onChange={handleRunOnEdits} />
 								</Field.Label>
 								<Field.Hint>{t('Integration_Run_When_Message_Is_Edited_Description')}</Field.Hint>
 							</Field>
-						</FieldGroup>, [triggerWordAnywhere, runOnEdits])}
+						</FieldGroup>, [event, t, triggerWordAnywhere, handleTriggerWordAnywhere, runOnEdits, handleRunOnEdits])}
 					</FieldGroup>
 				</Accordion.Item>
 				{ append }
