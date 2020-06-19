@@ -12,7 +12,7 @@ import { Session } from 'meteor/session';
 import { messageArgs } from './messageArgs';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
-import { hasAtLeastOnePermission } from '../../../authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
 
 const call = (method, ...args) => new Promise((resolve, reject) => {
@@ -172,13 +172,21 @@ Meteor.startup(async function() {
 				reply: msg._id,
 			});
 		},
-		condition({ subscription, room }) {
+		condition({ subscription, room, msg, u }) {
 			if (subscription == null) {
 				return false;
 			}
 			if (room.t === 'd' || room.t === 'l') {
 				return false;
 			}
+
+			// Check if we already have a DM started with the message user (not ourselves) or we can start one
+			const dmRoom = Rooms.findOne({ _id: [u._id, msg.u._id].sort().join('') });
+			const canAccessDM = dmRoom && Subscriptions.findOne({ rid: dmRoom._id, 'u._id': u._id });
+			if (u._id !== msg.u._id && !canAccessDM && !hasPermission('create-d')) {
+				return false;
+			}
+
 			return true;
 		},
 		order: 0,
