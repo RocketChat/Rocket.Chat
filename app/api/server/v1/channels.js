@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
