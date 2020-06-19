@@ -247,7 +247,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		Defer other updates as their return is not interesting to the user
 		*/
 		// Execute all callbacks
-		Meteor.defer(() => callbacks.run('afterSaveMessage', message, room, user._id));
+		callbacks.runAsync('afterSaveMessage', message, room, user._id);
 		return message;
 	}
 };
