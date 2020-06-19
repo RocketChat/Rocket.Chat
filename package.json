@@ -136,6 +136,10 @@
 		"@rocket.chat/icons": "^0.6.3-dev.23",
 		"@rocket.chat/ui-kit": "^0.6.3-dev.23",
 		"@slack/client": "^4.8.0",
+		"@types/fibers": "^3.1.0",
+		"@types/underscore.string": "0.0.38",
+		"@types/xml-crypto": "^1.4.1",
+		"@types/xmldom": "^0.1.29",
 		"@types/use-subscription": "^1.0.0",
 		"adm-zip": "RocketChat/adm-zip",
 		"apn": "2.2.0",
@@ -240,7 +244,6 @@
 		"xml-crypto": "^1.0.2",
 		"xml-encryption": "0.11.2",
 		"xml2js": "0.4.19",
-		"xmlbuilder": "^10.1.1",
 		"xmldom": "^0.1.27",
 		"yaqrcode": "^0.2.1"
 	},
