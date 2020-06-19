@@ -4,7 +4,7 @@ import { openRoom } from '../../../ui-utils';
 import { ChatRoom, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions } from '../../../utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions, roomTypes } from '../../../utils';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
@@ -135,6 +135,17 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	getAvatarPath(roomData) {
 		// TODO: change to always get avatar from _id when rooms have avatars
+
+		// if room is not a discussion, returns the avatar for its name
+		if (!roomData.prid) {
+			return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+		}
+
+		// if discussion's parent room is known, get his avatar
+		const proom = ChatRoom.findOne({ _id: roomData.prid }, { reactive: false });
+		if (proom) {
+			return roomTypes.getConfig(proom.t).getAvatarPath(proom);
+		}
 
 		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
 	}

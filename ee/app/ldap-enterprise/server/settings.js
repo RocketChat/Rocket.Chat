@@ -26,5 +26,18 @@ export const createSettings = () => {
 				enableQuery: { _id: 'LDAP_Enable_LDAP_Roles_To_RC_Roles', value: true },
 			});
 		});
+
+		this.section('LDAP_Advanced_Sync', function() {
+			this.add('LDAP_Sync_User_Active_State', 'disable', {
+				type: 'select',
+				values: [
+					{ key: 'none', i18nLabel: 'LDAP_Sync_User_Active_State_Nothing' },
+					{ key: 'disable', i18nLabel: 'LDAP_Sync_User_Active_State_Disable' },
+					{ key: 'both', i18nLabel: 'LDAP_Sync_User_Active_State_Both' },
+				],
+				i18nDescription: 'LDAP_Sync_User_Active_State_Description',
+				enableQuery: { _id: 'LDAP_Enable', value: true },
+			});
+		});
 	});
 };
