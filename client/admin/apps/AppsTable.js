@@ -1,10 +1,9 @@
-import { Box, Table, TextInput, Icon, Tag } from '@rocket.chat/fuselage';
+import { Box, Icon, Table, Tag, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useEffect, memo, useContext, useMemo } from 'react';
 
 import AppAvatar from '../../components/basic/avatar/AppAvatar';
 import GenericTable from '../../components/GenericTable';
-import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
@@ -47,22 +46,45 @@ const AppRow = memo(function AppRow({
 		installed,
 	} = props;
 	const t = useTranslation();
-	const setModal = useSetModal();
-	const [showStatus, setShowStatus] = useState(false);
 
-	const router = useRoute('admin-apps');
+	const [isFocused, setFocused] = useState(false);
+	const [isHovered, setHovered] = useState(false);
+	const isStatusVisible = isFocused || isHovered;
 
-	const onClick = useCallback((id, version) => () => router.push({
-		context: 'details',
-		version,
-		id,
-	}), [router]);
+	const appsRoute = useRoute('admin-apps');
 
-	const toggleShow = (state) => () => setShowStatus(state);
-	const handler = onClick(id, marketplaceVersion);
-	const preventDefault = useCallback((e) => { e.preventDefault(); e.stopPropagation(); }, []);
+	const handleClick = () => {
+		appsRoute.push({
+			context: 'details',
+			version: marketplaceVersion,
+			id,
+		});
+	};
 
-	return <Table.Row key={id} data-id={id} data-version={marketplaceVersion} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action onMouseEnter={toggleShow(true)} onMouseLeave={toggleShow(false)} >
+	const handleKeyDown = (e) => {
+		if (!['Enter', 'Space'].includes(e.nativeEvent.code)) {
+			return;
+		}
+
+		handleClick();
+	};
+
+	const preventClickPropagation = (e) => {
+		e.stopPropagation();
+	};
+
+	return <Table.Row
+		key={id}
+		role='link'
+		action
+		tabIndex={0}
+		onClick={handleClick}
+		onKeyDown={handleKeyDown}
+		onFocus={() => setFocused(true)}
+		onBlur={() => setFocused(false)}
+		onMouseEnter={() => setHovered(true)}
+		onMouseLeave={() => setHovered(false)}
+	>
 		<Table.Cell withTruncatedText display='flex' flexDirection='row'>
 			<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
 			<Box display='flex' flexDirection='column' alignSelf='flex-start'>
@@ -79,9 +101,9 @@ const AppRow = memo(function AppRow({
 			</Box>
 		</Table.Cell>}
 		<Table.Cell withTruncatedText>
-			<Box display='flex' flexDirection='row' alignItems='center' onClick={preventDefault}>
-				<AppStatus app={props} setModal={setModal} isLoggedIn={isLoggedIn} showStatus={showStatus} mie='x4'/>
-				{installed && <AppMenu display={showStatus ? 'block' : 'none'} app={props} setModal={setModal} isLoggedIn={isLoggedIn} mis='x4'/>}
+			<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
+				<AppStatus app={props} isLoggedIn={isLoggedIn} showStatus={isStatusVisible} marginInline='x8'/>
+				{installed && <AppMenu app={props} isLoggedIn={isLoggedIn} invisible={!isStatusVisible} marginInline='x8'/>}
 			</Box>
 		</Table.Cell>
 	</Table.Row>;

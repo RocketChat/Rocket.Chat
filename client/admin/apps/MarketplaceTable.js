@@ -1,17 +1,18 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
-import { Box, Table, TextInput, Icon, Tag } from '@rocket.chat/fuselage';
+import { Box, Icon, Table, Tag, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState, useEffect, useContext, useMemo, memo } from 'react';
 
-import PriceDisplay from './PriceDisplay';
 import AppAvatar from '../../components/basic/avatar/AppAvatar';
-import AppStatus from './AppStatus';
-import { useLoggedInCloud } from './hooks/useLoggedInCloud';
-import { useTranslation } from '../../contexts/TranslationContext';
+import GenericTable from '../../components/GenericTable';
 import { useRoute } from '../../contexts/RouterContext';
-import { useFilteredMarketplaceApps } from './hooks/useFilteredMarketplaceApps';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
-import { Th, GenericTable } from '../../components/GenericTable';
+import { useFilteredApps } from './hooks/useFilteredApps';
+import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import AppMenu from './AppMenu';
+import AppStatus from './AppStatus';
+import PriceDisplay from './PriceDisplay';
+import { AppDataContext } from './AppProvider';
 
 const FilterByText = React.memo(({ setFilter, ...props }) => {
 	const t = useTranslation();
@@ -29,14 +30,12 @@ const FilterByText = React.memo(({ setFilter, ...props }) => {
 	</Box>;
 });
 
-const MarketplaceRow = ({
-	handler,
-	isBig,
+const MarketplaceRow = memo(function MarketplaceRow({
 	isLoggedIn,
-	isMedium,
-	setModal,
+	medium,
+	large,
 	...props
-}) => {
+}) {
 	const {
 		author: { name: authorName },
 		name,
@@ -52,26 +51,44 @@ const MarketplaceRow = ({
 		installed,
 	} = props;
 	const t = useTranslation();
-	const [showStatus, setShowStatus] = useState(false);
 
-	const toggleShow = (state) => () => setShowStatus(state);
+	const [isFocused, setFocused] = useState(false);
+	const [isHovered, setHovered] = useState(false);
+	const isStatusVisible = isFocused || isHovered;
 
-	const preventDefault = useCallback((e) => {
-		e.preventDefault();
+	const marketplaceRoute = useRoute('admin-marketplace');
+
+	const handleClick = () => {
+		marketplaceRoute.push({
+			context: 'details',
+			version: marketplaceVersion,
+			id,
+		});
+	};
+
+	const handleKeyDown = (e) => {
+		if (!['Enter', 'Space'].includes(e.nativeEvent.code)) {
+			return;
+		}
+
+		handleClick();
+	};
+
+	const preventClickPropagation = (e) => {
 		e.stopPropagation();
-	}, []);
+	};
 
 	return <Table.Row
 		key={id}
-		data-id={id}
-		data-version={marketplaceVersion}
-		onKeyDown={handler}
-		onClick={handler}
-		tabIndex={0}
 		role='link'
 		action
-		onMouseEnter={toggleShow(true)}
-		onMouseLeave={toggleShow(false)}
+		tabIndex={0}
+		onClick={handleClick}
+		onKeyDown={handleKeyDown}
+		onFocus={() => setFocused(true)}
+		onBlur={() => setFocused(false)}
+		onMouseEnter={() => setHovered(true)}
+		onMouseLeave={() => setHovered(false)}
 	>
 		<Table.Cell withTruncatedText display='flex' flexDirection='row'>
 			<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
@@ -80,7 +97,7 @@ const MarketplaceRow = ({
 				<Box color='default' fontScale='p2'>{`${ t('By') } ${ authorName }`}</Box>
 			</Box>
 		</Table.Cell>
-		{isBig && <Table.Cell>
+		{large && <Table.Cell>
 			<Box display='flex' flexDirection='column'>
 				<Box color='default' withTruncatedText>{description}</Box>
 				{categories && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
@@ -88,84 +105,93 @@ const MarketplaceRow = ({
 				</Box>}
 			</Box>
 		</Table.Cell>}
-		{isMedium && <Table.Cell >
+		{medium && <Table.Cell>
 			<PriceDisplay {...{ purchaseType, pricingPlans, price }} />
 		</Table.Cell>}
 		<Table.Cell withTruncatedText>
-			<Box display='flex' flexDirection='row' alignItems='center' onClick={preventDefault}>
-				<AppStatus app={props} setModal={setModal} isLoggedIn={isLoggedIn} showStatus={showStatus} mie='x4'/>
-				{installed && <AppMenu display={showStatus ? 'block' : 'none'} app={props} setModal={setModal} isLoggedIn={isLoggedIn} mis='x4'/>}
+			<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
+				<AppStatus app={props} isLoggedIn={isLoggedIn} showStatus={isStatusVisible} marginInline='x8'/>
+				{installed && <AppMenu app={props} isLoggedIn={isLoggedIn} invisible={!isStatusVisible} marginInline='x8'/>}
 			</Box>
 		</Table.Cell>
 	</Table.Row>;
-};
+});
 
-export function MarketplaceTable({ setModal }) {
+function MarketplaceTable() {
 	const t = useTranslation();
-	const [ref, isBig, isMedium] = useResizeInlineBreakpoint([800, 600], 200);
+
+	const [ref, onLargeBreakpoint, onMediumBreakpoint] = useResizeInlineBreakpoint([800, 600], 200);
+
+	const isLoggedIn = useLoggedInCloud();
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 
-	const debouncedText = useDebouncedValue(params.text, 500);
-	const debouncedSort = useDebouncedValue(sort, 200);
+	const { text, current, itemsPerPage } = params;
+	const { data, dataCache } = useContext(AppDataContext);
+	const [filteredApps, filteredAppsCount] = useFilteredApps({
+		filterFunction: useCallback(
+			(text) => ({ name, marketplace }) => marketplace !== false && name.toLowerCase().indexOf(text.toLowerCase()) > -1,
+			[],
+		),
+		text: useDebouncedValue(text, 500),
+		current,
+		itemsPerPage,
+		sort: useDebouncedValue(sort, 200),
+		data: useMemo(
+			() => (data.length ? data : null),
+			[dataCache],
+		),
+		dataCache,
+	});
 
-	const [data, total] = useFilteredMarketplaceApps({ sort: debouncedSort, text: debouncedText, ...params });
-
-	const isLoggedIn = useLoggedInCloud();
-
-	const router = useRoute('admin-marketplace');
-
-	const handler = useCallback((e) => {
-		if (e.type !== 'click' && !['Enter', ' '].includes(e.key)) {
-			return;
-		}
-
-		const { id, version } = e.currentTarget.dataset;
-
-		router.push({
-			context: 'details',
-			version,
-			id,
-		});
-	}, [router]);
-
-	const onHeaderClick = useCallback((id) => {
-		const [sortBy, sortDirection] = sort;
-
-		if (sortBy === id) {
-			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
-			return;
-		}
-		setSort([id, 'asc']);
-	}, [sort]);
-
-	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w={isMedium ? 'x240' : 'x180'}>{t('Name')}</Th>,
-		isBig && <Th key={'details'}>{t('Details')}</Th>,
-		isMedium && <Th key={'price'}>{t('Price')}</Th>,
-		<Th key={'status'} w='x160'>{t('Status')}</Th>,
-	].filter(Boolean), [sort, onHeaderClick, isMedium, t, isBig]);
-
-	const renderRow = useCallback((props) => <MarketplaceRow
-		handler={handler}
-		isBig={isBig}
-		isLoggedIn={isLoggedIn}
-		isMedium={isMedium}
-		setModal={setModal}
-		{...props}
-	/>, [handler, isBig, isLoggedIn, isMedium, setModal]);
+	const [sortBy, sortDirection] = sort;
+	const onHeaderCellClick = (id) => {
+		setSort(
+			([sortBy, sortDirection]) => (
+				sortBy === id
+					? [id, sortDirection === 'asc' ? 'desc' : 'asc']
+					: [id, 'asc']
+			),
+		);
+	};
 
 	return <GenericTable
 		ref={ref}
-		FilterComponent={FilterByText}
-		header={header}
-		renderRow={renderRow}
-		results={data}
-		total={total}
+		header={<>
+			<GenericTable.HeaderCell
+				direction={sortDirection}
+				active={sortBy === 'name'}
+				onClick={onHeaderCellClick}
+				sort='name'
+				width={onMediumBreakpoint ? 'x240' : 'x180'}
+			>
+				{t('Name')}
+			</GenericTable.HeaderCell>
+			{onLargeBreakpoint && <GenericTable.HeaderCell>
+				{t('Details')}
+			</GenericTable.HeaderCell>}
+			{onMediumBreakpoint && <GenericTable.HeaderCell>
+				{t('Price')}
+			</GenericTable.HeaderCell>}
+			<GenericTable.HeaderCell width='x160'>
+				{t('Status')}
+			</GenericTable.HeaderCell>
+		</>}
+		results={filteredApps}
+		total={filteredAppsCount}
 		setParams={setParams}
 		params={params}
-	/>;
+		FilterComponent={FilterByText}
+	>
+		{(props) => <MarketplaceRow
+			key={props.id}
+			isLoggedIn={isLoggedIn}
+			medium={onMediumBreakpoint}
+			large={onLargeBreakpoint}
+			{...props}
+		/>}
+	</GenericTable>;
 }
 
 export default MarketplaceTable;

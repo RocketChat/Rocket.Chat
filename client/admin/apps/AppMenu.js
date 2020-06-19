@@ -8,9 +8,11 @@ import { IframeModal } from './IframeModal';
 import { CloudLoginModal } from './CloudLoginModal';
 import { useRoute } from '../../contexts/RouterContext';
 import WarningModal from './WarningModal';
+import { useSetModal } from '../../contexts/ModalContext';
 
-export default function AppMenu({ app, setModal, isLoggedIn, ...props }) {
+export default function AppMenu({ app, isLoggedIn, ...props }) {
 	const t = useTranslation();
+	const setModal = useSetModal();
 	const router = useRoute('admin-apps');
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';

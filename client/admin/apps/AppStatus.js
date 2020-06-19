@@ -6,6 +6,7 @@ import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange } 
 import { Apps } from '../../../app/apps/client/orchestrator';
 import { IframeModal } from './IframeModal';
 import { CloudLoginModal } from './CloudLoginModal';
+import { useSetModal } from '../../contexts/ModalContext';
 
 const installApp = async ({ id, name, version }) => {
 	try {
@@ -29,9 +30,10 @@ const actions = {
 	},
 };
 
-const AppStatus = React.memo(({ app, setModal, isLoggedIn, showStatus = true, ...props }) => {
+const AppStatus = React.memo(({ app, isLoggedIn, showStatus = true, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useState();
+	const setModal = useSetModal();
 
 	const button = appButtonProps(app);
 	const status = !button && appStatusSpanProps(app);

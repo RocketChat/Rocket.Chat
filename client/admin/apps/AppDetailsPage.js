@@ -16,9 +16,8 @@ import { useForm } from '../../hooks/useForm';
 import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import { handleAPIError, apiCurlGetter } from './helpers';
 import { AppSettingsAssembler } from './AppSettings';
-import { useSetModal } from '../../contexts/ModalContext';
 
-function AppDetailsPageContent({ data, setModal, isLoggedIn }) {
+function AppDetailsPageContent({ data, isLoggedIn }) {
 	const t = useTranslation();
 
 	const {
@@ -48,10 +47,10 @@ function AppDetailsPageContent({ data, setModal, isLoggedIn }) {
 				</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-						<AppStatus mie='x4' app={data} setModal={setModal} isLoggedIn={isLoggedIn}/>
+						<AppStatus mie='x4' app={data} isLoggedIn={isLoggedIn}/>
 						{!installed && <PriceDisplay mis='x4' purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false}/>}
 					</Box>
-					{installed && <AppMenu app={data} setModal={setModal} isLoggedIn={isLoggedIn} />}
+					{installed && <AppMenu app={data} isLoggedIn={isLoggedIn} />}
 				</Box>
 			</Box>
 		</Box>
@@ -158,7 +157,6 @@ const LoadingDetails = () => <Box display='flex' flexDirection='row' mbe='x20' w
 
 export default function AppDetailsPage({ id }) {
 	const t = useTranslation();
-	const setModal = useSetModal();
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
@@ -204,7 +202,7 @@ export default function AppDetailsPage({ id }) {
 			<Box maxWidth='x600' w='full' alignSelf='center'>
 				{isLoading && <LoadingDetails />}
 				{!isLoading && <>
-					<AppDetailsPageContent data={data} setModal={setModal} isLoggedIn={isLoggedIn}/>
+					<AppDetailsPageContent data={data} isLoggedIn={isLoggedIn}/>
 					{!!showApis && <APIsDisplay apis={apis}/>}
 					{!!showSettings && <SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef}/>}
 				</>}
