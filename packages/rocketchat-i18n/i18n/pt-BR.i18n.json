@@ -1266,6 +1266,7 @@
   "error-archived-duplicate-name": "Já há um canal arquivado com o nome '__room_name__'",
   "error-avatar-invalid-url": "URL inválida de avatar: __url__",
   "error-avatar-url-handling": "Erro durante o manuseio configuração avatar a partir de uma URL (__url__) para __username__",
+  "error-business-hours-are-closed": "Horário de expediente fechado",
   "error-cant-invite-for-direct-room": "Não é possível convidar usuários para salas diretas",
   "error-channels-setdefault-is-same": "A configuração padrão do canal é a mesma que seria alterada.",
   "error-channels-setdefault-missing-default-param": "O bodyParam 'default' é obrigatório",
