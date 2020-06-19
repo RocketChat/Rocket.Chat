@@ -4,8 +4,13 @@ import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { Growth } from '../data/Growth';
+import Growth from '../../../../../../client/components/data/Growth';
 import { Section } from '../Section';
+import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
+import { saveFile } from '../../../../../../client/lib/saveFile';
+
+const convertDataToCSV = (data) => `// type, name, messagesCount, updatedAt, createdAt
+${ data.map(({ createdAt, messagesCount, name, t, updatedAt }) => `${ t }, ${ name }, ${ messagesCount }, ${ updatedAt }, ${ createdAt }`).join('\n') }`;
 
 export function TableSection() {
 	const t = useTranslation();
@@ -73,7 +78,11 @@ export function TableSection() {
 		}));
 	}, [data]);
 
-	return <Section filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}>
+	const downloadData = () => {
+		saveFile(convertDataToCSV(channels), `Channels_start_${ params.start }_end_${ params.end }.csv`);
+	};
+
+	return <Section filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!channels} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}>
 		<Box>
 			{channels && !channels.length && <Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
 				{t('No_data_found')}

@@ -24,5 +24,5 @@ export const useEndpointUpload = (endpoint, params = {}, successMessage) => {
 			dispatchToastMessage({ type: 'error', message: error });
 			return { success: false };
 		}
-	}, [JSON.stringify(params)]);
+	}, [dispatchToastMessage, params, sendData, successMessage]);
 };

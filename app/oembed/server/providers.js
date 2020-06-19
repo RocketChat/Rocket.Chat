@@ -68,6 +68,11 @@ providers.registerProvider({
 	endPoint: 'https://www.dailymotion.com/services/oembed?maxheight=200',
 });
 
+providers.registerProvider({
+	urls: [new RegExp('https?://twitter\\.com/[^/]+/status/\\S+')],
+	endPoint: 'https://publish.twitter.com/oembed',
+});
+
 export const oembed = {};
 
 oembed.providers = providers;
