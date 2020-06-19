@@ -3,8 +3,6 @@ import './contactChatHistoryItem.html';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-// import { APIClient } from '../../../../../utils/client';
-
 Template.contactChatHistoryItem.helpers({
 	closedAt() {
 		const { closedAt } = Template.instance().room.get();
