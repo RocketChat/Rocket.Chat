@@ -60,12 +60,9 @@ const create = ({ prid, pmid, t_name, reply, users, user }) => {
 	try {
 		p_room = canSendMessage(prid, { uid: user._id, username: user.username, type: user.type });
 	} catch (error) {
-		throw new Meteor.Error('error-cannot-send-message', error.message);
+		throw new Meteor.Error(error.message);
 	}
 
-	if (!p_room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'DiscussionCreation' });
-	}
 	if (p_room.prid) {
 		throw new Meteor.Error('error-nested-discussion', 'Cannot create nested discussions', { method: 'DiscussionCreation' });
 	}
