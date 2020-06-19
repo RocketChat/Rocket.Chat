@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
@@ -1017,7 +1018,7 @@ API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
 
 API.v1.addRoute('channels.setEncrypted', { authRequired: true }, {
 	post() {
-		if (typeof this.bodyParams.encrypted === 'undefined') {
+		if (!Match.test(this.bodyParams, { encrypted: Boolean })) {
 			return API.v1.failure('The bodyParam "encrypted" is required');
 		}
 
@@ -1027,9 +1028,7 @@ API.v1.addRoute('channels.setEncrypted', { authRequired: true }, {
 			return API.v1.failure('The channel encrypted is the same as what it would be changed to.');
 		}
 
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('saveRoomSettings', findResult._id, 'encrypted', this.bodyParams.encrypted);
-		});
+		Meteor.call('saveRoomSettings', findResult._id, 'encrypted', this.bodyParams.encrypted);
 
 		return API.v1.success({
 			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),

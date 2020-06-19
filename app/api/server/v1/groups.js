@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
@@ -822,7 +823,7 @@ API.v1.addRoute('groups.moderators', { authRequired: true }, {
 
 API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
 	post() {
-		if (typeof this.bodyParams.encrypted === 'undefined') {
+		if (!Match.test(this.bodyParams, { encrypted: Boolean })) {
 			return API.v1.failure('The bodyParam "encrypted" is required');
 		}
 
@@ -832,12 +833,10 @@ API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
 			return API.v1.failure('The group encrypted is the same as what it would be changed to.');
 		}
 
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('saveRoomSettings', findResult._id, 'encrypted', this.bodyParams.encrypted);
-		});
+		Meteor.call('saveRoomSettings', findResult._id, 'encrypted', this.bodyParams.encrypted);
 
 		return API.v1.success({
-			groups: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
+			group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 		});
 	},
 });

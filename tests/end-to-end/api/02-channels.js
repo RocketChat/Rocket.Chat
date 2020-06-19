@@ -1270,4 +1270,82 @@ describe('[Channels]', function() {
 			});
 		});
 	});
+
+	describe('/channels.setEncrypted', () => {
+		let testChannel;
+		it('/channels.create', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.encrypted.test.${ Date.now() }`,
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+
+		it('should return an error when passing no boolean param', (done) => {
+			request.post(api('channels.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					encrypted: 'no-boolean',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The channel encrypted is the same as what it would be changed to.');
+				})
+				.end(done);
+		});
+
+		it('should set channel as encrypted correctly and return the new data', (done) => {
+			request.post(api('channels.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					encrypted: true,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('channel');
+					expect(res.body.channel).to.have.property('_id', testChannel._id);
+					expect(res.body.channel).to.have.property('encrypted', true);
+				})
+				.end(done);
+		});
+
+		it('should return the updated room encrypted', async () => {
+			const roomInfo = await getRoomInfo(testChannel._id);
+			expect(roomInfo).to.have.a.property('success', true);
+			expect(roomInfo.channel).to.have.a.property('_id', testChannel._id);
+			expect(roomInfo.channel).to.have.a.property('encrypted', true);
+		});
+
+		it('should set channel as unencrypted correctly and return the new data', (done) => {
+			request.post(api('channels.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					encrypted: false,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('channel');
+					expect(res.body.channel).to.have.property('_id', testChannel._id);
+					expect(res.body.channel).to.have.property('encrypted', false);
+				})
+				.end(done);
+		});
+
+		it('should return the updated room unencrypted', async () => {
+			const roomInfo = await getRoomInfo(testChannel._id);
+			expect(roomInfo).to.have.a.property('success', true);
+			expect(roomInfo.channel).to.have.a.property('_id', testChannel._id);
+			expect(roomInfo.channel).to.have.a.property('encrypted', false);
+		});
+	});
 });
