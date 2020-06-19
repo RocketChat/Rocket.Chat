@@ -30,8 +30,10 @@ Meteor.methods({
 
 			const jitsiTimeout = room.jitsiTimeout && new Date(room.jitsiTimeout).getTime();
 
+			const nextTimeOut = new Date(currentTime + CONSTANTS.TIMEOUT);
+
 			if (!jitsiTimeout || currentTime > jitsiTimeout - CONSTANTS.TIMEOUT / 2) {
-				Rooms.setJitsiTimeout(rid, new Date(currentTime + CONSTANTS.TIMEOUT));
+				Rooms.setJitsiTimeout(rid, nextTimeOut);
 			}
 
 			if (!jitsiTimeout || currentTime > jitsiTimeout) {
@@ -52,7 +54,7 @@ Meteor.methods({
 				callbacks.run('afterSaveMessage', message, { ...room, jitsiTimeout: currentTime + CONSTANTS.TIMEOUT });
 			}
 
-			return jitsiTimeout;
+			return jitsiTimeout || nextTimeOut;
 		} catch (error) {
 			SystemLogger.error('Error starting video call:', error);
 
