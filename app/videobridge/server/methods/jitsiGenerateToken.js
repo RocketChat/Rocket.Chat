@@ -17,7 +17,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'not allowed', { method: 'jitsi:generateToken' });
 		}
 
-		const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + rid;
+		const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + rid + settings.get('Jitsi_URL_Room_Suffix');
 
 		const jitsiDomain = settings.get('Jitsi_Domain');
 		const jitsiApplicationId = settings.get('Jitsi_Application_ID');
