@@ -37,7 +37,7 @@ export abstract class AbstractBusinessHour {
 		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
-	protected async getBusinessHoursThatMustBeOpen(day: string, currentTime: any, activeBusinessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> {
+	protected async getBusinessHoursThatMustBeOpened(day: string, currentTime: any, activeBusinessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> {
 		return activeBusinessHours
 			.filter((businessHour) => businessHour.workHours
 				.filter((hour) => hour.day === day)

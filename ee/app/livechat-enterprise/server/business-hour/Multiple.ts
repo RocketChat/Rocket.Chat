@@ -32,8 +32,16 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 		return businessHour;
 	}
 
-	openBusinessHoursByDayHourAndUTC(/* day: string, hour: string, utc: string*/): Promise<void> {
-		return Promise.resolve(undefined);
+	async openBusinessHoursByDayHourAndUTC(day: string, hour: string, utc: string): Promise<void> {
+		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToOpen(day, hour, utc, undefined, {
+			fields: {
+				_id: 1,
+				type: 1,
+			},
+		});
+		for (const businessHour of businessHours) {
+			this.openBusinessHour(businessHour);
+		}
 	}
 
 	async saveBusinessHour(businessHourData: IBusinessHoursExtraProperties): Promise<void> {
@@ -86,7 +94,7 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 				type: 1,
 			},
 		});
-		const businessHoursToOpenIds = await this.getBusinessHoursThatMustBeOpen(day, currentTime, activeBusinessHours);
+		const businessHoursToOpenIds = await this.getBusinessHoursThatMustBeOpened(day, currentTime, activeBusinessHours);
 		for (const businessHour of businessHoursToOpenIds) {
 			this.openBusinessHour(businessHour);
 		}
