@@ -2117,7 +2117,7 @@
   "LDAP_Login_Fallback": "Login Fallback",
   "LDAP_Login_Fallback_Description": "If the login on LDAP is not successful try to login in default/local account system. Helps when the LDAP is down for some reason.",
   "LDAP_Merge_Existing_Users": "Merge Existing Users",
-  "LDAP_Merge_Existing_Users_Description": "*Caution!* When importing an user from LDAP and an user with same username already exists the LDAP info and password will be set into the existing user.",
+  "LDAP_Merge_Existing_Users_Description": "*Caution!* When importing a user from LDAP and an user with same username already exists the LDAP info and password will be set into the existing user.",
   "LDAP_Port": "Port",
   "LDAP_Port_Description": "Port to access LDAP. eg: `389` or `636` for LDAPS",
   "LDAP_Reconnect": "Reconnect",
