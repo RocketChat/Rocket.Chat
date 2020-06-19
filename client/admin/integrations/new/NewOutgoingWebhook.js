@@ -46,6 +46,7 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 		...formValues,
 		urls: urls.split('\n'),
 		triggerWords: triggerWords.split(';'),
+		// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
 	}), [JSON.stringify(formValues)]);
 
 	const saveIntegration = useEndpointAction('POST', 'integrations.create', query, t('Integration_added'));
@@ -61,7 +62,7 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 		<Field.Row>
 			<Button w='full' mie='none' flexGrow={1} onClick={handleSave}>{t('Save')}</Button>
 		</Field.Row>
-	</Field>);
+	</Field>, [handleSave, t]);
 
 
 	return <OutgoingWebhookForm formValues={formValues} formHandlers={formHandlers} append={saveButton} {...props}/>;

@@ -1,18 +1,24 @@
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 const getUsername = ({ userId, username }) => {
+	const query = {};
 	if (username) {
-		return username;
+		query.username = username;
 	}
 
 	if (userId) {
-		const user = Meteor.users.findOne(userId, { fields: { username: 1 } });
-		return user && user.username;
+		query._id = userId;
 	}
+
+	const user = Meteor.users.findOne(query, { fields: { username: 1, avatarETag: 1 } });
+	if (!user) {
+		return {};
+	}
+
+	return user;
 };
 
 Template.avatar.helpers({
@@ -22,21 +28,23 @@ Template.avatar.helpers({
 			return url;
 		}
 
-		let username = getUsername(this);
+		if (this.roomIcon && this.username) {
+			return getUserAvatarURL(`@${ this.username }`);
+		}
+
+		const { username, avatarETag } = getUsername(this);
 		if (!username) {
+			if (this.username) {
+				return getUserAvatarURL(this.username);
+			}
 			return;
 		}
 
-		Session.get(`avatar_random_${ username }`);
-
-		if (this.roomIcon) {
-			username = `@${ username }`;
-		}
-
-		return getUserAvatarURL(username);
+		return getUserAvatarURL(username, avatarETag);
 	},
 
 	alt() {
-		return getUsername(this);
+		const { username } = getUsername(this);
+		return username;
 	},
 });

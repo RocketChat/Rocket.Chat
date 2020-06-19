@@ -9,7 +9,7 @@ export const useAutoToggle = (initialValue = false, ms = 1000) => {
 		return () => {
 			clearInterval(timer);
 		};
-	}, []);
+	}, [ms]);
 
 	return value;
 };

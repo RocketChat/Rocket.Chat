@@ -18,5 +18,5 @@ export const useFormatTime = () => {
 			default:
 				return moment(time).format(format);
 		}
-	}, [clockMode, format]);
+	}, [clockMode, format, sameDay]);
 };
