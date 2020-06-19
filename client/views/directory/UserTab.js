@@ -7,7 +7,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useQuery } from './hooks';
-import { roomTypes } from '../../../app/utils/client';
+import { getUserAvatarURL } from '../../../app/utils/client';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import NotAuthorizedPage from '../../admin/NotAuthorizedPage';
@@ -72,8 +72,8 @@ function UserTable({
 
 	const formatDate = useFormatDate();
 
-	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio }) => {
-		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: username || name, type: 'd', _id });
+	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio, avatarETag }) => {
+		const avatarUrl = getUserAvatarURL(username, avatarETag);
 
 		return <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 			<Table.Cell>
