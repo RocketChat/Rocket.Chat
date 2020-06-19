@@ -393,7 +393,11 @@ export class SAML {
 				};
 
 				if (!credentialToken) {
-					// No credentialToken in IdP-initiated SSO
+					// If the login was initiated by the IDP, then we don't have a credentialToken as there was no AuthorizeRequest on our side
+					// so we create a random token now to use the same url to end the login
+					//
+					// to test an IdP initiated login on localhost, use the following URL (assuming SimpleSAMLPHP on localhost:8080):
+					// http://localhost:8080/simplesaml/saml2/idp/SSOService.php?spentityid=http://localhost:3000/_saml/metadata/test-sp
 					credentialToken = Random.id();
 					SAMLUtils.log('[SAML] Using random credentialToken: ', credentialToken);
 				}
