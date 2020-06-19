@@ -1,18 +1,20 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Box, Table, TextInput, Icon, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState, useEffect, memo, useContext, useMemo } from 'react';
 
 import AppAvatar from '../../components/basic/avatar/AppAvatar';
-import AppStatus from './AppStatus';
-import { GenericTable, Th } from '../../components/GenericTable';
-import { useLoggedInCloud } from './hooks/useLoggedInCloud';
-import { useTranslation } from '../../contexts/TranslationContext';
+import GenericTable from '../../components/GenericTable';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useFilteredLocalApps } from './hooks/useFilteredLocalApps';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
+import { useFilteredApps } from './hooks/useFilteredApps';
+import { useLoggedInCloud } from './hooks/useLoggedInCloud';
 import AppMenu from './AppMenu';
+import AppStatus from './AppStatus';
+import { AppDataContext } from './AppProvider';
 
-const FilterByText = React.memo(({ setFilter, ...props }) => {
+const FilterByText = memo(({ setFilter, ...props }) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -28,14 +30,11 @@ const FilterByText = React.memo(({ setFilter, ...props }) => {
 	</Box>;
 });
 
-const AppRow = React.memo(({
-	onClick,
-	isMedium,
+const AppRow = memo(function AppRow({
+	medium,
 	isLoggedIn,
-	t,
-	setModal,
 	...props
-}) => {
+}) {
 	const {
 		author: { name: authorName },
 		name,
@@ -47,8 +46,17 @@ const AppRow = React.memo(({
 		iconFileContent,
 		installed,
 	} = props;
-
+	const t = useTranslation();
+	const setModal = useSetModal();
 	const [showStatus, setShowStatus] = useState(false);
+
+	const router = useRoute('admin-apps');
+
+	const onClick = useCallback((id, version) => () => router.push({
+		context: 'details',
+		version,
+		id,
+	}), [router]);
 
 	const toggleShow = (state) => () => setShowStatus(state);
 	const handler = onClick(id, marketplaceVersion);
@@ -62,7 +70,7 @@ const AppRow = React.memo(({
 				<Box color='default' fontScale='p2'>{`${ t('By') } ${ authorName }`}</Box>
 			</Box>
 		</Table.Cell>
-		{isMedium && <Table.Cell>
+		{medium && <Table.Cell>
 			<Box display='flex' flexDirection='column'>
 				<Box color='default' withTruncatedText>{description}</Box>
 				{categories && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
@@ -79,63 +87,68 @@ const AppRow = React.memo(({
 	</Table.Row>;
 });
 
-export function AppsTable({ setModal }) {
+function AppsTable() {
 	const t = useTranslation();
-	const [ref, isMedium] = useResizeInlineBreakpoint([600], 200);
 
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['name', 'asc']);
+	const [ref, onMediumBreakpoint] = useResizeInlineBreakpoint([600], 200);
 
-	const debouncedText = useDebouncedValue(params.text, 500);
-	const debouncedSort = useDebouncedValue(sort, 200);
-
-	const [data, total] = useFilteredLocalApps({ sort: debouncedSort, text: debouncedText, ...params });
+	const [params, setParams] = useState(() => ({ text: '', current: 0, itemsPerPage: 25 }));
+	const [sort, setSort] = useState(() => ['name', 'asc']);
 
 	const isLoggedIn = useLoggedInCloud();
 
-	const router = useRoute('admin-apps');
+	const { text, current, itemsPerPage } = params;
+	const { data, dataCache } = useContext(AppDataContext);
+	const [filteredApps, filteredAppsCount] = useFilteredApps({
+		text: useDebouncedValue(text, 500),
+		current,
+		itemsPerPage,
+		sort: useDebouncedValue(sort, 200),
+		data: useMemo(
+			() => (data.length ? data.filter((current) => current.installed) : null),
+			[dataCache],
+		),
+		dataCache,
+	});
 
-	const onClick = useCallback((id, version) => () => router.push({
-		context: 'details',
-		version,
-		id,
-	}), [router]);
+	const [sortBy, sortDirection] = sort;
 
-	const onHeaderClick = useCallback((id) => {
-		const [sortBy, sortDirection] = sort;
-
-		if (sortBy === id) {
-			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
-			return;
-		}
-		setSort([id, 'asc']);
-	}, [sort]);
-
-	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w={isMedium ? 'x240' : 'x180'}>{t('Name')}</Th>,
-		isMedium && <Th key={'details'}>{t('Details')}</Th>,
-		<Th key={'status'} w='x160'>{t('Status')}</Th>,
-	].filter(Boolean), [sort, onHeaderClick, isMedium, t]);
-
-	const renderRow = useCallback((props) => <AppRow
-		setModal={setModal}
-		onClick={onClick}
-		isLoggedIn={isLoggedIn}
-		isMedium={isMedium}
-		t={t}
-		{...props}
-	/>, [isLoggedIn, isMedium, onClick, setModal, t]);
+	const handleHeaderCellClick = (id) => {
+		setSort(
+			([sortBy, sortDirection]) =>
+				(sortBy === id
+					? [id, sortDirection === 'asc' ? 'desc' : 'asc']
+					: [id, 'asc']),
+		);
+	};
 
 	return <GenericTable
 		ref={ref}
-		FilterComponent={FilterByText}
-		header={header}
-		renderRow={renderRow}
-		results={data}
-		total={total}
-		setParams={setParams}
+		header={<>
+			<GenericTable.HeaderCell
+				direction={sortDirection}
+				active={sortBy === 'name'}
+				sort='name'
+				width={onMediumBreakpoint ? 'x240' : 'x180'}
+				onClick={handleHeaderCellClick}
+			>
+				{t('Name')}
+			</GenericTable.HeaderCell>
+			{onMediumBreakpoint && <GenericTable.HeaderCell>
+				{t('Details')}
+			</GenericTable.HeaderCell>}
+			<GenericTable.HeaderCell width='x160'>
+				{t('Status')}
+			</GenericTable.HeaderCell>
+		</>}
+		results={filteredApps}
+		total={filteredAppsCount}
 		params={params}
-	/>;
+		setParams={setParams}
+		FilterComponent={FilterByText}
+	>
+		{(props) => <AppRow key={props.id} medium={onMediumBreakpoint} isLoggedIn={isLoggedIn} {...props} />}
+	</GenericTable>;
 }
 
 export default AppsTable;

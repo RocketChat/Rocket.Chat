@@ -1,34 +1,69 @@
-import { useRef, useState, useEffect } from 'react';
+import React, {
+	createContext,
+	useEffect,
+	useRef,
+	useState,
+	FunctionComponent,
+} from 'react';
 
-import { Apps } from '../../../../app/apps/client/orchestrator';
-import { AppEvents } from '../../../../app/apps/client/communication';
-import { handleAPIError } from '../helpers';
+import { Apps } from '../../../app/apps/client/orchestrator';
+import { AppEvents } from '../../../app/apps/client/communication';
+import { handleAPIError } from './helpers';
 
-const registerListeners = (listeners) => {
-	Object.entries(listeners).forEach(([event, callback]) => {
-		Apps.getWsListener().registerListener(AppEvents[event], callback);
-	});
-	return () => {
-		Object.entries(listeners).forEach(([event, callback]) => {
-			Apps.getWsListener().unregisterListener(AppEvents[event], callback);
-		});
+type App = {
+	id: string;
+	name: string;
+	status: unknown;
+	installed: boolean;
+	marketplace: unknown;
+	version: unknown;
+	marketplaceVersion: unknown;
+	bundledIn: unknown;
+};
+
+export type AppDataContextValue = {
+	data: App[];
+	dataCache: any;
+}
+
+export const AppDataContext = createContext<AppDataContextValue>({
+	data: [],
+	dataCache: [],
+});
+
+type ListenersMapping = {
+	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
+};
+
+const registerListeners = (listeners: ListenersMapping): (() => void) => {
+	const entries = Object.entries(listeners) as [keyof typeof AppEvents, () => void][];
+
+	for (const [event, callback] of entries) {
+		Apps.getWsListener()?.registerListener(AppEvents[event], callback);
+	}
+
+	return (): void => {
+		for (const [event, callback] of entries) {
+			Apps.getWsListener()?.unregisterListener(AppEvents[event], callback);
+		}
 	};
 };
 
-export function useAppsData() {
-	const [data, setData] = useState({});
+const AppProvider: FunctionComponent = ({ children }) => {
+	const [data, setData] = useState<App[]>(() => []);
+	const [dataCache, setDataCache] = useState<any>(() => []);
 
-	const [dataCache, setDataCache] = useState();
-
-	const ref = useRef();
+	const ref = useRef(data);
 	ref.current = data;
 
-	const invalidateData = () => setDataCache(new Date());
+	const invalidateData = (): void => {
+		setDataCache(() => []);
+	};
 
-	const getDataCopy = () => ref.current.slice(0);
+	const getDataCopy = (): typeof ref.current => ref.current.slice(0);
 
 	useEffect(() => {
-		const handleAppAddedOrUpdated = async (appId) => {
+		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
 			try {
 				const { status, version } = await Apps.getApp(appId);
 				const app = await Apps.getAppFromMarketplace(appId, version);
@@ -51,7 +86,7 @@ export function useAppsData() {
 		const listeners = {
 			APP_ADDED: handleAppAddedOrUpdated,
 			APP_UPDATED: handleAppAddedOrUpdated,
-			APP_REMOVED: (appId) => {
+			APP_REMOVED: (appId: string): void => {
 				const updatedData = getDataCopy();
 				const index = updatedData.findIndex(({ id }) => id === appId);
 				if (!updatedData[index]) {
@@ -69,7 +104,7 @@ export function useAppsData() {
 				setData(updatedData);
 				invalidateData();
 			},
-			APP_STATUS_CHANGE: ({ appId, status }) => {
+			APP_STATUS_CHANGE: ({ appId, status }: {appId: string; status: unknown}): void => {
 				const updatedData = getDataCopy();
 				const app = updatedData.find(({ id }) => id === appId);
 
@@ -80,16 +115,19 @@ export function useAppsData() {
 				setData(updatedData);
 				invalidateData();
 			},
-			APP_SETTING_UPDATED: () => {
+			APP_SETTING_UPDATED: (): void => {
 				invalidateData();
 			},
 		};
 
 		const unregisterListeners = registerListeners(listeners);
 
-		(async () => {
+		(async (): Promise<void> => {
 			try {
-				const [marketplaceApps, installedApps] = await Promise.all([Apps.getAppsFromMarketplace(), Apps.getApps()]);
+				const [marketplaceApps, installedApps] = await Promise.all([
+					Apps.getAppsFromMarketplace() as Promise<App[]>,
+					Apps.getApps() as Promise<App[]>,
+				]);
 				const appsData = marketplaceApps.map((app) => {
 					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
 					if (!installedApps[appIndex]) {
@@ -105,8 +143,8 @@ export function useAppsData() {
 					return {
 						...app,
 						installed: true,
-						status: installedApp.status,
-						version: installedApp.version,
+						status: installedApp?.status,
+						version: installedApp?.version,
 						bundledIn: app.bundledIn,
 						marketplaceVersion: app.version,
 					};
@@ -127,5 +165,7 @@ export function useAppsData() {
 		return unregisterListeners;
 	}, []);
 
-	return { data, dataCache };
-}
+	return <AppDataContext.Provider children={children} value={{ data, dataCache }} />;
+};
+
+export default AppProvider;

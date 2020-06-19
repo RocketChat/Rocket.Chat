@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
-import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
+import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
+import { useMethod } from '../../contexts/ServerContext';
 import NotAuthorizedPage from '../NotAuthorizedPage';
+import PageSkeleton from '../PageSkeleton';
 import AppDetailsPage from './AppDetailsPage';
 import MarketplacePage from './MarketplacePage';
 import AppsPage from './AppsPage';
 import AppInstallPage from './AppInstallPage';
-import PageSkeleton from '../PageSkeleton';
 import AppProvider from './AppProvider';
 import AppLogsPage from './AppLogsPage';
-import { useMethod } from '../../contexts/ServerContext';
 
-export default function AppsRoute() {
+function AppsRoute() {
 	const [isLoading, setLoading] = useState(true);
 	const canViewAppsAndMarketplace = usePermission('manage-apps');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
@@ -62,10 +62,14 @@ export default function AppsRoute() {
 	}
 
 	return <AppProvider>
-		{!context && isMarketPlace && <MarketplacePage />}
-		{!context && !isMarketPlace && <AppsPage />}
-		{context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version}/>}
-		{context === 'logs' && <AppLogsPage id={id}/>}
-		{context === 'install' && <AppInstallPage />}
+		{
+			(!context && isMarketPlace && <MarketplacePage />)
+		|| (!context && !isMarketPlace && <AppsPage />)
+		|| (context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version}/>)
+		|| (context === 'logs' && <AppLogsPage id={id}/>)
+		|| (context === 'install' && <AppInstallPage />)
+		}
 	</AppProvider>;
 }
+
+export default AppsRoute;
