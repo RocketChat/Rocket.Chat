@@ -87,20 +87,18 @@ export class BusinessHourManager {
 		this.clearCronJobsCache();
 		const workHours = await this.businessHour.findHoursToCreateJobs();
 		workHours.forEach((workHour) => {
-			const { start, finish, day, utc } = workHour;
+			const { start, finish, day } = workHour;
 			start.forEach((hour) => {
-				const jobName = `${ workHour.day }/${ hour }/${ utc }/open`;
-				const localTime = moment.utc(`${ day }:${ hour }`, 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours');
-				const dayOfTheWeek = parseInt(utc) >= 0 ? localTime.clone().day(localTime.day()).format('dddd') : day;
-				const scheduleAt = `${ localTime.minutes() } ${ localTime.hours() } * * ${ cronJobDayDict[dayOfTheWeek] }`;
+				const jobName = `${ workHour.day }/${ hour }/open`;
+				const time = moment(hour, 'HH:mm');
+				const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
 				this.addToCache(jobName);
 				this.cronJobs.add(jobName, scheduleAt, this.openWorkHoursCallback);
 			});
 			finish.forEach((hour) => {
-				const jobName = `${ workHour.day }/${ hour }/${ utc }/close`;
-				const localTime = moment.utc(`${ day }:${ hour }`, 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours');
-				const dayOfTheWeek = parseInt(utc) >= 0 ? localTime.clone().day(localTime.day()).format('dddd') : day;
-				const scheduleAt = `${ localTime.minutes() } ${ localTime.hours() } * * ${ cronJobDayDict[dayOfTheWeek] }`;
+				const jobName = `${ workHour.day }/${ hour }/open`;
+				const time = moment(hour, 'HH:mm');
+				const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
 				this.addToCache(jobName);
 				this.cronJobs.add(jobName, scheduleAt, this.closeWorkHoursCallback);
 			});
@@ -115,12 +113,12 @@ export class BusinessHourManager {
 		return this.businessHour.openBusinessHoursIfNeeded();
 	}
 
-	private async openWorkHoursCallback(day: string, hour: string, utc: string): Promise<void> {
-		return this.businessHour.openBusinessHoursByDayHourAndUTC(day, hour, utc);
+	private async openWorkHoursCallback(day: string, hour: string): Promise<void> {
+		return this.businessHour.openBusinessHoursByDayHourAndUTC(day, hour);
 	}
 
-	private async closeWorkHoursCallback(day: string, hour: string, utc: string): Promise<void> {
-		return this.businessHour.closeBusinessHoursByDayAndHour(day, hour, utc);
+	private async closeWorkHoursCallback(day: string, hour: string): Promise<void> {
+		return this.businessHour.closeBusinessHoursByDayAndHour(day, hour);
 	}
 
 	private addToCache(jobName: string): void {

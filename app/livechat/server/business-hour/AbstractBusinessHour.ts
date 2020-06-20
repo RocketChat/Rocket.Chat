@@ -12,8 +12,8 @@ export interface IBusinessHour {
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined>;
 	findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
-	openBusinessHoursByDayHourAndUTC(day: string, hour: string, utc: string): Promise<void>;
-	closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void>;
+	openBusinessHoursByDayHourAndUTC(day: string, hour: string): Promise<void>;
+	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	removeBusinessHoursFromUsers(): Promise<void>;
 	removeBusinessHourById(id: string): Promise<void>;
 	removeBusinessHourFromUsers(departmentId: string): Promise<void>;
@@ -41,21 +41,11 @@ export abstract class AbstractBusinessHour {
 	protected async getBusinessHoursThatMustBeOpened(day: string, currentTime: any, activeBusinessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> {
 		return activeBusinessHours
 			.filter((businessHour) => businessHour.workHours
-				.filter((hour) => hour.day === day)
+				.filter((hour) => hour.start.cron.dayOfWeek === day)
 				.some((hour) => {
-					const localTimeStart = moment.utc(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours');
-					const localTimeFinish = moment.utc(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours');
-					const start = moment({
-						hour: localTimeStart.hours(),
-						minutes: localTimeStart.minutes(),
-						weekday: currentTime.weekday(),
-					});
-					const finish = moment({
-						hour: localTimeFinish.hours(),
-						minutes: localTimeFinish.minutes(),
-						weekday: currentTime.weekday(),
-					});
-					return currentTime.isSameOrAfter(start) && currentTime.isSameOrBefore(finish);
+					const localTimeStart = moment(`${ hour.start.cron.dayOfWeek }:${ hour.start.cron.time }`, 'dddd:HH:mm');
+					const localTimeFinish = moment(`${ hour.finish.cron.dayOfWeek }:${ hour.finish.cron.time }`, 'dddd:HH:mm');
+					return currentTime.isSameOrAfter(localTimeStart) && currentTime.isSameOrBefore(localTimeFinish);
 				}))
 			.map((businessHour) => ({
 				_id: businessHour._id,

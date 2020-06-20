@@ -6,9 +6,9 @@ export enum LivechatBussinessHourTypes {
 }
 
 export interface IBusinessHourWorkHour {
-	day: string;
-	start: string;
-	finish: string;
+	dayOfWeek: number;
+	start: { time: string; utc: { dayOfWeek: string; time: string }; cron: { dayOfWeek: string; time: string } };
+	finish: { time: string; utc: { dayOfWeek: string; time: string }; cron: { dayOfWeek: string; time: string } };
 	open: boolean;
 }
 
