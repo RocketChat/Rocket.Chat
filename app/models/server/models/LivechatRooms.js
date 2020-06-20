@@ -489,6 +489,35 @@ export class LivechatRooms extends Base {
 		});
 	}
 
+	requestTranscriptByRoomId(roomId, transcriptInfo = {}) {
+		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
+
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				transcriptRequest: {
+					requestedAt,
+					requestedBy,
+					email,
+					subject,
+				},
+			},
+		});
+	}
+
+	removeTranscriptRequestByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$unset: {
+				transcriptRequest: 1,
+			},
+		});
+	}
+
 	findOpenByAgent(userId) {
 		const query = {
 			t: 'l',
