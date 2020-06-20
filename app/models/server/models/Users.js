@@ -164,8 +164,12 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent() {
-		const query = queryStatusAgentOnline();
+	getNextAgent(currentlyServedByAgentId) {
+		const extraFilters = {};
+		if (currentlyServedByAgentId) {
+			extraFilters._id = { $ne: currentlyServedByAgentId };
+		}
+		const query = queryStatusAgentOnline(extraFilters);
 
 		const collectionObj = this.model.rawCollection();
 		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);

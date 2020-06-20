@@ -18,7 +18,7 @@ class ExternalQueue {
 		};
 	}
 
-	getNextAgent(department) {
+	getNextAgent(department, currentlyServedByAgentId) {
 		for (let i = 0; i < 10; i++) {
 			try {
 				const queryString = department ? `?departmentId=${ department }` : '';

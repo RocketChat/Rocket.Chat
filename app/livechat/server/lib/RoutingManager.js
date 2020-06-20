@@ -159,10 +159,14 @@ export const RoutingManager = {
 			return forwardRoomToDepartment(room, guest, transferData);
 		}
 
-		const agent = await this.getMethod().getNextAgent();
-		if (!agent) { return false; }
+		if (transferData.currentlyServedByAgentId) {
+			const agent = await this.getMethod().getNextAgent(undefined, transferData.currentlyServedByAgentId);
+			if (agent) {
+				return forwardRoomToAgent(room, { ...transferData, userId: agent.agentId });
+			}
+		}
 
-		return forwardRoomToAgent(room, { ...transferData, userId: agent.agentId });
+		return false;
 	},
 };
 

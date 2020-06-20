@@ -146,10 +146,15 @@ export class AppLivechatBridge {
 			type,
 		};
 
+		if (!currentRoom.servedBy) {
+			throw new Error('Invalid request. The room is currenlty not being served by any agent');
+		}
+		const currentlyServedByAgentId = currentRoom.servedBy.id;
+
 		return Livechat.transfer(
 			this.orch.getConverters().get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent ? targetAgent.id : undefined, departmentId, transferredBy },
+			{ userId: targetAgent ? targetAgent.id : undefined, departmentId, transferredBy, currentlyServedByAgentId },
 		);
 	}
 
