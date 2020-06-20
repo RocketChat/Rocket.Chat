@@ -50,6 +50,10 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
+	removeBusinessHourFromUsers(): Promise<void> {
+		return Promise.resolve();
+	}
+
 	removeBusinessHourById(): Promise<void> {
 		return Promise.resolve();
 	}

@@ -80,7 +80,11 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 			await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourData._id);
 			return this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departments, businessHourData._id);
 		}
-		return this.BusinessHourRepository.insertOne(businessHourData);
+		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);
+		if (!departments?.length) {
+			return;
+		}
+		return this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departments, insertedId);
 	}
 
 	async removeBusinessHourById(id: string): Promise<void> {
@@ -89,6 +93,7 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 			return;
 		}
 		this.BusinessHourRepository.removeById(id);
+		this.DepartmentsRepository.removeBusinessHourFromDepartmentsByBusinessHourId(id);
 	}
 
 	async openBusinessHoursIfNeeded(): Promise<void> {
@@ -106,6 +111,11 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 		for (const businessHour of businessHoursToOpenIds) {
 			this.openBusinessHour(businessHour);
 		}
+	}
+
+	async removeBusinessHourFromUsers(departmentId: string): Promise<void> {
+		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds([departmentId], { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+		return this.UsersRepository.closeBusinessHourByAgentIds(agentIds);
 	}
 
 	private async openBusinessHour(businessHour: Record<string, any>): Promise<void> {

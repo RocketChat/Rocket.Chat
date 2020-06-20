@@ -65,6 +65,19 @@ export class BusinessHourManager {
 		return this.businessHour.allowAgentChangeServiceStatus(agentId);
 	}
 
+	async removeBusinessHourIdFromUsers(departmentId: string): Promise<void> {
+		return this.businessHour.removeBusinessHourFromUsers(departmentId);
+	}
+
+	async removeBusinessHourById(id: string): Promise<void> {
+		await this.businessHour.removeBusinessHourById(id);
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+		await this.createCronJobsForWorkHours();
+		await this.openBusinessHoursIfNeeded();
+	}
+
 	private removeCronJobs(): void {
 		this.cronJobsCache.forEach((jobName) => this.cronJobs.remove(jobName));
 	}
@@ -100,15 +113,6 @@ export class BusinessHourManager {
 
 	private async openBusinessHoursIfNeeded(): Promise<void> {
 		return this.businessHour.openBusinessHoursIfNeeded();
-	}
-
-	async removeBusinessHourById(id: string): Promise<void> {
-		await this.businessHour.removeBusinessHourById(id);
-		if (!settings.get('Livechat_enable_business_hours')) {
-			return;
-		}
-		await this.createCronJobsForWorkHours();
-		await this.openBusinessHoursIfNeeded();
 	}
 
 	private async openWorkHoursCallback(day: string, hour: string, utc: string): Promise<void> {
