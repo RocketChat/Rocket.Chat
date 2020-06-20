@@ -2,6 +2,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import toastr from 'toastr';
 
 import { settings } from '../../../settings';
 import { AppEvents } from '../communication';
@@ -16,6 +17,7 @@ import {
 	triggerAppPopoverMenu,
 	warnStatusChange,
 } from './helpers';
+import { t } from '../../../utils/client';
 
 import './apps.html';
 
@@ -80,6 +82,12 @@ Template.apps.onCreated(function() {
 	this.handleAppAddedOrUpdated = async (appId) => {
 		try {
 			const app = await Apps.getApp(appId);
+			const updated = this.state.get('apps').filter(({ id }) => id === appId);
+			if (updated) {
+				toastr.success(t('Updated_Successfully'), app.name);
+			} else {
+				toastr.success(t('Added_Successfully'), app.name);
+			}
 			const { categories, version: marketplaceVersion } = await Apps.getAppFromMarketplace(appId, app.version) || {};
 			const apps = [
 				...this.state.get('apps').filter(({ id }) => id !== appId),
