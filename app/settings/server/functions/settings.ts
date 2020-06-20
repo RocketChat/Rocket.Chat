@@ -76,6 +76,13 @@ export interface ISettingAddOptions {
 	meteorSettingsValue?: SettingValue;
 	value?: SettingValue;
 	ts?: Date;
+	multiline?: boolean;
+	values?: Array<ISettingSelectOption>;
+}
+
+export interface ISettingSelectOption {
+	key: string;
+	i18nLabel: string;
 }
 
 export interface ISettingAddGroupOptions {
@@ -213,7 +220,7 @@ class Settings extends SettingsBase {
 	/*
 	* Add a setting group
 	*/
-	addGroup(_id: string, cb: addGroupCallback): boolean;
+	addGroup(_id: string, cb?: addGroupCallback): boolean;
 
 	// eslint-disable-next-line no-dupe-class-members
 	addGroup(_id: string, options: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): boolean {

@@ -88,6 +88,41 @@ class PasswordPolicy {
 
 		return true;
 	}
+
+	getPasswordPolicy() {
+		const data = {
+			enabled: false,
+			policy: [],
+		};
+		if (this.enabled) {
+			data.enabled = true;
+			if (this.minLength >= 1) {
+				data.policy.push('get-password-policy-minLength', { minLength: this.minLength });
+			}
+			if (this.maxLength >= 1) {
+				data.policy.push('get-password-policy-maxLength', { maxLength: this.maxLength });
+			}
+			if (this.forbidRepeatingCharacters) {
+				data.policy.push('get-password-policy-forbidRepeatingCharacters');
+			}
+			if (this.forbidRepeatingCharactersCount) {
+				data.policy.push('get-password-policy-forbidRepeatingCharactersCount', { forbidRepeatingCharactersCount: this.forbidRepeatingCharactersCount });
+			}
+			if (this.mustContainAtLeastOneLowercase) {
+				data.policy.push('get-password-policy-mustContainAtLeastOneLowercase');
+			}
+			if (this.mustContainAtLeastOneUppercase) {
+				data.policy.push('get-password-policy-mustContainAtLeastOneUppercase');
+			}
+			if (this.mustContainAtLeastOneNumber) {
+				data.policy.push('get-password-policy-mustContainAtLeastOneNumber');
+			}
+			if (this.mustContainAtLeastOneSpecialCharacter) {
+				data.policy.push('get-password-policy-mustContainAtLeastOneSpecialCharacter');
+			}
+		}
+		return data;
+	}
 }
 
 export default PasswordPolicy;

@@ -616,7 +616,7 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 			this.response.writeHead(200, {
 				'Access-Control-Allow-Origin': settings.get('API_CORS_Origin'),
 				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token',
+				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
 			});
 		} else {
 			this.response.writeHead(405);

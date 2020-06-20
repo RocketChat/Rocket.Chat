@@ -9,20 +9,25 @@ import '../../ufs/AmazonS3/server.js';
 
 const get = function(file, req, res) {
 	const forceDownload = typeof req.query.download !== 'undefined';
-	const fileUrl = this.store.getRedirectURL(file, forceDownload);
 
-	if (!fileUrl) {
-		return res.end();
-	}
+	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
+		if (err) {
+			return console.error(err);
+		}
 
-	const storeType = file.store.split(':').pop();
-	if (settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
-		const request = /^https:/.test(fileUrl) ? https : http;
+		if (!fileUrl) {
+			return res.end();
+		}
 
-		return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
-	}
+		const storeType = file.store.split(':').pop();
+		if (settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
+			const request = /^https:/.test(fileUrl) ? https : http;
 
-	return FileUpload.redirectToFile(fileUrl, req, res);
+			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
+		}
+
+		return FileUpload.redirectToFile(fileUrl, req, res);
+	});
 };
 
 const copy = function(file, out) {

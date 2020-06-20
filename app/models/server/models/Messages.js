@@ -256,7 +256,6 @@ export class Messages extends Base {
 			_hidden: {
 				$ne: true,
 			},
-
 			rid: roomId,
 		};
 

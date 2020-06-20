@@ -1,34 +1,7 @@
-
-import { createPortal } from 'react-dom';
-import React, { useMemo, useEffect } from 'react';
 import { Modal as ModalComponent, ModalBackdrop } from '@rocket.chat/fuselage';
+import React from 'react';
 
-const getModalRoot = () => {
-	const modalRoot = document.getElementById('modal-root');
-	if (modalRoot) {
-		return modalRoot;
-	}
-	const newElement = document.createElement('div');
-
-	newElement.id = 'modal-root';
-
-	document.body.appendChild(newElement);
-	return newElement;
-};
-
-function ModalPortal({ children = '' }) {
-	const modalRoot = useMemo(getModalRoot, []);
-	const node = useMemo(() => document.createElement('div'), []);
-
-	useEffect(() => {
-		modalRoot.appendChild(node);
-		return () => modalRoot.removeChild(node);
-	}, [modalRoot, node]);
-	return createPortal(
-		<div>{children}</div>,
-		node,
-	);
-}
+import ModalPortal from '../ModalPortal';
 
 export function Modal({ ...props }) {
 	return <ModalPortal>
