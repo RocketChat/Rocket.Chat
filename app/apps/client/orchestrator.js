@@ -88,11 +88,6 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	getAppLogs = async (appId) => {
-		const { logs } = await APIClient.get(`apps/${ appId }/logs`);
-		return logs;
-	}
-
 	getAppFromMarketplace = async (appId, version) => {
 		const { app } = await APIClient.get(`apps/${ appId }`, {
 			marketplace: 'true',

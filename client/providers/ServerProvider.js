@@ -26,13 +26,21 @@ const callEndpoint = (httpMethod, endpoint, ...args) => {
 	if (!endpoint) {
 		throw new Error('Invalid endpoint provided to "useEndpoint"');
 	}
-	if (endpoint.startsWith('/')) {
-		endpoint = endpoint.replace('/', '');
+
+	if (endpoint[0] === '/') {
+		return APIClient[httpMethod.toLowerCase()](endpoint.slice(1), ...args);
 	}
+
 	return APIClient.v1[httpMethod.toLowerCase()](endpoint, ...args);
 };
 
-const uploadToEndpoint = (endpoint, params, formData) => APIClient.v1.upload(endpoint, params, formData);
+const uploadToEndpoint = (endpoint, params, formData) => {
+	if (endpoint[0] === '/') {
+		return APIClient.upload(endpoint.slice(1), params, formData);
+	}
+
+	return APIClient.v1.upload(endpoint, params, formData);
+};
 
 const getStream = (streamName, options = {}) => new Meteor.Streamer(streamName, options);
 

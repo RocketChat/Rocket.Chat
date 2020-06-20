@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from 'react';
 import { Box, Button, ButtonGroup, Icon, Accordion, Skeleton, Margins, Pagination } from '@rocket.chat/fuselage';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState, useEffect } from 'react';
 
-import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
-import { useAppWithLogs } from './hooks/useAppWithLogs';
 import Page from '../../components/basic/Page';
+import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
+import { useEndpoint } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useHighlightedCode } from '../../hooks/useHighlightedCode';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
@@ -43,24 +44,56 @@ const LogsLoading = () => <Box maxWidth='x600' w='full' alignSelf='center'>
 	</Margins>
 </Box>;
 
-export default function AppLogsPage({ id, ...props }) {
+const useAppWithLogs = ({ id, current, itemsPerPage }) => {
+	const [data, setData] = useSafely(useState({}));
+	const getAppData = useEndpoint('GET', `/apps/${ id }`);
+	const getAppLogs = useEndpoint('GET', `/apps/${ id }/logs`);
+
+	const fetchData = useCallback(async () => {
+		try {
+			const [
+				data,
+				{ logs },
+			] = await Promise.all([
+				getAppData(),
+				getAppLogs(),
+			]);
+			setData({ ...data, logs });
+		} catch (error) {
+			setData({ error });
+		}
+	}, [getAppData, getAppLogs, setData]);
+
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
+
+	const sliceStart = data.logs && current > data.logs.length ? 0 : current;
+	const total = data.logs ? data.logs.length : 0;
+	const filteredData = data.logs
+		? { ...data, logs: data.logs.slice(sliceStart, itemsPerPage + current) }
+		: data;
+
+	return [filteredData, total, fetchData];
+};
+
+function AppLogsPage({ id, ...props }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 	const [current, setCurrent] = useState(0);
-	const [cache, setCache] = useState(0);
 
-	const [data, total] = useAppWithLogs({ id, cache, itemsPerPage, current });
+	const [data, total, fetchData] = useAppWithLogs({ id, itemsPerPage, current });
 
-	const currentRoute = useCurrentRoute();
-	const router = useRoute(currentRoute[0]);
+	const [currentRouteName] = useCurrentRoute();
+	const appLogsRoute = useRoute(currentRouteName);
 
 	const handleResetButtonClick = () => {
-		setCache(new Date());
+		fetchData();
 	};
 
 	const handleBackButtonClick = () => {
-		router.push({});
+		appLogsRoute.push();
 	};
 
 	const {
@@ -113,3 +146,5 @@ export default function AppLogsPage({ id, ...props }) {
 		/>
 	</Page>;
 }
+
+export default AppLogsPage;
