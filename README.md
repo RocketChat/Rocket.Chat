@@ -118,7 +118,7 @@ Instantly deploy your Rocket.Chat server for free on next-generation auto-scalin
 
 [![Layershift Hosting](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
 
-Painless SSL. Automatically scale your server cluster based on user demand.
+Painless SSL. Automatically scale your server cluster based on usage demand.
 
 ## Yunohost.org
 Host your own Rocket.Chat server in a few seconds.
@@ -206,7 +206,7 @@ Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with 
 [![Deploy](https://github.com/mastappl/images/blob/master/deployTo.png)](https://panel.d2c.io/?import=https://github.com/d2cio/rocketchat-stack/archive/master.zip/)
 
 ## Syncloud.org
-Run Rocket.Chat on your easy to use a personal device.
+Run Rocket.Chat on your easy to use personal device.
 
 [![Deploy](https://syncloud.org/images/logo_min.svg)](https://syncloud.org)
 
