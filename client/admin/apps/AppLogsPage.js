@@ -52,13 +52,13 @@ const useAppWithLogs = ({ id, current, itemsPerPage }) => {
 	const fetchData = useCallback(async () => {
 		try {
 			const [
-				data,
+				{ app },
 				{ logs },
 			] = await Promise.all([
 				getAppData(),
 				getAppLogs(),
 			]);
-			setData({ ...data, logs });
+			setData({ ...app, logs });
 		} catch (error) {
 			setData({ error });
 		}
@@ -83,7 +83,7 @@ function AppLogsPage({ id, ...props }) {
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 	const [current, setCurrent] = useState(0);
 
-	const [data, total, fetchData] = useAppWithLogs({ id, itemsPerPage, current });
+	const [app, logEntriesCount, fetchData] = useAppWithLogs({ id, itemsPerPage, current });
 
 	const [currentRouteName] = useCurrentRoute();
 	const appLogsRoute = useRoute(currentRouteName);
@@ -96,18 +96,14 @@ function AppLogsPage({ id, ...props }) {
 		appLogsRoute.push();
 	};
 
-	const {
-		name,
-	} = data;
-
-	const loading = !Object.values(data).length;
-	const showData = !loading && !data.error;
+	const loading = !Object.values(app).length;
+	const showData = !loading && !app.error;
 
 	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <Page flexDirection='column' {...props}>
-		<Page.Header title={t('View_the_Logs_for', { name: name || '' })}>
+		<Page.Header title={t('View_the_Logs_for', { name: app.name || '' })}>
 			<ButtonGroup>
 				<Button primary onClick={handleResetButtonClick}>
 					<Icon name='undo'/> {t('Refresh')}
@@ -119,10 +115,10 @@ function AppLogsPage({ id, ...props }) {
 		</Page.Header>
 		<Page.ScrollableContent>
 			{loading && <LogsLoading />}
-			{data.error && <Box maxWidth='x600' alignSelf='center' fontScale='h1'>{data.error.message}</Box>}
+			{app.error && <Box maxWidth='x600' alignSelf='center' fontScale='h1'>{app.error.message}</Box>}
 			{showData && <>
 				<Accordion maxWidth='x600' alignSelf='center'>
-					{data.logs && data.logs.map((log) => <LogItem
+					{app.logs && app.logs.map((log) => <LogItem
 						key={log._createdAt}
 						title={`${ formatDateAndTime(log._createdAt) }: "${ log.method }" (${ log.totalTime }ms)`}
 						instanceId={log.instanceId}
@@ -140,7 +136,7 @@ function AppLogsPage({ id, ...props }) {
 			itemsPerPage={itemsPerPage}
 			itemsPerPageLabel={itemsPerPageLabel}
 			showingResultsLabel={showingResultsLabel}
-			count={total}
+			count={logEntriesCount}
 			onSetItemsPerPage={setItemsPerPage}
 			onSetCurrent={setCurrent}
 		/>
