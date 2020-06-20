@@ -19,6 +19,7 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -484,6 +485,35 @@ export class LivechatRooms extends Base {
 			},
 			$unset: {
 				open: 1,
+			},
+		});
+	}
+
+	requestTranscriptByRoomId(roomId, transcriptInfo = {}) {
+		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
+
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				transcriptRequest: {
+					requestedAt,
+					requestedBy,
+					email,
+					subject,
+				},
+			},
+		});
+	}
+
+	removeTranscriptRequestByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$unset: {
+				transcriptRequest: 1,
 			},
 		});
 	}

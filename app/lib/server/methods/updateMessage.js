@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { Messages } from '../../../models';
 import { settings } from '../../../settings';
-import { hasPermission } from '../../../authorization';
+import { hasPermission, canSendMessage } from '../../../authorization/server';
 import { updateMessage } from '../functions';
 
 Meteor.methods({
@@ -55,6 +55,9 @@ Meteor.methods({
 				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });
 			}
 		}
+
+		const user = Meteor.users.findOne(Meteor.userId());
+		canSendMessage(message.rid, { uid: user._id, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
 		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {

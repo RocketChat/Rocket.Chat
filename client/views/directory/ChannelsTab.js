@@ -76,8 +76,9 @@ function ChannelsTable() {
 	}, [channelRoute]);
 
 	const formatDate = useFormatDate();
-	const renderRow = useCallback(({ _id, ts, name, fname, description, usersCount, lastMessage, topic, ...room }) => {
-		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: name || fname, type: 'd', _id });
+	const renderRow = useCallback((room) => {
+		const { _id, ts, t, name, fname, usersCount, lastMessage, topic } = room;
+		const avatarUrl = roomTypes.getConfig(t).getAvatarPath(room);
 
 		return <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
 			<Table.Cell>
@@ -87,7 +88,7 @@ function ChannelsTable() {
 						<Box display='flex' alignItems='center'>
 							<Icon name={roomTypes.getIcon(room)} color='hint' /> <Box fontScale='p2' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
 						</Box>
-						{topic && <MarkdownText fontScale='p1' color='hint' style={style} content={topic} />}
+						{topic && <MarkdownText fontScale='p1' color='hint' style={style} withRichContent={false} content={topic} />}
 					</Box>
 				</Box>
 			</Table.Cell>

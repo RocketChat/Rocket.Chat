@@ -110,7 +110,19 @@ const getButtonUrl = (room, subscription, message) => {
 	});
 };
 
-export function getEmailData({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
+function generateNameEmail(name, email) {
+	return `${ String(name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ email }>`;
+}
+
+export function getEmailData({
+	message,
+	receiver,
+	sender,
+	subscription,
+	room,
+	emailAddress,
+	hasMentionToUser,
+}) {
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
@@ -126,29 +138,36 @@ export function getEmailData({ message, user, subscription, room, emailAddress, 
 	});
 	const content = getEmailContent({
 		message,
-		user,
+		user: receiver,
 		room,
 	});
 
 	const room_path = getButtonUrl(room, subscription, message);
+
+	const receiverName = settings.get('UI_Use_Real_Name')
+		? receiver.name || receiver.username
+		: receiver.username;
+
+	const [senderEmail] = sender.emails;
 	const email = {
-		to: emailAddress,
+		from: generateNameEmail(username, settings.get('From_Email')),
+		to: generateNameEmail(receiverName, emailAddress),
 		subject: emailSubject,
 		html: content + goToMessage + (settings.get('Direct_Reply_Enable') ? advice : ''),
 		data: {
 			room_path,
 		},
+		headers: {
+			'Reply-To': generateNameEmail(username, senderEmail.address),
+		},
 	};
-
-	email.from = `${ String(username).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ settings.get('From_Email') }>`;
 
 	// If direct reply enabled, email content with headers
 	if (settings.get('Direct_Reply_Enable')) {
 		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
-		email.headers = {
-			// Reply-To header with format "username+messageId@domain"
-			'Reply-To': `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`,
-		};
+
+		// Reply-To header with format "username+messageId@domain"
+		email.headers['Reply-To'] = `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`;
 	}
 
 	metrics.notificationsSent.inc({ notification_type: 'email' });

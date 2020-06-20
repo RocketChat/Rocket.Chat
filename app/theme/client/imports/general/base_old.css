@@ -3873,6 +3873,10 @@
 	height: 2rem;
 }
 
+.flex-tab.discussions > .flex-tab__content {
+	padding: 0;
+}
+
 .rc-old .flex-tab {
 	&__content {
 		display: flex;
@@ -3888,6 +3892,7 @@
 	}
 
 	&__result {
+		overflow-x: hidden;
 		overflow-y: auto;
 		flex: 1 1 auto;
 	}
