@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { TextInput, Select, Field, Divider, Box } from '@rocket.chat/fuselage';
 
 import { useSetting } from '../../contexts/SettingsContext';
@@ -59,7 +59,14 @@ export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData
 	const customFieldsJson = useSetting('Accounts_CustomFields');
 
 	// TODO: add deps. Left this way so that a possible change in the setting can't crash the page (useForm generates states automatically)
-	const customFields = useMemo(() => JSON.parse(customFieldsJson || '{}'), []);
+	const [customFields] = useState(() => {
+		try {
+			JSON.parse(customFieldsJson || '{}');
+		} catch {
+			return {};
+		}
+	});
+
 	const hasCustomFields = Boolean(Object.values(customFields).length);
 	const defaultFields = useMemo(() => Object.entries(customFields).reduce((data, [key, value]) => { data[key] = value.defaultValue ?? ''; return data; }, {}), []);
 
