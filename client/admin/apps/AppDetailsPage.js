@@ -45,9 +45,15 @@ function AppDetailsPageContent({ data }) {
 					<Box mis= 'x4'>{t('Version_version', { version })}</Box>
 				</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center'>
-						<AppStatus mie='x4' app={data} />
-						{!installed && <PriceDisplay mis='x4' purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false}/>}
+					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8'>
+						<AppStatus app={data} marginInline='x8'/>
+						{!installed && <PriceDisplay
+							purchaseType={purchaseType}
+							pricingPlans={pricingPlans}
+							price={price}
+							showType={false}
+							marginInline='x8'
+						/>}
 					</Box>
 					{installed && <AppMenu app={data} />}
 				</Box>

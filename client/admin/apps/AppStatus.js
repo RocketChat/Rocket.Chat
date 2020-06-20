@@ -1,6 +1,6 @@
 import { Box, Button, Icon, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, memo } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange } from './helpers';
@@ -32,7 +32,7 @@ const actions = {
 	},
 };
 
-const AppStatus = React.memo(({ app, showStatus = true, ...props }) => {
+const AppStatus = memo(({ app, showStatus = true, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
 	const setModal = useSetModal();
@@ -54,16 +54,6 @@ const AppStatus = React.memo(({ app, showStatus = true, ...props }) => {
 		setModal(null);
 	}, [setLoading, setModal]);
 
-	const openModal = useCallback(async () => {
-		try {
-			const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-
-			setModal(() => <IframeModal url={data.url} cancel={cancelAction} confirm={confirmAction}/>);
-		} catch (error) {
-			handleAPIError(error);
-		}
-	}, [app.id, app.purchaseType, cancelAction, confirmAction, setModal]);
-
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
 	const handleClick = useCallback(async (e) => {
@@ -81,18 +71,26 @@ const AppStatus = React.memo(({ app, showStatus = true, ...props }) => {
 		}
 
 		if (action === 'purchase') {
-			openModal();
+			try {
+				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
+
+				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={confirmAction}/>);
+			} catch (error) {
+				handleAPIError(error);
+			}
 			return;
 		}
 
 		confirmAction();
-	}, [setLoading, checkUserLoggedIn, action, confirmAction, setModal, openModal]);
+	}, [setLoading, checkUserLoggedIn, action, confirmAction, setModal, app.id, app.purchaseType, cancelAction]);
 
 	return <Box {...props}>
-		{button && <Button primary disabled={loading} onClick={handleClick} display={showStatus || loading ? 'block' : 'none'}>
-			{loading && <Throbber />}
-			{!loading && button.icon && <Icon name={button.icon} />}
-			{!loading && t(button.label)}
+		{button && <Button primary disabled={loading} invisible={!showStatus && !loading} minHeight='x40' onClick={handleClick}>
+			{loading
+				? <Throbber inheritColor />
+				: <>
+					{button.icon && <Icon name={button.icon} />}{t(button.label)}
+				</>}
 		</Button>}
 		{status && <Box color={status.label === 'Disabled' ? 'warning' : 'hint'} display='flex' alignItems='center'>
 			<Icon size='x20' name={status.icon} mie='x4'/>
