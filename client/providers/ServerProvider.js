@@ -36,10 +36,10 @@ const callEndpoint = (httpMethod, endpoint, ...args) => {
 
 const uploadToEndpoint = (endpoint, params, formData) => {
 	if (endpoint[0] === '/') {
-		return APIClient.upload(endpoint.slice(1), params, formData);
+		return APIClient.upload(endpoint.slice(1), params, formData).promise;
 	}
 
-	return APIClient.v1.upload(endpoint, params, formData);
+	return APIClient.v1.upload(endpoint, params, formData).promise;
 };
 
 const getStream = (streamName, options = {}) => new Meteor.Streamer(streamName, options);

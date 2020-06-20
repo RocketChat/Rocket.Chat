@@ -1,21 +1,25 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import { Apps } from '../../../app/apps/client/orchestrator';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useMethod } from '../../contexts/ServerContext';
+import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { appEnabledStatuses, warnStatusChange, handleAPIError } from './helpers';
 import { CloudLoginModal } from './CloudLoginModal';
 import { IframeModal } from './IframeModal';
 import WarningModal from './WarningModal';
 
-export default function AppMenu({ app, ...props }) {
+function AppMenu({ app, ...props }) {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const appsRoute = useRoute('admin-apps');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+
+	const setAppStatus = useEndpoint('POST', `/apps/${ app.id }/status`);
+	const buildExternalUrl = useEndpoint('GET', '/apps');
+	const syncApp = useEndpoint('POST', `/apps/${ app.id }/sync`);
+	const uninstallApp = useEndpoint('DELETE', `/apps/${ app.id }`);
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
@@ -27,12 +31,12 @@ export default function AppMenu({ app, ...props }) {
 
 	const handleEnable = useCallback(async () => {
 		try {
-			const effectiveStatus = await Apps.enableApp(app.id);
-			warnStatusChange(app.name, effectiveStatus);
+			const { status } = await setAppStatus({ status: 'manually_enabled' });
+			warnStatusChange(app.name, status);
 		} catch (error) {
 			handleAPIError(error);
 		}
-	}, [app.id, app.name]);
+	}, [app.name, setAppStatus]);
 
 	const handleViewLogs = useCallback(() => {
 		appsRoute.push({ context: 'logs', id: app.id });
@@ -46,7 +50,12 @@ export default function AppMenu({ app, ...props }) {
 
 		let data;
 		try {
-			data = await Apps.buildExternalUrl(app.id, app.purchaseType, true);
+			data = await buildExternalUrl({
+				buildExternalUrl: 'true',
+				appId: app.id,
+				purchaseType: app.purchaseType,
+				details: true,
+			});
 		} catch (error) {
 			handleAPIError(error);
 			return;
@@ -54,21 +63,29 @@ export default function AppMenu({ app, ...props }) {
 
 		const confirm = async () => {
 			try {
-				await Apps.syncApp(app.id);
+				await syncApp();
 			} catch (error) {
 				handleAPIError(error);
 			}
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal}/>);
-	}, [checkUserLoggedIn, app.id, app.purchaseType, closeModal, setModal]);
+	}, [
+		checkUserLoggedIn,
+		setModal,
+		closeModal,
+		buildExternalUrl,
+		app.id,
+		app.purchaseType,
+		syncApp,
+	]);
 
 	const handleDisable = useCallback(() => {
 		const confirm = async () => {
 			closeModal();
 			try {
-				const effectiveStatus = await Apps.disableApp(app.id);
-				warnStatusChange(app.name, effectiveStatus);
+				const { status } = await setAppStatus({ status: 'manually_disabled' });
+				warnStatusChange(app.name, status);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -79,13 +96,13 @@ export default function AppMenu({ app, ...props }) {
 			text={t('Apps_Marketplace_Deactivate_App_Prompt')}
 			confirmText={t('Yes')}
 		/>);
-	}, [app.id, app.name, closeModal, setModal, t]);
+	}, [app.name, closeModal, setAppStatus, setModal, t]);
 
 	const handleUninstall = useCallback(() => {
 		const uninstall = async () => {
 			closeModal();
 			try {
-				await Apps.uninstallApp(app.id);
+				await uninstallApp();
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -112,7 +129,7 @@ export default function AppMenu({ app, ...props }) {
 			text={t('Apps_Marketplace_Uninstall_App_Prompt')}
 			confirmText={t('Yes')}
 		/>);
-	}, [app.id, closeModal, handleSubscription, isSubscribed, setModal, t]);
+	}, [closeModal, handleSubscription, isSubscribed, setModal, t, uninstallApp]);
 
 	const menuOptions = useMemo(() => ({
 		...canAppBeSubscribed && { subscribe: {
@@ -159,3 +176,5 @@ export default function AppMenu({ app, ...props }) {
 
 	return <Menu options={menuOptions} placement='bottom left' {...props}/>;
 }
+
+export default AppMenu;

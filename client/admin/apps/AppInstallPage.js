@@ -1,25 +1,33 @@
 import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import Page from '../../components/basic/Page';
-import { useFileInput } from '../../hooks/useFileInput';
+import { useRoute, useQueryStringParameter } from '../../contexts/RouterContext';
+import { useEndpoint, useUpload } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
-import { handleInstallError } from './helpers';
-import { APIClient } from '../../../app/utils';
+import { useFileInput } from '../../hooks/useFileInput';
 import { useForm } from '../../hooks/useForm';
+import { handleInstallError } from './helpers';
 
 const placeholderUrl = 'https://rocket.chat/apps/package.zip';
 
 function AppInstallPage() {
 	const t = useTranslation();
 
-	const [appId, setAppId] = useState(null);
+	const appsRoute = useRoute('admin-apps');
+
+	const appId = useQueryStringParameter('id');
+	const queryUrl = useQueryStringParameter('url');
+
 	const [installing, setInstalling] = useState(false);
+
+	const endpointAddress = appId ? `/apps/${ appId }` : '/apps';
+	const installApp = useEndpoint('POST', endpointAddress);
+	const uploadApp = useUpload(endpointAddress);
 
 	const { values, handlers } = useForm({
 		file: {},
-		url: '',
+		url: queryUrl,
 	});
 
 	const {
@@ -27,52 +35,43 @@ function AppInstallPage() {
 		url,
 	} = values;
 
-	const canSave = useMemo(() => !!url || !!file.name);
+	const canSave = !!url || !!file.name;
 
 	const {
 		handleFile,
 		handleUrl,
 	} = handlers;
 
-	const currentRoute = useCurrentRoute();
-	const { url: queryUrl, id: queryId } = currentRoute[2];
-
-	const appRouter = useRoute('admin-apps');
-
 	useEffect(() => {
 		queryUrl && handleUrl(queryUrl);
-		queryId && setAppId(queryId);
-	}, [queryUrl, queryId]);
+	}, [queryUrl, handleUrl]);
 
-	const onSetFile = useCallback((file) => {
-		handleFile(file);
-	}, []);
-
-	const onClickUpload = useFileInput(onSetFile, 'app');
-
-	const endpointAddress = (appId && `apps/${ appId }`) || 'apps';
+	const handleUploadButtonClick = useFileInput(handleFile, 'app');
 
 	const install = useCallback(async () => {
 		setInstalling(true);
 
-		let result;
 		try {
 			if (url) {
-				result = await APIClient.post(endpointAddress, { url });
-			} else {
-				const fileData = new FormData();
-				fileData.append('app', file, file.name);
-				result = await APIClient.upload(endpointAddress, fileData).promise;
+				const { app } = await installApp({ url });
+				appsRoute.push({ context: 'details', id: app.id });
+				return;
 			}
-			appRouter.push({ context: 'details', id: result.app.id });
+
+			const fileData = new FormData();
+			fileData.append('app', file, file.name);
+			const { app } = await uploadApp(fileData);
+			appsRoute.push({ context: 'details', id: app.id });
 		} catch (error) {
 			handleInstallError(error);
+		} finally {
+			setInstalling(false);
 		}
+	}, [url, appsRoute, installApp, file, uploadApp]);
 
-		setInstalling(false);
-	}, [url, file, endpointAddress]);
-
-	const handleCancel = useCallback(() => appRouter.push({}), []);
+	const handleCancel = () => {
+		appsRoute.push();
+	};
 
 	return <Page flexDirection='column'>
 		<Page.Header title={t('App_Installation')} />
@@ -89,7 +88,7 @@ function AppInstallPage() {
 					<Field.Row>
 						<TextInput
 							value={file.name || ''}
-							addon={<Button small primary onClick={onClickUpload} mb='neg-x4' mie='neg-x8'>
+							addon={<Button small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
 								<Icon name='upload' size='x12' />{t('Browse_Files')}
 							</Button>}
 						/>
