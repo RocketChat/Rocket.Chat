@@ -5,13 +5,18 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import * as Mailer from '../../app/mailer';
-import { settings } from '../../app/settings';
-import { callbacks } from '../../app/callbacks';
-import { Roles, Users, Settings } from '../../app/models';
-import { Users as UsersRaw } from '../../app/models/server/raw';
-import { addUserRoles } from '../../app/authorization';
-import { getAvatarSuggestionForUser } from '../../app/lib/server/functions';
+import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
+import { callbacks } from '../../../callbacks/server';
+import { Roles, Users, Settings } from '../../../models/server';
+import { Users as UsersRaw } from '../../../models/server/raw';
+import { addUserRoles } from '../../../authorization/server';
+import { getAvatarSuggestionForUser } from '../../../lib/server/functions';
+import {
+	isValidAttemptByUser,
+	isValidLoginAttemptByIp,
+} from '../lib/restrictLoginAttempts';
+import './settings';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -290,6 +295,18 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 Accounts.validateLoginAttempt(function(login) {
 	login = callbacks.run('beforeValidateLogin', login);
+
+	if (!Promise.await(isValidLoginAttemptByIp(login.connection?.clientAddress))) {
+		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
+			function: 'Accounts.validateLoginAttempt',
+		});
+	}
+
+	if (!Promise.await(isValidAttemptByUser(login))) {
+		throw new Meteor.Error('error-login-blocked-for-user', 'Login has been temporarily blocked For User', {
+			function: 'Accounts.validateLoginAttempt',
+		});
+	}
 
 	if (login.allowed !== true) {
 		return login.allowed;
