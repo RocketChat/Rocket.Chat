@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { formatPricingPlan, formatPrice } from '../../../app/apps/client/admin/helpers';
+import { formatPricingPlan, formatPrice } from './helpers';
 
 const formatPriceAndPurchaseType = (purchaseType, pricingPlans, price) => {
 	if (purchaseType === 'subscription') {
