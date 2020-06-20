@@ -1,0 +1,37 @@
+name: Upstream catchup from Rocketchat develop
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' #on every Monday
+
+jobs:
+  catchup:
+    name: Upstream Catchup
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Catchup Info
+      run: |
+        echo "GITHUB_ACTION: $GITHUB_ACTION"
+        echo "GITHUB_ACTOR: $GITHUB_ACTOR"
+        echo "GITHUB_REF: $GITHUB_REF"
+        echo "github.event_name: ${{ github.event_name }}"
+        cat $GITHUB_EVENT_PATH
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: Create Catchup PR
+      uses: shubhsherl/create-catchup-pr@v0.1.0
+      with:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        SOURCE_BRANCH: "develop"
+        SOURCE_REPO: "RocketChat"
+        TARGET_BRANCH: "develop_pwa"
+        GITHUB_REPO: ${{github.repository}}
+        TITLE: "[Upstream Catchup] Merge RC:develop to develop_pwa"
+        BODY: "Weekly Catchup PR to merge RC:develop in develop_pwa."
+        DRAFT: "true"
