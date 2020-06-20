@@ -53,7 +53,7 @@ export const useAppInfo = (appId) => {
 			}
 
 			if (app.marketplace === false) {
-				const [settings, apis] = await [getSettings(app.id, app.installed), getApis(app.id, app.installed)];
+				const [settings, apis] = await Promise.all([getSettings(app.id, app.installed), getApis(app.id, app.installed)]);
 				return setAppData({ ...app, settings, apis });
 			}
 
