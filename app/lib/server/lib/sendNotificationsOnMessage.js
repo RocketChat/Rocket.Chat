@@ -153,7 +153,15 @@ export const sendNotification = async ({
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
-					data: getEmailData({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser }),
+					data: getEmailData({
+						message,
+						receiver,
+						sender,
+						subscription,
+						room,
+						emailAddress: email.address,
+						hasMentionToUser,
+					}),
 				});
 
 				return true;
@@ -164,6 +172,7 @@ export const sendNotification = async ({
 
 	if (queueItems.length) {
 		Notification.scheduleItem({
+			user: receiver,
 			uid: subscription.u._id,
 			rid: room._id,
 			mid: message._id,
@@ -180,6 +189,7 @@ const project = {
 		mobilePushNotifications: 1,
 		muteGroupMentions: 1,
 		name: 1,
+		rid: 1,
 		userHighlights: 1,
 		'u._id': 1,
 		'receiver.active': 1,

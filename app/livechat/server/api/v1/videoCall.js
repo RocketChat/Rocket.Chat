@@ -41,7 +41,7 @@ API.v1.addRoute('livechat/video.call/:token', {
 				rid,
 				domain: rcSettings.get('Jitsi_Domain'),
 				provider: 'jitsi',
-				room: rcSettings.get('Jitsi_URL_Room_Prefix') + rcSettings.get('uniqueID') + rid,
+				room: rcSettings.get('Jitsi_URL_Room_Prefix') + rcSettings.get('uniqueID') + rid + rcSettings.get('Jitsi_URL_Room_Suffix'),
 				timeout: new Date(Date.now() + 3600 * 1000),
 			};
 

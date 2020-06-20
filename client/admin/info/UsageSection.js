@@ -6,7 +6,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 import { DescriptionList } from './DescriptionList';
 
-export function UsageSection({ statistics, isLoading }) {
+export const UsageSection = React.memo(function UsageSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
 	const formatMemorySize = useFormatMemorySize();
 	const t = useTranslation();
@@ -49,4 +49,4 @@ export function UsageSection({ statistics, isLoading }) {
 		<DescriptionList.Entry label={t('Stats_Total_Active_Outgoing_Integrations')}>{s(() => statistics.integrations.totalOutgoingActive)}</DescriptionList.Entry>
 		<DescriptionList.Entry label={t('Stats_Total_Integrations_With_Script_Enabled')}>{s(() => statistics.integrations.totalWithScriptEnabled)}</DescriptionList.Entry>
 	</DescriptionList>;
-}
+});
