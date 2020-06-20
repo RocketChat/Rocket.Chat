@@ -297,7 +297,6 @@ export class UsersRaw extends BaseRaw {
 	openAgentsBusinessHours(businessHourIds) {
 		const query = {
 			roles: 'livechat-agent',
-			status: 'online',
 		};
 
 		const update = {
@@ -315,7 +314,6 @@ export class UsersRaw extends BaseRaw {
 	closeAgentsBusinessHours(businessHourIds) {
 		const query = {
 			roles: 'livechat-agent',
-			status: 'online',
 		};
 
 		const update = {
@@ -331,7 +329,6 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
-			status: 'online',
 		};
 
 		const update = {
