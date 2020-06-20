@@ -4,58 +4,66 @@ import { settings } from '../../../settings/server';
 
 Meteor.startup(function() {
 	settings.addGroup('Accounts', function() {
-		const enableQueryCollectData = { _id: 'Accounts_Block_Failed_Login_Attempts_Enable_Collect_Login_data', value: true };
-		const enableQueryAudit = { _id: 'Accounts_FailedLoginAudit_Enabled', value: true };
-		this.section('Failed_Login_Attempts', function() {
-			this.add('Accounts_Block_Failed_Login_Attempts_Enable_Collect_Login_data', true, {
+		const enableQueryCollectData = { _id: 'Block_Multiple_Failed_Logins_Enabled', value: true };
+
+		this.section('Login_Attempts', function() {
+			this.add('Block_Multiple_Failed_Logins_Enabled', false, {
 				type: 'boolean',
 			});
-			this.add('Accounts_Block_Failed_Login_Attempts_By_User', true, {
+
+			this.add('Block_Multiple_Failed_Logins_By_User', true, {
 				type: 'boolean',
-				enableQuery: enableQueryCollectData,
-			});
-			this.add('Accounts_Block_Failed_Attempts_Until_Block_By_User', 10, {
-				type: 'int',
-				enableQuery: enableQueryCollectData,
-			});
-			this.add('Accounts_Block_Failed_Attempts_Time_To_Unblock_By_User_In_Minutes', 5, {
-				type: 'int',
-				enableQuery: enableQueryCollectData,
-			});
-			this.add('Accounts_Block_Failed_Login_Attempts_By_Ip', true, {
-				type: 'boolean',
-				enableQuery: enableQueryCollectData,
-			});
-			this.add('Accounts_Block_Failed_Attempts_Until_Block_By_Ip', 50, {
-				type: 'int',
-				enableQuery: enableQueryCollectData,
-			});
-			this.add('Accounts_Block_Failed_Attempts_Time_To_Unblock_By_Ip_In_Minutes', 5, {
-				type: 'int',
-				enableQuery: enableQueryCollectData,
-			});
-			this.add('Accounts_Block_Failed_Attempts_Ip_Whitelist', '', {
-				type: 'string',
 				enableQuery: enableQueryCollectData,
 			});
 
-			this.add('Accounts_FailedLoginAudit_Enabled', false, { type: 'boolean' });
-			this.add('Accounts_FailedLoginAudit_Log_Username', false, {
-				type: 'boolean',
-				enableQuery: enableQueryAudit,
+			const enableQueryByUser = [enableQueryCollectData, { _id: 'Block_Multiple_Failed_Logins_By_User', value: true }];
+
+			this.add('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User', 10, {
+				type: 'int',
+				enableQuery: enableQueryByUser,
 			});
-			this.add('Accounts_FailedLoginAudit_Log_UserAgent', false, {
-				type: 'boolean',
-				enableQuery: enableQueryAudit,
+
+			this.add('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes', 5, {
+				type: 'int',
+				enableQuery: enableQueryByUser,
 			});
-			this.add('Accounts_FailedLoginAudit_Log_ClientIp', false, {
+
+			this.add('Block_Multiple_Failed_Logins_By_Ip', true, {
 				type: 'boolean',
-				enableQuery: enableQueryAudit,
+				enableQuery: enableQueryCollectData,
 			});
-			this.add('Accounts_FailedLoginAudit_Log_ForwardedForIp', false, {
-				type: 'boolean',
-				enableQuery: enableQueryAudit,
+
+			const enableQueryByIp = [enableQueryCollectData, { _id: 'Block_Multiple_Failed_Logins_By_Ip', value: true }];
+
+			this.add('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip', 50, {
+				type: 'int',
+				enableQuery: enableQueryByIp,
 			});
+
+			this.add('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes', 5, {
+				type: 'int',
+				enableQuery: enableQueryByIp,
+			});
+
+			this.add('Block_Multiple_Failed_Logins_Ip_Whitelist', '', {
+				type: 'string',
+				enableQuery: enableQueryByIp,
+			});
+		});
+
+
+		this.section('Login_Logs', function() {
+			const enableQueryAudit = { _id: 'Login_Logs_Enabled', value: true };
+
+			this.add('Login_Logs_Enabled', false, { type: 'boolean' });
+
+			this.add('Login_Logs_Username', false, { type: 'boolean', enableQuery: enableQueryAudit });
+
+			this.add('Login_Logs_UserAgent', false, { type: 'boolean', enableQuery: enableQueryAudit });
+
+			this.add('Login_Logs_ClientIp', false, { type: 'boolean', enableQuery: enableQueryAudit });
+
+			this.add('Login_Logs_ForwardedForIp', false, { type: 'boolean', enableQuery: enableQueryAudit });
 		});
 	});
 });
