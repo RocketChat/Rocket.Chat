@@ -327,7 +327,7 @@ export const Livechat = {
 		const { extraData } = params;
 
 		const now = new Date();
-		const { _id: rid, servedBy } = room;
+		const { _id: rid, servedBy, transcriptRequest } = room;
 		const serviceTimeDuration = servedBy && (now.getTime() - servedBy.ts) / 1000;
 
 		const closeData = {
@@ -358,6 +358,7 @@ export const Livechat = {
 			t: 'livechat-close',
 			msg: comment,
 			groupable: false,
+			transcriptRequested: !!transcriptRequest,
 		};
 
 		// Retreive the closed room
@@ -921,13 +922,13 @@ export const Livechat = {
 		});
 	},
 
-	sendTranscript({ token, rid, email }) {
+	sendTranscript({ token, rid, email, subject, user }) {
 		check(rid, String);
 		check(email, String);
 
 		const room = LivechatRooms.findOneById(rid);
 
-		const visitor = LivechatVisitors.getVisitorByToken(token);
+		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1, token: 1, language: 1, username: 1, name: 1 } });
 		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
 
 		// allow to only user to send transcripts from their own chats
@@ -935,14 +936,11 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
-		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { ts: 1 } });
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat_video_call'];
+		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } });
 
 		let html = '<div> <hr>';
 		messages.forEach((message) => {
-			if (message.t && ['command', 'livechat-close', 'livechat_video_call'].indexOf(message.t) !== -1) {
-				return;
-			}
-
 			let author;
 			if (message.u._id === visitor._id) {
 				author = TAPi18n.__('You', { lng: userLanguage });
@@ -968,14 +966,57 @@ export const Livechat = {
 			fromEmail = settings.get('From_Email');
 		}
 
-		const subject = TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
+		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
 
-		this.sendEmail(fromEmail, email, fromEmail, subject, html);
+		this.sendEmail(fromEmail, email, fromEmail, mailSubject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.sendTranscript', messages, email);
 		});
 
+		let type = 'user';
+		if (!user) {
+			user = Users.findOneById('rocket.cat', { fields: { _id: 1, username: 1, name: 1 } });
+			type = 'visitor';
+		}
+
+		Messages.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, { requestData: { type, visitor, user } });
+		return true;
+	},
+
+	requestTranscript({ rid, email, subject, user }) {
+		check(rid, String);
+		check(email, String);
+		check(subject, String);
+		check(user, Match.ObjectIncluding({
+			_id: String,
+			username: String,
+			name: Match.Maybe(String),
+		}));
+
+		const room = LivechatRooms.findOneById(rid, { _id: 1, open: 1, transcriptRequest: 1 });
+
+		if (!room || !room.open) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
+
+		if (room.transcriptRequest) {
+			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
+		}
+
+		const { _id, username, name } = user;
+		const transcriptRequest = {
+			requestedAt: new Date(),
+			requestedBy: {
+				_id,
+				username,
+				name,
+			},
+			email,
+			subject,
+		};
+
+		LivechatRooms.requestTranscriptByRoomId(rid, transcriptRequest);
 		return true;
 	},
 

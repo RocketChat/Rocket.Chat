@@ -54,6 +54,7 @@ export const fields = {
 	departmentId: 1,
 	servedBy: 1,
 	priorityId: 1,
+	transcriptRequest: 1,
 
 	// fields used by DMs
 	usernames: 1,
