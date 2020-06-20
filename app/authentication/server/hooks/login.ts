@@ -7,11 +7,10 @@ import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 
 Accounts.onLoginFailure((login: ILoginAttempt) => {
-	if (!settings.get('Block_Multiple_Failed_Logins_Enabled')) {
-		return;
+	if (settings.get('Block_Multiple_Failed_Logins_Enabled')) {
+		saveFailedLoginAttempts(login);
 	}
 
-	saveFailedLoginAttempts(login);
 	logFailedLoginAttempts(login);
 });
 
