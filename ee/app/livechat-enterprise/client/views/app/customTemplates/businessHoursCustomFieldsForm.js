@@ -60,6 +60,9 @@ Template.businessHoursCustomFieldsForm.helpers({
 		}
 		return exceptions.concat(...businessHour.departments.map((dept) => dept._id));
 	},
+	departmentsConditions() {
+		return { businessHourId: { $exists: false } };
+	},
 });
 
 Template.businessHoursCustomFieldsForm.events({
