@@ -5,7 +5,7 @@ import { FileUpload } from '../../../file-upload';
 import { Messages, Rooms } from '../../../models';
 import { Notifications } from '../../../notifications';
 
-export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [] }, ignoreThreads = true) {
+export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -20,8 +20,8 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 		ignoreDiscussion,
 		ts,
 		fromUsers,
-		{ fields: { 'file._id': 1, pinned: 1 }, limit },
 		ignoreThreads,
+		{ fields: { 'file._id': 1, pinned: 1 }, limit },
 	).forEach((document) => {
 		FileUpload.getStore('Uploads').deleteById(document.file._id);
 		fileCount++;

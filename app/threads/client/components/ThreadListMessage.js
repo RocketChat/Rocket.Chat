@@ -5,9 +5,9 @@ import { css } from '@rocket.chat/css-in-js';
 import UserAvatar from '../../../../client/components/basic/avatar/UserAvatar';
 import RawText from '../../../../client/components/basic/RawText';
 
-const borderRadius = css`{
+const borderRadius = css`
 	border-radius: 100%;
-}`;
+`;
 
 export function NotificationStatus({ t = (e) => e, label, ...props }) {
 	return <Box width='x8' aria-label={t(label)} className={[borderRadius]} height='x8' {...props} />;
@@ -33,7 +33,7 @@ function isIterable(obj) {
 	return typeof obj[Symbol.iterator] === 'function';
 }
 
-const followStyle = css`{
+const followStyle = css`
 	& > .rcx-message__container > .rcx-contextual-message__follow {
 		opacity: 0;
 	}
@@ -42,7 +42,7 @@ const followStyle = css`{
 	&:focus > .rcx-message__container > .rcx-contextual-message__follow {
 		opacity: 1
 	}
-}`;
+`;
 
 export default function ThreadListMessage({ _id, msg, following, username, name, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, className = [], ...props }) {
 	const button = !following ? 'bell-off' : 'bell';

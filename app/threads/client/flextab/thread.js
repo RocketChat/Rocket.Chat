@@ -21,11 +21,13 @@ import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
 import './messageBoxFollow';
 
-createTemplateForComponent('Checkbox', () => import('../components/CheckBoxComponent'), {
+createTemplateForComponent('Checkbox', async () => {
+	const { CheckBox } = await import('@rocket.chat/fuselage');
+	return { default: CheckBox };
+}, {
 	// eslint-disable-next-line new-cap
 	renderContainerView: () => HTML.DIV({ class: 'rcx-checkbox', style: 'display: flex;' }),
 });
-
 
 const sort = { ts: 1 };
 

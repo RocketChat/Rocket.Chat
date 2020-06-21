@@ -27,7 +27,7 @@ import { useSetting } from '../../../../client/contexts/SettingsContext';
 
 
 function clickableItem(WrappedComponent) {
-	const clickable = css`{
+	const clickable = css`
 		cursor: pointer;
 		border-bottom: 2px solid #F2F3F5 !important;
 
@@ -35,7 +35,7 @@ function clickableItem(WrappedComponent) {
 		&:focus {
 			background: #F7F8FA;
 		}
-	}`;
+	`;
 	return (props) => <WrappedComponent className={clickable} tabIndex={0} {...props}/>;
 }
 
@@ -60,17 +60,17 @@ export function withData(WrappedComponent) {
 		const subscription = useUserSubscription(rid, subscriptionFields);
 
 		const userId = useUserId();
-		const type = useLocalStorage('thread-list-type', 'all');
-		const text = useState('');
+		const [type, setType] = useLocalStorage('thread-list-type', 'all');
+		const [text, setText] = useState('');
 		const [total, setTotal] = useState(LIST_SIZE);
 		const [threads, setThreads] = useDebouncedState([], 100);
 		const Threads = useRef(new Mongo.Collection(null));
 		const ref = useRef();
 		const [pagination, setPagination] = useState({ skip: 0, count: LIST_SIZE });
 
-		const params = useMemo(() => ({ rid: room._id, count: pagination.count, offset: pagination.skip, type: type[0], text: text[0] }), [room._id, pagination.skip, type[0], text[0]]);
+		const params = useMemo(() => ({ rid: room._id, count: pagination.count, offset: pagination.skip, type, text }), [room._id, pagination.skip, pagination.count, type, text]);
 
-		const { data, state, error } = useEndpointDataExperimental('chat.getThreadsList', useDebouncedValue(params, 500));
+		const { data, state, error } = useEndpointDataExperimental('chat.getThreadsList', useDebouncedValue(params, 400));
 
 		const loadMoreItems = useCallback((skip, count) => {
 			setPagination({ skip, count: count - skip });
@@ -78,7 +78,7 @@ export function withData(WrappedComponent) {
 			return new Promise((resolve) => { ref.current = resolve; });
 		}, []);
 
-		useEffect(() => () => Threads.current.remove({}, () => {}), [text[0], type[0]]);
+		useEffect(() => () => Threads.current.remove({}, () => {}), [text, type]);
 
 		useEffect(() => {
 			if (state !== ENDPOINT_STATES.DONE || !data || !data.threads) {
@@ -113,17 +113,17 @@ export function withData(WrappedComponent) {
 		useEffect(() => {
 			const cursor = Tracker.autorun(() => {
 				const query = {
-					...type[0] === 'subscribed' && { replies: { $in: [userId] } },
+					...type === 'subscribed' && { replies: { $in: [userId] } },
 				};
 				setThreads(Threads.current.find(query, { sort: { tlm: -1 } }).fetch().map(filterProps));
 			});
 
 			return () => cursor.stop();
-		}, [room._id, type[0]]);
+		}, [room._id, type, setThreads, userId]);
 
 		const handleTextChange = useCallback((e) => {
 			setPagination({ skip: 0, count: LIST_SIZE });
-			text[1](e.currentTarget.value);
+			setText(e.currentTarget.value);
 		}, []);
 
 		return <WrappedComponent
@@ -136,10 +136,10 @@ export function withData(WrappedComponent) {
 			loading={state === ENDPOINT_STATES.LOADING}
 			loadMoreItems={loadMoreItems}
 			room={room}
-			text={text[0]}
+			text={text}
 			setText={handleTextChange}
-			type={type[0]}
-			setType={type[1] }
+			type={type}
+			setType={setType}
 		/>;
 	};
 }
@@ -230,7 +230,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
-			<Box display='flex' flexDirection='row' p='x24' borderBlockEnd='2px solid' borderBlockEndColor='neutral-200'>
+			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200'>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x8'>
 					<Margins inline='x8'>
 						<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
