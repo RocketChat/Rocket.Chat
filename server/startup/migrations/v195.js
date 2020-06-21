@@ -53,7 +53,14 @@ const migrateCollection = () => {
 	} else {
 		LivechatBusinessHours.update({ type: LivechatBussinessHourTypes.SINGLE }, businessHour);
 	}
-	return LivechatOfficeHour.rawCollection().drop();
+	try {
+		Promise.await(LivechatOfficeHour.rawCollection().drop());
+	} catch (err) {
+		// Ignore if the collection does not exist
+		if (!err.code || err.code !== 26) {
+			throw err;
+		}
+	}
 };
 
 Migrations.add({
