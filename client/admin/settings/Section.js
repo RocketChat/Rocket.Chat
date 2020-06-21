@@ -56,7 +56,7 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		{help && <Box is='p' color='hint' fontScale='p1'>{help}</Box>}
 
 		<FieldGroup>
-			{editableSettings.map((setting) => <Setting key={setting} settingId={setting._id} sectionChanged={changed} />)}
+			{editableSettings.map((setting) => <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />)}
 
 			{hasReset && canReset && <Button
 				children={t('Reset_section_settings')}

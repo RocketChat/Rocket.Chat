@@ -57,8 +57,9 @@ function PageHeader({ children, title, ...props }) {
 	</Box>;
 }
 
-function PageContent(props) {
+const PageContent = React.forwardRef(function PageContent(props, ref) {
 	return <Box
+		ref={ref}
 		paddingInline='x24'
 		display='flex'
 		flexDirection='column'
@@ -66,7 +67,7 @@ function PageContent(props) {
 		height='full'
 		{...props}
 	/>;
-}
+});
 
 function PageScrollableContent({ onScrollContent, ...props }) {
 	return <Scrollable onScrollContent={onScrollContent} >

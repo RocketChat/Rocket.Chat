@@ -18,7 +18,7 @@ Meteor.startup(() => Tracker.autorun(() => {
 }));
 
 
-const instance = new MentionsParser({
+export const instance = new MentionsParser({
 	pattern: () => pattern,
 	useRealName: () => useRealName,
 	me: () => me,

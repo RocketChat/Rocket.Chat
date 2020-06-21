@@ -66,6 +66,8 @@ export const sendNotification = async ({
 		return;
 	}
 
+	const isThread = !!message.tmid && !message.tshow;
+
 	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
@@ -89,6 +91,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		notifyAudioUser(subscription.u._id, message, room);
 	}
@@ -105,6 +108,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		notifyDesktopUser({
 			notificationMessage,
@@ -125,6 +129,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		queueItems.push({
 			type: 'push',
@@ -148,6 +153,7 @@ export const sendNotification = async ({
 		hasMentionToAll,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
