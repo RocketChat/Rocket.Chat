@@ -192,6 +192,7 @@ export function shouldNotifyEmail({
 	hasMentionToAll,
 	hasReplyToThread,
 	roomType,
+	isThread,
 }) {
 	// email notifications are disabled globally
 	if (!settings.get('Accounts_AllowEmailNotifications')) {
@@ -220,5 +221,5 @@ export function shouldNotifyEmail({
 		}
 	}
 
-	return roomType === 'd' || isHighlighted || emailNotifications === 'all' || hasMentionToUser || hasReplyToThread || (!disableAllMessageNotifications && hasMentionToAll);
+	return (roomType === 'd' || isHighlighted || emailNotifications === 'all' || hasMentionToUser || (!disableAllMessageNotifications && hasMentionToAll)) && (!isThread || hasReplyToThread);
 }

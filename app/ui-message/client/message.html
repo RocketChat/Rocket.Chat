@@ -1,8 +1,17 @@
 <template name="message">
 	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}">
 		{{#if isThreadReply}}
-			{{> messageThread parentMessage=parentMessage threadMessage=threadMessage following=msg.following avatar=msg.u.username msg=msg body=body class=bodyClass}}
-		{{else}}
+			{{> messageThread parentMessage=parentMessage msg=msg tmid=msg.tmid class=bodyClass following=msg.following}}
+			<div class="thread-replied js-open-thread">
+				<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
+					{{> avatar username=msg.u.username}}
+				</button>
+				<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
+					<span class="message-body--unstyled">{{{threadMessage}}}</span>
+				</span>
+			</div>
+		{{/if}}
+		{{#unless shouldHideBody}}
 			{{#if msg.avatar}}
 				{{#if avatarFromUsername}}
 					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
@@ -37,9 +46,11 @@
 						<button class="message-custom-status rc-tooltip rc-tooltip--up rc-tooltip--start" aria-label="{{getStatus}}">💬</button>
 					{{/if}}
 					<span class="info border-component-color color-info-font-color"></span>
-					{{#each role in roleTags}}
-						<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
-					{{/each}}
+					{{# if showRoles }}
+						{{#each role in roleTags}}
+							<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
+						{{/each}}
+					{{/if}}
 					{{#if isBot}}
 						<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
 					{{/if}}
@@ -90,11 +101,7 @@
 							{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}
 						</div>
 					{{else}}
-						{{#if isDecrypting}}
-							<span>******</span>
-						{{else}}
-							{{{body}}}
-						{{/if}}
+						{{{body}}}
 					{{/if}}
 				</div>
 			</div>
@@ -127,6 +134,9 @@
 						</button>
 					{{/if}}
 					<span class="discussion-reply-lm">{{ formatDateAndTime msg.dlm }}</span>
+					{{# if unread }}
+						<div aria-label="{{_ 'Unread' }}" class="rc-tooltip message-unread"></div>
+					{{/if}}
 				</div>
 			{{/if}}
 
@@ -137,6 +147,9 @@
 						<span>{{{_ 'reply_counter' counter=i18nReplyCounter count=msg.tcount }}}</span>
 					</button>
 					<span class="discussion-reply-lm">{{ formatDateAndTime msg.tlm}}</span>
+					{{# if unread }}
+						<div aria-label="{{_ 'Unread' }}" class="rc-tooltip message-unread"></div>
+					{{/if}}
 				</div>
 			{{/if}}
 
@@ -179,9 +192,11 @@
 			</ul>
 			{{/unless}}
 			{{#if broadcast}}
-				<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
-					{{> icon icon="reply"}} {{_'Reply'}}
-				</button>
+				{{#with msg}}
+					<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
+						{{> icon icon="reply"}} {{_'Reply'}}
+					</button>
+				{{/with}}
 			{{/if}}
 			{{#unless hideReactions}}
 			<ul class="reactions">
@@ -199,6 +214,6 @@
 				</li>
 			</ul>
 			{{/unless}}
-		{{/if}}
+		{{/unless}}
 	</li>
 </template>

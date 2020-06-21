@@ -2111,6 +2111,8 @@
 	&-unread {
 		display: inline-block;
 
+		float: right;
+
 		width: 10px;
 		height: 10px;
 		margin: 0 0.25rem;

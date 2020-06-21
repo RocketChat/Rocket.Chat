@@ -543,8 +543,7 @@ export class Subscriptions extends Base {
 	}
 
 	findByRoomId(roomId, options) {
-		const query =			{ rid: roomId };
-
+		const query = { rid: roomId };
 		return this.find(query, options);
 	}
 
@@ -554,16 +553,6 @@ export class Subscriptions extends Base {
 			'u._id': {
 				$ne: userId,
 			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findByRoomAndUsersWithUserHighlights(roomId, users, options) {
-		const query = {
-			rid: roomId,
-			'u._id': { $in: users },
-			'userHighlights.0': { $exists: true },
 		};
 
 		return this.find(query, options);
@@ -984,6 +973,50 @@ export class Subscriptions extends Base {
 		const update = {
 			$set: {
 				open: true,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	setAlertForRoomIdAndUserIds(roomId, uids) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: uids },
+			alert: { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	setOpenForRoomIdAndUserIds(roomId, uids) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: uids },
+			open: { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				open: true,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	setLastReplyForRoomIdAndUserIds(roomId, uids, lr) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: uids },
+		};
+
+		const update = {
+			$set: {
+				lr,
 			},
 		};
 		return this.update(query, update, { multi: true });

@@ -36,25 +36,28 @@ Template.sidebarItem.helpers({
 	showUnread() {
 		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
+	unread() {
+		const { unread = 0, tunread = [] } = this;
+		return unread + tunread.length;
+	},
 	badgeClass() {
-		const { t, unread, userMentions, groupMentions } = this;
-
-		const badges = ['badge'];
-
-		if (unread) {
-			badges.push('badge--unread');
-			if (t === 'd') {
-				badges.push('badge--dm');
-			}
-		}
+		const { unread, userMentions, groupMentions, tunread = [] } = this;
 
 		if (userMentions) {
-			badges.push('badge--user-mentions');
-		} else if (groupMentions) {
-			badges.push('badge--group-mentions');
+			return 'badge badge--user-mentions';
 		}
 
-		return badges.join(' ');
+		if (groupMentions) {
+			return 'badge badge--group-mentions';
+		}
+
+		if (tunread.length) {
+			return 'badge badge--thread';
+		}
+
+		if (unread) {
+			return 'badge';
+		}
 	},
 });
 
@@ -87,7 +90,7 @@ Template.sidebarItem.onCreated(function() {
 			return;
 		}
 
-		setLastMessageTs(this, currentData.lastMessage.ts);
+		setLastMessageTs(this, currentData.lm || currentData.lastMessage.ts);
 
 		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
 			this.renderedMessage = '******';

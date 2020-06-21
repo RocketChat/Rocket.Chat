@@ -10,6 +10,7 @@ import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
+import Subscriptions from '../../../models/server/models/Subscriptions';
 import { settings } from '../../../settings';
 import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsFromRoom } from '../lib/messages';
 
@@ -427,9 +428,10 @@ API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
 
 API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 	get() {
-		const { rid } = this.queryParams;
+		const { rid, type, text } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
+
 		if (!rid) {
 			throw new Meteor.Error('The required "rid" query param is missing.');
 		}
@@ -441,9 +443,20 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
-		const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+
+		const typeThread = {
+			...type === 'following' && { replies: { $in: [this.userId] } },
+			...type === 'unread' && { _id: { $in: Subscriptions.findOneByRoomIdAndUserId(room._id, user._id).tunread } },
+			...text && {
+				$text: {
+					$search: text,
+				},
+			},
+		};
+
+		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
 		const cursor = Messages.find(threadQuery, {
-			sort: sort || { ts: 1 },
+			sort: sort || { tlm: -1 },
 			skip: offset,
 			limit: count,
 			fields,

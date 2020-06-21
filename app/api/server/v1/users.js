@@ -543,6 +543,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				highlights: Match.Maybe(Array),
 				desktopNotificationRequireInteraction: Match.Maybe(Boolean),
 				messageViewMode: Match.Maybe(Number),
+				showMessageInMainThread: Match.Maybe(Boolean),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
 				hideAvatars: Match.Maybe(Boolean),

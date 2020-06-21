@@ -52,6 +52,7 @@ export async function getPushData({ room, message, userId, receiverUsername, sen
 			type: room.t,
 			name: room.name,
 			messageType: message.t,
+			tmid: message.tmid,
 		},
 		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
 		username,
@@ -69,6 +70,7 @@ export function shouldNotifyMobile({
 	hasMentionToUser,
 	hasReplyToThread,
 	roomType,
+	isThread,
 }) {
 	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
@@ -79,7 +81,7 @@ export function shouldNotifyMobile({
 	}
 
 	if (!mobilePushNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all') {
+		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all' && (!isThread || hasReplyToThread)) {
 			return true;
 		}
 		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing') {
@@ -87,5 +89,5 @@ export function shouldNotifyMobile({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser || hasReplyToThread;
+	return (roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
 }
