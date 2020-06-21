@@ -111,6 +111,7 @@ export function settings() {
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
+			showFeedbackForm: initSettings.Livechat_feedback_form,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
