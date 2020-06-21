@@ -36,7 +36,7 @@ const notification = (message, room, replies) => {
 	return message;
 };
 
-const processThreads = (message, room) => {
+export const processThreads = (message, room) => {
 	if (!message.tmid) {
 		return message;
 	}
