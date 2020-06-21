@@ -126,19 +126,6 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 		return this.col.find(query, options).toArray();
 	}
 
-	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
-		return this.find({
-			type: LivechatBussinessHourTypes.SINGLE,
-			active: true,
-			workHours: {
-				$elemMatch: {
-					'start.cron.dayOfWeek': day,
-					open: true,
-				},
-			},
-		}, options).toArray();
-	}
-
 	async findActiveBusinessHoursToClose(day: string, finish: string, type?: LivechatBussinessHourTypes, options?: any): Promise<ILivechatBusinessHour[]> {
 		const query: Record<string, any> = {
 			active: true,

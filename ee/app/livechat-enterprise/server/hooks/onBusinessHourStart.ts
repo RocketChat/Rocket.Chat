@@ -11,4 +11,4 @@ callbacks.add('on-business-hour-start', (options: any = {}) => {
 		return options;
 	}
 	return { BusinessHourClass: MultipleBusinessHours };
-});
+}, callbacks.priority.HIGH, 'livechat-on-business-hour-start');

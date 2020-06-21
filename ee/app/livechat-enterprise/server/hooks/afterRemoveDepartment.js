@@ -7,9 +7,10 @@ callbacks.add('livechat.afterRemoveDepartment', (department) => {
 		return department;
 	}
 	LivechatDepartment.removeDepartmentFromForwardListById(department._id);
-	if (!department.businessHourId) {
+	const deletedDepartment = LivechatDepartment.trashFindOneById(department._id);
+	if (!deletedDepartment.businessHourId) {
 		return department;
 	}
-	Promise.await(businessHourManager.removeBusinessHourById(department._id));
+	Promise.await(businessHourManager.removeBusinessHourIdFromUsers(deletedDepartment));
 	return department;
 }, callbacks.priority.HIGH, 'livechat-after-remove-department');

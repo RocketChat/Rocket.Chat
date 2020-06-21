@@ -11,5 +11,5 @@ export interface ILivechatDepartment {
 	offlineMessageChannelName: string;
 	numAgents: number;
 	_updatedAt?: Date;
-	businessHour?: string;
+	businessHourId?: string;
 }

@@ -19,8 +19,8 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 
 	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
 
-	async closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void> {
-		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToClose(day, hour, utc, undefined, {
+	async closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
+		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToClose(day, hour, undefined, {
 			fields: {
 				_id: 1,
 				type: 1,
@@ -40,8 +40,8 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 		return businessHour;
 	}
 
-	async openBusinessHoursByDayHourAndUTC(day: string, hour: string, utc: string): Promise<void> {
-		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToOpen(day, hour, utc, undefined, {
+	async openBusinessHoursByDayHour(day: string, hour: string): Promise<void> {
+		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToOpen(day, hour, undefined, {
 			fields: {
 				_id: 1,
 				type: 1,
@@ -57,15 +57,59 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 			name: businessHourData.timezoneName,
 			utc: this.getUTCFromTimezone(businessHourData.timezoneName),
 		};
-		businessHourData.workHours.forEach((hour) => {
-			if (businessHourData.timezone.name) {
-				hour.start = moment.tz(hour.start, 'HH:mm', businessHourData.timezone.name).utc().format('HH:mm');
-				hour.finish = moment.tz(hour.finish, 'HH:mm', businessHourData.timezone.name).utc().format('HH:mm');
-			} else {
-				hour.start = moment(hour.start, 'HH:mm').utc().format('HH:mm');
-				hour.finish = moment(hour.finish, 'HH:mm').utc().format('HH:mm');
-			}
-		});
+		if (businessHourData.timezone.name) {
+			businessHourData.workHours.forEach((hour: any) => {
+				const startUtc = moment.tz(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm', businessHourData.timezoneName).utc();
+				const finishUtc = moment.tz(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm', businessHourData.timezoneName).utc();
+				hour.start = {
+					time: hour.start,
+					utc: {
+						dayOfWeek: startUtc.clone().format('dddd'),
+						time: startUtc.clone().format('HH:mm'),
+					},
+					cron: {
+						dayOfWeek: moment(startUtc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format('dddd'),
+						time: moment(startUtc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format('HH:mm'),
+					},
+				};
+				hour.finish = {
+					time: hour.finish,
+					utc: {
+						dayOfWeek: finishUtc.clone().format('dddd'),
+						time: finishUtc.clone().format('HH:mm'),
+					},
+					cron: {
+						dayOfWeek: moment(finishUtc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format('dddd'),
+						time: moment(finishUtc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format('HH:mm'),
+					},
+				};
+			});
+		} else {
+			businessHourData.workHours.forEach((hour: any) => {
+				hour.start = {
+					time: hour.start,
+					utc: {
+						dayOfWeek: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').utc().format('dddd'),
+						time: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').utc().format('HH:mm'),
+					},
+					cron: {
+						dayOfWeek: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').format('dddd'),
+						time: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').format('HH:mm'),
+					},
+				};
+				hour.finish = {
+					time: hour.finish,
+					utc: {
+						dayOfWeek: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
+						time: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
+					},
+					cron: {
+						dayOfWeek: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').format('dddd'),
+						time: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').format('HH:mm'),
+					},
+				};
+			});
+		}
 		businessHourData.active = Boolean(businessHourData.active);
 		businessHourData.type = businessHourData.type || LivechatBussinessHourTypes.MULTIPLE;
 		const departments = businessHourData.departmentsToApplyBusinessHour?.split(',');
@@ -113,9 +157,10 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 		}
 	}
 
-	async removeBusinessHourFromUsers(departmentId: string): Promise<void> {
+	async removeBusinessHourFromUsers(departmentId: string, businessHourId: string): Promise<void> {
 		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds([departmentId], { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
-		return this.UsersRepository.closeBusinessHourByAgentIds(agentIds);
+		await this.UsersRepository.closeBusinessHourByAgentIds(agentIds, businessHourId);
+		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
 	private async openBusinessHour(businessHour: Record<string, any>): Promise<void> {

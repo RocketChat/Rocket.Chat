@@ -4,6 +4,7 @@ import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessH
 import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHour } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
+import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,
@@ -65,8 +66,8 @@ export class BusinessHourManager {
 		return this.businessHour.allowAgentChangeServiceStatus(agentId);
 	}
 
-	async removeBusinessHourIdFromUsers(departmentId: string): Promise<void> {
-		return this.businessHour.removeBusinessHourFromUsers(departmentId);
+	async removeBusinessHourIdFromUsers(department: ILivechatDepartment): Promise<void> {
+		return this.businessHour.removeBusinessHourFromUsers(department._id, department.businessHourId as string);
 	}
 
 	async removeBusinessHourById(id: string): Promise<void> {

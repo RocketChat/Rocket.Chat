@@ -1,5 +1,5 @@
-import { callbacks } from '../../../../../app/callbacks/server';
-import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../app/callbacks/client';
+import { settings } from '../../../../../app/settings/client';
 import { MultipleBusinessHours } from '../views/business-hours/Multiple';
 
 callbacks.add('on-business-hour-start', (options: any = {}) => {
@@ -11,4 +11,4 @@ callbacks.add('on-business-hour-start', (options: any = {}) => {
 		return options;
 	}
 	return { BusinessHourClass: MultipleBusinessHours };
-});
+}, callbacks.priority.HIGH, 'livechat-on-business-hour-start');
