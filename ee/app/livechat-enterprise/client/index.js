@@ -10,7 +10,6 @@ import './views/livechatPriorities';
 import './views/livechatPriorityForm';
 import './views/business-hours/livechatBusinessHours';
 import './startup';
-import './hooks/onBusinessHourStart';
 
 hasLicense('livechat-enterprise').then((enabled) => {
 	if (!enabled) {
