@@ -1,7 +1,6 @@
 import { Box, Button, Icon, Margins, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
-import { css } from '@rocket.chat/css-in-js';
 
 import Page from './Page';
 import RawText from './RawText';
