@@ -156,7 +156,6 @@ Template.livechatBusinessHoursForm.onCreated(async function() {
 	this.businessHour.set({
 		...createDefaultBusinessHour(),
 	});
-
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');
 		let url = 'livechat/business-hour';

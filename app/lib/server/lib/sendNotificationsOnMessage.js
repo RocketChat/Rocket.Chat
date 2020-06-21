@@ -153,7 +153,15 @@ export const sendNotification = async ({
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
-					data: getEmailData({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser }),
+					data: getEmailData({
+						message,
+						receiver,
+						sender,
+						subscription,
+						room,
+						emailAddress: email.address,
+						hasMentionToUser,
+					}),
 				});
 
 				return true;

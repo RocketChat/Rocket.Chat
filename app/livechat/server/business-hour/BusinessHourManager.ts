@@ -114,7 +114,7 @@ export class BusinessHourManager {
 	}
 
 	private async openWorkHoursCallback(day: string, hour: string): Promise<void> {
-		return this.businessHour.openBusinessHoursByDayHourAndUTC(day, hour);
+		return this.businessHour.openBusinessHoursByDayHour(day, hour);
 	}
 
 	private async closeWorkHoursCallback(day: string, hour: string): Promise<void> {

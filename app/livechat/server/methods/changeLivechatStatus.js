@@ -12,7 +12,7 @@ Meteor.methods({
 
 		const newStatus = user.statusLivechat === 'available' ? 'not-available' : 'available';
 		if (!Livechat.allowAgentChangeServiceStatus(newStatus, user._id)) {
-			throw new Meteor.Error('error-office-hours-are-closed', 'Not allowed', { method: 'livechat:changeLivechatStatus' });
+			throw new Meteor.Error('error-business-hours-are-closed', 'Not allowed', { method: 'livechat:changeLivechatStatus' });
 		}
 
 		return Livechat.setUserStatusLivechat(user._id, newStatus);

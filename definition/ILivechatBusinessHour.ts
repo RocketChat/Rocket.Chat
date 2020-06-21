@@ -5,10 +5,16 @@ export enum LivechatBussinessHourTypes {
 	MULTIPLE = 'multiple',
 }
 
+interface IBusinessHourTime {
+	time: string;
+	utc: { dayOfWeek: string; time: string };
+	cron: { dayOfWeek: string; time: string };
+}
+
 export interface IBusinessHourWorkHour {
-	dayOfWeek: number;
-	start: { time: string; utc: { dayOfWeek: string; time: string }; cron: { dayOfWeek: string; time: string } };
-	finish: { time: string; utc: { dayOfWeek: string; time: string }; cron: { dayOfWeek: string; time: string } };
+	day: string;
+	start: IBusinessHourTime;
+	finish: IBusinessHourTime;
 	open: boolean;
 }
 

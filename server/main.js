@@ -4,7 +4,6 @@ import '../imports/startup/server';
 import '../lib/RegExp';
 
 import '../ee/server';
-import './lib/accounts';
 import './lib/pushConfig';
 import './lib/roomFiles';
 import './startup/migrations';
@@ -28,6 +27,7 @@ import './methods/deleteFileMessage';
 import './methods/deleteUser';
 import './methods/eraseRoom';
 import './methods/getAvatarSuggestion';
+import './methods/getPasswordPolicy';
 import './methods/getRoomById';
 import './methods/getRoomIdByNameOrId';
 import './methods/getRoomNameById';

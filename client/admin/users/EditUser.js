@@ -50,19 +50,21 @@ export function EditUser({ data, roles, ...props }) {
 
 	const router = useRoute('admin-users');
 
-	const goToUser = (id) => router.push({
+	const goToUser = useCallback((id) => router.push({
 		context: 'info',
 		id,
-	});
+	}), [router]);
 
 	const saveQuery = useMemo(() => ({
 		userId: data._id,
 		data: values,
+		// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
 	}), [data._id, JSON.stringify(values)]);
 
 	const saveAvatarQuery = useMemo(() => ({
 		userId: data._id,
 		avatarUrl: avatarObj && avatarObj.avatarUrl,
+		// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
 	}), [data._id, JSON.stringify(avatarObj)]);
 
 	const resetAvatarQuery = useMemo(() => ({
@@ -74,7 +76,7 @@ export function EditUser({ data, roles, ...props }) {
 	const saveAvatarUrlAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
 	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
 
-	const updateAvatar = async () => {
+	const updateAvatar = useCallback(async () => {
 		if (avatarObj === 'reset') {
 			return resetAvatarAction();
 		}
@@ -82,7 +84,7 @@ export function EditUser({ data, roles, ...props }) {
 			return saveAvatarUrlAction();
 		}
 		return saveAvatarAction(avatarObj);
-	};
+	}, [avatarObj, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction]);
 
 	const handleSave = useCallback(async () => {
 		const result = await saveAction();
@@ -92,11 +94,11 @@ export function EditUser({ data, roles, ...props }) {
 			}
 			goToUser(data._id);
 		}
-	}, [saveAction, updateAvatar]);
+	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar]);
 
 	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
 
-	const prepend = useMemo(() => <UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>, []);
+	const prepend = useMemo(() => <UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>, [data.username]);
 
 	const append = useMemo(() => <Field>
 		<Field.Row>
@@ -107,7 +109,7 @@ export function EditUser({ data, roles, ...props }) {
 				</Margins>
 			</Box>
 		</Field.Row>
-	</Field>, [handleSave, reset]);
+	</Field>, [handleSave, hasUnsavedChanges, reset, t]);
 
 	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} prepend={prepend} append={append} {...props}/>;
 }

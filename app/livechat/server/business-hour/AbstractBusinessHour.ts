@@ -12,7 +12,7 @@ export interface IBusinessHour {
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined>;
 	findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
-	openBusinessHoursByDayHourAndUTC(day: string, hour: string): Promise<void>;
+	openBusinessHoursByDayHour(day: string, hour: string): Promise<void>;
 	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	removeBusinessHoursFromUsers(): Promise<void>;
 	removeBusinessHourById(id: string): Promise<void>;
