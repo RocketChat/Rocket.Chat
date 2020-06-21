@@ -393,10 +393,11 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateLivechatStatusBasedOnBusinessHours() {
+	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
+			...Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } },
 		};
 
 		const update = {

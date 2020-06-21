@@ -79,6 +79,22 @@ export class BusinessHourManager {
 		await this.openBusinessHoursIfNeeded();
 	}
 
+	async removeBusinessHourFromUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+
+		await this.businessHour.removeBusinessHourFromUsersByIds(userIds, businessHourId);
+	}
+
+	async addBusinessHourToUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+
+		await this.businessHour.addBusinessHourToUsersByIds(userIds, businessHourId);
+	}
+
 	private removeCronJobs(): void {
 		this.cronJobsCache.forEach((jobName) => this.cronJobs.remove(jobName));
 	}

@@ -18,6 +18,8 @@ export interface IBusinessHour {
 	removeBusinessHourById(id: string): Promise<void>;
 	removeBusinessHourFromUsers(departmentId: string, businessHourId: string): Promise<void>;
 	openBusinessHoursIfNeeded(): Promise<void>;
+	removeBusinessHourFromUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void>;
+	addBusinessHourToUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void>;
 }
 
 export abstract class AbstractBusinessHour {

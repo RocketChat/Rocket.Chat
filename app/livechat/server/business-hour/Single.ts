@@ -77,4 +77,12 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 	removeBusinessHourById(): Promise<void> {
 		return Promise.resolve();
 	}
+
+	removeBusinessHourFromUsersByIds(): Promise<void> {
+		return Promise.resolve();
+	}
+
+	addBusinessHourToUsersByIds(): Promise<void> {
+		return Promise.resolve();
+	}
 }

@@ -163,6 +163,24 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
+	async removeBusinessHourFromUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void> {
+		if (!userIds?.length) {
+			return;
+		}
+
+		await this.UsersRepository.closeBusinessHourByAgentIds(userIds, businessHourId);
+		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours(userIds);
+	}
+
+	async addBusinessHourToUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void> {
+		if (!userIds?.length) {
+			return;
+		}
+
+		await this.UsersRepository.openBusinessHourByAgentIds(userIds, businessHourId);
+		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours(userIds);
+	}
+
 	private async openBusinessHour(businessHour: Record<string, any>): Promise<void> {
 		if (businessHour.type === LivechatBussinessHourTypes.MULTIPLE) {
 			const agentIds = await this.getAgentIdsFromBusinessHour(businessHour);

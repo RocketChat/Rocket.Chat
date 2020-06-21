@@ -35,7 +35,7 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
-import { normalizeTransferredByData, parseAgentCustomFields } from './Helper';
+import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 
@@ -824,7 +824,8 @@ export const Livechat = {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartmentAgents' });
 		}
 
-		return LivechatDepartment.createOrUpdateDepartment(_id, department, departmentAgents);
+		LivechatDepartment.createOrUpdateDepartment(_id, department);
+		return updateDepartmentAgents(_id, departmentAgents);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -869,7 +870,8 @@ export const Livechat = {
 			}
 		}
 
-		return LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
+		LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
+		return updateDepartmentAgents(_id, departmentAgents);
 	},
 
 	saveAgentInfo(_id, agentData, agentDepartments) {
