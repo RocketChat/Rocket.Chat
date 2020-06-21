@@ -10,8 +10,6 @@ import UsersModel from '../models/Users';
 import { UsersRaw } from './Users';
 import RoomsModel from '../models/Rooms';
 import { RoomsRaw } from './Rooms';
-import LivechatOfficeHourModel from '../models/LivechatOfficeHour';
-import { LivechatOfficeHourRaw } from './LivechatOfficeHour';
 import LivechatCustomFieldModel from '../models/LivechatCustomField';
 import { LivechatCustomFieldRaw } from './LivechatCustomField';
 import LivechatTriggerModel from '../models/LivechatTrigger';
@@ -48,6 +46,8 @@ import StatisticsModel from '../models/Statistics';
 import { StatisticsRaw } from './Statistics';
 import NotificationQueueModel from '../models/NotificationQueue';
 import { NotificationQueueRaw } from './NotificationQueue';
+import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
+import { LivechatBusinessHoursRaw } from './LivechatBusinessHours';
 import ServerEventModel from '../models/ServerEvents';
 import { ServerEventsRaw } from './ServerEvents';
 
@@ -57,7 +57,6 @@ export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCo
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection());
 export const Users = new UsersRaw(UsersModel.model.rawCollection());
 export const Rooms = new RoomsRaw(RoomsModel.model.rawCollection());
-export const LivechatOfficeHour = new LivechatOfficeHourRaw(LivechatOfficeHourModel.model.rawCollection());
 export const LivechatCustomField = new LivechatCustomFieldRaw(LivechatCustomFieldModel.model.rawCollection());
 export const LivechatTrigger = new LivechatTriggerRaw(LivechatTriggerModel.model.rawCollection());
 export const LivechatDepartment = new LivechatDepartmentRaw(LivechatDepartmentModel.model.rawCollection());
@@ -76,4 +75,5 @@ export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.mo
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection());
 export const Statistics = new StatisticsRaw(StatisticsModel.model.rawCollection());
 export const NotificationQueue = new NotificationQueueRaw(NotificationQueueModel.model.rawCollection());
+export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection());
 export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollection());
