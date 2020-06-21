@@ -75,7 +75,6 @@ import './methods/getTagsList';
 import './methods/getDepartmentForwardRestrictions';
 import './lib/Analytics';
 import './lib/QueueManager';
-import './lib/OfficeClock';
 import './lib/RoutingManager';
 import './lib/routing/External';
 import './lib/routing/ManualSelection';
@@ -88,5 +87,6 @@ import './api';
 import './api/rest';
 import './externalFrame';
 import './lib/messageTypes';
+import './methods/saveBusinessHour';
 
 export { Livechat } from './lib/Livechat';

@@ -78,6 +78,7 @@ export interface ISettingAddOptions {
 	ts?: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
+	public?: boolean;
 }
 
 export interface ISettingSelectOption {

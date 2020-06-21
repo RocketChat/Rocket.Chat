@@ -26,7 +26,6 @@ import {
 	LivechatDepartment,
 	LivechatCustomField,
 	LivechatVisitors,
-	LivechatOfficeHour,
 	LivechatInquiry,
 } from '../../../models';
 import { Logger } from '../../../logger';
@@ -38,6 +37,7 @@ import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields } from './Helper';
 import { Apps, AppEvents } from '../../../apps/server';
+import { businessHourManager } from '../business-hour';
 
 export const Livechat = {
 	Analytics,
@@ -1093,20 +1093,12 @@ export const Livechat = {
 		});
 	},
 
-	allowAgentChangeServiceStatus(statusLivechat) {
-		if (!settings.get('Livechat_enable_office_hours')) {
-			return true;
-		}
-
-		if (settings.get('Livechat_allow_online_agents_outside_office_hours')) {
-			return true;
-		}
-
+	allowAgentChangeServiceStatus(statusLivechat, agentId) {
 		if (statusLivechat !== 'available') {
 			return true;
 		}
 
-		return LivechatOfficeHour.isNowWithinHours();
+		return Promise.await(businessHourManager.allowAgentChangeServiceStatus(agentId));
 	},
 };
 
