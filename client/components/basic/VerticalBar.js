@@ -19,7 +19,6 @@ function VerticalBar({ children, ...props }) {
 		position={small ? 'absolute' : undefined}
 		insetInlineEnd={small ? 'none' : undefined}
 		backgroundColor='white'
-		rcx-vertical-bar
 		{...props}
 	>
 		{children}
