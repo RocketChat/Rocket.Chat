@@ -56,6 +56,6 @@ export class LivechatDepartmentRaw extends BaseRaw {
 			},
 		};
 
-		return this.col.update(query, update);
+		return this.col.update(query, update, { multi: true });
 	}
 }

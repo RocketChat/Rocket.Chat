@@ -58,57 +58,9 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 			utc: this.getUTCFromTimezone(businessHourData.timezoneName),
 		};
 		if (businessHourData.timezone.name) {
-			businessHourData.workHours.forEach((hour: any) => {
-				const startUtc = moment.tz(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm', businessHourData.timezoneName).utc();
-				const finishUtc = moment.tz(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm', businessHourData.timezoneName).utc();
-				hour.start = {
-					time: hour.start,
-					utc: {
-						dayOfWeek: startUtc.clone().format('dddd'),
-						time: startUtc.clone().format('HH:mm'),
-					},
-					cron: {
-						dayOfWeek: moment(startUtc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format('dddd'),
-						time: moment(startUtc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format('HH:mm'),
-					},
-				};
-				hour.finish = {
-					time: hour.finish,
-					utc: {
-						dayOfWeek: finishUtc.clone().format('dddd'),
-						time: finishUtc.clone().format('HH:mm'),
-					},
-					cron: {
-						dayOfWeek: moment(finishUtc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format('dddd'),
-						time: moment(finishUtc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format('HH:mm'),
-					},
-				};
-			});
+			businessHourData = this.convertWorkHoursWithSpecificTimezone(businessHourData);
 		} else {
-			businessHourData.workHours.forEach((hour: any) => {
-				hour.start = {
-					time: hour.start,
-					utc: {
-						dayOfWeek: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').utc().format('dddd'),
-						time: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').utc().format('HH:mm'),
-					},
-					cron: {
-						dayOfWeek: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').format('dddd'),
-						time: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').format('HH:mm'),
-					},
-				};
-				hour.finish = {
-					time: hour.finish,
-					utc: {
-						dayOfWeek: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
-						time: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
-					},
-					cron: {
-						dayOfWeek: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').format('dddd'),
-						time: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').format('HH:mm'),
-					},
-				};
-			});
+			businessHourData = this.convertWorkHoursWithServerTimezone(businessHourData) as IBusinessHoursExtraProperties;
 		}
 		businessHourData.active = Boolean(businessHourData.active);
 		businessHourData.type = businessHourData.type || LivechatBussinessHourTypes.MULTIPLE;
@@ -118,17 +70,10 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 		delete businessHourData.departments;
 		if (businessHourData._id) {
 			await this.BusinessHourRepository.updateOne(businessHourData._id, businessHourData);
-			if (!departments?.length) {
-				return;
-			}
-			await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourData._id);
-			return this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departments, businessHourData._id);
+			return this.updateDepartmentBusinessHour(businessHourData._id, departments);
 		}
 		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);
-		if (!departments?.length) {
-			return;
-		}
-		return this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departments, insertedId);
+		return this.updateDepartmentBusinessHour(insertedId, departments);
 	}
 
 	async removeBusinessHourById(id: string): Promise<void> {
@@ -179,6 +124,51 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 
 		await this.UsersRepository.openBusinessHourByAgentIds(userIds, businessHourId);
 		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours(userIds);
+	}
+
+	private async updateDepartmentBusinessHour(businessHourId: string, departments: string[]): Promise<void> {
+		if (!departments?.length) {
+			return;
+		}
+		if (businessHourId) {
+			await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId);
+			return this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departments, businessHourId);
+		}
+		return this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departments, businessHourId);
+	}
+
+	private convertWorkHoursWithSpecificTimezone(businessHourData: IBusinessHoursExtraProperties): IBusinessHoursExtraProperties {
+		businessHourData.workHours.forEach((hour: any) => {
+			const startUtc = moment.tz(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm', businessHourData.timezoneName).utc();
+			const finishUtc = moment.tz(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm', businessHourData.timezoneName).utc();
+			hour.start = {
+				time: hour.start,
+				utc: {
+					dayOfWeek: startUtc.clone().format('dddd'),
+					time: startUtc.clone().format('HH:mm'),
+				},
+				cron: {
+					dayOfWeek: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(startUtc, 'dddd'),
+					time: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(finishUtc, 'HH:mm'),
+				},
+			};
+			hour.finish = {
+				time: hour.finish,
+				utc: {
+					dayOfWeek: finishUtc.clone().format('dddd'),
+					time: finishUtc.clone().format('HH:mm'),
+				},
+				cron: {
+					dayOfWeek: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(startUtc, 'dddd'),
+					time: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(finishUtc, 'HH:mm'),
+				},
+			};
+		});
+		return businessHourData;
+	}
+
+	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: any, format: string): string {
+		return moment(utc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format(format);
 	}
 
 	private async openBusinessHour(businessHour: Record<string, any>): Promise<void> {

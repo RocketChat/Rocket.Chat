@@ -54,4 +54,40 @@ export abstract class AbstractBusinessHour {
 				type: businessHour.type,
 			}));
 	}
+
+	protected convertWorkHoursWithServerTimezone(businessHourData: ILivechatBusinessHour): ILivechatBusinessHour {
+		businessHourData.workHours.forEach((hour: any) => {
+			hour.start = {
+				time: hour.start,
+				utc: {
+					dayOfWeek: this.formatDayOfTheWeekFromUTC(`${ hour.day }:${ hour.start }`, 'dddd'),
+					time: this.formatDayOfTheWeekFromUTC(`${ hour.day }:${ hour.start }`, 'HH:mm'),
+				},
+				cron: {
+					dayOfWeek: this.formatDayOfTheWeekFromServerTimezone(`${ hour.day }:${ hour.start }`, 'dddd'),
+					time: this.formatDayOfTheWeekFromServerTimezone(`${ hour.day }:${ hour.start }`, ' HH:mm'),
+				},
+			};
+			hour.finish = {
+				time: hour.finish,
+				utc: {
+					dayOfWeek: this.formatDayOfTheWeekFromUTC(`${ hour.day }:${ hour.finish }`, 'dddd'),
+					time: this.formatDayOfTheWeekFromUTC(`${ hour.day }:${ hour.finish }`, 'HH:mm'),
+				},
+				cron: {
+					dayOfWeek: this.formatDayOfTheWeekFromServerTimezone(`${ hour.day }:${ hour.finish }`, 'dddd'),
+					time: this.formatDayOfTheWeekFromServerTimezone(`${ hour.day }:${ hour.finish }`, 'HH:mm'),
+				},
+			};
+		});
+		return businessHourData;
+	}
+
+	protected formatDayOfTheWeekFromServerTimezone(hour: string, format: string): string {
+		return moment(hour, 'dddd:HH:mm').format(format);
+	}
+
+	protected formatDayOfTheWeekFromUTC(hour: string, format: string): string {
+		return moment(hour, 'dddd:HH:mm').utc().format(format);
+	}
 }

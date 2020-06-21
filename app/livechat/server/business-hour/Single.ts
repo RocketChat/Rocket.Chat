@@ -8,30 +8,7 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 		if (!businessHourData._id) {
 			return;
 		}
-		businessHourData.workHours.forEach((hour: any) => {
-			hour.start = {
-				time: hour.start,
-				utc: {
-					dayOfWeek: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').utc().format('HH:mm'),
-				},
-				cron: {
-					dayOfWeek: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').format('HH:mm'),
-				},
-			};
-			hour.finish = {
-				time: hour.finish,
-				utc: {
-					dayOfWeek: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
-				},
-				cron: {
-					dayOfWeek: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').format('HH:mm'),
-				},
-			};
-		});
+		businessHourData = this.convertWorkHoursWithServerTimezone(businessHourData);
 		businessHourData.timezone = {
 			name: '',
 			utc: String(moment().utcOffset() / 60),
