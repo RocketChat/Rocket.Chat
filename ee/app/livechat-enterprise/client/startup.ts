@@ -19,9 +19,19 @@ const businessHours: Record<string, IBusinessHour> = {
 Meteor.startup(function() {
 	settings.onload('Livechat_business_hour_type', (_, value) => {
 		removeCustomTemplate('livechatBusinessHoursForm');
-		if (String(value).toLowerCase() === LivechatBussinessHourTypes.MULTIPLE) {
-			addCustomFormTemplate('livechatBusinessHoursForm', 'businessHoursCustomFieldsForm');
+		console.log(value);
+		switch (String(value).toLowerCase()) {
+			case LivechatBussinessHourTypes.SINGLE:
+				console.log('a');
+				businessHourManager.setBusinessHourManager(new SingleBusinessHour() as IBusinessHour);
+				break;
+			case LivechatBussinessHourTypes.MULTIPLE:
+				console.log('b');
+				businessHourManager.setBusinessHourManager(new MultipleBusinessHours() as IBusinessHour);
+				addCustomFormTemplate('livechatBusinessHoursForm', 'businessHoursCustomFieldsForm');
+				break;
 		}
+
 		businessHourManager.registerBusinessHourMethod(businessHours[value as string]);
 	});
 });

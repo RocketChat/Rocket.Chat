@@ -1,14 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-
 import { IBusinessHour } from './IBusinessHour';
 import { SingleBusinessHour } from './Single';
-import { callbacks } from '../../../../../callbacks/client';
 import { ILivechatBusinessHour } from '../../../../../../definition/ILivechatBusinessHour';
 
 class BusinessHoursManager {
 	private businessHour: IBusinessHour;
 
-	onStartBusinessHourManager(businessHour: IBusinessHour): void {
+	constructor(businessHour: IBusinessHour) {
+		this.setBusinessHourManager(businessHour);
+	}
+
+	setBusinessHourManager(businessHour: IBusinessHour): void {
 		this.registerBusinessHourMethod(businessHour);
 	}
 
@@ -29,9 +30,4 @@ class BusinessHoursManager {
 	}
 }
 
-export const businessHourManager = new BusinessHoursManager();
-
-Meteor.startup(() => {
-	const { BusinessHourClass } = callbacks.run('on-business-hour-start', { BusinessHourClass: SingleBusinessHour });
-	businessHourManager.onStartBusinessHourManager(new BusinessHourClass() as IBusinessHour);
-});
+export const businessHourManager = new BusinessHoursManager(new SingleBusinessHour() as IBusinessHour);
