@@ -7,7 +7,7 @@ import { settings } from '../../../settings/client';
 import { getUserPreference } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
 
-const fields = { name: 1, username: 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
+const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
 
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
@@ -26,10 +26,12 @@ export function messageContext({ rid } = Template.instance()) {
 				name: 1,
 				autoTranslate: 1,
 				rid: 1,
+				tunread: 1,
 			},
 		}),
 		settings: {
 			translateLanguage: AutoTranslate.getLanguage(rid),
+			showMessageInMainThread: getUserPreference(user, 'showMessageInMainThread'),
 			autoImageLoad: getUserPreference(user, 'autoImageLoad'),
 			saveMobileBandwidth: Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth'),
 			collapseMediaByDefault: getUserPreference(user, 'collapseMediaByDefault'),

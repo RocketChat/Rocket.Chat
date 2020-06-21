@@ -1,7 +1,4 @@
 .rc-header {
-
-	z-index: 10;
-
 	font-size: var(--text-heading-size);
 
 	.rc-badge {
@@ -45,7 +42,7 @@
 	&--room {
 		padding: 1.25rem;
 
-		box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
+		border-bottom: 2px solid var(--color-gray-lightest);
 
 		font-size: var(--header-title-font-size);
 	}
@@ -60,8 +57,6 @@
 		height: 36px;
 
 		white-space: nowrap;
-
-		background-color: var(--header-background-color);
 
 		align-items: center;
 

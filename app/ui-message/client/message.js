@@ -15,8 +15,9 @@ import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
 import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import './message.html';
-import './messageThread.html';
+import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
+
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -48,6 +49,39 @@ const renderBody = (msg, settings) => {
 
 	return msg;
 };
+
+const findParentMessage = (() => {
+	const waiting = [];
+	const uid = Tracker.nonreactive(() => Meteor.userId());
+	const getMessages = _.debounce(async function() {
+		const _tmp = [...waiting];
+		waiting.length = 0;
+		(await call('getMessages', _tmp)).map((msg) => Messages.findOne({ _id: msg._id }) || upsertMessage({ msg: { ...msg, _hidden: true }, uid }));
+	}, 500);
+
+
+	return (tmid) => {
+		if (waiting.indexOf(tmid) > -1) {
+			return;
+		}
+		const message = Messages.findOne({ _id: tmid });
+		if (!message) {
+			waiting.push(tmid);
+			return getMessages();
+		}
+		return Messages.update(
+			{ tmid, repliesCount: { $exists: 0 } },
+			{
+				$set: {
+					following: message.replies && message.replies.indexOf(uid) > -1,
+					threadMsg: normalizeThreadMessage(message),
+					repliesCount: message.tcount,
+				},
+			},
+			{ multi: true },
+		);
+	};
+})();
 
 Template.message.helpers({
 	body() {
@@ -199,6 +233,14 @@ Template.message.helpers({
 			}
 			return 'system';
 		}
+	},
+	unread() {
+		const { msg, subscription } = this;
+
+		if (!subscription) {
+			return false;
+		}
+		return subscription.tunread?.includes(msg._id);
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
@@ -373,6 +415,10 @@ Template.message.helpers({
 		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
 		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
+	shouldHideBody() {
+		const { msg: { tmid }, settings: { showreply } } = this;
+		return showreply && tmid;
+	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
 		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;
@@ -394,39 +440,6 @@ Template.message.helpers({
 	},
 });
 
-
-const findParentMessage = (() => {
-	const waiting = [];
-	const uid = Tracker.nonreactive(() => Meteor.userId());
-	const getMessages = _.debounce(async function() {
-		const _tmp = [...waiting];
-		waiting.length = 0;
-		(await call('getMessages', _tmp)).map((msg) => Messages.findOne({ _id: msg._id }) || upsertMessage({ msg: { ...msg, _hidden: true }, uid }));
-	}, 500);
-
-
-	return (tmid) => {
-		if (waiting.indexOf(tmid) > -1) {
-			return;
-		}
-		const message = Messages.findOne({ _id: tmid });
-		if (!message) {
-			waiting.push(tmid);
-			return getMessages();
-		}
-		return Messages.update(
-			{ tmid, repliesCount: { $exists: 0 } },
-			{
-				$set: {
-					following: message.replies && message.replies.indexOf(uid) > -1,
-					threadMsg: normalizeThreadMessage(message),
-					repliesCount: message.tcount,
-				},
-			},
-			{ multi: true },
-		);
-	};
-})();
 
 Template.message.onCreated(function() {
 	const { msg, shouldCollapseReplies } = Template.currentData();
@@ -489,7 +502,7 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 		return false;
 	}
 
-	if (shouldCollapseReplies && currentDataset.tmid) {
+	if (!shouldCollapseReplies && currentDataset.tmid) {
 		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
 	}
 
