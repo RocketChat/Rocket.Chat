@@ -55,11 +55,13 @@
         <div>
             <small class="secondary-font-color">{{{_ "List_of_departments_for_forward_description"}}}</small>
         </div>
-        {{#if businessHour.name }}
-                <h3>{{_ "Business_Hour"}}</h3>
-                <p>
-                    <h3>{{ businessHour.name }}</h3>
-                </p>
-        {{/if}}
+        {{#with businessHour}}
+            <div class="input-line">
+                <label>{{_ "Business_Hour"}}</label>
+                <div>
+                    <input type="text" class="rc-input__element" name="businessHour" value="{{name}}" disabled/>
+                </div>
+            </div>
+        {{/with}}
     </div>
 </template>
