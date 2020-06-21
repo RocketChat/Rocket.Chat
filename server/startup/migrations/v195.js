@@ -17,8 +17,29 @@ const migrateCollection = () => {
 		ts: new Date(),
 		workHours: officeHours.map((officeHour) => ({
 			day: officeHour.day,
-			start: officeHour.start,
-			finish: officeHour.finish,
+			start: {
+				time: officeHour.start,
+				utc: {
+					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('dddd'),
+					time: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('HH:mm'),
+				},
+				cron: {
+					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').format('dddd'),
+					time: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').format('HH:mm'),
+				},
+			},
+			finish: {
+				time: '20:00',
+				utc: {
+					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
+					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
+				},
+				cron: {
+					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').format('dddd'),
+					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').format('HH:mm'),
+				},
+			},
+			code: officeHour.code,
 			open: officeHour.open,
 		})),
 		timezone: {

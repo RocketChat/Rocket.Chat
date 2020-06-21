@@ -11,8 +11,8 @@ class SyncedCronJobs implements ICronJobs {
 			name,
 			schedule: (parser: any) => parser.cron(schedule),
 			job() {
-				const [day, hour, utc] = this.name.split('/');
-				callback(day, hour, utc);
+				const [day, hour] = this.name.split('/');
+				callback(day, hour);
 			},
 		});
 	}

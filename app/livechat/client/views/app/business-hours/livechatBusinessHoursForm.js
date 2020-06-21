@@ -132,11 +132,11 @@ Template.livechatBusinessHoursForm.onCreated(async function() {
 		this.businessHour.set(businessHour);
 		businessHour.workHours.forEach((d) => {
 			if (businessHour.timezone.name) {
-				this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
-				this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+				this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+				this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
 			} else {
-				this.dayVars[d.day].start.set(moment.utc(d.start, 'HH:mm').local().format('HH:mm'));
-				this.dayVars[d.day].finish.set(moment.utc(d.finish, 'HH:mm').local().format('HH:mm'));
+				this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').local().format('HH:mm'));
+				this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').local().format('HH:mm'));
 			}
 			this.dayVars[d.day].open.set(d.open);
 		});

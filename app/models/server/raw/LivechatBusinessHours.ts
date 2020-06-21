@@ -9,7 +9,6 @@ import {
 
 export interface IWorkHoursForCreateCronJobs {
 	day: string;
-	utc: string;
 	start: string[];
 	finish: string[];
 }
@@ -26,7 +25,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 			active: true,
 			workHours: {
 				$elemMatch: {
-					day,
+					'start.cron.dayOfWeek': day,
 					open: true,
 				},
 			},
@@ -71,7 +70,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 	findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
 		return this.col.aggregate([
 			{
-				$project: { _id: 0, workHours: 1, timezone: 1 },
+				$project: { _id: 0, workHours: 1 },
 			},
 			{
 				$unwind: { path: '$workHours' },
@@ -79,16 +78,15 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 			{ $match: { 'workHours.open': true } },
 			{
 				$group: {
-					_id: { hour: '$workHours.day', utc: '$timezone.utc' },
-					start: { $addToSet: '$workHours.start' },
-					finish: { $addToSet: '$workHours.finish' },
+					_id: { day: '$workHours.start.cron.dayOfWeek' },
+					start: { $addToSet: '$workHours.start.cron.time' },
+					finish: { $addToSet: '$workHours.finish.cron.time' },
 				},
 			},
 			{
 				$project: {
 					_id: 0,
-					day: '$_id.hour',
-					utc: '$_id.utc',
+					day: '$_id.day',
 					start: 1,
 					finish: 1,
 				},
@@ -96,43 +94,50 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 		]).toArray() as any;
 	}
 
-	async findActiveBusinessHoursIdsToOpen(type: LivechatBussinessHourTypes, day: string, start: string, utc: string): Promise<string[]> {
-		return (await this.col.find({
-			type,
+	async findActiveBusinessHoursToOpen(day: string, start: string, type?: LivechatBussinessHourTypes, options?: any): Promise<ILivechatBusinessHour[]> {
+		const query: Record<string, any> = {
 			active: true,
-			'timezone.utc': parseInt(utc),
 			workHours: {
 				$elemMatch: {
-					day,
-					start,
+					'start.cron.dayOfWeek': day,
+					'start.cron.time': start,
 					open: true,
 				},
 			},
-		},
-		{
-			fields: {
-				_id: 1,
-			},
-		}).toArray()).map((businessHour) => businessHour._id);
+		};
+		if (type) {
+			query.type = type;
+		}
+		return this.col.find(query, options).toArray();
 	}
 
-	async findActiveBusinessHoursIdsToClose(type: LivechatBussinessHourTypes, day: string, finish: string, utc: string): Promise<string[]> {
-		return (await this.col.find({
-			type,
+	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
+		return this.find({
+			type: LivechatBussinessHourTypes.SINGLE,
 			active: true,
-			'timezone.utc': parseInt(utc),
 			workHours: {
 				$elemMatch: {
-					day,
-					finish,
+					'start.cron.dayOfWeek': day,
 					open: true,
 				},
 			},
-		},
-		{
-			fields: {
-				_id: 1,
+		}, options).toArray();
+	}
+
+	async findActiveBusinessHoursToClose(day: string, finish: string, type?: LivechatBussinessHourTypes, options?: any): Promise<ILivechatBusinessHour[]> {
+		const query: Record<string, any> = {
+			active: true,
+			workHours: {
+				$elemMatch: {
+					'finish.cron.dayOfWeek': day,
+					'finish.cron.time': finish,
+					open: true,
+				},
 			},
-		}).toArray()).map((businessHour) => businessHour._id);
+		};
+		if (type) {
+			query.type = type;
+		}
+		return this.col.find(query, options).toArray();
 	}
 }

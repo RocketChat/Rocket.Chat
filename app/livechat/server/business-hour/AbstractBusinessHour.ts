@@ -12,8 +12,8 @@ export interface IBusinessHour {
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	getBusinessHour(id: string): Promise<ILivechatBusinessHour>;
 	findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
-	openBusinessHoursByDayHourAndUTC(day: string, hour: string, utc: string): Promise<void>;
-	closeBusinessHoursByDayAndHour(day: string, hour: string, utc: string): Promise<void>;
+	openBusinessHoursByDayHour(day: string, hour: string): Promise<void>;
+	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	removeBusinessHoursFromUsers(): Promise<void>;
 	openBusinessHoursIfNeeded(): Promise<void>;
 }
@@ -36,40 +36,18 @@ export abstract class AbstractBusinessHour {
 		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
-	async openBusinessHoursIfNeeded(): Promise<void> {
-		await this.removeBusinessHoursFromUsers();
-		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
-		const day = currentTime.format('dddd');
-		const businessHoursToOpenIds = await this.getBusinessHoursThatMustBeOpen(day, currentTime);
-		await this.UsersRepository.openAgentsBusinessHours(businessHoursToOpenIds);
-		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
-	}
-
-	private async getBusinessHoursThatMustBeOpen(day: string, currentTime: any): Promise<string[]> {
-		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
-			fields: {
-				workHours: 1,
-				timezone: 1,
-			},
-		});
+	protected async getBusinessHoursThatMustBeOpened(day: string, currentTime: any, activeBusinessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> {
 		return activeBusinessHours
 			.filter((businessHour) => businessHour.workHours
-				.filter((hour) => hour.day === day)
+				.filter((hour) => hour.start.cron.dayOfWeek === day)
 				.some((hour) => {
-					const localTimeStart = moment.utc(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').add(businessHour.timezone.utc, 'hours');
-					const localTimeFinish = moment.utc(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').add(businessHour.timezone.utc, 'hours');
-					const start = moment({
-						hour: localTimeStart.hours(),
-						minutes: localTimeStart.minutes(),
-						weekday: currentTime.weekday(),
-					});
-					const finish = moment({
-						hour: localTimeFinish.hours(),
-						minutes: localTimeFinish.minutes(),
-						weekday: currentTime.weekday(),
-					});
-					return currentTime.isSameOrAfter(start) && currentTime.isSameOrBefore(finish);
+					const localTimeStart = moment(`${ hour.start.cron.dayOfWeek }:${ hour.start.cron.time }`, 'dddd:HH:mm');
+					const localTimeFinish = moment(`${ hour.finish.cron.dayOfWeek }:${ hour.finish.cron.time }`, 'dddd:HH:mm');
+					return currentTime.isSameOrAfter(localTimeStart) && currentTime.isSameOrBefore(localTimeFinish);
 				}))
-			.map((businessHour) => businessHour._id);
+			.map((businessHour) => ({
+				_id: businessHour._id,
+				type: businessHour.type,
+			}));
 	}
 }
