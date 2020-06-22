@@ -26,11 +26,13 @@
 					</ul>
 				</div>
 			{{else}}
-				{{#if isSearching}}
-					<h2>{{_ "No_results_found"}}</h2>
-				{{else}}
-					<h2>{{_ "No_previous_chat_found"}}</h2>
-				{{/if}}
+				<div class="contact-chat-history-search-empty">
+					{{#if isSearching}}
+						<h2>{{_ "No_results_found"}}</h2>
+					{{else}}
+						<h2>{{_ "No_previous_chat_found"}}</h2>
+					{{/if}}
+				</div>
 			{{/if}}
 		</div>
 	{{else}}

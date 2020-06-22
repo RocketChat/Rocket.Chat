@@ -702,3 +702,7 @@
 	font-style: italic;
 	line-height: 16px;
 }
+
+.contact-chat-history-search-empty {
+	padding-left: 24px;
+}
