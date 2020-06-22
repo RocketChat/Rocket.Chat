@@ -301,7 +301,7 @@
   "Allow_Invalid_SelfSigned_Certs_Description": "Permitir certificado SSL inválidos e auto-assinados para validação de link e previews.",
   "Allow_switching_departments": "Permitir que Visitantes Mudem de Departamento",
   "Allow_Marketing_Emails": "Permitir emails de marketing",
-  "Allow_Online_Agents_Outside_Business_Hours": "Permitir agentes online fora do horário comercial",
+  "Allow_Online_Agents_Outside_Business_Hours": "Permitir agentes online fora do horário de expediente",
   "Allow_Online_Agents_Outside_Office_Hours": "Permitir agentes online fora do horário de expediente",
   "Almost_done": "Quase pronto",
   "Alphabetical": "Alfabética",

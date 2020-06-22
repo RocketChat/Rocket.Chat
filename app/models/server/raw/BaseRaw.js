@@ -22,4 +22,8 @@ export class BaseRaw {
 	update(...args) {
 		return this.col.update(...args);
 	}
+
+	removeById(_id) {
+		return this.col.deleteOne({ _id });
+	}
 }
