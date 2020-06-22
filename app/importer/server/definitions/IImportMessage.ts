@@ -1,3 +1,13 @@
+export interface IImportMessageIdentification {
+	id?: string;
+	rid?: string;
+	// tmid?: string;
+	u?: {
+		_id?: string;
+		username?: string;
+	};
+}
+
 export interface IImportMessageReaction {
 	name: string;
 	usernames: Array<string>;
@@ -5,16 +15,6 @@ export interface IImportMessageReaction {
 
 export interface IImportMessage {
 	id?: string;
-
-	importedData?: {
-		id?: string;
-		rid?: string;
-		// tmid?: string;
-		u?: {
-			_id?: string;
-			username?: string;
-		};
-	};
 
 	rid?: string;
 	u?: {

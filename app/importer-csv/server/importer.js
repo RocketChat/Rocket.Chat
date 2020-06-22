@@ -223,9 +223,8 @@ export class CsvImporter extends Base {
 
 					Meteor.runAsUser(startedByUserId, () => {
 						newImporter.addUser({
-							// importData: {
-							// 	id: u.id,
-							// },
+							// id: u.id,
+						}, {
 							email: u.email,
 							username: u.username,
 							name: u.name,
@@ -250,12 +249,11 @@ export class CsvImporter extends Base {
 
 					Meteor.runAsUser(startedByUserId, () => {
 						newImporter.addChannel({
-							importData: {
-								id: c.id,
-								u: {
-									username: c.creator,
-								},
+							id: c.id,
+							u: {
+								username: c.creator,
 							},
+						},{
 							name: c.name,
 							users: c.members,
 							t: c.isPrivate ? 'p' : 'c',
@@ -335,20 +333,21 @@ export class CsvImporter extends Base {
 						for (const msg of pack.messages) {
 							const user = this.getCsvUserFromUsername(msg.username);
 
-							const newMessage = {
-								importData: {
-									rid: csvChannel.id,
-									u: {
-										_id: user?.id,
-										username: msg.username,
-									},
+							const identification = {
+								rid: csvChannel.id,
+								u: {
+									_id: user?.id,
+									username: msg.username,
 								},
+							};
+
+							const newMessage = {
 								rid,
 								ts: new Date(parseInt(msg.ts)),
 								msg: msg.text,
 							};
 
-							newImporter.addMessage(newMessage);
+							newImporter.addMessage(identification, newMessage);
 
 							super.addCountCompleted(1);
 						}
@@ -400,9 +399,8 @@ export class CsvImporter extends Base {
 
 				if (!dmRooms.has(sourceId)) {
 					newImporter.addChannel({
-						importData: {
-							id: sourceId,
-						},
+						id: sourceId,
+					}, {
 						users: [msg.username, msg.otherUsername],
 						t: 'd',
 					});
@@ -414,20 +412,21 @@ export class CsvImporter extends Base {
 				const rid = dmRooms.get(sourceId);
 
 				const user = this.getCsvUserFromUsername(msg.username);
-				const newMessage = {
-					importData: {
-						rid: sourceId,
-						u: {
-							_id: user?.id,
-							username: msg.username,
-						},
+				const identification = {
+					rid: sourceId,
+					u: {
+						_id: user?.id,
+						username: msg.username,
 					},
+				};
+
+				const newMessage = {
 					...rid !== true && { rid },
 					ts: new Date(parseInt(msg.ts)),
 					msg: msg.text,
 				};
 
-				newImporter.addMessage(newMessage);
+				newImporter.addMessage(identification, newMessage);
 
 				super.addCountCompleted(1);
 			}

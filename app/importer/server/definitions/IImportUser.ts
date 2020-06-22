@@ -1,3 +1,7 @@
+export interface IImportUserIdentification {
+	id?: string;
+}
+
 export interface IImportUser {
 	id?: string;
 
