@@ -41,10 +41,10 @@ export abstract class AbstractBusinessHour {
 		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
-	protected async getBusinessHoursThatMustBeOpened(day: string, currentTime: any, activeBusinessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> {
+	protected async getBusinessHoursThatMustBeOpened(currentTime: any, activeBusinessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> {
 		return activeBusinessHours
 			.filter((businessHour) => businessHour.workHours
-				.filter((hour) => hour.start.cron.dayOfWeek === day)
+				.filter((hour) => hour.open)
 				.some((hour) => {
 					const localTimeStart = moment(`${ hour.start.cron.dayOfWeek }:${ hour.start.cron.time }`, 'dddd:HH:mm');
 					const localTimeFinish = moment(`${ hour.finish.cron.dayOfWeek }:${ hour.finish.cron.time }`, 'dddd:HH:mm');

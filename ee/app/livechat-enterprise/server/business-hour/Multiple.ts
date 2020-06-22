@@ -96,7 +96,7 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 				type: 1,
 			},
 		});
-		const businessHoursToOpenIds = await this.getBusinessHoursThatMustBeOpened(day, currentTime, activeBusinessHours);
+		const businessHoursToOpenIds = await this.getBusinessHoursThatMustBeOpened(currentTime, activeBusinessHours);
 		for (const businessHour of businessHoursToOpenIds) {
 			this.openBusinessHour(businessHour);
 		}
@@ -145,12 +145,11 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 	}
 
 	private async updateDepartmentBusinessHour(businessHourId: string, departments: string[]): Promise<void> {
-		if (!departments?.length) {
-			return;
-		}
 		if (businessHourId) {
 			await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId);
-			return this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departments, businessHourId);
+		}
+		if (!departments?.length) {
+			return;
 		}
 		return this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departments, businessHourId);
 	}

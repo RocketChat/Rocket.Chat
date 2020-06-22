@@ -42,7 +42,7 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 				type: 1,
 			},
 		});
-		const businessHoursToOpenIds = (await this.getBusinessHoursThatMustBeOpened(day, currentTime, activeBusinessHours)).map((businessHour) => businessHour._id);
+		const businessHoursToOpenIds = (await this.getBusinessHoursThatMustBeOpened(currentTime, activeBusinessHours)).map((businessHour) => businessHour._id);
 		await this.UsersRepository.openAgentsBusinessHours(businessHoursToOpenIds);
 		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
