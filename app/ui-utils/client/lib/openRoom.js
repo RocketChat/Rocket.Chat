@@ -89,6 +89,11 @@ export const openRoom = async function(type, name) {
 				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 			}
 
+
+			if (room._id === Session.get('openedRoom')) {
+				return;
+			}
+
 			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
 			if (mainNode) {
