@@ -12,7 +12,7 @@
         </button>
 	</header>
 	<section class="contextual-bar__content flex-tab contact-chat-history-messages">
-        <div class="control rocket-search-input">
+        <div class="control rocket-search-input contact-chat-history-search-wrapper">
             <form class="search-form" role="form">
                 <div class="rc-input">
                     <label class="rc-input__label">
@@ -28,7 +28,9 @@
         </div>
         {{#if $and isSearching empty }}
             <div class="rocket-search-result">
-                <h2>{{_ "No_results_found"}}</h2>
+                <div class="contact-chat-history-search-empty">
+                    <h2>{{_ "No_results_found"}}</h2>
+                </div>
             </div>
         {{else}}
             <div class="flex-tab__result js-list">

@@ -83,6 +83,7 @@ export function EditUser({ data, roles, ...props }) {
 		if (avatarObj.avatarUrl) {
 			return saveAvatarUrlAction();
 		}
+		avatarObj.set('userId', data._id);
 		return saveAvatarAction(avatarObj);
 	}, [avatarObj, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction]);
 
