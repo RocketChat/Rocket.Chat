@@ -245,7 +245,7 @@ export const FileUpload = {
 			};
 
 			const reorientation = (cb) => {
-				if (!metadata.orientation) {
+				if (!metadata.orientation || metadata.orientation === 1 || settings.get('FileUpload_RotateImages') !== true) {
 					return cb();
 				}
 				s.rotate()

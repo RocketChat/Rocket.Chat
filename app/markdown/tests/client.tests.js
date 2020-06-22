@@ -15,7 +15,7 @@ const italicWrapper = (text) => wrapper(`<em>${ text }</em>`, '_');
 const strikeWrapper = (text) => wrapper(`<strike>${ text }</strike>`, '~');
 const headerWrapper = (text, level) => `<h${ level }>${ text }</h${ level }>`;
 const quoteWrapper = (text) => `<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>${ text }</blockquote>`;
-const linkWrapped = (link, title) => `<a href="${ s.escapeHTML(link) }" target="_blank" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`;
+const linkWrapped = (link, title) => `<a href="${ link }" target="_blank" rel="noopener noreferrer">${ title }</a>`;
 const inlinecodeWrapper = (text) => wrapper(`<span><code class="code-colors inline">${ text }</code></span>`, '`');
 const codeWrapper = (text, lang) => `<pre><code class='code-colors hljs ${ lang }'><span class='copyonly'>\`\`\`<br></span>${ text }<span class='copyonly'><br>\`\`\`</span></code></pre>`;
 
@@ -227,8 +227,8 @@ const code = {
 	'```code\n```': codeWrapper('<span class="hljs-keyword">code</span>\n', 'clean'),
 	'```\ncode```': codeWrapper('<span class="hljs-keyword">code</span>', 'clean'),
 	'```javascript\nvar a = \'log\';\nconsole.log(a);```': codeWrapper('<span class="hljs-keyword">var</span> a = <span class="hljs-string">\'log\'</span>;\n<span class="hljs-built_in">console</span>.log(a);', 'javascript'),
-	'```*code*```': codeWrapper('*<span class="hljs-meta">code</span>*', 'armasm'),
-	'```**code**```': codeWrapper('**<span class="hljs-meta">code</span>**', 'armasm'),
+	'```*code*```': codeWrapper('<span class="hljs-emphasis">*code*</span>', 'markdown'),
+	'```**code**```': codeWrapper('<span class="hljs-strong">**code**</span>', 'markdown'),
 	'```_code_```': codeWrapper('<span class="hljs-variable">_code_</span>', 'sqf'),
 	'```__code__```': codeWrapper('<span class="hljs-strong">__code__</span>', 'markdown'),
 };

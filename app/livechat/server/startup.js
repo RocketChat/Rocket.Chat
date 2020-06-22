@@ -10,6 +10,7 @@ import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry } from '.
 import { RoutingManager } from './lib/RoutingManager';
 import { createLivechatQueueView } from './lib/Helper';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
+import { businessHourManager } from './business-hour';
 
 function allowAccessClosedRoomOfSameDepartment(room, user) {
 	if (!room || !user || room.t !== 'l' || !room.departmentId || room.open) {
@@ -95,5 +96,14 @@ Meteor.startup(() => {
 		}
 
 		monitor.start();
+	});
+
+	settings.get('Livechat_enable_business_hours', async (key, value) => {
+		if (value) {
+			await businessHourManager.openBusinessHoursIfNeeded();
+			return businessHourManager.createCronJobsForWorkHours();
+		}
+		await businessHourManager.removeBusinessHoursFromAgents();
+		businessHourManager.removeCronJobs();
 	});
 });

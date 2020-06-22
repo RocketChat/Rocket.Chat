@@ -124,11 +124,11 @@ AccountBox.addRoute({
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-officeHours',
-	path: '/officeHours',
+	name: 'livechat-business-hours',
+	path: '/businessHours',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Office_Hours',
-	pageTemplate: 'livechatOfficeHours',
+	i18nPageTitle: 'Business_Hours',
+	pageTemplate: 'livechatMainBusinessHours',
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({

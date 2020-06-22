@@ -15,7 +15,8 @@ import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Users, Rooms, Messages } from '../../models';
 import { insertMessage, createDirectRoom } from '../../lib';
 import { getValidRoomName } from '../../utils';
-import { settings } from '../../settings/lib/settings';
+import { settings } from '../../settings/server';
+import { MentionsParser } from '../../mentions/lib/MentionsParser';
 
 export class SlackImporter extends Base {
 	constructor(info, importRecord) {
@@ -242,6 +243,48 @@ export class SlackImporter extends Base {
 		});
 	}
 
+	parseMentions(message) {
+		const mentionsParser = new MentionsParser({
+			pattern: () => settings.get('UTF8_Names_Validation'),
+			useRealName: () => settings.get('UI_Use_Real_Name'),
+			me: () => 'me',
+		});
+
+		if (!message.mentions) {
+			message.mentions = [];
+		}
+		const users = mentionsParser.getUserMentions(message.msg);
+		users.forEach((user_id, index, arr) => {
+			const user = user_id.slice(1, user_id.length);
+			try {
+				if (user === 'all' || user === 'here') {
+					arr[index] = user;
+				} else {
+					arr[index] = Users.findOneByUsernameIgnoringCase(user);
+				}
+			} catch (e) {
+				this.logger.warn(`Failed to import user mention with name: ${ user }`);
+			}
+		});
+		message.mentions.push(...users);
+
+		if (!message.channels) {
+			message.channels = [];
+		}
+		const channels = mentionsParser.getChannelMentions(message.msg);
+		channels.forEach((channel_name, index, arr) => {
+			const chan = channel_name.slice(1, channel_name.length);
+			try {
+				const slackChannel = this.getSlackChannelFromName(chan);
+				arr[index] = Rooms.findOneById(slackChannel.rocketId);
+				arr[index].dname = chan; // Have to store name to display so parser can match it
+			} catch (e) {
+				this.logger.warn(`Failed to import channel mention with name: ${ chan }`);
+			}
+		});
+		message.channels.push(...channels);
+	}
+
 	processMessageSubType(message, room, msgDataDefaults, missedTypes) {
 		const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
 
@@ -274,6 +317,7 @@ export class SlackImporter extends Base {
 					...msgDataDefaults,
 					msg: `_${ this.convertSlackMessageToRocketChat(message.text) }_`,
 				};
+				this.parseMentions(msgObj);
 				insertMessage(rocketUser, msgObj, room, this._anyExistingSlackMessage);
 				break;
 			}
@@ -304,6 +348,7 @@ export class SlackImporter extends Base {
 				if (message.icons) {
 					msgObj.emoji = message.icons.emoji;
 				}
+				this.parseMentions(msgObj);
 				insertMessage(botUser, msgObj, room, this._anyExistingSlackMessage);
 				break;
 			}
@@ -457,6 +502,7 @@ export class SlackImporter extends Base {
 						}
 					}
 
+					this.parseMentions(msgObj);
 					try {
 						insertMessage(this.getRocketUserFromUserId(message.user), msgObj, room, this._anyExistingSlackMessage);
 					} catch (e) {
@@ -970,6 +1016,7 @@ export class SlackImporter extends Base {
 			message = message.replace(/:uk:/g, ':gb:');
 			message = message.replace(/<(http[s]?:[^>|]*)>/g, '$1');
 			message = message.replace(/<(http[s]?:[^|]*)\|([^>]*)>/g, '[$2]($1)');
+			message = message.replace(/<#([^|]*)\|([^>]*)>/g, '#$2');
 
 			for (const userReplace of Array.from(this.userTags)) {
 				message = message.replace(userReplace.slack, userReplace.rocket);

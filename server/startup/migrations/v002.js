@@ -38,7 +38,7 @@ Migrations.add({
 				type: contentType,
 			};
 
-			fileStore.insert(file, rs, () => Users.setAvatarOrigin(user._id, service));
+			fileStore.insert(file, rs, (err, result) => Users.setAvatarData(user._id, service, result.etag));
 		});
 	},
 });

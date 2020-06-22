@@ -3,6 +3,8 @@
 
 	padding: 0.5rem 0;
 	align-items: center;
+
+	flex-wrap: wrap;
 }
 
 .discussion-reply-lm {
@@ -11,6 +13,9 @@
 	color: var(--color-gray);
 
 	font-size: 12px;
+
+	flex-grow: 0;
+	flex-shrink: 0;
 }
 
 .discussions-list .load-more {

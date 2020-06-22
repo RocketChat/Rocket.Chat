@@ -164,8 +164,7 @@ Meteor.methods({
 		}
 
 		if (instance.serverOnly) {
-			const scope = {};
-			instance.emitWithScope(eventName, scope, ...args);
+			instance.__emit(eventName, ...args);
 		} else {
 			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
 		}
@@ -216,8 +215,7 @@ function startStreamCastBroadcast(value) {
 		}
 
 		if (instance.serverOnly) {
-			const scope = {};
-			return instance.emitWithScope(eventName, scope, args);
+			return instance.__emit(eventName, ...args);
 		}
 		return instance._emit(eventName, args);
 	});
