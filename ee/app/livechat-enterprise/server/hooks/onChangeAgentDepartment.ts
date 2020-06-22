@@ -10,7 +10,7 @@ callbacks.add('livechat.removeAgentDepartment', async (options: any = {}) => {
 	}
 
 	await businessHourManager.removeBusinessHourFromUsersByIds(agentsId, department.businessHourId);
-
+	await businessHourManager.setDefaultToUsersIfNeeded(agentsId);
 	return options;
 }, callbacks.priority.HIGH, 'livechat-on-remove-agent-department');
 

@@ -79,7 +79,7 @@ export class BusinessHourManager {
 		await this.openBusinessHoursIfNeeded();
 	}
 
-	async removeBusinessHourFromUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void> {
+	async removeBusinessHourFromUsersByIds(userIds: string[], businessHourId: string): Promise<void> {
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
 		}
@@ -87,7 +87,15 @@ export class BusinessHourManager {
 		await this.businessHour.removeBusinessHourFromUsersByIds(userIds, businessHourId);
 	}
 
-	async addBusinessHourToUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void> {
+	async setDefaultToUsersIfNeeded(userIds: string[]): Promise<void> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+
+		await this.businessHour.setDefaultToUsersIfNeeded(userIds);
+	}
+
+	async addBusinessHourToUsersByIds(userIds: string[], businessHourId: string): Promise<void> {
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
 		}

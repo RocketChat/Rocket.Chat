@@ -62,4 +62,8 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 	addBusinessHourToUsersByIds(): Promise<void> {
 		return Promise.resolve();
 	}
+
+	setDefaultToUsersIfNeeded(): Promise<void> {
+		return Promise.resolve();
+	}
 }

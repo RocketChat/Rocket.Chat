@@ -5,9 +5,9 @@ import {
 	IBusinessHour,
 } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
+import { LivechatDepartment } from '../../../../../app/models/server/raw';
 import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
-import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
+import LivechatDepartmentAgents, { LivechatDepartmentAgentsRaw } from '../../../models/server/raw/LivechatDepartmentAgents';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -108,22 +108,40 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
-	async removeBusinessHourFromUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void> {
+	async removeBusinessHourFromUsersByIds(userIds: string[], businessHourId: string): Promise<void> {
 		if (!userIds?.length) {
 			return;
 		}
 
 		await this.UsersRepository.closeBusinessHourByAgentIds(userIds, businessHourId);
-		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours(userIds);
+		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours(userIds);
 	}
 
-	async addBusinessHourToUsersByIds(userIds: Array<string>, businessHourId: string): Promise<void> {
+	async addBusinessHourToUsersByIds(userIds: string[], businessHourId: string): Promise<void> {
 		if (!userIds?.length) {
 			return;
 		}
 
 		await this.UsersRepository.openBusinessHourByAgentIds(userIds, businessHourId);
-		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours(userIds);
+		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours(userIds);
+	}
+
+	async setDefaultToUsersIfNeeded(userIds: string[]): Promise<void> {
+		if (!userIds?.length) {
+			return;
+		}
+		const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
+		const day = currentTime.format('dddd');
+		const [businessHour] = await this.BusinessHourRepository.findDefaultActiveAndOpenBusinessHoursByDay(day);
+		if (!businessHour) {
+			return;
+		}
+		for (const userId of userIds) {
+			if (!(await this.DepartmentsAgentsRepository.findDepartmentsWithBusinessHourByAgentId(userId)).length) { // eslint-disable-line no-await-in-loop
+				await this.UsersRepository.openBusinessHourByAgentIds([userId], businessHour._id); // eslint-disable-line no-await-in-loop
+			}
+		}
+		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
 	private async updateDepartmentBusinessHour(businessHourId: string, departments: string[]): Promise<void> {
@@ -149,7 +167,7 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 				},
 				cron: {
 					dayOfWeek: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(startUtc, 'dddd'),
-					time: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(finishUtc, 'HH:mm'),
+					time: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(startUtc, 'HH:mm'),
 				},
 			};
 			hour.finish = {
@@ -159,7 +177,7 @@ export class MultipleBusinessHours extends AbstractBusinessHour implements IBusi
 					time: finishUtc.clone().format('HH:mm'),
 				},
 				cron: {
-					dayOfWeek: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(startUtc, 'dddd'),
+					dayOfWeek: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(finishUtc, 'dddd'),
 					time: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(finishUtc, 'HH:mm'),
 				},
 			};
