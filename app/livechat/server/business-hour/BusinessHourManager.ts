@@ -4,6 +4,7 @@ import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessH
 import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHour } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
+import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,
@@ -36,16 +37,25 @@ export class BusinessHourManager {
 		this.businessHour = businessHour;
 	}
 
+	async dispatchOnStartTasks(): Promise<void> {
+		await this.createCronJobsForWorkHours();
+		await this.openBusinessHoursIfNeeded();
+	}
+
+	async dispatchOnCloseTasks(): Promise<void> {
+		await this.removeBusinessHoursFromAgents();
+		await this.removeCronJobs();
+	}
+
 	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
 		await this.businessHour.saveBusinessHour(businessHourData);
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
 		}
-		await this.createCronJobsForWorkHours();
-		await this.openBusinessHoursIfNeeded();
+		await this.dispatchOnStartTasks();
 	}
 
-	async getBusinessHour(id?: string): Promise<ILivechatBusinessHour> {
+	async getBusinessHour(id?: string): Promise<ILivechatBusinessHour | undefined> {
 		return this.businessHour.getBusinessHour(id as string);
 	}
 
@@ -56,11 +66,48 @@ export class BusinessHourManager {
 		return this.businessHour.allowAgentChangeServiceStatus(agentId);
 	}
 
-	removeCronJobs(): void {
+	async removeBusinessHourIdFromUsers(department: ILivechatDepartment): Promise<void> {
+		return this.businessHour.removeBusinessHourFromUsers(department._id, department.businessHourId as string);
+	}
+
+	async removeBusinessHourById(id: string): Promise<void> {
+		await this.businessHour.removeBusinessHourById(id);
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+		await this.createCronJobsForWorkHours();
+		await this.openBusinessHoursIfNeeded();
+	}
+
+	async removeBusinessHourFromUsersByIds(userIds: string[], businessHourId: string): Promise<void> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+
+		await this.businessHour.removeBusinessHourFromUsersByIds(userIds, businessHourId);
+	}
+
+	async setDefaultToUsersIfNeeded(userIds: string[]): Promise<void> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+
+		await this.businessHour.setDefaultToUsersIfNeeded(userIds);
+	}
+
+	async addBusinessHourToUsersByIds(userIds: string[], businessHourId: string): Promise<void> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+
+		await this.businessHour.addBusinessHourToUsersByIds(userIds, businessHourId);
+	}
+
+	private removeCronJobs(): void {
 		this.cronJobsCache.forEach((jobName) => this.cronJobs.remove(jobName));
 	}
 
-	async createCronJobsForWorkHours(): Promise<void> {
+	private async createCronJobsForWorkHours(): Promise<void> {
 		this.removeCronJobs();
 		this.clearCronJobsCache();
 		const workHours = await this.businessHour.findHoursToCreateJobs();
@@ -83,11 +130,11 @@ export class BusinessHourManager {
 		});
 	}
 
-	async removeBusinessHoursFromAgents(): Promise<void> {
+	private async removeBusinessHoursFromAgents(): Promise<void> {
 		return this.businessHour.removeBusinessHoursFromUsers();
 	}
 
-	async openBusinessHoursIfNeeded(): Promise<void> {
+	private async openBusinessHoursIfNeeded(): Promise<void> {
 		return this.businessHour.openBusinessHoursIfNeeded();
 	}
 

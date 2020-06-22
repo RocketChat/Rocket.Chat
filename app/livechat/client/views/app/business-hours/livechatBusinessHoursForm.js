@@ -2,11 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import toastr from 'toastr';
 import moment from 'moment';
 
 import { t, handleError, APIClient } from '../../../../../utils/client';
 import './livechatBusinessHoursForm.html';
+import { getCustomFormTemplate } from '../customTemplates/register';
+import { businessHourManager } from './BusinessHours';
 
 Template.livechatBusinessHoursForm.helpers({
 	days() {
@@ -32,6 +35,18 @@ Template.livechatBusinessHoursForm.helpers({
 	},
 	open(day) {
 		return Template.instance().dayVars[day.day].open.get();
+	},
+	customFieldsTemplate() {
+		if (!businessHourManager.shouldShowCustomTemplate(Template.instance().businessHour.get())) {
+			return;
+		}
+		return getCustomFormTemplate('livechatBusinessHoursForm');
+	},
+	showBackButton() {
+		return businessHourManager.shouldShowBackButton();
+	},
+	data() {
+		return Template.instance().businessHour;
 	},
 });
 
@@ -69,6 +84,12 @@ Template.livechatBusinessHoursForm.events({
 			instance[e.currentTarget.name].set(value);
 		}
 	},
+
+	'click button.back'(e/* , instance*/) {
+		e.preventDefault();
+		FlowRouter.go('livechat-business-hours');
+	},
+
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
 
@@ -87,14 +108,23 @@ Template.livechatBusinessHoursForm.events({
 				});
 			}
 		}
-		Meteor.call('livechat:saveBusinessHour', {
+
+		const businessHourData = {
 			...instance.businessHour.get(),
 			workHours: days,
-		}, function(err /* ,result*/) {
+		};
+
+		instance.$('.customFormField').each((i, el) => {
+			const elField = instance.$(el);
+			const name = elField.attr('name');
+			businessHourData[name] = elField.val();
+		});
+		Meteor.call('livechat:saveBusinessHour', businessHourData, function(err /* ,result*/) {
 			if (err) {
 				return handleError(err);
 			}
 			toastr.success(t('Business_hours_updated'));
+			FlowRouter.go('livechat-business-hours');
 		});
 	},
 });
@@ -112,7 +142,6 @@ const createDefaultBusinessHour = () => {
 	};
 };
 
-
 Template.livechatBusinessHoursForm.onCreated(async function() {
 	this.dayVars = createDefaultBusinessHour().workHours.reduce((acc, day) => {
 		acc[day.day] = {
@@ -124,21 +153,28 @@ Template.livechatBusinessHoursForm.onCreated(async function() {
 	}, {});
 	this.businessHour = new ReactiveVar({});
 
-	const { businessHour } = await APIClient.v1.get('livechat/business-hour');
 	this.businessHour.set({
 		...createDefaultBusinessHour(),
 	});
-	if (businessHour) {
-		this.businessHour.set(businessHour);
-		businessHour.workHours.forEach((d) => {
-			if (businessHour.timezone.name) {
-				this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
-				this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
-			} else {
-				this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').local().format('HH:mm'));
-				this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').local().format('HH:mm'));
-			}
-			this.dayVars[d.day].open.set(d.open);
-		});
-	}
+	this.autorun(async () => {
+		const id = FlowRouter.getParam('_id');
+		let url = 'livechat/business-hour';
+		if (id) {
+			url += `?_id=${ id }`;
+		}
+		const { businessHour } = await APIClient.v1.get(url);
+		if (businessHour) {
+			this.businessHour.set(businessHour);
+			businessHour.workHours.forEach((d) => {
+				if (businessHour.timezone.name) {
+					this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+					this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+				} else {
+					this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').local().format('HH:mm'));
+					this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').local().format('HH:mm'));
+				}
+				this.dayVars[d.day].open.set(d.open);
+			});
+		}
+	});
 });

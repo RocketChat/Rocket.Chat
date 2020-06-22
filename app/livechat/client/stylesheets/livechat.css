@@ -651,6 +651,18 @@
 	padding-left: 4% !important;
 }
 
+.contact-chat-history {
+	padding: 0 !important;
+}
+
+.contact-chat-history-messages {
+	padding: 0 !important;
+}
+
+.contact-chat-history-search-wrapper {
+	padding: var(--default-padding);
+}
+
 .contact-chat-history-messages-list .message-actions {
 	visibility: hidden;
 }
@@ -689,4 +701,8 @@
 	font-weight: 500;
 	font-style: italic;
 	line-height: 16px;
+}
+
+.contact-chat-history-search-empty {
+	padding-left: 24px;
 }

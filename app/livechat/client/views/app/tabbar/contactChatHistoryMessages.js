@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { messageContext } from '../../../../../ui-utils/client/lib/messageContext';
 import { APIClient } from '../../../../../utils/client';
 
-const MESSAGES_LIMIT = 10;
+const MESSAGES_LIMIT = 50;
 
 Template.contactChatHistoryMessages.helpers({
 	messages() {
