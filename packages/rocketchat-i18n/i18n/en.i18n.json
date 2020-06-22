@@ -808,6 +808,7 @@
   "Connect": "Connect",
   "Connection_Closed": "Connection closed",
   "Connection_Reset": "Connection reset",
+  "Connection_success":"LDAP Connection Successful",
   "Connectivity_Services": "Connectivity Services",
   "Consulting": "Consulting",
   "Consumer_Goods": "Consumer Goods",
