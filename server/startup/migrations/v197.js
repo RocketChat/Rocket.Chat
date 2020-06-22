@@ -2,7 +2,7 @@ import { Settings } from '../../../app/models/server';
 import { Migrations } from '../../../app/migrations/server';
 
 Migrations.add({
-	version: 196,
+	version: 197,
 	up: () => {
 		const discussion = Settings.findOneById('RetentionPolicy_DoNotExcludeDiscussion');
 		const thread = Settings.findOneById('RetentionPolicy_DoNotExcludeThreads');
