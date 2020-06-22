@@ -11,7 +11,7 @@ export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'channel',
-			path: '/channel/:name',
+			path: '/channel/:name/:tab?/:context?',
 		});
 	}
 

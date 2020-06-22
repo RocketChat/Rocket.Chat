@@ -1,11 +1,21 @@
 import { Messages, Subscriptions } from '../../models/server';
+import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
-export const reply = ({ tmid }, { rid, ts, u, editedAt }, parentMessage) => {
+export const reply = ({ tmid }, message, parentMessage, followers) => {
+	const { rid, ts, u, editedAt } = message;
 	if (!tmid || editedAt) {
 		return false;
 	}
 
-	const addToReplies = Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id];
+	const { mentionIds } = getMentions(message);
+
+	const addToReplies = [
+		...new Set([
+			...followers,
+			...mentionIds,
+			...Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id],
+		]),
+	];
 
 	Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 

@@ -8,7 +8,7 @@ import { Session } from 'meteor/session';
 import mem from 'mem';
 import _ from 'underscore';
 
-import { ChatSubscription, Rooms } from '../../../models';
+import { Messages, ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
@@ -38,7 +38,9 @@ function replaceCenterDomBy(dom) {
 				for (const child of Array.from(mainNode.children)) {
 					if (child) { mainNode.removeChild(child); }
 				}
-				mainNode.appendChild(dom);
+				const roomNode = dom();
+				mainNode.appendChild(roomNode);
+				return resolve([mainNode, roomNode]);
 			}
 			resolve(mainNode);
 		}, 1);
@@ -72,7 +74,7 @@ export const openRoom = async function(type, name) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
 					BlazeLayout.render('main');
 				}
-				await replaceCenterDomBy(getDomOfLoading());
+				await replaceCenterDomBy(() => getDomOfLoading());
 				return;
 			}
 
@@ -87,8 +89,7 @@ export const openRoom = async function(type, name) {
 				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 			}
 
-			const roomDom = RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate);
-			const mainNode = await replaceCenterDomBy(roomDom);
+			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
 			if (mainNode) {
 				if (roomDom.classList.contains('room-container')) {
@@ -110,7 +111,15 @@ export const openRoom = async function(type, name) {
 			}
 
 			if (FlowRouter.getQueryParam('msg')) {
-				const msg = { _id: FlowRouter.getQueryParam('msg'), rid: room._id };
+				const messageId = FlowRouter.getQueryParam('msg');
+				const msg = { _id: messageId, rid: room._id };
+
+				const message = Messages.findOne({ ss_id: msg._id }) || (await call('getMessages', [msg._id]))[0];
+
+				if (message && (message.tmid || message.tcount)) {
+					return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
+				}
+
 				RoomHistoryManager.getSurroundingMessages(msg);
 			}
 

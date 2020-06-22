@@ -73,3 +73,17 @@ registerAdminSidebarItem({
 	i18nLabel: 'Federation Dashboard',
 	permissionGranted: () => hasRole(Meteor.userId(), 'admin'),
 });
+
+registerAdminSidebarItem({
+	icon: 'cube',
+	href: 'admin-apps',
+	i18nLabel: 'Apps',
+	permissionGranted: () => hasPermission(['manage-apps']),
+});
+
+registerAdminSidebarItem({
+	icon: 'cube',
+	href: 'admin-marketplace',
+	i18nLabel: 'Marketplace',
+	permissionGranted: () => hasPermission(['manage-apps']),
+});

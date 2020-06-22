@@ -9,6 +9,7 @@ import _ from 'underscore';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { Rooms } from '../../../models/client';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -18,6 +19,17 @@ Meteor.startup(function() {
 		context: ['search'],
 		action() {
 			const { msg: message } = messageArgs(this);
+			if (message.tmid) {
+				return FlowRouter.go(FlowRouter.getRouteName(), {
+					tab: 'thread',
+					context: message.tmid,
+					rid: message.rid,
+					name: Rooms.findOne({ _id: message.rid }).name,
+				}, {
+					jump: message._id,
+				});
+			}
+
 			if (Session.get('openedRoom') === message.rid) {
 				return RoomHistoryManager.getSurroundingMessages(message, 50);
 			}

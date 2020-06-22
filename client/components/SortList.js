@@ -5,6 +5,7 @@ import { Icon, ToggleSwitch, RadioButton, Box, Flex, Margins } from '@rocket.cha
 import { useTranslation } from '../contexts/TranslationContext';
 import { useUserPreference } from '../contexts/UserContext';
 import { useMethod } from '../contexts/ServerContext';
+import { useSetting } from '../contexts/SettingsContext';
 
 function SortListItem({ text, icon, input }) {
 	return <Flex.Container>
@@ -99,6 +100,7 @@ function ViewModeList() {
 
 
 function GroupingList() {
+	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowDiscussion = useUserPreference('sidebarShowDiscussion');
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const sidebarShowFavorites = useUserPreference('sidebarShowFavorites');
@@ -121,7 +123,7 @@ function GroupingList() {
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>
-				<SortListItem icon={'discussion'} text={t('Group_discussions')} input={<ToggleSwitch onChange={handleChangeShowDicussion} name='sidebarShowDiscussion' checked={sidebarShowDiscussion} />} />
+				{isDiscussionEnabled && <SortListItem icon={'discussion'} text={t('Group_discussions')} input={<ToggleSwitch onChange={handleChangeShowDicussion} name='sidebarShowDiscussion' checked={sidebarShowDiscussion} />} />}
 				<SortListItem icon={'sort-amount-down'} text={t('Group_by_Type')} input={<ToggleSwitch onChange={handleChangeGroupByType} name='sidebarGroupByType' checked={sidebarGroupByType} />} />
 				<SortListItem icon={'star'} text={t('Group_favorites')} input={<ToggleSwitch onChange={handleChangeShoFavorite} name='sidebarShowFavorites' checked={sidebarShowFavorites} />} />
 				<SortListItem icon={'eye-off'} text={t('Unread_on_top')} input={<ToggleSwitch onChange={handleChangeShowUnread} name='sidebarShowUnread' checked={sidebarShowUnread} />} />

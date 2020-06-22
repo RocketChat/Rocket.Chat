@@ -1,0 +1,7 @@
+<template name="livechatMainBusinessHours">
+    {{#requiresPermission 'view-livechat-business-hours'}}
+        <div class="livechat-businessHours-div">
+            {{> Template.dynamic template=getTemplate}}
+        </div>
+    {{/requiresPermission}}
+</template>
