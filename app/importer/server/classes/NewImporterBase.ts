@@ -8,7 +8,7 @@ import { IImportChannel } from '../definitions/IImportChannel';
 import { Users, Rooms } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
 
-const guessNameFromUsername = (username: string) =>
+const guessNameFromUsername = (username: string): string =>
 	username
 		.replace(/\W/g, ' ')
 		.replace(/\s(.)/g, (u) => u.toUpperCase())
@@ -173,7 +173,7 @@ export class ImporterBase {
 
 				const room = this.findRoom({
 					rid: m.rid,
-					sourceRid: m.importData?.rid
+					sourceRid: m.importData?.rid,
 				});
 
 				if (!room) {
