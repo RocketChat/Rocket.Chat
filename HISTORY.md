@@ -1,6 +1,26 @@
 
 # 3.4.0 (Under Release Candidate Process)
 
+## 3.4.0-rc.1
+`2020-06-23  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Deprecate check permission on integrations ([#18024](https://github.com/RocketChat/Rocket.Chat/pull/18024))
+
+- Regression: Favorite and Featured fields not triggering changes ([#18010](https://github.com/RocketChat/Rocket.Chat/pull/18010))
+
+- Regression: Fix setting reply-to email header ([#18008](https://github.com/RocketChat/Rocket.Chat/pull/18008))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.4.0-rc.0
 `2020-06-22  ·  18 🎉  ·  19 🚀  ·  50 🐛  ·  34 🔍  ·  53 👩‍💻👨‍💻`
 
@@ -335,6 +355,117 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 3.3.3
+`2020-06-11  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.15.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.3.3 ([#17875](https://github.com/RocketChat/Rocket.Chat/pull/17875))
+
+- Always initialize CIRCLE_BRANCH env var on CI ([#17874](https://github.com/RocketChat/Rocket.Chat/pull/17874))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.3.2
+`2020-06-10  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.15.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.3.2 ([#17870](https://github.com/RocketChat/Rocket.Chat/pull/17870))
+
+- Fix invalid develop payload to release service ([#17799](https://github.com/RocketChat/Rocket.Chat/pull/17799))
+
+- Submit a payload to the release service when a release happens ([#17775](https://github.com/RocketChat/Rocket.Chat/pull/17775))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@graywolf336](https://github.com/graywolf336)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.3.1
+`2020-06-10  ·  8 🐛  ·  4 🔍  ·  10 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.15.0`
+
+### 🐛 Bug fixes
+
+
+- SAML LogoutRequest sending wrong NameID ([#17860](https://github.com/RocketChat/Rocket.Chat/pull/17860))
+
+- Logic for room type was inverted on Admin panel (#17851) ([#17853](https://github.com/RocketChat/Rocket.Chat/pull/17853) by [@cking-vonix](https://github.com/cking-vonix))
+
+  Fixed logic for public/private room types on room edit panel
+
+- Omnichannel message link is broken in email notifications ([#17843](https://github.com/RocketChat/Rocket.Chat/pull/17843))
+
+- Administration User page blank opening users without email ([#17836](https://github.com/RocketChat/Rocket.Chat/pull/17836))
+
+- Apps room events losing data ([#17827](https://github.com/RocketChat/Rocket.Chat/pull/17827))
+
+- Email link "go to message" being incorrectly escaped ([#17803](https://github.com/RocketChat/Rocket.Chat/pull/17803))
+
+- Error when re-installing an App ([#17789](https://github.com/RocketChat/Rocket.Chat/pull/17789))
+
+- Slack importer settings object ([#17776](https://github.com/RocketChat/Rocket.Chat/pull/17776) by [@lpilz](https://github.com/lpilz))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.3.1 ([#17865](https://github.com/RocketChat/Rocket.Chat/pull/17865) by [@cking-vonix](https://github.com/cking-vonix) & [@lpilz](https://github.com/lpilz))
+
+- [REGRESSION] Omnichannel visitor forward was applying wrong restrictions ([#17826](https://github.com/RocketChat/Rocket.Chat/pull/17826))
+
+- Fix the update check not working ([#17809](https://github.com/RocketChat/Rocket.Chat/pull/17809))
+
+- Update Apps-Engine version ([#17804](https://github.com/RocketChat/Rocket.Chat/pull/17804))
+
+  Update Apps-Engine version
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@cking-vonix](https://github.com/cking-vonix)
+- [@lpilz](https://github.com/lpilz)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@d-gubert](https://github.com/d-gubert)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@graywolf336](https://github.com/graywolf336)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.3.0
 `2020-05-27  ·  20 🎉  ·  8 🚀  ·  41 🐛  ·  45 🔍  ·  37 👩‍💻👨‍💻`
@@ -7912,7 +8043,7 @@
 
 - Privacy for custom user fields ([#11332](https://github.com/RocketChat/Rocket.Chat/pull/11332) by [@vynmera](https://github.com/vynmera))
 
-- Replaced old logo with the new ones ([#11491](https://github.com/RocketChat/Rocket.Chat/pull/11491))
+- Replaced old logo with the new ones ([#11491](https://github.com/RocketChat/Rocket.Chat/pull/11491) by [@brunosquadros](https://github.com/brunosquadros))
 
 - Sorting channels by number of users in directory ([#9972](https://github.com/RocketChat/Rocket.Chat/pull/9972) by [@arungalva](https://github.com/arungalva))
 
@@ -7934,7 +8065,7 @@
 ### 🐛 Bug fixes
 
 
-- New favicons size too small ([#11524](https://github.com/RocketChat/Rocket.Chat/pull/11524))
+- New favicons size too small ([#11524](https://github.com/RocketChat/Rocket.Chat/pull/11524) by [@brunosquadros](https://github.com/brunosquadros))
 
 - Render reply preview with message as a common message ([#11534](https://github.com/RocketChat/Rocket.Chat/pull/11534))
 
@@ -7992,7 +8123,7 @@
 
 - Update release issue template to use Houston CLI ([#11499](https://github.com/RocketChat/Rocket.Chat/pull/11499))
 
-- Regression: Remove safe area margins from logos ([#11508](https://github.com/RocketChat/Rocket.Chat/pull/11508))
+- Regression: Remove safe area margins from logos ([#11508](https://github.com/RocketChat/Rocket.Chat/pull/11508) by [@brunosquadros](https://github.com/brunosquadros))
 
 - Regression: Update cachedCollection version ([#11561](https://github.com/RocketChat/Rocket.Chat/pull/11561))
 
@@ -8014,6 +8145,7 @@
 - [@PhpXp](https://github.com/PhpXp)
 - [@arminfelder](https://github.com/arminfelder)
 - [@arungalva](https://github.com/arungalva)
+- [@brunosquadros](https://github.com/brunosquadros)
 - [@cardoso](https://github.com/cardoso)
 - [@karlprieb](https://github.com/karlprieb)
 - [@soundstorm](https://github.com/soundstorm)
@@ -8024,7 +8156,6 @@
 
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@brunosquadros](https://github.com/brunosquadros)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)

@@ -46233,6 +46233,242 @@
           ]
         }
       ]
+    },
+    "3.3.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.15.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17865",
+          "title": "Release 3.3.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego",
+            "lpilz",
+            "graywolf336",
+            "MarcosSpessatto",
+            "mariaeduardacunha",
+            "cking-vonix",
+            "renatobecker",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17860",
+          "title": "[FIX] SAML LogoutRequest sending wrong NameID",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.3.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "17853",
+          "title": "[FIX] Logic for room type was inverted on Admin panel (#17851)",
+          "userLogin": "cking-vonix",
+          "description": "Fixed logic for public/private room types on room edit panel",
+          "milestone": "3.3.1",
+          "contributors": [
+            "cking-vonix"
+          ]
+        },
+        {
+          "pr": "17843",
+          "title": "[FIX] Omnichannel message link is broken in email notifications",
+          "userLogin": "renatobecker",
+          "milestone": "3.3.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "17836",
+          "title": "[FIX] Administration User page blank opening users without email",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "3.3.1",
+          "contributors": [
+            "mariaeduardacunha"
+          ]
+        },
+        {
+          "pr": "17827",
+          "title": "[FIX] Apps room events losing data",
+          "userLogin": "d-gubert",
+          "milestone": "3.3.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17826",
+          "title": "[REGRESSION] Omnichannel visitor forward was applying wrong restrictions",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.3.1",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17809",
+          "title": "Fix the update check not working",
+          "userLogin": "graywolf336",
+          "milestone": "3.3.1",
+          "contributors": [
+            "graywolf336",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17804",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "description": "Update Apps-Engine version",
+          "milestone": "3.3.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17803",
+          "title": "[FIX] Email link \"go to message\" being incorrectly escaped",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.3.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17789",
+          "title": "[FIX] Error when re-installing an App",
+          "userLogin": "d-gubert",
+          "milestone": "3.3.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "17776",
+          "title": "[FIX] Slack importer settings object",
+          "userLogin": "lpilz",
+          "milestone": "3.3.1",
+          "contributors": [
+            "lpilz"
+          ]
+        }
+      ]
+    },
+    "3.3.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.15.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17870",
+          "title": "Release 3.3.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "graywolf336",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17799",
+          "title": "Fix invalid develop payload to release service",
+          "userLogin": "graywolf336",
+          "contributors": [
+            "graywolf336",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "17775",
+          "title": "Submit a payload to the release service when a release happens",
+          "userLogin": "graywolf336",
+          "contributors": [
+            "graywolf336"
+          ]
+        }
+      ]
+    },
+    "3.3.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.15.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "17875",
+          "title": "Release 3.3.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "17874",
+          "title": "Always initialize CIRCLE_BRANCH env var on CI",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.4.0-rc.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.15.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18024",
+          "title": "Regression: Deprecate check permission on integrations",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.4.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18010",
+          "title": "Regression: Favorite and Featured fields not triggering changes",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18008",
+          "title": "Regression: Fix setting reply-to email header",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.4.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
