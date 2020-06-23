@@ -6,8 +6,8 @@ export enum EventMessageTypeDescriptor {
 	DISCUSSION_CREATED = 'discussion-created', // when a discussion is created
 }
 
-export interface IEDataMessage {
-	t: EventMessageTypeDescriptor;
+export interface IEventDataMessage {
+	t: string;
 	u: IUser;
 	msg: string;
 	mentions?: Array<string>;

@@ -79,12 +79,12 @@ export class Messages extends Base {
 	// Overriding some methods to add V1<->V2 conversion
 	//
 	getV2Query(query) {
-		let _cid;
+		let clid;
 
 		if (query._id) {
-			_cid = query._id;
+			clid = query._id;
 
-			query._cid = _cid;
+			query.clid = clid;
 			delete query._id;
 		}
 
@@ -105,10 +105,14 @@ export class Messages extends Base {
 			}
 		}
 
-		v2Query.t = query.t || 'msg';
-		v2Query._deletedAt = query._deletedAt || null;
+		if (query._updatedAt) {
+			v2Query.updatedAt = query._updatedAt;
+		}
 
-		return { _cid, v2Query };
+		v2Query.t = query.t || 'msg';
+		v2Query.deletedAt = query._deletedAt || null;
+
+		return { clid, v2Query };
 	}
 
 	findV1(...args) {
@@ -163,11 +167,11 @@ export class Messages extends Base {
 	}
 
 	findOneById(...args) {
-		return this._findOne({ _cid: args[0] });
+		return this._findOne({ clid: args[0] });
 	}
 
 	findOneByIds(ids, options, ...args) {
-		return this._findOne([{ _cid: { $in: ids } }, options, ...args]);
+		return this._findOne([{ clid: { $in: ids } }, options, ...args]);
 	}
 
 	processEvents(query, processor) {
@@ -208,7 +212,7 @@ export class Messages extends Base {
 			d['[csg]set'] = d['[csg]set'] || {};
 			d['[csg]set']._oid = event._id; // Original id
 
-			const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.cid, event._cid, d));
+			const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.cid, event.clid, d));
 
 			Promise.await(this.dispatchEvent(editEvent));
 
@@ -232,7 +236,7 @@ export class Messages extends Base {
 		const [query] = args;
 
 		return this.processEvents(query, (event) => {
-			const deleteEvent = Promise.await(RoomEvents.createDeleteMessageEvent(event.src, event.cid, event._cid));
+			const deleteEvent = Promise.await(RoomEvents.createDeleteMessageEvent(event.src, event.cid, event.clid));
 
 			Promise.await(this.dispatchEvent(deleteEvent));
 

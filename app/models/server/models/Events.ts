@@ -3,14 +3,14 @@ import { SHA256 } from 'meteor/sha';
 import deepMapKeys from 'deep-map-keys';
 import { EJSON } from 'meteor/ejson';
 
-import { IEDataRoom } from '../../../events/definitions/data/IEDataRoom';
-import { IEDataUpdate } from '../../../events/definitions/data/IEDataUpdate';
-import { EventContext, EventTypeDescriptor, EDataDefinition, IEData, IEvent } from '../../../events/definitions/IEvent';
+import { IEventDataRoom } from '../../../events/definitions/data/IEventDataRoom';
+import { IEventDataUpdate } from '../../../events/definitions/data/IEventDataUpdate';
+import { EventContext, EventTypeDescriptor, EventDataDefinition, IEventData, IEvent } from '../../../events/definitions/IEvent';
 import { Base } from './_Base';
 
 export declare interface IContextQuery { ct: EventContext; cid: string }
 export declare interface IAddEventResult { success: boolean; reason?: string; missingParentIds?: Array<string>; latestEventIds?: Array<string> }
-export declare interface IEventStub<T extends EDataDefinition> { _cid?: string; t: EventTypeDescriptor; d: T }
+export declare interface IEventStub<T extends EventDataDefinition> { clid?: string; t: EventTypeDescriptor; d: T }
 
 export declare type IEventDataHashOption = {
 	include?: Array<string>;
@@ -24,7 +24,7 @@ export declare type IEventDataHashOptionsDef = {
 	options: IEventDataHashOption;
 };
 
-export class EventsModel extends Base<IEvent<EDataDefinition>> {
+export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 	readonly dataHashOptionsDefinition: Array<IEventDataHashOptionsDef> = [
 		{
 			t: [EventTypeDescriptor.MESSAGE, EventTypeDescriptor.EDIT_MESSAGE],
@@ -54,12 +54,13 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 		}, {} as IEventDataHashOptions);
 	}
 
-	public getEventIdHash<T extends EDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
-		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ event.dHash }`);
+	public getEventIdHash<T extends EventDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
+		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event.pids.join(',') }${ event.t }${ event.ts }${ event.dHash }`);
 	}
 
-	public getEventDataHash<T extends EDataDefinition>(event: IEvent<T>): string {
-		let data: any = event.d;
+	public getEventDataHash<T extends EventDataDefinition>(event: IEvent<T>): string {
+		// Always use the consolidated (o), unchanged data
+		let data: any = event.o;
 
 		const options: any = this.dataHashOptions[event.t];
 
@@ -71,8 +72,8 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 		return SHA256(JSON.stringify(data));
 	}
 
-	public async createEvent<T extends EDataDefinition>(src: string, contextQuery: IContextQuery, stub: IEventStub<T>): Promise<IEvent<T>> {
-		let _pids = []; // Previous ids
+	public async createEvent<T extends EventDataDefinition>(src: string, contextQuery: IContextQuery, stub: IEventStub<T>): Promise<IEvent<T>> {
+		let pids = []; // Previous ids
 
 		// If it is not a GENESIS event, we need to get the previous events
 		if (stub.t !== EventTypeDescriptor.ROOM) {
@@ -81,23 +82,24 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 				.find({ ...contextQuery, isLeaf: true })
 				.toArray();
 
-			_pids = previousEvents.map((e: IEvent<any>) => e._id);
+			pids = previousEvents.map((e: IEvent<any>) => e._id);
 
-			if (_pids.length === 0) {
+			if (pids.length === 0) {
 				throw new Error(`The event type:${ stub.t } cannot have zero parents, something went wrong`);
 			}
 		}
 
 		const event: IEvent<T> = {
 			_id: '',
-			_cid: stub._cid,
-			_pids: _pids || [],
+			clid: stub.clid,
+			pids: pids || [],
 			v: 2,
 			ts: new Date(),
 			src,
 			...contextQuery,
 			t: stub.t,
 			dHash: '',
+			o: stub.d,
 			d: stub.d,
 			isLeaf: true,
 		};
@@ -113,7 +115,7 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 		return event;
 	}
 
-	public async createGenesisEvent(src: string, contextQuery: IContextQuery, d: IEDataRoom): Promise<IEvent<IEDataRoom>> {
+	public async createGenesisEvent(src: string, contextQuery: IContextQuery, d: IEventDataRoom): Promise<IEvent<IEventDataRoom>> {
 		// Check if genesis event already exists, if so, do not create
 		const genesisEvent = await this.model
 			.rawCollection()
@@ -123,7 +125,7 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 			throw new Error(`A GENESIS event for this context query already exists: ${ JSON.stringify(contextQuery, null, 2) }`);
 		}
 
-		const stub: IEventStub<IEDataRoom> = {
+		const stub: IEventStub<IEventDataRoom> = {
 			t: EventTypeDescriptor.ROOM,
 			d,
 		};
@@ -131,18 +133,18 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 		return this.createEvent(src, contextQuery, stub);
 	}
 
-	public async addEvent<T extends EDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): Promise<IAddEventResult> {
+	public async addEvent<T extends EventDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): Promise<IAddEventResult> {
 		// Check if the event does not exit
 		const existingEvent = this.findOne({ _id: event._id });
 
 		// If it does not, we insert it, checking for the parents
 		if (!existingEvent) {
 			// Check if we have the parents
-			const parents: Array<IEvent<any>> = await this.model.rawCollection().find({ ...contextQuery, _id: { $in: event._pids } }, { _id: 1 }).toArray();
-			const _pids: Array<string> = parents.map((e: IEvent<any>) => e._id);
+			const parents: Array<IEvent<any>> = await this.model.rawCollection().find({ ...contextQuery, _id: { $in: event.pids } }, { _id: 1 }).toArray();
+			const pids: Array<string> = parents.map((e: IEvent<any>) => e._id);
 
 			// This means that we do not have the parents of the event we are adding
-			if (_pids.length !== event._pids.length) {
+			if (pids.length !== event.pids.length) {
 				const { src } = event;
 
 				// Get the latest events for that context and src
@@ -152,13 +154,13 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 				return {
 					success: false,
 					reason: 'missingParents',
-					missingParentIds: event._pids.filter((_id) => _pids.indexOf(_id) === -1),
+					missingParentIds: event.pids.filter((_id) => pids.indexOf(_id) === -1),
 					latestEventIds,
 				};
 			}
 
 			// Clear the "isLeaf" of the parent events
-			await this.update({ _id: { $in: _pids } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
+			await this.update({ _id: { $in: pids } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
 
 			this.insert(event);
 		}
@@ -172,13 +174,13 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 		const query: any = { ...contextQuery, t: eventT.substr(1) };
 
 		if (eventCID) {
-			query._cid = eventCID;
+			query.clid = eventCID;
 		}
 
 		return this.model.rawCollection().findOne(query);
 	}
 
-	public async updateEventData<T extends IEData>(contextQuery: IContextQuery, eventT: string, updateData: IEDataUpdate<T>, eventCID?: string): Promise<void> {
+	public async updateEventData<T extends IEventData>(contextQuery: IContextQuery, eventT: string, updateData: IEventDataUpdate<T>, eventCID?: string): Promise<void> {
 		const existingEvent = await this.getExistingEvent(contextQuery, eventT, eventCID);
 
 		const updateQuery: any = EJSON.fromJSONValue(deepMapKeys(updateData, (k: any) => k.replace('[csg]', '$').replace('[dot]', '.')));
@@ -197,8 +199,37 @@ export class EventsModel extends Base<IEvent<EDataDefinition>> {
 
 		await this.model.rawCollection().update({ _id: existingEvent._id }, {
 			$set: {
-				_deletedAt: deletedAt,
+				deletedAt,
 			},
 		});
 	}
+
+	// Overrides
+
+	setUpdatedAt(record: any = {}): any {
+		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
+			record.$set = record.$set || {};
+			record.$set.updatedAt = new Date();
+		} else {
+			record.updatedAt = new Date();
+		}
+
+		return record;
+	}
+
+	insert(record: any): any {
+		this.setUpdatedAt(record);
+
+		return super.insert(record, { skipUpdatedAt: true });
+	}
+
+	update(query: any, update: any, options: any = {}) {
+		this.setUpdatedAt(update);
+
+		options.skipUpdatedAt = true;
+
+		return super.update(query, update, options);
+	}
+
+	// ^^ Overrides ^^
 }

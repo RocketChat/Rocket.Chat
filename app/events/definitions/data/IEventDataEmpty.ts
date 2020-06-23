@@ -1,2 +1,2 @@
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IEDataEmpty {}
+export interface IEventDataEmpty {}

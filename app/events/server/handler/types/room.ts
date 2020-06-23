@@ -1,8 +1,8 @@
 import { RoomEvents, Rooms } from '../../../../models/server';
 import { HandlerMethod } from '../../../definitions/HandlerMethod';
-import { IEDataRoom } from '../../../definitions/data/IEDataRoom';
+import { IEventDataRoom } from '../../../definitions/data/IEventDataRoom';
 
-export const room: HandlerMethod<IEDataRoom> = async (event) => {
+export const room: HandlerMethod<IEventDataRoom> = async (event) => {
 	const eventResult = await RoomEvents.addRoomEvent(event);
 
 	// If the event was successfully added, handle the event locally

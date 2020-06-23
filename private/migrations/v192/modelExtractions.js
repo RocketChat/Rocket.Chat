@@ -9,7 +9,7 @@ const _ = moduleRequire('lodash');
 // RoomEvents
 //
 //
-const v1ToV2RootMap = ['_cid', '_pids', 'v', 'ts', 'src', 'rid', 't', 'd', '_updatedAt', '_deletedAt'];
+const v1ToV2RootMap = ['clid', 'pids', 'v', 'ts', 'src', 'rid', 't', 'd', 'updatedAt', 'deletedAt'];
 
 function fromV1Data(message) {
 	return { ..._.omit(message, this.v1ToV2RootMap), t: message.t || 'msg', u: message.u, msg: message.msg };
@@ -62,7 +62,7 @@ function SHA256(content) {
 }
 
 function getEventIdHash(contextQuery, event) {
-	return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event._pids.join(',') }${ event.t }${ event.ts }${ event.dHash }`);
+	return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event.pids.join(',') }${ event.t }${ event.ts }${ event.dHash }`);
 }
 
 function getEventDataHash(event) {
@@ -78,11 +78,11 @@ function getEventDataHash(event) {
 	return SHA256(JSON.stringify(data));
 }
 
-function buildEvent(src, rid, t, d, _pids = [], addIsLeaf = false) {
+function buildEvent(src, rid, t, d, pids = [], addIsLeaf = false) {
 	const contextQuery = { rid };
 
 	const event = {
-		_pids,
+		pids,
 		v: 2,
 		ts: new Date(),
 		src,

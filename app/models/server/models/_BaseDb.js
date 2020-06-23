@@ -225,7 +225,13 @@ export class BaseDb extends EventEmitter {
 	}
 
 	insert(record, ...args) {
-		this.setUpdatedAt(record);
+		// Check for skipUpdatedAt
+		if (!args[args.length - 1] || !args[args.length - 1].skipUpdatedAt) {
+			this.setUpdatedAt(record);
+		} else {
+			// Delete that option
+			delete args[args.length - 1];
+		}
 
 		const result = this.originals.insert(record, ...args);
 
@@ -235,7 +241,12 @@ export class BaseDb extends EventEmitter {
 	}
 
 	update(query, update, options = {}) {
-		this.setUpdatedAt(update, true, query);
+		if (!options.skipUpdatedAt) {
+			this.setUpdatedAt(update, true, query);
+		}
+
+		// Remove that option
+		delete options.skipUpdatedAt;
 
 		return this.originals.update(query, update, options);
 	}

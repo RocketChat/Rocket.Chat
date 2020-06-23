@@ -1,11 +1,11 @@
-import { IEDataRoom } from './data/IEDataRoom';
-import { IEDataMessage } from './data/IEDataMessage';
-import { IEDataUpdate } from './data/IEDataUpdate';
-import { IEDataEmpty } from './data/IDataEmpty';
+import { IEventDataEmpty } from './data/IEventDataEmpty';
+import { IEventDataUpdate } from './data/IEventDataUpdate';
+import { IEventDataRoom } from './data/IEventDataRoom';
+import { IEventDataMessage } from './data/IEventDataMessage';
 
-export type IEData = IEDataRoom | IEDataMessage | IEDataEmpty;
+export type IEventData = IEventDataRoom | IEventDataMessage | IEventDataEmpty;
 
-export type EDataDefinition = IEDataUpdate<IEData> | IEData;
+export type EventDataDefinition = IEventDataUpdate<IEventData> | IEventData;
 
 export enum EventContext {
 	ROOM = 'room',
@@ -32,10 +32,10 @@ export enum EventTypeDescriptor {
 	// UNMUTE_USER = 'unmute_user',
 }
 
-export interface IEvent<T extends EDataDefinition> {
+export interface IEvent<T extends EventDataDefinition> {
 	_id: string;
-	_cid?: string;
-	_pids: Array<string>;
+	clid?: string;
+	pids: Array<string>;
 	v: number;
 	ts: Date;
 	src: string;
@@ -43,7 +43,8 @@ export interface IEvent<T extends EDataDefinition> {
 	cid: string;
 	t: EventTypeDescriptor;
 	dHash: string;
+	o: T;
 	d: T;
 	isLeaf: boolean;
-	_deletedAt?: Date;
+	deletedAt?: Date;
 }

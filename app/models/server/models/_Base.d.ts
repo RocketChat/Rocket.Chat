@@ -9,9 +9,11 @@ export declare class Base<T> {
 
 	findOne(...args: any[]): T;
 
-	insert(item: T): string;
+	insert(item: T, ...args: any[]): string;
 
 	update(...args: any[]): any;
 
 	upsert(...args: any[]): any;
+
+	setUpdatedAt(record: any): any;
 }
