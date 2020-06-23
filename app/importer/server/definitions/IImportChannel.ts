@@ -4,7 +4,7 @@ export interface IImportChannelIdentification {
 		_id?: string;
 		username?: string;
 	};
-	is_general?: boolean;
+	isGeneral?: boolean;
 }
 
 export interface IImportChannel {

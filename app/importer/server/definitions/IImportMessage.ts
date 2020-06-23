@@ -1,20 +1,22 @@
+export type IImportedId = string;
+
 export interface IImportMessageIdentification {
-	id?: string;
-	rid?: string;
+	id?: IImportedId;
+	rid?: IImportedId;
 	// tmid?: string;
 	u?: {
-		_id?: string;
+		_id?: IImportedId;
 		username?: string;
 	};
 }
 
 export interface IImportMessageReaction {
 	name: string;
-	usernames: Array<string>;
+	users: Array<IImportedId>;
 }
 
 export interface IImportMessage {
-	id?: string;
+	_id?: string;
 
 	rid?: string;
 	u?: {
@@ -27,25 +29,28 @@ export interface IImportMessage {
 	// avatarUrl?: string;
 	// alias?: string;
 	ts: Date;
-	// t: string;
-	// reactions: Map<string, IImportMessageReaction>;
-	// attachments: Record<string, any>;
-	// editedAt?: Date;
-	// editedBySourceId?: string;
-	// groupable?: boolean;
+	t?: string;
+	reactions?: Map<string, IImportMessageReaction>;
+	replies?: Array<IImportedId>;
+	attachments?: Record<string, any>;
+	editedAt?: Date;
+	editedBy?: IImportedId;
+	mentions?: Array<IImportedId>;
+	channels?: Array<string>;
+	groupable?: boolean;
 }
 
-// export interface IImportPendingFile {
-// 	downloadUrl: string;
-// 	id: string;
-// 	size: number;
-// 	name: string;
-// 	external: boolean;
-// 	source: string;
-// 	original: Record<string, any>;
-// }
+export interface IImportPendingFile {
+	downloadUrl: string;
+	id: string;
+	size: number;
+	name: string;
+	external: boolean;
+	source: string;
+	original: Record<string, any>;
+}
 
-// export interface IImportFileMessage extends IImportMessage {
-// 	url?: string;
-// 	_importFile: IImportPendingFile;
-// }
+export interface IImportFileMessage extends IImportMessage {
+	url?: string;
+	_importFile: IImportPendingFile;
+}
