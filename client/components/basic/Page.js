@@ -12,6 +12,7 @@ function Page(props) {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
 		<Box
+			backgroundColor='neutral-100'
 			is='section'
 			display='flex'
 			flexDirection='column'
@@ -43,6 +44,7 @@ function PageHeader({ children, title, ...props }) {
 			flexDirection='row'
 			flexWrap='nowrap'
 			alignItems='center'
+			color='neutral-800'
 			{...props}
 		>
 			{hasBurgerMenuButton && <BurgerMenuButton

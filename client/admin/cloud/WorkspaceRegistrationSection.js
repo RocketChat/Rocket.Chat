@@ -118,7 +118,7 @@ function WorkspaceRegistrationSection({
 				<Button primary disabled={isProcessing} onClick={handleConnectButtonClick}>{t('Connect')}</Button>
 			</ButtonGroup>
 
-			<Box withRichContent>
+			<Box withRichContent color='neutral-800'>
 				<p>{t('Cloud_connect_support')}: <a href={supportMailtoUrl} target='_blank' rel='noopener noreferrer'>{supportEmailAddress}</a></p>
 			</Box>
 		</Margins>

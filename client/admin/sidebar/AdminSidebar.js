@@ -184,7 +184,7 @@ export default React.memo(function AdminSidebar() {
 
 	// TODO: uplift this provider
 	return <SettingsProvider privileged>
-		<Box display='flex' flexDirection='column' h='100vh'>
+		<Box display='flex' flexDirection='column' h='100vh' backgroundColor='neutral-200'>
 			<Box is='header' pb='x16' pi='x24' display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 				<Box color='neutral-800' fontSize='p1' fontWeight='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{t('Administration')}</Box>
 				<Button square small ghost onClick={closeAdminFlex}><Icon name='cross' size='x20'/></Button>

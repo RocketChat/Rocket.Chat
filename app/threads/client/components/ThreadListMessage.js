@@ -123,5 +123,5 @@ const style = {
 };
 
 function Body(props) {
-	return <Box rcx-message__body flexShrink={1} style={style} lineHeight='1.45' minHeight='40px' {...props}/>;
+	return <Box rcx-message__body flexShrink={1} style={style} lineHeight='1.45' minHeight='40px' color='neutral-800' {...props}/>;
 }
