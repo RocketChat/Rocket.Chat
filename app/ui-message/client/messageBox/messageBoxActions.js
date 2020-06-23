@@ -65,14 +65,43 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 	},
 });
 
-const geolocation = new ReactiveVar(false);
+const canGetGeolocation = new ReactiveVar(false);
+
+const getGeolocationPermission = () => new Promise((resolve) => {
+	if (!navigator.permissions) { resolve(true); }
+	navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+		if (result.state === 'denied') {
+			resolve(false);
+		} else {
+			resolve(true);
+		}
+	});
+});
+
+const getGeoPosition = () => new Promise((resolve) => navigator.geolocation.getCurrentPosition(resolve, () => { resolve(false); }, {
+	enableHighAccuracy: true,
+	maximumAge: 0,
+	timeout: 10000,
+}));
 
 messageBox.actions.add('Share', 'My_location', {
 	id: 'share-location',
 	icon: 'map-pin',
-	condition: () => geolocation.get() !== false,
-	action({ rid, tmid }) {
-		const position = geolocation.get();
+	condition: () => canGetGeolocation.get(),
+	async action({ rid, tmid }) {
+		const hasPermission = await getGeolocationPermission();
+		if (!hasPermission) {
+			modal.open({
+				title: t('Share_Location_Error_Title'),
+				text: t('Share_Location_No_Permission'),
+				confirmButtonText: t('Ok'),
+				closeOnConfirm: true,
+				closeOnCancel: true,
+			});
+			return;
+		}
+		const position = await getGeoPosition();
+
 		const { latitude, longitude } = position.coords;
 		const text = `<div class="upload-preview"><div class="upload-preview-file" style="background-size: cover; box-shadow: 0 0 0px 1px #dfdfdf; border-radius: 2px; height: 250px; width:100%; max-width: 500px; background-image:url(https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=500x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ settings.get('MapView_GMapsAPIKey') })" ></div></div>`;
 
@@ -102,24 +131,10 @@ messageBox.actions.add('Share', 'My_location', {
 });
 
 Meteor.startup(() => {
-	const handleGeolocation = (position) => geolocation.set(position);
-	const handleGeolocationError = () => geolocation.set(false);
-
 	Tracker.autorun(() => {
 		const isMapViewEnabled = settings.get('MapView_Enabled') === true;
-		const isGeolocationWatchSupported = navigator.geolocation && navigator.geolocation.watchPosition;
+		const isGeolocationCurrentPositionSupported = navigator.geolocation && navigator.geolocation.getCurrentPosition;
 		const googleMapsApiKey = settings.get('MapView_GMapsAPIKey');
-		const canGetGeolocation =			isMapViewEnabled && isGeolocationWatchSupported && (googleMapsApiKey && googleMapsApiKey.length);
-
-		if (!canGetGeolocation) {
-			geolocation.set(false);
-			return;
-		}
-
-		navigator.geolocation.watchPosition(handleGeolocation, handleGeolocationError, {
-			enableHighAccuracy: true,
-			maximumAge: 0,
-			timeout: 10000,
-		});
+		canGetGeolocation.set(isMapViewEnabled && isGeolocationCurrentPositionSupported && googleMapsApiKey && googleMapsApiKey.length);
 	});
 });
