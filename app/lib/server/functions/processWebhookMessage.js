@@ -5,10 +5,9 @@ import s from 'underscore.string';
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
 import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
-import { Subscriptions } from '../../../models';
 import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from './getDirectMessageByNameOrIdWithOptionToJoin';
 
-export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
+export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, integration = null) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
@@ -42,11 +41,6 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 
 				// No room, so throw an error
 				throw new Meteor.Error('invalid-channel');
-		}
-
-		if (mustBeJoined && !Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
-			// throw new Meteor.Error('invalid-room', 'Invalid room provided to send a message to, must be joined.');
-			throw new Meteor.Error('invalid-channel'); // Throwing the generic one so people can't "brute force" find rooms
 		}
 
 		if (messageObj.attachments && !_.isArray(messageObj.attachments)) {
@@ -84,7 +78,16 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 			}
 		}
 
-		validateRoomMessagePermissions(room, { uid: user._id, ...user });
+		try {
+			validateRoomMessagePermissions(room, { uid: user._id, ...user });
+		} catch (error) {
+			if (!integration) {
+				throw error;
+			}
+			console.warn(`Warning: The integration "${ integration.name }" failed to send a message to "${ [].concat(integration.channel).join(',') }" because user "${ integration.username }" doesn't have permission or is not part of the channel.`);
+			console.warn('This behavior is deprecated and starting from version v4.0.0 the following error will be thrown and the message will not be sent.');
+			console.error(error);
+		}
 
 		const messageReturn = sendMessage(user, message, room);
 		sentData.push({ channel, message: messageReturn });
