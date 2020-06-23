@@ -42,7 +42,7 @@ const createDefaultBusinessHour = (): ILivechatBusinessHour => {
 		})),
 		timezone: {
 			name: '',
-			utc: moment().utcOffset() / 60,
+			utc: String(moment().utcOffset() / 60),
 		},
 	};
 };

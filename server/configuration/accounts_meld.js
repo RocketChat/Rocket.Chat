@@ -1,7 +1,6 @@
 import _ from 'underscore';
 import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../../app/settings/server';
 import { Users } from '../../app/models';
 
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
@@ -37,7 +36,7 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		if (user != null) {
 			const findQuery = {
 				address: serviceData.email,
-				verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
+				verified: true,
 			};
 
 			if (!_.findWhere(user.emails, findQuery)) {
