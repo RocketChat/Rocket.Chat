@@ -1,7 +1,7 @@
 <template name='contactChatHistory'>
 	{{#if isReady}}
 		{{#if canSearch}}
-			<div class="control rocket-search-input">
+			<div class="control rocket-search-input contact-chat-history-search-wrapper">
 				<form class="search-form" role="form">
 					<div class="rc-input">
 						<label class="rc-input__label">
@@ -26,11 +26,13 @@
 					</ul>
 				</div>
 			{{else}}
-				{{#if isSearching}}
-					<h2>{{_ "No_results_found"}}</h2>
-				{{else}}
-					<h2>{{_ "No_previous_chat_found"}}</h2>
-				{{/if}}
+				<div class="contact-chat-history-search-empty">
+					{{#if isSearching}}
+						<h2>{{_ "No_results_found"}}</h2>
+					{{else}}
+						<h2>{{_ "No_previous_chat_found"}}</h2>
+					{{/if}}
+				</div>
 			{{/if}}
 		</div>
 	{{else}}

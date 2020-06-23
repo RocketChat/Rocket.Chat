@@ -1,5 +1,8 @@
+import { ILivechatDepartment } from './ILivechatDepartment';
+
 export enum LivechatBussinessHourTypes {
 	SINGLE = 'single',
+	MULTIPLE = 'multiple',
 }
 
 interface IBusinessHourTime {
@@ -17,7 +20,7 @@ export interface IBusinessHourWorkHour {
 
 export interface IBusinessHourTimezone {
 	name: string;
-	utc: number;
+	utc: string;
 }
 
 export interface ILivechatBusinessHour {
@@ -29,4 +32,5 @@ export interface ILivechatBusinessHour {
 	ts: Date;
 	workHours: IBusinessHourWorkHour[];
 	_updatedAt?: Date;
+	departments?: ILivechatDepartment[];
 }

@@ -83,8 +83,9 @@ export function EditUser({ data, roles, ...props }) {
 		if (avatarObj.avatarUrl) {
 			return saveAvatarUrlAction();
 		}
+		avatarObj.set('userId', data._id);
 		return saveAvatarAction(avatarObj);
-	}, [avatarObj, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction]);
+	}, [avatarObj, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, data._id]);
 
 	const handleSave = useCallback(async () => {
 		const result = await saveAction();
@@ -98,18 +99,20 @@ export function EditUser({ data, roles, ...props }) {
 
 	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
 
+	const canSaveOrReset = hasUnsavedChanges || avatarObj;
+
 	const prepend = useMemo(() => <UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>, [data.username]);
 
 	const append = useMemo(() => <Field>
 		<Field.Row>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
-					<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={reset}>{t('Reset')}</Button>
-					<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
+					<Button flexGrow={1} type='reset' disabled={!canSaveOrReset} onClick={reset}>{t('Reset')}</Button>
+					<Button mie='none' flexGrow={1} disabled={!canSaveOrReset} onClick={handleSave}>{t('Save')}</Button>
 				</Margins>
 			</Box>
 		</Field.Row>
-	</Field>, [handleSave, hasUnsavedChanges, reset, t]);
+	</Field>, [handleSave, canSaveOrReset, reset, t]);
 
 	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} prepend={prepend} append={append} {...props}/>;
 }
