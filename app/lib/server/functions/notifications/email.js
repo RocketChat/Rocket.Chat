@@ -156,6 +156,7 @@ export function getEmailData({
 		data: {
 			room_path,
 		},
+		headers: {},
 	};
 
 	if (sender.emails?.length > 0) {

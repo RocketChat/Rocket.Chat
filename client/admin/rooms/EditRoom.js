@@ -150,7 +150,7 @@ function EditRoom({ room, onChange }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Favorite')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={isFavorite} onChange={handleChange('favorite', room.default, () => !isFavorite)}/>
+						<ToggleSwitch disabled={deleted} checked={isFavorite} onChange={handleChange('favorite', room.favorite, () => !isFavorite)}/>
 					</Box>
 				</Field.Row>
 			</Field>
@@ -158,7 +158,7 @@ function EditRoom({ room, onChange }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Featured')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={isFeatured} onChange={handleChange('featured', room.default, () => !isFeatured)}/>
+						<ToggleSwitch disabled={deleted} checked={isFeatured} onChange={handleChange('featured', room.featured, () => !isFeatured)}/>
 					</Box>
 				</Field.Row>
 			</Field>
