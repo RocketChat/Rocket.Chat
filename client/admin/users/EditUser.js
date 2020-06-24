@@ -39,6 +39,7 @@ const getInitialValue = (data) => ({
 	setRandomPassword: false,
 	requirePasswordChange: data.setRandomPassword || false,
 	customFields: data.customFields ?? {},
+	statusText: data.statusText ?? '',
 });
 
 export function EditUser({ data, roles, ...props }) {
