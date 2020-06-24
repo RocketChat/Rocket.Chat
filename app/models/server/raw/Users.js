@@ -300,7 +300,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	openAgentsBusinessHours(businessHourIds) {
+	openAgentsBusinessHoursByBusinessHourId(businessHourIds) {
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -320,6 +320,7 @@ export class UsersRaw extends BaseRaw {
 	openBusinessHourByAgentIds(agentIds = [], businessHourId) {
 		const query = {
 			_id: { $in: agentIds },
+			roles: 'livechat-agent',
 		};
 
 		const update = {
@@ -337,6 +338,7 @@ export class UsersRaw extends BaseRaw {
 	closeBusinessHourByAgentIds(agentIds = [], businessHourId) {
 		const query = {
 			_id: { $in: agentIds },
+			roles: 'livechat-agent',
 		};
 
 		const update = {
@@ -379,7 +381,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	closeAgentsBusinessHours(businessHourIds) {
+	closeAgentsBusinessHoursByBusinessHourId(businessHourIds) {
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -419,8 +421,9 @@ export class UsersRaw extends BaseRaw {
 		}).count() > 0;
 	}
 
-	removeBusinessHoursFromUsers() {
+	removeBusinessHoursFromAllUsers() {
 		const query = {
+			roles: 'livechat-agent',
 			openBusinessHours: {
 				$exists: true,
 			},

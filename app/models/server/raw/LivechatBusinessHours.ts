@@ -17,7 +17,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 	public readonly col!: Collection<ILivechatBusinessHour>;
 
 	findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour> {
-		return this.findOne({ type: LivechatBussinessHourTypes.SINGLE });
+		return this.findOne({ type: LivechatBussinessHourTypes.DEFAULT });
 	}
 
 	findActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
@@ -34,7 +34,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 
 	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
 		return this.find({
-			type: LivechatBussinessHourTypes.SINGLE,
+			type: LivechatBussinessHourTypes.DEFAULT,
 			active: true,
 			workHours: {
 				$elemMatch: {
@@ -70,7 +70,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 	// TODO: Remove this function after remove the deprecated method livechat:saveOfficeHours
 	async updateDayOfGlobalBusinessHour(day: Omit<IBusinessHourWorkHour, 'code'>): Promise<any> {
 		return this.col.updateOne({
-			type: LivechatBussinessHourTypes.SINGLE,
+			type: LivechatBussinessHourTypes.DEFAULT,
 			'workHours.day': day.day,
 		}, {
 			$set: {

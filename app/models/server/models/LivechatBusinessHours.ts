@@ -11,7 +11,7 @@ const createDefaultBusinessHour = (): ILivechatBusinessHour => {
 		_id: new ObjectId().toHexString(),
 		name: '',
 		active: true,
-		type: LivechatBussinessHourTypes.SINGLE,
+		type: LivechatBussinessHourTypes.DEFAULT,
 		ts: new Date(),
 		workHours: days.map((day, index) => ({
 			day,
@@ -53,7 +53,7 @@ export class LivechatBusinessHours extends Base {
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true });
 
-		if (this.find({ type: LivechatBussinessHourTypes.SINGLE }).count() === 0) {
+		if (this.find({ type: LivechatBussinessHourTypes.DEFAULT }).count() === 0) {
 			this.insert(createDefaultBusinessHour());
 		}
 	}

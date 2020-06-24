@@ -157,22 +157,27 @@ Template.livechatBusinessHoursForm.onCreated(async function() {
 		...createDefaultBusinessHour(),
 	});
 	this.autorun(async () => {
+		if (FlowRouter.current().route.name.includes('new')) {
+			return;
+		}
 		const id = FlowRouter.getParam('_id');
+		const type = FlowRouter.getParam('type');
 		let url = 'livechat/business-hour';
-		if (id) {
-			url += `?_id=${ id }`;
+		if (id && type) {
+			url += `?_id=${ id }&type=${ type }`;
 		}
 		const { businessHour } = await APIClient.v1.get(url);
 		if (businessHour) {
 			this.businessHour.set(businessHour);
+			console.log(businessHour);
 			businessHour.workHours.forEach((d) => {
-				if (businessHour.timezone.name) {
-					this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
-					this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
-				} else {
-					this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').local().format('HH:mm'));
-					this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').local().format('HH:mm'));
-				}
+				// if (businessHour.timezone.name) {
+				this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+				this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
+				// } else {
+				// 	this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').local().format('HH:mm'));
+				// 	this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').local().format('HH:mm'));
+				// }
 				this.dayVars[d.day].open.set(d.open);
 			});
 		}

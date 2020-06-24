@@ -100,8 +100,8 @@ Meteor.startup(() => {
 
 	settings.get('Livechat_enable_business_hours', async (key, value) => {
 		if (value) {
-			return businessHourManager.dispatchOnStartTasks();
+			return businessHourManager.onStartManager();
 		}
-		await businessHourManager.dispatchOnCloseTasks();
+		return businessHourManager.onCloseManager();
 	});
 });

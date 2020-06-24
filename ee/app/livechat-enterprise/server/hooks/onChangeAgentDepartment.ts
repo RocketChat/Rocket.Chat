@@ -9,8 +9,8 @@ callbacks.add('livechat.removeAgentDepartment', async (options: any = {}) => {
 		return options;
 	}
 
-	await businessHourManager.removeBusinessHourFromUsersByIds(agentsId, department.businessHourId);
-	await businessHourManager.setDefaultToUsersIfNeeded(agentsId);
+	// await businessHourManager.removeBusinessHourFromUsersByIds(agentsId, department.businessHourId);
+	// await businessHourManager.setDefaultToUsersIfNeeded(agentsId);
 	return options;
 }, callbacks.priority.HIGH, 'livechat-on-remove-agent-department');
 
@@ -21,7 +21,7 @@ callbacks.add('livechat.saveAgentDepartment', async (options: any = {}) => {
 		return options;
 	}
 
-	await businessHourManager.addBusinessHourToUsersByIds(agentsId, department.businessHourId);
+	// await businessHourManager.addBusinessHourToUsersByIds(agentsId, department.businessHourId);
 
 	return options;
 }, callbacks.priority.HIGH, 'livechat-on-save-agent-department');

@@ -1,9 +1,18 @@
 import { ILivechatDepartment } from './ILivechatDepartment';
 
 export enum LivechatBussinessHourTypes {
-	SINGLE = 'single',
-	MULTIPLE = 'multiple',
+	DEFAULT = 'default',
+	CUSTOM = 'custom',
 }
+
+export enum LivechatBusinessHourBehaviors {
+	SINGLE = 'Single',
+	MULTIPLE = 'Multiple',
+}
+// export enum LivechatBussinessHourTypes {
+// 	SINGLE = 'single',
+// 	MULTIPLE = 'multiple',
+// }
 
 interface IBusinessHourTime {
 	time: string;

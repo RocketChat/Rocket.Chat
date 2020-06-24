@@ -31,6 +31,11 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findEnabledByBusinessHourId(businessHourId, options) {
+		const query = { businessHourId, enabled: true };
+		return this.find(query, options);
+	}
+
 	addBusinessHourToDepartamentsByIds(ids = [], businessHourId) {
 		const query = {
 			_id: { $in: ids },
@@ -45,8 +50,9 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.col.update(query, update, { multi: true });
 	}
 
-	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId) {
+	removeBusinessHourFromDepartmentsIdsByBusinessHourId(ids = [], businessHourId) {
 		const query = {
+			_id: { $in: ids },
 			businessHourId,
 		};
 

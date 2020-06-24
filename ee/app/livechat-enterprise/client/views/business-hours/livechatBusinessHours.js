@@ -90,7 +90,7 @@ Template.livechatBusinessHours.events({
 
 	'click .business-hour-info'(e/* , instance*/) {
 		e.preventDefault();
-		FlowRouter.go('livechat-business-hour-edit', { _id: this._id });
+		FlowRouter.go('livechat-business-hour-edit', { _id: this._id, type: this.type });
 	},
 
 	'keydown #business-hour-filter'(e) {
