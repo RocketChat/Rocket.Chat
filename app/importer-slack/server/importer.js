@@ -204,58 +204,33 @@ export class SlackImporter extends Base {
 		}
 
 		Meteor.runAsUser(startedByUserId, () => {
-			newImporter.addUser({
-				id: user.id,
-			}, {
-				email: user.profile.email,
+			const newUser = {
+				emails: [],
+				importIds: [
+					user.id,
+				],
 				username: user.name,
 				name: user.profile.real_name,
 				utcOffset: user.tz_offset && (user.tz_offset / 3600),
 				avatarUrl: user.profile.image_original || user.profile.image_512,
 				deleted: user.deleted,
-			});
+				statusText: user.profile.status_text || undefined,
+				bio: user.profile.title || undefined,
+				type: 'user',
+			};
+
+			if (user.profile.email) {
+				newUser.emails.push(user.profile.email);
+			}
+
+			if (user.is_bot) {
+				newUser.roles = ['bot'];
+				newUser.type = 'bot';
+			}
+
+			newImporter.addUser(newUser);
 
 			this._saveUserTag(user.id, user.name);
-
-			// const existantUser = Users.findOneByEmailAddress(user.profile.email) || Users.findOneByUsernameIgnoringCase(user.name);
-			// if (existantUser) {
-			// 	user.rocketId = existantUser._id;
-			// 	Users.update({ _id: user.rocketId }, { $addToSet: { importIds: user.id } });
-			// 	this._saveUserIdReference(user.id, existantUser._id, user.name, existantUser.username);
-			// } else {
-			// 	const userId = user.profile.email ? Accounts.createUser({ email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }) : Accounts.createUser({ username: user.name, password: Date.now() + user.name, joinDefaultChannelsSilenced: true });
-			// 	Meteor.runAsUser(userId, () => {
-			// 		Meteor.call('setUsername', user.name, { joinDefaultChannelsSilenced: true });
-
-			// 		const url = user.profile.image_original || user.profile.image_512;
-			// 		try {
-			// 			Meteor.call('setAvatarFromService', url, undefined, 'url');
-			// 		} catch (error) {
-			// 			this.logger.warn(`Failed to set ${ user.name }'s avatar from url ${ url }`);
-			// 			console.log(`Failed to set ${ user.name }'s avatar from url ${ url }`);
-			// 		}
-
-			// 		// Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
-			// 		if (user.tz_offset) {
-			// 			Meteor.call('userSetUtcOffset', user.tz_offset / 3600);
-			// 		}
-			// 	});
-
-			// 	Users.update({ _id: userId }, { $addToSet: { importIds: user.id } });
-
-			// 	if (user.profile.real_name) {
-			// 		Users.setName(userId, user.profile.real_name);
-			// 	}
-
-			// 	// Deleted users are 'inactive' users in Rocket.Chat
-			// 	if (user.deleted) {
-			// 		Meteor.call('setUserActiveStatus', userId, false);
-			// 	}
-
-			// 	user.rocketId = userId;
-			// 	this._saveUserIdReference(user.id, userId, user.name, user.name);
-			// }
-
 			this.addCountCompleted(1);
 		});
 	}
@@ -1090,6 +1065,9 @@ export class SlackImporter extends Base {
 				// 	// Just report the error but keep the import as successful.
 				// 	console.error(e);
 				// }
+
+				newImporter.convertUsers();
+
 				super.updateProgress(ProgressStep.DONE);
 
 				this.logger.log(`Import took ${ Date.now() - start } milliseconds.`);

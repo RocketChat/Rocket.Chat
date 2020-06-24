@@ -223,9 +223,9 @@ export class CsvImporter extends Base {
 
 					Meteor.runAsUser(startedByUserId, () => {
 						newImporter.addUser({
-							// id: u.id,
-						}, {
-							email: u.email,
+							emails: [
+								u.email,
+							],
 							username: u.username,
 							name: u.name,
 						});
@@ -355,7 +355,7 @@ export class CsvImporter extends Base {
 				});
 
 
-				// newImporter.convertUsers(startedByUserId);
+				newImporter.convertUsers(startedByUserId);
 				// newImporter.convertChannels(startedByUserId);
 				// newImporter.convertMessages(startedByUserId);
 

@@ -2,12 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { ImportData } from '../models/ImportData';
-import { IImportUser, IImportUserIdentification } from '../definitions/IImportUser';
+import { IImportUser } from '../definitions/IImportUser';
 import { IImportMessage, IImportMessageIdentification } from '../definitions/IImportMessage';
 import { IImportChannel, IImportChannelIdentification } from '../definitions/IImportChannel';
 import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../definitions/IImportRecord';
 import { Users, Rooms } from '../../../models/server';
-import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
+import { generateUsernameSuggestion, insertMessage, setUserAvatar } from '../../../lib/server';
+import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
 import '../../../../definition/Meteor';
 
@@ -21,7 +22,7 @@ const guessNameFromUsername = (username: string): string =>
 		.replace(/^\w/, (u) => u.toUpperCase());
 
 export class ImporterBase {
-	addObject(type: string, identification: Record<string, any>, data: Record<string, any>): void {
+	addObject(type: string, identification: Record<string, any> | undefined, data: Record<string, any>): void {
 		ImportData.insert({
 			data,
 			identification,
@@ -29,8 +30,8 @@ export class ImporterBase {
 		});
 	}
 
-	addUser(identification: IImportUserIdentification, data: IImportUser): void {
-		this.addObject('user', identification, data);
+	addUser(data: IImportUser): void {
+		this.addObject('user', undefined, data);
 	}
 
 	addChannel(identification: IImportChannelIdentification, data: IImportChannel): void {
@@ -41,33 +42,61 @@ export class ImporterBase {
 		this.addObject('message', identification, data);
 	}
 
-	updateUser(existingUser: IUser, userData: IImportUser, identification: IImportUserIdentification): void {
-		console.log('updating user', existingUser._id);
+	updateUserId(_id: string, userData: IImportUser): void {
+		const updateData: Record<string, any> = {
+			$set: {
+				statusText: userData.statusText || undefined,
+				roles: userData.roles || ['user'],
+				type: userData.type || 'user',
+				bio: userData.bio || undefined,
+				name: userData.name || undefined,
+			},
+		};
 
-		// since we have an existing user, let's try a few things
-		userData.id = existingUser._id;
-
-		if (identification?.id) {
-			Users.update({
-				_id: userData.id,
-			}, {
-				$addToSet: {
-					importIds: identification.id,
+		if (userData.importIds?.length) {
+			updateData.$addToSet = {
+				importIds: {
+					$each: userData.importIds,
 				},
-			});
+			};
 		}
 
-		// this.saveNewId(userData._id, userData.id);
+		Users.update({ _id }, updateData);
 	}
 
-	insertUser(userData: IImportUser, identification: IImportUserIdentification): void {
+	updateUser(existingUser: IUser, userData: IImportUser): void {
+		console.log('updating user', existingUser._id);
+
+		userData._id = existingUser._id;
+
+		this.updateUserId(userData._id, userData);
+
+		if (userData.avatarUrl) {
+			try {
+				setUserAvatar(existingUser, userData.avatarUrl, undefined, 'url');
+			} catch (error) {
+				// this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
+				console.log(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
+			}
+		}
+
+	}
+
+	insertUser(userData: IImportUser): IUser {
 		console.log('insert user', userData);
 
-		const password = `${ Date.now() }${ userData.name || '' }${ userData.email.toUpperCase() }`;
-		const userId = Accounts.createUser({
-			email: userData.email,
+		const password = `${ Date.now() }${ userData.name || '' }${ userData.emails.length ? userData.emails[0].toUpperCase() : '' }`;
+		const userId = userData.emails.length ? Accounts.createUser({
+			email: userData.emails[0],
 			password,
+		}) : Accounts.createUser({
+			username: userData.username,
+			password,
+			joinDefaultChannelsSilenced: true,
 		});
+
+		userData._id = userId;
+		const user = Users.findOneById(userId, {});
 
 		Meteor.runAsUser(userId, () => {
 			Meteor.call('setUsername', userData.username, { joinDefaultChannelsSilenced: true });
@@ -75,28 +104,43 @@ export class ImporterBase {
 				Users.setName(userId, userData.name);
 			}
 
-			if (identification?.id) {
-				Users.update({ _id: userId }, { $addToSet: { importIds: identification.id } });
+			this.updateUserId(userId, userData);
+
+			if (userData.utcOffset) {
+				Users.setUtcOffset(userId, userData.utcOffset);
 			}
 
-			userData.id = userId;
-			// this.saveNewId(userData._id, userId);
+			if (userData.avatarUrl) {
+				try {
+					// Meteor.call('setAvatarFromService', userData.avatarUrl, undefined, 'url');
+					setUserAvatar(user, userData.avatarUrl, undefined, 'url');
+				} catch (error) {
+					// this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
+					// this.logger.error(error);
+					console.log(error);
+					console.log(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
+				}
+			}
 		});
+
+		return user;
 	}
 
 	convertUsers(): void {
 		const users = ImportData.find({ dataType: 'user' });
-		users.forEach(({ data, identification, _id }: IImportUserRecord) => {
+		users.forEach(({ data, _id }: IImportUserRecord) => {
 			try {
-				if (!data.email) {
-					throw new Error('importer-user-missing-email');
+				data.emails = data.emails.filter((item) => item);
+				data.importIds = data.importIds.filter((item) => item);
+
+				if (!data.emails.length && !data.username) {
+					throw new Error('importer-user-missing-email-and-username');
 				}
 
-				// if (!identification?.id) {
-				// 	throw new Error('importer-user-missing-source-id');
-				// }
-
-				let existingUser = Users.findOneByEmailAddress(data.email, {});
+				let existingUser;
+				if (data.emails.length) {
+					existingUser = Users.findOneByEmailAddress(data.emails[0], {});
+				}
 
 				if (data.username) {
 					// If we couldn't find one by their email address, try to find an existing user by their username
@@ -106,18 +150,23 @@ export class ImporterBase {
 				} else {
 					data.username = generateUsernameSuggestion({
 						name: data.name,
-						emails: [data.email],
+						emails: data.emails,
 					});
 				}
 
 				if (existingUser) {
-					this.updateUser(existingUser, data, identification);
+					this.updateUser(existingUser, data);
 				} else {
 					if (!data.name && data.username) {
 						data.name = guessNameFromUsername(data.username);
 					}
 
-					this.insertUser(data, identification);
+					existingUser = this.insertUser(data);
+				}
+
+				// Deleted users are 'inactive' users in Rocket.Chat
+				if (data.deleted && existingUser?.active) {
+					setUserActiveStatus(data._id, false, true);
 				}
 			} catch (e) {
 				this.saveError(_id, e);

@@ -8,13 +8,13 @@ export interface IImportChannelIdentification {
 }
 
 export interface IImportChannel {
-	id?: string;
+	_id?: string;
 	u?: {
 		_id?: string;
 		username?: string;
 	};
 	name: string;
 	users: Array<string>;
-	userType?: 'username' | 'id' | 'importedId';
+	userType?: 'rocket.chat' | 'imported';
 	t: string;
 }

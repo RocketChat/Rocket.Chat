@@ -1,14 +1,16 @@
-export interface IImportUserIdentification {
-	id?: string;
-}
-
 export interface IImportUser {
-	id?: string;
+	_id?: string;
 
 	username?: string;
-	email: string;
+	emails: Array<string>;
+	importIds: Array<string>;
 	name?: string;
 	utcOffset?: number;
 	active?: boolean;
 	avatarUrl?: string;
+	deleted?: boolean;
+	statusText?: string;
+	roles?: Array<string>;
+	type: 'user' | 'bot';
+	bio?: string;
 }
