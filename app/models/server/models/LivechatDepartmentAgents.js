@@ -204,5 +204,11 @@ export class LivechatDepartmentAgents extends Base {
 
 		return this.update(query, update, { multi: true });
 	}
+
+	removeByDepartmentId(departmentId) {
+		const query = { departmentId };
+
+		return this.remove(query);
+	}
 }
 export default new LivechatDepartmentAgents();

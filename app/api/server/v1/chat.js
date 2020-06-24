@@ -128,7 +128,7 @@ API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 
 API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post() {
-		const messageReturn = processWebhookMessage(this.bodyParams, this.user, undefined, true)[0];
+		const messageReturn = processWebhookMessage(this.bodyParams, this.user)[0];
 
 		if (!messageReturn) {
 			return API.v1.failure('unknown-error');
