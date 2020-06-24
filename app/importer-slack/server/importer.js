@@ -1038,6 +1038,7 @@ export class SlackImporter extends Base {
 		Meteor.defer(() => {
 			try {
 				this._importUsers(startedByUserId);
+				newImporter.convertUsers();
 
 				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				this._importChannels(startedByUserId, channelNames);
@@ -1047,6 +1048,7 @@ export class SlackImporter extends Base {
 				this._importDMs(startedByUserId, channelNames);
 
 				this._importMessages(startedByUserId, channelNames);
+
 
 				super.updateProgress(ProgressStep.FINISHING);
 
@@ -1066,7 +1068,6 @@ export class SlackImporter extends Base {
 				// 	console.error(e);
 				// }
 
-				newImporter.convertUsers();
 
 				super.updateProgress(ProgressStep.DONE);
 

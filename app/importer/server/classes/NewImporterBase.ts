@@ -71,15 +71,17 @@ export class ImporterBase {
 
 		this.updateUserId(userData._id, userData);
 
-		if (userData.avatarUrl) {
-			try {
-				setUserAvatar(existingUser, userData.avatarUrl, undefined, 'url');
-			} catch (error) {
-				// this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
-				console.log(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
+		Meteor.runAsUser(existingUser._id, () => {
+			if (userData.avatarUrl) {
+				try {
+					setUserAvatar(existingUser, userData.avatarUrl, undefined, 'url');
+				} catch (error) {
+					// this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
+					console.log(error);
+					console.log(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
+				}
 			}
-		}
-
+		});
 	}
 
 	insertUser(userData: IImportUser): IUser {
@@ -112,7 +114,6 @@ export class ImporterBase {
 
 			if (userData.avatarUrl) {
 				try {
-					// Meteor.call('setAvatarFromService', userData.avatarUrl, undefined, 'url');
 					setUserAvatar(user, userData.avatarUrl, undefined, 'url');
 				} catch (error) {
 					// this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
