@@ -88,6 +88,15 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 		username: login.user?.username || login.methodArguments[0].user?.username,
 	};
 
+	if (!login.connection.clientAddress) {
+		const ipParams = {
+			httpFowardedCount: process.env.HTTP_FORWARDED_COUNT,
+			xForwardedFor: login.connection.httpHeaders['x-forwarded-for'],
+		};
+
+		console.log(ipParams);
+	}
+
 	await ServerEvents.insertOne({
 		ip: login.connection.clientAddress,
 		t: IServerEventType.FAILED_LOGIN_ATTEMPT,
