@@ -69,40 +69,74 @@ const canGetGeolocation = new ReactiveVar(false);
 
 const getGeolocationPermission = () => new Promise((resolve) => {
 	if (!navigator.permissions) { resolve(true); }
-	navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-		if (result.state === 'denied') {
-			resolve(false);
-		} else {
-			resolve(true);
-		}
+	navigator.permissions.query({ name: 'geolocation' }).then(({ state }) => { resolve(state); });
+});
+
+const getGeolocationPosition = () => new Promise((resolvePos) => {
+	navigator.geolocation.getCurrentPosition(resolvePos, () => { resolvePos(false); }, {
+		enableHighAccuracy: true,
+		maximumAge: 0,
+		timeout: 10000,
 	});
 });
 
-const getGeoPosition = () => new Promise((resolve) => navigator.geolocation.getCurrentPosition(resolve, () => { resolve(false); }, {
-	enableHighAccuracy: true,
-	maximumAge: 0,
-	timeout: 10000,
-}));
+const getCoordinates = async () => {
+	const status = await getGeolocationPermission();
+	if (status === 'prompt') {
+		let resolveModal;
+		const modalAnswer = new Promise((resolve) => { resolveModal = resolve; });
+		modal.open({
+			title: t('You_will_be_asked_for_permissions'),
+			confirmButtonText: t('Continue'),
+			showCancelButton: true,
+			closeOnConfirm: true,
+			closeOnCancel: true,
+		}, async (isConfirm) => {
+			if (!isConfirm) {
+				resolveModal(false);
+			}
+			const position = await getGeolocationPosition();
+			if (!position) {
+				const newStatus = getGeolocationPermission();
+				resolveModal(newStatus);
+			}
+			resolveModal(position);
+		});
+		const position = await modalAnswer;
+		return position;
+	}
+
+	if (status === 'denied') {
+		return status;
+	}
+
+	const position = await getGeolocationPosition();
+	return position;
+};
+
 
 messageBox.actions.add('Share', 'My_location', {
 	id: 'share-location',
 	icon: 'map-pin',
 	condition: () => canGetGeolocation.get(),
 	async action({ rid, tmid }) {
-		const hasPermission = await getGeolocationPermission();
-		if (!hasPermission) {
+		const position = await getCoordinates();
+
+		if (!position) {
+			return;
+		}
+
+		if (position === 'denied') {
 			modal.open({
-				title: t('Share_Location_Error_Title'),
-				text: t('Share_Location_No_Permission'),
+				title: t('Cannot_share_your_location'),
+				text: t('The_necessary_browser_permissions_for_location_sharing_are_not_granted'),
 				confirmButtonText: t('Ok'),
 				closeOnConfirm: true,
-				closeOnCancel: true,
 			});
 			return;
 		}
-		const position = await getGeoPosition();
 
-		const { latitude, longitude } = position.coords;
+		const { coords: { latitude, longitude } } = position;
 		const text = `<div class="upload-preview"><div class="upload-preview-file" style="background-size: cover; box-shadow: 0 0 0px 1px #dfdfdf; border-radius: 2px; height: 250px; width:100%; max-width: 500px; background-image:url(https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=500x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ settings.get('MapView_GMapsAPIKey') })" ></div></div>`;
 
 		modal.open({
