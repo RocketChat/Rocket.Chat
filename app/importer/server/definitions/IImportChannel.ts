@@ -1,12 +1,3 @@
-export interface IImportChannelIdentification {
-	id: string;
-	u?: {
-		_id?: string;
-		username?: string;
-	};
-	isGeneral?: boolean;
-}
-
 export interface IImportChannel {
 	_id?: string;
 	u?: {
@@ -15,6 +6,12 @@ export interface IImportChannel {
 	};
 	name: string;
 	users: Array<string>;
-	userType?: 'rocket.chat' | 'imported';
+	importIds: Array<string>;
 	t: string;
+	topic?: string;
+	description?: string;
+	ts?: Date;
+
+	// Determine if the values in the 'u' object are relative to the Rocket.Chat data or to imported data
+	userType: 'rocket.chat' | 'imported';
 }

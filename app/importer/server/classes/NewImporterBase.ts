@@ -3,14 +3,15 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { ImportData } from '../models/ImportData';
 import { IImportUser } from '../definitions/IImportUser';
-import { IImportMessage, IImportMessageIdentification } from '../definitions/IImportMessage';
-import { IImportChannel, IImportChannelIdentification } from '../definitions/IImportChannel';
+import { IImportMessage } from '../definitions/IImportMessage';
+import { IImportChannel } from '../definitions/IImportChannel';
 import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../definitions/IImportRecord';
 import { Users, Rooms } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, setUserAvatar } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
 import '../../../../definition/Meteor';
+import { getValidRoomName } from '../../../utils';
 
 type IRoom = Record<string, any>;
 
@@ -34,8 +35,8 @@ export class ImporterBase {
 		this.addObject('user', undefined, data);
 	}
 
-	addChannel(identification: IImportChannelIdentification, data: IImportChannel): void {
-		this.addObject('channel', identification, data);
+	addChannel(data: IImportChannel): void {
+		this.addObject('channel', undefined, data);
 	}
 
 	addMessage(identification: IImportMessageIdentification, data: IImportMessage): void {
@@ -71,17 +72,17 @@ export class ImporterBase {
 
 		this.updateUserId(userData._id, userData);
 
-		Meteor.runAsUser(existingUser._id, () => {
-			if (userData.avatarUrl) {
-				try {
-					setUserAvatar(existingUser, userData.avatarUrl, undefined, 'url');
-				} catch (error) {
-					// this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
-					console.log(error);
-					console.log(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
-				}
-			}
-		});
+		// Meteor.runAsUser(existingUser._id, () => {
+		// 	if (userData.avatarUrl) {
+		// 		try {
+		// 			setUserAvatar(existingUser, userData.avatarUrl, undefined, 'url');
+		// 		} catch (error) {
+		// 			// this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
+		// 			console.log(error);
+		// 			console.log(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
+		// 		}
+		// 	}
+		// });
 	}
 
 	insertUser(userData: IImportUser): IUser {
@@ -186,6 +187,7 @@ export class ImporterBase {
 	}
 
 	saveError(importId: string, error: Error): void {
+		console.log(error);
 		ImportData.update({
 			_id: importId,
 		}, {
@@ -267,22 +269,18 @@ export class ImporterBase {
 		});
 	}
 
-	updateRoom(room: IRoom, roomData: IImportChannel, identification: IImportChannelIdentification): void {
+	updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): void {
 		console.log('updating room', room._id);
 		// eslint-disable-next-line no-extra-parens
-		roomData.id = (roomData.name && roomData.name.toUpperCase() === 'GENERAL') ? 'GENERAL' : room._id;
+		roomData._id = room._id;
 
-		if (identification?.id) {
-			Rooms.update({
-				_id: roomData.id,
-			}, {
-				$addToSet: {
-					importIds: identification.id,
-				},
+		if (roomData._id.toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
+			Meteor.runAsUser(startedByUserId, () => {
+				Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', roomData.name);
 			});
 		}
 
-		// this.saveNewId(roomData._id, roomData.id);
+		this.updateRoomId(room._id, roomData);
 	}
 
 	_findRoom({ rid, sourceRid }: Record<string, string | undefined>, returnId = false): string | IRoom | null {
@@ -319,7 +317,33 @@ export class ImporterBase {
 		return this._findRoom({ rid, sourceRid }, true) as string | null;
 	}
 
-	_findUser({ _id, username, sourceId, sourceUsername }: Record<string, string | undefined>, returnId = false): string | IUser | null {
+	_findImportedUser({ _id, username }: Record<string, string | undefined>, returnId = false): string | IUser | null {
+		const options = returnId ? { fields: { _id: 1 } } : undefined;
+
+		if (_id) {
+			const user = Users.findOneByImportId(_id, options);
+			if (user) {
+				if (returnId) {
+					return user._id;
+				}
+				return user;
+			}
+		}
+
+		if (username) {
+			const user = Users.findOneByUsernameIgnoringCase(username, options);
+			if (user) {
+				if (returnId) {
+					return user._id;
+				}
+				return user;
+			}
+		}
+
+		return null;
+	}
+
+	_findUser({ _id, username }: Record<string, string | undefined>, returnId = false): string | IUser | null {
 		const options = returnId ? { fields: { _id: 1 } } : undefined;
 
 		if (_id) {
@@ -341,116 +365,114 @@ export class ImporterBase {
 			}
 		}
 
-		if (sourceId) {
-			const user = Users.findOneByImportId(sourceId, options);
-			if (user) {
-				if (returnId) {
-					return user._id;
-				}
-				return user;
-			}
-
-			// const userImport = ImportData.findOne({
-			// 	dataType: 'user',
-			// 	'identification.id': sourceId,
-			// 	id: {
-			// 		$exists: true,
-			// 	},
-			// }, { fields: { id: 1 } });
-
-			// if (userImport && userImport.id) {
-			// 	if (returnId) {
-			// 		return userImport.id;
-			// 	}
-
-			// 	return Users.findOneById(userImport.id, options);
-			// }
-		}
-
-		if (sourceUsername) {
-			// const userImport = ImportData.findOne({
-			// 	dataType: 'user',
-			// 	username: sourceUsername,
-			// 	id: {
-			// 		$exists: true,
-			// 	},
-			// }, { fields: { id: 1 } });
-
-			// if (userImport && userImport.id) {
-			// 	if (userImport && userImport.id) {
-			// 		if (returnId) {
-			// 			return userImport.id;
-			// 		}
-
-			// 		return Users.findOneById(userImport.id, options);
-			// 	}
-			// }
-
-			const user = Users.findOneByUsernameIgnoringCase(sourceUsername, options);
-			if (user) {
-				if (returnId) {
-					return user._id;
-				}
-				return user;
-			}
-		}
-
 		return null;
 	}
 
-	findUser({ _id, username, sourceId, sourceUsername }: Record<string, string | undefined>): IUser | null {
-		return this._findUser({ _id, username, sourceId, sourceUsername }, false) as IUser | null;
+	findUser({ _id, username }: Record<string, string | undefined>): IUser | null {
+		return this._findUser({ _id, username }, false) as IUser | null;
 	}
 
-	findUserId({ _id, username, sourceId, sourceUsername }: Record<string, string | undefined>): string | null {
-		return this._findUser({ _id, username, sourceId, sourceUsername }, true) as string | null;
+	findUserId({ _id, username }: Record<string, string | undefined>): string | null {
+		return this._findUser({ _id, username }, true) as string | null;
 	}
 
-	insertRoom(roomData: IImportChannel, identification: IImportChannelIdentification, startedByUserId: string): void {
+	findImportedUser({ _id, username }: Record<string, string | undefined>): IUser | null {
+		return this._findImportedUser({ _id, username }, false) as IUser | null;
+	}
+
+	findImportedUserId({ _id, username }: Record<string, string | undefined>): string | null {
+		return this._findImportedUser({ _id, username }, true) as string | null;
+	}
+
+	updateRoomId(_id: string, roomData: IImportChannel): void {
+		const set = {
+			ts: roomData.ts,
+			topic: roomData.topic,
+			description: roomData.description,
+		};
+
+		const roomUpdate = {};
+
+		if (Object.keys(set).length > 0) {
+			roomUpdate.$set = set;
+		}
+
+		if (roomData.importIds.length) {
+			roomUpdate.$addToSet = {
+				importIds: {
+					$each: roomData.importIds,
+				},
+			};
+		}
+
+		if (roomUpdate.$set || roomUpdate.$addToSet) {
+			Rooms.update({ _id: roomData._id }, roomUpdate);
+		}
+	}
+
+	insertRoom(roomData: IImportChannel, startedByUserId: string): void {
 		// Find the rocketchatId of the user who created this channel
-		const creatorId = this.findUserId({
-			_id: roomData.u?._id,
-			username: roomData.u?.username,
-			sourceId: identification.u?._id,
-			sourceUsername: identification.u?.username,
-		}) || startedByUserId;
+		const creatorId = (roomData.userType === 'rocket.chat' ? this.findUserId(roomData.u) : this.findImportedUserId(roomData.u)) || startedByUserId;
 
 		console.log('insert room by', creatorId);
+		const members = roomData.userType === 'rocket.chat' ? roomData.users : roomData.users.map((user) => {
+			const obj = Users.findOneByImportId(user, { fields: { username: 1 } });
+			// If it's not a direct message, then remove the room creator from the list
+			if (roomData.t !== 'd' && obj?._id === creatorId) {
+				return false;
+			}
+
+			return obj?.username;
+		}).filter((user) => user);
 
 		// Create the channel
-		Meteor.runAsUser(creatorId, () => {
-			const roomInfo = roomData.t === 'd'
-				? Meteor.call('createDirectMessage', ...roomData.users)
-				: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, roomData.users);
+		try {
+			Meteor.runAsUser(creatorId, () => {
+				const roomInfo = roomData.t === 'd'
+					? Meteor.call('createDirectMessage', ...members)
+					: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
 
-			roomData.id = roomInfo.rid;
-		});
-
-		if (identification?.id) {
-			Rooms.update({ _id: roomData.id }, { $addToSet: { importIds: identification.id } });
+				roomData._id = roomInfo.rid;
+			});
+		} catch (e) {
+			console.log(roomData.name, members);
+			console.log(e);
+			throw e;
 		}
-		// this.saveNewId(roomData._id, roomData.id);
+
+		this.updateRoomId(roomData._id, roomData);
 	}
 
 	convertChannels(startedByUserId: string): void {
 		const channels = ImportData.find({ dataType: 'channel' });
-		channels.forEach(({ data: c, identification, _id }: IImportChannelRecord) => {
+		channels.forEach(({ data: c, _id }: IImportChannelRecord) => {
 			try {
 				if (!c.name && c.t !== 'd') {
 					throw new Error('importer-channel-missing-name');
 				}
 
-				// if (!c.identification?.id) {
-				// 	throw new Error('importer-channel-missing-source-id');
-				// }
+				c.importIds = c.importIds.filter((item) => item);
 
-				const existingRoom = c.t === 'd' ? Rooms.findDirectRoomContainingAllUsernames(c.users, {}) : Rooms.findOneByNonValidatedName(c.name, {});
-				// If the room exists or the name of it is 'general', then we don't need to create it again
+				if (!c.importIds.length) {
+					throw new Error('importer-channel-missing-import-id');
+				}
 
-				if (existingRoom || (c.name && c.name.toUpperCase() === 'GENERAL')) {
-					this.updateRoom(existingRoom, c, identification);
+				let existingRoom;
+				if (c._id && c._id.toUpperCase() === 'GENERAL') {
+					existingRoom = Rooms.findOneById('GENERAL', {});
+
+					// Prevent the importer from trying to create a new general
+					if (!existingRoom) {
+						throw new Error('importer-channel-general-not-found');
+					}
 				} else {
-					this.insertRoom(c, identification, startedByUserId);
+					existingRoom = c.t === 'd' ? Rooms.findDirectRoomContainingAllUsernames(c.users, {}) : Rooms.findOneByNonValidatedName(c.name, {});
+				}
+
+				if (existingRoom) {
+					this.updateRoom(existingRoom, c, startedByUserId);
+				} else {
+					this.insertRoom(c, startedByUserId);
 				}
 			} catch (e) {
 				this.saveError(_id, e);
