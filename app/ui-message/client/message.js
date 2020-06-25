@@ -236,11 +236,22 @@ Template.message.helpers({
 	},
 	unread() {
 		const { msg, subscription } = this;
-
-		if (!subscription) {
+		if (!subscription?.tunread?.includes(msg._id)) {
 			return false;
 		}
-		return subscription.tunread?.includes(msg._id);
+
+		const badgeClass = (() => {
+			if (subscription.tunreadUser?.includes(msg._id)) {
+				return 'badge--user-mentions';
+			}
+			if (subscription.tunreadGroup?.includes(msg._id)) {
+				return 'badge--group-mentions';
+			}
+		})();
+
+		return {
+			class: badgeClass,
+		};
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;

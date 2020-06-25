@@ -1365,16 +1365,19 @@ export class Subscriptions extends Base {
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
-	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid) {
+	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid, { groupMention = false, userMention = false } = {}) {
 		if (!users) {
 			return;
 		}
+
 		return this.update({
 			'u._id': { $in: users },
 			rid,
 		}, {
 			$addToSet: {
 				tunread: tmid,
+				...groupMention && { tunreadGroup: tmid },
+				...userMention && { tunreadUser: tmid },
 			},
 		}, { multi: true });
 	}
@@ -1386,6 +1389,8 @@ export class Subscriptions extends Base {
 		}, {
 			$pull: {
 				tunread: tmid,
+				tunreadGroup: tmid,
+				tunreadUser: tmid,
 			},
 		});
 	}

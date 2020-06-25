@@ -41,13 +41,13 @@ Template.sidebarItem.helpers({
 		return unread + tunread.length;
 	},
 	badgeClass() {
-		const { unread, userMentions, groupMentions, tunread = [] } = this;
+		const { unread, userMentions, groupMentions, tunread = [], tunreadGroup = [], tunreadUser = [] } = this;
 
-		if (userMentions) {
+		if (userMentions || tunreadUser.length > 0) {
 			return 'badge badge--user-mentions';
 		}
 
-		if (groupMentions) {
+		if (groupMentions || tunreadGroup.length > 0) {
 			return 'badge badge--group-mentions';
 		}
 
