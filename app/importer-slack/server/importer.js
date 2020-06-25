@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 
 import {
@@ -11,9 +10,7 @@ import {
 	SelectionUser,
 	ImporterWebsocket,
 } from '../../importer/server';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Users, Rooms, Messages } from '../../models';
-import { insertMessage, createDirectRoom } from '../../lib';
 import { getValidRoomName } from '../../utils';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
@@ -244,7 +241,7 @@ export class SlackImporter extends Base {
 
 		const users = mentionsParser.getUserMentions(newMessage.msg);
 		users.forEach((user_id, index, arr) => {
-			arr[index] = user_id.slice(1, user_id.length);
+			arr[index] = this._replaceSlackUserId(user_id.slice(1, user_id.length));
 		});
 
 		if (users.length) {
@@ -422,12 +419,25 @@ export class SlackImporter extends Base {
 		}
 	}
 
-	performMessageImport(message, room, missedTypes, slackChannel) {
-		const newMessage = {
-			_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }`,
-			ts: new Date(parseInt(message.ts.split('.')[0]) * 1000),
-		};
+	makeSlackMessageId(channelId, ts, fileIndex = undefined) {
+		const base = `slack-${ channelId }-${ ts.replace(/\./g, '-') }`;
 
+		if (fileIndex) {
+			return `${ base }-file${ fileIndex }`;
+		}
+
+		return base;
+	}
+
+	performMessageImport(message, room, missedTypes, slackChannel) {
+		const id = this.makeSlackMessageId(slackChannel.id, message.ts);
+		const newMessage = {
+			_id: id,
+			ts: new Date(parseInt(message.ts.split('.')[0]) * 1000),
+			u: {
+				_id: this._replaceSlackUserId(message.user),
+			},
+		};
 
 		// Process the reactions
 		if (message.reactions && message.reactions.length > 0) {
@@ -465,29 +475,27 @@ export class SlackImporter extends Base {
 		}
 
 		if (message.type === 'message') {
-			const identification = {
-				rid: slackChannel.id,
-				u: {
-					_id: message.user,
-				},
-			};
-
 			if (message.files) {
 				let fileIndex = 0;
 				message.files.forEach((file) => {
 					fileIndex++;
+
+					const fileId = this.makeSlackMessageId(slackChannel.id, message.ts, fileIndex);
 					const fileMessage = {
-						_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }-file${ fileIndex }`,
+						_id: fileId,
 						ts: newMessage.ts,
 						msg: file.url_private_download || '',
 						_importFile: this.convertSlackFileToPendingFile(file),
+						u: {
+							_id: this._replaceSlackUserId(message.user),
+						},
 					};
 
 					if (message.thread_ts && (message.thread_ts !== message.ts)) {
-						fileMessage.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
+						fileMessage.tmid = this.makeSlackMessageId(slackChannel.id, message.thread_ts);
 					}
 
-					newImporter.addMessage(identification, fileMessage);
+					newImporter.addMessage(fileMessage);
 				});
 			}
 
@@ -518,7 +526,7 @@ export class SlackImporter extends Base {
 
 			if (message.subtype && !regularTypes.includes(message.subtype)) {
 				if (this.processMessageSubType(message, slackChannel, newMessage, missedTypes)) {
-					newImporter.addMessage(identification, newMessage);
+					newImporter.addMessage(newMessage);
 				}
 			} else {
 				const text = this.convertSlackMessageToRocketChat(message.text);
@@ -534,12 +542,12 @@ export class SlackImporter extends Base {
 						if (message.reply_users) {
 							newMessage.replies = [];
 							message.reply_users.forEach((item) => {
-								newMessage.replies.push(item);
+								newMessage.replies.push(this._replaceSlackUserId(item));
 							});
 						} else if (message.replies) {
 							newMessage.replies = [];
 							message.repĺies.forEach((item) => {
-								newMessage.replies.push(item.user);
+								newMessage.replies.push(this._replaceSlackUserId(item.user));
 							});
 						} else {
 							this.logger.warn(`Failed to import the parent comment, message: ${ newMessage._id }. Missing replies/reply_users field`);
@@ -548,14 +556,14 @@ export class SlackImporter extends Base {
 						newMessage.tcount = message.reply_count;
 						newMessage.tlm = new Date(parseInt(message.latest_reply.split('.')[0]) * 1000);
 					} else {
-						newMessage.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
+						newMessage.tmid = this.makeSlackMessageId(slackChannel.id, message.thread_ts);
 					}
 				}
 
 				if (message.edited) {
 					newMessage.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
 					if (message.edited.user) {
-						newMessage.editedBy = message.edited.user;
+						newMessage.editedBy = this._replaceSlackUserId(message.edited.user);
 					}
 				}
 
@@ -565,7 +573,7 @@ export class SlackImporter extends Base {
 
 				this.newParseMentions(newMessage);
 
-				newImporter.addMessage(identification, newMessage);
+				newImporter.addMessage(newMessage);
 
 				// const user = this.getRocketUserFromUserId(message.user);
 				// if (user) {

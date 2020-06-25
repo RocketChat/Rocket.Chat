@@ -15,7 +15,7 @@ import '../../../../definition/Meteor';
 // import { getValidRoomName } from '../../../utils';
 
 type IRoom = Record<string, any>;
-type IUserCache = {
+type IUserIdentification = {
 	_id: string;
 	username: string | undefined;
 };
@@ -28,17 +28,28 @@ const guessNameFromUsername = (username: string): string =>
 		.replace(/^\w/, (u) => u.toUpperCase());
 
 export class ImporterBase {
-	private _userCache: Map<string, IUserCache>;
+	private _userCache: Map<string, IUserIdentification>;
+
+	private _roomCache: Map<string, string>;
 
 	constructor() {
 		this._userCache = new Map();
+		this._roomCache = new Map();
 	}
 
-	addUserToCache(importId: string, _id: string, username: string | undefined): void {
-		this._userCache.set(importId, {
+	addUserToCache(importId: string, _id: string, username: string | undefined): IUserIdentification {
+		const cache = {
 			_id,
 			username,
-		});
+		};
+
+		this._userCache.set(importId, cache);
+		return cache;
+	}
+
+	addRoomToCache(importId: string, rid: string): string {
+		this._roomCache.set(importId, rid);
+		return rid;
 	}
 
 	addUserDataToCache(userData: IImportUser): void {
@@ -52,24 +63,23 @@ export class ImporterBase {
 		this.addUserToCache(userData.importIds[0], userData._id, userData.username);
 	}
 
-	addObject(type: string, identification: Record<string, any> | undefined, data: Record<string, any>): void {
-		ImportData.insert({
+	addObject(type: string, data: Record<string, any>): void {
+		ImportData.model.rawCollection().insert({
 			data,
-			identification,
 			dataType: type,
 		});
 	}
 
 	addUser(data: IImportUser): void {
-		this.addObject('user', undefined, data);
+		this.addObject('user', data);
 	}
 
 	addChannel(data: IImportChannel): void {
-		this.addObject('channel', undefined, data);
+		this.addObject('channel', data);
 	}
 
-	addMessage(identification: IImportMessageIdentification, data: IImportMessage): void {
-		this.addObject('message', identification, data);
+	addMessage(data: IImportMessage): void {
+		this.addObject('message', data);
 	}
 
 	updateUserId(_id: string, userData: IImportUser): void {
@@ -243,58 +253,36 @@ export class ImporterBase {
 		// 	]
 		// });
 
-		const timestamps: Record<number, number> = {};
 		const messages = ImportData.find({ dataType: 'message' });
-		messages.forEach(({ data: m, identification, _id }: IImportMessageRecord) => {
+		messages.forEach(({ data: m, _id }: IImportMessageRecord) => {
 			try {
 				if (!m.ts || isNaN(m.ts as unknown as number)) {
 					throw new Error('importer-message-invalid-timestamp');
 				}
 
-				const creator = this.findUser({
-					_id: m.u?._id,
-					username: m.u?.username,
-					sourceId: identification?.u?._id,
-					sourceUsername: identification?.u?.username,
-				});
-
+				const creator = this.findImportedUser(m.u._id);
 				if (!creator) {
 					throw new Error('importer-message-unknown-user');
 				}
 
-				const room = this.findRoom({
-					rid: m.rid,
-					sourceRid: identification?.rid,
-				});
-
-				if (!room) {
+				const rid = this.findImportedRoomId(m.rid);
+				if (!rid) {
 					throw new Error('importer-message-unknown-room');
 				}
 
-				const ts = m.ts.getTime();
-				const sourceChannelId = identification?.rid || room._id;
-
-				let suffix = '';
-				if (timestamps[ts] === undefined) {
-					timestamps[ts] = 1;
-				} else {
-					suffix = `-${ timestamps[ts] }`;
-					timestamps[ts] += 1;
-				}
-
 				const msgObj = {
-					// _id: `csv-${ csvChannel.id }-${ msg.ts }${ suffix }`,
-					_id: `imported-${ sourceChannelId }-${ ts }${ suffix }`,
+					_id: m._id || undefined,
 					ts: m.ts,
 					msg: m.msg,
-					rid: room._id,
+					t: m.t || undefined,
+					rid,
 					u: {
 						_id: creator._id,
 						username: creator.username,
 					},
 				};
 
-				insertMessage(creator, msgObj, room, true);
+				insertMessage(creator, msgObj, rid, true);
 			} catch (e) {
 				this.saveError(_id, e);
 				throw e;
@@ -315,120 +303,55 @@ export class ImporterBase {
 		this.updateRoomId(room._id, roomData);
 	}
 
-	_findRoom({ rid, sourceRid }: Record<string, string | undefined>, returnId = false): string | IRoom | null {
-		const options = returnId ? { fields: { _id: 1 } } : undefined;
-
-		if (rid) {
-			if (returnId) {
-				return rid;
-			}
-
-			return Rooms.findOneById(rid, options);
+	findImportedRoomId(importId: string): string | null {
+		if (this._roomCache.has(importId)) {
+			return this._roomCache.get(importId) as string;
 		}
 
-		if (sourceRid) {
-			const room = Rooms.findOneByImportId(sourceRid, options);
+		const options = {
+			fields: {
+				_id: 1,
+			},
+		};
 
-			if (room) {
-				if (returnId) {
-					return room._id;
-				}
-
-				return room;
-			}
+		const room = Rooms.findOneByImportId(importId, options);
+		if (room) {
+			return this.addRoomToCache(importId, room._id);
 		}
 
 		return null;
 	}
 
-	findRoom({ rid, sourceRid }: Record<string, string | undefined>): IRoom | null {
-		return this._findRoom({ rid, sourceRid }, false) as IRoom | null;
-	}
+	findImportedUser(importId: string): IUserIdentification | null {
+		const options = {
+			fields: {
+				_id: 1,
+				username: 1,
+			},
+		};
 
-	findRoomId({ rid, sourceRid }: Record<string, string | undefined>): string | null {
-		return this._findRoom({ rid, sourceRid }, true) as string | null;
-	}
-
-	_findImportedUser({ _id, username }: Record<string, string | undefined>, returnId = false): string | IUser | null {
-		if (_id === 'rocket.cat' || username === 'rocket.cat') {
-			if (returnId) {
-				return 'rocket.cat';
-			}
-
-			return Users.findOneById('rocket.cat', {});
+		if (importId === 'rocket.cat') {
+			return {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+			};
 		}
 
-		if (returnId && _id && this._userCache.has(_id)) {
-			const cache = this._userCache.get(_id);
-			if (cache) {
-				return cache._id;
-			}
+		if (this._userCache.has(importId)) {
+			return this._userCache.get(importId) as IUserIdentification;
 		}
 
-		const options = returnId ? { fields: { _id: 1 } } : undefined;
-
-		if (_id) {
-			const user = Users.findOneByImportId(_id, options);
-			if (user) {
-				if (returnId) {
-					return user._id;
-				}
-				return user;
-			}
-		}
-
-		if (username) {
-			const user = Users.findOneByUsernameIgnoringCase(username, options);
-			if (user) {
-				if (returnId) {
-					return user._id;
-				}
-				return user;
-			}
+		const user = Users.findOneByImportId(importId, options);
+		if (user) {
+			return this.addUserToCache(importId, user._id, user.username);
 		}
 
 		return null;
 	}
 
-	_findUser({ _id, username }: Record<string, string | undefined>, returnId = false): string | IUser | null {
-		const options = returnId ? { fields: { _id: 1 } } : undefined;
-
-		if (_id) {
-			if (returnId) {
-				return _id;
-			}
-
-			return Users.findOneById(_id, options);
-		}
-
-		if (username) {
-			const user = Users.findOneByUsernameIgnoringCase(username, options);
-			if (user) {
-				if (returnId) {
-					return user._id;
-				}
-
-				return user;
-			}
-		}
-
-		return null;
-	}
-
-	findUser({ _id, username }: Record<string, string | undefined>): IUser | null {
-		return this._findUser({ _id, username }, false) as IUser | null;
-	}
-
-	findUserId({ _id, username }: Record<string, string | undefined>): string | null {
-		return this._findUser({ _id, username }, true) as string | null;
-	}
-
-	findImportedUser({ _id, username }: Record<string, string | undefined>): IUser | null {
-		return this._findImportedUser({ _id, username }, false) as IUser | null;
-	}
-
-	findImportedUserId({ _id, username }: Record<string, string | undefined>): string | null {
-		return this._findImportedUser({ _id, username }, true) as string | null;
+	findImportedUserId(_id: string): string | undefined {
+		const data = this.findImportedUser(_id);
+		return data?._id;
 	}
 
 	updateRoomId(_id: string, roomData: IImportChannel): void {
@@ -459,7 +382,7 @@ export class ImporterBase {
 
 	getRoomCreatorId(roomData: IImportChannel, startedByUserId: string): string {
 		if (roomData.u) {
-			const creatorId = this.findImportedUserId(roomData.u);
+			const creatorId = this.findImportedUserId(roomData.u._id);
 			if (creatorId) {
 				return creatorId;
 			}
@@ -473,7 +396,7 @@ export class ImporterBase {
 
 		if (roomData.t === 'd') {
 			for (const member of roomData.users) {
-				const userId = this.findImportedUserId({ _id: member });
+				const userId = this.findImportedUserId(member);
 				if (userId) {
 					return userId;
 				}
@@ -592,10 +515,9 @@ export class ImporterBase {
 	}
 
 	convertData(startedByUserId: string): void {
-		this._userCache = new Map();
-
 		this.convertUsers();
 		this.convertChannels(startedByUserId);
+		this.convertMessages();
 	}
 
 	clearImportData(keepErrors = false): void {
