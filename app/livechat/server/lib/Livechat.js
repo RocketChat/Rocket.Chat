@@ -939,6 +939,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
+		const showAgentInfo = settings.get('Livechat_show_agent_info');
 		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat_video_call'];
 		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } });
 
@@ -948,7 +949,7 @@ export const Livechat = {
 			if (message.u._id === visitor._id) {
 				author = TAPi18n.__('You', { lng: userLanguage });
 			} else {
-				author = message.u.username;
+				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
 			}
 
 			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
