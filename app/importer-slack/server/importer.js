@@ -440,7 +440,7 @@ export class SlackImporter extends Base {
 				if (reaction.users && reaction.users.length) {
 					newMessage.reactions.set(name, {
 						name,
-						users: reaction.users,
+						users: this._replaceSlackUserIds(reaction.users),
 					});
 				}
 
@@ -671,19 +671,19 @@ export class SlackImporter extends Base {
 				newImporter.addChannel({
 					_id: channel.is_general ? 'general' : undefined,
 					u: {
-						_id: channel.creator,
+						_id: this._replaceSlackUserId(channel.creator),
 					},
 					importIds: [
 						channel.id,
 					],
 
 					name: channel.name,
-					users: channel.members,
-					userType: 'imported',
+					users: this._replaceSlackUserIds(channel.members),
 					t: 'c',
 					topic: channel.topic?.value || undefined,
 					description: channel.purpose?.value || undefined,
 					ts: channel.created ? new Date(channel.created * 1000) : undefined,
+					archived: channel.is_archived,
 				});
 
 				this.addCountCompleted(1);
@@ -741,35 +741,22 @@ export class SlackImporter extends Base {
 			channelNames.push(channel.name);
 
 			Meteor.runAsUser(startedByUserId, () => {
-				// newImporter.addChannel({
-				// 	id: channel.id,
-				// 	u: {
-				// 		_id: channel.creator,
-				// 	},
-				// }, {
-				// 	name: channel.name,
-				// 	users: channel.members,
-				// 	userType: 'imported',
-				// 	t: 'p',
-				// });
+				newImporter.addChannel({
+					u: {
+						_id: this._replaceSlackUserId(channel.creator),
+					},
+					importIds: [
+						channel.id,
+					],
 
-
-				// const existingRoom = this._findExistingRoom(channel.name);
-
-				// if (existingRoom) {
-				// 	channel.rocketId = existingRoom._id;
-				// 	Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
-				// } else {
-				// 	const users = this._getChannelUserList(channel);
-
-				// 	const userId = this.getImportedRocketUserIdFromSlackUserId(channel.creator) || startedByUserId;
-				// 	Meteor.runAsUser(userId, () => {
-				// 		const returned = Meteor.call('createPrivateGroup', channel.name, users);
-				// 		channel.rocketId = returned.rid;
-				// 	});
-
-				// 	this._updateImportedChannelTopicAndDescription(channel);
-				// }
+					name: channel.name,
+					users: this._replaceSlackUserIds(channel.members),
+					t: 'p',
+					topic: channel.topic?.value || undefined,
+					description: channel.purpose?.value || undefined,
+					ts: channel.created ? new Date(channel.created * 1000) : undefined,
+					archived: channel.is_archived,
+				});
 
 				this.addCountCompleted(1);
 			});
@@ -811,47 +798,39 @@ export class SlackImporter extends Base {
 			channelNames.push(channel.name);
 
 			Meteor.runAsUser(startedByUserId, () => {
-				// newImporter.addChannel({
-				// 	id: channel.id,
-				// 	u: {
-				// 		_id: channel.creator,
-				// 	},
-				// }, {
-				// 	name: channel.name,
-				// 	users: channel.members,
-				// 	userType: 'imported',
-				// 	t: 'd',
-				// });
-
-				// const users = this._getChannelUserList(channel, true, true);
-				// const existingRoom = Rooms.findOneDirectRoomContainingAllUserIDs(users, { fields: { _id: 1 } });
-
-				// if (existingRoom) {
-				// 	channel.rocketId = existingRoom._id;
-				// 	Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
-				// } else {
-				// 	const userId = this.getImportedRocketUserIdFromSlackUserId(channel.creator) || startedByUserId;
-				// 	Meteor.runAsUser(userId, () => {
-				// 		// If there are too many users for a direct room, then create a private group instead
-				// 		if (users.length > maxUsers) {
-				// 			const usernames = users.map((user) => user.username);
-				// 			const group = Meteor.call('createPrivateGroup', channel.name, usernames);
-				// 			channel.rocketId = group.rid;
-				// 			return;
-				// 		}
-
-				// 		const newRoom = createDirectRoom(users);
-				// 		channel.rocketId = newRoom._id;
-				// 	});
-
-				// 	this._updateImportedChannelTopicAndDescription(channel);
-				// }
+				newImporter.addChannel({
+					u: {
+						_id: this._replaceSlackUserId(channel.creator),
+					},
+					importIds: [
+						channel.id,
+					],
+					name: channel.name,
+					users: this._replaceSlackUserIds(channel.members),
+					t: channel.members.length > maxUsers ? 'p' : 'd',
+					topic: channel.topic?.value || undefined,
+					description: channel.purpose?.value || undefined,
+					ts: channel.created ? new Date(channel.created * 1000) : undefined,
+					archived: channel.is_archived,
+				});
 
 				this.addCountCompleted(1);
 			});
 		});
 
 		this.collection.update({ _id: this.mpims._id }, { $set: { channels: this.mpims.channels } });
+	}
+
+	_replaceSlackUserId(userId) {
+		if (userId === 'USLACKBOT') {
+			return 'rocket.cat';
+		}
+
+		return userId;
+	}
+
+	_replaceSlackUserIds(members) {
+		return members.map((userId) => this._replaceSlackUserId(userId));
 	}
 
 	_importDMs(startedByUserId, channelNames) {
@@ -868,14 +847,14 @@ export class SlackImporter extends Base {
 			}
 
 			Meteor.runAsUser(startedByUserId, () => {
-				// newImporter.addChannel({
-				// 	id: channel.id,
-				// }, {
-				// 	name: channel.name,
-				// 	users: channel.members,
-				// 	userType: 'imported',
-				// 	t: 'd',
-				// });
+				newImporter.addChannel({
+					importIds: [
+						channel.id,
+					],
+					users: this._replaceSlackUserIds(channel.members),
+					t: 'd',
+					ts: channel.created ? new Date(channel.created * 1000) : undefined,
+				});
 
 				// const user1 = this.getRocketUserFromUserId(channel.members[0]);
 				// const user2 = this.getRocketUserFromUserId(channel.members[1]);
@@ -1022,7 +1001,6 @@ export class SlackImporter extends Base {
 		Meteor.defer(() => {
 			try {
 				this._importUsers(startedByUserId);
-				newImporter.convertUsers();
 
 				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				this._importChannels(startedByUserId, channelNames);
@@ -1031,11 +1009,9 @@ export class SlackImporter extends Base {
 
 				this._importDMs(startedByUserId, channelNames);
 
-				newImporter.convertChannels(startedByUserId);
-
 				this._importMessages(startedByUserId, channelNames);
 
-
+				newImporter.convertData(startedByUserId);
 				super.updateProgress(ProgressStep.FINISHING);
 
 				// try {

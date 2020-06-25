@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import _ from 'underscore';
 
 import { ImportData } from '../models/ImportData';
 import { IImportUser } from '../definitions/IImportUser';
@@ -11,9 +12,13 @@ import { generateUsernameSuggestion, insertMessage, setUserAvatar } from '../../
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
 import '../../../../definition/Meteor';
-import { getValidRoomName } from '../../../utils';
+// import { getValidRoomName } from '../../../utils';
 
 type IRoom = Record<string, any>;
+type IUserCache = {
+	_id: string;
+	username: string | undefined;
+};
 
 const guessNameFromUsername = (username: string): string =>
 	username
@@ -23,6 +28,30 @@ const guessNameFromUsername = (username: string): string =>
 		.replace(/^\w/, (u) => u.toUpperCase());
 
 export class ImporterBase {
+	private _userCache: Map<string, IUserCache>;
+
+	constructor() {
+		this._userCache = new Map();
+	}
+
+	addUserToCache(importId: string, _id: string, username: string | undefined): void {
+		this._userCache.set(importId, {
+			_id,
+			username,
+		});
+	}
+
+	addUserDataToCache(userData: IImportUser): void {
+		if (!userData._id) {
+			return;
+		}
+		if (!userData.importIds.length) {
+			return;
+		}
+
+		this.addUserToCache(userData.importIds[0], userData._id, userData.username);
+	}
+
 	addObject(type: string, identification: Record<string, any> | undefined, data: Record<string, any>): void {
 		ImportData.insert({
 			data,
@@ -66,11 +95,13 @@ export class ImporterBase {
 	}
 
 	updateUser(existingUser: IUser, userData: IImportUser): void {
-		console.log('updating user', existingUser._id);
-
 		userData._id = existingUser._id;
 
 		this.updateUserId(userData._id, userData);
+
+		if (userData.importIds.length) {
+			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
+		}
 
 		// Meteor.runAsUser(existingUser._id, () => {
 		// 	if (userData.avatarUrl) {
@@ -86,8 +117,6 @@ export class ImporterBase {
 	}
 
 	insertUser(userData: IImportUser): IUser {
-		console.log('insert user', userData);
-
 		const password = `${ Date.now() }${ userData.name || '' }${ userData.emails.length ? userData.emails[0].toUpperCase() : '' }`;
 		const userId = userData.emails.length ? Accounts.createUser({
 			email: userData.emails[0],
@@ -100,6 +129,10 @@ export class ImporterBase {
 
 		userData._id = userId;
 		const user = Users.findOneById(userId, {});
+
+		if (user && userData.importIds.length) {
+			this.addUserToCache(userData.importIds[0], user._id, user.username);
+		}
 
 		Meteor.runAsUser(userId, () => {
 			Meteor.call('setUsername', userData.username, { joinDefaultChannelsSilenced: true });
@@ -270,11 +303,10 @@ export class ImporterBase {
 	}
 
 	updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): void {
-		console.log('updating room', room._id);
-		// eslint-disable-next-line no-extra-parens
 		roomData._id = room._id;
 
-		if (roomData._id.toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
+		// eslint-disable-next-line no-extra-parens
+		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
 			Meteor.runAsUser(startedByUserId, () => {
 				Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', roomData.name);
 			});
@@ -318,6 +350,21 @@ export class ImporterBase {
 	}
 
 	_findImportedUser({ _id, username }: Record<string, string | undefined>, returnId = false): string | IUser | null {
+		if (_id === 'rocket.cat' || username === 'rocket.cat') {
+			if (returnId) {
+				return 'rocket.cat';
+			}
+
+			return Users.findOneById('rocket.cat', {});
+		}
+
+		if (returnId && _id && this._userCache.has(_id)) {
+			const cache = this._userCache.get(_id);
+			if (cache) {
+				return cache._id;
+			}
+		}
+
 		const options = returnId ? { fields: { _id: 1 } } : undefined;
 
 		if (_id) {
@@ -410,20 +457,42 @@ export class ImporterBase {
 		}
 	}
 
-	insertRoom(roomData: IImportChannel, startedByUserId: string): void {
-		// Find the rocketchatId of the user who created this channel
-		const creatorId = (roomData.userType === 'rocket.chat' ? this.findUserId(roomData.u) : this.findImportedUserId(roomData.u)) || startedByUserId;
-
-		console.log('insert room by', creatorId);
-		const members = roomData.userType === 'rocket.chat' ? roomData.users : roomData.users.map((user) => {
-			const obj = Users.findOneByImportId(user, { fields: { username: 1 } });
-			// If it's not a direct message, then remove the room creator from the list
-			if (roomData.t !== 'd' && obj?._id === creatorId) {
-				return false;
+	getRoomCreatorId(roomData: IImportChannel, startedByUserId: string): string {
+		if (roomData.u) {
+			const creatorId = this.findImportedUserId(roomData.u);
+			if (creatorId) {
+				return creatorId;
 			}
 
-			return obj?.username;
-		}).filter((user) => user);
+			if (roomData.t !== 'd') {
+				return startedByUserId;
+			}
+
+			throw new Error('importer-channel-invalid-creator');
+		}
+
+		if (roomData.t === 'd') {
+			for (const member of roomData.users) {
+				const userId = this.findImportedUserId({ _id: member });
+				if (userId) {
+					return userId;
+				}
+			}
+		}
+
+		throw new Error('importer-channel-invalid-creator');
+	}
+
+	insertRoom(roomData: IImportChannel, startedByUserId: string): void {
+		// Find the rocketchatId of the user who created this channel
+		const creatorId = this.getRoomCreatorId(roomData, startedByUserId);
+		const members = this.convertImportedIdsToUsernames(roomData.users, roomData.t !== 'd' ? creatorId : undefined);
+
+		if (roomData.t === 'd') {
+			if (members.length < roomData.users.length) {
+				throw new Error('importer-channel-missing-users');
+			}
+		}
 
 		// Create the channel
 		try {
@@ -443,6 +512,57 @@ export class ImporterBase {
 		this.updateRoomId(roomData._id, roomData);
 	}
 
+	convertImportedIdsToUsernames(importedIds: Array<string>, idToRemove: string | undefined = undefined): Array<string> {
+		return importedIds.map((user) => {
+			if (user === 'rocket.cat') {
+				return user;
+			}
+
+			if (this._userCache.has(user)) {
+				const cache = this._userCache.get(user);
+				if (cache) {
+					return cache.username;
+				}
+			}
+
+			const obj = Users.findOneByImportId(user, { fields: { _id: 1, username: 1 } });
+			if (obj) {
+				this.addUserToCache(user, obj._id, obj.username);
+
+				if (idToRemove && obj._id === idToRemove) {
+					return false;
+				}
+
+				return obj.username;
+			}
+
+			return false;
+		}).filter((user) => user);
+	}
+
+	findExistingRoom(data: IImportChannel): IRoom {
+		if (data._id && data._id.toUpperCase() === 'GENERAL') {
+			const room = Rooms.findOneById('GENERAL', {});
+			// Prevent the importer from trying to create a new general
+			if (!room) {
+				throw new Error('importer-channel-general-not-found');
+			}
+
+			return room;
+		}
+
+		if (data.t === 'd') {
+			const users = this.convertImportedIdsToUsernames(data.users);
+			if (users.length !== data.users.length) {
+				throw new Error('importer-channel-missing-users');
+			}
+
+			return Rooms.findDirectRoomContainingAllUsernames(users, {});
+		}
+
+		return Rooms.findOneByNonValidatedName(data.name, {});
+	}
+
 	convertChannels(startedByUserId: string): void {
 		const channels = ImportData.find({ dataType: 'channel' });
 		channels.forEach(({ data: c, _id }: IImportChannelRecord) => {
@@ -452,22 +572,13 @@ export class ImporterBase {
 				}
 
 				c.importIds = c.importIds.filter((item) => item);
+				c.users = _.uniq(c.users);
 
 				if (!c.importIds.length) {
 					throw new Error('importer-channel-missing-import-id');
 				}
 
-				let existingRoom;
-				if (c._id && c._id.toUpperCase() === 'GENERAL') {
-					existingRoom = Rooms.findOneById('GENERAL', {});
-
-					// Prevent the importer from trying to create a new general
-					if (!existingRoom) {
-						throw new Error('importer-channel-general-not-found');
-					}
-				} else {
-					existingRoom = c.t === 'd' ? Rooms.findDirectRoomContainingAllUsernames(c.users, {}) : Rooms.findOneByNonValidatedName(c.name, {});
-				}
+				const existingRoom = this.findExistingRoom(c);
 
 				if (existingRoom) {
 					this.updateRoom(existingRoom, c, startedByUserId);
@@ -478,6 +589,13 @@ export class ImporterBase {
 				this.saveError(_id, e);
 			}
 		});
+	}
+
+	convertData(startedByUserId: string): void {
+		this._userCache = new Map();
+
+		this.convertUsers();
+		this.convertChannels(startedByUserId);
 	}
 
 	clearImportData(keepErrors = false): void {

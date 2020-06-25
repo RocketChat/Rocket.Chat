@@ -11,7 +11,5 @@ export interface IImportChannel {
 	topic?: string;
 	description?: string;
 	ts?: Date;
-
-	// Determine if the values in the 'u' object are relative to the Rocket.Chat data or to imported data
-	userType: 'rocket.chat' | 'imported';
+	archived?: boolean;
 }
