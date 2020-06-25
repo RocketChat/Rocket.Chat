@@ -46469,6 +46469,66 @@
           ]
         }
       ]
+    },
+    "3.4.0-rc.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.15.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18039",
+          "title": "Regression: Fix wrong message grouping inside threads",
+          "userLogin": "ggazzo",
+          "milestone": "3.4.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18004",
+          "title": "Regression: Room flickering if open a thread",
+          "userLogin": "ggazzo",
+          "milestone": "3.4.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18007",
+          "title": "Regression: Reset section button",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.4.0",
+          "contributors": [
+            "MartinSchoeler",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18037",
+          "title": "Regression: Repair CodeMirror component reactivity",
+          "userLogin": "tassoevan",
+          "milestone": "3.4.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "18032",
+          "title": "Regression - Unable to edit status on the Edit User panel of the admin",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.4.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
