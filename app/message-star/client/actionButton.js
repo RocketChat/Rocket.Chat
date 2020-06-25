@@ -103,7 +103,8 @@ Meteor.startup(function() {
 		context: ['starred', 'threads'],
 		async action(event) {
 			const { msg: message } = messageArgs(this);
-			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
+			const permalink = await MessageAction.getPermaLink(message._id);
+			navigator.clipboard.writeText(permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition({ msg, subscription, u }) {
