@@ -90,8 +90,9 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 
 	if (!login.connection.clientAddress) {
 		const ipParams = {
+			clientAddress: login.connection.clientAddress,
 			httpFowardedCount: process.env.HTTP_FORWARDED_COUNT,
-			xForwardedFor: login.connection.httpHeaders['x-forwarded-for'],
+			httpHeaders: login.connection.httpHeaders,
 		};
 
 		console.log(ipParams);
@@ -106,6 +107,16 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 };
 
 export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> => {
+	if (!login.connection.clientAddress) {
+		const ipParams = {
+			clientAddress: login.connection.clientAddress,
+			httpFowardedCount: process.env.HTTP_FORWARDED_COUNT,
+			httpHeaders: login.connection.httpHeaders,
+		};
+
+		console.log(ipParams);
+	}
+
 	await ServerEvents.insertOne({
 		ip: login.connection.clientAddress,
 		t: IServerEventType.LOGIN,
