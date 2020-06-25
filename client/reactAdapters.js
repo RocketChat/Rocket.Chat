@@ -206,6 +206,8 @@ export const renderRouteComponent = (importFn, {
 			Template[routeName] = blazeTemplate;
 		}
 
-		BlazeLayout.render(template, { [region]: routeName });
+		Tracker.afterFlush(() => {
+			BlazeLayout.render(template, { [region]: routeName });
+		});
 	});
 };

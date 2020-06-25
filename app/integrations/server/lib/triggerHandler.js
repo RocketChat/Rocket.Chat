@@ -205,7 +205,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			message.channel = `#${ tmpRoom._id }`;
 		}
 
-		message = processWebhookMessage(message, user, defaultValues);
+		message = processWebhookMessage(message, user, defaultValues, trigger);
 		return message;
 	}
 
