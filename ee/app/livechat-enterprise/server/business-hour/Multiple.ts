@@ -45,8 +45,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				active: 1,
 			},
 		});
-		const businessHoursToOpenIds = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
-		for (const businessHour of businessHoursToOpenIds) {
+		const businessHoursToOpen = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
+		for (const businessHour of businessHoursToOpen) {
 			this.openBusinessHour(businessHour);
 		}
 	}
@@ -89,16 +89,21 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async onAddAgentToDepartment(options: Record<string, any> = {}): Promise<any> {
-		console.log(options)
 		const { departmentId, agentsId } = options;
 		const department = await this.DepartmentsRepository.findOneById(departmentId, { fields: { businessHourId: 1 } });
-		if (!department || !department.businessHourId) {
+		if (!department || !department.businessHourId || !agentsId.length) {
 			return options;
 		}
-
-		// await businessHourManager.addBusinessHourToUsersByIds(agentsId, department.businessHourId);
-
+		const businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
+		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour]);
+		const defaultBusinessHour = await this.BusinessHourRepository.findOneDefaultBusinessHour();
+		await removeBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
+		if (!businessHourToOpen.length) {
+			return options;
+		}
+		await this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id);
 		return options;
+
 	}
 
 	async onRemoveAgentFromDepartment(options: Record<string, any> = {}): Promise<any> {
@@ -107,19 +112,23 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!department || !department.businessHourId || !agentsId.length) {
 			return options;
 		}
-		await removeBusinessHourByAgentIds(agentsId, department.businessHourId);
-		const businessHour = await this.BusinessHourRepository.findOneDefaultBusinessHour();
-		const businessHourIdToOpen = await filterBusinessHoursThatMustBeOpened([businessHour]);
-		if (!businessHourIdToOpen.length) {
-			return options;
-		}
 		const agentIdsWithoutDepartment = [];
+		const agentIdsToRemoveCurrentBusinessHour = [];
 		for (const agentId of agentsId) {
 			if (await this.DepartmentsAgentsRepository.findByAgentId(agentId).count() === 0) { // eslint-disable-line no-await-in-loop
-					agentIdsWithoutDepartment.push(agentId);
+				agentIdsWithoutDepartment.push(agentId);
+			}
+			if(!(await this.DepartmentsAgentsRepository.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length){ // eslint-disable-line no-await-in-loop
+				agentIdsToRemoveCurrentBusinessHour.push(agentId);
 			}
 		}
-		if(!agentIdsWithoutDepartment.length){
+		await removeBusinessHourByAgentIds(agentIdsToRemoveCurrentBusinessHour, department.businessHourId);
+		if (!agentIdsWithoutDepartment.length) {
+			return options;
+		}
+		const businessHour = await this.BusinessHourRepository.findOneDefaultBusinessHour();
+		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour]);
+		if (!businessHourToOpen.length) {
 			return options;
 		}
 		await this.UsersRepository.addBusinessHourByAgentIds(agentIdsWithoutDepartment, businessHour._id);

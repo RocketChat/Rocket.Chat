@@ -37,6 +37,9 @@ export const closeBusinessHour = async (businessHour: Record<string, any>): Prom
 };
 
 export const removeBusinessHourByAgentIds = async (agentIds: string[], businessHourId: string): Promise<void> => {
+	if (!agentIds.length) {
+		return;
+	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	return Users.updateLivechatStatusBasedOnBusinessHours();
 };
