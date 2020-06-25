@@ -101,7 +101,7 @@ Meteor.startup(function() {
 		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['starred', 'threads'],
-		async action(event) {
+		async action() {
 			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
