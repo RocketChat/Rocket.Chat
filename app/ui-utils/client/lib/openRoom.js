@@ -43,7 +43,7 @@ function replaceCenterDomBy(dom) {
 				return resolve([mainNode, roomNode]);
 			}
 			resolve(mainNode);
-		}, 1);
+		}, 0);
 	});
 }
 
@@ -70,6 +70,17 @@ export const openRoom = async function(type, name) {
 			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
+
+			if (room._id !== name && type === 'd') { // Redirect old url using username to rid
+				RoomManager.close(type + name);
+				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
+			}
+
+
+			if (room._id === Session.get('openedRoom')) {
+				return;
+			}
+
 			if (RoomManager.open(type + name).ready() !== true) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
 					BlazeLayout.render('main');
@@ -78,17 +89,15 @@ export const openRoom = async function(type, name) {
 				return;
 			}
 
+			BlazeLayout.render('main', {
+				center: 'loading',
+			});
+
 			c.stop();
 
 			if (window.currentTracker) {
 				window.currentTracker = undefined;
 			}
-
-			if (room._id !== name && type === 'd') { // Redirect old url using username to rid
-				RoomManager.close(type + name);
-				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
-			}
-
 			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
 			if (mainNode) {

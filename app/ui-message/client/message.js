@@ -502,7 +502,7 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 		return false;
 	}
 
-	if (!shouldCollapseReplies && currentDataset.tmid) {
+	if (shouldCollapseReplies && currentDataset.tmid) {
 		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
 	}
 
