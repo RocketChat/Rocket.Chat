@@ -10,8 +10,11 @@ import { LivechatDepartment } from '../../../../../app/models/server/raw';
 import { BusinessHourManager } from '../../../../../app/livechat/server/business-hour/BusinessHourManager';
 import { callbacks } from '../../../../../app/callbacks/server';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
+import LivechatDepartmentAgents, { LivechatDepartmentAgentsRaw } from '../../../models/server/raw/LivechatDepartmentAgents';
+import { findBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
+import { closeBusinessHour, openBusinessHour, removeBusinnesHourByAgentIds } from './Helper';
 
-interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
+export interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
 	departmentsToApplyBusinessHour: string;
 }
@@ -20,6 +23,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 	name = LivechatBussinessHourTypes.CUSTOM;
 
 	private DepartmentsRepository: LivechatDepartmentRaw = LivechatDepartment;
+	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
 
 	async getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined> {
 		if (!id) {
@@ -30,35 +34,55 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		return businessHour;
 	}
 
-	async saveBusinessHour(businessHourData: IBusinessHoursExtraProperties): Promise<void> {
+	async saveBusinessHour(businessHourData: IBusinessHoursExtraProperties): Promise<ILivechatBusinessHour> {
 		businessHourData.timezone = {
 			name: businessHourData.timezoneName,
 			utc: this.getUTCFromTimezone(businessHourData.timezoneName),
 		};
 		const departments = businessHourData.departmentsToApplyBusinessHour?.split(',').filter(Boolean);
+		const businessHourToReturn = { ...businessHourData };
 		delete businessHourData.timezoneName;
 		delete businessHourData.departmentsToApplyBusinessHour;
 		delete businessHourData.departments;
 		const businessHourId = await this.baseSaveBusinessHour(businessHourData);
 		const currentDepartments = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
-		await this.removeBusinessHourFromDepartmentsIfNeeded(businessHourId, currentDepartments, departments);
-		await this.addBusinessHourToDepartmentsIfNeeded(businessHourId, currentDepartments, departments);
-	}
-
-	private async removeBusinessHourFromDepartmentsIfNeeded(businessHourId: string, currentDepartments: string[], departments: string[]): Promise<void> {
 		const toRemove = [...currentDepartments.filter((dept: string) => !departments.includes(dept))];
-		if (!toRemove.length) {
-			return;
-		}
-		await this.DepartmentsRepository.removeBusinessHourFromDepartmentsIdsByBusinessHourId(toRemove, businessHourId);
+		const toAdd = [...departments.filter((dept: string) => !currentDepartments.includes(dept))];
+		await this.removeBusinessHourFromDepartmentsIfNeeded(businessHourId, toRemove);
+		await this.addBusinessHourToDepartmentsIfNeeded(businessHourId, toAdd);
+		businessHourToReturn._id = businessHourId;
+		return businessHourToReturn;
 	}
 
-	private async addBusinessHourToDepartmentsIfNeeded(businessHourId: string, currentDepartments: string[], departments: string[]): Promise<void> {
-		const toAdd = [...departments.filter((dept: string) => !currentDepartments.includes(dept))];
-		if (!toAdd.length) {
+	async removeBusinessHourById(businessHourId: string): Promise<void> {
+		const businessHour = await this.BusinessHourRepository.findOneById(businessHourId);
+		if (!businessHour) {
 			return;
 		}
-		await this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(toAdd, businessHourId);
+		await this.BusinessHourRepository.removeById(businessHourId);
+		await this.removeBusinessHourFromAgents(businessHourId);
+		await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId);
+		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+	}
+
+	private async removeBusinessHourFromAgents(businessHourId: string): Promise<void> {
+		const departmentIds = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
+		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+		return this.UsersRepository.removeBusinessHourByAgentIds(agentIds, businessHourId);
+	}
+
+	private async removeBusinessHourFromDepartmentsIfNeeded(businessHourId: string, departmentsToRemove: string[]): Promise<void> {
+		if (!departmentsToRemove.length) {
+			return;
+		}
+		await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(departmentsToRemove, businessHourId);
+	}
+
+	private async addBusinessHourToDepartmentsIfNeeded(businessHourId: string, departmentsToAdd: string[]): Promise<void> {
+		if (!departmentsToAdd.length) {
+			return;
+		}
+		await this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departmentsToAdd, businessHourId);
 	}
 
 	private getUTCFromTimezone(timezone: string): string {

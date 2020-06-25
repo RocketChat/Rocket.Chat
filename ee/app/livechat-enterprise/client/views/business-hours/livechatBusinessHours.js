@@ -32,7 +32,7 @@ Template.livechatBusinessHours.helpers({
 		return instance.ready && instance.ready.get();
 	},
 	isDefault() {
-		return this.type === LivechatBussinessHourTypes.SINGLE;
+		return this.type === LivechatBussinessHourTypes.DEFAULT;
 	},
 	openDays() {
 		return this
@@ -72,7 +72,7 @@ Template.livechatBusinessHours.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('livechat:removeBusinessHour', this._id, (error/* , result*/) => {
+			Meteor.call('livechat:removeBusinessHour', this._id, this.type, (error/* , result*/) => {
 				if (error) {
 					return handleError(error);
 				}

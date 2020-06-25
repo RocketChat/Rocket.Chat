@@ -5,10 +5,15 @@ import {
 	IBusinessHour, IBusinessHourBehavior,
 } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
-import { LivechatBusinessHours, LivechatDepartment } from '../../../../../app/models/server/raw';
+import { LivechatDepartment } from '../../../../../app/models/server';
+import { LivechatBusinessHours, LivechatDepartment as Raw from '../../../../../app/models/server/raw';
 import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
 import LivechatDepartmentAgents, { LivechatDepartmentAgentsRaw } from '../../../models/server/raw/LivechatDepartmentAgents';
 import { LivechatBusinessHoursRaw } from '../../../../../app/models/server/raw/LivechatBusinessHours';
+import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
+import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
+import { findBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
+import { closeBusinessHour, openBusinessHour, removeBusinnesHourByAgentIds } from './Helper';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -16,11 +21,37 @@ interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 }
 
 export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
-	private DepartmentsRepository: LivechatDepartmentRaw = LivechatDepartment;
+	private DepartmentsRepository: LivechatDepartmentRaw = Raw;
 
 	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
 
-	async openBusinessHoursByDayHour(day: string, hour: string): Promise<void> {
+	constructor() {
+		super();
+		this.onAddAgentToDepartment = this.onAddAgentToDepartment.bind(this);
+		this.onRemoveAgentFromDepartment = this.onRemoveAgentFromDepartment.bind(this);
+		this.onRemoveDepartment = this.onRemoveDepartment.bind(this);
+	}
+
+	async onStartBusinessHours(): Promise<void> {
+		await this.UsersRepository.removeBusinessHoursFromAllUsers();
+		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
+		const day = currentTime.format('dddd');
+		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
+			fields: {
+				workHours: 1,
+				timezone: 1,
+				type: 1,
+				active: 1,
+			},
+		});
+		const businessHoursToOpenIds = await findBusinessHoursThatMustBeOpened(activeBusinessHours);
+		for (const businessHour of businessHoursToOpenIds) {
+			this.openBusinessHour(businessHour);
+		}
+	}
+
+	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
 		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToOpen(day, hour, undefined, {
 			fields: {
 				_id: 1,
@@ -44,38 +75,92 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 	}
 
-	private async openBusinessHour(businessHour: Record<string, any>): Promise<void> {
-		const agentIds: string[] = await this.getAgentIdsToHandle(businessHour);
-		return this.UsersRepository.openBusinessHourByAgentIds(agentIds, businessHour._id);
+	async afterSaveBusinessHours(businessHourData: IBusinessHoursExtraProperties): Promise<void> {
+		const departments = businessHourData.departmentsToApplyBusinessHour?.split(',').filter(Boolean);
+		const currentDepartments = businessHourData.departments?.map((dept: any) => dept._id);
+		const toRemove = [...(currentDepartments || []).filter((dept: Record<string, any>) => !departments.includes(dept._id))];
+		await this.removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(businessHourData._id, toRemove);
+		const businessHour = await this.BusinessHourRepository.findOneById(businessHourData._id);
+		const businessHourIdToOpen = (await findBusinessHoursThatMustBeOpened([businessHour])).map((businessHour) => businessHour._id);
+		if (!businessHourIdToOpen.length) {
+			return closeBusinessHour(businessHour);
+		}
+		return openBusinessHour(businessHour);
 	}
 
-	private async getAgentIdsToHandle(businessHour: Record<string, any>): Promise<string[]> {
-		let agentIds: string[] = await this.getAgentIdsFromBusinessHour(businessHour);
-		if (businessHour.type === LivechatBussinessHourTypes.DEFAULT) {
-			agentIds = await this.getAgentIdsWithoutDepartment();
+	async onAddAgentToDepartment(options: Record<string, any> = {}): Promise<any> {
+		console.log(options)
+		const { departmentId, agentsId } = options;
+		const department = await this.DepartmentsRepository.findOneById(departmentId, { fields: { businessHourId: 1 } });
+		if (!department || !department.businessHourId) {
+			return options;
 		}
-		return agentIds;
+
+		// await businessHourManager.addBusinessHourToUsersByIds(agentsId, department.businessHourId);
+
+		return options;
 	}
+
+	async onRemoveAgentFromDepartment(options: Record<string, any> = {}): Promise<any> {
+		const { departmentId, agentsId } = options;
+		const department = await this.DepartmentsRepository.findOneById(departmentId, { fields: { businessHourId: 1 } });
+		if (!department || !department.businessHourId) {
+			return options;
+		}
+
+		// await businessHourManager.removeBusinessHourFromUsersByIds(agentsId, department.businessHourId);
+		// await businessHourManager.setDefaultToUsersIfNeeded(agentsId);
+		return options;
+	}
+
+	async onRemoveDepartment(department?: ILivechatDepartment): Promise<any> {
+		if (!department) {
+			return department;
+		}
+		const deletedDepartment = LivechatDepartment.trashFindOneById(department._id);
+		if (!deletedDepartment.businessHourId) {
+			return department;
+		}
+		// await
+	}
+
+	private async openBusinessHour(businessHour: Record<string, any>): Promise<void> {
+		return openBusinessHour(businessHour);
+	}
+
+	private async removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(businessHourId: string, departmentsToRemove: string[]): Promise<void> {
+		if (!departmentsToRemove.length) {
+			return;
+		}
+		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentsToRemove).toArray()).map((dept: any) => dept.agentId);
+		await removeBusinnesHourByAgentIds(agentIds, businessHourId);
+	}
+
+	// private async getActiveAgentIdsToHandle(businessHour: Record<string, any>): Promise<string[]> {
+	// 	let agentIds: string[] = await this.getActiveAgentIdsFromBusinessHour(businessHour);
+	// 	if (businessHour.type === LivechatBussinessHourTypes.DEFAULT) {
+	// 		agentIds = await this.getAgentIdsWithoutDepartment();
+	// 	}
+	// 	return agentIds;
+	// }
 
 	private async closeBusinessHour(businessHour: Record<string, any>): Promise<void> {
-		const agentIds: string[] = await this.getAgentIdsToHandle(businessHour);
-		await this.UsersRepository.closeBusinessHourByAgentIds(agentIds, businessHour._id);
-		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+		closeBusinessHour(businessHour);
 	}
 
-	private async getAgentIdsFromBusinessHour(businessHour: Record<string, any>): Promise<string[]> {
-		const departmentIds = (await this.DepartmentsRepository.findEnabledByBusinessHourId(businessHour._id, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
-		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
-		return agentIds;
-	}
+	// private async getActiveAgentIdsFromBusinessHour(businessHour: Record<string, any>): Promise<string[]> {
+	// 	const departmentIds = (await this.DepartmentsRepository.findEnabledByBusinessHourId(businessHour._id, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
+	// 	const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+	// 	return agentIds;
+	// }
 
-	private async getAgentIdsWithoutDepartment(): Promise<string[]> {
-		const agentIdsWithDepartment = (await this.DepartmentsAgentsRepository.find({}, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
-		const agentIdsWithoutDepartment = (await this.UsersRepository.findUsersInRolesWithQuery('livechat-agent', {
-			_id: { $nin: agentIdsWithDepartment },
-		}, { fields: { _id: 1 } }).toArray()).map((user: any) => user._id);
-		return agentIdsWithoutDepartment;
-	}
+	// private async getAgentIdsWithoutDepartment(): Promise<string[]> {
+	// 	const agentIdsWithDepartment = (await this.DepartmentsAgentsRepository.find({}, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+	// 	const agentIdsWithoutDepartment = (await this.UsersRepository.findUsersInRolesWithQuery('livechat-agent', {
+	// 		_id: { $nin: agentIdsWithDepartment },
+	// 	}, { fields: { _id: 1 } }).toArray()).map((user: any) => user._id);
+	// 	return agentIdsWithoutDepartment;
+	// }
 }
 
 // import moment from 'moment';

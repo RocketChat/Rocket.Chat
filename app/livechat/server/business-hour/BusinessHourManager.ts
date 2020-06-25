@@ -6,6 +6,8 @@ import { IBusinessHour, IBusinessHourBehavior, IBusinessHourType } from './Abstr
 import { settings } from '../../../settings/server';
 import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
 import { callbacks } from '../../../callbacks/server';
+import { LivechatDepartment } from '../../../models/server';
+import { businessHourManager } from './index';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,
@@ -35,6 +37,8 @@ export class BusinessHourManager {
 
 	async onStartManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
+		this.setupCallbacks();
+		this.behavior.onStartBusinessHours();
 	}
 
 	async onCloseManager(): Promise<void> {
@@ -62,11 +66,27 @@ export class BusinessHourManager {
 
 	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
 		const type = this.getBusinessHourType(businessHourData.type as string || LivechatBussinessHourTypes.DEFAULT) as IBusinessHourType;
-		await type.saveBusinessHour(businessHourData);
+		const saved = await type.saveBusinessHour(businessHourData);
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+		await this.behavior.afterSaveBusinessHours(saved);
+		await this.createCronJobsForWorkHours();
+	}
+
+	async removeBusinessHourByIdAndType(id: string, type: string): Promise<void> {
+		const businessHourType = this.getBusinessHourType(type) as IBusinessHourType;
+		await businessHourType.removeBusinessHourById(id);
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
 		}
 		await this.createCronJobsForWorkHours();
+	}
+
+	private setupCallbacks(): void {
+		callbacks.add('livechat.removeAgentDepartment', this.behavior.onRemoveAgentFromDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-on-remove-agent-department');
+		callbacks.add('livechat.afterRemoveDepartment', this.behavior.onRemoveDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-after-remove-department');
+		callbacks.add('livechat.saveAgentDepartment', this.behavior.onAddAgentToDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-on-save-agent-department');
 	}
 
 	private async createCronJobsForWorkHours(): Promise<void> {
@@ -93,7 +113,7 @@ export class BusinessHourManager {
 	}
 
 	private async openWorkHoursCallback(day: string, hour: string): Promise<void> {
-		return this.behavior.openBusinessHoursByDayHour(day, hour);
+		return this.behavior.openBusinessHoursByDayAndHour(day, hour);
 	}
 
 	private async closeWorkHoursCallback(day: string, hour: string): Promise<void> {

@@ -50,9 +50,23 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.col.update(query, update, { multi: true });
 	}
 
-	removeBusinessHourFromDepartmentsIdsByBusinessHourId(ids = [], businessHourId) {
+	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids = [], businessHourId) {
 		const query = {
 			_id: { $in: ids },
+			businessHourId,
+		};
+
+		const update = {
+			$unset: {
+				businessHourId: 1,
+			},
+		};
+
+		return this.col.update(query, update, { multi: true });
+	}
+
+	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId) {
+		const query = {
 			businessHourId,
 		};
 

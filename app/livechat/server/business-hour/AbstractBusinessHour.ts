@@ -6,12 +6,19 @@ import {
 } from '../../../models/server/raw/LivechatBusinessHours';
 import { UsersRaw } from '../../../models/server/raw/Users';
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
+import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
+import { BusinessHourManager } from './BusinessHourManager';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
-	openBusinessHoursByDayHour(day: string, hour: string): Promise<void>;
+	openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	onDisableBusinessHours(): Promise<void>;
+	onAddAgentToDepartment(options?: Record<string, any>): Promise<any>;
+	onRemoveAgentFromDepartment(options?: Record<string, any>): Promise<any>;
+	onRemoveDepartment(department?: ILivechatDepartment): Promise<any>;
+	onStartBusinessHours(): Promise<void>;
+	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	// onSaveBusinessHour(businessHour: ILivechatBusinessHour): Promise<void>;
 	// saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void>;
 	// allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
@@ -43,7 +50,8 @@ export interface IBusinessHourBehavior {
 export interface IBusinessHourType {
 	name: string;
 	getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined>;
-	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void>;
+	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<ILivechatBusinessHour>;
+	removeBusinessHourById(id: string): Promise<void>;
 }
 
 export abstract class AbstractBusinessHourBehavior {
@@ -63,6 +71,7 @@ export abstract class AbstractBusinessHourBehavior {
 
 export abstract class AbstractBusinessHourType {
 	protected BusinessHourRepository: LivechatBusinessHoursRaw = LivechatBusinessHours;
+	protected UsersRepository: UsersRaw = Users;
 
 	protected async baseSaveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<string> {
 		businessHourData.active = Boolean(businessHourData.active);
