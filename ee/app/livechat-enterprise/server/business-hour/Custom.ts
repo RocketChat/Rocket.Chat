@@ -11,8 +11,8 @@ import { BusinessHourManager } from '../../../../../app/livechat/server/business
 import { callbacks } from '../../../../../app/callbacks/server';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 import LivechatDepartmentAgents, { LivechatDepartmentAgentsRaw } from '../../../models/server/raw/LivechatDepartmentAgents';
-import { findBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
-import { closeBusinessHour, openBusinessHour, removeBusinnesHourByAgentIds } from './Helper';
+import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
+import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 
 export interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;

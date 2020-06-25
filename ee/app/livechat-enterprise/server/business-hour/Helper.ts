@@ -7,7 +7,7 @@ const getAgentIdsFromBusinessHour = async (businessHour: Record<string, any>): P
 	return agentIds;
 };
 
-const getAgentIdsWithoutDepartment = async (): Promise<string[]> => {
+const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	const agentIdsWithDepartment = (await LivechatDepartmentAgents.find({}, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
 	const agentIdsWithoutDepartment = (await Users.findUsersInRolesWithQuery('livechat-agent', {
 		_id: { $nin: agentIdsWithDepartment },
@@ -21,9 +21,7 @@ const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<s
 	if (businessHour.type === LivechatBussinessHourTypes.CUSTOM) {
 		return agentIds;
 	}
-	console.log('sem DTP')
-	console.log(await getAgentIdsWithoutDepartment())
-	return getAgentIdsWithoutDepartment();
+	return getAllAgentIdsWithoutDepartment();
 };
 
 export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
@@ -34,12 +32,11 @@ export const openBusinessHour = async (businessHour: Record<string, any>): Promi
 
 export const closeBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
-	console.log(agentIds)
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHour._id);
 	return Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
-export const removeBusinnesHourByAgentIds = async (agentIds: string[], businessHourId: string): Promise<void> => {
+export const removeBusinessHourByAgentIds = async (agentIds: string[], businessHourId: string): Promise<void> => {
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	return Users.updateLivechatStatusBasedOnBusinessHours();
 };

@@ -3,7 +3,7 @@ import moment from 'moment';
 import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
 
-export const findBusinessHoursThatMustBeOpened = async (businessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> => {
+export const filterBusinessHoursThatMustBeOpened = async (businessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> => {
 	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
 
 	return businessHours
@@ -32,7 +32,7 @@ export const openBusinessHourDefault = async () => {
 			active: 1,
 		},
 	});
-	const businessHoursToOpenIds = (await findBusinessHoursThatMustBeOpened(activeBusinessHours)).map((businessHour) => businessHour._id);
+	const businessHoursToOpenIds = (await filterBusinessHoursThatMustBeOpened(activeBusinessHours)).map((businessHour) => businessHour._id);
 	await Users.openAgentsBusinessHoursByBusinessHourId(businessHoursToOpenIds);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };

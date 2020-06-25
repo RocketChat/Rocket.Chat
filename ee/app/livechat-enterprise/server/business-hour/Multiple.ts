@@ -12,8 +12,8 @@ import LivechatDepartmentAgents, { LivechatDepartmentAgentsRaw } from '../../../
 import { LivechatBusinessHoursRaw } from '../../../../../app/models/server/raw/LivechatBusinessHours';
 import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
-import { findBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
-import { closeBusinessHour, openBusinessHour, removeBusinnesHourByAgentIds } from './Helper';
+import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
+import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -45,7 +45,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				active: 1,
 			},
 		});
-		const businessHoursToOpenIds = await findBusinessHoursThatMustBeOpened(activeBusinessHours);
+		const businessHoursToOpenIds = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
 		for (const businessHour of businessHoursToOpenIds) {
 			this.openBusinessHour(businessHour);
 		}
@@ -81,7 +81,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		const toRemove = [...(currentDepartments || []).filter((dept: Record<string, any>) => !departments.includes(dept._id))];
 		await this.removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(businessHourData._id, toRemove);
 		const businessHour = await this.BusinessHourRepository.findOneById(businessHourData._id);
-		const businessHourIdToOpen = (await findBusinessHoursThatMustBeOpened([businessHour])).map((businessHour) => businessHour._id);
+		const businessHourIdToOpen = (await filterBusinessHoursThatMustBeOpened([businessHour])).map((businessHour) => businessHour._id);
 		if (!businessHourIdToOpen.length) {
 			return closeBusinessHour(businessHour);
 		}
@@ -104,12 +104,25 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	async onRemoveAgentFromDepartment(options: Record<string, any> = {}): Promise<any> {
 		const { departmentId, agentsId } = options;
 		const department = await this.DepartmentsRepository.findOneById(departmentId, { fields: { businessHourId: 1 } });
-		if (!department || !department.businessHourId) {
+		if (!department || !department.businessHourId || !agentsId.length) {
 			return options;
 		}
-
-		// await businessHourManager.removeBusinessHourFromUsersByIds(agentsId, department.businessHourId);
-		// await businessHourManager.setDefaultToUsersIfNeeded(agentsId);
+		await removeBusinessHourByAgentIds(agentsId, department.businessHourId);
+		const businessHour = await this.BusinessHourRepository.findOneDefaultBusinessHour();
+		const businessHourIdToOpen = await filterBusinessHoursThatMustBeOpened([businessHour]);
+		if (!businessHourIdToOpen.length) {
+			return options;
+		}
+		const agentIdsWithoutDepartment = [];
+		for (const agentId of agentsId) {
+			if (await this.DepartmentsAgentsRepository.findByAgentId(agentId).count() === 0) { // eslint-disable-line no-await-in-loop
+					agentIdsWithoutDepartment.push(agentId);
+			}
+		}
+		if(!agentIdsWithoutDepartment.length){
+			return options;
+		}
+		await this.UsersRepository.addBusinessHourByAgentIds(agentIdsWithoutDepartment, businessHour._id);
 		return options;
 	}
 
@@ -133,7 +146,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return;
 		}
 		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentsToRemove).toArray()).map((dept: any) => dept.agentId);
-		await removeBusinnesHourByAgentIds(agentIds, businessHourId);
+		await removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 
 	// private async getActiveAgentIdsToHandle(businessHour: Record<string, any>): Promise<string[]> {

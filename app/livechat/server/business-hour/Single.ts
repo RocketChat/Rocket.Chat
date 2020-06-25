@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { AbstractBusinessHourBehavior, IBusinessHour, IBusinessHourBehavior } from './AbstractBusinessHour';
-import { findBusinessHoursThatMustBeOpened, openBusinessHourDefault } from './Helper';
+import { filterBusinessHoursThatMustBeOpened, openBusinessHourDefault } from './Helper';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
