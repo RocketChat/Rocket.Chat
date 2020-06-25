@@ -25,9 +25,6 @@ export const roomExit = function() {
 			}
 		}
 		callbacks.run('roomExit');
-		BlazeLayout.render('main', {
-			center: 'none',
-		});
 
 		Session.set('openedRoom', null);
 		RoomManager.openedRoom = null;
@@ -52,8 +49,8 @@ export const roomExit = function() {
 						child.oldScrollTop = wrapper.scrollTop;
 					}
 				}
+				mainNode.removeChild(child);
 			}
-			mainNode.removeChild(child);
 		});
 	});
 };
