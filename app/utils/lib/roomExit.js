@@ -1,5 +1,4 @@
 import { Blaze } from 'meteor/blaze';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
