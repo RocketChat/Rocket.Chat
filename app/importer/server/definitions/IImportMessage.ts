@@ -1,11 +1,10 @@
-export type IImportedId = string;
-
+export type IImportedId = 'string';
 // export interface IImportMessageIdentification {
-// 	id?: IImportedId;
-// 	rid?: IImportedId;
+// 	id?: string;
+// 	rid?: string;
 // 	// tmid?: string;
 // 	u?: {
-// 		_id?: IImportedId;
+// 		_id?: string;
 // 		username?: string;
 // 	};
 // }
@@ -26,11 +25,11 @@ export interface IImportPendingFile {
 }
 
 export interface IImportMessage {
-	_id?: string;
+	_id?: IImportedId;
 
-	rid: string;
+	rid: IImportedId;
 	u: {
-		_id: string;
+		_id: IImportedId;
 		// username?: string;
 	};
 
@@ -40,14 +39,18 @@ export interface IImportMessage {
 	// alias?: string;
 	ts: Date;
 	t?: string;
-	reactions?: Map<string, IImportMessageReaction>;
+	reactions?: Record<string, IImportMessageReaction>;
+	groupable?: boolean;
+
+	tmid?: IImportedId;
+	tlm?: Date;
+	tcount?: number;
 	replies?: Array<IImportedId>;
-	attachments?: Record<string, any>;
 	editedAt?: Date;
 	editedBy?: IImportedId;
 	mentions?: Array<IImportedId>;
 	channels?: Array<string>;
-	groupable?: boolean;
+	attachments?: Record<string, any>;
 
 	url?: string;
 	_importFile?: IImportPendingFile;

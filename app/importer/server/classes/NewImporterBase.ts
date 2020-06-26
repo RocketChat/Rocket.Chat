@@ -19,6 +19,16 @@ type IUserIdentification = {
 	_id: string;
 	username: string | undefined;
 };
+type IMentionedUser = {
+	_id: string;
+	username: string;
+	name: string;
+};
+
+type IMessageReactions = Record<string, {
+	name: string;
+	usernames: Array<string>;
+}>;
 
 const guessNameFromUsername = (username: string): string =>
 	username
@@ -30,11 +40,18 @@ const guessNameFromUsername = (username: string): string =>
 export class ImporterBase {
 	private _userCache: Map<string, IUserIdentification>;
 
+	// display name uses a different cache because it's only used on mentions so we don't need to load it every time we load an user
+	private _userDisplayNameCache: Map<string, string>;
+
 	private _roomCache: Map<string, string>;
+
+	private _roomNameCache: Map<string, string>;
 
 	constructor() {
 		this._userCache = new Map();
+		this._userDisplayNameCache = new Map();
 		this._roomCache = new Map();
+		this._roomNameCache = new Map();
 	}
 
 	addUserToCache(importId: string, _id: string, username: string | undefined): IUserIdentification {
@@ -47,9 +64,19 @@ export class ImporterBase {
 		return cache;
 	}
 
+	addUserDisplayNameToCache(importId: string, name: string): string {
+		this._userDisplayNameCache.set(importId, name);
+		return name;
+	}
+
 	addRoomToCache(importId: string, rid: string): string {
 		this._roomCache.set(importId, rid);
 		return rid;
+	}
+
+	addRoomNameToCache(importId: string, name: string): string {
+		this._roomNameCache.set(importId, name);
+		return name;
 	}
 
 	addUserDataToCache(userData: IImportUser): void {
@@ -63,10 +90,11 @@ export class ImporterBase {
 		this.addUserToCache(userData.importIds[0], userData._id, userData.username);
 	}
 
-	addObject(type: string, data: Record<string, any>): void {
+	addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
 		ImportData.model.rawCollection().insert({
 			data,
 			dataType: type,
+			...options,
 		});
 	}
 
@@ -78,8 +106,10 @@ export class ImporterBase {
 		this.addObject('channel', data);
 	}
 
-	addMessage(data: IImportMessage): void {
-		this.addObject('message', data);
+	addMessage(data: IImportMessage, useQuickInsert = false): void {
+		this.addObject('message', data, {
+			useQuickInsert: useQuickInsert || undefined,
+		});
 	}
 
 	updateUserId(_id: string, userData: IImportUser): void {
@@ -243,6 +273,101 @@ export class ImporterBase {
 		});
 	}
 
+	convertMessageReactions(importedReactions: Record<string, IImportMessageReaction>): undefined | IMessageReactions {
+		const reactions = {};
+
+		for (const name in importedReactions) {
+			if (!importedReactions.hasOwnProperty(name)) {
+				continue;
+			}
+			const { users } = importedReactions[name];
+
+			if (!users.length) {
+				continue;
+			}
+
+			const reaction = {
+				name,
+				usernames: [],
+			};
+
+			for (const importId of users) {
+				const username = this.findImportedUsername(importId);
+				if (username && !reaction.usernames.includes(username)) {
+					reaction.usernames.push(username);
+				}
+			}
+
+			if (reaction.usernames.length) {
+				reactions[name] = reaction;
+			}
+		}
+
+		if (Object.keys(reactions).length > 0) {
+			return reactions;
+		}
+	}
+
+	convertMessageReplies(replies: Set<string>): Array<string> {
+		const result = [];
+		for (const importId of replies) {
+			const userId = this.findImportedUserId(importId);
+			if (userId && !result.includes(userId)) {
+				result.push(userId);
+			}
+		}
+		return result;
+	}
+
+	convertMessageMentions(message: IImportMessage): Array<IMentionedUser> {
+		const { mentions } = message;
+		const result = [];
+		for (const importId of mentions) {
+			if (importId === 'all' || importId === 'here') {
+				result.push({
+					_id: importId,
+					username: importId,
+				});
+				continue;
+			}
+
+			// Loading the name will also store the remaining data on the cache if it's missing, so this won't run two queries
+			const name = this.findImportedUserDisplayName(importId);
+			const data = this.findImportedUser(importId);
+
+			if (!data) {
+				throw new Error('importer-message-mentioned-user-not-found');
+			}
+
+			message.msg = message.msg.replace(new RegExp(`\@${ importId }`, 'gi'), `@${ data.username }`);
+
+			result.push({
+				...data,
+				name,
+			});
+		}
+		return result;
+	}
+
+	convertMessageChannels(message: IImportMessage): Array<string> {
+		const { channels } = message;
+		const result = [];
+		for (const importId of channels) {
+			// loading the name will also store the id on the cache if it's missing, so this won't run two queries
+			const name = this.findImportedRoomName(importId);
+			const _id = this.findImportedRoomId(importId);
+
+			message.msg = message.msg.replace(new RegExp(`\#${ importId }`, 'gi'), `#${ name }`);
+
+			result.push({
+				_id,
+				name,
+			});
+		}
+
+		return result;
+	}
+
 	convertMessages(): void {
 		// const rooms = ImportData.model.rawCollection().find({
 		// 	dataType: 'message',
@@ -270,17 +395,34 @@ export class ImporterBase {
 					throw new Error('importer-message-unknown-room');
 				}
 
+				// Convert the mentions and channels first because these conversions can also modify the msg in the message object
+				const mentions = m.mentions && this.convertMessageMentions(m);
+				const channels = m.channels && this.convertMessageChannels(m);
+
 				const msgObj = {
 					_id: m._id || undefined,
-					ts: m.ts,
-					msg: m.msg,
-					t: m.t || undefined,
 					rid,
 					u: {
 						_id: creator._id,
 						username: creator.username,
 					},
+					msg: m.msg,
+					ts: m.ts,
+					t: m.t || undefined,
+					groupable: m.groupable,
+					tmid: m.tmid,
+					tlm: m.tlm,
+					tcount: m.tcount,
+					replies: m.replies && this.convertMessageReplies(m.replies),
+					editedAt: m.editedAt,
+					editedBy: m.editedBy && (this.findImportedUser(m.editedBy) || undefined),
+					mentions,
+					channels,
 				};
+
+				if (m.reactions) {
+					msgObj.reactions = this.convertMessageReactions(m.reactions);
+				}
 
 				insertMessage(creator, msgObj, rid, true);
 			} catch (e) {
@@ -322,6 +464,27 @@ export class ImporterBase {
 		return null;
 	}
 
+	findImportedRoomName(importId: string): string {
+		if (this._roomNameCache.has(importId)) {
+			return this._roomNameCache.get(importId) as string;
+		}
+
+		const options = {
+			fields: {
+				_id: 1,
+				name: 1,
+			},
+		};
+
+		const room = Rooms.findOneByImportId(importId, options);
+		if (room) {
+			if (!this._roomCache.has(importId)) {
+				this.addRoomToCache(importId, room._id);
+			}
+			return this.addRoomNameToCache(importId, room.name);
+		}
+	}
+
 	findImportedUser(importId: string): IUserIdentification | null {
 		const options = {
 			fields: {
@@ -352,6 +515,34 @@ export class ImporterBase {
 	findImportedUserId(_id: string): string | undefined {
 		const data = this.findImportedUser(_id);
 		return data?._id;
+	}
+
+	findImportedUsername(_id: string): string | undefined {
+		const data = this.findImportedUser(_id);
+		return data?.username;
+	}
+
+	findImportedUserDisplayName(importId: string): string | undefined {
+		const options = {
+			fields: {
+				_id: 1,
+				name: 1,
+				username: 1,
+			},
+		};
+
+		if (this._userDisplayNameCache.has(importId)) {
+			return this._userDisplayNameCache.get(importId);
+		}
+
+		const user = importId === 'rocket.cat' ? Users.findOneById('rocket.cat', options) : Users.findOneByImportId(importId, options);
+		if (user) {
+			if (!this._userCache.has(importId)) {
+				this.addUserToCache(importId, user);
+			}
+
+			return this.addUserDisplayNameToCache(importId, user.name);
+		}
 	}
 
 	updateRoomId(_id: string, roomData: IImportChannel): void {

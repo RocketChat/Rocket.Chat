@@ -443,8 +443,6 @@ export class SlackImporter extends Base {
 		if (message.reactions && message.reactions.length > 0) {
 			newMessage.reactions = new Map();
 
-			// msgDataDefaults.reactions = {};
-
 			message.reactions.forEach((reaction) => {
 				const name = `:${ reaction.name }:`;
 				if (reaction.users && reaction.users.length) {
@@ -453,24 +451,6 @@ export class SlackImporter extends Base {
 						users: this._replaceSlackUserIds(reaction.users),
 					});
 				}
-
-
-				// reaction.name = `:${ reaction.name }:`;
-
-				// msgDataDefaults.reactions[reaction.name] = { usernames: [] };
-
-				// if (reaction.users) {
-				// 	reaction.users.forEach((u) => {
-				// 		const rcUser = this.getRocketUserFromUserId(u);
-				// 		if (!rcUser) { return; }
-
-				// 		msgDataDefaults.reactions[reaction.name].usernames.push(rcUser.username);
-				// 	});
-				// }
-
-				// if (msgDataDefaults.reactions[reaction.name].usernames.length === 0) {
-				// 	delete msgDataDefaults.reactions[reaction.name];
-				// }
 			});
 		}
 
@@ -540,15 +520,23 @@ export class SlackImporter extends Base {
 				if (message.thread_ts) {
 					if (message.thread_ts === message.ts) {
 						if (message.reply_users) {
-							newMessage.replies = [];
+							const replies = new Set();
 							message.reply_users.forEach((item) => {
-								newMessage.replies.push(this._replaceSlackUserId(item));
+								replies.add(this._replaceSlackUserId(item));
 							});
+
+							if (replies.length) {
+								newMessage.replies = Array.from(replies);
+							}
 						} else if (message.replies) {
-							newMessage.replies = [];
+							const replies = new Set();
 							message.repĺies.forEach((item) => {
-								newMessage.replies.push(this._replaceSlackUserId(item.user));
+								replies.add(this._replaceSlackUserId(item.user));
 							});
+
+							if (replies.length) {
+								newMessage.replies = Array.from(replies);
+							}
 						} else {
 							this.logger.warn(`Failed to import the parent comment, message: ${ newMessage._id }. Missing replies/reply_users field`);
 						}
@@ -585,40 +573,6 @@ export class SlackImporter extends Base {
 				// 	// 		username: user.username,
 				// 	// 	},
 				// 	// };
-
-				// 	// if (message.thread_ts) {
-				// 	// 	if (message.thread_ts === message.ts) {
-				// 	// 		if (message.reply_users) {
-				// 	// 			msgObj.replies = [];
-				// 	// 			message.reply_users.forEach(function(item) {
-				// 	// 				msgObj.replies.push(item);
-				// 	// 			});
-				// 	// 		} else if (message.replies) {
-				// 	// 			msgObj.replies = [];
-				// 	// 			message.replies.forEach(function(item) {
-				// 	// 				msgObj.replies.push(item.user);
-				// 	// 			});
-				// 	// 		} else {
-				// 	// 			this.logger.warn(`Failed to import the parent comment, message: ${ msgDataDefaults._id }. Missing replies/reply_users field`);
-				// 	// 		}
-
-				// 	// 		msgObj.tcount = message.reply_count;
-				// 	// 		msgObj.tlm = new Date(parseInt(message.latest_reply.split('.')[0]) * 1000);
-				// 	// 	} else {
-				// 	// 		msgObj.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
-				// 	// 	}
-				// 	// }
-
-				// 	// if (message.edited) {
-				// 	// 	msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
-				// 	// 	const editedBy = this.getRocketUserFromUserId(message.edited.user);
-				// 	// 	if (editedBy) {
-				// 	// 		msgObj.editedBy = {
-				// 	// 			_id: editedBy._id,
-				// 	// 			username: editedBy.username,
-				// 	// 		};
-				// 	// 	}
-				// 	// }
 
 				// 	// this.parseMentions(msgObj);
 				// 	// try {
