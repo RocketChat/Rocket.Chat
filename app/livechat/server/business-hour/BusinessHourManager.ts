@@ -6,8 +6,6 @@ import { IBusinessHour, IBusinessHourBehavior, IBusinessHourType } from './Abstr
 import { settings } from '../../../settings/server';
 import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatDepartment } from '../../../models/server';
-import { businessHourManager } from './index';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,
