@@ -5,7 +5,7 @@ import { LivechatBusinessHours } from '../../../app/models/server/raw';
 import { LivechatBussinessHourTypes } from '../../../definition/ILivechatBusinessHour';
 
 const updateBusinessHours = async () => {
-	const defaultBusinessHour = await LivechatBusinessHours.findOne({ type: 'single' });
+	const defaultBusinessHour = await LivechatBusinessHours.findOne({ $or: [{ type: 'single' }, { type: 'default' }] });
 	await LivechatBusinessHours.update({ _id: defaultBusinessHour._id }, {
 		$set: {
 			type: LivechatBussinessHourTypes.DEFAULT,

@@ -21,7 +21,7 @@ export const filterBusinessHoursThatMustBeOpened = async (businessHours: ILivech
 		}));
 };
 
-export const openBusinessHourDefault = async () => {
+export const openBusinessHourDefault = async (): Promise<void> => {
 	await Users.removeBusinessHoursFromAllUsers();
 	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
 	const day = currentTime.format('dddd');
@@ -38,8 +38,8 @@ export const openBusinessHourDefault = async () => {
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
-export const createDefaultBusinessHourIfNotExists = async(): Promise<void> => {
+export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
 	if (await LivechatBusinessHours.find({ type: LivechatBussinessHourTypes.DEFAULT }).count() === 0) {
 		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
 	}
-}
+};
