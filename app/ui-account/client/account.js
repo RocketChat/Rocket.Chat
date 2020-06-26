@@ -5,7 +5,7 @@ import { SideNav } from '../../ui-utils';
 import '../../../client/account/sidebarItems';
 
 
-Template.account.onRendered(function() {
+Template.account2.onRendered(function() {
 	Tracker.afterFlush(function() {
 		SideNav.setFlex('accountFlex');
 		SideNav.openFlex();

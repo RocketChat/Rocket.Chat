@@ -106,11 +106,8 @@ FlowRouter.route('/directory/:tab?', {
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
-	action: (params) => {
-		if (!params.group) {
-			params.group = 'profile';
-		}
-		BlazeLayout.render('main', { center: `account${ s.capitalize(params.group, true) }` });
+	action: () => {
+		renderRouteComponent(() => import('./account/AccountRoute'), { template: 'main', region: 'center' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
