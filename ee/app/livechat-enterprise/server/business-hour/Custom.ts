@@ -7,12 +7,8 @@ import {
 import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
 import { LivechatDepartment } from '../../../../../app/models/server/raw';
-import { BusinessHourManager } from '../../../../../app/livechat/server/business-hour/BusinessHourManager';
-import { callbacks } from '../../../../../app/callbacks/server';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 import LivechatDepartmentAgents, { LivechatDepartmentAgentsRaw } from '../../../models/server/raw/LivechatDepartmentAgents';
-import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
-import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 
 export interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -23,6 +19,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 	name = LivechatBussinessHourTypes.CUSTOM;
 
 	private DepartmentsRepository: LivechatDepartmentRaw = LivechatDepartment;
+
 	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
 
 	async getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined> {

@@ -4,8 +4,8 @@ import { settings } from '../../../../app/settings';
 import { checkWaitingQueue, updatePredictedVisitorAbandonment } from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
 import './lib/query.helper';
-import { MultipleBusinessHours, MultipleBusinessHoursBehavior } from './business-hour/Multiple';
-import { SingleBusinessHour, SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
+import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
+import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
 import { businessHourManager } from '../../../../app/livechat/server/business-hour';
 
 const visitorActivityMonitor = new VisitorInactivityMonitor();

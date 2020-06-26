@@ -1,6 +1,5 @@
 import { callbacks } from '../../../../../app/callbacks';
 import { LivechatDepartment } from '../../../../../app/models/server';
-import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 
 callbacks.add('livechat.afterRemoveDepartment', (options = {}) => {
 	const { department } = options;
