@@ -1,0 +1,148 @@
+.push-message-container {
+	overflow: hidden;
+
+	min-height: 40px;
+	margin-top: 4px;
+	padding: 8px;
+
+	border: 1px solid;
+	border-color: grey;
+	border-radius: 10px;
+
+	line-height: 20px;
+}
+
+.push-message {
+	display: flex;
+
+	&-content-container {
+		margin: 0 8px;
+	}
+
+	&-icon-container {
+		float: left;
+
+		width: 36px;
+		height: 36px;
+
+		margin: 4px 8px 0 0;
+	}
+
+	&-icon {
+		width: 100%;
+		height: 100%;
+
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+	}
+
+	&-header {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	&-title {
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		font-size: 15px;
+		font-weight: bold;
+	}
+
+	&-timestamp-container {
+		display: flex;
+	}
+
+	&-timestamp {
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		font-size: 13px;
+		flex-shrink: 0;
+	}
+
+	&-body {
+		overflow: hidden;
+
+		text-overflow: ellipsis;
+
+		font-size: 14px;
+	}
+
+	&-actions-container {
+		display: flex;
+		overflow: hidden;
+	}
+}
+
+.button-expand {
+	transition: transform 0.2s;
+	transform: rotate(180deg);
+}
+
+.button-collapse {
+	transition: transform 0.2s;
+	transform: rotate(0deg);
+}
+
+.body-collapsed {
+	display: block;
+
+	max-height: 20px;
+
+	white-space: nowrap;
+}
+
+.push-message-action-button {
+	display: flex;
+	overflow: hidden;
+
+	min-height: 40px;
+
+	margin: 4px;
+	padding: 2px 12px;
+
+	border: 1px solid;
+	border-color: grey;
+	border-radius: 10px;
+	align-items: center;
+
+	&:hover {
+		background-color: #dddddd;
+	}
+
+	&-icon-container {
+		float: left;
+		flex: none;
+
+		width: 16px;
+		height: 16px;
+
+		margin-right: 8px;
+	}
+
+	&-icon {
+		width: 100%;
+		height: 100%;
+
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+	}
+
+	&-title {
+		overflow: hidden;
+
+		white-space: nowrap;
+
+		text-overflow: ellipsis;
+
+		font-size: 15px;
+		font-weight: bold;
+	}
+}

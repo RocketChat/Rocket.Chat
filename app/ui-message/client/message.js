@@ -380,6 +380,10 @@ Template.message.helpers({
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
+	isPushMessage() {
+		const { msg } = this;
+		return msg.isPushMessage;
+	},
 });
 
 

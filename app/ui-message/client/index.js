@@ -7,3 +7,5 @@ import './popup/messagePopupConfig';
 import './popup/messagePopupEmoji';
 import './popup/messagePopupSlashCommandPreview';
 import './blocks';
+import './pushMessage';
+import './pushMessageAction';
