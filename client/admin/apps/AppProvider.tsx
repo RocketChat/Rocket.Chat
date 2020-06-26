@@ -8,7 +8,7 @@ import React, {
 
 import { Apps } from '../../../app/apps/client/orchestrator';
 import { AppEvents } from '../../../app/apps/client/communication';
-import { handleAPIError } from './helpers';
+import { handleAPIError, handleUpdateMessage } from './helpers';
 
 type App = {
 	id: string;
@@ -65,7 +65,8 @@ const AppProvider: FunctionComponent = ({ children }) => {
 	useEffect(() => {
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
 			try {
-				const { status, version } = await Apps.getApp(appId);
+				const { name, status, version } = await Apps.getApp(appId);
+				handleUpdateMessage(name);
 				const app = await Apps.getAppFromMarketplace(appId, version);
 				const updatedData = getDataCopy();
 				const index = updatedData.findIndex(({ id }) => id === appId);
