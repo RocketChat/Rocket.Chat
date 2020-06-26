@@ -27,10 +27,11 @@ export let API = {};
 
 const getRequestIP = (req) => {
 	const socket = req.socket || req.connection?.socket;
-	const remoteAddress = socket?.remoteAddress || req.connection?.remoteAddress || null;
+	const remoteAddress = req.headers['x-real-ip'] || socket?.remoteAddress || req.connection?.remoteAddress || null;
+	let forwardedFor = req.headers['x-forwarded-for'];
 
 	if (!socket) {
-		return req.headers['x-forwarded-for'];
+		return remoteAddress || forwardedFor || null;
 	}
 
 	const httpForwardedCount = parseInt(process.env.HTTP_FORWARDED_COUNT) || 0;
@@ -38,7 +39,6 @@ const getRequestIP = (req) => {
 		return remoteAddress;
 	}
 
-	let forwardedFor = req.headers['x-forwarded-for'];
 	if (!_.isString(forwardedFor)) {
 		return remoteAddress;
 	}
