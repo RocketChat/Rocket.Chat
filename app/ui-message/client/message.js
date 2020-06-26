@@ -84,13 +84,20 @@ const findParentMessage = (() => {
 })();
 
 Template.message.helpers({
+	following() {
+		const { msg, u } = this;
+		return msg.replies && msg.replies.indexOf(u._id) > -1;
+	},
 	body() {
 		const { msg, settings } = this;
 		return Tracker.nonreactive(() => renderBody(msg, settings));
 	},
 	i18nReplyCounter() {
 		const { msg } = this;
-		return `<span class='reply-counter'>${ msg.tcount }</span>`;
+		if (msg.tcount === 1) {
+			return 'reply_counter';
+		}
+		return 'reply_counter_plural';
 	},
 	i18nDiscussionCounter() {
 		const { msg } = this;
@@ -378,6 +385,9 @@ Template.message.helpers({
 	},
 	injectSettings(data, settings) {
 		data.settings = settings;
+	},
+	className() {
+		return this.msg.className;
 	},
 	channelName() {
 		const { subscription } = this;
