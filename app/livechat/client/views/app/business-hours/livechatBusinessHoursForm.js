@@ -37,13 +37,19 @@ Template.livechatBusinessHoursForm.helpers({
 		return Template.instance().dayVars[day.day].open.get();
 	},
 	customFieldsTemplate() {
-		if (!businessHourManager.shouldShowCustomTemplate(Template.instance().businessHour.get())) {
+		if (!businessHourManager.showCustomTemplate(Template.instance().businessHour.get())) {
 			return;
 		}
 		return getCustomFormTemplate('livechatBusinessHoursForm');
 	},
+	timezoneTemplate() {
+		if (!businessHourManager.showTimezoneTemplate()) {
+			return;
+		}
+		return getCustomFormTemplate('livechatBusinessHoursTimezoneForm');
+	},
 	showBackButton() {
-		return businessHourManager.shouldShowBackButton();
+		return businessHourManager.showBackButton();
 	},
 	data() {
 		return Template.instance().businessHour;

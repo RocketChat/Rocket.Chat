@@ -27,7 +27,6 @@ export class BusinessHourManager {
 
 	constructor(cronJobs: ICronJobs) {
 		this.cronJobs = cronJobs;
-		callbacks.run('onCreateBusinessHourManager', this);
 		this.openWorkHoursCallback = this.openWorkHoursCallback.bind(this);
 		this.closeWorkHoursCallback = this.closeWorkHoursCallback.bind(this);
 	}

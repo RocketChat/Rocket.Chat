@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 import {
 	AbstractBusinessHourType,
 	IBusinessHourType,
@@ -52,7 +50,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 	}
 
 	async removeBusinessHourById(businessHourId: string): Promise<void> {
-		const businessHour = await this.BusinessHourRepository.findOneById(businessHourId);
+		const businessHour = await this.BusinessHourRepository.findOneById(businessHourId, {});
 		if (!businessHour) {
 			return;
 		}
@@ -80,13 +78,6 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 			return;
 		}
 		await this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departmentsToAdd, businessHourId);
-	}
-
-	private getUTCFromTimezone(timezone: string): string {
-		if (!timezone) {
-			return String(moment().utcOffset() / 60);
-		}
-		return moment.tz(timezone).format('Z');
 	}
 }
 

@@ -2,6 +2,7 @@ import { ILivechatBusinessHour } from '../../../../../../definition/ILivechatBus
 
 export interface IBusinessHourBehavior {
 	getView(): string;
-	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean;
-	shouldShowBackButton(): boolean;
+	showCustomTemplate(businessHourData: ILivechatBusinessHour): boolean;
+	showBackButton(): boolean;
+	showTimezoneTemplate(): boolean;
 }

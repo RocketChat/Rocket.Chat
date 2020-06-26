@@ -1,4 +1,12 @@
-import { LivechatDepartment, LivechatDepartmentAgents, Users } from '../../../../../app/models/server/raw';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment-timezone';
+
+import {
+	LivechatBusinessHours,
+	LivechatDepartment,
+	LivechatDepartmentAgents,
+	Users,
+} from '../../../../../app/models/server/raw';
 import { LivechatBussinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
@@ -36,4 +44,24 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	return Users.updateLivechatStatusBasedOnBusinessHours();
+};
+
+export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
+	Meteor.call('license:isEnterprise', async (err: any, isEnterprise: any) => {
+		if (err) {
+			throw err;
+		}
+		if (isEnterprise) {
+			return;
+		}
+		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour({ fields: { _id: 1 } });
+		LivechatBusinessHours.update({ _id: defaultBusinessHour._id }, {
+			$set: {
+				timezone: {
+					name: moment.tz.guess(),
+					utc: String(moment().utcOffset() / 60),
+				},
+			},
+		});
+	});
 };

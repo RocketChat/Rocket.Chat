@@ -5,11 +5,15 @@ export class SingleBusinessHourBehavior implements IBusinessHourBehavior {
 		return 'livechatBusinessHoursForm';
 	}
 
-	shouldShowCustomTemplate(): boolean {
+	showCustomTemplate(): boolean {
 		return false;
 	}
 
-	shouldShowBackButton(): boolean {
+	showBackButton(): boolean {
+		return false;
+	}
+
+	showTimezoneTemplate(): boolean {
 		return false;
 	}
 }

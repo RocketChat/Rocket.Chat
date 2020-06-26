@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
 
 import { Base } from './_Base';
@@ -41,7 +41,7 @@ const createDefaultBusinessHour = (): ILivechatBusinessHour => {
 			open: !closedDays.includes(day),
 		})),
 		timezone: {
-			name: '',
+			name: moment.tz.guess(),
 			utc: String(moment().utcOffset() / 60),
 		},
 	};

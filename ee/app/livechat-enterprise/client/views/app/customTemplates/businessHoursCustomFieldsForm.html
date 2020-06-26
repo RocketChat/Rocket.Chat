@@ -18,17 +18,6 @@
         </div>
     </div>
     <div class="input-line">
-        <label>{{_ "Timezone"}}</label>
-        <div>
-            <select name="timezoneName" class="rc-input__element additional-field customFormField">
-                {{#each timezone in timezones}}
-                    <option class="rc-select__option" value="{{timezone.key}}" selected="{{selectedOption timezone.key}}">{{_
-                            timezone.i18nLabel}}</option>
-                {{/each}}
-            </select>
-        </div>
-    </div>
-    <div class="input-line">
         {{> livechatAutocompleteUser
                 onClickTag=onClickTagDepartment
                 list=selectedDepartments

@@ -16,8 +16,8 @@ export interface IWorkHoursForCreateCronJobs {
 export class LivechatBusinessHoursRaw extends BaseRaw {
 	public readonly col!: Collection<ILivechatBusinessHour>;
 
-	findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour> {
-		return this.findOne({ type: LivechatBussinessHourTypes.DEFAULT });
+	findOneDefaultBusinessHour(options?: any): Promise<ILivechatBusinessHour> {
+		return this.findOne({ type: LivechatBussinessHourTypes.DEFAULT }, options);
 	}
 
 	findActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {

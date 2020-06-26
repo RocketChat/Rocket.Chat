@@ -6,11 +6,15 @@ export class MultipleBusinessHoursBehavior implements IBusinessHourBehavior {
 		return 'livechatBusinessHours';
 	}
 
-	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
+	showCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
 		return !businessHourData._id || businessHourData.type !== LivechatBussinessHourTypes.DEFAULT;
 	}
 
-	shouldShowBackButton(): boolean {
+	showTimezoneTemplate(): boolean {
+		return true;
+	}
+
+	showBackButton(): boolean {
 		return true;
 	}
 }

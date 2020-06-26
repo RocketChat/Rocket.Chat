@@ -21,12 +21,16 @@ class BusinessHoursManager {
 		return this.behavior.getView();
 	}
 
-	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
-		return this.behavior.shouldShowCustomTemplate(businessHourData);
+	showCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
+		return this.behavior.showCustomTemplate(businessHourData);
 	}
 
-	shouldShowBackButton(): boolean {
-		return this.behavior.shouldShowBackButton();
+	showBackButton(): boolean {
+		return this.behavior.showBackButton();
+	}
+
+	showTimezoneTemplate(): boolean {
+		return this.behavior.showTimezoneTemplate();
 	}
 }
 
