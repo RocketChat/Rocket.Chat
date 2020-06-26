@@ -29,6 +29,6 @@ Meteor.startup(function() {
 	});
 	settings.onload('Livechat_business_hour_type', (_, value) => {
 		businessHourManager.registerBusinessHourBehavior(businessHours[value]);
-		businessHourManager.onStartManager();
+		businessHourManager.startManager();
 	});
 });

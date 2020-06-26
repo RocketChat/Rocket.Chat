@@ -32,15 +32,16 @@ export class BusinessHourManager {
 		this.closeWorkHoursCallback = this.closeWorkHoursCallback.bind(this);
 	}
 
-	async onStartManager(): Promise<void> {
+	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
 		this.setupCallbacks();
 		this.behavior.onStartBusinessHours();
 	}
 
-	async onCloseManager(): Promise<void> {
+	async stopManager(): Promise<void> {
 		this.removeCronJobs();
 		this.clearCronJobsCache();
+		this.removeCallbacks();
 		await this.behavior.onDisableBusinessHours();
 	}
 
@@ -90,6 +91,12 @@ export class BusinessHourManager {
 		callbacks.add('livechat.removeAgentDepartment', this.behavior.onRemoveAgentFromDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-on-remove-agent-department');
 		callbacks.add('livechat.afterRemoveDepartment', this.behavior.onRemoveDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-after-remove-department');
 		callbacks.add('livechat.saveAgentDepartment', this.behavior.onAddAgentToDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-on-save-agent-department');
+	}
+
+	private removeCallbacks(): void {
+		callbacks.remove('livechat.removeAgentDepartment', 'business-hour-livechat-on-remove-agent-department');
+		callbacks.remove('livechat.afterRemoveDepartment', 'business-hour-livechat-after-remove-department');
+		callbacks.remove('livechat.saveAgentDepartment', 'business-hour-livechat-on-save-agent-department');
 	}
 
 	private async createCronJobsForWorkHours(): Promise<void> {

@@ -9,10 +9,6 @@ export enum LivechatBusinessHourBehaviors {
 	SINGLE = 'Single',
 	MULTIPLE = 'Multiple',
 }
-// export enum LivechatBussinessHourTypes {
-// 	SINGLE = 'single',
-// 	MULTIPLE = 'multiple',
-// }
 
 interface IBusinessHourTime {
 	time: string;
