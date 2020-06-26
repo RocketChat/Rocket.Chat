@@ -28,7 +28,7 @@ jobs:
       uses: shubhsherl/create-catchup-pr@v0.1.0
       with:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        SOURCE_BRANCH: "develop"
+        SOURCE_BRANCH: "master"
         SOURCE_REPO: "RocketChat"
         TARGET_BRANCH: "develop_pwa"
         GITHUB_REPO: ${{github.repository}}
