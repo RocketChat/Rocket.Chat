@@ -296,7 +296,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 Accounts.validateLoginAttempt(function(login) {
 	login = callbacks.run('beforeValidateLogin', login);
 
-	if (!Promise.await(isValidLoginAttemptByIp(login.connection?.clientAddress))) {
+	if (!Promise.await(isValidLoginAttemptByIp(login.connection?.clientAddress || login.connection?.httpHeaders['x-real-ip']))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
 			function: 'Accounts.validateLoginAttempt',
 		});

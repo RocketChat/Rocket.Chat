@@ -88,7 +88,9 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 		username: login.user?.username || login.methodArguments[0].user?.username,
 	};
 
-	if (!login.connection.clientAddress) {
+	const ip = login.connection.clientAddress || login.connection.httpHeaders['x-real-ip'];
+
+	if (!ip) {
 		const ipParams = {
 			clientAddress: login.connection.clientAddress,
 			httpFowardedCount: process.env.HTTP_FORWARDED_COUNT,
@@ -99,7 +101,7 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 	}
 
 	await ServerEvents.insertOne({
-		ip: login.connection.clientAddress,
+		ip,
 		t: IServerEventType.FAILED_LOGIN_ATTEMPT,
 		ts: new Date(),
 		u: user,
@@ -107,7 +109,9 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 };
 
 export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> => {
-	if (!login.connection.clientAddress) {
+	const ip = login.connection.clientAddress || login.connection.httpHeaders['x-real-ip'];
+
+	if (!ip) {
 		const ipParams = {
 			clientAddress: login.connection.clientAddress,
 			httpFowardedCount: process.env.HTTP_FORWARDED_COUNT,
@@ -118,7 +122,7 @@ export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> =
 	}
 
 	await ServerEvents.insertOne({
-		ip: login.connection.clientAddress,
+		ip,
 		t: IServerEventType.LOGIN,
 		ts: new Date(),
 		u: login.user,

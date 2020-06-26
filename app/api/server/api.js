@@ -482,6 +482,7 @@ export class APIClass extends Restivus {
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
 						close() {},
+						httpHeaders: this.request.headers,
 						clientAddress: getRequestIP(this.request),
 					},
 				});
