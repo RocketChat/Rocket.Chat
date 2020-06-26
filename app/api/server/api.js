@@ -25,11 +25,31 @@ let prometheusAPIUserAgent = false;
 
 export let API = {};
 
-const getRequestIP = (req) =>
-	req.headers['x-forwarded-for']
-	|| (req.connection && req.connection.remoteAddress)
-	|| (req.socket && req.socket.remoteAddress)
-	|| (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
+const getRequestIP = (req) => {
+	const socket = req.socket || req.connection?.socket;
+	const remoteAddress = socket?.remoteAddress || req.connection?.remoteAddress || null;
+
+	if (!socket) {
+		return req.headers['x-forwarded-for'];
+	}
+
+	const httpForwardedCount = parseInt(process.env.HTTP_FORWARDED_COUNT) || 0;
+	if (httpForwardedCount <= 0) {
+		return remoteAddress;
+	}
+
+	let forwardedFor = req.headers['x-forwarded-for'];
+	if (!_.isString(forwardedFor)) {
+		return remoteAddress;
+	}
+
+	forwardedFor = forwardedFor.trim().split(/\s*,\s*/);
+	if (httpForwardedCount > forwardedFor.length) {
+		return remoteAddress;
+	}
+
+	return forwardedFor[forwardedFor.length - httpForwardedCount];
+};
 
 export class APIClass extends Restivus {
 	constructor(properties) {
