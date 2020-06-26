@@ -4,7 +4,7 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../hooks/useEndpointData';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { CounterSet } from '../data/CounterSet';
 import { Section } from '../Section';
 
@@ -48,7 +48,7 @@ export function NewUsersSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/users/new-users', params);
+	const data = useEndpointData('engagement-dashboard/users/new-users', params);
 
 	const [
 		countFromPeriod,
@@ -157,7 +157,7 @@ export function NewUsersSection() {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 										{t('Value_users', { value })}
 									</Box>}
 								/>

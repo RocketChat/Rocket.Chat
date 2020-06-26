@@ -180,20 +180,6 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
-	updateDesktopNotificationDurationById(_id, value) {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				desktopNotificationDuration: parseInt(value),
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	updateMobilePushNotificationsById(_id, mobilePushNotifications) {
 		const query = {
 			_id,
@@ -366,7 +352,6 @@ export class Subscriptions extends Base {
 				ignored: 1,
 				audioNotifications: 1,
 				audioNotificationValue: 1,
-				desktopNotificationDuration: 1,
 				desktopNotifications: 1,
 				mobilePushNotifications: 1,
 				emailNotifications: 1,
@@ -393,7 +378,6 @@ export class Subscriptions extends Base {
 				'u._id': 1,
 				audioNotifications: 1,
 				audioNotificationValue: 1,
-				desktopNotificationDuration: 1,
 				desktopNotifications: 1,
 				mobilePushNotifications: 1,
 				emailNotifications: 1,

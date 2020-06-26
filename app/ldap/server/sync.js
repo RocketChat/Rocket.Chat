@@ -210,6 +210,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 	const syncUserRolesFieldMap = settings.get('LDAP_Sync_User_Data_GroupsMap').trim();
 
 	if (!syncUserRoles || !syncUserRolesFieldMap) {
+		logger.debug('not syncing user roles');
 		return [];
 	}
 
@@ -296,6 +297,7 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 
 	const userChannels = [];
 	if (!syncUserRoles || !syncUserRolesAutoChannels || !syncUserRolesChannelFieldMap) {
+		logger.debug('not syncing groups to channels');
 		return [];
 	}
 
@@ -317,7 +319,7 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 		}
 
 		for (const channel of channels) {
-			let room = Rooms.findOneByName(channel);
+			let room = Rooms.findOneByNonValidatedName(channel);
 			if (!room) {
 				room = createRoomForSync(channel);
 			}

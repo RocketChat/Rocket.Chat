@@ -19,6 +19,11 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
+const subscriptionActiveStatuses = [
+	'trialing',
+	'active',
+];
+
 export const handleAPIError = (error) => {
 	console.error(error);
 	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
@@ -47,7 +52,7 @@ const promptCloudLogin = () => {
 		html: false,
 	}, (confirmed) => {
 		if (confirmed) {
-			FlowRouter.go('cloud-config');
+			FlowRouter.go('cloud');
 		}
 	});
 };
@@ -298,7 +303,7 @@ export const appButtonProps = ({
 		};
 	}
 
-	const canTrial = purchaseType === 'subscription' && !subscriptionInfo.status;
+	const canTrial = purchaseType === 'subscription' && !subscriptionActiveStatuses.includes(subscriptionInfo.status);
 	if (canTrial) {
 		return {
 			action: 'purchase',
@@ -363,11 +368,12 @@ export const appStatusSpanProps = ({
 
 export const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
 
-export const formatPricingPlan = ({ strategy, price, tiers }) => {
+export const formatPricingPlan = ({ strategy, price, tiers = [] }) => {
 	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',
+		Array.isArray(tiers) && tiers.length > 0 && 'startingAt',
 		strategy,
 		perUnit && 'perUser',
 	].filter(Boolean).join('_');

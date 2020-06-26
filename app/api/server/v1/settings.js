@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
-import { Settings } from '../../../models';
+import { Settings } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { API } from '../api';
 

@@ -4,6 +4,7 @@ import s from 'underscore.string';
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
+import { getValidRoomName } from '../../../utils';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -19,9 +20,6 @@ export class Rooms extends Base {
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
-		// Livechat - statistics
-		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
-
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 	}
@@ -253,6 +251,22 @@ export class Rooms extends Base {
 		const query = { importIds: _id };
 
 		return this.findOne(query, options);
+	}
+
+	findOneByNonValidatedName(name, options) {
+		const room = this.findOneByName(name, options);
+		if (room) {
+			return room;
+		}
+
+		let channelName = s.trim(name);
+		try {
+			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
+		} catch (e) {
+			console.error(e);
+		}
+
+		return this.findOneByName(channelName, options);
 	}
 
 	findOneByName(name, options) {
@@ -907,8 +921,19 @@ export class Rooms extends Base {
 
 		const update = {
 			$set: {
-				default: defaultValue === 'true',
+				default: defaultValue,
 			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveFavoriteById(_id, favorite, defaultValue) {
+		const query = { _id };
+
+		const update = {
+			...favorite && defaultValue && { $set: { favorite } },
+			...(!favorite || !defaultValue) && { $unset: {	favorite: 1 } },
 		};
 
 		return this.update(query, update);

@@ -59,7 +59,7 @@ export const MessageAction = new class {
 		}
 
 		if (config.condition) {
-			config.condition = mem(config.condition, { maxAge: 1000 });
+			config.condition = mem(config.condition, { maxAge: 1000, cacheKey: JSON.stringify });
 		}
 
 		return Tracker.nonreactive(() => {

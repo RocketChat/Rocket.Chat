@@ -17,7 +17,7 @@ export { getURL } from '../lib/getURL';
 export { getValidRoomName } from '../lib/getValidRoomName';
 export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
-export { APIClient } from './lib/RestApiClient';
+export { APIClient, mountArrayQueryParameters } from './lib/RestApiClient';
 export { canDeleteMessage } from './lib/canDeleteMessage';
 export { SWCache } from './lib/swCache';
 export { cleanMessagesAtStartup, triggerOfflineMsgs } from './lib/offlineMessages';
