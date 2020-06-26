@@ -42,10 +42,16 @@ export class BusinessHourManager {
 	}
 
 	async onCloseManager(): Promise<void> {
-		console.log('jaj');
 		this.removeCronJobs();
 		this.clearCronJobsCache();
 		await this.behavior.onDisableBusinessHours();
+	}
+
+	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return true;
+		}
+		return this.behavior.allowAgentChangeServiceStatus(agentId);
 	}
 
 	registerBusinessHourType(businessHourType: IBusinessHourType): void {

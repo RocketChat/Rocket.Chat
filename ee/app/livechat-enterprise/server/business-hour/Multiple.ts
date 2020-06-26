@@ -109,7 +109,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 		await this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id);
 		return options;
-
 	}
 
 	async onRemoveAgentFromDepartment(options: Record<string, any> = {}): Promise<any> {
@@ -118,9 +117,22 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!department || !agentsId.length) {
 			return options;
 		}
+		return this.handleRemoveAgentsFromDepartments(department, agentsId, options);
+	}
+
+	async onRemoveDepartment(options: Record<string, any> = {}): Promise<any> {
+		const { department, agentsIds } = options;
+		if (!department || !agentsIds?.length) {
+			return options;
+		}
+		const deletedDepartment = LivechatDepartment.trashFindOneById(department._id);
+		return this.handleRemoveAgentsFromDepartments(deletedDepartment, agentsIds, options);
+	}
+
+	private async handleRemoveAgentsFromDepartments(department: Record<string, any>, agentsIds: string[], options: any): Promise<any> {
 		const agentIdsWithoutDepartment = [];
 		const agentIdsToRemoveCurrentBusinessHour = [];
-		for (const agentId of agentsId) {
+		for (const agentId of agentsIds) {
 			if (await this.DepartmentsAgentsRepository.findByAgentId(agentId).count() === 0) { // eslint-disable-line no-await-in-loop
 				agentIdsWithoutDepartment.push(agentId);
 			}
@@ -130,37 +142,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 		if (department.businessHourId) {
 			await removeBusinessHourByAgentIds(agentIdsToRemoveCurrentBusinessHour, department.businessHourId);
-		}
-		if (!agentIdsWithoutDepartment.length) {
-			return options;
-		}
-		const businessHour = await this.BusinessHourRepository.findOneDefaultBusinessHour();
-		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour]);
-		if (!businessHourToOpen.length) {
-			return options;
-		}
-		await this.UsersRepository.addBusinessHourByAgentIds(agentIdsWithoutDepartment, businessHour._id);
-		return options;
-	}
-
-	async onRemoveDepartment(options: Record<string, any> = {}): Promise<any> {
-		const { department, agentsIds } = options;
-		if (!department || !agentsIds?.length) {
-			return options;
-		}
-		const deletedDepartment = LivechatDepartment.trashFindOneById(department._id);
-		const agentIdsWithoutDepartment = [];
-		const agentIdsToRemoveCurrentBusinessHour = [];
-		for (const agentId of agentsIds) {
-			if (await this.DepartmentsAgentsRepository.findByAgentId(agentId).count() === 0) { // eslint-disable-line no-await-in-loop
-				agentIdsWithoutDepartment.push(agentId);
-			}
-			if (!(await this.DepartmentsAgentsRepository.findAgentsByAgentIdAndBusinessHourId(agentId, deletedDepartment.businessHourId)).length) { // eslint-disable-line no-await-in-loop
-				agentIdsToRemoveCurrentBusinessHour.push(agentId);
-			}
-		}
-		if (deletedDepartment.businessHourId) {
-			await removeBusinessHourByAgentIds(agentIdsToRemoveCurrentBusinessHour, deletedDepartment.businessHourId);
 		}
 		if (!agentIdsWithoutDepartment.length) {
 			return options;

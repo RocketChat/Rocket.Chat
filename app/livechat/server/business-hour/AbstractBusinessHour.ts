@@ -19,6 +19,7 @@ export interface IBusinessHourBehavior {
 	onRemoveDepartment(department?: ILivechatDepartment): Promise<any>;
 	onStartBusinessHours(): Promise<void>;
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
+	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>
 	// onSaveBusinessHour(businessHour: ILivechatBusinessHour): Promise<void>;
 	// saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void>;
 	// allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
@@ -66,6 +67,10 @@ export abstract class AbstractBusinessHourBehavior {
 	async onDisableBusinessHours(): Promise<void> {
 		await this.UsersRepository.removeBusinessHoursFromAllUsers();
 		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+	}
+
+	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
+		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 }
 
