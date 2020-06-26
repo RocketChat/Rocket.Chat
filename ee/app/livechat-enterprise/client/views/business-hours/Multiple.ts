@@ -7,7 +7,6 @@ export class MultipleBusinessHoursBehavior implements IBusinessHourBehavior {
 	}
 
 	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
-		console.log(businessHourData);
 		return !businessHourData._id || businessHourData.type !== LivechatBussinessHourTypes.DEFAULT;
 	}
 

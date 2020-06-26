@@ -169,7 +169,6 @@ Template.livechatBusinessHoursForm.onCreated(async function() {
 		const { businessHour } = await APIClient.v1.get(url);
 		if (businessHour) {
 			this.businessHour.set(businessHour);
-			console.log(businessHour);
 			businessHour.workHours.forEach((d) => {
 				this.dayVars[d.day].start.set(moment.utc(d.start.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
 				this.dayVars[d.day].finish.set(moment.utc(d.finish.utc.time, 'HH:mm').tz(businessHour.timezone.name).format('HH:mm'));
