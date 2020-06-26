@@ -7,6 +7,7 @@ import { IUser } from '../../../../definition/IUser';
 import { settings } from '../../../settings/server';
 import { addMinutesToADate } from '../../../utils/lib/date.helper';
 import Sessions from '../../../models/server/raw/Sessions';
+import { getClientAddress } from '../../../../server/lib/getClientAddress';
 
 export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const whitelist = String(settings.get('Block_Multiple_Failed_Logins_Ip_Whitelist')).split(',');
@@ -88,20 +89,8 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 		username: login.user?.username || login.methodArguments[0].user?.username,
 	};
 
-	const ip = login.connection.clientAddress || login.connection.httpHeaders['x-real-ip'];
-
-	if (!ip) {
-		const ipParams = {
-			clientAddress: login.connection.clientAddress,
-			httpFowardedCount: process.env.HTTP_FORWARDED_COUNT,
-			httpHeaders: login.connection.httpHeaders,
-		};
-
-		console.log(ipParams);
-	}
-
 	await ServerEvents.insertOne({
-		ip,
+		ip: getClientAddress(login.connection),
 		t: IServerEventType.FAILED_LOGIN_ATTEMPT,
 		ts: new Date(),
 		u: user,
@@ -109,20 +98,8 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 };
 
 export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> => {
-	const ip = login.connection.clientAddress || login.connection.httpHeaders['x-real-ip'];
-
-	if (!ip) {
-		const ipParams = {
-			clientAddress: login.connection.clientAddress,
-			httpFowardedCount: process.env.HTTP_FORWARDED_COUNT,
-			httpHeaders: login.connection.httpHeaders,
-		};
-
-		console.log(ipParams);
-	}
-
 	await ServerEvents.insertOne({
-		ip,
+		ip: getClientAddress(login.connection),
 		t: IServerEventType.LOGIN,
 		ts: new Date(),
 		u: login.user,
