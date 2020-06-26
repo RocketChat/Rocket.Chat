@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import { Base } from './_Base';
 import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 
-const createDefaultBusinessHour = (): ILivechatBusinessHour => {
+export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 	const closedDays = ['Saturday', 'Sunday'];
 	return {
@@ -52,10 +52,6 @@ export class LivechatBusinessHours extends Base {
 		super('livechat_business_hours');
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true });
-
-		if (this.find({ type: LivechatBussinessHourTypes.DEFAULT }).count() === 0) {
-			this.insert(createDefaultBusinessHour());
-		}
 	}
 }
 

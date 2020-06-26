@@ -1,7 +1,8 @@
 import moment from 'moment';
 
-import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
+import { createDefaultBusinessHourRow } from '../../../models/server/models/LivechatBusinessHours';
 
 export const filterBusinessHoursThatMustBeOpened = async (businessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> => {
 	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
@@ -36,3 +37,9 @@ export const openBusinessHourDefault = async () => {
 	await Users.openAgentsBusinessHoursByBusinessHourId(businessHoursToOpenIds);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
+
+export const createDefaultBusinessHourIfNotExists = async(): Promise<void> => {
+	if (await LivechatBusinessHours.find({ type: LivechatBussinessHourTypes.DEFAULT }).count() === 0) {
+		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
+	}
+}
