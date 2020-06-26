@@ -8,6 +8,6 @@ export async function findLivechatBusinessHour(userId: string, id?: string, type
 	}
 
 	return {
-		businessHour: await businessHourManager.getBusinessHour(id, type),
+		businessHour: await businessHourManager.getBusinessHour(id, type) as ILivechatBusinessHour,
 	};
 }

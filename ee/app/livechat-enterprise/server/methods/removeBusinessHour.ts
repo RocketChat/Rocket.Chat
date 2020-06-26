@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Promise } from 'meteor/promise';
 
 import { hasPermission } from '../../../../../app/authorization/server';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
