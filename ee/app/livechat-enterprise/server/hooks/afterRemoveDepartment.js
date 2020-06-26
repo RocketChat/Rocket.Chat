@@ -2,10 +2,11 @@ import { callbacks } from '../../../../../app/callbacks';
 import { LivechatDepartment } from '../../../../../app/models/server';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 
-callbacks.add('livechat.afterRemoveDepartment', (department) => {
+callbacks.add('livechat.afterRemoveDepartment', (options = {}) => {
+	const { department } = options;
 	if (!department) {
-		return department;
+		return options;
 	}
 	LivechatDepartment.removeDepartmentFromForwardListById(department._id);
-	return department;
+	return options;
 }, callbacks.priority.HIGH, 'livechat-after-remove-department');
