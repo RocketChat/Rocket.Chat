@@ -1,5 +1,5 @@
 import { IBusinessHourBehavior } from '../../../../../../app/livechat/client/views/app/business-hours/IBusinessHourBehavior';
-import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../../definition/ILivechatBusinessHour';
 
 export class MultipleBusinessHoursBehavior implements IBusinessHourBehavior {
 	getView(): string {
@@ -7,7 +7,7 @@ export class MultipleBusinessHoursBehavior implements IBusinessHourBehavior {
 	}
 
 	showCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
-		return !businessHourData._id || businessHourData.type !== LivechatBussinessHourTypes.DEFAULT;
+		return !businessHourData._id || businessHourData.type !== LivechatBusinessHourTypes.DEFAULT;
 	}
 
 	showTimezoneTemplate(): boolean {

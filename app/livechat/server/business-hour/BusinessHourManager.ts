@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
@@ -60,7 +60,7 @@ export class BusinessHourManager {
 	}
 
 	async getBusinessHour(id?: string, type?: string): Promise<ILivechatBusinessHour | undefined> {
-		const businessHourType = this.getBusinessHourType(type as string || LivechatBussinessHourTypes.DEFAULT);
+		const businessHourType = this.getBusinessHourType(type as string || LivechatBusinessHourTypes.DEFAULT);
 		if (!businessHourType) {
 			return;
 		}
@@ -68,7 +68,7 @@ export class BusinessHourManager {
 	}
 
 	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
-		const type = this.getBusinessHourType(businessHourData.type as string || LivechatBussinessHourTypes.DEFAULT) as IBusinessHourType;
+		const type = this.getBusinessHourType(businessHourData.type as string || LivechatBusinessHourTypes.DEFAULT) as IBusinessHourType;
 		const saved = await type.saveBusinessHour(businessHourData);
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;

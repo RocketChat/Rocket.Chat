@@ -2,7 +2,7 @@ import {
 	AbstractBusinessHourType,
 	IBusinessHourType,
 } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
 import { LivechatDepartment } from '../../../../../app/models/server/raw';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
@@ -14,7 +14,7 @@ export interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 }
 
 class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHourType {
-	name = LivechatBussinessHourTypes.CUSTOM;
+	name = LivechatBusinessHourTypes.CUSTOM;
 
 	private DepartmentsRepository: LivechatDepartmentRaw = LivechatDepartment;
 

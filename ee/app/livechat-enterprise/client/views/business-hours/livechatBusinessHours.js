@@ -9,7 +9,7 @@ import { hasLicense } from '../../../../license/client';
 import './livechatBusinessHours.html';
 import { modal } from '../../../../../../app/ui-utils/client';
 import { APIClient, handleError, t } from '../../../../../../app/utils';
-import { LivechatBussinessHourTypes } from '../../../../../../definition/ILivechatBusinessHour';
+import { LivechatBusinessHourTypes } from '../../../../../../definition/ILivechatBusinessHour';
 
 const licenseEnabled = new ReactiveVar(false);
 
@@ -32,7 +32,7 @@ Template.livechatBusinessHours.helpers({
 		return instance.ready && instance.ready.get();
 	},
 	isDefault() {
-		return this.type === LivechatBussinessHourTypes.DEFAULT;
+		return this.type === LivechatBusinessHourTypes.DEFAULT;
 	},
 	openDays() {
 		return this

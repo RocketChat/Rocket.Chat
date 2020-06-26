@@ -1,14 +1,14 @@
 import moment from 'moment';
 
 import { AbstractBusinessHourType, IBusinessHourType } from './AbstractBusinessHour';
-import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 
 interface IExtraProperties extends ILivechatBusinessHour {
 	timezoneName?: string;
 }
 
 export class DefaultBusinessHour extends AbstractBusinessHourType implements IBusinessHourType {
-	name = LivechatBussinessHourTypes.DEFAULT;
+	name = LivechatBusinessHourTypes.DEFAULT;
 
 	getBusinessHour(): Promise<ILivechatBusinessHour | undefined> {
 		return this.BusinessHourRepository.findOneDefaultBusinessHour();

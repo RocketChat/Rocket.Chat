@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
 import { createDefaultBusinessHourRow } from '../../../models/server/models/LivechatBusinessHours';
 
@@ -39,7 +39,7 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
-	if (await LivechatBusinessHours.find({ type: LivechatBussinessHourTypes.DEFAULT }).count() === 0) {
+	if (await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count() === 0) {
 		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
 	}
 };

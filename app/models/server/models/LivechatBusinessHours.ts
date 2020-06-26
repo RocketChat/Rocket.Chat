@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
 
 import { Base } from './_Base';
-import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 
 export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -11,7 +11,7 @@ export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
 		_id: new ObjectId().toHexString(),
 		name: '',
 		active: true,
-		type: LivechatBussinessHourTypes.DEFAULT,
+		type: LivechatBusinessHourTypes.DEFAULT,
 		ts: new Date(),
 		workHours: days.map((day, index) => ({
 			day,

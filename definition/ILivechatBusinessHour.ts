@@ -1,6 +1,6 @@
 import { ILivechatDepartment } from './ILivechatDepartment';
 
-export enum LivechatBussinessHourTypes {
+export enum LivechatBusinessHourTypes {
 	DEFAULT = 'default',
 	CUSTOM = 'custom',
 }
@@ -32,7 +32,7 @@ export interface ILivechatBusinessHour {
 	_id: string;
 	name: string;
 	active: boolean;
-	type: LivechatBussinessHourTypes;
+	type: LivechatBusinessHourTypes;
 	timezone: IBusinessHourTimezone;
 	ts: Date;
 	workHours: IBusinessHourWorkHour[];

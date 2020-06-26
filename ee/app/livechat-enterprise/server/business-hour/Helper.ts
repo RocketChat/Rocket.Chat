@@ -7,7 +7,7 @@ import {
 	LivechatDepartmentAgents,
 	Users,
 } from '../../../../../app/models/server/raw';
-import { LivechatBussinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
+import { LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	const agentIdsWithDepartment = (await LivechatDepartmentAgents.find({}, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
@@ -20,7 +20,7 @@ const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<string[]> => {
 	const departmentIds = (await LivechatDepartment.findEnabledByBusinessHourId(businessHour._id, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
 	const agentIds = (await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
-	if (businessHour.type === LivechatBussinessHourTypes.CUSTOM) {
+	if (businessHour.type === LivechatBusinessHourTypes.CUSTOM) {
 		return agentIds;
 	}
 	return getAllAgentIdsWithoutDepartment();
