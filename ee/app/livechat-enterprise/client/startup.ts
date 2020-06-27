@@ -12,6 +12,7 @@ import {
 	LivechatBusinessHourBehaviors,
 } from '../../../../definition/ILivechatBusinessHour';
 import { EESingleBusinessHourBehaviour } from './SingleBusinessHour';
+import { hasLicense } from '../../license/client';
 
 const businessHours: Record<string, IBusinessHourBehavior> = {
 	Multiple: new MultipleBusinessHoursBehavior(),
@@ -19,13 +20,15 @@ const businessHours: Record<string, IBusinessHourBehavior> = {
 };
 
 Meteor.startup(function() {
-	settings.onload('Livechat_business_hour_type', (_, value) => {
+	settings.onload('Livechat_business_hour_type', async (_, value) => {
 		removeCustomTemplate('livechatBusinessHoursForm');
 		removeCustomTemplate('livechatBusinessHoursTimezoneForm');
+		addCustomFormTemplate('livechatBusinessHoursTimezoneForm', 'businessHoursTimezoneFormField');
 		if (LivechatBusinessHourBehaviors.MULTIPLE) {
 			addCustomFormTemplate('livechatBusinessHoursForm', 'businessHoursCustomFieldsForm');
-			addCustomFormTemplate('livechatBusinessHoursTimezoneForm', 'businessHoursTimezoneFormField');
 		}
-		businessHourManager.registerBusinessHourBehavior(businessHours[value as string]);
+		if (await hasLicense('livechat-enterprise')) {
+			businessHourManager.registerBusinessHourBehavior(businessHours[value as string]);
+		}
 	});
 });
