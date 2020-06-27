@@ -2,14 +2,14 @@ import moment from 'moment';
 
 import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
 import {
-	IWorkHoursForCreateCronJobs, LivechatBusinessHoursRaw,
+	IWorkHoursCronJobsWrapper, LivechatBusinessHoursRaw,
 } from '../../../models/server/raw/LivechatBusinessHours';
 import { UsersRaw } from '../../../models/server/raw/Users';
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
 import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
 
 export interface IBusinessHourBehavior {
-	findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]>;
+	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
 	openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	onDisableBusinessHours(): Promise<void>;
@@ -33,7 +33,7 @@ export abstract class AbstractBusinessHourBehavior {
 
 	protected UsersRepository: UsersRaw = Users;
 
-	async findHoursToCreateJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
+	async findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]> {
 		return this.BusinessHourRepository.findHoursToScheduleJobs();
 	}
 

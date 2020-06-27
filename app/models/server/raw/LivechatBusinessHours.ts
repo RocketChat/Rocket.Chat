@@ -7,10 +7,14 @@ import {
 	LivechatBusinessHourTypes,
 } from '../../../../definition/ILivechatBusinessHour';
 
-export interface IWorkHoursForCreateCronJobs {
+export interface IWorkHoursCronJobsItem {
 	day: string;
-	start: string[];
-	finish: string[];
+	times: string[];
+}
+
+export interface IWorkHoursCronJobsWrapper {
+	start: IWorkHoursCronJobsItem[];
+	finish: IWorkHoursCronJobsItem[];
 }
 
 export class LivechatBusinessHoursRaw extends BaseRaw {
@@ -81,29 +85,48 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 		});
 	}
 
-	findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
+	findHoursToScheduleJobs(): Promise<IWorkHoursCronJobsWrapper[]> {
 		return this.col.aggregate([
-			{ $match: { active: true } },
 			{
-				$project: { _id: 0, workHours: 1 },
-			},
-			{
-				$unwind: { path: '$workHours' },
-			},
-			{ $match: { 'workHours.open': true } },
-			{
-				$group: {
-					_id: { day: '$workHours.start.cron.dayOfWeek' },
-					start: { $addToSet: '$workHours.start.cron.time' },
-					finish: { $addToSet: '$workHours.finish.cron.time' },
-				},
-			},
-			{
-				$project: {
-					_id: 0,
-					day: '$_id.day',
-					start: 1,
-					finish: 1,
+				$facet: {
+					start: [
+						{ $match: { active: true } },
+						{ $project: { _id: 0, workHours: 1 } },
+						{ $unwind: { path: '$workHours' } },
+						{ $match: { 'workHours.open': true } },
+						{
+							$group: {
+								_id: { day: '$workHours.start.cron.dayOfWeek' },
+								times: { $addToSet: '$workHours.start.cron.time' },
+							},
+						},
+						{
+							$project: {
+								_id: 0,
+								day: '$_id.day',
+								times: 1,
+							},
+						},
+					],
+					finish: [
+						{ $match: { active: true } },
+						{ $project: { _id: 0, workHours: 1 } },
+						{ $unwind: { path: '$workHours' } },
+						{ $match: { 'workHours.open': true } },
+						{
+							$group: {
+								_id: { day: '$workHours.finish.cron.dayOfWeek' },
+								times: { $addToSet: '$workHours.finish.cron.time' },
+							},
+						},
+						{
+							$project: {
+								_id: 0,
+								day: '$_id.day',
+								times: 1,
+							},
+						},
+					],
 				},
 			},
 		]).toArray() as any;

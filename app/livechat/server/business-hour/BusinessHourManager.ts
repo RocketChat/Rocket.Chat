@@ -101,23 +101,23 @@ export class BusinessHourManager {
 	private async createCronJobsForWorkHours(): Promise<void> {
 		this.removeCronJobs();
 		this.clearCronJobsCache();
-		const workHours = await this.behavior.findHoursToCreateJobs();
-		workHours.forEach((workHour) => {
-			const { start, finish, day } = workHour;
-			start.forEach((hour) => {
-				const jobName = `${ workHour.day }/${ hour }/open`;
-				const time = moment(hour, 'HH:mm');
-				const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
-				this.addToCache(jobName);
-				this.cronJobs.add(jobName, scheduleAt, this.openWorkHoursCallback);
-			});
-			finish.forEach((hour) => {
-				const jobName = `${ workHour.day }/${ hour }/open`;
-				const time = moment(hour, 'HH:mm');
-				const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
-				this.addToCache(jobName);
-				this.cronJobs.add(jobName, scheduleAt, this.closeWorkHoursCallback);
-			});
+		const [workHours] = await this.behavior.findHoursToCreateJobs();
+		if (!workHours) {
+			return;
+		}
+
+		const { start, finish } = workHours;
+		start.forEach(({ day, times }) => this.scheduleCronJob(times, day, 'open', this.openWorkHoursCallback));
+		finish.forEach(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback));
+	}
+
+	private scheduleCronJob(items: string[], day: string, type: string, job: Function): void {
+		items.forEach((hour) => {
+			const jobName = `${ day }/${ hour }/${ type }`;
+			const time = moment(hour, 'HH:mm');
+			const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
+			this.addToCache(jobName);
+			this.cronJobs.add(jobName, scheduleAt, job);
 		});
 	}
 
