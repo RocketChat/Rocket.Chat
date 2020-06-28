@@ -11,7 +11,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findOneByUsername(username, options) {
+	findOneByUsername(username, options = null) {
 		const query = { username };
 
 		return this.findOne(query, options);
@@ -317,6 +317,68 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
+	openBusinessHourByAgentIds(agentIds = [], businessHourId) {
+		const query = {
+			_id: { $in: agentIds },
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	closeBusinessHourByAgentIds(agentIds = [], businessHourId) {
+		const query = {
+			_id: { $in: agentIds },
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+		const query = {
+			_id: { $nin: agentIdsWithDepartment },
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+		const query = {
+			_id: { $nin: agentIdsWithDepartment },
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	closeAgentsBusinessHours(businessHourIds) {
 		const query = {
 			roles: 'livechat-agent',
@@ -331,10 +393,11 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateLivechatStatusBasedOnBusinessHours() {
+	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
+			...Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } },
 		};
 
 		const update = {

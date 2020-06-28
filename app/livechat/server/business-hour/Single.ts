@@ -8,33 +8,10 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 		if (!businessHourData._id) {
 			return;
 		}
-		businessHourData.workHours.forEach((hour: any) => {
-			hour.start = {
-				time: hour.start,
-				utc: {
-					dayOfWeek: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').utc().format('HH:mm'),
-				},
-				cron: {
-					dayOfWeek: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm').format('HH:mm'),
-				},
-			};
-			hour.finish = {
-				time: hour.finish,
-				utc: {
-					dayOfWeek: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
-				},
-				cron: {
-					dayOfWeek: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm').format('HH:mm'),
-				},
-			};
-		});
+		businessHourData = this.convertWorkHoursWithServerTimezone(businessHourData);
 		businessHourData.timezone = {
 			name: '',
-			utc: moment().utcOffset() / 60,
+			utc: String(moment().utcOffset() / 60),
 		};
 		await this.BusinessHourRepository.updateOne(businessHourData._id, businessHourData);
 	}
@@ -65,8 +42,28 @@ export class SingleBusinessHour extends AbstractBusinessHour implements IBusines
 				type: 1,
 			},
 		});
-		const businessHoursToOpenIds = (await this.getBusinessHoursThatMustBeOpened(day, currentTime, activeBusinessHours)).map((businessHour) => businessHour._id);
+		const businessHoursToOpenIds = (await this.getBusinessHoursThatMustBeOpened(currentTime, activeBusinessHours)).map((businessHour) => businessHour._id);
 		await this.UsersRepository.openAgentsBusinessHours(businessHoursToOpenIds);
 		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+	}
+
+	removeBusinessHourFromUsers(): Promise<void> {
+		return Promise.resolve();
+	}
+
+	removeBusinessHourById(): Promise<void> {
+		return Promise.resolve();
+	}
+
+	removeBusinessHourFromUsersByIds(): Promise<void> {
+		return Promise.resolve();
+	}
+
+	addBusinessHourToUsersByIds(): Promise<void> {
+		return Promise.resolve();
+	}
+
+	setDefaultToUsersIfNeeded(): Promise<void> {
+		return Promise.resolve();
 	}
 }

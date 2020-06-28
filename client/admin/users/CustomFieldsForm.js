@@ -61,7 +61,7 @@ export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData
 	// TODO: add deps. Left this way so that a possible change in the setting can't crash the page (useForm generates states automatically)
 	const [customFields] = useState(() => {
 		try {
-			JSON.parse(customFieldsJson || '{}');
+			return JSON.parse(customFieldsJson || '{}');
 		} catch {
 			return {};
 		}

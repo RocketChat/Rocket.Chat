@@ -25,7 +25,20 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 			active: true,
 			workHours: {
 				$elemMatch: {
-					'start.cron.dayOfWeek': day,
+					$or: [{ 'start.cron.dayOfWeek': day, 'finish.cron.dayOfWeek': day }],
+					open: true,
+				},
+			},
+		}, options).toArray();
+	}
+
+	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
+		return this.find({
+			type: LivechatBussinessHourTypes.SINGLE,
+			active: true,
+			workHours: {
+				$elemMatch: {
+					$or: [{ 'start.cron.dayOfWeek': day, 'finish.cron.dayOfWeek': day }],
 					open: true,
 				},
 			},
@@ -35,6 +48,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 	async insertOne(data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
 		return this.col.insertOne({
 			_id: new ObjectId().toHexString(),
+			ts: new Date(),
 			...data,
 		});
 	}
@@ -69,6 +83,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 
 	findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
 		return this.col.aggregate([
+			{ $match: { active: true } },
 			{
 				$project: { _id: 0, workHours: 1 },
 			},
@@ -109,19 +124,6 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 			query.type = type;
 		}
 		return this.col.find(query, options).toArray();
-	}
-
-	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
-		return this.find({
-			type: LivechatBussinessHourTypes.SINGLE,
-			active: true,
-			workHours: {
-				$elemMatch: {
-					'start.cron.dayOfWeek': day,
-					open: true,
-				},
-			},
-		}, options).toArray();
 	}
 
 	async findActiveBusinessHoursToClose(day: string, finish: string, type?: LivechatBussinessHourTypes, options?: any): Promise<ILivechatBusinessHour[]> {
