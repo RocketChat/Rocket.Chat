@@ -7,6 +7,7 @@ import { IUser } from '../../../../definition/IUser';
 import { settings } from '../../../settings/server';
 import { addMinutesToADate } from '../../../utils/lib/date.helper';
 import Sessions from '../../../models/server/raw/Sessions';
+import { getClientAddress } from '../../../../server/lib/getClientAddress';
 
 export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const whitelist = String(settings.get('Block_Multiple_Failed_Logins_Ip_Whitelist')).split(',');
@@ -89,7 +90,7 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 	};
 
 	await ServerEvents.insertOne({
-		ip: login.connection.clientAddress,
+		ip: getClientAddress(login.connection),
 		t: IServerEventType.FAILED_LOGIN_ATTEMPT,
 		ts: new Date(),
 		u: user,
@@ -98,7 +99,7 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 
 export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> => {
 	await ServerEvents.insertOne({
-		ip: login.connection.clientAddress,
+		ip: getClientAddress(login.connection),
 		t: IServerEventType.LOGIN,
 		ts: new Date(),
 		u: login.user,
