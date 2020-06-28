@@ -39,6 +39,8 @@ export const fields = {
 	ignored: 1,
 	E2EKey: 1,
 	tunread: 1,
+	tunreadGroup: 1,
+	tunreadUser: 1,
 };
 
 Meteor.methods({
