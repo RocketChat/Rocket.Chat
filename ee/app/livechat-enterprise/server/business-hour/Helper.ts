@@ -18,12 +18,11 @@ const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 };
 
 const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<string[]> => {
-	const departmentIds = (await LivechatDepartment.findEnabledByBusinessHourId(businessHour._id, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
-	const agentIds = (await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
-	if (businessHour.type === LivechatBusinessHourTypes.CUSTOM) {
-		return agentIds;
+	if (businessHour.type === LivechatBusinessHourTypes.DEFAULT) {
+		return getAllAgentIdsWithoutDepartment();
 	}
-	return getAllAgentIdsWithoutDepartment();
+	const departmentIds = (await LivechatDepartment.findEnabledByBusinessHourId(businessHour._id, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
+	return (await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
 };
 
 export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
