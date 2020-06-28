@@ -7,15 +7,24 @@
 	flex-wrap: wrap;
 }
 
-.discussion-reply-lm {
-	padding: 4px 8px;
+.discussion-reply-lm,
+.reply-counter {
+	padding: 4px;
 
 	color: var(--color-gray);
 
 	font-size: 12px;
+	font-style: italic;
 
 	flex-grow: 0;
 	flex-shrink: 0;
+}
+
+.reply-counter {
+	color: var(--color-dark-light);
+
+	font-weight: 600;
+	margin-inline-start: 4px;
 }
 
 .discussions-list .load-more {
