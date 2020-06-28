@@ -75,6 +75,15 @@
 		flex-flow: row nowrap;
 	}
 
+	&:hover,
+	&:focus {
+		.thread-icons {
+			&--bell-off {
+				opacity: 1;
+			}
+		}
+	}
+
 	.thread-icons {
 		display: block;
 		flex: 0 0 20px;
@@ -90,13 +99,21 @@
 			color: var(--rc-color-alert-message-primary);
 		}
 
+		&--bell-off {
+			opacity: 0;
+		}
+
 		&--bell,
 		&--bell-off {
 			cursor: pointer;
 
-			color: #a0a0a0;
+			color: #6c727a;
 
-			font-size: 1rem;
+			font-size: 1.25rem;
+		}
+
+		&--large {
+			font-size: 1.25rem;
 		}
 	}
 
@@ -108,6 +125,13 @@
 		font-size: 12px;
 
 		align-items: center;
+
+		.thread-icons {
+			&--bell,
+			&--bell-off {
+				font-size: 1rem;
+			}
+		}
 	}
 
 	.thread-quote__message {

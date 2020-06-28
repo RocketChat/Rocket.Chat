@@ -15,13 +15,15 @@ export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 	if (!settings.get('Login_Logs_ClientIp')) {
 		clientAddress = '-';
 	}
-	let forwardedFor = connection.httpHeaders['x-forwarded-for'];
+	let forwardedFor = connection.httpHeaders && connection.httpHeaders['x-forwarded-for'];
+	let realIp = connection.httpHeaders && connection.httpHeaders['x-real-ip'];
 	if (!settings.get('Login_Logs_ForwardedForIp')) {
 		forwardedFor = '-';
+		realIp = '-';
 	}
-	let userAgent = connection.httpHeaders['user-agent'];
+	let userAgent = connection.httpHeaders && connection.httpHeaders['user-agent'];
 	if (!settings.get('Login_Logs_UserAgent')) {
 		userAgent = '-';
 	}
-	console.log('Failed login detected - Username[%s] ClientAddress[%s] ForwardedFor[%s] UserAgent[%s]', user, clientAddress, forwardedFor, userAgent);
+	console.log('Failed login detected - Username[%s] ClientAddress[%s] ForwardedFor[%s] XRealIp[%s] UserAgent[%s]', user, clientAddress, forwardedFor, realIp, userAgent);
 };

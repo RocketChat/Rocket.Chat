@@ -11,7 +11,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findOneByUsername(username, options) {
+	findOneByUsername(username, options = null) {
 		const query = { username };
 
 		return this.findOne(query, options);

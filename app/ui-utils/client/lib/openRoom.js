@@ -18,6 +18,9 @@ import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 
 window.currentTracker = undefined;
 
+// cleanup session when hot reloading
+Session.set('openedRoom', null);
+
 const getDomOfLoading = mem(function getDomOfLoading() {
 	const loadingDom = document.createElement('div');
 	const contentAsFunc = (content) => () => content;
