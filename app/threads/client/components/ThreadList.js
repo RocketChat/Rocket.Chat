@@ -14,7 +14,7 @@ import RawText from '../../../../client/components/basic/RawText';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { roomTypes } from '../../../utils/client';
 import { call, renderMessageBody } from '../../../ui-utils/client';
-import { useUserId, useUser } from '../../../../client/contexts/UserContext';
+import { useUserId } from '../../../../client/contexts/UserContext';
 import { Messages } from '../../../models/client';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
 import { getConfig } from '../../../ui-utils/client/config';
@@ -51,7 +51,7 @@ const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 25;
 
 const filterProps = ({ msg, u, replies, mentions, tcount, ts, _id, tlm, attachments }) => ({ ..._id && { _id }, attachments, mentions, msg, u, replies, tcount, ts: new Date(ts), tlm: new Date(tlm) });
 
-const subscriptionFields = { tunread: 1 };
+const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };
 
 export function withData(WrappedComponent) {
@@ -128,7 +128,9 @@ export function withData(WrappedComponent) {
 
 		return <WrappedComponent
 			{...props}
-			unread={subscription && subscription.tunread}
+			unread={subscription?.tunread}
+			unreadUser={subscription?.tunreadUser}
+			unreadGroup={subscription?.tunreadGroup}
 			userId={userId}
 			error={error}
 			threads={threads}
@@ -168,13 +170,11 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
-export function ThreadList({ total = 10, threads = [], room, unread = [], type, setType, loadMoreItems, loading, onClose, error, userId, text, setText }) {
+export function ThreadList({ total = 10, threads = [], room, unread = [], unreadUser = [], unreadGroup = [], type, setType, loadMoreItems, loading, onClose, error, userId, text, setText }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const threadsRef = useRef();
 
 	const t = useTranslation();
-
-	const user = useUser();
 
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 
@@ -209,8 +209,8 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 			username={ thread.u.username }
 			style={style}
 			unread={unread.includes(thread._id)}
-			mention={thread.mentions && thread.mentions.includes(user.username)}
-			all={thread.mentions && thread.mentions.includes('all')}
+			mention={unreadUser.includes(thread._id)}
+			all={unreadGroup.includes(thread._id)}
 			following={thread.replies && thread.replies.includes(userId)}
 			data-id={thread._id}
 			msg={msg}
@@ -218,7 +218,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], type, 
 			formatDate={formatDate}
 			handleFollowButton={handleFollowButton} onClick={onClick}
 		/>;
-	}), [unread, showRealNames]);
+	}), [unread, unreadUser, unreadGroup, showRealNames]);
 
 	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver();
