@@ -46529,6 +46529,52 @@
           ]
         }
       ]
+    },
+    "3.4.0-rc.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "mongo_versions": [],
+      "pull_requests": [
+        {
+          "pr": "18048",
+          "title": "Regression: Fix threads badge color indicators",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.4.0",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "18033",
+          "title": "Regression: Improve the logic to get request IPs",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18042",
+          "title": "Regression: Grouping Thread messages",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18043",
+          "title": "Revert \"Regression: Fix wrong message grouping inside threads\"",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
