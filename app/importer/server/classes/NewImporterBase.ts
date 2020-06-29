@@ -418,6 +418,8 @@ export class ImporterBase {
 					editedBy: m.editedBy && (this.findImportedUser(m.editedBy) || undefined),
 					mentions,
 					channels,
+					_importFile: m._importFile,
+					url: m.url,
 				};
 
 				if (m.reactions) {
