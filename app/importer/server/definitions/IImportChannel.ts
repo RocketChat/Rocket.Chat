@@ -1,8 +1,8 @@
 export interface IImportChannel {
 	_id?: string;
 	u?: {
-		_id?: string;
-		username?: string;
+		_id: string;
+		// username?: string;
 	};
 	name: string;
 	users: Array<string>;

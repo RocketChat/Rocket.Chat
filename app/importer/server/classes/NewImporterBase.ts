@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { ImportData } from '../models/ImportData';
 import { IImportUser } from '../definitions/IImportUser';
-import { IImportMessage } from '../definitions/IImportMessage';
+import { IImportMessage, IImportMessageReaction } from '../definitions/IImportMessage';
 import { IImportChannel } from '../definitions/IImportChannel';
 import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../definitions/IImportRecord';
 import { Users, Rooms } from '../../../models/server';
@@ -12,9 +12,9 @@ import { generateUsernameSuggestion, insertMessage, setUserAvatar } from '../../
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
 import '../../../../definition/Meteor';
-// import { getValidRoomName } from '../../../utils';
 
 type IRoom = Record<string, any>;
+type IMessage = Record<string, any>;
 type IUserIdentification = {
 	_id: string;
 	username: string | undefined;
@@ -22,13 +22,19 @@ type IUserIdentification = {
 type IMentionedUser = {
 	_id: string;
 	username: string;
+	name?: string;
+};
+type IMentionedChannel = {
+	_id: string;
 	name: string;
 };
 
-type IMessageReactions = Record<string, {
+type IMessageReaction = {
 	name: string;
 	usernames: Array<string>;
-}>;
+};
+
+type IMessageReactions = Record<string, IMessageReaction>;
 
 const guessNameFromUsername = (username: string): string =>
 	username
@@ -164,6 +170,7 @@ export class ImporterBase {
 		}) : Accounts.createUser({
 			username: userData.username,
 			password,
+			// @ts-ignore
 			joinDefaultChannelsSilenced: true,
 		});
 
@@ -274,7 +281,7 @@ export class ImporterBase {
 	}
 
 	convertMessageReactions(importedReactions: Record<string, IImportMessageReaction>): undefined | IMessageReactions {
-		const reactions = {};
+		const reactions: IMessageReactions = {};
 
 		for (const name in importedReactions) {
 			if (!importedReactions.hasOwnProperty(name)) {
@@ -286,7 +293,7 @@ export class ImporterBase {
 				continue;
 			}
 
-			const reaction = {
+			const reaction: IMessageReaction = {
 				name,
 				usernames: [],
 			};
@@ -308,8 +315,8 @@ export class ImporterBase {
 		}
 	}
 
-	convertMessageReplies(replies: Set<string>): Array<string> {
-		const result = [];
+	convertMessageReplies(replies: Array<string>): Array<string> {
+		const result: Array<string> = [];
 		for (const importId of replies) {
 			const userId = this.findImportedUserId(importId);
 			if (userId && !result.includes(userId)) {
@@ -319,11 +326,16 @@ export class ImporterBase {
 		return result;
 	}
 
-	convertMessageMentions(message: IImportMessage): Array<IMentionedUser> {
+	convertMessageMentions(message: IImportMessage): Array<IMentionedUser> | undefined {
 		const { mentions } = message;
-		const result = [];
+		if (!mentions) {
+			return undefined;
+		}
+
+		const result: Array<IMentionedUser> = [];
 		for (const importId of mentions) {
-			if (importId === 'all' || importId === 'here') {
+			// eslint-disable-next-line no-extra-parens
+			if (importId === ('all' as 'string') || importId === 'here') {
 				result.push({
 					_id: importId,
 					username: importId,
@@ -338,24 +350,37 @@ export class ImporterBase {
 			if (!data) {
 				throw new Error('importer-message-mentioned-user-not-found');
 			}
+			if (!data.username) {
+				throw new Error('importer-message-mentioned-username-not-found');
+			}
 
 			message.msg = message.msg.replace(new RegExp(`\@${ importId }`, 'gi'), `@${ data.username }`);
 
 			result.push({
-				...data,
+				_id: data._id,
+				username: data.username as 'string',
 				name,
 			});
 		}
 		return result;
 	}
 
-	convertMessageChannels(message: IImportMessage): Array<string> {
+	convertMessageChannels(message: IImportMessage): Array<IMentionedChannel> | undefined {
 		const { channels } = message;
-		const result = [];
+		if (!channels) {
+			return;
+		}
+
+		const result: Array<IMentionedChannel> = [];
 		for (const importId of channels) {
 			// loading the name will also store the id on the cache if it's missing, so this won't run two queries
 			const name = this.findImportedRoomName(importId);
 			const _id = this.findImportedRoomId(importId);
+
+			if (!_id || !name) {
+				console.log(`Mentioned room not found: ${ importId }`);
+				continue;
+			}
 
 			message.msg = message.msg.replace(new RegExp(`\#${ importId }`, 'gi'), `#${ name }`);
 
@@ -399,7 +424,7 @@ export class ImporterBase {
 				const mentions = m.mentions && this.convertMessageMentions(m);
 				const channels = m.channels && this.convertMessageChannels(m);
 
-				const msgObj = {
+				const msgObj: IMessage = {
 					_id: m._id || undefined,
 					rid,
 					u: {
@@ -429,7 +454,6 @@ export class ImporterBase {
 				insertMessage(creator, msgObj, rid, true);
 			} catch (e) {
 				this.saveError(_id, e);
-				throw e;
 			}
 		});
 	}
@@ -466,7 +490,7 @@ export class ImporterBase {
 		return null;
 	}
 
-	findImportedRoomName(importId: string): string {
+	findImportedRoomName(importId: string): string | undefined {
 		if (this._roomNameCache.has(importId)) {
 			return this._roomNameCache.get(importId) as string;
 		}
@@ -540,7 +564,7 @@ export class ImporterBase {
 		const user = importId === 'rocket.cat' ? Users.findOneById('rocket.cat', options) : Users.findOneByImportId(importId, options);
 		if (user) {
 			if (!this._userCache.has(importId)) {
-				this.addUserToCache(importId, user);
+				this.addUserToCache(importId, user._id, user.username);
 			}
 
 			return this.addUserDisplayNameToCache(importId, user.name);
@@ -554,7 +578,7 @@ export class ImporterBase {
 			description: roomData.description,
 		};
 
-		const roomUpdate = {};
+		const roomUpdate: {$set?: Record<string, any>; $addToSet?: Record<string, any>} = {};
 
 		if (Object.keys(set).length > 0) {
 			roomUpdate.$set = set;
@@ -625,7 +649,7 @@ export class ImporterBase {
 			throw e;
 		}
 
-		this.updateRoomId(roomData._id, roomData);
+		this.updateRoomId(roomData._id as 'string', roomData);
 	}
 
 	convertImportedIdsToUsernames(importedIds: Array<string>, idToRemove: string | undefined = undefined): Array<string> {
