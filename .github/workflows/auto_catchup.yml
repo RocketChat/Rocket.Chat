@@ -32,6 +32,6 @@ jobs:
         SOURCE_REPO: "RocketChat"
         TARGET_BRANCH: "develop_pwa"
         GITHUB_REPO: ${{github.repository}}
-        TITLE: "[Upstream Catchup] Merge RC:develop to develop_pwa"
-        BODY: "Weekly Catchup PR to merge RC:develop in develop_pwa."
+        TITLE: "[Upstream Catchup] Merge RC:master to develop_pwa"
+        BODY: "Weekly Catchup PR to merge RC:master in develop_pwa."
         DRAFT: "true"
