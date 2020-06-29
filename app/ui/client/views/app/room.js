@@ -702,7 +702,7 @@ Template.room.events({
 		});
 	},
 	'click .js-reply-broadcast'() {
-		const { msg } = messageArgs(this);
+		const msg = messageArgs(this);
 		roomTypes.openRouteLink('d', { name: msg.u.username }, { ...FlowRouter.current().queryParams, reply: msg._id });
 	},
 	'click, touchend'(e, t) {
