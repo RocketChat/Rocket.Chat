@@ -10,6 +10,7 @@ export class LivechatDepartment extends Base {
 		super(modelOrName || 'livechat_department');
 
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ businessHourId: 1 }, { sparse: true });
 		this.tryEnsureIndex({
 			numAgents: 1,
 			enabled: 1,

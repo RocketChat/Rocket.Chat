@@ -1,16 +1,20 @@
-import { IBusinessHour } from '../../../../../../app/livechat/client/views/app/business-hours/IBusinessHour';
-import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../../../definition/ILivechatBusinessHour';
+import { IBusinessHourBehavior } from '../../../../../../app/livechat/client/views/app/business-hours/IBusinessHourBehavior';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../../definition/ILivechatBusinessHour';
 
-export class MultipleBusinessHours implements IBusinessHour {
+export class MultipleBusinessHoursBehavior implements IBusinessHourBehavior {
 	getView(): string {
 		return 'livechatBusinessHours';
 	}
 
-	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
-		return !businessHourData._id || businessHourData.type !== LivechatBussinessHourTypes.SINGLE;
+	showCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
+		return !businessHourData._id || businessHourData.type !== LivechatBusinessHourTypes.DEFAULT;
 	}
 
-	shouldShowBackButton(): boolean {
+	showTimezoneTemplate(): boolean {
+		return true;
+	}
+
+	showBackButton(): boolean {
 		return true;
 	}
 }

@@ -16,4 +16,3 @@ import './onSetUserStatusLivechat';
 import './onCloseLivechat';
 import './onSaveVisitorInfo';
 import './onBusinessHourStart';
-import './onChangeAgentDepartment';
