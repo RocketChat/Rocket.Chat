@@ -178,7 +178,7 @@ export class ImporterBase {
 		const user = Users.findOneById(userId, {});
 
 		if (user && userData.importIds.length) {
-			this.addUserToCache(userData.importIds[0], user._id, user.username);
+			this.addUserToCache(userData.importIds[0], user._id, userData.username);
 		}
 
 		Meteor.runAsUser(userId, () => {
@@ -445,6 +445,9 @@ export class ImporterBase {
 					channels,
 					_importFile: m._importFile,
 					url: m.url,
+					attachments: m.attachments,
+					bot: m.bot,
+					emoji: m.emoji,
 				};
 
 				if (m.reactions) {

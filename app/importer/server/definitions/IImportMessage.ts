@@ -24,6 +24,12 @@ export interface IImportPendingFile {
 	original: Record<string, any>;
 }
 
+export interface IImportAttachment extends Record<string, any> {
+	text: string;
+	title: string;
+	fallback: string;
+}
+
 export interface IImportMessage {
 	_id?: IImportedId;
 
@@ -34,7 +40,6 @@ export interface IImportMessage {
 	};
 
 	msg: string;
-	// emoji?: string;
 	// avatarUrl?: string;
 	// alias?: string;
 	ts: Date;
@@ -50,7 +55,9 @@ export interface IImportMessage {
 	editedBy?: IImportedId;
 	mentions?: Array<IImportedId>;
 	channels?: Array<string>;
-	attachments?: Record<string, any>;
+	attachments?: IImportAttachment;
+	bot?: boolean;
+	emoji?: string;
 
 	url?: string;
 	_importFile?: IImportPendingFile;
