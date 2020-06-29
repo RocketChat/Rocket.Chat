@@ -13,12 +13,12 @@ const migrateCollection = () => {
 	const officeHours = [];
 	days.forEach((day) => {
 		const officeHour = LivechatOfficeHour.findOne({ day });
-		if (officeHour && officeHour !== undefined) {
+		if (officeHour) {
 			officeHours.push(officeHour);
 		}
 	});
 
-	if (!officeHours || !officeHours.length) {
+	if (!officeHours || officeHours.length === 0) {
 		return;
 	}
 
