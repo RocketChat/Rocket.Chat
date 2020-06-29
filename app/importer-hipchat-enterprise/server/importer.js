@@ -4,8 +4,6 @@ import fs from 'fs';
 
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import { Random } from 'meteor/random';
 import TurndownService from 'turndown';
 
 import {
@@ -15,6 +13,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 } from '../../importer/server';
+import { ImporterBase as NewImporterBase } from '../../importer/server/classes/NewImporterBase';
 import { Messages, Users, Subscriptions, Rooms, Imports } from '../../models';
 import { insertMessage } from '../../lib';
 
@@ -23,6 +22,8 @@ const turndownService = new TurndownService({
 	hr: '',
 	br: '\n',
 });
+
+let newImporter = null;
 
 turndownService.addRule('strikethrough', {
 	filter: 'img',
@@ -93,6 +94,7 @@ export class HipChatEnterpriseImporter extends Base {
 				avatar: u.User.avatar && u.User.avatar.replace(/\n/g, ''),
 				timezone: u.User.timezone,
 				isDeleted: u.User.is_deleted,
+				title: u.User.title,
 			};
 			count++;
 
@@ -709,61 +711,31 @@ export class HipChatEnterpriseImporter extends Base {
 		});
 	}
 
-	_importUser(userToImport, startedByUserId) {
-		Meteor.runAsUser(startedByUserId, () => {
-			let existingUser = Users.findOneByUsernameIgnoringCase(userToImport.username);
-			if (!existingUser) {
-				// If there's no user with that username, but there's an imported user with the same original ID and no username, use that
-				existingUser = Users.findOne({
-					importIds: userToImport.id,
-					username: { $exists: false },
-				});
-			}
+	_importUser(user) {
+		const newUser = {
+			emails: [],
+			importIds: [
+				user.id,
+			],
+			username: user.username,
+			name: user.name,
+			// avatarUrl: user.avatar ? `data:image/png;base64,${ user.avatar }` : undefined,
+			bio: user.title || undefined,
+			deleted: user.isDeleted,
+			type: 'user',
+		};
 
-			if (existingUser) {
-				// since we have an existing user, let's try a few things
-				this._saveUserIdReference(userToImport.id, existingUser._id);
-				userToImport.rocketId = existingUser._id;
+		if (user.email) {
+			newUser.emails.push(user.email);
+		}
 
-				try {
-					this._updateImportedUser(userToImport, existingUser._id);
-				} catch (e) {
-					this.logger.error(e);
-					this.addUserError(userToImport.id, e);
-				}
-			} else {
-				const user = {
-					email: userToImport.email,
-					password: Random.id(),
-					username: userToImport.username,
-					name: userToImport.name,
-					active: userToImport.isDeleted !== true,
-				};
-				if (!user.email) {
-					delete user.email;
-				}
-				if (!user.username) {
-					delete user.username;
-				}
-				if (!user.name) {
-					delete user.name;
-				}
+		if (user.is_bot) {
+			newUser.roles = ['bot'];
+			newUser.type = 'bot';
+		}
 
-				try {
-					const userId = Accounts.createUser(user);
-
-					userToImport.rocketId = userId;
-					this._saveUserIdReference(userToImport.id, userId);
-
-					this._updateImportedUser(userToImport, userId);
-				} catch (e) {
-					this.logger.error(e);
-					this.addUserError(userToImport.id, e);
-				}
-			}
-
-			super.addCountCompleted(1);
-		});
+		newImporter.addUser(newUser);
+		super.addCountCompleted(1);
 	}
 
 	_applyUserSelections(importSelection) {
@@ -873,6 +845,9 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	startImport(importSelection) {
+		newImporter = new NewImporterBase();
+		newImporter.clearImportData();
+
 		this.reloadCount();
 		super.startImport(importSelection);
 		this._userDataCache = {};
@@ -884,15 +859,16 @@ export class HipChatEnterpriseImporter extends Base {
 		Meteor.defer(async () => {
 			try {
 				await super.updateProgress(ProgressStep.IMPORTING_USERS);
-				await this._importUsers(startedByUserId);
+				await this._importUsers();
 
 				await super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
-				await this._importChannels(startedByUserId);
+				await this._importChannels();
 
 				await super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				await this._importMessages(startedByUserId);
-				await this._importDirectMessages();
+				// await this._importMessages(startedByUserId);
+				// await this._importDirectMessages();
 
+				newImporter.convertData(startedByUserId);
 				// super.updateProgress(ProgressStep.FINISHING);
 				await super.updateProgress(ProgressStep.DONE);
 			} catch (e) {
@@ -911,7 +887,7 @@ export class HipChatEnterpriseImporter extends Base {
 		return super.getProgress();
 	}
 
-	_importUsers(startedByUserId) {
+	_importUsers() {
 		this._userIdReference = {};
 
 		const userLists = this.collection.find({
@@ -931,7 +907,7 @@ export class HipChatEnterpriseImporter extends Base {
 					return;
 				}
 
-				this._importUser(u, startedByUserId);
+				this._importUser(u);
 			});
 		});
 	}
@@ -968,42 +944,59 @@ export class HipChatEnterpriseImporter extends Base {
 		});
 	}
 
-	_importChannel(channelToImport, startedByUserId) {
-		Meteor.runAsUser(startedByUserId, () => {
-			const existingRoom = Rooms.findOneByName(limax(channelToImport.name));
-			// If the room exists or the name of it is 'general', then we don't need to create it again
-			if (existingRoom || channelToImport.name.toUpperCase() === 'GENERAL') {
-				channelToImport.rocketId = channelToImport.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existingRoom._id;
-				this._saveRoomIdReference(channelToImport.id, channelToImport.rocketId);
-				Rooms.update({ _id: channelToImport.rocketId }, { $push: { importIds: channelToImport.id } });
+	_importChannel(channelToImport) {
+		newImporter.addChannel({
+			u: {
+				_id: channelToImport.creator,
+			},
+			importIds: [
+				channelToImport.id,
+			],
 
-				this._createSubscriptions(channelToImport, existingRoom || 'general');
-			} else {
-				// Find the rocketchatId of the user who created this channel
-				const creatorId = this._getUserRocketId(channelToImport.creator) || startedByUserId;
-
-				// Create the channel
-				Meteor.runAsUser(creatorId, () => {
-					try {
-						const roomInfo = Meteor.call(channelToImport.isPrivate ? 'createPrivateGroup' : 'createChannel', channelToImport.name, []);
-						this._saveRoomIdReference(channelToImport.id, roomInfo.rid);
-						channelToImport.rocketId = roomInfo.rid;
-					} catch (e) {
-						this.logger.error(`Failed to create channel, using userId: ${ creatorId };`, e);
-					}
-				});
-
-				if (channelToImport.rocketId) {
-					Rooms.update({ _id: channelToImport.rocketId }, { $set: { ts: channelToImport.created, topic: channelToImport.topic }, $push: { importIds: channelToImport.id } });
-					this._createSubscriptions(channelToImport, channelToImport.rocketId);
-				}
-			}
-
-			super.addCountCompleted(1);
+			name: channelToImport.name,
+			users: channelToImport.members,
+			t: channelToImport.isPrivate ? 'p' : 'c',
+			topic: channelToImport.topic,
+			// description: channel.purpose?.value || undefined,
+			ts: channelToImport.created,
+			archived: channelToImport.isArchived,
 		});
+
+		// Meteor.runAsUser(startedByUserId, () => {
+		// 	const existingRoom = Rooms.findOneByName(limax(channelToImport.name));
+		// 	// If the room exists or the name of it is 'general', then we don't need to create it again
+		// 	if (existingRoom || channelToImport.name.toUpperCase() === 'GENERAL') {
+		// 		channelToImport.rocketId = channelToImport.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existingRoom._id;
+		// 		this._saveRoomIdReference(channelToImport.id, channelToImport.rocketId);
+		// 		Rooms.update({ _id: channelToImport.rocketId }, { $push: { importIds: channelToImport.id } });
+
+		// 		this._createSubscriptions(channelToImport, existingRoom || 'general');
+		// 	} else {
+		// 		// Find the rocketchatId of the user who created this channel
+		// 		const creatorId = this._getUserRocketId(channelToImport.creator) || startedByUserId;
+
+		// 		// Create the channel
+		// 		Meteor.runAsUser(creatorId, () => {
+		// 			try {
+		// 				const roomInfo = Meteor.call(channelToImport.isPrivate ? 'createPrivateGroup' : 'createChannel', channelToImport.name, []);
+		// 				this._saveRoomIdReference(channelToImport.id, roomInfo.rid);
+		// 				channelToImport.rocketId = roomInfo.rid;
+		// 			} catch (e) {
+		// 				this.logger.error(`Failed to create channel, using userId: ${ creatorId };`, e);
+		// 			}
+		// 		});
+
+		// 		if (channelToImport.rocketId) {
+		// 			Rooms.update({ _id: channelToImport.rocketId }, { $set: { ts: channelToImport.created, topic: channelToImport.topic }, $push: { importIds: channelToImport.id } });
+		// 			this._createSubscriptions(channelToImport, channelToImport.rocketId);
+		// 		}
+		// 	}
+
+		// 	super.addCountCompleted(1);
+		// });
 	}
 
-	_importChannels(startedByUserId) {
+	_importChannels() {
 		this._roomIdReference = {};
 		const channelLists = this.collection.find({
 			import: this.importRecord._id,
@@ -1021,7 +1014,7 @@ export class HipChatEnterpriseImporter extends Base {
 					return;
 				}
 
-				this._importChannel(c, startedByUserId);
+				this._importChannel(c);
 			});
 		});
 	}
