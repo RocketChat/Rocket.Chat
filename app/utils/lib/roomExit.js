@@ -28,9 +28,6 @@ export const roomExit = function() {
 		Session.set('openedRoom', null);
 		RoomManager.openedRoom = null;
 
-		if (typeof window.currentTracker !== 'undefined') {
-			window.currentTracker.stop();
-		}
 		const mainNode = document.querySelector('.main-content');
 		if (mainNode == null) {
 			return;
@@ -52,4 +49,7 @@ export const roomExit = function() {
 			}
 		});
 	});
+	if (typeof window.currentTracker !== 'undefined') {
+		window.currentTracker.stop();
+	}
 };
