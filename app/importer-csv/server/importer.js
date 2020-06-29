@@ -10,7 +10,7 @@ import {
 	SelectionUser,
 	ImporterWebsocket,
 } from '../../importer/server';
-import { Users, Rooms } from '../../models';
+import { Rooms } from '../../models';
 import { t } from '../../utils';
 import { ImporterBase as NewImporterBase } from '../../importer/server/classes/NewImporterBase';
 
@@ -273,31 +273,12 @@ export class CsvImporter extends Base {
 								this.channels.channels.push({
 									id: cname.replace('.', '_'),
 									name: cname,
-									// rocketId: cname.toUpperCase() === 'GENERAL' ? 'GENERAL' : existantRoom._id,
 									do_import: true,
 								});
 							}
 						});
 					}
 				}
-
-				// // If no users file, collect user map from DB for message-only import
-				// if (this.users.users.length === 0) {
-				// 	const usernames = distinct('messages.username', { import: this.importRecord._id, type: 'messages' });
-				// 	for (const username of usernames) {
-				// 		Meteor.runAsUser(startedByUserId, () => {
-				// 			if (!this.getUserFromUsername(username)) {
-				// 				const user = Users.findOneByUsernameIgnoringCase(username);
-				// 				if (user) {
-				// 					this.users.users.push({
-				// 						rocketId: user._id,
-				// 						username: user.username,
-				// 					});
-				// 				}
-				// 			}
-				// 		});
-				// 	}
-				// }
 
 				// Import the Messages
 				super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
@@ -405,21 +386,6 @@ export class CsvImporter extends Base {
 		for (const ch of this.channels.channels) {
 			if (ch.is_direct || ch.isDirect) {
 				return ch;
-			}
-		}
-	}
-
-	getUserFromUsername(username) {
-		const u = this.getCsvUserFromUsername(username);
-		if (u) {
-			return Users.findOneById(u.rocketId, { fields: { username: 1 } });
-		}
-	}
-
-	getCsvUserFromUsername(username) {
-		for (const u of this.users.users) {
-			if (u.username === username) {
-				return u;
 			}
 		}
 	}
