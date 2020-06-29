@@ -10,10 +10,18 @@ import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusiness
 const migrateCollection = () => {
 	const LivechatOfficeHour = new Mongo.Collection('rocketchat_livechat_office_hour');
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-	const officeHours = days.map((day) => LivechatOfficeHour.findOne({ day }));
+	const officeHours = [];
+	days.forEach((day) => {
+		const officeHour = LivechatOfficeHour.findOne({ day });
+		if (officeHour && officeHour !== undefined) {
+			officeHours.push(officeHour);
+		}
+	});
+
 	if (!officeHours || !officeHours.length) {
 		return;
 	}
+
 	const businessHour = {
 		name: '',
 		active: true,
