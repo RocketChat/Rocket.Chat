@@ -1,14 +1,15 @@
 import { callbacks } from '../../../../../app/callbacks/server';
-import { MultipleBusinessHours } from '../business-hour/Multiple';
+import { MultipleBusinessHoursBehavior } from '../business-hour/Multiple';
 import { settings } from '../../../../../app/settings/server';
+import { LivechatBusinessHourBehaviors } from '../../../../../definition/ILivechatBusinessHour';
 
 callbacks.add('on-business-hour-start', (options: any = {}) => {
-	const { BusinessHourClass } = options;
-	if (!BusinessHourClass) {
+	const { BusinessHourBehaviorClass } = options;
+	if (!BusinessHourBehaviorClass) {
 		return options;
 	}
-	if (settings.get('Livechat_business_hour_type') === 'Single') {
+	if (settings.get('Livechat_business_hour_type') === LivechatBusinessHourBehaviors.SINGLE) {
 		return options;
 	}
-	return { BusinessHourClass: MultipleBusinessHours };
+	return { BusinessHourBehaviorClass: MultipleBusinessHoursBehavior };
 }, callbacks.priority.HIGH, 'livechat-on-business-hour-start');
