@@ -11,7 +11,7 @@
 .reply-counter {
 	padding: 4px;
 
-	color: var(--color-gray);
+	color: var(--color-white);
 
 	font-size: 12px;
 	font-style: italic;
@@ -21,8 +21,6 @@
 }
 
 .reply-counter {
-	color: var(--color-dark-light);
-
 	font-weight: 600;
 	margin-inline-start: 4px;
 }
