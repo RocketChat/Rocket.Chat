@@ -50,13 +50,14 @@
 			margin-bottom: 2rem;
 		}
 
-
-		&.discussions, &.pinned-messages, &.starred-messages{
+		&.discussions,
+		&.pinned-messages,
+		&.starred-messages {
 			.message {
 				padding-left: 46px;
 
 				.user-card-message {
-					left: 0
+					left: 0;
 				}
 			}
 		}
