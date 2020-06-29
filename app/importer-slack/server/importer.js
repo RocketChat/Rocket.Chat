@@ -190,7 +190,7 @@ export class SlackImporter extends Base {
 		return new Selection(this.name, selectionUsers, selectionChannels.concat(selectionGroups).concat(selectionMpims), selectionMessages);
 	}
 
-	performUserImport(user, startedByUserId) {
+	performUserImport(user) {
 		if (user.is_bot) {
 			this._saveUserIdReference(user.id, 'rocket.cat', user.name, 'rocket.cat');
 			this._saveUserTag(user.id, user.name);
@@ -201,36 +201,34 @@ export class SlackImporter extends Base {
 			return;
 		}
 
-		Meteor.runAsUser(startedByUserId, () => {
-			const newUser = {
-				emails: [],
-				importIds: [
-					user.id,
-				],
-				username: user.name,
-				name: user.profile.real_name,
-				utcOffset: user.tz_offset && (user.tz_offset / 3600),
-				avatarUrl: user.profile.image_original || user.profile.image_512,
-				deleted: user.deleted,
-				statusText: user.profile.status_text || undefined,
-				bio: user.profile.title || undefined,
-				type: 'user',
-			};
+		const newUser = {
+			emails: [],
+			importIds: [
+				user.id,
+			],
+			username: user.name,
+			name: user.profile.real_name,
+			utcOffset: user.tz_offset && (user.tz_offset / 3600),
+			avatarUrl: user.profile.image_original || user.profile.image_512,
+			deleted: user.deleted,
+			statusText: user.profile.status_text || undefined,
+			bio: user.profile.title || undefined,
+			type: 'user',
+		};
 
-			if (user.profile.email) {
-				newUser.emails.push(user.profile.email);
-			}
+		if (user.profile.email) {
+			newUser.emails.push(user.profile.email);
+		}
 
-			if (user.is_bot) {
-				newUser.roles = ['bot'];
-				newUser.type = 'bot';
-			}
+		if (user.is_bot) {
+			newUser.roles = ['bot'];
+			newUser.type = 'bot';
+		}
 
-			newImporter.addUser(newUser);
+		newImporter.addUser(newUser);
 
-			this._saveUserTag(user.id, user.name);
-			this.addCountCompleted(1);
-		});
+		this._saveUserTag(user.id, user.name);
+		this.addCountCompleted(1);
 	}
 
 	newParseMentions(newMessage) {
@@ -541,7 +539,7 @@ export class SlackImporter extends Base {
 		this._userIdReference = {};
 
 		super.updateProgress(ProgressStep.IMPORTING_USERS);
-		this.users.users.forEach((user) => this.performUserImport(user, startedByUserId));
+		this.users.users.forEach((user) => this.performUserImport(user));
 		this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 	}
 
@@ -559,27 +557,25 @@ export class SlackImporter extends Base {
 
 			channelNames.push(channel.name);
 
-			Meteor.runAsUser(startedByUserId, () => {
-				newImporter.addChannel({
-					_id: channel.is_general ? 'general' : undefined,
-					u: {
-						_id: this._replaceSlackUserId(channel.creator),
-					},
-					importIds: [
-						channel.id,
-					],
+			newImporter.addChannel({
+				_id: channel.is_general ? 'general' : undefined,
+				u: {
+					_id: this._replaceSlackUserId(channel.creator),
+				},
+				importIds: [
+					channel.id,
+				],
 
-					name: channel.name,
-					users: this._replaceSlackUserIds(channel.members),
-					t: 'c',
-					topic: channel.topic?.value || undefined,
-					description: channel.purpose?.value || undefined,
-					ts: channel.created ? new Date(channel.created * 1000) : undefined,
-					archived: channel.is_archived,
-				});
-
-				this.addCountCompleted(1);
+				name: channel.name,
+				users: this._replaceSlackUserIds(channel.members),
+				t: 'c',
+				topic: channel.topic?.value || undefined,
+				description: channel.purpose?.value || undefined,
+				ts: channel.created ? new Date(channel.created * 1000) : undefined,
+				archived: channel.is_archived,
 			});
+
+			this.addCountCompleted(1);
 		});
 
 		this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });

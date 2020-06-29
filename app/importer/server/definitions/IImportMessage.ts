@@ -1,13 +1,4 @@
 export type IImportedId = 'string';
-// export interface IImportMessageIdentification {
-// 	id?: string;
-// 	rid?: string;
-// 	// tmid?: string;
-// 	u?: {
-// 		_id?: string;
-// 		username?: string;
-// 	};
-// }
 
 export interface IImportMessageReaction {
 	name: string;
@@ -36,7 +27,6 @@ export interface IImportMessage {
 	rid: IImportedId;
 	u: {
 		_id: IImportedId;
-		// username?: string;
 	};
 
 	msg: string;
