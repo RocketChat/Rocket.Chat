@@ -39,7 +39,6 @@ export abstract class AbstractBusinessHourBehavior {
 
 	async onDisableBusinessHours(): Promise<void> {
 		await this.UsersRepository.removeBusinessHoursFromAllUsers();
-		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
