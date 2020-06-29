@@ -83,7 +83,7 @@ AccountBox.addRoute({
 
 AccountBox.addRoute({
 	name: 'livechat-business-hour-edit',
-	path: '/business-hours/:_id/edit',
+	path: '/business-hours/:_id/:type/edit',
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Edit_Business_Hour',
 	pageTemplate: 'livechatBusinessHoursForm',

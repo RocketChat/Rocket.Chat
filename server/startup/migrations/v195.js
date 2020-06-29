@@ -1,19 +1,31 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
 import { Mongo } from 'meteor/mongo';
 
 import { Migrations } from '../../../app/migrations/server';
 import { Permissions, Settings } from '../../../app/models/server';
 import { LivechatBusinessHours } from '../../../app/models/server/raw';
-import { LivechatBussinessHourTypes } from '../../../definition/ILivechatBusinessHour';
+import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
 
 const migrateCollection = () => {
 	const LivechatOfficeHour = new Mongo.Collection('rocketchat_livechat_office_hour');
-	const officeHours = Promise.await(LivechatOfficeHour.rawCollection().find().toArray());
+	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+	const officeHours = [];
+	days.forEach((day) => {
+		const officeHour = LivechatOfficeHour.findOne({ day });
+		if (officeHour) {
+			officeHours.push(officeHour);
+		}
+	});
+
+	if (!officeHours || officeHours.length === 0) {
+		return;
+	}
+
 	const businessHour = {
 		name: '',
 		active: true,
-		type: LivechatBussinessHourTypes.SINGLE,
+		type: LivechatBusinessHourTypes.DEFAULT,
 		ts: new Date(),
 		workHours: officeHours.map((officeHour) => ({
 			day: officeHour.day,
@@ -29,7 +41,7 @@ const migrateCollection = () => {
 				},
 			},
 			finish: {
-				time: '20:00',
+				time: officeHour.finish,
 				utc: {
 					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
 					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
@@ -43,15 +55,15 @@ const migrateCollection = () => {
 			open: officeHour.open,
 		})),
 		timezone: {
-			name: '',
+			name: moment.tz.guess(),
 			utc: moment().utcOffset() / 60,
 		},
 	};
-	if (LivechatBusinessHours.find({ type: LivechatBussinessHourTypes.SINGLE }).count() === 0) {
+	if (LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count() === 0) {
 		businessHour._id = new ObjectId().toHexString();
 		LivechatBusinessHours.insertOne(businessHour);
 	} else {
-		LivechatBusinessHours.update({ type: LivechatBussinessHourTypes.SINGLE }, businessHour);
+		LivechatBusinessHours.update({ type: LivechatBusinessHourTypes.DEFAULT }, { $set: { ...businessHour } });
 	}
 	try {
 		Promise.await(LivechatOfficeHour.rawCollection().drop());

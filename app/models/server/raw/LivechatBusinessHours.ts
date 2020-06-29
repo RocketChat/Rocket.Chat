@@ -4,20 +4,24 @@ import { BaseRaw } from './BaseRaw';
 import {
 	IBusinessHourWorkHour,
 	ILivechatBusinessHour,
-	LivechatBussinessHourTypes,
+	LivechatBusinessHourTypes,
 } from '../../../../definition/ILivechatBusinessHour';
 
-export interface IWorkHoursForCreateCronJobs {
+export interface IWorkHoursCronJobsItem {
 	day: string;
-	start: string[];
-	finish: string[];
+	times: string[];
+}
+
+export interface IWorkHoursCronJobsWrapper {
+	start: IWorkHoursCronJobsItem[];
+	finish: IWorkHoursCronJobsItem[];
 }
 
 export class LivechatBusinessHoursRaw extends BaseRaw {
 	public readonly col!: Collection<ILivechatBusinessHour>;
 
-	findOneDefaultBusinessHour(): Promise<ILivechatBusinessHour> {
-		return this.findOne({ type: LivechatBussinessHourTypes.SINGLE });
+	findOneDefaultBusinessHour(options?: any): Promise<ILivechatBusinessHour> {
+		return this.findOne({ type: LivechatBusinessHourTypes.DEFAULT }, options);
 	}
 
 	findActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
@@ -34,7 +38,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 
 	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
 		return this.find({
-			type: LivechatBussinessHourTypes.SINGLE,
+			type: LivechatBusinessHourTypes.DEFAULT,
 			active: true,
 			workHours: {
 				$elemMatch: {
@@ -70,7 +74,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 	// TODO: Remove this function after remove the deprecated method livechat:saveOfficeHours
 	async updateDayOfGlobalBusinessHour(day: Omit<IBusinessHourWorkHour, 'code'>): Promise<any> {
 		return this.col.updateOne({
-			type: LivechatBussinessHourTypes.SINGLE,
+			type: LivechatBusinessHourTypes.DEFAULT,
 			'workHours.day': day.day,
 		}, {
 			$set: {
@@ -81,35 +85,54 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 		});
 	}
 
-	findHoursToScheduleJobs(): Promise<IWorkHoursForCreateCronJobs[]> {
+	findHoursToScheduleJobs(): Promise<IWorkHoursCronJobsWrapper[]> {
 		return this.col.aggregate([
-			{ $match: { active: true } },
 			{
-				$project: { _id: 0, workHours: 1 },
-			},
-			{
-				$unwind: { path: '$workHours' },
-			},
-			{ $match: { 'workHours.open': true } },
-			{
-				$group: {
-					_id: { day: '$workHours.start.cron.dayOfWeek' },
-					start: { $addToSet: '$workHours.start.cron.time' },
-					finish: { $addToSet: '$workHours.finish.cron.time' },
-				},
-			},
-			{
-				$project: {
-					_id: 0,
-					day: '$_id.day',
-					start: 1,
-					finish: 1,
+				$facet: {
+					start: [
+						{ $match: { active: true } },
+						{ $project: { _id: 0, workHours: 1 } },
+						{ $unwind: { path: '$workHours' } },
+						{ $match: { 'workHours.open': true } },
+						{
+							$group: {
+								_id: { day: '$workHours.start.cron.dayOfWeek' },
+								times: { $addToSet: '$workHours.start.cron.time' },
+							},
+						},
+						{
+							$project: {
+								_id: 0,
+								day: '$_id.day',
+								times: 1,
+							},
+						},
+					],
+					finish: [
+						{ $match: { active: true } },
+						{ $project: { _id: 0, workHours: 1 } },
+						{ $unwind: { path: '$workHours' } },
+						{ $match: { 'workHours.open': true } },
+						{
+							$group: {
+								_id: { day: '$workHours.finish.cron.dayOfWeek' },
+								times: { $addToSet: '$workHours.finish.cron.time' },
+							},
+						},
+						{
+							$project: {
+								_id: 0,
+								day: '$_id.day',
+								times: 1,
+							},
+						},
+					],
 				},
 			},
 		]).toArray() as any;
 	}
 
-	async findActiveBusinessHoursToOpen(day: string, start: string, type?: LivechatBussinessHourTypes, options?: any): Promise<ILivechatBusinessHour[]> {
+	async findActiveBusinessHoursToOpen(day: string, start: string, type?: LivechatBusinessHourTypes, options?: any): Promise<ILivechatBusinessHour[]> {
 		const query: Record<string, any> = {
 			active: true,
 			workHours: {
@@ -126,7 +149,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw {
 		return this.col.find(query, options).toArray();
 	}
 
-	async findActiveBusinessHoursToClose(day: string, finish: string, type?: LivechatBussinessHourTypes, options?: any): Promise<ILivechatBusinessHour[]> {
+	async findActiveBusinessHoursToClose(day: string, finish: string, type?: LivechatBusinessHourTypes, options?: any): Promise<ILivechatBusinessHour[]> {
 		const query: Record<string, any> = {
 			active: true,
 			workHours: {

@@ -1,33 +1,37 @@
-import { IBusinessHour } from './IBusinessHour';
-import { SingleBusinessHour } from './Single';
+import { IBusinessHourBehavior } from './IBusinessHourBehavior';
+import { SingleBusinessHourBehavior } from './Single';
 import { ILivechatBusinessHour } from '../../../../../../definition/ILivechatBusinessHour';
 
 class BusinessHoursManager {
-	private businessHour: IBusinessHour;
+	private behavior: IBusinessHourBehavior;
 
-	constructor(businessHour: IBusinessHour) {
-		this.setBusinessHourManager(businessHour);
+	constructor(businessHour: IBusinessHourBehavior) {
+		this.setBusinessHourBehavior(businessHour);
 	}
 
-	setBusinessHourManager(businessHour: IBusinessHour): void {
-		this.registerBusinessHourMethod(businessHour);
+	setBusinessHourBehavior(businessHour: IBusinessHourBehavior): void {
+		this.registerBusinessHourBehavior(businessHour);
 	}
 
-	registerBusinessHourMethod(businessHour: IBusinessHour): void {
-		this.businessHour = businessHour;
+	registerBusinessHourBehavior(behavior: IBusinessHourBehavior): void {
+		this.behavior = behavior;
 	}
 
 	getTemplate(): string {
-		return this.businessHour.getView();
+		return this.behavior.getView();
 	}
 
-	shouldShowCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
-		return this.businessHour.shouldShowCustomTemplate(businessHourData);
+	showCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
+		return this.behavior.showCustomTemplate(businessHourData);
 	}
 
-	shouldShowBackButton(): boolean {
-		return this.businessHour.shouldShowBackButton();
+	showBackButton(): boolean {
+		return this.behavior.showBackButton();
+	}
+
+	showTimezoneTemplate(): boolean {
+		return this.behavior.showTimezoneTemplate();
 	}
 }
 
-export const businessHourManager = new BusinessHoursManager(new SingleBusinessHour() as IBusinessHour);
+export const businessHourManager = new BusinessHoursManager(new SingleBusinessHourBehavior());
