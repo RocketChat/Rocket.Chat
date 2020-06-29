@@ -12,7 +12,7 @@ export const roomExit = function() {
 	Tracker.afterFlush(() => {
 		const context = FlowRouter.current();
 
-		if (oldRoute && testIfPathAreEquals(oldRoute.params.name || oldRoute.params.rid, context.params.name || context.params.rid)) {
+		if (oldRoute && testIfPathAreEquals(oldRoute.params.name || oldRoute.params.rid || oldRoute.params.id, context.params.name || context.params.rid || context.params.id)) {
 			return;
 		}
 		// 7370 - Close flex-tab when opening a room on mobile UI
