@@ -4,7 +4,7 @@ export interface IImportChannel {
 		_id: string;
 		// username?: string;
 	};
-	name: string;
+	name?: string;
 	users: Array<string>;
 	importIds: Array<string>;
 	t: string;

@@ -177,12 +177,11 @@ export class CsvImporter extends Base {
 
 	startImport(importSelection) {
 		newImporter = new NewImporterBase();
-		newImporter.clearImportData(false);
+		newImporter.clearImportData();
 
 		this.users = RawImports.findOne({ import: this.importRecord._id, type: 'users' });
 		this.channels = RawImports.findOne({ import: this.importRecord._id, type: 'channels' });
 		this.reloadCount();
-
 
 		const rawCollection = this.collection.model.rawCollection();
 		const distinct = Meteor.wrapAsync(rawCollection.distinct, rawCollection);
@@ -221,17 +220,18 @@ export class CsvImporter extends Base {
 						continue;
 					}
 
-					Meteor.runAsUser(startedByUserId, () => {
-						newImporter.addUser({
-							emails: [
-								u.email,
-							],
-							username: u.username,
-							name: u.name,
-						});
-
-						super.addCountCompleted(1);
+					newImporter.addUser({
+						importIds: [
+							u.username,
+						],
+						emails: [
+							u.email,
+						],
+						username: u.username,
+						name: u.name,
 					});
+
+					super.addCountCompleted(1);
 				}
 				this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 
@@ -247,21 +247,19 @@ export class CsvImporter extends Base {
 						continue;
 					}
 
-					Meteor.runAsUser(startedByUserId, () => {
-						newImporter.addChannel({
-							id: c.id,
-							u: {
-								username: c.creator,
-							},
-						},{
-							name: c.name,
-							users: c.members,
-							t: c.isPrivate ? 'p' : 'c',
-						});
-
-
-						super.addCountCompleted(1);
+					newImporter.addChannel({
+						importIds: [
+							c.id,
+						],
+						u: {
+							_id: c.creator,
+						},
+						name: c.name,
+						users: c.members,
+						t: c.isPrivate ? 'p' : 'c',
 					});
+
+					super.addCountCompleted(1);
 				}
 				this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
 
@@ -319,45 +317,27 @@ export class CsvImporter extends Base {
 						return;
 					}
 
-					// if (ch.toLowerCase() === 'directmessages') {
-					// 	return;
-					// }
+					if (ch.toLowerCase() === 'directmessages') {
+						return;
+					}
 
-					const room = Rooms.findOneByNonValidatedName(csvChannel.name);
-					const rid = room && room._id;
-					// const room = Rooms.findOneById(csvChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
-					// const timestamps = {};
+					super.updateRecord({ messagesstatus: `${ ch }/${ msgGroupData }.${ pack.messages.length }` });
+					for (const msg of pack.messages) {
+						const newMessage = {
+							rid: csvChannel.id,
+							u: {
+								_id: msg.username,
+							},
+							ts: new Date(parseInt(msg.ts)),
+							msg: msg.text,
+						};
 
-					Meteor.runAsUser(startedByUserId, () => {
-						super.updateRecord({ messagesstatus: `${ ch }/${ msgGroupData }.${ pack.messages.length }` });
-						for (const msg of pack.messages) {
-							const user = this.getCsvUserFromUsername(msg.username);
-
-							const identification = {
-								rid: csvChannel.id,
-								u: {
-									_id: user?.id,
-									username: msg.username,
-								},
-							};
-
-							const newMessage = {
-								rid,
-								ts: new Date(parseInt(msg.ts)),
-								msg: msg.text,
-							};
-
-							newImporter.addMessage(identification, newMessage);
-
-							super.addCountCompleted(1);
-						}
-					});
+						newImporter.addMessage(newMessage);
+						super.addCountCompleted(1);
+					}
 				});
 
-
-				newImporter.convertUsers(startedByUserId);
-				// newImporter.convertChannels(startedByUserId);
-				// newImporter.convertMessages(startedByUserId);
+				newImporter.convertData(startedByUserId);
 
 				super.updateProgress(ProgressStep.FINISHING);
 				super.updateProgress(ProgressStep.DONE);
@@ -365,10 +345,6 @@ export class CsvImporter extends Base {
 				this.logger.error(e);
 				super.updateProgress(ProgressStep.ERROR);
 			}
-
-			// Meteor.defer(() => {
-			// 	newImporter.clearImportData(true);
-			// });
 
 			const timeTook = Date.now() - started;
 			this.logger.log(`CSV Import took ${ timeTook } milliseconds.`);
@@ -378,18 +354,6 @@ export class CsvImporter extends Base {
 	}
 
 	_importDirectMessagesFile(msgGroupData, msgs, startedByUserId) {
-		const dmUsers = {};
-
-		const findUser = (username) => {
-			if (!dmUsers[username]) {
-				// const user = this.getUserFromUsername(username) || Users.findOneByUsername(username, { fields: { username: 1 } });
-				const user = this.getCsvUserFromUsername(username);
-				dmUsers[username] = user;
-			}
-
-			return dmUsers[username];
-		};
-
 		const dmRooms = new Map();
 
 		Meteor.runAsUser(startedByUserId, () => {
@@ -399,34 +363,26 @@ export class CsvImporter extends Base {
 
 				if (!dmRooms.has(sourceId)) {
 					newImporter.addChannel({
-						id: sourceId,
-					}, {
+						importIds: [
+							sourceId,
+						],
 						users: [msg.username, msg.otherUsername],
 						t: 'd',
 					});
 
-					const roomId = Rooms.findDirectRoomContainingAllUsernames([msg.username, msg.otherUsername]);
-					dmRooms.set(sourceId, roomId || true);
+					dmRooms.set(sourceId, true);
 				}
 
-				const rid = dmRooms.get(sourceId);
-
-				const user = this.getCsvUserFromUsername(msg.username);
-				const identification = {
+				const newMessage = {
 					rid: sourceId,
 					u: {
-						_id: user?.id,
-						username: msg.username,
+						_id: msg.username,
 					},
-				};
-
-				const newMessage = {
-					...rid !== true && { rid },
 					ts: new Date(parseInt(msg.ts)),
 					msg: msg.text,
 				};
 
-				newImporter.addMessage(identification, newMessage);
+				newImporter.addMessage(newMessage);
 
 				super.addCountCompleted(1);
 			}

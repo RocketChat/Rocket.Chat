@@ -833,7 +833,7 @@ export class SlackImporter extends Base {
 
 	startImport(importSelection) {
 		newImporter = new NewImporterBase();
-		newImporter.clearImportData(false);
+		newImporter.clearImportData();
 
 		const bots = this.collection.findOne({ import: this.importRecord._id, type: 'bots' });
 		if (bots) {

@@ -394,15 +394,6 @@ export class ImporterBase {
 	}
 
 	convertMessages(): void {
-		// const rooms = ImportData.model.rawCollection().find({
-		// 	dataType: 'message',
-		// 	$or: [
-		// 		{
-
-		// 		}
-		// 	]
-		// });
-
 		const messages = ImportData.find({ dataType: 'message' });
 		messages.forEach(({ data: m, _id }: IImportMessageRecord) => {
 			try {
@@ -425,7 +416,6 @@ export class ImporterBase {
 				const channels = m.channels && this.convertMessageChannels(m);
 
 				const msgObj: IMessage = {
-					_id: m._id || undefined,
 					rid,
 					u: {
 						_id: creator._id,
@@ -449,6 +439,10 @@ export class ImporterBase {
 					bot: m.bot,
 					emoji: m.emoji,
 				};
+
+				if (m._id) {
+					msgObj._id = m._id;
+				}
 
 				if (m.reactions) {
 					msgObj.reactions = this.convertMessageReactions(m.reactions);
@@ -738,17 +732,24 @@ export class ImporterBase {
 		this.convertUsers();
 		this.convertChannels(startedByUserId);
 		this.convertMessages();
+
+		Meteor.defer(() => {
+			this.clearSuccessfullyImportedData();
+		});
 	}
 
-	clearImportData(keepErrors = false): void {
-		if (keepErrors) {
-			ImportData.model.rawCollection().remove({
-				errors: {
-					$exists: false,
-				},
-			});
-		} else {
-			ImportData.model.rawCollection().remove({});
-		}
+	clearImportData(): void {
+		const rawCollection = ImportData.model.rawCollection();
+		const remove = Meteor.wrapAsync(rawCollection.remove, rawCollection);
+
+		remove({});
+	}
+
+	clearSuccessfullyImportedData(): void {
+		ImportData.model.rawCollection().remove({
+			errors: {
+				$exists: false,
+			},
+		});
 	}
 }
