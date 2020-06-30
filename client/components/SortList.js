@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Icon, ToggleSwitch, RadioButton, Box, Flex, Margins, CheckBox } from '@rocket.chat/fuselage';
+import { Icon, ToggleSwitch, RadioButton, Box, Flex, Margins, CheckBox, Divider } from '@rocket.chat/fuselage';
 
 
 import { useTranslation } from '../contexts/TranslationContext';
@@ -34,8 +34,10 @@ const style = {
 export function SortList() {
 	return <>
 		<div className='rc-popover__column'>
-			<SortModeList/>
 			<ViewModeList/>
+			<Divider/>
+			<SortModeList/>
+			<Divider/>
 			<GroupingList/>
 		</div>
 	</>;
