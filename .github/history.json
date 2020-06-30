@@ -46655,6 +46655,26 @@
           ]
         }
       ]
+    },
+    "3.4.0-rc.5": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.15.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18077",
+          "title": "Regression: Fix update last message on delete",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
