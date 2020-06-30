@@ -2,10 +2,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { call, normalizeThreadMessage } from '../../ui-utils/client';
+import { call } from '../../ui-utils/client';
 import { Messages } from '../../models/client';
-
 import './messageThread.html';
+import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
 
 const findParentMessage = (() => {
 	const waiting = [];
@@ -22,7 +22,7 @@ const findParentMessage = (() => {
 	const get = async (tmid) => {
 		getMessages();
 		const messages = await pending;
-		return normalizeThreadMessage(messages.find(({ _id }) => _id === tmid));
+		return messages.find(({ _id }) => _id === tmid);
 	};
 
 
@@ -30,7 +30,7 @@ const findParentMessage = (() => {
 		const message = Messages.findOne({ _id: tmid });
 
 		if (message) {
-			return normalizeThreadMessage(message);
+			return message;
 		}
 
 		if (waiting.indexOf(tmid) === -1) {
@@ -44,7 +44,7 @@ Template.messageThread.helpers({
 	parentMessage() {
 		const { parentMessage } = Template.instance();
 		if (parentMessage) {
-			return parentMessage.get();
+			return normalizeThreadTitle(parentMessage.get());
 		}
 	},
 });
