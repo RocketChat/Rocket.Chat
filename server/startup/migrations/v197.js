@@ -1,45 +1,35 @@
-import { Settings } from '../../../app/models/server';
+import moment from 'moment-timezone';
+
 import { Migrations } from '../../../app/migrations/server';
+import { LivechatBusinessHours } from '../../../app/models/server/raw';
+import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
+
+const updateBusinessHours = async () => {
+	await LivechatBusinessHours.update({ type: 'multiple' }, {
+		$set: {
+			type: LivechatBusinessHourTypes.CUSTOM,
+		},
+	}, { multi: true });
+
+	const defaultBusinessHour = await LivechatBusinessHours.findOne({ $or: [{ type: 'single' }, { type: 'default' }] });
+	if (!defaultBusinessHour) {
+		return;
+	}
+
+	await LivechatBusinessHours.update({ _id: defaultBusinessHour._id }, {
+		$set: {
+			type: LivechatBusinessHourTypes.DEFAULT,
+			timezone: {
+				name: moment.tz.guess(),
+				utc: String(moment().utcOffset() / 60),
+			},
+		},
+	});
+};
 
 Migrations.add({
 	version: 197,
-	up: () => {
-		const discussion = Settings.findOneById('RetentionPolicy_DoNotExcludeDiscussion');
-		const thread = Settings.findOneById('RetentionPolicy_DoNotExcludeThreads');
-		const pinned = Settings.findOneById('RetentionPolicy_ExcludePinned');
-
-		if (discussion) {
-			Settings.upsert({
-				_id: 'RetentionPolicy_DoNotPruneDiscussion',
-			}, {
-				$set: {
-					value: discussion.value,
-				},
-			});
-		}
-
-		if (thread) {
-			Settings.upsert({
-				_id: 'RetentionPolicy_DoNotPruneThreads',
-			}, {
-				$set: {
-					value: thread.value,
-				},
-			});
-		}
-
-		if (pinned) {
-			Settings.upsert({
-				_id: 'RetentionPolicy_DoNotPrunePinned',
-			}, {
-				$set: {
-					value: pinned.value,
-				},
-			});
-		}
-
-		Settings.remove({
-			_id: { $in: ['RetentionPolicy_DoNotExcludeDiscussion', 'RetentionPolicy_DoNotExcludeThreads', 'RetentionPolicy_ExcludePinned'] },
-		});
+	up() {
+		Promise.await(updateBusinessHours());
 	},
 });
