@@ -251,10 +251,10 @@ const AccountProfilePage = (props) => {
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<AccountProfileForm values={values} handlers={handlers} user={user} settings={settings} setCanSave={setCanSave}/>
 					<ButtonGroup stretch mb='x12'>
-						<Button ghost onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
+						<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
 							{t('Logout_Others')}
 						</Button>
-						{allowDeleteOwnAccount && <Button ghost danger onClick={handleDeleteOwnAccount}>
+						{allowDeleteOwnAccount && <Button danger onClick={handleDeleteOwnAccount}>
 							<Icon name='trash' size='x20' mie='x4'/>
 							{t('Delete_my_account')}
 						</Button>}

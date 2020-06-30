@@ -180,7 +180,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, s
 					</Field.Error>
 				</Field>, [t, email, handleEmail, verified, allowEmailChange, emailError])}
 				{useMemo(() => !verified && <Field>
-					<Button disabled={email !== previousEmail} ghost onClick={handleSendConfirmationEmail}>
+					<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
 						{t('Resend_verification_email')}
 					</Button>
 				</Field>, [verified, t, email, previousEmail, handleSendConfirmationEmail])}
