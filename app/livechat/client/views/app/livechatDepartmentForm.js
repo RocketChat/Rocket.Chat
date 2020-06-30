@@ -132,6 +132,9 @@ Template.livechatDepartmentForm.helpers({
 			return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
 		};
 	},
+	channelSelector() {
+		return (expression) => ({ name: expression });
+	},
 });
 
 Template.livechatDepartmentForm.events({

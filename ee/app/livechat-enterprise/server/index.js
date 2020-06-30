@@ -10,6 +10,7 @@ import './methods/removeUnit';
 import './methods/saveUnit';
 import './methods/savePriority';
 import './methods/removePriority';
+import './methods/removeBusinessHour';
 import LivechatUnit from '../../models/server/models/LivechatUnit';
 import LivechatTag from '../../models/server/models/LivechatTag';
 import LivechatUnitMonitors from '../../models/server/models/LivechatUnitMonitors';
@@ -28,6 +29,7 @@ import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
 import './lib/routing/LoadBalancing';
 import { onLicense } from '../../license/server';
+import './business-hour';
 
 onLicense('livechat-enterprise', () => {
 	require('./api');

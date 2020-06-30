@@ -35,6 +35,7 @@ export function UserInfoWithData({ uid, ...props }) {
 
 	const onChange = () => setCache(new Date());
 
+	// TODO: remove cache. Is necessary for data invalidation
 	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId: uid }), [uid, cache]));
 
 	if (state === ENDPOINT_STATES.LOADING) {
@@ -59,7 +60,7 @@ export function UserInfo({ data, onChange, ...props }) {
 	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
-		<Box display='flex' flexDirection='column' alignItems='center' withTruncatedText>
+		<Box display='flex' flexDirection='column' alignItems='center' flexShrink={0} withTruncatedText>
 			<Margins block='x2' inline='auto'>
 				<Avatar size={'x120'} title={data.username} url={avatarUrl}/>
 				<Box fontScale='h1' withTruncatedText>{data.name || data.username}</Box>
@@ -69,9 +70,9 @@ export function UserInfo({ data, onChange, ...props }) {
 		</Box>
 
 		<UserInfoActions isActive={data.active} isAdmin={data.roles.includes('admin')} _id={data._id} username={data.username} onChange={onChange}/>
-		<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16' withTruncatedText>
+		<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16' withTruncatedText flexShrink={0}>
 			<Margins blockEnd='x4'>
-				{data.bio && data.bio.trim().length > 0 && <MarkdownText fontScale='s1'>{data.bio}</MarkdownText>}
+				{data.bio && data.bio.trim().length > 0 && <MarkdownText withTruncatedText fontScale='s1' content={data.bio} />}
 				{!!data.roles.length && <>
 					<Box fontScale='micro' color='hint' mbs='none'>{t('Roles')}</Box>
 					<Box display='flex' flexDirection='row' flexWrap='wrap'>

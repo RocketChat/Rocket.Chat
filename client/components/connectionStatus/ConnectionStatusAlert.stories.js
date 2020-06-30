@@ -2,65 +2,59 @@ import { action } from '@storybook/addon-actions';
 import React from 'react';
 
 import { ConnectionStatusContext } from '../../contexts/ConnectionStatusContext';
-import { ConnectionStatusAlert } from './ConnectionStatusAlert';
+import ConnectionStatusAlert from './ConnectionStatusAlert';
+
+const stateDecorator = ({
+	status = 'connected',
+} = {}) =>
+	(storyFn) =>
+		<ConnectionStatusContext.Provider
+			value={{
+				connected: status === 'connected',
+				status,
+				retryTime: status === 'waiting' && Date.now() + 300000,
+				reconnect: action('reconnect'),
+			}}
+		>
+			{storyFn()}
+		</ConnectionStatusContext.Provider>;
 
 export default {
-	title: 'connectionStatus/ConnectionStatusAlert',
+	title: 'components/connectionStatus/ConnectionStatusAlert',
 	component: ConnectionStatusAlert,
 };
 
-export const connected = () => <ConnectionStatusAlert />;
-connected.story = {
+export const Connected = () => <ConnectionStatusAlert />;
+Connected.story = {
 	decorators: [
-		(fn) => <ConnectionStatusContext.Provider children={fn()} value={{
-			connected: true,
-			status: 'connected',
-			reconnect: action('reconnect'),
-		}} />,
+		stateDecorator(),
 	],
 };
 
-export const connecting = () => <ConnectionStatusAlert />;
-connecting.story = {
+export const Connecting = () => <ConnectionStatusAlert />;
+Connecting.story = {
 	decorators: [
-		(fn) => <ConnectionStatusContext.Provider children={fn()} value={{
-			connected: false,
-			status: 'connecting',
-			reconnect: action('reconnect'),
-		}} />,
+		stateDecorator({ status: 'connecting' }),
 	],
 };
 
-export const failed = () => <ConnectionStatusAlert />;
-failed.story = {
+export const Failed = () => <ConnectionStatusAlert />;
+Failed.story = {
 	decorators: [
-		(fn) => <ConnectionStatusContext.Provider children={fn()} value={{
-			connected: false,
-			status: 'failed',
-			reconnect: action('reconnect'),
-		}} />,
+		stateDecorator({ status: 'failed' }),
 	],
 };
 
-export const waiting = () => <ConnectionStatusAlert />;
-waiting.story = {
+export const Waiting = () => <ConnectionStatusAlert />;
+Waiting.story = {
 	decorators: [
-		(fn) => <ConnectionStatusContext.Provider children={fn()} value={{
-			connected: false,
-			status: 'waiting',
-			retryTime: Date.now() + 300000,
-			reconnect: action('reconnect'),
-		}} />,
+		stateDecorator({ status: 'waiting' }),
 	],
 };
 
-export const offline = () => <ConnectionStatusAlert />;
-offline.story = {
+export const Offline = () => <ConnectionStatusAlert />;
+Offline.story = {
 	decorators: [
-		(fn) => <ConnectionStatusContext.Provider children={fn()} value={{
-			connected: false,
-			status: 'offline',
-			reconnect: action('reconnect'),
-		}} />,
+		stateDecorator({ status: 'offline' }),
 	],
 };

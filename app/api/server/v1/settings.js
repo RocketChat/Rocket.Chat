@@ -64,6 +64,21 @@ API.v1.addRoute('settings.oauth', { authRequired: false }, {
 	},
 });
 
+API.v1.addRoute('settings.addCustomOAuth', { authRequired: true }, {
+	post() {
+		if (!this.requestParams().name || !this.requestParams().name.trim()) {
+			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('addOAuthService', this.requestParams().name, this.userId);
+		});
+
+
+		return API.v1.success();
+	},
+});
+
 API.v1.addRoute('settings', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();

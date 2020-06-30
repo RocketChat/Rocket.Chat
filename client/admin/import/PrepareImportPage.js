@@ -50,8 +50,8 @@ function PrepareUsers({ usersCount, users, setUsers }) {
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState(25);
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), []);
-	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
+	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <>
 		<Table>
@@ -118,8 +118,8 @@ function PrepareChannels({ channels, channelsCount, setChannels }) {
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState(25);
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), []);
-	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), []);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
+	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return channels.length && <><Table>
 		<Table.Head>
@@ -213,7 +213,7 @@ function PrepareImportPage() {
 		return () => {
 			streamer.removeListener('progress', handleProgressUpdated);
 		};
-	}, []);
+	}, [setProgressRate]);
 
 	useEffect(() => {
 		const loadImportFileData = async () => {
@@ -286,7 +286,7 @@ function PrepareImportPage() {
 		};
 
 		loadCurrentOperation();
-	}, []);
+	}, [getCurrentImportOperation, getImportFileData, handleError, importHistoryRoute, importProgressRoute, newImportRoute, setMessageCount, setPreparing, setProgressRate, setStatus, t]);
 
 	const handleBackToImportsButtonClick = () => {
 		importHistoryRoute.push();

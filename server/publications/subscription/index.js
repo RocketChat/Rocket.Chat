@@ -7,6 +7,7 @@ export const fields = {
 	t: 1,
 	ts: 1,
 	ls: 1,
+	lr: 1,
 	name: 1,
 	fname: 1,
 	rid: 1,
@@ -38,6 +39,8 @@ export const fields = {
 	ignored: 1,
 	E2EKey: 1,
 	tunread: 1,
+	tunreadGroup: 1,
+	tunreadUser: 1,
 };
 
 Meteor.methods({

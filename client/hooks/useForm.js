@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useCallback } from 'react';
 
 import { capitalize } from '../helpers/capitalize';
@@ -7,6 +8,7 @@ const getValue = (e) => (e.currentTarget ? e.currentTarget.value : e);
 export const useForm = (obj) => {
 	const resetCallbacks = [];
 	const hasUnsavedChanges = [];
+	// TODO: use useReducer hook as we can't assure that obj will have the same structure on each render
 	const ret = Object.keys(obj).sort().reduce((ret, key) => {
 		const value = obj[key];
 		const [data, setData] = useState(value);

@@ -27,4 +27,8 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw {
 		};
 		return this.find(query, options);
 	}
+
+	findByDepartmentIds(departmentIds, options) {
+		return this.find({ departmentId: { $in: departmentIds } }, options);
+	}
 }

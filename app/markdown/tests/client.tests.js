@@ -15,7 +15,7 @@ const italicWrapper = (text) => wrapper(`<em>${ text }</em>`, '_');
 const strikeWrapper = (text) => wrapper(`<strike>${ text }</strike>`, '~');
 const headerWrapper = (text, level) => `<h${ level }>${ text }</h${ level }>`;
 const quoteWrapper = (text) => `<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>${ text }</blockquote>`;
-const linkWrapped = (link, title) => `<a href="${ s.escapeHTML(link) }" target="_blank" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`;
+const linkWrapped = (link, title) => `<a href="${ link }" target="_blank" rel="noopener noreferrer">${ title }</a>`;
 const inlinecodeWrapper = (text) => wrapper(`<span><code class="code-colors inline">${ text }</code></span>`, '`');
 const codeWrapper = (text, lang) => `<pre><code class='code-colors hljs ${ lang }'><span class='copyonly'>\`\`\`<br></span>${ text }<span class='copyonly'><br>\`\`\`</span></code></pre>`;
 
@@ -188,7 +188,7 @@ const link = {
 	'[Text](http://invalid link)': '[Text](http://invalid link)',
 	'[Text](http://link)': linkWrapped('http://link', 'Text'),
 	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
-	'[ Open Site For Rocket.Chat](https://open.rocket.chat/ )': linkWrapped('https://open.rocket.chat/ ', ' Open Site For Rocket.Chat'),
+	'[ Open Site For Rocket.Chat ](https://open.rocket.chat/)': linkWrapped('https://open.rocket.chat/', ' Open Site For Rocket.Chat '),
 	'[Rocket.Chat Site](https://rocket.chat/)': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
 	'[Testing Entry on Rocket.Chat Docs Site](https://rocket.chat/docs/developer-guides/testing/#testing)': linkWrapped('https://rocket.chat/docs/developer-guides/testing/#testing', 'Testing Entry on Rocket.Chat Docs Site'),
 	'[](http://linkText)': '[](http://linkText)',
@@ -201,7 +201,13 @@ const link = {
 	'[Open Site For Rocket.Chat](open.rocket.chat/)': '[Open Site For Rocket.Chat](open.rocket.chat/)',
 	'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)': '[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)',
 	'[Text](http://link?param1=1&param2=2)': linkWrapped('http://link?param1=1&param2=2', 'Text'),
+	'[Testing Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation))': linkWrapped('https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)', 'Testing Double parentheses'),
+	'[Testing data after Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla)': linkWrapped('https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla', 'Testing data after Double parentheses'),
 };
+
+Object.entries(link).forEach(([key, value]) => {
+	link[`before (test) ${ key } after (test)`] = `before (test) ${ value } after (test)`;
+});
 
 const inlinecode = {
 	'`code`': inlinecodeWrapper('code'),
@@ -221,8 +227,8 @@ const code = {
 	'```code\n```': codeWrapper('<span class="hljs-keyword">code</span>\n', 'clean'),
 	'```\ncode```': codeWrapper('<span class="hljs-keyword">code</span>', 'clean'),
 	'```javascript\nvar a = \'log\';\nconsole.log(a);```': codeWrapper('<span class="hljs-keyword">var</span> a = <span class="hljs-string">\'log\'</span>;\n<span class="hljs-built_in">console</span>.log(a);', 'javascript'),
-	'```*code*```': codeWrapper('*<span class="hljs-meta">code</span>*', 'armasm'),
-	'```**code**```': codeWrapper('**<span class="hljs-meta">code</span>**', 'armasm'),
+	'```*code*```': codeWrapper('<span class="hljs-emphasis">*code*</span>', 'markdown'),
+	'```**code**```': codeWrapper('<span class="hljs-strong">**code**</span>', 'markdown'),
 	'```_code_```': codeWrapper('<span class="hljs-variable">_code_</span>', 'sqf'),
 	'```__code__```': codeWrapper('<span class="hljs-strong">__code__</span>', 'markdown'),
 };
