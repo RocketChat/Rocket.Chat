@@ -2748,7 +2748,7 @@
   "Pinned_Messages": "Pinned Messages",
   "pinning-not-allowed": "Pinning is not allowed",
   "PiwikAdditionalTrackers": "Additional Piwik Sites",
-  "PiwikAdditionalTrackers_Description": "Enter addtitional Piwik website URLs and SiteIDs in the following format, if you wnat to track the same data into different websites: [ { \"trackerURL\" : \"https://my.piwik.domain2/\", \"siteId\" : 42 }, { \"trackerURL\" : \"https://my.piwik.domain3/\", \"siteId\" : 15 } ]",
+  "PiwikAdditionalTrackers_Description": "Enter addtitional Piwik website URLs and SiteIDs in the following format, if you want to track the same data into different websites: [ { \"trackerURL\" : \"https://my.piwik.domain2/\", \"siteId\" : 42 }, { \"trackerURL\" : \"https://my.piwik.domain3/\", \"siteId\" : 15 } ]",
   "PiwikAnalytics_cookieDomain": "All Subdomains",
   "PiwikAnalytics_cookieDomain_Description": "Track visitors across all subdomains",
   "PiwikAnalytics_domains": "Hide Outgoing Links",
