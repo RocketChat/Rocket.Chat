@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Icon, ToggleSwitch, RadioButton, Box, Flex, Margins } from '@rocket.chat/fuselage';
+import { Icon, ToggleSwitch, RadioButton, Box, Flex, Margins, CheckBox } from '@rocket.chat/fuselage';
 
 
 import { useTranslation } from '../contexts/TranslationContext';
@@ -119,14 +119,14 @@ function GroupingList() {
 	const t = useTranslation();
 	return <>
 		<Margins block='x8'>
-			<Box is='p' style={style} fontScale='micro'>{t('Grouping')}</Box>
+			<Box is='p' style={style} fontScale='micro'>{t('Group_by')}</Box>
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>
-				{isDiscussionEnabled && <SortListItem icon={'discussion'} text={t('Group_discussions')} input={<ToggleSwitch onChange={handleChangeShowDicussion} name='sidebarShowDiscussion' checked={sidebarShowDiscussion} />} />}
-				<SortListItem icon={'sort-amount-down'} text={t('Group_by_Type')} input={<ToggleSwitch onChange={handleChangeGroupByType} name='sidebarGroupByType' checked={sidebarGroupByType} />} />
-				<SortListItem icon={'star'} text={t('Group_favorites')} input={<ToggleSwitch onChange={handleChangeShoFavorite} name='sidebarShowFavorites' checked={sidebarShowFavorites} />} />
-				<SortListItem icon={'eye-off'} text={t('Unread_on_top')} input={<ToggleSwitch onChange={handleChangeShowUnread} name='sidebarShowUnread' checked={sidebarShowUnread} />} />
+				{isDiscussionEnabled && <SortListItem icon={'discussion'} text={t('Discussions')} input={<CheckBox onChange={handleChangeShowDicussion} name='sidebarShowDiscussion' checked={sidebarShowDiscussion} />} />}
+				<SortListItem icon={'sort-amount-down'} text={t('Type')} input={<CheckBox onChange={handleChangeGroupByType} name='sidebarGroupByType' checked={sidebarGroupByType} />} />
+				<SortListItem icon={'star'} text={t('Favorites')} input={<CheckBox onChange={handleChangeShoFavorite} name='sidebarShowFavorites' checked={sidebarShowFavorites} />} />
+				<SortListItem icon={'eye-off'} text={t('Unread_on_top')} input={<CheckBox onChange={handleChangeShowUnread} name='sidebarShowUnread' checked={sidebarShowUnread} />} />
 			</Margins>
 		</ul>
 	</>;
