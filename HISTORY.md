@@ -1,6 +1,38 @@
 
 # 3.4.0 (Under Release Candidate Process)
 
+## 3.4.0-rc.4
+`2020-06-29  ·  7 🔍  ·  6 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Wrong padding and colors on some tabs ([#18068](https://github.com/RocketChat/Rocket.Chat/pull/18068))
+
+- Regression: Fix mentions on thread preview ([#18071](https://github.com/RocketChat/Rocket.Chat/pull/18071))
+
+- Upgrade Livechat Widget version to 1.6.0 ([#18070](https://github.com/RocketChat/Rocket.Chat/pull/18070))
+
+- Regression: Fix exit-room on livechat ([#18067](https://github.com/RocketChat/Rocket.Chat/pull/18067))
+
+- Regresion: Issue with reply button on broadcast channels ([#18057](https://github.com/RocketChat/Rocket.Chat/pull/18057))
+
+- Regression: Infinite render loop on Setup Wizard ([#18074](https://github.com/RocketChat/Rocket.Chat/pull/18074))
+
+- Regression: Improve Omnichannel Business Hours ([#18050](https://github.com/RocketChat/Rocket.Chat/pull/18050))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.4.0-rc.3
 `2020-06-28  ·  4 🔍  ·  4 👩‍💻👨‍💻`
 

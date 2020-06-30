@@ -46575,6 +46575,86 @@
           ]
         }
       ]
+    },
+    "3.4.0-rc.4": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.15.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18068",
+          "title": "Regression: Wrong padding and colors on some tabs",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.4.0",
+          "contributors": [
+            "MartinSchoeler",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18071",
+          "title": "Regression: Fix mentions on thread preview",
+          "userLogin": "ggazzo",
+          "milestone": "3.4.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18070",
+          "title": "Upgrade Livechat Widget version to 1.6.0",
+          "userLogin": "renatobecker",
+          "milestone": "3.4.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18067",
+          "title": "Regression: Fix exit-room on livechat",
+          "userLogin": "ggazzo",
+          "milestone": "3.4.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18057",
+          "title": "Regresion: Issue with reply button on broadcast channels",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.4.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "18074",
+          "title": "Regression: Infinite render loop on Setup Wizard",
+          "userLogin": "tassoevan",
+          "milestone": "3.4.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "18050",
+          "title": "Regression: Improve Omnichannel Business Hours",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "3.4.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
