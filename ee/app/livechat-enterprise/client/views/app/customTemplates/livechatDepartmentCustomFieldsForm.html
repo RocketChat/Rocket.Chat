@@ -1,0 +1,67 @@
+<template name="livechatDepartmentCustomFieldsForm" args="deptId">
+    <div class="input-line">
+        <label>{{_ "Max_number_of_chats_per_agent_description"}}</label>
+        <div>
+            <input type="number" class="rc-input__element customFormField" name="maxNumberSimultaneousChat"
+                   value="{{department.maxNumberSimultaneousChat}}"
+                   placeholder="{{_ "Max_number_of_chats_per_agent"}}"/>
+        </div>
+    </div>
+    <div class="input-line">
+        <label>{{_ "How_long_to_wait_to_consider_visitor_abandonment"}}</label>
+        <div>
+            <input type="number" class="rc-input__element customFormField" name="visitorInactivityTimeoutInSeconds"
+                   value="{{department.visitorInactivityTimeoutInSeconds}}" placeholder="{{_ "Number_in_seconds"}}"/>
+        </div>
+    </div>
+    <div class="input-line">
+        <label>{{_ "Livechat_abandoned_rooms_closed_custom_message"}}</label>
+        <div>
+            <input type="text" class="rc-input__element customFormField" name="abandonedRoomsCloseCustomMessage"
+                   value="{{department.abandonedRoomsCloseCustomMessage}}"
+                   placeholder="{{_ "Enter_a_custom_message"}}"/>
+        </div>
+    </div>
+    <div class="input-line">
+        <label>{{_ "Waiting_queue_message"}}</label>
+        <div>
+			<textarea class="rc-input__element customFormField" name="waitingQueueMessage"
+                      rows="4">{{department.waitingQueueMessage}}</textarea>
+        </div>
+    </div>
+    <div class="input-line">
+        {{> livechatAutocompleteUser
+                onClickTag=onClickTagDepartment
+                list=selectedDepartments
+                onSelect=onSelectDepartments
+                collection='CachedDepartmentList'
+                endpoint='livechat/department.autocomplete'
+                field='name'
+                sort='name'
+                label="List_of_departments_for_forward"
+                placeholder="Enter_a_department_name"
+                name="department"
+                icon="queue"
+                noMatchTemplate="userSearchEmpty"
+                templateItem="popupList_item_channel"
+                template="roomSearch"
+                noMatchTemplate="roomSearchEmpty"
+                modifier=departmentModifier
+                showLabel=true
+                exceptions=exceptionsDepartments
+        }}
+        <input type="hidden" class="customFormField" name="departmentsAllowedToForward"
+               value="{{selectedDepartmentsIds}}"/>
+        <div>
+            <small class="secondary-font-color">{{{_ "List_of_departments_for_forward_description"}}}</small>
+        </div>
+        {{#with businessHour}}
+            <div class="input-line">
+                <label>{{_ "Business_Hour"}}</label>
+                <div>
+                    <input type="text" class="rc-input__element" name="businessHour" value="{{name}}" disabled/>
+                </div>
+            </div>
+        {{/with}}
+    </div>
+</template>

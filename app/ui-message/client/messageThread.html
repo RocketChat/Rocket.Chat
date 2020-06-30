@@ -1,0 +1,14 @@
+<template name="messageThread">
+	<q role="button" aria-label="{{_ " Open_thread "}}" class="thread-quote js-open-thread">
+		{{> icon icon="thread" block="thread-icons"}} <div class="thread-quote__message "><span class="message-body--unstyled">{{{parentMessage}}}</span></div>
+		{{# if following }}
+		<div role="button" class="rc-tooltip js-unfollow-thread" aria-label="{{_ "Following"}}">
+			{{> icon icon="bell" block="thread-icons"}}
+		</div>
+		{{else}}
+		<div role="button" class="rc-tooltip js-follow-thread" aria-label="{{_ "Not_following"}}">
+			{{> icon icon="bell-off" block="thread-icons"}}
+		</div>
+		{{/if}}
+	</q>
+</template>

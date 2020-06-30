@@ -1,17 +1,19 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
+
+Migrations.add({
 	version: 68,
 	up() {
-		const GoogleSiteVerification_id = RocketChat.models.Settings.findOne({ _id: 'GoogleSiteVerification_id' });
+		const GoogleSiteVerification_id = Settings.findOne({ _id: 'GoogleSiteVerification_id' });
 
 		if (GoogleSiteVerification_id && GoogleSiteVerification_id.value) {
-			RocketChat.models.Settings.update({ _id: 'Meta_google-site-verification' }, {
+			Settings.update({ _id: 'Meta_google-site-verification' }, {
 				$set: {
 					value: GoogleSiteVerification_id.value,
 				},
 			});
 		}
 
-		RocketChat.models.Settings.remove({ _id: 'GoogleSiteVerification_id' });
+		Settings.remove({ _id: 'GoogleSiteVerification_id' });
 	},
 });
-

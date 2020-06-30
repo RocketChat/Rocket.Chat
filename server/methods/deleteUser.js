@@ -1,25 +1,35 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
+import { Users } from '../../app/models';
+import { hasPermission } from '../../app/authorization';
+import { deleteUser } from '../../app/lib/server';
+
 Meteor.methods({
-	deleteUser(userId) {
+	deleteUser(userId, confirmRelinquish = false) {
 		check(userId, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'deleteUser',
-			});
-		}
-
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'delete-user') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'deleteUser',
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		if (hasPermission(Meteor.userId(), 'delete-user') !== true) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'deleteUser',
+			});
+		}
+
+		const user = Users.findOneById(userId);
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
+				method: 'deleteUser',
+			});
+		}
+
+		if (user.type === 'app') {
+			throw new Meteor.Error('error-cannot-delete-app-user', 'Deleting app user is not allowed', {
 				method: 'deleteUser',
 			});
 		}
@@ -35,7 +45,7 @@ Meteor.methods({
 			});
 		}
 
-		RocketChat.deleteUser(userId);
+		deleteUser(userId, confirmRelinquish);
 
 		return true;
 	},

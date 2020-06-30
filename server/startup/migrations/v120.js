@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Users } from '../../../app/models';
+
+Migrations.add({
 	version: 120,
 	up() {
-		RocketChat.models.Users.update({
+		Users.update({
 			'settings.preferences.roomsListExhibitionMode': 'activity',
 		}, {
 			$unset: {
@@ -13,7 +16,7 @@ RocketChat.Migrations.add({
 			},
 		});
 
-		RocketChat.models.Users.update({
+		Users.update({
 			'settings.preferences.roomsListExhibitionMode': 'unread',
 		}, {
 			$unset: {
@@ -21,12 +24,12 @@ RocketChat.Migrations.add({
 			},
 			$set: {
 				'settings.preferences.sidebarSortby': 'alphabetical',
-				'settings.preferences.sidebarShowUnread' : true,
+				'settings.preferences.sidebarShowUnread': true,
 				'settings.preferences.sidebarShowFavorites': true,
 			},
 		});
 
-		RocketChat.models.Users.update({
+		Users.update({
 			'settings.preferences.roomsListExhibitionMode': 'category',
 		}, {
 			$unset: {

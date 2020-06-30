@@ -1,6 +1,7 @@
 {
 	"version": "0.2.0",
 	"configurations": [
+		
 		{
 			"name": "Attach to meteor debug",
 			"type": "node",
@@ -13,6 +14,7 @@
 				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
+				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"
 			},
 			"protocol": "inspector"
 		},
@@ -26,6 +28,7 @@
 				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
+				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"
 			}
 		},
 		{
@@ -43,6 +46,7 @@
 				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
+				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"
 			},
 			"protocol": "inspector"
 		},
@@ -61,6 +65,7 @@
 				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
+				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"
 			},
 			"protocol": "inspector"
 		},
@@ -79,6 +84,7 @@
 				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
+				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"
 			},
 			"env": {
 				"TEST_MODE": "true"

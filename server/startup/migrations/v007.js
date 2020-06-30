@@ -1,12 +1,15 @@
-/* globals OEmbed */
 import _ from 'underscore';
 
-RocketChat.Migrations.add({
+import { OEmbed } from '../../../app/oembed/server';
+import { Migrations } from '../../../app/migrations';
+import { Messages } from '../../../app/models';
+
+Migrations.add({
 	version: 7,
 	up() {
 		console.log('Populate urls in messages');
 
-		const query = RocketChat.models.Messages.find({
+		const query = Messages.find({
 			'urls.0': {
 				$exists: true,
 			},

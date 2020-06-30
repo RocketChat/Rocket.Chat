@@ -472,8 +472,6 @@
 	}
 }(this || {}));
 
-/* globals EventEmitter */
-
 (function(w) {
 	w.RocketChat = w.RocketChat || { _: [] };
 	var config = {};
@@ -605,8 +603,8 @@
 				return;
 			}
 
-			const right = parseInt(widget.style.right.replace(/px$/, ''), 10);
-			const bottom = parseInt(widget.style.bottom.replace(/px$/, ''), 10);
+			var right = parseInt(widget.style.right.replace(/px$/, ''), 10);
+			var bottom = parseInt(widget.style.bottom.replace(/px$/, ''), 10);
 			widget.style.right = (right - (displacement.x - this.dragOffset.x)) + 'px';
 			widget.style.bottom = (bottom - (displacement.y - this.dragOffset.y)) + 'px';
 		},
@@ -697,7 +695,7 @@
 		chatWidget.dataset.state = 'closed';
 		chatWidget.className = 'rocketchat-widget';
 		chatWidget.innerHTML = '<div class="rocketchat-container" style="width:100%;height:100%">' +
-			'<iframe id="rocketchat-iframe" src="' + url + '" style="width:100%;height:100%;border:none;background-color:transparent" allowTransparency="true"></iframe> ' +
+			'<iframe id="rocketchat-iframe" src="' + url + '" style="width:100%;height:100%;border:none;background-color:transparent" allowTransparency="true" allow="microphone; camera"></iframe> ' +
 			'</div><div class="rocketchat-overlay"></div>';
 
 		chatWidget.style.position = 'fixed';

@@ -1,6 +1,9 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Users } from '../../../app/models';
+
+Migrations.add({
 	version: 52,
 	up() {
-		RocketChat.models.Users.update({ _id: 'rocket.cat' }, { $addToSet: { roles: 'bot' } });
+		Users.update({ _id: 'rocket.cat' }, { $addToSet: { roles: 'bot' } });
 	},
 });

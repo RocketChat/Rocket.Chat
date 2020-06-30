@@ -9,12 +9,11 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'http',
-		'rocketchat:lib',
-	]);
-	api.use([
+		'rocketchat:settings',
+		'rocketchat:callbacks',
+		'rocketchat:models',
 		'templating',
-		'rocketchat:ui',
-	], 'client');
+	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

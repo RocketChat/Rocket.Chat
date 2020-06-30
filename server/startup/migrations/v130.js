@@ -1,10 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Rooms, Subscriptions, Users } from '../../../app/models';
+
+Migrations.add({
 	version: 130,
 	up() {
-		RocketChat.models.Rooms._db.originals.update(
+		Rooms._db.originals.update(
 			{
 				t: { $ne: 'd' },
 			},
@@ -13,10 +16,10 @@ RocketChat.Migrations.add({
 			},
 			{
 				multi: true,
-			}
+			},
 		);
 
-		RocketChat.models.Rooms.find(
+		Rooms.find(
 			{
 				usersCount: { $exists: false },
 			},
@@ -24,13 +27,13 @@ RocketChat.Migrations.add({
 				fields: {
 					_id: 1,
 				},
-			}
+			},
 		).forEach(({ _id }) => {
-			const usersCount = RocketChat.models.Subscriptions.findByRoomId(
-				_id
+			const usersCount = Subscriptions.findByRoomId(
+				_id,
 			).count();
 
-			RocketChat.models.Rooms._db.originals.update(
+			Rooms._db.originals.update(
 				{
 					_id,
 				},
@@ -38,13 +41,13 @@ RocketChat.Migrations.add({
 					$set: {
 						usersCount,
 					},
-				}
+				},
 			);
 		});
 
 		// Getting all subscriptions and users to memory allow us to process in batches,
 		// all other solutions takes hundreds or thousands times more to process.
-		const subscriptions = RocketChat.models.Subscriptions.find(
+		const subscriptions = Subscriptions.find(
 			{
 				t: 'd',
 				name: { $exists: true },
@@ -54,12 +57,12 @@ RocketChat.Migrations.add({
 				fields: {
 					name: 1,
 				},
-			}
+			},
 		).fetch();
 
-		const users = RocketChat.models.Users.find(
+		const users = Users.find(
 			{ username: { $exists: true }, name: { $exists: true } },
-			{ fields: { username: 1, name: 1 } }
+			{ fields: { username: 1, name: 1 } },
 		).fetch();
 		const usersByUsername = users.reduce((obj, user) => {
 			obj[user.username] = user.name;
@@ -74,7 +77,7 @@ RocketChat.Migrations.add({
 					return resolve();
 				}
 
-				RocketChat.models.Subscriptions._db.originals.update(
+				Subscriptions._db.originals.update(
 					{
 						_id: subscription._id,
 					},
@@ -82,7 +85,7 @@ RocketChat.Migrations.add({
 						$set: {
 							fname: name,
 						},
-					}
+					},
 				);
 
 				resolve();
@@ -100,7 +103,7 @@ RocketChat.Migrations.add({
 				itens.length,
 				'of',
 				subscriptions.length,
-				'subscriptions'
+				'subscriptions',
 			);
 
 			if (itens.length) {

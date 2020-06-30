@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import s from 'underscore.string';
 
+import { Subscriptions, Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+
 Meteor.methods({
 	messageSearch(text, rid, limit) {
 		check(text, String);
@@ -11,7 +14,7 @@ Meteor.methods({
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
 			message: {
-				docs:[],
+				docs: [],
 			},
 		};
 
@@ -27,7 +30,7 @@ Meteor.methods({
 			if (!Meteor.call('canAccessRoom', rid, currentUserId)) {
 				return result;
 			}
-		} else if (RocketChat.settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
+		} else if (settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
 			return result;
 		}
 
@@ -114,6 +117,16 @@ Meteor.methods({
 			return '';
 		}
 
+		function filterTitle(_, tag) {
+			query['attachments.title'] = new RegExp(s.escapeRegExp(tag), 'i');
+			return '';
+		}
+
+		function filterDescription(_, tag) {
+			query['attachments.description'] = new RegExp(s.escapeRegExp(tag), 'i');
+			return '';
+		}
+
 		function sortByTimestamp(_, direction) {
 			if (direction.startsWith('asc')) {
 				options.sort.ts = 1;
@@ -168,6 +181,10 @@ Meteor.methods({
 		text = text.replace(/has:location|has:map/g, filterLocation);
 		// Filter image tags
 		text = text.replace(/label:(\w+)/g, filterLabel);
+		// Filter on description of messages.
+		text = text.replace(/file-desc:(\w+)/g, filterDescription);
+		// Filter on title of messages.
+		text = text.replace(/file-title:(\w+)/g, filterTitle);
 		// Filtering before/after/on a date
 		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by before:, after: and on: respectively.
 		// Example: before:15/09/2016 after: 10-08-2016
@@ -187,7 +204,7 @@ Meteor.methods({
 					$regex: r[1],
 					$options: r[2],
 				};
-			} else if (RocketChat.settings.get('Message_AlwaysSearchRegExp')) {
+			} else if (settings.get('Message_AlwaysSearchRegExp')) {
 				query.msg = {
 					$regex: text,
 					$options: 'i',
@@ -216,19 +233,19 @@ Meteor.methods({
 				query.rid = rid;
 			} else {
 				query.rid = {
-					$in: RocketChat.models.Subscriptions.findByUserId(user._id)
+					$in: Subscriptions.findByUserId(user._id)
 						.fetch()
 						.map((subscription) => subscription.rid),
 				};
 			}
 
-			if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+			if (!settings.get('Message_ShowEditedStatus')) {
 				options.fields = {
 					editedAt: 0,
 				};
 			}
 
-			result.message.docs = RocketChat.models.Messages.find(query, options).fetch();
+			result.message.docs = Messages.find(query, options).fetch();
 		}
 
 		return result;
