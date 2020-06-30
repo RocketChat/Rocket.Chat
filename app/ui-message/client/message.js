@@ -8,7 +8,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
-import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
+import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
+import { renderMessageBody, MessageTypes, MessageAction, call } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
@@ -74,7 +75,7 @@ const findParentMessage = (() => {
 			{
 				$set: {
 					following: message.replies && message.replies.indexOf(uid) > -1,
-					threadMsg: normalizeThreadMessage(message),
+					threadMsg: normalizeThreadTitle(message),
 					repliesCount: message.tcount,
 				},
 			},
@@ -226,7 +227,7 @@ Template.message.helpers({
 	},
 	threadMessage() {
 		const { msg } = this;
-		return normalizeThreadMessage(msg);
+		return normalizeThreadTitle(msg);
 	},
 	bodyClass() {
 		const { msg } = this;
