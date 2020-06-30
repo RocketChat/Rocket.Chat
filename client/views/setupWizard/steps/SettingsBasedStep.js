@@ -9,7 +9,7 @@ import {
 	TextInput,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useState, useCallback } from 'react';
 
 import { useSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -36,8 +36,8 @@ const useFields = () => {
 		return fields;
 	}, []);
 
-	const resetFields = (fields) => dispatch({ type: reset, payload: fields });
-	const setFieldValue = (_id, value) => dispatch({ type: setValue, payload: { _id, value } });
+	const resetFields = useCallback((fields) => dispatch({ type: reset, payload: fields }), []);
+	const setFieldValue = useCallback((_id, value) => dispatch({ type: setValue, payload: { _id, value } }), []);
 
 	return { fields, resetFields, setFieldValue };
 };
@@ -57,7 +57,7 @@ function SettingsBasedStep({ step, title, active }) {
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
 				.map(({ value, ...field }) => ({ ...field, value: value != null ? value : '' })),
 		);
-	}, [settings, currentStep, resetFields, step]);
+	}, [settings, currentStep, step, resetFields]);
 
 	const t = useTranslation();
 

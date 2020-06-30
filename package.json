@@ -68,6 +68,7 @@
 		"@types/meteor": "^1.4.37",
 		"@types/mocha": "^7.0.2",
 		"@types/mock-require": "^2.0.0",
+		"@types/moment-timezone": "^0.5.13",
 		"@types/mongodb": "^3.5.8",
 		"@types/react-dom": "^16.9.8",
 		"@typescript-eslint/eslint-plugin": "^2.11.0",
