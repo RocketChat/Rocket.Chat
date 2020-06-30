@@ -3,9 +3,7 @@ import React, { useEffect } from 'react';
 import { useRouteParameter, useRoute } from '../contexts/RouterContext';
 import { SideNav } from '../../app/ui-utils';
 import AccountProfilePage from './AccountProfilePage';
-import { createAccountSidebarTemplate } from './sidebarItems';
-
-createAccountSidebarTemplate();
+import './sidebarItems';
 
 const AccountRoute = () => {
 	const page = useRouteParameter('group');
