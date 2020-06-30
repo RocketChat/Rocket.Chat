@@ -1,4 +1,5 @@
 export interface IImportUser {
+	// #ToDo: Remove this _id, as it isn't part of the imported data
 	_id?: string;
 
 	username?: string;

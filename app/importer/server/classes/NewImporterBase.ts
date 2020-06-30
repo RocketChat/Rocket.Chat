@@ -438,6 +438,7 @@ export class ImporterBase {
 					attachments: m.attachments,
 					bot: m.bot,
 					emoji: m.emoji,
+					alias: m.alias,
 				};
 
 				if (m._id) {
