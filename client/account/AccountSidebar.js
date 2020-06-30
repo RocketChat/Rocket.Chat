@@ -26,7 +26,7 @@ export default React.memo(function AccountSidebar() {
 	const currentPath = useRoutePath(...currentRoute);
 
 	useEffect(() => {
-		if (!currentPath.startsWith('/account/')) {
+		if (currentRoute[0] !== 'account') {
 			SideNav.closeFlex();
 		}
 	}, [currentRoute, currentPath]);
