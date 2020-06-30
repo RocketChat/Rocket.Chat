@@ -11,6 +11,8 @@ export class ScreenSharingManager {
 
 	private screenShareProvider: IScreenSharingProvider | any = null;
 
+	private activeSessions: string[] = [];
+
 	enabled(): any {
 		return settings.get('Livechat_screen_sharing_enabled');
 	}
@@ -47,7 +49,28 @@ export class ScreenSharingManager {
 
 	requestScreenSharing(roomId: string, user: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('request_screen_sharing_access', roomId, '', user, {});
-		console.log(this.screenShareProvider.getJWT('agent1', 'agent1@gmail.com'));
+		// console.log(this.screenShareProvider.getJWT('agent1', 'agent1@gmail.com'));
+		this.addActiveScreenSharing(roomId);
+		console.log(this.activeSessions);
+	}
+
+	endScreenSharingSession(roomId: string, user: any): void {
+		Messages.createWithTypeRoomIdMessageAndUser('end_screen_sharing_session', roomId, '', user, {});
+		this.removeActiveScreenSharing(roomId);
+		console.log(this.activeSessions);
+	}
+
+	addActiveScreenSharing(roomId: string): void {
+		this.activeSessions = this.activeSessions.filter((id) => id !== roomId);
+		this.activeSessions.push(roomId);
+	}
+
+	removeActiveScreenSharing(roomId: string): void {
+		this.activeSessions = this.activeSessions.filter((id) => id !== roomId);
+	}
+
+	getActiveSessionStatus(roomId: string): boolean {
+		return this.activeSessions.includes(roomId);
 	}
 }
 

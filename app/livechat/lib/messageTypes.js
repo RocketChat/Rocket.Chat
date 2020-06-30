@@ -60,3 +60,9 @@ MessageTypes.registerType({
 	system: true,
 	message: 'request_screen_sharing_access',
 });
+
+MessageTypes.registerType({
+	id: 'end_screen_sharing_session',
+	system: true,
+	message: 'end_screen_sharing_session',
+});
