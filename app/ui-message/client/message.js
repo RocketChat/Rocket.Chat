@@ -68,7 +68,7 @@ Template.message.helpers({
 	},
 	broadcast() {
 		const { msg, room = {}, u } = this;
-		return !msg.private && !msg.t && msg.u._id !== u._id && room && room.broadcast;
+		return !msg.private && msg.t === 'msg' && msg.u._id !== u._id && room && room.broadcast;
 	},
 	isIgnored() {
 		const { ignored, msg } = this;
