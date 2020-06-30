@@ -42,8 +42,8 @@ const Content = ({ children, ...props }) => <Scrollable {...props}>
 </Scrollable>;
 
 const Header = ({ title, onClose, children, ...props }) => <Box is='header' display='flex' flexDirection='column' pb='x16' {...props}>
-	{(title || onClose) && <Box display='flex' flexDirection='row' alignItems='center' pi='x24' justifyContent='space-between' flexGrow={1} alignItems='center'>
-		{title && <Box color='neutral-800' fontSize='p1' fontWeight='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{title}</Box>}
+	{(title || onClose) && <Box display='flex' flexDirection='row' alignItems='center' pi='x24' justifyContent='space-between' flexGrow={1}>
+		{title && <Box color='neutral-800' fontSize='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{title}</Box>}
 		{onClose && <Button square small ghost onClick={onClose}><Icon name='cross' size='x20'/></Button>}
 	</Box>}
 	{children}

@@ -3,7 +3,7 @@ import { createTemplateForComponent } from '../reactAdapters';
 import { settings } from '../../app/settings';
 import { createSidebarItems } from '../components/basic/Sidebar';
 
-export const createAccountSidebarTemplate = () => createTemplateForComponent('accountFlex', () => import('./AccountSidebar'));
+createTemplateForComponent('accountFlex', () => import('./AccountSidebar'));
 
 export const {
 	registerSidebarItem: registerAdminSidebarItem,

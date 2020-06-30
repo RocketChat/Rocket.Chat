@@ -108,10 +108,9 @@ FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: (params) => {
 		if (!params.group) {
-			params.group = 'Profile';
+			params.group = 'profile';
 		}
-		params.group = s.capitalize(params.group, true);
-		BlazeLayout.render('main', { center: `account${ params.group }` });
+		BlazeLayout.render('main', { center: `account${ s.capitalize(params.group, true) }` });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
