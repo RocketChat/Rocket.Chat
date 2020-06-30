@@ -69,7 +69,7 @@ export function RoomPickSettingInput({
 		return () => {
 			Blaze.remove(view);
 		};
-	}, [valueRef]);
+	}, [_id, autocomplete, disabled, onChangeValue, placeholder, readonly, valueRef]);
 
 	return <>
 		<Flex.Container>

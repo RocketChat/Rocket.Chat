@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { Messages } from '../../../models';
 import { settings } from '../../../settings';
-import { hasPermission } from '../../../authorization';
+import { hasPermission, canSendMessage } from '../../../authorization/server';
 import { updateMessage } from '../functions';
 
 Meteor.methods({
@@ -23,6 +23,15 @@ Meteor.methods({
 		if (originalMessage.msg === message.msg) {
 			return;
 		}
+
+		if (!!message.tmid && originalMessage._id === message.tmid) {
+			throw new Meteor.Error('error-message-same-as-tmid', 'Cannot set tmid the same as the _id', { method: 'updateMessage' });
+		}
+
+		if (!originalMessage.tmid && !!message.tmid) {
+			throw new Meteor.Error('error-message-change-to-thread', 'Cannot update message to a thread', { method: 'updateMessage' });
+		}
+
 		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
 		const editOwn = originalMessage.u && originalMessage.u._id === Meteor.userId();
@@ -46,6 +55,9 @@ Meteor.methods({
 				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });
 			}
 		}
+
+		const user = Meteor.users.findOne(Meteor.userId());
+		canSendMessage(message.rid, { uid: user._id, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
 		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {

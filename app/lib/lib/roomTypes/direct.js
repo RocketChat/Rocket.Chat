@@ -13,7 +13,7 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'direct',
-			path: '/direct/:rid',
+			path: '/direct/:rid/:tab?/:context?',
 		});
 	}
 
@@ -190,6 +190,11 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			return '';
 		}
 
+		// if coming from sidenav search
+		if (roomData.name && roomData.avatarETag) {
+			return getUserAvatarURL(roomData.name, roomData.avatarETag);
+		}
+
 		if (this.isGroupChat(roomData)) {
 			return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
 		}
@@ -197,7 +202,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
 
 		if (sub && sub.name) {
-			return getUserAvatarURL(sub.name);
+			const user = Meteor.users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } });
+			return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
 		}
 
 		if (roomData) {

@@ -297,19 +297,15 @@ Meteor.startup(function() {
 		i18nLabel: 'Send_Visitor_navigation_history_as_a_message',
 	});
 
-	settings.add('Livechat_enable_office_hours', false, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		public: true,
-		i18nLabel: 'Office_hours_enabled',
-	});
-
-	settings.add('Livechat_allow_online_agents_outside_office_hours', true, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		public: true,
-		i18nLabel: 'Allow_Online_Agents_Outside_Office_Hours',
-		enableQuery: { _id: 'Livechat_enable_office_hours', value: true },
+	settings.addGroup('Omnichannel', function() {
+		this.section('Business_Hours', function() {
+			this.add('Livechat_enable_business_hours', false, {
+				type: 'boolean',
+				group: 'Omnichannel',
+				public: true,
+				i18nLabel: 'Business_hours_enabled',
+			});
+		});
 	});
 
 	settings.add('Livechat_continuous_sound_notification_new_livechat_room', false, {

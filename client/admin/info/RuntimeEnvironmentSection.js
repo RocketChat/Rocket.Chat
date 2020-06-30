@@ -17,7 +17,7 @@ const formatCPULoad = (load) => {
 	return `${ s.numberFormat(oneMinute, 2) }, ${ s.numberFormat(fiveMinutes, 2) }, ${ s.numberFormat(fifteenMinutes, 2) }`;
 };
 
-export function RuntimeEnvironmentSection({ statistics, isLoading }) {
+export const RuntimeEnvironmentSection = React.memo(function RuntimeEnvironmentSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
 	const t = useTranslation();
 	const formatMemorySize = useFormatMemorySize();
@@ -40,4 +40,4 @@ export function RuntimeEnvironmentSection({ statistics, isLoading }) {
 		<DescriptionList.Entry label={t('OS_Freemem')}>{s(() => formatMemorySize(statistics.os.freemem))}</DescriptionList.Entry>
 		<DescriptionList.Entry label={t('OS_Cpus')}>{s(() => statistics.os.cpus.length)}</DescriptionList.Entry>
 	</DescriptionList>;
-}
+});
