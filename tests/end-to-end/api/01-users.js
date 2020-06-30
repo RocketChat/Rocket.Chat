@@ -247,19 +247,19 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should return "rooms" property and unreads messages for each room when user request it and the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
+		it('should return "unread" property for each room when user request it and the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
 			request.get(api('users.info'))
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
-					fields: JSON.stringify({ userRooms: 1, includeUnreadInfo: 1 }),
+					fields: JSON.stringify({ userRooms: 1 }),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
-					res.body.user.rooms.forEach((room) => expect(room).to.have.property('unreads'));
+					res.body.user.rooms.forEach((room) => expect(room).to.have.property('unread'));
 				})
 				.end(done);
 		});

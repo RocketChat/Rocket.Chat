@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
-import { Users, Subscriptions, Messages } from '../../../models/server';
+import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -190,33 +190,8 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 		if (!user) {
 			return API.v1.failure('User not found.');
 		}
-		if (!fields.userRooms) {
-			return API.v1.success({
-				user,
-			});
-		}
 		const myself = user._id === this.userId;
-		if (!myself && !hasPermission(this.userId, 'view-other-user-channels')) {
-			return API.v1.success({
-				user,
-			});
-		}
-		if (fields.includeUnreadInfo === 1) {
-			user.rooms = Promise.await(Messages.findByUserIdWithUnreadMessagesCount(user._id, {
-				fields: {
-					rid: 1,
-					bio: 1,
-					name: 1,
-					t: 1,
-					roles: 1,
-					ls: 1,
-				},
-				sort: {
-					t: 1,
-					name: 1,
-				},
-			}));
-		} else {
+		if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
 			user.rooms = Subscriptions.findByUserId(user._id, {
 				fields: {
 					rid: 1,
@@ -224,7 +199,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 					name: 1,
 					t: 1,
 					roles: 1,
-					ls: 1,
+					unread: 1,
 				},
 				sort: {
 					t: 1,
@@ -232,6 +207,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 				},
 			}).fetch();
 		}
+
 		return API.v1.success({
 			user,
 		});

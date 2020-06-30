@@ -1222,68 +1222,6 @@ export class Messages extends Base {
 
 		return this.find(query);
 	}
-
-	async findByUserIdWithUnreadMessagesCount(userId, options = {}) {
-		return this.model.rawCollection().aggregate([
-			{ $match: { _hidden: { $ne: true }, t: { $exists: false } } },
-			{
-				$lookup: {
-					from: 'rocketchat_room',
-					localField: 'rid',
-					foreignField: '_id',
-					as: 'room',
-				},
-			},
-			{ $unwind: '$room' },
-			{
-				$lookup: {
-					from: 'rocketchat_subscription',
-					localField: 'rid',
-					foreignField: 'rid',
-					as: 'subscription',
-				},
-			},
-			{ $unwind: '$subscription' },
-			{ $match: { 'subscription.u._id': userId } },
-			{
-				$group: {
-					_id: { _id: '$rid', subscription: '$subscription' },
-					unreads: {
-						$sum: {
-							$cond: [{
-								$and: [
-									{ $eq: ['$rid', '$room._id'] },
-									{ $gte: ['$ts', '$subscription.ls'] },
-									{ $or: [{ $lte: ['$ts', '$room.lm'] }, { $lte: ['$ts', '$room._updatedAt'] }] },
-								],
-							}, 1, 0],
-						},
-					},
-				},
-			},
-			{
-				$project: {
-					subscription: '$_id.subscription',
-					_id: 0,
-					unreads: 1,
-				},
-			},
-			{
-				$addFields: {
-					'subscription.unreads': '$unreads',
-				},
-			},
-			{ $replaceRoot: { newRoot: '$subscription' } },
-			{
-				$project: {
-					...options.fields,
-					_id: 1,
-					unreads: 1,
-				},
-			},
-			...options.sort ? [{ $sort: options.sort }] : [],
-		]).toArray();
-	}
 }
 
 export default new Messages();
