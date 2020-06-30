@@ -901,10 +901,11 @@ export const Livechat = {
 		}
 
 		const ret = LivechatDepartment.removeById(_id);
+		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id).fetch().map((agent) => agent.agentId);
 		LivechatDepartmentAgents.removeByDepartmentId(_id);
 		if (ret) {
 			Meteor.defer(() => {
-				callbacks.run('livechat.afterRemoveDepartment', department);
+				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 			});
 		}
 		return ret;
