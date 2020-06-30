@@ -1,35 +1,34 @@
 import { Meteor } from 'meteor/meteor';
 
-import { MultipleBusinessHours } from './views/business-hours/Multiple';
-import { SingleBusinessHour } from '../../../../app/livechat/client/views/app/business-hours/Single';
+import { MultipleBusinessHoursBehavior } from './views/business-hours/Multiple';
 import { settings } from '../../../../app/settings/client';
 import { businessHourManager } from '../../../../app/livechat/client/views/app/business-hours/BusinessHours';
-import { IBusinessHour } from '../../../../app/livechat/client/views/app/business-hours/IBusinessHour';
+import { IBusinessHourBehavior } from '../../../../app/livechat/client/views/app/business-hours/IBusinessHourBehavior';
 import {
 	addCustomFormTemplate,
 	removeCustomTemplate,
 } from '../../../../app/livechat/client/views/app/customTemplates/register';
-import { LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
+import {
+	LivechatBusinessHourBehaviors,
+} from '../../../../definition/ILivechatBusinessHour';
+import { EESingleBusinessHourBehaviour } from './SingleBusinessHour';
+import { hasLicense } from '../../license/client';
 
-const businessHours: Record<string, IBusinessHour> = {
-	Multiple: new MultipleBusinessHours(),
-	Single: new SingleBusinessHour(),
+const businessHours: Record<string, IBusinessHourBehavior> = {
+	Multiple: new MultipleBusinessHoursBehavior(),
+	Single: new EESingleBusinessHourBehaviour(),
 };
 
 Meteor.startup(function() {
-	settings.onload('Livechat_business_hour_type', (_, value) => {
+	settings.onload('Livechat_business_hour_type', async (_, value) => {
 		removeCustomTemplate('livechatBusinessHoursForm');
-
-		switch (String(value).toLowerCase()) {
-			case LivechatBussinessHourTypes.SINGLE:
-				businessHourManager.setBusinessHourManager(new SingleBusinessHour() as IBusinessHour);
-				break;
-			case LivechatBussinessHourTypes.MULTIPLE:
-				businessHourManager.setBusinessHourManager(new MultipleBusinessHours() as IBusinessHour);
-				addCustomFormTemplate('livechatBusinessHoursForm', 'businessHoursCustomFieldsForm');
-				break;
+		removeCustomTemplate('livechatBusinessHoursTimezoneForm');
+		addCustomFormTemplate('livechatBusinessHoursTimezoneForm', 'businessHoursTimezoneFormField');
+		if (LivechatBusinessHourBehaviors.MULTIPLE) {
+			addCustomFormTemplate('livechatBusinessHoursForm', 'businessHoursCustomFieldsForm');
 		}
-
-		businessHourManager.registerBusinessHourMethod(businessHours[value as string]);
+		if (await hasLicense('livechat-enterprise')) {
+			businessHourManager.registerBusinessHourBehavior(businessHours[value as string]);
+		}
 	});
 });

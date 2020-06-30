@@ -29,6 +29,7 @@ import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
 import './lib/routing/LoadBalancing';
 import { onLicense } from '../../license/server';
+import './business-hour';
 
 onLicense('livechat-enterprise', () => {
 	require('./api');

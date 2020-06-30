@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 
 import { APIClient, mountArrayQueryParameters } from '../../../../../../../app/utils/client';
 import './livechatDepartmentCustomFieldsForm.html';
+import { LivechatBusinessHourTypes } from '../../../../../../../definition/ILivechatBusinessHour';
 
 Template.livechatDepartmentCustomFieldsForm.helpers({
 	department() {
@@ -61,7 +62,7 @@ Template.livechatDepartmentCustomFieldsForm.onCreated(function() {
 				})));
 			}
 			if (department.businessHourId) {
-				const { businessHour } = await APIClient.v1.get(`livechat/business-hour?_id=${ department.businessHourId }`);
+				const { businessHour } = await APIClient.v1.get(`livechat/business-hour?_id=${ department.businessHourId }&type=${ LivechatBusinessHourTypes.CUSTOM }`);
 				this.businessHour.set(businessHour);
 			}
 			this.department.set(department);

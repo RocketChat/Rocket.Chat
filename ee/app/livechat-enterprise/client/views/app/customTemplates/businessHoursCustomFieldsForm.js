@@ -1,16 +1,9 @@
-import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import './businessHoursCustomFieldsForm.html';
 
 Template.businessHoursCustomFieldsForm.helpers({
-	timezones() {
-		return moment.tz.names().map((name) => ({
-			key: name,
-			i18nLabel: name,
-		}));
-	},
 	data() {
 		return Template.instance().businessHour.get();
 	},
@@ -26,13 +19,6 @@ Template.businessHoursCustomFieldsForm.helpers({
 	},
 	active() {
 		return Template.instance().active.get();
-	},
-	selectedOption(val) {
-		const { timezone } = Template.instance().businessHour.get();
-		if (!timezone) {
-			return;
-		}
-		return timezone.name === val;
 	},
 	departmentModifier() {
 		return (filter, text = '') => {
