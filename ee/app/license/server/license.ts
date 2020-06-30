@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 
 import { Users } from '../../../../app/models/server';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';

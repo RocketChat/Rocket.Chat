@@ -9,11 +9,11 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { modal, SideNav, popover } from '../../ui-utils';
-import { t, handleError } from '../../utils';
-import { settings } from '../../settings';
-import { Notifications } from '../../notifications';
-import { callbacks } from '../../callbacks';
+import { modal, SideNav, warnUserDeletionMayRemoveRooms, popover } from '../../ui-utils/client';
+import { t, handleError } from '../../utils/client';
+import { settings } from '../../settings/client';
+import { Notifications } from '../../notifications/client';
+import { callbacks } from '../../callbacks/client';
 import { getPopoverStatusConfig } from '../../ui/client';
 
 const validateEmail = (email) => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
@@ -146,6 +146,13 @@ Template.accountProfile.helpers({
 		}
 
 		if (!validateEmail(email) || !validatePassword(password, confirmationPassword) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
+			return ret;
+		}
+	},
+	canResendEmailConf(ret) {
+		const email = Template.instance().email.get();
+		const user = Meteor.user();
+		if (getUserEmailAddress(user) && getUserEmailAddress(user) !== email) {
 			return ret;
 		}
 	},
@@ -360,7 +367,7 @@ const checkAvailability = _.debounce((username, { usernameAvaliable }) => {
 	Meteor.call('checkUsernameAvailability', username, function(error, data) {
 		usernameAvaliable.set(data);
 	});
-}, 300);
+}, 800);
 
 Template.accountProfile.events({
 	'change [data-customfield="true"], input [data-customfield="true"]': _.debounce((e, i) => {
@@ -492,6 +499,31 @@ Template.accountProfile.events({
 	'click .js-delete-account'(e) {
 		e.preventDefault();
 		const user = Meteor.user();
+
+		const deleteOwnAccount = (deleteConfirmation, confirmRelinquish = false) => {
+			Meteor.call('deleteUserOwnAccount', deleteConfirmation, confirmRelinquish, function(error) {
+				if (error) {
+					toastr.remove();
+
+					if (error.error === 'user-last-owner') {
+						const { shouldChangeOwner, shouldBeRemoved } = error.details;
+						warnUserDeletionMayRemoveRooms(user._id, () => deleteOwnAccount(deleteConfirmation, true), {
+							confirmButtonKey: 'Continue',
+							closeOnConfirm: true,
+							skipModalIfEmpty: true,
+							shouldChangeOwner,
+							shouldBeRemoved,
+						});
+						return;
+					}
+
+					modal.showInputError(t('Your_password_is_wrong'));
+				} else {
+					modal.close();
+				}
+			});
+		};
+
 		if (s.trim(user && user.services && user.services.password && user.services.password.bcrypt)) {
 			modal.open({
 				title: t('Are_you_sure_you_want_to_delete_your_account'),
@@ -506,14 +538,8 @@ Template.accountProfile.events({
 				if (typedPassword) {
 					toastr.remove();
 					toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
-					Meteor.call('deleteUserOwnAccount', SHA256(typedPassword), function(error) {
-						if (error) {
-							toastr.remove();
-							modal.showInputError(t('Your_password_is_wrong'));
-						} else {
-							modal.close();
-						}
-					});
+
+					deleteOwnAccount(SHA256(typedPassword));
 				} else {
 					modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
 					return false;
@@ -533,14 +559,8 @@ Template.accountProfile.events({
 				if (deleteConfirmation === (user && user.username)) {
 					toastr.remove();
 					toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
-					Meteor.call('deleteUserOwnAccount', deleteConfirmation, function(error) {
-						if (error) {
-							toastr.remove();
-							modal.showInputError(t('Your_password_is_wrong'));
-						} else {
-							modal.close();
-						}
-					});
+
+					deleteOwnAccount(deleteConfirmation);
 				} else {
 					modal.showInputError(t('You_need_to_type_in_your_username_in_order_to_do_this'));
 					return false;

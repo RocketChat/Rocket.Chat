@@ -8,16 +8,14 @@ export function Section({
 }) {
 	return <Box>
 		<Margins block='x24'>
-			<Flex.Container alignItems='center' wrap='no-wrap'>
-				<Box>
-					<Flex.Item grow={1}>
-						<Box fontScale='s2' color='default'>{title}</Box>
-					</Flex.Item>
-					{filter && <Flex.Item grow={0}>
+			<Box display='flex' alignItems='center' wrap='no-wrap'>
+				<Box flexGrow={1} fontScale='s2' color='default'>{title}</Box>
+				{filter && <Flex.Item grow={0}>
+					<Margins mi='x24'>
 						{filter}
-					</Flex.Item>}
-				</Box>
-			</Flex.Container>
+					</Margins>
+				</Flex.Item>}
+			</Box>
 			{children}
 		</Margins>
 	</Box>;

@@ -22,5 +22,5 @@ export const useEndpointAction = (httpMethod, endpoint, params = {}, successMess
 			dispatchToastMessage({ type: 'error', message: error });
 			return { success: false };
 		}
-	}, [JSON.stringify(params)]);
+	}, [dispatchToastMessage, params, sendData, successMessage]);
 };

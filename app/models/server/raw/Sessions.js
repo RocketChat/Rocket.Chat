@@ -112,6 +112,15 @@ export class SessionsRaw extends BaseRaw {
 		]).toArray();
 	}
 
+	async findLastLoginByIp(ip) {
+		return (await this.col.find({
+			ip,
+		}, {
+			sort: { loginAt: -1 },
+			limit: 1,
+		}).toArray())[0];
+	}
+
 	getActiveUsersOfPeriodByDayBetweenDates({ start, end }) {
 		return this.col.aggregate([
 			{

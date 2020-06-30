@@ -1,20 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
-import { CachedCollection } from '../../../ui-cached-collection';
+import { PublicSettingsCachedCollection } from '../../../../client/lib/settings/PublicSettingsCachedCollection';
 import { SettingsBase, SettingValue } from '../../lib/settings';
 
-const cachedCollection = new CachedCollection({
-	name: 'public-settings',
-	eventType: 'onAll',
-	userRelated: false,
-	listenChangesForLoggedUsersOnly: true,
-});
-
 class Settings extends SettingsBase {
-	cachedCollection = cachedCollection
+	cachedCollection = PublicSettingsCachedCollection.get()
 
-	collection = cachedCollection.collection;
+	collection = PublicSettingsCachedCollection.get().collection;
 
 	dict = new ReactiveDict<any>('settings');
 

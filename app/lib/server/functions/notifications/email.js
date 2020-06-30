@@ -110,7 +110,19 @@ const getButtonUrl = (room, subscription, message) => {
 	});
 };
 
-export function getEmailData({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
+function generateNameEmail(name, email) {
+	return `${ String(name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ email }>`;
+}
+
+export function getEmailData({
+	message,
+	receiver,
+	sender,
+	subscription,
+	room,
+	emailAddress,
+	hasMentionToUser,
+}) {
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
@@ -126,29 +138,38 @@ export function getEmailData({ message, user, subscription, room, emailAddress, 
 	});
 	const content = getEmailContent({
 		message,
-		user,
+		user: receiver,
 		room,
 	});
 
 	const room_path = getButtonUrl(room, subscription, message);
+
+	const receiverName = settings.get('UI_Use_Real_Name')
+		? receiver.name || receiver.username
+		: receiver.username;
+
 	const email = {
-		to: emailAddress,
+		from: generateNameEmail(username, settings.get('From_Email')),
+		to: generateNameEmail(receiverName, emailAddress),
 		subject: emailSubject,
 		html: content + goToMessage + (settings.get('Direct_Reply_Enable') ? advice : ''),
 		data: {
 			room_path,
 		},
+		headers: {},
 	};
 
-	email.from = `${ String(username).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ settings.get('From_Email') }>`;
+	if (sender.emails?.length > 0) {
+		const [senderEmail] = sender.emails;
+		email.headers['Reply-To'] = generateNameEmail(username, senderEmail.address);
+	}
 
 	// If direct reply enabled, email content with headers
 	if (settings.get('Direct_Reply_Enable')) {
 		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
-		email.headers = {
-			// Reply-To header with format "username+messageId@domain"
-			'Reply-To': `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`,
-		};
+
+		// Reply-To header with format "username+messageId@domain"
+		email.headers['Reply-To'] = `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`;
 	}
 
 	metrics.notificationsSent.inc({ notification_type: 'email' });
@@ -166,12 +187,14 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 
 export function shouldNotifyEmail({
 	disableAllMessageNotifications,
+	statusConnection,
 	emailNotifications,
 	isHighlighted,
 	hasMentionToUser,
 	hasMentionToAll,
 	hasReplyToThread,
 	roomType,
+	isThread,
 }) {
 	// email notifications are disabled globally
 	if (!settings.get('Accounts_AllowEmailNotifications')) {
@@ -180,6 +203,11 @@ export function shouldNotifyEmail({
 
 	// user/room preference to nothing
 	if (emailNotifications === 'nothing') {
+		return false;
+	}
+
+	// user connected (don't need to send him an email)
+	if (statusConnection === 'online') {
 		return false;
 	}
 
@@ -195,5 +223,5 @@ export function shouldNotifyEmail({
 		}
 	}
 
-	return roomType === 'd' || isHighlighted || emailNotifications === 'all' || hasMentionToUser || hasReplyToThread || (!disableAllMessageNotifications && hasMentionToAll);
+	return (roomType === 'd' || isHighlighted || emailNotifications === 'all' || hasMentionToUser || (!disableAllMessageNotifications && hasMentionToAll)) && (!isThread || hasReplyToThread);
 }
