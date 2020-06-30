@@ -1,3 +1,4 @@
+.message-thread,
 .message-discussion {
 	display: flex;
 
@@ -7,11 +8,15 @@
 	flex-wrap: wrap;
 }
 
+.message-thread {
+	.reply-counter {
+		color: var(--color-gray);
+	}
+}
+
 .discussion-reply-lm,
 .reply-counter {
-	padding: 4px;
-
-	color: var(--color-gray);
+	color: var(--color-white);
 
 	font-size: 12px;
 	font-style: italic;
@@ -21,10 +26,14 @@
 }
 
 .reply-counter {
-	color: var(--color-dark-light);
-
 	font-weight: 600;
-	margin-inline-start: 4px;
+	margin-inline-start: 8px;
+}
+
+.discussion-reply-lm {
+	padding: 4px 8px;
+
+	color: var(--color-gray);
 }
 
 .discussions-list .load-more {
