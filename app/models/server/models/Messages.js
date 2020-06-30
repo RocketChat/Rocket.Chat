@@ -506,6 +506,10 @@ export class Messages extends Base {
 			rid,
 			_hidden: { $ne: true },
 			t: { $exists: false },
+			$or: [
+				{ tmid: { $exists: false } },
+				{ tshow: true },
+			],
 		};
 
 		if (messageId) {
