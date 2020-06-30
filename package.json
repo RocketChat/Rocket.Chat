@@ -55,7 +55,7 @@
 		"@babel/preset-react": "^7.0.0",
 		"@octokit/rest": "^16.1.0",
 		"@rocket.chat/eslint-config": "^0.3.0",
-		"@rocket.chat/livechat": "^1.5.0",
+		"@rocket.chat/livechat": "^1.6.0",
 		"@settlin/spacebars-loader": "^1.0.7",
 		"@storybook/addon-actions": "^5.3.19",
 		"@storybook/addon-knobs": "^5.3.19",
