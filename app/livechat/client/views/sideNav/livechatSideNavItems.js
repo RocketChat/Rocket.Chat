@@ -24,4 +24,4 @@ addSidebarItem('Livechat_Installation', 'livechat-installation', 'view-livechat-
 addSidebarItem('Livechat_Appearance', 'livechat-appearance', 'view-livechat-appearance');
 addSidebarItem('Webhooks', 'livechat-webhooks', 'view-livechat-webhooks');
 addSidebarItem('Facebook Messenger', 'livechat-facebook', 'view-livechat-facebook');
-addSidebarItem('Office_Hours', 'livechat-officeHours', 'view-livechat-officeHours');
+addSidebarItem('Business_Hours', 'livechat-business-hours', 'view-livechat-business-hours');

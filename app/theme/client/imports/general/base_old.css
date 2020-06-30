@@ -2111,6 +2111,8 @@
 	&-unread {
 		display: inline-block;
 
+		float: right;
+
 		width: 10px;
 		height: 10px;
 		margin: 0 0.25rem;
@@ -3871,6 +3873,10 @@
 	height: 2rem;
 }
 
+.flex-tab.discussions > .flex-tab__content {
+	padding: 0;
+}
+
 .rc-old .flex-tab {
 	&__content {
 		display: flex;
@@ -3886,6 +3892,7 @@
 	}
 
 	&__result {
+		overflow-x: hidden;
 		overflow-y: auto;
 		flex: 1 1 auto;
 	}

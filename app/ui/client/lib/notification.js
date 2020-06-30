@@ -65,11 +65,11 @@ export const KonchatNotification = {
 						window.focus();
 						switch (notification.payload.type) {
 							case 'd':
-								return FlowRouter.go('direct', { rid: notification.payload.rid }, FlowRouter.current().queryParams);
+								return FlowRouter.go('direct', { rid: notification.payload.rid, ...notification.payload.tmid && { tab: 'thread', context: notification.payload.tmid } }, { ...FlowRouter.current().queryParams, jump: notification.payload._id });
 							case 'c':
-								return FlowRouter.go('channel', { name: notification.payload.name }, FlowRouter.current().queryParams);
+								return FlowRouter.go('channel', { name: notification.payload.name, ...notification.payload.tmid && { tab: 'thread', context: notification.payload.tmid } }, { ...FlowRouter.current().queryParams, jump: notification.payload._id });
 							case 'p':
-								return FlowRouter.go('group', { name: notification.payload.name }, FlowRouter.current().queryParams);
+								return FlowRouter.go('group', { name: notification.payload.name, ...notification.payload.tmid && { tab: 'thread', context: notification.payload.tmid } }, { ...FlowRouter.current().queryParams, jump: notification.payload._id });
 						}
 					};
 				}

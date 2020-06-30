@@ -37,6 +37,20 @@ registerAdminRoute('/custom-sounds/:context?/:id?', {
 	lazyRouteComponent: () => import('./customSounds/AdminSoundsRoute'),
 });
 
+registerAdminRoute('/apps/what-is-it', {
+	name: 'admin-apps-disabled',
+	lazyRouteComponent: () => import('./apps/AppsWhatIsIt'),
+});
+
+registerAdminRoute('/marketplace/:context?/:id?/:version?', {
+	name: 'admin-marketplace',
+	lazyRouteComponent: () => import('./apps/AppsRoute'),
+});
+
+registerAdminRoute('/apps/:context?/:id?/:version?', {
+	name: 'admin-apps',
+	lazyRouteComponent: () => import('./apps/AppsRoute'),
+});
 
 registerAdminRoute('/info', {
 	name: 'admin-info',
@@ -115,6 +129,11 @@ registerAdminRoute('/cloud/:page?', {
 registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
 	lazyRouteComponent: () => import('./viewLogs/ViewLogsRoute'),
+});
+
+registerAdminRoute('/federation-dashboard', {
+	name: 'federation-dashboard',
+	lazyRouteComponent: () => import('./federationDashboard/FederationDashboardRoute'),
 });
 
 Meteor.startup(() => {
