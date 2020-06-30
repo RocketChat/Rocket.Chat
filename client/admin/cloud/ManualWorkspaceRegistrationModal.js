@@ -24,7 +24,7 @@ function CopyStep({ onNextButtonClick }) {
 		};
 
 		loadWorkspaceRegisterData();
-	}, []);
+	}, [getWorkspaceRegisterData]);
 
 	const copyRef = useRef();
 
@@ -37,7 +37,7 @@ function CopyStep({ onNextButtonClick }) {
 		return () => {
 			clipboard.destroy();
 		};
-	}, []);
+	}, [dispatchToastMessage, t]);
 
 	return <>
 		<Modal.Content>
@@ -67,11 +67,7 @@ function CopyStep({ onNextButtonClick }) {
 					<Icon name='copy' /> {t('Copy')}
 				</Button>
 			</Box>
-			<Box withRichContent>
-				<p>
-					<MarkdownText>{t('Cloud_click_here', { cloudConsoleUrl })}</MarkdownText>
-				</p>
-			</Box>
+			<MarkdownText is='p' withRichContent content={t('Cloud_click_here', { cloudConsoleUrl })} />
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup>

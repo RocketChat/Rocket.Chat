@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
 
-import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { GenericTable, Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 
 const FilterByText = ({ setFilter, ...props }) => {
@@ -11,7 +11,7 @@ const FilterByText = ({ setFilter, ...props }) => {
 
 	useEffect(() => {
 		setFilter({ text });
-	}, [text]);
+	}, [setFilter, text]);
 	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 		<TextInput flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
@@ -30,7 +30,7 @@ export function CustomEmoji({
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
 		<Th key={'aliases'} w='x200'>{t('Aliases')}</Th>,
-	], [sort]);
+	], [onHeaderClick, sort, t]);
 
 	const renderRow = (emojis) => {
 		const { _id, name, aliases } = emojis;

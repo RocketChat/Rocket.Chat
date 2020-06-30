@@ -1,7 +1,4 @@
 .rc-header {
-
-	z-index: 10;
-
 	font-size: var(--text-heading-size);
 
 	.rc-badge {
@@ -21,13 +18,21 @@
 
 		color: white;
 		border-radius: calc(4 * var(--badge-font-size));
-		background: var(--rc-color-button-primary);
+		background-color: var(--rc-color-button-primary);
 		box-shadow: 0 0 0 2px #ffffff;
 
 		font-size: var(--badge-font-size);
 		font-weight: 600;
 		align-items: center;
 		justify-content: center;
+
+		&--user-mentions {
+			background-color: var(--badge-user-mentions-background);
+		}
+
+		&--group-mentions {
+			background-color: var(--badge-group-mentions-background);
+		}
 	}
 
 	&__first-icon {
@@ -45,7 +50,7 @@
 	&--room {
 		padding: 1.25rem;
 
-		box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
+		border-bottom: 2px solid var(--color-gray-lightest);
 
 		font-size: var(--header-title-font-size);
 	}
@@ -60,8 +65,6 @@
 		height: 36px;
 
 		white-space: nowrap;
-
-		background-color: var(--header-background-color);
 
 		align-items: center;
 

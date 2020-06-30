@@ -5,8 +5,13 @@ import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { CounterSet } from '../data/CounterSet';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
+import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
+import { saveFile } from '../../../../../../client/lib/saveFile';
+
+const convertDataToCSV = (data) => `// date, newMessages
+${ data.map(({ date, newMessages }) => `${ date }, ${ newMessages }`).join('\n') }`;
 
 export function MessagesSentSection() {
 	const t = useTranslation();
@@ -81,9 +86,13 @@ export function MessagesSentSection() {
 		];
 	}, [data, period]);
 
+	const downloadData = () => {
+		saveFile(convertDataToCSV(values), `MessagesSentSection_start_${ params.start }_end_${ params.end }.csv`);
+	};
+
 	return <Section
 		title={t('Messages_sent')}
-		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
+		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
 	>
 		<CounterSet
 			counters={[
