@@ -1,7 +1,7 @@
 import URL from 'url';
 import QueryString from 'querystring';
 
-import { changeCase } from 'meteor/konecty:change-case';
+import { camelCase } from 'change-case';
 import _ from 'underscore';
 
 import { callbacks } from '../../callbacks';
@@ -68,6 +68,11 @@ providers.registerProvider({
 	endPoint: 'https://www.dailymotion.com/services/oembed?maxheight=200',
 });
 
+providers.registerProvider({
+	urls: [new RegExp('https?://twitter\\.com/[^/]+/status/\\S+')],
+	endPoint: 'https://publish.twitter.com/oembed',
+});
+
 export const oembed = {};
 
 oembed.providers = providers;
@@ -106,7 +111,7 @@ callbacks.add('oembed:afterParseContent', function(data) {
 						const metas = JSON.parse(data.content.body);
 						_.each(metas, function(value, key) {
 							if (_.isString(value)) {
-								data.meta[changeCase.camelCase(`oembed_${ key }`)] = value;
+								data.meta[camelCase(`oembed_${ key }`)] = value;
 							}
 						});
 						data.meta.oembedUrl = url;

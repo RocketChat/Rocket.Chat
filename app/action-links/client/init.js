@@ -1,14 +1,14 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
-import { handleError } from '../../utils';
-import { fireGlobalEvent, Layout } from '../../ui-utils';
+import { handleError } from '../../utils/client';
+import { fireGlobalEvent, Layout } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { actionLinks } from '../both/lib/actionLinks';
+import { actionLinks } from './lib/actionLinks';
 
 
 Template.room.events({
-	'click .action-link'(event, instance) {
+	'click [data-actionlink]'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 

@@ -25,11 +25,31 @@ let prometheusAPIUserAgent = false;
 
 export let API = {};
 
-const getRequestIP = (req) =>
-	req.headers['x-forwarded-for']
-	|| (req.connection && req.connection.remoteAddress)
-	|| (req.socket && req.socket.remoteAddress)
-	|| (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
+const getRequestIP = (req) => {
+	const socket = req.socket || req.connection?.socket;
+	const remoteAddress = req.headers['x-real-ip'] || socket?.remoteAddress || req.connection?.remoteAddress || null;
+	let forwardedFor = req.headers['x-forwarded-for'];
+
+	if (!socket) {
+		return remoteAddress || forwardedFor || null;
+	}
+
+	const httpForwardedCount = parseInt(process.env.HTTP_FORWARDED_COUNT) || 0;
+	if (httpForwardedCount <= 0) {
+		return remoteAddress;
+	}
+
+	if (!_.isString(forwardedFor)) {
+		return remoteAddress;
+	}
+
+	forwardedFor = forwardedFor.trim().split(/\s*,\s*/);
+	if (httpForwardedCount > forwardedFor.length) {
+		return remoteAddress;
+	}
+
+	return forwardedFor[forwardedFor.length - httpForwardedCount];
+};
 
 export class APIClass extends Restivus {
 	constructor(properties) {
@@ -374,7 +394,7 @@ export class APIClass extends Restivus {
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
-						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, undefined, e);
+						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 					} finally {
 						delete Accounts._accountData[connection.id];
 					}
@@ -462,6 +482,8 @@ export class APIClass extends Restivus {
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
 						close() {},
+						httpHeaders: this.request.headers,
+						clientAddress: getRequestIP(this.request),
 					},
 				});
 
@@ -616,7 +638,7 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 			this.response.writeHead(200, {
 				'Access-Control-Allow-Origin': settings.get('API_CORS_Origin'),
 				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token',
+				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
 			});
 		} else {
 			this.response.writeHead(405);

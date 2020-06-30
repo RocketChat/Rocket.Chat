@@ -91,7 +91,7 @@ settings.addGroup('Accounts', function() {
 	this.add('Accounts_ConfirmPasswordPlaceholder', '', {
 		type: 'string',
 		public: true,
-		i18nLabel: 'Placeholder_for_password_login_field',
+		i18nLabel: 'Placeholder_for_password_login_confirm_field',
 	});
 	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',
@@ -235,11 +235,6 @@ settings.addGroup('Accounts', function() {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Idle_Time_Limit',
-		});
-		this.add('Accounts_Default_User_Preferences_desktopNotificationDuration', 0, {
-			type: 'int',
-			public: true,
-			i18nLabel: 'Notification_Duration',
 		});
 		this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
 			type: 'boolean',
@@ -403,11 +398,18 @@ settings.addGroup('Accounts', function() {
 			i18nLabel: 'Sort_By',
 		});
 
+		this.add('Accounts_Default_User_Preferences_showMessageInMainThread', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Show_Message_In_Main_Thread',
+		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Group_favorites',
 		});
+
 		this.add('Accounts_Default_User_Preferences_sendOnEnter', 'normal', {
 			type: 'select',
 			values: [
@@ -874,6 +876,8 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		public: true,
 	});
+
+	// Deprecated setting
 	this.add('Support_Cordova_App', false, {
 		type: 'boolean',
 		i18nDescription: 'Support_Cordova_App_Description',
@@ -1166,6 +1170,23 @@ settings.addGroup('Meta', function() {
 	});
 });
 
+settings.addGroup('Mobile', function() {
+	this.section('Screen_Lock', function() {
+		this.add('Force_Screen_Lock', false, { type: 'boolean', i18nDescription: 'Force_Screen_Lock_description', public: true });
+		this.add('Force_Screen_Lock_After', 1800, { type: 'int', i18nDescription: 'Force_Screen_Lock_After_description', enableQuery: { _id: 'Force_Screen_Lock', value: true }, public: true });
+	});
+});
+
+const pushEnabledWithoutGateway = [
+	{
+		_id: 'Push_enable',
+		value: true,
+	}, {
+		_id: 'Push_enable_gateway',
+		value: false,
+	},
+];
+
 settings.addGroup('Push', function() {
 	this.add('Push_enable', true, {
 		type: 'boolean',
@@ -1200,15 +1221,7 @@ settings.addGroup('Push', function() {
 		type: 'boolean',
 		public: true,
 		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: [
-			{
-				_id: 'Push_enable',
-				value: true,
-			}, {
-				_id: 'Push_enable_gateway',
-				value: false,
-			},
-		],
+		enableQuery: pushEnabledWithoutGateway,
 	});
 	this.add('Push_test_push', 'push_test', {
 		type: 'action',
@@ -1221,39 +1234,47 @@ settings.addGroup('Push', function() {
 	this.section('Certificates_and_Keys', function() {
 		this.add('Push_apn_passphrase', '', {
 			type: 'string',
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_key', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_cert', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_dev_passphrase', '', {
 			type: 'string',
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_dev_key', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_dev_cert', '', {
 			type: 'string',
 			multiline: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			public: true,
+			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 	});
@@ -2756,7 +2777,7 @@ settings.addGroup('Setup_Wizard', function() {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
+		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(0), {
 			type: 'date',
 			hidden: true,
 			readonly: true,

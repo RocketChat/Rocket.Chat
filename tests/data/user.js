@@ -23,7 +23,6 @@ export const preferences = {
 		mobileNotifications: 'default',
 		enableAutoAway: true,
 		highlights: [],
-		desktopNotificationDuration: 0,
 		desktopNotificationRequireInteraction: false,
 		messageViewMode: 0,
 		hideUsernames: false,

@@ -42,6 +42,8 @@ export class Users extends Base {
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
+		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -124,10 +126,10 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentByUsername(username) {
+	findOneOnlineAgentByUsername(username, options) {
 		const query = queryStatusAgentOnline({ username });
 
-		return this.findOne(query);
+		return this.findOne(query, options);
 	}
 
 	findOneOnlineAgentById(_id) {
@@ -523,7 +525,7 @@ export class Users extends Base {
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
-		const query = { 'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i') };
+		const query = { 'emails.address': String(emailAddress).trim().toLowerCase() };
 
 		return this.findOne(query, options);
 	}
@@ -545,6 +547,15 @@ export class Users extends Base {
 
 	findOneById(userId, options) {
 		const query = { _id: userId };
+
+		return this.findOne(query, options);
+	}
+
+	findOneActiveById(userId, options) {
+		const query = {
+			_id: userId,
+			active: true,
+		};
 
 		return this.findOne(query, options);
 	}
@@ -856,6 +867,21 @@ export class Users extends Base {
 		});
 	}
 
+	findBySAMLNameIdOrIdpSession(nameID, idpSession) {
+		return this.find({
+			$or: [
+				{ 'services.saml.nameID': nameID },
+				{ 'services.saml.idpSession': idpSession },
+			],
+		});
+	}
+
+	findBySAMLInResponseTo(inResponseTo) {
+		return this.find({
+			'services.saml.inResponseTo': inResponseTo,
+		});
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -993,20 +1019,22 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	setAvatarOrigin(_id, origin) {
+	setAvatarData(_id, origin, etag) {
 		const update = {
 			$set: {
 				avatarOrigin: origin,
+				avatarETag: etag,
 			},
 		};
 
 		return this.update(_id, update);
 	}
 
-	unsetAvatarOrigin(_id) {
+	unsetAvatarData(_id) {
 		const update = {
 			$unset: {
 				avatarOrigin: 1,
+				avatarETag: 1,
 			},
 		};
 
@@ -1302,6 +1330,16 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
+	removeSamlServiceSession(_id) {
+		const update = {
+			$unset: {
+				'services.saml.idpSession': '',
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
 	updateDefaultStatus(_id, statusDefault) {
 		return this.update({
 			_id,
@@ -1309,6 +1347,16 @@ export class Users extends Base {
 		}, {
 			$set: {
 				statusDefault,
+			},
+		});
+	}
+
+	setSamlInResponseTo(_id, inResponseTo) {
+		this.update({
+			_id,
+		}, {
+			$set: {
+				'services.saml.inResponseTo': inResponseTo,
 			},
 		});
 	}

@@ -153,6 +153,10 @@ export const renderRouteComponent = (importFn, {
 } = {}) => {
 	const routeName = FlowRouter.getRouteName();
 
+	if (portalsMap.has(routeName)) {
+		return;
+	}
+
 	Tracker.autorun(async (computation) => {
 		if (routeName !== FlowRouter.getRouteName()) {
 			unregisterPortal(routeName);
@@ -202,6 +206,8 @@ export const renderRouteComponent = (importFn, {
 			Template[routeName] = blazeTemplate;
 		}
 
-		BlazeLayout.render(template, { [region]: routeName });
+		Tracker.afterFlush(() => {
+			BlazeLayout.render(template, { [region]: routeName });
+		});
 	});
 };

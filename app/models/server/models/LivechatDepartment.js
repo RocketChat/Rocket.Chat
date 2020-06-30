@@ -10,6 +10,7 @@ export class LivechatDepartment extends Base {
 		super(modelOrName || 'livechat_department');
 
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ businessHourId: 1 }, { sparse: true });
 		this.tryEnsureIndex({
 			numAgents: 1,
 			enabled: 1,
@@ -44,26 +45,6 @@ export class LivechatDepartment extends Base {
 			this.update({ _id }, { $set: record });
 		} else {
 			_id = this.insert(record);
-		}
-
-		if (hasAgents) {
-			const savedAgents = _.pluck(LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
-			const agentsToSave = _.pluck(agents, 'agentId');
-
-			// remove other agents
-			_.difference(savedAgents, agentsToSave).forEach((agentId) => {
-				LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(_id, agentId);
-			});
-
-			agents.forEach((agent) => {
-				LivechatDepartmentAgents.saveAgent({
-					agentId: agent.agentId,
-					departmentId: _id,
-					username: agent.username,
-					count: agent.count ? parseInt(agent.count) : 0,
-					order: agent.order ? parseInt(agent.order) : 0,
-				});
-			});
 		}
 
 		return _.extend(record, { _id });

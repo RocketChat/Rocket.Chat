@@ -391,6 +391,7 @@ describe('[Users]', function() {
 						expect(res.body).to.have.property('full', true);
 						expect(res.body).to.have.property('users').to.have.property('0').to.deep.have.all.keys(
 							'_id',
+							'avatarETag',
 							'username',
 							'name',
 							'status',
@@ -426,6 +427,7 @@ describe('[Users]', function() {
 						expect(res.body).to.have.property('full', true);
 						expect(res.body).to.have.property('users').to.have.property('0').to.deep.have.all.keys(
 							'_id',
+							'avatarETag',
 							'username',
 							'name',
 							'status',
