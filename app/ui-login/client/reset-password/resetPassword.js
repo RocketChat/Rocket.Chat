@@ -4,6 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal, call } from '../../../ui-utils/client';
 import { t } from '../../../utils';
@@ -24,6 +25,12 @@ Template.resetPassword.helpers({
 		if (user) {
 			return user.requirePasswordChangeReason;
 		}
+	},
+	passwordPolicyEnabled() {
+		return Template.instance().passwordPolicyEnabled.get();
+	},
+	passwordPolicy() {
+		return Template.instance().passwordPolicyRules.get();
 	},
 });
 
@@ -105,4 +112,12 @@ Template.resetPassword.onRendered(function() {
 
 Template.resetPassword.onCreated(function() {
 	this.state = new ReactiveDict({ password: '' });
+	this.passwordPolicyEnabled = new ReactiveVar(false);
+	this.passwordPolicyRules = new ReactiveVar();
+	Meteor.call('getPasswordPolicy', (error, result) => {
+		if (result.enabled) {
+			this.passwordPolicyEnabled.set(true);
+			this.passwordPolicyRules.set(result.policy);
+		}
+	});
 });

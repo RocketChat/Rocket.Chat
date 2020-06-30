@@ -26,6 +26,7 @@ function findUsers({ rid, status, skip, limit, filter = '' }) {
 				'u.name': 1,
 				'u.username': 1,
 				'u.status': 1,
+				'u.avatarETag': 1,
 			},
 		},
 		...status ? [{ $match: { 'u.status': status } }] : [],
@@ -42,6 +43,7 @@ function findUsers({ rid, status, skip, limit, filter = '' }) {
 				_id: { $arrayElemAt: ['$u._id', 0] },
 				name: { $arrayElemAt: ['$u.name', 0] },
 				username: { $arrayElemAt: ['$u.username', 0] },
+				avatarETag: { $arrayElemAt: ['$u.avatarETag', 0] },
 			},
 		},
 	]).toArray();

@@ -1099,4 +1099,82 @@ describe('[Groups]', function() {
 				.end(done);
 		});
 	});
+
+	describe('/groups.setEncrypted', () => {
+		let testGroup;
+		it('/groups.create', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `group.encrypted.test.${ Date.now() }`,
+				})
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+
+		it('should return an error when passing no boolean param', (done) => {
+			request.post(api('groups.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					encrypted: 'no-boolean',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The bodyParam "encrypted" is required');
+				})
+				.end(done);
+		});
+
+		it('should set group as encrypted correctly and return the new data', (done) => {
+			request.post(api('groups.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					encrypted: true,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('group');
+					expect(res.body.group).to.have.property('_id', testGroup._id);
+					expect(res.body.group).to.have.property('encrypted', true);
+				})
+				.end(done);
+		});
+
+		it('should return the updated room encrypted', async () => {
+			const roomInfo = await getRoomInfo(testGroup._id);
+			expect(roomInfo).to.have.a.property('success', true);
+			expect(roomInfo.group).to.have.a.property('_id', testGroup._id);
+			expect(roomInfo.group).to.have.a.property('encrypted', true);
+		});
+
+		it('should set group as unencrypted correctly and return the new data', (done) => {
+			request.post(api('groups.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					encrypted: false,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('group');
+					expect(res.body.group).to.have.property('_id', testGroup._id);
+					expect(res.body.group).to.have.property('encrypted', false);
+				})
+				.end(done);
+		});
+
+		it('should return the updated room unencrypted', async () => {
+			const roomInfo = await getRoomInfo(testGroup._id);
+			expect(roomInfo).to.have.a.property('success', true);
+			expect(roomInfo.group).to.have.a.property('_id', testGroup._id);
+			expect(roomInfo.group).to.have.a.property('encrypted', false);
+		});
+	});
 });
