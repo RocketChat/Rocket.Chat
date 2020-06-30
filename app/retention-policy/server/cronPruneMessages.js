@@ -21,9 +21,9 @@ const toDays = (d) => d * 1000 * 60 * 60 * 24;
 function job() {
 	const now = new Date();
 	const filesOnly = settings.get('RetentionPolicy_FilesOnly');
-	const excludePinned = settings.get('RetentionPolicy_ExcludePinned');
-	const ignoreDiscussion = settings.get('RetentionPolicy_DoNotExcludeDiscussion');
-	const ignoreThreads = settings.get('RetentionPolicy_DoNotExcludeThreads');
+	const excludePinned = settings.get('RetentionPolicy_DoNotPrunePinned');
+	const ignoreDiscussion = settings.get('RetentionPolicy_DoNotPruneDiscussion');
+	const ignoreThreads = settings.get('RetentionPolicy_DoNotPruneThreads');
 
 	// get all rooms with default values
 	types.forEach((type) => {
