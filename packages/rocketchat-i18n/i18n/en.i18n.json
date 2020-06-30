@@ -1765,7 +1765,7 @@
   "Graphql_Enabled": "GraphQL Enabled",
   "Graphql_CORS": "GraphQL CORS",
   "Graphql_Subscription_Port": "GraphQL Subscription Port",
-  "Group_by": "Group by Type",
+  "Group_by": "Group by",
   "Group_by_Type": "Group by Type",
   "Group_discussions": "Group discussions",
   "Group_favorites": "Group favorites",
