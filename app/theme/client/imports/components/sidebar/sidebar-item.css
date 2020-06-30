@@ -101,8 +101,8 @@
 		background-color: var(--sidebar-item-active-background);
 	}
 
-	&--unread,
-	&--mention {
+	&--unread &__message-top,
+	&--mention &__message-top {
 		color: var(--sidebar-item-unread-color);
 
 		font-weight: var(--sidebar-item-unread-font-weight);
@@ -274,6 +274,12 @@
 
 		font-size: 12px;
 		line-height: normal;
+
+		&--unread {
+			color: var(--sidebar-item-unread-color);
+
+			font-weight: var(--sidebar-item-unread-font-weight);
+		}
 	}
 
 	&__time {

@@ -24,7 +24,7 @@ export const useRoute = (name) => {
 		getUrl: (...args) => getRouteUrl(name, ...args),
 		push: (...args) => pushRoute(name, ...args),
 		replace: (...args) => replaceRoute(name, ...args),
-	}), [getRoutePath, pushRoute, replaceRoute]);
+	}), [getRoutePath, getRouteUrl, name, pushRoute, replaceRoute]);
 };
 
 export const useRoutePath = (name, params, queryStringParams) => {

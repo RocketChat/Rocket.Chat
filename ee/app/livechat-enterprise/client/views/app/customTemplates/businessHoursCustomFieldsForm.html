@@ -1,0 +1,48 @@
+<template name="businessHoursCustomFieldsForm">
+    <div class="input-line">
+        <label>{{_ "Enabled"}}</label>
+        <div>
+            <label><input class="js-active-business-hour" type="radio" name="enabled" value="1" checked="{{showBusinessHourActiveFormTrueChecked}}" /> {{_ "Yes"}}</label>
+            <label><input class="js-active-business-hour" type="radio" name="enabled" value="0" checked="{{showBusinessHourActiveFormFalseChecked}}" /> {{_ "No"}}</label>
+            <input class="customFormField" type="hidden" name="active" value="{{active}}" />
+        </div>
+    </div>
+    <div class="input-line">
+        <div class="rc-input">
+            <label class="rc-input__label">
+                <div class="rc-input__title">{{_ "Name"}}</div>
+                <div class="rc-input__wrapper">
+                    <input required type="text" class="rc-input__element customFormField" name="name" value="{{data.name}}"/>
+                </div>
+            </label>
+        </div>
+    </div>
+    <div class="input-line">
+        {{> livechatAutocompleteUser
+                onClickTag=onClickTagDepartment
+                list=selectedDepartments
+                onSelect=onSelectDepartments
+                collection='CachedDepartmentList'
+                endpoint='livechat/department.autocomplete'
+                field='name'
+                sort='name'
+                label="Departments"
+                placeholder="Enter_a_department_name"
+                name="department"
+                icon="queue"
+                noMatchTemplate="userSearchEmpty"
+                templateItem="popupList_item_channel"
+                template="roomSearch"
+                noMatchTemplate="roomSearchEmpty"
+                modifier=departmentModifier
+                showLabel=true
+                exceptions=exceptionsDepartments
+                conditions=departmentsConditions
+        }}
+        <input type="hidden" class="customFormField" name="departmentsToApplyBusinessHour" value="{{selectedDepartmentsIds}}" />
+        <div>
+            <small class="secondary-font-color">{{{_ "List_of_departments_to_apply_this_business_hour"}}}</small>
+        </div>
+        <input type="hidden" class="customFormField" name="type" value="custom" />
+    </div>
+</template>
