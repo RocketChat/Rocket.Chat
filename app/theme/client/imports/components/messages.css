@@ -202,15 +202,13 @@
 	left: 2px;
 }
 
-@media (width >= 500px) {
-	.message {
-		&:hover,
-		&.active {
-			background-color: #f7f8fa;
+.message {
+	&:hover,
+	&.active {
+		background-color: #f7f8fa;
 
-			& .message-actions {
-				display: flex;
-			}
+		& .message-actions {
+			display: flex;
 		}
 	}
 }
