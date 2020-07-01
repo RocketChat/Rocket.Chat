@@ -147,6 +147,7 @@ export const sendNotification = async ({
 
 	if (receiver.emails && shouldNotifyEmail({
 		disableAllMessageNotifications,
+		statusConnection: receiver.statusConnection,
 		emailNotifications,
 		isHighlighted,
 		hasMentionToUser,
