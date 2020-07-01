@@ -5,20 +5,20 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
 import UserAvatar from './UserAvatar';
 
-function UserAvatarSuggestions({ suggestions, setAvatarObj, setNewAvatarSource, ...props }) {
+function UserAvatarSuggestions({ suggestions, setAvatarObj, setNewAvatarSource, disabled, ...props }) {
 	const handleClick = useCallback((suggestion) => () => {
 		setAvatarObj(suggestion);
 		setNewAvatarSource(suggestion.blob);
 	}, [setAvatarObj, setNewAvatarSource]);
 
 	return <Margins inline='x4' {...props}>
-		{Object.values(suggestions).map((suggestion) => <Button square onClick={handleClick(suggestion)}>
-			<UserAvatar key={suggestion.service} title={suggestion.service} size='x36' url={suggestion.blob} mie='x4'/>
+		{Object.values(suggestions).map((suggestion) => <Button key={suggestion.service} disabled={disabled} square onClick={handleClick(suggestion)}>
+			<UserAvatar title={suggestion.service} size='x36' url={suggestion.blob} mie='x4'/>
 		</Button>)}
 	</Margins>;
 }
 
-export function UserAvatarEditor({ username, setAvatarObj, suggestions }) {
+export function UserAvatarEditor({ username, setAvatarObj, suggestions, disabled, userId }) {
 	const t = useTranslation();
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
@@ -48,14 +48,14 @@ export function UserAvatarEditor({ username, setAvatarObj, suggestions }) {
 	return <Box display='flex' flexDirection='column' fontScale='p2'>
 		{t('Profile_picture')}
 		<Box display='flex' flexDirection='row' mbs='x4'>
-			<UserAvatar size='x120' url={url} username={username} style={{ objectFit: 'contain' }} mie='x4'/>
+			<UserAvatar size='x120' url={url} userId={userId} username={username} style={{ objectFit: 'contain' }} mie='x4'/>
 			<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
 				<Box display='flex' flexDirection='row' mbs='none'>
 					<Margins inline='x4'>
-						<Button square mis='none' onClick={clickReset}><UserAvatar size='x36' username={`%40${ username }`} mie='x4'/></Button>
-						<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
-						<Button square mie='none' onClick={clickUrl}><Icon name='permalink' size='x20'/></Button>
-						{suggestions && <UserAvatarSuggestions suggestions={suggestions} setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource}/>}
+						<Button square mis='none' onClick={clickReset} disabled={disabled}><UserAvatar size='x36' url={`/avatar/%40${ username }`} mie='x4'/></Button>
+						<Button square onClick={clickUpload} disabled={disabled}><Icon name='upload' size='x20'/></Button>
+						<Button square mie='none' onClick={clickUrl} disabled={disabled}><Icon name='permalink' size='x20'/></Button>
+						{suggestions && <UserAvatarSuggestions suggestions={suggestions} setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled}/>}
 					</Margins>
 				</Box>
 				<Box>{t('Use_url_for_avatar')}</Box>

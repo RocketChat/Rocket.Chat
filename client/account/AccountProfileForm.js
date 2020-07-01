@@ -122,8 +122,8 @@ export default function AccountProfileForm({ values, handlers, user, settings, s
 
 	return <FieldGroup is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
 		{useMemo(() => <Field>
-			<UserAvatarEditor username={username} setAvatarObj={handleAvatar} disabled={!allowUserAvatarChange} suggestions={avatarSuggestions}/>
-		</Field>, [username, handleAvatar, allowUserAvatarChange, avatarSuggestions])}
+			<UserAvatarEditor userId={user._id} username={username} setAvatarObj={handleAvatar} disabled={!allowUserAvatarChange} suggestions={avatarSuggestions}/>
+		</Field>, [username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user._id])}
 		<Box display='flex' flexDirection='row' justifyContent='space-between'>
 			{useMemo(() => <Field mie='x8'>
 				<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
