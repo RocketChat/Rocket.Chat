@@ -2,14 +2,18 @@ import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 // import { ReactiveVar } from 'meteor/reactive-var';
 import { Promise } from 'meteor/promise';
-// import { Tracker } from 'meteor/tracker';
+import { Tracker } from 'meteor/tracker';
 
 import CountriesList from '../../../public/public/countiesList';
 // import Countries from '../../models';
 
-const getCountries = () => Meteor.call('getCountry', (error, result) => {
-	console.log(result, error);
-	return result;
+const getCountries = () => new Promise((resolve, reject) => {
+	Meteor.call('getCountry', (error, result) => {
+		if (error) {
+			reject(error);
+		}
+		resolve(result);
+	});
 });
 
 Template.countryList.helpers({
@@ -17,7 +21,8 @@ Template.countryList.helpers({
 		return CountriesList?.filter((cou) => JSON.stringify(cou.name).indexOf(name) !== -1)[0]?.flag;
 	},
 	countries() {
-		this.list = getCountries();
+		console.log(this.list);
+		return this.list;
 		// const list = getCountries();
 		// this.data = [];
 		// for (let c = 0; c < list.lenght; c++) {
@@ -30,25 +35,26 @@ Template.countryList.helpers({
 		// const c = Template.instance().list.get();
 		// console.log(c);
 		// return c;
-		console.log(this.list);
-		return this.list;
+
 		// console.log(list);
 
 		// list = getCountries.then((value) => value);
-		//
+		// console.log(list);
 		// return ;
 		// return [{ name: 'Jordan' }];
 	},
 
 });
 
-// Template.countryList.onCreated(function() {
-// 	Tracker.autorun(function() {
-// 		getCountries.then((value) => {
-// 			list = value;
-// 		});
-// 	});
-// });
+Template.countryList.onCreated(function() {
+	this.list = [];
+	Tracker.autorun(async function() {
+		await getCountries()
+			.then((result) => {
+				this.list = result;
+			});
+	});
+});
 // Template.countryList.onCreated(async function countryListOnCreated() {
 // 	this.list = new ReactiveVar([]);
 // 	this.list.set(await Meteor.call('getCountry'));
