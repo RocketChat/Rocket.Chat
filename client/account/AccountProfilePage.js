@@ -56,7 +56,7 @@ const getInitialValues = (user) => ({
 	customFields: user.customFields ?? {},
 });
 
-const AccountProfilePage = (props) => {
+const AccountProfilePage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -239,7 +239,7 @@ const AccountProfilePage = (props) => {
 	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t]);
 
 	return <>
-		<Page {...props}>
+		<Page>
 			<Page.Header title={t('Profile')}>
 				<ButtonGroup>
 					<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
@@ -247,7 +247,7 @@ const AccountProfilePage = (props) => {
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
-			<Page.ScrollableContent>
+			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<AccountProfileForm values={values} handlers={handlers} user={user} settings={settings} setCanSave={setCanSave}/>
 					<ButtonGroup stretch mb='x12'>
@@ -260,7 +260,7 @@ const AccountProfilePage = (props) => {
 						</Button>}
 					</ButtonGroup>
 				</Box>
-			</Page.ScrollableContent>
+			</Page.ScrollableContentWithShadow>
 		</Page>
 		{ modal }
 	</>;

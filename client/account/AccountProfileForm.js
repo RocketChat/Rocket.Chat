@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
-import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, AnimatedVisibility, PasswordInput, Button } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, AnimatedVisibility, PasswordInput, Button, Grid } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../contexts/TranslationContext';
@@ -159,50 +159,56 @@ export default function AccountProfileForm({ values, handlers, user, settings, s
 				<TextAreaInput rows={3} flexGrow={1} value={bio} onChange={handleBio} addon={<Icon name='edit' size='x20' alignSelf='center'/>}/>
 			</Field.Row>
 		</Field>, [bio, handleBio, t])}
-		<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
-			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
-				{useMemo(() => <Field mie='x8' flexGrow={1}>
-					<Field.Label>{t('Email')}</Field.Label>
-					<Field.Row>
-						<TextInput
-							flexGrow={1}
-							value={email}
-							error={emailError}
-							onChange={handleEmail}
-							addon={
-								<Icon name={ verified ? 'circle-check' : 'mail' } size='x20'/>
-							}
-							disabled={!allowEmailChange}
-						/>
-					</Field.Row>
-					<Field.Error>
-						{t(emailError)}
-					</Field.Error>
-				</Field>, [t, email, handleEmail, verified, allowEmailChange, emailError])}
-				{useMemo(() => !verified && <Field>
-					<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
-						{t('Resend_verification_email')}
-					</Button>
-				</Field>, [verified, t, email, previousEmail, handleSendConfirmationEmail])}
-			</Box>
-			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={0} mis='x8'>
-				{useMemo(() => <Field flexGrow={1} mbe='x8'>
-					<Field.Label>{t('Password')}</Field.Label>
-					<Field.Row>
-						<PasswordInput disabled={!allowPasswordChange} error={passwordError} flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
-					</Field.Row>
-				</Field>, [t, password, handlePassword, passwordError, allowPasswordChange])}
-				{useMemo(() => <AnimatedVisibility visibility={password ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN }><Field>
-					<Field.Label>{t('Confirm_password')}</Field.Label>
-					<Field.Row>
-						<PasswordInput error={passwordError} flexGrow={1} value={confirmationPassword} onChange={handleConfirmationPassword} addon={<Icon name='key' size='x20'/>}/>
-					</Field.Row>
-					<Field.Error>
-						{passwordError}
-					</Field.Error>
-				</Field></AnimatedVisibility>, [t, confirmationPassword, handleConfirmationPassword, password, passwordError])}
-			</Box>
-		</Box>
+		<Field>
+			<Grid>
+				<Grid.Item>
+					<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
+						{useMemo(() => <Field>
+							<Field.Label>{t('Email')}</Field.Label>
+							<Field.Row>
+								<TextInput
+									flexGrow={1}
+									value={email}
+									error={emailError}
+									onChange={handleEmail}
+									addon={
+										<Icon name={ verified ? 'circle-check' : 'mail' } size='x20'/>
+									}
+									disabled={!allowEmailChange}
+								/>
+							</Field.Row>
+							<Field.Error>
+								{t(emailError)}
+							</Field.Error>
+						</Field>, [t, email, handleEmail, verified, allowEmailChange, emailError])}
+						{useMemo(() => !verified && <Field>
+							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
+								{t('Resend_verification_email')}
+							</Button>
+						</Field>, [verified, t, email, previousEmail, handleSendConfirmationEmail])}
+					</FieldGroup>
+				</Grid.Item>
+				<Grid.Item>
+					<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
+						{useMemo(() => <Field>
+							<Field.Label>{t('Password')}</Field.Label>
+							<Field.Row>
+								<PasswordInput autocomplete='off' disabled={!allowPasswordChange} error={passwordError} flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
+							</Field.Row>
+						</Field>, [t, password, handlePassword, passwordError, allowPasswordChange])}
+						{useMemo(() => <AnimatedVisibility visibility={password ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN }><Field>
+							<Field.Label>{t('Confirm_password')}</Field.Label>
+							<Field.Row>
+								<PasswordInput autocomplete='off' error={passwordError} flexGrow={1} value={confirmationPassword} onChange={handleConfirmationPassword} addon={<Icon name='key' size='x20'/>}/>
+							</Field.Row>
+							{ passwordError && <Field.Error>
+								{passwordError}
+							</Field.Error> }
+						</Field></AnimatedVisibility>, [t, confirmationPassword, handleConfirmationPassword, password, passwordError])}
+					</FieldGroup>
+				</Grid.Item>
+			</Grid>
+		</Field>
 		<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields}/>
 	</FieldGroup>;
 }
