@@ -53,6 +53,15 @@
 }
 
 .message {
+	&:hover,
+	&.active {
+		background-color: #f7f8fa;
+
+		& .message-actions {
+			display: flex;
+		}
+	}
+
 	& .toggle-hidden {
 		display: none;
 	}
@@ -200,17 +209,6 @@
 .rtl .message-actions {
 	right: auto;
 	left: 2px;
-}
-
-.message {
-	&:hover,
-	&.active {
-		background-color: #f7f8fa;
-
-		& .message-actions {
-			display: flex;
-		}
-	}
 }
 
 .compact {
