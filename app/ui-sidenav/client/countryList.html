@@ -1,0 +1,13 @@
+<template name="countryList">
+	sdfsdfdsfsfdsfsf
+	{{ #if Template.subscriptionsReady }}
+	{{#with countries}}
+
+		{{#each con in this}}
+			<img src="{{getFlag(con.name)}}" width='10px'>
+			<h1>{{con.name}}</h1>
+		{{/each}}
+	{{/with}}
+	{{/if}}
+
+</template>

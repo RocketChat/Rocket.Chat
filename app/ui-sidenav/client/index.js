@@ -11,6 +11,8 @@ import './sideNav';
 import './roomList';
 import './toolbar';
 import './userPresence';
+import './countryList.html';
+import './countryList';
 
 export {
 	toolbarSearch,

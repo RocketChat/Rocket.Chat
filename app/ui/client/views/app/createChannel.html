@@ -87,6 +87,26 @@
 					</div>
 					<div class="rc-input">
 						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Choose Country"}}</div>
+							<div class="rc-input__wrapper">
+								<select name="country">
+									{{#each coun in countries}}
+										<option value={{coun.name}}>{{coun.name}}</option>
+									{{/each}}
+								</select>
+							</div>
+							{{#if isCountry}}
+							<div class="rc-input__error">
+								<div class="rc-input__error-icon">
+									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								</div>
+								<div class="rc-input__error-message">{{_ "Channel_country_doesn't_exist"}}</div>
+							</div>
+						{{/if}}
+						</label>
+					</div>
+					<div class="rc-input">
+						<label class="rc-input__label">
 							<div class="rc-input__title">{{_ "Invite_Users"}}</div>
 							<div class="rc-input__wrapper">
 								<div class="rc-input__icon">

@@ -968,7 +968,7 @@ API.v1.addRoute('channels.roles', { authRequired: true }, {
 		const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
 		const roles = Meteor.runAsUser(this.userId, () => Meteor.call('getRoomRoles', findResult._id));
-
+		console.log("roleeeee",roles);
 		return API.v1.success({
 			roles,
 		});

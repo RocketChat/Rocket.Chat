@@ -5,6 +5,7 @@ import ExportOperations from './models/ExportOperations';
 import Messages from './models/Messages';
 import Reports from './models/Reports';
 import Rooms from './models/Rooms';
+import Country from './models/Country';
 import Settings from './models/Settings';
 import Subscriptions from './models/Subscriptions';
 import Uploads from './models/Uploads';
@@ -55,6 +56,7 @@ export {
 	Messages,
 	Reports,
 	Rooms,
+	Country,
 	Settings,
 	Subscriptions,
 	Uploads,

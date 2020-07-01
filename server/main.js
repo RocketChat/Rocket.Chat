@@ -29,6 +29,7 @@ import './methods/eraseRoom';
 import './methods/getAvatarSuggestion';
 import './methods/getPasswordPolicy';
 import './methods/getRoomById';
+import './methods/getCountries';
 import './methods/getRoomIdByNameOrId';
 import './methods/getRoomNameById';
 import './methods/getSetupWizardParameters';

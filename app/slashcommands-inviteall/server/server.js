@@ -17,7 +17,7 @@ function inviteAll(type) {
 		if (!/invite\-all-(to|from)/.test(command) || !Match.test(params, String)) {
 			return;
 		}
-
+		console.log('inviteAll', params);
 		const regexp = /#?([\d-_\w]+)/g;
 		const [, channel] = regexp.exec(params.trim());
 

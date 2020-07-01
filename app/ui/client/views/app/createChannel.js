@@ -12,6 +12,7 @@ import { callbacks } from '../../../../callbacks';
 import { t, roomTypes } from '../../../../utils';
 import { hasAllPermission } from '../../../../authorization';
 import { AutoComplete } from '../../../../meteor-autocomplete/client';
+import CountriesList from '../../../../../public/public/countiesList';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -57,6 +58,10 @@ const filterNames = (old) => {
 };
 
 Template.createChannel.helpers({
+	countries() {
+		return CountriesList;
+	},
+
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
@@ -111,6 +116,12 @@ Template.createChannel.helpers({
 	readOnly() {
 		return Template.instance().readOnly.get();
 	},
+	isCountry() {
+		return this.countries().includes(Template.instance().country.get());
+	},
+	country() {
+		return Template.instance().country.get();
+	},
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
@@ -126,8 +137,8 @@ Template.createChannel.helpers({
 		const extensions_invalid = instance.extensions_invalid.get();
 		const inUse = instance.inUse.get();
 		const name = instance.name.get();
-
-		if (name.length === 0 || invalid || inUse === true || inUse === undefined || extensions_invalid) {
+		const isCountry = instance.isCountry.get();
+		if (name.length === 0 || invalid || inUse === true || inUse === undefined || extensions_invalid || !isCountry) {
 			return 'disabled';
 		}
 		return '';
@@ -172,7 +183,7 @@ Template.createChannel.helpers({
 
 Template.createChannel.events({
 	...acEvents,
-	'click .rc-tags__tag'({ target }, t) {
+	'click .toastrrc-tags__tag'({ target }, t) {
 		const { username } = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter((user) => user.username !== username));
 	},
@@ -206,11 +217,12 @@ Template.createChannel.events({
 		t.userFilter.set(modified);
 	},
 	'input [name="name"]'(e, t) {
+
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const { length } = input.value;
 		const modified = filterNames(input.value);
-
+		console.log(modified);
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
 		t.invalid.set(!validateChannelName(input.value));
@@ -218,6 +230,12 @@ Template.createChannel.events({
 			t.inUse.set(undefined);
 			t.checkChannel(input.value);
 			t.name.set(modified);
+		}
+	},
+	'input [name="country"]'(e, t) {
+		const _country = e.target.value;
+		if (_country !== t.country.get()) {
+			t.country.set(_country);
 		}
 	},
 	'submit .create-channel__content'(e, instance) {
@@ -228,7 +246,9 @@ Template.createChannel.events({
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
 		const encrypted = instance.encrypted.get();
+		const country = instance.country.get();
 		const isPrivate = type === 'p';
+		console.log("vvvvvvvvvvv" , country);
 
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
@@ -240,7 +260,8 @@ Template.createChannel.events({
 		const extraData = Object.keys(instance.extensions_submits)
 			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, country, function(err, result) {
+			console.log("errrrrrrrrr", err, result);
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					instance.invalid.set(true);
@@ -265,7 +286,7 @@ Template.createChannel.events({
 				instance.data.onCreate(result);
 			}
 
-			return FlowRouter.go(isPrivate ? 'group' : 'channel', { ...result }, FlowRouter.current().queryParams);
+			return FlowRouter.go(isPrivate ? 'group' : 'channel', { ...result }, FlowRouter.current().queryParams, country);
 		});
 		return false;
 	},
@@ -302,6 +323,7 @@ Template.createChannel.onCreated(function() {
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);
+	this.country = new ReactiveVar('Algeria');
 	this.change = _.debounce(() => {
 		let valid = true;
 		Object.keys(this.extensions_validations).map((key) => this.extensions_validations[key]).forEach((f) => { valid = f(this) && valid; });

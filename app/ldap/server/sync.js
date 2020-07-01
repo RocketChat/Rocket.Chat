@@ -279,7 +279,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 }
 export function createRoomForSync(channel) {
 	logger.info(`Channel '${ channel }' doesn't exist, creating it.`);
-
+	console.log('chaaaaaaa',channel);
 	const room = createRoom('c', channel, settings.get('LDAP_Sync_User_Data_Groups_AutoChannels_Admin'), [], false, { customFields: { ldap: true } });
 	if (!room || !room.rid) {
 		logger.error(`Unable to auto-create channel '${ channel }' during ldap sync.`);

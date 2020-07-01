@@ -2,7 +2,7 @@
 	{{#if isLivechat}}
 		{{> livechat . }}
 	{{else}}
-		{{#with rooms}}
+		{{#with privateRooms}}
 			{{#if shouldAppear .. .}}
 					<h3 class="rooms-list__type">
 						<span class="rooms-list__type-text">{{_ ../label}}</span>

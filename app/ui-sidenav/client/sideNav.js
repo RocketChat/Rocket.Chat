@@ -1,12 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
-import { roomTypes, getUserPreference } from '../../utils';
+import { getUserPreference } from '../../utils'; //  roomTypes,
 import { Users } from '../../models';
 
 Template.sideNav.helpers({
@@ -22,17 +20,18 @@ Template.sideNav.helpers({
 		return String(settings.get('Layout_Sidenav_Footer')).trim();
 	},
 
-	roomType() {
-		return roomTypes.getTypes().map((roomType) => ({
-			template: roomType.customTemplate || 'roomList',
-			data: {
-				header: roomType.header,
-				identifier: roomType.identifier,
-				isCombined: roomType.isCombined,
-				label: roomType.label,
-			},
-		}));
-	},
+	// roomType() {
+	// 	const result = roomTypes.getTypes().map((roomType) => ({
+	// 		template: roomType.customTemplate || 'roomList',
+	// 		data: {
+	// 			header: roomType.header,
+	// 			identifier: roomType.identifier,
+	// 			isCombined: roomType.isCombined,
+	// 			label: roomType.label,
+	// 		},
+	// 	}));
+	// 	return result;
+	// },
 
 	loggedInUser() {
 		return !!Meteor.userId();
@@ -79,35 +78,35 @@ Template.sideNav.events({
 	},
 });
 
-const redirectToDefaultChannelIfNeeded = () => {
-	const needToBeRedirect = () => ['/', '/home'].includes(FlowRouter.current().path);
+// const redirectToDefaultChannelIfNeeded = () => {
+// 	const needToBeRedirect = () => ['/', '/home'].includes(FlowRouter.current().path);
 
-	Tracker.autorun((c) => {
-		const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
+// 	Tracker.autorun((c) => {
+// 		const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
 
-		if (!needToBeRedirect()) {
-			return c.stop();
-		}
+// 		if (!needToBeRedirect()) {
+// 			return c.stop();
+// 		}
 
-		if (!firstChannelAfterLogin) {
-			return c.stop();
-		}
+// 		if (!firstChannelAfterLogin) {
+// 			return c.stop();
+// 		}
 
-		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+// 		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
 
-		if (!room) {
-			return;
-		}
+// 		if (!room) {
+// 			return;
+// 		}
 
-		c.stop();
-		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
-	});
-};
+// 		c.stop();
+// 		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
+// 	});
+// };
 
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-	redirectToDefaultChannelIfNeeded();
+	//redirectToDefaultChannelIfNeeded();
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });

@@ -7,6 +7,10 @@ import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
 import { settings } from '../../settings';
 
 Template.roomList.helpers({
+
+	privateRooms() {
+		return Rooms.find({ t: 'p' });
+	},
 	rooms() {
 		/*
 			modes:
@@ -100,7 +104,9 @@ Template.roomList.helpers({
 				query.f = { $ne: favoritesEnabled };
 			}
 		}
-		return ChatSubscription.find(query, { sort });
+		const result = ChatSubscription.find(query, { sort });
+		console.log('rrrrrrrrrrrrrrresuls', result);
+		return result;
 	},
 
 	isLivechat() {

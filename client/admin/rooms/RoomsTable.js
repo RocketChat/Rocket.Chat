@@ -50,22 +50,6 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 			<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mbs='x8' mi='neg-x8'>
 				<Margins inline='x8'>
 					<Field.Row>
-						<CheckBox checked={types.d} id={idDirect} onChange={() => handleCheckBox('d')}/>
-						<Field.Label htmlFor={idDirect} >{t('Direct')}</Field.Label>
-					</Field.Row>
-					<Field.Row>
-						<CheckBox checked={types.c} id={idDPublic} onChange={() => handleCheckBox('c')}/>
-						<Field.Label htmlFor={idDPublic}>{t('Public')}</Field.Label>
-					</Field.Row>
-					<Field.Row>
-						<CheckBox checked={types.p} id={idPrivate} onChange={() => handleCheckBox('p')}/>
-						<Field.Label htmlFor={idPrivate}>{t('Private')}</Field.Label>
-					</Field.Row>
-					<Field.Row>
-						<CheckBox checked={types.l} id={idOmnichannel} onChange={() => handleCheckBox('l')}/>
-						<Field.Label htmlFor={idOmnichannel}>{t('Omnichannel')}</Field.Label>
-					</Field.Row>
-					<Field.Row>
 						<CheckBox checked={types.discussions} id={idDiscussions} onChange={() => handleCheckBox('discussions')}/>
 						<Field.Label htmlFor={idDiscussions}>{t('Discussions')}</Field.Label>
 					</Field.Row>

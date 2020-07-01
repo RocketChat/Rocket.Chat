@@ -11,6 +11,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	}
 
 	getTypes() {
+		console.log(roomTypes);
 		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]).filter((type) => !type.condition || type.condition());
 	}
 

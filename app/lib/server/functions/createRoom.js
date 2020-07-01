@@ -11,8 +11,9 @@ import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
 
 
-export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}) {
-	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
+export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}, cory) {
+	console.log("zzzzzzzzz111111111111", cory);
+	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options, cory });
 
 	if (type === 'd') {
 		return createDirectRoom(members, extraData, options);
@@ -63,7 +64,9 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 		ts: now,
 		ro: readOnly === true,
 	};
-
+	const country = {
+		name: cory,
+	};
 	room._USERNAMES = members;
 
 	const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', room).catch((error) => {
@@ -91,8 +94,8 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 	if (type === 'c') {
 		callbacks.run('beforeCreateChannel', owner, room);
 	}
-
-	room = Rooms.createWithFullRoomData(room);
+	console.log("zzzzzzzzz", country, cory);
+	room = Rooms.createWithFullRoomData(room, country);
 
 	for (const username of members) {
 		const member = Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 } });

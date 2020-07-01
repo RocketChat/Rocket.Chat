@@ -5,11 +5,12 @@ import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { getValidRoomName } from '../../../utils';
+import Country from './Country';
 
 export class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
-
+		console.log('hiiiiiiii', args);
 		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
 		this.tryEnsureIndex({ default: 1 }, { sparse: true });
 		this.tryEnsureIndex({ featured: 1 }, { sparse: true });
@@ -1087,10 +1088,14 @@ export class Rooms extends Base {
 		return room;
 	}
 
-	createWithFullRoomData(room) {
+	createWithFullRoomData(room, country) {
 		delete room._id;
-
+		console.log('counttttttttttttt', room, country);
+		Country.test();
+		//console.log(Country.findAndUpdate(country.name, room.name));
+		Country.findAndUpdate(country.name, room.name);
 		room._id = this.insert(room);
+		console.log("roommmms", room);
 		return room;
 	}
 

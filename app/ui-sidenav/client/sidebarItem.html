@@ -7,7 +7,6 @@
 		{{# userPresence uid=uid}}<div class="sidebar-item__user-status {{#if status}}sidebar-item__user-status--{{status}}{{/if}}" aria-label="{{status}}"></div>{{/userPresence}}
 	{{/if}}
 </template>
-
 <template name="sidebarItem">
 	<li class="sidebar-item{{#if showUnread }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}} js-sidebar-type-{{t}}" data-id="{{_id}}">
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" aria-label="{{name}}">

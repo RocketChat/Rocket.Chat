@@ -7,12 +7,15 @@ import { Rooms, Subscriptions, Users } from '../../../models/server';
 export class AppRoomBridge {
 	constructor(orch) {
 		this.orch = orch;
+		console.log("craeteAppRoom",orch);
+
 	}
 
 	async create(room, members, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating a new room.`, room);
 
 		const rcRoom = this.orch.getConverters().get('rooms').convertAppRoom(room);
+		console.log("craeteAppRoom", rcRoom);
 		let method;
 
 		switch (room.type) {

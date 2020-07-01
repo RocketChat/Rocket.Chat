@@ -1289,7 +1289,6 @@ settings.addGroup('Push', function() {
 		});
 	});
 });
-
 settings.addGroup('Layout', function() {
 	this.section('Content', function() {
 		this.add('Layout_Home_Title', 'Home', {

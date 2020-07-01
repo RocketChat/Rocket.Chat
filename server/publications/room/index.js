@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { roomTypes } from '../../../app/utils';
 import { hasPermission } from '../../../app/authorization';
-import { Rooms } from '../../../app/models';
+import { Rooms, Country } from '../../../app/models';
 import { settings } from '../../../app/settings';
 import './emitter';
 
@@ -113,5 +113,8 @@ Meteor.methods({
 		}
 
 		return roomMap(room);
+	},
+	'country/get'() {
+		return Country.findAllCouhntry();
 	},
 });
