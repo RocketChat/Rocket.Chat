@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
 
 import { Users } from '../../../../app/models/server';
-import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 import { addRoleRestrictions } from '../../authorization/lib/addRoleRestrictions';
-import decrypt from './decrypt';
+import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 import { getBundleModules, isBundle } from './bundles';
+import decrypt from './decrypt';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -15,6 +15,7 @@ export interface ILicense {
 	modules: string[];
 	maxGuestUsers: number;
 	maxRoomsPerGuest: number;
+	tag: string;
 }
 
 export interface IValidLicense {
@@ -29,6 +30,8 @@ class LicenseClass {
 	private url: string|null = null;
 
 	private licenses: IValidLicense[] = [];
+
+	private tags = new Set<string>();
 
 	private modules = new Set<string>();
 
@@ -99,6 +102,10 @@ class LicenseClass {
 		return [...this.modules];
 	}
 
+	getTags(): string[] {
+		return [...this.tags];
+	}
+
 	setURL(url: string): void {
 		this.url = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
 
@@ -137,6 +144,10 @@ class LicenseClass {
 			}
 
 			this._validModules(license.modules);
+
+			if (license.tag && license.tag !== '') {
+				this.tags.add(license.tag);
+			}
 
 			console.log('#### License validated:', license.modules.join(', '));
 
@@ -218,6 +229,10 @@ export function getMaxGuestUsers(): number {
 
 export function getModules(): string[] {
 	return License.getModules();
+}
+
+export function getTags(): string[] {
+	return License.getTags();
 }
 
 export function onLicense(feature: string, cb: (...args: any[]) => void): void {
