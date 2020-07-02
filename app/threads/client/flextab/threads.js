@@ -7,7 +7,7 @@ import '../threads.css';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
 
-createTemplateForComponent('ThreadsList', () => import('../../../../client/Channel/Threads/ContextualBar/ThreadList'), {
+createTemplateForComponent('ThreadsList', () => import('../../../../client/Channel/Threads/ContextualBar/List'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 

@@ -4,7 +4,7 @@ import { css } from '@rocket.chat/css-in-js';
 
 import UserAvatar from '../../../../components/basic/avatar/UserAvatar';
 import RawText from '../../../../components/basic/RawText';
-import MessageTemplate from '../../../components/Message';
+import * as MessageTemplate from '../../../components/Message';
 import NotificationStatus from '../../../components/NotificationStatus';
 
 function isIterable(obj) {
@@ -26,11 +26,11 @@ const followStyle = css`
 	}
 `;
 
-export default function Message({ _id, msg, following, username, name, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, className = [], ...props }) {
+export default React.memo(function Message({ _id, msg, following, username, name, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, className = [], ...props }) {
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 
-	return <Box rcx-contextual-message pi='x20' pb='x16' pbs='x16' display='flex' {...props} className={[...isIterable(className) ? className : [className], !following && followStyle].filter(Boolean)}>
+	return <MessageTemplate.Message {...props} className={[...isIterable(className) ? className : [className], !following && followStyle].filter(Boolean)}>
 		<MessageTemplate.Container mb='neg-x2'>
 			<UserAvatar username={username} rcx-message__avatar size='x36'/>
 		</MessageTemplate.Container>
@@ -54,5 +54,5 @@ export default function Message({ _id, msg, following, username, name, ts, repli
 				|| (unread && <NotificationStatus.Unread t={t} mb='x24'/>)
 			}
 		</MessageTemplate.Container>
-	</Box>;
-}
+	</MessageTemplate.Message>;
+});

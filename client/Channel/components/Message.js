@@ -1,8 +1,9 @@
 import React from 'react';
 import { Box, Margins, Skeleton } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
 
-export function MessageSkeleton(props) {
-	return <Box rcx-message pi='x20' pb='x16' pbs='x16' display='flex' {...props}>
+export const MessageSkeleton = React.memo(function MessageSkeleton(props) {
+	return <Message {...props}>
 		<Container mb='neg-x2'>
 			<Skeleton variant='rect' size='x36'/>
 		</Container>
@@ -19,8 +20,8 @@ export function MessageSkeleton(props) {
 				</Margins>
 			</Box>
 		</Container>
-	</Box>;
-}
+	</Message>;
+});
 
 export function Container({ children, ...props }) {
 	return <Box rcx-message__container display='flex' mi='x4' flexDirection='column' {...props}><Margins block='x2'>{children}</Margins></Box>;
@@ -38,14 +39,28 @@ export function Timestamp({ ts }) {
 	return <Box rcx-message__time fontSize='c1' color='neutral-600' flexShrink={0} withTruncatedText>{ts.toDateString ? ts.toDateString() : ts }</Box>;
 }
 
-const style = {
-	display: '-webkit-box',
-	overflow: 'hidden',
-	WebkitLineClamp: 2,
-	WebkitBoxOrient: 'vertical',
-	wordBreak: 'break-all',
-};
+function isIterable(obj) {
+	// checks for null and undefined
+	if (obj == null) {
+		return false;
+	}
+	return typeof obj[Symbol.iterator] === 'function';
+}
+
+export function Message({ className, ...props }) {
+	return <Box rcx-contextual-message pi='x20' pb='x16' pbs='x16' display='flex' {...props} className={[...isIterable(className) ? className : [className]].filter(Boolean)}/>;
+}
+
+export default Message;
+
+const style = css`
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	word-break: break-word;
+`;
 
 export function BodyClamp(props) {
-	return <Box rcx-message__body flexShrink={1} style={style} lineHeight='1.45' minHeight='40px' {...props}/>;
+	return <Box rcx-message__body className={style} flexShrink={1} lineHeight='1.45' minHeight='40px' {...props}/>;
 }
