@@ -1,45 +1,28 @@
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from "meteor/kadira:flow-router";
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import s from 'underscore.string';
 import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
-import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { css } from '@rocket.chat/css-in-js';
 
-import { roomTypes } from '../../../../app/utils/client';
-import { call, renderMessageBody } from '../../../../app/ui-utils/client';
+import { renderMessageBody } from '../../../../app/ui-utils/client';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../app/models/client';
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import RawText from '../../../components/basic/RawText';
-import { useRoute } from '../../../contexts/RouterContext';
 import { useUserId } from '../../../contexts/UserContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { MessageSkeleton } from '../../components/Message';
 import { useUserSubscription } from '../../hooks/useUserSubscription';
 import { useUserRoom } from '../../hooks/useUserRoom';
-import { useLocalStorage } from '../../hooks/useLocalstorage';
 import { useSetting } from '../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
-
-
-function clickableItem(WrappedComponent) {
-	const clickable = css`
-		cursor: pointer;
-		border-bottom: 2px solid #F2F3F5 !important;
-
-		&:hover,
-		&:focus {
-			background: #F7F8FA;
-		}
-	`;
-	return (props) => <WrappedComponent className={clickable} tabIndex={0} {...props}/>;
-}
+import { clickableItem } from '../../helpers/clickableItem';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
@@ -49,7 +32,7 @@ const Discussion = React.memo(mapProps(clickableItem(DiscussionListMessage)));
 
 const Skeleton = React.memo(clickableItem(MessageSkeleton));
 
-const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 25;
+const LIST_SIZE = parseInt(getConfig('discussionListSize')) || 25;
 
 const filterProps = ({ msg, drid, u, dcount, mentions, tcount, ts, _id, dlm, attachments, name }) => ({ ..._id && { _id }, drid, attachments, name, mentions, msg, u, dcount, tcount, ts: new Date(ts), dlm: new Date(dlm) });
 
@@ -92,7 +75,6 @@ export function withData(WrappedComponent) {
 
 			setTotal(data.total);
 			ref.current && ref.current();
-
 		}, [data, state]);
 
 		useEffect(() => {
@@ -205,7 +187,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 
 	return <VerticalBar>
 		<VerticalBar.Header>
-			<VerticalBar.Icon name='thread'/>
+			<VerticalBar.Icon name='discussion'/>
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><RawText>{t('Discussions')}</RawText></Box>
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>

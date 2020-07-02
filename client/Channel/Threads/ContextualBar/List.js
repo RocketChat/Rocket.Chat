@@ -6,7 +6,6 @@ import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fus
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { css } from '@rocket.chat/css-in-js';
 
 import { roomTypes } from '../../../../app/utils/client';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';
@@ -25,20 +24,7 @@ import { useUserRoom } from '../../hooks/useUserRoom';
 import { useLocalStorage } from '../../hooks/useLocalstorage';
 import { useSetting } from '../../../contexts/SettingsContext';
 import ThreadListMessage from './components/Message';
-
-
-function clickableItem(WrappedComponent) {
-	const clickable = css`
-		cursor: pointer;
-		border-bottom: 2px solid #F2F3F5 !important;
-
-		&:hover,
-		&:focus {
-			background: #F7F8FA;
-		}
-	`;
-	return (props) => <WrappedComponent className={clickable} tabIndex={0} {...props}/>;
-}
+import { clickableItem } from '../../helpers/clickableItem';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;

@@ -5,7 +5,7 @@ import { css } from '@rocket.chat/css-in-js';
 import UserAvatar from '../../../../components/basic/avatar/UserAvatar';
 import RawText from '../../../../components/basic/RawText';
 import * as MessageTemplate from '../../../components/Message';
-import NotificationStatus from '../../../components/NotificationStatus';
+import * as NotificationStatus from '../../../components/NotificationStatus';
 
 function isIterable(obj) {
 	// checks for null and undefined
