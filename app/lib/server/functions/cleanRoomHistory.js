@@ -1,16 +1,24 @@
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload';
-import { Rooms, RoomEvents } from '../../../models';
+import { Messages, Rooms } from '../../../models';
 import { Notifications } from '../../../notifications';
 
 export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
-	const query = queryBuilder({
+	const ts = { [gt]: oldest, [lt]: latest };
+
+	const text = `_${ TAPi18n.__('File_removed_by_prune') }_`;
+
+	let fileCount = 0;
+	Messages.findFilesByRoomIdPinnedTimestampAndUsers(
 		rid,
-		ts: { [gt]: oldest, [lt]: latest },
 		excludePinned,
+		ignoreDiscussion,
+		ts,
 		fromUsers,
 		ignoreThreads,
 		{ fields: { 'file._id': 1, pinned: 1 }, limit },
@@ -31,15 +39,16 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 			.forEach(({ drid }) => deleteRoom(drid));
 	}
 
-	if (result.count) {
+	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers);
+	if (count) {
 		Rooms.resetLastMessageById(rid);
 		Notifications.notifyRoom(rid, 'deleteMessageBulk', {
 			rid,
 			excludePinned,
 			ignoreDiscussion,
-			ts: query.ts,
+			ts,
 			users: fromUsers,
 		});
 	}
-	return result.count;
+	return count;
 };
