@@ -6,4 +6,4 @@ import './popup/messagePopupChannel';
 import './popup/messagePopupConfig';
 import './popup/messagePopupEmoji';
 import './popup/messagePopupSlashCommandPreview';
-import './blocks';
+import '../../../client/views/blocks';

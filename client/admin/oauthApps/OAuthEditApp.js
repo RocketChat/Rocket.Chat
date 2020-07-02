@@ -72,6 +72,7 @@ export default function EditOauthAppWithData({ _id, ...props }) {
 
 	const query = useMemo(() => ({
 		appId: _id,
+		// TODO: remove cache. Is necessary for data invalidation
 	}), [_id, cache]);
 
 	const { data, state, error } = useEndpointDataExperimental('oauth-apps.get', query);
@@ -115,8 +116,8 @@ function EditOauthApp({ onChange, data, ...props }) {
 	const close = useCallback(() => router.push({}), [router]);
 
 	const absoluteUrl = useAbsoluteUrl();
-	const authUrl = useMemo(() => absoluteUrl('oauth/authorize'));
-	const tokenUrl = useMemo(() => absoluteUrl('oauth/token'));
+	const authUrl = useMemo(() => absoluteUrl('oauth/authorize'), [absoluteUrl]);
+	const tokenUrl = useMemo(() => absoluteUrl('oauth/token'), [absoluteUrl]);
 
 	const saveApp = useMethod('updateOAuthApp');
 	const deleteApp = useMethod('deleteOAuthApp');
@@ -132,7 +133,7 @@ function EditOauthApp({ onChange, data, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [JSON.stringify(newData)]);
+	}, [data._id, dispatchToastMessage, newData, onChange, saveApp, t]);
 
 	const onDeleteConfirm = useCallback(async () => {
 		try {
@@ -141,7 +142,7 @@ function EditOauthApp({ onChange, data, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [data._id]);
+	}, [close, data._id, deleteApp, dispatchToastMessage]);
 
 	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
 

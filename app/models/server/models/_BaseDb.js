@@ -8,13 +8,15 @@ import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 
 const baseName = 'rocketchat_';
 
-const trash = new Mongo.Collection(`${ baseName }_trash`);
+export const trash = new Mongo.Collection(`${ baseName }_trash`);
 try {
-	trash._ensureIndex({ collection: 1 });
+	trash._ensureIndex({ __collection__: 1 });
 	trash._ensureIndex(
 		{ _deletedAt: 1 },
 		{ expireAfterSeconds: 60 * 60 * 24 * 30 },
 	);
+
+	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
 	console.log(e);
 }

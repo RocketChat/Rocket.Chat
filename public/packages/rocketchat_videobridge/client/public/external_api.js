@@ -329,7 +329,6 @@ JitsiMeetExternalAPI.prototype.removeEventListener = function (event) {
  * @param events array with the names of the events.
  */
 JitsiMeetExternalAPI.prototype.removeEventListeners = function (events) {
-    var eventsArray = [];
     for (var i = 0; i < events.length; i++) {
         this.removeEventListener(events[i]);
     }

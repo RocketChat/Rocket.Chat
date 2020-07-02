@@ -12,6 +12,10 @@ declare module 'meteor/accounts-base' {
 		function _bcryptRounds(): number;
 
 		function _getLoginToken(connectionId: string): string | undefined;
+
+		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): string;
+
+		function _generateStampedLoginToken(): {token: string; when: Date};
 	}
 }
 
@@ -42,8 +46,32 @@ declare module 'meteor/ddp-common' {
 	}
 }
 
+declare module 'meteor/routepolicy' {
+	export class RoutePolicy {
+		static declare(urlPrefix: string, type: string): void;
+	}
+}
+
 declare module 'meteor/rocketchat:tap-i18n' {
 	namespace TAPi18n {
 		function __(s: string, options: { lng: string }): string;
+	}
+}
+
+declare module 'meteor/promise' {
+	namespace Promise {
+		function await(): any;
+	}
+}
+
+declare module 'meteor/littledata:synced-cron' {
+	interface ICronAddParameters {
+		name: string;
+		schedule: Function;
+		job: Function;
+	}
+	namespace SyncedCron {
+		function add(params: ICronAddParameters): string;
+		function remove(name: string): string;
 	}
 }

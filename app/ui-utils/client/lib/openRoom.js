@@ -8,7 +8,7 @@ import { Session } from 'meteor/session';
 import mem from 'mem';
 import _ from 'underscore';
 
-import { ChatSubscription, Rooms } from '../../../models';
+import { Messages, ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
@@ -17,6 +17,9 @@ import { call, callMethod } from './callMethod';
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 
 window.currentTracker = undefined;
+
+// cleanup session when hot reloading
+Session.set('openedRoom', null);
 
 const getDomOfLoading = mem(function getDomOfLoading() {
 	const loadingDom = document.createElement('div');
@@ -38,10 +41,12 @@ function replaceCenterDomBy(dom) {
 				for (const child of Array.from(mainNode.children)) {
 					if (child) { mainNode.removeChild(child); }
 				}
-				mainNode.appendChild(dom);
+				const roomNode = dom();
+				mainNode.appendChild(roomNode);
+				return resolve([mainNode, roomNode]);
 			}
 			resolve(mainNode);
-		}, 1);
+		}, 0);
 	});
 }
 
@@ -68,27 +73,35 @@ export const openRoom = async function(type, name) {
 			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
-			if (RoomManager.open(type + name).ready() !== true) {
-				if (settings.get('Accounts_AllowAnonymousRead')) {
-					BlazeLayout.render('main');
-				}
-				await replaceCenterDomBy(getDomOfLoading());
-				return;
-			}
-
-			c.stop();
-
-			if (window.currentTracker) {
-				window.currentTracker = undefined;
-			}
 
 			if (room._id !== name && type === 'd') { // Redirect old url using username to rid
 				RoomManager.close(type + name);
 				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 			}
 
-			const roomDom = RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate);
-			const mainNode = await replaceCenterDomBy(roomDom);
+
+			if (room._id === Session.get('openedRoom')) {
+				return;
+			}
+
+			if (RoomManager.open(type + name).ready() !== true) {
+				if (settings.get('Accounts_AllowAnonymousRead')) {
+					BlazeLayout.render('main');
+				}
+				await replaceCenterDomBy(() => getDomOfLoading());
+				return;
+			}
+
+			BlazeLayout.render('main', {
+				center: 'loading',
+			});
+
+			c.stop();
+
+			if (window.currentTracker) {
+				window.currentTracker = undefined;
+			}
+			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
 			if (mainNode) {
 				if (roomDom.classList.contains('room-container')) {
@@ -110,7 +123,15 @@ export const openRoom = async function(type, name) {
 			}
 
 			if (FlowRouter.getQueryParam('msg')) {
-				const msg = { _id: FlowRouter.getQueryParam('msg'), rid: room._id };
+				const messageId = FlowRouter.getQueryParam('msg');
+				const msg = { _id: messageId, rid: room._id };
+
+				const message = Messages.findOne({ ss_id: msg._id }) || (await call('getMessages', [msg._id]))[0];
+
+				if (message && (message.tmid || message.tcount)) {
+					return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
+				}
+
 				RoomHistoryManager.getSurroundingMessages(msg);
 			}
 

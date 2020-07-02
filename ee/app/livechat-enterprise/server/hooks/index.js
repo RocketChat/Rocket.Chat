@@ -15,3 +15,4 @@ import './onLoadConfigApi';
 import './onSetUserStatusLivechat';
 import './onCloseLivechat';
 import './onSaveVisitorInfo';
+import './onBusinessHourStart';

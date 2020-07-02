@@ -32,7 +32,7 @@ export const createPermissions = () => {
 		'view-livechat-current-chats',
 		'view-livechat-analytics',
 		'view-livechat-real-time-monitoring',
-		'view-livechat-officeHours',
+		'view-livechat-business-hours',
 		'manage-livechat-agents',
 		'view-livechat-room-closed-same-department',
 		'view-livechat-room-closed-by-another-agent',
