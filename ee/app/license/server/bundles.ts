@@ -14,10 +14,10 @@ const bundles: IBundle = {
 	],
 };
 
-const getBundleFromModule = (moduleName: string): string|undefined => {
+export const getBundleFromModule = (moduleName: string): string => {
 	const match = moduleName.match(/(.*):\*$/);
 	if (!match) {
-		return;
+		return '';
 	}
 
 	return match[1];

@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { Users } from '../../../../app/models/server';
 import { addRoleRestrictions } from '../../authorization/lib/addRoleRestrictions';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
-import { getBundleModules, isBundle } from './bundles';
+import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 
 const EnterpriseLicenses = new EventEmitter();
@@ -15,7 +15,7 @@ export interface ILicense {
 	modules: string[];
 	maxGuestUsers: number;
 	maxRoomsPerGuest: number;
-	tag: string;
+	tag?: string;
 }
 
 export interface IValidLicense {
@@ -35,11 +35,11 @@ class LicenseClass {
 
 	private modules = new Set<string>();
 
-	_validateExpiration(expiration: string): boolean {
+	private _validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
 	}
 
-	_validateURL(licenseURL: string, url: string): boolean {
+	private _validateURL(licenseURL: string, url: string): boolean {
 		licenseURL = licenseURL
 			.replace(/\./g, '\\.') // convert dots to literal
 			.replace(/\*/g, '.*'); // convert * to .*
@@ -48,7 +48,7 @@ class LicenseClass {
 		return !!regex.exec(url);
 	}
 
-	_validModules(licenseModules: string[]): void {
+	private _validModules(licenseModules: string[]): void {
 		licenseModules.forEach((licenseModule) => {
 			const modules = isBundle(licenseModule)
 				? getBundleModules(licenseModule)
@@ -61,7 +61,7 @@ class LicenseClass {
 		});
 	}
 
-	_invalidModules(licenseModules: string[]): void {
+	private _invalidModules(licenseModules: string[]): void {
 		licenseModules.forEach((licenseModule) => {
 			const modules = isBundle(licenseModule)
 				? getBundleModules(licenseModule)
@@ -71,8 +71,23 @@ class LicenseClass {
 		});
 	}
 
-	_hasValidNumberOfActiveUsers(maxActiveUsers: number): boolean {
+	private _hasValidNumberOfActiveUsers(maxActiveUsers: number): boolean {
 		return Users.getActiveLocalUserCount() <= maxActiveUsers;
+	}
+
+	private _addTags(license: ILicense) {
+		// if no tag present, it means it is an old license, so try check for bundles and use them as tags
+		if (typeof license.tag === 'undefined') {
+			license.modules
+				.filter(isBundle)
+				.map(getBundleFromModule)
+				.forEach(this.tags.add, this.tags);
+			return;
+		}
+
+		if (license.tag.trim() !== '') {
+			this.tags.add(license.tag.trim());
+		}
 	}
 
 	addLicense(license: ILicense): void {
@@ -145,9 +160,7 @@ class LicenseClass {
 
 			this._validModules(license.modules);
 
-			if (license.tag && license.tag !== '') {
-				this.tags.add(license.tag);
-			}
+			this._addTags(license);
 
 			console.log('#### License validated:', license.modules.join(', '));
 
