@@ -67,7 +67,7 @@ export default function ThreadListMessage({ _id, msg, following, username, name,
 			</Box>
 		</Container>
 		<Container alignItems='center'>
-			<Button rcx-contextual-message__follow small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} aria-label={actionLabel}><Icon name={button} size='x20'/></Button>
+			<Button rcx-contextual-message__follow small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} title={actionLabel} aria-label={actionLabel}><Icon name={button} size='x20'/></Button>
 			{
 				(mention && <NotificationStatusMe t={t} mb='x24'/>)
 				|| (all && <NotificationStatusAll t={t} mb='x24'/>)

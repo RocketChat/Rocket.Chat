@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "3.4.0-develop",
+	"version": "3.5.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -55,7 +55,7 @@
 		"@babel/preset-react": "^7.0.0",
 		"@octokit/rest": "^16.1.0",
 		"@rocket.chat/eslint-config": "^0.3.0",
-		"@rocket.chat/livechat": "^1.5.0",
+		"@rocket.chat/livechat": "^1.6.0",
 		"@settlin/spacebars-loader": "^1.0.7",
 		"@storybook/addon-actions": "^5.3.19",
 		"@storybook/addon-knobs": "^5.3.19",
@@ -68,6 +68,7 @@
 		"@types/meteor": "^1.4.37",
 		"@types/mocha": "^7.0.2",
 		"@types/mock-require": "^2.0.0",
+		"@types/moment-timezone": "^0.5.13",
 		"@types/mongodb": "^3.5.8",
 		"@types/react-dom": "^16.9.8",
 		"@typescript-eslint/eslint-plugin": "^2.11.0",

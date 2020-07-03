@@ -1,15 +1,19 @@
-import { IBusinessHour } from './IBusinessHour';
+import { IBusinessHourBehavior } from './IBusinessHourBehavior';
 
-export class SingleBusinessHour implements IBusinessHour {
+export class SingleBusinessHourBehavior implements IBusinessHourBehavior {
 	getView(): string {
 		return 'livechatBusinessHoursForm';
 	}
 
-	shouldShowCustomTemplate(): boolean {
+	showCustomTemplate(): boolean {
 		return false;
 	}
 
-	shouldShowBackButton(): boolean {
+	showBackButton(): boolean {
+		return false;
+	}
+
+	showTimezoneTemplate(): boolean {
 		return false;
 	}
 }
