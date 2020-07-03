@@ -1,22 +1,18 @@
 import { Base } from './_Base';
 
 export class Country extends Base {
-	constructor() {
-		super('country');
-		console.log('hiiiiiiii');
+	constructor(...args) {
+		super(...args);
 	}
 
 	insertNewCountry(country) {
-		//delete country._id;
-		console.log('country1', country);
+		// delete country._id;
 		return this.insert({ name: country });
 	}
 
 
 	findAllCountry() {
-		console.log("findAllCountry called");
 		const c = this.find({}).fetch();
-		console.log('find all country', c);
 		return c;
 	}
 
@@ -36,10 +32,15 @@ export class Country extends Base {
 				roomName,
 			},
 		};
-		console.log('country2', country);
-		// console.log('result of insert the country', this.insertNewCountry('Jordan'));
-		return this.update(qeury, update);
+		this.update(qeury, update, (err, result) => {
+			if (!err) {
+				this.insertNewCountry(country);
+				result = this.update(qeury, update);
+			}
+			return result;
+		});
+
 	}
 }
 
-export default new Country();
+export default new Country('country', true);

@@ -18,7 +18,6 @@ import { ChatMessage } from './models/ChatMessage';
 import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
-import { Country } from './models/Country';
 import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
 import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
@@ -28,7 +27,6 @@ const Users = _.extend({}, users, Meteor.users);
 const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
 const Messages = _.extend({}, ChatMessage);
 const Rooms = _.extend({}, ChatRoom);
-const Countries = _.extend({}, Country);
 
 export {
 	Base,
@@ -36,8 +34,7 @@ export {
 	Uploads,
 	UserDataFiles,
 	Roles,
-	//Countries,
-//	Country,
+
 	Subscriptions,
 	Users,
 	Messages,

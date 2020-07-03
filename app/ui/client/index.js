@@ -51,6 +51,8 @@ import './components/tabs';
 import './components/popupList.html';
 import './components/popupList';
 import './components/selectDropdown.html';
+import './views/app/roomsList.html';
+import './views/app/roomsList';
 
 import './components/header/header';
 import './components/header/headerRoom';

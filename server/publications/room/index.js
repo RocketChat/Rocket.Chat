@@ -114,7 +114,7 @@ Meteor.methods({
 
 		return roomMap(room);
 	},
-	'country/get'() {
-		return Country.findAllCouhntry();
-	},
+	// 'country/get'() {
+	// 	return Country.findAllCouhntry();
+	// },
 });

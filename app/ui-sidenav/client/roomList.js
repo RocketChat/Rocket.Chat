@@ -105,7 +105,6 @@ Template.roomList.helpers({
 			}
 		}
 		const result = ChatSubscription.find(query, { sort });
-		console.log('rrrrrrrrrrrrrrresuls', result);
 		return result;
 	},
 

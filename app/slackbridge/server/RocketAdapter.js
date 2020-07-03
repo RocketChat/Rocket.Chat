@@ -262,7 +262,6 @@ export default class RocketAdapter {
 	addChannel(slackChannelID, hasRetried = false) {
 		logger.rocket.debug('Adding Rocket.Chat channel from Slack', slackChannelID);
 		let addedRoom;
-		console.log("aptttttt",slackChannelID, hasRetried )
 
 		this.slackAdapters.forEach((slack) => {
 			if (addedRoom) {

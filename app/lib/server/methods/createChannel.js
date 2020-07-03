@@ -8,7 +8,6 @@ Meteor.methods({
 	createChannel(name, members, readOnly = false, customFields = {}, extraData = {}, country) {
 		check(name, String);
 		check(members, Match.Optional([String]));
-		console.log("mmeee", country);
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
 		}

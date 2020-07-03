@@ -27,11 +27,7 @@ Meteor.methods({
 				}],
 			}),
 		}));
-		console.log("calllllllllllllvvvvvvvvvvvvvvv", country);
-
-		let c = createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData }, {}, country);
-
-		console.log("callllllllllllll", country);
+		const c = createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData }, {}, country);
 		return c;
 	},
 });

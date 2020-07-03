@@ -152,6 +152,17 @@ button {
 	}
 }
 
+.rc-icon--large-size {
+	overflow: hidden;
+
+	width: 1.25em;
+	height: 1em;
+
+	vertical-align: -0.15em;
+	fill: currentColor;
+	font-size: 50px;
+}
+
 .ps-scrollbar-y-rail {
 	background: transparent !important;
 }

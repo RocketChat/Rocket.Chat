@@ -12,7 +12,6 @@ import { createDirectRoom } from './createDirectRoom';
 
 
 export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}, cory) {
-	console.log("zzzzzzzzz111111111111", cory);
 	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options, cory });
 
 	if (type === 'd') {
@@ -94,7 +93,6 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 	if (type === 'c') {
 		callbacks.run('beforeCreateChannel', owner, room);
 	}
-	console.log("zzzzzzzzz", country, cory);
 	room = Rooms.createWithFullRoomData(room, country);
 
 	for (const username of members) {

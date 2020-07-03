@@ -12,7 +12,6 @@ export class Base {
 		this.model = this._db.model;
 		this.collectionName = this._db.collectionName;
 		this.name = this._db.name;
-		console.log('databaseeeeeee', this.name, this.collectionName);
 		this.on = this._db.on.bind(this._db);
 		this.emit = this._db.emit.bind(this._db);
 

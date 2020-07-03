@@ -1,12 +1,16 @@
 <template name="countryList">
-	sdfsdfdsfsfdsfsf
 	{{ #if Template.subscriptionsReady }}
 	{{#with countries}}
-
+	<ul>
 		{{#each con in this}}
-			<img src="{{getFlag(con.name)}}" width='10px'>
-			<h1>{{con.name}}</h1>
+		<li onmouseover="this.style.backgroundColor='#1F2329'" onmouseout="this.style.backgroundColor='#2F343D'">
+			<a href="/country/{{ con.name }}" style="width: 100%; display: flex; justify-content: start; align-items: flex-start; color:white; padding: 5px;" data-button ="viewRooms" name= "{{con.name}}">
+				<img src="{{getFlag(con.name)}}" width='25px' height="25px">
+				<h1 style="margin-left: 10px; margin-top: 5px;">{{con.name}}</h1>
+			</a>
+		</li>
 		{{/each}}
+	</ul>
 	{{/with}}
 	{{/if}}
 

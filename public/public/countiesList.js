@@ -7,7 +7,7 @@ export default [
 	{ name: 'Egypt', flag: 'https://restcountries.eu/data/egy.svg' },
 	{ name: 'Eritrea', flag: 'https://restcountries.eu/data/eri.svg' },
 	{ name: 'Iraq', flag: 'https://restcountries.eu/data/irq.svg' },
-	{ name: 'Israel', flag: 'https://restcountries.eu/data/isr.svg' },
+	{ name: 'Palestine', flag: 'https://restcountries.eu/data/pse.svg' },
 	{ name: 'Jordan', flag: 'https://restcountries.eu/data/jor.svg' },
 	{ name: 'Kuwait', flag: 'https://restcountries.eu/data/kwt.svg' },
 	{ name: 'Lebanon', flag: 'https://restcountries.eu/data/lbn.svg' },

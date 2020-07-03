@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
 
 const getUsername = ({ userId, username }) => {
 	const query = {};
@@ -27,7 +28,10 @@ Template.avatar.helpers({
 		if (url) {
 			return url;
 		}
-
+		const { src } = Template.instance().data;
+		if (src) {
+			return getUserAvatarURL(`@${ src }`);
+		}
 		if (this.roomIcon && this.username) {
 			return getUserAvatarURL(`@${ this.username }`);
 		}

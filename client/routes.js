@@ -71,6 +71,7 @@ FlowRouter.route('/home', {
 
 	action(params, queryParams) {
 		KonchatNotification.getDesktopPermission();
+
 		if (queryParams.saml_idp_credentialToken !== undefined) {
 			Accounts.callLoginMethod({
 				methodArguments: [{
@@ -91,6 +92,12 @@ FlowRouter.route('/home', {
 		} else {
 			BlazeLayout.render('main', { center: 'home' });
 		}
+	},
+});
+FlowRouter.route('/country/:name', {
+	name: 'country',
+	action() {
+		BlazeLayout.render('main', { center: 'roomsList' });
 	},
 });
 
@@ -145,7 +152,7 @@ FlowRouter.route('/legal-notice', {
 FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
 	action: ({ type, name }) => {
-		Session.set('roomNotFound', { type, name });
+		Session.set('roomNotFound', { tye, name });
 		BlazeLayout.render('main', { center: 'roomNotFound' });
 	},
 });

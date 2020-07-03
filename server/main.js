@@ -30,6 +30,7 @@ import './methods/getAvatarSuggestion';
 import './methods/getPasswordPolicy';
 import './methods/getRoomById';
 import './methods/getCountries';
+import './methods/getRoomsByCountry';
 import './methods/getRoomIdByNameOrId';
 import './methods/getRoomNameById';
 import './methods/getSetupWizardParameters';

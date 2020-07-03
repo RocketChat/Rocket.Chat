@@ -117,7 +117,7 @@ Template.createChannel.helpers({
 		return Template.instance().readOnly.get();
 	},
 	isCountry() {
-		return this.countries().includes(Template.instance().country.get());
+		return Template.instance().countries.get().includes(Template.instance().country.get());
 	},
 	country() {
 		return Template.instance().country.get();
@@ -222,7 +222,6 @@ Template.createChannel.events({
 		const position = input.selectionEnd || input.selectionStart;
 		const { length } = input.value;
 		const modified = filterNames(input.value);
-		console.log(modified);
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
 		t.invalid.set(!validateChannelName(input.value));
@@ -248,7 +247,6 @@ Template.createChannel.events({
 		const encrypted = instance.encrypted.get();
 		const country = instance.country.get();
 		const isPrivate = type === 'p';
-		console.log("vvvvvvvvvvv" , country);
 
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
@@ -261,7 +259,6 @@ Template.createChannel.events({
 			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
 
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, country, function(err, result) {
-			console.log("errrrrrrrrr", err, result);
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					instance.invalid.set(true);
