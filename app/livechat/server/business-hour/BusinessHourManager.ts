@@ -1,9 +1,10 @@
 import moment from 'moment';
 
-import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
-import { IBusinessHour } from './AbstractBusinessHour';
+import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
+import { callbacks } from '../../../callbacks/server';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,
@@ -16,87 +17,124 @@ const cronJobDayDict: Record<string, number> = {
 };
 
 export class BusinessHourManager {
-	private businessHour: IBusinessHour;
+	private types: Map<string, IBusinessHourType> = new Map();
+
+	private behavior: IBusinessHourBehavior;
 
 	private cronJobs: ICronJobs;
 
 	private cronJobsCache: string[] = [];
 
-	constructor() {
+	constructor(cronJobs: ICronJobs) {
+		this.cronJobs = cronJobs;
 		this.openWorkHoursCallback = this.openWorkHoursCallback.bind(this);
 		this.closeWorkHoursCallback = this.closeWorkHoursCallback.bind(this);
 	}
 
-	onStartBusinessHourManager(businessHour: IBusinessHour, cronJobs: ICronJobs): void {
-		this.cronJobs = cronJobs;
-		this.registerBusinessHourMethod(businessHour);
-	}
-
-	registerBusinessHourMethod(businessHour: IBusinessHour): void {
-		this.businessHour = businessHour;
-	}
-
-	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
-		await this.businessHour.saveBusinessHour(businessHourData);
-		if (!settings.get('Livechat_enable_business_hours')) {
-			return;
-		}
+	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
-		await this.openBusinessHoursIfNeeded();
+		this.setupCallbacks();
+		this.behavior.onStartBusinessHours();
 	}
 
-	async getBusinessHour(id?: string): Promise<ILivechatBusinessHour> {
-		return this.businessHour.getBusinessHour(id as string);
+	async stopManager(): Promise<void> {
+		this.removeCronJobs();
+		this.clearCronJobsCache();
+		this.removeCallbacks();
+		await this.behavior.onDisableBusinessHours();
 	}
 
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return true;
 		}
-		return this.businessHour.allowAgentChangeServiceStatus(agentId);
+		return this.behavior.allowAgentChangeServiceStatus(agentId);
 	}
 
-	removeCronJobs(): void {
-		this.cronJobsCache.forEach((jobName) => this.cronJobs.remove(jobName));
+	registerBusinessHourType(businessHourType: IBusinessHourType): void {
+		this.types.set(businessHourType.name, businessHourType);
 	}
 
-	async createCronJobsForWorkHours(): Promise<void> {
+	registerBusinessHourBehavior(behavior: IBusinessHourBehavior): void {
+		this.behavior = behavior;
+	}
+
+	async getBusinessHour(id?: string, type?: string): Promise<ILivechatBusinessHour | undefined> {
+		const businessHourType = this.getBusinessHourType(type as string || LivechatBusinessHourTypes.DEFAULT);
+		if (!businessHourType) {
+			return;
+		}
+		return businessHourType.getBusinessHour(id as string);
+	}
+
+	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
+		const type = this.getBusinessHourType(businessHourData.type as string || LivechatBusinessHourTypes.DEFAULT) as IBusinessHourType;
+		const saved = await type.saveBusinessHour(businessHourData);
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+		await this.behavior.afterSaveBusinessHours(saved);
+		await this.createCronJobsForWorkHours();
+	}
+
+	async removeBusinessHourByIdAndType(id: string, type: string): Promise<void> {
+		const businessHourType = this.getBusinessHourType(type) as IBusinessHourType;
+		await businessHourType.removeBusinessHourById(id);
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return;
+		}
+		await this.createCronJobsForWorkHours();
+	}
+
+	private setupCallbacks(): void {
+		callbacks.add('livechat.removeAgentDepartment', this.behavior.onRemoveAgentFromDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-on-remove-agent-department');
+		callbacks.add('livechat.afterRemoveDepartment', this.behavior.onRemoveDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-after-remove-department');
+		callbacks.add('livechat.saveAgentDepartment', this.behavior.onAddAgentToDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-on-save-agent-department');
+	}
+
+	private removeCallbacks(): void {
+		callbacks.remove('livechat.removeAgentDepartment', 'business-hour-livechat-on-remove-agent-department');
+		callbacks.remove('livechat.afterRemoveDepartment', 'business-hour-livechat-after-remove-department');
+		callbacks.remove('livechat.saveAgentDepartment', 'business-hour-livechat-on-save-agent-department');
+	}
+
+	private async createCronJobsForWorkHours(): Promise<void> {
 		this.removeCronJobs();
 		this.clearCronJobsCache();
-		const workHours = await this.businessHour.findHoursToCreateJobs();
-		workHours.forEach((workHour) => {
-			const { start, finish, day } = workHour;
-			start.forEach((hour) => {
-				const jobName = `${ workHour.day }/${ hour }/open`;
-				const time = moment(hour, 'HH:mm');
-				const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
-				this.addToCache(jobName);
-				this.cronJobs.add(jobName, scheduleAt, this.openWorkHoursCallback);
-			});
-			finish.forEach((hour) => {
-				const jobName = `${ workHour.day }/${ hour }/open`;
-				const time = moment(hour, 'HH:mm');
-				const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
-				this.addToCache(jobName);
-				this.cronJobs.add(jobName, scheduleAt, this.closeWorkHoursCallback);
-			});
+		const [workHours] = await this.behavior.findHoursToCreateJobs();
+		if (!workHours) {
+			return;
+		}
+
+		const { start, finish } = workHours;
+		start.forEach(({ day, times }) => this.scheduleCronJob(times, day, 'open', this.openWorkHoursCallback));
+		finish.forEach(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback));
+	}
+
+	private scheduleCronJob(items: string[], day: string, type: string, job: Function): void {
+		items.forEach((hour) => {
+			const jobName = `${ day }/${ hour }/${ type }`;
+			const time = moment(hour, 'HH:mm');
+			const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
+			this.addToCache(jobName);
+			this.cronJobs.add(jobName, scheduleAt, job);
 		});
 	}
 
-	async removeBusinessHoursFromAgents(): Promise<void> {
-		return this.businessHour.removeBusinessHoursFromUsers();
-	}
-
-	async openBusinessHoursIfNeeded(): Promise<void> {
-		return this.businessHour.openBusinessHoursIfNeeded();
-	}
-
 	private async openWorkHoursCallback(day: string, hour: string): Promise<void> {
-		return this.businessHour.openBusinessHoursByDayHour(day, hour);
+		return this.behavior.openBusinessHoursByDayAndHour(day, hour);
 	}
 
 	private async closeWorkHoursCallback(day: string, hour: string): Promise<void> {
-		return this.businessHour.closeBusinessHoursByDayAndHour(day, hour);
+		return this.behavior.closeBusinessHoursByDayAndHour(day, hour);
+	}
+
+	private getBusinessHourType(type: string): IBusinessHourType | undefined {
+		return this.types.get(type);
+	}
+
+	private removeCronJobs(): void {
+		this.cronJobsCache.forEach((jobName) => this.cronJobs.remove(jobName));
 	}
 
 	private addToCache(jobName: string): void {

@@ -1,17 +1,17 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
 
 import { Base } from './_Base';
-import { ILivechatBusinessHour, LivechatBussinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 
-const createDefaultBusinessHour = (): ILivechatBusinessHour => {
+export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 	const closedDays = ['Saturday', 'Sunday'];
 	return {
 		_id: new ObjectId().toHexString(),
 		name: '',
 		active: true,
-		type: LivechatBussinessHourTypes.SINGLE,
+		type: LivechatBusinessHourTypes.DEFAULT,
 		ts: new Date(),
 		workHours: days.map((day, index) => ({
 			day,
@@ -41,8 +41,8 @@ const createDefaultBusinessHour = (): ILivechatBusinessHour => {
 			open: !closedDays.includes(day),
 		})),
 		timezone: {
-			name: '',
-			utc: moment().utcOffset() / 60,
+			name: moment.tz.guess(),
+			utc: String(moment().utcOffset() / 60),
 		},
 	};
 };
@@ -52,10 +52,6 @@ export class LivechatBusinessHours extends Base {
 		super('livechat_business_hours');
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true });
-
-		if (this.find({ type: LivechatBussinessHourTypes.SINGLE }).count() === 0) {
-			this.insert(createDefaultBusinessHour());
-		}
 	}
 }
 

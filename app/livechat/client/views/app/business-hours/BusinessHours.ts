@@ -1,28 +1,37 @@
-import { Meteor } from 'meteor/meteor';
-
-import { IBusinessHour } from './IBusinessHour';
-import { SingleBusinessHour } from './Single';
-import { callbacks } from '../../../../../callbacks/client';
+import { IBusinessHourBehavior } from './IBusinessHourBehavior';
+import { SingleBusinessHourBehavior } from './Single';
+import { ILivechatBusinessHour } from '../../../../../../definition/ILivechatBusinessHour';
 
 class BusinessHoursManager {
-	private businessHour: IBusinessHour;
+	private behavior: IBusinessHourBehavior;
 
-	onStartBusinessHourManager(businessHour: IBusinessHour): void {
-		this.registerBusinessHour(businessHour);
+	constructor(businessHour: IBusinessHourBehavior) {
+		this.setBusinessHourBehavior(businessHour);
 	}
 
-	registerBusinessHour(businessHour: IBusinessHour): void {
-		this.businessHour = businessHour;
+	setBusinessHourBehavior(businessHour: IBusinessHourBehavior): void {
+		this.registerBusinessHourBehavior(businessHour);
+	}
+
+	registerBusinessHourBehavior(behavior: IBusinessHourBehavior): void {
+		this.behavior = behavior;
 	}
 
 	getTemplate(): string {
-		return this.businessHour.getView();
+		return this.behavior.getView();
+	}
+
+	showCustomTemplate(businessHourData: ILivechatBusinessHour): boolean {
+		return this.behavior.showCustomTemplate(businessHourData);
+	}
+
+	showBackButton(): boolean {
+		return this.behavior.showBackButton();
+	}
+
+	showTimezoneTemplate(): boolean {
+		return this.behavior.showTimezoneTemplate();
 	}
 }
 
-export const businessHourManager = new BusinessHoursManager();
-
-Meteor.startup(() => {
-	const { BusinessHourClass } = callbacks.run('on-business-hour-start', { BusinessHourClass: SingleBusinessHour });
-	businessHourManager.onStartBusinessHourManager(new BusinessHourClass() as IBusinessHour);
-});
+export const businessHourManager = new BusinessHoursManager(new SingleBusinessHourBehavior());

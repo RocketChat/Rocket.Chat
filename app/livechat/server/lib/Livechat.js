@@ -35,7 +35,7 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
-import { normalizeTransferredByData, parseAgentCustomFields } from './Helper';
+import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 
@@ -378,7 +378,7 @@ export const Livechat = {
 			 */
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
-			callbacks.run('livechat.closeRoom', room);
+			callbacks.runAsync('livechat.closeRoom', room);
 		});
 
 		return true;
@@ -824,7 +824,8 @@ export const Livechat = {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartmentAgents' });
 		}
 
-		return LivechatDepartment.createOrUpdateDepartment(_id, department, departmentAgents);
+		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, department);
+		return departmentDB && updateDepartmentAgents(departmentDB._id, departmentAgents);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -869,7 +870,8 @@ export const Livechat = {
 			}
 		}
 
-		return LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
+		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
+		return departmentDB && updateDepartmentAgents(departmentDB._id, departmentAgents);
 	},
 
 	saveAgentInfo(_id, agentData, agentDepartments) {
@@ -899,9 +901,11 @@ export const Livechat = {
 		}
 
 		const ret = LivechatDepartment.removeById(_id);
+		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id).fetch().map((agent) => agent.agentId);
+		LivechatDepartmentAgents.removeByDepartmentId(_id);
 		if (ret) {
 			Meteor.defer(() => {
-				callbacks.run('livechat.afterRemoveDepartment', department);
+				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 			});
 		}
 		return ret;

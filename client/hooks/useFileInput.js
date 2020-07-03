@@ -13,8 +13,8 @@ export const useFileInput = (onSetFile, fileType = 'image') => {
 		document.body.appendChild(fileInput);
 
 		const handleFiles = () => {
-			formData.append(fileType, this.files[0]);
-			handleSetFile(this.files[0], formData);
+			formData.append(fileType, fileInput.files[0]);
+			handleSetFile(fileInput.files[0], formData);
 		};
 		fileInput.addEventListener('change', handleFiles, false);
 		setOpenInput(() => () => fileInput.click());

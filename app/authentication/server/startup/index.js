@@ -17,6 +17,7 @@ import {
 	isValidLoginAttemptByIp,
 } from '../lib/restrictLoginAttempts';
 import './settings';
+import { getClientAddress } from '../../../../server/lib/getClientAddress';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -296,7 +297,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 Accounts.validateLoginAttempt(function(login) {
 	login = callbacks.run('beforeValidateLogin', login);
 
-	if (!Promise.await(isValidLoginAttemptByIp(login.connection?.clientAddress))) {
+	if (!Promise.await(isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
 			function: 'Accounts.validateLoginAttempt',
 		});

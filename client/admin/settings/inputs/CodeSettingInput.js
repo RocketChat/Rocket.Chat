@@ -1,5 +1,5 @@
 import { Box, Button, Field, Flex } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { useToggle, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -24,25 +24,27 @@ function CodeMirror({
 	onChange,
 	...props
 }) {
-	const [editor, setEditor] = useState();
 	const [value, setValue] = useState(valueProp || defaultValue);
-	const ref = useRef();
+
+	const textAreaRef = useRef();
+	const editorRef = useRef();
+	const handleChange = useMutableCallback(onChange);
 
 	useEffect(() => {
-		let editor;
+		if (editorRef.current) {
+			return;
+		}
 
 		const setupCodeMirror = async () => {
 			const CodeMirror = await import('codemirror/lib/codemirror.js');
 			await import('../../../../app/ui/client/lib/codeMirror/codeMirror');
 			await import('codemirror/lib/codemirror.css');
 
-			const { current: textarea } = ref;
-
-			if (!textarea) {
+			if (!textAreaRef.current) {
 				return;
 			}
 
-			editor = CodeMirror.fromTextArea(textarea, {
+			editorRef.current = CodeMirror.fromTextArea(textAreaRef.current, {
 				lineNumbers,
 				lineWrapping,
 				mode,
@@ -56,23 +58,21 @@ function CodeMirror({
 				readOnly,
 			});
 
-			editor.on('change', (doc) => {
+			editorRef.current.on('change', (doc) => {
 				const value = doc.getValue();
 				setValue(value);
-				onChange(value);
+				handleChange(value);
 			});
-
-			setEditor(editor);
 		};
 
 		setupCodeMirror();
 
 		return () => {
-			if (!editor) {
+			if (!editorRef.current) {
 				return;
 			}
 
-			editor.toTextArea();
+			editorRef.current.toTextArea();
 		};
 	}, [
 		autoCloseBrackets,
@@ -84,9 +84,9 @@ function CodeMirror({
 		matchBrackets,
 		matchTags,
 		mode,
-		onChange,
+		handleChange,
 		readOnly,
-		ref,
+		textAreaRef,
 		showTrailingSpace,
 	]);
 
@@ -95,16 +95,16 @@ function CodeMirror({
 	}, [valueProp]);
 
 	useEffect(() => {
-		if (!editor) {
+		if (!editorRef.current) {
 			return;
 		}
 
-		if (value !== editor.getValue()) {
-			editor.setValue(value);
+		if (value !== editorRef.current.getValue()) {
+			editorRef.current.setValue(value);
 		}
-	}, [editor, ref, value]);
+	}, [textAreaRef, value]);
 
-	return <textarea readOnly ref={ref} style={{ display: 'none' }} value={value} {...props}/>;
+	return <textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />;
 }
 
 export function CodeSettingInput({

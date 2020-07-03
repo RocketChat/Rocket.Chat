@@ -7,7 +7,7 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 		return false;
 	}
 
-	const { mentionIds } = getMentions(message);
+	const { toAll, toHere, mentionIds } = getMentions(message);
 
 	const addToReplies = [
 		...new Set([
@@ -21,8 +21,19 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 
 	const replies = Messages.getThreadFollowsByThreadId(tmid);
 
-	// doesnt need to update the sender (u._id) subscription, so filter it
-	Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, replies.filter((userId) => userId !== u._id), tmid);
+	const repliesFiltered = replies
+		.filter((userId) => userId !== u._id)
+		.filter((userId) => !mentionIds.includes(userId));
+
+	if (toAll || toHere) {
+		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, { groupMention: true });
+	} else {
+		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid);
+	}
+
+	mentionIds.forEach((mentionId) =>
+		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [mentionId], tmid, { userMention: true }),
+	);
 };
 
 export const undoReply = ({ tmid }) => {
