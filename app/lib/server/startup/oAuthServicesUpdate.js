@@ -51,7 +51,11 @@ function _OAuthServicesUpdate() {
 				data.nameField = settings.get(`${ service.key }-name_field`);
 				data.avatarField = settings.get(`${ service.key }-avatar_field`);
 				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
+				data.groupsClaim = settings.get(`${ service.key }-groups_claim`);
+				data.channelsMap = settings.get(`${ service.key }-groups_channel_map`);
+				data.channelsAdmin = settings.get(`${ service.key }--channels_admin`);
 				data.mergeUsers = settings.get(`${ service.key }-merge_users`);
+				data.mapChannels = settings.get(`${ service.key }-map_channels`);
 				data.mergeRoles = settings.get(`${ service.key }-merge_roles`);
 				data.showButton = settings.get(`${ service.key }-show_button`);
 				new CustomOAuth(serviceName.toLowerCase(), {
@@ -68,6 +72,10 @@ function _OAuthServicesUpdate() {
 					nameField: data.nameField,
 					avatarField: data.avatarField,
 					rolesClaim: data.rolesClaim,
+					groupsClaim: data.groupsClaim,
+					mapChannels: data.mapChannels,
+					channelsMap: data.channelsMap,
+					channelsAdmin: data.channelsAdmin,
 					mergeUsers: data.mergeUsers,
 					mergeRoles: data.mergeRoles,
 					accessTokenParam: data.accessTokenParam,
