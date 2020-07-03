@@ -5,7 +5,7 @@ import { capitalize } from '../helpers/capitalize';
 
 const getValue = (e) => (e.currentTarget ? e.currentTarget.value : e);
 
-export const useForm = (obj) => {
+export const useForm = (obj, onChange = () => {}) => {
 	const resetCallbacks = [];
 	const hasUnsavedChanges = [];
 	// TODO: use useReducer hook as we can't assure that obj will have the same structure on each render
@@ -14,7 +14,15 @@ export const useForm = (obj) => {
 		const [data, setData] = useState(value);
 
 		ret.values = { ...ret.values, [key]: data };
-		ret.handlers = { ...ret.handlers, [`handle${ capitalize(key) }`]: useCallback(typeof value !== 'boolean' ? (e) => setData(getValue(e)) : () => setData(!data), [data]) };
+		ret.handlers = {
+			...ret.handlers,
+			[`handle${ capitalize(key) }`]: useCallback((event) => {
+				const newValue = typeof value !== 'boolean' ? getValue(event) : !data;
+				setData(newValue);
+				onChange({ initialValue: value, value: newValue, key });
+			}, [data, key, value]),
+		};
+
 		hasUnsavedChanges.push(JSON.stringify(value) !== JSON.stringify(data));
 		resetCallbacks.push(() => setData(value));
 
