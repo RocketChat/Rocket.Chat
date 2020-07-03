@@ -3,7 +3,7 @@ import { FileUpload } from '../../../file-upload';
 import { Rooms, RoomEvents } from '../../../models';
 import { Notifications } from '../../../notifications';
 
-function queryBuilder({ rid, ts, excludePinned, fromUsers, filesOnly, ignoreDiscussion }) {
+function queryBuilder({ rid, ts, excludePinned, fromUsers, filesOnly, ignoreDiscussion, ignoreThreads }) {
 	const query = {
 		cid: { $eq: rid },
 		t: { $eq: 'msg' },
@@ -24,11 +24,16 @@ function queryBuilder({ rid, ts, excludePinned, fromUsers, filesOnly, ignoreDisc
 	}
 
 	if (filesOnly) {
-		query['d.file._id'] = { $exists: 1 };
+		query['d.file._id'] = { $exists: true };
 	}
 
 	if (!ignoreDiscussion) {
 		query['d.t'].$in.push('discussion-created');
+	}
+
+	if (ignoreThreads) {
+		query['d.tcount'] = { $exists: false };
+		query['d.tmid'] = { $exists: false };
 	}
 
 	return query;
@@ -45,6 +50,7 @@ export const cleanRoomHistory = async function({ rid, latest = new Date(), oldes
 		fromUsers,
 		filesOnly,
 		ignoreDiscussion,
+		ignoreThreads,
 	});
 
 	const result = await RoomEvents.createPruneMessagesEvent(query, rid, userId);
@@ -71,4 +77,3 @@ export const cleanRoomHistory = async function({ rid, latest = new Date(), oldes
 	}
 	return result.count;
 };
-
