@@ -111,6 +111,12 @@ const toolbarButtons = (/* user */) => [{
 				name: t('Channel'),
 				action: createChannel,
 			},
+			hasAtLeastOnePermission(['create-c', 'create-p'])
+			&& {
+				icon: 'hashtag',
+				name: 'Envio Whatsapp',
+				action: createChannel,
+			},
 			hasPermission('create-d')
 			&& {
 				icon: 'team',
