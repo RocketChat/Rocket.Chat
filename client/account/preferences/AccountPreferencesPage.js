@@ -66,7 +66,7 @@ const AccountPreferencesPage = () => {
 
 	return <>
 		<Page>
-			<Page.Header title={t('Profile')}>
+			<Page.Header title={t('Preferences')}>
 				<ButtonGroup>
 					<Button primary disabled={!hasAnyChange} onClick={handleSave}>
 						{t('Save_changes')}
