@@ -149,7 +149,7 @@ class RoomEventsModel extends EventsModel {
 					$set: {
 						'd.msg': '',
 					},
-					$currentDate: { _deletedAt: true },
+					$currentDate: { deletedAt: true },
 				});
 			},
 			discussion: (): void => {
@@ -159,7 +159,7 @@ class RoomEventsModel extends EventsModel {
 				this.update({
 					_id: event._id,
 				}, {
-					$currentDate: { _deletedAt: true },
+					$currentDate: { deletedAt: true },
 				});
 
 				this.model.rawCollection().updateMany({
@@ -171,7 +171,7 @@ class RoomEventsModel extends EventsModel {
 						'd.attachments': [],
 					},
 					$unset: { 'd.file': 1 },
-					$currentDate: { _deletedAt: true },
+					$currentDate: { deletedAt: true },
 				});
 			},
 			file: (): void => {
@@ -183,7 +183,7 @@ class RoomEventsModel extends EventsModel {
 				}, {
 					$unset: { 'd.file': 1 },
 					$set: { 'd.attachments': [{ color: '#FD745E', prunedText: `_${ TAPi18n.__('File_removed_by_prune') }_` }] },
-					$currentDate: { _deletedAt: true },
+					$currentDate: { deletedAt: true },
 				});
 			},
 		});
@@ -192,6 +192,7 @@ class RoomEventsModel extends EventsModel {
 			'd.msg': { $exists: true },
 			...query,
 		}).toArray();
+		console.log('createPruneMessagesEvent results.length', results.length);
 
 		for (let i = 0; results.length > i; i++) {
 			// identify what type of data is the current one

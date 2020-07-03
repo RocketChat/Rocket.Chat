@@ -5,12 +5,12 @@ import { Notifications } from '../../../notifications';
 
 function queryBuilder({ rid, ts, excludePinned, fromUsers, filesOnly, ignoreDiscussion }) {
 	const query = {
-		rid: { $eq: rid },
+		cid: { $eq: rid },
 		t: { $eq: 'msg' },
 		'd.t': { $in: ['msg'] },
 		ts,
 		'd.u.username': { $exists: true }, // this changes below if necessary
-		_deletedAt: { $exists: false }, // since we don't need something is already deleted
+		deletedAt: { $exists: false }, // since we don't need something is already deleted
 	};
 	if (!excludePinned) {
 		query['d.t'].$in.push('message_pinned');
@@ -35,7 +35,6 @@ function queryBuilder({ rid, ts, excludePinned, fromUsers, filesOnly, ignoreDisc
 }
 
 export const cleanRoomHistory = async function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], userId = '', ignoreThreads = true }) {
-	console.log('userId', userId);
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
