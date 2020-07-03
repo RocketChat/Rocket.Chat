@@ -46799,6 +46799,84 @@
           ]
         }
       ]
+    },
+    "3.4.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.15.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18088",
+          "title": "[FIX] Email notifications were still being sent for online users",
+          "userLogin": "densik",
+          "milestone": "3.4.1",
+          "contributors": [
+            "densik",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18090",
+          "title": "[FIX] The livechat agent activity monitor wasn't being initialised because due to an internal error",
+          "userLogin": "paulobernardoaf",
+          "milestone": "3.4.1",
+          "contributors": [
+            "paulobernardoaf"
+          ]
+        },
+        {
+          "pr": "18101",
+          "title": "[FIX] Not possible to read encrypted messages after disable E2E on channel level",
+          "userLogin": "rodrigok",
+          "milestone": "3.4.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "18102",
+          "title": "[FIX] Omnichannel close room callback returning promise",
+          "userLogin": "renatobecker",
+          "milestone": "3.4.1",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18109",
+          "title": "[FIX] Avatar ETag missing from User",
+          "userLogin": "gabriellsh",
+          "milestone": "3.4.1",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "18110",
+          "title": "[FIX] \"Add reaction\" icon missing when the viewport size is smaller than 500px",
+          "userLogin": "mariaeduardacunha",
+          "milestone": "3.4.1",
+          "contributors": [
+            "mariaeduardacunha",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18111",
+          "title": "[FIX] Jitsi opening twice",
+          "userLogin": "ggazzo",
+          "milestone": "3.4.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }

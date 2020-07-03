@@ -1,4 +1,43 @@
 
+# 3.4.1
+`2020-07-02  ·  7 🐛  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.15.0`
+
+### 🐛 Bug fixes
+
+
+- Email notifications were still being sent for online users ([#18088](https://github.com/RocketChat/Rocket.Chat/pull/18088) by [@densik](https://github.com/densik))
+
+- The livechat agent activity monitor wasn't being initialised because due to an internal error ([#18090](https://github.com/RocketChat/Rocket.Chat/pull/18090) by [@paulobernardoaf](https://github.com/paulobernardoaf))
+
+- Not possible to read encrypted messages after disable E2E on channel level ([#18101](https://github.com/RocketChat/Rocket.Chat/pull/18101))
+
+- Omnichannel close room callback returning promise ([#18102](https://github.com/RocketChat/Rocket.Chat/pull/18102))
+
+- Avatar ETag missing from User ([#18109](https://github.com/RocketChat/Rocket.Chat/pull/18109))
+
+- "Add reaction" icon missing when the viewport size is smaller than 500px ([#18110](https://github.com/RocketChat/Rocket.Chat/pull/18110))
+
+- Jitsi opening twice ([#18111](https://github.com/RocketChat/Rocket.Chat/pull/18111))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@densik](https://github.com/densik)
+- [@paulobernardoaf](https://github.com/paulobernardoaf)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@mariaeduardacunha](https://github.com/mariaeduardacunha)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+
 # 3.4.0
 `2020-06-30  ·  18 🎉  ·  19 🚀  ·  42 🐛  ·  52 🔍  ·  52 👩‍💻👨‍💻`
 

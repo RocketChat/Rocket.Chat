@@ -378,7 +378,7 @@ export const Livechat = {
 			 */
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
-			callbacks.run('livechat.closeRoom', room);
+			callbacks.runAsync('livechat.closeRoom', room);
 		});
 
 		return true;
