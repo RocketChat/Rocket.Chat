@@ -124,6 +124,7 @@
   "Accounts_OAuth_Custom_Name_Field": "Name field",
   "Accounts_OAuth_Custom_Roles_Claim": "Roles/Groups field name",
   "Accounts_OAuth_Custom_Groups_Claim": "Roles/Groups field for channel mapping",
+  "Accounts_OAuth_Custom_Channel_Admin": "User Data Group Map",
   "Accounts_OAuth_Custom_Channel_Map": "OAuth Group Channel Map",
   "Accounts_OAuth_Custom_Merge_Roles": "Merge Roles from SSO",
   "Accounts_OAuth_Custom_Map_Channels": "Map Roles/Groups to channels",
