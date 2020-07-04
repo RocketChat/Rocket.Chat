@@ -9,6 +9,7 @@ import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
+import { useAbsoluteUrl } from '../../contexts/ServerContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { sidebarItems } from '../sidebarItems';
@@ -175,12 +176,14 @@ export default React.memo(function AdminSidebar() {
 
 	const currentRoute = useCurrentRoute();
 	const currentPath = useRoutePath(...currentRoute);
+	const absoluteUrl = useAbsoluteUrl();
 
 	useEffect(() => {
-		if (!currentPath.startsWith('/admin/')) {
+		const { pathname: adminPath } = new URL(absoluteUrl('admin/'));
+		if (!currentPath.startsWith(adminPath)) {
 			SideNav.closeFlex();
 		}
-	}, [currentRoute, currentPath]);
+	}, [absoluteUrl, currentPath]);
 
 	// TODO: uplift this provider
 	return <SettingsProvider privileged>
