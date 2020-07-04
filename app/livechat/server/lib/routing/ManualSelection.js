@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Livechat } from '../Livechat';
 import { RoutingManager } from '../RoutingManager';
 import { sendNotification } from '../../../../lib/server';
-import { LivechatRooms, LivechatInquiry } from '../../../../models/server';
+import { LivechatRooms, LivechatInquiry, Users } from '../../../../models/server';
 
 /* Manual Selection Queuing Method:
 	*
@@ -46,11 +46,14 @@ class ManualSelection {
 
 		// Alert only the online agents of the queued request
 		const onlineAgents = Livechat.getOnlineAgents(department);
-		const { message } = inquiry;
 
 		const room = LivechatRooms.findOneById(rid);
+		const notificationUserName = v && (v.name || v.username);
 
 		onlineAgents.forEach((agent) => {
+			if (agent.agentId) {
+				agent = Users.findOneById(agent.agentId);
+			}
 			const { _id, active, emails, language, status, statusConnection, username } = agent;
 			sendNotification({
 				// fake a subscription in order to make use of the function defined above
@@ -73,8 +76,8 @@ class ManualSelection {
 				hasMentionToAll: true, // consider all agents to be in the room
 				hasMentionToHere: false,
 				message: Object.assign({}, { u: v }),
-				notificationMessage: message.msg,
-				room: Object.assign(room, { name: TAPi18n.__('New_livechat_in_queue') }),
+				notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
+				room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
 				mentionIds: [],
 			});
 		});

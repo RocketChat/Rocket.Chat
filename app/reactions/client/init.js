@@ -57,7 +57,7 @@ Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'reaction-message',
 		icon: 'add-reaction',
-		label: 'Reactions',
+		label: 'Add_Reaction',
 		context: [
 			'message',
 			'message-mobile',
@@ -93,7 +93,7 @@ Meteor.startup(function() {
 
 			return true;
 		},
-		order: 22,
-		group: 'message',
+		order: -2,
+		group: ['message', 'menu'],
 	});
 });

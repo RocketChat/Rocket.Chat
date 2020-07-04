@@ -89,4 +89,107 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.find(query, options);
 	}
+
+	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
+		const lookup = {
+			$lookup: {
+				from: 'rocketchat_analytics',
+				localField: '_id',
+				foreignField: 'room._id',
+				as: 'messages',
+			},
+		};
+		const messagesProject = {
+			$project: {
+				room: '$$ROOT',
+				messages: {
+					$filter: {
+						input: '$messages',
+						as: 'message',
+						cond: {
+							$and: [
+								{ $gte: ['$$message.date', start] },
+								{ $lte: ['$$message.date', end] },
+							],
+						},
+					},
+				},
+				lastWeekMessages: {
+					$filter: {
+						input: '$messages',
+						as: 'message',
+						cond: {
+							$and: [
+								{ $gte: ['$$message.date', startOfLastWeek] },
+								{ $lte: ['$$message.date', endOfLastWeek] },
+							],
+						},
+					},
+				},
+			},
+		};
+		const messagesUnwind = {
+			$unwind: {
+				path: '$messages',
+				preserveNullAndEmptyArrays: true,
+			},
+		};
+		const messagesGroup = {
+			$group: {
+				_id: {
+					_id: '$room._id',
+				},
+				room: { $first: '$room' },
+				messages: { $sum: '$messages.messages' },
+				lastWeekMessages: { $first: '$lastWeekMessages' },
+			},
+		};
+		const lastWeekMessagesUnwind = {
+			$unwind: {
+				path: '$lastWeekMessages',
+				preserveNullAndEmptyArrays: true,
+			},
+		};
+		const lastWeekMessagesGroup = {
+			$group: {
+				_id: {
+					_id: '$room._id',
+				},
+				room: { $first: '$room' },
+				messages: { $first: '$messages' },
+				lastWeekMessages: { $sum: '$lastWeekMessages.messages' },
+			},
+		};
+		const presentationProject = {
+			$project: {
+				_id: 0,
+				room: {
+					_id: '$_id._id',
+					name: { $ifNull: ['$room.name', '$room.fname'] },
+					ts: '$room.ts',
+					t: '$room.t',
+					_updatedAt: '$room._updatedAt',
+					usernames: '$room.usernames',
+				},
+				messages: '$messages',
+				lastWeekMessages: '$lastWeekMessages',
+				diffFromLastWeek: { $subtract: ['$messages', '$lastWeekMessages'] },
+			},
+		};
+		const firstParams = [lookup, messagesProject, messagesUnwind, messagesGroup, lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
+		const sort = { $sort: options.sort || { messages: -1 } };
+		const params = [...firstParams, sort];
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+			return this.col.aggregate(params);
+		}
+		if (options.offset) {
+			params.push({ $skip: options.offset });
+		}
+		if (options.count) {
+			params.push({ $limit: options.count });
+		}
+
+		return this.col.aggregate(params).toArray();
+	}
 }

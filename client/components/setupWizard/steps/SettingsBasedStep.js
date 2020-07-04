@@ -4,7 +4,7 @@ import {
 	Flex,
 	InputBox,
 	Margins,
-	SelectInput,
+	Select,
 	Skeleton,
 	TextInput,
 } from '@rocket.chat/fuselage';
@@ -53,9 +53,9 @@ export function SettingsBasedStep({ step, title, active }) {
 		resetFields(
 			settings
 				.filter(({ wizard }) => wizard.step === step)
-				.filter(({ type }) => ['string', 'select', 'language'].includes(type))
+				.filter(({ type }) => ['string', 'select', 'language', 'boolean'].includes(type))
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
-				.map(({ value, ...field }) => ({ ...field, value: value || '' })),
+				.map(({ value, ...field }) => ({ ...field, value: value != null ? value : '' })),
 		);
 	}, [settings, currentStep]);
 
@@ -124,36 +124,43 @@ export function SettingsBasedStep({ step, title, active }) {
 								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
 							/>}
 
-							{type === 'select' && <SelectInput
+							{type === 'select' && <Select
 								type='select'
 								data-qa={_id}
 								id={_id}
 								name={_id}
 								placeholder={t('Select_an_option')}
-								ref={i === 0 ? autoFocusRef : undefined}
 								value={value}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-							>
-								{values
-									.map(({ i18nLabel, key }) => ({ label: t(i18nLabel), value: key }))
-									.map(({ label, value }) => <SelectInput.Option key={value} value={value}>{label}</SelectInput.Option>)}
-							</SelectInput>}
+								onChange={(value) => setFieldValue(_id, value)}
+								options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
+							/>}
 
-							{type === 'language' && <SelectInput
+							{type === 'boolean' && <Select
+								type='select'
+								data-qa={_id}
+								id={_id}
+								name={_id}
+								ref={i === 0 ? autoFocusRef : undefined}
+								value={String(value)}
+								onChange={(value) => setFieldValue(_id, value === 'true')}
+								options={[
+									['true', t('Yes')],
+									['false', t('No')],
+								]}
+							/>}
+
+							{type === 'language' && <Select
 								type='select'
 								data-qa={_id}
 								id={_id}
 								name={_id}
 								placeholder={t('Default')}
-								ref={i === 0 ? autoFocusRef : undefined}
 								value={value}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-							>
-								{Object.entries(languages)
-									.map(([key, { name }]) => ({ label: name, value: key }))
-									.sort((a, b) => a.value - b.value)
-									.map(({ label, value }) => <SelectInput.Option key={value} value={value} dir='auto'>{label}</SelectInput.Option>)}
-							</SelectInput>}
+								onChange={(value) => setFieldValue(_id, value)}
+								options = {languages
+									.map(({ key, name }) => [key, name])
+									.sort(([a], [b]) => a - b)}
+							/>}
 						</Field.Row>
 					</Field>,
 				)}

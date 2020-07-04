@@ -17,7 +17,7 @@ import { adminEmail, preferences, password, adminUsername } from '../../data/use
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createUser, login } from '../../data/users.helper.js';
+import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 
 function createTestUser() {
 	return new Promise((resolve) => {
@@ -237,7 +237,10 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.info]', () => {
-		after(() => updatePermission('view-other-user-channels', ['admin']));
+		after(() => {
+			updatePermission('view-other-user-channels', ['admin']);
+			updatePermission('view-full-other-user-info', ['admin']);
+		});
 
 		it('should return an error when the user does not exist', (done) => {
 			request.get(api('users.info'))
@@ -253,7 +256,6 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
 				.set(credentials)
@@ -330,6 +332,45 @@ describe('[Users]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.nested.property('user.rooms');
+					})
+					.end(done);
+			});
+		});
+		it('should NOT return some services fields when request to another user\'s info even if the user has the necessary permission', (done) => {
+			updatePermission('view-full-other-user-info', ['admin']).then(() => {
+				request.get(api('users.info'))
+					.set(credentials)
+					.query({
+						userId: targetUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.services.emailCode');
+						expect(res.body).to.not.have.nested.property('user.services.cloud');
+						expect(res.body).to.not.have.nested.property('user.services.email2fa');
+						expect(res.body).to.not.have.nested.property('user.services.totp');
+						expect(res.body).to.not.have.nested.property('user.services.password');
+						expect(res.body).to.not.have.nested.property('user.services.email');
+						expect(res.body).to.not.have.nested.property('user.services.resume');
+					})
+					.end(done);
+			});
+		});
+		it('should return all services fields when request for myself data even without privileged permission', (done) => {
+			updatePermission('view-full-other-user-info', []).then(() => {
+				request.get(api('users.info'))
+					.set(credentials)
+					.query({
+						userId: credentials['X-User-Id'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.services.password');
+						expect(res.body).to.have.nested.property('user.services.resume');
 					})
 					.end(done);
 			});
@@ -461,19 +502,20 @@ describe('[Users]', function() {
 	describe('[/users.setAvatar]', () => {
 		let user;
 		before(async () => {
-			user = await createTestUser();
+			user = await createUser();
 		});
 
 		let userCredentials;
 		before(async () => {
-			userCredentials = await loginTestUser(user);
+			userCredentials = await login(user.username, password);
 		});
 		before((done) => {
 			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
 		});
 		after(async () => {
-			await deleteTestUser(user);
+			await deleteUser(user);
 			user = undefined;
+			await updatePermission('edit-other-user-info', ['admin']);
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request.post(api('users.setAvatar'))
@@ -1822,6 +1864,178 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/users.getStatus]', () => {
+		it('should return my own status', (done) => {
+			request.get(api('users.getStatus'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('status');
+					expect(res.body._id).to.be.equal(credentials['X-User-Id']);
+				})
+				.end(done);
+		});
+		it('should return other user status', (done) => {
+			request.get(api('users.getStatus?userId=rocket.cat'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('status');
+					expect(res.body._id).to.be.equal('rocket.cat');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.setStatus]', () => {
+		let user;
+		before((done) => {
+			createUser()
+				.then((createdUser) => {
+					user = createdUser;
+					done();
+				});
+		});
+		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
+			updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
+				request.post(api('users.setStatus'))
+					.set(credentials)
+					.send({
+						status: 'busy',
+						message: '',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('error-not-allowed');
+						expect(res.body.error).to.be.equal('Change status is not allowed [error-not-allowed]');
+					})
+					.end(done);
+			});
+		});
+		it('should update my own status', (done) => {
+			updateSetting('Accounts_AllowUserStatusMessageChange', true).then(() => {
+				request.post(api('users.setStatus'))
+					.set(credentials)
+					.send({
+						status: 'busy',
+						message: 'test',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when trying to update other user status without the required permission', (done) => {
+			updatePermission('edit-other-user-info', []).then(() => {
+				request.post(api('users.setStatus'))
+					.set(credentials)
+					.send({
+						status: 'busy',
+						message: 'test',
+						userId: user._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should update another user status succesfully', (done) => {
+			updatePermission('edit-other-user-info', ['admin']).then(() => {
+				request.post(api('users.setStatus'))
+					.set(credentials)
+					.send({
+						status: 'busy',
+						message: 'test',
+						userId: user._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						getUserStatus(credentials['X-User-Id']).then((status) => {
+							expect(status.status).to.be.equal('busy');
+							expect(status.message).to.be.equal('test');
+						});
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when the user try to update user status with an invalid status', (done) => {
+			request.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'invalid',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-status');
+					expect(res.body.error).to.be.equal('Valid status types include online, away, offline, and busy. [error-invalid-status]');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.removeOtherTokens]', () => {
+		let user;
+		let userCredentials;
+		let newCredentials;
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+			newCredentials = await login(user.username, password);
+		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+		});
+
+		it('should invalidate all active sesions', (done) => {
+			/* We want to validate that the login with the "old" credentials fails
+			However, the removal of the tokens is done asynchronously.
+			Thus, we check that within the next seconds, at least one try to
+			access an authentication requiring route fails */
+			let counter = 0;
+
+			async function checkAuthenticationFails() {
+				const result = await request.get(api('me'))
+					.set(userCredentials);
+				return result.statusCode === 401;
+			}
+
+			async function tryAuthentication() {
+				if (await checkAuthenticationFails()) {
+					done();
+				} else if (++counter < 20) {
+					setTimeout(tryAuthentication, 1000);
+				} else {
+					done('Session did not invalidate in time');
+				}
+			}
+
+			request.post(api('users.removeOtherTokens'))
+				.set(newCredentials)
+				.expect(200)
+				.then(tryAuthentication);
 		});
 	});
 });

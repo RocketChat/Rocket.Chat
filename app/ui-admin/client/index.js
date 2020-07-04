@@ -1,3 +1,5 @@
 import './adminFlex.html';
 import './adminFlex';
-import './routes';
+
+export { registerAdminRoute } from './routes';
+export { registerAdminSidebarItem } from './sidebarItems';

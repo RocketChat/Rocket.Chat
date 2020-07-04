@@ -72,6 +72,7 @@ export const Livechat = {
 
 	getAgents(department) {
 		if (department) {
+			// TODO: This and all others should get the user's info as well
 			return LivechatDepartmentAgents.findByDepartmentId(department);
 		}
 		return Users.findAgents();
@@ -107,7 +108,7 @@ export const Livechat = {
 		});
 	},
 
-	async getRoom(guest, message, roomInfo, agent) {
+	async getRoom(guest, message, roomInfo, agent, extraData) {
 		let room = LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
 
@@ -127,7 +128,7 @@ export const Livechat = {
 			}
 
 			// delegate room creation to QueueManager
-			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent });
+			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent, extraData });
 			newRoom = true;
 		}
 
@@ -314,18 +315,23 @@ export const Livechat = {
 		return ret;
 	},
 
-	closeRoom({ user, visitor, room, comment }) {
+	closeRoom({ user, visitor, room, comment, options = {} }) {
 		if (!room || room.t !== 'l' || !room.open) {
 			return false;
 		}
 
-		callbacks.run('livechat.beforeCloseRoom', room);
+		const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
+		const { extraData } = params;
 
 		const now = new Date();
+		const { _id: rid, servedBy } = room;
+		const serviceTimeDuration = servedBy && (now.getTime() - servedBy.ts) / 1000;
 
 		const closeData = {
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000,
+			...serviceTimeDuration && { serviceTimeDuration },
+			...extraData,
 		};
 
 		if (user) {
@@ -342,7 +348,6 @@ export const Livechat = {
 			};
 		}
 
-		const { _id: rid, servedBy } = room;
 		LivechatRooms.closeByRoomId(rid, closeData);
 		LivechatInquiry.removeByRoomId(rid);
 
@@ -480,7 +485,13 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return Rooms.setFnameById(roomData._id, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			const { _id: rid } = roomData;
+			const { name } = guestData;
+			return Rooms.setFnameById(rid, name)
+				&& LivechatInquiry.setNameByRoomId(rid, name)
+				// This one needs to be the last since the agent may not have the subscription
+				// when the conversation is in the queue, then the result will be 0(zero)
+				&& Subscriptions.updateDisplayNameByRoomId(rid, name);
 		}
 	},
 
@@ -530,7 +541,7 @@ export const Livechat = {
 
 	saveTransferHistory(room, transferData) {
 		const { departmentId: previousDepartment } = room;
-		const { department: nextDepartment, transferredBy, transferredTo, scope } = transferData;
+		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
 
 		check(transferredBy, Match.ObjectIncluding({
 			_id: String,
@@ -546,6 +557,7 @@ export const Livechat = {
 				transferredBy,
 				ts: new Date(),
 				scope: scope || (nextDepartment ? 'department' : 'agent'),
+				comment,
 				...previousDepartment && { previousDepartment },
 				...nextDepartment && { nextDepartment },
 				...transferredTo && { transferredTo },
@@ -617,6 +629,16 @@ export const Livechat = {
 		const visitor = LivechatVisitors.findOneById(room.v._id);
 		const agent = Users.findOneById(room.servedBy && room.servedBy._id);
 
+		const externalCustomFields = () => {
+			try {
+				const customFields = JSON.parse(settings.get('Accounts_CustomFields'));
+				return Object.keys(customFields)
+					.filter((customFieldKey) => customFields[customFieldKey].sendToIntegrations === true);
+			} catch (error) {
+				return [];
+			}
+		};
+
 		const ua = new UAParser();
 		ua.setUA(visitor.userAgent);
 
@@ -644,11 +666,16 @@ export const Livechat = {
 		};
 
 		if (agent) {
+			const { customFields: agentCustomFields = {} } = agent;
+			const externalCF = externalCustomFields();
+			const customFields = Object.keys(agentCustomFields).reduce((newObj, key) => (externalCF.includes(key) ? { ...newObj, [key]: agentCustomFields[key] } : newObj), null);
+
 			postData.agent = {
 				_id: agent._id,
 				username: agent.username,
 				name: agent.name,
 				email: null,
+				...customFields && { customFields },
 			};
 
 			if (agent.emails && agent.emails.length > 0) {
@@ -801,6 +828,8 @@ export const Livechat = {
 			showOnRegistration: Boolean,
 			email: String,
 			showOnOfflineForm: Boolean,
+			requestTagBeforeClosingChat: Match.Optional(Boolean),
+			chatClosingTags: Match.Optional([String]),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
@@ -818,6 +847,11 @@ export const Livechat = {
 				username: String,
 			}),
 		]));
+
+		const { requestTagBeforeClosingChat, chatClosingTags } = departmentData;
+		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
+			throw new Meteor.Error('error-validating-department-chat-closing-tags', 'At least one closing tag is required when the department requires tag(s) on closing conversations.', { method: 'livechat:saveDepartment' });
+		}
 
 		if (_id) {
 			const department = LivechatDepartment.findOneById(_id);
@@ -855,7 +889,13 @@ export const Livechat = {
 			throw new Meteor.Error('department-not-found', 'Department not found', { method: 'livechat:removeDepartment' });
 		}
 
-		return LivechatDepartment.removeById(_id);
+		const ret = LivechatDepartment.removeById(_id);
+		if (ret) {
+			Meteor.defer(() => {
+				callbacks.run('livechat.afterRemoveDepartment', department);
+			});
+		}
+		return ret;
 	},
 
 	showConnecting() {

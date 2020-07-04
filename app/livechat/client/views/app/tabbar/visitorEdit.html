@@ -45,6 +45,9 @@
 
 			{{#with room}}
 				<h3>{{_ "Conversation" }}</h3>
+				{{#if customFieldsTemplate}}
+					{{> Template.dynamic template=customFieldsTemplate data=room }}
+				{{/if}}
 				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Topic"}}</div>

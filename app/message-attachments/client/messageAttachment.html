@@ -62,11 +62,7 @@
 					{{else}}
 						{{title}}
 					{{/if}}
-					{{#if collapsed}}
-						<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-					{{else}}
-						<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-					{{/if}}
+					{{> collapseArrow collapsedMedia=collapsedMediaVar}}
 				</div>
 			{{/if}}
 
@@ -87,7 +83,7 @@
 			{{/unless}}
 
 			{{#if image_url}}
-				{{#unless mediaCollapsed}}
+				{{#unless collapsed}}
 					<div class="attachment-image inline-image">
 					{{#if loadImage}}
 						<figure>
@@ -105,8 +101,10 @@
 						</figure>
 					{{else}}
 						<div class="image-to-download" data-url="{{image_url}}">
-							<i class="icon-picture"></i>
+
+							<i class="icon-picture rc-input__wrapper"></i>
 							<div>{{_ "Click_to_load"}}</div>
+
 						</div>
 					{{/if}}
 					</div>
@@ -114,22 +112,22 @@
 			{{/if}}
 
 			{{#if audio_url}}
-				{{#unless mediaCollapsed}}
+				{{#unless collapsed}}
 					<div class="attachment-audio">
 						<audio controls>
 							<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{description}}">
-							Your browser does not support the audio element.
+							{{_ "Browser_does_not_support_audio_element"}}
 						</audio>
 					</div>
 				{{/unless}}
 			{{/if}}
 
 			{{#if video_url}}
-				{{#unless mediaCollapsed}}
+				{{#unless collapsed}}
 					<div class="attachment-video">
 						<video controls class="inline-video">
 							<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
-							Your browser does not support the video element.
+							{{_ "Browser_does_not_support_video_element"}}
 						</video>
 					</div>
 				{{/unless}}
@@ -172,7 +170,8 @@
 			{{#each attachments}}
 				{{injectMessage . ../msg}}
 			 	{{injectSettings . ../settings}}
-				{{injectIndex . ../index @index}} {{> messageAttachment}}
+				{{injectIndex . ../index @index}}
+				{{> messageAttachment (injectCollapsedMedia ..)}}
 			{{/each}}
 		</div>
 	</div>

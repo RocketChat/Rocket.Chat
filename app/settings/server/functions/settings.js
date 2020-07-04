@@ -64,10 +64,7 @@ const overrideSetting = (_id, value, options) => {
 * @param {Object} setting
 */
 
-settings.add = function(_id, value, options = {}) {
-	if (options == null) {
-		options = {};
-	}
+settings.add = function(_id, value, { editor, ...options } = {}) {
 	if (!_id || value == null) {
 		return false;
 	}
@@ -112,9 +109,9 @@ settings.add = function(_id, value, options = {}) {
 			createdAt: new Date(),
 		},
 	};
-	if (options.editor != null) {
-		updateOperations.$setOnInsert.editor = options.editor;
-		delete options.editor;
+	if (editor != null) {
+		updateOperations.$setOnInsert.editor = editor;
+		updateOperations.$setOnInsert.packageEditor = editor;
 	}
 	if (options.value == null) {
 		if (options.force === true) {

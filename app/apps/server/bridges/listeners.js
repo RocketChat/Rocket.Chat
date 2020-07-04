@@ -37,6 +37,12 @@ export class AppListenerBridge {
 		// }
 	}
 
+	async externalComponentEvent(inte, externalComponent) {
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, externalComponent);
+
+		return result;
+	}
+
 	async uiKitInteractionEvent(inte, action) {
 		return this.orch.getManager().getListenerManager().executeListener(inte, action);
 

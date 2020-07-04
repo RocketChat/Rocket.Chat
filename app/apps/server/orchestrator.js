@@ -12,6 +12,10 @@ import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
 import { AppRealLogsStorage, AppRealStorage } from './storage';
 
+function isTesting() {
+	return process.env.TEST_MODE === 'true';
+}
+
 
 class AppServerOrchestrator {
 	constructor() {
@@ -84,6 +88,10 @@ class AppServerOrchestrator {
 		return this._manager;
 	}
 
+	getProvidedComponents() {
+		return this._manager.getExternalComponentManager().getProvidedComponents();
+	}
+
 	isInitialized() {
 		return this._isInitialized;
 	}
@@ -97,7 +105,7 @@ class AppServerOrchestrator {
 	}
 
 	isDebugging() {
-		return settings.get('Apps_Framework_Development_Mode');
+		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
 	}
 
 	getRocketChatLogger() {
@@ -167,8 +175,20 @@ settings.addGroup('General', function() {
 			public: true,
 			hidden: false,
 		});
+
+		this.add('Apps_Game_Center_enabled', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Apps_Framework_enabled',
+				value: true,
+			},
+			hidden: false,
+			public: true,
+			alert: 'Experimental_Feature_Alert',
+		});
 	});
 });
+
 
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	// In case this gets called before `Meteor.startup`

@@ -55,6 +55,50 @@
 											<label><input type="radio" name="requestTagBeforeClosingChat" value="0" checked="{{$eq requestTagBeforeClosingChat false}}" /> {{_ "No"}}</label>
 										</div>
 									</div>
+									<label>{{_ "Conversation_closing_tags"}}</label>
+									<div class="input-line form-inline">
+										<div class="form-group">
+											{{#if hasAvailableTags}}
+												<div class="rc-input__wrapper">
+													<select id="tagSelect" class="rc-input rc-input__element rc-input--small rc-form-item-inline">
+														<option value="placeholder" disabled selected>{{_ "Select_tag"}}</option>
+														{{#each availableDepartmentTags}}
+															<option value="{{_id}}">{{this}}</option>
+														{{/each}}
+													</select>
+												</div>
+											{{else}}
+												<div class="rc-input" id="add-tag-input">
+													<label class="rc-input__label">
+														<div class="rc-input__wrapper">
+															<div class="rc-input__icon">
+																{{> icon icon='edit' }}
+															</div>
+															<input id="tagInput" class="rc-input__element" type="text" name="tags" autocomplete="off" placeholder="{{_"Enter_a_tag"}}">
+														</div>
+													</label>
+												</div>
+											{{/if}}
+										</div>
+										<div class="form-group">
+											<button id="addTag" name="addTag" class="rc-button rc-button--primary add-tag">{{_ "Add"}}</button>
+										</div>
+										<div>
+											<small class="secondary-font-color">{{{_ "Conversation_closing_tags_description"}}}</small>
+										</div>
+									</div>
+									{{#if hasChatClosingTags}}
+										<div class="input-line">
+											<ul id="tags" class="chip-container department-fallback-tags">
+												{{#each chatClosingTags}}
+												<li class="remove-tag" title="{{this}}">
+													<i class="icon icon-cancel-circled"></i>
+													{{this}}
+												</li>
+												{{/each}}
+											</ul>
+										</div>
+									{{/if}}
 									{{#if customFieldsTemplate}}
 										{{> Template.dynamic template=customFieldsTemplate data=data }}
 									{{/if}}

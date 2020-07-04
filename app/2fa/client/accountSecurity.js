@@ -5,7 +5,7 @@ import toastr from 'toastr';
 
 import { modal } from '../../ui-utils';
 import { settings } from '../../settings';
-import { t } from '../../utils';
+import { t, handleError, APIClient } from '../../utils/client';
 
 Template.accountSecurity.helpers({
 	showImage() {
@@ -31,6 +31,10 @@ Template.accountSecurity.helpers({
 		if (Template.instance().codesRemaining.get()) {
 			return t('You_have_n_codes_remaining', { number: Template.instance().codesRemaining.get() });
 		}
+	},
+	isEmailEnabled() {
+		const user = Meteor.user();
+		return user && user.services && user.services.email2fa && user.services.email2fa.enabled;
 	},
 });
 
@@ -80,6 +84,28 @@ Template.accountSecurity.events({
 				}
 			});
 		});
+	},
+
+	async 'click .enable-2fa-email'(event) {
+		event.preventDefault();
+
+		try {
+			await APIClient.v1.post('users.2fa.enableEmail');
+			toastr.success(t('Two-factor_authentication_enabled'));
+		} catch (error) {
+			handleError(error);
+		}
+	},
+
+	async 'click .disable-2fa-email'(event) {
+		event.preventDefault();
+
+		try {
+			await APIClient.v1.post('users.2fa.disableEmail');
+			toastr.success(t('Two-factor_authentication_disabled'));
+		} catch (error) {
+			handleError(error);
+		}
 	},
 
 	'click .verify-code'(event, instance) {

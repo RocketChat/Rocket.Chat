@@ -1,16 +1,15 @@
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { AdminBox } from '../../ui-utils';
 import { hasAllPermission } from '../../authorization';
+import { registerAdminRoute, registerAdminSidebarItem } from '../../ui-admin/client';
 import { t } from '../../utils';
 
 export const stdout = new Mongo.Collection(null);
 
 Meteor.startup(function() {
-	AdminBox.addOption({
+	registerAdminSidebarItem({
 		href: 'admin-view-logs',
 		i18nLabel: 'View_Logs',
 		icon: 'post',
@@ -20,7 +19,7 @@ Meteor.startup(function() {
 	});
 });
 
-FlowRouter.route('/admin/view-logs', {
+registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
 	async action() {
 		await import('./views/viewLogs');

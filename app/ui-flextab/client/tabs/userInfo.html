@@ -51,6 +51,11 @@
 							{{/with}}
 						</div>
 
+						{{#if hasBio}}
+							<div class="rc-user-info-details">
+								{{ bio }}
+							</div>
+						{{/if}}
 						<div class="rc-user-info-details">
 							{{#if roleTags}}
 								<div class="rc-user-info-details__item">

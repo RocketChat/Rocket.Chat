@@ -7,7 +7,7 @@ export const rocketChatDecorator = (fn) => {
 	if (linkElement.id !== 'theme-styles') {
 		require('../../app/theme/client/main.css');
 		require('../../app/theme/client/vendor/fontello/css/fontello.css');
-		require('../../client/rocketchat.font.css');
+		require('../../app/theme/client/rocketchat.font.css');
 		linkElement.setAttribute('id', 'theme-styles');
 		linkElement.setAttribute('rel', 'stylesheet');
 		linkElement.setAttribute('href', 'https://open.rocket.chat/theme.css');

@@ -137,7 +137,7 @@ describe('miscellaneous', function() {
 					'idleTimeLimit',
 					'sidebarShowFavorites',
 					'sidebarShowUnread',
-					// 'sidebarSortby',
+					'sidebarSortby',
 					'sidebarViewMode',
 					'sidebarHideAvatar',
 					'sidebarGroupByType',

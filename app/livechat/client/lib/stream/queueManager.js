@@ -2,6 +2,7 @@ import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { inquiryDataStream } from './inquiry';
 import { hasRole } from '../../../../authorization/client';
+import { call } from '../../../../ui-utils/client';
 
 let agentDepartments = [];
 
@@ -59,6 +60,12 @@ export const initializeLivechatInquiryStream = async (userId) => {
 		removeDepartmentsListeners(agentDepartments);
 	}
 	removeGlobalListener();
+
+	const config = await call('livechat:getRoutingConfig');
+	if (config && config.autoAssignAgent) {
+		return;
+	}
+
 	await updateInquiries(await getInquiriesFromAPI('livechat/inquiries.queued?sort={"ts": 1}'));
 
 	agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);

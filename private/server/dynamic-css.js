@@ -138,6 +138,8 @@
 
 	var DynamicCss = {};
 
+	window.DynamicCss = DynamicCss;
+
 	DynamicCss.test = function () {
 		return window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)');
 	};

@@ -34,7 +34,13 @@
 
 		display: flex;
 
+		overflow: auto;
+
 		flex-direction: column;
+
+		height: auto;
+
+		max-height: 70%;
 
 		padding: var(--popover-padding);
 

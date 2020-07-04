@@ -1,7 +1,7 @@
-import { AdminBox } from '../../../ui-utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
+import { registerAdminSidebarItem } from '../../../ui-admin/client';
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	href: 'invites',
 	i18nLabel: 'Invites',
 	icon: 'user-plus',

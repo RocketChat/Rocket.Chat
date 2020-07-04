@@ -1521,6 +1521,7 @@ rc-old select,
 		}
 
 		.setting-action {
+			height: auto;
 			margin: 0 4px;
 		}
 
@@ -1954,8 +1955,9 @@ rc-old select,
 	&-wrapper {
 		display: flex;
 
-		height: calc(100% - 61px);
-		flex-grow: 1;
+		flex: 1 1 auto;
+
+		height: 1%;
 	}
 
 	&-main {
@@ -4846,7 +4848,7 @@ rc-old select,
 	display: block;
 }
 
-.rc-old .hide-usernames .message .user.user-card-message {
+.rc-old .hide-usernames .message .user.user-card-message .message-alias {
 	display: none;
 }
 

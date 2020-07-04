@@ -1,7 +1,7 @@
-import { AdminBox } from '../../ui-utils';
 import { hasAllPermission } from '../../authorization';
+import { registerAdminSidebarItem } from '../../ui-admin/client';
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	href: 'admin-mailer',
 	i18nLabel: 'Mailer',
 	icon: 'mail',

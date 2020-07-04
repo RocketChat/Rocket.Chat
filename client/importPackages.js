@@ -1,4 +1,3 @@
-import '../app/assistify/ai/client';
 import '../app/cors/client';
 import '../app/2fa/client';
 import '../app/analytics/client';
@@ -101,6 +100,7 @@ import '../app/user-status';
 import '../app/utils';
 import '../app/settings';
 import '../app/models';
+import '../app/assistify/ai/client';
 import '../app/callbacks';
 import '../app/notifications';
 import '../app/promises/client';
@@ -110,3 +110,4 @@ import '../app/action-links';
 import '../app/reactions/client';
 import '../app/livechat/client';
 import '../app/meteor-autocomplete/client';
+import '../app/theme/client';

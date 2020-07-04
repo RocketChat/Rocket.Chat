@@ -1,7 +1,7 @@
-import { AdminBox } from '../../../ui-utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
+import { registerAdminSidebarItem } from '../../../ui-admin/client';
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	href: 'user-status-custom',
 	i18nLabel: 'Custom_User_Status',
 	icon: 'user',

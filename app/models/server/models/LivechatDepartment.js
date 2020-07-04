@@ -9,6 +9,7 @@ export class LivechatDepartment extends Base {
 	constructor(modelOrName) {
 		super(modelOrName || 'livechat_department');
 
+		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({
 			numAgents: 1,
 			enabled: 1,

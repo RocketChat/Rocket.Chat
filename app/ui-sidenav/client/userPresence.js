@@ -82,9 +82,8 @@ Tracker.autorun(() => {
 			observer.unobserve(node);
 			observer.observe(node);
 		}
+		return;
 	}
-
-	get(this.data.uid);
 	getAll();
 });
 

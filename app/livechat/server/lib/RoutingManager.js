@@ -7,6 +7,7 @@ import { createLivechatSubscription,
 	forwardRoomToAgent,
 	forwardRoomToDepartment,
 	removeAgentFromSubscription,
+	updateChatDepartment,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
@@ -87,8 +88,11 @@ export const RoutingManager = {
 		}
 
 		if (departmentId && departmentId !== department) {
-			LivechatRooms.changeDepartmentIdByRoomId(rid, departmentId);
-			LivechatInquiry.changeDepartmentIdByRoomId(rid, departmentId);
+			updateChatDepartment({
+				rid,
+				newDepartmentId: departmentId,
+				oldDepartmentId: department,
+			});
 			// Fake the department to delegate the inquiry;
 			inquiry.department = departmentId;
 		}

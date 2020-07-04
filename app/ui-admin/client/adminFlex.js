@@ -3,12 +3,14 @@ import s from 'underscore.string';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { settings } from '../../settings';
-import { menu, SideNav, AdminBox, Layout } from '../../ui-utils/client';
+import { menu, SideNav, Layout } from '../../ui-utils/client';
 import { t } from '../../utils';
 import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
 import { hasAtLeastOnePermission } from '../../authorization/client';
+import { getSidebarItems } from './sidebarItems';
 
 Template.adminFlex.onCreated(function() {
 	this.isEmbedded = Layout.isEmbedded();
@@ -34,10 +36,10 @@ Template.adminFlex.helpers({
 		const query = {
 			type: 'group',
 		};
+		let groups = [];
 		if (filter) {
 			const filterRegex = new RegExp(s.escapeRegExp(filter), 'i');
 			const records = settings.collectionPrivate.find().fetch();
-			let groups = [];
 			records.forEach(function(record) {
 				if (filterRegex.test(TAPi18n.__(record.i18nLabel || record._id))) {
 					groups.push(record.group || record._id);
@@ -49,6 +51,9 @@ Template.adminFlex.helpers({
 					$in: groups,
 				};
 			}
+		}
+		if (filter && groups.length === 0) {
+			return 0;
 		}
 		return settings.collectionPrivate.find(query).fetch().map(function(el) {
 			el.label = label.apply(el);
@@ -62,9 +67,12 @@ Template.adminFlex.helpers({
 	},
 	label,
 	adminBoxOptions() {
-		return AdminBox.getOptions();
+		return getSidebarItems();
 	},
 	menuItem(name, icon, section, group) {
+		const routeParam = FlowRouter.getParam('group');
+		const routeName = FlowRouter.getRouteName();
+
 		return {
 			name: t(name),
 			icon,
@@ -72,6 +80,7 @@ Template.adminFlex.helpers({
 			pathGroup: group,
 			darken: true,
 			isLightSidebar: true,
+			active: (routeParam && routeParam === group) || (routeName !== 'admin' && routeName === section),
 		};
 	},
 	embeddedVersion() {

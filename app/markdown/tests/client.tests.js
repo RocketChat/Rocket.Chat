@@ -6,6 +6,7 @@ import s from 'underscore.string';
 
 import './client.mocks.js';
 import { original } from '../lib/parser/original/original';
+import { filtered } from '../lib/parser/filtered/filtered';
 import { Markdown } from '../lib/markdown';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
@@ -230,15 +231,119 @@ const nested = {
 	'> some quote\n`window.location.reload();`': `${ quoteWrapper(' some quote') }${ inlinecodeWrapper('window.location.reload();') }`,
 };
 
+/*
+* Markdown Filters
+*/
+const boldFiltered = {
+	'*Hello*': 'Hello',
+	'**Hello**': 'Hello',
+	'*Hello**': 'Hello',
+	'He*llo': 'He*llo',
+	'*Hello': '*Hello',
+	'Hello*': 'Hello*',
+	'***Hello***': '***Hello***',
+	'***Hello**': '***Hello**',
+	'*Hello* there': 'Hello there',
+	'**Hello** there': 'Hello there',
+	'Hi, *Hello*': 'Hi, Hello',
+	'Hi, **Hello**': 'Hi, Hello',
+	'Hi, *Hello* how are you?': 'Hi, Hello how are you?',
+	'Hi, **Hello** how are you?': 'Hi, Hello how are you?',
+};
+
+const italicFiltered = {
+	_Hello_: 'Hello',
+	__Hello__: 'Hello',
+	_Hello__: 'Hello',
+	He_llo: 'He_llo',
+	_Hello: '_Hello',
+	__Hello: '__Hello',
+	Hello_: 'Hello_',
+	___Hello___: '___Hello___',
+	___Hello__: '___Hello__',
+	'_Hello_ there': 'Hello there',
+	'__Hello__ there': 'Hello there',
+	'Hi, _Hello_': 'Hi, Hello',
+	'Hi, __Hello__': 'Hi, Hello',
+	'Hi, _Hello_ how are you?': 'Hi, Hello how are you?',
+	'Hi, __Hello__ how are you?': 'Hi, Hello how are you?',
+};
+
+const strikeFiltered = {
+	'~Hello~': 'Hello',
+	'~~Hello~~': 'Hello',
+	'~~Hello': '~~Hello',
+	'~Hello~~': 'Hello',
+	'He~llo': 'He~llo',
+	'~Hello': '~Hello',
+	'Hello~': 'Hello~',
+	'~~~Hello~~~': '~~~Hello~~~',
+	'~~~Hello~~': '~~~Hello~~',
+	'~Hello~ there': 'Hello there',
+	'~~Hello~~ there': 'Hello there',
+	'Hi, ~Hello~': 'Hi, Hello',
+	'Hi, ~~Hello~~': 'Hi, Hello',
+	'Hi, ~Hello~ how are you?': 'Hi, Hello how are you?',
+	'Hi, ~~Hello~~ how are you?': 'Hi, Hello how are you?',
+};
+
+const headingFiltered = {
+	'# Hello': 'Hello',
+	'## Hello': 'Hello',
+	'### Hello': 'Hello',
+	'#### Hello': 'Hello',
+	'#Hello': '#Hello',
+	'##Hello': '##Hello',
+	'###Hello': '###Hello',
+	'####Hello': '####Hello',
+	'He#llo': 'He#llo',
+	'# Hello there': 'Hello there',
+	'Hi, # Hello': 'Hi, # Hello',
+	'Hi, # Hello there': 'Hi, # Hello there',
+};
+
+const quoteFiltered = {
+	'>Hello': 'Hello',
+	'> Hello': ' Hello',
+	'>>>\nHello\n<<<': 'Hello',
+	'>>>\nHello there!\n<<<': 'Hello there!',
+	'>>>\n Hello there! \n<<<': ' Hello there! ',
+};
+
+const linkFiltered = {
+	'[Text](http://link)': 'Text',
+	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': 'Open Site For Rocket.Chat',
+	'[ Open Site For Rocket.Chat](https://open.rocket.chat/ )': ' Open Site For Rocket.Chat',
+	'[Rocket.Chat Site](https://rocket.chat/)': 'Rocket.Chat Site',
+	'<http://link|Text>': 'Text',
+	'<http://link|Text for test>': 'Text for test',
+};
+
+const inlinecodeFiltered = {
+	'`code`': 'code',
+	'`code` begin': 'code begin',
+	'End `code`': 'End code',
+	'Middle `code` middle': 'Middle code middle',
+	'`code`begin': 'codebegin',
+	'End`code`': 'Endcode',
+	'Middle`code`middle': 'Middlecodemiddle',
+};
+
+const blockcodeFiltered = {
+	'```code```': 'code',
+	'```code': 'code',
+	'code```': 'code',
+	'Here ```code``` lies': 'Here code lies',
+	'Here```code```lies': 'Herecodelies',
+};
+
 const defaultObjectTest = (result, object, objectKey) => assert.equal(result.html, object[objectKey]);
 
 const testObject = (object, parser = original, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
 		describe(objectKey, () => {
-			const message = {
-				html: s.escapeHTML(objectKey),
-			};
-			const result = Markdown.mountTokensBack(parser(message));
+			const message = parser === original ? { html: s.escapeHTML(objectKey) } : objectKey;
+			const result = parser === original ? Markdown.mountTokensBack(parser(message)) : { html: parser(message) };
 			it(`should be equal to ${ object[objectKey] }`, () => {
 				test(result, object, objectKey);
 			});
@@ -272,6 +377,24 @@ describe('Original', function() {
 	describe('Code', () => testObject(code));
 
 	describe('Nested', () => testObject(nested));
+});
+
+describe('Filtered', function() {
+	describe('BoldFilter', () => testObject(boldFiltered, filtered));
+
+	describe('Italic', () => testObject(italicFiltered, filtered));
+
+	describe('StrikeFilter', () => testObject(strikeFiltered, filtered));
+
+	describe('HeadingFilter', () => testObject(headingFiltered, filtered));
+
+	describe('QuoteFilter', () => testObject(quoteFiltered, filtered));
+
+	describe('LinkFilter', () => testObject(linkFiltered, filtered));
+
+	describe('inlinecodeFilter', () => testObject(inlinecodeFiltered, filtered));
+
+	describe('blockcodeFilter', () => testObject(blockcodeFiltered, filtered));
 });
 
 // describe.only('Marked', function() {

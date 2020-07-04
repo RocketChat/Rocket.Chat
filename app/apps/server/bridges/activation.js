@@ -1,6 +1,4 @@
-import { STATUS_MAP } from '../../../../imports/users-presence/server/activeUsers';
-import { Users } from '../../../models/server';
-import { Notifications } from '../../../notifications/server';
+import { Users } from '../../../models/server/raw';
 
 export class AppActivationBridge {
 	constructor(orch) {
@@ -20,19 +18,9 @@ export class AppActivationBridge {
 	}
 
 	async appStatusChanged(app, status) {
-		const user = Users.findOneByAppId(app.getID(), { fields: { username: 1 } });
+		const userStatus = ['auto_enabled', 'manually_enabled'].includes(status) ? 'online' : 'offline';
 
-		if (user) {
-			const { _id, username } = user;
-			const userStatus = ['auto_enabled', 'manually_enabled'].includes(status) ? 'online' : 'offline';
-
-			Users.updateStatusById(_id, userStatus);
-			Notifications.notifyLogged('user-status', [
-				_id,
-				username,
-				STATUS_MAP[userStatus],
-			]);
-		}
+		await Users.updateStatusByAppId(app.getID(), userStatus);
 
 		await this.orch.getNotifier().appStatusUpdated(app.getID(), status);
 	}

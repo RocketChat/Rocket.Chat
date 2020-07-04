@@ -1,11 +1,12 @@
-import 'url-polyfill';
+import './polyfills';
 
-import './importsCss';
+import './lib/meteorCallWrapper';
 import './importPackages';
 import '../imports/startup/client';
 
 import '../lib/RegExp';
 
+import '../ee/client';
 import './lib/toastr';
 import './templateHelpers';
 import './methods/deleteMessage';
