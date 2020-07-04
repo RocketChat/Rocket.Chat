@@ -51,6 +51,15 @@ Meteor.startup(function() {
 				i18nLabel: 'Auth_Token',
 				secret: true,
 			});
+			this.add('SMS_Twilio_Number_Send', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'twilio',
+				},
+				i18nLabel: 'Twilio_Number_Send',
+				secret: true,
+			});
 			this.add('SMS_Twilio_FileUpload_Enabled', true, {
 				type: 'boolean',
 				enableQuery: {
