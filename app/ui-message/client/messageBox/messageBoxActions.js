@@ -5,6 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { VRecDialog } from '../../../ui-vrecord/client';
+import { ScrShareDialog } from '../../../livechat/client/views/app/ui-screensharing/client';
 import { messageBox, modal } from '../../../ui-utils';
 import { fileUpload } from '../../../ui';
 import { settings } from '../../../settings';
@@ -104,8 +105,9 @@ messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 		// 	resolve(true);
 		// }).then((bool) => bool);
 	},
-	action: ({ rid }) => {
+	action: ({ rid, tmid, messageBox }) => {
 		Meteor.call('livechat:requestScreenSharing', rid);
+		ScrShareDialog.opened ? ScrShareDialog.close() : ScrShareDialog.open(messageBox, { rid, tmid, src: 'https://cobrowse.io/dashboard' });
 	},
 });
 
