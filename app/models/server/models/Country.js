@@ -20,7 +20,7 @@ export class Country extends Base {
 		const qeury = {
 			name,
 		};
-		return this.find(qeury);
+		return this.findOne(qeury);
 	}
 
 	findAndUpdate(country, roomName) {
