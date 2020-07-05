@@ -14,7 +14,7 @@ const getRoomsByCountry = (name) => new Promise((resolve, reject) => {
 	});
 });
 
-Template.roomsList.onCreated(function() {
+Template.roomsList.onCreated(async function() {
 	this.list = new ReactiveVar([]);
 	Tracker.autorun(async () => {
 		await getRoomsByCountry(FlowRouter.getParam('name'))

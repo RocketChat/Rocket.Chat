@@ -6,11 +6,12 @@ import { Country, Rooms } from '../../app/models';
 Meteor.methods({
 	getRoomsByCountry(name) {
 		check(name, String);
-		this.listNames = Country.findCountry(name).fetch().roomName | [];
-		this.rooms = [];
-		this.listNames.foreach((element) => {
-			this.rooms.push(Rooms.findOne({ name: element }).fetch());
-		});
-		return this.rooms;
+		const rooms = [];
+		const roomsNames = Country.findCountry(name).fetch()[0].roomName;
+		for (let index = 0; index < roomsNames.length; index++) {
+			const c = Rooms.find({ name: roomsNames[index] });
+			rooms.push(c.fetch()[0]);
+		}
+		return rooms;
 	},
 });
