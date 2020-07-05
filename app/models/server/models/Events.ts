@@ -3,9 +3,9 @@ import { SHA256 } from 'meteor/sha';
 import deepMapKeys from 'deep-map-keys';
 import { EJSON } from 'meteor/ejson';
 
-import { IEventDataRoom } from '../../../events/definitions/data/IEventDataRoom';
 import { IEventDataUpdate } from '../../../events/definitions/data/IEventDataUpdate';
 import { EventContext, EventTypeDescriptor, EventDataDefinition, IEventData, IEvent } from '../../../events/definitions/IEvent';
+import { RoomEventTypeDescriptor } from '../../../events/definitions/room/IRoomEvent';
 import { Base } from './_Base';
 
 export declare interface IContextQuery { ct: EventContext; cid: string }
@@ -27,7 +27,7 @@ export declare type IEventDataHashOptionsDef = {
 export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 	readonly dataHashOptionsDefinition: Array<IEventDataHashOptionsDef> = [
 		{
-			t: [EventTypeDescriptor.MESSAGE, EventTypeDescriptor.EDIT_MESSAGE],
+			t: [RoomEventTypeDescriptor.MESSAGE, RoomEventTypeDescriptor.EDIT_MESSAGE],
 			options: {
 				include: ['t', 'u', 'msg'],
 			},
@@ -73,21 +73,15 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 	}
 
 	public async createEvent<T extends EventDataDefinition>(src: string, contextQuery: IContextQuery, stub: IEventStub<T>): Promise<IEvent<T>> {
+		// Get the previous events
 		let pids = []; // Previous ids
 
-		// If it is not a GENESIS event, we need to get the previous events
-		if (stub.t !== EventTypeDescriptor.ROOM) {
-			const previousEvents = await this.model
-				.rawCollection()
-				.find({ ...contextQuery, isLeaf: true })
-				.toArray();
+		const previousEvents = await this.model
+			.rawCollection()
+			.find({ ...contextQuery, isLeaf: true })
+			.toArray();
 
-			pids = previousEvents.map((e: IEvent<any>) => e._id);
-
-			if (pids.length === 0) {
-				throw new Error(`The event type:${ stub.t } cannot have zero parents, something went wrong`);
-			}
-		}
+		pids = previousEvents.map((e: IEvent<any>) => e._id);
 
 		const event: IEvent<T> = {
 			_id: '',
@@ -115,18 +109,18 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 		return event;
 	}
 
-	public async createGenesisEvent(src: string, contextQuery: IContextQuery, d: IEventDataRoom): Promise<IEvent<IEventDataRoom>> {
+	public async createGenesisEvent<T extends EventDataDefinition>(src: string, contextQuery: IContextQuery, t: EventTypeDescriptor, d: T): Promise<IEvent<T>> {
 		// Check if genesis event already exists, if so, do not create
 		const genesisEvent = await this.model
 			.rawCollection()
-			.findOne({ ...contextQuery, t: EventTypeDescriptor.ROOM });
+			.findOne({ ...contextQuery, t });
 
 		if (genesisEvent) {
 			throw new Error(`A GENESIS event for this context query already exists: ${ JSON.stringify(contextQuery, null, 2) }`);
 		}
 
-		const stub: IEventStub<IEventDataRoom> = {
-			t: EventTypeDescriptor.ROOM,
+		const stub: IEventStub<T> = {
+			t,
 			d,
 		};
 

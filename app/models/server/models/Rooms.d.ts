@@ -1,5 +1,5 @@
 import { Base } from './_Base';
-import { IRoom } from '../../../events/definitions/IRoom';
+import { IRoom } from '../../../events/definitions/room/IRoom';
 
 declare class RoomsClass extends Base<IRoom> {}
 

@@ -5,8 +5,8 @@ import { roomMessage } from './types/room_message';
 import { roomEditMessage } from './types/room_edit_message';
 import { roomDeleteMessage } from './types/room_delete_message';
 import { HandlerMethod } from '../../definitions/HandlerMethod';
-import { IEventDataMessage } from '../../definitions/data/IEventDataMessage';
-import { IEventDataRoom } from '../../definitions/data/IEventDataRoom';
+import { IRoomEventDataMessage } from '../../definitions/room/data/IRoomEventDataMessage';
+import { IRoomEventDataRoom } from '../../definitions/room/data/IRoomEventDataRoom';
 import { IEventDataUpdate } from '../../definitions/data/IEventDataUpdate';
 import { IEventDataEmpty } from '../../definitions/data/IEventDataEmpty';
 
@@ -16,9 +16,9 @@ export type TypesHandler = {
 
 const typesHandler: TypesHandler = {
 	// Room
-	room: (event) => room(event as IEvent<IEventDataRoom>),
+	room: (event) => room(event as IEvent<IRoomEventDataRoom>),
 	droom: (event) => roomDelete(event as IEvent<IEventDataUpdate<IEventDataEmpty>>),
-	msg: (event) => roomMessage(event as IEvent<IEventDataMessage>),
+	msg: (event) => roomMessage(event as IEvent<IRoomEventDataMessage>),
 	emsg: (event) => roomEditMessage(event as IEvent<IEventDataUpdate<IEventDataEmpty>>),
 	dmsg: (event) => roomDeleteMessage(event as IEvent<IEventDataUpdate<IEventDataEmpty>>),
 };

@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../app/settings';
 import { Users, RoomEvents } from '../../../app/models';
 import { msgStream } from '../../../app/lib/server';
-import { EventTypeDescriptor } from '../../../app/events/definitions/IEvent';
+import { RoomEventTypeDescriptor } from '../../../app/events/definitions/room/IRoomEvent';
 
 import { MY_MESSAGE } from '.';
 
@@ -32,7 +32,7 @@ Meteor.startup(function() {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				let message = data || RoomEvents.findOne({ _id: id, t: EventTypeDescriptor.MESSAGE });
+				let message = data || RoomEvents.findOne({ _id: id, t: RoomEventTypeDescriptor.MESSAGE });
 
 				if (!message || message.t !== 'msg') {
 					break;

@@ -8,7 +8,7 @@ import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
 import { RoomEvents } from './RoomEvents';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
-import { EventTypeDescriptor } from '../../../events/definitions/IEvent';
+import { RoomEventTypeDescriptor } from '../../../events/definitions/room/IRoomEvent';
 
 export class Messages extends Base {
 	constructor() {
@@ -131,7 +131,7 @@ export class Messages extends Base {
 		args[0] = v2Query;
 
 		// Add a `t: msg` and not deleted
-		args[0].t = EventTypeDescriptor.MESSAGE;
+		args[0].t = RoomEventTypeDescriptor.MESSAGE;
 
 		const cursor = RoomEvents.find.apply(RoomEvents, args);
 

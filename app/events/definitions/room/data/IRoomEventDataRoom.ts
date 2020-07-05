@@ -1,5 +1,5 @@
 import { IRoom } from '../IRoom';
 
-export interface IEventDataRoom {
+export interface IRoomEventDataRoom {
 	room: IRoom;
 }

@@ -1,4 +1,4 @@
-import { IUser } from '../IUser';
+import { IUser } from '../../IUser';
 
 export enum EventMessageTypeDescriptor {
 	MESSAGE = 'msg', // regular message
@@ -6,7 +6,7 @@ export enum EventMessageTypeDescriptor {
 	DISCUSSION_CREATED = 'discussion-created', // when a discussion is created
 }
 
-export interface IEventDataMessage {
+export interface IRoomEventDataMessage {
 	t: string;
 	u: IUser;
 	msg: string;

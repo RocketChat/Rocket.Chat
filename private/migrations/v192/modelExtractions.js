@@ -20,29 +20,26 @@ function fromV1Data(message) {
 // Events
 //
 //
-const EventTypeDescriptor = {
-	// // Global
-	// PING = 'ping',
+const RoomEventTypeDescriptor = {
+	ROOM: 'room', // create new room
+	DELETE_ROOM: 'droom', // delete room
+	PRUNE_ROOM_MESSAGES: 'prune', // prune messages from room
+	MESSAGE: 'msg', // new message
+	EDIT_MESSAGE: 'emsg', // edit a message content
+	DELETE_MESSAGE: 'dmsg', // delete message
 
-	// Rooms
-	ROOM: 'room',
-	DELETE_ROOM: 'droom',
-	MESSAGE: 'msg',
-	EDIT_MESSAGE: 'emsg',
-	DELETE_MESSAGE: 'dmsg',
-
-	// // Not implemented
-	// ADD_USER = 'add_user',
-	// REMOVE_USER = 'remove_user',
-	// SET_MESSAGE_REACTION = 'set_message_reaction',
-	// UNSET_MESSAGE_REACTION = 'unset_message_reaction',
-	// MUTE_USER = 'mute_user',
-	// UNMUTE_USER = 'unmute_user',
+	// Not yet implemented
+	// ADD_USER:'add_user',
+	// REMOVE_USER:'remove_user',
+	// SET_MESSAGE_REACTION:'set_message_reaction',
+	// UNSET_MESSAGE_REACTION:'unset_message_reaction',
+	// MUTE_USER:'mute_user',
+	// UNMUTE_USER:'unmute_user',
 };
 
 const dataHashOptionsDefinition = [
 	{
-		t: [EventTypeDescriptor.MESSAGE, EventTypeDescriptor.EDIT_MESSAGE],
+		t: [RoomEventTypeDescriptor.MESSAGE, RoomEventTypeDescriptor.EDIT_MESSAGE],
 		options: {
 			include: ['t', 'u', 'msg'],
 		},

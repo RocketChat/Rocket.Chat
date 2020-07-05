@@ -1,14 +1,20 @@
 import _ from 'lodash';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { IEventDataRoom } from '../../../events/definitions/data/IEventDataRoom';
-import { IEventDataMessage } from '../../../events/definitions/data/IEventDataMessage';
-import { EventContext, EventTypeDescriptor, EventDataDefinition, IEventData, IEvent } from '../../../events/definitions/IEvent';
-import { IRoom } from '../../../events/definitions/IRoom';
-import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
-import { IAddEventResult, IContextQuery, EventsModel, IEventStub } from './Events';
+import { IRoomEventDataRoom } from '../../../events/definitions/room/data/IRoomEventDataRoom';
+import { IRoomEventDataMessage } from '../../../events/definitions/room/data/IRoomEventDataMessage';
+import {
+	EventContext,
+	EventDataDefinition,
+	IEvent,
+	IEventData,
+} from '../../../events/definitions/IEvent';
+import { IRoom } from '../../../events/definitions/room/IRoom';
+import { RoomEventTypeDescriptor } from '../../../events/definitions/room/IRoomEvent';
 import { IEventDataUpdate } from '../../../events/definitions/data/IEventDataUpdate';
 import { IEventDataEmpty } from '../../../events/definitions/data/IEventDataEmpty';
+import { EventsModel, IAddEventResult, IContextQuery, IEventStub } from './Events';
+import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
 
 const getContextQuery = (param: string | IEvent<any>): IContextQuery => {
 	let cid: string;
@@ -67,32 +73,32 @@ class RoomEventsModel extends EventsModel {
 		return super.flagEventAsDeleted(getContextQuery(event), event.t, new Date(), event.clid);
 	}
 
-	public async createRoomGenesisEvent(src: string, room: IRoom): Promise<IEvent<IEventDataRoom>> {
+	public async createRoomGenesisEvent(src: string, room: IRoom): Promise<IEvent<IRoomEventDataRoom>> {
 		src = this.ensureSrc(src);
 
-		const event: IEventDataRoom = { room };
+		const event: IRoomEventDataRoom = { room };
 
-		return super.createGenesisEvent(src, getContextQuery(room._id), event);
+		return super.createGenesisEvent(src, getContextQuery(room._id), RoomEventTypeDescriptor.ROOM, event);
 	}
 
-	public async createMessageEvent<T extends IEventDataMessage>(src: string, roomId: string, clid: string, d: T): Promise<IEvent<T>> {
+	public async createMessageEvent<T extends IRoomEventDataMessage>(src: string, roomId: string, clid: string, d: T): Promise<IEvent<T>> {
 		src = this.ensureSrc(src);
 
 		const stub: IEventStub<T> = {
 			clid,
-			t: EventTypeDescriptor.MESSAGE,
+			t: RoomEventTypeDescriptor.MESSAGE,
 			d,
 		};
 
 		return super.createEvent(src, getContextQuery(roomId), stub);
 	}
 
-	public async createEditMessageEvent<T extends IEventDataUpdate<IEventDataMessage>>(src: string, roomId: string, clid: string, d: T): Promise<IEvent<T>> {
+	public async createEditMessageEvent<T extends IEventDataUpdate<IRoomEventDataMessage>>(src: string, roomId: string, clid: string, d: T): Promise<IEvent<T>> {
 		src = this.ensureSrc(src);
 
 		const stub: IEventStub<T> = {
 			clid,
-			t: EventTypeDescriptor.EDIT_MESSAGE,
+			t: RoomEventTypeDescriptor.EDIT_MESSAGE,
 			d,
 		};
 
@@ -104,7 +110,7 @@ class RoomEventsModel extends EventsModel {
 
 		const stub: IEventStub<IEventDataUpdate<IEventDataEmpty>> = {
 			clid,
-			t: EventTypeDescriptor.DELETE_MESSAGE,
+			t: RoomEventTypeDescriptor.DELETE_MESSAGE,
 			d: {},
 		};
 
@@ -115,7 +121,7 @@ class RoomEventsModel extends EventsModel {
 		src = this.ensureSrc(src);
 
 		const stub: IEventStub<IEventDataUpdate<IEventDataEmpty>> = {
-			t: EventTypeDescriptor.DELETE_ROOM,
+			t: RoomEventTypeDescriptor.DELETE_ROOM,
 			d: {},
 		};
 
@@ -128,7 +134,7 @@ class RoomEventsModel extends EventsModel {
 		discussionsIds: Array<string>;
 	}> {
 		const pruneEvent = await super.createEvent(getLocalSrc(), getContextQuery(roomId), {
-			t: EventTypeDescriptor.PRUNE_ROOM_MESSAGES,
+			t: RoomEventTypeDescriptor.PRUNE_ROOM_MESSAGES,
 			d: {
 				query: JSON.stringify(query),
 				u: {
@@ -141,7 +147,7 @@ class RoomEventsModel extends EventsModel {
 
 		const filesIds: Array<string> = [];
 		const discussionsIds: Array<string> = [];
-		const modifier = (event: IEvent<IEventDataMessage>): {[key: string]: Function} => ({
+		const modifier = (event: IEvent<IRoomEventDataMessage>): {[key: string]: Function} => ({
 			msg: (): void => {
 				this.update({
 					_id: event._id,
@@ -188,7 +194,7 @@ class RoomEventsModel extends EventsModel {
 			},
 		});
 
-		const results: Array<IEvent<IEventDataMessage>> = await this.model.rawCollection().find({
+		const results: Array<IEvent<IRoomEventDataMessage>> = await this.model.rawCollection().find({
 			'd.msg': { $exists: true },
 			...query,
 		}).toArray();
@@ -255,7 +261,7 @@ class RoomEventsModel extends EventsModel {
 		return this.v1ToV2RootMap.indexOf(property) !== -1;
 	}
 
-	public fromV1Data(message: IEventDataMessage): IEventDataMessage {
+	public fromV1Data(message: IRoomEventDataMessage): IRoomEventDataMessage {
 		return { ..._.omit(message, this.v1ToV2RootMap), t: message.t || 'msg', u: message.u, msg: message.msg };
 	}
 
