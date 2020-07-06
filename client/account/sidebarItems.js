@@ -27,15 +27,7 @@ export const {
 		i18nLabel: 'Security',
 		icon: 'lock',
 		permissionGranted: () => settings.get('Accounts_TwoFactorAuthentication_Enabled') || settings.get('E2E_Enable'),
-	},
-	// {
-	// 	pathSection: 'account',
-	// 	pathGroup: 'encryption',
-	// 	i18nLabel: 'Encryption',
-	// 	icon: 'key',
-	// 	permissionGranted: () => settings.get('E2E_Enable'),
-	// },
-	{
+	}, {
 		pathSection: 'account',
 		pathGroup: 'integrations',
 		i18nLabel: 'Integrations',

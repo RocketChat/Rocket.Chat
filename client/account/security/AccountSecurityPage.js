@@ -3,16 +3,15 @@ import { Box, Accordion } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUser } from '../../contexts/UserContext';
-// import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import Page from '../../components/basic/Page';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import TwoFactorTOTP from './TwoFactorTOTP';
 import TwoFactorEmail from './TwoFactorEmail';
+import EndToEnd from './EndToEnd';
 
 const AccountSecurityPage = () => {
 	const t = useTranslation();
-	// const dispatchToastMessage = useToastMessageDispatch();
 
 	const [modal, setModal] = useState(null);
 
@@ -36,7 +35,7 @@ const AccountSecurityPage = () => {
 							<TwoFactorEmail user={user} />
 						</Accordion.Item>}
 						{e2eEnabled && <Accordion.Item title={t('E2E Encryption')} defaultExpanded={!twoFactorEnabled}>
-							E2E placeholder
+							<EndToEnd />
 						</Accordion.Item>}
 					</Accordion>
 				</Box>
