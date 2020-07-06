@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Box, Button, TextInput, Icon, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import qrcode from 'yaqrcode';
 
@@ -33,12 +33,24 @@ const BackupCodesModal = ({ codes, onClose, ...props }) => {
 const VerifyCodeModal = ({ onVerify, onCancel, ...props }) => {
 	const t = useTranslation();
 
+	const ref = useRef({});
+
+	useEffect(() => {
+		if (typeof ref.current?.focus === 'function') {
+			ref.current.focus();
+		}
+	}, [ref]);
+
 	const { values, handlers } = useForm({ code: '' });
 
 	const { code } = values;
 	const { handleCode } = handlers;
 
-	const handleVerify = useCallback(() => { onVerify(code); onCancel(); }, [code, onCancel, onVerify]);
+	const handleVerify = useCallback((e) => {
+		if (e.type === 'click' || (e.type === 'keydown' && e.keyCode === 13)) {
+			onVerify(code); onCancel();
+		}
+	}, [code, onCancel, onVerify]);
 
 	return <Modal {...props}>
 		<Modal.Header>
@@ -49,7 +61,7 @@ const VerifyCodeModal = ({ onVerify, onCancel, ...props }) => {
 		<Modal.Content fontScale='p1'>
 			<Box mbe='x8'>{t('Open_your_authentication_app_and_enter_the_code')}</Box>
 			<Box display='flex' alignItems='stretch'>
-				<TextInput placeholder={t('Enter_authentication_code')} value={code} onChange={handleCode}/>
+				<TextInput ref={ref} placeholder={t('Enter_authentication_code')} value={code} onChange={handleCode} onKeyDown={handleVerify}/>
 			</Box>
 		</Modal.Content>
 		<Modal.Footer>
