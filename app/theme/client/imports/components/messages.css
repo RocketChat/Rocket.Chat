@@ -4,38 +4,38 @@
 
 .message-actions {
 	position: absolute;
-	top: 2px;
+	top: -18px;
 	right: 0.4rem;
 
 	display: none;
+
+	padding: 2px;
 
 	user-select: none;
 
 	color: var(--color-darkest);
 
-	font-size: 1rem;
+	background: var(rcx-surface, #fff);
+
+	font-size: 1.25rem;
+
+	border: 2px solid #F2F3F7;
+	box-sizing: border-box;
+	border-radius: 4px;
 
 	&__buttons {
 		display: flex;
 	}
 
-	&__button {
-		margin: 0 0.2rem;
-
-		font-size: inherit;
-
-		&:hover {
-			color: var(--rc-color-button-primary);
-		}
-	}
-
+	&__button,
 	&__menu {
-		padding: 2px 0;
+		padding: 2px;
 
 		cursor: pointer;
 
-		&:hover &-icon {
-			fill: var(--rc-color-button-primary);
+		&:hover {
+			background: #EEEFF1;
+			border-radius: 2px;
 		}
 
 		&-icon {
