@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { SettingsBase, SettingValue, ISettingAddOptions, ISettingRecord } from '../../lib/settings';
+import { SettingsBase, SettingValue } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
 
 const blockedSettings = new Set<string>();
@@ -57,6 +57,45 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 
 	return value;
 };
+
+export interface ISettingAddOptions {
+	_id?: string;
+	type?: 'group' | 'boolean' | 'int' | 'string' | 'asset' | 'code' | 'select' | 'password' | 'action' | 'relativeUrl' | 'language' | 'date' | 'color' | 'font' | 'roomPick' | 'multiSelect';
+	editor?: string;
+	packageEditor?: string;
+	packageValue?: SettingValue;
+	valueSource?: string;
+	hidden?: boolean;
+	blocked?: boolean;
+	secret?: boolean;
+	sorter?: number;
+	i18nLabel?: string;
+	i18nDescription?: string;
+	autocomplete?: boolean;
+	force?: boolean;
+	group?: string;
+	section?: string;
+	enableQuery?: any;
+	processEnvValue?: SettingValue;
+	meteorSettingsValue?: SettingValue;
+	value?: SettingValue;
+	ts?: Date;
+	multiline?: boolean;
+	values?: Array<ISettingSelectOption>;
+	public?: boolean;
+	enterprise?: boolean;
+	modules?: Array<string>;
+	invalidValue?: any;
+}
+export interface ISettingSelectOption {
+	key: string;
+	i18nLabel: string;
+}
+export interface ISettingRecord extends ISettingAddOptions {
+	_id: string;
+	env: boolean;
+	value: SettingValue;
+}
 
 export interface ISettingAddGroupOptions {
 	hidden?: boolean;

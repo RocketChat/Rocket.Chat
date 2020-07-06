@@ -1,9 +1,9 @@
-import { SettingsEvents, settings } from '../../../../app/settings/server/functions/settings';
-import { SettingValue, ISettingRecord } from '../../../../app/settings/lib/settings';
+import { SettingsEvents, settings, ISettingRecord } from '../../../../app/settings/server/functions/settings';
+import { SettingValue } from '../../../../app/settings/lib/settings';
 import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
 import SettingsModel from '../../../../app/models/server/models/Settings';
 
-function getSettingValue(record: ISettingRecord): undefined | { value: SettingValue } {
+function changeSettingValue(record: ISettingRecord): undefined | { value: SettingValue } {
 	if (!record.enterprise) {
 		return;
 	}
@@ -24,7 +24,7 @@ function getSettingValue(record: ISettingRecord): undefined | { value: SettingVa
 }
 
 SettingsEvents.on('store-setting-value', (record: ISettingRecord, newRecord: { value: SettingValue }) => {
-	const changedValue = getSettingValue(record);
+	const changedValue = changeSettingValue(record);
 	if (changedValue) {
 		newRecord.value = changedValue.value;
 	}
@@ -32,12 +32,28 @@ SettingsEvents.on('store-setting-value', (record: ISettingRecord, newRecord: { v
 
 SettingsEvents.on('fetch-settings', (settings: Array<ISettingRecord>): void => {
 	for (const setting of settings) {
-		const changedValue = getSettingValue(setting);
+		const changedValue = changeSettingValue(setting);
 		if (changedValue) {
 			setting.value = changedValue.value;
 		}
 	}
 });
+
+type ISettingNotificationValue = {
+	_id: string;
+	value: SettingValue;
+	editor: string;
+	properties: string;
+	enterprise: boolean;
+};
+
+SettingsEvents.on('change-setting', (record: ISettingRecord, value: ISettingNotificationValue): void => {
+	const changedValue = changeSettingValue(record);
+	if (changedValue) {
+		value.value = changedValue.value;
+	}
+});
+
 
 onValidateLicenses(() => {
 	const enterpriseSettings = SettingsModel.findEnterpriseSettings();
