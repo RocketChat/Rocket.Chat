@@ -6,7 +6,25 @@ import _ from 'underscore';
 import { Settings } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { API } from '../api';
-import { settings as settingsLib } from '../../../settings/server';
+import { SettingsEvents } from '../../../settings/server';
+
+const fetchSettings = (query, sort, offset, count, fields) => {
+	const settings = Settings.find.fetchSettings(query, {
+		sort: sort || { _id: 1 },
+		skip: offset,
+		limit: count,
+		fields: Object.assign({ _id: 1, value: 1, enterprise: 1, invalidValue: 1, modules: 1 }, fields),
+	});
+
+	SettingsEvents.emit('fetch-settings', settings);
+	return settings.map((setting) => {
+		'enterprise' in setting && !fields.enterprise && delete setting.enterprise;
+		'invalidValue' in setting && !fields.invalidValue && delete setting.invalidValue;
+		'modules' in setting && !fields.modules && delete setting.modules;
+
+		return setting;
+	});
+};
 
 // settings endpoints
 API.v1.addRoute('settings.public', { authRequired: false }, {
@@ -21,12 +39,7 @@ API.v1.addRoute('settings.public', { authRequired: false }, {
 
 		ourQuery = Object.assign({}, query, ourQuery);
 
-		const settings = settingsLib.fetchSettings(ourQuery, {
-			sort: sort || { _id: 1 },
-			skip: offset,
-			limit: count,
-			fields: Object.assign({ _id: 1, value: 1 }, fields),
-		});
+		const settings = fetchSettings(ourQuery, sort, offset, count, fields);
 
 		return API.v1.success({
 			settings,
@@ -95,12 +108,7 @@ API.v1.addRoute('settings', { authRequired: true }, {
 
 		ourQuery = Object.assign({}, query, ourQuery);
 
-		const settings = settingsLib.fetchSettings(ourQuery, {
-			sort: sort || { _id: 1 },
-			skip: offset,
-			limit: count,
-			fields: Object.assign({ _id: 1, value: 1 }, fields),
-		});
+		const settings = fetchSettings(ourQuery, sort, offset, count, fields);
 
 		return API.v1.success({
 			settings,

@@ -381,16 +381,6 @@ class Settings extends SettingsBase {
 	}
 
 	/*
-	* Runs a query on the settings module and pass the fetched data through an event before returning
-	*/
-	fetchSettings(query: Record<string, any>, options: Record<string, any>): void {
-		const settings = SettingsModel.find(query, options).fetch();
-
-		SettingsEvents.emit('fetch-settings', settings);
-		return settings;
-	}
-
-	/*
 	* Update a setting by id
 	*/
 	init(): void {
