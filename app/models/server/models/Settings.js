@@ -105,6 +105,10 @@ export class Settings extends Base {
 		return this.find({ wizard: { $exists: true, $ne: null } });
 	}
 
+	findEnterpriseSettings() {
+		return this.find({ enterprise: true });
+	}
+
 	// UPDATE
 	updateValueById(_id, value) {
 		const query = {

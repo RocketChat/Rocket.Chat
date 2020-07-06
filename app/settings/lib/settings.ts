@@ -6,6 +6,44 @@ export type SettingValueRoomPick = Array<{_id: string; name: string}> | string
 export type SettingValue = string | boolean | number | SettingValueMultiSelect | undefined;
 export type SettingComposedValue = {key: string; value: SettingValue};
 export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
+export interface ISettingAddOptions {
+	_id?: string;
+	type?: 'group' | 'boolean' | 'int' | 'string' | 'asset' | 'code' | 'select' | 'password' | 'action' | 'relativeUrl' | 'language' | 'date' | 'color' | 'font' | 'roomPick' | 'multiSelect';
+	editor?: string;
+	packageEditor?: string;
+	packageValue?: SettingValue;
+	valueSource?: string;
+	hidden?: boolean;
+	blocked?: boolean;
+	secret?: boolean;
+	sorter?: number;
+	i18nLabel?: string;
+	i18nDescription?: string;
+	autocomplete?: boolean;
+	force?: boolean;
+	group?: string;
+	section?: string;
+	enableQuery?: any;
+	processEnvValue?: SettingValue;
+	meteorSettingsValue?: SettingValue;
+	value?: SettingValue;
+	ts?: Date;
+	multiline?: boolean;
+	values?: Array<ISettingSelectOption>;
+	public?: boolean;
+	enterprise?: boolean;
+	modules?: Array<string>;
+	invalidValue?: any;
+}
+export interface ISettingSelectOption {
+	key: string;
+	i18nLabel: string;
+}
+export interface ISettingRecord extends ISettingAddOptions {
+	_id: string;
+	env: boolean;
+	value: SettingValue;
+}
 
 interface ISettingRegexCallbacks {
 	regex: RegExp;

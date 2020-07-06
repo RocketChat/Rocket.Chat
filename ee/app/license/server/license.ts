@@ -144,6 +144,7 @@ class LicenseClass {
 			return item;
 		});
 
+		EnterpriseLicenses.emit('validate');
 		this.showLicenses();
 	}
 
@@ -226,6 +227,14 @@ export function onLicense(feature: string, cb: (...args: any[]) => void): void {
 	}
 
 	EnterpriseLicenses.once(`valid:${ feature }`, cb);
+}
+
+export function onValidateLicenses(cb: (...args: any[]) => void): void {
+	if (isEnterprise()) {
+		return cb();
+	}
+
+	EnterpriseLicenses.once('validate', cb);
 }
 
 export interface IOverrideClassProperties {

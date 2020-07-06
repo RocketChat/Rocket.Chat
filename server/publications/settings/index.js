@@ -4,6 +4,7 @@ import { Settings } from '../../../app/models/server';
 import { Notifications } from '../../../app/notifications/server';
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
+import { SettingsEvents } from '../../../app/settings/server/functions/settings';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
@@ -84,7 +85,12 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 				value: setting.value,
 				editor: setting.editor,
 				properties: setting.properties,
+				enterprise: setting.enterprise,
+				invalidValue: setting.invalidValue,
+				modules: setting.modules,
 			};
+
+			SettingsEvents.emit('change-setting', setting, value);
 
 			if (setting.public === true) {
 				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);

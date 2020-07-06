@@ -1,7 +1,9 @@
+import { EventEmitter } from 'events';
+
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { SettingsBase, SettingValue } from '../../lib/settings';
+import { SettingsBase, SettingValue, ISettingAddOptions, ISettingRecord } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
 
 const blockedSettings = new Set<string>();
@@ -14,6 +16,8 @@ if (process.env.SETTINGS_BLOCKED) {
 if (process.env.SETTINGS_HIDDEN) {
 	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => hiddenSettings.add(settingId.trim()));
 }
+
+export const SettingsEvents = new EventEmitter();
 
 const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddOptions): SettingValue => {
 	const envValue = process.env[_id];
@@ -54,38 +58,6 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 	return value;
 };
 
-export interface ISettingAddOptions {
-	_id?: string;
-	type?: 'group' | 'boolean' | 'int' | 'string' | 'asset' | 'code' | 'select' | 'password' | 'action' | 'relativeUrl' | 'language' | 'date' | 'color' | 'font' | 'roomPick' | 'multiSelect';
-	editor?: string;
-	packageEditor?: string;
-	packageValue?: SettingValue;
-	valueSource?: string;
-	hidden?: boolean;
-	blocked?: boolean;
-	secret?: boolean;
-	sorter?: number;
-	i18nLabel?: string;
-	i18nDescription?: string;
-	autocomplete?: boolean;
-	force?: boolean;
-	group?: string;
-	section?: string;
-	enableQuery?: any;
-	processEnvValue?: SettingValue;
-	meteorSettingsValue?: SettingValue;
-	value?: SettingValue;
-	ts?: Date;
-	multiline?: boolean;
-	values?: Array<ISettingSelectOption>;
-	public?: boolean;
-}
-
-export interface ISettingSelectOption {
-	key: string;
-	i18nLabel: string;
-}
-
 export interface ISettingAddGroupOptions {
 	hidden?: boolean;
 	blocked?: boolean;
@@ -93,6 +65,7 @@ export interface ISettingAddGroupOptions {
 	i18nLabel?: string;
 	i18nDescription?: string;
 }
+
 
 interface IUpdateOperator {
 	$set: ISettingAddOptions;
@@ -143,6 +116,13 @@ class Settings extends SettingsBase {
 		options.hidden = options.hidden || false;
 		options.blocked = options.blocked || false;
 		options.secret = options.secret || false;
+		options.enterprise = options.enterprise || false;
+
+		if (options.enterprise && !('invalidValue' in options)) {
+			console.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
+			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);
+		}
+
 		if (options.group && options.sorter == null) {
 			options.sorter = this._sorter[options.group]++;
 		}
@@ -330,32 +310,56 @@ class Settings extends SettingsBase {
 	}
 
 	/*
+	* Change a setting value on the Meteor.settings object
+	*/
+	storeSettingValue(record: ISettingRecord, initialLoad: boolean): void {
+		const newData = {
+			value: record.enterprise ? record.invalidValue : record.value,
+		};
+		SettingsEvents.emit('store-setting-value', record, newData);
+		const { value } = newData;
+
+		Meteor.settings[record._id] = value;
+		if (record.env === true) {
+			process.env[record._id] = String(value);
+		}
+
+		this.load(record._id, value, initialLoad);
+	}
+
+	/*
+	* Remove a setting value on the Meteor.settings object
+	*/
+	removeSettingValue(record: ISettingRecord, initialLoad: boolean): void {
+		SettingsEvents.emit('remove-setting-value', record);
+
+		delete Meteor.settings[record._id];
+		if (record.env === true) {
+			delete process.env[record._id];
+		}
+
+		this.load(record._id, undefined, initialLoad);
+	}
+
+	/*
+	* Runs a query on the settings module and pass the fetched data through an event before returning
+	*/
+	fetchSettings(query: Record<string, any>, options: Record<string, any>): void {
+		const settings = SettingsModel.find(query, options).fetch();
+
+		SettingsEvents.emit('fetch-settings', settings);
+		return settings;
+	}
+
+	/*
 	* Update a setting by id
 	*/
 	init(): void {
 		this.initialLoad = true;
 		SettingsModel.find().observe({
-			added: (record: {_id: string; env: boolean; value: SettingValue}) => {
-				Meteor.settings[record._id] = record.value;
-				if (record.env === true) {
-					process.env[record._id] = String(record.value);
-				}
-				return this.load(record._id, record.value, this.initialLoad);
-			},
-			changed: (record: {_id: string; env: boolean; value: SettingValue}) => {
-				Meteor.settings[record._id] = record.value;
-				if (record.env === true) {
-					process.env[record._id] = String(record.value);
-				}
-				return this.load(record._id, record.value, this.initialLoad);
-			},
-			removed: (record: {_id: string; env: boolean}) => {
-				delete Meteor.settings[record._id];
-				if (record.env === true) {
-					delete process.env[record._id];
-				}
-				return this.load(record._id, undefined, this.initialLoad);
-			},
+			added: (record: ISettingRecord) => this.storeSettingValue(record, this.initialLoad),
+			changed: (record: ISettingRecord) => this.storeSettingValue(record, this.initialLoad),
+			removed: (record: ISettingRecord) => this.removeSettingValue(record, this.initialLoad),
 		});
 		this.initialLoad = false;
 		this.afterInitialLoad.forEach((fn) => fn(Meteor.settings));
