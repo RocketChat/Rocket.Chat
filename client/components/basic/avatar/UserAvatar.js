@@ -1,9 +1,11 @@
 import React from 'react';
-import { Avatar } from '@rocket.chat/fuselage';
+
+import BaseAvatar from './Base';
 
 function UserAvatar({ url, username, ...props }) {
 	const avatarUrl = url || `/avatar/${ username }`;
-	return <Avatar url={avatarUrl} title={username} {...props}/>;
+
+	return <BaseAvatar url={avatarUrl} title={username} {...props}/>;
 }
 
 export default UserAvatar;
