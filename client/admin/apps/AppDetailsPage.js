@@ -7,7 +7,7 @@ import ExternalLink from '../../components/basic/ExternalLink';
 import PriceDisplay from './PriceDisplay';
 import AppStatus from './AppStatus';
 import AppMenu from './AppMenu';
-import { useRoute } from '../../contexts/RouterContext';
+import { useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useAppInfo } from './hooks/useAppInfo';
 import { useAbsoluteUrl } from '../../contexts/ServerContext';
@@ -168,7 +168,9 @@ export default function AppDetailsPage({ id }) {
 	const settingsRef = useRef({});
 
 	const data = useAppInfo(id);
-	const router = useRoute('admin-apps');
+
+	const [currentRouteName] = useCurrentRoute();
+	const router = useRoute(currentRouteName);
 	const handleReturn = () => router.push({});
 
 	const isLoading = Object.values(data).length === 0;

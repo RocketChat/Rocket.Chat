@@ -57,3 +57,21 @@ declare module 'meteor/rocketchat:tap-i18n' {
 		function __(s: string, options: { lng: string }): string;
 	}
 }
+
+declare module 'meteor/promise' {
+	namespace Promise {
+		function await(): any;
+	}
+}
+
+declare module 'meteor/littledata:synced-cron' {
+	interface ICronAddParameters {
+		name: string;
+		schedule: Function;
+		job: Function;
+	}
+	namespace SyncedCron {
+		function add(params: ICronAddParameters): string;
+		function remove(name: string): string;
+	}
+}

@@ -4,16 +4,18 @@ import { settings } from '../../../../app/settings';
 import { checkWaitingQueue, updatePredictedVisitorAbandonment } from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
 import './lib/query.helper';
-import { MultipleBusinessHours } from './business-hour/Multiple';
-import { SingleBusinessHour } from '../../../../app/livechat/server/business-hour/Single';
+import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
+import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
 import { businessHourManager } from '../../../../app/livechat/server/business-hour';
+import { resetDefaultBusinessHourIfNeeded } from './business-hour/Helper';
 
 const visitorActivityMonitor = new VisitorInactivityMonitor();
 const businessHours = {
-	Multiple: new MultipleBusinessHours(),
-	Single: new SingleBusinessHour(),
+	Multiple: new MultipleBusinessHoursBehavior(),
+	Single: new SingleBusinessHourBehavior(),
 };
-Meteor.startup(function() {
+
+Meteor.startup(async function() {
 	settings.onload('Livechat_maximum_chats_per_agent', function(/* key, value */) {
 		checkWaitingQueue();
 	});
@@ -28,7 +30,8 @@ Meteor.startup(function() {
 		updatePredictedVisitorAbandonment();
 	});
 	settings.onload('Livechat_business_hour_type', (_, value) => {
-		businessHourManager.registerBusinessHourMethod(businessHours[value]);
-		businessHourManager.dispatchOnStartTasks();
+		businessHourManager.registerBusinessHourBehavior(businessHours[value]);
+		businessHourManager.startManager();
 	});
+	await resetDefaultBusinessHourIfNeeded();
 });

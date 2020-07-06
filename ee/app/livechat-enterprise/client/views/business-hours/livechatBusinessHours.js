@@ -9,7 +9,7 @@ import { hasLicense } from '../../../../license/client';
 import './livechatBusinessHours.html';
 import { modal } from '../../../../../../app/ui-utils/client';
 import { APIClient, handleError, t } from '../../../../../../app/utils';
-import { LivechatBussinessHourTypes } from '../../../../../../definition/ILivechatBusinessHour';
+import { LivechatBusinessHourTypes } from '../../../../../../definition/ILivechatBusinessHour';
 
 const licenseEnabled = new ReactiveVar(false);
 
@@ -32,7 +32,7 @@ Template.livechatBusinessHours.helpers({
 		return instance.ready && instance.ready.get();
 	},
 	isDefault() {
-		return this.type === LivechatBussinessHourTypes.SINGLE;
+		return this.type === LivechatBusinessHourTypes.DEFAULT;
 	},
 	openDays() {
 		return this
@@ -72,7 +72,7 @@ Template.livechatBusinessHours.events({
 			closeOnConfirm: false,
 			html: false,
 		}, () => {
-			Meteor.call('livechat:removeBusinessHour', this._id, (error/* , result*/) => {
+			Meteor.call('livechat:removeBusinessHour', this._id, this.type, (error/* , result*/) => {
 				if (error) {
 					return handleError(error);
 				}
@@ -90,7 +90,7 @@ Template.livechatBusinessHours.events({
 
 	'click .business-hour-info'(e/* , instance*/) {
 		e.preventDefault();
-		FlowRouter.go('livechat-business-hour-edit', { _id: this._id });
+		FlowRouter.go('livechat-business-hour-edit', { _id: this._id, type: this.type });
 	},
 
 	'keydown #business-hour-filter'(e) {

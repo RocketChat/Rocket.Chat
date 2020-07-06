@@ -8,7 +8,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
-import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
+import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
+import { renderMessageBody, MessageTypes, MessageAction, call } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
@@ -74,7 +75,7 @@ const findParentMessage = (() => {
 			{
 				$set: {
 					following: message.replies && message.replies.indexOf(uid) > -1,
-					threadMsg: normalizeThreadMessage(message),
+					threadMsg: normalizeThreadTitle(message),
 					repliesCount: message.tcount,
 				},
 			},
@@ -84,13 +85,20 @@ const findParentMessage = (() => {
 })();
 
 Template.message.helpers({
+	following() {
+		const { msg, u } = this;
+		return msg.replies && msg.replies.indexOf(u._id) > -1;
+	},
 	body() {
 		const { msg, settings } = this;
 		return Tracker.nonreactive(() => renderBody(msg, settings));
 	},
 	i18nReplyCounter() {
 		const { msg } = this;
-		return `<span class='reply-counter'>${ msg.tcount }</span>`;
+		if (msg.tcount === 1) {
+			return 'reply_counter';
+		}
+		return 'reply_counter_plural';
 	},
 	i18nDiscussionCounter() {
 		const { msg } = this;
@@ -219,7 +227,7 @@ Template.message.helpers({
 	},
 	threadMessage() {
 		const { msg } = this;
-		return normalizeThreadMessage(msg);
+		return normalizeThreadTitle(msg);
 	},
 	bodyClass() {
 		const { msg } = this;
@@ -236,11 +244,22 @@ Template.message.helpers({
 	},
 	unread() {
 		const { msg, subscription } = this;
-
-		if (!subscription) {
+		if (!subscription?.tunread?.includes(msg._id)) {
 			return false;
 		}
-		return subscription.tunread?.includes(msg._id);
+
+		const badgeClass = (() => {
+			if (subscription.tunreadUser?.includes(msg._id)) {
+				return 'badge--user-mentions';
+			}
+			if (subscription.tunreadGroup?.includes(msg._id)) {
+				return 'badge--group-mentions';
+			}
+		})();
+
+		return {
+			class: badgeClass,
+		};
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
@@ -367,6 +386,9 @@ Template.message.helpers({
 	},
 	injectSettings(data, settings) {
 		data.settings = settings;
+	},
+	className() {
+		return this.msg.className;
 	},
 	channelName() {
 		const { subscription } = this;

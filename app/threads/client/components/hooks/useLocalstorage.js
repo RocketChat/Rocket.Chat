@@ -32,7 +32,7 @@ export function useLocalStorage(key, initialValue) {
 		}
 		window.addEventListener('storage', handleEvent);
 		return () => window.removeEventListener('storage', handleEvent);
-	}, []);
+	}, [key]);
 
 	return [storedValue, setValue];
 }
