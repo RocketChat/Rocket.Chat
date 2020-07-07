@@ -100,7 +100,7 @@ self.addEventListener('fetch', (event) => {
 				// We only return non css/js/html cached response e.g images
 				if (!hasHash(event.request.url) && !/text\/html/.test(resourceType)) {
 					// Refresh resources which are not(sound or assets)
-					if (!/sounds/.test(event.request.url) && !/assets/.test(event.request.url)) {
+					if (!/sounds/.test(event.request.url) && !/assets/.test(event.request.url) && !/font/.test(event.request.url)) {
 						fetchFromNetwork(event);
 					}
 					return cached;
