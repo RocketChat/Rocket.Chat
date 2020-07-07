@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Avatar, Skeleton } from '@rocket.chat/fuselage';
 
-function BaseAvatar({ url, username, ...props }) {
+function BaseAvatar(props) {
 	const [error, setError] = useState(false);
 
 	if (error) {
-		return <Skeleton variant='rect' title={username} {...props} />;
+		return <Skeleton variant='rect' {...props} />;
 	}
 
 	return <Avatar onError={setError} {...props}/>;
