@@ -4,7 +4,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { messageBox } from '../../ui-utils/client';
-import { t } from '../../utils/client';
 import { settings } from '../../settings/client';
 import { Rooms } from '../../models';
 import { ScrShareDialog } from './views/app/ui-screensharing/client';

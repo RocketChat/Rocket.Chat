@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-
 import * as jwt from 'jsonwebtoken';
 
 import { IScreenSharingProvider } from './IScreenSharingProvider';
