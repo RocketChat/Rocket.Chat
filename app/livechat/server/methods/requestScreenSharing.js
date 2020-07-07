@@ -27,11 +27,11 @@ Meteor.methods({
 });
 
 Meteor.methods({
-	'livechat:getActiveSessionStatus'(roomId) {
+	'livechat:getActiveSessions'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:requestScreenSharing' });
 		}
 
-		return ScreensharingManager.getActiveSessionStatus(roomId);
+		return ScreensharingManager.getActiveSessions();
 	},
 });

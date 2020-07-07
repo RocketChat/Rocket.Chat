@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings/server';
 import { Messages } from '../../../models/server';
 import { IScreenSharingProvider } from './screenSharing/IScreenSharingProvider';
+import { screenSharingStreamer } from './stream/screenSharingStream';
 
 export class ScreenSharingManager {
 	providerName = '';
@@ -11,7 +12,7 @@ export class ScreenSharingManager {
 
 	private screenShareProvider: IScreenSharingProvider | any = null;
 
-	private activeSessions: string[] = [];
+	activeSessions: string[] = [];
 
 	enabled(): any {
 		return settings.get('Livechat_screen_sharing_enabled');
@@ -63,14 +64,16 @@ export class ScreenSharingManager {
 	addActiveScreenSharing(roomId: string): void {
 		this.activeSessions = this.activeSessions.filter((id) => id !== roomId);
 		this.activeSessions.push(roomId);
+		screenSharingStreamer.emit('session-modified', { activeSessions: this.activeSessions });
 	}
 
 	removeActiveScreenSharing(roomId: string): void {
 		this.activeSessions = this.activeSessions.filter((id) => id !== roomId);
+		screenSharingStreamer.emit('session-modified', { activeSessions: this.activeSessions });
 	}
 
-	getActiveSessionStatus(roomId: string): boolean {
-		return this.activeSessions.includes(roomId);
+	getActiveSessions(): string[] {
+		return this.activeSessions;
 	}
 }
 

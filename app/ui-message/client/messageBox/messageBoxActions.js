@@ -1,18 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { VRecDialog } from '../../../ui-vrecord/client';
-import { ScrShareDialog } from '../../../livechat/client/views/app/ui-screensharing/client';
 import { messageBox, modal } from '../../../ui-utils';
 import { fileUpload } from '../../../ui';
 import { settings } from '../../../settings';
 import { t } from '../../../utils';
 import { mime } from '../../../utils/lib/mimeTypes';
-import { Rooms } from '../../../models';
-import { call } from '../../../ui-utils/client';
 
 messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
@@ -64,59 +60,6 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 		if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
 			$input.click();
 		}
-	},
-});
-
-messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
-	id: 'request-screen-sharing',
-	icon: 'video',
-	condition: () => {
-		const rid = Session.get('openedRoom');
-		const room = Rooms.findOne({
-			_id: rid,
-		});
-
-		console.log(room);
-
-		return true;
-
-		// return new Promise((resolve, reject) => {
-		// 	resolve(false);
-		// });
-
-		// const promise = Promise.resolve(true);
-		// const promise = new Promise((resolve, reject) => {
-		// 	resolve(true);
-		// });
-		// promise.then((val) => val);
-
-		// Meteor.call('livechat:getActiveSessionStatus', rid).then((active) => active).then((active) => !active && settings.get('Livechat_enabled') && settings.get('Livechat_screen_sharing_enabled') && room && room.t === 'l');
-
-		// Meteor.call('livechat:getActiveSessionStatus', rid).then((data) => {
-		// 	console.log(data);
-		// 	return data;
-		// });
-		// const active = await call('livechat:getActiveSessionStatus', rid);
-
-		// console.log(active);
-		// if (active === true) { return 0; }
-		// return settings.get('Livechat_enabled') && settings.get('Livechat_screen_sharing_enabled') && room && room.t === 'l';
-		// new Promise((resolve, reject) => {
-		// 	resolve(true);
-		// }).then((bool) => bool);
-	},
-	action: ({ rid, tmid, messageBox }) => {
-		Meteor.call('livechat:requestScreenSharing', rid);
-		ScrShareDialog.opened ? ScrShareDialog.close() : ScrShareDialog.open(messageBox, { rid, tmid, src: 'https://cobrowse.io/dashboard' });
-	},
-});
-
-messageBox.actions.add('Screen_Sharing', 'End_Screen_Sharing_Session', {
-	id: 'end-screen-sharing-session',
-	icon: 'video',
-	condition: () => true,
-	action: ({ rid }) => {
-		Meteor.call('livechat:endScreenSharingSession', rid);
 	},
 });
 

@@ -32,7 +32,5 @@ export const ScrShareDialog = new class {
 	close() {
 		$('.scrshare-dialog').removeClass('show');
 		this.opened = false;
-		// if (this.video != null) {
-		// }
 	}
 }();

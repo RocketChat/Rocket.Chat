@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
@@ -13,6 +15,8 @@ Template.scrshareDialog.helpers({
 
 Template.scrshareDialog.events({
 	'click .scrshare-dialog .cancel'(e, t) {
+		const rid = Session.get('openedRoom');
+		Meteor.call('livechat:endScreenSharingSession', rid);
 		ScrShareDialog.close();
 	},
 });
