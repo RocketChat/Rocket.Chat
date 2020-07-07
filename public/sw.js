@@ -94,12 +94,15 @@ self.addEventListener('fetch', (event) => {
 
 	event.respondWith(
 		caches.match(event.request.clone()).then((cached) => {
-			const fetchEvent = fetchFromNetwork(event);
 			// We don't return cached HTML (except if fetch failed)
 			if (cached) {
 				const resourceType = cached.headers.get('content-type');
 				// We only return non css/js/html cached response e.g images
 				if (!hasHash(event.request.url) && !/text\/html/.test(resourceType)) {
+					// Refresh resources which are not(sound or assets)
+					if (!/sounds/.test(event.request.url) && !/assets/.test(event.request.url)) {
+						fetchFromNetwork(event);
+					}
 					return cached;
 				}
 
@@ -108,7 +111,7 @@ self.addEventListener('fetch', (event) => {
 					return cached;
 				}
 			}
-			return fetchEvent;
+			return fetchFromNetwork(event);
 		}),
 	);
 });

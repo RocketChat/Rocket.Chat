@@ -158,7 +158,7 @@ Meteor.startup(() => {
 	settings.get('css', (key, value = '') => {
 		currentHash = crypto.createHash('sha1').update(value).digest('hex');
 		currentSize = value.length;
-		injectIntoHead('css-theme', `<link rel="stylesheet" type="text/css" href="${ getURL(`/theme.css?${ currentHash }`) }">`);
+		injectIntoHead('css-theme', `<link rel="stylesheet" type="text/css" href="${ getURL(`/theme.css?hash=${ currentHash }`) }">`);
 	});
 });
 
