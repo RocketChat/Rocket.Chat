@@ -1,14 +1,10 @@
 import React from 'react';
 
-import { GroupSelector } from './GroupSelector';
-import { SettingsState } from './SettingsState';
+import GroupSelector from './GroupSelector';
 
 export default {
 	title: 'admin/settings/GroupSelector',
 	component: GroupSelector,
-	decorators: [
-		(storyFn) => <SettingsState>{storyFn()}</SettingsState>,
-	],
 };
 
 export const _default = () => <GroupSelector />;
