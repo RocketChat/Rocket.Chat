@@ -1,13 +1,13 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
-export const ScrShareDialog = new class {
+export const ScreenSharinDialog = new class {
 	opened = false;
 
 	dialogView = null;
 
 	init() {
-		this.dialogView = Blaze.render(Template.scrshareDialog, document.body);
+		this.dialogView = Blaze.render(Template.screenSharinDialog, document.body);
 	}
 
 	open(source, { rid, tmid, src }) {
@@ -23,14 +23,14 @@ export const ScrShareDialog = new class {
 		});
 
 		this.source = source;
-		const dialog = $('.scrshare-dialog');
+		const dialog = $('.screensharing-dialog');
 		this.dialogView.templateInstance().setPosition(dialog, source);
 		dialog.addClass('show');
 		this.opened = true;
 	}
 
 	close() {
-		$('.scrshare-dialog').removeClass('show');
+		$('.screensharing-dialog').removeClass('show');
 		this.opened = false;
 	}
 }();

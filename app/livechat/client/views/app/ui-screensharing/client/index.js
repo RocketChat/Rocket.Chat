@@ -1,8 +1,8 @@
-import './scrshare.html';
-import './scrshare';
-import { ScrShareDialog } from './ScrShareDialog';
-import './scrshare.css';
+import './screensharing.html';
+import './screensharing';
+import { ScreenSharinDialog } from './ScreenSharinDialog';
+import './screensharing.css';
 
 export {
-	ScrShareDialog,
+	ScreenSharinDialog,
 };

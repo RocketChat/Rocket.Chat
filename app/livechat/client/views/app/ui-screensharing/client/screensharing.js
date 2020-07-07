@@ -4,23 +4,23 @@ import { Session } from 'meteor/session';
 import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
-import { ScrShareDialog } from './ScrShareDialog';
+import { ScreenSharinDialog } from './ScreenSharinDialog';
 
-Template.scrshareDialog.helpers({
+Template.screenSharinDialog.helpers({
 	src() {
 		return Template.instance().src.get();
 	},
 });
 
-Template.scrshareDialog.events({
-	'click .scrshare-dialog .cancel'() {
+Template.screenSharinDialog.events({
+	'click .screensharing-dialog .cancel'() {
 		const rid = Session.get('openedRoom');
 		Meteor.call('livechat:endScreenSharingSession', rid);
-		ScrShareDialog.close();
+		ScreenSharinDialog.close();
 	},
 });
 
-Template.scrshareDialog.onCreated(function() {
+Template.screenSharinDialog.onCreated(function() {
 	this.width = 400;
 	this.height = 290;
 
@@ -64,6 +64,6 @@ Template.scrshareDialog.onCreated(function() {
 	};
 });
 
-Template.scrshareDialog.onDestroyed(function() {
+Template.screenSharinDialog.onDestroyed(function() {
 	$(window).off('resize', this.remove);
 });

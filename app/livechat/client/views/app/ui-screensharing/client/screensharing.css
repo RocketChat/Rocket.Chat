@@ -1,5 +1,5 @@
 @media (width <= 500px) {
-	.scrshare-dialog {
+	.screensharing-dialog {
 		right: 0 !important;
 		left: 0 !important;
 
@@ -14,7 +14,7 @@
 	}
 }
 
-.scrshare-dialog {
+.screensharing-dialog {
 	position: absolute;
 
 	visibility: hidden;
@@ -54,13 +54,13 @@
 	}
 }
 
-.scrshare-dialog button.hide {
+.screensharing-dialog button.hide {
 	visibility: hidden;
 
 	opacity: 0;
 }
 
-.scrshare-dialog button.show {
+.screensharing-dialog button.show {
 	display: block;
 	visibility: visible;
 
