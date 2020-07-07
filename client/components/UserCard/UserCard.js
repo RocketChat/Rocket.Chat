@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Box, Tag, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
 
-import { ActionButton } from './basic/Buttons/ActionButton';
-import UserAvatar from './basic/avatar/UserAvatar';
-import * as Status from './basic/UserStatus';
+import { ActionButton } from '../basic/Buttons/ActionButton';
+import UserAvatar from '../basic/avatar/UserAvatar';
+import * as Status from '../basic/UserStatus';
 
-const style = {
+const clampStyle = {
 	display: '-webkit-box',
 	overflow: 'hidden',
 	WebkitLineClamp: 3,
@@ -17,8 +17,10 @@ export const Action = ({ icon }) => <Button small mi='x2'><Icon name={icon} size
 
 export const Info = (props) => <Box mb='x4' is='p' fontSize='p1' fontSize='p1' fontScale='p1' letterSpacing='p1' fontWeight='p1' color='hint' withTruncatedText {...props} />;
 
+export const Username = ({ name, status = <Status.Offline/> }) => <Box display='flex' flexShrink={0} alignItems='center' is='p' fontSize='s2' fontSize='s2' fontScale='s2' letterSpacing='s2' fontWeight='s2' color='default' withTruncatedText>{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box></Box>;
+
 const Roles = ({ children }) =>
-	<Info rcx-user-card__roles mi='neg-x2' height='16px' display='flex'>
+	<Info rcx-user-card__roles mi='neg-x2' height='16px' display='flex' flexShrink={0}>
 		{children}
 	</Info>;
 
@@ -34,9 +36,12 @@ const Role = ({ children }) => <Tag
 	children={children}
 />;
 
-const UserCardConteiner = (props) => <Box rcx-user-card elevation='1' p='x24' display='flex' borderRadius='x2' width='439px' heigth='230px' {...props}/>;
-const UserCard = ({
+const UserCardConteiner = forwardRef((props, ref) => <Box rcx-user-card bg='surface' elevation='2' p='x24' display='flex' borderRadius='x2' width='439px' heigth='230px' {...props} ref={ref}/>);
+const UserCard = forwardRef(({
+	className,
+	style,
 	name = <Skeleton width='100%'/>,
+	username,
 	customStatus = <Skeleton width='100%'/>,
 	roles = <>
 		<Skeleton width='32%' mi='x2'/>
@@ -51,26 +56,30 @@ const UserCard = ({
 	status = <Status.Offline/>,
 	actions,
 	localTime = <Skeleton width='100%'/>,
-}) => <UserCardConteiner>
+	onClose,
+}, ref) => <UserCardConteiner className={className} ref={ref} style={style}>
 	<Box>
-		<UserAvatar size='x124'/>
+		<UserAvatar username={username} size='x124'/>
 		{ actions && <Box display='flex' mb='x8' align='center' justifyContent='center'>
 			{actions}
 		</Box>}
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
-		<Box display='flex' flexGrow={1} alignItems='center' is='p' fontSize='s2' fontSize='s2' fontScale='s2' letterSpacing='s2' fontWeight='s2' color='default' withTruncatedText>{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box></Box>
+		<Username status={status} name={name}/>
 		<Info>{customStatus}</Info>
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
-		<Info withTruncatedText={false} style={style} height='60px'>{bio}</Info>
+		<Info withTruncatedText={false} style={clampStyle} height='60px'>{bio}</Info>
 		<a href='#'>See Full Profile</a>
 	</Box>
-	<Box><ActionButton icon='cross'/></Box>
-</UserCardConteiner>;
+	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}
+</UserCardConteiner>);
 
 
 export default UserCard;
 
 UserCard.Action = Action;
 UserCard.Role = Role;
+UserCard.Roles = Roles;
+UserCard.Info = Info;
+UserCard.Username = Username;

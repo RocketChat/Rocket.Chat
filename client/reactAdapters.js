@@ -109,6 +109,12 @@ const createLazyPortal = async (importFn, propsFn, node) => {
 	return createPortal(await createLazyElement(importFn, propsFn), node);
 };
 
+export const createPhemeralPortal = async (importFn, propsFn, node) => {
+	const portal = await createLazyPortal(importFn, propsFn, node);
+	registerPortal(node, portal);
+	return () => unregisterPortal(node);
+};
+
 export const createTemplateForComponent = (
 	name,
 	importFn,

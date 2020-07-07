@@ -37,6 +37,7 @@ import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
 import { mime } from '../../../../utils/lib/mimeTypes';
+import * as UserCard from '../../lib/UserCard';
 
 export const chatMessages = {};
 
@@ -911,6 +912,15 @@ Template.room.events({
 		const { msg } = messageArgs(this);
 		const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
 		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
+	},
+	'mouseover .mention-link'(e) {
+		const { currentTarget: { dataset: { username } } } = e;
+
+		if (!username) {
+			return;
+		}
+
+		UserCard.open({ username }, e.currentTarget);
 	},
 	'click .mention-link'(e, instance) {
 		e.stopPropagation();
