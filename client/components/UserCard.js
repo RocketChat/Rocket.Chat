@@ -18,7 +18,7 @@ export const Action = ({ icon }) => <Button small mi='x2'><Icon name={icon} size
 export const Info = (props) => <Box mb='x4' is='p' fontSize='p1' fontSize='p1' fontScale='p1' letterSpacing='p1' fontWeight='p1' color='hint' withTruncatedText {...props} />;
 
 const Roles = ({ roles }) =>
-	<Info mi='neg-x2'>
+	<Info mi='neg-x2' height='16px'>
 		{roles.map((role, index) => (
 			<Tag
 				pb={0}
@@ -36,7 +36,7 @@ const Roles = ({ roles }) =>
 		))}
 	</Info>;
 
-const UserCard = ({ name, customStatus, roles = [], bio, status = <Status.Offline/>, actions }) => <Box rcx-user-card elevation='1' p='x24' display='flex' borderRadius='x2' width='439px' heigth='230px'>
+const UserCard = ({ name, customStatus, roles = [], bio, status = <Status.Offline/>, actions, localTime }) => <Box rcx-user-card elevation='1' p='x24' display='flex' borderRadius='x2' width='439px' heigth='230px'>
 	<Box><UserAvatar size='x124'/>
 		{ actions && <Box display='flex' mb='x8' align='center' justifyContent='center'>
 			{actions}
@@ -45,9 +45,9 @@ const UserCard = ({ name, customStatus, roles = [], bio, status = <Status.Offlin
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
 		<Box display='flex' alignItems='center' is='p' fontSize='s2' fontSize='s2' fontScale='s2' letterSpacing='s2' fontWeight='s2' color='default' withTruncatedText>{status} <Box mi='x8' withTruncatedText>{name}</Box></Box>
 		<Info>{customStatus}</Info>
-		{roles.length > <Roles roles={roles}/>}
-		<Info >Local Time: 7:44 AM</Info>
-		<Info withTruncatedText={false} style={style}>{bio}</Info>
+		<Roles roles={roles}/>
+		<Info>{localTime}</Info>
+		<Info withTruncatedText={false} style={style} height='60px'>{bio}</Info>
 		<a href='#'>See Full Profile</a>
 	</Box>
 	<Box><ActionButton icon='cross'/></Box>
@@ -55,3 +55,5 @@ const UserCard = ({ name, customStatus, roles = [], bio, status = <Status.Offlin
 
 
 export default UserCard;
+
+UserCard.Action = Action;
