@@ -26,7 +26,7 @@ export const useEndpointDataExperimental = (endpoint, params = {}, { delayTimeou
 					return;
 				}
 
-				setData({ delaying: true, state: ENDPOINT_STATES.LOADING });
+				setData({ delaying: true, state: ENDPOINT_STATES.LOADING, reload: fetchData });
 			}, delayTimeout);
 
 			try {
@@ -42,13 +42,13 @@ export const useEndpointDataExperimental = (endpoint, params = {}, { delayTimeou
 				}
 
 
-				setData({ data, state: ENDPOINT_STATES.DONE });
+				setData({ data, state: ENDPOINT_STATES.DONE, reload: fetchData });
 			} catch (error) {
 				if (!mounted) {
 					return;
 				}
 
-				setData({ error, state: ENDPOINT_STATES.ERROR });
+				setData({ error, state: ENDPOINT_STATES.ERROR, reload: fetchData });
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				clearTimeout(timer);

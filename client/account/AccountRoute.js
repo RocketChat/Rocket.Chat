@@ -5,6 +5,7 @@ import { SideNav } from '../../app/ui-utils';
 import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import AccountSecurityPage from './security/AccountSecurityPage';
+import AccountTokensPage from './tokens/AccountTokensPage';
 import './sidebarItems';
 
 const AccountRoute = () => {
@@ -26,6 +27,9 @@ const AccountRoute = () => {
 	}
 	if (page === 'security') {
 		return <AccountSecurityPage />;
+	}
+	if (page === 'tokens') {
+		return <AccountTokensPage />;
 	}
 	return null;
 };
