@@ -26,7 +26,7 @@ const AccountSecurityPage = () => {
 
 	return <>
 		<Page>
-			<Page.Header title={t('Preferences')} />
+			<Page.Header title={t('Security')} />
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Accordion>
