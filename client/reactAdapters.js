@@ -80,7 +80,7 @@ export const registerPortal = (key, portal) => {
 
 
 const createLazyElement = async (importFn, propsFn) => {
-	const { createElement, lazy, useEffect, useState, memo } = await import('react');
+	const { createElement, lazy, useEffect, useState, memo, Suspense } = await import('react');
 	const LazyComponent = lazy(importFn);
 
 	if (!propsFn) {
@@ -100,7 +100,7 @@ const createLazyElement = async (importFn, propsFn) => {
 			};
 		}, []);
 
-		return createElement(LazyComponent, props);
+		return createElement(Suspense, { fallback: null }, createElement(LazyComponent, props));
 	});
 
 	return createElement(WrappedComponent);
