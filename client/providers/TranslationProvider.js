@@ -50,14 +50,15 @@ export function TranslationProvider({ children }) {
 	const language = useReactiveValue(() => TAPi18n.getLanguage());
 	const loadLanguage = useCallback((language) => TAPi18n._loadLanguage(language), []);
 	const translate = useMemo(() => createTranslateFunction(language), [language]);
-
+	const value = useMemo(() => ({
+		languages,
+		language,
+		loadLanguage,
+		translate,
+	}),
+	[languages, language, loadLanguage, translate]);
 	return <TranslationContext.Provider
 		children={children}
-		value={{
-			languages,
-			language,
-			loadLanguage,
-			translate,
-		}}
+		value={value}
 	/>;
 }

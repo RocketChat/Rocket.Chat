@@ -44,7 +44,7 @@ const mountRoot = async () => {
 
 		useLayoutEffect(() => {
 			invalidatePortals = () => {
-				setPortals(Array.from(portalsMap.values()).sort());
+				setPortals(Array.from(portalsMap.values()));
 			};
 			invalidatePortals();
 

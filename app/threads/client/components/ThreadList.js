@@ -176,8 +176,8 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 
 	const t = useTranslation();
 
-	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
-
+	const [name] = useCurrentRoute();
+	const channelRoute = useRoute(name);
 	const onClick = useCallback((e) => {
 		const { id: context } = e.currentTarget.dataset;
 		channelRoute.push({

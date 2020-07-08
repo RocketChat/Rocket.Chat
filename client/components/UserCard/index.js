@@ -25,7 +25,7 @@ const LocalTime = React.memo(({ offset }) => {
 	return `Local Time: ${ format(time) } (UTC ${ offset })`;
 });
 
-export default ({ username, onClose, target, open }) => {
+const UserCardWithData = ({ username, onClose, target, open }) => {
 	const ref = useRef(target);
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
@@ -63,15 +63,16 @@ export default ({ username, onClose, target, open }) => {
 		[open, onClose],
 	);
 
-	return (
-		<Backdrop bg='transparent' onClick={onClose}>
-			<PositionAnimated
-				anchor={{ current: target }}
-				placement='center right'
-				visible={AnimatedVisibility.UNHIDING}
-			>
-				<UserCard {...user} onClose={onClose} open={handleOpen} />
-			</PositionAnimated>
-		</Backdrop>
+	return (<>
+		<Backdrop bg='transparent' onClick={onClose}/>
+		<PositionAnimated
+			anchor={ref}
+			placement='center right'
+			visible={AnimatedVisibility.UNHIDING}
+		>
+			<UserCard {...user} onClose={onClose} open={handleOpen} />
+		</PositionAnimated></>
 	);
 };
+
+export default UserCardWithData;
