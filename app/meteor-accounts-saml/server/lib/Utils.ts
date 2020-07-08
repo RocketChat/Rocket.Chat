@@ -326,7 +326,7 @@ export class SAMLUtils {
 		return parsedMap;
 	}
 
-	public static getProfileValue(profile: Record<string, any>, mapping: IAttributeMapping): any {
+	public static getProfileValue(profile: Record<string, any>, mapping: IAttributeMapping, forceString = false): any {
 		const values: Record<string, string> = {
 			regex: '',
 		};
@@ -334,10 +334,26 @@ export class SAMLUtils {
 
 		let mainValue;
 		for (const fieldName of fieldNames) {
-			values[fieldName] = profile[fieldName];
+			let profileValue = profile[fieldName];
+
+			if (Array.isArray(profileValue)) {
+				for (let i = 0; i < profile[fieldName].length; i++) {
+					// Add every index to the list of possible values to be used, both first to last and from last to first
+					values[`${ fieldName }[${ i }]`] = profileValue[i];
+					values[`${ fieldName }[-${ Math.abs(0 - profileValue.length + i) }]`] = profileValue[i];
+				}
+				values[`${ fieldName }[]`] = profileValue.join('');
+				if (forceString) {
+					profileValue = profileValue.join('');
+				}
+			} else {
+				values[fieldName] = profileValue;
+			}
+
+			values[fieldName] = profileValue;
 
 			if (!mainValue) {
-				mainValue = profile[fieldName];
+				mainValue = profileValue;
 			}
 		}
 
@@ -422,7 +438,7 @@ export class SAMLUtils {
 		}
 
 		const email = this.getProfileValue(profile, userDataMap.email);
-		const profileUsername = this.getProfileValue(profile, userDataMap.username);
+		const profileUsername = this.getProfileValue(profile, userDataMap.username, true);
 		const name = this.getProfileValue(profile, userDataMap.name);
 
 		// Even if we're not using the email to identify the user, it is still mandatory because it's a mandatory information on Rocket.Chat

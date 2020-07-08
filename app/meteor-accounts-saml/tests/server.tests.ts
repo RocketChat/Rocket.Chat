@@ -664,6 +664,22 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 
+			it('should join array values if username receives an array of values', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const multipleUsernames = {
+					...profile,
+					anotherUsername: ['user1', 'user2'],
+				};
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				const userObject = SAMLUtils.mapProfileToUserObject(multipleUsernames);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('samlLogin').that.is.an('object');
+				expect(userObject).to.have.property('username').that.is.equal('user1user2');
+			});
+
 			// Channels support both a comma separated single value and an array of values
 			it('should support `channels` attribute with multiple values', () => {
 				const channelsProfile = {
@@ -825,6 +841,36 @@ describe('SAML', () => {
 				// for this one, should run the regex first, then the template
 				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName] (AnotherName)');
 			});
+
+			it('should support individual array values on templates', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const multipleUsernames = {
+					...profile,
+					anotherUsername: ['1', '2'],
+				};
+
+				const fieldMap = {
+					username: {
+						fieldName: 'anotherUsername',
+						template: 'user-__anotherUsername[-1]__',
+					},
+					email: {
+						fieldName: 'anotherUsername',
+						template: 'user-__anotherUsername[0]__',
+					},
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				const userObject = SAMLUtils.mapProfileToUserObject(multipleUsernames);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('username').that.is.equal('user-2');
+				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('user-1');
+			});
+
 
 			it('should collect the values of every attribute on the field map', () => {
 				const { globalSettings } = SAMLUtils;
