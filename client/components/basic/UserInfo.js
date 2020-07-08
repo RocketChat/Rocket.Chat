@@ -6,7 +6,7 @@ import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useTranslation } from '../../contexts/TranslationContext';
 // import MarkdownText from './MarkdownText';
 import VerticalBar from './VerticalBar';
-import UTCClock from './UTCClock';
+import { UTCClock } from './UTCClock';
 import UserAvatar from './avatar/UserAvatar';
 import UserCard from '../UserCard/UserCard';
 

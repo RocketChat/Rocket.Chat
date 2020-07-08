@@ -204,33 +204,6 @@ Template.userInfo.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
 	this.nowInterval = setInterval(() => this.now.set(moment()), 30000);
 
-	this.loadUser = async ({ _id, username }) => {
-		this.loadingUserInfo.set(true);
-
-		const params = {};
-
-		if (_id != null) {
-			params.userId = _id;
-		} else if (username != null) {
-			params.username = username;
-		} else {
-			return;
-		}
-
-		const { user } = await APIClient.v1.get('users.info', params);
-		this.user.set(user);
-		this.loadingUserInfo.set(false);
-	};
-
-	this.autorun(async () => {
-		const data = Template.currentData();
-		if (!data) {
-			return;
-		}
-
-		this.loadUser(data);
-	});
-
 	this.autorun(() => {
 		const data = Template.currentData();
 		if (data.clear != null) {

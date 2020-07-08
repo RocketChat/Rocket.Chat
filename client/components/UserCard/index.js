@@ -1,30 +1,13 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
-import moment from 'moment';
 
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
-import { useFormatTime } from '../../hooks/useFormatTime';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import UserCard from './UserCard';
 import { Backdrop } from '../basic/Backdrop';
 import * as UserStatus from '../basic/UserStatus';
-
-const LocalTime = React.memo(({ offset }) => {
-	const [time, setTime] = useState(null);
-	const format = useFormatTime();
-	useEffect(() => {
-		if (offset === undefined) {
-			return;
-		}
-		setTime(moment().utcOffset(offset));
-
-		const interval = setInterval(() => setTime(moment().utcOffset(offset)), 1000);
-		return () => clearInterval(interval);
-	}, [offset]);
-
-	return `Local Time: ${ format(time) } (UTC ${ offset })`;
-});
+import { LocalTime } from '../basic/UTCClock';
 
 const UserCardWithData = ({ username, onClose, target, open }) => {
 	const ref = useRef(target);
@@ -33,25 +16,37 @@ const UserCardWithData = ({ username, onClose, target, open }) => {
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
-	const [query, setQuery] = useState(() => ({ username }));
+	const query = useMemo(() => ({ username }), [username]);
 
-	useEffect(() => setQuery({ username }), [username]);
-
-	const { data, state, error } = useEndpointDataExperimental('users.info', query);
+	const { data, state } = useEndpointDataExperimental('users.info', query);
 
 	ref.current = target;
 
 	const user = useMemo(() => {
+		const loading = state === ENDPOINT_STATES.LOADING;
+		const defaultValue = loading ? undefined : null;
+
 		const { user } = data || { user: {} };
-		const { name = username, roles = [], status, statusText, bio, utcOffset } = user;
+
+		const {
+			name = username,
+			roles = defaultValue,
+			status,
+			statusText = status,
+			bio = defaultValue,
+			utcOffset = defaultValue,
+		} = user;
+
 		return {
 			name: showRealNames ? name : username,
 			username,
-			roles: roles.map((role, index) => (
+			roles: roles && roles.map((role, index) => (
 				<UserCard.Role key={index}>{role}</UserCard.Role>
 			)),
 			bio,
-			localTime: <LocalTime offset={utcOffset} />,
+			localTime: Number.isInteger(utcOffset) && (
+				<LocalTime utcOffset={utcOffset} />
+			),
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
 		};

@@ -56,26 +56,30 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 		};
 	}, [data, showRealNames]);
 
-	if (state === ENDPOINT_STATES.LOADING) {
-		return <FormSkeleton />;
-	}
+	return (
+		<VerticalBar>
+			<VerticalBar.Header>
+				{t('User_Info')}
+				{onClose && <VerticalBar.Close onClick={onClose} />}
+			</VerticalBar.Header>
 
-	if (error) {
-		return <Box mbs='x16'>{t('User_not_found')}</Box>;
-	}
-	return <VerticalBar>
-		<VerticalBar.Header>
-			{t('User_Info')}
-			{ onClose && <VerticalBar.Close onClick={onClose} />}
-		</VerticalBar.Header>
-		<UserInfo
-			{...user}
-			data={data.user}
-			// onChange={onChange}
-			{...props}
-			p='x24'
-		/>
-	</VerticalBar>;
+			{
+				(error && <VerticalBar.Content>
+					<Box mbs='x16'>{t('User_not_found')}</Box>
+				</VerticalBar.Content>)
+				|| (state === ENDPOINT_STATES.LOADING && <VerticalBar.Content>
+					<FormSkeleton />
+				</VerticalBar.Content>)
+				|| <UserInfo
+					{...user}
+					data={data.user}
+					// onChange={onChange}
+					{...props}
+					p='x24'
+				/>
+			}
+		</VerticalBar>
+	);
 });
 
 export default UserInfoWithData;
