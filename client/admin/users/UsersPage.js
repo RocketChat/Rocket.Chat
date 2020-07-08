@@ -55,12 +55,12 @@ function UsersPage() {
 				{context === 'invite' && t('Invite_Users')}
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			<VerticalBar.Content>
-				{context === 'info' && <UserInfoWithData uid={id}/>}
-				{context === 'edit' && <EditUserWithData uid={id}/>}
-				{context === 'new' && <AddUser/>}
-				{context === 'invite' && <InviteUsers/>}
-			</VerticalBar.Content>
+
+			{context === 'info' && <UserInfoWithData uid={id}/>}
+			{context === 'edit' && <EditUserWithData uid={id}/>}
+			{context === 'new' && <AddUser/>}
+			{context === 'invite' && <InviteUsers/>}
+
 		</VerticalBar>}
 	</Page>;
 }

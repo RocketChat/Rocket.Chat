@@ -1,5 +1,9 @@
-import { createPhemeralPortal } from '../../../../client/reactAdapters';
+import { Tracker } from 'meteor/tracker';
 
+import { createEphemeralPortal } from '../../../../client/reactAdapters';
+
+const Dep = new Tracker.Dependency();
+let state;
 let dom;
 let unregister;
 const createAchor = () => {
@@ -15,9 +19,20 @@ export const close = () => {
 		return;
 	}
 	unregister();
+	unregister = undefined;
 };
 
-export const open = async (args, target) => {
+const props = () => {
+	Dep.depend();
+	return state;
+};
+
+export const open = async ({ ...args }) => {
 	dom = dom || createAchor();
-	unregister = await createPhemeralPortal(() => import('../../../../client/components/UserCard'), () => ({ ...args, target, onClose: close }), dom);
+	state = {
+		onClose: close,
+		...args,
+	};
+	Dep.changed();
+	unregister = unregister || await createEphemeralPortal(() => import('../../../../client/components/UserCard'), props, dom);
 };

@@ -55,8 +55,8 @@ const VerticalBarContent = React.forwardRef(function VerticalBarContent(props, r
 	return <Page.Content {...props} ref={ref}/>;
 });
 
-const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScrollableContent({ children, props }, ref) {
-	return <Page.ScrollableContent padding='x24' mi='neg-x24' {...props} ref={ref}>
+const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScrollableContent({ children, ...props }, ref) {
+	return <Page.ScrollableContent p='x24' rcx-verticalbar-scrollable-content {...props} ref={ref}>
 		<Margins blockEnd='x16'>{children}</Margins>
 	</Page.ScrollableContent>;
 });

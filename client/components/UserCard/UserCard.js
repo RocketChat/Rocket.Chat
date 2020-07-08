@@ -40,6 +40,7 @@ const UserCardConteiner = forwardRef((props, ref) => <Box rcx-user-card bg='surf
 const UserCard = forwardRef(({
 	className,
 	style,
+	open,
 	name = <Skeleton width='100%'/>,
 	username,
 	customStatus = <Skeleton width='100%'/>,
@@ -70,7 +71,7 @@ const UserCard = forwardRef(({
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
 		<Info withTruncatedText={false} style={clampStyle} height='60px'>{bio}</Info>
-		<a href='#'>See Full Profile</a>
+		{open && <a onClick={open}>See Full Profile</a>}
 	</Box>
 	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}
 </UserCardConteiner>);

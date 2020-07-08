@@ -1,10 +1,9 @@
-import React, { useCallback } from 'react';
-import { Box, Margins, Chip, Tag } from '@rocket.chat/fuselage';
+import React from 'react';
+import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { UserInfoActions } from '../../admin/users/UserInfoActions';
 // import MarkdownText from './MarkdownText';
 import VerticalBar from './VerticalBar';
 import UTCClock from './UTCClock';
@@ -17,7 +16,7 @@ const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 const Info = (props) => <UserCard.Info flexShrink={0} {...props}/>;
 // const timeAgo = (e) => e;
 
-export function UserInfo({
+export const UserInfo = React.memo(function UserInfo({
 	username,
 	bio,
 	email,
@@ -29,18 +28,19 @@ export function UserInfo({
 	utcOffset,
 	name,
 	data,
-	onChange,
+	// onChange,
+	actions,
 	...props
 }) {
 	const t = useTranslation();
 
 	const timeAgo = useTimeAgo();
 
-	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
+	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
 		<UserAvatar size={'x332'} title={username} username={username}/>
 
-		<UserInfoActions isActive={data.active} isAdmin={data.roles.includes('admin')} _id={data._id} username={data.username} onChange={onChange}/>
+		{actions}
 
 		<Margins block='x4'>
 			<UserCard.Username name={username} status={status} />
@@ -86,4 +86,6 @@ export function UserInfo({
 		</Margins>
 
 	</VerticalBar.ScrollableContent>;
-}
+});
+
+export default UserInfo;

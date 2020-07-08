@@ -71,7 +71,7 @@ const PageContent = React.forwardRef(function PageContent(props, ref) {
 
 function PageScrollableContent({ onScrollContent, ...props }) {
 	return <Scrollable onScrollContent={onScrollContent} >
-		<Box padding='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
+		<Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
 	</Scrollable>;
 }
 

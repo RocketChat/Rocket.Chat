@@ -63,6 +63,11 @@ const mountRoot = async () => {
 	render(createElement(AppRoot), rootNode);
 };
 
+export const unregisterPortal = (key) => {
+	portalsMap.delete(key);
+	invalidatePortals();
+};
+
 export const registerPortal = (key, portal) => {
 	if (!rootNode) {
 		mountRoot();
@@ -70,12 +75,9 @@ export const registerPortal = (key, portal) => {
 
 	portalsMap.set(key, portal);
 	invalidatePortals();
+	return () => unregisterPortal(key);
 };
 
-export const unregisterPortal = (key) => {
-	portalsMap.delete(key);
-	invalidatePortals();
-};
 
 const createLazyElement = async (importFn, propsFn) => {
 	const { createElement, lazy, useEffect, useState } = await import('react');
@@ -109,10 +111,9 @@ const createLazyPortal = async (importFn, propsFn, node) => {
 	return createPortal(await createLazyElement(importFn, propsFn), node);
 };
 
-export const createPhemeralPortal = async (importFn, propsFn, node) => {
+export const createEphemeralPortal = async (importFn, propsFn, node) => {
 	const portal = await createLazyPortal(importFn, propsFn, node);
-	registerPortal(node, portal);
-	return () => unregisterPortal(node);
+	return registerPortal(node, portal);
 };
 
 export const createTemplateForComponent = (
@@ -127,7 +128,7 @@ export const createTemplateForComponent = (
 	}
 
 	const template = new Blaze.Template(name, renderContainerView);
-
+	let unregister;
 	template.onRendered(async function() {
 		const props = new ReactiveVar(this.data);
 		this.autorun(() => {
@@ -140,11 +141,11 @@ export const createTemplateForComponent = (
 			return;
 		}
 
-		registerPortal(this, portal);
+		unregister = await registerPortal(this, portal);
 	});
 
 	template.onDestroyed(function() {
-		unregisterPortal(this);
+		unregister && unregister();
 	});
 
 	Template[name] = template;

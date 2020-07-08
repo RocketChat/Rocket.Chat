@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
@@ -6,6 +6,7 @@ import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperime
 import { useFormatTime } from '../../hooks/useFormatTime';
 import { useSetting } from '../../contexts/SettingsContext';
 import UserCard from './UserCard';
+import { Backdrop } from '../basic/Backdrop';
 import * as UserStatus from '../basic/UserStatus';
 
 const LocalTime = React.memo(({ offset }) => {
@@ -24,14 +25,18 @@ const LocalTime = React.memo(({ offset }) => {
 	return `Local Time: ${ format(time) } (UTC ${ offset })`;
 });
 
-export default ({ username, onClose, target }) => {
+export default ({ username, onClose, target, open }) => {
 	const ref = useRef(target);
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
-	const [query] = useState(() => ({ username }));
+	const [query, setQuery] = useState(() => ({ username }));
+
+	useEffect(() => setQuery({ username }), [username]);
 
 	const { data, state, error } = useEndpointDataExperimental('users.info', query);
+
+	ref.current = target;
 
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
@@ -49,9 +54,24 @@ export default ({ username, onClose, target }) => {
 		};
 	}, [data, username, showRealNames]);
 
+
+	const handleOpen = useCallback(
+		(e) => {
+			open && open(e);
+			onClose && onClose();
+		},
+		[open, onClose],
+	);
+
 	return (
-		<PositionAnimated anchor={ref} placement='bottom right' visible={AnimatedVisibility.VISIBLE}>
-			<UserCard {...user} onClose={onClose} />
-		</PositionAnimated>
+		<Backdrop bg='transparent' onClick={onClose}>
+			<PositionAnimated
+				anchor={{ current: target }}
+				placement='center right'
+				visible={AnimatedVisibility.UNHIDING}
+			>
+				<UserCard {...user} onClose={onClose} open={handleOpen} />
+			</PositionAnimated>
+		</Backdrop>
 	);
 };

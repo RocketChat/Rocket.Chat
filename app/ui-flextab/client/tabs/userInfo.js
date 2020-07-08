@@ -1,20 +1,21 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { HTML } from 'meteor/htmljs';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 
 import { DateFormat } from '../../../lib';
 import { popover } from '../../../ui-utils';
-import { templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
 import { getActions } from './userActions';
 import './userInfo.html';
 import { APIClient } from '../../../utils/client';
 import { Markdown } from '../../../markdown/lib/markdown';
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
+
 
 const shownActionsCount = 2;
 
@@ -27,105 +28,21 @@ const moreActions = function() {
 	);
 };
 
+createTemplateForComponent('UserInfoWithData', () => import('../../../../client/channel/UserInfo'), {
+	// eslint-disable-next-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar', style: 'flex-grow: 1;' }),
+});
+
 Template.userInfo.helpers({
-	hideHeader() {
-		return ['Template.adminUserInfo', 'adminUserInfo'].includes(Template.parentData(2).viewName);
+	onClose() {
+		const instance = Template.instance();
+		return () => {
+			instance.clear();
+		};
 	},
-
-	moreActions,
-
-	actions() {
-		return Template.instance().actions.get()
-			.map((action) => (typeof action === 'function' ? action.call(this) : action))
-			.filter((action) => action && (!action.condition || action.condition.call(this)))
-			.slice(0, shownActionsCount);
-	},
-
-	customField() {
-		const sCustomFieldsToShow = settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
-		const customFields = [];
-
-		if (sCustomFieldsToShow) {
-			const user = Template.instance().user.get();
-			const userCustomFields = (user && user.customFields) || {};
-			const listOfCustomFieldsToShow = JSON.parse(sCustomFieldsToShow);
-
-			_.map(listOfCustomFieldsToShow, (el) => {
-				let content = '';
-				if (_.isObject(el)) {
-					_.map(el, (key, label) => {
-						const value = templateVarHandler(key, userCustomFields);
-						if (value) {
-							content = { label, value };
-						}
-					});
-				} else {
-					content = templateVarHandler(el, userCustomFields);
-				}
-				if (content) {
-					customFields.push(content);
-				}
-			});
-		}
-		return customFields;
-	},
-	uid() {
-		const user = Template.instance().user.get();
-		return user._id;
-	},
-	name() {
-		const user = Template.instance().user.get();
-		return user && user.name ? user.name : TAPi18n.__('Unnamed');
-	},
-
 	username() {
-		const user = Template.instance().user.get();
-		return user && user.username;
-	},
-
-	userStatus() {
-		const user = Template.instance().user.get();
-		const userStatus = Session.get(`user_${ user.username }_status`);
-		return userStatus || TAPi18n.__('offline');
-	},
-
-	userStatusText() {
-		if (s.trim(this.statusText)) {
-			return this.statusText;
-		}
-
-		const user = Template.instance().user.get();
-		const userStatus = Session.get(`user_${ user.username }_status`);
-		return userStatus || TAPi18n.__('offline');
-	},
-
-	email() {
-		const user = Template.instance().user.get();
-		return user && user.emails && user.emails[0] && user.emails[0].address;
-	},
-
-	utc() {
-		const user = Template.instance().user.get();
-		if (user && user.utcOffset != null) {
-			if (user.utcOffset > 0) {
-				return `+${ user.utcOffset }`;
-			}
-			return user.utcOffset;
-		}
-	},
-
-	lastLogin() {
-		const user = Template.instance().user.get();
-		if (user && user.lastLogin) {
-			return DateFormat.formatDateAndTime(user.lastLogin);
-		}
-	},
-
-	createdAt() {
-		const user = Template.instance().user.get();
-		if (user && user.createdAt) {
-			return DateFormat.formatDateAndTime(user.createdAt);
-		}
+		console.log(Template.currentData());
+		return Template.currentData().username;
 	},
 	linkedinUsername() {
 		const user = Template.instance().user.get();

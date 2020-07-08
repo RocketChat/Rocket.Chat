@@ -830,17 +830,6 @@ Template.room.events({
 		openProfileTabOrOpenDM(e, instance, this.user.username);
 	},
 
-	'click .user-card-message'(e, instance) {
-		const { msg } = messageArgs(this);
-		if (!Meteor.userId()) {
-			return;
-		}
-
-		const { username } = msg.u;
-
-		openProfileTabOrOpenDM(e, instance, username);
-	},
-
 	'scroll .wrapper': _.throttle(function(e, t) {
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
@@ -913,15 +902,6 @@ Template.room.events({
 		const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
 		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
-	'mouseover .mention-link'(e) {
-		const { currentTarget: { dataset: { username } } } = e;
-
-		if (!username) {
-			return;
-		}
-
-		UserCard.open({ username }, e.currentTarget);
-	},
 	'click .mention-link'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -946,9 +926,38 @@ Template.room.events({
 		}
 
 		if (username) {
-			openProfileTabOrOpenDM(e, instance, username);
+			UserCard.open({
+				username,
+				target: e.currentTarget,
+				open: (e) => {
+					e.preventDefault();
+					openProfileTabOrOpenDM(e, instance, username);
+				},
+			});
 		}
 	},
+
+
+	'click .user-card-message'(e, instance) {
+		const { msg } = messageArgs(this);
+		if (!Meteor.userId()) {
+			return;
+		}
+
+		const { username } = msg.u;
+
+		if (username) {
+			UserCard.open({
+				username,
+				target: e.currentTarget,
+				open: (e) => {
+					e.preventDefault();
+					openProfileTabOrOpenDM(e, instance, username);
+				},
+			});
+		}
+	},
+
 
 	'click .image-to-download'(event) {
 		const { msg } = messageArgs(this);
