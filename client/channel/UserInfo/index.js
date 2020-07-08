@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
 import { UserInfo } from '../../components/basic/UserInfo';
@@ -16,17 +16,15 @@ import VerticalBar from '../../components/basic/VerticalBar';
 
 export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, onClose, ...props }) {
 	const t = useTranslation();
-	const [cache, setCache] = useState();
-	const showRealNames = useSetting('UI_Use_Real_Name');
 
-	const onChange = () => setCache(new Date());
+	const showRealNames = useSetting('UI_Use_Real_Name');
 
 	// TODO: remove cache. Is necessary for data invalidation
 	const { data, state, error } = useEndpointDataExperimental(
 		'users.info',
 		useMemo(
 			() => ({ ...uid && { userId: uid }, ...username && { username } }),
-			[uid, username, cache],
+			[uid, username],
 		),
 	);
 

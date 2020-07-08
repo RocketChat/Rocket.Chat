@@ -11,8 +11,7 @@ import { css } from '@rocket.chat/css-in-js';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import RawText from '../../../../client/components/basic/RawText';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { roomTypes } from '../../../utils/client';
+import { useRoute, useCurrentRoute } from '../../../../client/contexts/RouterContext';
 import { call, renderMessageBody } from '../../../ui-utils/client';
 import { useUserId } from '../../../../client/contexts/UserContext';
 import { Messages } from '../../../models/client';
@@ -221,7 +220,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 	}), [unread, unreadUser, unreadGroup, showRealNames]);
 
 	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver();
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
 	return <VerticalBar>
 		<VerticalBar.Header>

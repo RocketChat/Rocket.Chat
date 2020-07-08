@@ -5,6 +5,7 @@ import moment from 'moment';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useFormatTime } from '../../hooks/useFormatTime';
 import { useSetting } from '../../contexts/SettingsContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 import UserCard from './UserCard';
 import { Backdrop } from '../basic/Backdrop';
 import * as UserStatus from '../basic/UserStatus';
@@ -27,6 +28,8 @@ const LocalTime = React.memo(({ offset }) => {
 
 const UserCardWithData = ({ username, onClose, target, open }) => {
 	const ref = useRef(target);
+
+	const t = useTranslation();
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
@@ -70,7 +73,7 @@ const UserCardWithData = ({ username, onClose, target, open }) => {
 			placement='center right'
 			visible={AnimatedVisibility.UNHIDING}
 		>
-			<UserCard {...user} onClose={onClose} open={handleOpen} />
+			<UserCard {...user} onClose={onClose} open={handleOpen} t={t}/>
 		</PositionAnimated></>
 	);
 };

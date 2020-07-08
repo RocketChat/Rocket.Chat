@@ -13,26 +13,37 @@ const clampStyle = {
 	wordBreak: 'break-all',
 };
 
-export const Action = ({ icon }) => <Button small mi='x2'><Icon name={icon} size='x16' /></Button>;
+export const Action = ({ icon }) => (
+	<Button small mi='x2'>
+		<Icon name={icon} size='x16' />
+	</Button>
+);
 
-export const Info = (props) => <Box mb='x4' is='p' fontSize='p1' fontSize='p1' fontScale='p1' letterSpacing='p1' fontWeight='p1' color='hint' withTruncatedText {...props} />;
+export const Info = (props) => (
+	<Box
+		mb='x4'
+		is='p'
+		fontSize='p1'
+		fontScale='p1'
+		color='hint'
+		withTruncatedText
+		{...props}
+	/>
+);
 
-export const Username = ({ name, status = <Status.Offline/> }) => <Box display='flex' flexShrink={0} alignItems='center' is='p' fontSize='s2' fontSize='s2' fontScale='s2' letterSpacing='s2' fontWeight='s2' color='default' withTruncatedText>{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box></Box>;
+export const Username = ({ name, status = <Status.Offline/> }) => <Box display='flex' flexShrink={0} alignItems='center' is='p' fontScale='s2' color='default' withTruncatedText>
+	{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
+</Box>;
 
-const Roles = ({ children }) =>
-	<Info rcx-user-card__roles mi='neg-x2' height='16px' display='flex' flexShrink={0}>
-		{children}
-	</Info>;
+const Roles = ({ children }) => <Info rcx-user-card__roles mi='neg-x2' height='16px' display='flex' flexShrink={0}>
+	{children}
+</Info>;
 
 const Role = ({ children }) => <Tag
 	pb={0}
 	mi='x2'
 	disabled
-	fontSize='c2'
-	fontSize='c2'
 	fontScale='c2'
-	letterSpacing='c2'
-	fontWeight='c2'
 	children={children}
 />;
 
@@ -58,6 +69,7 @@ const UserCard = forwardRef(({
 	actions,
 	localTime = <Skeleton width='100%'/>,
 	onClose,
+	t = (e) => e,
 }, ref) => <UserCardConteiner className={className} ref={ref} style={style}>
 	<Box>
 		<UserAvatar username={username} size='x124'/>
@@ -71,7 +83,7 @@ const UserCard = forwardRef(({
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
 		<Info withTruncatedText={false} style={clampStyle} height='60px'>{bio}</Info>
-		{open && <a onClick={open}>See Full Profile</a>}
+		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
 	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}
 </UserCardConteiner>);
