@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ScreensharingManager } from '../lib/ScreenSharingManager';
+import { ScreensharingManager } from '../lib/screenSharing/ScreenSharingManager';
 
 Meteor.methods({
 	async 'livechat:requestScreenSharing'(roomId) {
@@ -28,10 +28,6 @@ Meteor.methods({
 
 Meteor.methods({
 	'livechat:getActiveSessions'() {
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:requestScreenSharing' });
-		}
-
 		return ScreensharingManager.getActiveSessions();
 	},
 });

@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 
-import { IScreenSharingProvider } from './IScreenSharingProvider';
+import { IScreenSharingProvider } from '../IScreenSharingProvider';
 import { ScreensharingManager } from '../ScreenSharingManager';
 
 export class CobrowseProvider implements IScreenSharingProvider {

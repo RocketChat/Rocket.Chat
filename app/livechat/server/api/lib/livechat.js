@@ -6,7 +6,7 @@ import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } 
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
-import { ScreensharingManager } from '../../lib/ScreenSharingManager';
+import { ScreensharingManager } from '../../lib/screenSharing/ScreenSharingManager';
 
 export function online(department) {
 	return Livechat.online(department);

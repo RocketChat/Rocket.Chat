@@ -25,7 +25,6 @@ Meteor.startup(function() {
 		section: 'Screen_Sharing',
 		values: [
 			{ key: 'Cobrowse.io', i18nLabel: 'Cobrowse.io' },
-			{ key: 'Provider2', i18nLabel: 'Provider2' },
 		],
 	});
 

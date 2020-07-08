@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
-import { Messages } from '../../../models/server';
-import { IScreenSharingProvider } from './screenSharing/IScreenSharingProvider';
-import { screenSharingStreamer } from './stream/screenSharingStream';
+import { settings } from '../../../../settings/server';
+import { Messages } from '../../../../models/server';
+import { IScreenSharingProvider } from './IScreenSharingProvider';
+import { screenSharingStreamer } from '../stream/screenSharingStream';
 
 export class ScreenSharingManager {
 	providerName = '';
