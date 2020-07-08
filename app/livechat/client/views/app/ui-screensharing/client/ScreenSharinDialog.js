@@ -10,14 +10,13 @@ export const ScreenSharinDialog = new class {
 		this.dialogView = Blaze.render(Template.screenSharinDialog, document.body);
 	}
 
-	open(source, { rid, tmid, src }) {
+	open(source, { rid, src }) {
 		if (!this.dialogView) {
 			this.init();
 		}
 
 		this.dialogView.templateInstance().update({
 			rid,
-			tmid,
 			input: source.querySelector('.js-input-message'),
 			src,
 		});

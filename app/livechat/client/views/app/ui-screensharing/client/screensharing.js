@@ -25,12 +25,10 @@ Template.screenSharinDialog.onCreated(function() {
 	this.height = 290;
 
 	this.rid = new ReactiveVar();
-	this.tmid = new ReactiveVar();
 	this.input = new ReactiveVar();
 	this.src = new ReactiveVar('');
-	this.update = ({ rid, tmid, input, src }) => {
+	this.update = ({ rid, input, src }) => {
 		this.rid.set(rid);
-		this.tmid.set(tmid);
 		this.input.set(input);
 		this.src.set(src);
 	};

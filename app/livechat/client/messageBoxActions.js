@@ -28,9 +28,9 @@ messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 
 		return !sessions.get().includes(rid);
 	},
-	action: ({ rid, tmid, messageBox }) => {
+	action: ({ rid, messageBox }) => {
 		Meteor.call('livechat:requestScreenSharing', rid);
-		ScreenSharinDialog.opened ? ScreenSharinDialog.close() : ScreenSharinDialog.open(messageBox, { rid, tmid, src: 'https://cobrowse.io/dashboard' });
+		ScreenSharinDialog.opened ? ScreenSharinDialog.close() : ScreenSharinDialog.open(messageBox, { rid, src: 'https://cobrowse.io/dashboard' });
 	},
 });
 
@@ -51,8 +51,8 @@ messageBox.actions.add('Screen_Sharing', 'Active_Screen_Sharing_Session', {
 
 		return sessions.get().includes(rid);
 	},
-	action: ({ rid, tmid, messageBox }) => {
-		ScreenSharinDialog.opened ? ScreenSharinDialog.close() : ScreenSharinDialog.open(messageBox, { rid, tmid, src: 'https://cobrowse.io/dashboard' });
+	action: ({ rid, messageBox }) => {
+		ScreenSharinDialog.opened ? ScreenSharinDialog.close() : ScreenSharinDialog.open(messageBox, { rid, src: 'https://cobrowse.io/dashboard' });
 	},
 });
 
