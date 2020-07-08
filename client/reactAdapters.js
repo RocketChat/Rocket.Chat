@@ -20,7 +20,7 @@ const mountRoot = async () => {
 	}
 
 	const [
-		{ Component, Suspense, createElement, lazy, useLayoutEffect, useState },
+		{ PureComponent, Suspense, createElement, lazy, useLayoutEffect, useState },
 		{ render },
 	] = await Promise.all([
 		import('react'),
@@ -29,7 +29,7 @@ const mountRoot = async () => {
 
 	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
 
-	class PortalWrapper extends Component {
+	class PortalWrapper extends PureComponent {
 		state = { errored: false }
 
 		static getDerivedStateFromError = () => ({ errored: true })
@@ -44,7 +44,7 @@ const mountRoot = async () => {
 
 		useLayoutEffect(() => {
 			invalidatePortals = () => {
-				setPortals(Array.from(portalsMap.values()));
+				setPortals(Array.from(portalsMap.values()).sort());
 			};
 			invalidatePortals();
 
@@ -55,7 +55,7 @@ const mountRoot = async () => {
 
 		return createElement(Suspense, { fallback: null },
 			createElement(LazyMeteorProvider, {},
-				...portals.map((portal, key) => createElement(PortalWrapper, { key, portal })),
+				portals.map(({ key, portal }) => createElement(PortalWrapper, { key, portal })),
 			),
 		);
 	}
@@ -73,26 +73,26 @@ export const registerPortal = (key, portal) => {
 		mountRoot();
 	}
 
-	portalsMap.set(key, portal);
+	portalsMap.set(key, { portal, key: Date.now() });
 	invalidatePortals();
 	return () => unregisterPortal(key);
 };
 
 
 const createLazyElement = async (importFn, propsFn) => {
-	const { createElement, lazy, useEffect, useState } = await import('react');
+	const { createElement, lazy, useEffect, useState, memo } = await import('react');
 	const LazyComponent = lazy(importFn);
 
 	if (!propsFn) {
 		return createElement(LazyComponent);
 	}
 
-	const WrappedComponent = () => {
+	const WrappedComponent = memo(() => {
 		const [props, setProps] = useState(() => Tracker.nonreactive(propsFn));
 
 		useEffect(() => {
 			const computation = Tracker.autorun(() => {
-				setProps(propsFn);
+				setProps(propsFn());
 			});
 
 			return () => {
@@ -101,7 +101,7 @@ const createLazyElement = async (importFn, propsFn) => {
 		}, []);
 
 		return createElement(LazyComponent, props);
-	};
+	});
 
 	return createElement(WrappedComponent);
 };
