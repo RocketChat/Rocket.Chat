@@ -143,6 +143,7 @@ Template.avatarPrompt.events({
 				console.log(error);
 				return toastr.error(error.message);
 			}
+			callbacks.run('onUserLogin');
 			template.getSuggestions();
 		});
 	},

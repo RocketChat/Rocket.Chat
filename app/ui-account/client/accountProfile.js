@@ -59,6 +59,7 @@ const loginWith = function(event, template) {
 			}
 			return toastr.error(error.message);
 		}
+		callbacks.run('onUserLogin');
 		template.getSuggestions();
 	});
 };

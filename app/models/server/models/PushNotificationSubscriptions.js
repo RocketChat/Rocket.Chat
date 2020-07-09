@@ -33,6 +33,22 @@ export class PushNotificationSubscriptions extends Base {
 		};
 		return this.find(query);
 	}
+
+	updateUserIdWithSubscriptionEndpoint(endpoint, user = null) {
+		const query = {
+			endpoint,
+		};
+
+		const update = {};
+
+		if (user !== null) {
+			update.$set = { u: user };
+		} else {
+			update.$unset = { u: 1 };
+		}
+
+		return this.update(query, update);
+	}
 }
 
 export default new PushNotificationSubscriptions('pushNotificationSubscriptions');
