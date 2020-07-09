@@ -1,31 +1,76 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-import { useState, useCallback } from 'react';
+import { useCallback, useReducer, useMemo } from 'react';
 
 import { capitalize } from '../helpers/capitalize';
 
-const getValue = (e) => (e.currentTarget ? e.currentTarget.value : e);
+const reduceForm = (state, morphState) => morphState(state);
 
-export const useForm = (obj) => {
-	const resetCallbacks = [];
-	const hasUnsavedChanges = [];
-	// TODO: use useReducer hook as we can't assure that obj will have the same structure on each render
-	const ret = Object.keys(obj).sort().reduce((ret, key) => {
-		const value = obj[key];
-		const [data, setData] = useState(value);
+const initForm = (initialValues) =>
+	Object.entries(initialValues)
+		.reduce((form, [fieldName, initialValue]) => ({
+			...form,
+			values: {
+				...form.values,
+				[fieldName]: initialValue,
+			},
+			initialValues: {
+				...form.initialValues,
+				[fieldName]: initialValue,
+			},
+		}), {
+			hasUnsavedChanges: false,
+		});
 
-		ret.values = { ...ret.values, [key]: data };
-		ret.handlers = { ...ret.handlers, [`handle${ capitalize(key) }`]: useCallback(typeof value !== 'boolean' ? (e) => setData(getValue(e)) : () => setData(!data), [data]) };
-		hasUnsavedChanges.push(JSON.stringify(value) !== JSON.stringify(data));
-		resetCallbacks.push(() => setData(value));
-
-		return ret;
-	}, {});
-
-	ret.reset = () => {
-		resetCallbacks.forEach((reset) => reset());
+const valueChanged = (fieldName, newValue) => (form) => {
+	const initialValue = form.initialValues[fieldName];
+	return {
+		...form,
+		values: {
+			...form.values,
+			[fieldName]: newValue,
+		},
+		hasUnsavedChanges: JSON.stringify(newValue) !== JSON.stringify(initialValue),
 	};
+};
 
-	ret.hasUnsavedChanges = hasUnsavedChanges.filter(Boolean).length > 0;
+const formReset = () => (form) => ({
+	...form,
+	values: {
+		...form.initialValues,
+	},
+	hasUnsavedChanges: false,
+});
 
-	return ret;
+export const useForm = (initialValues, onChange = () => {}) => {
+	const [form, update] = useReducer(reduceForm, initialValues, initForm);
+
+	const reset = useCallback(() => {
+		update(formReset());
+	}, []);
+
+	const handlers = useMemo(() => Object.entries(initialValues).reduce((handlers, [fieldName, initialValue]) => ({
+		...handlers,
+		[`handle${ capitalize(fieldName) }`]: (event) => {
+			const getValue = (e) => {
+				if (typeof initialValue === 'boolean') {
+					return e?.currentTarget?.checked;
+				}
+
+				if (typeof e?.currentTarget?.value !== 'undefined') {
+					return e.currentTarget.value;
+				}
+
+				return e;
+			};
+			const newValue = getValue(event);
+			update(valueChanged(fieldName, newValue));
+			onChange({ initialValue, value: newValue, key: fieldName });
+		},
+	}), {}), [initialValues, onChange]);
+
+	return {
+		values: form.values,
+		handlers,
+		reset,
+		hasUnsavedChanges: form.hasUnsavedChanges,
+	};
 };
