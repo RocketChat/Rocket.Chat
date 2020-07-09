@@ -353,7 +353,7 @@ class Settings extends SettingsBase {
 	*/
 	storeSettingValue(record: ISettingRecord, initialLoad: boolean): void {
 		const newData = {
-			value: record.enterprise ? record.invalidValue : record.value,
+			value: record.value,
 		};
 		SettingsEvents.emit('store-setting-value', record, newData);
 		const { value } = newData;
