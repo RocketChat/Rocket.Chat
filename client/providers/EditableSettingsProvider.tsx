@@ -1,12 +1,12 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import React, { useEffect, useMemo, FunctionComponent, useCallback, useRef, MutableRefObject } from 'react';
+import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
 import { SettingId, GroupId } from '../../definition/ISetting';
 import { EditableSettingsContext, IEditableSetting, EditableSettingsContextValue } from '../contexts/EditableSettingsContext';
 import { useSettings, SettingsContextQuery } from '../contexts/SettingsContext';
-import { useReactiveSubscriptionFactory } from '../hooks/useReactiveSubscriptionFactory';
+import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
 const defaultQuery: SettingsContextQuery = {};
 
@@ -38,8 +38,8 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		}
 	}, [getSettingsCollection, persistedSettings]);
 
-	const queryEditableSetting = useReactiveSubscriptionFactory(
-		useCallback(
+	const queryEditableSetting = useMemo(
+		() => createReactiveSubscriptionFactory(
 			(_id: SettingId): IEditableSetting | undefined => {
 				const settingsCollection = getSettingsCollection();
 
@@ -65,12 +65,12 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 					disabled: !queries.every((query) => settingsCollection.find(query).count() > 0),
 				};
 			},
-			[getSettingsCollection],
 		),
+		[getSettingsCollection],
 	);
 
-	const queryEditableSettings = useReactiveSubscriptionFactory(
-		useCallback(
+	const queryEditableSettings = useMemo(
+		() => createReactiveSubscriptionFactory(
 			(query = {}) => getSettingsCollection().find({
 				...('_id' in query) && { _id: { $in: query._id } },
 				...('group' in query) && { group: query.group },
@@ -92,12 +92,12 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 					i18nLabel: 1,
 				},
 			}).fetch(),
-			[getSettingsCollection],
 		),
+		[getSettingsCollection],
 	);
 
-	const queryGroupSections = useReactiveSubscriptionFactory(
-		useCallback(
+	const queryGroupSections = useMemo(
+		() => createReactiveSubscriptionFactory(
 			(_id: GroupId) => Array.from(new Set(
 				getSettingsCollection().find({
 					group: _id,
@@ -112,8 +112,8 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 					},
 				}).fetch().map(({ section }) => section || ''),
 			)),
-			[getSettingsCollection],
 		),
+		[getSettingsCollection],
 	);
 
 	const dispatch = useMutableCallback((changes: Partial<IEditableSetting>[]): void => {
