@@ -3,7 +3,7 @@ import React from 'react';
 import AuthorizationProvider from './AuthorizationProvider';
 import { ConnectionStatusProvider } from './ConnectionStatusProvider';
 import { RouterProvider } from './RouterProvider';
-import { SessionProvider } from './SessionProvider';
+import SessionProvider from './SessionProvider';
 import SettingsProvider from './SettingsProvider';
 import { ServerProvider } from './ServerProvider';
 import { SidebarProvider } from './SidebarProvider';
