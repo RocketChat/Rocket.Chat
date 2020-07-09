@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AuthorizationProvider } from './AuthorizationProvider';
+import AuthorizationProvider from './AuthorizationProvider';
 import { ConnectionStatusProvider } from './ConnectionStatusProvider';
 import { RouterProvider } from './RouterProvider';
 import { SessionProvider } from './SessionProvider';

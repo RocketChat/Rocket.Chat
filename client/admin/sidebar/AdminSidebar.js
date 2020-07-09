@@ -163,7 +163,13 @@ const AdminSidebarSettings = ({ currentPath }) => {
 export default React.memo(function AdminSidebar() {
 	const t = useTranslation();
 
-	const canViewSettings = useAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+	const canViewSettings = useAtLeastOnePermission(
+		useMemo(() => [
+			'view-privileged-setting',
+			'edit-privileged-setting',
+			'manage-selected-settings',
+		], []),
+	);
 
 	const closeAdminFlex = useCallback(() => {
 		if (Layout.isEmbedded()) {

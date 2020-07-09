@@ -16,11 +16,13 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 	children,
 	privileged = false,
 }) => {
-	const hasPrivilegedPermission = useAtLeastOnePermission([
-		'view-privileged-setting',
-		'edit-privileged-setting',
-		'manage-selected-settings',
-	]);
+	const hasPrivilegedPermission = useAtLeastOnePermission(
+		useMemo(() => [
+			'view-privileged-setting',
+			'edit-privileged-setting',
+			'manage-selected-settings',
+		], []),
+	);
 
 	const hasPrivateAccess = privileged && hasPrivilegedPermission;
 
