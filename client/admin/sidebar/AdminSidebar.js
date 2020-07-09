@@ -74,7 +74,7 @@ const SidebarItemsAssembler = React.memo(({ items, currentPath }) => {
 });
 
 const AdminSidebarPages = React.memo(({ currentPath }) => {
-	const items = useReactiveValue(() => sidebarItems.get());
+	const items = useReactiveValue(useCallback(() => sidebarItems.get(), []));
 
 	return <Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
 		<SidebarItemsAssembler items={items} currentPath={currentPath}/>
