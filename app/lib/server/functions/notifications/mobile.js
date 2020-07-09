@@ -96,19 +96,28 @@ export async function sendSinglePush({
 		'https://www.viasat.com',
 		vapidPublic,
 		vapidPrivate,
+		'aes128gcm',
 	);
 
 	const pushSubscriptions = PushNotificationSubscriptions.findByUserId(userId);
 	const options = {
 		TTL: 3600,
 	};
+	const payload = {
+		host: Meteor.absoluteUrl(),
+		rid: message.rid,
+		sender: message.u,
+		type: room.t,
+		name: room.name,
+		messageType: message.t,
+		messageId: message._id,
+		message: notificationMessage,
+	};
+	const stringifiedPayload = JSON.stringify(payload);
 
 	pushSubscriptions.forEach((pushSubscription) => {
-		try {
-			webpush.sendNotification(pushSubscription, 'ok', options);
-		} catch (e) {
-			console.log(e);
-		}
+		webpush.sendNotification(pushSubscription, stringifiedPayload, options)
+			.catch((error) => console.log(error));
 	});
 }
 

@@ -112,15 +112,35 @@ self.addEventListener('fetch', (event) => {
 	);
 });
 
-self.addEventListener('push', function(event) {
+self.addEventListener('push', function (event) {
+	const data = JSON.parse(event.data.text());
+
+	const title = data.type === 'd' ? data.sender.name : data.name;
+	const message = data.type === 'd' ? data.message : data.sender.name + ": " + data.message;
+	let redirectURL = data.type === 'd' ? "/direct/" : data.type === 'c' ? "/channel/" : "/group/";
+	redirectURL = redirectURL + data.rid;
 	const options = {
-		body: 'You have a new message',
-		icon: 'images/logo.png',
+		body: message,
+		icon: '/images/icons/icon-72x72.png',
 		vibrate: [100, 50, 100],
 		data: {
 			dateOfArrival: Date.now(),
-			primaryKey: '2',
+			redirectURL,
 		},
+		actions: [
+			{action: 'reply', title: 'Reply'},  
+			{action: 'close', title: 'Close'}
+		],
 	};
-	event.waitUntil(self.registration.showNotification('Message', options));
+	event.waitUntil(self.registration.showNotification(title, options));
 });
+
+self.addEventListener('notificationclick', function(event) {  
+	var data = event.notification.data;
+
+	event.notification.close();  
+
+	if (event.action === 'reply') {  
+		event.waitUntil(clients.openWindow(event.notification.data.redirectURL));
+	}  
+}, false);
