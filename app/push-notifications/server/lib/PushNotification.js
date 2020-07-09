@@ -31,6 +31,7 @@ export class PushNotification {
 			title = `${ username }`;
 		}
 
+		const idOnly = settings.get('Push_request_content_from_server');
 		const config = {
 			from: 'push',
 			badge,
@@ -42,7 +43,8 @@ export class PushNotification {
 				host: Meteor.absoluteUrl(),
 				rid,
 				messageId,
-				...payload,
+				notificationType: idOnly ? 'message-id-only' : 'message',
+				...idOnly ? { } : payload,
 			},
 			userId,
 			notId: this.getNotificationId(rid),
