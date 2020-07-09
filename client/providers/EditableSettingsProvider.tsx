@@ -34,7 +34,7 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 
 		settingsCollection.remove({ _id: { $nin: persistedSettings.map(({ _id }) => _id) } });
 		for (const { _id, ...fields } of persistedSettings) {
-			settingsCollection.upsert(_id, { $set: { ...fields } });
+			settingsCollection.upsert(_id, { $set: { ...fields }, $unset: { changed: true } });
 		}
 	}, [getSettingsCollection, persistedSettings]);
 
