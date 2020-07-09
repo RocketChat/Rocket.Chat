@@ -198,7 +198,6 @@ class RoomEventsModel extends EventsModel {
 			'd.msg': { $exists: true },
 			...query,
 		}).toArray();
-		console.log('createPruneMessagesEvent results.length', results.length);
 
 		for (let i = 0; results.length > i; i++) {
 			// identify what type of data is the current one
