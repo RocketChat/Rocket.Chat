@@ -6,23 +6,35 @@ interface ISubscriptionFactory<T> {
 	(...args: any[]): Subscription<T>;
 }
 
-export const useReactiveSubscriptionFactory = <T>(fn: (...args: any[]) => T): ISubscriptionFactory<T> =>
+export const useReactiveSubscriptionFactory = <T>(
+	computeCurrentValueWith: (...args: any[]) => T,
+): ISubscriptionFactory<T> =>
 	useCallback<ISubscriptionFactory<T>>((...args: any[]) => {
-		const fnWithArgs = (): T => fn(...args);
+		const computeCurrentValue = (): T => computeCurrentValueWith(...args);
+
+		const callbacks = new Set<Unsubscribe>();
+
+		let currentValue: T;
+
+		const computation = Tracker.autorun(() => {
+			currentValue = computeCurrentValue();
+			callbacks.forEach((callback) => {
+				callback();
+			});
+		});
 
 		return {
-			getCurrentValue: (): T => Tracker.nonreactive(fnWithArgs) as unknown as T,
+			getCurrentValue: (): T => currentValue,
 			subscribe: (callback): Unsubscribe => {
-				const computation = Tracker.autorun((c) => {
-					fnWithArgs();
-					if (!c.firstRun) {
-						callback();
-					}
-				});
+				callbacks.add(callback);
 
 				return (): void => {
-					computation.stop();
+					callbacks.delete(callback);
+
+					if (callbacks.size === 0) {
+						computation.stop();
+					}
 				};
 			},
 		};
-	}, [fn]);
+	}, [computeCurrentValueWith]);
