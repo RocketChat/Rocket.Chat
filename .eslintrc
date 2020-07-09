@@ -77,6 +77,7 @@
           "error",
           "prefer-single"
         ],
+        "indent": "off",
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
         "react/jsx-no-undef": "error",
@@ -87,7 +88,11 @@
         "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/indent": [
           "error",
-          "tab"
+          "tab",
+          {
+            "SwitchCase": 1,
+            "CallExpression": {"arguments": 1}
+          }
         ],
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/interface-name-prefix": [
