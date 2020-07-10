@@ -8,9 +8,7 @@ const useUTCClock = (utcOffset) => {
 	return `${ time } (UTC ${ utcOffset })`;
 };
 
-export const UTCClock = React.memo(({ utcOffset }) => {
-	return useUTCClock(utcOffset);
-});
+export const UTCClock = React.memo(({ utcOffset }) => useUTCClock(utcOffset));
 
 export const LocalTime = React.memo(({ utcOffset }) => {
 	const t = useTranslation();

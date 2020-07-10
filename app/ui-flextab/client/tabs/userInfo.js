@@ -12,7 +12,6 @@ import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
 import { getActions } from './userActions';
 import './userInfo.html';
-import { APIClient } from '../../../utils/client';
 import { Markdown } from '../../../markdown/lib/markdown';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 

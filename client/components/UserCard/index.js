@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, { useMemo, useRef, useCallback } from 'react';
 import { PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
