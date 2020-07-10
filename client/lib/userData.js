@@ -20,7 +20,7 @@ function updateUser(userData) {
 
 const onUserEvents = {
 	inserted: (_id, data) => Meteor.users.insert(data),
-	updated: (_id, { diff }) => Meteor.users.upsert({ _id }, { $set: diff }),
+	updated: (_id, { diff: $set, unset: $unset }) => Meteor.users.upsert({ _id }, { $set, $unset }),
 	removed: (_id) => Meteor.users.remove({ _id }),
 };
 

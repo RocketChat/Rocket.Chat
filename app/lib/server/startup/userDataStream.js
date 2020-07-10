@@ -1,10 +1,10 @@
 import { Users } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
 
-Users.on('change', ({ clientAction, id, data, diff }) => {
+Users.on('change', ({ clientAction, id, data, diff, unset }) => {
 	switch (clientAction) {
 		case 'updated':
-			Notifications.notifyUserInThisInstance(id, 'userData', { diff, type: clientAction });
+			Notifications.notifyUserInThisInstance(id, 'userData', { diff, unset, type: clientAction });
 			break;
 		case 'inserted':
 			Notifications.notifyUserInThisInstance(id, 'userData', { data, type: clientAction });

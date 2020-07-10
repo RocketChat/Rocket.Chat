@@ -197,11 +197,12 @@ export class BaseDb extends EventEmitter {
 					}
 				}
 			}
-
+			const unset = {};
 			if (action.op.o.$unset) {
 				for (const key in action.op.o.$unset) {
 					if (action.op.o.$unset.hasOwnProperty(key)) {
 						diff[key] = undefined;
+						unset[key] = 1;
 					}
 				}
 			}
@@ -211,6 +212,7 @@ export class BaseDb extends EventEmitter {
 				clientAction: 'updated',
 				id: action.id,
 				diff,
+				unset,
 				oplog: true,
 			});
 			return;
