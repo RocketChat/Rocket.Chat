@@ -78,6 +78,7 @@
           "prefer-single"
         ],
         "indent": "off",
+        "no-extra-parens": "off",
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
         "react/jsx-no-undef": "error",
@@ -90,8 +91,18 @@
           "error",
           "tab",
           {
-            "SwitchCase": 1,
-            "CallExpression": {"arguments": 1}
+            "SwitchCase": 1
+          }
+        ],
+        "@typescript-eslint/no-extra-parens": [
+          "error",
+          "all",
+          {
+            "conditionalAssign": true,
+            "nestedBinaryExpressions": false,
+            "returnAssign": true,
+            "ignoreJSX": "all",
+            "enforceForArrowConditionals": false
           }
         ],
         "@typescript-eslint/no-explicit-any": "off",
