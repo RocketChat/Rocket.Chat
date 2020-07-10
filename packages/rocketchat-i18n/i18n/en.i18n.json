@@ -3722,6 +3722,8 @@
   "User_started_a_new_conversation": "__username__ started a new conversation",
   "User_unmuted_by": "User <em>__user_unmuted__</em> unmuted by <em>__user_by__</em>.",
   "User_unmuted_in_room": "User unmuted in room",
+  "User__username__unmuted_in_room__roomName__": "User __username__ unmuted in room __roomName__",
+  "User__username__muted_in_room__roomName__": "User __username__ muted in room __roomName__",
   "User_updated_successfully": "User updated successfully",
   "User_uploaded_a_file_on_channel": "<strong>__username__</strong> uploaded a file on <strong>__channel__</strong>",
   "User_uploaded_a_file_to_you": "<strong>__username__</strong> sent you a file",

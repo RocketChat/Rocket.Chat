@@ -6,6 +6,7 @@ export const AuthorizationContext = createContext({
 	hasPermission: () => {},
 	hasAtLeastOnePermission: () => {},
 	hasAllPermissions: () => {},
+	userHasAllPermissions: () => {},
 	hasRole: () => {},
 });
 
@@ -25,6 +26,12 @@ export const useAllPermissions = (permissions, scope) => {
 	const { hasAllPermissions } = useContext(AuthorizationContext);
 	return useObservableValue(useCallback((listener) =>
 		hasAllPermissions(permissions, scope, listener), [hasAllPermissions, permissions, scope]));
+};
+
+export const useUserHasAllPermissions = (userId, permissions, scope) => {
+	const { userHasAllPermissions } = useContext(AuthorizationContext);
+	return useObservableValue(useCallback((listener) =>
+		userHasAllPermissions(userId, permissions, scope, listener), [permissions, scope, userHasAllPermissions, userId]));
 };
 
 export const useRole = (role) => {

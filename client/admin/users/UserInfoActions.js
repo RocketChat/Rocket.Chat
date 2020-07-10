@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Box, Button, ButtonGroup, Icon, Menu } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 
 import { Modal } from '../../components/basic/Modal';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -9,7 +9,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import RawText from '../../components/basic/RawText';
-
+import ActionSpread from '../../components/basic/ActionSpread';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
@@ -97,7 +97,6 @@ const SuccessModal = ({ onClose, ...props }) => {
 		</Modal.Footer>
 	</Modal>;
 };
-
 
 export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ...props }) => {
 	const t = useTranslation();
@@ -243,20 +242,10 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		changeActiveStatus,
 	]);
 
-	const [actions, moreActions] = useMemo(() => {
-		const keys = Object.keys(menuOptions);
-
-		const firstHalf = keys.slice(0, 2);
-		const secondHalf = keys.slice(2, keys.length);
-
-		return [firstHalf.length && firstHalf.map((key) => menuOptions[key]), secondHalf.length && Object.fromEntries(secondHalf.map((key) => [key, menuOptions[key]]))];
-	}, [menuOptions]);
-
 	return <>
 		<Box display='flex' flexDirection='row' {...props}>
 			<ButtonGroup flexGrow={1} justifyContent='center'>
-				{ actions && actions.map((action, index) => (<Button key={index} onClick={action.action}>{action.label}</Button>))}
-				{ moreActions && <Menu options={moreActions} placement='bottom left'/> }
+				<ActionSpread actions={menuOptions}/>
 			</ButtonGroup>
 		</Box>
 		{ modal }

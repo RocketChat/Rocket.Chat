@@ -5,6 +5,7 @@ import {
 	hasPermission,
 	hasAtLeastOnePermission,
 	hasAllPermission,
+	userHasAllPermission,
 } from '../../app/authorization/client/hasPermission';
 import { AuthorizationContext } from '../contexts/AuthorizationContext';
 import { hasRole } from '../../app/authorization/client';
@@ -14,6 +15,7 @@ const contextValue = {
 	hasPermission: createObservableFromReactive(hasPermission),
 	hasAtLeastOnePermission: createObservableFromReactive(hasAtLeastOnePermission),
 	hasAllPermission: createObservableFromReactive(hasAllPermission),
+	userHasAllPermissions: createObservableFromReactive(userHasAllPermission),
 	hasRole: createObservableFromReactive((role) => hasRole(Meteor.userId(), role)),
 };
 
