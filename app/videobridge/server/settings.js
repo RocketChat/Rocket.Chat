@@ -30,6 +30,15 @@ Meteor.startup(function() {
 				},
 			});
 
+			this.add('bigbluebutton_welcomeMessage', '<br>Welcome to <b>%%CONFNAME%%</b>!', {
+				type: 'string',
+				i18nLabel: 'Welcome_Message',
+				enableQuery: {
+					_id: 'bigbluebutton_Enabled',
+					value: true,
+				},
+			});
+
 			this.add('bigbluebutton_enable_d', true, {
 				type: 'boolean',
 				i18nLabel: 'WebRTC_Enable_Direct',
