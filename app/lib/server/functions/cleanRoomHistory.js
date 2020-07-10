@@ -7,7 +7,7 @@ function queryBuilder({ rid, ts, excludePinned, fromUsers, filesOnly, ignoreDisc
 	const query = {
 		cid: { $eq: rid },
 		t: { $eq: 'msg' },
-		'd.t': { $in: ['msg'] },
+		'd.t': { $in: ['msg', 'e2e'] },
 		ts,
 		'd.u.username': { $exists: true }, // this changes below if necessary
 		deletedAt: { $exists: false }, // since we don't need something is already deleted
