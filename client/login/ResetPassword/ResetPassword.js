@@ -52,7 +52,7 @@ const ResetPassword = ({ resetPassword }) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [newPassword, isSubmitDisabled, setUserPassword, resetPassword]);
+	}, [newPassword, isSubmitDisabled, setUserPassword, resetPassword, token, setError, setIsLoading]);
 
 	return (
 		<Modal is='form' onSubmit={handleSubmit}>
@@ -60,7 +60,7 @@ const ResetPassword = ({ resetPassword }) => {
 				<Modal.Title textAlign='start'>{t('Password')}</Modal.Title>
 			</Modal.Header>
 			<Modal.Content>
-				<Box is='p' fontScale='h2'>
+				<Box is='p' fontScale='h2' textAlign='start'>
 					{t(changePasswordReason)}
 				</Box>
 				<Field>
@@ -80,7 +80,7 @@ const ResetPassword = ({ resetPassword }) => {
 					{policyEnabled && (
 						<Field.Hint>
 							{policies.map((policy, index) => (
-								<p key={index}>{t(...policy)}</p>
+								<Box is='p' textAlign='start' key={index}>{t(...policy)}</Box>
 							))}
 						</Field.Hint>
 					)}
