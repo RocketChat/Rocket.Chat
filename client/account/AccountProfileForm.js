@@ -11,7 +11,7 @@ import { UserAvatarEditor } from '../components/basic/avatar/UserAvatarEditor';
 import CustomFieldsForm from '../components/CustomFieldsForm';
 import UserStatusMenu from '../components/basic/userStatus/UserStatusMenu';
 
-export default function AccountProfileForm({ values, handlers, user, settings, setCanSave, ...props }) {
+export default function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -117,8 +117,8 @@ export default function AccountProfileForm({ values, handlers, user, settings, s
 	].filter(Boolean);
 
 	useEffect(() => {
-		setCanSave(canSave);
-	}, [canSave, setCanSave]);
+		onSaveStateChange(canSave);
+	}, [canSave, onSaveStateChange]);
 
 	return <FieldGroup is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
 		{useMemo(() => <Field>

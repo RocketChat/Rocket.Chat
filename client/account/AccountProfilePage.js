@@ -11,6 +11,7 @@ import { useSetting } from '../contexts/SettingsContext';
 import { useUser } from '../contexts/UserContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useMethod } from '../contexts/ServerContext';
+import { useSetModal } from '../contexts/ModalContext';
 import { Modal } from '../components/basic/Modal';
 import { useUpdateAvatar } from '../hooks/useUpdateAvatar';
 import { getUserEmailAddress } from '../helpers/getUserEmailAddress';
@@ -64,7 +65,7 @@ const AccountProfilePage = () => {
 
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(user));
 	const [canSave, setCanSave] = useState(true);
-	const [modal, setModal] = useState(null);
+	const setModal = useSetModal();
 	const [loggingOut, setLoggingOut] = useState(false);
 
 	const logoutOtherClients = useMethod('logoutOtherClients');
@@ -184,6 +185,7 @@ const AccountProfilePage = () => {
 		t,
 		customFields,
 		statusType,
+		setModal,
 	]);
 
 	const handleLogoutOtherLocations = useCallback(async () => {
@@ -236,34 +238,31 @@ const AccountProfilePage = () => {
 			text={t('If_you_are_sure_type_in_your_username')}
 			isPassword
 		/>);
-	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t]);
+	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t, setModal]);
 
-	return <>
-		<Page>
-			<Page.Header title={t('Profile')}>
-				<ButtonGroup>
-					<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
-						{t('Save_changes')}
+	return <Page>
+		<Page.Header title={t('Profile')}>
+			<ButtonGroup>
+				<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
+					{t('Save_changes')}
+				</Button>
+			</ButtonGroup>
+		</Page.Header>
+		<Page.ScrollableContentWithShadow>
+			<Box maxWidth='x600' w='full' alignSelf='center'>
+				<AccountProfileForm values={values} handlers={handlers} user={user} settings={settings} onSaveStateChange={setCanSave}/>
+				<ButtonGroup stretch mb='x12'>
+					<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
+						{t('Logout_Others')}
 					</Button>
+					{allowDeleteOwnAccount && <Button danger onClick={handleDeleteOwnAccount}>
+						<Icon name='trash' size='x20' mie='x4'/>
+						{t('Delete_my_account')}
+					</Button>}
 				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
-					<AccountProfileForm values={values} handlers={handlers} user={user} settings={settings} setCanSave={setCanSave}/>
-					<ButtonGroup stretch mb='x12'>
-						<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
-							{t('Logout_Others')}
-						</Button>
-						{allowDeleteOwnAccount && <Button danger onClick={handleDeleteOwnAccount}>
-							<Icon name='trash' size='x20' mie='x4'/>
-							{t('Delete_my_account')}
-						</Button>}
-					</ButtonGroup>
-				</Box>
-			</Page.ScrollableContentWithShadow>
-		</Page>
-		{ modal }
-	</>;
+			</Box>
+		</Page.ScrollableContentWithShadow>
+	</Page>;
 };
 
 export default AccountProfilePage;
