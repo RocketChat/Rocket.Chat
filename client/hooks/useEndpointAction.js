@@ -33,7 +33,6 @@ export const useEndpointActionExperimental = (httpMethod, endpoint, successMessa
 		try {
 			const data = await sendData(params, ...args);
 
-			console.log({ data, params, args });
 			if (!data.success) {
 				throw new Error(data.status);
 			}

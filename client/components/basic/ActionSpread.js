@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Button, Menu } from '@rocket.chat/fuselage';
 
-const mapFn = (actions = {}, spreadAmmount = 2) => {
+const mapFn = ({ actions = {}, spreadAmmount = 2 }) => {
 	const entries = Object.entries(actions);
 
 	const spreadEntries = entries.slice(0, spreadAmmount);
@@ -13,11 +13,11 @@ const mapFn = (actions = {}, spreadAmmount = 2) => {
 };
 
 const ActionSpread = ({ actions, mapSpread = mapFn, className }) => {
-	const [spread, options] = useMemo(() => mapSpread(actions, 2), [actions, mapSpread]);
+	const [spread, options] = useMemo(() => mapSpread({ actions, spreadAmmount: 2 }), [actions, mapSpread]);
 
 	return <>
-		{spread.map((Item, index) => <Item key={index} className={className}/>)}
-		<Menu className={className} options={options} placement='bottom left'/>
+		{spread.length > 0 && spread.map((Item, index) => <Item key={index} className={className}/>)}
+		{Object.keys(options).length > 0 && <Menu className={className} options={options} placement='bottom left'/>}
 	</>;
 };
 

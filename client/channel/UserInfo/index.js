@@ -12,7 +12,7 @@ import * as UserStatus from '../../components/basic/UserStatus';
 import UserCard from '../../components/UserCard/UserCard';
 import { FormSkeleton } from '../../admin/users/Skeleton';
 import VerticalBar from '../../components/basic/VerticalBar';
-import ChannelActions from './actions/ChannelActions';
+import RoomActions from './actions/RoomActions';
 
 export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, onClose, ...props }) {
 	const t = useTranslation();
@@ -74,7 +74,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 					{...user}
 					data={data.user}
 					// onChange={onChange}
-					actions={<ChannelActions user={data.user}/>}
+					actions={<RoomActions user={data.user}/>}
 					{...props}
 					p='x24'
 				/>

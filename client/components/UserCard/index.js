@@ -8,6 +8,7 @@ import UserCard from './UserCard';
 import { Backdrop } from '../basic/Backdrop';
 import * as UserStatus from '../basic/UserStatus';
 import { LocalTime } from '../basic/UTCClock';
+import RoomActions from '../../channel/UserInfo/actions/RoomActions';
 
 const UserCardWithData = ({ username, onClose, target, open }) => {
 	const ref = useRef(target);
@@ -68,7 +69,7 @@ const UserCardWithData = ({ username, onClose, target, open }) => {
 			placement='center right'
 			visible={AnimatedVisibility.UNHIDING}
 		>
-			<UserCard {...user} onClose={onClose} open={handleOpen} t={t}/>
+			<UserCard {...user} onClose={onClose} open={handleOpen} actions={<RoomActions user={data?.user || {}} isUserCard/>} t={t}/>
 		</PositionAnimated></>
 	);
 };
