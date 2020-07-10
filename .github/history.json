@@ -46877,6 +46877,72 @@
           ]
         }
       ]
+    },
+    "3.4.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.15.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18238",
+          "title": "[FIX] CAS login not merging users with local accounts",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.4.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "18224",
+          "title": "[FIX] SAML login crashing when receiving an array of roles",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.4.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "18222",
+          "title": "[FIX] Application not loading due to reverse proxy decoding API calls unnecessarily",
+          "userLogin": "rodrigok",
+          "milestone": "3.4.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "18185",
+          "title": "[FIX] Old Data Migrations breaking upgrades",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.4.2",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "18147",
+          "title": "[FIX] Cannot open admin when server uses ROOT_URL with subpath (#18105)",
+          "userLogin": "omarchehab98",
+          "milestone": "3.4.2",
+          "contributors": [
+            "omarchehab98"
+          ]
+        },
+        {
+          "pr": "18080",
+          "title": "[FIX] App details returns to apps table, instead of previous page.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.4.2",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
