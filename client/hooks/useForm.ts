@@ -1,4 +1,4 @@
-import { useCallback, useReducer, useMemo, SyntheticEvent } from 'react';
+import { useCallback, useReducer, useMemo, ChangeEvent } from 'react';
 
 import { capitalize } from '../helpers/capitalize';
 
@@ -11,6 +11,7 @@ type Field = {
 
 type FormState = {
 	fields: Field[];
+	values: Record<string, unknown>;
 	hasUnsavedChanges: boolean;
 };
 
@@ -20,13 +21,18 @@ type FormAction = {
 
 type UseFormReturnType = {
 	values: Record<string, unknown>;
-	handlers: Record<string, (eventOrValue: SyntheticEvent<HTMLInputElement> | unknown) => void>;
+	handlers: Record<string, (eventOrValue: ChangeEvent | unknown) => void>;
 	hasUnsavedChanges: boolean;
+	commit: () => void;
 	reset: () => void;
 };
 
-const reduceForm = (prevState: FormState, action: FormAction): FormState =>
-	action(prevState);
+const reduceForm = (state: FormState, action: FormAction): FormState => {
+	console.time('reduceForm');
+	const newState = action(state);
+	console.timeEnd('reduceForm');
+	return newState;
+};
 
 const initForm = (initialValues: Record<string, unknown>): FormState => {
 	const fields = [];
@@ -42,101 +48,132 @@ const initForm = (initialValues: Record<string, unknown>): FormState => {
 
 	return {
 		fields,
+		values: { ...initialValues },
 		hasUnsavedChanges: false,
 	};
 };
 
 const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
-	(prevState: FormState): FormState => {
-		const prevField = prevState.fields.find(({ name }) => name === fieldName);
+	(state: FormState): FormState => {
+		let { fields } = state;
+		const field = fields.find(({ name }) => name === fieldName);
 
-		if (!prevField || prevField.currentValue === newValue) {
-			return prevState;
+		if (!field || field.currentValue === newValue) {
+			return state;
 		}
 
 		const newField = {
-			...prevField,
+			...field,
 			currentValue: newValue,
-			changed: JSON.stringify(newValue) !== JSON.stringify(prevField.initialValue),
+			changed: JSON.stringify(newValue) !== JSON.stringify(field.initialValue),
 		};
 
-		if (newField.changed === prevField.changed) {
-			return {
-				...prevState,
-				fields: prevState.fields.map((field) => (field.name === fieldName ? newField : field)),
-			};
-		}
+		fields = state.fields.map((field) => {
+			if (field.name === fieldName) {
+				return newField;
+			}
 
-		if (newField.changed) {
-			return {
-				...prevState,
-				fields: prevState.fields.map((field) => (field.name === fieldName ? newField : field)),
-				hasUnsavedChanges: true,
-			};
-		}
-
-		const fields = prevState.fields.map((field) => (field.name === fieldName ? newField : field));
-		const hasUnsavedChanges = fields.reduce<boolean>((newHasUnsavedChanges, field) => newHasUnsavedChanges || field.changed, false);
+			return field;
+		});
 
 		return {
-			...prevState,
+			...state,
 			fields,
-			hasUnsavedChanges,
+			values: {
+				...state.values,
+				[newField.name]: newField.currentValue,
+			},
+			hasUnsavedChanges: newField.changed || fields.some((field) => field.changed),
 		};
 	};
 
-const formReset = (): FormAction =>
-	(prevState: FormState): FormState => ({
-		...prevState,
-		fields: prevState.fields.map((field) => ({
+const formCommitted = (): FormAction =>
+	(state: FormState): FormState => ({
+		...state,
+		fields: state.fields.map((field) => ({
 			...field,
-			currentValue: field.initialValue,
+			initialValue: field.currentValue,
 			changed: false,
 		})),
 		hasUnsavedChanges: false,
 	});
 
+const formReset = (): FormAction =>
+	(state: FormState): FormState => ({
+		...state,
+		fields: state.fields.map((field) => ({
+			...field,
+			currentValue: field.initialValue,
+			changed: false,
+		})),
+		values: state.fields.reduce((values, field) => ({
+			...values,
+			[field.name]: field.initialValue,
+		}), {}),
+		hasUnsavedChanges: false,
+	});
+
+const isChangeEvent = (x: any): x is ChangeEvent =>
+	(typeof x === 'object' || typeof x === 'function') && typeof x?.currentTarget !== 'undefined';
+
+const getValue = (eventOrValue: ChangeEvent | unknown): unknown => {
+	if (!isChangeEvent(eventOrValue)) {
+		return eventOrValue;
+	}
+
+	const target = eventOrValue.currentTarget;
+
+	if (target instanceof HTMLTextAreaElement) {
+		return target.value;
+	}
+
+	if (target instanceof HTMLSelectElement) {
+		return target.value;
+	}
+
+	if (!(target instanceof HTMLInputElement)) {
+		return undefined;
+	}
+
+	if (target.type === 'checkbox' || target.type === 'radio') {
+		return target.checked;
+	}
+
+	return target.value;
+};
+
 export const useForm = (
 	initialValues: Record<string, unknown>,
 	onChange: ((...args: unknown[]) => void) = (): void => undefined,
 ): UseFormReturnType => {
-	const [formState, dispatch] = useReducer(reduceForm, initialValues, initForm);
+	const [state, dispatch] = useReducer(reduceForm, initialValues, initForm);
+
+	const commit = useCallback(() => {
+		dispatch(formCommitted());
+	}, []);
 
 	const reset = useCallback(() => {
 		dispatch(formReset());
 	}, []);
 
-	const handlers = useMemo(() => Object.entries(initialValues).reduce((handlers, [fieldName, initialValue]) => ({
+	const handlers = useMemo(() => state.fields.reduce((handlers, { name, initialValue }) => ({
 		...handlers,
-		[`handle${ capitalize(fieldName) }`]: (eventOrValue: SyntheticEvent<HTMLInputElement> | unknown): void => {
-			const getValue = (eventOrValue: SyntheticEvent<HTMLInputElement> | unknown): unknown => {
-				if (typeof initialValue === 'boolean') {
-					return (eventOrValue as SyntheticEvent<HTMLInputElement>)?.currentTarget?.checked;
-				}
-
-				if (typeof (eventOrValue as SyntheticEvent<HTMLInputElement>)?.currentTarget?.value !== 'undefined') {
-					return (eventOrValue as SyntheticEvent<HTMLInputElement>).currentTarget.value;
-				}
-
-				return eventOrValue;
-			};
+		[`handle${ capitalize(name) }`]: (eventOrValue: ChangeEvent | unknown): void => {
 			const newValue = getValue(eventOrValue);
-			dispatch(valueChanged(fieldName, newValue));
-			onChange({ initialValue, value: newValue, key: fieldName });
+			dispatch(valueChanged(name, newValue));
+			onChange({
+				initialValue,
+				value: newValue,
+				key: name,
+			});
 		},
-	}), {}), [initialValues, onChange]);
-
-	const values = useMemo(
-		() => formState.fields.reduce((values, field) => ({ ...values, [field.name]: field.currentValue }), {}),
-		[formState],
-	);
-
-	const { hasUnsavedChanges } = formState;
+	}), {}), [onChange, state.fields]);
 
 	return {
-		values,
 		handlers,
+		values: state.values,
+		hasUnsavedChanges: state.hasUnsavedChanges,
+		commit,
 		reset,
-		hasUnsavedChanges,
 	};
 };
