@@ -1,26 +1,11 @@
-import React, { useMemo } from 'react';
-import { Meteor } from 'meteor/meteor';
+import React from 'react';
 import { Avatar } from '@rocket.chat/fuselage';
 
-import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
+import { useAvatarUrlFromUserId } from '../../../hooks/useAvatarUrlFromUserId';
 
-const useAvatarUrl = ({ url, username, userId }) => useMemo(() => {
-	if (url) {
-		return url;
-	}
-
-	if (userId) {
-		const { username: foundUsername, avatarETag } = Meteor.users.findOne({ _id: userId }, { fields: { username: 1, avatarETag: 1 } });
-
-		return getUserAvatarURL(foundUsername, avatarETag);
-	}
-
-	return getUserAvatarURL(username);
-}, [url, username, userId]);
-
-function UserAvatar({ url, username, userId, ...props }) {
-	const avatarUrl = useAvatarUrl({ url, username, userId });
-	return <Avatar url={avatarUrl} title={username} {...props}/>;
+function UserAvatar({ userId, ...props }) {
+	const [username, url] = useAvatarUrlFromUserId({ userId });
+	return <Avatar url={url} title={username} {...props}/>;
 }
 
 export default UserAvatar;
