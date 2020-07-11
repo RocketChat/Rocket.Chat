@@ -1,16 +1,16 @@
 import React, { useMemo, useRef, useCallback } from 'react';
-import { PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
+import { PositionAnimated, AnimatedVisibility, Menu } from '@rocket.chat/fuselage';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import UserCard from './UserCard';
-import { Backdrop } from '../basic/Backdrop';
-import * as UserStatus from '../basic/UserStatus';
-import { LocalTime } from '../basic/UTCClock';
-import RoomActions from '../../channel/UserInfo/actions/RoomActions';
+import UserCard from '../../components/basic/UserCard';
+import { Backdrop } from '../../components/basic/Backdrop';
+import * as UserStatus from '../../components/basic/UserStatus';
+import { LocalTime } from '../../components/basic/UTCClock';
+import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
 
-const UserCardWithData = ({ username, onClose, target, open }) => {
+const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
 
 	const t = useTranslation();
@@ -51,8 +51,7 @@ const UserCardWithData = ({ username, onClose, target, open }) => {
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
 		};
-	}, [data, username, showRealNames]);
-
+	}, [data, username, showRealNames, state]);
 
 	const handleOpen = useCallback(
 		(e) => {
@@ -62,6 +61,12 @@ const UserCardWithData = ({ username, onClose, target, open }) => {
 		[open, onClose],
 	);
 
+	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));
+
+	const menu = menuOptions && <Menu flexShrink={0} key='menu' options={menuOptions} placement='bottom left'/>;
+
+	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserCard.Action key={key} aria-label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
+
 	return (<>
 		<Backdrop bg='transparent' onClick={onClose}/>
 		<PositionAnimated
@@ -69,7 +74,12 @@ const UserCardWithData = ({ username, onClose, target, open }) => {
 			placement='center right'
 			visible={AnimatedVisibility.UNHIDING}
 		>
-			<UserCard {...user} onClose={onClose} open={handleOpen} actions={<RoomActions user={data?.user || {}} isUserCard/>} t={t}/>
+			<UserCard
+				{...user}
+				onClose={onClose}
+				open={handleOpen}
+				actions={actions}
+				t={t}/>
 		</PositionAnimated></>
 	);
 };

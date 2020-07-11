@@ -9,17 +9,16 @@ import {
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import * as UserStatus from '../../components/basic/UserStatus';
-import UserCard from '../../components/UserCard/UserCard';
+import UserCard from '../../components/basic/UserCard';
 import { FormSkeleton } from '../../admin/users/Skeleton';
 import VerticalBar from '../../components/basic/VerticalBar';
-import RoomActions from './actions/RoomActions';
+import UserActions from './actions/UserActions';
 
-export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, onClose, ...props }) {
+export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, rid, username, onClose, ...props }) {
 	const t = useTranslation();
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
-	// TODO: remove cache. Is necessary for data invalidation
 	const { data, state, error } = useEndpointDataExperimental(
 		'users.info',
 		useMemo(
@@ -74,7 +73,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 					{...user}
 					data={data.user}
 					// onChange={onChange}
-					actions={<RoomActions user={data.user}/>}
+					actions={<UserActions user={data.user} rid={rid}/>}
 					{...props}
 					p='x24'
 				/>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import { Box, Margins, Tag, Button, Icon } from '@rocket.chat/fuselage';
 
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
@@ -8,7 +8,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from './VerticalBar';
 import { UTCClock } from './UTCClock';
 import UserAvatar from './avatar/UserAvatar';
-import UserCard from '../UserCard/UserCard';
+import UserCard from './UserCard';
 
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
@@ -87,5 +87,14 @@ export const UserInfo = React.memo(function UserInfo({
 
 	</VerticalBar.ScrollableContent>;
 });
+
+export const Action = ({ icon, label, ...props }) => (
+	<Button {...props} mi='x2'>
+		<Icon name={icon} size='x16' />
+		{label}
+	</Button>
+);
+
+UserInfo.Action = Action;
 
 export default UserInfo;

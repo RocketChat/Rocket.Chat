@@ -1,31 +1,15 @@
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { HTML } from 'meteor/htmljs';
 import _ from 'underscore';
 import s from 'underscore.string';
-import moment from 'moment';
 
 import { DateFormat } from '../../../lib';
-import { popover } from '../../../ui-utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
-import { getActions } from './userActions';
 import './userInfo.html';
 import { Markdown } from '../../../markdown/lib/markdown';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
-
-
-const shownActionsCount = 2;
-
-const moreActions = function() {
-	return (
-		Template.instance().actions.get()
-			.map((action) => (typeof action === 'function' ? action.call(this) : action))
-			.filter((action) => action && (!action.condition || action.condition.call(this)))
-			.slice(shownActionsCount)
-	);
-};
 
 createTemplateForComponent('UserInfoWithData', () => import('../../../../client/channel/UserInfo'), {
 	// eslint-disable-next-line new-cap
@@ -40,7 +24,6 @@ Template.userInfo.helpers({
 		};
 	},
 	username() {
-		console.log(Template.currentData());
 		return Template.currentData().username;
 	},
 	linkedinUsername() {
@@ -130,87 +113,12 @@ Template.userInfo.helpers({
 	},
 });
 
-Template.userInfo.events({
-	'click .js-more'(e, instance) {
-		const actions = moreActions.call(this);
-		const groups = [];
-		const columns = [];
-		const admin = actions.filter((actions) => actions.group === 'admin');
-		const others = actions.filter((action) => !action.group);
-		const channel = actions.filter((actions) => actions.group === 'channel');
-		if (others.length) {
-			groups.push({ items: others });
-		}
-		if (channel.length) {
-			groups.push({ items: channel });
-		}
-
-		if (admin.length) {
-			groups.push({ items: admin });
-		}
-		columns[0] = { groups };
-
-		$(e.currentTarget).blur();
-		e.preventDefault();
-		e.stopPropagation();
-		const config = {
-			columns,
-			data: {
-				rid: this._id,
-				username: instance.data.username,
-				instance,
-			},
-			currentTarget: e.currentTarget,
-			offsetVertical: e.currentTarget.clientHeight + 10,
-		};
-		popover.open(config);
-	},
-	'click .js-action'(e) {
-		return this.action && this.action.apply(this, [e, { instance: Template.instance() }]);
-	},
-	'click .js-close-info'(e, instance) {
-		return instance.clear();
-	},
-	'click .js-close'(e, instance) {
-		return instance.clear();
-	},
-
-	'click .js-back'(e, instance) {
-		return instance.clear();
-	},
-});
-
 Template.userInfo.onCreated(function() {
-	this.now = new ReactiveVar(moment());
-	this.user = new ReactiveVar();
-	this.actions = new ReactiveVar();
-
-	this.autorun(() => {
-		const user = this.user.get();
-		if (!user) {
-			this.actions.set([]);
-			return;
-		}
-		const actions = getActions({
-			user,
-			hideAdminControls: this.data.hideAdminControls,
-			directActions: this.data.showAll,
-		});
-		this.actions.set(actions);
-	});
-	this.editingUser = new ReactiveVar();
-	this.loadingUserInfo = new ReactiveVar(true);
 	this.tabBar = Template.currentData().tabBar;
-	this.nowInterval = setInterval(() => this.now.set(moment()), 30000);
-
 	this.autorun(() => {
 		const data = Template.currentData();
 		if (data.clear != null) {
 			this.clear = data.clear;
 		}
 	});
-});
-
-Template.userInfo.onDestroyed(function() {
-	clearInterval(this.nowInterval);
 });

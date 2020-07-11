@@ -928,6 +928,7 @@ Template.room.events({
 		if (username) {
 			UserCard.open({
 				username,
+				rid: Session.get('openedRoom'),
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
@@ -949,6 +950,7 @@ Template.room.events({
 		if (username) {
 			UserCard.open({
 				username,
+				rid: Session.get('openedRoom'),
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
@@ -1179,7 +1181,18 @@ Template.room.onCreated(function() {
 	};
 
 	this.clearUserDetail = () => {
-		this.userDetail.set(null);
+		const room = Rooms.findOne({ _id: rid }, {
+			fields: {
+				t: 1,
+				usernames: 1,
+				uids: 1,
+			},
+		});
+
+		if (room.t !== 'd') {
+			return this.userDetail.set(null);
+		}
+		this.tabBar.close();
 	};
 
 	Meteor.call('getRoomRoles', this.data._id, function(error, results) {

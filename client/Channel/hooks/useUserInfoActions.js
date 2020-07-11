@@ -1,19 +1,18 @@
 import React, { useCallback, useMemo } from 'react';
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { usePermission, useUserHasAllPermissions } from '../../../contexts/AuthorizationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useUserId } from '../../../contexts/UserContext';
-import { useSession } from '../../../contexts/SessionContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { WebRTC } from '../../../../app/webrtc/client';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { ChatRoom, RoomRoles, Subscriptions } from '../../../../app/models/client';
-import { roomTypes, RoomMemberActions } from '../../../../app/utils';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { usePermission, useAllPermissions } from '../../contexts/AuthorizationContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useUserId } from '../../contexts/UserContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { WebRTC } from '../../../app/webrtc/client';
+import { useRoute } from '../../contexts/RouterContext';
+import { useSetModal } from '../../contexts/ModalContext';
+import { ChatRoom, RoomRoles, Subscriptions } from '../../../app/models/client';
+import { roomTypes, RoomMemberActions } from '../../../app/utils';
+import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 
 const userHasRoomRole = (uid, rid, role) => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role });
 
@@ -73,14 +72,31 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 	</Modal>;
 };
 
-export const useRoomActions = (user) => {
+
+const mapOptions = ([key, { action, label, icon }]) => [
+	key,
+	{
+		label: <><Icon name={icon} size='x20' mie='x4' />{label}</>, // TODO fuselage
+		action,
+	},
+];
+
+export const useUserInfoActionsSpread = (actions, size = 2) => useMemo(() => {
+	const entries = Object.entries(actions);
+
+	const options = entries.slice(0, size);
+	const menuOptions = entries.slice(size, entries.length).map(mapOptions);
+	const menu = menuOptions.length && Object.fromEntries(entries.slice(size, entries.length).map(mapOptions));
+
+	return { actions: options, menu };
+}, [actions, size]);
+
+export const useUserInfoActions = (user = {}, rid) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const directRoute = useRoute('direct');
 
 	const setModal = useSetModal();
-
-	const rid = useSession('openedRoom');
 
 	const { _id: userId } = user;
 	const ownUserId = useUserId();
@@ -92,16 +108,16 @@ export const useRoomActions = (user) => {
 	const getUsernameSubscription = useCallback(() => Subscriptions.findOne({ name: user.username }), [user.username]);
 	const getRoom = useCallback(() => ChatRoom.findOne(rid), [rid]);
 
-	const isLeader = useReactiveValue(() => userHasRoomRole(userId, rid, 'leader'), [userId, rid]);
-	const isModerator = useReactiveValue(() => userHasRoomRole(userId, rid, 'moderator'), [userId, rid]);
-	const isOwner = useReactiveValue(() => userHasRoomRole(userId, rid, 'owner'), [userId, rid]);
+	const isLeader = useReactiveValue(useCallback(() => userHasRoomRole(userId, rid, 'leader'), [userId, rid]));
+	const isModerator = useReactiveValue(useCallback(() => userHasRoomRole(userId, rid, 'moderator'), [userId, rid]));
+	const isOwner = useReactiveValue(useCallback(() => userHasRoomRole(userId, rid, 'owner'), [userId, rid]));
 
 	const room = useReactiveValue(getRoom);
 	const thisSubscription = useReactiveValue(getThisSubscription);
 	const usernameSubscription = useReactiveValue(getUsernameSubscription);
 	const webRTCInstance = useReactiveValue(getWebRTCInstance);
 
-	const otherUserCanPostReadonly = useUserHasAllPermissions('post-readonly', rid, userId);
+	const otherUserCanPostReadonly = useAllPermissions('post-readonly', rid, userId);
 
 	const isIgnored = thisSubscription && thisSubscription.ignored && thisSubscription.ignored.indexOf(userId) > -1;
 	const isMuted = getUserIsMuted(room, user, otherUserCanPostReadonly);
@@ -138,7 +154,7 @@ export const useRoomActions = (user) => {
 	const userCanDirectMessage = usePermission('create-d');
 
 	const shouldAllowCalls = getShouldAllowCalls(webRTCInstance);
-	const callInProgress = useReactiveValue(() => webRTCInstance?.callInProgress?.get());
+	const callInProgress = useReactiveValue(useCallback(() => webRTCInstance?.callInProgress?.get(), []));
 	const shouldOpenDirectMessage = getShouldOpenDirectMessage(thisSubscription, usernameSubscription, userCanDirectMessage, user.username);
 
 	const openDirectMessageOption = useMemo(() => {
@@ -148,7 +164,7 @@ export const useRoomActions = (user) => {
 
 		return shouldOpenDirectMessage && {
 			label: t('Direct_Message'),
-			icon: (props) => <Icon name='chat' size='x20' mie='x4' {...props}/>,
+			icon: 'chat',
 			action,
 		};
 	}, [directRoute, shouldOpenDirectMessage, t, user.username]);
@@ -164,7 +180,7 @@ export const useRoomActions = (user) => {
 
 		return shouldAllowCalls && {
 			label: t(callInProgress ? 'Join_video_call' : 'Start_video_call'),
-			icon: (props) => <Icon name='video' size='x20' mie='x4' {...props}/>,
+			icon: 'video',
 			action,
 		};
 	}, [callInProgress, shouldAllowCalls, t, webRTCInstance]);
@@ -180,7 +196,7 @@ export const useRoomActions = (user) => {
 
 		return shouldAllowCalls && {
 			label: t(callInProgress ? 'Join_audio_call' : 'Start_audio_call'),
-			icon: (props) => <Icon name='mic' size='x20' mie='x4' {...props}/>,
+			icon: 'mic',
 			action,
 		};
 	}, [callInProgress, shouldAllowCalls, t, webRTCInstance]);
@@ -194,7 +210,7 @@ export const useRoomActions = (user) => {
 
 	const changeOwnerOption = useMemo(() => roomCanSetOwner && userCanSetOwner && {
 		label: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
-		icon: (props) => <Icon name='shield-check' size='x20' mie='x4' {...props}/>,
+		icon: 'shield-check',
 		action: changeOwner,
 	}, [changeOwner, isOwner, roomCanSetOwner, t, userCanSetOwner]);
 
@@ -207,7 +223,7 @@ export const useRoomActions = (user) => {
 
 	const changeLeaderOption = useMemo(() => roomCanSetLeader && userCanSetLeader && {
 		label: t(isLeader ? 'Remove_as_leader' : 'Set_as_leader'),
-		icon: (props) => <Icon name='shield-alt' size='x20' mie='x4' {...props}/>,
+		icon: 'shield-alt',
 		action: changeLeader,
 	}, [changeLeader, isLeader, roomCanSetLeader, t, userCanSetLeader]);
 
@@ -220,7 +236,7 @@ export const useRoomActions = (user) => {
 
 	const changeModeratorOption = useMemo(() => roomCanSetModerator && userCanSetModerator && {
 		label: t(isModerator ? 'Remove_as_moderator' : 'Set_as_moderator'),
-		icon: (props) => <Icon name='shield' size='x20' mie='x4'{...props}/>,
+		icon: 'shield',
 		action: changeModerator,
 	}, [changeModerator, isModerator, roomCanSetModerator, t, userCanSetModerator]);
 
@@ -235,7 +251,7 @@ export const useRoomActions = (user) => {
 	}, [dispatchToastMessage, ignoreUserFn, isIgnored, rid, t, userId]);
 	const ignoreUserOption = useMemo(() => roomCanBlock && userId !== ownUserId && {
 		label: t(isIgnored ? 'Unignore' : 'Ignore'),
-		icon: (props) => <Icon name='ban' size='x20' mie='x4'{...props}/>,
+		icon: 'ban',
 		action: ignoreUser,
 	}, [ignoreUser, isIgnored, ownUserId, roomCanBlock, t, userId]);
 
@@ -274,7 +290,7 @@ export const useRoomActions = (user) => {
 
 		return roomCanMute && userCanMute && {
 			label: t(isMuted ? 'Unmute_user' : 'Mute_user'),
-			icon: (props) => <Icon name={isMuted ? 'mic' : 'mic-off'} size='x20' mie='x4'{...props}/>,
+			icon: isMuted ? 'mic' : 'mic-off',
 			action,
 		};
 	}, [closeModal, dispatchToastMessage, isMuted, muteFn, rid, roomCanMute, roomName, setModal, t, user.username, userCanMute]);
@@ -292,7 +308,7 @@ export const useRoomActions = (user) => {
 
 		return roomCanRemove && userCanRemove && {
 			label: <Box color='danger'>{t('Remove_from_room')}</Box>,
-			icon: (props) => <Icon name='sign-out' size='x20' mie='x4' color='danger'{...props}/>,
+			icon: 'sign-out',
 			action,
 		};
 	}, [closeModal, removeUserAction, rid, roomCanRemove, roomName, setModal, t, userCanRemove, userId]);

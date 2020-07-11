@@ -1,9 +1,9 @@
 import React, { forwardRef } from 'react';
 import { Box, Tag, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
 
-import { ActionButton } from '../basic/Buttons/ActionButton';
-import UserAvatar from '../basic/avatar/UserAvatar';
-import * as Status from '../basic/UserStatus';
+import { ActionButton } from './Buttons/ActionButton';
+import UserAvatar from './avatar/UserAvatar';
+import * as Status from './UserStatus';
 
 const clampStyle = {
 	display: '-webkit-box',
@@ -13,8 +13,8 @@ const clampStyle = {
 	wordBreak: 'break-all',
 };
 
-export const Action = ({ icon }) => (
-	<Button small mi='x2'>
+export const Action = ({ icon, ...props }) => (
+	<Button {...props} small mi='x2'>
 		<Icon name={icon} size='x16' />
 	</Button>
 );
@@ -22,7 +22,7 @@ export const Action = ({ icon }) => (
 export const Info = (props) => (
 	<Box
 		mb='x4'
-		is='p'
+		is='span'
 		fontSize='p1'
 		fontScale='p1'
 		color='hint'
@@ -31,7 +31,7 @@ export const Info = (props) => (
 	/>
 );
 
-export const Username = ({ name, status = <Status.Offline/> }) => <Box display='flex' flexShrink={0} alignItems='center' is='p' fontScale='s2' color='default' withTruncatedText>
+export const Username = ({ name, status = <Status.Offline/> }) => <Box display='flex' flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
 	{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
 </Box>;
 

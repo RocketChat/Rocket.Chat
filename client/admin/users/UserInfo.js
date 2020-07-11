@@ -7,7 +7,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import * as UserStatus from '../../components/basic/UserStatus';
-import UserCard from '../../components/UserCard/UserCard';
+import UserCard from '../../components/basic/UserCard';
 import { FormSkeleton } from './Skeleton';
 import { UserInfoActions } from './UserInfoActions';
 

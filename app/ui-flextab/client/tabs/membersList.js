@@ -107,15 +107,19 @@ Template.membersList.helpers({
 
 	userInfoDetail() {
 		const room = ChatRoom.findOne(this.rid, { fields: { t: 1, usernames: 1 } });
-
+		const username = Template.instance().userDetail.get();
+		if (!username) {
+			return;
+		}
 		return {
 			tabBar: Template.currentData().tabBar,
-			username: Template.instance().userDetail.get(),
+			username,
 			clear: Template.instance().clearUserDetail,
 			showAll: roomTypes.getConfig(room.t).userDetailShowAll(room) || false,
 			hideAdminControls: roomTypes.getConfig(room.t).userDetailShowAdmin(room) || false,
 			video: ['d'].includes(room && room.t),
 			showBackButton: roomTypes.getConfig(room.t).isGroupChat(room),
+			rid: Template.currentData().rid,
 		};
 	},
 	displayName() {
@@ -316,7 +320,7 @@ Template.membersList.onCreated(function() {
 });
 
 Template.membersList.onRendered(function() {
-	this.firstNode.parentNode.querySelector('#user-search').focus();
+	this.firstNode.parentNode.querySelector('#user-search')?.focus();
 	this.autorun(() => {
 		const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');
