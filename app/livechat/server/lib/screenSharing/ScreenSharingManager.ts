@@ -14,6 +14,8 @@ export class ScreenSharingManager {
 
 	activeSessions: string[] = [];
 
+	urls = new Map<string, string>();
+
 	enabled(): any {
 		return settings.get('Livechat_screen_sharing_enabled');
 	}
@@ -50,30 +52,35 @@ export class ScreenSharingManager {
 
 	requestScreenSharing(roomId: string, user: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('request_screen_sharing_access', roomId, '', user, {});
-		// console.log(this.screenShareProvider.getJWT('agent1', 'agent1@gmail.com'));
 		this.addActiveScreenSharing(roomId);
-		console.log(this.activeSessions);
 	}
 
 	endScreenSharingSession(roomId: string, user: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('end_screen_sharing_session', roomId, '', user, {});
 		this.removeActiveScreenSharing(roomId);
-		console.log(this.activeSessions);
 	}
 
 	addActiveScreenSharing(roomId: string): void {
 		this.activeSessions = this.activeSessions.filter((id) => id !== roomId);
 		this.activeSessions.push(roomId);
+		this.urls.set(roomId, this.screenShareProvider.getURL(roomId));
+		console.log(this.activeSessions);
 		screenSharingStreamer.emit('session-modified', { activeSessions: this.activeSessions });
 	}
 
 	removeActiveScreenSharing(roomId: string): void {
 		this.activeSessions = this.activeSessions.filter((id) => id !== roomId);
+		this.urls.delete(roomId);
+		console.log(this.activeSessions);
 		screenSharingStreamer.emit('session-modified', { activeSessions: this.activeSessions });
 	}
 
 	getActiveSessions(): string[] {
 		return this.activeSessions;
+	}
+
+	getSessionUrl(roomId: string): any {
+		return this.urls.get(roomId);
 	}
 }
 

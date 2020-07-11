@@ -31,11 +31,11 @@ messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 	},
 	action: ({ rid, messageBox }) => {
 		Meteor.call('livechat:requestScreenSharing', rid);
-		ScreenSharinDialog.setMessageBox(messageBox);
+		// ScreenSharinDialog.setMessageBox(messageBox);
 		if (ScreenSharinDialog.opened) {
 			ScreenSharinDialog.close();
 		}
-		ScreenSharinDialog.open(messageBox, { rid, src: `https://ashwaniydv.github.io/sstest/index.html?rid=${ rid }` });
+		// ScreenSharinDialog.open(messageBox, { rid, src: `https://ashwaniydv.github.io/sstest/index.html?rid=${ rid }` });
 	},
 });
 
@@ -57,10 +57,12 @@ messageBox.actions.add('Screen_Sharing', 'Active_Screen_Sharing_Session', {
 		return sessions.get().includes(rid);
 	},
 	action: ({ rid, messageBox }) => {
-		if (ScreenSharinDialog.opened) {
-			ScreenSharinDialog.close();
-		}
-		ScreenSharinDialog.open(messageBox, { rid, src: `https://ashwaniydv.github.io/sstest/index.html?rid=${ rid }` });
+		Meteor.call('livechat:getSessionUrl', rid, (err, url) => {
+			if (ScreenSharinDialog.opened) {
+				ScreenSharinDialog.close();
+			}
+			ScreenSharinDialog.open(messageBox, { rid, src: url });
+		});
 	},
 });
 
