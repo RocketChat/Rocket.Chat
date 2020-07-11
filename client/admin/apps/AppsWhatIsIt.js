@@ -8,7 +8,7 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 
-const readMeUrl = 'https://github.com/RocketChat/Rocket.Chat.Apps-dev-environment/blob/master/README.md';
+const readMeUrl = 'https://go.rocket.chat/i/developing-an-app';
 
 function AppsWhatIsIt() {
 	const t = useTranslation();
