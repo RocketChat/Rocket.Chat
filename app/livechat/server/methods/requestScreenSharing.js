@@ -31,3 +31,9 @@ Meteor.methods({
 		return ScreensharingManager.getActiveSessions();
 	},
 });
+
+// Meteor.methods({
+// 	'livechat:getSessionUrl'(roomId) {
+// 		return ScreensharingManager.getSessionUrl(roomId);
+// 	},
+// });

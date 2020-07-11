@@ -11,23 +11,6 @@ Meteor.startup(function() {
 		public: true,
 	});
 
-	settings.add('Livechat_screen_sharing_enabled', false, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		public: true,
-		section: 'Screen_Sharing',
-	});
-
-	settings.add('Livechat_screen_sharing_provider', 'Cobrowse.io', {
-		type: 'select',
-		group: 'Omnichannel',
-		public: true,
-		section: 'Screen_Sharing',
-		values: [
-			{ key: 'Cobrowse.io', i18nLabel: 'Cobrowse.io' },
-		],
-	});
-
 	settings.add('Livechat_title', 'Rocket.Chat', {
 		type: 'string',
 		group: 'Omnichannel',
@@ -557,5 +540,32 @@ Meteor.startup(function() {
 		section: 'Sessions',
 		i18nLabel: 'How_long_to_wait_to_consider_visitor_abandonment',
 		i18nDescription: 'Time_in_seconds',
+	});
+
+	// screen sharing settings
+	settings.addGroup('Screen_Sharing');
+
+	settings.add('Livechat_screen_sharing_enabled', false, {
+		type: 'boolean',
+		group: 'Screen_Sharing',
+		public: true,
+	});
+
+	settings.add('Livechat_screen_sharing_provider', 'Cobrowse.io', {
+		type: 'select',
+		group: 'Screen_Sharing',
+		public: true,
+		values: [
+			{ key: 'Cobrowse.io', i18nLabel: 'Cobrowse.io' },
+		],
+	});
+
+	settings.add('Cobrowse.io_Private_Key', '', {
+		type: 'string',
+		group: 'Screen_Sharing',
+		section: 'Cobrowse.io',
+		multiline: true,
+		i18nLabel: 'Cobrowse.io_Private_Key',
+		i18nDescription: 'Cobrowse.io_Private_Key_Description',
 	});
 });

@@ -6,11 +6,20 @@ export const ScreenSharinDialog = new class {
 
 	dialogView = null;
 
+	messageBox = null;
+
 	init() {
 		this.dialogView = Blaze.render(Template.screenSharinDialog, document.body);
 	}
 
+	setMessageBox(source) {
+		this.messageBox = source;
+	}
+
 	open(source, { rid, src }) {
+		source = source;
+		console.log(source);
+
 		if (!this.dialogView) {
 			this.init();
 		}
