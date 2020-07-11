@@ -722,6 +722,17 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('username').that.is.equal('[username]');
 			});
 
+			it('should load multiple roles from the roleAttributeName when it has multiple values', () => {
+				const multipleRoles = {
+					...profile,
+					roles: ['role1', 'role2'],
+				};
+
+				const userObject = SAMLUtils.mapProfileToUserObject(multipleRoles);
+
+				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['role1', 'role2']);
+			});
+
 			it('should assign the default role when the roleAttributeName is missing', () => {
 				const { globalSettings } = SAMLUtils;
 				globalSettings.roleAttributeName = '';

@@ -8,22 +8,22 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { css } from '@rocket.chat/css-in-js';
 
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import RawText from '../../../../client/components/basic/RawText';
-import { useRoute, useCurrentRoute } from '../../../../client/contexts/RouterContext';
-import { call, renderMessageBody } from '../../../ui-utils/client';
-import { useUserId } from '../../../../client/contexts/UserContext';
-import { Messages } from '../../../models/client';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
-import { getConfig } from '../../../ui-utils/client/config';
-import { useTimeAgo } from '../../../../client/hooks/useTimeAgo';
-import ThreadListMessage, { MessageSkeleton } from './ThreadListMessage';
-import { useUserSubscription } from './hooks/useUserSubscription';
-import { useUserRoom } from './hooks/useUserRoom';
-import { useLocalStorage } from './hooks/useLocalstorage';
-import { useSetting } from '../../../../client/contexts/SettingsContext';
-
+import VerticalBar from '../../../components/basic/VerticalBar';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import RawText from '../../../components/basic/RawText';
+import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
+import { call, renderMessageBody } from '../../../../app/ui-utils/client';
+import { useUserId } from '../../../contexts/UserContext';
+import { Messages } from '../../../../app/models/client';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
+import { getConfig } from '../../../../app/ui-utils/client/config';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import ThreadListMessage from './components/Message';
+import { useUserSubscription } from '../../hooks/useUserSubscription';
+import { useUserRoom } from '../../hooks/useUserRoom';
+import { useLocalStorage } from '../../hooks/useLocalstorage';
+import { useSetting } from '../../../contexts/SettingsContext';
+import { MessageSkeleton } from '../../components/Message';
 
 function clickableItem(WrappedComponent) {
 	const clickable = css`
