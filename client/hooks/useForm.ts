@@ -27,12 +27,8 @@ type UseFormReturnType = {
 	reset: () => void;
 };
 
-const reduceForm = (state: FormState, action: FormAction): FormState => {
-	console.time('reduceForm');
-	const newState = action(state);
-	console.timeEnd('reduceForm');
-	return newState;
-};
+const reduceForm = (state: FormState, action: FormAction): FormState =>
+	action(state);
 
 const initForm = (initialValues: Record<string, unknown>): FormState => {
 	const fields = [];
