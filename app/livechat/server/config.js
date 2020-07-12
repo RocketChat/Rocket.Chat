@@ -568,4 +568,12 @@ Meteor.startup(function() {
 		i18nLabel: 'Cobrowse.io_Private_Key',
 		i18nDescription: 'Cobrowse.io_Private_Key_Description',
 	});
+
+	settings.add('Cobrowse.io_License_Key', '', {
+		type: 'string',
+		group: 'Screen_Sharing',
+		section: 'Cobrowse.io',
+		i18nLabel: 'Cobrowse.io_License_Key',
+		i18nDescription: 'Cobrowse.io_License_Key_Description',
+	});
 });

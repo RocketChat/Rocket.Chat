@@ -29,7 +29,7 @@ messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 
 		return !sessions.get().includes(rid);
 	},
-	action: ({ rid, messageBox }) => {
+	action: ({ rid }) => {
 		Meteor.call('livechat:requestScreenSharing', rid);
 	},
 });

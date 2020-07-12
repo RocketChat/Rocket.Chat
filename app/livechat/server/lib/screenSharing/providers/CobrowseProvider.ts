@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import * as jwt from 'jsonwebtoken';
 
 import { IScreenSharingProvider } from '../IScreenSharingProvider';
@@ -14,17 +15,18 @@ export class CobrowseProvider implements IScreenSharingProvider {
 		return 'info from cobrowse.io';
 	}
 
-	getJWT(agentDisplayName: string, agentEmail: string): any {
+	getJWT(): any {
+		const user = Meteor.user();
 		const payload = {
-			displayName: agentDisplayName,
+			displayName: user.username,
 		};
 
 		const privateKEY = settings.get('Cobrowse.io_Private_Key');
 
 		// Issuer (license key)
-		const i = 'GDlHlzhpzAVO9g';
+		const i = settings.get('Cobrowse.io_License_Key');
 		// Subject
-		const s = agentEmail;
+		const s = user.emails[0].address;
 		// Audience
 		const a = 'https://cobrowse.io';
 
@@ -43,7 +45,8 @@ export class CobrowseProvider implements IScreenSharingProvider {
 	}
 
 	getURL(sessionId: string): string {
-		const jwt = this.getJWT('agent1', 'agent1@gmail.com');
+		const jwt = this.getJWT();
+		console.log(jwt);
 		return `https://cobrowse.io/connect?filter_roomId=${ sessionId }&token=${ jwt }`;
 	}
 }
