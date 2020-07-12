@@ -72,7 +72,7 @@ class E2E {
 			return;
 		}
 
-		if (room.encrypted !== true) {
+		if (room.encrypted !== true && room.e2eKeyId == null) {
 			return;
 		}
 
@@ -508,6 +508,14 @@ Meteor.startup(function() {
 	// Encrypt messages before sending
 	promises.add('onClientBeforeSendMessage', async function(message) {
 		if (!message.rid) {
+			return Promise.resolve(message);
+		}
+
+		const room = Rooms.findOne({
+			_id: message.rid,
+		});
+
+		if (!room || room.encrypted !== true) {
 			return Promise.resolve(message);
 		}
 
