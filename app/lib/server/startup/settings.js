@@ -91,7 +91,7 @@ settings.addGroup('Accounts', function() {
 	this.add('Accounts_ConfirmPasswordPlaceholder', '', {
 		type: 'string',
 		public: true,
-		i18nLabel: 'Placeholder_for_password_login_field',
+		i18nLabel: 'Placeholder_for_password_login_confirm_field',
 	});
 	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',
@@ -398,11 +398,18 @@ settings.addGroup('Accounts', function() {
 			i18nLabel: 'Sort_By',
 		});
 
+		this.add('Accounts_Default_User_Preferences_showMessageInMainThread', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Show_Message_In_Main_Thread',
+		});
+
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Group_favorites',
 		});
+
 		this.add('Accounts_Default_User_Preferences_sendOnEnter', 'normal', {
 			type: 'select',
 			values: [

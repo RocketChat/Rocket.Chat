@@ -130,6 +130,7 @@ Meteor.methods({
 				createdAt: 1,
 				emails: 1,
 				federation: 1,
+				avatarETag: 1,
 			},
 		};
 

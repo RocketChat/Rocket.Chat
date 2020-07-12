@@ -126,6 +126,7 @@ describe('miscellaneous', function() {
 					'mobileNotifications',
 					'enableAutoAway',
 					// 'highlights',
+					'showMessageInMainThread',
 					'desktopNotificationRequireInteraction',
 					'messageViewMode',
 					'hideUsernames',

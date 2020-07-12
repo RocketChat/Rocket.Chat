@@ -61,6 +61,7 @@ Meteor.methods({
 				name: 1,
 				status: 1,
 				statusText: 1,
+				avatarETag: 1,
 			},
 			sort: {},
 			filterByDiscoverability: true,

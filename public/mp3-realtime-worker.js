@@ -6,7 +6,6 @@
 	var encoder;
 	var maxSamples = 1152;
 	var samplesMono;
-	var config;
 	var dataBuffer;
 
   function convertBuffer(arrayBuffer) {

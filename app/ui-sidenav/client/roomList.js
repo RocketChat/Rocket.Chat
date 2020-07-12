@@ -142,9 +142,16 @@ const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 };
 
 const mergeSubRoom = (subscription) => {
-	const room = Rooms.findOne(subscription.rid) || { _updatedAt: subscription.ts };
+	const options = {
+		fields: {
+			lm: 1,
+			lastMessage: 1,
+			streamingOptions: 1,
+		},
+	};
+	const room = Rooms.findOne({ _id: subscription.rid }, options) || { lm: subscription.ts };
 	subscription.lastMessage = room.lastMessage;
-	subscription.lm = (room.lastMessage && room.lastMessage.ts) || room._updatedAt;
+	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, room.lm)) : ((room.lastMessage && room.lastMessage.ts) || room.lm);
 	subscription.streamingOptions = room.streamingOptions;
 	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
@@ -160,9 +167,17 @@ const mergeRoomSub = (room) => {
 	}, {
 		$set: {
 			lastMessage: room.lastMessage,
-			lm: (room.lastMessage && room.lastMessage.ts) || room._updatedAt,
 			streamingOptions: room.streamingOptions,
 			...getLowerCaseNames(room, sub.name, sub.fname),
+		},
+	});
+
+	Subscriptions.update({
+		rid: room._id,
+		lm: { $lt: (room.lastMessage && room.lastMessage.ts) || room.lm },
+	}, {
+		$set: {
+			lm: room.lm,
 		},
 	});
 

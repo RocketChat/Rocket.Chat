@@ -114,7 +114,7 @@ export const RoomManager = new function() {
 			return Object.keys(openedRooms).map((typeName) => openedRooms[typeName]).find((openedRoom) => openedRoom.rid === rid);
 		}
 
-		getDomOfRoom(typeName, rid) {
+		getDomOfRoom(typeName, rid, templateName) {
 			const room = openedRooms[typeName];
 			if (room == null) {
 				return;
@@ -125,7 +125,7 @@ export const RoomManager = new function() {
 				room.dom.classList.add('room-container');
 				const contentAsFunc = (content) => () => content;
 
-				room.template = Blaze._TemplateWith({ _id: rid }, contentAsFunc(Template.room));
+				room.template = Blaze._TemplateWith({ _id: rid }, contentAsFunc(Template[templateName || 'room']));
 				Blaze.render(room.template, room.dom); // , nextNode, parentView
 			}
 

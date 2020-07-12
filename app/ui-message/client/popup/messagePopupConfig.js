@@ -67,13 +67,14 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 
 	users
 		.slice(0, 5)
-		.forEach(({ username, name, status }) => {
+		.forEach(({ username, name, status, avatarETag }) => {
 			if (records.length < 5) {
 				records.push({
 					_id: username,
 					username,
 					name,
 					status,
+					avatarETag,
 					sort: 3,
 				});
 			}

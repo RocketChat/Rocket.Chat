@@ -1,6 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks';
-
-callbacks.add('ldap.beforeSearchAll', (searchParams) => {
+export const beforeSearchAll = (searchParams) => {
 	const { options } = searchParams;
 
 	if (!Array.isArray(options.attributes)) {
@@ -10,4 +8,4 @@ callbacks.add('ldap.beforeSearchAll', (searchParams) => {
 	options.attributes.push('pwdAccountLockedTime');
 
 	return searchParams;
-}, callbacks.priority.MEDIUM, 'ldap-return-attribute-AccountLockedTime');
+};

@@ -110,11 +110,12 @@ Meteor.startup(function() {
 		{ _id: 'view-livechat-appearance',      roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-webhooks',        roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-facebook',        roles: ['livechat-manager', 'admin'] },
-		{ _id: 'view-livechat-officeHours',     roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-business-hours',     roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-room-closed-same-department',  roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-room-closed-by-another-agent', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-room-customfields',    roles: ['livechat-manager', 'livechat-agent', 'admin'] },
 		{ _id: 'edit-livechat-room-customfields',    roles: ['livechat-manager', 'livechat-agent', 'admin'] },
+		{ _id: 'send-omnichannel-chat-transcript',   roles: ['livechat-manager', 'admin'] },
 	];
 
 	for (const permission of permissions) {

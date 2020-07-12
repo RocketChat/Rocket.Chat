@@ -40,7 +40,7 @@
 	/* #region colors Colors */
 	--rc-color-error: var(--color-red);
 	--rc-color-error-light: #e1364c;
-	--rc-color-alert: var(--color-orange);
+	--rc-color-alert: var(--color-yellow);
 	--rc-color-alert-light: var(--color-dark-yellow);
 	--rc-color-success: var(--color-green);
 	--rc-color-success-light: #25d198;
@@ -104,7 +104,7 @@
 	--toolbar-height: 55px;
 	--footer-min-height: 70px;
 	--rooms-box-width: 280px;
-	--flex-tab-width: 400px;
+	--flex-tab-width: 380px;
 	--flex-tab-webrtc-width: 400px;
 	--flex-tab-webrtc-2-width: 850px;
 	--border: 2px;
@@ -322,20 +322,20 @@
 	--badge-radius: 12px;
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--rc-color-primary-dark);
-	--badge-unread-background: var(--rc-color-primary-dark);
-	--badge-user-mentions-background: var(--color-dark-blue);
-	--badge-group-mentions-background: var(--rc-color-primary-dark);
+	--badge-unread-background: var(--color-blue);
+	--badge-user-mentions-background: var(--color-red);
+	--badge-group-mentions-background: var(--color-orange);
 
 	/*
 	* Mention link
 	*/
-	--mention-link-radius: 10px;
-	--mention-link-background: var(--color-lighter-blue);
-	--mention-link-text-color: var(--color-dark-blue);
-	--mention-link-me-background: var(--color-dark-blue);
-	--mention-link-me-text-color: var(--color-white);
-	--mention-link-group-background: var(--rc-color-primary-dark);
-	--mention-link-group-text-color: var(--color-white);
+	--mention-link-radius: 4px;
+	--mention-link-background: #fff6d6;
+	--mention-link-text-color: #b68d00;
+	--mention-link-me-background: #ffe9ec;
+	--mention-link-me-text-color: var(--color-red);
+	--mention-link-group-background: #fde8d7;
+	--mention-link-group-text-color: var(--color-orange);
 
 	/*
 	* Message box

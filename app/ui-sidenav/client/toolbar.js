@@ -52,6 +52,7 @@ const getFromServer = (cb, type) => {
 			t: 'd',
 			name: user.username,
 			fname: user.name,
+			avatarETag: user.avatarETag,
 		});
 
 		resultsFromServer.push(...results.users.map(userMap));

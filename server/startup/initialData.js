@@ -41,7 +41,7 @@ Meteor.startup(function() {
 			};
 
 			Meteor.runAsUser('rocket.cat', () => {
-				fileStore.insert(file, rs, () => Users.setAvatarOrigin('rocket.cat', 'local'));
+				fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
 			});
 		}
 
