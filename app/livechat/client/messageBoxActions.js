@@ -31,11 +31,6 @@ messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 	},
 	action: ({ rid, messageBox }) => {
 		Meteor.call('livechat:requestScreenSharing', rid);
-		// ScreenSharinDialog.setMessageBox(messageBox);
-		if (ScreenSharinDialog.opened) {
-			ScreenSharinDialog.close();
-		}
-		// ScreenSharinDialog.open(messageBox, { rid, src: `https://ashwaniydv.github.io/sstest/index.html?rid=${ rid }` });
 	},
 });
 
