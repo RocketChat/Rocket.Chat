@@ -6,16 +6,18 @@ import { Match, check } from 'meteor/check';
 export const handleAccessToken = (loginRequest) => {
 	check(loginRequest, Match.ObjectIncluding({
 		identityToken: String,
-		fullName: Object,
-		email: String,
+		fullName: Match.Maybe(Object),
+		email: Match.Maybe(String),
 	}));
 
 	const decodedToken = decodeToken(loginRequest.identityToken).payload;
 
-	const { givenName, familyName } = loginRequest.fullName;
-
 	const profile = {};
-	profile.name = `${ givenName } ${ familyName }`;
+
+	const { givenName, familyName } = loginRequest.fullName;
+	if (givenName && familyName) {
+		profile.name = `${ givenName } ${ familyName }`;
+	}
 
 	const { iss, iat, exp } = decodedToken;
 
@@ -33,6 +35,11 @@ export const handleAccessToken = (loginRequest) => {
 		issuedAt: new Date(iat * 1000),
 		expiresAt: new Date(exp * 1000),
 	};
+
+	const { email } = loginRequest;
+	if (email) {
+		serviceData.email = email;
+	}
 
 	return {
 		serviceData,
