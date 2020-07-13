@@ -101,6 +101,7 @@ const toolbarButtons = (/* user */) => [{
 
 		const createChannel = action('Create_A_New_Channel', 'createChannel');
 		const createDirectMessage = action('Direct_Messages', 'CreateDirectMessage');
+		const createDirectMessageWhatsapp = action('Direct_Messages', 'CreateDirectMessageWhatsapp');
 		const createDiscussion = action('Discussion_title', 'CreateDiscussion');
 
 
@@ -110,6 +111,13 @@ const toolbarButtons = (/* user */) => [{
 				icon: 'hashtag',
 				name: t('Channel'),
 				action: createChannel,
+			},
+			hasAtLeastOnePermission(['create-c', 'create-p'])
+			&& {
+				icon: 'hashtag',
+				name: t('Envio_Whatsapp'),
+				action: createDirectMessageWhatsapp,
+				
 			},
 			hasPermission('create-d')
 			&& {

@@ -22,6 +22,7 @@ class Twilio {
 	constructor() {
 		this.accountSid = settings.get('SMS_Twilio_Account_SID');
 		this.authToken = settings.get('SMS_Twilio_authToken');
+		this.numbersend = settings.get('SMS_Twilio_Number_Send');
 		this.fileUploadEnabled = settings.get('SMS_Twilio_FileUpload_Enabled');
 		this.mediaTypeWhiteList = settings.get('SMS_Twilio_FileUpload_MediaTypeWhiteList');
 	}
@@ -113,6 +114,10 @@ class Twilio {
 			const [longitude, latitude] = extraData.location.coordinates;
 			persistentAction = `geo:${ latitude },${ longitude }`;
 			body = TAPi18n.__('Location', { lng: defaultLanguage });
+		}
+
+		if(fromNumber){
+			fromNumber = this.numbersend;
 		}
 
 		client.messages.create({

@@ -34,6 +34,7 @@ import './views/404/roomNotFound';
 import './views/app/burger';
 import './views/app/createChannel';
 import './views/app/CreateDirectMessage';
+import './views/app/CreateDirectMessageWhatsapp';
 import './views/app/editStatus';
 import './views/app/fullModal';
 import './views/app/home';
