@@ -9,19 +9,20 @@
 
 	display: none;
 
+	box-sizing: border-box;
+
 	padding: 2px;
 
 	user-select: none;
 
 	color: var(--color-darkest);
 
-	background: var(rcx-surface, #fff);
+	border: 2px solid #f2f3f7;
+	border-radius: 4px;
+
+	background: var(rcx-surface, #ffffff);
 
 	font-size: 1.25rem;
-
-	border: 2px solid #F2F3F7;
-	box-sizing: border-box;
-	border-radius: 4px;
 
 	&__buttons {
 		display: flex;
@@ -34,8 +35,8 @@
 		cursor: pointer;
 
 		&:hover {
-			background: #EEEFF1;
 			border-radius: 2px;
+			background: #eeeff1;
 		}
 
 		&-icon {
