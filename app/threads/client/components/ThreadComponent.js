@@ -11,7 +11,7 @@ import { roomTypes, APIClient } from '../../../utils/client';
 import { call } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useLocalStorage } from './hooks/useLocalstorage';
+import { useLocalStorage } from '../../../../client/Channel/hooks/useLocalstorage';
 import { normalizeThreadTitle } from '../lib/normalizeThreadTitle';
 
 export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
