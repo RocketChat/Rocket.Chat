@@ -1,8 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { Match, check } from 'meteor/check';
 
 import { appTokensCollection } from '../../../push/server';
 import { API } from '../api';
+import PushNotification from '../../../push-notifications/server/lib/PushNotification';
+
 
 API.v1.addRoute('push.token', { authRequired: true }, {
 	post() {
@@ -61,5 +64,18 @@ API.v1.addRoute('push.token', { authRequired: true }, {
 		}
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('push.get', { authRequired: true }, {
+	get() {
+		const params = this.requestParams();
+		check(params, Match.ObjectIncluding({
+			id: String,
+		}));
+
+		const data = PushNotification.getNotificationForMessageId(params.id, Meteor.userId());
+
+		return API.v1.success({ data });
 	},
 });
