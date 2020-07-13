@@ -7,6 +7,8 @@ import { roomTypes } from '../../../../utils/client';
 import { call } from '../../../../ui-utils/client';
 import './CreateDirectMessageWhatsapp.html';
 
+import { t, APIClient } from '../../../../utils/client';
+
 Template.CreateDirectMessageWhatsapp.helpers({
 	onSelectUser() {
 		return Template.instance().onSelectUser;
@@ -62,47 +64,67 @@ const waitUntilRoomBeInserted = async (rid) => new Promise((resolve) => {
 });
 
 Template.CreateDirectMessageWhatsapp.events({
-	async 'submit #create-dm, click .js-save-dm'(event, instance) {
+	async 'submit .create-channel__content'(event, instance) {
 		event.preventDefault();
-		const users = instance.selectedUsers.get().map(({ username }) => username).filter((value, index, self) => self.indexOf(value) === index);
 
-		const result = await call('createDirectMessage', ...users);
+		const numeroCelular = event.target.numeroCelular.value;
+		console.log(numeroCelular)
 
-		if (instance.data.onCreate) {
-			instance.data.onCreate(result);
-		}
+		const newvisiter = {
+			"From": "whatsapp:+55"+numeroCelular,
+			"To": "whatsapp:+557140420385",
+			"Body": "SMS message",
+			"ToCountry": "Brazil",
+			"ToState": "RS",
+			"ToCity": "Porto Alegre",
+			"ToZip": "",
+			"FromCountry": "Brazil",
+			"FromState": "RS",
+			"FromCity": "Porto Alegre",
+			"FromZip": ""
+		  }
 
-		await waitUntilRoomBeInserted(result.rid);
+		  const visit = await APIClient.v1.post('livechat/sms-incoming/twilio',  newvisiter )
 
-		const user = Meteor.user();
-		roomTypes.openRouteLink(result.t, { ...result, name: result.usernames.filter((username) => username !== user.username).join(', ') });
+		// const users = instance.selectedUsers.get().map(({ username }) => username).filter((value, index, self) => self.indexOf(value) === index);
+
+		// const result = await call('createDirectMessage', ...users);
+
+		// if (instance.data.onCreate) {
+		// 	instance.data.onCreate(result);
+		// }
+
+		// await waitUntilRoomBeInserted(result.rid);
+
+		// const user = Meteor.user();
+		// roomTypes.openRouteLink(result.t, { ...result, name: result.usernames.filter((username) => username !== user.username).join(', ') });
 	},
 });
 
 Template.CreateDirectMessageWhatsapp.onRendered(function() {
-	this.find('#directMessageUsers').focus();
+	//this.find('#directMessageUsers').focus();
 });
 
 Template.CreateDirectMessageWhatsapp.onCreated(function() {
-	this.selectedUsers = new ReactiveVar([]);
+	// this.selectedUsers = new ReactiveVar([]);
 
-	this.onSelectUser = ({ item: user }) => {
-		if (user.username === Meteor.user().username) {
-			return;
-		}
-		const users = this.selectedUsers.get();
-		if (!users.find((u) => user.username === u.username)) {
-			this.selectedUsers.set([...users, user]);
-		}
-	};
+	// this.onSelectUser = ({ item: user }) => {
+	// 	if (user.username === Meteor.user().username) {
+	// 		return;
+	// 	}
+	// 	const users = this.selectedUsers.get();
+	// 	if (!users.find((u) => user.username === u.username)) {
+	// 		this.selectedUsers.set([...users, user]);
+	// 	}
+	// };
 
-	this.onClickTagUser = ({ username }) => {
-		this.selectedUsers.set(this.selectedUsers.get().filter((user) => user.username !== username));
-	};
+	// this.onClickTagUser = ({ username }) => {
+	// 	this.selectedUsers.set(this.selectedUsers.get().filter((user) => user.username !== username));
+	// };
 
-	this.deleteLastItemUser = () => {
-		const arr = this.selectedUsers.get();
-		arr.pop();
-		this.selectedUsers.set(arr);
-	};
+	// this.deleteLastItemUser = () => {
+	// 	const arr = this.selectedUsers.get();
+	// 	arr.pop();
+	// 	this.selectedUsers.set(arr);
+	// };
 });
