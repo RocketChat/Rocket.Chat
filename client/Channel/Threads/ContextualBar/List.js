@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useDebouncedState, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { css } from '@rocket.chat/css-in-js';
 
 import VerticalBar from '../../../components/basic/VerticalBar';
@@ -21,7 +21,6 @@ import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import ThreadListMessage from './components/Message';
 import { useUserSubscription } from '../../hooks/useUserSubscription';
 import { useUserRoom } from '../../hooks/useUserRoom';
-import { useLocalStorage } from '../../hooks/useLocalstorage';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { MessageSkeleton } from '../../components/Message';
 

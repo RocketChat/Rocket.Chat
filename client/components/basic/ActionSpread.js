@@ -17,7 +17,7 @@ const ActionSpread = ({ actions, mapSpread = mapFn, className }) => {
 
 	return <>
 		{spread.length > 0 && spread.map((Item, index) => <Item key={index} className={className}/>)}
-		{Object.keys(options).length > 0 && <Menu className={className} options={options} placement='bottom left'/>}
+		{Object.keys(options).length > 0 && <Menu className={className} options={options}/>}
 	</>;
 };
 

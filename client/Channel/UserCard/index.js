@@ -63,7 +63,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));
 
-	const menu = menuOptions && <Menu flexShrink={0} key='menu' options={menuOptions} placement='bottom left'/>;
+	const menu = menuOptions && <Menu flexShrink={0} key='menu' options={menuOptions}/>;
 
 	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserCard.Action key={key} aria-label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
 
@@ -71,7 +71,8 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		<Backdrop bg='transparent' onClick={onClose}/>
 		<PositionAnimated
 			anchor={ref}
-			placement='center right'
+			placement='top-start'
+			margin={8}
 			visible={AnimatedVisibility.UNHIDING}
 		>
 			<UserCard

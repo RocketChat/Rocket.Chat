@@ -174,7 +174,7 @@ function AppMenu({ app, ...props }) {
 		handleUninstall,
 	]);
 
-	return <Menu options={menuOptions} placement='bottom left' {...props}/>;
+	return <Menu options={menuOptions} {...props}/>;
 }
 
 export default AppMenu;
