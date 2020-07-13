@@ -2611,6 +2611,7 @@
   "No_starred_messages": "No starred messages",
   "No_such_command": "No such command: `/__command__`",
   "No_discussions_yet": "No discussions yet",
+  "No_Discussions_found": "No discussions found",
   "No_Threads": "No threads found",
   "No_user_with_username_%s_was_found": "No user with username <strong>\"%s\"</strong> was found!",
   "No_data_found": "No data found",

@@ -6,38 +6,25 @@ import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fus
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { css } from '@rocket.chat/css-in-js';
 
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import RawText from '../../../../client/components/basic/RawText';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { roomTypes } from '../../../utils/client';
-import { call, renderMessageBody } from '../../../ui-utils/client';
-import { useUserId } from '../../../../client/contexts/UserContext';
-import { Messages } from '../../../models/client';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
-import { getConfig } from '../../../ui-utils/client/config';
-import { useTimeAgo } from '../../../../client/hooks/useTimeAgo';
-import ThreadListMessage, { MessageSkeleton } from './ThreadListMessage';
-import { useUserSubscription } from './hooks/useUserSubscription';
-import { useUserRoom } from './hooks/useUserRoom';
-import { useLocalStorage } from './hooks/useLocalstorage';
-import { useSetting } from '../../../../client/contexts/SettingsContext';
-
-
-function clickableItem(WrappedComponent) {
-	const clickable = css`
-		cursor: pointer;
-		border-bottom: 2px solid #F2F3F5 !important;
-
-		&:hover,
-		&:focus {
-			background: #F7F8FA;
-		}
-	`;
-	return (props) => <WrappedComponent className={clickable} tabIndex={0} {...props}/>;
-}
+import { roomTypes } from '../../../../app/utils/client';
+import { call, renderMessageBody } from '../../../../app/ui-utils/client';
+import { getConfig } from '../../../../app/ui-utils/client/config';
+import { Messages } from '../../../../app/models/client';
+import VerticalBar from '../../../components/basic/VerticalBar';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import RawText from '../../../components/basic/RawText';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useUserId } from '../../../contexts/UserContext';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { MessageSkeleton } from '../../components/Message';
+import { useUserSubscription } from '../../hooks/useUserSubscription';
+import { useUserRoom } from '../../hooks/useUserRoom';
+import { useLocalStorage } from '../../hooks/useLocalstorage';
+import { useSetting } from '../../../contexts/SettingsContext';
+import ThreadListMessage from './components/Message';
+import { clickableItem } from '../../helpers/clickableItem';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;

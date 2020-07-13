@@ -74,7 +74,7 @@ const SidebarItemsAssembler = React.memo(({ items, currentPath }) => {
 });
 
 const AdminSidebarPages = React.memo(({ currentPath }) => {
-	const items = useReactiveValue(() => sidebarItems.get());
+	const items = useReactiveValue(useCallback(() => sidebarItems.get(), []));
 
 	return <Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
 		<SidebarItemsAssembler items={items} currentPath={currentPath}/>
@@ -163,7 +163,13 @@ const AdminSidebarSettings = ({ currentPath }) => {
 export default React.memo(function AdminSidebar() {
 	const t = useTranslation();
 
-	const canViewSettings = useAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+	const canViewSettings = useAtLeastOnePermission(
+		useMemo(() => [
+			'view-privileged-setting',
+			'edit-privileged-setting',
+			'manage-selected-settings',
+		], []),
+	);
 
 	const closeAdminFlex = useCallback(() => {
 		if (Layout.isEmbedded()) {
