@@ -5,7 +5,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUser } from '../../contexts/UserContext';
 import { useMethodData, useMethod } from '../../contexts/ServerContext';
-import { useRouteParameter } from '../../contexts/RouterContext';
+import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,
@@ -15,21 +15,22 @@ const getChangePasswordReason = ({
 } = {}) => requirePasswordChangeReason;
 
 
-const ResetPassword = ({ resetPassword }) => {
+const ResetPassword = () => {
 	const user = useUser();
 	const t = useTranslation();
 	const [{ enabled: policyEnabled, policy: policies } = {}] = useMethodData('getPasswordPolicy');
 
-
 	const setUserPassword = useMethod('setUserPassword');
+	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
+
+	const router = useRoute('home');
 
 	const changePasswordReason = getChangePasswordReason(user || {});
 
 	const [newPassword, setNewPassword] = useState('');
 	const [isLoading, setIsLoading] = useSafely(useState(false));
 	const [error, setError] = useSafely(useState());
-
 
 	const handleOnChange = useCallback((event) => setNewPassword(event.currentTarget.value), [setNewPassword]);
 
@@ -44,6 +45,7 @@ const ResetPassword = ({ resetPassword }) => {
 		try {
 			if (token && resetPassword) {
 				await resetPassword(token, newPassword);
+				router.push({});
 			} else {
 				await setUserPassword(newPassword);
 			}
@@ -52,7 +54,7 @@ const ResetPassword = ({ resetPassword }) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [newPassword, isSubmitDisabled, setUserPassword, resetPassword, token, setError, setIsLoading]);
+	}, [isSubmitDisabled, setIsLoading, token, resetPassword, newPassword, router, setUserPassword, setError]);
 
 	return (
 		<Modal is='form' onSubmit={handleSubmit}>
@@ -60,7 +62,7 @@ const ResetPassword = ({ resetPassword }) => {
 				<Modal.Title textAlign='start'>{t('Password')}</Modal.Title>
 			</Modal.Header>
 			<Modal.Content>
-				<Box is='p' fontScale='h2' textAlign='start'>
+				<Box is='p' fontScale='h1' textAlign='start'>
 					{t(changePasswordReason)}
 				</Box>
 				<Field>
