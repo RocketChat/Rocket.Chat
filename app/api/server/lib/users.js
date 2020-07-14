@@ -14,6 +14,7 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 			name: 1,
 			username: 1,
 			status: 1,
+			avatarETag: 1,
 		},
 		sort: {
 			username: 1,

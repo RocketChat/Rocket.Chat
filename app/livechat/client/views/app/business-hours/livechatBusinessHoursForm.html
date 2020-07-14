@@ -1,0 +1,65 @@
+<template name="livechatBusinessHoursForm">
+    {{#requiresPermission 'view-livechat-business-hours'}}
+        <form class="rocket-form" id="businessHoursForm">
+            {{#if timezoneTemplate}}
+                {{> Template.dynamic template=timezoneTemplate data=data }}
+            {{/if}}
+
+            {{#if customFieldsTemplate}}
+                {{> Template.dynamic template=customFieldsTemplate data=data }}
+            {{/if}}
+
+            <!-- days open -->
+            <fieldset>
+                <legend>{{_ "Open_days_of_the_week"}}</legend>
+                {{#each day in days}}
+                    {{#if open day}}
+                        <label class="dayOpenCheck"><input type="checkbox" name={{openName day}} checked>{{name
+                                day}}</label>
+                    {{else}}
+                        <label class="dayOpenCheck"><input type="checkbox" name={{openName day}}>{{name day}}
+                        </label>
+                    {{/if}}
+                {{/each}}
+            </fieldset>
+
+            <!-- times -->
+            <fieldset>
+                <legend>{{_ "Hours"}}</legend>
+                {{#each day in days}}
+                    <div class="input-line">
+                        <h1><strong>{{name day}}</strong></h1>
+                        <table style="width:100%;">
+                            <tr>
+                                <td>{{_ "Open"}}:</td>
+                                <td>{{_ "Close"}}:</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="margin-right:30px">
+                                        <input type="time" class="preview-settings rc-input__element"
+                                               name={{startName day}} id={{startName day}}  value={{start day}}
+                                               style="width=100px;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="margin-right:30px">
+                                        <input type="time" class="preview-settings rc-input__element"
+                                               name={{finishName day}} id={{finishName day}} value={{finish day}}
+                                               style="width=100px;">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                {{/each}}
+            </fieldset>
+
+
+            <div class="rc-button__group">
+                {{#if showBackButton}}<button class="rc-button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>{{/if}}
+                <button class="rc-button rc-button--primary save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
+            </div>
+        </form>
+    {{/requiresPermission}}
+</template>

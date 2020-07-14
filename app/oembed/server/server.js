@@ -3,7 +3,7 @@ import querystring from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import { HTTPInternals } from 'meteor/http';
-import { changeCase } from 'meteor/konecty:change-case';
+import { camelCase } from 'change-case';
 import _ from 'underscore';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
@@ -176,16 +176,16 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 			return escapeMeta('pageTitle', title);
 		});
 		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gmi, function(meta, name, value) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gmi, function(meta, name, value) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, function(meta, value, name) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, function(meta, value, name) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		if (metas.fragment === '!' && (withFragment == null)) {
 			return OEmbed.getUrlMeta(url, true);
@@ -199,7 +199,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		headers = {};
 		const headerObj = content.headers;
 		Object.keys(headerObj).forEach((header) => {
-			headers[changeCase.camelCase(header)] = headerObj[header];
+			headers[camelCase(header)] = headerObj[header];
 		});
 	}
 	if (content && content.statusCode !== 200) {

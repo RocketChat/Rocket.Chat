@@ -1,6 +1,8 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 
 import { Users } from '../../../../app/models/server';
+import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
+import { addRoleRestrictions } from '../../authorization/lib/addRoleRestrictions';
 import decrypt from './decrypt';
 import { getBundleModules, isBundle } from './bundles';
 
@@ -21,6 +23,7 @@ export interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let addedRoleRestrictions = false;
 
 class LicenseClass {
 	private url: string|null = null;
@@ -76,6 +79,12 @@ class LicenseClass {
 		});
 
 		this.validate();
+
+		if (!addedRoleRestrictions && this.hasAnyValidLicense()) {
+			addRoleRestrictions();
+			resetEnterprisePermissions();
+			addedRoleRestrictions = true;
+		}
 	}
 
 	hasModule(module: string): boolean {

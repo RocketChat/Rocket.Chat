@@ -44,7 +44,7 @@ export const KonchatNotification = {
 					requireInteraction: getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction'),
 				});
 
-				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
+				const notificationDuration = notification.duration - 0 || 10;
 				if (notificationDuration > 0) {
 					setTimeout(() => n.close(), notificationDuration * 1000);
 				}
@@ -65,11 +65,11 @@ export const KonchatNotification = {
 						window.focus();
 						switch (notification.payload.type) {
 							case 'd':
-								return FlowRouter.go('direct', { rid: notification.payload.rid }, FlowRouter.current().queryParams);
+								return FlowRouter.go('direct', { rid: notification.payload.rid, ...notification.payload.tmid && { tab: 'thread', context: notification.payload.tmid } }, { ...FlowRouter.current().queryParams, jump: notification.payload._id });
 							case 'c':
-								return FlowRouter.go('channel', { name: notification.payload.name }, FlowRouter.current().queryParams);
+								return FlowRouter.go('channel', { name: notification.payload.name, ...notification.payload.tmid && { tab: 'thread', context: notification.payload.tmid } }, { ...FlowRouter.current().queryParams, jump: notification.payload._id });
 							case 'p':
-								return FlowRouter.go('group', { name: notification.payload.name }, FlowRouter.current().queryParams);
+								return FlowRouter.go('group', { name: notification.payload.name, ...notification.payload.tmid && { tab: 'thread', context: notification.payload.tmid } }, { ...FlowRouter.current().queryParams, jump: notification.payload._id });
 						}
 					};
 				}
@@ -165,14 +165,7 @@ Meteor.startup(() => {
 				}
 			});
 		} else {
-			const [room] = $(`audio#${ newRoomNotification }`);
-			if (!room) {
-				return;
-			}
-			if (room.pause) {
-				room.pause();
-				room.currentTime = 0;
-			}
+			CustomSounds.pause(newRoomNotification);
 		}
 	});
 });

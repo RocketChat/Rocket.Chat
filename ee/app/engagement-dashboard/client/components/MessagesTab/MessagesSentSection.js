@@ -4,9 +4,14 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { CounterSet } from '../data/CounterSet';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
-import { useEndpointData } from '../../hooks/useEndpointData';
+import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
+import { saveFile } from '../../../../../../client/lib/saveFile';
+
+const convertDataToCSV = (data) => `// date, newMessages
+${ data.map(({ date, newMessages }) => `${ date }, ${ newMessages }`).join('\n') }`;
 
 export function MessagesSentSection() {
 	const t = useTranslation();
@@ -48,7 +53,7 @@ export function MessagesSentSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/messages/messages-sent', params);
+	const data = useEndpointData('engagement-dashboard/messages/messages-sent', params);
 
 	const [
 		countFromPeriod,
@@ -81,9 +86,13 @@ export function MessagesSentSection() {
 		];
 	}, [data, period]);
 
+	const downloadData = () => {
+		saveFile(convertDataToCSV(values), `MessagesSentSection_start_${ params.start }_end_${ params.end }.csv`);
+	};
+
 	return <Section
 		title={t('Messages_sent')}
-		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
+		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
 	>
 		<CounterSet
 			counters={[
@@ -157,7 +166,7 @@ export function MessagesSentSection() {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 										{t('Value_messages', { value })}
 									</Box>}
 								/>

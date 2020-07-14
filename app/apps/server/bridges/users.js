@@ -1,9 +1,8 @@
 import { Random } from 'meteor/random';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
-
 
 export class AppUserBridge {
 	constructor(orch) {
@@ -25,7 +24,7 @@ export class AppUserBridge {
 	async getAppUser(appId) {
 		this.orch.debugLog(`The App ${ appId } is getting its assigned user`);
 
-		const user = Users.findOne({ appId });
+		const user = Users.findOneByAppId(appId);
 
 		return this.orch.getConverters().get('users').convertToApp(user);
 	}

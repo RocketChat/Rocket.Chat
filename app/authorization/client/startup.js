@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { hasAtLeastOnePermission } from './hasPermission';
-import { registerAdminSidebarItem } from '../../ui-admin/client';
+import { registerAdminSidebarItem } from '../../../client/admin';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { APIClient } from '../../utils/client';
 import { Roles } from '../../models/client';
