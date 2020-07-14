@@ -85,7 +85,7 @@ export interface ISettingAddOptions {
 	public?: boolean;
 	enterprise?: boolean;
 	modules?: Array<string>;
-	invalidValue?: any;
+	invalidValue?: SettingValue;
 }
 export interface ISettingSelectOption {
 	key: string;
