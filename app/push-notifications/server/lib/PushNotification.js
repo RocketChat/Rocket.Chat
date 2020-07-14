@@ -66,9 +66,9 @@ export class PushNotification {
 		return hash;
 	}
 
-	send({ rid, uid: userId, mid: messageId, roomName, username, message, payload, badge = 1, category }) {
+	send({ rid, uid, mid, roomName, username, message, payload, badge = 1, category }) {
 		const idOnly = settings.get('Push_request_content_from_server');
-		const config = this.getNotificationConfig({ rid, userId, messageId, roomName, username, message, payload, badge, category, idOnly });
+		const config = this.getNotificationConfig({ rid, uid, mid, roomName, username, message, payload, badge, category, idOnly });
 
 		metrics.notificationsSent.inc({ notification_type: 'mobile' });
 		return Push.send(config);
