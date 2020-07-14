@@ -10,7 +10,8 @@ import { ScreenSharinDialog } from './views/app/ui-screensharing/client';
 import { screenSharingStreamer } from './lib/stream/screenSharingStream';
 import { callbacks } from '../../callbacks/client';
 
-const sessions = new ReactiveVar([]);
+const activeSessions = new ReactiveVar([]);
+const pendingSessions = new ReactiveVar([]);
 
 messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 	id: 'request-screen-sharing',
@@ -27,7 +28,7 @@ messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 			return;
 		}
 
-		return !sessions.get().includes(rid);
+		return !activeSessions.get().includes(rid) && !pendingSessions.get().includes(rid);
 	},
 	action: ({ rid }) => {
 		Meteor.call('livechat:requestScreenSharing', rid);
@@ -49,7 +50,7 @@ messageBox.actions.add('Screen_Sharing', 'Active_Screen_Sharing_Session', {
 			return;
 		}
 
-		return sessions.get().includes(rid);
+		return activeSessions.get().includes(rid);
 	},
 	action: ({ rid, messageBox }) => {
 		Meteor.call('livechat:getSessionUrl', rid, (err, url) => {
@@ -63,13 +64,19 @@ messageBox.actions.add('Screen_Sharing', 'Active_Screen_Sharing_Session', {
 
 Meteor.startup(function() {
 	Meteor.call('livechat:getActiveSessions', (err, data) => {
-		sessions.set(data);
+		activeSessions.set(data);
 	});
 	Tracker.autorun(() => {
-		screenSharingStreamer.on('session-modified', ({ activeSessions }) => {
-			console.log(activeSessions);
-			sessions.set(activeSessions);
+		screenSharingStreamer.on('active-sessions-modified', ({ sessions }) => {
+			console.log(sessions);
+			activeSessions.set(sessions);
 		});
+	});
+	Tracker.autorun(() => {
+		screenSharingStreamer.on('pending-sessions-modified', ({ sessions }) => {
+			console.log(sessions);
+			pendingSessions.set(sessions);
+		});	
 	});
 });
 

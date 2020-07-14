@@ -57,16 +57,19 @@ export class ScreenSharingManager {
 		Messages.createWithTypeRoomIdMessageAndUser('request_screen_sharing_access', roomId, '', user, {});
 		this.pendingSessions = this.pendingSessions.filter((id) => id !== roomId);
 		this.pendingSessions.push(roomId);
+		screenSharingStreamer.emit('pending-sessions-modified', { sessions: this.pendingSessions });
 	}
 
 	screenSharingRequestRejected(roomId: string, visitor: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('screen_sharing_request_rejected', roomId, '', visitor, {});
 		this.pendingSessions = this.pendingSessions.filter((id) => id !== roomId);
+		screenSharingStreamer.emit('pending-sessions-modified', { sessions: this.pendingSessions });
 	}
 
 	screenSharingRequestAccepted(roomId: string, visitor: any, agent: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('screen_sharing_request_accepted', roomId, '', visitor, {});
 		this.pendingSessions = this.pendingSessions.filter((id) => id !== roomId);
+		screenSharingStreamer.emit('pending-sessions-modified', { sessions: this.pendingSessions });
 		const user = Users.findOneByUsernameIgnoringCase(agent.username);
 		this.addActiveScreenSharing(roomId, user);
 	}
@@ -85,14 +88,14 @@ export class ScreenSharingManager {
 		const sessionUrl = this.screenShareProvider.getURL(roomId, agent);
 		this.urls.set(roomId, sessionUrl);
 		console.log(this.activeSessions);
-		screenSharingStreamer.emit('session-modified', { activeSessions: this.activeSessions });
+		screenSharingStreamer.emit('active-sessions-modified', { sessions: this.activeSessions });
 	}
 
 	removeActiveScreenSharing(roomId: string): void {
 		this.activeSessions = this.activeSessions.filter((id) => id !== roomId);
 		this.urls.delete(roomId);
 		console.log(this.activeSessions);
-		screenSharingStreamer.emit('session-modified', { activeSessions: this.activeSessions });
+		screenSharingStreamer.emit('active-sessions-modified', { sessions: this.activeSessions });
 	}
 
 	getActiveSessions(): string[] {
