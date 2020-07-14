@@ -97,6 +97,7 @@
   "Accounts_iframe_url": "URL do Iframe",
   "Accounts_LoginExpiration": "Expiração do Login em Dias",
   "Accounts_ManuallyApproveNewUsers": "Aprovar Manualmente novos Usuários",
+  "Accounts_OAuth_Apple": "Iniciar sessão com a Apple",
   "Accounts_OAuth_Custom_Authorize_Path": "Path de Autorização",
   "Accounts_OAuth_Custom_Avatar_Field": "Avatar",
   "Accounts_OAuth_Custom_Button_Color": "Cor do Botão",
