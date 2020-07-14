@@ -139,6 +139,16 @@
 								</label>
 							</div>
 						</div>
+						<div class="rc-form-group">
+							<div class="rc-input rc-w100 padded">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Nickname"}}</div>
+									<div class="rc-input__wrapper">
+										<input type="text" class="rc-input__element" name="nickname" id="nickname" maxlength="120" rows="4" placeholder="{{_ "Nickname_Placeholder" }}" value="{{get 'nickname'}}"/>
+									</div>
+								</label>
+							</div>
+						</div>
 						<div class="rc-form-group rc-grid">
 							{{#with canChange=allowEmailChange}}
 							<div class="rc-input rc-w50 padded {{#if emailInvalid}}rc-input--error{{/if}}">
