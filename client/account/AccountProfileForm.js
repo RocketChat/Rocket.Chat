@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
-import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, AnimatedVisibility, PasswordInput, Button, Grid } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, AnimatedVisibility, PasswordInput, Button, Grid, Margins } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../contexts/TranslationContext';
@@ -122,7 +122,11 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 		onSaveStateChange(canSave);
 	}, [canSave, onSaveStateChange]);
 
-	return <FieldGroup is='form' autoComplete='off' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
+	const handleSubmit = useCallback((e) => {
+		e.preventDefault();
+	}, []);
+
+	return <FieldGroup is='form' autoComplete='off' onSubmit={handleSubmit} {...props}>
 		{useMemo(() => <Field>
 			<UserAvatarEditor etag={user.avatarETag} username={username} setAvatarObj={handleAvatar} disabled={!allowUserAvatarChange} suggestions={avatarSuggestions}/>
 		</Field>, [username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag])}
@@ -184,9 +188,11 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 							</Field.Error>
 						</Field>, [t, email, handleEmail, verified, allowEmailChange, emailError])}
 						{useMemo(() => !verified && <Field>
-							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
-								{t('Resend_verification_email')}
-							</Button>
+							<Margins blockEnd='x28'>
+								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
+									{t('Resend_verification_email')}
+								</Button>
+							</Margins>
 						</Field>, [verified, t, email, previousEmail, handleSendConfirmationEmail])}
 					</FieldGroup>
 				</Grid.Item>
@@ -198,15 +204,17 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 								<PasswordInput autoComplete='off' disabled={!allowPasswordChange} error={passwordError} flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
 							</Field.Row>
 						</Field>, [t, password, handlePassword, passwordError, allowPasswordChange])}
-						{useMemo(() => <AnimatedVisibility visibility={password ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN }><Field>
-							<Field.Label>{t('Confirm_password')}</Field.Label>
-							<Field.Row>
-								<PasswordInput autoComplete='off' error={passwordError} flexGrow={1} value={confirmationPassword} onChange={handleConfirmationPassword} addon={<Icon name='key' size='x20'/>}/>
-							</Field.Row>
-							{ passwordError && <Field.Error>
-								{passwordError}
-							</Field.Error> }
-						</Field></AnimatedVisibility>, [t, confirmationPassword, handleConfirmationPassword, password, passwordError])}
+						{useMemo(() => <Field>
+							<AnimatedVisibility visibility={password ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN }>
+								<Field.Label>{t('Confirm_password')}</Field.Label>
+								<Field.Row>
+									<PasswordInput autoComplete='off' error={passwordError} flexGrow={1} value={confirmationPassword} onChange={handleConfirmationPassword} addon={<Icon name='key' size='x20'/>}/>
+								</Field.Row>
+								{ passwordError && <Field.Error>
+									{passwordError}
+								</Field.Error> }
+							</AnimatedVisibility>
+						</Field>, [t, confirmationPassword, handleConfirmationPassword, password, passwordError])}
 					</FieldGroup>
 				</Grid.Item>
 			</Grid>
