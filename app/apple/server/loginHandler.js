@@ -15,15 +15,19 @@ Accounts.registerLoginHandler('apple', (loginRequest) => {
 
 	const auth = handleAccessToken(loginRequest);
 
-	const result = Accounts.updateOrCreateUserFromExternalService('apple', auth.serviceData, auth.options);
+	if (!auth.error) {
+		const result = Accounts.updateOrCreateUserFromExternalService('apple', auth.serviceData, auth.options);
 
-	// Ensure processing succeeded
-	if (result === undefined || result.userId === undefined) {
-		return {
-			type: 'apple',
-			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'User creation failed from Apple response token'),
-		};
+		// Ensure processing succeeded
+		if (result === undefined || result.userId === undefined) {
+			return {
+				type: 'apple',
+				error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'User creation failed from Apple response token'),
+			};
+		}
+
+		return result;
 	}
 
-	return result;
+	return auth;
 });
