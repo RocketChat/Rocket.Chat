@@ -21,6 +21,8 @@ const configureService = _.debounce(Meteor.bindEnvironment(() => {
 		service: 'apple',
 	}, {
 		$set: {
+			// We'll hide this button on Web Client
+			showButton: false,
 			enabled: settings.get('Accounts_OAuth_Apple'),
 		},
 	});
