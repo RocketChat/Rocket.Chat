@@ -1,10 +1,9 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Box, Avatar, Margins, Chip, Tag } from '@rocket.chat/fuselage';
+import { Box, Margins, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { roomTypes } from '../../../app/utils/client';
 import { DateFormat } from '../../../app/lib';
 import { UserInfoActions } from './UserInfoActions';
 import MarkdownText from '../../components/basic/MarkdownText';
