@@ -8,13 +8,12 @@ import { SettingsEvents } from '../../../app/settings/server/functions/settings'
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
-		const mapFn = ({ _id, value, editor }) => ({ _id, value, editor });
 		if (updatedAt instanceof Date) {
 			const records = Settings.findNotHiddenPublicUpdatedAfter(updatedAt).fetch();
 			SettingsEvents.emit('fetch-settings', records);
 
 			return {
-				update: records.map(mapFn),
+				update: records,
 				remove: Settings.trashFindDeletedAfter(updatedAt, {
 					hidden: {
 						$ne: true,
@@ -32,7 +31,7 @@ Meteor.methods({
 		const publicSettings = Settings.findNotHiddenPublic().fetch();
 		SettingsEvents.emit('fetch-settings', publicSettings);
 
-		return publicSettings.map(mapFn);
+		return publicSettings;
 	},
 	'private-settings/get'(updatedAfter) {
 		const uid = Meteor.userId();
