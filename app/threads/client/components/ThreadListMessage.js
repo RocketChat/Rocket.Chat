@@ -44,13 +44,13 @@ const followStyle = css`
 	}
 `;
 
-export default function ThreadListMessage({ _id, msg, following, username, name, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, className = [], u: { _id: userId }, ...props }) {
+export default function ThreadListMessage({ _id, msg, following, username, name, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, className = [], ...props }) {
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 
 	return <Box rcx-contextual-message pi='x20' pb='x16' pbs='x16' display='flex' {...props} className={[...isIterable(className) ? className : [className], !following && followStyle].filter(Boolean)}>
 		<Container mb='neg-x2'>
-			<UserAvatar userId={userId} rcx-message__avatar size='x36'/>
+			<UserAvatar title={username} username={username} rcx-message__avatar size='x36'/>
 		</Container>
 		<Container width='1px' mb='neg-x4' flexGrow={1}>
 			<Header>
