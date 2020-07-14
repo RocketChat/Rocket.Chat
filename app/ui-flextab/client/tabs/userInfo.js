@@ -11,7 +11,7 @@ import './userInfo.html';
 import { Markdown } from '../../../markdown/lib/markdown';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
-createTemplateForComponent('UserInfoWithData', () => import('../../../../client/Channel/UserInfo'), {
+createTemplateForComponent('UserInfoWithData', () => import('../../../../client/channel/UserInfo'), {
 	// eslint-disable-next-line new-cap
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar', style: 'flex-grow: 1;' }),
 });

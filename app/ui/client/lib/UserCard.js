@@ -34,5 +34,5 @@ export const open = async ({ ...args }) => {
 		...args,
 	};
 	Dep.changed();
-	unregister = unregister || await createEphemeralPortal(() => import('../../../../client/Channel/UserCard'), props, dom);
+	unregister = unregister || await createEphemeralPortal(() => import('../../../../client/channel/UserCard'), props, dom);
 };

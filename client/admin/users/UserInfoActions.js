@@ -10,7 +10,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import RawText from '../../components/basic/RawText';
-import { useUserInfoActionsSpread } from '../../Channel/hooks/useUserInfoActions';
+import { useUserInfoActionsSpread } from '../../channel/hooks/useUserInfoActions';
 import UserInfo from '../../components/basic/UserInfo';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
