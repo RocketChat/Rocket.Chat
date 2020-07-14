@@ -120,10 +120,10 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 		onSaveStateChange(canSave);
 	}, [canSave, onSaveStateChange]);
 
-	return <FieldGroup is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
+	return <FieldGroup is='form' autoComplete='off' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
 		{useMemo(() => <Field>
-			<UserAvatarEditor userId={user._id} username={username} setAvatarObj={handleAvatar} disabled={!allowUserAvatarChange} suggestions={avatarSuggestions}/>
-		</Field>, [username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user._id])}
+			<UserAvatarEditor etag={user.avatarETag} username={username} setAvatarObj={handleAvatar} disabled={!allowUserAvatarChange} suggestions={avatarSuggestions}/>
+		</Field>, [username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag])}
 		<Box display='flex' flexDirection='row' justifyContent='space-between'>
 			{useMemo(() => <Field mie='x8'>
 				<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
@@ -193,13 +193,13 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 						{useMemo(() => <Field>
 							<Field.Label>{t('Password')}</Field.Label>
 							<Field.Row>
-								<PasswordInput autocomplete='off' disabled={!allowPasswordChange} error={passwordError} flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
+								<PasswordInput autoComplete='off' disabled={!allowPasswordChange} error={passwordError} flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
 							</Field.Row>
 						</Field>, [t, password, handlePassword, passwordError, allowPasswordChange])}
 						{useMemo(() => <AnimatedVisibility visibility={password ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN }><Field>
 							<Field.Label>{t('Confirm_password')}</Field.Label>
 							<Field.Row>
-								<PasswordInput autocomplete='off' error={passwordError} flexGrow={1} value={confirmationPassword} onChange={handleConfirmationPassword} addon={<Icon name='key' size='x20'/>}/>
+								<PasswordInput autoComplete='off' error={passwordError} flexGrow={1} value={confirmationPassword} onChange={handleConfirmationPassword} addon={<Icon name='key' size='x20'/>}/>
 							</Field.Row>
 							{ passwordError && <Field.Error>
 								{passwordError}

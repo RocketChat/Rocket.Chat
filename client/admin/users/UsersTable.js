@@ -7,6 +7,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { getUserAvatarURL } from '../../../app/utils/client';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -79,12 +80,10 @@ export function UsersTable() {
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const renderRow = useCallback(({ emails, _id, username, name, roles, status, avatarETag }) => {
-		const avatarUrl = getUserAvatarURL(username, avatarETag);
-
 		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
 			<Table.Cell style={style}>
 				<Box display='flex' alignItems='center'>
-					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={username} url={avatarUrl} />
+					<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
 					<Box display='flex' style={style} mi='x8'>
 						<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
 							<Box fontScale='p2' style={style} color='default'>{name || username}</Box>

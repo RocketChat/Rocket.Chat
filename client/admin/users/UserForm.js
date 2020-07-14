@@ -118,11 +118,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 				</Box>
 			</Field.Row>
 		</Field>, [handleSendWelcomeEmail, t, sendWelcomeEmail])}
-		<>
-			<Divider />
-			<Box fontScale='s2'>{t('Custom_Fields')}</Box>
-			<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields}/>
-		</>
+		<Divider />
+		<Box fontScale='s2'>{t('Custom_Fields')}</Box>
+		<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields}/>
 		{ append }
 	</VerticalBar.ScrollableContent>;
 }

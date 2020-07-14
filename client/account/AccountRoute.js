@@ -16,11 +16,10 @@ const AccountRoute = () => {
 		SideNav.openFlex();
 	});
 
-	return <>
-		{{
-			profile: <AccountProfilePage />,
-		}[page]}
-	</>;
+	if (page === 'profile') {
+		return <AccountProfilePage />;
+	}
+	return null;
 };
 
 export default AccountRoute;

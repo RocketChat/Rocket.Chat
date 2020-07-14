@@ -249,7 +249,7 @@ const AccountProfilePage = () => {
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
-			<Box maxWidth='x600' w='full' alignSelf='center'>
+			<Box maxWidth='600px' w='full' alignSelf='center'>
 				<AccountProfileForm values={values} handlers={handlers} user={user} settings={settings} onSaveStateChange={setCanSave}/>
 				<ButtonGroup stretch mb='x12'>
 					<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
