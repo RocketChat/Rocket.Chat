@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -53,6 +54,7 @@ const getUserIsMuted = (room, user, userCanPostReadonly) => {
 };
 
 const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
+	const refAutoFocus = useAutoFocus(true);
 	const t = useTranslation();
 	return <Modal {...props}>
 		<Modal.Header>
@@ -66,7 +68,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button ghost onClick={close}>{t('Cancel')}</Button>
-				<Button primary danger onClick={confirm}>{confirmText}</Button>
+				<Button ref={refAutoFocus} primary danger onClick={confirm}>{confirmText}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;

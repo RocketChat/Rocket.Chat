@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Button, ButtonGroup, Icon, Menu, Option } from '@rocket.chat/fuselage';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
 import { Modal } from '../../components/basic/Modal';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -36,6 +37,8 @@ const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 
 const ConfirmOwnerChangeWarningModal = ({ onConfirm, onCancel, contentTitle = '', confirmLabel = '', shouldChangeOwner, shouldBeRemoved, ...props }) => {
 	const t = useTranslation();
+
+	const refAutoFocus = useAutoFocus(true);
 
 	let changeOwnerRooms = '';
 	if (shouldChangeOwner.length > 0) {
@@ -74,7 +77,7 @@ const ConfirmOwnerChangeWarningModal = ({ onConfirm, onCancel, contentTitle = ''
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onConfirm}>{confirmLabel}</Button>
+				<Button ref={refAutoFocus} primary danger onClick={onConfirm}>{confirmLabel}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;
@@ -250,9 +253,9 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(options);
 
-	const menu = menuOptions && <Menu small={false} ghost={false} flexShrink={0} key='menu' renderItem={({ label: { label, icon }, ...props }) => <Option label={label} icon={icon} {...props}/>} options={menuOptions}/>;
+	const menu = menuOptions && <Menu small={false} ghost={false} flexShrink={0} key='menu' renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>} options={menuOptions}/>;
 
-	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
+	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
 
 	return <>
 		<ButtonGroup flexGrow={1} justifyContent='center'>

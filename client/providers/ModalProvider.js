@@ -6,7 +6,7 @@ import ModalPortal from '../components/ModalPortal';
 import { ModalContext } from '../contexts/ModalContext';
 
 
-const style = { zIndex: 999 };
+const style = { zIndex: 9999 };
 function ModalProvider({ children }) {
 	const [currentModal, setCurrentModal] = useState(null);
 
