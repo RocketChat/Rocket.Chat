@@ -184,7 +184,7 @@ Template.popover.events({
 		popover.close();
 		const options = [];
 		const config = {
-			template: createTemplateForComponent('SortList', () => import('../../../ui-sidenav/client/SortList')),
+			template: createTemplateForComponent('SortList', () => import('../../../../client/components/SortList')),
 			currentTarget: e.currentTarget,
 			data: {
 				options,
