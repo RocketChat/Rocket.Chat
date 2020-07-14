@@ -66,6 +66,7 @@ Meteor.methods({
 
 		info.title = initSettings.Livechat_title;
 		info.color = initSettings.Livechat_title_color;
+		info.limitTextLength = initSettings.Livechat_title_character_limit;
 		info.enabled = initSettings.Livechat_enabled;
 		info.registrationForm = initSettings.Livechat_registration_form;
 		info.offlineTitle = initSettings.Livechat_offline_title;

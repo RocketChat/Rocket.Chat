@@ -11,6 +11,9 @@ import { APIClient } from '../../../../utils/client';
 const getSettingFromAppearance = (instance, settingName) => instance.appearance.get() && instance.appearance.get().find((setting) => setting._id === settingName);
 
 Template.livechatAppearance.helpers({
+	limitTextLength() {
+		return Template.instance().limitTextLength.get();
+	},
 	color() {
 		return Template.instance().color.get();
 	},
@@ -110,6 +113,7 @@ Template.livechatAppearance.onCreated(async function() {
 	this.appearance = new ReactiveVar([]);
 	this.title = new ReactiveVar(null);
 	this.color = new ReactiveVar(null);
+	this.limitTextLength = new ReactiveVar(null);
 
 	this.showAgentInfo = new ReactiveVar(null);
 	this.showAgentEmail = new ReactiveVar(null);
@@ -132,6 +136,7 @@ Template.livechatAppearance.onCreated(async function() {
 
 	const livechatTitle = getSettingFromAppearance(this, 'Livechat_title');
 	const livechatTitleColor = getSettingFromAppearance(this, 'Livechat_title_color');
+	const livechatTitleLimitTextLength = getSettingFromAppearance(this, 'Livechat_title_character_limit');
 	const livechatShowAgentInfo = getSettingFromAppearance(this, 'Livechat_show_agent_info');
 	const livechatShowAgentEmail = getSettingFromAppearance(this, 'Livechat_show_agent_email');
 	const livechatDisplayOfflineForm = getSettingFromAppearance(this, 'Livechat_display_offline_form');
@@ -150,6 +155,7 @@ Template.livechatAppearance.onCreated(async function() {
 
 	this.title.set(livechatTitle && livechatTitle.value);
 	this.color.set(livechatTitleColor && livechatTitleColor.value);
+	this.limitTextLength.set(livechatTitleLimitTextLength && livechatTitleLimitTextLength.value);
 	this.showAgentInfo.set(livechatShowAgentInfo && livechatShowAgentInfo.value);
 	this.showAgentEmail.set(livechatShowAgentEmail && livechatShowAgentEmail.value);
 	this.displayOfflineForm.set(livechatDisplayOfflineForm && livechatDisplayOfflineForm.value);
@@ -186,6 +192,9 @@ Template.livechatAppearance.events({
 
 		const settingTitleColor = getSettingFromAppearance(instance, 'Livechat_title_color');
 		instance.color.set(settingTitleColor && settingTitleColor.value);
+
+		const settingTitleLimitTextLength = getSettingFromAppearance(instance, 'Livechat_title_character_limit');
+		instance.limitTextLength.set(settingTitleLimitTextLength && settingTitleLimitTextLength.value);
 
 		const settingShowAgentInfo = getSettingFromAppearance(instance, 'Livechat_show_agent_info');
 		instance.showAgentInfo.set(settingShowAgentInfo && settingShowAgentInfo.value);
@@ -239,6 +248,10 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_title_color',
 				value: instance.color.get(),
+			},
+			{
+				_id: 'Livechat_title_character_limit',
+				value: instance.limitTextLength.get(),
 			},
 			{
 				_id: 'Livechat_show_agent_info',
