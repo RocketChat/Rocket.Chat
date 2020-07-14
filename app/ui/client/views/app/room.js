@@ -73,23 +73,23 @@ const openProfileTab = (e, instance, username) => {
 };
 
 const openProfileTabOrOpenDM = (e, instance, username) => {
-	if (settings.get('UI_Click_Direct_Message')) {
-		Meteor.call('createDirectMessage', username, (error, result) => {
-			if (error) {
-				if (error.isClientSafe) {
-					openProfileTab(e, instance, username);
-				} else {
-					handleError(error);
-				}
-			}
+	// if (settings.get('UI_Click_Direct_Message')) {
+	// 	Meteor.call('createDirectMessage', username, (error, result) => {
+	// 		if (error) {
+	// 			if (error.isClientSafe) {
+	// 				openProfileTab(e, instance, username);
+	// 			} else {
+	// 				handleError(error);
+	// 			}
+	// 		}
 
-			if (result && result.rid) {
-				FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
-			}
-		});
-	} else {
-		openProfileTab(e, instance, username);
-	}
+	// 		if (result && result.rid) {
+	// 			FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+	// 		}
+	// 	});
+	// } else {
+	openProfileTab(e, instance, username);
+	// }
 	e.stopPropagation();
 };
 

@@ -5,6 +5,8 @@ import { modal } from '../../app/ui-utils/client/lib/modal';
 import ModalPortal from '../components/ModalPortal';
 import { ModalContext } from '../contexts/ModalContext';
 
+
+const style = { zIndex: 999 };
 function ModalProvider({ children }) {
 	const [currentModal, setCurrentModal] = useState(null);
 
@@ -15,7 +17,7 @@ function ModalProvider({ children }) {
 	return <ModalContext.Provider value={contextValue}>
 		{children}
 		{currentModal && <ModalPortal>
-			<Modal.Backdrop>
+			<Modal.Backdrop style={style}>
 				{currentModal}
 			</Modal.Backdrop>
 		</ModalPortal>}

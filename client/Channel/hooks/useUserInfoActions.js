@@ -117,7 +117,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 	const usernameSubscription = useReactiveValue(getUsernameSubscription);
 	const webRTCInstance = useReactiveValue(getWebRTCInstance);
 
-	const otherUserCanPostReadonly = useAllPermissions('post-readonly', rid, userId);
+	const otherUserCanPostReadonly = useAllPermissions('post-readonly', rid);
 
 	const isIgnored = thisSubscription && thisSubscription.ignored && thisSubscription.ignored.indexOf(userId) > -1;
 	const isMuted = getUserIsMuted(room, user, otherUserCanPostReadonly);
