@@ -5,8 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { t, getUserPreference, share, isShareAvailable } from '../../../utils';
-import { settings } from '../../../settings';
+import { share, isShareAvailable } from '../../../utils';
 import { hide, leave } from './ChannelActions';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
@@ -37,30 +36,6 @@ export const popover = {
 		}
 		this.renderedPopover = null;
 	},
-};
-
-
-const viewModeIcon = {
-	extended: 'th-list',
-	medium: 'list',
-	condensed: 'list-alt',
-};
-
-const extendedViewOption = (user) => {
-	if (settings.get('Store_Last_Message')) {
-		return {
-			icon: viewModeIcon.extended,
-			name: t('Extended'),
-			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
-			action: () => {
-				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
-					if (error) {
-						return handleError(error);
-					}
-				});
-			},
-		};
-	}
 };
 
 Template.popover.helpers({
