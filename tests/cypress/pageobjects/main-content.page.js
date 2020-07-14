@@ -17,6 +17,8 @@ class MainContent extends Page {
 
 	get plusBtn() { return browser.element('.rc-message-box__icon.js-plus'); }
 
+	get replyTabClsBtn() { return browser.element('.rcx-icon.rcx-icon--name-cross'); }
+
 	get fileUploadBtn() { return browser.element('.rc-popover__item[data-id="file-upload"]'); }
 
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
@@ -203,7 +205,8 @@ class MainContent extends Page {
 				break;
 			case 'reply':
 				this.messageReply.click();
-				this.messageInput.type(' this is a reply message');
+				cy.wait(1000);
+				this.messageInput.eq(1).type(' this is a reply message');
 				break;
 			case 'delete':
 				this.messageDelete.click();

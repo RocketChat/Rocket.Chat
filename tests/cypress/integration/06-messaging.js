@@ -149,6 +149,7 @@ function messageActionsTest(currentTest) {
 				it('it should reply the message', () => {
 					mainContent.selectAction('reply');
 					mainContent.sendBtn.click();
+					mainContent.replyTabClsBtn.click();
 				});
 
 				it('it should check if the message was replied', () => {
