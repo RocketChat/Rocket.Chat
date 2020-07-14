@@ -168,10 +168,12 @@ export const menu = new class extends EventEmitter {
 		this.on('open', ignore(() => {
 			// WIDECHAT close main content
 			this.mainContent.css('transform', 'translate3d( 100%, 0 , 0)');
-			FlowRouter.withReplaceState(function() {
-				FlowRouter.go('/home');
-			});
-			Session.set('openSearchPage', false);
+			if (!FlowRouter.current().path.startsWith('/admin')) {
+				FlowRouter.withReplaceState(function() {
+					FlowRouter.go('/home');
+				});
+				Session.set('openSearchPage', false);
+			}
 		}));
 
 		this.list = $('.rooms-list');
