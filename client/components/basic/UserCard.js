@@ -79,10 +79,10 @@ const UserCard = forwardRef(({
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
 		<Username status={status} name={name}/>
-		<Info>{customStatus}</Info>
+		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
-		<Info withTruncatedText={false} style={clampStyle} height='60px'>{bio}</Info>
+		{ bio && <Info withTruncatedText={false} style={clampStyle} height='60px'>{bio}</Info> }
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
 	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Icon, Menu, Option } from '@rocket.chat/fuselage';
 
 import { Modal } from '../../components/basic/Modal';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -9,7 +9,8 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import RawText from '../../components/basic/RawText';
-import ActionSpread from '../../components/basic/ActionSpread';
+import { useUserInfoActionsSpread } from '../../Channel/hooks/useUserInfoActions';
+import UserInfo from '../../components/basic/UserInfo';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
@@ -98,7 +99,7 @@ const SuccessModal = ({ onClose, ...props }) => {
 	</Modal>;
 };
 
-export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ...props }) => {
+export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) => {
 	const t = useTranslation();
 	const [modal, setModal] = useState();
 
@@ -205,25 +206,30 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		id: _id,
 	}), [_id, userRoute]);
 
-	const menuOptions = useMemo(() => ({
+	const options = useMemo(() => ({
 		...canDirectMessage && { directMessage: {
-			label: <><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</>,
+			icon: 'chat',
+			label: t('Direct_Message'),
 			action: directMessageClick,
 		} },
 		...canEditOtherUserInfo && { editUser: {
-			label: <><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</>,
+			icon: 'edit',
+			label: t('Edit'),
 			action: editUserClick,
 		} },
 		...canAssignAdminRole && { makeAdmin: {
-			label: <><Icon mie='x4' name='key' size='x16'/>{ isAdmin ? t('Remove_Admin') : t('Make_Admin')}</>,
+			icon: 'key',
+			label: isAdmin ? t('Remove_Admin') : t('Make_Admin'),
 			action: changeAdminStatus,
 		} },
 		...canDeleteUser && { delete: {
-			label: <Box color='danger'><Icon mie='x4' name='trash' size='x16'/>{t('Delete')}</Box>,
+			icon: 'trash',
+			label: t('Delete'),
 			action: confirmDeleteUser,
 		} },
 		...canEditOtherUserActiveStatus && { changeActiveStatus: {
-			label: <><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Deactivate') : t('Activate')}</>,
+			icon: 'user',
+			label: isActive ? t('Deactivate') : t('Activate'),
 			action: changeActiveStatus,
 		} },
 	}), [
@@ -242,12 +248,16 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		changeActiveStatus,
 	]);
 
+	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(options);
+
+	const menu = menuOptions && <Menu small={false} ghost={false} flexShrink={0} key='menu' renderItem={({ label: { label, icon }, ...props }) => <Option label={label} icon={icon} {...props}/>} options={menuOptions}/>;
+
+	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
+
 	return <>
-		<Box display='flex' flexDirection='row' {...props}>
-			<ButtonGroup flexGrow={1} justifyContent='center'>
-				<ActionSpread actions={menuOptions}/>
-			</ButtonGroup>
-		</Box>
+		<ButtonGroup flexGrow={1} justifyContent='center'>
+			{actions}
+		</ButtonGroup>
 		{ modal }
 	</>;
 };

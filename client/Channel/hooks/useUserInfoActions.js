@@ -76,7 +76,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 const mapOptions = ([key, { action, label, icon }]) => [
 	key,
 	{
-		label: <><Icon name={icon} size='x20' mie='x4' />{label}</>, // TODO fuselage
+		label: { label, icon }, // TODO fuselage
 		action,
 	},
 ];

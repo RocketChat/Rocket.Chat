@@ -1093,7 +1093,7 @@ Template.room.onCreated(function() {
 			return;
 		}
 
-		this.userDetail.set(room.usernames.filter((username) => username !== user.username)[0]);
+		this.userDetail.set(room.usernames.length === 1 ? room.usernames[0] : room.usernames.filter((username) => username !== user.username)[0]);
 	});
 
 	this.autorun(() => {

@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useCallback } from 'react';
-import { PositionAnimated, AnimatedVisibility, Menu } from '@rocket.chat/fuselage';
+import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useSetting } from '../../contexts/SettingsContext';
@@ -63,7 +63,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));
 
-	const menu = menuOptions && <Menu flexShrink={0} key='menu' options={menuOptions}/>;
+	const menu = menuOptions && <Menu flexShrink={0} key='menu' renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />} options={menuOptions}/>;
 
 	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserCard.Action key={key} aria-label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
 
