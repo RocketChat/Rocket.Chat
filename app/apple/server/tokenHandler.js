@@ -28,7 +28,7 @@ const isValidAppleJWT = (identityToken, header) => {
 	}
 };
 
-export const handleAccessToken = ({ identityToken, fullName, email }) => {
+export const handleIdentityToken = ({ identityToken, fullName, email }) => {
 	check(identityToken, String);
 	check(fullName, Match.Maybe(Object));
 	check(email, Match.Maybe(String));

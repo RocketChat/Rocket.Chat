@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { handleAccessToken } from './tokenHandler';
+import { handleIdentityToken } from './tokenHandler';
 import { settings } from '../../settings';
 
 Accounts.registerLoginHandler('apple', (loginRequest) => {
@@ -13,10 +13,10 @@ Accounts.registerLoginHandler('apple', (loginRequest) => {
 		return;
 	}
 
-	const auth = handleAccessToken(loginRequest);
+	const identityResult = handleIdentityToken(loginRequest);
 
-	if (!auth.error) {
-		const result = Accounts.updateOrCreateUserFromExternalService('apple', auth.serviceData, auth.options);
+	if (!identityResult.error) {
+		const result = Accounts.updateOrCreateUserFromExternalService('apple', identityResult.serviceData, identityResult.options);
 
 		// Ensure processing succeeded
 		if (result === undefined || result.userId === undefined) {
@@ -29,5 +29,5 @@ Accounts.registerLoginHandler('apple', (loginRequest) => {
 		return result;
 	}
 
-	return auth;
+	return identityResult;
 });
