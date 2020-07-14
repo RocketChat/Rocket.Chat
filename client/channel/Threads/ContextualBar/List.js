@@ -19,10 +19,10 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/use
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import ThreadListMessage from './components/Message';
-import { useUserSubscription } from '../../hooks/useUserSubscription';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { MessageSkeleton } from '../../components/Message';
+import { useUserSubscription } from '../../../contexts/SubscriptionContext';
 
 function clickableItem(WrappedComponent) {
 	const clickable = css`

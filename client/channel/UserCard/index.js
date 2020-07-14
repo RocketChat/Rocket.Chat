@@ -30,6 +30,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		const { user } = data || { user: {} };
 
 		const {
+			_id,
 			name = username,
 			roles = defaultValue,
 			status,
@@ -39,6 +40,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		} = user;
 
 		return {
+			_id,
 			name: showRealNames ? name : username,
 			username,
 			roles: roles && roles.map((role, index) => (
