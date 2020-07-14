@@ -1,1 +1,1 @@
-export const getUserEmailAddress = (user) => user.emails && user.emails[0] && user.emails[0].address;
+export const getUserEmailAddress = (user) => user.emails?.find(({ address }) => !!address)?.address;

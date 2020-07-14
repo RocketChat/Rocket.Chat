@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Box, Button, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
@@ -13,7 +13,7 @@ function UserAvatarSuggestions({ suggestions, setAvatarObj, setNewAvatarSource, 
 
 	return <Margins inline='x4' {...props}>
 		{Object.values(suggestions).map((suggestion) => <Button key={suggestion.service} disabled={disabled} square onClick={handleClick(suggestion)}>
-			<UserAvatar title={suggestion.service} size='x36' url={suggestion.blob} mie='x4'/>
+			<Avatar title={suggestion.service} size='x36' url={suggestion.blob} mie='x4'/>
 		</Button>)}
 	</Margins>;
 }
@@ -39,7 +39,7 @@ export function UserAvatarEditor({ username, setAvatarObj, suggestions, disabled
 		setAvatarObj('reset');
 	};
 
-	const url = newAvatarSource || undefined;
+	const url = newAvatarSource;
 
 	const handleAvatarFromUrlChange = (event) => {
 		setAvatarFromUrl(event.currentTarget.value);
@@ -52,7 +52,7 @@ export function UserAvatarEditor({ username, setAvatarObj, suggestions, disabled
 			<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
 				<Box display='flex' flexDirection='row' mbs='none'>
 					<Margins inline='x4'>
-						<Button square mis='none' onClick={clickReset} disabled={disabled}><UserAvatar size='x36' url={`/avatar/%40${ username }`} mie='x4'/></Button>
+						<Button square mis='none' onClick={clickReset} disabled={disabled}><Avatar size='x36' url={`/avatar/%40${ username }`} mie='x4'/></Button>
 						<Button square onClick={clickUpload} disabled={disabled}><Icon name='upload' size='x20'/></Button>
 						<Button square mie='none' onClick={clickUrl} disabled={disabled}><Icon name='permalink' size='x20'/></Button>
 						{suggestions && <UserAvatarSuggestions suggestions={suggestions} setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled}/>}

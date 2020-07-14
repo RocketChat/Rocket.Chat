@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, AnimatedVisibility, PasswordInput, Button, Grid } from '@rocket.chat/fuselage';
-import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { isEmail } from '../../app/utils/lib/isEmail.js';
@@ -11,6 +11,8 @@ import { UserAvatarEditor } from '../components/basic/avatar/UserAvatarEditor';
 import CustomFieldsForm from '../components/CustomFieldsForm';
 import UserStatusMenu from '../components/basic/userStatus/UserStatusMenu';
 
+const STATUS_TEXT_MAX_LENGTH = 120;
+
 export default function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -20,7 +22,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 	const sendConfirmationEmail = useMethod('sendConfirmationEmail');
 
 	const [usernameError, setUsernameError] = useState();
-	const [avatarSuggestions, setAvatarSuggestions] = useState();
+	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
 
 	const {
 		allowRealNameChange,
@@ -88,7 +90,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 			setAvatarSuggestions(suggestions);
 		};
 		getSuggestions();
-	}, [getAvatarSuggestions]);
+	}, [getAvatarSuggestions, setAvatarSuggestions]);
 
 	useEffect(() => {
 		checkUsername(username);
@@ -105,7 +107,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 		if (!realname && requireName) { return t('Field_required'); }
 	}, [realname, requireName, t, user.name]);
 
-	const statusTextError = useMemo(() => (!statusText || statusText.length <= 120 || statusText.length === 0 ? undefined : t('Max_length_is', '120')), [statusText, t]);
+	const statusTextError = useMemo(() => (!statusText || statusText.length <= STATUS_TEXT_MAX_LENGTH || statusText.length === 0 ? undefined : t('Max_length_is', STATUS_TEXT_MAX_LENGTH)), [statusText, t]);
 	const { emails: [{ verified = false }] } = user;
 
 	const canSave = !![
