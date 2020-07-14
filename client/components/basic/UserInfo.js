@@ -89,7 +89,7 @@ export const UserInfo = React.memo(function UserInfo({
 });
 
 export const Action = ({ icon, label, ...props }) => (
-	<Button {...props} mi='x2'>
+	<Button title={label} {...props} mi='x2'>
 		<Icon name={icon} size='x16' />
 		{label}
 	</Button>

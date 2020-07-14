@@ -228,7 +228,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
-			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200'>
+			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x8'>
 					<Margins inline='x8'>
 						<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>

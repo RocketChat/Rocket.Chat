@@ -192,7 +192,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
-			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200'>
+			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
 				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 			</Box>
 			<Box flexGrow={1} flexShrink={1} ref={ref}>

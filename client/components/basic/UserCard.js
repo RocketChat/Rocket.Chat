@@ -13,8 +13,8 @@ const clampStyle = {
 	wordBreak: 'break-all',
 };
 
-export const Action = ({ icon, ...props }) => (
-	<Button {...props} small mi='x2'>
+export const Action = ({ icon, label, ...props }) => (
+	<Button title={label} {...props} small mi='x2'>
 		<Icon name={icon} size='x16' />
 	</Button>
 );
@@ -73,7 +73,7 @@ const UserCard = forwardRef(({
 }, ref) => <UserCardConteiner className={className} ref={ref} style={style}>
 	<Box>
 		<UserAvatar username={username} size='x124'/>
-		{ actions && <Box display='flex' mb='x8' align='center' justifyContent='center'>
+		{ actions && <Box flexGrow={0} display='flex' mb='x8' align='center' justifyContent='center'>
 			{actions}
 		</Box>}
 	</Box>

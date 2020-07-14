@@ -61,6 +61,6 @@ const style = css`
 	word-break: break-word;
 `;
 
-export function BodyClamp(props) {
-	return <Box rcx-message__body className={style} flexShrink={1} lineHeight='1.45' minHeight='40px' {...props}/>;
+export function BodyClamp({ className, ...props }) {
+	return <Box rcx-message__body className={[...isIterable(className) ? className : [className], style].filter(Boolean)} flexShrink={1} lineHeight='1.45' minHeight='40px' {...props}/>;
 }
