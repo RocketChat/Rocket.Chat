@@ -50,7 +50,7 @@ export default function ThreadListMessage({ _id, msg, following, username, name,
 
 	return <Box rcx-contextual-message pi='x20' pb='x16' pbs='x16' display='flex' {...props} className={[...isIterable(className) ? className : [className], !following && followStyle].filter(Boolean)}>
 		<Container mb='neg-x2'>
-			<UserAvatar username={username} rcx-message__avatar size='x36'/>
+			<UserAvatar title={username} username={username} rcx-message__avatar size='x36'/>
 		</Container>
 		<Container width='1px' mb='neg-x4' flexGrow={1}>
 			<Header>
