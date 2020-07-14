@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react'
 import {
 	Button,
 	PositionAnimated,
+	Margins,
 	Options,
 	useCursor,
 	Box,
@@ -21,12 +22,21 @@ const UserStatusMenu = ({
 
 	const [status, setStatus] = useState(initialStatus);
 
-	const options = useMemo(() => [
-		['online', <Box display='flex' flexDirection='row' alignItems='center'><UserStatus status='online'/>{t('Online')}</Box>],
-		['busy', <Box display='flex' flexDirection='row' alignItems='center'><UserStatus status='busy'/>{t('Busy')}</Box>],
-		['away', <Box display='flex' flexDirection='row' alignItems='center'><UserStatus status='away'/>{t('Away')}</Box>],
-		['offline', <Box display='flex' flexDirection='row' alignItems='center'><UserStatus status='offline'/>{t('Invisible')}</Box>],
-	], [t]);
+	const options = useMemo(() => {
+		const renderOption = (status, label) => <Box display='flex' flexDirection='row' alignItems='center'>
+			<Margins inlineEnd='x8'>
+				<UserStatus status={status} />
+			</Margins>
+			{label}
+		</Box>;
+
+		return [
+			['online', renderOption('online', t('Online'))],
+			['busy', renderOption('busy', t('Busy'))],
+			['away', renderOption('away', t('Away'))],
+			['offline', renderOption('offline', t('Invisible'))],
+		];
+	}, [t]);
 
 	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(-1, options, ([selected], [, hide]) => {
 		setStatus(selected);
