@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import React, { useState, useCallback } from 'react';
 import { Button, TextInput, Field, Modal, Box, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
@@ -44,7 +45,8 @@ const ResetPassword = () => {
 		setIsLoading(true);
 		try {
 			if (token && resetPassword) {
-				await resetPassword(token, newPassword);
+				const result = await resetPassword(token, newPassword);
+				await Meteor.loginWithToken(result.token);
 				router.push({});
 			} else {
 				await setUserPassword(newPassword);
