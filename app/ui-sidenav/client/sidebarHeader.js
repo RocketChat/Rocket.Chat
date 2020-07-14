@@ -19,6 +19,24 @@ const setStatus = (status, statusText) => {
 	popover.close();
 };
 
+const sortAction = async (e) => {
+	const options = [];
+	const config = {
+		template: createTemplateForComponent('SortList', () => import('../../../client/components/SortList')),
+		currentTarget: e.currentTarget,
+		data: {
+			options,
+		},
+		offsetVertical: e.currentTarget.clientHeight + 10,
+	};
+	
+	// Close popup, if open
+	if (popover.renderedPopover) {
+		popover.close();
+	}
+	popover.open(config);
+};
+
 const showToolbar = new ReactiveVar(false);
 let hideHeader = true;
 
@@ -49,30 +67,7 @@ export const toolbarSearch = {
 	},
 };
 
-const viewModeIcon = {
-	extended: 'th-list',
-	medium: 'list',
-	condensed: 'list-alt',
-};
-
-const extendedViewOption = (user) => {
-	if (settings.get('Store_Last_Message')) {
-		return {
-			icon: viewModeIcon.extended,
-			name: t('Extended'),
-			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
-			action: () => {
-				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
-					if (error) {
-						return handleError(error);
-					}
-				});
-			},
-		};
-	}
-};
-
-const toolbarButtons = (user) => [{
+const toolbarButtons = (/* user */) => [{
 	name: t('Home'),
 	icon: 'home',
 	condition: () => !isMobile() && settings.get('Layout_Show_Home_Button'),
@@ -99,7 +94,7 @@ const toolbarButtons = (user) => [{
 },
 {
 	name: t('Directory'),
-	icon: 'globe',
+	icon: 'discover',
 	condition: () => !isMobile() && settings.get('UI_DisplayDirectory'),
 	action: () => {
 		menu.close();
@@ -107,90 +102,14 @@ const toolbarButtons = (user) => [{
 	},
 },
 {
-	name: t('View_mode'),
-	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'extended'],
-	condition: () => !isMobile(),
-	hasPopup: true,
-	action: (e) => {
-		const hideAvatarSetting = getUserPreference(user, 'sidebarHideAvatar');
-		const config = {
-			columns: [
-				{
-					groups: [
-						{
-							items: [
-								extendedViewOption(user),
-								{
-									icon: viewModeIcon.medium,
-									name: t('Medium'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarViewMode: 'medium' }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-								{
-									icon: viewModeIcon.condensed,
-									name: t('Condensed'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarViewMode: 'condensed' }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-							],
-						},
-						{
-							items: [
-								{
-									icon: 'user-rounded',
-									name: hideAvatarSetting ? t('Show_Avatars') : t('Hide_Avatars'),
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarHideAvatar: !hideAvatarSetting }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-							],
-						},
-					],
-				},
-			],
-			currentTarget: e.currentTarget,
-			offsetVertical: e.currentTarget.clientHeight + 10,
-		};
-
-		popover.open(config);
-	},
-},
-{
 	name: t('Sort'),
 	icon: 'sort',
 	condition: () => !isMobile(),
 	hasPopup: true,
-	action: async (e) => {
-		const options = [];
-		const config = {
-			template: createTemplateForComponent('SortList', () => import('../../../client/components/SortList')),
-			currentTarget: e.currentTarget,
-			data: {
-				options,
-			},
-			offsetVertical: e.currentTarget.clientHeight + 10,
-		};
-		popover.open(config);
-	},
+	action: sortAction,
 },
 {
-	name: t('Create_A_New_Channel'),
+	name: t('Create_new'),
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user']),
 	hasPopup: true,
@@ -272,8 +191,6 @@ const toolbarButtons = (user) => [{
 				id: 'administration',
 				action: () => {
 					import('../../../client/admin').then(() => {
-						SideNav.setFlex('adminFlex');
-						SideNav.openFlex();
 						FlowRouter.go('admin', { group: 'info' });
 						popover.close();
 					});
@@ -284,7 +201,8 @@ const toolbarButtons = (user) => [{
 		const sortOption = {
 			name: t('Sort'),
 			icon: 'sort',
-			type: 'sort-action',
+			hasPopup: true,
+			action: sortAction,
 		};
 
 		const shareOption = {

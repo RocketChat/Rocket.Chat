@@ -190,7 +190,7 @@ Template.popover.onDestroyed(function() {
 Template.popover.events({
 	'click .js-action'(e, instance) {
 		!this.action || this.action.call(this, e, instance.data.data);
-		popover.close();
+		!this.hasPopup && popover.close();
 	},
 	'click .js-close'() {
 		popover.close();
@@ -215,79 +215,6 @@ Template.popover.events({
 			popover.close();
 			return false;
 		}
-	},
-	'click [data-type="sort-action"]'(e) {
-		popover.close();
-		const options = [];
-		const config = {
-			template: 'sortlist',
-			currentTarget: e.currentTarget,
-			data: {
-				options,
-			},
-			offsetVertical: e.currentTarget.clientHeight + 10,
-		};
-		popover.open(config);
-	},
-	'click [data-type="view-mode-action"]'(e) {
-		popover.close();
-		const user = Meteor.userId();
-		const hideAvatarSetting = getUserPreference(user, 'sidebarHideAvatar');
-		const config = {
-			columns: [
-				{
-					groups: [
-						{
-							items: [
-								extendedViewOption(user),
-								{
-									icon: viewModeIcon.medium,
-									name: t('Medium'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarViewMode: 'medium' }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-								{
-									icon: viewModeIcon.condensed,
-									name: t('Condensed'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarViewMode: 'condensed' }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-							],
-						},
-						{
-							items: [
-								{
-									icon: 'user-rounded',
-									name: hideAvatarSetting ? t('Show_Avatars') : t('Hide_Avatars'),
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarHideAvatar: !hideAvatarSetting }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-							],
-						},
-					],
-				},
-			],
-			currentTarget: e.currentTarget,
-			offsetVertical: e.currentTarget.clientHeight + 10,
-		};
-		popover.open(config);
 	},
 	'click [data-type="share-action"]'(e) {
 		if (isShareAvailable()) {
