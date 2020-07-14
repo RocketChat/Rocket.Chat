@@ -1,6 +1,6 @@
 export interface IScreenSharingProvider {
 	config: any;
 	getInfo(): any;
-	getJWT(): any;
-	getURL(sessionId: string): string;
+	getJWT(agent: any): any;
+	getURL(sessionId: string, agent: any): string;
 }

@@ -92,3 +92,15 @@ MessageTypes.registerType({
 	system: true,
 	message: 'end_screen_sharing_session',
 });
+
+MessageTypes.registerType({
+	id: 'screen_sharing_request_accepted',
+	system: true,
+	message: 'screen_sharing_request_accepted',
+});
+
+MessageTypes.registerType({
+	id: 'screen_sharing_request_rejected',
+	system: true,
+	message: 'screen_sharing_request_rejected',
+});

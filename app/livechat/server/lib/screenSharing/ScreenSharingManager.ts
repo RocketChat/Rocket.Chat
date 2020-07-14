@@ -4,6 +4,7 @@ import { settings } from '../../../../settings/server';
 import { Messages } from '../../../../models/server';
 import { IScreenSharingProvider } from './IScreenSharingProvider';
 import { screenSharingStreamer } from '../stream/screenSharingStream';
+import { Users } from '../../../../models';
 
 export class ScreenSharingManager {
 	providerName = '';
@@ -13,6 +14,8 @@ export class ScreenSharingManager {
 	private screenShareProvider: IScreenSharingProvider | any = null;
 
 	activeSessions: string[] = [];
+
+	pendingSessions: string[] = [];
 
 	urls = new Map<string, string>();
 
@@ -52,7 +55,20 @@ export class ScreenSharingManager {
 
 	requestScreenSharing(roomId: string, user: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('request_screen_sharing_access', roomId, '', user, {});
-		this.addActiveScreenSharing(roomId);
+		this.pendingSessions = this.pendingSessions.filter((id) => id !== roomId);
+		this.pendingSessions.push(roomId);
+	}
+
+	screenSharingRequestRejected(roomId: string, visitor: any): void {
+		Messages.createWithTypeRoomIdMessageAndUser('screen_sharing_request_rejected', roomId, '', visitor, {});
+		this.pendingSessions = this.pendingSessions.filter((id) => id !== roomId);
+	}
+
+	screenSharingRequestAccepted(roomId: string, visitor: any, agent: any): void {
+		Messages.createWithTypeRoomIdMessageAndUser('screen_sharing_request_accepted', roomId, '', visitor, {});
+		this.pendingSessions = this.pendingSessions.filter((id) => id !== roomId);
+		const user = Users.findOneByUsernameIgnoringCase(agent.username);
+		this.addActiveScreenSharing(roomId, user);
 	}
 
 	endScreenSharingSession(roomId: string, user: any): void {
@@ -60,10 +76,14 @@ export class ScreenSharingManager {
 		this.removeActiveScreenSharing(roomId);
 	}
 
-	addActiveScreenSharing(roomId: string): void {
+	addActiveScreenSharing(roomId: string, agent: any): void {
 		this.activeSessions = this.activeSessions.filter((id) => id !== roomId);
 		this.activeSessions.push(roomId);
-		this.urls.set(roomId, this.screenShareProvider.getURL(roomId));
+		if (this.urls.has(roomId)) {
+			this.urls.delete(roomId);
+		}
+		const sessionUrl = this.screenShareProvider.getURL(roomId, agent);
+		this.urls.set(roomId, sessionUrl);
 		console.log(this.activeSessions);
 		screenSharingStreamer.emit('session-modified', { activeSessions: this.activeSessions });
 	}
