@@ -76,7 +76,7 @@ Meteor.startup(function() {
 		screenSharingStreamer.on('pending-sessions-modified', ({ sessions }) => {
 			console.log(sessions);
 			pendingSessions.set(sessions);
-		});	
+		});
 	});
 });
 
