@@ -3,18 +3,16 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 
-export const handleAccessToken = (loginRequest) => {
-	check(loginRequest, Match.ObjectIncluding({
-		identityToken: String,
-		fullName: Match.Maybe(Object),
-		email: Match.Maybe(String),
-	}));
+export const handleAccessToken = ({ identityToken, fullName, email }) => {
+	check(identityToken, String);
+	check(fullName, Match.Maybe(Object));
+	check(email, Match.Maybe(String));
 
-	const decodedToken = decodeToken(loginRequest.identityToken).payload;
+	const decodedToken = decodeToken(identityToken).payload;
 
 	const profile = {};
 
-	const { givenName, familyName } = loginRequest.fullName;
+	const { givenName, familyName } = fullName;
 	if (givenName && familyName) {
 		profile.name = `${ givenName } ${ familyName }`;
 	}
@@ -36,7 +34,6 @@ export const handleAccessToken = (loginRequest) => {
 		expiresAt: new Date(exp * 1000),
 	};
 
-	const { email } = loginRequest;
 	if (email) {
 		serviceData.email = email;
 	}
