@@ -107,6 +107,27 @@ Meteor.methods({
 				fields: userOptions.fields,
 				sort: userOptions.sort,
 			}).fetch();
+		} else if (type.users === true) {
+			const userSubscriptions = Subscriptions.findByUserId(userId, { rid: true })
+				.fetch()
+				.map((x) => x.rid);
+
+			const usersWithSameSubscriptions = Subscriptions.find({
+				rid: { $in: userSubscriptions },
+				'u._id': { $ne: userId },
+			})
+				.fetch()
+				.map(({ u }) => u._id);
+
+			result.users = Users.find({
+				active: true,
+				_id: { $in: usersWithSameSubscriptions },
+				username: { $regex: regex },
+			}, {
+				fields: userOptions.fields,
+				sort: userOptions.sort,
+				limit: userOptions.limit,
+			}).fetch();
 		}
 
 		return result;
