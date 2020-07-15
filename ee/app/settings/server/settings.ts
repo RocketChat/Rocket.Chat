@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import { SettingsEvents, settings, ISettingRecord } from '../../../../app/settings/server/functions/settings';
 import { SettingValue } from '../../../../app/settings/lib/settings';
 import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
@@ -54,9 +56,18 @@ SettingsEvents.on('change-setting', (record: ISettingRecord, value: ISettingNoti
 	}
 });
 
-
-onValidateLicenses(() => {
+function updateSettings(): void {
 	const enterpriseSettings = SettingsModel.findEnterpriseSettings();
 
 	enterpriseSettings.forEach((record: ISettingRecord) => settings.storeSettingValue(record, false));
+}
+
+
+Meteor.startup(() => {
+	updateSettings();
+
+	// If there was no license loaded, add a callback to update the settings once one is added
+	if (!isEnterprise()) {
+		onValidateLicenses(updateSettings);
+	}
 });

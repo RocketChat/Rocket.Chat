@@ -234,7 +234,7 @@ export function onValidateLicenses(cb: (...args: any[]) => void): void {
 		return cb();
 	}
 
-	EnterpriseLicenses.once('validate', cb);
+	EnterpriseLicenses.on('validate', cb);
 }
 
 export interface IOverrideClassProperties {
