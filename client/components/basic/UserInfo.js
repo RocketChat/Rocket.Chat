@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Margins, Tag, Button, Icon } from '@rocket.chat/fuselage';
-
+import { css } from '@rocket.chat/css-in-js';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -13,7 +13,11 @@ import UserCard from './UserCard';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
-const Info = (props) => <UserCard.Info flexShrink={0} {...props}/>;
+const wordBreak = css`
+	word-break: break-word;
+`;
+
+const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
 // const timeAgo = (e) => e;
 
 export const UserInfo = React.memo(function UserInfo({
@@ -57,7 +61,7 @@ export const UserInfo = React.memo(function UserInfo({
 			</>}
 
 			<Label>{t('Last_login')}</Label>
-			<Info >{lastLogin ? timeAgo(lastLogin) : t('Never')}</Info>
+			<Info>{lastLogin ? timeAgo(lastLogin) : t('Never')}</Info>
 
 			{name && <>
 				<Label>{t('Full Name')}</Label>
@@ -89,8 +93,8 @@ export const UserInfo = React.memo(function UserInfo({
 });
 
 export const Action = ({ icon, label, ...props }) => (
-	<Button title={label} {...props} mi='x2'>
-		<Icon name={icon} size='x16' />
+	<Button title={label} {...props} mi='x4'>
+		<Icon name={icon} size='x20' mie='x4' />
 		{label}
 	</Button>
 );

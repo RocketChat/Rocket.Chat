@@ -295,6 +295,7 @@ Template.membersList.onCreated(function() {
 
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);
+		this.userDetail.set(null);
 		this.tabBar.setData({
 			label: 'Members',
 			icon: 'team',

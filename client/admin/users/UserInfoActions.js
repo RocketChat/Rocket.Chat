@@ -253,7 +253,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(options);
 
-	const menu = menuOptions && <Menu small={false} ghost={false} flexShrink={0} key='menu' renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>} options={menuOptions}/>;
+	const menu = menuOptions && <Menu mi='x4' small={false} ghost={false} flexShrink={0} key='menu' renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>} options={menuOptions}/>;
 
 	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
 

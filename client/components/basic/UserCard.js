@@ -35,19 +35,19 @@ export const Username = ({ name, status = <Status.Offline/> }) => <Box display='
 	{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
 </Box>;
 
-const Roles = ({ children }) => <Info rcx-user-card__roles mi='neg-x2' height='16px' display='flex' flexShrink={0}>
+const Roles = ({ children }) => <Info rcx-user-card__roles m='neg-x2' flexWrap='wrap' display='flex' flexShrink={0}>
 	{children}
 </Info>;
 
 const Role = ({ children }) => <Tag
 	pb={0}
-	mi='x2'
+	m='x2'
 	disabled
 	fontScale='c2'
 	children={children}
 />;
 
-const UserCardConteiner = forwardRef((props, ref) => <Box rcx-user-card bg='surface' elevation='2' p='x24' display='flex' borderRadius='x2' width='439px' heigth='230px' {...props} ref={ref}/>);
+const UserCardConteiner = forwardRef((props, ref) => <Box rcx-user-card bg='surface' elevation='2' p='x24' display='flex' borderRadius='x2' width='439px' {...props} ref={ref}/>);
 const UserCard = forwardRef(({
 	className,
 	style,

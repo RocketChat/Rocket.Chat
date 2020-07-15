@@ -1092,8 +1092,8 @@ Template.room.onCreated(function() {
 		if (roomTypes.getConfig(room.t).isGroupChat(room)) {
 			return;
 		}
-
-		this.userDetail.set(room.usernames.length === 1 ? room.usernames[0] : room.usernames.filter((username) => username !== user.username)[0]);
+		const usernames = Array.from(new Set(room.usernames));
+		this.userDetail.set(this.userDetail.get() || (usernames.length === 1 ? usernames[0] : usernames.filter((username) => username !== user.username)[0]));
 	});
 
 	this.autorun(() => {
@@ -1176,22 +1176,8 @@ Template.room.onCreated(function() {
 		return previewMessages;
 	};
 
-	this.setUserDetail = (username) => {
-		this.userDetail.set(username);
-	};
-
 	this.clearUserDetail = () => {
-		const room = Rooms.findOne({ _id: rid }, {
-			fields: {
-				t: 1,
-				usernames: 1,
-				uids: 1,
-			},
-		});
-
-		if (room.t !== 'd') {
-			return this.userDetail.set(null);
-		}
+		this.userDetail.set(null);
 		this.tabBar.close();
 	};
 
