@@ -355,4 +355,26 @@ Meteor.startup(async function() {
 		order: 17,
 		group: 'menu',
 	});
+
+	MessageAction.addButton({
+		id: 'reaction-list',
+		icon: 'emoji',
+		label: 'Reaction_list',
+		context: ['message', 'message-mobile', 'threads'],
+		action() {
+			const { msg: { reactions } } = messageArgs(this);
+			console.log(reactions);
+
+			modal.open({
+				template: 'ReactionList',
+				data: { reactions },
+			}, () => {
+			});
+		},
+		condition({ msg: { reactions } }) {
+			return !!reactions;
+		},
+		order: 18,
+		group: 'menu',
+	});
 });
