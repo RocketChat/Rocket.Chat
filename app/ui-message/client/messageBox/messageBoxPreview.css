@@ -1,0 +1,8 @@
+.messagePreview {
+	overflow-y: auto;
+
+	width: 100%;
+	min-height: 23px;
+
+	max-height: 155px;
+}
