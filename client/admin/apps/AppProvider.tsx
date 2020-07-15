@@ -128,7 +128,7 @@ const AppProvider: FunctionComponent = ({ children }) => {
 					Apps.getAppsFromMarketplace() as Promise<App[]>,
 					Apps.getApps() as Promise<App[]>,
 				]);
-				const appsData = marketplaceApps.map((app) => {
+				const appsData = marketplaceApps.length ? marketplaceApps.map((app) => {
 					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
 					if (!installedApps[appIndex]) {
 						return {
@@ -148,7 +148,7 @@ const AppProvider: FunctionComponent = ({ children }) => {
 						bundledIn: app.bundledIn,
 						marketplaceVersion: app.version,
 					};
-				});
+				}) : [];
 
 				if (installedApps.length) {
 					appsData.push(...installedApps.map((current) => ({ ...current, installed: true, marketplace: false })));
