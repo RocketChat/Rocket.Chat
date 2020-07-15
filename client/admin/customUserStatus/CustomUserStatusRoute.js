@@ -93,15 +93,15 @@ export default function CustomUserStatusRoute({ props }) {
 			</Page.Content>
 		</Page>
 		{ context
-			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+			&& <VerticalBar className='contextual-bar' mod-small={small} mod-mobile={mobile} width='380px' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
 				<VerticalBar.Header>
 					{ context === 'edit' && t('Custom_User_Status_Edit') }
 					{ context === 'new' && t('Custom_User_Status_Add') }
-					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
-				<VerticalBar.Content>
-					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
-					{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} onChange={onChange}/>}
-				</VerticalBar.Content>
+					<VerticalBar.Close onClick={close}/>
+				</VerticalBar.Header>
+
+				{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
+				{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} onChange={onChange}/>}
 			</VerticalBar>}
 	</Page>;
 }

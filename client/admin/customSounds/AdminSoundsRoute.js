@@ -96,15 +96,14 @@ export default function CustomSoundsRoute({ props }) {
 			</Page.Content>
 		</Page>
 		{ context
-			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+			&& <VerticalBar className='contextual-bar' mod-small={small} mod-mobile={mobile} width='380px' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
 				<VerticalBar.Header>
 					{ context === 'edit' && t('Custom_Sound_Edit') }
 					{ context === 'new' && t('Custom_Sound_Add') }
-					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
-				<VerticalBar.Content>
-					{context === 'edit' && <EditCustomSound _id={id} close={close} onChange={onChange} cache={cache}/>}
-					{context === 'new' && <AddCustomSound goToNew={onClick} close={close} onChange={onChange}/>}
-				</VerticalBar.Content>
+					<VerticalBar.Close onClick={close}/>
+				</VerticalBar.Header>
+				{context === 'edit' && <EditCustomSound _id={id} close={close} onChange={onChange} cache={cache}/>}
+				{context === 'new' && <AddCustomSound goToNew={onClick} close={close} onChange={onChange}/>}
 			</VerticalBar>}
 	</Page>;
 }
