@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useRouteParameter, useRoute } from '../contexts/RouterContext';
 import { SideNav } from '../../app/ui-utils';
 import AccountProfilePage from './AccountProfilePage';
+import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import './sidebarItems';
 
 const AccountRoute = () => {
@@ -18,6 +19,9 @@ const AccountRoute = () => {
 
 	if (page === 'profile') {
 		return <AccountProfilePage />;
+	}
+	if (page === 'preferences') {
+		return <AccountPreferencesPage />;
 	}
 	return null;
 };
