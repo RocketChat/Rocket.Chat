@@ -13,6 +13,7 @@ import { useAbsoluteUrl } from '../../contexts/ServerContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { sidebarItems } from '../sidebarItems';
+import PlanTag from '../../components/basic/PlanTag';
 
 const SidebarItem = React.memo(({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
@@ -195,7 +196,7 @@ export default React.memo(function AdminSidebar() {
 	return <SettingsProvider privileged>
 		<Box display='flex' flexDirection='column' h='100vh'>
 			<Box is='header' pb='x16' pi='x24' display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-				<Box color='neutral-800' fontSize='p1' fontWeight='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{t('Administration')}</Box>
+				<Box color='neutral-800' fontSize='p1' display='flex' flexDirection='row' alignItems='center' fontWeight='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{t('Administration')}<PlanTag></PlanTag></Box>
 				<Button square small ghost onClick={closeAdminFlex}><Icon name='cross' size='x20'/></Button>
 			</Box>
 			<Scrollable>
