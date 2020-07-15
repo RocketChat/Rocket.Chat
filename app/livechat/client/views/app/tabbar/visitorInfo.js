@@ -136,22 +136,11 @@ Template.visitorInfo.helpers({
 		return Template.instance().action.get() === 'forward';
 	},
 
-	editDetails() {
-		const instance = Template.instance();
-		const user = instance.user.get();
-		return {
-			visitorId: user ? user._id : null,
-			roomId: this.rid,
-			save() {
-				instance.action.set();
-			},
-			cancel() {
-				instance.action.set();
-			},
-		};
+	sendingTranscript() {
+		return Template.instance().action.get() === 'transcript';
 	},
 
-	forwardDetails() {
+	roomInfoData() {
 		const instance = Template.instance();
 		const user = instance.user.get();
 		return {
@@ -211,6 +200,10 @@ Template.visitorInfo.helpers({
 		return hasPermission('transfer-livechat-guest');
 	},
 
+	canSendTranscript() {
+		return hasPermission('send-omnichannel-chat-transcript');
+	},
+
 	roomClosedDateTime() {
 		const { closedAt } = this;
 		return DateFormat.formatDateAndTime(closedAt);
@@ -240,6 +233,16 @@ Template.visitorInfo.helpers({
 		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
 		// because only the dynamic template data will be reloaded
 		return Template.instance().room;
+	},
+
+	transcriptRequest() {
+		const room = Template.instance().room.get();
+		return room?.transcriptRequest;
+	},
+
+	transcriptRequestedDateTime() {
+		const { requestedAt } = this;
+		return DateFormat.formatDateAndTime(requestedAt);
 	},
 });
 
@@ -308,6 +311,12 @@ Template.visitorInfo.events({
 		event.preventDefault();
 
 		instance.action.set('forward');
+	},
+
+	'click .send-transcript'(event, instance) {
+		event.preventDefault();
+
+		instance.action.set('transcript');
 	},
 });
 

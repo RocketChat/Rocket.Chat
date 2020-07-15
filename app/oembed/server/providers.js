@@ -53,6 +53,11 @@ class Providers {
 const providers = new Providers();
 providers.loadProviders();
 
+providers.registerProvider({
+	urls: [new RegExp('https?://twitter\\.com/[^/]+/status/\\S+')],
+	endPoint: 'https://publish.twitter.com/oembed',
+});
+
 export const oembed = {};
 
 oembed.providers = providers;

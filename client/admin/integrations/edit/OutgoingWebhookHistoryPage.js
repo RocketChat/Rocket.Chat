@@ -1,9 +1,9 @@
 import { Button, ButtonGroup, Icon, Skeleton, Box, Accordion, Field, FieldGroup, Pagination } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 
 import Page from '../../../components/basic/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useHilightCode } from '../../../hooks/useHilightCode';
+import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
 import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
@@ -13,8 +13,6 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 
 function HistoryItem({ data, onChange, ...props }) {
 	const t = useTranslation();
-
-	const hilightCode = useHilightCode();
 
 	const replayOutgoingIntegration = useMethod('replayOutgoingIntegration');
 
@@ -40,9 +38,16 @@ function HistoryItem({ data, onChange, ...props }) {
 		e.stopPropagation();
 		replayOutgoingIntegration({ integrationId, historyId: _id });
 		onChange();
-	}, [_id]);
+	}, [_id, integrationId, onChange, replayOutgoingIntegration]);
 
 	const formatDateAndTime = useFormatDateAndTime();
+
+	const prepareSentMessageCode = useHighlightedCode('json', JSON.stringify(prepareSentMessage || '', null, 2));
+	const processSentMessageCode = useHighlightedCode('json', JSON.stringify(processSentMessage || '', null, 2));
+	const httpCallDataCode = useHighlightedCode('json', JSON.stringify(httpCallData || '', null, 2));
+	const httpErrorCode = useHighlightedCode('json', JSON.stringify(httpError || '', null, 2));
+	const httpResultCode = useHighlightedCode('json', JSON.stringify(httpResult || '', null, 2));
+	const errorStackCode = useHighlightedCode('json', JSON.stringify(errorStack || '', null, 2));
 
 	return <Accordion.Item
 		title={
@@ -100,7 +105,7 @@ function HistoryItem({ data, onChange, ...props }) {
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<pre><code dangerouslySetInnerHTML={{ __html: hilightCode('json', JSON.stringify(dataSentToTrigger, null, 2)) }}></code></pre>
+						<pre><code dangerouslySetInnerHTML={{ __html: useHighlightedCode('json', JSON.stringify(dataSentToTrigger, null, 2)) }}></code></pre>
 					</Box>
 				</Field.Row>
 			</Field>
@@ -108,7 +113,7 @@ function HistoryItem({ data, onChange, ...props }) {
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Prepare_Script')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<pre><code dangerouslySetInnerHTML={{ __html: hilightCode('json', JSON.stringify(prepareSentMessage, null, 2)) }}></code></pre>
+						<pre><code dangerouslySetInnerHTML={{ __html: prepareSentMessageCode }}></code></pre>
 					</Box>
 				</Field.Row>
 			</Field>}
@@ -116,7 +121,7 @@ function HistoryItem({ data, onChange, ...props }) {
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Process_Script')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<pre><code dangerouslySetInnerHTML={{ __html: hilightCode('json', JSON.stringify(processSentMessage, null, 2)) }}></code></pre>
+						<pre><code dangerouslySetInnerHTML={{ __html: processSentMessageCode }}></code></pre>
 					</Box>
 				</Field.Row>
 			</Field>}
@@ -132,7 +137,7 @@ function HistoryItem({ data, onChange, ...props }) {
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Data_Passed_To_URL')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<pre><code dangerouslySetInnerHTML={{ __html: hilightCode('json', JSON.stringify(httpCallData, null, 2)) }}></code></pre>
+						<pre><code dangerouslySetInnerHTML={{ __html: httpCallDataCode }}></code></pre>
 					</Box>
 				</Field.Row>
 			</Field>}
@@ -140,7 +145,7 @@ function HistoryItem({ data, onChange, ...props }) {
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Http_Response_Error')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<pre><code dangerouslySetInnerHTML={{ __html: hilightCode('json', JSON.stringify(httpError, null, 2)) }}></code></pre>
+						<pre><code dangerouslySetInnerHTML={{ __html: httpErrorCode }}></code></pre>
 					</Box>
 				</Field.Row>
 			</Field>}
@@ -148,7 +153,7 @@ function HistoryItem({ data, onChange, ...props }) {
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Http_Response')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<pre><code dangerouslySetInnerHTML={{ __html: hilightCode('json', httpResult) }}></code></pre>
+						<pre><code dangerouslySetInnerHTML={{ __html: httpResultCode }}></code></pre>
 					</Box>
 				</Field.Row>
 			</Field>}
@@ -156,7 +161,7 @@ function HistoryItem({ data, onChange, ...props }) {
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Error_Stacktrace')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<pre><code dangerouslySetInnerHTML={{ __html: hilightCode('json', JSON.stringify(errorStack, null, 2)) }}></code></pre>
+						<pre><code dangerouslySetInnerHTML={{ __html: errorStackCode }}></code></pre>
 					</Box>
 				</Field.Row>
 			</Field>}
@@ -167,12 +172,7 @@ function HistoryItem({ data, onChange, ...props }) {
 function HistoryContent({ data, state, onChange, ...props }) {
 	const t = useTranslation();
 
-	const [loadedData, setLoadedData] = useState();
-	useEffect(() => {
-		if (state === ENDPOINT_STATES.DONE) { setLoadedData(data); }
-	}, [state]);
-
-	if (!loadedData || state === ENDPOINT_STATES.LOADING) {
+	if (!data || state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
 			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
@@ -183,13 +183,13 @@ function HistoryContent({ data, state, onChange, ...props }) {
 		</Box>;
 	}
 
-	if (loadedData.history.length < 1) {
+	if (data.history.length < 1) {
 		return <Box mbs='x16' {...props}>{t('Integration_Outgoing_WebHook_No_History')}</Box>;
 	}
 
 	return <>
 		<Accordion w='full' maxWidth='x600' alignSelf='center' key='content'>
-			{loadedData.history.map((current) => <HistoryItem
+			{data.history.map((current) => <HistoryItem
 				data={current}
 				key={current._id}
 				onChange={onChange}
@@ -207,7 +207,7 @@ function OutgoingWebhookHistoryPage(props) {
 	const [itemsPerPage, setItemsPerPage] = useState();
 	const onChange = useCallback(() => {
 		setCache(new Date());
-	});
+	}, []);
 
 	const router = useRoute('admin-integrations');
 
@@ -231,13 +231,14 @@ function OutgoingWebhookHistoryPage(props) {
 
 	const query = useMemo(() => ({
 		id,
-		cout: itemsPerPage,
+		count: itemsPerPage,
 		offset: current,
+		// TODO: remove cache. Is necessary for data validation
 	}), [id, itemsPerPage, current, cache]);
 
 	const { data, state } = useEndpointDataExperimental('integrations.history', query);
 
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), []);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={t('Integration_Outgoing_WebHook_History')}>

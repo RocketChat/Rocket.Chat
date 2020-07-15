@@ -30,7 +30,6 @@ import WebdavAccounts from './models/WebdavAccounts';
 import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
-import LivechatOfficeHour from './models/LivechatOfficeHour';
 import LivechatPageVisited from './models/LivechatPageVisited';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatTrigger from './models/LivechatTrigger';
@@ -82,7 +81,6 @@ export {
 	LivechatCustomField,
 	LivechatDepartment,
 	LivechatDepartmentAgents,
-	LivechatOfficeHour,
 	LivechatPageVisited,
 	LivechatRooms,
 	LivechatTrigger,

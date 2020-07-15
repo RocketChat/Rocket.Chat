@@ -51,7 +51,8 @@ export function EditCustomUserStatusWithData({ _id, cache, ...props }) {
 	const t = useTranslation();
 	const query = useMemo(() => ({
 		query: JSON.stringify({ _id }),
-	}), [_id]);
+		// TODO: remove cache. Is necessary for data invalidation
+	}), [_id, cache]);
 
 	const { data, state, error } = useEndpointDataExperimental('custom-user-status.list', query);
 
@@ -96,7 +97,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const saveStatus = useMethod('insertOrUpdateUserStatus');
 	const deleteStatus = useMethod('deleteCustomUserStatus');
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousStatusType !== statusType, [name, statusType]);
+	const hasUnsavedChanges = useMemo(() => previousName !== name || previousStatusType !== statusType, [name, previousName, previousStatusType, statusType]);
 	const handleSave = useCallback(async () => {
 		try {
 			await saveStatus({
@@ -111,7 +112,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [name, statusType, _id]);
+	}, [saveStatus, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
 
 	const onDeleteConfirm = useCallback(async () => {
 		try {
@@ -121,7 +122,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			dispatchToastMessage({ type: 'error', message: error });
 			onChange();
 		}
-	}, [_id]);
+	}, [_id, close, deleteStatus, dispatchToastMessage, onChange]);
 
 	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
 
