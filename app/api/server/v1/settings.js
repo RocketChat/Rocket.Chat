@@ -9,12 +9,12 @@ import { API } from '../api';
 import { SettingsEvents } from '../../../settings/server';
 
 const fetchSettings = (query, sort, offset, count, fields) => {
-	const settings = Settings.find.fetchSettings(query, {
+	const settings = Settings.find(query, {
 		sort: sort || { _id: 1 },
 		skip: offset,
 		limit: count,
 		fields: Object.assign({ _id: 1, value: 1, enterprise: 1, invalidValue: 1, modules: 1 }, fields),
-	});
+	}).fetch();
 
 	SettingsEvents.emit('fetch-settings', settings);
 	return settings.map((setting) => {
