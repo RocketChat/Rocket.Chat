@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter } from '../../contexts/RouterContext';
@@ -9,12 +9,14 @@ import EditIntegrationsPage from './edit/EditIntegrationsPage';
 import OutgoingWebhookHistoryPage from './edit/OutgoingWebhookHistoryPage';
 
 function IntegrationsRoute() {
-	const canViewIntegrationsPage = useAtLeastOnePermission([
-		'manage-incoming-integrations',
-		'manage-outgoing-integrations',
-		'manage-own-incoming-integrations',
-		'manage-own-outgoing-integrations',
-	]);
+	const canViewIntegrationsPage = useAtLeastOnePermission(
+		useMemo(() => [
+			'manage-incoming-integrations',
+			'manage-outgoing-integrations',
+			'manage-own-incoming-integrations',
+			'manage-own-outgoing-integrations',
+		], []),
+	);
 
 	const context = useRouteParameter('context');
 
