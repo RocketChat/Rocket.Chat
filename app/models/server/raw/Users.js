@@ -126,6 +126,8 @@ export class UsersRaw extends BaseRaw {
 				username: termRegex,
 			}, {
 				name: termRegex,
+			}, {
+				nickname: termRegex,
 			}],
 			active: true,
 			type: {

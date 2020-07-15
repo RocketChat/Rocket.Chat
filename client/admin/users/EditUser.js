@@ -34,6 +34,7 @@ const getInitialValue = (data) => ({
 	username: data.username,
 	status: data.status,
 	bio: data.bio ?? '',
+	nickname: data.nickname ?? '',
 	email: (data.emails && data.emails[0].address) || '',
 	verified: (data.emails && data.emails[0].verified) || false,
 	setRandomPassword: false,

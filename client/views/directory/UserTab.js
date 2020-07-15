@@ -72,7 +72,7 @@ function UserTable({
 
 	const formatDate = useFormatDate();
 
-	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio, avatarETag }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
+	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio, avatarETag, nickname }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 		<Table.Cell>
 			<Flex.Container>
 				<Box>
@@ -81,7 +81,7 @@ function UserTable({
 					</Flex.Item>
 					<Box style={style} grow={1} mi='x8'>
 						<Box display='flex'>
-							<Box fontScale='p2' style={style}>{name || username}</Box> <Box mi='x4'/> <Box fontScale='p1' color='hint' style={style}>{username}</Box>
+							<Box fontScale='p2' style={style}>{name || username}{nickname && ` (${ nickname })`}</Box> <Box mi='x4'/> <Box fontScale='p1' color='hint' style={style}>{username}</Box>
 						</Box>
 						<Box fontScale='p1' color='hint' style={style}> {bio} </Box>
 					</Box>
