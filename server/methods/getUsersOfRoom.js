@@ -25,12 +25,13 @@ function findUsers({ rid, status, skip, limit, filter = '' }) {
 				'u._id': 1,
 				'u.name': 1,
 				'u.username': 1,
+				'u.nickname': 1,
 				'u.status': 1,
 				'u.avatarETag': 1,
 			},
 		},
 		...status ? [{ $match: { 'u.status': status } }] : [],
-		...filter.trim() ? [{ $match: { $or: [{ 'u.name': regex }, { 'u.username': regex }] } }] : [],
+		...filter.trim() ? [{ $match: { $or: [{ 'u.name': regex }, { 'u.username': regex }, { 'u.nickname': regex }] } }] : [],
 		{
 			$sort: {
 				[settings.get('UI_Use_Real_Name') ? 'u.name' : 'u.username']: 1,
@@ -43,6 +44,7 @@ function findUsers({ rid, status, skip, limit, filter = '' }) {
 				_id: { $arrayElemAt: ['$u._id', 0] },
 				name: { $arrayElemAt: ['$u.name', 0] },
 				username: { $arrayElemAt: ['$u.username', 0] },
+				nickname: { $arrayElemAt: ['$u.nickname', 0] },
 				avatarETag: { $arrayElemAt: ['$u.avatarETag', 0] },
 			},
 		},
