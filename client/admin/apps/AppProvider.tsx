@@ -24,11 +24,13 @@ type App = {
 export type AppDataContextValue = {
 	data: App[];
 	dataCache: any;
+	finishedLoading: boolean;
 }
 
 export const AppDataContext = createContext<AppDataContextValue>({
 	data: [],
 	dataCache: [],
+	finishedLoading: false,
 });
 
 type ListenersMapping = {
@@ -51,6 +53,7 @@ const registerListeners = (listeners: ListenersMapping): (() => void) => {
 
 const AppProvider: FunctionComponent = ({ children }) => {
 	const [data, setData] = useState<App[]>(() => []);
+	const [finishedLoading, setFinishedLoading] = useState<boolean>(() => false);
 	const [dataCache, setDataCache] = useState<any>(() => []);
 
 	const ref = useRef(data);
@@ -63,12 +66,17 @@ const AppProvider: FunctionComponent = ({ children }) => {
 	const getDataCopy = (): typeof ref.current => ref.current.slice(0);
 
 	useEffect(() => {
+		const updateData = (data: App[]): void => {
+			setData(data.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)));
+			invalidateData();
+		};
+
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
 			try {
 				const { status, version } = await Apps.getApp(appId);
 				const app = await Apps.getAppFromMarketplace(appId, version);
 				const updatedData = getDataCopy();
-				const index = updatedData.findIndex(({ id }) => id === appId);
+				const index = updatedData.findIndex(({ id }: {id: string}) => id === appId);
 				updatedData[index] = {
 					...app,
 					installed: true,
@@ -88,7 +96,7 @@ const AppProvider: FunctionComponent = ({ children }) => {
 			APP_UPDATED: handleAppAddedOrUpdated,
 			APP_REMOVED: (appId: string): void => {
 				const updatedData = getDataCopy();
-				const index = updatedData.findIndex(({ id }) => id === appId);
+				const index = updatedData.findIndex(({ id }: {id: string}) => id === appId);
 				if (!updatedData[index]) {
 					return;
 				}
@@ -106,7 +114,7 @@ const AppProvider: FunctionComponent = ({ children }) => {
 			},
 			APP_STATUS_CHANGE: ({ appId, status }: {appId: string; status: unknown}): void => {
 				const updatedData = getDataCopy();
-				const app = updatedData.find(({ id }) => id === appId);
+				const app = updatedData.find(({ id }: {id: string}) => id === appId);
 
 				if (!app) {
 					return;
@@ -124,10 +132,18 @@ const AppProvider: FunctionComponent = ({ children }) => {
 
 		(async (): Promise<void> => {
 			try {
-				const [marketplaceApps, installedApps] = await Promise.all([
-					Apps.getAppsFromMarketplace() as Promise<App[]>,
-					Apps.getApps() as Promise<App[]>,
-				]);
+				const installedApps = await Apps.getApps().then((result) => {
+					let apps: App[] = [];
+					if (result.length) {
+						apps = result.map((current: App) => ({ ...current, installed: true, marketplace: false }));
+						console.log(apps);
+						updateData(apps);
+					}
+					return apps;
+				}) as App[];
+
+				const marketplaceApps = await Apps.getAppsFromMarketplace() as App[];
+
 				const appsData = marketplaceApps.length ? marketplaceApps.map((app) => {
 					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
 					if (!installedApps[appIndex]) {
@@ -151,11 +167,11 @@ const AppProvider: FunctionComponent = ({ children }) => {
 				}) : [];
 
 				if (installedApps.length) {
-					appsData.push(...installedApps.map((current) => ({ ...current, installed: true, marketplace: false })));
+					appsData.push(...installedApps);
 				}
 
-				setData(appsData.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)));
-				invalidateData();
+				updateData(appsData);
+				setFinishedLoading(true);
 			} catch (e) {
 				handleAPIError(e);
 				unregisterListeners();
@@ -163,9 +179,9 @@ const AppProvider: FunctionComponent = ({ children }) => {
 		})();
 
 		return unregisterListeners;
-	}, []);
+	}, [setData, setFinishedLoading]);
 
-	return <AppDataContext.Provider children={children} value={{ data, dataCache }} />;
+	return <AppDataContext.Provider children={children} value={{ data, dataCache, finishedLoading }} />;
 };
 
 export default AppProvider;
