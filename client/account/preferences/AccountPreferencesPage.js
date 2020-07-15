@@ -19,7 +19,6 @@ const AccountPreferencesPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [modal, setModal] = useState(null);
 	const [hasAnyChange, setHasAnyChange] = useState(false);
 
 	const saveData = useRef({});
@@ -64,32 +63,29 @@ const AccountPreferencesPage = () => {
 		}
 	}, [dispatchToastMessage, saveFn, t]);
 
-	return <>
-		<Page>
-			<Page.Header title={t('Preferences')}>
-				<ButtonGroup>
-					<Button primary disabled={!hasAnyChange} onClick={handleSave}>
-						{t('Save_changes')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
-					<Accordion>
-						<PreferencesLocalizationSection onChange={onChange} defaultExpanded/>
-						<PreferencesGlobalSection onChange={onChange} />
-						<PreferencesUserPresenceSection onChange={onChange} />
-						<PreferencesNotificationsSection onChange={onChange} />
-						<PreferencesMessagesSection onChange={onChange} />
-						<PreferencesHighlightsSection onChange={onChange} />
-						<PreferencesSoundSection onChange={onChange} />
-						{dataDownloadEnabled && <PreferencesMyDataSection onChange={onChange} setModal={setModal} />}
-					</Accordion>
-				</Box>
-			</Page.ScrollableContentWithShadow>
-		</Page>
-		{modal}
-	</>;
+	return <Page>
+		<Page.Header title={t('Preferences')}>
+			<ButtonGroup>
+				<Button primary disabled={!hasAnyChange} onClick={handleSave}>
+					{t('Save_changes')}
+				</Button>
+			</ButtonGroup>
+		</Page.Header>
+		<Page.ScrollableContentWithShadow>
+			<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Accordion>
+					<PreferencesLocalizationSection onChange={onChange} defaultExpanded/>
+					<PreferencesGlobalSection onChange={onChange} />
+					<PreferencesUserPresenceSection onChange={onChange} />
+					<PreferencesNotificationsSection onChange={onChange} />
+					<PreferencesMessagesSection onChange={onChange} />
+					<PreferencesHighlightsSection onChange={onChange} />
+					<PreferencesSoundSection onChange={onChange} />
+					{dataDownloadEnabled && <PreferencesMyDataSection onChange={onChange} />}
+				</Accordion>
+			</Box>
+		</Page.ScrollableContentWithShadow>
+	</Page>;
 };
 
 export default AccountPreferencesPage;

@@ -5,6 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { Modal } from '../../components/basic/Modal';
 import { useMethod } from '../../contexts/ServerContext';
+import { useSetModal } from '../../contexts/ModalContext';
 
 const MyDataModal = ({ onCancel, title, text, ...props }) => {
 	const t = useTranslation();
@@ -26,8 +27,10 @@ const MyDataModal = ({ onCancel, title, text, ...props }) => {
 	</Modal>;
 };
 
-const PreferencesMyDataSection = ({ onChange, setModal, ...props }) => {
+const PreferencesMyDataSection = ({ onChange, ...props }) => {
 	const t = useTranslation();
+
+	const setModal = useSetModal();
 
 	const requestDataDownload = useMethod('requestDataDownload');
 
