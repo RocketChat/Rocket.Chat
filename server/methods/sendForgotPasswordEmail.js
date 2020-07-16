@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
 import { Users } from '../../app/models';
+import { settings } from '../../app/settings/server';
 
 Meteor.methods({
 	sendForgotPasswordEmail(to) {
@@ -14,6 +15,12 @@ Meteor.methods({
 
 		if (!user) {
 			return false;
+		}
+
+		if (user.services && !user.services.password) {
+			if (!settings.get('Accounts_AllowPasswordChangeForOAuthUsers')) {
+				return false;
+			}
 		}
 
 		try {

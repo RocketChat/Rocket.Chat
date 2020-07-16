@@ -61,6 +61,10 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Accounts_AllowPasswordChangeForOAuthUsers', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Accounts_AllowEmailNotifications', true, {
 		type: 'boolean',
 		public: true,

@@ -189,6 +189,18 @@ Template.accountProfile.helpers({
 	allowPasswordChange() {
 		return settings.get('Accounts_AllowPasswordChange');
 	},
+	isPasswordVisible() {
+		if (settings.get('Accounts_AllowPasswordChangeForOAuthUsers')) {
+			return true;
+		}
+
+		const user = Meteor.user();
+		if (!user || !user.services || !user.services.password) {
+			return false;
+		}
+
+		return true;
+	},
 	canConfirmNewPassword() {
 		const password = Template.instance().password.get();
 		return settings.get('Accounts_AllowPasswordChange') && password && password !== '';

@@ -178,33 +178,35 @@
 							</div>
 							{{/with}}
 							<div class="rc-input{{#if confirmationPasswordInvalid}} rc-input--error{{/if}} rc-w50 padded">
-								{{#with canChange=allowPasswordChange}}
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ "New_password"}}</div>
-										<div class="rc-input__wrapper">
-											<input name="password" type="password" class="rc-input__element" placeholder="{{_ "New_Password_Placeholder"}}"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
-										</div>
-									</label>
-									{{#if canConfirmNewPassword}}
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ "Confirm_new_password"}}</div>
-										<div class="rc-input__wrapper">
-											<input name="confirmation-password" type="password" class="rc-input__element" placeholder="{{_ "Confirm_New_Password_Placeholder"}}" autocomplete="confirm-new-password">
-										</div>
-									</label>
-									{{/if}}
-									{{# unless canChange}}
-										<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>
-									{{/unless}}
-									{{#if confirmationPasswordInvalid}}
-										<div class="rc-input__error">
-											<div class="rc-input__error-icon">
-												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								{{#if isPasswordVisible}}
+									{{#with canChange=allowPasswordChange}}
+										<label class="rc-input__label">
+											<div class="rc-input__title">{{_ "New_password"}}</div>
+											<div class="rc-input__wrapper">
+												<input name="password" type="password" class="rc-input__element" placeholder="{{_ "New_Password_Placeholder"}}"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
 											</div>
-											<div class="rc-input__error-message">{{_ 'Passwords_do_not_match'}}</div>
-										</div>
-									{{/if}}
-								{{/with}}
+										</label>
+										{{#if canConfirmNewPassword}}
+										<label class="rc-input__label">
+											<div class="rc-input__title">{{_ "Confirm_new_password"}}</div>
+											<div class="rc-input__wrapper">
+												<input name="confirmation-password" type="password" class="rc-input__element" placeholder="{{_ "Confirm_New_Password_Placeholder"}}" autocomplete="confirm-new-password">
+											</div>
+										</label>
+										{{/if}}
+										{{# unless canChange}}
+											<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>
+										{{/unless}}
+										{{#if confirmationPasswordInvalid}}
+											<div class="rc-input__error">
+												<div class="rc-input__error-icon">
+													{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+												</div>
+												<div class="rc-input__error-message">{{_ 'Passwords_do_not_match'}}</div>
+											</div>
+										{{/if}}
+									{{/with}}
+								{{/if}}
 							</div>
 						</div>
 					</div>
