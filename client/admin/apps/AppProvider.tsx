@@ -136,7 +136,6 @@ const AppProvider: FunctionComponent = ({ children }) => {
 					let apps: App[] = [];
 					if (result.length) {
 						apps = result.map((current: App) => ({ ...current, installed: true, marketplace: false }));
-						console.log(apps);
 						updateData(apps);
 					}
 					return apps;
