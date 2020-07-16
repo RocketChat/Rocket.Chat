@@ -1688,6 +1688,8 @@
   "Flags": "Flags",
   "Follow_message": "Follow Message",
   "Following": "Following",
+  "Nickname": "Nickname",
+  "Nickname_Placeholder": "Enter your nickname...",
   "Not_Following": "Not Following",
   "Follow_social_profiles": "Follow our social profiles, fork us on github and share your thoughts about the rocket.chat app on our trello board.",
   "Fonts": "Fonts",
