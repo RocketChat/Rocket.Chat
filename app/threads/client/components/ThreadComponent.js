@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { Tracker } from 'meteor/tracker';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
 import { ChatMessage } from '../../../models/client';
 import { useRoute } from '../../../../client/contexts/RouterContext';
@@ -11,7 +12,6 @@ import { roomTypes, APIClient } from '../../../utils/client';
 import { call } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useLocalStorage } from '../../../../client/Channel/hooks/useLocalstorage';
 import { normalizeThreadTitle } from '../lib/normalizeThreadTitle';
 
 export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
