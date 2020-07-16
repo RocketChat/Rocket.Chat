@@ -1,12 +1,16 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Box, Button, TextInput, Icon, ButtonGroup, Margins } from '@rocket.chat/fuselage';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import qrcode from 'yaqrcode';
 
+import { useUser } from '../../contexts/UserContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useMethod } from '../../contexts/ServerContext';
 import { Modal } from '../../components/basic/Modal';
+import TextCopy from '../../components/basic/TextCopy';
 
 const mapCodes = (codes) => codes.map((code, index) => ((index + 1) % 4 === 0 ? `${ code }\n` : code)).join(' ');
 
@@ -33,10 +37,10 @@ const BackupCodesModal = ({ codes, onClose, ...props }) => {
 const VerifyCodeModal = ({ onVerify, onCancel, ...props }) => {
 	const t = useTranslation();
 
-	const ref = useRef({});
+	const ref = useRef();
 
 	useEffect(() => {
-		if (typeof ref.current?.focus === 'function') {
+		if (typeof ref?.current?.focus === 'function') {
 			ref.current.focus();
 		}
 	}, [ref]);
@@ -48,9 +52,9 @@ const VerifyCodeModal = ({ onVerify, onCancel, ...props }) => {
 
 	const handleVerify = useCallback((e) => {
 		if (e.type === 'click' || (e.type === 'keydown' && e.keyCode === 13)) {
-			onVerify(code); onCancel();
+			onVerify(code);
 		}
-	}, [code, onCancel, onVerify]);
+	}, [code, onVerify]);
 
 	return <Modal {...props}>
 		<Modal.Header>
@@ -73,9 +77,11 @@ const VerifyCodeModal = ({ onVerify, onCancel, ...props }) => {
 	</Modal>;
 };
 
-const TwoFactorTOTP = ({ setModal, user, ...props }) => {
+const TwoFactorTOTP = (props) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const user = useUser();
+	const setModal = useSetModal();
 
 	const enableTotpFn = useMethod('2fa:enable');
 	const disableTotpFn = useMethod('2fa:disable');
@@ -83,10 +89,10 @@ const TwoFactorTOTP = ({ setModal, user, ...props }) => {
 	const checkCodesRemainingFn = useMethod('2fa:checkCodesRemaining');
 	const regenerateCodesFn = useMethod('2fa:regenerateCodes');
 
-	const [registeringTotp, setRegisteringTotp] = useState(false);
-	const [qrCode, setQrCode] = useState();
-	const [totpSecret, setTotpSecret] = useState();
-	const [codesRemaining, setCodesRemaining] = useState();
+	const [registeringTotp, setRegisteringTotp] = useSafely(useState(false));
+	const [qrCode, setQrCode] = useSafely(useState());
+	const [totpSecret, setTotpSecret] = useSafely(useState());
+	const [codesRemaining, setCodesRemaining] = useSafely(useState());
 
 	const { values, handlers } = useForm({ authCode: '' });
 
@@ -104,7 +110,7 @@ const TwoFactorTOTP = ({ setModal, user, ...props }) => {
 			setCodesRemaining(result.remaining);
 		};
 		updateCodesRemaining();
-	}, [checkCodesRemainingFn, totpEnabled]);
+	}, [checkCodesRemainingFn, setCodesRemaining, totpEnabled]);
 
 	const handleEnableTotp = useCallback(async () => {
 		try {
@@ -117,7 +123,7 @@ const TwoFactorTOTP = ({ setModal, user, ...props }) => {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [dispatchToastMessage, enableTotpFn]);
+	}, [dispatchToastMessage, enableTotpFn, setQrCode, setRegisteringTotp, setTotpSecret]);
 
 	const handleDisableTotp = useCallback(async () => {
 		const onDisable = async (authCode) => {
@@ -132,6 +138,7 @@ const TwoFactorTOTP = ({ setModal, user, ...props }) => {
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
+			closeModal();
 		};
 
 		setModal(<VerifyCodeModal onVerify={onDisable} onCancel={closeModal}/>);
@@ -144,7 +151,7 @@ const TwoFactorTOTP = ({ setModal, user, ...props }) => {
 			if (!result) {
 				return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 			}
-			const codes = `<pre><code> ${ mapCodes(result.codes) }</pre></code>`;
+			const codes = `<pre><code>${ mapCodes(result.codes) }</pre></code>`;
 			setModal(<BackupCodesModal codes={codes} onClose={closeModal}/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -159,11 +166,12 @@ const TwoFactorTOTP = ({ setModal, user, ...props }) => {
 				if (!result) {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 				}
-				const codes = `<pre><code> ${ mapCodes(result.codes) }</pre></code>`;
+				const codes = `<pre><code>${ mapCodes(result.codes) }</pre></code>`;
 				setModal(<BackupCodesModal codes={codes} onClose={closeModal}/>);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
+			closeModal();
 		};
 
 		setModal(<VerifyCodeModal onVerify={onRegenerate} onCancel={closeModal}/>);
@@ -178,8 +186,9 @@ const TwoFactorTOTP = ({ setModal, user, ...props }) => {
 			</>}
 			{!totpEnabled && registeringTotp && <>
 				<Box>{t('Scan_QR_code')}</Box>
-				<Box>{t('Scan_QR_code_alternative_s', { code: totpSecret })}</Box>
-				<Box is='img' size='x200' src={qrCode}/>
+				<Box>{t('Scan_QR_code_alternative_s', { code: '' })}</Box>
+				<TextCopy text={totpSecret}/>
+				<Box is='img' size='x200' src={qrCode} aria-hidden='true'/>
 				<Box display='flex' flexDirection='row' w='full'>
 					<TextInput placeholder={t('Enter_authentication_code')} value={authCode} onChange={handleAuthCode}/>
 					<Button primary onClick={handleVerifyCode}>{t('Verify')}</Button>

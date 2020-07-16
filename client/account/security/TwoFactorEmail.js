@@ -2,10 +2,12 @@ import React, { useCallback } from 'react';
 import { Box, Button, Margins } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useUser } from '../../contexts/UserContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 
-const TwoFactorEmail = ({ user, ...props }) => {
+const TwoFactorEmail = (props) => {
 	const t = useTranslation();
+	const user = useUser();
 
 	const isEnabled = user && user.services && user.services.email2fa && user.services.email2fa.enabled;
 

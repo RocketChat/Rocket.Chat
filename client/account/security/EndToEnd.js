@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
@@ -22,9 +22,6 @@ const EndToEnd = (props) => {
 	const { handlePassword, handlePasswordConfirm } = handlers;
 
 	const keysExist = publicKey && privateKey;
-
-	const explanationHtml = useMemo(() => ({ __html: t('E2E_Encryption_Password_Explanation') }), [t]);
-	const resetExplanationHtml = useMemo(() => ({ __html: t('E2E_Reset_Key_Explanation') }), [t]);
 
 	const hasTypedPassword = password.trim().length > 0;
 	const passwordError = password !== passwordConfirm && passwordConfirm.length > 0 ? t('Passwords_do_not_match') : undefined;
@@ -60,7 +57,7 @@ const EndToEnd = (props) => {
 	return <Box display='flex' flexDirection='column' alignItems='flex-start' mbs='x16' {...props}>
 		<Margins blockEnd='x8'>
 			<Box fontScale='s2'>{t('E2E_Encryption_Password_Change')}</Box>
-			<Box dangerouslySetInnerHTML={explanationHtml}/>
+			<Box dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }}/>
 			<FieldGroup w='full'>
 				<Field>
 					<Field.Label>{t('New_encryption_password')}</Field.Label>
@@ -77,7 +74,7 @@ const EndToEnd = (props) => {
 			</FieldGroup>
 			<Button primary disabled={!canSave} onClick={saveNewPassword}>{t('Save_changes')}</Button>
 			<Box fontScale='s2' mbs='x16'>{t('Reset_E2E_Key')}</Box>
-			<Box dangerouslySetInnerHTML={resetExplanationHtml}/>
+			<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }}/>
 			<Button onClick={handleResetE2eKey}>{t('Reset_E2E_Key')}</Button>
 		</Margins>
 	</Box>;
