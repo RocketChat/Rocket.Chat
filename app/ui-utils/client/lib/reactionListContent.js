@@ -46,6 +46,6 @@ export default function ReactionListContent(props) {
 
 	return <Box style={style}>
 		<Box is='h2' fontScale='h1' mb='x8'>{t('Users_reacted')}</Box>
-		<Reactions reactions={reactions}></Reactions>
+		<Reactions reactions={reactions} />
 	</Box>;
 }
