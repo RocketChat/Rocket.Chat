@@ -1,0 +1,30 @@
+<template name="livechatUnits">
+	{{#if hasLicense}}
+		{{#requiresPermission 'manage-livechat-units'}}
+			<div class="rc-table-content">
+				{{#table fixed='true' onScroll=onTableScroll}}
+					<thead>
+						<tr>
+							<th><div class="table-fake-th">{{_ "Name"}}</div></th>
+							<th width="30%"><div class="table-fake-th">{{_ "Visibility"}}</div></th>
+							<th width='40px'><div class="table-fake-th">&nbsp;</div></th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each units}}
+							<tr class="unit-info row-link" data-id="{{_id}}">
+								<td><div class="rc-table-wrapper">
+									<div class="rc-table-info"><span class="rc-table-title">{{name}}</span></div></div></td>
+								<td>{{visibility}}</td>
+								<td><a href="#remove" class="remove-unit"><i class="icon-trash"></i></a></td>
+							</tr>
+						{{/each}}
+					</tbody>
+				{{/table}}
+			</div>
+			<div class="rc-button__group">
+				<a href="{{pathFor 'livechat-unit-new'}}" class="rc-button rc-button--primary">{{_ "New_Unit"}}</a>
+			</div>
+		{{/requiresPermission}}
+	{{/if}}
+</template>

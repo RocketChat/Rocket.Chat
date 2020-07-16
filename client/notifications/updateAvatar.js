@@ -1,7 +1,10 @@
-/* globals updateAvatarOfUsername */
+import { Meteor } from 'meteor/meteor';
+
+import { Notifications } from '../../app/notifications';
 
 Meteor.startup(function() {
-	RocketChat.Notifications.onLogged('updateAvatar', function(data) {
-		updateAvatarOfUsername(data.username);
+	Notifications.onLogged('updateAvatar', function(data) {
+		const { username, etag } = data;
+		Meteor.users.update({ username }, { $set: { avatarETag: etag } });
 	});
 });

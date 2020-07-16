@@ -1,12 +1,12 @@
-/* eslint-env mocha */
-/* globals expect */
+import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { createRoom } from '../../data/rooms.helper';
 
 describe('[Subscriptions]', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	it('/subscriptions.get', (done) => {
 		request.get(api('subscriptions.get'))
@@ -25,7 +25,7 @@ describe('[Subscriptions]', function() {
 		request.get(api('subscriptions.get'))
 			.set(credentials)
 			.query({
-				updatedSince: new Date
+				updatedSince: new Date(),
 			})
 			.expect(200)
 			.expect((res) => {
@@ -42,7 +42,7 @@ describe('[Subscriptions]', function() {
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${ Date.now() }`
+					name: `channel.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -53,7 +53,7 @@ describe('[Subscriptions]', function() {
 			request.get(api('subscriptions.getOne'))
 				.set(credentials)
 				.query({
-					roomId: testChannel._id
+					roomId: testChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -66,11 +66,38 @@ describe('[Subscriptions]', function() {
 	});
 
 	describe('[/subscriptions.read]', () => {
+		let testChannel;
+		it('create a channel', (done) => {
+			createRoom({ type: 'c', name: `channel.test.${ Date.now() }` })
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+
+		let testGroup;
+		it('create a group', (done) => {
+			createRoom({ type: 'p', name: `channel.test.${ Date.now() }` })
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+
+		let testDM;
+		it('create a DM', (done) => {
+			createRoom({ type: 'd', username: 'rocket.cat' })
+				.end((err, res) => {
+					testDM = res.body.room;
+					done();
+				});
+		});
+
 		it('should mark public channels as read', (done) => {
 			request.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
-					rid: 'foobar123-somechannel'
+					rid: testChannel._id,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -83,7 +110,7 @@ describe('[Subscriptions]', function() {
 			request.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
-					rid: 'foobar123-somegroup'
+					rid: testGroup._id,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -96,7 +123,7 @@ describe('[Subscriptions]', function() {
 			request.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
-					rid: 'foobar123-somedm'
+					rid: testDM._id,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -105,11 +132,53 @@ describe('[Subscriptions]', function() {
 				.end(done);
 		});
 
+		it('should fail on mark inexistent public channel as read', (done) => {
+			request.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({
+					rid: 'foobar123-somechannel',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should fail on mark inexistent group as read', (done) => {
+			request.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({
+					rid: 'foobar123-somegroup',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should fail on mark inexistent DM as read', (done) => {
+			request.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({
+					rid: 'foobar123-somedm',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
 		it('should fail on invalid params', (done) => {
 			request.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
-					rid: 12345
+					rid: 12345,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -138,7 +207,7 @@ describe('[Subscriptions]', function() {
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${ Date.now() }`
+					name: `channel.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -151,8 +220,8 @@ describe('[Subscriptions]', function() {
 				.send({
 					message: {
 						rid: testChannel._id,
-						msg: 'Sample message'
-					}
+						msg: 'Sample message',
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -166,7 +235,7 @@ describe('[Subscriptions]', function() {
 			request.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({
-					roomId: testChannel._id
+					roomId: testChannel._id,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -179,7 +248,7 @@ describe('[Subscriptions]', function() {
 			request.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({
-					roomId: 12345
+					roomId: 12345,
 				})
 				.expect(400)
 				.expect((res) => {

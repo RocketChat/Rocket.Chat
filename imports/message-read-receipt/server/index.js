@@ -1,4 +1,3 @@
-import './dbIndexes';
 import './hooks';
 import './settings';
 

@@ -1,0 +1,68 @@
+<template name="createInviteLink">
+
+	<form class="" role="form">
+		{{#if isEditing}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<div class="rc-input__title">{{_ "Expiration_(Days)"}}</div>
+					<label class="rc-select">
+						<select class="rc-select__element js-type" name="expiration_days" id="expiration_days" aria-label="{{_ "Expiration_(Days)"}}">
+							<option value="1" selected>1</option>
+							<option value="7">7</option>
+							<option value="15">15</option>
+							<option value="30">30</option>
+							<option value="0">{{_ 'Never'}}</option>
+						</select>
+						{{> icon block="rc-select__arrow" icon="arrow-down" }}
+					</label>
+				</div>
+			</div>
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<div class="rc-input__title">{{_ "Max_number_of_uses"}}</div>
+					<label class="rc-select">
+						<select class="rc-select__element js-type" name="max_uses" id="max_uses" aria-label="{{_ "Max_number_of_uses"}}">
+							<option value="1">1</option>
+							<option value="5">5</option>
+							<option value="10">10</option>
+							<option value="25">25</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="0" selected>{{_ 'No Limit'}}</option>
+						</select>
+						{{> icon block="rc-select__arrow" icon="arrow-down" }}
+					</label>
+				</div>
+			</div>
+
+			<button class="rc-button rc-button--default js-confirm-invite" title="{{_ 'Generate_New_Link'}}">{{_ 'Generate_New_Link'}}</button>
+		{{else}}
+		<div class="rc-user-info__row">
+			<div class="rc-input">
+				<div class="rc-input__title">{{_ "Invite_Link"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon rc-input__icon--right rc-input__icon--clickable js-copy">
+						{{> icon block="rc-input__icon-svg" icon="copy" }}
+					</div>
+					<input type="text" class="rc-input__element rc-invite-link-input" name="link" id="link" readonly value="{{ url }}"/>
+				</div>
+			</div>
+		</div>
+		<div class="rc-user-info__row">
+			<div class="rc-input">
+				<div class="rc-input__title">{{linkExpirationText}}</div>
+			</div>
+		</div>
+		<div class="rc-user-info__row">
+			<button class="rc-button rc-button--outline js-edit-invite" title="{{_ 'Edit_Invite'}}">{{_ 'Edit_Invite'}}</button>
+		</div>
+
+
+		{{/if}}
+	</form>
+
+
+	<div class="rc-user-info__flex rc-user-info__row">
+		<button class="rc-button rc-button--outline js-close" title="{{_ 'Close'}}">{{_ 'Close'}}</button>
+	</div>
+</template>

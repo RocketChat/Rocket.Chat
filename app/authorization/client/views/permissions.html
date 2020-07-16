@@ -1,0 +1,80 @@
+<template name="permissionsTable">
+		<div class="content">
+			<table class="permission-grid secondary-background-color">
+
+				<thead class="content-background-color">
+					<tr>
+						<th class=" role-name permission-name border-component-color"></th>
+						{{#each role in allRoles}}
+						<th class="edit-icon role-name border-component-color" title="{{role.description}}">
+							<a class="permission-edit" href="{{pathFor "admin-permissions-edit" name=role._id}}">
+								<p class="permission-label">
+									<div class = "rotator">
+										{{role._id}}
+									</div>
+								</p>
+								<p class="permission-icon">
+									<i class="icon-edit"></i>
+								</p>
+							</a>
+						</th>
+						{{/each}}
+					</tr>
+				</thead>
+				<tbody>
+					{{#each permission in permissions}}
+					<tr class="admin-table-row">
+						<td class="permission-name border-component-color" title="{{permissionDescription permission}}">{{permissionName permission}}<br><span class = "id-styler">[ID: {{permission._id}}]</span></td>
+						{{#each role in allRoles}}
+						<td class="permission-checkbox border-component-color">
+							{{#if isRolePermissionEnabled role permission}}
+								<input type="checkbox" name="perm[{{role._id}}][{{permission._id}}]" class="role-permission" value="1" checked="{{granted permission.roles role}}" data-role="{{role._id}}" data-permission="{{permission._id}}">
+							{{/if}}
+						</td>
+						{{else}}
+						<tr class="table-no-click">
+							<td>{{_ "No_results_found_for"}} {{filter}}</td>
+						</tr>
+						{{/each}}
+					</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
+</template>
+<template name="permissions">
+	<div class="page-container permissions-manager">
+		<section class="permissions-manager page-container page-home page-static page-list">
+			{{#if hasPermission}}
+				{{# header sectionName=pageTitle}}
+				<div class="rc-header__section-button">
+					<a href="{{pathFor"admin-permissions-new"}}"
+						class="rc-button rc-button--primary new-role">{{_ "New_role"}}</a>
+				</div>
+				{{/header}}
+				<form class="search-form" role="form">
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+						</div>
+						<input id="permissions-filter" type="text" class="rc-input__element" placeholder="{{_ " Search "}}" autofocus dir="auto">
+					</div>
+				</form>
+
+				{{>tabs tabs=tabsData}}
+				{{#if $eq tab 'settings'}}
+					{{> permissionsTable query=filter permissions=settingPermissions allRoles=roles collection='Setting'}}
+				{{else}}
+					{{> permissionsTable query=filter permissions=permissions allRoles=roles collection='Chat'}}
+				{{/if}}
+			{{/if}}
+			{{#if hasNoPermission}}
+				<div class="content">
+					{{#if i18nPageTitle}} {{> header sectionName=i18nPageTitle}} {{else}} {{> header sectionName=pageTitle}}
+					{{/if}}
+					{{_ "Not_authorized"}}
+				</div>
+			{{/if}}
+		</section>
+	</div>
+</template>
