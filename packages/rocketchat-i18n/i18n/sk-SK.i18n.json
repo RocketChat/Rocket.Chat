@@ -1902,6 +1902,7 @@
   "Office_Hours": "Úradné hodiny",
   "Office_hours_enabled": "Úradné hodiny povolené",
   "Office_hours_updated": "Aktualizované pracovné hodiny",
+  "RetentionPolicy_ExcludePinned": "Vylúčte pripnuté správy",
   "Offline": "offline",
   "Offline_DM_Email": "Predmet správy elektronickej pošty",
   "Offline_Email_Subject_Description": "Môžete použiť nasledujúce zástupné symboly: <br/><ul><li>[Site_Name] pre názov aplikácie, [Site_URL] pre URL aplikácie, [User] pre používateľa a [Room] pre miestnosť.<li/></ul>",

@@ -2042,6 +2042,7 @@
   "Office_Hours": "Kantoortijden",
   "Office_hours_enabled": "Kantooruren ingeschakeld",
   "Office_hours_updated": "Kantooruren bijgewerkt",
+  "RetentionPolicy_ExcludePinned": "Sluit vastgezette berichten uit",
   "Offline": "offline",
   "Offline_DM_Email": "Je hebt direct zijn messaged door __user__",
   "Offline_Email_Subject_Description": "U kunt de volgende tijdelijke aanduidingen gebruiken:<br/><ul><li>[Site_Name], [Site_URL], [User] en [Room] voor respectievelijk de app-naam, URL, gebruikersnaam en roomname.<li/></ul>",

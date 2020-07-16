@@ -1901,6 +1901,7 @@
   "Office_Hours": "Официални часове",
   "Office_hours_enabled": "Официалните часове са активирани",
   "Office_hours_updated": "Работното време е актуализирано",
+  "RetentionPolicy_ExcludePinned": "Изключете закачените съобщения",
   "Offline": "Извън линия",
   "Offline_DM_Email": "Теми за пряко съобщение по имейл",
   "Offline_Email_Subject_Description": "Можете да използвате следните заместващи символи:<br/><ul><li>[Site_Name], [Site_URL], [User] и [Room] съответно за името, URL адреса,<li/></ul>",

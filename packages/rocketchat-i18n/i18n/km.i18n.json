@@ -2183,6 +2183,7 @@
   "Office_Hours": "ម៉ោងធ្វើការ",
   "Office_hours_enabled": "ម៉ោងការិយាល័យបានប្រើ",
   "Office_hours_updated": "ម៉ោងការិយាល័យបានធ្វើបច្ចុប្បន្នភាព",
+  "RetentionPolicy_ExcludePinned": "មិនរាប់បញ្ចូលសារដែលបានបញ្ចូល",
   "Offline": "ក្រៅបណ្តាញ",
   "Offline_DM_Email": "អ្នកត្រូវបាន messaged ដោយផ្ទាល់ដោយ __user__",
   "Offline_Email_Subject_Description": "អ្នកអាចប្រើកន្លែងដាក់ដូចតទៅនេះ: <br/><ul><li>[Site_Name], [Site_URL], [អ្នកប្រើ] & [បន្ទប់] សម្រាប់ឈ្មោះកម្មវិធី URL ឈ្មោះអ្នកប្រើនិងឈ្មោះរបស់វា<li/></ul>",

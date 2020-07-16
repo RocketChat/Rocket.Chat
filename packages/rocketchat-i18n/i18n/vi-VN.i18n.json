@@ -1901,6 +1901,7 @@
   "Office_Hours": "Giờ hành chính",
   "Office_hours_enabled": "Bật giờ làm việc",
   "Office_hours_updated": "Giờ làm việc được cập nhật",
+  "RetentionPolicy_ExcludePinned": "Loại trừ các thư đã ghim",
   "Offline": "Ngoại tuyến",
   "Offline_DM_Email": "Tiêu đề Email khi nhận tin nhắn trực tiếp",
   "Offline_Email_Subject_Description": "Bạn có thể sử dụng các placeholder sau: <br/><ul><li>[Site_Name], [Site_URL], [User] & [Room] cho Tên Ứng dụng, URL, Tên Người dùng & Tên phòng. <li/></ul>",

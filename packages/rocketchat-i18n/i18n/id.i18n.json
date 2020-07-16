@@ -1910,6 +1910,7 @@
   "Office_Hours": "Jam kerja",
   "Office_hours_enabled": "Jam Kerja Diaktifkan",
   "Office_hours_updated": "Jam kantor diperbarui",
+  "RetentionPolicy_ExcludePinned": "Kecualikan pesan yang disematkan",
   "Offline": "Offline",
   "Offline_DM_Email": "Anda telah langsung mengirim pesan oleh __user__",
   "Offline_Email_Subject_Description": "Anda dapat menggunakan pemegang tempat berikut ini: <br/><ul><li>[Site_Name], [Site_URL], [Pengguna] & [Kamar] untuk Nama Aplikasi, URL, Nama Pengguna & Kamar Nama masing-masing.<li/></ul>",

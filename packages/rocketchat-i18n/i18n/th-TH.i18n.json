@@ -1900,6 +1900,7 @@
   "Office_Hours": "เวลาทำการ",
   "Office_hours_enabled": "เปิดใช้งาน Office Hours แล้ว",
   "Office_hours_updated": "อัปเดตชั่วโมงทำงานแล้ว",
+  "RetentionPolicy_ExcludePinned": "ไม่รวมข้อความตรึง",
   "Offline": "ออฟไลน์",
   "Offline_DM_Email": "หัวข้ออีเมลข้อความโดยตรง",
   "Offline_Email_Subject_Description": "คุณสามารถใช้ตัวยึดตำแหน่งต่อไปนี้: <br/><ul><li>[Site_Name], [Site_URL], [ผู้ใช้] และ [Room] สำหรับชื่อแอ็พพลิเคชัน URL ชื่อผู้ใช้และชื่อห้องตามลำดับ <li/></ul>",

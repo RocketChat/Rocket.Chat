@@ -2069,6 +2069,7 @@
   "Office_Hours": "Horari d'obertura",
   "Office_hours_enabled": "Horari d'obertura actiu",
   "Office_hours_updated": "Horari actualitzat",
+  "RetentionPolicy_ExcludePinned": "Exclou els missatges fixats",
   "Offline": "Fora de línia",
   "Offline_DM_Email": "__user__ us ha enviat un missatge directe",
   "Offline_Email_Subject_Description": "Podeu utilitzar els marcadors següents:<br/><ul><li>[Site_Name], [Lloc_URL], [User] i [Room] per al nom de l'aplicació, l'URL, el nom d'usuari i el nom de la sala respectivament.<li/></ul>",

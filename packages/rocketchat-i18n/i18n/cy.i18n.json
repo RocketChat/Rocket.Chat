@@ -1898,6 +1898,7 @@
   "Office_Hours": "Oriau swyddfa",
   "Office_hours_enabled": "Oriau Swyddfa Wedi eu Hwyluso",
   "Office_hours_updated": "Diweddaru oriau swyddfa",
+  "RetentionPolicy_ExcludePinned": "Eithrio negeseuon wedi'u pinnio",
   "Offline": "Offline",
   "Offline_DM_Email": "Pwnc E-bost Neges Uniongyrchol",
   "Offline_Email_Subject_Description": "Gallwch ddefnyddio'r canlynol o ddeiliaid lle: <br / ><ul><li>[Site_Name], [Site_URL], [Defnyddiwr] a [Ystafell] ar gyfer yr Enw Cais, URL, Enw Defnyddiwr a Ffenestri yn y drefn honno <li / ></ul>",

@@ -2111,6 +2111,7 @@
   "Office_Hours": "업무시간",
   "Office_hours_enabled": "업무시간 설정하기",
   "Office_hours_updated": "업무시간 업데이트",
+  "RetentionPolicy_ExcludePinned": "고정된 메시지 제외",
   "Offline": "오프라인",
   "Offline_DM_Email": "개인 대화 이메일 제목",
   "Offline_Email_Subject_Description": "다음의 지시어를 사용할 수 있습니다:<br/><ul><li>어플리케이션 이름 [Site_Name] / 사이트 URL [Site_URL] / 사용자 이름 [User] / 채팅방 이름 [Room] <li/></ul>",

@@ -1901,6 +1901,7 @@
   "Office_Hours": "Oficejo Horoj",
   "Office_hours_enabled": "Oficejo Horoj Enabled",
   "Office_hours_updated": "Horaj horoj ĝisdatigitaj",
+  "RetentionPolicy_ExcludePinned": "Ekskludi kovritajn mesaĝojn",
   "Offline": "Senkonekta",
   "Offline_DM_Email": "Rekta Mesaĝo Retpoŝto Temo",
   "Offline_Email_Subject_Description": "Vi povas uzi la sekvajn anstataŭaĵojn: <br/><ul><li>[Site_Name], [Site_URL], [Uzanto] & [Ĉambro] por la Aplika Nomo, URL, Uzantnomo kaj Ĉambro respektive.<li/></ul>",

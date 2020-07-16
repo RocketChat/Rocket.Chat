@@ -1901,6 +1901,7 @@
   "Office_Hours": "Orari zyrtar",
   "Office_hours_enabled": "Orari i Zyrave të Aktivizuara",
   "Office_hours_updated": "Përditësimi i orëve të punës",
+  "RetentionPolicy_ExcludePinned": "Përjashto mesazhet e mbështetura",
   "Offline": "në linjë",
   "Offline_DM_Email": "Ju keni qenë mesazhi direkt nga __user__",
   "Offline_Email_Subject_Description": "Ju mund të përdorni vendet e mëposhtme të rezervuara:<br/><ul><li>[Site_Name], [Site_URL], [Përdoruesi] dhe [Salla] për emrin e aplikacionit, URL, emërimin dhe Roomname.<li/></ul>",

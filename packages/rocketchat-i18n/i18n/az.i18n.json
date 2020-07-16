@@ -1901,6 +1901,7 @@
   "Office_Hours": "İş saatları",
   "Office_hours_enabled": "Ofis saatları aktivləşdi",
   "Office_hours_updated": "Ofis saatları yeniləndi",
+  "RetentionPolicy_ExcludePinned": "Səslənən mesajları həddindən kənarlaşdırın",
   "Offline": "Offline",
   "Offline_DM_Email": "Direkt Mesaj E-poçt Mövzu",
   "Offline_Email_Subject_Description": "Aşağıdakı yer tutuculardan istifadə edə bilərsiniz: <br/><ul><li>[Site_Name], [Site_URL], [İstifadəçi] və [İstifadəçi adı], URL, İstifadəçi adı və Roomname üçün [Room]. <li/></ul>",

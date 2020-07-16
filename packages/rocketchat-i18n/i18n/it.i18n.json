@@ -1933,6 +1933,7 @@
   "Office_Hours": "Ore d'ufficio",
   "Office_hours_enabled": "Orario ufficio attivo",
   "Office_hours_updated": "Orari di ufficio aggiornati",
+  "RetentionPolicy_ExcludePinned": "Escludere i messaggi aggiunti",
   "Offline": "Offline",
   "Offline_DM_Email": "Hai ricevuto un messaggio diretto da __user__",
   "Offline_Email_Subject_Description": "Puoi utilizzare i seguenti segnaposti:<br/><ul><li>[Nome sito], [Site_URL], [Utente] e [Sala] rispettivamente per Nome applicazione, URL, Nome utente e Nome stanza. <li/></ul>",

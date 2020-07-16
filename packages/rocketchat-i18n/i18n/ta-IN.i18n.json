@@ -1901,6 +1901,7 @@
   "Office_Hours": "அலுவலக நேரம்",
   "Office_hours_enabled": "அலுவலகம் மணி இயக்கப்பட்டது",
   "Office_hours_updated": "அலுவலக நேரம் புதுப்பிக்கப்பட்டது",
+  "RetentionPolicy_ExcludePinned": "பின் செய்திகளை விலக்கவும்",
   "Offline": "ஆஃப்லைன்",
   "Offline_DM_Email": "நீங்கள் நேரடி __user__ மூலம் குறுஞ்செய்தி வருகின்றன",
   "Offline_Email_Subject_Description": "நீங்கள் பின்வரும் பெட்டிகளைப் பயன்படுத்தலாம்: <br/><ul><li>விண்ணப்பப் பெயர், URL, பயனர்பெயர் & அறை பெயரை முறையே [Site_Name], [Site_URL], [பயனர்] & அறை]. <li/></ul>",

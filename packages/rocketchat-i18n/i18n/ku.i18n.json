@@ -1900,6 +1900,7 @@
   "Office_Hours": "Wextên Saetan",
   "Office_hours_enabled": "Navendên Karûbarên Hilbijartinê",
   "Office_hours_updated": "Roja betalî",
+  "RetentionPolicy_ExcludePinned": "Peyamên pinned",
   "Offline": "Ne girêdayî",
   "Offline_DM_Email": "Te direct by __user__ messaged dîtin",
   "Offline_Email_Subject_Description": "Hûn dikarin liverên jêrîn bikar bînin: <br/><ul><li>[Site_Name], [Site_URL], [Bikarhêner] & [Room] ji bo navê Name, URL, Navê Username û RoomName.<li/></ul>",

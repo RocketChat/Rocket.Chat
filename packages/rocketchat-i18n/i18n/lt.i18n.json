@@ -1901,6 +1901,7 @@
   "Office_Hours": "Darbo laikas",
   "Office_hours_enabled": "Darbo valandos įjungtos",
   "Office_hours_updated": "Darbo valandos atnaujintos",
+  "RetentionPolicy_ExcludePinned": "Išskirti prisegtus pranešimus",
   "Offline": "Neprisijungęs",
   "Offline_DM_Email": "Tiesioginio pranešimo el. Pašto tema",
   "Offline_Email_Subject_Description": "Galite naudoti šiuos vietoj žodžius: <br/><ul><li>[Site_Name], [Site_URL], [naudotojas] ir [Kambarys] pagal programos pavadinimą, URL, vartotojo vardą ir kambario pavadinimą.<li/></ul>",

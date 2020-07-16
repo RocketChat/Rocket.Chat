@@ -1901,6 +1901,7 @@
   "Office_Hours": "Ажлын цаг",
   "Office_hours_enabled": "Оффисын цаг идэвхжсэн",
   "Office_hours_updated": "Ажлын цаг шинэчлэгдсэн",
+  "RetentionPolicy_ExcludePinned": "Тэмдэглэсэн зурвасуудыг хасна уу",
   "Offline": "Офлайн",
   "Offline_DM_Email": "Шууд мессеж И-мэйл хаяг",
   "Offline_Email_Subject_Description": "Та дараах нэршлийн газруудыг ашиглаж болно: <br/><ul><li>[Site_Name], [Site_URL], [Хэрэглэгчийн] & [Room] нь Application Name, URL, Username, Roomname-г тус тусад нь хэрэглэж болно.<li/></ul>",

@@ -1977,6 +1977,7 @@
   "Office_Hours": "Kontortid",
   "Office_hours_enabled": "Kontortimer aktivert",
   "Office_hours_updated": "Kontortid oppdatert",
+  "RetentionPolicy_ExcludePinned": "Ekskluder pinnede meldinger",
   "Offline": "offline",
   "Offline_DM_Email": "Direkte e-post-emne",
   "Offline_Email_Subject_Description": "Du kan bruke følgende plassholdere:<br/><ul><li>[Site_Name], [Site_URL], [User] og [Room] for henholdsvis søknadens navn, URL, brukernavn og romnavn.<li/></ul>",

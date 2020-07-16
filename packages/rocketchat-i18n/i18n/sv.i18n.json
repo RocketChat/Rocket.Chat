@@ -1974,6 +1974,7 @@
   "Office_Hours": "Kontorstider",
   "Office_hours_enabled": "Kontortimmar aktiverade",
   "Office_hours_updated": "Kontortid uppdaterad",
+  "RetentionPolicy_ExcludePinned": "Exkludera fasta meddelanden",
   "Offline": "Offline",
   "Offline_DM_Email": "Du har fått ett meddelande av __user__",
   "Offline_Email_Subject_Description": "Du kan använda följande platsinnehavare: <br/><ul><li>[Site_Name], [Site_URL], [User] och [Room] för respektive programnamn, URL, Användarnamn och Rumnamn. <li/></ul>",

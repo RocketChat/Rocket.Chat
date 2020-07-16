@@ -1900,6 +1900,7 @@
   "Office_Hours": "ເວລາເຮັດວຽກ",
   "Office_hours_enabled": "Office Hours Enabled",
   "Office_hours_updated": "ຊົ່ວໂມງເຮັດວຽກຂອງຫ້ອງການ",
+  "RetentionPolicy_ExcludePinned": "ຍົກເວັ້ນຂໍ້ຄວາມທີ່ມີ PINned",
   "Offline": "ອອຟໄລ",
   "Offline_DM_Email": "ທ່ານໄດ້ຮັບການ messaged ໂດຍກົງໂດຍ __user__",
   "Offline_Email_Subject_Description": "ທ່ານສາມາດນໍາໃຊ້ບ່ອນວາງສະແດງດັ່ງຕໍ່ໄປນີ້: <br/><ul><li>[Site_Name], [Site_URL], [User] & [Room] ສໍາລັບຊື່ແອັບພລິເຄຊັນ, URL, ຊື່ຜູ້ໃຊ້ແລະຊື່ຫ້ອງການ. <li/></ul>",

@@ -2082,6 +2082,7 @@
   "Office_Hours": "Heures de bureau",
   "Office_hours_enabled": "Heures de bureau activées",
   "Office_hours_updated": "Heures de bureau modifiées",
+  "RetentionPolicy_ExcludePinned": "Exclure les messages épinglés",
   "Offline": "Hors ligne",
   "Offline_DM_Email": "Vous avez reçu des messages privés de __user__",
   "Offline_Email_Subject_Description": "Vous pouvez utiliser les espaces réservés suivants:<br/><ul><li>[Site_Name], [Site_URL], [User] & [Room] pour le nom de l'application, l'URL, le nom d'utilisateur et le nom du salon, respectivement.<li/></ul>",

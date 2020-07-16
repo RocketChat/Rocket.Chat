@@ -1905,6 +1905,7 @@
   "Office_Hours": "Darba laiks",
   "Office_hours_enabled": "Darba laiks ir iespējots",
   "Office_hours_updated": "Darba laiks ir atjaunināts",
+  "RetentionPolicy_ExcludePinned": "Izslēgt piespraustos ziņojumus",
   "Offline": "Bezsaistē",
   "Offline_DM_Email": "Ziņojuma e-pasta tēma",
   "Offline_Email_Subject_Description": "Varat izmantot tālāk norādītos aizstājējus:<br/><ul><li>[Site_Name], [Site_URL], [Lietotājs] un [Room] Lietotnes nosaukums, URL, Lietotājvārds un attiecīgi istabas nosaukums.<li/></ul>",

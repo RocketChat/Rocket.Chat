@@ -1899,6 +1899,7 @@
   "Office_Hours": "Delovni čas",
   "Office_hours_enabled": "Delovni čas omogočen",
   "Office_hours_updated": "Delovni čas posodobljen",
+  "RetentionPolicy_ExcludePinned": "Izključi prepovedana sporočila",
   "Offline": "Nedosegljiv",
   "Offline_DM_Email": "Zadeva neposrednega sporočila",
   "Offline_Email_Subject_Description": "Uporabite lahko naslednje označbe mest: <br/><ul><li>[Site_Name], [Site_URL], [User] & [Room] za ime aplikacije, URL, uporabniško ime in ime sobe.<li/></ul>",

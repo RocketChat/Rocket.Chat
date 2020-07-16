@@ -1901,6 +1901,7 @@
   "Office_Hours": "Kantoor ure",
   "Office_hours_enabled": "Kantoorure geaktiveer",
   "Office_hours_updated": "Kantoorure is opgedateer",
+  "RetentionPolicy_ExcludePinned": "Sluit uitgespelde boodskappe uit",
   "Offline": "op die regte pad",
   "Offline_DM_Email": "Direkte boodskap E-pos Vak",
   "Offline_Email_Subject_Description": "U mag die volgende plekhouers gebruik:<br/><ul><li>[Site_Name], [Site_URL], [Gebruiker] en [Kamer] vir die Aansoek Naam, URL, Gebruikersnaam en Kamernaam onderskeidelik.<li/></ul>",

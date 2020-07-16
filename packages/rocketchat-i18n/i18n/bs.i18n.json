@@ -1899,6 +1899,7 @@
   "Office_Hours": "Uredovni Sati",
   "Office_hours_enabled": "Uredovni Sati omogućeno",
   "Office_hours_updated": "Ažurirani sati",
+  "RetentionPolicy_ExcludePinned": "Izuzmite prikvačene poruke",
   "Offline": "Offline",
   "Offline_DM_Email": "__user__ vas je izravno kontaktirao",
   "Offline_Email_Subject_Description": "Možete upotrijebiti sljedeće oznake mjesta:<br/><ul><li>[Site_Name], [Site_URL], [User] i [Room] za naziv aplikacije, URL, ime i naziv prostorije.<li/></ul>",

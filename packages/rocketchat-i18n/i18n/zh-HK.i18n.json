@@ -1928,6 +1928,7 @@
   "Office_Hours": "工作时间",
   "Office_hours_enabled": "办公时间已启用",
   "Office_hours_updated": "办公时间更新",
+  "RetentionPolicy_ExcludePinned": "排除固定消息",
   "Offline": "离线",
   "Offline_DM_Email": "直接留言邮件主题",
   "Offline_Email_Subject_Description": "您可以使用以下占位符：<br/><ul><li>[Site_Name]，[Site_URL]，[User]＆[Room]<li/></ul>",

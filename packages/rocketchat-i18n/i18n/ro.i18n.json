@@ -1901,6 +1901,7 @@
   "Office_Hours": "Ore de birou",
   "Office_hours_enabled": "Orele de birou sunt activate",
   "Office_hours_updated": "Ore de lucru actualizate",
+  "RetentionPolicy_ExcludePinned": "Excludeți mesajele fixate",
   "Offline": "Deconectat",
   "Offline_DM_Email": "Ai fost messaged directe de __user__",
   "Offline_Email_Subject_Description": "Puteți utiliza următorii substituenți: <ul><li>[Site_Name], [Site_URL], [Utilizator] și [Cameră]</ul>",
