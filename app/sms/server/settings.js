@@ -91,6 +91,25 @@ Meteor.startup(function() {
 				i18nLabel: 'URL',
 				secret: true,
 			});
+			this.add('SMS_Voxtelesys_FileUpload_Enabled', true, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'voxtelesys',
+				},
+				i18nLabel: 'FileUpload_Enabled',
+				secret: true,
+			});
+			this.add('SMS_Voxtelesys_FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,text/*,application/pdf', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'voxtelesys',
+				},
+				i18nLabel: 'FileUpload_MediaTypeWhiteList',
+				i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+				secret: true,
+			});
 		});
 
 		this.section('Mobex', function() {

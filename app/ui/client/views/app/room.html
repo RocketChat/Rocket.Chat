@@ -148,9 +148,14 @@
 						</footer>
 					</div>
 				{{/if}}
-				{{#with flexData}}
-					{{> contextualBar}}
+				{{# with openedThread}}
+					{{> ThreadComponent}}
 				{{/with}}
+				{{# unless shouldCloseFlexTab}}
+					{{#with flexData}}
+						{{> contextualBar}}
+					{{/with}}
+				{{/unless}}
 			</div>
 		</section>
 	</div>

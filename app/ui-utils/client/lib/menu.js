@@ -20,7 +20,7 @@ export const menu = new class extends EventEmitter {
 			const listHeight = this.list.height();
 			let showTop = false;
 			let showBottom = false;
-			$('li.has-alert').each(function() {
+			$('li.sidebar-item--unread').each(function() {
 				if ($(this).offset().top < listOffset.top - $(this).height()) {
 					showTop = true;
 				}
@@ -168,10 +168,12 @@ export const menu = new class extends EventEmitter {
 		this.on('open', ignore(() => {
 			// WIDECHAT close main content
 			this.mainContent.css('transform', 'translate3d( 100%, 0 , 0)');
-			FlowRouter.withReplaceState(function() {
-				FlowRouter.go('/home');
-			});
-			Session.set('openSearchPage', false);
+			if (!FlowRouter.current().path.startsWith('/admin')) {
+				FlowRouter.withReplaceState(function() {
+					FlowRouter.go('/home');
+				});
+				Session.set('openSearchPage', false);
+			}
 		}));
 
 		this.list = $('.rooms-list');

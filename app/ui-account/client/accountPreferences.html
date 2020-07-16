@@ -113,17 +113,7 @@
 								{{/if}}
 							</div>
 						</div>
-						<div class="input-line double-col">
-							<label class="setting-label">{{_ "Notification_Duration"}}</label>
-							<div class="setting-field">
-								{{#if desktopNotificationDuration}}
-									<input type="number" class="rc-input__element" name="desktopNotificationDuration" min="0" value="{{desktopNotificationDuration}}">
-								{{else}}
-									<input type="number" class="rc-input__element" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultDesktopNotificationDuration}})">
-								{{/if}}
-							</div>
-						</div>
-						<div class="input-line double-col" id="unreadAlert">
+						<div class="input-line double-col" id="desktopNotificationRequireInteraction">
 							<label class="setting-label">{{_ "Notification_RequireInteraction"}}</label>
 							<div class="setting-field">
 								<label><input type="radio" name="desktopNotificationRequireInteraction" value="true" checked="{{checked 'desktopNotificationRequireInteraction' true}}"/> {{_ "On"}}</label>
@@ -187,6 +177,13 @@
 							<div class="setting-field">
 								<label><input type="radio" name="unreadAlert" value="true" checked="{{checked 'unreadAlert' true}}"/> {{_ "On"}}</label>
 								<label><input type="radio" name="unreadAlert" value="false" checked="{{checked 'unreadAlert' false}}"/> {{_ "Off"}}</label>
+							</div>
+						</div>
+						<div class="input-line double-col" id="showMessageInMainThread">
+							<label class="setting-label">{{_ "Show_Message_In_Main_Thread"}}</label>
+							<div class="setting-field">
+								<label><input type="radio" name="showMessageInMainThread" value="true" checked="{{checked 'showMessageInMainThread' true}}" /> {{_ "True"}}</label>
+								<label><input type="radio" name="showMessageInMainThread" value="false" checked="{{checked 'showMessageInMainThread' false}}" /> {{_ "False"}}</label>
 							</div>
 						</div>
 						<div class="input-line double-col" id="clockMode">

@@ -32,10 +32,10 @@ TabBar.addButton({
 
 TabBar.addButton({
 	groups: ['live'],
-	id: 'visitor-history',
-	i18nTitle: 'Past_Chats',
+	id: 'contact-chat-history',
+	i18nTitle: 'Contact_Chat_History',
 	icon: 'clock',
-	template: 'visitorHistory',
+	template: 'contactChatHistory',
 	order: 11,
 });
 
@@ -44,15 +44,6 @@ TabBar.addGroup('starred-messages', ['live']);
 TabBar.addGroup('uploaded-files-list', ['live']);
 TabBar.addGroup('push-notifications', ['live']);
 TabBar.addGroup('video', ['live']);
-
-TabBar.addButton({
-	groups: ['live'],
-	id: 'external-search',
-	i18nTitle: 'Knowledge_Base',
-	icon: 'book',
-	template: 'externalSearch',
-	order: 10,
-});
 
 MessageTypes.registerType({
 	id: 'livechat-close',

@@ -41,7 +41,7 @@ Meteor.startup(function() {
 			};
 
 			Meteor.runAsUser('rocket.cat', () => {
-				fileStore.insert(file, rs, () => Users.setAvatarOrigin('rocket.cat', 'local'));
+				fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
 			});
 		}
 
@@ -70,7 +70,7 @@ Meteor.startup(function() {
 			};
 
 			Meteor.runAsUser('viasat', () => {
-				fileStore.insert(file, rs, () => Users.setAvatarOrigin('viasat', 'local'));
+				fileStore.insert(file, rs, () => Users.setAvatarData('viasat', 'local', null));
 			});
 		}
 

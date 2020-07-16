@@ -1,5 +1,5 @@
 .contextual-bar {
-	z-index: 1;
+	z-index: 10;
 
 	display: flex;
 
@@ -11,7 +11,8 @@
 	height: 100%;
 
 	background: var(--color-white);
-	box-shadow: 0 3px 1px 2px rgba(31, 35, 41, 0.08);
+
+	border-inline-start: 2px solid var(--color-gray-lightest);
 
 	&-wrap {
 		position: relative;
@@ -48,17 +49,31 @@
 		& .section:not(:last-child) {
 			margin-bottom: 2rem;
 		}
+
+		&.discussions,
+		&.pinned-messages,
+		&.starred-messages {
+			.message {
+				padding-left: 46px;
+
+				.user-card-message {
+					left: 0;
+				}
+			}
+		}
 	}
 
 	&__header {
 		display: flex;
 		flex: 0 0 auto;
 
+		height: 64px;
+
+		margin: 0 -8px;
+
 		padding: var(--default-padding);
 
-		border-bottom: solid 1px var(--color-gray-light);
-
-		background: var(--color-gray-lightest);
+		border-bottom: solid 2px var(--color-gray-lightest);
 
 		align-items: center;
 		justify-content: flex-end;
@@ -135,6 +150,12 @@
 	& .search-form .rc-input__icon-svg {
 		font-size: 1.2rem;
 	}
+}
+
+.contextual-bar + .contextual-bar {
+	position: absolute;
+	z-index: -1;
+	right: 0;
 }
 
 @media (width <= 1100px) {
