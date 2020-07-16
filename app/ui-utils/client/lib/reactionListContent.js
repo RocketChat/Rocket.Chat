@@ -10,7 +10,7 @@ export function Reactions(props) {
 		marginBottom: '16px',
 	};
 
-	const reactionKeys = Object.keys(props.reactions);
+	const reactionKeys = useMemo(() => Object.keys(props.reactions), [props.reactions]);
 
 	return <Box>
 		{
