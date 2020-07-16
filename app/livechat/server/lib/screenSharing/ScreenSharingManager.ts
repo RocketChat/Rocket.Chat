@@ -98,6 +98,10 @@ export class ScreenSharingManager {
 		screenSharingStreamer.emit('active-sessions-modified', { sessions: this.activeSessions });
 	}
 
+	guestRequestingScreenSharing(roomId: string, visitor: any): void {
+		Messages.createWithTypeRoomIdMessageAndUser('guest_requesting_screen_sharing', roomId, 'guest_requesting_screen_sharing', visitor, {});
+	}
+
 	getActiveSessions(): string[] {
 		return this.activeSessions;
 	}

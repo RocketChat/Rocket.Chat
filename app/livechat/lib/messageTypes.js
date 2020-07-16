@@ -104,3 +104,9 @@ MessageTypes.registerType({
 	system: true,
 	message: 'screen_sharing_request_rejected',
 });
+
+MessageTypes.registerType({
+	id: 'guest_requesting_screen_sharing',
+	system: true,
+	message: 'guest_requesting_screen_sharing',
+});
