@@ -7,7 +7,7 @@ import Emoji from '../../../../client/components/basic/Emoji';
 export function Reactions(props) {
 	const reactionKeys = useMemo(() => Object.keys(props.reactions), [props.reactions]);
 
-	return <Box overflowY='auto' maxHeight='440px'>
+	return <Box overflowY='auto' maxHeight='x440'>
 		{reactionKeys.map((reaction, i) => <Box key={reaction}>
 			<Box display='flex'>
 				<Emoji emojiHandle={reaction}/> {reaction}
