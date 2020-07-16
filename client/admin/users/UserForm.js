@@ -17,7 +17,6 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 		verified,
 		statusText,
 		bio,
-		nickname,
 		password,
 		setRandomPassword,
 		requirePasswordChange,
@@ -34,7 +33,6 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 		handleVerified,
 		handleStatusText,
 		handleBio,
-		handleNickname,
 		handlePassword,
 		handleSetRandomPassword,
 		handleRequirePasswordChange,
@@ -81,12 +79,6 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 				<TextAreaInput rows={3} flexGrow={1} value={bio} onChange={handleBio} addon={<Icon name='edit' size='x20' alignSelf='center'/>}/>
 			</Field.Row>
 		</Field>, [bio, handleBio, t])}
-		{useMemo(() => <Field>
-			<Field.Label>{t('Nickname')}</Field.Label>
-			<Field.Row>
-				<TextInput flexGrow={1} value={nickname} onChange={handleNickname} addon={<Icon name='edit' size='x20' alignSelf='center'/>}/>
-			</Field.Row>
-		</Field>, [nickname, handleNickname, t])}
 		{useMemo(() => <Field>
 			<Field.Label>{t('Password')}</Field.Label>
 			<Field.Row>

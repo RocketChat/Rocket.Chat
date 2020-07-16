@@ -123,7 +123,6 @@ Template.accountProfile.helpers({
 		const statusType = instance.statusType.get();
 		const statusText = instance.fields.get('statusText');
 		const bio = instance.fields.get('bio');
-		const nickname = instance.fields.get('nickname');
 		const username = instance.username.get();
 		const password = instance.password.get();
 		const confirmationPassword = instance.confirmationPassword.get();
@@ -142,7 +141,7 @@ Template.accountProfile.helpers({
 			}
 		}
 
-		if (!avatar && user.bio === bio && user.nickname === nickname && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password && statusType === user.status) {
+		if (!avatar && user.bio === bio && user.name === realname && user.username === username && getUserEmailAddress(user) === email && statusText === user.statusText && !password && statusType === user.status) {
 			return ret;
 		}
 
@@ -213,7 +212,6 @@ Template.accountProfile.onCreated(function() {
 	this.fields = new ReactiveDict({
 		statusText: user.statusText,
 		bio: user.bio,
-		nickname: user.nickname,
 	});
 
 	const self = this;
@@ -304,11 +302,8 @@ Template.accountProfile.onCreated(function() {
 			data.statusText = s.trim(self.fields.get('statusText'));
 		}
 
-		if (s.trim(self.fields.get('bio')) !== user.bio) {
+		if (s.trim(self.fields.get('bio')) !== user.statusText) {
 			data.bio = s.trim(self.fields.get('bio'));
-		}
-		if (s.trim(self.fields.get('nickname')) !== user.nickname) {
-			data.nickname = s.trim(self.fields.get('nickname'));
 		}
 		if (self.statusType.get() !== user.statusType) {
 			data.statusType = self.statusType.get();
@@ -443,7 +438,7 @@ Template.accountProfile.events({
 			instance.confirmationPassword.set('');
 		}
 	},
-	'input [name=bio], input [name=statusText], input [name=nickname]'(e, instance) {
+	'input [name=bio], input [name=statusText]'(e, instance) {
 		instance.fields.set(e.target.name, e.target.value);
 	},
 	'input [name=confirmation-password]'(e, instance) {

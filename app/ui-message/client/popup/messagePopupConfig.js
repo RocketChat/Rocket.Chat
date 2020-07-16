@@ -67,12 +67,11 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 
 	users
 		.slice(0, 5)
-		.forEach(({ username, nickname, name, status, avatarETag }) => {
+		.forEach(({ username, name, status, avatarETag }) => {
 			if (records.length < 5) {
 				records.push({
 					_id: username,
 					username,
-					nickname,
 					name,
 					status,
 					avatarETag,
@@ -261,7 +260,6 @@ Template.messagePopupConfig.helpers({
 								{
 									fields: {
 										username: 1,
-										nickname: 1,
 										name: 1,
 										status: 1,
 									},
@@ -269,10 +267,9 @@ Template.messagePopupConfig.helpers({
 								},
 							)
 							.fetch()
-							.map(({ username, name, status, nickname }) => ({
+							.map(({ username, name, status }) => ({
 								_id: username,
 								username,
-								nickname,
 								name,
 								status,
 								sort: 1,
@@ -304,17 +301,15 @@ Template.messagePopupConfig.helpers({
 						{
 							fields: {
 								username: 1,
-								nickname: 1,
 								name: 1,
 								status: 1,
 							},
 							limit: 5 - usernamesAlreadyFetched.length,
 						})
 							.fetch()
-							.map(({ username, name, status, nickname }) => ({
+							.map(({ username, name, status }) => ({
 								_id: username,
 								username,
-								nickname,
 								name,
 								status,
 								sort: 1,

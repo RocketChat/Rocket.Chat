@@ -63,7 +63,7 @@ export function UserInfo({ data, onChange, ...props }) {
 		<Box display='flex' flexDirection='column' alignItems='center' flexShrink={0} withTruncatedText>
 			<Margins block='x2' inline='auto'>
 				<Avatar size={'x120'} title={data.username} url={avatarUrl}/>
-				<Box fontScale='h1' withTruncatedText>{data.name || data.username}{data.nickname && ` (${ data.nickname })`}</Box>
+				<Box fontScale='h1' withTruncatedText>{data.name || data.username}</Box>
 				{!!data.name && <Box fontScale='p1' color='hint' withTruncatedText>@{data.username}</Box>}
 				<Box fontScale='p1' color='hint' withTruncatedText>{data.status}</Box>
 			</Margins>

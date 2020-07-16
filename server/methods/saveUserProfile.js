@@ -46,22 +46,13 @@ Meteor.methods({
 			Meteor.call('setUserStatus', settings.statusType, null);
 		}
 
-		if (settings.bio != null) {
+		if (settings.bio) {
 			if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
 				throw new Meteor.Error('error-invalid-field', 'bio', {
 					method: 'saveUserProfile',
 				});
 			}
 			Users.setBio(user._id, settings.bio.trim());
-		}
-
-		if (settings.nickname != null) {
-			if (typeof settings.nickname !== 'string' || settings.nickname.length > 120) {
-				throw new Meteor.Error('error-invalid-field', 'nickname', {
-					method: 'saveUserProfile',
-				});
-			}
-			Users.setNickname(user._id, settings.nickname.trim());
 		}
 
 		if (settings.email) {

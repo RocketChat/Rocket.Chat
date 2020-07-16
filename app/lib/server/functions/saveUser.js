@@ -215,23 +215,6 @@ const handleBio = (updateUser, bio) => {
 	}
 };
 
-const handleNickname = (updateUser, nickname) => {
-	if (nickname) {
-		if (nickname.trim()) {
-			if (typeof nickname !== 'string' || nickname.length > 120) {
-				throw new Meteor.Error('error-invalid-field', 'nickname', {
-					method: 'saveUserProfile',
-				});
-			}
-			updateUser.$set = updateUser.$set || {};
-			updateUser.$set.nickname = nickname;
-		} else {
-			updateUser.$unset = updateUser.$unset || {};
-			updateUser.$unset.nickname = 1;
-		}
-	}
-};
-
 export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
 	let sendPassword = false;
@@ -278,7 +261,6 @@ export const saveUser = function(userId, userData) {
 		}
 
 		handleBio(updateUser, userData.bio);
-		handleNickname(updateUser, userData.nickname);
 
 		Meteor.users.update({ _id }, updateUser);
 
@@ -338,7 +320,6 @@ export const saveUser = function(userId, userData) {
 	};
 
 	handleBio(updateUser, userData.bio);
-	handleNickname(updateUser, userData.nickname);
 
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;
