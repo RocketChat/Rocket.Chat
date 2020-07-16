@@ -27,7 +27,7 @@ export function Usernames(props) {
 export default function ReactionListContent(props) {
 	const t = useTranslation();
 
-	const { reactions } = props.data;
+	const { reactions } = props;
 
 	return <Box>
 		<Box is='h2' fontScale='h1' mb='x8'>{t('Users_reacted')}</Box>

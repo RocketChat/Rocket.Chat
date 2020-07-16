@@ -8,7 +8,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import './ReactionList';
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
+
 
 import { messageArgs } from './messageArgs';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
@@ -366,7 +367,7 @@ Meteor.startup(async function() {
 			const { msg: { reactions } } = messageArgs(this);
 
 			modal.open({
-				template: 'ReactionList',
+				template: createTemplateForComponent('reactionList', () => import('./reactionListContent')),
 				data: { reactions },
 			});
 		},
