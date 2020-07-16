@@ -1,7 +1,8 @@
 {
 	"name": "Rocket.Chat",
 	"short_name": "Rocket.Chat",
-	"background_color": "#fff",
+	"background_color": "#2f343d",
+	"theme_color": "#2f343d",
 	"icons": [
 		{
 			"src": "/assets/favicon_192.png",
@@ -14,6 +15,6 @@
 			"type": "image/png"
 		}
 	],
-	"start_url": "/home?homescreen",
+	"start_url": "/",
 	"display": "standalone"
 }

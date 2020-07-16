@@ -11,7 +11,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
+import { t, roomTypes, getUserPreference, handleError, isMobile } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
@@ -22,6 +22,7 @@ import {
 	popover,
 	modal,
 	Layout,
+	MessageTypes,
 	MessageAction,
 	RocketChatTabBar,
 } from '../../../../ui-utils';
@@ -92,33 +93,26 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 	e.stopPropagation();
 };
 
+const showMessageActions = (e, outerContext) => {
+	const { msg } = messageArgs(outerContext);
+	return e.target && e.target.nodeName === 'DIV' && !msg.private && !MessageTypes.isSystemMessage(msg);
+};
+
 const mountPopover = (e, i, outerContext) => {
-	let context = $(e.target).parents('.message').data('context');
+	let context = $(e.target).parents('.message').data('context') || ($(e.target).parents('.message').hasClass('mentions') && 'mentions');
 	if (!context) {
 		context = 'message';
 	}
 
 	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
+	const menuItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
 		icon: item.icon,
 		name: t(item.label),
 		type: 'message-action',
 		id: item.id,
 		modifier: item.color,
 	}));
-
-	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map((item) => ({
-			icon: item.icon,
-			name: t(item.label),
-			type: 'message-action',
-			id: item.id,
-			modifier: item.color,
-		}));
-
-		menuItems = menuItems.concat(messageItems);
-	}
 
 	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
 	const groups = [{ items }];
@@ -140,7 +134,9 @@ const mountPopover = (e, i, outerContext) => {
 		onRendered: () => new Clipboard('.rc-popover__item'),
 	};
 
-	popover.open(config);
+	if (!popover.renderedPopover) {
+		popover.open(config);
+	}
 };
 
 const wipeFailedUploads = () => {
@@ -275,6 +271,14 @@ export const dropzoneHelpers = {
 
 Template.room.helpers({
 	...dropzoneHelpers,
+
+	openSearchPage() {
+		if (!isMobile()) {
+			return false;
+		}
+		return Session.get('openSearchPage');
+	},
+
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -772,6 +776,8 @@ Template.room.events({
 			}
 
 			window.open(e.target.href);
+		} else if (isMobile() && !touchMoved && showMessageActions(e, this)) {
+			mountPopover(e, t, this);
 		}
 	},
 
@@ -866,7 +872,9 @@ Template.room.events({
 
 	'click .new-message'(event, instance) {
 		instance.atBottom = true;
-		chatMessages[RoomManager.openedRoom].input.focus();
+		if (!isMobile()) {
+			chatMessages[RoomManager.openedRoom].input.focus();
+		}
 	},
 	'click .message-actions__menu'(e, i) {
 		const messageContext = messageArgs(this);
@@ -906,11 +914,13 @@ Template.room.events({
 
 		popover.open(config);
 	},
-	'click .time a'(e) {
+	'click .time-link'(e) {
 		e.preventDefault();
 		const { msg } = messageArgs(this);
-		const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
-		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
+		const link = msg.attachments ? msg.attachments[0].message_link : this.message_link;
+		const repliedMessageId = link.split('?msg=')[1];
+		const { pathname } = new URL(link);
+		FlowRouter.go(pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
 		e.stopPropagation();
@@ -1043,6 +1053,7 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
+	Session.set('openSearchPage', false);
 	const rid = this.data._id;
 
 	this.onFile = (filesToUpload) => {
@@ -1220,6 +1231,8 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
+	Session.set('openSearchPage', false);
+
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {
@@ -1418,6 +1431,7 @@ Template.room.onRendered(function() {
 		if (!room) {
 			return FlowRouter.go('home');
 		}
+		callbacks.run('onRenderRoom', template, room);
 	});
 
 	const observer = new ResizeObserver(template.sendToBottomIfNecessary);

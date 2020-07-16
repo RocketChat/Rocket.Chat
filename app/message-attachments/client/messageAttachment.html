@@ -18,9 +18,9 @@
 						<a href="{{author_link}}" target="_blank" rel="noopener noreferrer">{{author_name}}</a>
 						{{#if ts}}
 							{{#if message_link}}
-								<span class="time-link">
-									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
-								</span>
+								<button type="button" class="time">
+									<span class="time-link">{{time}}</span>
+								</button>
 							{{else}}
 								{{#unless time}}
 									<span class="time">
@@ -38,9 +38,9 @@
 						{{author_name}}
 					{{#if ts}}
 						{{#if message_link}}
-							<span class="time-link">
-								<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
-							</span>
+							<button type="button" class="time">
+								<span class="time-link">{{time}}</span>
+							</button>
 						{{else}}
 							{{#unless time}}
 								<span class="time">

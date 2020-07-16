@@ -33,6 +33,7 @@ export const popover = {
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
+		this.renderedPopover = null;
 	},
 };
 
@@ -141,6 +142,16 @@ Template.popover.onRendered(function() {
 	this.position = position;
 
 	this.firstNode.style.visibility = 'visible';
+});
+
+Template.popover.onCreated(function() {
+	this.route = FlowRouter.current().path;
+	this.autorun(() => {
+		FlowRouter.watchPathChange();
+		if (FlowRouter.current().path !== this.route) {
+			popover.close();
+		}
+	});
 });
 
 Template.popover.onDestroyed(function() {

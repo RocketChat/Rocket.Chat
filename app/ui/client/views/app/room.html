@@ -11,6 +11,9 @@
 				{{/headerRoom}}
 			{{/if}}
 			<div class="messages-container-wrapper">
+				{{#if openSearchPage}}
+					{{> RocketSearch}}
+				{{else}}
 				<div class="messages-container-main dropzone {{dragAndDrop}}">
 					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 					{{#unless embeddedVersion}}
@@ -145,6 +148,7 @@
 						{{> messageBox messageboxData}}
 					</footer>
 				</div>
+				{{/if}}
 				{{# with openedThread}}
 					{{> ThreadComponent}}
 				{{/with}}
