@@ -230,10 +230,6 @@ export function onLicense(feature: string, cb: (...args: any[]) => void): void {
 }
 
 export function onValidateLicenses(cb: (...args: any[]) => void): void {
-	if (isEnterprise()) {
-		return cb();
-	}
-
 	EnterpriseLicenses.on('validate', cb);
 }
 

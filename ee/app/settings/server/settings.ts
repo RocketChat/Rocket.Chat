@@ -66,8 +66,5 @@ function updateSettings(): void {
 Meteor.startup(() => {
 	updateSettings();
 
-	// If there was no license loaded, add a callback to update the settings once one is added
-	if (!isEnterprise()) {
-		onValidateLicenses(updateSettings);
-	}
+	onValidateLicenses(updateSettings);
 });
