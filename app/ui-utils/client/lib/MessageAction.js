@@ -369,7 +369,6 @@ Meteor.startup(async function() {
 			modal.open({
 				template: 'ReactionList',
 				data: { reactions },
-			}, () => {
 			});
 		},
 		condition({ msg: { reactions } }) {
