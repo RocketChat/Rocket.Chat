@@ -1,40 +1,45 @@
 import React, { useMemo, useState } from 'react';
-import { Tag } from '@rocket.chat/fuselage';
+import { Tag, Box } from '@rocket.chat/fuselage';
 
 import { useMethod } from '../../contexts/ServerContext';
 
 function PlanTag() {
-	const [plan, setPlan] = useState('');
-	const [background, setBackground] = useState('#2F343D');
+	const [plans, setPlans] = useState([]);
+	const [background, setBackground] = useState([]);
 
 	const getTags = useMethod('license:getTags');
 
 	useMemo(() => {
 		const loadTags = async () => {
-			setPlan(await getTags());
+			setPlans(await getTags());
 		};
 		loadTags();
 	}, [getTags]);
 
 	useMemo(() => {
-		const selectBg = async () => {
-			switch (await plan[0]) {
+		const currBg = [];
+		plans.forEach((plan, i) => {
+			switch (plan) {
 				case 'bronze':
-					setBackground('#BD5A0B');
+					currBg[i] = '#BD5A0B';
 					break;
 				case 'silver':
-					setBackground('#9EA2A8');
+					currBg[i] = '#9EA2A8';
 					break;
 				case 'gold':
-					setBackground('#F3BE08');
+					currBg[i] = '#F3BE08';
+					break;
+				default:
+					currBg[i] = '#2F343D';
 					break;
 			}
-		};
+		});
+		setBackground(currBg);
+	}, [plans]);
 
-		selectBg();
-	}, [plan]);
-
-	return <Tag backgroundColor={background} marginInlineStart='x8' color='#fff' textTransform='captalize' >{plan}</Tag>;
+	return <Box>
+		{plans.map((plan, i) => <Tag key={plan} backgroundColor={background[i]} marginInlineStart='x8' color='#fff' textTransform='capitalize' >{plan}</Tag>) }
+	</Box>;
 }
 
 export default PlanTag;
