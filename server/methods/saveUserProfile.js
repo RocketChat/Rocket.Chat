@@ -91,11 +91,11 @@ Meteor.methods({
 					});
 				}
 
+				passwordPolicy.validate(settings.newPassword);
+
 				Accounts.setPassword(this.userId, settings.newPassword, {
 					logout: false,
 				});
-
-				passwordPolicy.validate(settings.newPassword);
 
 				try {
 					Meteor.call('removeOtherTokens');
