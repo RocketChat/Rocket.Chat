@@ -364,7 +364,6 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: { reactions } } = messageArgs(this);
-			console.log(reactions);
 
 			modal.open({
 				template: 'ReactionList',
