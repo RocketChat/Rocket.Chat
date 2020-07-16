@@ -38,7 +38,7 @@ function PlanTag() {
 	}, [plans]);
 
 	return <Box>
-		{plans.map((plan, i) => <Tag key={plan} backgroundColor={background[i]} marginInlineStart='x8' color='#fff' textTransform='capitalize' >{plan}</Tag>) }
+		{plans.map((plan, i) => <Tag key={plan} backgroundColor={background[i]} marginInlineStart='x8' color='#fff' textTransform='capitalize'>{plan}</Tag>) }
 	</Box>;
 }
 
