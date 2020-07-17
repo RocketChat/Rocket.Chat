@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { HTML } from 'meteor/htmljs';
 
 import { getActions } from './userActions';
 import { RoomManager, popover } from '../../../ui-utils/client';
@@ -10,6 +11,12 @@ import { settings } from '../../../settings/client';
 import { t, isRtl, handleError, roomTypes, getUserAvatarURL } from '../../../utils/client';
 import { WebRTC } from '../../../webrtc/client';
 import { hasPermission } from '../../../authorization/client';
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
+
+createTemplateForComponent('UserInfoWithData', () => import('../../../../client/channel/UserInfo'), {
+	// eslint-disable-next-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar', style: 'flex-grow: 1;' }),
+});
 
 Template.membersList.helpers({
 	ignored() {
@@ -114,12 +121,10 @@ Template.membersList.helpers({
 		return {
 			tabBar: Template.currentData().tabBar,
 			username,
-			clear: Template.instance().clearUserDetail,
-			showAll: roomTypes.getConfig(room.t).userDetailShowAll(room) || false,
-			hideAdminControls: roomTypes.getConfig(room.t).userDetailShowAdmin(room) || false,
+			rid: Template.currentData().rid,
+			onClose: Template.instance().clearUserDetail,
 			video: ['d'].includes(room && room.t),
 			showBackButton: roomTypes.getConfig(room.t).isGroupChat(room),
-			rid: Template.currentData().rid,
 		};
 	},
 	displayName() {
