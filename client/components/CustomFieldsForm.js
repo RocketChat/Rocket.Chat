@@ -1,14 +1,13 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { TextInput, Select, Field, Divider, Box } from '@rocket.chat/fuselage';
+import { TextInput, Select, Field } from '@rocket.chat/fuselage';
 
-import { useSetting } from '../../contexts/SettingsContext';
-import { useForm } from '../../hooks/useForm';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { capitalize } from '../../helpers/capitalize';
+import { useSetting } from '../contexts/SettingsContext';
+import { useForm } from '../hooks/useForm';
+import { useTranslation } from '../contexts/TranslationContext';
+import { capitalize } from '../helpers/capitalize';
 
-const CustomTextInput = (props) => {
+const CustomTextInput = ({ name, required, minLength, maxLength, setState, state, className }) => {
 	const t = useTranslation();
-	const { name, required, minLength, maxLength, setState, state } = props;
 	const verify = useMemo(() => {
 		const error = [];
 		if (!state && required) { error.push(t('Field_required')); }
@@ -16,28 +15,27 @@ const CustomTextInput = (props) => {
 		return error.join(', ');
 	}, [state, required, minLength, t]);
 
-	return useMemo(() => <Field>
+	return useMemo(() => <Field className={className}>
 		<Field.Label>{name}</Field.Label>
 		<Field.Row>
 			<TextInput name={name} error={verify} maxLength={maxLength} flexGrow={1} value={state} required={required} onChange={(e) => setState(e.currentTarget.value)}/>
 		</Field.Row>
 		<Field.Error>{verify}</Field.Error>
-	</Field>, [name, verify, maxLength, state, required, setState]);
+	</Field>, [name, verify, maxLength, state, required, setState, className]);
 };
 
-const CustomSelect = (props) => {
+const CustomSelect = ({ name, required, options, setState, state, className }) => {
 	const t = useTranslation();
-	const { name, required, options, setState, state } = props;
 	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [options]);
 	const verify = useMemo(() => (!state.length && required ? t('Field_required') : ''), [required, state.length, t]);
 
-	return useMemo(() => <Field>
+	return useMemo(() => <Field className={className}>
 		<Field.Label>{name}</Field.Label>
 		<Field.Row>
 			<Select name={name} error={verify} flexGrow={1} value={state} options={mappedOptions} required={required} onChange={(val) => setState(val)}/>
 		</Field.Row>
 		<Field.Error>{verify}</Field.Error>
-	</Field>, [name, verify, state, mappedOptions, required, setState]);
+	</Field>, [name, verify, state, mappedOptions, required, setState, className]);
 };
 
 const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...props }) => Object.entries(customFields).map(([key, value]) => {
@@ -54,8 +52,6 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 });
 
 export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData, ...props }) {
-	const t = useTranslation();
-
 	const customFieldsJson = useSetting('Accounts_CustomFields');
 
 	// TODO: add deps. Left this way so that a possible change in the setting can't crash the page (useForm generates states automatically)
@@ -83,9 +79,5 @@ export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData
 		return null;
 	}
 
-	return <>
-		<Divider />
-		<Box fontScale='s2'>{t('Custom_Fields')}</Box>
-		<CustomFieldsAssembler formValues={values} formHandlers={handlers} customFields={customFields} {...props}/>
-	</>;
+	return <CustomFieldsAssembler formValues={values} formHandlers={handlers} customFields={customFields} {...props}/>;
 }

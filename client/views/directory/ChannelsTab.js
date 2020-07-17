@@ -4,7 +4,7 @@ import React, { useMemo, useState, useCallback, useEffect } from 'react';
 
 import { GenericTable, Th } from '../../components/GenericTable';
 import MarkdownText from '../../components/basic/MarkdownText';
-import NotAuthorizedPage from '../../admin/NotAuthorizedPage';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRoute } from '../../contexts/RouterContext';

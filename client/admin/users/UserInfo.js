@@ -1,15 +1,15 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Box, Avatar, Margins, Chip, Tag } from '@rocket.chat/fuselage';
+import { Box, Margins, Chip, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { roomTypes } from '../../../app/utils/client';
 import { DateFormat } from '../../../app/lib';
 import { UserInfoActions } from './UserInfoActions';
 import MarkdownText from '../../components/basic/MarkdownText';
 import VerticalBar from '../../components/basic/VerticalBar';
 import { FormSkeleton } from './Skeleton';
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
 
 const useTimezoneClock = (utcOffset = 0, updateInterval) => {
 	const [time, setTime] = useState();
@@ -57,12 +57,11 @@ export function UserInfo({ data, onChange, ...props }) {
 
 	const lastLogin = data.lastLogin ? DateFormat.formatDateAndTime(data.lastLogin) : '';
 
-	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
 		<Box display='flex' flexDirection='column' alignItems='center' flexShrink={0} withTruncatedText>
 			<Margins block='x2' inline='auto'>
-				<Avatar size={'x120'} title={data.username} url={avatarUrl}/>
+				<UserAvatar size={'x120'} title={data.username} username={data.username} etag={data.avatarETag}/>
 				<Box fontScale='h1' withTruncatedText>{data.name || data.username}{data.nickname && ` (${ data.nickname })`}</Box>
 				{!!data.name && <Box fontScale='p1' color='hint' withTruncatedText>@{data.username}</Box>}
 				<Box fontScale='p1' color='hint' withTruncatedText>{data.status}</Box>
