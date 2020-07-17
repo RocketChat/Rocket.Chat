@@ -6,7 +6,6 @@ import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fus
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { useDebouncedValue, useDebouncedState, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { css } from '@rocket.chat/css-in-js';
 
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -16,26 +15,14 @@ import { call, renderMessageBody } from '../../../../app/ui-utils/client';
 import { useUserId } from '../../../contexts/UserContext';
 import { Messages } from '../../../../app/models/client';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
-import { getConfig } from '../../../../app/ui-utils/client/config';
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import ThreadListMessage from './components/Message';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { clickableItem } from '../../helpers/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
+import ThreadListMessage from './components/Message';
 import { useUserSubscription } from '../../../contexts/SubscriptionContext';
-
-function clickableItem(WrappedComponent) {
-	const clickable = css`
-		cursor: pointer;
-		border-bottom: 2px solid #F2F3F5 !important;
-
-		&:hover,
-		&:focus {
-			background: #F7F8FA;
-		}
-	`;
-	return (props) => <WrappedComponent className={clickable} tabIndex={0} {...props}/>;
-}
+import { getConfig } from '../../../../app/ui-utils/client/config';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;

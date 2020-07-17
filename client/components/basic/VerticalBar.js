@@ -11,6 +11,7 @@ function VerticalBar({ children, ...props }) {
 
 	return <Box
 		rcx-vertical-bar
+		backgroundColor='surface'
 		display='flex'
 		flexDirection='column'
 		flexShrink={0}
@@ -18,7 +19,6 @@ function VerticalBar({ children, ...props }) {
 		height='full'
 		position={small ? 'absolute' : undefined}
 		insetInlineEnd={small ? 'none' : undefined}
-		backgroundColor='white'
 		{...props}
 	>
 		{children}
@@ -33,10 +33,10 @@ function VerticalBarHeader({ children, ...props }) {
 		display='flex'
 		alignItems='center'
 		justifyContent='space-between'
-		backgroundColor='white'
 		borderBlockColor='neutral-200'
 		borderBlockEndWidth='x2'
 		fontScale='s2'
+		color='neutral-800'
 		{...props}
 	>
 		<Margins inline='x4'>{children}</Margins>
