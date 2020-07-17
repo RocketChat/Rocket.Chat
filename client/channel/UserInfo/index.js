@@ -47,6 +47,8 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, rid,
 				<UserCard.Role key={index}>{role}</UserCard.Role>
 			)),
 			bio,
+			phone: user.phone,
+			customFields: user.customFields,
 			email: user.emails?.find(({ address }) => !!address),
 			utcOffset,
 			createdAt: user.createdAt,

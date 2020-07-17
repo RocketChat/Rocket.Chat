@@ -9,7 +9,7 @@ import VerticalBar from './VerticalBar';
 import { UTCClock } from './UTCClock';
 import UserAvatar from './avatar/UserAvatar';
 import UserCard from './UserCard';
-
+import MarkdownText from './MarkdownText';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -25,11 +25,13 @@ export const UserInfo = React.memo(function UserInfo({
 	bio,
 	email,
 	status,
+	phone,
 	customStatus,
 	roles = [],
 	lastLogin,
 	createdAt,
 	utcOffset,
+	customFields = [],
 	name,
 	data,
 	// onChange,
@@ -70,7 +72,13 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{bio && <>
 				<Label>{t('Bio')}</Label>
-				<Info withTruncatedText={false}>{bio}</Info>
+				<Info withTruncatedText={false}><MarkdownText>{bio}</MarkdownText></Info>
+			</>}
+
+			{phone && <> <Label>{t('Phone')}</Label>
+				<Info display='flex' flexDirection='row' alignItems='center'>
+					<Box is='a' withTruncatedText href={`tel:${ phone }`}>{phone}</Box>
+				</Info>
 			</>}
 
 			{email && <> <Label>{t('Email')}</Label>
@@ -82,6 +90,11 @@ export const UserInfo = React.memo(function UserInfo({
 					</Margins>
 				</Info>
 			</>}
+
+			{ customFields && customFields.map((customField) => <React.Fragment key={customField.label}>
+				<Label>{t(customField.label)}</Label>
+				<Info>{customField.value}</Info>
+			</React.Fragment>) }
 
 			<Label>{t('Created_at')}</Label>
 			<Info>{timeAgo(createdAt)}</Info>

@@ -14,6 +14,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 	const t = useTranslation();
 	const [cache, setCache] = useState();
 	const showRealNames = useSetting('UI_Use_Real_Name');
+	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
 	const onChange = () => setCache(new Date());
 
@@ -40,7 +41,9 @@ export function UserInfoWithData({ uid, username, ...props }) {
 				<UserCard.Role key={index}>{role}</UserCard.Role>
 			)),
 			bio,
+			phone: user.phone,
 			utcOffset,
+			customFields: [approveManuallyUsers && user.active === false && user.reason && { label: 'Reason', value: user.reason }, ...Array.isArray(user.customFields) ? user.customFields : []].filter(Boolean),
 			email: user.emails?.find(({ address }) => !!address)?.address,
 			createdAt: user.createdAt,
 			// localTime: <LocalTime offset={utcOffset} />,
