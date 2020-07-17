@@ -75,7 +75,7 @@ class LicenseClass {
 		return Users.getActiveLocalUserCount() <= maxActiveUsers;
 	}
 
-	private _addTags(license: ILicense) {
+	private _addTags(license: ILicense): void {
 		// if no tag present, it means it is an old license, so try check for bundles and use them as tags
 		if (typeof license.tag === 'undefined') {
 			license.modules
