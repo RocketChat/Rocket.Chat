@@ -5,7 +5,7 @@ import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/basic/Page';
-import NotAuthorizedPage from '../NotAuthorizedPage';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { CustomEmoji } from './CustomEmoji';
 import { EditCustomEmojiWithData } from './EditCustomEmoji';
 import { AddCustomEmoji } from './AddCustomEmoji';
