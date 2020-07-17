@@ -28,9 +28,7 @@ import { Notifications } from '../../notifications';
 import { Layout, call, modal, alerts } from '../../ui-utils';
 
 import './events.js';
-import './accountEncryption.html';
 import './tabbar';
-import './accountEncryption.js';
 
 let failedToDecodeKey = false;
 let showingE2EAlert = false;

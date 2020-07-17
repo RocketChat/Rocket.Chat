@@ -451,7 +451,12 @@ export class SAMLUtils {
 		}
 
 		if (roleAttributeName && profile[roleAttributeName]) {
-			userObject.roles = this.ensureArray<string>((profile[roleAttributeName] || '').split(','));
+			let value = profile[roleAttributeName] || '';
+			if (typeof value === 'string') {
+				value = value.split(',');
+			}
+
+			userObject.roles = this.ensureArray<string>(value);
 		}
 
 		if (profile.language) {
