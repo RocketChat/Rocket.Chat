@@ -9,6 +9,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import InfoModal from './InfoModal';
+import { useUserId } from '../../contexts/UserContext';
 
 const TokenRow = ({ lastTokenPart, name, createdAt, bypassTwoFactor, formatDateAndTime, onRegenerate, onRemove, t, isMedium }) => {
 	const handleRegenerate = useCallback(() => onRegenerate(name), [name, onRegenerate]);
@@ -28,11 +29,13 @@ const TokenRow = ({ lastTokenPart, name, createdAt, bypassTwoFactor, formatDateA
 	</Table.Row>;
 };
 
-export function AccountTokensTable({ data, reload, userId }) {
+export function AccountTokensTable({ data, reload }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
+
+	const userId = useUserId();
 
 	const regenerateToken = useMethod('personalAccessTokens:regenerateToken');
 	const removeToken = useMethod('personalAccessTokens:removeToken');

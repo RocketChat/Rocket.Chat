@@ -10,8 +10,14 @@ export const ENDPOINT_STATES = {
 };
 
 const defaultState = { data: null, state: ENDPOINT_STATES.LOADING };
+const defaultParams = {};
+const defaultOptions = {};
 
-export const useEndpointDataExperimental = (endpoint, params = {}, { delayTimeout = 1000 } = {}) => {
+export const useEndpointDataExperimental = (
+	endpoint,
+	params = defaultParams,
+	{ delayTimeout = 1000 } = defaultOptions,
+) => {
 	const [data, setData] = useState(defaultState);
 
 	const getData = useEndpoint('GET', endpoint);

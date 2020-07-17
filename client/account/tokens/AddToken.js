@@ -6,6 +6,7 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useUserId } from '../../contexts/UserContext';
 import { useForm } from '../../hooks/useForm';
 import InfoModal from './InfoModal';
 
@@ -14,11 +15,13 @@ const initialValues = {
 	bypassTwoFactor: false,
 };
 
-const AddToken = ({ userId, reload, ...props }) => {
+const AddToken = ({ onDidAddToken, ...props }) => {
 	const t = useTranslation();
 	const createTokenFn = useMethod('personalAccessTokens:generateToken');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
+
+	const userId = useUserId();
 
 	const { values, handlers, reset } = useForm(initialValues);
 
@@ -38,11 +41,11 @@ const AddToken = ({ userId, reload, ...props }) => {
 				onConfirm={closeModal}
 			/>);
 			reset();
-			reload();
+			onDidAddToken();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [bypassTwoFactor, closeModal, createTokenFn, dispatchToastMessage, name, reload, reset, setModal, t, userId]);
+	}, [bypassTwoFactor, closeModal, createTokenFn, dispatchToastMessage, name, onDidAddToken, reset, setModal, t, userId]);
 
 	const bypassTwoFactorCheckboxId = useUniqueId();
 
