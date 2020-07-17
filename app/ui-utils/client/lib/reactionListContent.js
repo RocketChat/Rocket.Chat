@@ -19,7 +19,7 @@ export function Reactions(props) {
 }
 
 export function Usernames(props) {
-	return <Box paddingBlockStart='8x'>
+	return <Box paddingBlockStart='x8'>
 		{ props.usernames.map((user) => <Tag marginInlineEnd='4x' key={user}>{user}</Tag>)}
 	</Box>;
 }
