@@ -360,14 +360,14 @@ Meteor.startup(async function() {
 	MessageAction.addButton({
 		id: 'reaction-list',
 		icon: 'emoji',
-		label: 'Reaction_list',
+		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: { reactions } } = messageArgs(this);
 
 			modal.open({
 				template: createTemplateForComponent('reactionList', () => import('./ReactionListContent')),
-				data: { reactions },
+				data: { reactions, onClose: () => modal.close() },
 			});
 		},
 		condition({ msg: { reactions } }) {
