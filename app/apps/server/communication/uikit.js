@@ -111,8 +111,10 @@ export class AppUIKitInteractionApi {
 					const {
 						type,
 						actionId,
-						view,
-						isCleared,
+						payload: {
+							view,
+							isCleared,
+						},
 					} = req.body;
 
 					const user = this.orch.getConverters().get('users').convertToApp(req.user);
