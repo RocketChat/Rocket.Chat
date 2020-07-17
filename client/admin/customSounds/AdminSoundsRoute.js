@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -44,9 +44,6 @@ export default function CustomSoundsRoute({ props }) {
 
 
 	const router = useRoute(routeName);
-
-	const mobile = useMediaQuery('(max-width: 420px)');
-	const small = useMediaQuery('(max-width: 780px)');
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -96,7 +93,7 @@ export default function CustomSoundsRoute({ props }) {
 			</Page.Content>
 		</Page>
 		{ context
-			&& <VerticalBar className='contextual-bar' mod-small={small} mod-mobile={mobile} width='380px' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+			&& <VerticalBar className='contextual-bar' width='x380' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
 				<VerticalBar.Header>
 					{ context === 'edit' && t('Custom_Sound_Edit') }
 					{ context === 'new' && t('Custom_Sound_Add') }
