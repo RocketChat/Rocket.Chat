@@ -2444,7 +2444,7 @@
   "Saved": "Enregistré",
   "Saving": "Enregistrement en cours",
   "Scan_QR_code": "En utilisant une application d'authentification comme Google Authenticator, Authy ou Duo, scannez le code QR. Il affichera un code à 6 chiffres que vous devrez entrer ci-dessous.",
-  "Scan_QR_code_alternative_s": "Si vous ne pouvez pas scanner le code QR, vous pouvez entrer le code manuellement à la place: __code__",
+  "Scan_QR_code_alternative_s": "Si vous ne pouvez pas scanner le code QR, vous pouvez entrer le code manuellement à la place:",
   "Scope": "Portée",
   "Screen_Share": "Partage d'Écran",
   "Script_Enabled": "Script activé",

@@ -2399,7 +2399,7 @@
   "Saved": "Desat",
   "Saving": "Desant",
   "Scan_QR_code": "Fent servir una app d'autenticació com Google Authenticator, Authy o Duo, escanneja el codi QR. Et mostrarà un codi de 6 dígits que has d'entrar aquí a sota.",
-  "Scan_QR_code_alternative_s": "Si no podeu escanejar el codi QR, podeu introduir el codi manualment: __code__",
+  "Scan_QR_code_alternative_s": "Si no podeu escanejar el codi QR, podeu introduir el codi manualment:",
   "Scope": "Abast (scope)",
   "Screen_Share": "Compartir pantalla",
   "Script_Enabled": "Script actiu",

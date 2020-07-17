@@ -2232,7 +2232,7 @@
   "Saved": "uložený",
   "Saving": "sporenia",
   "Scan_QR_code": "Pomocou aplikácie autentifikátora, ako je Google Authenticator, Authy alebo Duo, vyhľadajte kód QR. Zobrazí sa 6-ciferný kód, ktorý musíte zadať nižšie.",
-  "Scan_QR_code_alternative_s": "Ak nemôžete skenovať kód QR, môžete namiesto toho zadávať kód ručne: __code__",
+  "Scan_QR_code_alternative_s": "Ak nemôžete skenovať kód QR, môžete namiesto toho zadávať kód ručne:",
   "Scope": "Rozsah",
   "Screen_Share": "Podiel obrazovky",
   "Script_Enabled": "Skript Povolený",

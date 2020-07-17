@@ -2478,7 +2478,7 @@
   "Saved": "저장됨",
   "Saving": "저장 중",
   "Scan_QR_code": "Google OTP, Authy 또는 Duo와 같은 인증 프로그램을 사용하여 QR 코드를 스캔하세요. 아래에 입력해야하는 6자리 코드가 표시됩니다.",
-  "Scan_QR_code_alternative_s": "QR 코드를 스캔 할 수 없는 경우 수동으로 코드를 입력할 수 있습니다: __code__",
+  "Scan_QR_code_alternative_s": "QR 코드를 스캔 할 수 없는 경우 수동으로 코드를 입력할 수 있습니다:",
   "Scope": "범위",
   "Screen_Share": "화면 공유",
   "Script_Enabled": "스크립트 사용",

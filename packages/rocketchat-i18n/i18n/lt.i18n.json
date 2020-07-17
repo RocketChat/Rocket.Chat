@@ -2231,7 +2231,7 @@
   "Saved": "Išsaugotas",
   "Saving": "Taupymas",
   "Scan_QR_code": "Naudodami autentifikavimo programą, pvz., \"Google Authenticator\", \"Authy\" arba \"Duo\", nuskaitykite QR kodą. Bus rodomas 6 skaitmenų kodas, kurį turėsite įvesti žemiau.",
-  "Scan_QR_code_alternative_s": "Jei negalite nuskaityti QR kodo, galite vietoje jo įvesti kodą: __code__",
+  "Scan_QR_code_alternative_s": "Jei negalite nuskaityti QR kodo, galite vietoje jo įvesti kodą:",
   "Scope": "Taikymo sritis",
   "Screen_Share": "Ekrano dalis",
   "Script_Enabled": "Scenarijus įjungtas",

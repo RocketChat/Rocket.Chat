@@ -3129,7 +3129,7 @@
   "Saved": "Saved",
   "Saving": "Saving",
   "Scan_QR_code": "Using an authenticator app like Google Authenticator, Authy or Duo, scan the QR code. It will display a 6 digit code which you need to enter below.",
-  "Scan_QR_code_alternative_s": "If you can't scan the QR code, you may enter code manually instead: __code__",
+  "Scan_QR_code_alternative_s": "If you can't scan the QR code, you may enter code manually instead:",
   "Scope": "Scope",
   "Screen_Lock": "Screen Lock",
   "Screen_Share": "Screen Share",

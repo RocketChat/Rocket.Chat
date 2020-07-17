@@ -3032,7 +3032,7 @@
   "Saved": "Uloženo",
   "Saving": "Ukládání",
   "Scan_QR_code": "V autentizační aplikace jako Google Authenticator, Authy nebo Duo naskenujte QR kód. Aplikace vám poté zobrazí 6-ti místný kód, který zadejte níže.",
-  "Scan_QR_code_alternative_s": "Pokud nemůžete naskenovat QR kód, můžete jej zadat ručně: __code__",
+  "Scan_QR_code_alternative_s": "Pokud nemůžete naskenovat QR kód, můžete jej zadat ručně:",
   "Scope": "Rozsah",
   "Screen_Lock": "Zámek obrazovky",
   "Screen_Share": "Sdílení obrazovky",

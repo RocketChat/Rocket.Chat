@@ -186,7 +186,7 @@ const TwoFactorTOTP = (props) => {
 			</>}
 			{!totpEnabled && registeringTotp && <>
 				<Box>{t('Scan_QR_code')}</Box>
-				<Box>{t('Scan_QR_code_alternative_s', { code: '' })}</Box>
+				<Box>{t('Scan_QR_code_alternative_s')}</Box>
 				<TextCopy text={totpSecret}/>
 				<Box is='img' size='x200' src={qrCode} aria-hidden='true'/>
 				<Box display='flex' flexDirection='row' w='full'>

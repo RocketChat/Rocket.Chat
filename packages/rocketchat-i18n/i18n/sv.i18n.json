@@ -2315,7 +2315,7 @@
   "Saved": "Sparad",
   "Saving": "Sparar",
   "Scan_QR_code": "Använd en autentiseringsapp som Google Authenticator, Authy eller Duo, skanna QR-koden. Det kommer att visa en 6-siffrig kod som du måste ange nedan.",
-  "Scan_QR_code_alternative_s": "Om du inte kan skanna QR-koden kan du ange kod manuellt istället: __code__",
+  "Scan_QR_code_alternative_s": "Om du inte kan skanna QR-koden kan du ange kod manuellt istället:",
   "Scope": "Omfattning",
   "Screen_Share": "Skärmdelning",
   "Script_Enabled": "Skript Aktiverat",

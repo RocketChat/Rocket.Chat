@@ -2240,7 +2240,7 @@
   "Saved": "disimpan",
   "Saving": "Penghematan",
   "Scan_QR_code": "Menggunakan aplikasi authenticator seperti Google Authenticator, Authy atau Duo, pindai kode QR. Ini akan menampilkan kode 6 digit yang perlu Anda masukkan di bawah ini.",
-  "Scan_QR_code_alternative_s": "Jika Anda tidak dapat memindai kode QR, Anda dapat memasukkan kode secara manual sebagai gantinya: __code__",
+  "Scan_QR_code_alternative_s": "Jika Anda tidak dapat memindai kode QR, Anda dapat memasukkan kode secara manual sebagai gantinya:",
   "Scope": "Cakupan",
   "Screen_Share": "layar Share",
   "Script_Enabled": "Script Diaktifkan",

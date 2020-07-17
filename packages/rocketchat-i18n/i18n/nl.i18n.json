@@ -2394,7 +2394,7 @@
   "Saved": "Opgeslagen",
   "Saving": "Opslaan",
   "Scan_QR_code": "Gebruik de authenticator-app zoals Google Authenticator, Authy of Duo om de QR-code te scannen. Het toont een 6-cijferige code die je hieronder moet invoeren.",
-  "Scan_QR_code_alternative_s": "Als u de QR-code niet kunt scannen, kunt u in plaats daarvan de code handmatig invoeren: __code__",
+  "Scan_QR_code_alternative_s": "Als u de QR-code niet kunt scannen, kunt u in plaats daarvan de code handmatig invoeren:",
   "Scope": "strekking",
   "Screen_Share": "Scherm delen",
   "Script_Enabled": "script Ingeschakeld",

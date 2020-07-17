@@ -2363,7 +2363,7 @@
   "Saved": "Spremljeno",
   "Saving": "Spremanje",
   "Scan_QR_code": "Pomoću aplikacije autentifikatora kao što je Google Autentifikator, Authy ili Duo, skeniranje QR koda. On će prikazati šesteroznamenkasti kôd koji morate unijeti u nastavku.",
-  "Scan_QR_code_alternative_s": "Ako ne možete skenirati QR kod, možete ručno unijeti kôd: __code__",
+  "Scan_QR_code_alternative_s": "Ako ne možete skenirati QR kod, možete ručno unijeti kôd:",
   "Scope": "Djelokrug",
   "Screen_Share": "Podijeli Zaslon",
   "Script_Enabled": "Skripta Omogućena",

@@ -2228,7 +2228,7 @@
   "Saved": "Saved",
   "Saving": "Arbed",
   "Scan_QR_code": "Gan ddefnyddio app dilysu fel Google Dilysydd, Authy neu Duo, sganiwch y cod QR. Bydd yn dangos cod 6 digid y mae angen i chi ei nodi isod.",
-  "Scan_QR_code_alternative_s": "Os na allwch sganio'r cod QR, fe allech chi gofnodi'r cod yn lle hynny: __code__",
+  "Scan_QR_code_alternative_s": "Os na allwch sganio'r cod QR, fe allech chi gofnodi'r cod yn lle hynny:",
   "Scope": "Cwmpas",
   "Screen_Share": "Cyfran Sgrin",
   "Script_Enabled": "Script Enabled",

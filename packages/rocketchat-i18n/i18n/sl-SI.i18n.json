@@ -2229,7 +2229,7 @@
   "Saved": "Shranjeno",
   "Saving": "Shranjevanje",
   "Scan_QR_code": "Skenirajte kodo QR z uporabo aplikacije za preverjanje pristnosti, kot so Google Authenticator, Authy ali Duo. Prikazal bo 6-mestno kodo, ki jo morate vnesti spodaj.",
-  "Scan_QR_code_alternative_s": "Če ne morete skenirati kode QR, lahko namesto tega vnesete kodo: __code__",
+  "Scan_QR_code_alternative_s": "Če ne morete skenirati kode QR, lahko namesto tega vnesete kodo:",
   "Scope": "Obseg",
   "Screen_Share": "Delitev zaslona",
   "Script_Enabled": "Skript je omogočen",

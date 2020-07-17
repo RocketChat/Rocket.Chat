@@ -2849,7 +2849,7 @@
   "Saved": "Gemt",
   "Saving": "Lagring",
   "Scan_QR_code": "Brug en autentiseringsapp som Google Authenticator, Authy eller Duo, scan QR-koden. Det vil vise en 6-cifret kode, som du skal indtaste nedenfor.",
-  "Scan_QR_code_alternative_s": "Hvis du ikke kan scanne QR-koden, kan du indtaste kode manuelt i stedet: __code__",
+  "Scan_QR_code_alternative_s": "Hvis du ikke kan scanne QR-koden, kan du indtaste kode manuelt i stedet:",
   "Scope": "Anvendelsesområde",
   "Screen_Share": "Screen Share",
   "Script_Enabled": "Script aktiveret",

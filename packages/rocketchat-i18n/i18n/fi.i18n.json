@@ -2231,7 +2231,7 @@
   "Saved": "Tallennettu",
   "Saving": "Tallennetaan",
   "Scan_QR_code": "Skannaa QR-koodi käyttämällä autentikointisovellusta, kuten Google Authenticator, Authy tai Duo. Se näyttää 6-numeroisen koodin, jonka haluat syöttää alla.",
-  "Scan_QR_code_alternative_s": "Jos et pysty skannaamaan QR-koodia, voit syöttää koodin manuaalisesti sen sijaan: __code__",
+  "Scan_QR_code_alternative_s": "Jos et pysty skannaamaan QR-koodia, voit syöttää koodin manuaalisesti sen sijaan:",
   "Scope": "Laajuus",
   "Screen_Share": "Näytön jakaminen",
   "Script_Enabled": "Skripti käytössä",

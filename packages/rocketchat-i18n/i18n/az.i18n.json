@@ -2231,7 +2231,7 @@
   "Saved": "Saxlanıldı",
   "Saving": "Saving",
   "Scan_QR_code": "Google Authenticator, Authy və ya Duo kimi bir identifikator tətbiqindən QR kodu tarayın. Aşağıda daxil etmək üçün lazım olan 6 rəqəmli kod göstərilir.",
-  "Scan_QR_code_alternative_s": "QR kodunu tarayamıyorsanız, bunun əvəzinə əl ilə daxil ola bilərsiniz: __code__",
+  "Scan_QR_code_alternative_s": "QR kodunu tarayamıyorsanız, bunun əvəzinə əl ilə daxil ola bilərsiniz:",
   "Scope": "Sahə",
   "Screen_Share": "Screen Share",
   "Script_Enabled": "Script effektivdir",

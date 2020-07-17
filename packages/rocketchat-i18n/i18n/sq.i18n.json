@@ -2231,7 +2231,7 @@
   "Saved": "Saved",
   "Saving": "kursim",
   "Scan_QR_code": "Përdorimi i një aplikacioni autentifikues si Google Authenticator, Authy ose Duo, skanoni kodin QR. Do të shfaqet një kod me 6 shifra të cilat duhet të futni më poshtë.",
-  "Scan_QR_code_alternative_s": "Nëse nuk mund të skanoni kodin QR, mund të futni kodin manualisht: __code__",
+  "Scan_QR_code_alternative_s": "Nëse nuk mund të skanoni kodin QR, mund të futni kodin manualisht:",
   "Scope": "fushë",
   "Screen_Share": "Screen Share",
   "Script_Enabled": "script aktivizuar",

@@ -2559,7 +2559,7 @@
   "Saved": "Gespeichert",
   "Saving": "Speichern",
   "Scan_QR_code": "Scanne den QR-Code mit einer Authenticator-App (wie Google Authenticator, Authy oder Duo). Danach wird ein sechsstelliger Code angezeigt, den Du unten eingeben kannst.",
-  "Scan_QR_code_alternative_s": "Wenn Du den QR-code nicht einscannen kannst, kannst Du ihn alternativ manuell eingeben: __code__",
+  "Scan_QR_code_alternative_s": "Wenn Du den QR-code nicht einscannen kannst, kannst Du ihn alternativ manuell eingeben:",
   "Scope": "Umfang",
   "Screen_Share": "Bildschirmübertragung",
   "Script_Enabled": "Das Script wurde aktiviert",

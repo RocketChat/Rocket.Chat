@@ -3017,7 +3017,7 @@
   "Saved": "Zapisano",
   "Saving": "Zapisywanie",
   "Scan_QR_code": "Za pomocą aplikacji uwierzytelniającej, takiej jak Google Authenticator, Authy lub Duo, zeskanuj kod QR. Wyświetli 6-cyfrowy kod, który musisz wprowadzić poniżej.",
-  "Scan_QR_code_alternative_s": "Jeśli nie możesz zeskanować kodu QR, możesz wpisać kod ręcznie: __code__",
+  "Scan_QR_code_alternative_s": "Jeśli nie możesz zeskanować kodu QR, możesz wpisać kod ręcznie:",
   "Scope": "Zakres",
   "Screen_Lock": "Blokada ekranu",
   "Screen_Share": "Współdzielenie ekranu",

@@ -2626,7 +2626,7 @@
   "Saved": "Kaydedildi",
   "Saving": "Kaydediliyor",
   "Scan_QR_code": "Google Authenticator, Authy veya Duo gibi bir kimlik doğrulayıcı uygulaması kullanarak QR kodunu tarayın. Aşağıda girmeniz gereken 6 basamaklı bir kod görüntüler.",
-  "Scan_QR_code_alternative_s": "QR kodunu tarayamazsanız, bunun yerine el ile kodu girebilirsiniz: __code__",
+  "Scan_QR_code_alternative_s": "QR kodunu tarayamazsanız, bunun yerine el ile kodu girebilirsiniz:",
   "Scope": "Kapsam",
   "Screen_Share": "Ekran Paylaşımı",
   "Script_Enabled": "Betik Etkin",

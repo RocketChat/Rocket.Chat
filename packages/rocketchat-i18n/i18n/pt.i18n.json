@@ -2567,7 +2567,7 @@
   "Saved": "Guardado",
   "Saving": "A guardar",
   "Scan_QR_code": "Usando um aplicativo autenticador como o Google Authenticator, Authy ou Duo, analise o código QR. Ele exibirá um código de 6 dígitos que você precisa inserir abaixo.",
-  "Scan_QR_code_alternative_s": "Se você não pode digitalizar o código QR, pode digitar o código manualmente em vez disso: __code__",
+  "Scan_QR_code_alternative_s": "Se você não pode digitalizar o código QR, pode digitar o código manualmente em vez disso:",
   "Scope": "Escopo",
   "Screen_Share": "Partilha de Ecrã",
   "Script_Enabled": "Script activo",

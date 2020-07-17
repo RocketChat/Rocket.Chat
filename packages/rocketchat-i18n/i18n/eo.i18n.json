@@ -2231,7 +2231,7 @@
   "Saved": "Savita",
   "Saving": "Ŝparado",
   "Scan_QR_code": "Uzante aŭtentikigilon kiel Google Authenticator, Authy aŭ Duo, skani la QR-kodon. Ĝi montros 6-cifer-kodon, kiun vi devas eniri sube.",
-  "Scan_QR_code_alternative_s": "Se vi ne povas scani la QR-kodon, vi eble enmetu la kodon permane anstataŭe: __code__",
+  "Scan_QR_code_alternative_s": "Se vi ne povas scani la QR-kodon, vi eble enmetu la kodon permane anstataŭe:",
   "Scope": "Amplekso",
   "Screen_Share": "Ekrano Kunhavigi",
   "Script_Enabled": "Skripto Enabled",

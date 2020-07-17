@@ -2231,7 +2231,7 @@
   "Saved": "Đã lưu",
   "Saving": "Đang lưu",
   "Scan_QR_code": "Sử dụng một ứng dụng xác thực như Google Authenticator, Authy hoặc Duo, quét mã QR. Nó sẽ hiển thị một mã 6 chữ số mà bạn cần nhập vào bên dưới.",
-  "Scan_QR_code_alternative_s": "Nếu bạn không thể quét mã QR, bạn có thể nhập mã thủ công thay vì: __code__",
+  "Scan_QR_code_alternative_s": "Nếu bạn không thể quét mã QR, bạn có thể nhập mã thủ công thay vì:",
   "Scope": "Phạm vi",
   "Screen_Share": "Chia sẻ Màn hình",
   "Script_Enabled": "Bật mã",

@@ -2231,7 +2231,7 @@
   "Saved": "gered",
   "Saving": "spaar",
   "Scan_QR_code": "Gebruik 'n verifikasieprogram soos Google Authenticator, Authy of Duo, scan die QR-kode. Dit sal 'n 6-syfer kode vertoon wat u hieronder moet invoer.",
-  "Scan_QR_code_alternative_s": "As jy nie die QR-kode kan skandeer nie, kan jy die kode handmatig invoer in plaas daarvan: __code__",
+  "Scan_QR_code_alternative_s": "As jy nie die QR-kode kan skandeer nie, kan jy die kode handmatig invoer in plaas daarvan:",
   "Scope": "omvang",
   "Screen_Share": "Skerm deel",
   "Script_Enabled": "Skrip geaktiveer",

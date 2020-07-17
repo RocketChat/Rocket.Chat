@@ -2246,7 +2246,7 @@
   "Saved": "захаваны",
   "Saving": "эканомія",
   "Scan_QR_code": "Выкарыстанне прыкладання аутентификатора як Google Authenticator, Authy або Duo, сканаваць QR-код. Ён будзе адлюстроўваць 6-значны код, які вам трэба ўвесці ніжэй.",
-  "Scan_QR_code_alternative_s": "Калі вы не можаце сканаваць QR-код, вы можаце ўвесці код уручную замест: __code__",
+  "Scan_QR_code_alternative_s": "Калі вы не можаце сканаваць QR-код, вы можаце ўвесці код уручную замест:",
   "Scope": "Вобласць",
   "Screen_Share": "Screen Share",
   "Script_Enabled": "сцэнар Enabled",

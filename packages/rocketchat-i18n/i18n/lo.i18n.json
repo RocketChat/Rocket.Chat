@@ -2230,7 +2230,7 @@
   "Saved": "ບັນທຶກໄວ້",
   "Saving": "ຝາກປະຢັດ",
   "Scan_QR_code": "ການນໍາໃຊ້ app authenticator ເຊັ່ນ Google Authenticator, Authy ຫຼື Duo, scan ລະຫັດ QR. ມັນຈະສະແດງລະຫັດທີ່ມີ 6 ຕົວເລກທີ່ທ່ານຈໍາເປັນຕ້ອງເຂົ້າໄປຂ້າງລຸ່ມນີ້.",
-  "Scan_QR_code_alternative_s": "ຖ້າທ່ານບໍ່ສາມາດສະແກນລະຫັດ QR, ທ່ານອາດໃສ່ລະຫັດດ້ວຍຕົນເອງແທນ: __code__",
+  "Scan_QR_code_alternative_s": "ຖ້າທ່ານບໍ່ສາມາດສະແກນລະຫັດ QR, ທ່ານອາດໃສ່ລະຫັດດ້ວຍຕົນເອງແທນ:",
   "Scope": "ຂອບເຂດ",
   "Screen_Share": "ຫນ້າຈໍ Share",
   "Script_Enabled": "script ເປີດໃຊ້ວຽກ",

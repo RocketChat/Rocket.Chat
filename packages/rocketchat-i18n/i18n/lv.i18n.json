@@ -2235,7 +2235,7 @@
   "Saved": "Saglabāts",
   "Saving": "Saglabā",
   "Scan_QR_code": "Izmantojot autentifikācijas lietotni, piemēram, Google Authenticator, Authy vai Duo, noskenējiet QR kodu. Tajā parādīsies 6 ciparu kods, kas jums jāievada zemāk.",
-  "Scan_QR_code_alternative_s": "Ja jūs nevarat noskenēt QR kodu, jūs varat ievadīt kodu manuāli vietā: __kods__",
+  "Scan_QR_code_alternative_s": "Ja jūs nevarat noskenēt QR kodu, jūs varat ievadīt kodu manuāli vietā:",
   "Scope": "Darbības joma",
   "Screen_Share": "Ekrāna kopīgošana",
   "Script_Enabled": "Skripts ir iespējots",

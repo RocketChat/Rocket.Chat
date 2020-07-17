@@ -2259,7 +2259,7 @@
   "Saved": "保存",
   "Saving": "保存",
   "Scan_QR_code": "使用Google身份验证器，Authy或Duo等身份验证器应用扫描QR码。它将显示一个6位数的代码，您需要在下面输入。",
-  "Scan_QR_code_alternative_s": "如果您无法扫描QR码，则可以手动输入代码：__code__",
+  "Scan_QR_code_alternative_s": "如果您无法扫描QR码，则可以手动输入代码：",
   "Scope": "范围",
   "Screen_Share": "屏幕分享",
   "Script_Enabled": "脚本已启用",

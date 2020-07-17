@@ -2983,7 +2983,7 @@
   "Saved": "保存",
   "Saving": "保存",
   "Scan_QR_code": "使用Google身份驗證器，Authy或Duo等身份驗證器應用掃描QR碼。它將顯示一個6位數的代碼，您需要在下面輸入。",
-  "Scan_QR_code_alternative_s": "如果您無法掃描QR碼，則可以手動輸入代碼：__code__",
+  "Scan_QR_code_alternative_s": "如果您無法掃描QR碼，則可以手動輸入代碼：",
   "Scope": "範圍",
   "Screen_Lock": "螢幕鎖定",
   "Screen_Share": "螢幕分享",

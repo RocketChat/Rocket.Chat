@@ -2631,7 +2631,7 @@
   "Saved": "Mentett",
   "Saving": "Megtakarítás",
   "Scan_QR_code": "A hitelesítő alkalmazás, például a Google Hitelesítő, az Authy vagy a Duo használatával beolvashatja a QR-kódot. Megjelenik egy 6 jegyű kód, amelyet alább kell megadnia.",
-  "Scan_QR_code_alternative_s": "Ha nem tudja beolvasni a QR-kódot, manuálisan írhatja be a kódot: __code__",
+  "Scan_QR_code_alternative_s": "Ha nem tudja beolvasni a QR-kódot, manuálisan írhatja be a kódot:",
   "Scope": "Alkalmazási kör",
   "Screen_Share": "képernyő megosztása",
   "Script_Enabled": "Script engedélyezve",
