@@ -8,7 +8,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-import { InfoModal } from './AccountTokensPage';
+import InfoModal from './InfoModal';
 
 const TokenRow = ({ lastTokenPart, name, createdAt, bypassTwoFactor, formatDateAndTime, onRegenerate, onRemove, t, isMedium }) => {
 	const handleRegenerate = useCallback(() => onRegenerate(name), [name, onRegenerate]);

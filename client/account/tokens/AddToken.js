@@ -7,7 +7,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useForm } from '../../hooks/useForm';
-import { InfoModal } from './AccountTokensPage';
+import InfoModal from './InfoModal';
 
 const initialValues = {
 	name: '',
