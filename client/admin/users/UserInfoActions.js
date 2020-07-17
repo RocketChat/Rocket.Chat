@@ -1,16 +1,16 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Button, ButtonGroup, Icon, Menu, Option } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Menu, Modal, Option } from '@rocket.chat/fuselage';
+import React, { useCallback, useMemo } from 'react';
 
-import { Modal } from '../../components/basic/Modal';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useRoute } from '../../contexts/RouterContext';
+import { useUserInfoActionsSpread } from '../../channel/hooks/useUserInfoActions';
+import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
+import UserInfo from '../../components/basic/UserInfo';
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useSetModal } from '../../contexts/ModalContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
-import { useUserInfoActionsSpread } from '../../channel/hooks/useUserInfoActions';
-import UserInfo from '../../components/basic/UserInfo';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
 	const t = useTranslation();
@@ -55,7 +55,7 @@ const SuccessModal = ({ onClose, ...props }) => {
 
 export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) => {
 	const t = useTranslation();
-	const [modal, setModal] = useState();
+	const setModal = useSetModal();
 
 	const directRoute = useRoute('direct');
 	const userRoute = useRoute('admin-users');
@@ -112,7 +112,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const confirmDeleteUser = useCallback(() => {
 		setModal(<DeleteWarningModal onDelete={deleteUser} onCancel={() => setModal()}/>);
-	}, [deleteUser]);
+	}, [deleteUser, setModal]);
 
 	const setAdminStatus = useMethod('setAdminStatus');
 	const changeAdminStatus = useCallback(() => {
@@ -208,10 +208,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
 
-	return <>
-		<ButtonGroup flexGrow={1} justifyContent='center'>
-			{actions}
-		</ButtonGroup>
-		{ modal }
-	</>;
+	return <ButtonGroup flexGrow={1} justifyContent='center'>
+		{actions}
+	</ButtonGroup>;
 };
