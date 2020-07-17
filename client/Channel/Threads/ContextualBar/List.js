@@ -17,13 +17,13 @@ import RawText from '../../../components/basic/RawText';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useUserId } from '../../../contexts/UserContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { MessageSkeleton } from '../../components/Message';
-import { useUserSubscription } from '../../hooks/useUserSubscription';
 import { useUserRoom } from '../../hooks/useUserRoom';
+import { useUserSubscription } from '../../hooks/useUserSubscription';
 import { useSetting } from '../../../contexts/SettingsContext';
-import ThreadListMessage from './components/Message';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { clickableItem } from '../../helpers/clickableItem';
+import { MessageSkeleton } from '../../components/Message';
+import ThreadListMessage from './components/Message';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;

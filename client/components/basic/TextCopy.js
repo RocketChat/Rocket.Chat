@@ -26,7 +26,7 @@ const TextCopy = ({ text, wordBreak = 'break-all', ...props }) => {
 		alignItems='flex-start'
 		flexGrow={1}
 		padding='x16'
-		backgroundColor='neutral-100'
+		backgroundColor='surface'
 		width='full'
 		{...props}
 	>
