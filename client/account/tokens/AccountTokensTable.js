@@ -34,8 +34,8 @@ export function AccountTokensTable({ data, reload, userId }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const regenerateTokenFn = useMethod('personalAccessTokens:regenerateToken');
-	const removeTokenFn = useMethod('personalAccessTokens:removeToken');
+	const regenerateToken = useMethod('personalAccessTokens:regenerateToken');
+	const removeToken = useMethod('personalAccessTokens:removeToken');
 
 	const [ref, isMedium] = useResizeInlineBreakpoint([600], 200);
 
@@ -65,7 +65,7 @@ export function AccountTokensTable({ data, reload, userId }) {
 	const onRegenerate = useCallback((name) => {
 		const onConfirm = async () => {
 			try {
-				const token = await regenerateTokenFn({ tokenName: name });
+				const token = await regenerateToken({ tokenName: name });
 
 				setModal(<InfoModal
 					title={t('API_Personal_Access_Token_Generated')}
@@ -88,12 +88,12 @@ export function AccountTokensTable({ data, reload, userId }) {
 			cancelText={t('Cancel')}
 			onClose={closeModal}
 		/>);
-	}, [closeModal, dispatchToastMessage, regenerateTokenFn, reload, setModal, t, userId]);
+	}, [closeModal, dispatchToastMessage, regenerateToken, reload, setModal, t, userId]);
 
 	const onRemove = useCallback((name) => {
 		const onConfirm = async () => {
 			try {
-				await removeTokenFn({ tokenName: name });
+				await removeToken({ tokenName: name });
 
 				dispatchToastMessage({ type: 'success', message: t('Removed') });
 				reload();
@@ -111,18 +111,18 @@ export function AccountTokensTable({ data, reload, userId }) {
 			cancelText={t('Cancel')}
 			onClose={closeModal}
 		/>);
-	}, [closeModal, dispatchToastMessage, reload, removeTokenFn, setModal, t]);
+	}, [closeModal, dispatchToastMessage, reload, removeToken, setModal, t]);
 
-	const renderRow = useCallback((props) => <TokenRow
-		onRegenerate={onRegenerate}
-		onRemove={onRemove}
-		t={t}
-		formatDateAndTime={formatDateAndTime}
-		isMedium={isMedium}
-		{...props}
-	/>, [formatDateAndTime, isMedium, onRegenerate, onRemove, t]);
-
-	return <GenericTable ref={ref} header={header} renderRow={renderRow} results={tokens} total={tokensTotal} setParams={setParams} params={params}/>;
+	return <GenericTable ref={ref} header={header} results={tokens} total={tokensTotal} setParams={setParams} params={params}>
+		{useCallback((props) => <TokenRow
+			onRegenerate={onRegenerate}
+			onRemove={onRemove}
+			t={t}
+			formatDateAndTime={formatDateAndTime}
+			isMedium={isMedium}
+			{...props}
+		/>, [formatDateAndTime, isMedium, onRegenerate, onRemove, t])}
+	</GenericTable>;
 }
 
 export default AccountTokensTable;
