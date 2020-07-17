@@ -2,9 +2,10 @@ import { Table, Button, ButtonGroup, Icon, Box } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import { GenericTable, Th } from '../../components/GenericTable';
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { InfoModal } from './AccountTokensPage';
@@ -27,10 +28,11 @@ const TokenRow = ({ lastTokenPart, name, createdAt, bypassTwoFactor, formatDateA
 	</Table.Row>;
 };
 
-export function AccountTokensTable({ setModal, data, reload, userId }) {
+export function AccountTokensTable({ data, reload, userId }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
 
 	const regenerateTokenFn = useMethod('personalAccessTokens:regenerateToken');
 	const removeTokenFn = useMethod('personalAccessTokens:removeToken');

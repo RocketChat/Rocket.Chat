@@ -1,18 +1,20 @@
 import React, { useCallback } from 'react';
 import { Box, TextInput, Button, Field, Margins, CheckBox } from '@rocket.chat/fuselage';
 
-import { useForm } from '../../hooks/useForm';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useForm } from '../../hooks/useForm';
 import { InfoModal } from './AccountTokensPage';
 
 const formObj = { name: '', bypassTwoFactor: false };
 
-const AddToken = ({ setModal, userId, reload, ...props }) => {
+const AddToken = ({ userId, reload, ...props }) => {
 	const t = useTranslation();
 	const createTokenFn = useMethod('personalAccessTokens:generateToken');
 	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
 
 	const { values, handlers, reset } = useForm(formObj);
 

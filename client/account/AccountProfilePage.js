@@ -1,6 +1,6 @@
+import { ButtonGroup, Button, Box, Icon, PasswordInput, TextInput, Modal } from '@rocket.chat/fuselage';
 import { SHA256 } from 'meteor/sha';
 import React, { useMemo, useState, useCallback } from 'react';
-import { ButtonGroup, Button, Box, Icon, PasswordInput, TextInput } from '@rocket.chat/fuselage';
 
 import Page from '../components/basic/Page';
 import AccountProfileForm from './AccountProfileForm';
@@ -12,7 +12,6 @@ import { useUser } from '../contexts/UserContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useMethod } from '../contexts/ServerContext';
 import { useSetModal } from '../contexts/ModalContext';
-import { Modal } from '../components/basic/Modal';
 import { useUpdateAvatar } from '../hooks/useUpdateAvatar';
 import { getUserEmailAddress } from '../helpers/getUserEmailAddress';
 

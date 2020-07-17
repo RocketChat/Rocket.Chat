@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import React from 'react';
+import { Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { Modal } from '../../components/basic/Modal';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useUserId } from '../../contexts/UserContext';
@@ -34,8 +33,6 @@ const AccountTokensPage = () => {
 	const t = useTranslation();
 	const userId = useUserId();
 
-	const [modal, setModal] = useState(null);
-
 	const canCreateTokens = usePermission('create-personal-access-tokens');
 
 	const { data, reload } = useEndpointDataExperimental('users.getPersonalAccessTokens', emptyObj, []);
@@ -44,16 +41,13 @@ const AccountTokensPage = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	return <>
-		<Page>
-			<Page.Header title={t('Personal_Access_Tokens')}/>
-			<Page.Content>
-				<AddToken userId={userId} setModal={setModal} reload={reload}/>
-				<AccountTokensTable userId={userId} setModal={setModal} data={data} reload={reload} />
-			</Page.Content>
-		</Page>
-		{modal}
-	</>;
+	return <Page>
+		<Page.Header title={t('Personal_Access_Tokens')}/>
+		<Page.Content>
+			<AddToken userId={userId} reload={reload}/>
+			<AccountTokensTable userId={userId} data={data} reload={reload} />
+		</Page.Content>
+	</Page>;
 };
 
 export default AccountTokensPage;
