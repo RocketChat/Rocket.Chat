@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react';
-import { Accordion, Field, FieldGroup, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, ButtonGroup, Button, Icon, Box, Modal } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { Modal } from '../../components/basic/Modal';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetModal } from '../../contexts/ModalContext';
 
