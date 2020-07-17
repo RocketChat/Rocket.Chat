@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Box, Button, TextInput, Icon, ButtonGroup, Margins } from '@rocket.chat/fuselage';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { Box, Button, TextInput, Icon, ButtonGroup, Margins, Modal } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import qrcode from 'yaqrcode';
 
@@ -9,13 +9,12 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useMethod } from '../../contexts/ServerContext';
-import { Modal } from '../../components/basic/Modal';
 import TextCopy from '../../components/basic/TextCopy';
-
-const mapCodes = (codes) => codes.map((code, index) => ((index + 1) % 4 === 0 ? `${ code }\n` : code)).join(' ');
 
 const BackupCodesModal = ({ codes, onClose, ...props }) => {
 	const t = useTranslation();
+
+	const codesText = useMemo(() => codes.join(' '), [codes]);
 
 	return <Modal {...props}>
 		<Modal.Header>
@@ -24,7 +23,9 @@ const BackupCodesModal = ({ codes, onClose, ...props }) => {
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			<Box mb='x8' withRichContent dangerouslySetInnerHTML={{ __html: t('Make_sure_you_have_a_copy_of_your_codes', { codes }) }} />
+			<Box mb='x8' withRichContent>{t('Make_sure_you_have_a_copy_of_your_codes_1')}</Box>
+			<TextCopy text={codesText} wordBreak='break-word' mb='x8' />
+			<Box mb='x8' withRichContent>{t('Make_sure_you_have_a_copy_of_your_codes_2')}</Box>
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -151,8 +152,7 @@ const TwoFactorTOTP = (props) => {
 			if (!result) {
 				return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 			}
-			const codes = `<pre><code>${ mapCodes(result.codes) }</pre></code>`;
-			setModal(<BackupCodesModal codes={codes} onClose={closeModal}/>);
+			setModal(<BackupCodesModal codes={result.codes} onClose={closeModal}/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -166,12 +166,10 @@ const TwoFactorTOTP = (props) => {
 				if (!result) {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 				}
-				const codes = `<pre><code>${ mapCodes(result.codes) }</pre></code>`;
-				setModal(<BackupCodesModal codes={codes} onClose={closeModal}/>);
+				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal}/>);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
-			closeModal();
 		};
 
 		setModal(<VerifyCodeModal onVerify={onRegenerate} onCancel={closeModal}/>);
