@@ -206,8 +206,8 @@ Meteor.startup(async function() {
 
 			return true;
 		},
-		order: 3,
-		group: 'menu',
+		order: -3,
+		group: ['message', 'menu'],
 	});
 
 	MessageAction.addButton({
