@@ -1,45 +1,36 @@
-import React, { useMemo, useState } from 'react';
-import { Tag, Box } from '@rocket.chat/fuselage';
+import React, { useEffect, useState } from 'react';
+import { Tag } from '@rocket.chat/fuselage';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 
 import { useMethod } from '../../contexts/ServerContext';
 
 function PlanTag() {
-	const [plans, setPlans] = useState([]);
-	const [background, setBackground] = useState([]);
+	const [plans, setPlans] = useSafely(useState([]));
 
 	const getTags = useMethod('license:getTags');
 
 	useEffect(() => {
-		const loadTags = async () => {
-			setPlans(await getTags());
-		};
-		loadTags();
-	}, [getTags]);
+		(async () => {
+			const tags = await getTags();
+			const getBackgroundColor = (plan) => {
+				switch (plan) {
+					case 'bronze':
+						return '#BD5A0B';
+					case 'silver':
+						return '#9EA2A8';
+					case 'gold':
+						return '#F3BE08';
+					case 'development':
+						return 'primary-600';
+					default:
+						return '#2F343D';
+				}
+			};
+			setPlans([process.env.NODE_ENV === 'development' && 'development', ...tags].filter(Boolean).map((plan) => ({ plan, background: getBackgroundColor(plan) })));
+		})();
+	}, []);
 
-	const background = useMemo(() => {
-		const currBg = [];
-		plans.forEach((plan, i) => {
-			switch (plan) {
-				case 'bronze':
-					currBg[i] = '#BD5A0B';
-					break;
-				case 'silver':
-					currBg[i] = '#9EA2A8';
-					break;
-				case 'gold':
-					currBg[i] = '#F3BE08';
-					break;
-				default:
-					currBg[i] = '#2F343D';
-					break;
-			}
-		});
-		return currBg;
-	}, [plans]);
-
-	return <Box>
-		{plans.map((plan, i) => <Tag key={plan} backgroundColor={background[i]} marginInlineStart='x8' color='#fff' textTransform='capitalize'>{plan}</Tag>) }
-	</Box>;
+	return plans.map(({ plan, background }) => <Tag key={plan} backgroundColor={background} marginInline='x4' color='#fff' textTransform='capitalize'>{plan}</Tag>);
 }
 
 export default PlanTag;
