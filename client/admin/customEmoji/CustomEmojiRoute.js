@@ -93,7 +93,7 @@ export default function CustomEmojiRoute({ props }) {
 			</Page.Content>
 		</Page>
 		{ context
-			&& <VerticalBar className='contextual-bar' mod-small={small} mod-mobile={mobile} width='380px' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+			&& <VerticalBar className='contextual-bar' width='x380' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
 				<VerticalBar.Header>
 					{ context === 'edit' && t('Custom_Emoji_Info') }
 					{ context === 'new' && t('Custom_Emoji_Add') }
