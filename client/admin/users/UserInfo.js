@@ -46,7 +46,6 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			customFields: [approveManuallyUsers && user.active === false && user.reason && { label: 'Reason', value: user.reason }, ...Array.isArray(user.customFields) ? user.customFields : []].filter(Boolean),
 			email: user.emails?.find(({ address }) => !!address)?.address,
 			createdAt: user.createdAt,
-			// localTime: <LocalTime offset={utcOffset} />,
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
 		};
@@ -60,7 +59,6 @@ export function UserInfoWithData({ uid, username, ...props }) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
-
 	return <UserInfo
 		{...user}
 		data={data.user}
@@ -69,7 +67,3 @@ export function UserInfoWithData({ uid, username, ...props }) {
 		{...props}
 	/>;
 }
-
-// data.bio && data.bio.trim().length > 0 && (
-// 	<MarkdownText withTruncatedText fontScale="s1" content={data.bio} />
-// );
