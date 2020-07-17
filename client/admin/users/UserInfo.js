@@ -1,16 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-
 import { UserInfo } from '../../components/basic/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import * as UserStatus from '../../components/basic/UserStatus';
 import UserCard from '../../components/basic/UserCard';
-import { FormSkeleton } from './Skeleton';
 import { UserInfoActions } from './UserInfoActions';
-
+import { FormSkeleton } from './Skeleton';
 
 export function UserInfoWithData({ uid, username, ...props }) {
 	const t = useTranslation();

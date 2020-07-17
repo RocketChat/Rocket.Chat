@@ -92,6 +92,10 @@ Template.userInfo.helpers({
 		const user = Template.instance().user.get();
 		return user.bio && user.bio.trim();
 	},
+	nickname() {
+		const user = Template.instance().user.get();
+		return user.nickname?.trim();
+	},
 	bio() {
 		const user = Template.instance().user.get();
 		return Markdown.parse(user.bio);

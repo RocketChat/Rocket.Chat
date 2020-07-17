@@ -13,7 +13,7 @@ import { EditCustomSound } from './EditCustomSound';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import VerticalBar from '../../components/basic/VerticalBar';
-import NotAuthorizedPage from '../NotAuthorizedPage';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 

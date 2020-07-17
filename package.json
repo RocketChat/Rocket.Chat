@@ -133,7 +133,6 @@
 		"@rocket.chat/fuselage": "^0.13.0",
 		"@rocket.chat/fuselage-hooks": "^0.13.0",
 		"@rocket.chat/fuselage-polyfills": "^0.13.0",
-		"@rocket.chat/fuselage-tokens": "^0.13.0",
 		"@rocket.chat/fuselage-ui-kit": "^0.13.0",
 		"@rocket.chat/icons": "^0.13.0",
 		"@rocket.chat/ui-kit": "^0.13.0",
