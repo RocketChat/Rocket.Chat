@@ -14,7 +14,7 @@ import { FormSkeleton } from '../../admin/users/Skeleton';
 import VerticalBar from '../../components/basic/VerticalBar';
 import UserActions from './actions/UserActions';
 
-export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, rid, username, onClose, ...props }) {
+export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClose, video, showBackButton, ...props }) {
 	const t = useTranslation();
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
