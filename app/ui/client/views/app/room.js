@@ -37,7 +37,7 @@ import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
 import { mime } from '../../../../utils/lib/mimeTypes';
-import * as UserCard from '../../lib/UserCard';
+import { openUserCard } from '../../lib/UserCard';
 
 export const chatMessages = {};
 
@@ -926,7 +926,7 @@ Template.room.events({
 		}
 
 		if (username) {
-			UserCard.open({
+			openUserCard({
 				username,
 				rid: Session.get('openedRoom'),
 				target: e.currentTarget,

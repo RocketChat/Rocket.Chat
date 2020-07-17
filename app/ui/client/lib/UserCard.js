@@ -14,7 +14,7 @@ const createAchor = () => {
 };
 
 
-export const close = () => {
+export const closeUserCard = () => {
 	if (!dom) {
 		return;
 	}
@@ -27,10 +27,10 @@ const props = () => {
 	return state;
 };
 
-export const open = async ({ ...args }) => {
+export const openUserCard = async ({ ...args }) => {
 	dom = dom || createAchor();
 	state = {
-		onClose: close,
+		onClose: closeUserCard,
 		...args,
 	};
 	Dep.changed();
