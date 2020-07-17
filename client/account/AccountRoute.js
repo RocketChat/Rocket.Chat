@@ -4,6 +4,7 @@ import { useRouteParameter, useRoute } from '../contexts/RouterContext';
 import { SideNav } from '../../app/ui-utils';
 import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
+import AccountSecurityPage from './security/AccountSecurityPage';
 import './sidebarItems';
 
 const AccountRoute = () => {
@@ -22,6 +23,9 @@ const AccountRoute = () => {
 	}
 	if (page === 'preferences') {
 		return <AccountPreferencesPage />;
+	}
+	if (page === 'security') {
+		return <AccountSecurityPage />;
 	}
 	return null;
 };

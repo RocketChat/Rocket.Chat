@@ -9,8 +9,8 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import { useQuery } from './hooks';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
-import NotAuthorizedPage from '../../admin/NotAuthorizedPage';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
