@@ -73,7 +73,7 @@ const AccountProfilePage = () => {
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const localPassword = !!(user && user.services && user.services.password && user.services.password.bcrypt.trim());
+	const localPassword = Boolean(user?.services?.password?.bcrypt?.trim());
 	const requirePasswordConfirmation = (values.email !== getUserEmailAddress(user) || !!values.password) && localPassword;
 
 	const erasureType = useSetting('Message_ErasureType');
