@@ -1,5 +1,6 @@
+import { Box, TextInput, Button, Field, FieldGroup, Margins, CheckBox } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback } from 'react';
-import { Box, TextInput, Button, Field, Margins, CheckBox } from '@rocket.chat/fuselage';
 
 import { useSetModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -8,7 +9,10 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useForm } from '../../hooks/useForm';
 import { InfoModal } from './AccountTokensPage';
 
-const formObj = { name: '', bypassTwoFactor: false };
+const initialValues = {
+	name: '',
+	bypassTwoFactor: false,
+};
 
 const AddToken = ({ userId, reload, ...props }) => {
 	const t = useTranslation();
@@ -16,7 +20,7 @@ const AddToken = ({ userId, reload, ...props }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const { values, handlers, reset } = useForm(formObj);
+	const { values, handlers, reset } = useForm(initialValues);
 
 	const { name, bypassTwoFactor } = values;
 	const { handleName, handleBypassTwoFactor } = handlers;
@@ -40,22 +44,22 @@ const AddToken = ({ userId, reload, ...props }) => {
 		}
 	}, [bypassTwoFactor, closeModal, createTokenFn, dispatchToastMessage, name, reload, reset, setModal, t, userId]);
 
-	return <Box display='flex' flexDirection='column' mbe='x8' {...props}>
-		<Box display='flex' flexDirection='row' alignItems='stretch' mi='neg-x2'>
-			<Margins inline='x2'>
-				<TextInput value={name} onChange={handleName} placeholder={t('API_Add_Personal_Access_Token')}/>
-				<Button primary onClick={handleAdd}>{t('Add')}</Button>
-			</Margins>
-		</Box>
+	const bypassTwoFactorCheckboxId = useUniqueId();
+
+	return <FieldGroup is='form' marginBlock='x8' {...props}>
 		<Field>
-			<Box display='flex' flexDirection='row' alignItems='center' mbs='x4'>
-				<Field.Row>
-					<CheckBox checked={bypassTwoFactor} onChange={handleBypassTwoFactor}/>
-				</Field.Row>
-				<Box mis='x4'>{t('Ignore')} {t('Two Factor Authentication')}</Box>
-			</Box>
+			<Field.Row>
+				<Margins inlineEnd='x4'>
+					<TextInput value={name} onChange={handleName} placeholder={t('API_Add_Personal_Access_Token')}/>
+				</Margins>
+				<Button primary onClick={handleAdd}>{t('Add')}</Button>
+			</Field.Row>
+			<Field.Row>
+				<CheckBox id={bypassTwoFactorCheckboxId} checked={bypassTwoFactor} onChange={handleBypassTwoFactor} />
+				<Field.Label htmlFor={bypassTwoFactorCheckboxId}>{t('Ignore')} {t('Two Factor Authentication')}</Field.Label>
+			</Field.Row>
 		</Field>
-	</Box>;
+	</FieldGroup>;
 };
 
 export default AddToken;
