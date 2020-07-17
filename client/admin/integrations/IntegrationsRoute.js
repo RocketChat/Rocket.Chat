@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter } from '../../contexts/RouterContext';
-import NotAuthorizedPage from '../NotAuthorizedPage';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import IntegrationsPage from './IntegrationsPage';
 import NewIntegrationsPage from './new/NewIntegrationsPage';
 import EditIntegrationsPage from './edit/EditIntegrationsPage';
