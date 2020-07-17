@@ -1,5 +1,4 @@
-.contextual-bar.rcx-box,
-.contextual-bar {
+.contextual-bar.contextual-bar {
 	z-index: 10;
 
 	display: flex;

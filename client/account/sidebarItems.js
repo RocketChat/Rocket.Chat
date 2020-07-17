@@ -6,7 +6,7 @@ import { createSidebarItems } from '../components/basic/Sidebar';
 createTemplateForComponent('accountFlex', () => import('./AccountSidebar'));
 
 export const {
-	registerSidebarItem: registerAdminSidebarItem,
+	registerSidebarItem: registerAccountSidebarItem,
 	unregisterSidebarItem,
 	itemsSubscription,
 } = createSidebarItems([
