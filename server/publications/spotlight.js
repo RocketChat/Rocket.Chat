@@ -58,6 +58,7 @@ Meteor.methods({
 			limit: 5,
 			fields: {
 				username: 1,
+				nickname: 1,
 				name: 1,
 				status: 1,
 				statusText: 1,

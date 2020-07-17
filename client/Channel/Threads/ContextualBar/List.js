@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useDebouncedState, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
 import { roomTypes } from '../../../../app/utils/client';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';
@@ -17,14 +17,13 @@ import RawText from '../../../components/basic/RawText';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useUserId } from '../../../contexts/UserContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { MessageSkeleton } from '../../components/Message';
-import { useUserSubscription } from '../../hooks/useUserSubscription';
 import { useUserRoom } from '../../hooks/useUserRoom';
-import { useLocalStorage } from '../../hooks/useLocalstorage';
+import { useUserSubscription } from '../../hooks/useUserSubscription';
 import { useSetting } from '../../../contexts/SettingsContext';
-import ThreadListMessage from './components/Message';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { clickableItem } from '../../helpers/clickableItem';
+import { MessageSkeleton } from '../../components/Message';
+import ThreadListMessage from './components/Message';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
