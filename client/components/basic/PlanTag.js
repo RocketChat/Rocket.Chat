@@ -9,14 +9,14 @@ function PlanTag() {
 
 	const getTags = useMethod('license:getTags');
 
-	useMemo(() => {
+	useEffect(() => {
 		const loadTags = async () => {
 			setPlans(await getTags());
 		};
 		loadTags();
 	}, [getTags]);
 
-	useMemo(() => {
+	const background = useMemo(() => {
 		const currBg = [];
 		plans.forEach((plan, i) => {
 			switch (plan) {
@@ -34,7 +34,7 @@ function PlanTag() {
 					break;
 			}
 		});
-		setBackground(currBg);
+		return currBg;
 	}, [plans]);
 
 	return <Box>

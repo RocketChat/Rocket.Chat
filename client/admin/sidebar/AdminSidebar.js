@@ -196,7 +196,9 @@ export default React.memo(function AdminSidebar() {
 	return <SettingsProvider privileged>
 		<Box display='flex' flexDirection='column' h='100vh'>
 			<Box is='header' pb='x16' pi='x24' display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-				<Box color='neutral-800' fontSize='p1' display='flex' flexDirection='row' alignItems='center' fontWeight='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{t('Administration')}<PlanTag></PlanTag></Box>
+				<Box color='neutral-800' fontSize='p1' display='flex' flexDirection='row' alignItems='center' fontWeight='p1' fontWeight='p1' flexShrink={1} withTruncatedText>
+					{t('Administration')} <PlanTag />
+				</Box>
 				<Button square small ghost onClick={closeAdminFlex}><Icon name='cross' size='x20'/></Button>
 			</Box>
 			<Scrollable>
