@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -41,9 +41,6 @@ export default function CustomEmojiRoute({ props }) {
 	const data = useEndpointData('emoji-custom.all', query) || { emojis: { } };
 
 	const router = useRoute(routeName);
-
-	const mobile = useMediaQuery('(max-width: 420px)');
-	const small = useMediaQuery('(max-width: 780px)');
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');

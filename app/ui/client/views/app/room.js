@@ -948,7 +948,7 @@ Template.room.events({
 		const { username } = msg.u;
 
 		if (username) {
-			UserCard.open({
+			openUserCard({
 				username,
 				rid: Session.get('openedRoom'),
 				target: e.currentTarget,
