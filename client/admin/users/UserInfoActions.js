@@ -209,7 +209,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		<Box display='flex' flexDirection='row' {...props}>
 			<ButtonGroup flexGrow={1} justifyContent='center'>
 				{ actions && actions.map((action, index) => (<Button key={index} onClick={action.action}>{action.label}</Button>))}
-				{ moreActions && <Menu options={moreActions} placement='bottom left'/> }
+				{ moreActions && <Menu options={moreActions} placement='bottom-start'/> }
 			</ButtonGroup>
 		</Box>
 		{ modal }
