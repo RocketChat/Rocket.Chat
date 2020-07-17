@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { eventTypes } from '../../../models/server/models/FederationEvents';
+import { eventTypes } from '../../../models/server/models/Events';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
 

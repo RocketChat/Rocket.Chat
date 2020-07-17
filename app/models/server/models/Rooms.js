@@ -5,6 +5,8 @@ import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { getValidRoomName } from '../../../utils';
+import { RoomEvents } from './RoomEvents';
+import { getFederationDomain } from '../../../federation/server/lib/getFederationDomain';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -26,6 +28,53 @@ export class Rooms extends Base {
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 	}
+
+	registerEventDispatcher(callback) {
+		this.dispatchEvent = callback;
+	}
+
+	//
+	// Overriding insert method to create the genesis event
+	//
+	insert(room) {
+		const roomId = super.insert(room);
+
+		room = {
+			_id: roomId,
+			...room,
+		};
+
+		const event = Promise.await(RoomEvents.createRoomGenesisEvent(getFederationDomain(), room));
+
+		Promise.await(this.dispatchEvent(event));
+
+		return roomId;
+	}
+
+	upsert(...args) {
+		const result = super.upsert(...args);
+
+		const { insertedId } = result;
+
+		// If the room was inserted, we need to create the genesis event
+		if (insertedId) {
+			let [, { $setOnInsert: room }] = args;
+
+			room = {
+				_id: insertedId,
+				...room,
+			};
+
+			const event = Promise.await(RoomEvents.createRoomGenesisEvent(getFederationDomain(), room));
+
+			Promise.await(this.dispatchEvent(event));
+		}
+
+		return result;
+	}
+	//
+	// ^^^
+	//
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
@@ -1097,6 +1146,10 @@ export class Rooms extends Base {
 	// REMOVE
 	removeById(_id) {
 		const query = { _id };
+
+		const event = Promise.await(RoomEvents.createDeleteRoomEvent(getFederationDomain(), _id));
+
+		Promise.await(this.dispatchEvent(event));
 
 		return this.remove(query);
 	}

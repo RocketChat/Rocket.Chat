@@ -1,9 +1,14 @@
 import { Match } from 'meteor/check';
 import _ from 'underscore';
+import deepMapKeys from 'deep-map-keys';
+import { EJSON } from 'meteor/ejson';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
+import { RoomEvents } from './RoomEvents';
+import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
+import { RoomEventTypeDescriptor } from '../../../events/definitions/room/IRoomEvent';
 
 export class Messages extends Base {
 	constructor() {
@@ -32,6 +37,10 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
+	}
+
+	registerEventDispatcher(callback) {
+		this.dispatchEvent = callback;
 	}
 
 	setReactions(messageId, reactions) {
@@ -65,6 +74,202 @@ export class Messages extends Base {
 			multi: true,
 		});
 	}
+
+	//
+	// Overriding some methods to add V1<->V2 conversion
+	//
+	getV2Query(query) {
+		let clid;
+
+		if (query._id) {
+			clid = query._id;
+
+			query.clid = clid;
+			delete query._id;
+		}
+
+		if (query.rid) {
+			query.cid = query.rid;
+			delete query.rid;
+		}
+
+		const v2Query = {};
+
+		for (const item in query) {
+			if (item.startsWith('$')) { continue; }
+
+			if (RoomEvents.belongsToV2Root(item)) {
+				v2Query[item] = query[item];
+			} else {
+				v2Query[`d.${ item }`] = query[item];
+			}
+		}
+
+		if (query._updatedAt) {
+			v2Query.updatedAt = query._updatedAt;
+		}
+
+		v2Query.t = query.t || 'msg';
+		v2Query.deletedAt = query._deletedAt || null;
+
+		return { clid, v2Query };
+	}
+
+	findV1(...args) {
+		return this.model.rawCollection().find(...args);
+	}
+
+	removeV1(...args) {
+		return this.model.rawCollection().remove(...args);
+	}
+
+	find(...args) {
+		args[0] = args[0] || {};
+
+		const { v2Query } = this.getV2Query(args[0]);
+
+		args[0] = v2Query;
+
+		// Add a `t: msg` and not deleted
+		args[0].t = RoomEventTypeDescriptor.MESSAGE;
+
+		const cursor = RoomEvents.find.apply(RoomEvents, args);
+
+		cursor._fetch = cursor.fetch;
+		cursor.fetch = function(...args) {
+			const results = this._fetch(args);
+
+			// Convert to V1
+			return results.map(RoomEvents.toV1);
+		}.bind(cursor);
+
+		return cursor;
+	}
+
+	_findOne(...args) {
+		args[0] = args[0] || {};
+
+		const { v2Query } = this.getV2Query(args[0]);
+
+		args[0] = v2Query;
+
+		let result = RoomEvents.findOne.apply(RoomEvents, args);
+
+		if (result) {
+			result = RoomEvents.toV1(result);
+		}
+
+		return result;
+	}
+
+	findOne(...args) {
+		return this._findOne(...args);
+	}
+
+	findOneById(...args) {
+		return this._findOne({ clid: args[0] });
+	}
+
+	findOneByIds(ids, options, ...args) {
+		return this._findOne([{ clid: { $in: ids } }, options, ...args]);
+	}
+
+	processEvents(query, processor) {
+		const { v2Query } = this.getV2Query(query);
+
+		const events = RoomEvents.find(v2Query).fetch();
+
+		if (!events.length) {
+			return null;
+		}
+
+		const result = [];
+
+		for (const event of events) {
+			result.push(processor(event));
+		}
+
+		return result.length === 1 ? result[0] : result;
+	}
+
+	insert(...args) {
+		const [message] = args;
+
+		const v2Data = RoomEvents.fromV1Data(message);
+
+		const event = Promise.await(RoomEvents.createMessageEvent(getLocalSrc(), message.rid, message._id, v2Data));
+
+		Promise.await(this.dispatchEvent(event));
+
+		return RoomEvents.toV1(event)._id;
+	}
+
+	update(...args) {
+		const [query, update] = args;
+
+		return this.processEvents(query, (event) => {
+			const d = deepMapKeys(EJSON.toJSONValue(update), (k) => k.replace('$', '[csg]').replace('.', '[dot]'));
+			d['[csg]set'] = d['[csg]set'] || {};
+			d['[csg]set']._oid = event._id; // Original id
+
+			const editEvent = Promise.await(RoomEvents.createEditMessageEvent(event.src, event.cid, event.clid, d));
+
+			Promise.await(this.dispatchEvent(editEvent));
+
+			return RoomEvents.toV1(editEvent);
+		});
+	}
+
+	upsert(...args) {
+		const [query] = args;
+
+		const event = RoomEvents.findOne(query);
+
+		if (event) {
+			return this.update(...args);
+		}
+
+		return this.insert(...args);
+	}
+
+	remove(...args) {
+		const [query] = args;
+
+		return this.processEvents(query, (event) => {
+			const deleteEvent = Promise.await(RoomEvents.createDeleteMessageEvent(event.src, event.cid, event.clid));
+
+			Promise.await(this.dispatchEvent(deleteEvent));
+
+			return RoomEvents.toV1(deleteEvent);
+		});
+	}
+
+	trashFind(query, options) {
+		query._deletedAt = { $ne: null };
+
+		return this.find(query, options);
+	}
+
+	trashFindOneById(_id, options) {
+		const query = {
+			_id,
+			_deletedAt: { $ne: null },
+		};
+
+		return this.findOne(query, options);
+	}
+
+	trashFindDeletedAfter(deletedAt, query = {}, options) {
+		query._deletedAt = {
+			$ne: null,
+			$gt: deletedAt,
+		};
+
+		return this.find(query, options);
+	}
+	//
+	// ^^^
+	//
 
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
@@ -760,7 +965,7 @@ export class Messages extends Base {
 
 		_.extend(record, extraData);
 
-		record._id = this.insertOrUpsert(record);
+		record._id = this.insert(record);
 		Rooms.incMsgCountById(roomId, 1);
 		return record;
 	}
@@ -785,7 +990,7 @@ export class Messages extends Base {
 
 		_.extend(record, extraData);
 
-		record._id = this.insertOrUpsert(record);
+		record._id = this.insert(record);
 		return record;
 	}
 
@@ -808,7 +1013,7 @@ export class Messages extends Base {
 		}
 		Object.assign(record, extraData);
 
-		record._id = this.insertOrUpsert(record);
+		record._id = this.insert(record);
 		return record;
 	}
 

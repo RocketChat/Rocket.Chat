@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings';
-import { Users, Messages } from '../../../app/models';
+import { Users, RoomEvents } from '../../../app/models';
 import { msgStream } from '../../../app/lib/server';
+import { RoomEventTypeDescriptor } from '../../../app/events/definitions/room/IRoomEvent';
 
 import { MY_MESSAGE } from '.';
 
@@ -27,11 +28,18 @@ Meteor.startup(function() {
 		}
 	}
 
-	return Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
+	return RoomEvents.on('change', function({ clientAction, id, data/* , oplog*/ }) {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				const message = data || Messages.findOne({ _id: id });
+				let message = data || RoomEvents.findOne({ _id: id, t: RoomEventTypeDescriptor.MESSAGE });
+
+				if (!message || message.t !== 'msg') {
+					break;
+				}
+
+				message = RoomEvents.toV1(message);
+
 				publishMessage(clientAction, message);
 				break;
 		}
