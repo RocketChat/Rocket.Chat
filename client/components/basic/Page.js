@@ -12,7 +12,7 @@ function Page(props) {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
 		<Box
-			backgroundColor='neutral-100'
+			backgroundColor='surface'
 			is='section'
 			display='flex'
 			flexDirection='column'

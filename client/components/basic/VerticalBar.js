@@ -11,7 +11,7 @@ function VerticalBar({ children, ...props }) {
 
 	return <Box
 		rcx-vertical-bar
-		backgroundColor='neutral-100'
+		backgroundColor='surface'
 		display='flex'
 		flexDirection='column'
 		flexShrink={0}
