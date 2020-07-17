@@ -366,7 +366,7 @@ Meteor.startup(async function() {
 			const { msg: { reactions } } = messageArgs(this);
 
 			modal.open({
-				template: createTemplateForComponent('reactionList', () => import('./reactionListContent')),
+				template: createTemplateForComponent('reactionList', () => import('./ReactionListContent')),
 				data: { reactions },
 			});
 		},
