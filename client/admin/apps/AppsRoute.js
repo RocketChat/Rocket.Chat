@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
-import NotAuthorizedPage from '../NotAuthorizedPage';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import PageSkeleton from '../PageSkeleton';
 import AppDetailsPage from './AppDetailsPage';
 import MarketplacePage from './MarketplacePage';

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import NotAuthorizedPage from '../NotAuthorizedPage';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import ViewLogs from './ViewLogs';
 
