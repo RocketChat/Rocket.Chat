@@ -43,7 +43,7 @@ export function getBundleModules(moduleName: string): string[] {
 	}
 
 	const bundle = getBundleFromModule(moduleName);
-	if (!bundle) {
+	if (!bundle || !bundles[bundle]) {
 		return [];
 	}
 
