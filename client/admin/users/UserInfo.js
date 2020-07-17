@@ -43,6 +43,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			)),
 			bio,
 			utcOffset,
+			email: user.emails?.find(({ address }) => !!address)?.address,
 			createdAt: user.createdAt,
 			// localTime: <LocalTime offset={utcOffset} />,
 			status: UserStatus.getStatus(status),

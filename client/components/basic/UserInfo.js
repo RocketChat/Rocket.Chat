@@ -75,7 +75,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{email && <> <Label>{t('Email')}</Label>
 				<Info display='flex' flexDirection='row' alignItems='center'>
-					<Box withTruncatedText>{email.address}</Box>
+					<Box is='a' withTruncatedText href={`mailto:${ email.address }`}>{email.address}</Box>
 					<Margins inline='x4'>
 						{email.verified && <Tag variant='primary'>{t('Verified')}</Tag>}
 						{email.verified || <Tag disabled>{t('Not_verified')}</Tag>}
@@ -85,7 +85,6 @@ export const UserInfo = React.memo(function UserInfo({
 
 			<Label>{t('Created_at')}</Label>
 			<Info>{timeAgo(createdAt)}</Info>
-
 
 		</Margins>
 
