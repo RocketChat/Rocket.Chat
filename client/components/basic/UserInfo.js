@@ -72,7 +72,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{bio && <>
 				<Label>{t('Bio')}</Label>
-				<Info withTruncatedText={false}><MarkdownText>{bio}</MarkdownText></Info>
+				<Info withTruncatedText={false}><MarkdownText content={bio}/></Info>
 			</>}
 
 			{phone && <> <Label>{t('Phone')}</Label>
