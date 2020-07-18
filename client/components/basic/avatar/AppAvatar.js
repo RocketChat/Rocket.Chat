@@ -1,6 +1,6 @@
 import React from 'react';
 
-import BaseAvatar from './Base';
+import BaseAvatar from './BaseAvatar';
 
 const objectFit = { objectFit: 'contain' };
 

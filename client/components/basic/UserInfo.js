@@ -4,7 +4,6 @@ import { css } from '@rocket.chat/css-in-js';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useTranslation } from '../../contexts/TranslationContext';
-// import MarkdownText from './MarkdownText';
 import VerticalBar from './VerticalBar';
 import { UTCClock } from './UTCClock';
 import UserAvatar from './avatar/UserAvatar';
@@ -18,7 +17,6 @@ const wordBreak = css`
 `;
 
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
-// const timeAgo = (e) => e;
 
 export const UserInfo = React.memo(function UserInfo({
 	username,

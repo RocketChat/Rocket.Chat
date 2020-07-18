@@ -63,7 +63,7 @@ const mountRoot = async () => {
 	render(createElement(AppRoot), rootNode);
 };
 
-export const unregisterPortal = (key) => {
+const unregisterPortal = (key) => {
 	portalsMap.delete(key);
 	invalidatePortals();
 };

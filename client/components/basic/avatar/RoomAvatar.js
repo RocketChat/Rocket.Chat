@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
-import BaseAvatar from './Base';
+import BaseAvatar from './BaseAvatar';
 
 function RoomAvatar({ room: { type, ...room }, ...props }) {
 	const avatarUrl = roomTypes.getConfig(type).getAvatarPath({ type, ...room });
