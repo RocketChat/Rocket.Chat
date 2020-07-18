@@ -661,7 +661,7 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
+	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
@@ -683,7 +683,7 @@ export class Users extends Base {
 			return this._db.find(query, options);
 		}
 
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+		const termRegex = new RegExp((startsWith ? '^' : '') + s.escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 

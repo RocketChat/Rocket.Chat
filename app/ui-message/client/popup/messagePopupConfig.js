@@ -66,19 +66,20 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 	}
 
 	users
-		.slice(0, 5)
-		.forEach(({ username, nickname, name, status, avatarETag }) => {
-			if (records.length < 5) {
-				records.push({
-					_id: username,
-					username,
-					nickname,
-					name,
-					status,
-					avatarETag,
-					sort: 3,
-				});
-			}
+		// .slice(0, 5)
+		.forEach(({ username, nickname, name, status, avatarETag, outside }) => {
+			// if (records.length < 5) {
+			records.push({
+				_id: username,
+				username,
+				nickname,
+				name,
+				status,
+				avatarETag,
+				outside,
+				sort: 3,
+			});
+			// }
 		});
 
 	records.sort(({ sort: sortA }, { sort: sortB }) => sortA - sortB);
@@ -210,7 +211,7 @@ Template.messagePopupConfig.helpers({
 					.find(
 						{
 							ts: { $exists: true },
-							...filterRegex && {
+							...filterText && {
 								$or: [
 									{ username: filterRegex },
 									{ name: filterRegex },
@@ -218,111 +219,114 @@ Template.messagePopupConfig.helpers({
 							},
 						},
 						{
-							limit: 5,
+							limit: filterText ? 2 : 5,
 							sort: { ts: -1 },
 						},
 					)
-					.fetch();
+					.fetch().map((u) => {
+						u.suggestion = true;
+						return u;
+					});
 
-				// If needed, add to list the online users
-				if (items.length < 5 && filterRegex) {
-					const usernamesAlreadyFetched = items.map(({ username }) => username);
-					if (!hasAllPermission('view-outside-room')) {
-						const usernamesFromDMs = Subscriptions
-							.find(
-								{
-									t: 'd',
-									$and: [
-										{
-											...filterRegex && {
-												$or: [
-													{ name: filterRegex },
-													{ fname: filterRegex },
-												],
-											},
-										},
-										{
-											name: { $nin: usernamesAlreadyFetched },
-										},
-									],
-								},
-								{
-									fields: { name: 1 },
-								},
-							)
-							.map(({ name }) => name);
-						const newItems = Users
-							.find(
-								{
-									username: {
-										$in: usernamesFromDMs,
-									},
-								},
-								{
-									fields: {
-										username: 1,
-										nickname: 1,
-										name: 1,
-										status: 1,
-									},
-									limit: 5 - usernamesAlreadyFetched.length,
-								},
-							)
-							.fetch()
-							.map(({ username, name, status, nickname }) => ({
-								_id: username,
-								username,
-								nickname,
-								name,
-								status,
-								sort: 1,
-							}));
+				// // If needed, add to list the online users
+				// if (items.length < 5 && filterRegex) {
+				// 	const usernamesAlreadyFetched = items.map(({ username }) => username);
+				// 	if (!hasAllPermission('view-outside-room')) {
+				// 		const usernamesFromDMs = Subscriptions
+				// 			.find(
+				// 				{
+				// 					t: 'd',
+				// 					$and: [
+				// 						{
+				// 							...filterRegex && {
+				// 								$or: [
+				// 									{ name: filterRegex },
+				// 									{ fname: filterRegex },
+				// 								],
+				// 							},
+				// 						},
+				// 						{
+				// 							name: { $nin: usernamesAlreadyFetched },
+				// 						},
+				// 					],
+				// 				},
+				// 				{
+				// 					fields: { name: 1 },
+				// 				},
+				// 			)
+				// 			.map(({ name }) => name);
+				// 		const newItems = Users
+				// 			.find(
+				// 				{
+				// 					username: {
+				// 						$in: usernamesFromDMs,
+				// 					},
+				// 				},
+				// 				{
+				// 					fields: {
+				// 						username: 1,
+				// 						nickname: 1,
+				// 						name: 1,
+				// 						status: 1,
+				// 					},
+				// 					limit: 5 - usernamesAlreadyFetched.length,
+				// 				},
+				// 			)
+				// 			.fetch()
+				// 			.map(({ username, name, status, nickname }) => ({
+				// 				_id: username,
+				// 				username,
+				// 				nickname,
+				// 				name,
+				// 				status,
+				// 				sort: 1,
+				// 			}));
 
-						items.push(...newItems);
-					} else {
-						const user = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
-						const newItems = Meteor.users.find({
-							$and: [
-								{
-									...filterRegex && {
-										$or: [
-											{ username: filterRegex },
-											{ name: filterRegex },
-										],
-									},
-								},
-								{
-									username: {
-										$nin: [
-											user && user.username,
-											...usernamesAlreadyFetched,
-										],
-									},
-								},
-							],
-						},
-						{
-							fields: {
-								username: 1,
-								nickname: 1,
-								name: 1,
-								status: 1,
-							},
-							limit: 5 - usernamesAlreadyFetched.length,
-						})
-							.fetch()
-							.map(({ username, name, status, nickname }) => ({
-								_id: username,
-								username,
-								nickname,
-								name,
-								status,
-								sort: 1,
-							}));
+				// 		items.push(...newItems);
+				// 	} else {
+				// 		const user = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
+				// 		const newItems = Meteor.users.find({
+				// 			$and: [
+				// 				{
+				// 					...filterRegex && {
+				// 						$or: [
+				// 							{ username: filterRegex },
+				// 							{ name: filterRegex },
+				// 						],
+				// 					},
+				// 				},
+				// 				{
+				// 					username: {
+				// 						$nin: [
+				// 							user && user.username,
+				// 							...usernamesAlreadyFetched,
+				// 						],
+				// 					},
+				// 				},
+				// 			],
+				// 		},
+				// 		{
+				// 			fields: {
+				// 				username: 1,
+				// 				nickname: 1,
+				// 				name: 1,
+				// 				status: 1,
+				// 			},
+				// 			limit: 5 - usernamesAlreadyFetched.length,
+				// 		})
+				// 			.fetch()
+				// 			.map(({ username, name, status, nickname }) => ({
+				// 				_id: username,
+				// 				username,
+				// 				nickname,
+				// 				name,
+				// 				status,
+				// 				sort: 1,
+				// 			}));
 
-						items.push(...newItems);
-					}
-				}
+				// 		items.push(...newItems);
+				// 	}
+				// }
 
 				// Get users from Server
 				if (items.length < 5 && filterText !== '') {
