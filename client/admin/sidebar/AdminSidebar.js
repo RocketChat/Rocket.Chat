@@ -83,7 +83,6 @@ const AdminSidebarSettings = ({ currentPath }) => {
 				placeholder={t('Search')}
 				onChange={handleChange}
 				addon={<Icon name='magnifier' size='x20'/>}
-				className={['asdsads']}
 			/>
 		</Box>
 		<Box pb='x16' display='flex' flexDirection='column'>

@@ -26,14 +26,13 @@ export function RoomsPage() {
 				<RoomsTable />
 			</Page.Content>
 		</Page>
-		{context && <VerticalBar>
+		{context && <VerticalBar className='contextual-bar'>
 			<VerticalBar.Header>
 				{t('Room_Info')}
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			<VerticalBar.Content>
-				<EditRoomContextBar rid={id} />
-			</VerticalBar.Content>
+
+			<EditRoomContextBar rid={id} />
 		</VerticalBar>}
 	</Page>;
 }

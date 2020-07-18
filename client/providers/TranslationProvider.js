@@ -55,14 +55,15 @@ export function TranslationProvider({ children }) {
 	const languages = useReactiveValue(getLanguages);
 	const language = useReactiveValue(getLanguage);
 	const translate = useMemo(() => createTranslateFunction(language), [language]);
-
+	const value = useMemo(() => ({
+		languages,
+		language,
+		loadLanguage,
+		translate,
+	}),
+	[languages, language, loadLanguage, translate]);
 	return <TranslationContext.Provider
 		children={children}
-		value={{
-			languages,
-			language,
-			loadLanguage,
-			translate,
-		}}
+		value={value}
 	/>;
 }
