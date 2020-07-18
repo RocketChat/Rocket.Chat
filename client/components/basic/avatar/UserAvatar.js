@@ -1,6 +1,6 @@
 import React from 'react';
 
-import BaseAvatar from './Base';
+import BaseAvatar from './BaseAvatar';
 
 function UserAvatar({ url, username, etag, ...props }) {
 	// NOW, `username` and `etag` props are enough to determine the whole state of
