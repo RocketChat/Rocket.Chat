@@ -7,23 +7,22 @@ import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { useDebouncedValue, useDebouncedState, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
-import { roomTypes } from '../../../../app/utils/client';
-import { call, renderMessageBody } from '../../../../app/ui-utils/client';
-import { getConfig } from '../../../../app/ui-utils/client/config';
-import { Messages } from '../../../../app/models/client';
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import RawText from '../../../components/basic/RawText';
-import { useRoute } from '../../../contexts/RouterContext';
+import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
+import { call, renderMessageBody } from '../../../../app/ui-utils/client';
 import { useUserId } from '../../../contexts/UserContext';
+import { Messages } from '../../../../app/models/client';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useUserRoom } from '../../hooks/useUserRoom';
-import { useUserSubscription } from '../../hooks/useUserSubscription';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { clickableItem } from '../../helpers/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
+import { useUserSubscription } from '../../../contexts/SubscriptionContext';
+import { getConfig } from '../../../../app/ui-utils/client/config';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -162,8 +161,8 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 
 	const t = useTranslation();
 
-	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
-
+	const [name] = useCurrentRoute();
+	const channelRoute = useRoute(name);
 	const onClick = useCallback((e) => {
 		const { id: context } = e.currentTarget.dataset;
 		channelRoute.push({
@@ -207,7 +206,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 	}), [unread, unreadUser, unreadGroup, showRealNames]);
 
 	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver();
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
 	return <VerticalBar>
 		<VerticalBar.Header>
@@ -216,7 +215,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
-			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200'>
+			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x8'>
 					<Margins inline='x8'>
 						<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>

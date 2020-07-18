@@ -16,7 +16,7 @@ export default React.memo(function Message({ _id, msg, following, username, name
 				<MessageTemplate.Username title={username}>{name}</MessageTemplate.Username>
 				<MessageTemplate.Timestamp ts={formatDate(ts)}/>
 			</MessageTemplate.Header>
-			<MessageTemplate.BodyClamp><Icon name='discussion' size='x20' mie='x2'/><RawText>{msg}</RawText></MessageTemplate.BodyClamp>
+			<MessageTemplate.BodyClamp><RawText>{msg}</RawText></MessageTemplate.BodyClamp>
 			<Box mi='neg-x2' flexDirection='row' display='flex' alignItems='baseline' mbs='x8'>
 				{!dcount && <Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600'>{t('No_messages_yet')}</Box>}
 				{ !!dcount && <Box display='flex' alignItems='center' is='span' fontSize='x12' color='neutral-700' fontWeight='600'><Icon name='discussion' size='x20' mi='x2'/>{dcount}</Box>}
