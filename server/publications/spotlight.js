@@ -76,7 +76,7 @@ function processLimitAndUsernames(options, usernames, users) {
 	}
 
 	// Prevent the next query to get the same users
-	usernames.push(...users.map((u) => u.username));
+	usernames.push(...users.map((u) => u.username).filter((u) => !usernames.includes(u)));
 }
 
 function _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
@@ -123,6 +123,10 @@ function searchUsers({ userId, rid, text, usernames }) {
 
 	const room = Rooms.findOneById(rid, { fields: { _id: 1, t: 1, uids: 1 } });
 
+	if (!room) {
+		return users;
+	}
+
 	const canListOutsiders = hasAllPermission(userId, 'view-outside-room', 'view-d-room');
 	const canListInsiders = canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
 
@@ -153,20 +157,37 @@ function searchUsers({ userId, rid, text, usernames }) {
 
 	const searchParams = { rid, text, usernames, options, users, canListOutsiders, insiderExtraQuery };
 
-	// Exact match for insiders
-	if (_searchInsiderUsers({ ...searchParams, match: { startsWith: true, endsWith: true } })) {
-		return users;
+	// Exact match for username only
+	if (rid) {
+		const exactMatch = Users.findOneByUsernameAndRoomIgnoringCase(text, rid, { fields: options.fields });
+		if (exactMatch) {
+			users.push(exactMatch);
+			processLimitAndUsernames(options, usernames, users);
+		}
 	}
+
+	if (users.length === 0 && canListOutsiders) {
+		const exactMatch = Users.findOneByUsernameIgnoringCase(text, { fields: options.fields });
+		if (exactMatch) {
+			users.push(exactMatch);
+			processLimitAndUsernames(options, usernames, users);
+		}
+	}
+
+	// Exact match for insiders
+	// if (_searchInsiderUsers({ ...searchParams, match: { startsWith: true, endsWith: true } })) {
+	// 	return users;
+	// }
 
 	// Exact match for outsiders
-	if (_searchOutsiderUsers({ ...searchParams, match: { startsWith: true, endsWith: true } })) {
-		return users;
-	}
+	// if (_searchOutsiderUsers({ ...searchParams, match: { startsWith: true, endsWith: true } })) {
+	// 	return users;
+	// }
 
 	// Starts with for insiders
-	if (_searchInsiderUsers({ ...searchParams, match: { startsWith: true } })) {
-		return users;
-	}
+	// if (_searchInsiderUsers({ ...searchParams, match: { startsWith: true } })) {
+	// 	return users;
+	// }
 
 	// Contains for insiders
 	if (_searchInsiderUsers(searchParams)) {
@@ -174,9 +195,9 @@ function searchUsers({ userId, rid, text, usernames }) {
 	}
 
 	// Starts with for outsiders
-	if (_searchOutsiderUsers({ ...searchParams, match: { startsWith: true } })) {
-		return users;
-	}
+	// if (_searchOutsiderUsers({ ...searchParams, match: { startsWith: true } })) {
+	// 	return users;
+	// }
 
 	// Contains for outsiders
 	if (_searchOutsiderUsers(searchParams)) {

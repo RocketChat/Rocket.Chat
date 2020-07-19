@@ -515,6 +515,19 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = {
+			__rooms: rid,
+			username,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
