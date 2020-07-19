@@ -91,7 +91,7 @@ function _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtr
 	}
 }
 
-function _searchOutsiderUsers({ rid, text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
+function _searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
 	// Then get the outsiders if allowed
 	if (canListOutsiders) {
 		users.push(...Users.findByActiveUsersExcept(text, usernames, options, undefined, undefined, match).fetch().map(mapOutsiders));

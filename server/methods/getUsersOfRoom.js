@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 
 import { Subscriptions, Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization';
