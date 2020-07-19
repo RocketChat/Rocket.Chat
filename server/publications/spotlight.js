@@ -79,7 +79,7 @@ function processLimitAndUsernames(options, usernames, users) {
 	usernames.push(...users.map((u) => u.username));
 }
 
-function _searchInsiderUsers({ rid, text, usernames, options, users, canListOutsiders, insiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
+function _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
 	// Get insiders first
 	if (rid) {
 		users.push(...Users.findByActiveUsersExcept(text, usernames, options, undefined, insiderExtraQuery, match).fetch());
@@ -91,7 +91,7 @@ function _searchInsiderUsers({ rid, text, usernames, options, users, canListOuts
 	}
 }
 
-function _searchOutsiderUsers({ rid, text, usernames, options, users, canListOutsiders, insiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
+function _searchOutsiderUsers({ rid, text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
 	// Then get the outsiders if allowed
 	if (canListOutsiders) {
 		users.push(...Users.findByActiveUsersExcept(text, usernames, options, undefined, undefined, match).fetch().map(mapOutsiders));
@@ -107,7 +107,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 	const users = [];
 
 	const options = {
-		limit: 5,
+		limit: settings.get('Number_of_users_autocomplete_suggestions'),
 		fields: {
 			username: 1,
 			nickname: 1,
@@ -117,7 +117,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 			avatarETag: 1,
 		},
 		sort: {
-			...settings.get('UI_Use_Real_Name') ? { name: 1 } : { username: 1 },
+			[settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1,
 		},
 	};
 

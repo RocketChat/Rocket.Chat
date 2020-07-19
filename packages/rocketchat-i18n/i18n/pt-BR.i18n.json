@@ -2352,6 +2352,7 @@
   "Notify_all_in_this_room": "Notificar todos nesta sala",
   "Num_Agents": "# Agentes",
   "Number_of_messages": "Número de mensagens",
+  "Number_of_users_autocomplete_suggestions": "Número de sugestões para autocomplete de usuários",
   "RetentionPolicy_DoNotExcludeDiscussion": "Não exclua mensagens de discussões",
   "OAuth Apps": "Apps OAuth",
   "OAuth_Application": "Aplicação OAuth",

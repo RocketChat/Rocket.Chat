@@ -7,11 +7,12 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Messages, Subscriptions, Users } from '../../../models';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { Messages, Subscriptions } from '../../../models/client';
+import { settings } from '../../../settings/client';
+import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization/client';
 import { EmojiPicker, emoji } from '../../../emoji';
-import { call } from '../../../ui-utils';
-import { t, getUserPreference, slashCommands } from '../../../utils';
+import { call } from '../../../ui-utils/client';
+import { t, getUserPreference, slashCommands } from '../../../utils/client';
 import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
@@ -193,6 +194,8 @@ Template.messagePopupConfig.helpers({
 
 	popupUserConfig() {
 		const template = Template.instance();
+		const suggestionsCount = settings.get('Number_of_users_autocomplete_suggestions');
+
 		return {
 			title: t('People'),
 			collection: template.usersFromRoomMessages,
@@ -219,7 +222,7 @@ Template.messagePopupConfig.helpers({
 							},
 						},
 						{
-							limit: filterText ? 2 : 5,
+							limit: filterText ? 2 : suggestionsCount,
 							sort: { ts: -1 },
 						},
 					)
@@ -329,7 +332,7 @@ Template.messagePopupConfig.helpers({
 				// }
 
 				// Get users from Server
-				if (items.length < 5 && filterText !== '') {
+				if (items.length < suggestionsCount && filterText !== '') {
 					fetchUsersFromServer(filterText, items, rid, cb);
 				}
 
