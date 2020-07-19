@@ -394,6 +394,48 @@ export class Users extends Base {
 		});
 	}
 
+	addRoomByUserId(_id, rid) {
+		return this.update({
+			_id,
+			__rooms: { $ne: rid },
+		}, {
+			$addToSet: { __rooms: rid },
+		});
+	}
+
+	removeRoomByUserId(_id, rid) {
+		return this.update({
+			_id,
+			__rooms: rid,
+		}, {
+			$pull: { __rooms: rid },
+		});
+	}
+
+	removeAllRoomsByUserId(_id) {
+		return this.update({
+			_id,
+		}, {
+			$set: { __rooms: [] },
+		});
+	}
+
+	removeRoomByRoomId(rid) {
+		return this.update({
+			__rooms: rid,
+		}, {
+			$pull: { __rooms: rid },
+		}, { multi: true });
+	}
+
+	removeRoomByRoomIds(rids) {
+		return this.update({
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
 	update2FABackupCodesByUserId(userId, backupCodes) {
 		return this.update({
 			_id: userId,
