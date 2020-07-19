@@ -32,6 +32,8 @@ export class Users extends Base {
 			__rooms: 0,
 		};
 
+		this.tryEnsureIndex({ __rooms: 1 }, { sparse: 1 });
+
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ bio: 1 }, { sparse: 1 });
