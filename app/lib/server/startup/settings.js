@@ -949,6 +949,14 @@ settings.addGroup('General', function() {
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description',
 		});
+		this.add('Notifications_Always_Notify_Mobile', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Notifications_Always_Notify_Mobile_Description',
+		});
+		this.add('Notification_Service_User_Username', 'viasat.notification.service', {
+			type: 'string',
+		});
 	});
 	this.section('REST API', function() {
 		return this.add('API_User_Limit', 500, {
