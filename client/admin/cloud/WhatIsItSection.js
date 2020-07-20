@@ -10,7 +10,7 @@ function WhatIsItSection(props) {
 	return <Box is='section' {...props}>
 		<Subtitle>{t('Cloud_what_is_it')}</Subtitle>
 
-		<Box withRichContent>
+		<Box withRichContent color='neutral-800'>
 			<p>{t('Cloud_what_is_it_description')}</p>
 
 			<details>

@@ -1,83 +1,24 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Icon, SearchInput, Scrollable, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Icon, SearchInput, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import { useSubscription } from 'use-subscription';
 
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
 import { SettingType } from '../../../definition/ISetting';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
 import { useAbsoluteUrl } from '../../contexts/ServerContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
+import Sidebar from '../../components/basic/Sidebar';
 import SettingsProvider from '../../providers/SettingsProvider';
-import { sidebarItems } from '../sidebarItems';
-
-const SidebarItem = React.memo(({ permissionGranted, pathGroup, href, icon, label, currentPath }) => {
-	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
-	const path = useRoutePath(href, params);
-	const isActive = path === currentPath || false;
-	if (permissionGranted && !permissionGranted()) { return null; }
-	return <Box
-		is='a'
-		color='default'
-		pb='x8'
-		pi='x24'
-		key={path}
-		href={path}
-		className={[
-			isActive && 'active',
-			css`
-				&:hover,
-				&:focus,
-				&.active:focus,
-				&.active:hover {
-					background-color: var(--sidebar-background-light-hover);
-				}
-
-				&.active {
-					background-color: var(--sidebar-background-light-active);
-				}
-			`,
-		].filter(Boolean)}
-	>
-		<Box
-			mi='neg-x4'
-			display='flex'
-			flexDirection='row'
-			alignItems='center'>
-			{icon && <Icon name={icon} size='x20' mi='x4'/>}
-			<Box withTruncatedText fontScale='p1' mi='x4' color='info'>{label}</Box>
-		</Box>
-	</Box>;
-});
-
-const SidebarItemsAssembler = React.memo(({ items, currentPath }) => {
-	const t = useTranslation();
-	return items.map(({
-		href,
-		i18nLabel,
-		name,
-		icon,
-		permissionGranted,
-		pathGroup,
-	}) => <SidebarItem
-		permissionGranted={permissionGranted}
-		pathGroup={pathGroup}
-		href={href}
-		icon={icon}
-		label={t(i18nLabel || name)}
-		key={i18nLabel || name}
-		currentPath={currentPath}
-	/>);
-});
+import { itemsSubscription } from '../sidebarItems';
 
 const AdminSidebarPages = React.memo(({ currentPath }) => {
-	const items = useReactiveValue(() => sidebarItems.get());
+	const items = useSubscription(itemsSubscription);
 
 	return <Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
-		<SidebarItemsAssembler items={items} currentPath={currentPath}/>
+		<Sidebar.ItemsAssembler items={items} currentPath={currentPath}/>
 	</Box>;
 });
 
@@ -147,10 +88,10 @@ const AdminSidebarSettings = ({ currentPath }) => {
 		</Box>
 		<Box pb='x16' display='flex' flexDirection='column'>
 			{isLoadingGroups && <Skeleton/>}
-			{!isLoadingGroups && !!groups.length && <SidebarItemsAssembler
+			{!isLoadingGroups && !!groups.length && <Sidebar.ItemsAssembler
 				items={groups.map((group) => ({
 					name: t(group.i18nLabel || group._id),
-					href: 'admin',
+					pathSection: 'admin',
 					pathGroup: group._id,
 				}))}
 				currentPath={currentPath}
@@ -163,7 +104,13 @@ const AdminSidebarSettings = ({ currentPath }) => {
 export default React.memo(function AdminSidebar() {
 	const t = useTranslation();
 
-	const canViewSettings = useAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+	const canViewSettings = useAtLeastOnePermission(
+		useMemo(() => [
+			'view-privileged-setting',
+			'edit-privileged-setting',
+			'manage-selected-settings',
+		], []),
+	);
 
 	const closeAdminFlex = useCallback(() => {
 		if (Layout.isEmbedded()) {
@@ -187,17 +134,12 @@ export default React.memo(function AdminSidebar() {
 
 	// TODO: uplift this provider
 	return <SettingsProvider privileged>
-		<Box display='flex' flexDirection='column' h='100vh'>
-			<Box is='header' pb='x16' pi='x24' display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-				<Box color='neutral-800' fontSize='p1' fontWeight='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{t('Administration')}</Box>
-				<Button square small ghost onClick={closeAdminFlex}><Icon name='cross' size='x20'/></Button>
-			</Box>
-			<Scrollable>
-				<Box display='flex' flexDirection='column' h='full'>
-					<AdminSidebarPages currentPath={currentPath}/>
-					{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}
-				</Box>
-			</Scrollable>
-		</Box>
+		<Sidebar>
+			<Sidebar.Header onClose={closeAdminFlex} title={t('Administration')}/>
+			<Sidebar.Content>
+				<AdminSidebarPages currentPath={currentPath}/>
+				{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}
+			</Sidebar.Content>
+		</Sidebar>
 	</SettingsProvider>;
 });
