@@ -381,7 +381,6 @@ export const updateDepartmentAgents = (departmentId, agents = []) => {
 		callbacks.run('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}
 
-	const agentsAdded = [];
 	agents.forEach((agent) => {
 		LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
@@ -390,10 +389,15 @@ export const updateDepartmentAgents = (departmentId, agents = []) => {
 			count: agent.count ? parseInt(agent.count) : 0,
 			order: agent.order ? parseInt(agent.order) : 0,
 		});
-		agentsAdded.push(agent.agentId);
 	});
+	const diff = agents
+		.map((agent) => agent.agentId)
+		.filter((agentId) => !savedAgents.includes(agentId));
 
-	if (agentsAdded.length > 0) {
-		callbacks.run('livechat.saveAgentDepartment', { departmentId, agentsId: agentsAdded });
+	if (diff.length > 0) {
+		callbacks.run('livechat.saveAgentDepartment', {
+			departmentId,
+			agentsId: diff,
+		});
 	}
 };

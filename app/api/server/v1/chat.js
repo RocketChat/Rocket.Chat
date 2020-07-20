@@ -697,7 +697,7 @@ API.v1.addRoute('chat.getSnippetedMessages', { authRequired: true }, {
 
 API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
 	get() {
-		const { roomId } = this.queryParams;
+		const { roomId, text } = this.queryParams;
 		const { sort } = this.parseJsonQuery();
 		const { offset, count } = this.getPaginationItems();
 
@@ -707,6 +707,7 @@ API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
 		const messages = Promise.await(findDiscussionsFromRoom({
 			uid: this.userId,
 			roomId,
+			text,
 			pagination: {
 				offset,
 				count,

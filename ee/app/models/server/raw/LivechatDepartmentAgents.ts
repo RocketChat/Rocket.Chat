@@ -2,7 +2,7 @@ import { LivechatDepartmentAgentsRaw as Raw } from '../../../../../app/models/se
 import { LivechatDepartmentAgents } from '../../../../../app/models/server';
 
 export class LivechatDepartmentAgentsRaw extends Raw {
-	findDepartmentsWithBusinessHourByAgentId(agentId: string): Promise<Record<string, any>> {
+	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<Record<string, any>> {
 		const match = {
 			$match: { agentId },
 		};
@@ -20,7 +20,7 @@ export class LivechatDepartmentAgentsRaw extends Raw {
 				preserveNullAndEmptyArrays: true,
 			},
 		};
-		const withBusinessHourId = { $match: { 'departments.businessHourId': { $exists: true } } };
+		const withBusinessHourId = { $match: { 'departments.businessHourId': businessHourId } };
 		const project = { $project: { departments: 0 } };
 		return this.col.aggregate([match, lookup, unwind, withBusinessHourId, project]).toArray();
 	}

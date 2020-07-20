@@ -11,7 +11,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findOneByUsername(username, options) {
+	findOneByUsername(username, options = null) {
 		const query = { username };
 
 		return this.findOne(query, options);
@@ -126,6 +126,8 @@ export class UsersRaw extends BaseRaw {
 				username: termRegex,
 			}, {
 				name: termRegex,
+			}, {
+				nickname: termRegex,
 			}],
 			active: true,
 			type: {
@@ -300,7 +302,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	openAgentsBusinessHours(businessHourIds) {
+	openAgentsBusinessHoursByBusinessHourId(businessHourIds) {
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -317,9 +319,10 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	openBusinessHourByAgentIds(agentIds = [], businessHourId) {
+	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
 		const query = {
 			_id: { $in: agentIds },
+			roles: 'livechat-agent',
 		};
 
 		const update = {
@@ -334,9 +337,10 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	closeBusinessHourByAgentIds(agentIds = [], businessHourId) {
+	removeBusinessHourByAgentIds(agentIds = [], businessHourId) {
 		const query = {
 			_id: { $in: agentIds },
+			roles: 'livechat-agent',
 		};
 
 		const update = {
@@ -379,7 +383,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	closeAgentsBusinessHours(businessHourIds) {
+	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds) {
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -419,8 +423,9 @@ export class UsersRaw extends BaseRaw {
 		}).count() > 0;
 	}
 
-	removeBusinessHoursFromUsers() {
+	removeBusinessHoursFromAllUsers() {
 		const query = {
+			roles: 'livechat-agent',
 			openBusinessHours: {
 				$exists: true,
 			},

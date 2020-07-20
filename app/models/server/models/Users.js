@@ -30,7 +30,8 @@ export class Users extends Base {
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
-		this.tryEnsureIndex({ bio: 1 });
+		this.tryEnsureIndex({ bio: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ nickname: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
@@ -43,6 +44,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
+		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -1144,6 +1146,21 @@ export class Users extends Base {
 			} : {
 				$unset: {
 					bio: 1,
+				},
+			},
+		};
+		return this.update(_id, update);
+	}
+
+	setNickname(_id, nickname = '') {
+		const update = {
+			...nickname.trim() ? {
+				$set: {
+					nickname,
+				},
+			} : {
+				$unset: {
+					nickname: 1,
 				},
 			},
 		};

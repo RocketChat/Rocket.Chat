@@ -15,7 +15,7 @@ function SortIcon({ direction }) {
 export function Th({ children, active, direction, sort, onClick, align, ...props }) {
 	const fn = useMemo(() => () => onClick && onClick(sort), [sort, onClick]);
 	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
-		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon mod-active={active} direction={active && direction} />}</Box>
+		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon direction={active && direction} />}</Box>
 	</Table.Cell>;
 }
 

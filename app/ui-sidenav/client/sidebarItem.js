@@ -40,14 +40,24 @@ Template.sidebarItem.helpers({
 		const { unread = 0, tunread = [] } = this;
 		return unread + tunread.length;
 	},
-	badgeClass() {
-		const { unread, userMentions, groupMentions, tunread = [] } = this;
+	lastMessageUnread() {
+		if (!this.ls) {
+			return true;
+		}
+		if (!this.lastMessage?.ts) {
+			return false;
+		}
 
-		if (userMentions) {
+		return this.lastMessage.ts > this.ls;
+	},
+	badgeClass() {
+		const { unread, userMentions, groupMentions, tunread = [], tunreadGroup = [], tunreadUser = [] } = this;
+
+		if (userMentions || tunreadUser.length > 0) {
 			return 'badge badge--user-mentions';
 		}
 
-		if (groupMentions) {
+		if (groupMentions || tunreadGroup.length > 0) {
 			return 'badge badge--group-mentions';
 		}
 

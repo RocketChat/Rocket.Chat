@@ -12,7 +12,7 @@ export const roomExit = function() {
 	Tracker.afterFlush(() => {
 		const context = FlowRouter.current();
 
-		if (oldRoute && testIfPathAreEquals(oldRoute.params.name || oldRoute.params.rid, context.params.name || context.params.rid)) {
+		if (oldRoute && testIfPathAreEquals(oldRoute.params.name || oldRoute.params.rid || oldRoute.params.id, context.params.name || context.params.rid || context.params.id)) {
 			return;
 		}
 		// 7370 - Close flex-tab when opening a room on mobile UI
@@ -25,12 +25,10 @@ export const roomExit = function() {
 		}
 		callbacks.run('roomExit');
 
+		Session.set('lastOpenedRoom', Session.get('openedRoom'));
 		Session.set('openedRoom', null);
 		RoomManager.openedRoom = null;
 
-		if (typeof window.currentTracker !== 'undefined') {
-			window.currentTracker.stop();
-		}
 		const mainNode = document.querySelector('.main-content');
 		if (mainNode == null) {
 			return;
@@ -52,4 +50,7 @@ export const roomExit = function() {
 			}
 		});
 	});
+	if (typeof window.currentTracker !== 'undefined') {
+		window.currentTracker.stop();
+	}
 };

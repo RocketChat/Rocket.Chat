@@ -13,6 +13,7 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 		fields: {
 			name: 1,
 			username: 1,
+			nickname: 1,
 			status: 1,
 			avatarETag: 1,
 		},

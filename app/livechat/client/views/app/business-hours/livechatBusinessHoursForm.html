@@ -1,6 +1,9 @@
 <template name="livechatBusinessHoursForm">
     {{#requiresPermission 'view-livechat-business-hours'}}
         <form class="rocket-form" id="businessHoursForm">
+            {{#if timezoneTemplate}}
+                {{> Template.dynamic template=timezoneTemplate data=data }}
+            {{/if}}
 
             {{#if customFieldsTemplate}}
                 {{> Template.dynamic template=customFieldsTemplate data=data }}
