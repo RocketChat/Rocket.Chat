@@ -103,15 +103,26 @@ export async function sendSinglePush({
 	const options = {
 		TTL: 3600,
 	};
+	const title = room.t === 'd' ? message.u.name : room.name;
+	const displayMessage = room.t === 'd' ? notificationMessage : `${ message.u.name }: ${ notificationMessage }`;
+
+	let redirectURL;
+	if (room.t === 'd') {
+		redirectURL = '/direct/';
+	} else if (room.t === 'p') {
+		redirectURL = '/group/';
+	} else if (room.t === 'c') {
+		redirectURL = '/channel/';
+	}
+	redirectURL += message.rid;
+
 	const payload = {
 		host: Meteor.absoluteUrl(),
-		rid: message.rid,
-		sender: message.u,
-		type: room.t,
-		name: room.name,
-		messageType: message.t,
-		messageId: message._id,
-		message: notificationMessage,
+		title,
+		message: displayMessage,
+		redirectURL,
+		vibrate: [100, 50, 100],
+		icon: '/images/icons/icon-72x72.png',
 	};
 	const stringifiedPayload = JSON.stringify(payload);
 

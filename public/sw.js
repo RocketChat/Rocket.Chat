@@ -115,24 +115,21 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', function (event) {
 	const data = JSON.parse(event.data.text());
 
-	const title = data.type === 'd' ? data.sender.name : data.name;
-	const message = data.type === 'd' ? data.message : data.sender.name + ": " + data.message;
-	let redirectURL = data.type === 'd' ? "/direct/" : data.type === 'c' ? "/channel/" : "/group/";
-	redirectURL = redirectURL + data.rid;
 	const options = {
-		body: message,
-		icon: '/images/icons/icon-72x72.png',
-		vibrate: [100, 50, 100],
+		body: data.message,
+		icon: data.icon,
+		vibrate: data.vibrate,
 		data: {
 			dateOfArrival: Date.now(),
-			redirectURL,
+			redirectURL: data.redirectURL,
 		},
 		actions: [
 			{action: 'reply', title: 'Reply'},  
 			{action: 'close', title: 'Close'}
 		],
 	};
-	event.waitUntil(self.registration.showNotification(title, options));
+
+	event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
 self.addEventListener('notificationclick', function(event) {  
