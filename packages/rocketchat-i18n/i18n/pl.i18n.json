@@ -738,7 +738,6 @@
   "Cloud_register_offline_helper": "Workspace może być zarejestrowany manualnie jeśli nie ma dostępu do sieci. Przekopiuj poniższy tekst i przejdź do Cloud Console aby zakończyć proces.",
   "Cloud_register_success": "Twój workspace został pomyślnie zarejestrowany.",
   "Cloud_register_error": "Nastąpił błąd przy próbie przetworzenia Twojego żądania. Proszę spróbować ponownie później.",
-  "Cloud_connect_support": "Jeśli nadal nie otrzymałeś e-maila rejestracyjnego, upewnij się, że Twój e-mail został zaktualizowany powyżej.  Jeśli nadal masz problemy, możesz skontaktować się z pomocą techniczną pod adresem",
   "Cloud_console": "Konsola w chmurze",
   "Cloud_Info": "Chmura",
   "Cloud_what_is_it": "Co to jest?",

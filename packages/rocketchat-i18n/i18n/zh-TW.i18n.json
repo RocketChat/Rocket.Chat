@@ -768,7 +768,6 @@
   "Cloud_register_offline_helper": "如果存在間隙或網路存取受到限制，則可以手動註冊工作區。複製下面的文字，然後轉到我們的雲端控制介面以完成該過程。",
   "Cloud_register_success": "您的工作區已成功註冊！",
   "Cloud_register_error": "嘗試處理您的請求時出錯。請稍後再試。",
-  "Cloud_connect_support": "假如您仍沒有收到註冊電子郵件請確認您的電子郵件已更新。假如您仍有問題您可以連絡支援在",
   "Cloud_console": "雲端控制台",
   "Cloud_Info": "雲端資訊",
   "Cloud_what_is_it": "這是什麼?",
