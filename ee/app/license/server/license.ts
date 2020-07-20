@@ -81,7 +81,7 @@ class LicenseClass {
 			license.modules
 				.filter(isBundle)
 				.map(getBundleFromModule)
-				.forEach(this.tags.add, this.tags);
+				.forEach((tag) => tag && this.tags.add(tag));
 			return;
 		}
 
