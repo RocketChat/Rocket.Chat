@@ -99,9 +99,9 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 			}, error);
  		}
 
-		if (messageObj.pushm && messageObj.pushm === 'true') {
-			message.pushm = true;
-			message.pushm_encrypted = true;
+ 		if (messageObj.pushm && messageObj.pushm === 'true') {
+ 			message.pushm = true;
+ 			message.pushm_encrypted = true;
 		}
 
 		const messageReturn = sendMessage(user, message, room);
