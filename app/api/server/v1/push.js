@@ -5,7 +5,8 @@ import { Match, check } from 'meteor/check';
 import { appTokensCollection } from '../../../push/server';
 import { API } from '../api';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
-
+import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { Users, Messages, Rooms } from '../../../models/server';
 
 API.v1.addRoute('push.token', { authRequired: true }, {
 	post() {
@@ -73,6 +74,25 @@ API.v1.addRoute('push.get', { authRequired: true }, {
 		check(params, Match.ObjectIncluding({
 			id: String,
 		}));
+
+		const message = Messages.findOneById(params.id, { fields: { rid: 1 } });
+		if (!message) {
+			throw new Error('error-message-not-found');
+		}
+
+		const user = Users.findOneById(Meteor.userId());
+		if (!user) {
+			throw new Error('error-user-not-found');
+		}
+
+		const room = Rooms.findOneById(message.rid);
+		if (!user) {
+			throw new Error('error-room-not-found');
+		}
+
+		if (!canAccessRoom(room, user)) {
+			throw new Error('error-room-not-found');
+		}
 
 		const data = PushNotification.getNotificationForMessageId(params.id, Meteor.userId());
 
