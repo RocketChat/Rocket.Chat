@@ -30,4 +30,4 @@ import './startup/unread';
 import './startup/userSetUtcOffset';
 import './startup/usersObserve';
 import './admin';
-import './Channel';
+import './channel';

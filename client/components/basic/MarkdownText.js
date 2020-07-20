@@ -11,7 +11,7 @@ function MarkdownText({ content, ...props }) {
 		headerIds: false,
 	}), []);
 
-	const __html = useMemo(() => marked(content, options), [content, options]);
+	const __html = useMemo(() => content && marked(content, options), [content, options]);
 
 	return <Box dangerouslySetInnerHTML={{ __html }} withRichContent {...props} />;
 }
