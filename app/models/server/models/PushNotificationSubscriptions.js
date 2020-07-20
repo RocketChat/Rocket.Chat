@@ -49,6 +49,10 @@ export class PushNotificationSubscriptions extends Base {
 
 		return this.update(query, update);
 	}
+
+	removeById(_id) {
+		return this.remove(_id);
+	}
 }
 
 export default new PushNotificationSubscriptions('pushNotificationSubscriptions');

@@ -128,7 +128,11 @@ export async function sendSinglePush({
 
 	pushSubscriptions.forEach((pushSubscription) => {
 		webpush.sendNotification(pushSubscription, stringifiedPayload, options)
-			.catch((error) => console.log(error));
+			.catch((error) => {
+				if (error.statusCode === 410) {
+					PushNotificationSubscriptions.removeById(pushSubscription._id);
+				}
+			});
 	});
 }
 
