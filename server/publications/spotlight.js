@@ -123,7 +123,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 
 	const room = Rooms.findOneById(rid, { fields: { _id: 1, t: 1, uids: 1 } });
 
-	if (!room) {
+	if (rid && !room) {
 		return users;
 	}
 
@@ -137,22 +137,24 @@ function searchUsers({ userId, rid, text, usernames }) {
 
 	const insiderExtraQuery = [];
 
-	switch (room.t) {
-		case 'd':
-			insiderExtraQuery.push({
-				_id: { $in: room.uids.filter((id) => id !== userId) },
-			});
-			break;
-		case 'l':
-			insiderExtraQuery.push({
-				_id: { $in: Subscriptions.findByRoomId(room._id).fetch().map((s) => s.u?._id).filter((id) => id && id !== userId) },
-			});
-			break;
-		default:
-			insiderExtraQuery.push({
-				__rooms: rid,
-			});
-			break;
+	if (rid) {
+		switch (room.t) {
+			case 'd':
+				insiderExtraQuery.push({
+					_id: { $in: room.uids.filter((id) => id !== userId) },
+				});
+				break;
+			case 'l':
+				insiderExtraQuery.push({
+					_id: { $in: Subscriptions.findByRoomId(room._id).fetch().map((s) => s.u?._id).filter((id) => id && id !== userId) },
+				});
+				break;
+			default:
+				insiderExtraQuery.push({
+					__rooms: rid,
+				});
+				break;
+		}
 	}
 
 	const searchParams = { rid, text, usernames, options, users, canListOutsiders, insiderExtraQuery };
