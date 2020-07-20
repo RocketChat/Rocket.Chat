@@ -1287,7 +1287,7 @@ settings.addGroup('Push', function() {
 			type: 'boolean',
 			public: true,
 		});
-		return this.add('Push_request_content_from_server', true, {
+		this.add('Push_request_content_from_server', true, {
 			type: 'boolean',
 			enterprise: true,
 			invalidValue: false,

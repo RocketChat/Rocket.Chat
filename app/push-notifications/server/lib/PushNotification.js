@@ -36,7 +36,7 @@ export class PushNotification {
 				rid,
 				messageId,
 				notificationType: idOnly ? 'message-id-only' : 'message',
-				...idOnly ? { } : payload,
+				...idOnly || payload,
 			},
 			userId,
 			notId: this.getNotificationId(rid),
