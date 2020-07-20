@@ -1,41 +1,40 @@
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import s from 'underscore.string';
 import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
-import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useDebouncedState, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 
-import { roomTypes } from '../../../../app/utils/client';
-import { call, renderMessageBody } from '../../../../app/ui-utils/client';
+import { renderMessageBody } from '../../../../app/ui-utils/client';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../app/models/client';
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import RawText from '../../../components/basic/RawText';
-import { useRoute } from '../../../contexts/RouterContext';
 import { useUserId } from '../../../contexts/UserContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { MessageSkeleton } from '../../components/Message';
-import { useUserSubscription } from '../../hooks/useUserSubscription';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
-import ThreadListMessage from './components/Message';
+import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../helpers/clickableItem';
+import { useUserSubscription } from '../../../contexts/SubscriptionContext';
 
 function mapProps(WrappedComponent) {
-	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
+	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
 }
 
-const Thread = React.memo(mapProps(clickableItem(ThreadListMessage)));
+const Discussion = React.memo(mapProps(clickableItem(DiscussionListMessage)));
 
 const Skeleton = React.memo(clickableItem(MessageSkeleton));
 
-const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 25;
+const LIST_SIZE = parseInt(getConfig('discussionListSize')) || 25;
 
-const filterProps = ({ msg, u, replies, mentions, tcount, ts, _id, tlm, attachments }) => ({ ..._id && { _id }, attachments, mentions, msg, u, replies, tcount, ts: new Date(ts), tlm: new Date(tlm) });
+const filterProps = ({ msg, drid, u, dcount, mentions, tcount, ts, _id, dlm, attachments, name }) => ({ ..._id && { _id }, drid, attachments, name, mentions, msg, u, dcount, tcount, ts: new Date(ts), dlm: new Date(dlm) });
 
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };
@@ -44,19 +43,18 @@ export function withData(WrappedComponent) {
 	return ({ rid, ...props }) => {
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
-
 		const userId = useUserId();
-		const [type, setType] = useLocalStorage('thread-list-type', 'all');
+
 		const [text, setText] = useState('');
 		const [total, setTotal] = useState(LIST_SIZE);
-		const [threads, setThreads] = useDebouncedState([], 100);
-		const Threads = useRef(new Mongo.Collection(null));
+		const [discussions, setDiscussions] = useDebouncedState([], 100);
+		const Discussions = useRef(new Mongo.Collection(null));
 		const ref = useRef();
 		const [pagination, setPagination] = useState({ skip: 0, count: LIST_SIZE });
 
-		const params = useMemo(() => ({ rid: room._id, count: pagination.count, offset: pagination.skip, type, text }), [room._id, pagination.skip, pagination.count, type, text]);
+		const params = useMemo(() => ({ roomId: room._id, count: pagination.count, offset: pagination.skip, text }), [room._id, pagination.skip, pagination.count, text]);
 
-		const { data, state, error } = useEndpointDataExperimental('chat.getThreadsList', useDebouncedValue(params, 400));
+		const { data, state, error } = useEndpointDataExperimental('chat.getDiscussions', useDebouncedValue(params, 400));
 
 		const loadMoreItems = useCallback((skip, count) => {
 			setPagination({ skip, count: count - skip });
@@ -64,32 +62,31 @@ export function withData(WrappedComponent) {
 			return new Promise((resolve) => { ref.current = resolve; });
 		}, []);
 
-		useEffect(() => () => Threads.current.remove({}, () => {}), [text, type]);
+		useEffect(() => () => Discussions.current.remove({}, () => {}), [text]);
 
 		useEffect(() => {
-			if (state !== ENDPOINT_STATES.DONE || !data || !data.threads) {
+			if (state !== ENDPOINT_STATES.DONE || !data || !data.messages) {
 				return;
 			}
 
-			data.threads.forEach(({ _id, ...message }) => {
-				Threads.current.upsert({ _id }, filterProps(message));
+			data.messages.forEach(({ _id, ...message }) => {
+				Discussions.current.upsert({ _id }, filterProps(message));
 			});
 
-			ref.current && ref.current();
-
 			setTotal(data.total);
+			ref.current && ref.current();
 		}, [data, state]);
 
 		useEffect(() => {
-			const cursor = Messages.find({ rid: room._id, tcount: { $exists: true }, _hidden: { $ne: true } }).observe({
+			const cursor = Messages.find({ rid: room._id, drid: { $exists: true } }).observe({
 				added: ({ _id, ...message }) => {
-					Threads.current.upsert({ _id }, message);
+					Discussions.current.upsert({ _id }, message);
 				}, // Update message to re-render DOM
 				changed: ({ _id, ...message }) => {
-					Threads.current.update({ _id }, message);
+					Discussions.current.update({ _id }, message);
 				}, // Update message to re-render DOM
 				removed: ({ _id }) => {
-					Threads.current.remove(_id);
+					Discussions.current.remove(_id);
 				},
 			});
 			return () => cursor.stop();
@@ -99,13 +96,12 @@ export function withData(WrappedComponent) {
 		useEffect(() => {
 			const cursor = Tracker.autorun(() => {
 				const query = {
-					...type === 'subscribed' && { replies: { $in: [userId] } },
 				};
-				setThreads(Threads.current.find(query, { sort: { tlm: -1 } }).fetch().map(filterProps));
+				setDiscussions(Discussions.current.find(query, { sort: { tlm: -1 } }).fetch().map(filterProps));
 			});
 
 			return () => cursor.stop();
-		}, [room._id, type, setThreads, userId]);
+		}, [room._id, setDiscussions, userId]);
 
 		const handleTextChange = useCallback((e) => {
 			setPagination({ skip: 0, count: LIST_SIZE });
@@ -119,24 +115,16 @@ export function withData(WrappedComponent) {
 			unreadGroup={subscription?.tunreadGroup}
 			userId={userId}
 			error={error}
-			threads={threads}
+			discussions={discussions}
 			total={total}
 			loading={state === ENDPOINT_STATES.LOADING}
 			loadMoreItems={loadMoreItems}
 			room={room}
 			text={text}
 			setText={handleTextChange}
-			type={type}
-			setType={setType}
 		/>;
 	};
 }
-
-const handleFollowButton = (e) => {
-	e.preventDefault();
-	e.stopPropagation();
-	call(![true, 'true'].includes(e.currentTarget.dataset.following) ? 'followMessage' : 'unfollowMessage', { mid: e.currentTarget.dataset.id });
-};
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
@@ -156,77 +144,60 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
-export function ThreadList({ total = 10, threads = [], room, unread = [], unreadUser = [], unreadGroup = [], type, setType, loadMoreItems, loading, onClose, error, userId, text, setText }) {
+export function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, onClose, error, userId, text, setText }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
-	const threadsRef = useRef();
+	const discussionsRef = useRef();
 
 	const t = useTranslation();
 
-	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
-
 	const onClick = useCallback((e) => {
-		const { id: context } = e.currentTarget.dataset;
-		channelRoute.push({
-			tab: 'thread',
-			context,
-			rid: room._id,
-			name: room.name,
-		});
-	}, [room._id, room.name]);
+		const { drid } = e.currentTarget.dataset;
+		FlowRouter.goToRoomById(drid);
+	}, []);
 
 	const formatDate = useTimeAgo();
 
-	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], []);
-
-	threadsRef.current = threads;
+	discussionsRef.current = discussions;
 
 	const rowRenderer = useCallback(React.memo(function rowRenderer({ data, index, style }) {
 		if (!data[index]) {
 			return <Skeleton style={style}/>;
 		}
-		const thread = data[index];
-		const msg = normalizeThreadMessage(thread);
+		const discussion = data[index];
+		const msg = normalizeThreadMessage(discussion);
 
-		const { name = thread.u.username } = thread.u;
+		const { name = discussion.u.username } = discussion.u;
 
-		return <Thread
-			{ ...thread }
-			name={showRealNames ? name : thread.u.username }
-			username={ thread.u.username }
+		return <Discussion
+			{ ...discussion }
+			name={showRealNames ? name : discussion.u.username }
+			username={ discussion.u.username }
 			style={style}
-			unread={unread.includes(thread._id)}
-			mention={unreadUser.includes(thread._id)}
-			all={unreadGroup.includes(thread._id)}
-			following={thread.replies && thread.replies.includes(userId)}
-			data-id={thread._id}
+			following={discussion.replies && discussion.replies.includes(userId)}
+			data-drid={discussion.drid}
 			msg={msg}
 			t={t}
 			formatDate={formatDate}
-			handleFollowButton={handleFollowButton} onClick={onClick}
+			onClick={onClick}
 		/>;
-	}), [unread, unreadUser, unreadGroup, showRealNames]);
+	}), [showRealNames]);
 
-	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
+	const isItemLoaded = useCallback((index) => index < discussionsRef.current.length, []);
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver();
 
 	return <VerticalBar>
 		<VerticalBar.Header>
-			<Icon name='thread' size='x20'/>
-			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><RawText>{t('Threads')}</RawText></Box>
+			<VerticalBar.Icon name='discussion'/>
+			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><RawText>{t('Discussions')}</RawText></Box>
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
-			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200'>
-				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x8'>
-					<Margins inline='x8'>
-						<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
-						<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
-					</Margins>
-				</Box>
+			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
+				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 			</Box>
 			<Box flexGrow={1} flexShrink={1} ref={ref}>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
-				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
+				{total === 0 && <Box p='x24'>{t('No_Discussions_found')}</Box>}
 				<InfiniteLoader
 					isItemLoaded={isItemLoaded}
 					itemCount={total}
@@ -236,7 +207,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 						height={blockSize}
 						width={inlineSize}
 						itemCount={total}
-						itemData={threads}
+						itemData={discussions}
 						itemSize={124}
 						ref={ref}
 						minimumBatchSize={LIST_SIZE}
@@ -249,4 +220,4 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 	</VerticalBar>;
 }
 
-export default withData(ThreadList);
+export default withData(DiscussionList);

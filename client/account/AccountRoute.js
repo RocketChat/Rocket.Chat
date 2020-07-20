@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 
 import { SideNav } from '../../app/ui-utils';
-import NotAuthorizedPage from '../components/NotAuthorizedPage';
+import { useSetting } from '../contexts/SettingsContext';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../contexts/RouterContext';
+import NotAuthorizedPage from '../components/NotAuthorizedPage';
 import AccountProfilePage from './AccountProfilePage';
+import AccountIntegrationsPage from './AccountIntegrationsPage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import AccountSecurityPage from './security/AccountSecurityPage';
 import AccountTokensPage from './tokens/AccountTokensPage';
@@ -21,6 +23,7 @@ const AccountRoute = () => {
 		SideNav.openFlex();
 	});
 
+	const webdavEnabled = useSetting('Webdav_Integration_Enabled');
 	const canCreateTokens = usePermission('create-personal-access-tokens');
 
 	if (page === 'profile') {
@@ -33,6 +36,14 @@ const AccountRoute = () => {
 
 	if (page === 'security') {
 		return <AccountSecurityPage />;
+	}
+
+	if (page === 'integrations') {
+		if (!webdavEnabled) {
+			return <NotAuthorizedPage />;
+		}
+
+		return <AccountIntegrationsPage />;
 	}
 
 	if (page === 'tokens') {
