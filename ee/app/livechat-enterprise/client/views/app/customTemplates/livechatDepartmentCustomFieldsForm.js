@@ -31,8 +31,9 @@ Template.livechatDepartmentCustomFieldsForm.helpers({
 		const department = Template.instance().department.get();
 		return [department && department._id, ...Template.instance().selectedDepartments.get().map((dept) => dept._id)];
 	},
-	businessHour() {
-		return Template.instance().businessHour.get();
+	businessHourName() {
+		const businessHour = Template.instance().businessHour.get();
+		return businessHour?.name;
 	},
 });
 
