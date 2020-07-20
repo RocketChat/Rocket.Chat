@@ -9,6 +9,7 @@ const bundles: IBundle = {
 		'ldap-enterprise',
 		'livechat-enterprise',
 		'engagement-dashboard',
+		'push-privacy',
 	],
 	pro: [
 	],
