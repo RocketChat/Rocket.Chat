@@ -97,9 +97,9 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 				channels: integration.channel,
 				username: integration.username,
 			}, error);
-                }
-		
-                if (messageObj.pushm && messageObj.pushm === 'true') {
+ 		}
+
+		if (messageObj.pushm && messageObj.pushm === 'true') {
 			message.pushm = true;
 			message.pushm_encrypted = true;
 		}
