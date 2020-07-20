@@ -2303,7 +2303,7 @@
   "Localization": "Localization",
   "Location": "Location",
   "Local_Time": "Local Time",
-  "Local_Time_time":"Local Time: __time__",
+  "Local_Time_time": "Local Time: __time__",
   "Log_Exceptions_to_Channel_Description": "A channel that will receive all captured exceptions. Leave empty to ignore exceptions.",
   "Log_Exceptions_to_Channel": "Log Exceptions to Channel",
   "Log_File": "Show File and Line",
