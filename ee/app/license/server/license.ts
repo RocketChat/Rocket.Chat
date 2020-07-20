@@ -5,8 +5,14 @@ import { addRoleRestrictions } from '../../authorization/lib/addRoleRestrictions
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
+import { getTagColor } from './getTagColor';
 
 const EnterpriseLicenses = new EventEmitter();
+
+interface ILicenseTag {
+	name: string;
+	color: string;
+}
 
 export interface ILicense {
 	url: string;
@@ -15,7 +21,7 @@ export interface ILicense {
 	modules: string[];
 	maxGuestUsers: number;
 	maxRoomsPerGuest: number;
-	tag?: string;
+	tag?: ILicenseTag;
 }
 
 export interface IValidLicense {
@@ -31,7 +37,7 @@ class LicenseClass {
 
 	private licenses: IValidLicense[] = [];
 
-	private tags = new Set<string>();
+	private tags = new Set<ILicenseTag>();
 
 	private modules = new Set<string>();
 
@@ -81,13 +87,22 @@ class LicenseClass {
 			license.modules
 				.filter(isBundle)
 				.map(getBundleFromModule)
-				.forEach((tag) => tag && this.tags.add(tag));
+				.forEach((tag) => tag && this._addTag({ name: tag, color: getTagColor(tag) }));
 			return;
 		}
 
-		if (license.tag.trim() !== '') {
-			this.tags.add(license.tag.trim());
+		this._addTag(license.tag);
+	}
+
+	private _addTag(tag: ILicenseTag): void {
+		// make sure to not add duplicated tag names
+		for (const addedTag of this.tags) {
+			if (addedTag.name.toLowerCase() === tag.name.toLowerCase()) {
+				return;
+			}
 		}
+
+		this.tags.add(tag);
 	}
 
 	addLicense(license: ILicense): void {
@@ -117,7 +132,7 @@ class LicenseClass {
 		return [...this.modules];
 	}
 
-	getTags(): string[] {
+	getTags(): ILicenseTag[] {
 		return [...this.tags];
 	}
 
@@ -244,7 +259,7 @@ export function getModules(): string[] {
 	return License.getModules();
 }
 
-export function getTags(): string[] {
+export function getTags(): ILicenseTag[] {
 	return License.getTags();
 }
 
