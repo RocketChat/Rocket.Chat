@@ -12,9 +12,8 @@ import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
+const DeleteWarningModal = ({ onDelete, onCancel, erasureType, ...props }) => {
 	const t = useTranslation();
-	const erasureType = useSetting('Message_ErasureType');
 
 	return <Modal {...props}>
 		<Modal.Header>
@@ -111,8 +110,8 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 	});
 
 	const confirmDeleteUser = useCallback(() => {
-		setModal(<DeleteWarningModal onDelete={deleteUser} onCancel={() => setModal()}/>);
-	}, [deleteUser, setModal]);
+		setModal(<DeleteWarningModal onDelete={deleteUser} onCancel={() => setModal()} erasureType={erasureType}/>);
+	}, [deleteUser, erasureType, setModal]);
 
 	const setAdminStatus = useMethod('setAdminStatus');
 	const changeAdminStatus = useCallback(() => {
