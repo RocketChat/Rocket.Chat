@@ -1,28 +1,45 @@
-import { Migrations } from '../../../app/migrations';
-import { LivechatDepartmentAgents, LivechatDepartment } from '../../../app/models/server';
-
-const updateEnabledProperty = (departmentIds) => {
-	LivechatDepartment
-		.find({ _id: { $in: departmentIds } })
-		.forEach((department) => {
-			LivechatDepartmentAgents.update({ departmentId: department._id },
-				{
-					$set: { departmentEnabled: department.enabled },
-				},
-				{
-					multi: true,
-				});
-		});
-};
+import { Settings } from '../../../app/models/server';
+import { Migrations } from '../../../app/migrations/server';
 
 Migrations.add({
 	version: 198,
-	up() {
-		const departmentIds = [...new Set(LivechatDepartmentAgents
-			.find({}, { fields: { departmentId: 1 } })
-			.fetch()
-			.map((departmentAgent) => departmentAgent.departmentId))];
+	up: () => {
+		const discussion = Settings.findOneById('RetentionPolicy_DoNotExcludeDiscussion');
+		const thread = Settings.findOneById('RetentionPolicy_DoNotExcludeThreads');
+		const pinned = Settings.findOneById('RetentionPolicy_ExcludePinned');
 
-		updateEnabledProperty(departmentIds);
+		if (discussion) {
+			Settings.upsert({
+				_id: 'RetentionPolicy_DoNotPruneDiscussion',
+			}, {
+				$set: {
+					value: discussion.value,
+				},
+			});
+		}
+
+		if (thread) {
+			Settings.upsert({
+				_id: 'RetentionPolicy_DoNotPruneThreads',
+			}, {
+				$set: {
+					value: thread.value,
+				},
+			});
+		}
+
+		if (pinned) {
+			Settings.upsert({
+				_id: 'RetentionPolicy_DoNotPrunePinned',
+			}, {
+				$set: {
+					value: pinned.value,
+				},
+			});
+		}
+
+		Settings.remove({
+			_id: { $in: ['RetentionPolicy_DoNotExcludeDiscussion', 'RetentionPolicy_DoNotExcludeThreads', 'RetentionPolicy_ExcludePinned'] },
+		});
 	},
 });

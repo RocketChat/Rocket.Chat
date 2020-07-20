@@ -1,5 +1,4 @@
 import mem from 'mem';
-import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
@@ -106,12 +105,8 @@ FlowRouter.route('/directory/:tab?', {
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
-	action: (params) => {
-		if (!params.group) {
-			params.group = 'Profile';
-		}
-		params.group = s.capitalize(params.group, true);
-		BlazeLayout.render('main', { center: `account${ params.group }` });
+	action: () => {
+		renderRouteComponent(() => import('./account/AccountRoute'), { template: 'main', region: 'center' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
