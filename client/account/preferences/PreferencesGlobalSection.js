@@ -8,7 +8,7 @@ import { useForm } from '../../hooks/useForm';
 const PreferencesGlobalSection = ({ onChange, ...props }) => {
 	const t = useTranslation();
 
-	const userDontAskAgainList = useUserPreference('dontAskAgainList');
+	const userDontAskAgainList = useUserPreference('dontAskAgainList') || [];
 
 	const options = useMemo(() => userDontAskAgainList.map(({ action, label }) => [action, label]), [userDontAskAgainList]);
 
