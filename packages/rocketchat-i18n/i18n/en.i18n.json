@@ -790,7 +790,7 @@
   "Cloud_error_code": "Code:  __errorCode__",
   "Cloud_status_page_description": "If a particular Cloud Service is having issues you can check for known issues on our status page at",
   "Cloud_Service_Agree_PrivacyTerms": "Cloud Service Agree PrivacyTerms",
-  "Cloud_token_instructions": "To Register your workspace goto Cloud Console.  Login or Create an account and click register self-managed. Paste the token provided below",
+  "Cloud_token_instructions": "To Register your workspace go to Cloud Console. Login or Create an account and click register self-managed. Paste the token provided below",
   "Cloud_troubleshooting": "Troubleshooting",
   "Collaborative": "Collaborative",
   "Collapse_Embedded_Media_By_Default": "Collapse Embedded Media by Default",
