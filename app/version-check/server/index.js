@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
+import { settings } from '../../settings';
 import checkVersionUpdate from './functions/checkVersionUpdate';
 import './methods/banner_dismiss';
 import './addSettings';
@@ -11,18 +12,30 @@ if (SyncedCron.nextScheduledAtDate(jobName)) {
 	SyncedCron.remove(jobName);
 }
 
-SyncedCron.add({
-	name: jobName,
-	schedule: (parser) => parser.text('at 2:00 am'),
-	job() {
-		checkVersionUpdate();
-	},
-});
+const addVersionCheckJob = () => {
+	SyncedCron.add({
+		name: jobName,
+		schedule: (parser) => parser.text('at 2:00 am'),
+		job() {
+			checkVersionUpdate();
+		},
+	});
+};
+
 
 Meteor.startup(() => {
 	checkVersionUpdate();
 });
 
-// Send email to admins
-// Save latest alert
-// ENV var to disable the check for update for our cloud
+settings.get('Register_Server', (key, value) => {
+	if (value && SyncedCron.nextScheduledAtDate(jobName)) {
+		return;
+	}
+
+	if (value) {
+		addVersionCheckJob();
+		return;
+	}
+
+	SyncedCron.remove(jobName);
+});
