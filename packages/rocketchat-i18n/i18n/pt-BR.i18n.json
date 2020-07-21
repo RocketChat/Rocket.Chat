@@ -701,7 +701,6 @@
   "Cloud_Register_manually": "Registre manualmente",
   "Cloud_register_success": "A sua área de trabalho foi registrada com sucesso!",
   "Cloud_register_error": "Houve um erro ao processar sua solicitação. Por favor tente novamente mais tarde. ",
-  "Cloud_connect_support": "Se você ainda não recebeu um e-mail de registro, verifique se o seu e-mail está atualizado acima. Se você ainda tiver problemas, entre em contato com o suporte em",
   "Cloud_what_is_it": "O que é isso?",
   "Cloud_what_is_it_description": "O Rocket.Chat Cloud Connect permite que você conecte seu workspace Rocket.Chat auto-hospedado à nossa nuvem. Fazer isso permite que você gerencie suas licenças, Faturamento e Suporte no Rocket.Chat Cloud.",
   "Cloud_what_is_it_services_like": "Serviços como:",

@@ -726,7 +726,6 @@
   "Cloud_register_offline_helper": "Los espacios de trabajo pueden registrarse manualmente si el acceso a la red está restringido. Copia el texto de abajo y ve a nuestra Cloud Console para completar el proceso.",
   "Cloud_register_success": "¡Su espacio de trabajo ha sido registrado correctamente!",
   "Cloud_register_error": "Ha habido un error al tratar de procesar su solicitud. Por favor, inténtelo de nuevo más tarde.",
-  "Cloud_connect_support": "Si todavía no has recibido un correo electrónico de registro, por favor asegúrate de que tu correo electrónico esté actualizado.  Si todavía tienes problemas, puedes contactar con el soporte en",
   "Cloud_what_is_it": "¿Que es esto?",
   "Cloud_what_is_it_description": "Rocket.Chat Cloud Connect le permite conectar su espacio de trabajo Rocket.Chat con los servicios que ofrecemos en nuestra nube.",
   "Cloud_what_is_it_services_like": "Servicios como:",
