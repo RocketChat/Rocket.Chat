@@ -4,4 +4,10 @@
 		<div class="popup-user-avatar" style="background-image:url({{avatarUrlFromUsername username avatarETag}});"></div>
 	{{/unless}}
 	<strong>{{username}}</strong> {{name}}{{#if nickname}} ({{nickname}}){{/if}}
+	{{#if outside}}
+		<div class="popup-user-not_in_channel">{{_ "Not_in_channel"}}</div>
+	{{/if}}
+	{{#if suggestion}}
+		<div class="popup-user-not_in_channel">{{_ "Suggestion_from_recent_messages"}}</div>
+	{{/if}}
 </template>
