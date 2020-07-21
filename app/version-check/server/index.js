@@ -32,7 +32,7 @@ settings.get('Register_Server', (key, value) => {
 		return;
 	}
 
-	if (value) {
+	if (value && settings.get('Update_EnableChecker')) {
 		addVersionCheckJob();
 		return;
 	}
