@@ -18,7 +18,9 @@ export const closeUserCard = () => {
 	if (!dom) {
 		return;
 	}
-	unregister = unregister && unregister();
+	Tracker.afterFlush(() => {
+		unregister = unregister && unregister();
+	});
 };
 
 const props = () => {
