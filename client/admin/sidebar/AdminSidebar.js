@@ -13,6 +13,7 @@ import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import Sidebar from '../../components/basic/Sidebar';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { itemsSubscription } from '../sidebarItems';
+import PlanTag from '../../components/basic/PlanTag';
 
 const AdminSidebarPages = React.memo(({ currentPath }) => {
 	const items = useSubscription(itemsSubscription);
@@ -134,7 +135,7 @@ export default React.memo(function AdminSidebar() {
 	// TODO: uplift this provider
 	return <SettingsProvider privileged>
 		<Sidebar>
-			<Sidebar.Header onClose={closeAdminFlex} title={t('Administration')}/>
+			<Sidebar.Header onClose={closeAdminFlex} title={<>{t('Administration')} <PlanTag/></>}/>
 			<Sidebar.Content>
 				<AdminSidebarPages currentPath={currentPath}/>
 				{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}
