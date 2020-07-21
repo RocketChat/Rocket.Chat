@@ -375,7 +375,7 @@ export const updateDepartmentAgents = (departmentId, agents) => {
 	});
 
 	if (agentsRemoved.length > 0) {
-		callbacks.run('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
+		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}
 
 	upsert.forEach((agent) => {
@@ -389,8 +389,8 @@ export const updateDepartmentAgents = (departmentId, agents) => {
 		agentsAdded.push(agent.agentId);
 	});
 
-	if (upsert.length > 0) {
-		callbacks.run('livechat.saveAgentDepartment', {
+	if (agentsAdded.length > 0) {
+		callbacks.runAsync('livechat.saveAgentDepartment', {
 			departmentId,
 			agentsId: agentsAdded,
 		});
