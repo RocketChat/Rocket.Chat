@@ -1961,6 +1961,12 @@
 	background-size: contain;
 }
 
+.rc-old .popup-user-not_in_channel {
+	display: inline-block;
+
+	float: right;
+}
+
 .rc-old .popup-user-status {
 	display: inline-block;
 

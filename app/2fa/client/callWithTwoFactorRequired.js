@@ -36,7 +36,7 @@ export function process2faReturn({ error, result, originalCallback, onCode, emai
 		text: t(methods[method].text),
 		html: methods[method].html,
 		type: 'input',
-		inputActionText: method === 'email' && t('Send_me_the_code_again'),
+		inputActionText: method === 'email' && emailOrUsername && t('Send_me_the_code_again'),
 		async inputAction(e) {
 			const { value } = e.currentTarget;
 			e.currentTarget.value = t('Sending');

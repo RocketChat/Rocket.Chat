@@ -812,12 +812,24 @@ export const Livechat = {
 
 	saveDepartmentAgents(_id, departmentAgents) {
 		check(_id, String);
-		check(departmentAgents, [
-			Match.ObjectIncluding({
-				agentId: String,
-				username: String,
-			}),
-		]);
+		check(departmentAgents, {
+			upsert: [
+				Match.ObjectIncluding({
+					agentId: String,
+					username: String,
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			],
+			remove: [
+				Match.ObjectIncluding({
+					agentId: String,
+					username: Match.Maybe(String),
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			],
+		});
 
 		const department = LivechatDepartment.findOneById(_id);
 		if (!department) {
@@ -850,13 +862,10 @@ export const Livechat = {
 		});
 
 		check(departmentData, defaultValidations);
-
-		check(departmentAgents, Match.Maybe([
-			Match.ObjectIncluding({
-				agentId: String,
-				username: String,
-			}),
-		]));
+		check(departmentAgents, Match.Maybe({
+			upsert: Match.Maybe(Array),
+			remove: Match.Maybe(Array),
+		}));
 
 		const { requestTagBeforeClosingChat, chatClosingTags } = departmentData;
 		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
@@ -870,8 +879,12 @@ export const Livechat = {
 			}
 		}
 
-		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
-		return departmentDB && updateDepartmentAgents(departmentDB._id, departmentAgents);
+		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
+		if (departmentDB) {
+			updateDepartmentAgents(departmentDB._id, departmentAgents);
+		}
+
+		return departmentDB;
 	},
 
 	saveAgentInfo(_id, agentData, agentDepartments) {
@@ -899,7 +912,6 @@ export const Livechat = {
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', { method: 'livechat:removeDepartment' });
 		}
-
 		const ret = LivechatDepartment.removeById(_id);
 		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id).fetch().map((agent) => agent.agentId);
 		LivechatDepartmentAgents.removeByDepartmentId(_id);

@@ -124,7 +124,15 @@ export class BaseDb extends EventEmitter {
 		};
 	}
 
+	_ensureDefaultFields(options) {
+		if ((options?.fields == null || Object.keys(options?.fields).length === 0) && this.baseModel.defaultFields) {
+			options.fields = this.baseModel.defaultFields;
+		}
+	}
+
 	_doNotMixInclusionAndExclusionFields(options) {
+		this._ensureDefaultFields(options);
+
 		if (options && options.fields) {
 			const keys = Object.keys(options.fields);
 			const removeKeys = keys.filter((key) => options.fields[key] === 0);
@@ -134,18 +142,18 @@ export class BaseDb extends EventEmitter {
 		}
 	}
 
-	find(...args) {
-		this._doNotMixInclusionAndExclusionFields(args[1]);
-		return this.model.find(...args);
+	find(query = {}, options = {}) {
+		this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.find(query, options);
 	}
 
 	findById(_id, options) {
 		return this.find({ _id }, options);
 	}
 
-	findOne(...args) {
-		this._doNotMixInclusionAndExclusionFields(args[1]);
-		return this.model.findOne(...args);
+	findOne(query = {}, options = {}) {
+		this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.findOne(query, options);
 	}
 
 	findOneById(_id, options) {

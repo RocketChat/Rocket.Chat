@@ -666,7 +666,6 @@
   "Cloud_register_offline_helper": "Arbeitsbereiche können manuell registriert werden, wenn ein Airgap besteht oder der Netzwerkzugriff eingeschränkt ist. Kopieren Sie den folgenden Text und rufen Sie unsere Cloud-Konsole auf, um den Vorgang abzuschließen.",
   "Cloud_register_success": "Ihr Arbeitsbereich wurde erfolgreich registriert!",
   "Cloud_register_error": "Beim Verarbeiten Ihrer Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",
-  "Cloud_connect_support": "Wenn Sie noch immer keine Registrierungs-E-Mail erhalten haben, überprüfen Sie bitte die o. g. Adresse. Wenn es dann immer noch Probleme gibt, erreichen Sie unseren Support unter",
   "Cloud_console": "Cloud Console",
   "Cloud_Info": "Cloud-Informationen",
   "Cloud_what_is_it": "Was ist das?",

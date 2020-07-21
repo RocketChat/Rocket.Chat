@@ -29,7 +29,6 @@ function ConnectToCloudSection({
 				throw Error(t('An error occured'));
 			}
 
-			// TODO: sync on register?
 			const isSynced = await syncWorkspace();
 
 			if (!isSynced) {
