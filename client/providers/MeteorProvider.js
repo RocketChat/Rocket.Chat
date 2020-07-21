@@ -13,6 +13,7 @@ import UserProvider from './UserProvider';
 import { AvatarUrlProvider } from './AvatarUrlProvider';
 import { CustomSoundProvider } from './CustomSoundProvides';
 import ModalProvider from './ModalProvider';
+import SubscriptionProvider from './SubscriptionProvider';
 
 export function MeteorProvider({ children }) {
 	return <ConnectionStatusProvider>
@@ -22,19 +23,21 @@ export function MeteorProvider({ children }) {
 					<SessionProvider>
 						<SidebarProvider>
 							<ToastMessagesProvider>
-								<ModalProvider>
-									<SettingsProvider>
-										<CustomSoundProvider>
-											<AvatarUrlProvider>
+								<SettingsProvider>
+									<CustomSoundProvider>
+										<AvatarUrlProvider>
+											<SubscriptionProvider>
 												<UserProvider>
 													<AuthorizationProvider>
-														{children}
+														<ModalProvider>
+															{children}
+														</ModalProvider>
 													</AuthorizationProvider>
 												</UserProvider>
-											</AvatarUrlProvider>
-										</CustomSoundProvider>
-									</SettingsProvider>
-								</ModalProvider>
+											</SubscriptionProvider>
+										</AvatarUrlProvider>
+									</CustomSoundProvider>
+								</SettingsProvider>
 							</ToastMessagesProvider>
 						</SidebarProvider>
 					</SessionProvider>

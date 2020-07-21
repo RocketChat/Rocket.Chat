@@ -15,7 +15,7 @@ const bundles: IBundle = {
 	],
 };
 
-const getBundleFromModule = (moduleName: string): string|undefined => {
+export const getBundleFromModule = (moduleName: string): string|undefined => {
 	const match = moduleName.match(/(.*):\*$/);
 	if (!match) {
 		return;
@@ -44,7 +44,7 @@ export function getBundleModules(moduleName: string): string[] {
 	}
 
 	const bundle = getBundleFromModule(moduleName);
-	if (!bundle) {
+	if (!bundle || !bundles[bundle]) {
 		return [];
 	}
 

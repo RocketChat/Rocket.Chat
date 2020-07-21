@@ -22,7 +22,14 @@ Meteor.startup(() => {
 		if (hasPermission('view-canned-responses')) {
 			const { responses } = await APIClient.v1.get('canned-responses.get');
 			responses.forEach((response) => CannedResponse.insert(response));
-			cannedResponsesStreamer.on('canned-responses', (response) => events[response.type](response));
+			cannedResponsesStreamer.on('canned-responses', (response, options) => {
+				const { agentsId } = options || {};
+				if (agentsId && Array.isArray(agentsId) && !agentsId.includes(Meteor.userId())) {
+					return;
+				}
+
+				events[response.type](response);
+			});
 
 			c.stop();
 		}
