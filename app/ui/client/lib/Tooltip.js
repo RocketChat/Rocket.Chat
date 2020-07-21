@@ -42,14 +42,14 @@ document.body.addEventListener('mouseover', (() => {
 	let timeout;
 	return (e) => {
 		timeout = timeout && clearTimeout(timeout);
-		const element = e.target.title || e.dataset?.title ? e.target : e.target.closest('[title], [data-title]');
-		if (element) {
-			element.dataset.title = element.dataset.title || element.title;
-			element.removeAttribute('title');
-			timeout = setTimeout(() => {
+		timeout = setTimeout(() => {
+			const element = e.target.title || e.dataset?.title ? e.target : e.target.closest('[title], [data-title]');
+			if (element) {
+				element.dataset.title = element.dataset.title || element.title;
+				element.removeAttribute('title');
 				openToolTip(element.dataset.title, element);
-			}, 1500);
-		}
+			}
+		}, 1000);
 		closeTooltip();
 	};
 })());

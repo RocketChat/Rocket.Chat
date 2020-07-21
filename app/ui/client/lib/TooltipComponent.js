@@ -10,7 +10,7 @@ export const TooltipComponent = ({ title, anchor }) => {
 		margin={8}
 		visible={AnimatedVisibility.UNHIDING}
 		children={title}
-	><Tooltip arrowPosition='down'>{title}</Tooltip></PositionAnimated>;
+	><Tooltip>{title}</Tooltip></PositionAnimated>;
 };
 
 export default TooltipComponent;
