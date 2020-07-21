@@ -17,13 +17,7 @@ const fetchSettings = (query, sort, offset, count, fields) => {
 	}).fetch();
 
 	SettingsEvents.emit('fetch-settings', settings);
-	return settings.map((setting) => {
-		'enterprise' in setting && !fields.enterprise && delete setting.enterprise;
-		'invalidValue' in setting && !fields.invalidValue && delete setting.invalidValue;
-		'modules' in setting && !fields.modules && delete setting.modules;
-
-		return setting;
-	});
+	return settings;
 };
 
 // settings endpoints
