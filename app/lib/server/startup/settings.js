@@ -529,6 +529,7 @@ settings.addGroup('Accounts', function() {
 
 		this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
 			type: 'boolean',
+			public: true,
 		});
 
 		return this.add('Accounts_SetDefaultAvatar', true, {
