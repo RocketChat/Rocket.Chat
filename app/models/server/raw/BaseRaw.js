@@ -3,7 +3,7 @@ export class BaseRaw {
 		this.col = col;
 	}
 
-	findOneById(_id, options) {
+	findOneById(_id, options = {}) {
 		return this.findOne({ _id }, options);
 	}
 
