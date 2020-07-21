@@ -767,7 +767,6 @@
   "Cloud_register_offline_helper": "Pracovní prostory lze ručně zaregistrovat, pokud je k nim omezen síťový přístup. Zkopírujte níže uvedený text a dokončete proces pomocí naší cloudové konzole.",
   "Cloud_register_success": "Váš pracovní prostor byl úspěšně zaregistrován!",
   "Cloud_register_error": "Při zpracování vašeho požadavku došlo k chybě. Prosím zkuste to znovu později.",
-  "Cloud_connect_support": "Pokud jste ještě neobdrželi registrační e-mail, ujistěte se, že váš e-mail výše je aktuální. Pokud problémy přetrvávají, můžete kontaktovat podporu na adrese",
   "Cloud_console": "Cloud přehled",
   "Cloud_Info": "Informace o Cloudu",
   "Cloud_what_is_it": "Co je to?",
