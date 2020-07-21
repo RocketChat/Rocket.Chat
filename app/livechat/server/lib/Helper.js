@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
 
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartmentAgents } from '../../../models/server';
+import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
@@ -360,19 +360,17 @@ export const userCanTakeInquiry = (user) => {
 	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
 };
 
-export const updateDepartmentAgents = (departmentId, agents = []) => {
+export const updateDepartmentAgents = (departmentId, agents) => {
 	check(departmentId, String);
+	check(agents, Match.ObjectIncluding({
+		upsert: Match.Maybe(Array),
+		remove: Match.Maybe(Array),
+	}));
 
-	if (!agents && !Array.isArray(agents)) {
-		return true;
-	}
-
-	const savedAgents = _.pluck(LivechatDepartmentAgents.findByDepartmentId(departmentId).fetch(), 'agentId');
-	const agentsToSave = _.pluck(agents, 'agentId');
-
-	// remove other agents
+	const { upsert = [], remove = [] } = agents;
 	const agentsRemoved = [];
-	_.difference(savedAgents, agentsToSave).forEach((agentId) => {
+	const agentsAdded = [];
+	remove.forEach(({ agentId }) => {
 		LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
 		agentsRemoved.push(agentId);
 	});
@@ -381,7 +379,7 @@ export const updateDepartmentAgents = (departmentId, agents = []) => {
 		callbacks.run('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}
 
-	agents.forEach((agent) => {
+	upsert.forEach((agent) => {
 		LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
 			departmentId,
@@ -389,15 +387,18 @@ export const updateDepartmentAgents = (departmentId, agents = []) => {
 			count: agent.count ? parseInt(agent.count) : 0,
 			order: agent.order ? parseInt(agent.order) : 0,
 		});
+		agentsAdded.push(agent.agentId);
 	});
-	const diff = agents
-		.map((agent) => agent.agentId)
-		.filter((agentId) => !savedAgents.includes(agentId));
 
-	if (diff.length > 0) {
+	if (upsert.length > 0) {
 		callbacks.run('livechat.saveAgentDepartment', {
 			departmentId,
-			agentsId: diff,
+			agentsId: agentsAdded,
 		});
+	}
+
+	if (agentsRemoved.length > 0 || upsert.length > 0) {
+		const numAgents = LivechatDepartmentAgents.find({ departmentId }).count();
+		LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
 	}
 };

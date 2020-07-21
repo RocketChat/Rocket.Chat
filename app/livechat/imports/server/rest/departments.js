@@ -35,7 +35,8 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 				agents: Match.Maybe(Array),
 			});
 
-			const department = Livechat.saveDepartment(null, this.bodyParams.department, this.bodyParams.agents);
+			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
+			const department = Livechat.saveDepartment(null, this.bodyParams.department, agents);
 
 			if (department) {
 				return API.v1.success({
@@ -86,7 +87,6 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
-
 			});
 
 			const { _id } = this.urlParams;
@@ -94,7 +94,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 
 			let success;
 			if (permissionToSave) {
-				success = Livechat.saveDepartment(_id, department, agents);
+				success = Livechat.saveDepartment(_id, department);
 			}
 
 			if (success && agents && permissionToAddAgents) {

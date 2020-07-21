@@ -14,13 +14,13 @@ import { APIClient, roomTypes } from '../../../../utils/client';
 
 const LIST_SIZE = 50;
 
-const saveDepartmentsAgents = (_id, instance) => {
+const saveDepartmentsAgents = async (_id, instance) => {
 	const upsert = [...instance.agentsToUpsert.values()];
 	const remove = [...instance.agentsToRemove.values()];
 	if (!upsert.length && !remove.length) {
 		return;
 	}
-	APIClient.v1.post(`livechat/department/${ _id }/agents`, {
+	return APIClient.v1.post(`livechat/department/${ _id }/agents`, {
 		upsert,
 		remove,
 	});
@@ -192,19 +192,17 @@ Template.livechatDepartmentForm.events({
 			departmentData[name] = elField.val();
 		});
 
-		const callback = (error) => {
-			$btn.html(oldBtnValue);
-			if (error) {
-				return handleError(error);
-			}
-
-			toastr.success(t('Saved'));
-			FlowRouter.go('livechat-departments');
-		};
-
 		if (hasPermission('manage-livechat-departments')) {
-			Meteor.call('livechat:saveDepartment', _id, departmentData, [], callback);
-			saveDepartmentsAgents(_id, instance);
+			Meteor.call('livechat:saveDepartment', _id, departmentData, [], async function(err, result) {
+				$btn.html(oldBtnValue);
+				if (err) {
+					return handleError(err);
+				}
+
+				await saveDepartmentsAgents(result._id, instance);
+				toastr.success(t('Saved'));
+				FlowRouter.go('livechat-departments');
+			});
 		} else if (hasPermission('add-livechat-department-agents')) {
 			saveDepartmentsAgents(_id, instance);
 		} else {

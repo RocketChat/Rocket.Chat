@@ -862,13 +862,10 @@ export const Livechat = {
 		});
 
 		check(departmentData, defaultValidations);
-
-		check(departmentAgents, Match.Maybe([
-			Match.ObjectIncluding({
-				agentId: String,
-				username: String,
-			}),
-		]));
+		check(departmentAgents, Match.Maybe({
+			upsert: Match.Maybe(Array),
+			remove: Match.Maybe(Array),
+		}));
 
 		const { requestTagBeforeClosingChat, chatClosingTags } = departmentData;
 		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
@@ -882,8 +879,12 @@ export const Livechat = {
 			}
 		}
 
-		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
-		return departmentDB && updateDepartmentAgents(departmentDB._id, departmentAgents);
+		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
+		if (departmentDB) {
+			updateDepartmentAgents(departmentDB._id, departmentAgents);
+		}
+
+		return departmentDB;
 	},
 
 	saveAgentInfo(_id, agentData, agentDepartments) {
