@@ -75,26 +75,26 @@ API.v1.addRoute('push.get', { authRequired: true }, {
 			id: String,
 		}));
 
-		const message = Messages.findOneById(params.id, { fields: { rid: 1 } });
+		const receiver = Users.findOneById(this.userId);
+		if (!receiver) {
+			throw new Error('error-user-not-found');
+		}
+
+		const message = Messages.findOneById(params.id);
 		if (!message) {
 			throw new Error('error-message-not-found');
 		}
 
-		const user = Users.findOneById(Meteor.userId());
-		if (!user) {
-			throw new Error('error-user-not-found');
-		}
-
 		const room = Rooms.findOneById(message.rid);
-		if (!user) {
+		if (!room) {
 			throw new Error('error-room-not-found');
 		}
 
-		if (!canAccessRoom(room, user)) {
-			throw new Error('error-room-not-found');
+		if (!canAccessRoom(room, receiver)) {
+			throw new Error('error-not-allowed');
 		}
 
-		const data = PushNotification.getNotificationForMessageId(params.id, Meteor.userId());
+		const data = PushNotification.getNotificationForMessageId({ receiver, room, message });
 
 		return API.v1.success({ data });
 	},

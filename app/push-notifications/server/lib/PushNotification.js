@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Push } from '../../../push/server';
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
-import { Messages, Rooms, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { RocketChatAssets } from '../../../assets/server';
 import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../lib/server/functions/notifications';
 import { callbacks } from '../../../callbacks/server';
@@ -74,17 +74,7 @@ export class PushNotification {
 		return Push.send(config);
 	}
 
-	getNotificationForMessageId(messageId, receiverUserId) {
-		const message = Messages.findOneById(messageId);
-		if (!message) {
-			throw new Error('Message not found');
-		}
-
-		const receiver = Users.findOne(receiverUserId);
-		if (!receiver) {
-			throw new Error('User not found');
-		}
-
+	getNotificationForMessageId({ receiver, message, room }) {
 		const sender = Users.findOne(message.u._id, { fields: { username: 1, name: 1 } });
 		if (!sender) {
 			throw new Error('Message sender not found');
@@ -96,11 +86,10 @@ export class PushNotification {
 		}
 		notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
-		const room = Rooms.findOneById(message.rid);
 		const pushData = Promise.await(getPushData({
 			room,
 			message,
-			userId: receiverUserId,
+			userId: receiver._id,
 			receiverUsername: receiver.username,
 			senderUsername: sender.username,
 			senderName: sender.name,
@@ -113,7 +102,7 @@ export class PushNotification {
 				...pushData,
 				rid: message.rid,
 				uid: message.u._id,
-				mid: messageId,
+				mid: message._id,
 				idOnly: false,
 			}),
 		};
