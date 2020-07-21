@@ -31,7 +31,7 @@ export class LivechatDepartment extends Base {
 	}
 
 	createOrUpdateDepartment(_id, data = {}) {
-		const oldData = this.findOneById(_id);
+		const oldData = _id && this.findOneById(_id);
 
 		const record = {
 			...data,
