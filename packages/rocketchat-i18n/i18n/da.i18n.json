@@ -768,7 +768,6 @@
   "Cloud_register_offline_helper": "Arbejdsområder kan registreres manuelt, hvis der ikke er netværksadgang eller den er begrænset. Kopier teksten nedenfor og gå til vores Cloud Console for at afslutte processen.",
   "Cloud_register_success": "Dit arbejdsområde er blevet registreret!",
   "Cloud_register_error": "Der har været en fejl ved forsøg på at behandle din anmodning. Prøv igen senere.",
-  "Cloud_connect_support": "Hvis du stadig ikke har modtaget en registrerings-e-mail, skal du sørge for, at din e-mail er opdateret ovenfor. Hvis du stadig har problemer, kan du kontakte support på",
   "Cloud_console": "Cloud Console",
   "Cloud_Info": "Cloud Info",
   "Cloud_what_is_it": "Hvad er dette?",

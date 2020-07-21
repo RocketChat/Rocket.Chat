@@ -669,7 +669,6 @@
   "Cloud_register_offline_helper": "如果网络访问受到限制，可以手动注册工作区。复制下面的文字并转到Cloud Console以完成本次操作。",
   "Cloud_register_success": "您的工作区已成功注册！",
   "Cloud_register_error": "处理请求时出错。请稍后再试。",
-  "Cloud_connect_support": "如果你尚未收到注册邮件请检查上方邮件是否正确。仍有问题可获取支持于",
   "Cloud_console": "云控制台",
   "Cloud_Info": "云端资料",
   "Cloud_what_is_it": "这是什么?",
