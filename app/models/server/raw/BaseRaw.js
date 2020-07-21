@@ -9,7 +9,7 @@ export class BaseRaw {
 		}
 	}
 
-	findOneById(_id, options) {
+	findOneById(_id, options = {}) {
 		return this.findOne({ _id }, options);
 	}
 
