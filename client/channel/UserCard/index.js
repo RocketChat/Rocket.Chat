@@ -1,5 +1,6 @@
-import React, { useMemo, useRef, useCallback } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useSetting } from '../../contexts/SettingsContext';
@@ -9,6 +10,21 @@ import { Backdrop } from '../../components/basic/Backdrop';
 import * as UserStatus from '../../components/basic/UserStatus';
 import { LocalTime } from '../../components/basic/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
+import { useCurrentRoute } from '../../contexts/RouterContext';
+
+export const useComponentDidUpdate = (
+	effect,
+	dependencies = [],
+) => {
+	const hasMounted = useRef(false);
+	useEffect(() => {
+		if (!hasMounted.current) {
+			hasMounted.current = true;
+			return;
+		}
+		effect();
+	}, dependencies);
+};
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
@@ -22,6 +38,12 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const { data, state } = useEndpointDataExperimental('users.info', query);
 
 	ref.current = target;
+
+	const [route, params] = useCurrentRoute();
+
+	useComponentDidUpdate(() => {
+		onClose && onClose();
+	}, [route, JSON.stringify(params), onClose]);
 
 	const user = useMemo(() => {
 		const loading = state === ENDPOINT_STATES.LOADING;
@@ -55,13 +77,10 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		};
 	}, [data, username, showRealNames, state]);
 
-	const handleOpen = useCallback(
-		(e) => {
-			open && open(e);
-			onClose && onClose();
-		},
-		[open, onClose],
-	);
+	const handleOpen = useMutableCallback((e) => {
+		open && open(e);
+		onClose && onClose();
+	});
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));
 

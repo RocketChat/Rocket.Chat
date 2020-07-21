@@ -1,10 +1,12 @@
 import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
+import { Random } from 'meteor/random';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import _ from 'underscore';
 
 let rootNode;
 let invalidatePortals = () => {};
@@ -43,9 +45,9 @@ const mountRoot = async () => {
 		const [portals, setPortals] = useState(() => Tracker.nonreactive(() => Array.from(portalsMap.values())));
 
 		useLayoutEffect(() => {
-			invalidatePortals = () => {
+			invalidatePortals = _.debounce(() => {
 				setPortals(Array.from(portalsMap.values()));
-			};
+			}, 1);
 			invalidatePortals();
 
 			return () => {
@@ -73,7 +75,7 @@ export const registerPortal = (key, portal) => {
 		mountRoot();
 	}
 
-	portalsMap.set(key, { portal, key: Date.now() });
+	portalsMap.set(key, { portal, key: Random.id() });
 	invalidatePortals();
 	return () => unregisterPortal(key);
 };

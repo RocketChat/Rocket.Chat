@@ -18,8 +18,7 @@ export const closeUserCard = () => {
 	if (!dom) {
 		return;
 	}
-	unregister();
-	unregister = undefined;
+	unregister = unregister && unregister();
 };
 
 const props = () => {
