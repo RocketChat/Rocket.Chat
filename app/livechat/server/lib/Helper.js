@@ -396,7 +396,7 @@ export const updateDepartmentAgents = (departmentId, agents) => {
 		});
 	}
 
-	if (agentsRemoved.length > 0 || upsert.length > 0) {
+	if (agentsRemoved.length > 0 || agentsAdded.length > 0) {
 		const numAgents = LivechatDepartmentAgents.find({ departmentId }).count();
 		LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
 	}
