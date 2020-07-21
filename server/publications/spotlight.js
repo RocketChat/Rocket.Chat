@@ -42,20 +42,18 @@ function searchRooms({ userId, text }) {
 		return fetchRooms(userId, Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch());
 	}
 
-	if (hasPermission(userId, 'view-outside-room')) {
-		if (hasPermission(userId, 'view-c-room')) {
-			const searchableRoomTypes = Object.entries(roomTypes.roomTypes)
-				.filter((roomType) => roomType[1].includeInRoomSearch())
-				.map((roomType) => roomType[0]);
+	if (hasAllPermission(userId, ['view-outside-room', 'view-c-room'])) {
+		const searchableRoomTypes = Object.entries(roomTypes.roomTypes)
+			.filter((roomType) => roomType[1].includeInRoomSearch())
+			.map((roomType) => roomType[0]);
 
-			const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypes, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
-			const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypes, roomOptions);
-			if (exactRoom) {
-				roomIds.push(exactRoom.rid);
-			}
-
-			return fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypes, roomIds, roomOptions).fetch());
+		const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypes, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypes, roomOptions);
+		if (exactRoom) {
+			roomIds.push(exactRoom.rid);
 		}
+
+		return fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypes, roomIds, roomOptions).fetch());
 	}
 
 	return [];
