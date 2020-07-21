@@ -54,7 +54,7 @@ Template.livechatDepartmentCustomFieldsForm.onCreated(function() {
 
 	if (!contextDepartment && _id) {
 		this.autorun(async () => {
-			const { department } = await APIClient.v1.get(`livechat/department/${ _id }`);
+			const { department } = await APIClient.v1.get(`livechat/department/${ _id }?includeAgents=false`);
 			if (department.departmentsAllowedToForward) {
 				const { departments } = await APIClient.v1.get(`livechat/department.listByIds?${ mountArrayQueryParameters('ids', department.departmentsAllowedToForward) }&fields=${ JSON.stringify({ fields: { name: 1 } }) }`);
 				this.selectedDepartments.set(departments.map((dept) => ({
