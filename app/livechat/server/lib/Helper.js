@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
