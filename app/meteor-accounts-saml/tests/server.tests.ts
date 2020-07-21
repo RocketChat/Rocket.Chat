@@ -677,7 +677,7 @@ describe('SAML', () => {
 
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('samlLogin').that.is.an('object');
-				expect(userObject).to.have.property('username').that.is.equal('user1user2');
+				expect(userObject).to.have.property('username').that.is.equal('user1 user2');
 			});
 
 			// Channels support both a comma separated single value and an array of values

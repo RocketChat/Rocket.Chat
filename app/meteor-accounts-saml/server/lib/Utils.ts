@@ -342,9 +342,9 @@ export class SAMLUtils {
 					values[`${ fieldName }[${ i }]`] = profileValue[i];
 					values[`${ fieldName }[-${ Math.abs(0 - profileValue.length + i) }]`] = profileValue[i];
 				}
-				values[`${ fieldName }[]`] = profileValue.join('');
+				values[`${ fieldName }[]`] = profileValue.join(' ');
 				if (forceString) {
-					profileValue = profileValue.join('');
+					profileValue = profileValue.join(' ');
 				}
 			} else {
 				values[fieldName] = profileValue;
