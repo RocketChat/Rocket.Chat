@@ -6,7 +6,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
 
 let rootNode;
 let invalidatePortals = () => {};
@@ -27,6 +26,7 @@ const mountRoot = async () => {
 	] = await Promise.all([
 		import('react'),
 		import('react-dom'),
+		import('@rocket.chat/fuselage-hooks'),
 	]);
 
 	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
@@ -45,9 +45,9 @@ const mountRoot = async () => {
 		const [portals, setPortals] = useState(() => Tracker.nonreactive(() => Array.from(portalsMap.values())));
 
 		useLayoutEffect(() => {
-			invalidatePortals = _.debounce(() => {
+			invalidatePortals = () => {
 				setPortals(Array.from(portalsMap.values()));
-			}, 1);
+			};
 			invalidatePortals();
 
 			return () => {
