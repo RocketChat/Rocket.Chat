@@ -1283,9 +1283,17 @@ settings.addGroup('Push', function() {
 			type: 'boolean',
 			public: true,
 		});
-		return this.add('Push_show_message', true, {
+		this.add('Push_show_message', true, {
 			type: 'boolean',
 			public: true,
+		});
+		this.add('Push_request_content_from_server', true, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: [
+				'push-privacy',
+			],
 		});
 	});
 });

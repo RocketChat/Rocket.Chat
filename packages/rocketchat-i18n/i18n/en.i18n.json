@@ -2870,6 +2870,7 @@
   "Push_gcm_api_key": "GCM API Key",
   "Push_gcm_project_number": "GCM Project Number",
   "Push_production": "Production",
+  "Push_request_content_from_server": "Fetch full message content from the server on receipt",
   "Push_show_message": "Show Message in Notification",
   "Push_show_username_room": "Show Channel/Group/Username in Notification",
   "Push_test_push": "Test",
