@@ -47,7 +47,7 @@ function UsersPage() {
 				<UsersTable />
 			</Page.Content>
 		</Page>
-		{context && <VerticalBar>
+		{context && <VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
 				{context === 'info' && t('User_Info')}
 				{context === 'edit' && t('Edit_User')}
@@ -55,12 +55,12 @@ function UsersPage() {
 				{context === 'invite' && t('Invite_Users')}
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			<VerticalBar.Content>
-				{context === 'info' && <UserInfoWithData uid={id}/>}
-				{context === 'edit' && <EditUserWithData uid={id}/>}
-				{context === 'new' && <AddUser/>}
-				{context === 'invite' && <InviteUsers/>}
-			</VerticalBar.Content>
+
+			{context === 'info' && <UserInfoWithData uid={id}/>}
+			{context === 'edit' && <EditUserWithData uid={id}/>}
+			{context === 'new' && <AddUser/>}
+			{context === 'invite' && <InviteUsers/>}
+
 		</VerticalBar>}
 	</Page>;
 }

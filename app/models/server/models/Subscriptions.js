@@ -1308,6 +1308,10 @@ export class Subscriptions extends Base {
 
 		Rooms.incUsersCountById(room._id);
 
+		if (!['d', 'l'].includes(room.t)) {
+			Users.addRoomByUserId(user._id, room._id);
+		}
+
 		return result;
 	}
 
@@ -1326,6 +1330,8 @@ export class Subscriptions extends Base {
 			Rooms.incUsersCountNotDMsByIds(roomIds, -1);
 		}
 
+		Users.removeAllRoomsByUserId(userId);
+
 		return result;
 	}
 
@@ -1339,6 +1345,8 @@ export class Subscriptions extends Base {
 		if (Match.test(result, Number) && result > 0) {
 			Rooms.incUsersCountById(roomId, - result);
 		}
+
+		Users.removeRoomByRoomId(roomId);
 
 		return result;
 	}
@@ -1355,26 +1363,35 @@ export class Subscriptions extends Base {
 			Rooms.incUsersCountById(roomId, - result);
 		}
 
+		Users.removeRoomByUserId(userId, roomId);
+
 		return result;
 	}
 
 	removeByRoomIds(rids) {
-		return this.remove({ rid: { $in: rids } });
+		const result = this.remove({ rid: { $in: rids } });
+
+		Users.removeRoomByRoomIds(rids);
+
+		return result;
 	}
 
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
-	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid) {
+	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid, { groupMention = false, userMention = false } = {}) {
 		if (!users) {
 			return;
 		}
+
 		return this.update({
 			'u._id': { $in: users },
 			rid,
 		}, {
 			$addToSet: {
 				tunread: tmid,
+				...groupMention && { tunreadGroup: tmid },
+				...userMention && { tunreadUser: tmid },
 			},
 		}, { multi: true });
 	}
@@ -1386,6 +1403,8 @@ export class Subscriptions extends Base {
 		}, {
 			$pull: {
 				tunread: tmid,
+				tunreadGroup: tmid,
+				tunreadUser: tmid,
 			},
 		});
 	}

@@ -34,11 +34,13 @@ const getInitialValue = (data) => ({
 	username: data.username,
 	status: data.status,
 	bio: data.bio ?? '',
+	nickname: data.nickname ?? '',
 	email: (data.emails && data.emails[0].address) || '',
 	verified: (data.emails && data.emails[0].verified) || false,
 	setRandomPassword: false,
 	requirePasswordChange: data.setRandomPassword || false,
 	customFields: data.customFields ?? {},
+	statusText: data.statusText ?? '',
 });
 
 export function EditUser({ data, roles, ...props }) {
@@ -101,7 +103,7 @@ export function EditUser({ data, roles, ...props }) {
 
 	const canSaveOrReset = hasUnsavedChanges || avatarObj;
 
-	const prepend = useMemo(() => <UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>, [data.username]);
+	const prepend = useMemo(() => <UserAvatarEditor username={data.username} etag={data.avatarETag} setAvatarObj={setAvatarObj}/>, [data.username, data.avatarETag]);
 
 	const append = useMemo(() => <Field>
 		<Field.Row>

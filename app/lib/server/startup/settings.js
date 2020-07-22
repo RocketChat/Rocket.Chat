@@ -97,7 +97,7 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_SearchFields', 'username, name, bio', {
+	this.add('Accounts_SearchFields', 'username, name, bio, nickname', {
 		type: 'string',
 	});
 	this.add('Accounts_Directory_DefaultView', 'channels', {
@@ -529,6 +529,7 @@ settings.addGroup('Accounts', function() {
 
 		this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
 			type: 'boolean',
+			public: true,
 		});
 
 		return this.add('Accounts_SetDefaultAvatar', true, {
@@ -1283,9 +1284,17 @@ settings.addGroup('Push', function() {
 			type: 'boolean',
 			public: true,
 		});
-		return this.add('Push_show_message', true, {
+		this.add('Push_show_message', true, {
 			type: 'boolean',
 			public: true,
+		});
+		this.add('Push_request_content_from_server', true, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: [
+				'push-privacy',
+			],
 		});
 	});
 });
@@ -1374,6 +1383,12 @@ settings.addGroup('Layout', function() {
 			type: 'boolean',
 			public: true,
 		});
+
+		this.add('Number_of_users_autocomplete_suggestions', 5, {
+			type: 'int',
+			public: true,
+		});
+
 		this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
 			type: 'select',
 			values: [

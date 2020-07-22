@@ -124,7 +124,7 @@ function MarketplaceTable() {
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const { text, current, itemsPerPage } = params;
-	const { data, dataCache } = useContext(AppDataContext);
+	const { data, dataCache, finishedLoading } = useContext(AppDataContext);
 	const [filteredApps, filteredAppsCount] = useFilteredApps({
 		filterFunction: useCallback(
 			(text) => ({ name, marketplace }) => marketplace !== false && name.toLowerCase().indexOf(text.toLowerCase()) > -1,
@@ -174,7 +174,7 @@ function MarketplaceTable() {
 				{t('Status')}
 			</GenericTable.HeaderCell>
 		</>}
-		results={filteredApps}
+		results={(filteredApps?.length || finishedLoading) && filteredApps}
 		total={filteredAppsCount}
 		setParams={setParams}
 		params={params}

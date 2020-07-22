@@ -58,16 +58,16 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		<FieldGroup>
 			{editableSettings.map((setting) => <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />)}
 
-			{hasReset && canReset && <Button
-				children={t('Reset_section_settings')}
-				danger
-				data-section={sectionName}
-				ghost
-				onClick={handleResetSectionClick}
-			/>}
 
 			{children}
 		</FieldGroup>
+		{hasReset && canReset && <Button
+			children={t('Reset_section_settings')}
+			danger
+			marginBlockStart={'x16'}
+			data-section={sectionName}
+			onClick={handleResetSectionClick}
+		/>}
 	</Accordion.Item>;
 }
 
