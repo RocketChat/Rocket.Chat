@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import s from 'underscore.string';
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -9,12 +8,11 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
-import { renderMessageBody, MessageTypes, MessageAction, call } from '../../ui-utils/client';
-import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
+import { renderMessageBody, MessageTypes, MessageAction } from '../../ui-utils/client';
+import { RoomRoles, UserRoles, Roles } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
-import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
 import './message.html';
 import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
@@ -50,39 +48,6 @@ const renderBody = (msg, settings) => {
 
 	return msg;
 };
-
-const findParentMessage = (() => {
-	const waiting = [];
-	const uid = Tracker.nonreactive(() => Meteor.userId());
-	const getMessages = _.debounce(async function() {
-		const _tmp = [...waiting];
-		waiting.length = 0;
-		(await call('getMessages', _tmp)).map((msg) => Messages.findOne({ _id: msg._id }) || upsertMessage({ msg: { ...msg, _hidden: true }, uid }));
-	}, 500);
-
-
-	return (tmid) => {
-		if (waiting.indexOf(tmid) > -1) {
-			return;
-		}
-		const message = Messages.findOne({ _id: tmid });
-		if (!message) {
-			waiting.push(tmid);
-			return getMessages();
-		}
-		return Messages.update(
-			{ tmid, repliesCount: { $exists: 0 } },
-			{
-				$set: {
-					following: message.replies && message.replies.indexOf(uid) > -1,
-					threadMsg: normalizeThreadTitle(message),
-					repliesCount: message.tcount,
-				},
-			},
-			{ multi: true },
-		);
-	};
-})();
 
 Template.message.helpers({
 	following() {
@@ -460,14 +425,6 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
 	},
-});
-
-
-Template.message.onCreated(function() {
-	const { msg, shouldCollapseReplies } = Template.currentData();
-	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
-		findParentMessage(msg.tmid);
-	}
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
