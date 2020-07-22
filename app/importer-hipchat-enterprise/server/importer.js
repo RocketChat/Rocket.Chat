@@ -12,7 +12,6 @@ import {
 	SelectionChannel,
 	SelectionUser,
 } from '../../importer/server';
-import { ImporterBase as NewImporterBase } from '../../importer/server/classes/NewImporterBase';
 import { Messages, Users, Subscriptions, Rooms, Imports } from '../../models';
 
 const turndownService = new TurndownService({
@@ -20,8 +19,6 @@ const turndownService = new TurndownService({
 	hr: '',
 	br: '\n',
 });
-
-let newImporter = null;
 
 turndownService.addRule('strikethrough', {
 	filter: 'img',
@@ -732,7 +729,7 @@ export class HipChatEnterpriseImporter extends Base {
 			newUser.type = 'bot';
 		}
 
-		newImporter.addUser(newUser);
+		this.converter.addUser(newUser);
 		super.addCountCompleted(1);
 	}
 
@@ -843,8 +840,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	startImport(importSelection) {
-		newImporter = new NewImporterBase();
-		newImporter.clearImportData();
+		this.converter.clearImportData();
 
 		this.reloadCount();
 		super.startImport(importSelection);
@@ -866,7 +862,7 @@ export class HipChatEnterpriseImporter extends Base {
 				await this._importMessages(startedByUserId);
 				await this._importDirectMessages();
 
-				newImporter.convertData(startedByUserId);
+				this.converter.convertData(startedByUserId);
 				// super.updateProgress(ProgressStep.FINISHING);
 				await super.updateProgress(ProgressStep.DONE);
 			} catch (e) {
@@ -943,7 +939,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	_importChannel(channelToImport) {
-		newImporter.addChannel({
+		this.converter.addChannel({
 			u: {
 				_id: String(channelToImport.creator),
 			},
@@ -1041,7 +1037,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 		switch (msg.type) {
 			case 'user':
-				newImporter.addMessage({
+				this.converter.addMessage({
 					_id: msg.id,
 					ts: msg.ts,
 					msg: msg.text,
@@ -1053,7 +1049,7 @@ export class HipChatEnterpriseImporter extends Base {
 				});
 				break;
 			case 'topic':
-				newImporter.addMessage({
+				this.converter.addMessage({
 					_id: msg.id,
 					ts: msg.ts,
 					t: 'room_changed_topic',
@@ -1205,7 +1201,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 				const rid = [msg.receiverId, msg.senderId].sort().join('');
 				if (!(rid in addedRooms)) {
-					newImporter.addChannel({
+					this.converter.addChannel({
 						importIds: [
 							rid,
 						],
@@ -1225,7 +1221,7 @@ export class HipChatEnterpriseImporter extends Base {
 				importedMessages[msg.id] = true;
 
 				if (!msg.skip) {
-					newImporter.addMessage({
+					this.converter.addMessage({
 						_id: msg.id,
 						ts: msg.ts,
 						msg: msg.text,

@@ -12,9 +12,6 @@ import {
 } from '../../importer/server';
 import { Rooms } from '../../models';
 import { t } from '../../utils';
-import { ImporterBase as NewImporterBase } from '../../importer/server/classes/NewImporterBase';
-
-let newImporter = null;
 
 export class CsvImporter extends Base {
 	constructor(info, importRecord) {
@@ -176,8 +173,7 @@ export class CsvImporter extends Base {
 	}
 
 	startImport(importSelection) {
-		newImporter = new NewImporterBase();
-		newImporter.clearImportData();
+		this.converter.clearImportData();
 
 		this.users = RawImports.findOne({ import: this.importRecord._id, type: 'users' });
 		this.channels = RawImports.findOne({ import: this.importRecord._id, type: 'channels' });
@@ -220,7 +216,7 @@ export class CsvImporter extends Base {
 						continue;
 					}
 
-					newImporter.addUser({
+					this.converter.addUser({
 						importIds: [
 							u.username,
 						],
@@ -247,7 +243,7 @@ export class CsvImporter extends Base {
 						continue;
 					}
 
-					newImporter.addChannel({
+					this.converter.addChannel({
 						importIds: [
 							c.id,
 						],
@@ -313,12 +309,12 @@ export class CsvImporter extends Base {
 							msg: msg.text,
 						};
 
-						newImporter.addMessage(newMessage);
+						this.converter.addMessage(newMessage);
 						super.addCountCompleted(1);
 					}
 				});
 
-				newImporter.convertData(startedByUserId);
+				this.converter.convertData(startedByUserId);
 
 				super.updateProgress(ProgressStep.FINISHING);
 				super.updateProgress(ProgressStep.DONE);
@@ -343,7 +339,7 @@ export class CsvImporter extends Base {
 				const sourceId = [msg.username, msg.otherUsername].sort().join('/');
 
 				if (!dmRooms.has(sourceId)) {
-					newImporter.addChannel({
+					this.converter.addChannel({
 						importIds: [
 							sourceId,
 						],
@@ -363,7 +359,7 @@ export class CsvImporter extends Base {
 					msg: msg.text,
 				};
 
-				newImporter.addMessage(newMessage);
+				this.converter.addMessage(newMessage);
 
 				super.addCountCompleted(1);
 			}

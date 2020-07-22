@@ -14,10 +14,7 @@ import { Users, Rooms, Messages } from '../../models';
 import { getValidRoomName } from '../../utils';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
-import { ImporterBase as NewImporterBase } from '../../importer/server/classes/NewImporterBase';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-
-let newImporter = null;
 
 export class SlackImporter extends Base {
 	constructor(info, importRecord) {
@@ -225,7 +222,7 @@ export class SlackImporter extends Base {
 			newUser.type = 'bot';
 		}
 
-		newImporter.addUser(newUser);
+		this.converter.addUser(newUser);
 
 		this._saveUserTag(user.id, user.name);
 		this.addCountCompleted(1);
@@ -432,7 +429,7 @@ export class SlackImporter extends Base {
 						fileMessage.tmid = this.makeSlackMessageId(slackChannel.id, message.thread_ts);
 					}
 
-					newImporter.addMessage(fileMessage);
+					this.converter.addMessage(fileMessage);
 				});
 			}
 
@@ -445,7 +442,7 @@ export class SlackImporter extends Base {
 
 			if (message.subtype && !regularTypes.includes(message.subtype) && !isBotMessage) {
 				if (this.processMessageSubType(message, slackChannel, newMessage, missedTypes)) {
-					newImporter.addMessage(newMessage);
+					this.converter.addMessage(newMessage);
 				}
 			} else {
 				const text = this.convertSlackMessageToRocketChat(message.text);
@@ -508,7 +505,7 @@ export class SlackImporter extends Base {
 
 				this.newParseMentions(newMessage);
 
-				newImporter.addMessage(newMessage);
+				this.converter.addMessage(newMessage);
 			}
 		}
 
@@ -557,7 +554,7 @@ export class SlackImporter extends Base {
 
 			channelNames.push(channel.name);
 
-			newImporter.addChannel({
+			this.converter.addChannel({
 				_id: channel.is_general ? 'general' : undefined,
 				u: {
 					_id: this._replaceSlackUserId(channel.creator),
@@ -629,7 +626,7 @@ export class SlackImporter extends Base {
 			channelNames.push(channel.name);
 
 			Meteor.runAsUser(startedByUserId, () => {
-				newImporter.addChannel({
+				this.converter.addChannel({
 					u: {
 						_id: this._replaceSlackUserId(channel.creator),
 					},
@@ -686,7 +683,7 @@ export class SlackImporter extends Base {
 			channelNames.push(channel.name);
 
 			Meteor.runAsUser(startedByUserId, () => {
-				newImporter.addChannel({
+				this.converter.addChannel({
 					u: {
 						_id: this._replaceSlackUserId(channel.creator),
 					},
@@ -735,7 +732,7 @@ export class SlackImporter extends Base {
 			}
 
 			Meteor.runAsUser(startedByUserId, () => {
-				newImporter.addChannel({
+				this.converter.addChannel({
 					importIds: [
 						channel.id,
 					],
@@ -828,8 +825,7 @@ export class SlackImporter extends Base {
 	}
 
 	startImport(importSelection) {
-		newImporter = new NewImporterBase();
-		newImporter.clearImportData();
+		this.converter.clearImportData();
 
 		const bots = this.collection.findOne({ import: this.importRecord._id, type: 'bots' });
 		if (bots) {
@@ -870,7 +866,7 @@ export class SlackImporter extends Base {
 
 				this._importMessages(startedByUserId, channelNames);
 
-				newImporter.convertData(startedByUserId);
+				this.converter.convertData(startedByUserId);
 				super.updateProgress(ProgressStep.FINISHING);
 
 				// try {

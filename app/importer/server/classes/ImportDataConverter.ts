@@ -43,7 +43,7 @@ const guessNameFromUsername = (username: string): string =>
 		.replace(/^(.)/, (u) => u.toLowerCase())
 		.replace(/^\w/, (u) => u.toUpperCase());
 
-export class ImporterBase {
+export class ImportDataConverter {
 	private _userCache: Map<string, IUserIdentification>;
 
 	// display name uses a different cache because it's only used on mentions so we don't need to load it every time we load an user

@@ -16,6 +16,7 @@ import { Settings, Imports } from '../../../models';
 import { Logger } from '../../../logger';
 import { FileUpload } from '../../../file-upload';
 import { sendMessage } from '../../../lib';
+import { ImportDataConverter } from './ImportDataConverter';
 
 /**
  * Base class for all of the importers.
@@ -84,6 +85,7 @@ export class Base {
 		this.https = https;
 		this.AdmZip = AdmZip;
 		this.getFileType = getFileType;
+		this.converter = new ImportDataConverter();
 
 		this.prepare = this.prepare.bind(this);
 		this.startImport = this.startImport.bind(this);
