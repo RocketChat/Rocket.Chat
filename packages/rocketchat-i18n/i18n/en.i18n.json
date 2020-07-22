@@ -3646,6 +3646,7 @@
   "Unstar_Message": "Remove Star",
   "Update": "Update",
   "Update_LatestAvailableVersion": "Update Latest Available Version",
+  "Update_EnableChecker": "Enable the Update Checker",
   "Update_to_version": "Update to __version__",
   "Update_your_RocketChat": "Update your Rocket.Chat",
   "Updated_at": "Updated at",
