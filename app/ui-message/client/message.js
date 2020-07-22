@@ -403,8 +403,8 @@ Template.message.helpers({
 		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	shouldHideBody() {
-		const { msg: { tmid }, settings: { showreply } } = this;
-		return showreply && tmid;
+		const { msg: { tmid, actionContext }, settings: { showreply }, context } = this;
+		return showreply && tmid && !(actionContext || context);
 	},
 	collapsed() {
 		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
