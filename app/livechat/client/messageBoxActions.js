@@ -13,6 +13,23 @@ import { callbacks } from '../../callbacks/client';
 const activeSessions = new ReactiveVar([]);
 const pendingSessions = new ReactiveVar([]);
 
+// utility function to open screen sharing IFrame
+const openSessionIframe = (rid) => {
+	const messageBoxRef = document.querySelector('.rc-message-box');
+
+	if (ScreenSharinDialog.opened) {
+		ScreenSharinDialog.close();
+	}
+
+	if (!activeSessions.get().includes(rid)) {
+		return;
+	}
+
+	Meteor.call('livechat:getSessionUrl', rid, (err, url) => {
+		ScreenSharinDialog.open(messageBoxRef, { rid, src: url });
+	});
+};
+
 messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 	id: 'request-screen-sharing',
 	icon: 'video',
@@ -67,9 +84,12 @@ Meteor.startup(function() {
 		activeSessions.set(data);
 	});
 	Tracker.autorun(() => {
-		screenSharingStreamer.on('active-sessions-modified', ({ sessions }) => {
+		screenSharingStreamer.on('active-sessions-modified', ({ sessions, sessionAdded }) => {
 			console.log(sessions);
 			activeSessions.set(sessions);
+			if (sessionAdded && Session.get('openedRoom') === sessionAdded) {
+				openSessionIframe(sessionAdded);
+			}
 		});
 	});
 	Tracker.autorun(() => {
@@ -80,22 +100,9 @@ Meteor.startup(function() {
 	});
 });
 
-// callbacks.add('enter-room', (sub) => {
-// 	console.log(sub);
-// 	console.log(sessions.get());
-
-// 	// if (sessions.get().length === 0) {
-// 	// 	return;
-// 	// }
-// 	if (ScreenSharinDialog.opened) {
-// 		ScreenSharinDialog.close();
-// 	}
-// 	if (!sessions.get().includes(sub.rid)) {
-// 		return;
-// 	}
-// 	console.log('entered');
-// 	ScreenSharinDialog.open(null, { rid: sub.rid, src: `https://ashwaniydv.github.io/sstest/index.html?rid=${ sub.rid }` });
-// });
+callbacks.add('enter-room', (sub) => {
+	openSessionIframe(sub.rid);
+});
 
 callbacks.add('roomExit', () => {
 	if (ScreenSharinDialog.opened) {

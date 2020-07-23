@@ -88,14 +88,14 @@ export class ScreenSharingManager {
 		const sessionUrl = this.screenShareProvider.getURL(roomId, agent);
 		this.urls.set(roomId, sessionUrl);
 		console.log(this.activeSessions);
-		screenSharingStreamer.emit('active-sessions-modified', { sessions: this.activeSessions });
+		screenSharingStreamer.emit('active-sessions-modified', { sessions: this.activeSessions, sessionAdded: roomId });
 	}
 
 	removeActiveScreenSharing(roomId: string): void {
 		this.activeSessions = this.activeSessions.filter((id) => id !== roomId);
 		this.urls.delete(roomId);
 		console.log(this.activeSessions);
-		screenSharingStreamer.emit('active-sessions-modified', { sessions: this.activeSessions });
+		screenSharingStreamer.emit('active-sessions-modified', { sessions: this.activeSessions, sessionAdded: null });
 	}
 
 	guestRequestingScreenSharing(roomId: string, visitor: any): void {
