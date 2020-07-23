@@ -7,7 +7,6 @@ import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
 
 import { Progress } from './ImporterProgress';
-import { Selection } from './ImporterSelection';
 import { ImporterWebsocket } from './ImporterWebsocket';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
@@ -17,6 +16,14 @@ import { Logger } from '../../../logger';
 import { FileUpload } from '../../../file-upload';
 import { sendMessage } from '../../../lib';
 import { ImportDataConverter } from './ImportDataConverter';
+import { ImportData } from '../models/ImportData';
+import { t } from '../../../utils/server';
+
+import {
+	Selection,
+	SelectionChannel,
+	SelectionUser,
+} from '..';
 
 /**
  * Base class for all of the importers.
@@ -198,7 +205,73 @@ export class Base {
 			throw new Error(`Channels in the selected data wasn't found, it must but at least an empty array for the ${ this.info.name } importer.`);
 		}
 
-		return this.updateProgress(ProgressStep.IMPORTING_STARTED);
+		this.updateProgress(ProgressStep.IMPORTING_STARTED);
+		this.reloadCount();
+		const started = Date.now();
+		const startedByUserId = Meteor.userId();
+		console.log(importSelection);
+
+		const beforeImportFn = (data, type) => {
+			switch (type) {
+				case 'channel': {
+					const id = data.t === 'd' ? '__directMessages__' : data.importIds[0];
+					for (const channel of importSelection.channels) {
+						if (channel.channel_id === id) {
+							return channel.do_import;
+						}
+					}
+
+					return false;
+				}
+				case 'user': {
+					const id = data.importIds[0];
+					for (const user of importSelection.users) {
+						if (user.user_id === id) {
+							return user.do_import;
+						}
+					}
+
+					return false;
+				}
+			}
+
+			return true;
+		};
+
+		const afterImportFn = () => {
+			this.addCountCompleted(1);
+		};
+
+		Meteor.defer(() => {
+			try {
+				this.updateProgress(ProgressStep.IMPORTING_USERS);
+				this.converter.convertUsers({ beforeImportFn, afterImportFn });
+
+				this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
+				this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn });
+
+				this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
+				this.converter.convertMessages({ afterImportFn });
+
+				this.updateProgress(ProgressStep.FINISHING);
+
+				// #ToDo: Archive channels
+
+				Meteor.defer(() => {
+					this.converter.clearSuccessfullyImportedData();
+				});
+
+				this.updateProgress(ProgressStep.DONE);
+			} catch (e) {
+				this.logger.error(e);
+				this.updateProgress(ProgressStep.ERROR);
+			}
+
+			const timeTook = Date.now() - started;
+			this.logger.log(`CSV Import took ${ timeTook } milliseconds.`);
+		});
+
+		return this.getProgress();
 	}
 
 	/**
@@ -453,5 +526,25 @@ export class Base {
 				});
 			}));
 		}));
+	}
+
+	buildSelection() {
+		this.updateProgress(ProgressStep.USER_SELECTION);
+
+		const users = ImportData.getAllUsersForSelection();
+		const channels = ImportData.getAllChannelsForSelection();
+		const hasDM = ImportData.checkIfDirectMessagesExists();
+
+		const selectionUsers = users.map((u) => new SelectionUser(u.data.importIds[0], u.data.username, u.data.emails[0], Boolean(u.data.deleted), u.data.type === 'bot', true));
+		const selectionChannels = channels.map((c) => new SelectionChannel(c.data.importIds[0], c.data.name, Boolean(c.data.archived), true, c.data.t === 'p', undefined, c.data.t === 'd'));
+		const selectionMessages = ImportData.countMessages();
+
+		if (hasDM) {
+			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));
+		}
+
+		const results = new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
+
+		return results;
 	}
 }

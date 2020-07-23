@@ -8,7 +8,9 @@ import { hasPermission } from '../../../authorization';
 import { Imports } from '../../../models';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 
-import { Importers } from '..';
+import {
+	Importers,
+} from '..';
 
 Meteor.methods({
 	getImportFileData() {
@@ -59,31 +61,17 @@ Meteor.methods({
 		];
 
 		if (readySteps.indexOf(importer.instance.progress.step) >= 0) {
-			if (importer.instance.importRecord && importer.instance.importRecord.fileData) {
-				return importer.instance.importRecord.fileData;
-			}
+			return importer.instance.buildSelection();
 		}
 
 		const fileName = importer.instance.importRecord.file;
 		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
-		const results = importer.instance.prepareUsingLocalFile(fullFilePath);
+		const promise = importer.instance.prepareUsingLocalFile(fullFilePath);
 
-		if (results instanceof Promise) {
-			return results.then((data) => {
-				importer.instance.updateRecord({
-					fileData: data,
-				});
-
-				return data;
-			}).catch((e) => {
-				console.error(e);
-				throw new Meteor.Error(e);
-			});
+		if (promise && promise instanceof Promise) {
+			Promise.await(promise);
 		}
-		importer.instance.updateRecord({
-			fileData: results,
-		});
 
-		return results;
+		return importer.instance.buildSelection();
 	},
 });

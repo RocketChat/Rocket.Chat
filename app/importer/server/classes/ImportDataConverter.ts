@@ -36,6 +36,15 @@ type IMessageReaction = {
 
 type IMessageReactions = Record<string, IMessageReaction>;
 
+interface IConversionCallbacks {
+	beforeImportFn?: {
+		(data: IImportUser | IImportChannel | IImportMessage, type: string): boolean;
+	};
+	afterImportFn?: {
+		(data: IImportUser | IImportChannel | IImportMessage, type: string): void;
+	};
+}
+
 const guessNameFromUsername = (username: string): string =>
 	username
 		.replace(/\W/g, ' ')
@@ -208,10 +217,15 @@ export class ImportDataConverter {
 		return user;
 	}
 
-	convertUsers(): void {
+	convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const users = ImportData.find({ dataType: 'user' });
 		users.forEach(({ data, _id }: IImportUserRecord) => {
 			try {
+				if (beforeImportFn && !beforeImportFn(data, 'user')) {
+					this.skipRecord(_id);
+					return;
+				}
+
 				data.emails = data.emails.filter((item) => item);
 				data.importIds = data.importIds.filter((item) => item);
 
@@ -250,6 +264,10 @@ export class ImportDataConverter {
 				if (data.deleted && existingUser?.active) {
 					setUserActiveStatus(data._id, false, true);
 				}
+
+				if (afterImportFn) {
+					afterImportFn(data, 'user');
+				}
 			} catch (e) {
 				this.saveError(_id, e);
 			}
@@ -276,6 +294,16 @@ export class ImportDataConverter {
 					message: error.message,
 					stack: error.stack,
 				},
+			},
+		});
+	}
+
+	skipRecord(_id: string): void {
+		ImportData.update({
+			_id,
+		}, {
+			$set: {
+				skipped: true,
 			},
 		});
 	}
@@ -393,16 +421,22 @@ export class ImportDataConverter {
 		return result;
 	}
 
-	convertMessages(): void {
+	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const messages = ImportData.find({ dataType: 'message' });
 		messages.forEach(({ data: m, _id }: IImportMessageRecord) => {
 			try {
+				if (beforeImportFn && !beforeImportFn(m, 'message')) {
+					this.skipRecord(_id);
+					return;
+				}
+
 				if (!m.ts || isNaN(m.ts as unknown as number)) {
 					throw new Error('importer-message-invalid-timestamp');
 				}
 
 				const creator = this.findImportedUser(m.u._id);
 				if (!creator) {
+					console.log(`Imported user not found: ${ m.u._id }`);
 					throw new Error('importer-message-unknown-user');
 				}
 
@@ -450,6 +484,10 @@ export class ImportDataConverter {
 				}
 
 				insertMessage(creator, msgObj, rid, true);
+
+				if (afterImportFn) {
+					afterImportFn(m, 'message');
+				}
 			} catch (e) {
 				this.saveError(_id, e);
 			}
@@ -628,6 +666,7 @@ export class ImportDataConverter {
 
 		if (roomData.t === 'd') {
 			if (members.length < roomData.users.length) {
+				console.log('One or more imported users not found: ${ roomData.users }');
 				throw new Error('importer-channel-missing-users');
 			}
 		}
@@ -701,10 +740,15 @@ export class ImportDataConverter {
 		return Rooms.findOneByNonValidatedName(data.name, {});
 	}
 
-	convertChannels(startedByUserId: string): void {
+	convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const channels = ImportData.find({ dataType: 'channel' });
 		channels.forEach(({ data: c, _id }: IImportChannelRecord) => {
 			try {
+				if (beforeImportFn && !beforeImportFn(c, 'channel')) {
+					this.skipRecord(_id);
+					return;
+				}
+
 				if (!c.name && c.t !== 'd') {
 					throw new Error('importer-channel-missing-name');
 				}
@@ -723,16 +767,20 @@ export class ImportDataConverter {
 				} else {
 					this.insertRoom(c, startedByUserId);
 				}
+
+				if (afterImportFn) {
+					afterImportFn(c, 'channel');
+				}
 			} catch (e) {
 				this.saveError(_id, e);
 			}
 		});
 	}
 
-	convertData(startedByUserId: string): void {
-		this.convertUsers();
-		this.convertChannels(startedByUserId);
-		this.convertMessages();
+	convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): void {
+		this.convertUsers(callbacks);
+		this.convertChannels(startedByUserId, callbacks);
+		this.convertMessages(callbacks);
 
 		Meteor.defer(() => {
 			this.clearSuccessfullyImportedData();
