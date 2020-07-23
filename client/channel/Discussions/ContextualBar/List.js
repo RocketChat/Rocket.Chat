@@ -13,7 +13,6 @@ import { getConfig } from '../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../app/models/client';
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import RawText from '../../../components/basic/RawText';
 import { useUserId } from '../../../contexts/UserContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -188,7 +187,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 	return <VerticalBar>
 		<VerticalBar.Header>
 			<VerticalBar.Icon name='discussion'/>
-			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><RawText>{t('Discussions')}</RawText></Box>
+			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Discussions')}</Box>
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
