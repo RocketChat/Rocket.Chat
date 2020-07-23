@@ -1,6 +1,37 @@
 
 # 3.5.0 (Under Release Candidate Process)
 
+## 3.5.0-rc.1
+`2020-07-23  ·  1 🐛  ·  3 🔍  ·  6 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Update check not able to be disabled ([#18339](https://github.com/RocketChat/Rocket.Chat/pull/18339))
+
+  Update checker can now be disabled.
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Admin User password  ([#18350](https://github.com/RocketChat/Rocket.Chat/pull/18350))
+
+- Regression: Preferences crashing when User has no preferences set. ([#18341](https://github.com/RocketChat/Rocket.Chat/pull/18341))
+
+- Regression: User Status selector ([#18343](https://github.com/RocketChat/Rocket.Chat/pull/18343))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@graywolf336](https://github.com/graywolf336)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.5.0-rc.0
 `2020-07-21  ·  8 🎉  ·  5 🚀  ·  32 🐛  ·  14 🔍  ·  22 👩‍💻👨‍💻`
 
@@ -179,6 +210,96 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 3.4.2
+`2020-07-10  ·  6 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.15.0`
+
+### 🐛 Bug fixes
+
+
+- CAS login not merging users with local accounts ([#18238](https://github.com/RocketChat/Rocket.Chat/pull/18238))
+
+- SAML login crashing when receiving an array of roles ([#18224](https://github.com/RocketChat/Rocket.Chat/pull/18224))
+
+- Application not loading due to reverse proxy decoding API calls unnecessarily ([#18222](https://github.com/RocketChat/Rocket.Chat/pull/18222))
+
+- Old Data Migrations breaking upgrades ([#18185](https://github.com/RocketChat/Rocket.Chat/pull/18185))
+
+- Cannot open admin when server uses ROOT_URL with subpath (#18105) ([#18147](https://github.com/RocketChat/Rocket.Chat/pull/18147) by [@omarchehab98](https://github.com/omarchehab98))
+
+- App details returns to apps table, instead of previous page. ([#18080](https://github.com/RocketChat/Rocket.Chat/pull/18080))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.4.2 ([#18241](https://github.com/RocketChat/Rocket.Chat/pull/18241) by [@omarchehab98](https://github.com/omarchehab98))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@omarchehab98](https://github.com/omarchehab98)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rodrigok](https://github.com/rodrigok)
+
+# 3.4.1
+`2020-07-02  ·  7 🐛  ·  1 🔍  ·  8 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.15.0`
+
+### 🐛 Bug fixes
+
+
+- Email notifications were still being sent for online users ([#18088](https://github.com/RocketChat/Rocket.Chat/pull/18088) by [@densik](https://github.com/densik))
+
+- The livechat agent activity monitor wasn't being initialised because due to an internal error ([#18090](https://github.com/RocketChat/Rocket.Chat/pull/18090) by [@paulobernardoaf](https://github.com/paulobernardoaf))
+
+- Not possible to read encrypted messages after disable E2E on channel level ([#18101](https://github.com/RocketChat/Rocket.Chat/pull/18101))
+
+- Omnichannel close room callback returning promise ([#18102](https://github.com/RocketChat/Rocket.Chat/pull/18102))
+
+- Avatar ETag missing from User ([#18109](https://github.com/RocketChat/Rocket.Chat/pull/18109))
+
+- "Add reaction" icon missing when the viewport size is smaller than 500px ([#18110](https://github.com/RocketChat/Rocket.Chat/pull/18110) by [@dudizilla](https://github.com/dudizilla))
+
+- Jitsi opening twice ([#18111](https://github.com/RocketChat/Rocket.Chat/pull/18111))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.4.1 ([#18134](https://github.com/RocketChat/Rocket.Chat/pull/18134) by [@densik](https://github.com/densik) & [@dudizilla](https://github.com/dudizilla) & [@paulobernardoaf](https://github.com/paulobernardoaf))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@densik](https://github.com/densik)
+- [@dudizilla](https://github.com/dudizilla)
+- [@paulobernardoaf](https://github.com/paulobernardoaf)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.4.0
 `2020-06-30  ·  18 🎉  ·  19 🚀  ·  42 🐛  ·  52 🔍  ·  52 👩‍💻👨‍💻`
