@@ -10,7 +10,7 @@ const PreferencesGlobalSection = ({ onChange, ...props }) => {
 
 	const userDontAskAgainList = useUserPreference('dontAskAgainList');
 
-	const options = useMemo(() => userDontAskAgainList.map(({ action, label }) => [action, label]), [userDontAskAgainList]);
+	const options = useMemo(() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]), [userDontAskAgainList]);
 
 	const selectedOptions = options.map(([action]) => action);
 

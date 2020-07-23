@@ -6,5 +6,13 @@ settings.addGroup('General', function() {
 			type: 'string',
 			readonly: true,
 		});
+
+		this.add('Update_EnableChecker', true, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
 	});
 });
