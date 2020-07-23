@@ -207,7 +207,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
 
-	return <ButtonGroup flexGrow={1} justifyContent='center'>
+	return <ButtonGroup flexGrow={0} justifyContent='center'>
 		{actions}
 	</ButtonGroup>;
 };
