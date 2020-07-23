@@ -125,26 +125,39 @@ export class BaseDb extends EventEmitter {
 	}
 
 	_ensureDefaultFields(options) {
-		if ((options?.fields == null || Object.keys(options?.fields).length === 0) && this.baseModel.defaultFields) {
-			options.fields = this.baseModel.defaultFields;
+		if (!this.baseModel.defaultFields) {
+			return options;
 		}
+
+		if (!options) {
+			return { fields: this.baseModel.defaultFields };
+		}
+
+		if (options.fields != null && Object.keys(options.fields).length > 0) {
+			return options;
+		}
+
+		return {
+			...options,
+			fields: this.baseModel.defaultFields,
+		};
 	}
 
 	_doNotMixInclusionAndExclusionFields(options) {
-		this._ensureDefaultFields(options);
+		const optionsDef = this._ensureDefaultFields(options);
 
-		if (options && options.fields) {
-			const keys = Object.keys(options.fields);
-			const removeKeys = keys.filter((key) => options.fields[key] === 0);
+		if (optionsDef && optionsDef.fields) {
+			const keys = Object.keys(optionsDef.fields);
+			const removeKeys = keys.filter((key) => optionsDef.fields[key] === 0);
 			if (keys.length > removeKeys.length) {
-				removeKeys.forEach((key) => delete options.fields[key]);
+				removeKeys.forEach((key) => delete optionsDef.fields[key]);
 			}
 		}
 	}
 
 	find(query = {}, options = {}) {
-		this._doNotMixInclusionAndExclusionFields(options);
-		return this.model.find(query, options);
+		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.find(query, optionsDef);
 	}
 
 	findById(_id, options) {
@@ -152,8 +165,8 @@ export class BaseDb extends EventEmitter {
 	}
 
 	findOne(query = {}, options = {}) {
-		this._doNotMixInclusionAndExclusionFields(options);
-		return this.model.findOne(query, options);
+		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.findOne(query, optionsDef);
 	}
 
 	findOneById(_id, options) {
