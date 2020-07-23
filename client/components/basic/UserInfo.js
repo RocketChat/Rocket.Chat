@@ -42,7 +42,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
-		<UserAvatar size={'x332'} title={username} username={username}/>
+		<UserAvatar margin='auto' size={'x332'} title={username} username={username}/>
 
 		{actions}
 
