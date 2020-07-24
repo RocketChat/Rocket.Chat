@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Push } from '../../../push/server';
 import { settings } from '../../../settings/server';
@@ -17,27 +16,23 @@ export class PushNotification {
 	}
 
 	getNotificationConfig({ rid, uid: userId, mid: messageId, roomName, username, message, payload, badge = 1, category, idOnly = false }) {
-		let title;
-		if (roomName && roomName !== '') {
-			title = `${ roomName }`;
-			message = `${ username }: ${ message }`;
-		} else {
-			title = `${ username }`;
-		}
+		const title = idOnly ? '' : roomName || username;
+
+		// message is being redacted already by 'parseMessageTextPerUser' if idOnly is true
+		const text = !idOnly && roomName !== '' ? `${ username }: ${ message }` : message;
 
 		const config = {
 			from: 'push',
 			badge,
 			sound: 'default',
 			priority: 10,
-			title: idOnly ? '' : title,
-			text: idOnly ? TAPi18n.__('Someone_sent_you_a_message') : message,
+			title,
+			text,
 			payload: {
 				host: Meteor.absoluteUrl(),
-				...idOnly || { rid },
 				messageId,
 				notificationType: idOnly ? 'message-id-only' : 'message',
-				...idOnly || payload,
+				...idOnly || { rid, ...payload },
 			},
 			userId,
 			notId: this.getNotificationId(rid),
