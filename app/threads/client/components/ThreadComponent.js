@@ -13,6 +13,7 @@ import { call } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import { normalizeThreadTitle } from '../lib/normalizeThreadTitle';
+import RawText from '../../../../client/components/basic/RawText';
 
 export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 	const t = useTranslation();
@@ -88,7 +89,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 			<VerticalBar rcx-thread-view width='full' style={style} display='flex' flexDirection='column' position='absolute' { ...!expanded && { width: '380px' } }>
 				<VerticalBar.Header>
 					<VerticalBar.Icon name='thread' />
-					<VerticalBar.Text>{headerTitle}</VerticalBar.Text>
+					<VerticalBar.Text><RawText>{headerTitle}</RawText></VerticalBar.Text>
 					<VerticalBar.Action aria-label={expandLabel} onClick={handleExpandButton} name={expandIcon}/>
 					<VerticalBar.Action aria-label={actionLabel} onClick={handleFollowButton} name={button}/>
 					<VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
