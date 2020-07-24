@@ -59,6 +59,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			statusText = status,
 			bio = defaultValue,
 			utcOffset = defaultValue,
+			nickname,
 		} = user;
 
 		return {
@@ -74,6 +75,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			),
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
+			nickname,
 		};
 	}, [data, username, showRealNames, state]);
 

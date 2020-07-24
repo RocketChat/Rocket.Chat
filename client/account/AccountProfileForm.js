@@ -45,6 +45,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 		bio,
 		statusType,
 		customFields,
+		nickname,
 	} = values;
 
 	const {
@@ -58,6 +59,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 		handleStatusType,
 		handleBio,
 		handleCustomFields,
+		handleNickname,
 	} = handlers;
 
 	const previousEmail = getUserEmailAddress(user);
@@ -136,6 +138,9 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 				<Field.Row>
 					<TextInput error={nameError} disabled={!allowRealNameChange} flexGrow={1} value={realname} onChange={handleRealname}/>
 				</Field.Row>
+				{!allowRealNameChange && <Field.Hint>
+					{t('RealName_Change_Disabled')}
+				</Field.Hint>}
 				<Field.Error>
 					{nameError}
 				</Field.Error>
@@ -145,6 +150,9 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 				<Field.Row>
 					<TextInput error={usernameError} disabled={!canChangeUsername} flexGrow={1} value={username} onChange={handleUsername} addon={<Icon name='at' size='x20'/>}/>
 				</Field.Row>
+				{!canChangeUsername && <Field.Hint>
+					{t('Username_Change_Disabled')}
+				</Field.Hint>}
 				<Field.Error>
 					{usernameError}
 				</Field.Error>
@@ -155,10 +163,19 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 			<Field.Row>
 				<TextInput error={statusTextError} disabled={!allowUserStatusMessageChange} flexGrow={1} value={statusText} onChange={handleStatusText} addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType}/>}/>
 			</Field.Row>
+			{!allowUserStatusMessageChange && <Field.Hint>
+				{t('StatusMessage_Change_Disabled')}
+			</Field.Hint>}
 			<Field.Error>
 				{statusTextError}
 			</Field.Error>
 		</Field>, [t, statusTextError, allowUserStatusMessageChange, statusText, handleStatusText, handleStatusType, statusType])}
+		{useMemo(() => <Field>
+			<Field.Label>{t('Nickname')}</Field.Label>
+			<Field.Row>
+				<TextInput flexGrow={1} value={nickname} onChange={handleNickname} addon={<Icon name='edit' size='x20' alignSelf='center'/>}/>
+			</Field.Row>
+		</Field>, [nickname, handleNickname, t])}
 		{useMemo(() => <Field>
 			<Field.Label>{t('Bio')}</Field.Label>
 			<Field.Row>
@@ -183,6 +200,9 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 									disabled={!allowEmailChange}
 								/>
 							</Field.Row>
+							{!allowEmailChange && <Field.Hint>
+								{t('Email_Change_Disabled')}
+							</Field.Hint>}
 							<Field.Error>
 								{t(emailError)}
 							</Field.Error>
@@ -203,6 +223,9 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 							<Field.Row>
 								<PasswordInput autoComplete='off' disabled={!allowPasswordChange} error={passwordError} flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
 							</Field.Row>
+							{!allowPasswordChange && <Field.Hint>
+								{t('Password_Change_Disabled')}
+							</Field.Hint>}
 						</Field>, [t, password, handlePassword, passwordError, allowPasswordChange])}
 						{useMemo(() => <Field>
 							<AnimatedVisibility visibility={password ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN }>
