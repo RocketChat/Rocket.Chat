@@ -52,6 +52,26 @@ class ImportDataModel extends Base {
 			dataType: 'message',
 		}).count();
 	}
+
+	findChannelImportIdByNameOrImportId(channelIdentifier: string): string | undefined {
+		const channel = this.findOne({
+			dataType: 'channel',
+			$or: [
+				{
+					'data.name': channelIdentifier,
+				},
+				{
+					'data.importIds': channelIdentifier,
+				},
+			],
+		}, {
+			fields: {
+				'data.importIds': 1,
+			},
+		});
+
+		return channel?.data?.importIds?.shift();
+	}
 }
 
 export const ImportData = new ImportDataModel();
