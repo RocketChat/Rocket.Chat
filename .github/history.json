@@ -47609,6 +47609,70 @@
           ]
         }
       ]
+    },
+    "3.5.0-rc.2": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.16.0-beta.3516",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18360",
+          "title": "Regression: Fix defaultFields for null values",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.5.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18358",
+          "title": "Broken link on readme",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18359",
+          "title": "Regression: nickname field in user profile.",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "18356",
+          "title": "Regression: Thread Title not being escaped",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18354",
+          "title": "Regression: Userinfo center avatar image",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "18353",
+          "title": "Regression: Notification with id-only isn't showed by iOS devices",
+          "userLogin": "djorkaeffalexandre",
+          "contributors": [
+            "djorkaeffalexandre",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }

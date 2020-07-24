@@ -1,6 +1,35 @@
 
 # 3.5.0 (Under Release Candidate Process)
 
+## 3.5.0-rc.2
+`2020-07-23  ·  6 🔍  ·  5 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix defaultFields for null values ([#18360](https://github.com/RocketChat/Rocket.Chat/pull/18360))
+
+- Broken link on readme ([#18358](https://github.com/RocketChat/Rocket.Chat/pull/18358))
+
+- Regression: nickname field in user profile. ([#18359](https://github.com/RocketChat/Rocket.Chat/pull/18359))
+
+- Regression: Thread Title not being escaped ([#18356](https://github.com/RocketChat/Rocket.Chat/pull/18356))
+
+- Regression: Userinfo center avatar image ([#18354](https://github.com/RocketChat/Rocket.Chat/pull/18354))
+
+- Regression: Notification with id-only isn't showed by iOS devices ([#18353](https://github.com/RocketChat/Rocket.Chat/pull/18353))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.5.0-rc.1
 `2020-07-23  ·  1 🐛  ·  3 🔍  ·  6 👩‍💻👨‍💻`
 
