@@ -4,9 +4,24 @@ export class BaseRaw {
 	}
 
 	_ensureDefaultFields(options) {
-		if ((options?.fields == null || Object.keys(options?.fields).length === 0) && this.defaultFields) {
-			options.fields = this.defaultFields;
+		if (!this.defaultFields) {
+			return options;
 		}
+
+		if (!options) {
+			return { projection: this.defaultFields };
+		}
+
+		// TODO: change all places using "fields" for raw models and remove the additional condition here
+		if ((options.projection != null && Object.keys(options.projection).length > 0)
+		|| (options.fields != null && Object.keys(options.fields).length > 0)) {
+			return options;
+		}
+
+		return {
+			...options,
+			projection: this.defaultFields,
+		};
 	}
 
 	findOneById(_id, options = {}) {
@@ -14,8 +29,8 @@ export class BaseRaw {
 	}
 
 	findOne(query = {}, options = {}) {
-		this._ensureDefaultFields(options);
-		return this.col.findOne(query, options);
+		const optionsDef = this._ensureDefaultFields(options);
+		return this.col.findOne(query, optionsDef);
 	}
 
 	findUsersInRoles() {
@@ -23,8 +38,8 @@ export class BaseRaw {
 	}
 
 	find(query = {}, options = {}) {
-		this._ensureDefaultFields(options);
-		return this.col.find(query, options);
+		const optionsDef = this._ensureDefaultFields(options);
+		return this.col.find(query, optionsDef);
 	}
 
 	update(...args) {
