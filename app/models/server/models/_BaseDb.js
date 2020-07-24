@@ -145,14 +145,17 @@ export class BaseDb extends EventEmitter {
 
 	_doNotMixInclusionAndExclusionFields(options) {
 		const optionsDef = this._ensureDefaultFields(options);
-
-		if (optionsDef && optionsDef.fields) {
-			const keys = Object.keys(optionsDef.fields);
-			const removeKeys = keys.filter((key) => optionsDef.fields[key] === 0);
-			if (keys.length > removeKeys.length) {
-				removeKeys.forEach((key) => delete optionsDef.fields[key]);
-			}
+		if (!optionsDef?.fields) {
+			return optionsDef;
 		}
+
+		const keys = Object.keys(optionsDef.fields);
+		const removeKeys = keys.filter((key) => optionsDef.fields[key] === 0);
+		if (keys.length > removeKeys.length) {
+			removeKeys.forEach((key) => delete optionsDef.fields[key]);
+		}
+
+		return optionsDef;
 	}
 
 	find(query = {}, options = {}) {
