@@ -135,6 +135,7 @@
 		"@rocket.chat/fuselage-polyfills": "^0.13.1",
 		"@rocket.chat/fuselage-ui-kit": "^0.13.1",
 		"@rocket.chat/icons": "^0.13.1",
+		"@rocket.chat/mp3-encoder": "^0.13.1",
 		"@rocket.chat/ui-kit": "^0.13.1",
 		"@slack/client": "^4.8.0",
 		"@types/fibers": "^3.1.0",
