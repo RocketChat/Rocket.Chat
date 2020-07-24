@@ -30,7 +30,7 @@ export class PushNotification {
 			sound: 'default',
 			priority: 10,
 			title: idOnly ? '' : title,
-			text: idOnly ? '' : message,
+			text: idOnly ? ' ' : message,
 			payload: {
 				host: Meteor.absoluteUrl(),
 				...idOnly || { rid },
