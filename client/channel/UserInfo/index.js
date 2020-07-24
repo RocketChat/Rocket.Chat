@@ -38,6 +38,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			bio,
 			utcOffset,
 			lastLogin,
+			nickname,
 		} = user;
 		return {
 			name: showRealNames ? name : username,
@@ -55,6 +56,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			// localTime: <LocalTime offset={utcOffset} />,
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
+			nickname,
 		};
 	}, [data, showRealNames]);
 
