@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Push } from '../../../push/server';
 import { settings } from '../../../settings/server';
@@ -30,7 +31,7 @@ export class PushNotification {
 			sound: 'default',
 			priority: 10,
 			title: idOnly ? '' : title,
-			text: idOnly ? ' ' : message,
+			text: idOnly ? TAPi18n.__('Someone_sent_you_a_message') : message,
 			payload: {
 				host: Meteor.absoluteUrl(),
 				...idOnly || { rid },
