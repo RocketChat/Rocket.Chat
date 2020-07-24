@@ -32,6 +32,7 @@ export const UserInfo = React.memo(function UserInfo({
 	customFields = [],
 	name,
 	data,
+	nickname,
 	// onChange,
 	actions,
 	...props
@@ -68,6 +69,11 @@ export const UserInfo = React.memo(function UserInfo({
 				<Info>{name}</Info>
 			</>}
 
+			{nickname && <>
+				<Label>{t('Nickname')}</Label>
+				<Info>{nickname}</Info>
+			</>}
+
 			{bio && <>
 				<Label>{t('Bio')}</Label>
 				<Info withTruncatedText={false}><MarkdownText content={bio}/></Info>
@@ -89,9 +95,9 @@ export const UserInfo = React.memo(function UserInfo({
 				</Info>
 			</>}
 
-			{ customFields && customFields.map((customField) => <React.Fragment key={customField.label}>
-				<Label>{t(customField.label)}</Label>
-				<Info>{customField.value}</Info>
+			{ customFields && Object.entries(customFields).map(([label, value]) => <React.Fragment key={label}>
+				<Label>{t(label)}</Label>
+				<Info>{value}</Info>
 			</React.Fragment>) }
 
 			<Label>{t('Created_at')}</Label>
