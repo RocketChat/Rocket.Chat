@@ -51,7 +51,7 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 		: <CustomSelect {...extraProps} {...props}/>;
 });
 
-export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData, ...props }) {
+export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData, onLoadFields = () => {}, ...props }) {
 	const customFieldsJson = useSetting('Accounts_CustomFields');
 
 	// TODO: add deps. Left this way so that a possible change in the setting can't crash the page (useForm generates states automatically)
@@ -69,6 +69,7 @@ export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData
 	const { values, handlers } = useForm({ ...defaultFields, ...customFieldsData });
 
 	useEffect(() => {
+		onLoadFields(hasCustomFields);
 		if (hasCustomFields) {
 			setCustomFieldsData(values);
 		}
