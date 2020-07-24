@@ -60,7 +60,7 @@
 
 # Moving to a Single Codebase
 
-Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/2020/03/28/moving-to-a-single-codebase/).
+Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/rocket-chat-is-moving-to-a-single-codebase-get-to-know-the-reasons-and-how-the-community-will-benefit-from-it/).
 
 # Help Wanted
 
