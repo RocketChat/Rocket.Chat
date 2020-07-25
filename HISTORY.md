@@ -1,6 +1,35 @@
 
 # 3.5.0 (Under Release Candidate Process)
 
+## 3.5.0-rc.3
+`2020-07-24  ·  6 🔍  ·  5 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Provide a fallback text when push notification is idOnly ([#18373](https://github.com/RocketChat/Rocket.Chat/pull/18373))
+
+- Regression: Mentions in thread title ([#18369](https://github.com/RocketChat/Rocket.Chat/pull/18369))
+
+- Regression: Edit messages after opening thread ([#18375](https://github.com/RocketChat/Rocket.Chat/pull/18375))
+
+- Regression: Wrong background in disabled inputs ([#18372](https://github.com/RocketChat/Rocket.Chat/pull/18372))
+
+- Regression: MP3 worker ([#18371](https://github.com/RocketChat/Rocket.Chat/pull/18371))
+
+- Regression: useStorage ([#18370](https://github.com/RocketChat/Rocket.Chat/pull/18370))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.5.0-rc.2
 `2020-07-23  ·  6 🔍  ·  5 👩‍💻👨‍💻`
 

@@ -47673,6 +47673,78 @@
           ]
         }
       ]
+    },
+    "3.5.0-rc.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.16.0-beta.3516",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18373",
+          "title": "Regression: Provide a fallback text when push notification is idOnly",
+          "userLogin": "djorkaeffalexandre",
+          "contributors": [
+            "djorkaeffalexandre",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18369",
+          "title": "Regression: Mentions in thread title",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.0",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18375",
+          "title": "Regression: Edit messages after opening thread",
+          "userLogin": "gabriellsh",
+          "milestone": "3.5.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "18372",
+          "title": "Regression: Wrong background in disabled inputs",
+          "userLogin": "gabriellsh",
+          "milestone": "3.5.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "18371",
+          "title": "Regression: MP3 worker",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.0",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18370",
+          "title": "Regression: useStorage",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
