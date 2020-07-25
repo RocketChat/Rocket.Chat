@@ -3,7 +3,7 @@ import React from 'react';
 
 const style = { wordBreak: 'break-word' };
 
-export const DescriptionList = ({ children, title, ...props }) => <>
+export const DescriptionList = React.memo(({ children, title, ...props }) => <>
 	{title && <Box display='flex' justifyContent='flex-end' width='30%' paddingInline='x8'>
 		{title}
 	</Box>}
@@ -12,7 +12,7 @@ export const DescriptionList = ({ children, title, ...props }) => <>
 			{children}
 		</Table.Body>
 	</Table>
-</>;
+</>);
 
 const Entry = ({ children, label, ...props }) =>
 	<Table.Row {...props}>
@@ -20,4 +20,4 @@ const Entry = ({ children, label, ...props }) =>
 		<Table.Cell width='70%' align='start' color='default' style={style}>{children}</Table.Cell>
 	</Table.Row>;
 
-DescriptionList.Entry = Entry;
+DescriptionList.Entry = React.memo(Entry);

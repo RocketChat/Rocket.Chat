@@ -1,14 +1,12 @@
-import { Box, Button, ButtonGroup, EmailInput, Field, Margins, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Field, Margins, TextInput } from '@rocket.chat/fuselage';
 import { useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
-import { supportEmailAddress } from './constants';
 
 function WorkspaceRegistrationSection({
-	email: initialEmail,
 	token: initialToken,
 	workspaceId,
 	uniqueId,
@@ -18,55 +16,14 @@ function WorkspaceRegistrationSection({
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const updateEmail = useMethod('cloud:updateEmail');
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
+	const syncWorkspace = useMethod('cloud:syncWorkspace');
 
 	const [isProcessing, setProcessing] = useSafely(useState(false));
-	const [email, setEmail] = useState(initialEmail);
 	const [token, setToken] = useState(initialToken);
-
-	const supportMailtoUrl = useMemo(() => {
-		const subject = encodeURIComponent('Self Hosted Registration');
-		const body = encodeURIComponent([
-			`WorkspaceId: ${ workspaceId }`,
-			`Deployment Id: ${ uniqueId }`,
-			'Issue: <please describe your issue here>',
-		].join('\r\n'));
-		return `mailto:${ supportEmailAddress }?subject=${ subject }&body=${ body }`;
-	}, [workspaceId, uniqueId]);
-
-	const handleEmailChange = ({ currentTarget: { value } }) => {
-		setEmail(value);
-	};
 
 	const handleTokenChange = ({ currentTarget: { value } }) => {
 		setToken(value);
-	};
-
-	const handleUpdateEmailButtonClick = async () => {
-		setProcessing(true);
-
-		try {
-			await updateEmail(email, false);
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			setProcessing(false);
-		}
-	};
-
-	const handleResendEmailButtonClick = async () => {
-		setProcessing(true);
-
-		try {
-			await updateEmail(email, true);
-			dispatchToastMessage({ type: 'success', message: t('Requested') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			setProcessing(false);
-		}
 	};
 
 	const handleConnectButtonClick = async () => {
@@ -80,6 +37,12 @@ function WorkspaceRegistrationSection({
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Connected') });
+
+			const isSynced = await syncWorkspace();
+
+			if (!isSynced) {
+				throw Error(t('An error occured syncing'));
+			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
@@ -88,23 +51,13 @@ function WorkspaceRegistrationSection({
 		}
 	};
 
-	const emailInputId = useUniqueId();
 	const tokenInputId = useUniqueId();
 
 	return <Box marginBlock='neg-x24' {...props}>
 		<Margins block='x24'>
-			<Field>
-				<Field.Label htmlFor={emailInputId}>{t('Email')}</Field.Label>
-				<Field.Row>
-					<EmailInput id={emailInputId} disabled={isProcessing} value={email} onChange={handleEmailChange} />
-				</Field.Row>
-				<Field.Hint>{t('Cloud_address_to_send_registration_to')}</Field.Hint>
-			</Field>
-
-			<ButtonGroup>
-				<Button disabled={isProcessing} onClick={handleUpdateEmailButtonClick}>{t('Cloud_update_email')}</Button>
-				<Button disabled={isProcessing} onClick={handleResendEmailButtonClick}>{t('Cloud_resend_email')}</Button>
-			</ButtonGroup>
+			<Box withRichContent color='neutral-800'>
+				<p>{t('Cloud_token_instructions')}</p>
+			</Box>
 
 			<Field>
 				<Field.Label htmlFor={tokenInputId}>{t('Token')}</Field.Label>
@@ -117,10 +70,6 @@ function WorkspaceRegistrationSection({
 			<ButtonGroup>
 				<Button primary disabled={isProcessing} onClick={handleConnectButtonClick}>{t('Connect')}</Button>
 			</ButtonGroup>
-
-			<Box withRichContent>
-				<p>{t('Cloud_connect_support')}: <a href={supportMailtoUrl} target='_blank' rel='noopener noreferrer'>{supportEmailAddress}</a></p>
-			</Box>
 		</Margins>
 	</Box>;
 }

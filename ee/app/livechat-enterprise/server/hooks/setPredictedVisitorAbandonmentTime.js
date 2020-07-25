@@ -8,15 +8,15 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 	// skips this callback if the message was edited
 	if (message.editedAt) {
-		return false;
+		return message;
 	}
 	// message valid only if it is a livechat room
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
-		return false;
+		return message;
 	}
 	// if the message has a type means it is a special message (like the closing comment), so skips
 	if (message.t) {
-		return false;
+		return message;
 	}
 	const sentByAgent = !message.token;
 	if (sentByAgent) {

@@ -1,4 +1,42 @@
 :root {
+	/*
+	* Color palette
+	*/
+	--color-dark-100: #0c0d0f;
+	--color-dark-90: #1e232a;
+	--color-dark-80: #2e343e;
+	--color-dark-70: #53585f;
+	--color-dark-30: #9da2a9;
+	--color-dark-20: #caced1;
+	--color-dark-10: #e0e5e8;
+	--color-dark-05: #f1f2f4;
+	--color-dark-blue: #175cc4;
+	--color-blue: #1d74f5;
+	--color-light-blue: #4eb2f5;
+	--color-lighter-blue: #e8f2ff;
+	--color-purple: #861da8;
+	--color-red: #f5455c;
+	--color-dark-red: #e0364d;
+	--color-orange: #f38c39;
+	--color-yellow: #ffd21f;
+	--color-dark-yellow: #f6c502;
+	--color-green: #2de0a5;
+	--color-dark-green: #26d198;
+
+	/*
+	* General Colors
+	*/
+	--color-darkest: #1f2329;
+	--color-dark: #2f343d;
+	--color-dark-medium: #414852;
+	--color-dark-light: #6c727a;
+	--color-gray: #9ea2a8;
+	--color-gray-medium: #cbced1;
+	--color-gray-light: #e1e5e8;
+	--color-gray-lightest: #f2f3f5;
+	--color-black: #000000;
+	--color-white: #ffffff;
+
 	/* #region colors Colors */
 	--rc-color-error: var(--color-red);
 	--rc-color-error-light: #e1364c;
@@ -35,9 +73,9 @@
 	--secondary-font-color: #a0a0a0;
 	--secondary-action-color: #dddddd;
 	--component-color: #f2f3f5;
-	--success-color: #4dff4d;
 	--pending-color: #fcb316;
 	--error-color: #bc2031;
+	--success-color: #2de0a5;
 	--selection-color: #02acec;
 	--attention-color: #9c27b0;
 
@@ -49,10 +87,6 @@
 	--link-font-color: var(--primary-action-color);
 	--info-font-color: var(--secondary-font-color);
 	--custom-scrollbar-color: var(--transparent-darker);
-	--status-online: var(--success-color);
-	--status-away: var(--pending-color);
-	--status-busy: var(--error-color);
-	--status-offline: var(--transparent-darker);
 
 	/* #endregion */
 
@@ -62,44 +96,6 @@
 	/* #endregion */
 
 	/*
-	 * Color palette
-	 */
-	--color-dark-100: #0c0d0f;
-	--color-dark-90: #1e232a;
-	--color-dark-80: #2e343e;
-	--color-dark-70: #53585f;
-	--color-dark-30: #9da2a9;
-	--color-dark-20: #caced1;
-	--color-dark-10: #e0e5e8;
-	--color-dark-05: #f1f2f4;
-	--color-dark-blue: #175cc4;
-	--color-blue: #1d74f5;
-	--color-light-blue: #4eb2f5;
-	--color-lighter-blue: #e8f2ff;
-	--color-purple: #861da8;
-	--color-red: #f5455c;
-	--color-dark-red: #e0364d;
-	--color-orange: #f59547;
-	--color-yellow: #ffd21f;
-	--color-dark-yellow: #f6c502;
-	--color-green: #2de0a5;
-	--color-dark-green: #26d198;
-
-	/*
-	* General Colors
-	*/
-	--color-darkest: #1f2329;
-	--color-dark: #2f343d;
-	--color-dark-medium: #414852;
-	--color-dark-light: #6c727a;
-	--color-gray: #9ea2a8;
-	--color-gray-medium: #cbced1;
-	--color-gray-light: #e1e5e8;
-	--color-gray-lightest: #f2f3f5;
-	--color-black: #000000;
-	--color-white: #ffffff;
-
-	/*
 	* General
 	*/
 	--text-size: 0.875rem;
@@ -107,16 +103,17 @@
 	--toolbar-height: 55px;
 	--footer-min-height: 70px;
 	--rooms-box-width: 280px;
-	--flex-tab-width: 400px;
+	--flex-tab-width: 380px;
 	--flex-tab-webrtc-width: 400px;
 	--flex-tab-webrtc-2-width: 850px;
 	--border: 2px;
 	--border-radius: 2px;
-	--status-online: var(--rc-color-success);
-	--status-away: var(--rc-color-alert);
-	--status-busy: var(--rc-color-error);
-	--status-invisible: var(--color-gray-medium);
-	--status-invisible-sidebar: var(--rc-color-primary-darkest);
+	--rc-status-online: var(--rc-color-success);
+	--rc-status-away: var(--rc-color-alert);
+	--rc-status-busy: var(--rc-color-error);
+	--rc-status-invisible: var(--color-gray-medium);
+	--rc-status-offline: var(--transparent-darker);
+	--rc-status-invisible-sidebar: var(--rc-color-primary-darkest);
 	--default-padding: 1.5rem;
 	--default-small-padding: 1rem;
 	--status-bullet-size: 10px;
@@ -320,20 +317,20 @@
 	--badge-radius: 12px;
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--rc-color-primary-dark);
-	--badge-unread-background: var(--rc-color-primary-dark);
-	--badge-user-mentions-background: var(--color-dark-blue);
-	--badge-group-mentions-background: var(--rc-color-primary-dark);
+	--badge-unread-background: var(--color-blue);
+	--badge-user-mentions-background: var(--color-red);
+	--badge-group-mentions-background: var(--color-orange);
 
 	/*
 	* Mention link
 	*/
-	--mention-link-radius: 10px;
-	--mention-link-background: var(--color-lighter-blue);
-	--mention-link-text-color: var(--color-dark-blue);
-	--mention-link-me-background: var(--color-dark-blue);
-	--mention-link-me-text-color: var(--color-white);
-	--mention-link-group-background: var(--rc-color-primary-dark);
-	--mention-link-group-text-color: var(--color-white);
+	--mention-link-radius: 4px;
+	--mention-link-background: #fff6d6;
+	--mention-link-text-color: #b68d00;
+	--mention-link-me-background: #ffe9ec;
+	--mention-link-me-text-color: var(--color-red);
+	--mention-link-group-background: #fde8d7;
+	--mention-link-group-text-color: var(--color-orange);
 
 	/*
 	* Message box

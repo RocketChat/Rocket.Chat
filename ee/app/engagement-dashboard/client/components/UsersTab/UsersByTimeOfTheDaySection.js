@@ -6,6 +6,12 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
+import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
+import { saveFile } from '../../../../../../client/lib/saveFile';
+
+const convertDataToCSV = (data) => `// date, users
+${ data.map(({ users, hour, day, month, year }) => ({ date: moment([year, month - 1, day, hour, 0, 0, 0]), users })).sort((a, b) => a > b).map(({ date, users }) => `${ date.toISOString() }, ${ users }`).join('\n') }`;
+
 
 export function UsersByTimeOfTheDaySection() {
 	const t = useTranslation();
@@ -75,92 +81,93 @@ export function UsersByTimeOfTheDaySection() {
 			dates.map((date) => date.toISOString()),
 			values,
 		];
-	}, [data]);
+	}, [data, period.end, period.start]);
 
+	const downloadData = () => {
+		saveFile(convertDataToCSV(data.week), `UsersByTimeOfTheDaySection_start_${ params.start }_end_${ params.end }.csv`);
+	};
 	return <Section
 		title={t('Users_by_time_of_day')}
-		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
+		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />{<ActionButton mis='x16' onClick={downloadData} aria-label={t('Download_Info')} icon='download'/>}</>}
 	>
-		<Flex.Container>
-			{data
-				? <Box style={{ height: 696 }}>
-					<Flex.Item align='stretch' grow={1} shrink={0}>
-						<Box style={{ position: 'relative' }}>
-							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
-								<ResponsiveHeatMap
-									data={values}
-									indexBy='hour'
-									keys={dates}
-									padding={4}
-									margin={{
-										// TODO: Get it from theme
-										left: 40,
-										bottom: 20,
-									}}
-									colors={[
-										// TODO: Get it from theme
-										'#E8F2FF',
-										'#D1EBFE',
-										'#A4D3FE',
-										'#76B7FC',
-										'#549DF9',
-										'#1D74F5',
-										'#10529E',
-									]}
-									cellOpacity={1}
-									enableLabels={false}
-									axisTop={null}
-									axisRight={null}
-									axisBottom={{
-										// TODO: Get it from theme
-										tickSize: 0,
-										tickPadding: 4,
-										tickRotation: 0,
-										format: (isoString) => (dates.length === 7 ? moment(isoString).format('dddd') : ''),
-									}}
-									axisLeft={{
-										// TODO: Get it from theme
-										tickSize: 0,
-										tickPadding: 4,
-										tickRotation: 0,
-										format: (hour) => moment().set({ hour: parseInt(hour, 10), minute: 0, second: 0 }).format('LT'),
-									}}
-									hoverTarget='cell'
-									animate={dates.length <= 7}
-									motionStiffness={90}
-									motionDamping={15}
-									theme={{
-										// TODO: Get it from theme
-										axis: {
-											ticks: {
-												text: {
-													fill: '#9EA2A8',
-													fontFamily: 'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
-													fontSize: 10,
-													fontStyle: 'normal',
-													fontWeight: '600',
-													letterSpacing: '0.2px',
-													lineHeight: '12px',
-												},
+		{data
+			? <Box display='flex' style={{ height: 696 }}>
+				<Flex.Item align='stretch' grow={1} shrink={0}>
+					<Box style={{ position: 'relative' }}>
+						<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+							<ResponsiveHeatMap
+								data={values}
+								indexBy='hour'
+								keys={dates}
+								padding={4}
+								margin={{
+									// TODO: Get it from theme
+									left: 40,
+									bottom: 20,
+								}}
+								colors={[
+									// TODO: Get it from theme
+									'#E8F2FF',
+									'#D1EBFE',
+									'#A4D3FE',
+									'#76B7FC',
+									'#549DF9',
+									'#1D74F5',
+									'#10529E',
+								]}
+								cellOpacity={1}
+								enableLabels={false}
+								axisTop={null}
+								axisRight={null}
+								axisBottom={{
+									// TODO: Get it from theme
+									tickSize: 0,
+									tickPadding: 4,
+									tickRotation: 0,
+									format: (isoString) => (dates.length === 7 ? moment(isoString).format('dddd') : ''),
+								}}
+								axisLeft={{
+									// TODO: Get it from theme
+									tickSize: 0,
+									tickPadding: 4,
+									tickRotation: 0,
+									format: (hour) => moment().set({ hour: parseInt(hour, 10), minute: 0, second: 0 }).format('LT'),
+								}}
+								hoverTarget='cell'
+								animate={dates.length <= 7}
+								motionStiffness={90}
+								motionDamping={15}
+								theme={{
+									// TODO: Get it from theme
+									axis: {
+										ticks: {
+											text: {
+												fill: '#9EA2A8',
+												fontFamily: 'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+												fontSize: 10,
+												fontStyle: 'normal',
+												fontWeight: '600',
+												letterSpacing: '0.2px',
+												lineHeight: '12px',
 											},
 										},
-										tooltip: {
-											container: {
-												backgroundColor: '#1F2329',
-												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-												borderRadius: 2,
-											},
+									},
+									tooltip: {
+										container: {
+											backgroundColor: '#1F2329',
+											boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+											borderRadius: 2,
 										},
-									}}
-									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
-										{t('Value_users', { value })}
-									</Box>}
-								/>
-							</Box>
+									},
+								}}
+								tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
+									{t('Value_users', { value })}
+								</Box>}
+							/>
 						</Box>
-					</Flex.Item>
-				</Box>
-				: <Skeleton variant='rect' height={696} />}
-		</Flex.Container>
+					</Box>
+				</Flex.Item>
+			</Box>
+			: <Skeleton variant='rect' height={696} />}
 	</Section>;
 }

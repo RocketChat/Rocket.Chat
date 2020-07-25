@@ -506,8 +506,6 @@ Template.livechatCurrentChats.onCreated(async function() {
 			this.customFields.set(customFields);
 		}
 	});
-
-	this.loadDefaultFilters();
 });
 
 Template.livechatCurrentChats.onRendered(function() {
@@ -516,4 +514,6 @@ Template.livechatCurrentChats.onRendered(function() {
 		todayHighlight: true,
 		format: moment.localeData().longDateFormat('L').toLowerCase(),
 	});
+
+	this.loadDefaultFilters();
 });

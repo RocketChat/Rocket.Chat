@@ -64,6 +64,7 @@
 											templateItem="popupList_item_channel"
 											modifier=offlineMessageChannelModifier
 											showLabel=true
+											selector=channelSelector
 										}}
 									</div>
 									<div class="input-line">
@@ -165,7 +166,7 @@
 										<legend>{{_ "Selected_agents"}}</legend>
 
 										<div class="rc-table-content">
-											{{#table fixed='true'}}
+											{{#table fixed='true' onScroll=onTableScroll }}
 												<thead>
 													<tr>
 														<th width="25%"><div class="table-fake-th">{{_ "Username"}}</div></th>
@@ -184,8 +185,8 @@
 																	</div>
 																</div>
 															</td>
-															<td><input type="text" class="count-{{agentId}}" name="count" value="{{count}}" size="3"></td>
-															<td><input type="text" class="order-{{agentId}}" name="order" value="{{order}}" size="3"></td>
+															<td><input type="text" class="count" name="count" value="{{count}}" size="3"></td>
+															<td><input type="text" class="order" name="order" value="{{order}}" size="3"></td>
 															<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
 														</tr>
 													{{else}}

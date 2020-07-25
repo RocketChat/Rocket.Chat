@@ -288,12 +288,16 @@ Template.messagePopup.events({
 		const template = Template.instance();
 		template.clickingItem = true;
 	},
-	'mouseup .popup-item, touchend .popup-item'() {
+	'mouseup .popup-item, touchend .popup-item'(e) {
+		e.stopPropagation();
 		const template = Template.instance();
+		const wasMenuIconClicked = e.target.classList.contains('sidebar-item__menu-icon');
 		template.clickingItem = false;
-		template.value.set(this._id);
-		template.enterValue();
-		template.open.set(false);
+		if (!wasMenuIconClicked) {
+			template.value.set(this._id);
+			template.enterValue();
+			template.open.set(false);
+		}
 	},
 });
 

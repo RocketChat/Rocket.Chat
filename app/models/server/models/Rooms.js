@@ -11,18 +11,18 @@ export class Rooms extends Base {
 		super(...args);
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
-		this.tryEnsureIndex({ default: 1 });
-		this.tryEnsureIndex({ featured: 1 });
+		this.tryEnsureIndex({ default: 1 }, { sparse: true });
+		this.tryEnsureIndex({ featured: 1 }, { sparse: true });
+		this.tryEnsureIndex({ muted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ ts: 1 });
+		// Tokenpass
+		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ tokenpass: 1 }, { sparse: true });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
-		// Livechat - statistics
-		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
-
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 	}
@@ -979,6 +979,18 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				'retention.excludePinned': value === true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveRetentionIgnoreThreadsById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			[value === true ? '$set' : '$unset']: {
+				'retention.ignoreThreads': true,
 			},
 		};
 

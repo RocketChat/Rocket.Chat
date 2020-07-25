@@ -1,8 +1,11 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
+import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 
 import { Users } from '../../../models/server';
+import { settings } from '../../../settings/server';
 
 const apiServer = express();
 
@@ -13,11 +16,22 @@ WebApp.connectHandlers.use(apiServer);
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-const unauthorized = (res) =>
-	res.status(401).send({
-		status: 'error',
-		message: 'You must be logged in to do this.',
+const unauthorized = (res) => res.status(401).send({
+	status: 'error',
+	message: 'You must be logged in to do this.',
+});
+
+Meteor.startup(() => {
+	// use specific rate limit of 600 (which is 60 times the default limits) requests per minute (around 10/second)
+	const apiLimiter = rateLimit({
+		windowMs: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+		max: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default') * 60,
+		skip: () =>
+			settings.get('API_Enable_Rate_Limiter') !== true
+			|| (process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
 	});
+	router.use(apiLimiter);
+});
 
 router.use((req, res, next) => {
 	const {
@@ -97,8 +111,10 @@ export class AppUIKitInteractionApi {
 					const {
 						type,
 						actionId,
-						view,
-						isCleared,
+						payload: {
+							view,
+							isCleared,
+						},
 					} = req.body;
 
 					const user = this.orch.getConverters().get('users').convertToApp(req.user);

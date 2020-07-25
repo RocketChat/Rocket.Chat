@@ -1,9 +1,19 @@
-import React from 'react';
+import { Box } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
+import marked from 'marked';
 
-import { Markdown } from '../../../app/markdown/client';
-import RawText from './RawText';
+marked.InlineLexer.rules.gfm.strong = /^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/;
+marked.InlineLexer.rules.gfm.em = /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/;
 
-const MarkdownText = ({ children }) =>
-	<RawText>{Markdown.parse(children)}</RawText>;
+function MarkdownText({ content, ...props }) {
+	const options = useMemo(() => ({
+		gfm: true,
+		headerIds: false,
+	}), []);
+
+	const __html = useMemo(() => content && marked(content, options), [content, options]);
+
+	return <Box dangerouslySetInnerHTML={{ __html }} withRichContent {...props} />;
+}
 
 export default MarkdownText;

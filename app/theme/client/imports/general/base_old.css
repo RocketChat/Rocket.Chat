@@ -1314,6 +1314,15 @@
 				border-bottom: none;
 			}
 
+			& .add-token {
+				display: flex;
+
+				& .rc-select {
+					width: 40%;
+					margin: 0 0 0 10px;
+				}
+			}
+
 			&:first-child {
 				padding-top: 0;
 			}
@@ -1952,13 +1961,18 @@
 	background-size: contain;
 }
 
+.rc-old .popup-user-not_in_channel {
+	display: inline-block;
+
+	float: right;
+}
+
 .rc-old .popup-user-status {
 	display: inline-block;
 
 	width: 10px;
 	height: 10px;
 
-	border-width: 1px;
 	border-radius: 10px;
 }
 
@@ -2102,6 +2116,8 @@
 
 	&-unread {
 		display: inline-block;
+
+		float: right;
 
 		width: 10px;
 		height: 10px;
@@ -3158,18 +3174,6 @@
 	}
 }
 
-.rc-old .avatarPrompt {
-	& header p {
-		font-size: 14px;
-		font-weight: 300;
-		line-height: 22px;
-	}
-
-	& img {
-		width: 200px;
-	}
-}
-
 .rc-old #login-card {
 	position: relative;
 	z-index: 1;
@@ -3302,9 +3306,15 @@
 }
 
 .rc-old .oauth-login {
+	display: flex;
+
 	margin-bottom: 16px;
+
 	margin-left: -4px;
-	flex-wrap: wrap;
+
+	flex-flow: row wrap;
+
+	justify-content: space-around;
 
 	& h3 {
 		margin-top: 0;
@@ -3317,10 +3327,17 @@
 		font-weight: 300;
 	}
 
+	button {
+		margin: 0 5px;
+
+		flex-grow: 1;
+	}
+
 	& .button {
 		margin-bottom: 4px;
 
 		font-size: 18px;
+
 		line-height: 22px;
 		flex-grow: 1;
 
@@ -3850,6 +3867,10 @@
 	height: 2rem;
 }
 
+.flex-tab.discussions > .flex-tab__content {
+	padding: 0;
+}
+
 .rc-old .flex-tab {
 	&__content {
 		display: flex;
@@ -3865,6 +3886,7 @@
 	}
 
 	&__result {
+		overflow-x: hidden;
 		overflow-y: auto;
 		flex: 1 1 auto;
 	}
@@ -4145,6 +4167,15 @@
 
 		& .jump-to-large {
 			display: none;
+		}
+	}
+
+	.add-token {
+		display: block !important;
+
+		& .rc-select {
+			width: auto !important;
+			margin: 10px 0 !important;
 		}
 	}
 }
