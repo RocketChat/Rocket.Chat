@@ -15,7 +15,7 @@ function ModalProvider({ children }) {
 	return <ModalContext.Provider value={contextValue}>
 		{children}
 		{currentModal && <ModalPortal>
-			<Modal.Backdrop>
+			<Modal.Backdrop zIndex={9999}>
 				{currentModal}
 			</Modal.Backdrop>
 		</ModalPortal>}

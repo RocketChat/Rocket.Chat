@@ -207,7 +207,7 @@ textarea {
 		color: var(--input-placeholder-color);
 	}
 
-	&[disabled] {
+	&[disabled]:not(.rcx-box--full) {
 		background-color: var(--button-disabled-background);
 	}
 }

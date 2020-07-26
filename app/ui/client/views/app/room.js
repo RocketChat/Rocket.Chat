@@ -37,6 +37,7 @@ import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
 import { mime } from '../../../../utils/lib/mimeTypes';
+import { openUserCard } from '../../lib/UserCard';
 
 export const chatMessages = {};
 
@@ -72,23 +73,23 @@ const openProfileTab = (e, instance, username) => {
 };
 
 const openProfileTabOrOpenDM = (e, instance, username) => {
-	if (settings.get('UI_Click_Direct_Message')) {
-		Meteor.call('createDirectMessage', username, (error, result) => {
-			if (error) {
-				if (error.isClientSafe) {
-					openProfileTab(e, instance, username);
-				} else {
-					handleError(error);
-				}
-			}
+	// if (settings.get('UI_Click_Direct_Message')) {
+	// 	Meteor.call('createDirectMessage', username, (error, result) => {
+	// 		if (error) {
+	// 			if (error.isClientSafe) {
+	// 				openProfileTab(e, instance, username);
+	// 			} else {
+	// 				handleError(error);
+	// 			}
+	// 		}
 
-			if (result && result.rid) {
-				FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
-			}
-		});
-	} else {
-		openProfileTab(e, instance, username);
-	}
+	// 		if (result && result.rid) {
+	// 			FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+	// 		}
+	// 	});
+	// } else {
+	openProfileTab(e, instance, username);
+	// }
 	e.stopPropagation();
 };
 
@@ -555,6 +556,7 @@ Template.room.helpers({
 		const mid = FlowRouter.getParam('context');
 		const rid = Template.currentData()._id;
 		const jump = FlowRouter.getQueryParam('jump');
+		const subscription = Template.instance().subscription.get();
 
 		if (tab !== 'thread' || !mid || rid !== Session.get('openedRoom')) {
 			return;
@@ -574,6 +576,7 @@ Template.room.helpers({
 			mid,
 			room,
 			jump,
+			subscription,
 		};
 	},
 });
@@ -829,17 +832,6 @@ Template.room.events({
 		openProfileTabOrOpenDM(e, instance, this.user.username);
 	},
 
-	'click .user-card-message'(e, instance) {
-		const { msg } = messageArgs(this);
-		if (!Meteor.userId()) {
-			return;
-		}
-
-		const { username } = msg.u;
-
-		openProfileTabOrOpenDM(e, instance, username);
-	},
-
 	'scroll .wrapper': _.throttle(function(e, t) {
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
@@ -936,9 +928,40 @@ Template.room.events({
 		}
 
 		if (username) {
-			openProfileTabOrOpenDM(e, instance, username);
+			openUserCard({
+				username,
+				rid: Session.get('openedRoom'),
+				target: e.currentTarget,
+				open: (e) => {
+					e.preventDefault();
+					openProfileTabOrOpenDM(e, instance, username);
+				},
+			});
 		}
 	},
+
+
+	'click .user-card-message'(e, instance) {
+		const { msg } = messageArgs(this);
+		if (!Meteor.userId()) {
+			return;
+		}
+
+		const { username } = msg.u;
+
+		if (username) {
+			openUserCard({
+				username,
+				rid: Session.get('openedRoom'),
+				target: e.currentTarget,
+				open: (e) => {
+					e.preventDefault();
+					openProfileTabOrOpenDM(e, instance, username);
+				},
+			});
+		}
+	},
+
 
 	'click .image-to-download'(event) {
 		const { msg } = messageArgs(this);
@@ -1071,8 +1094,8 @@ Template.room.onCreated(function() {
 		if (roomTypes.getConfig(room.t).isGroupChat(room)) {
 			return;
 		}
-
-		this.userDetail.set(room.usernames.filter((username) => username !== user.username)[0]);
+		const usernames = Array.from(new Set(room.usernames));
+		this.userDetail.set(this.userDetail.get() || (usernames.length === 1 ? usernames[0] : usernames.filter((username) => username !== user.username)[0]));
 	});
 
 	this.autorun(() => {
@@ -1155,12 +1178,9 @@ Template.room.onCreated(function() {
 		return previewMessages;
 	};
 
-	this.setUserDetail = (username) => {
-		this.userDetail.set(username);
-	};
-
 	this.clearUserDetail = () => {
 		this.userDetail.set(null);
+		this.tabBar.close();
 	};
 
 	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
