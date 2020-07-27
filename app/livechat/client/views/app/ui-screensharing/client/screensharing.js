@@ -10,6 +10,15 @@ Template.screenSharinDialog.helpers({
 	src() {
 		return Template.instance().src.get();
 	},
+	windowMaximized() {
+		return Template.instance().isWindowMaximized.get();
+	},
+	iframeWidth() {
+		return Template.instance().iframeWidth.get();
+	},
+	iframeHeight() {
+		return Template.instance().iframeHeight.get();
+	},
 });
 
 Template.screenSharinDialog.events({
@@ -17,6 +26,12 @@ Template.screenSharinDialog.events({
 		const rid = Session.get('openedRoom');
 		Meteor.call('livechat:endScreenSharingSession', rid);
 		ScreenSharinDialog.close();
+	},
+	'click .screensharing-dialog .maximize'() {
+		ScreenSharinDialog.maximize();
+	},
+	'click .screensharing-dialog .minimize'() {
+		ScreenSharinDialog.minimize();
 	},
 });
 
@@ -27,6 +42,9 @@ Template.screenSharinDialog.onCreated(function() {
 	this.rid = new ReactiveVar();
 	this.input = new ReactiveVar();
 	this.src = new ReactiveVar('');
+	this.isWindowMaximized = new ReactiveVar(false);
+	this.iframeWidth = new ReactiveVar(320);
+	this.iframeHeight = new ReactiveVar(240);
 	this.update = ({ rid, input, src }) => {
 		this.rid.set(rid);
 		this.input.set(input);
@@ -46,7 +64,7 @@ Template.screenSharinDialog.onCreated(function() {
 				if (right < 0) {
 					right = 10;
 				}
-				return dialog.css({ top: `${ top }px`, right: `${ right }px` });
+				return dialog.css({ top: `${ top }px`, right: `${ right }px`, width: 'auto', height: 'auto', left: 'auto' });
 			}
 			let left = (sourcePos.left - this.width) + 100;
 			if (left < 0) {
@@ -59,7 +77,34 @@ Template.screenSharinDialog.onCreated(function() {
 		_set();
 		this.remove = set;
 		$(window).on('resize', set);
+
+		this.isWindowMaximized.set(false);
+		this.iframeWidth.set(320);
+		this.iframeHeight.set(240);
 	};
+
+	this.maximizeWindow = function(dialog, source) {
+		const room = $('.main-content').offset();
+		console.log(room);
+		const { top, left } = room;
+		const width = $('.main-content').width();
+		const height = $('.main-content').height();
+		const _set = () => {
+			return dialog.css({ top: `${ top }px`, left: `${ left }px`, width: `${ width }px`, height: `${ height }px` });
+		};
+		const set = _.debounce(_set, 2000);
+		_set();
+		this.remove = set;
+		$(window).on('resize', set);
+
+		this.isWindowMaximized.set(true);
+		this.iframeWidth.set(width - 10);
+		this.iframeHeight.set(height - 30 - 10);
+	};
+
+	this.autorun(() => {
+		this.isWindowMaximized.set(ScreenSharinDialog.windowMaximized);
+	});
 });
 
 Template.screenSharinDialog.onDestroyed(function() {

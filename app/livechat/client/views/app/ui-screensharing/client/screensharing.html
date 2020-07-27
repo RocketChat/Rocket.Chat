@@ -1,12 +1,16 @@
 <template name="screenSharinDialog">
 	<div class="rc-old screensharing-dialog secondary-background-color">
 		<div class="video-container">
-			<iframe width="320" height="240" src="{{src}}"></iframe>
+			<iframe width="{{iframeWidth}}" height="{{iframeHeight}}" src="{{src}}"></iframe>
 		</div>
 		<div class="buttons">
 			<span class="buttons__wrapper">
 				<button class="rc-button rc-button--nude rc-button--small cancel">{{_ "End_Screen_Sharing_Session"}}</button>
-				<button class="rc-button rc-button--primary rc-button--small ok">{{_ "Ok"}}</button>
+				{{#if windowMaximized}}
+					<button class="rc-button rc-button--primary rc-button--small minimize">{{_ "Minimize"}}</button>
+				{{else}}
+					<button class="rc-button rc-button--primary rc-button--small maximize">{{_ "Maximize"}}</button>
+				{{/if}}
 			</span>
 		</div>
 	</div>
