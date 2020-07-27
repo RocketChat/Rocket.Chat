@@ -29,7 +29,6 @@ function ConnectToCloudSection({
 				throw Error(t('An error occured'));
 			}
 
-			// TODO: sync on register?
 			const isSynced = await syncWorkspace();
 
 			if (!isSynced) {
@@ -47,7 +46,7 @@ function ConnectToCloudSection({
 
 	return <Box is='section' {...props}>
 		<Subtitle>{t('Cloud_registration_required')}</Subtitle>
-		<Box withRichContent>
+		<Box withRichContent color='neutral-800'>
 			<p>{t('Cloud_registration_required_description')}</p>
 		</Box>
 		<ButtonGroup>
