@@ -37,6 +37,6 @@ export interface IEvent<T extends EventDataDefinition> {
 	dHash: string;
 	o: T;
 	d: T;
-	isLeaf: boolean;
+	isLeaf?: boolean;
 	deletedAt?: Date;
 }
