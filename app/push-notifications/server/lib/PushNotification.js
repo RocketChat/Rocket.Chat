@@ -18,7 +18,7 @@ export class PushNotification {
 	getNotificationConfig({ rid, uid: userId, mid: messageId, roomName, username, message, payload, badge = 1, category, idOnly = false }) {
 		const title = idOnly ? '' : roomName || username;
 
-		// message is being redacted already by 'parseMessageTextPerUser' if idOnly is true
+		// message is being redacted already by 'getPushData' if idOnly is true
 		const text = !idOnly && roomName !== '' ? `${ username }: ${ message }` : message;
 
 		const config = {
@@ -86,10 +86,11 @@ export class PushNotification {
 			room,
 			message,
 			userId: receiver._id,
-			receiverUsername: receiver.username,
+			receiver,
 			senderUsername: sender.username,
 			senderName: sender.name,
 			notificationMessage,
+			shouldOmitMessage: false,
 		}));
 
 		return {
