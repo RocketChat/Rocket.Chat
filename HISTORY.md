@@ -1,6 +1,42 @@
 
 # 3.5.0 (Under Release Candidate Process)
 
+## 3.5.0-rc.4
+`2020-07-27  ·  3 🐛  ·  4 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Missing Privacy Terms Cloud Register warning ([#18383](https://github.com/RocketChat/Rocket.Chat/pull/18383))
+
+- File uploads for unknown file types but nothing is blocked ([#18263](https://github.com/RocketChat/Rocket.Chat/pull/18263) by [@20051231](https://github.com/20051231))
+
+- Push gateway and cloud integration ([#18377](https://github.com/RocketChat/Rocket.Chat/pull/18377))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Update Apps Engine ([#18389](https://github.com/RocketChat/Rocket.Chat/pull/18389))
+
+- Regression: Return original message on push API ([#18386](https://github.com/RocketChat/Rocket.Chat/pull/18386))
+
+- Regression: useUserContext ([#18385](https://github.com/RocketChat/Rocket.Chat/pull/18385))
+
+- Regression: Fix useUserSubscription usage ([#18378](https://github.com/RocketChat/Rocket.Chat/pull/18378))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@20051231](https://github.com/20051231)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.5.0-rc.3
 `2020-07-24  ·  6 🔍  ·  5 👩‍💻👨‍💻`
 

@@ -47745,6 +47745,80 @@
           ]
         }
       ]
+    },
+    "3.5.0-rc.4": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.16.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18389",
+          "title": "Update Apps Engine",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18383",
+          "title": "[FIX] Missing Privacy Terms Cloud Register warning",
+          "userLogin": "gabriellsh",
+          "milestone": "3.6.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "18386",
+          "title": "Regression: Return original message on push API",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18385",
+          "title": "Regression: useUserContext",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18378",
+          "title": "Regression: Fix useUserSubscription usage",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18263",
+          "title": "[FIX] File uploads for unknown file types but nothing is blocked",
+          "userLogin": "20051231",
+          "contributors": [
+            "20051231",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18377",
+          "title": "[FIX] Push gateway and cloud integration",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.5.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
