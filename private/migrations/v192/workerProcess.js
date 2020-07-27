@@ -58,7 +58,7 @@ module.exports.getWorkerProcess = () => ({
 		const roomEvents = [];
 
 		for (const room of rooms) {
-			const event = Events.buildEvent(config.get('LOCAL_SRC'), room._id, 'room', room);
+			const event = Events.buildEvent(config.get('LOCAL_SRC'), null, room._id, 'room', room);
 
 			roomEvents.push(event);
 		}
@@ -69,13 +69,15 @@ module.exports.getWorkerProcess = () => ({
 	//
 	// Messages
 	async buildMessages({ rid }) {
+		const cid = rid;
+
 		const count = await this.Messages.find({ rid }).count();
 
 		if (count === 0) {
 			console.log(`Messages - Room ${ rid } has no messages`);
 
 			// If there are no messages, set the isLeaf true
-			await this.RoomEvents.updateOne({ rid }, { $set: { isLeaf: true } });
+			await this.RoomEvents.updateOne({ cid }, { $set: { isLeaf: true } });
 
 			return { success: true };
 		}
@@ -86,7 +88,7 @@ module.exports.getWorkerProcess = () => ({
 
 		const messageEvents = [];
 
-		let lastEventId = (await this.RoomEvents.findOne({ rid }))._id;
+		let lastEventId = (await this.RoomEvents.findOne({ cid }))._id;
 
 		for (let i = 0; i < batches; i++) {
 			console.log(`Messages - Room ${ rid }, running batch ${ i }/${ batches }`);
@@ -101,7 +103,7 @@ module.exports.getWorkerProcess = () => ({
 			for (const message of messages) {
 				const v2Data = RoomEvents.fromV1Data(message);
 
-				const event = Events.buildEvent(config.get('LOCAL_SRC'), message.rid, 'msg', v2Data, [lastEventId]);
+				const event = Events.buildEvent(config.get('LOCAL_SRC'), message._id, message.rid, 'msg', v2Data, [lastEventId]);
 
 				lastEventId = event._id;
 
