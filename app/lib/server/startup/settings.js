@@ -1198,10 +1198,20 @@ settings.addGroup('Push', function() {
 	this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
+		enableQuery: [
+			{
+				_id: 'Push_enable',
+				value: true,
+			},
+			{
+				_id: 'Register_Server',
+				value: true,
+			},
+			{
+				_id: 'Cloud_Service_Agree_PrivacyTerms',
+				value: true,
+			},
+		],
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
