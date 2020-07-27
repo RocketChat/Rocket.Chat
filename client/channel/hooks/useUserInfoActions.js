@@ -6,7 +6,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { usePermission, useAllPermissions } from '../../contexts/AuthorizationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useUserId } from '../../contexts/UserContext';
+import { useUserId, useUserSubscription, useUserSubscriptionByName } from '../../contexts/UserContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { WebRTC } from '../../../app/webrtc/client';
 import { useRoute } from '../../contexts/RouterContext';
@@ -15,7 +15,6 @@ import { RoomRoles } from '../../../app/models/client';
 import { roomTypes, RoomMemberActions } from '../../../app/utils';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { useUserRoom } from './useUserRoom';
-import { useUserSubscription, useUserSubscriptionByName } from '../../contexts/SubscriptionContext';
 
 
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
