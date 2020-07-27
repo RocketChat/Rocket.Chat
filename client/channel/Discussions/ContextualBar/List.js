@@ -13,7 +13,7 @@ import { getConfig } from '../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../app/models/client';
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserId } from '../../../contexts/UserContext';
+import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { MessageSkeleton } from '../../components/Message';
@@ -21,7 +21,6 @@ import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../helpers/clickableItem';
-import { useUserSubscription } from '../../../contexts/SubscriptionContext';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
