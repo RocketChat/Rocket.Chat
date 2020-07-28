@@ -53,7 +53,7 @@ Meteor.startup(() => {
 								window.location.reload();
 							}
 						};
-						console.log(`Service worker has been registered for scope: ${reg.scope}`);
+						console.log(`Service worker has been registered for scope: ${ reg.scope }`);
 					} else {
 						reg.pushManager.getSubscription().then(function(sub) {
 							if (sub === null) {
