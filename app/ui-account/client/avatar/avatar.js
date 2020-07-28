@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
+import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 const getUsername = ({ userId, username }) => {
@@ -23,9 +24,13 @@ const getUsername = ({ userId, username }) => {
 
 Template.avatar.helpers({
 	src() {
-		const { url } = Template.instance().data;
+		const { url, rid } = Template.instance().data;
 		if (url) {
 			return url;
+		}
+
+		if (rid) {
+			return getRoomAvatarURL(rid);
 		}
 
 		if (this.roomIcon && this.username) {

@@ -797,6 +797,9 @@ Template.channelSettingsInfo.onCreated(function() {
 
 Template.channelSettingsInfo.helpers({
 	...common,
+	rid() {
+		return Template.instance().room._id;
+	},
 	channelName() {
 		return `@${ Template.instance().room.name }`;
 	},
