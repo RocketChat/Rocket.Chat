@@ -43,7 +43,7 @@
 						{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}
 					</button>
 					{{#if getStatus}}
-						<button class="message-custom-status rc-tooltip rc-tooltip--up rc-tooltip--start" aria-label="{{getStatus}}">💬</button>
+						<button class="message-custom-status" title="{{getStatus}}">💬</button>
 					{{/if}}
 					<span class="info border-component-color color-info-font-color"></span>
 					{{# if showRoles }}
@@ -57,28 +57,28 @@
 					<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
 					{{#if showTranslated}}
 						<span class="translated">
-							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" title="{{_ "Translated"}}"></i>
 							<span class="translation-provider">{{ translationProvider }}</span>
 						</span>
 					{{/if}}
 					{{#if msg.sentByEmail}}
 						<span class="sent-by-email">
-							<i class="icon-mail" title='{{_ "Message_sent_by_email"}}' aria-label='{{_ "Message_sent_by_email"}}'></i>
+							<i class="icon-mail" title='{{_ "Message_sent_by_email"}}'></i>
 						</span>
 					{{/if}}
 					{{#if edited}}
 						<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
-							<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
+							<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" title="{{_ "Edited"}}"></i>
 						</span>
 					{{/if}}
 					{{#if msg.pinned}}
-						<span aria-label="{{_ "Message_has_been_pinned"}}" class="pinned rc-tooltip rc-tooltip--up rc-tooltip--start"><i class="icon-pin"></i></span>
+						<span title="{{_ "Message_has_been_pinned"}}" class="pinned"><i class="icon-pin"></i></span>
 					{{/if}}
 					{{#if showStar}}
-						<span aria-label="{{_ "Message_has_been_starred"}}" class="starred rc-tooltip rc-tooltip--up rc-tooltip--start"><i class="icon-star"></i></span>
+						<span title="{{_ "Message_has_been_starred"}}" class="starred"><i class="icon-star"></i></span>
 					{{/if}}
 					{{#if msg.alert}}
-						<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div>
+						<div title="{{_ msg.alert }}" class="message-unread"></div>
 					{{/if}}
 					{{#if msg.private}}
 						<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
@@ -135,7 +135,7 @@
 					{{/if}}
 					<span class="discussion-reply-lm">{{ formatDateAndTime msg.dlm }}</span>
 					{{# if unread }}
-						<div aria-label="{{_ 'Unread' }}" class="rc-tooltip message-unread"></div>
+						<div title="{{_ 'Unread' }}" class="message-unread"></div>
 					{{/if}}
 				</div>
 			{{/if}}
@@ -148,14 +148,14 @@
 					<span class='reply-counter'>{{_ i18nReplyCounter counter=msg.tcount }}</span>
 					<span class="discussion-reply-lm">{{ formatDateAndTime msg.tlm}}</span>
 					{{# if unread }}
-						<div aria-label="{{_ 'Unread' }}" class="rc-tooltip message-unread {{class}}"></div>
+						<div title="{{_ 'Unread' }}" class="message-unread {{class}}"></div>
 					{{/if}}
 					{{# if following }}
-					<div role="button" class="rc-tooltip js-unfollow-thread" aria-label="{{_ "Following"}}">
+					<div role="button" class="js-unfollow-thread" title="{{_ "Following"}}">
 						{{> icon icon="bell" block="thread-icons"}}
 					</div>
 					{{else}}
-					<div role="button" class="rc-tooltip js-follow-thread" aria-label="{{_ "Not_following"}}">
+					<div role="button" class="js-follow-thread" title="{{_ "Not_following"}}">
 						{{> icon icon="bell-off" block="thread-icons"}}
 					</div>
 					{{/if}}
