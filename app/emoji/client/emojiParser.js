@@ -12,7 +12,7 @@ import { emoji } from '../lib/rocketchat';
  * @param {Object} message - The message object
  */
 
-const emojiParser = function (message) {
+const emojiParser = function(message) {
 	let html = s.trim(message.html);
 	if (html) {
 		// &#39; to apostrophe (') for emojis such as :')
@@ -29,7 +29,7 @@ const emojiParser = function (message) {
 
 		const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
 
-		let hasText =  false;
+		let hasText = false;
 
 		if (!isIE11()) {
 			const filter = (node) => {

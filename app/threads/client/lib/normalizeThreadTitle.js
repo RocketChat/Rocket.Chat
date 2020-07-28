@@ -5,7 +5,7 @@ import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { Users } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MentionsParser } from '../../../mentions/lib/MentionsParser';
-import { emojiParser } from '../../../emoji/client/emojiParser.js'
+import { emojiParser } from '../../../emoji/client/emojiParser.js';
 
 export const normalizeThreadTitle = ({ ...message }) => {
 	if (message.msg) {
@@ -25,8 +25,7 @@ export const normalizeThreadTitle = ({ ...message }) => {
 			userTemplate: ({ label }) => `<strong> ${ label } </strong>`,
 			roomTemplate: ({ channel }) => `<strong> ${ channel } </strong>`,
 		});
-		
-		html = emojiParser({ html:filteredMessage }).html;
+		const { html } = emojiParser({ html: filteredMessage });
 		return instance.parse({ ...message, msg: filteredMessage, html }).html;
 	}
 
