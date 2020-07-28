@@ -88,7 +88,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 			<VerticalBar rcx-thread-view width='full' style={style} display='flex' flexDirection='column' position='absolute' { ...!expanded && { width: '380px' } }>
 				<VerticalBar.Header>
 					<VerticalBar.Icon name='thread' />
-					<VerticalBar.Text>{headerTitle}</VerticalBar.Text>
+					<VerticalBar.Text dangerouslySetInnerHTML={{ __html: headerTitle }} />
 					<VerticalBar.Action aria-label={expandLabel} onClick={handleExpandButton} name={expandIcon}/>
 					<VerticalBar.Action aria-label={actionLabel} onClick={handleFollowButton} name={button}/>
 					<VerticalBar.Close onClick={handleClose}/>

@@ -4,7 +4,6 @@ import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from './Page';
-import RawText from './RawText';
 
 function VerticalBar({ children, ...props }) {
 	const mobile = useDebouncedValue(useMediaQuery('(max-width: 500px)'), 50);
@@ -81,8 +80,8 @@ function VerticalBarSkeleton(props) {
 	</VerticalBar>;
 }
 
-function VerticalBarText({ children, ...props }) {
-	return <Box flexShrink={1} flexGrow={1} withTruncatedText {...props}><RawText>{children}</RawText></Box>;
+function VerticalBarText(props) {
+	return <Box flexShrink={1} flexGrow={1} withTruncatedText {...props}/>;
 }
 
 VerticalBar.Icon = React.memo(VerticalBarIcon);

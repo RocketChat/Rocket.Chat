@@ -16,27 +16,23 @@ export class PushNotification {
 	}
 
 	getNotificationConfig({ rid, uid: userId, mid: messageId, roomName, username, message, payload, badge = 1, category, idOnly = false }) {
-		let title;
-		if (roomName && roomName !== '') {
-			title = `${ roomName }`;
-			message = `${ username }: ${ message }`;
-		} else {
-			title = `${ username }`;
-		}
+		const title = idOnly ? '' : roomName || username;
+
+		// message is being redacted already by 'getPushData' if idOnly is true
+		const text = !idOnly && roomName !== '' ? `${ username }: ${ message }` : message;
 
 		const config = {
 			from: 'push',
 			badge,
 			sound: 'default',
 			priority: 10,
-			title: idOnly ? '' : title,
-			text: idOnly ? '' : message,
+			title,
+			text,
 			payload: {
 				host: Meteor.absoluteUrl(),
-				...idOnly || { rid },
 				messageId,
 				notificationType: idOnly ? 'message-id-only' : 'message',
-				...idOnly || payload,
+				...idOnly || { rid, ...payload },
 			},
 			userId,
 			notId: this.getNotificationId(rid),
@@ -90,10 +86,11 @@ export class PushNotification {
 			room,
 			message,
 			userId: receiver._id,
-			receiverUsername: receiver.username,
+			receiver,
 			senderUsername: sender.username,
 			senderName: sender.name,
 			notificationMessage,
+			shouldOmitMessage: false,
 		}));
 
 		return {

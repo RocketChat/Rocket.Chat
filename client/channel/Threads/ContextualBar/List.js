@@ -9,10 +9,9 @@ import { useDebouncedValue, useDebouncedState, useResizeObserver, useLocalStorag
 
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import RawText from '../../../components/basic/RawText';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';
-import { useUserId } from '../../../contexts/UserContext';
+import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { Messages } from '../../../../app/models/client';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useUserRoom } from '../../hooks/useUserRoom';
@@ -21,7 +20,6 @@ import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { clickableItem } from '../../helpers/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
-import { useUserSubscription } from '../../../contexts/SubscriptionContext';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 
 function mapProps(WrappedComponent) {
@@ -211,7 +209,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 	return <VerticalBar>
 		<VerticalBar.Header>
 			<Icon name='thread' size='x20'/>
-			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><RawText>{t('Threads')}</RawText></Box>
+			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Threads')}</Box>
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
