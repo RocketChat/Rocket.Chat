@@ -27,6 +27,7 @@ export function AddUser({ roles, ...props }) {
 		username: '',
 		statusText: '',
 		bio: '',
+		nickname: '',
 		email: '',
 		password: '',
 		verified: false,
