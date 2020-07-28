@@ -8,9 +8,7 @@ import { InformationPage } from './InformationPage';
 
 export const InformationRoute = React.memo(function InformationRoute() {
 	const canViewStatistics = usePermission('view-statistics');
-	if (!canViewStatistics) {
-		return <NotAuthorizedPage />;
-	}
+
 
 	const [isLoading, setLoading] = useState(true);
 	const [statistics, setStatistics] = useState({});
@@ -67,15 +65,18 @@ export const InformationRoute = React.memo(function InformationRoute() {
 		downloadJsonAsAFile(statistics, 'statistics');
 	};
 
-	return <InformationPage
-		canViewStatistics={canViewStatistics}
-		isLoading={isLoading}
-		info={info}
-		statistics={statistics}
-		instances={instances}
-		onClickRefreshButton={handleClickRefreshButton}
-		onClickDownloadInfo={handleClickDownloadInfo}
-	/>;
+	if (canViewStatistics) {
+		return <InformationPage
+			canViewStatistics={canViewStatistics}
+			isLoading={isLoading}
+			info={info}
+			statistics={statistics}
+			instances={instances}
+			onClickRefreshButton={handleClickRefreshButton}
+			onClickDownloadInfo={handleClickDownloadInfo}
+		/>;
+	}
+	return <NotAuthorizedPage />;
 });
 
 export default InformationRoute;
