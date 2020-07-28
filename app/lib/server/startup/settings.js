@@ -1294,6 +1294,10 @@ settings.addGroup('Push', function() {
 			type: 'string',
 			secret: true,
 		});
+		this.add('Vapid_subject', 'https://www.viasat.com', {
+			type: 'string',
+			public: false,
+		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
 			enableQuery: pushEnabledWithoutGateway,

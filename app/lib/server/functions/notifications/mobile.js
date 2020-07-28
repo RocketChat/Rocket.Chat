@@ -73,10 +73,11 @@ export function sendWebPush({ room, message, userId, receiverUsername, senderUse
 	const gcmKey = settings.get('Push_gcm_api_key');
 	const vapidPublic = settings.get('Vapid_public_key');
 	const vapidPrivate = settings.get('Vapid_private_key');
+	const vapidSubject = settings.get('Vapid_subject');
 
 	webpush.setGCMAPIKey(gcmKey);
 	webpush.setVapidDetails(
-		'https://www.viasat.com',
+		vapidSubject,
 		vapidPublic,
 		vapidPrivate,
 		'aes128gcm',
@@ -103,6 +104,9 @@ export function sendWebPush({ room, message, userId, receiverUsername, senderUse
 		host: Meteor.absoluteUrl(),
 		title,
 		message: displayMessage,
+		receiverUsername,
+		senderUsername,
+		senderName,
 		redirectURL,
 		vibrate: [100, 50, 100],
 		icon: '/images/icons/icon-72x72.png',
