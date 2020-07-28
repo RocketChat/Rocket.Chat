@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
+import { HTML } from 'meteor/htmljs';
 import moment from 'moment';
 import s from 'underscore.string';
 
@@ -14,7 +15,9 @@ import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } fro
 import { t, roomTypes, RoomSettingsEnum } from '../../../utils';
 import { ChannelSettings } from '../lib/ChannelSettings';
 import { MessageTypesValues } from '../../../lib/lib/MessageTypes';
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
+createTemplateForComponent('channelSettingsEditing', () => import('../../../../client/channel/ChannelInfo/EditChannel'));
 
 const common = {
 	canLeaveRoom() {
@@ -138,7 +141,7 @@ const fixRoomName = (old) => {
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
-Template.channelSettingsEditing.events({
+Template.channelSettingsEditing2.events({
 	'input [name="name"]'(e) {
 		const input = e.currentTarget;
 		const modified = fixRoomName(input.value);
@@ -215,7 +218,7 @@ Template.channelSettingsEditing.events({
 	},
 });
 
-Template.channelSettingsEditing.onCreated(function() {
+Template.channelSettingsEditing2.onCreated(function() {
 	const room = ChatRoom.findOne(this.data && this.data.rid);
 	this.room = room;
 	this.settings = {
@@ -701,7 +704,7 @@ Template.channelSettingsEditing.onCreated(function() {
 	});
 });
 
-Template.channelSettingsEditing.helpers({
+Template.channelSettingsEditing2.helpers({
 	...common,
 	value() {
 		return this.value.get();

@@ -1,9 +1,9 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import { Box, Button, Margins, TextInput, Skeleton, Field, ToggleSwitch, Divider, Icon, Callout, RadioButton	 } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Field, ToggleSwitch } from '@rocket.chat/fuselage';
 
 import VerticalBar from '../../components/basic/VerticalBar';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import RoomAvatarEditor from '../../components/basic/avatar/RoomAvatarEditor';
+import EditRoomForm from '../../components/EditRoomForm';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -21,6 +21,8 @@ const getInitialValues = (room) => ({
 	favorite: !!room.favorite,
 	featured: !!room.featured,
 	roomTopic: room.topic ?? '',
+	roomDescription: room.description ?? '',
+	roomAnnouncement: room.announcement ?? '',
 	roomAvatar: undefined,
 });
 
@@ -67,18 +69,14 @@ function EditRoom({ room, onChange }) {
 		featured,
 		roomTopic,
 		roomAvatar,
+		roomDescription,
+		roomAnnouncement,
 	} = values;
 
 	const {
-		handleRoomName,
-		handleRoomType,
-		handleReadOnly,
-		handleArchived,
 		handleIsDefault,
 		handleFavorite,
 		handleFeatured,
-		handleRoomAvatar,
-		handleRoomTopic,
 	} = handlers;
 
 	const changeArchivation = archived !== !!room.archived;
@@ -101,6 +99,8 @@ function EditRoom({ room, onChange }) {
 			default: isDefault,
 			favorite: { defaultValue: isDefault, favorite },
 			featured,
+			roomDescription,
+			roomAnnouncement,
 			roomAvatar,
 		});
 
@@ -117,101 +117,45 @@ function EditRoom({ room, onChange }) {
 		setDeleted(true);
 	}, [deleteRoom, room._id]);
 
+	const append = useMemo(() => <>
+		<Field>
+			<Field.Row>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<Field.Label>{t('Default')}</Field.Label>
+					<ToggleSwitch disabled={deleted} checked={isDefault} onChange={handleIsDefault}/>
+				</Box>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Row>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<Field.Label>{t('Favorite')}</Field.Label>
+					<ToggleSwitch disabled={deleted} checked={favorite} onChange={handleFavorite}/>
+				</Box>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Row>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<Field.Label>{t('Featured')}</Field.Label>
+					<ToggleSwitch disabled={deleted} checked={featured} onChange={handleFeatured}/>
+				</Box>
+			</Field.Row>
+		</Field>
+	</>, [deleted, favorite, featured, handleFavorite, handleFeatured, handleIsDefault, isDefault, t]);
+
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])}>
-		{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
-		<RoomAvatarEditor room={room} onChangeAvatar={handleRoomAvatar}/>
-		<Field>
-			<Field.Label>{t('Name')}</Field.Label>
-			<Field.Row>
-				<TextInput disabled={deleted || room.t === 'd'} value={roomName} onChange={handleRoomName} flexGrow={1}/>
-			</Field.Row>
-		</Field>
-		{ room.t !== 'd' && <>
-			<Field>
-				<Field.Label>{t('Owner')}</Field.Label>
-				<Field.Row>
-					<Box fontScale='p1'>{room.u?.username}</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Topic')}</Field.Label>
-				<Field.Row>
-					<TextInput disabled={deleted} value={roomTopic} onChange={handleRoomTopic} flexGrow={1}/>
-				</Field.Row>
-			</Field>
-			<Divider />
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Public')}</Field.Label>
-						<RadioButton disabled={deleted} checked={roomType !== 'p'} onChange={() => handleRoomType('c')}/>
-					</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Private')}</Field.Label>
-						<RadioButton disabled={deleted} checked={roomType === 'p'} onChange={() => handleRoomType('p')}/>
-					</Box>
-				</Field.Row>
-			</Field>
-			<Divider />
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Read_only')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={readOnly} onChange={handleReadOnly}/>
-					</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Archived')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={archived} onChange={handleArchived}/>
-					</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Default')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={isDefault} onChange={handleIsDefault}/>
-					</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Favorite')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={favorite} onChange={handleFavorite}/>
-					</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Featured')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={featured} onChange={handleFeatured}/>
-					</Box>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-						<Margins inlineEnd='x4'>
-							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges || deleted} onClick={reset}>{t('Reset')}</Button>
-							<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges || deleted} onClick={handleSave}>{t('Save')}</Button>
-						</Margins>
-					</Box>
-				</Field.Row>
-			</Field>
-		</>}
-		<Field>
-			<Field.Row>
-				<Button primary danger disabled={deleted || !canDelete} onClick={handleDelete} display='flex' alignItems='center' justifyContent='center' flexGrow={1}><Icon name='trash' size='x16' />{t('Delete')}</Button>
-			</Field.Row>
-		</Field>
+		<EditRoomForm
+			values={values}
+			handlers={handlers}
+			onSave={handleSave}
+			onDelete={handleDelete}
+			canDelete={canDelete}
+			onReset={reset}
+			deleted={deleted}
+			room={room}
+			hasUnsavedChanges={hasUnsavedChanges}
+			append={append}
+		/>
 	</VerticalBar.ScrollableContent>;
 }
