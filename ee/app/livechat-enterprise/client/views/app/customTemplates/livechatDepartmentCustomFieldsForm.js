@@ -31,8 +31,9 @@ Template.livechatDepartmentCustomFieldsForm.helpers({
 		const department = Template.instance().department.get();
 		return [department && department._id, ...Template.instance().selectedDepartments.get().map((dept) => dept._id)];
 	},
-	businessHour() {
-		return Template.instance().businessHour.get();
+	businessHourName() {
+		const businessHour = Template.instance().businessHour.get();
+		return businessHour?.name;
 	},
 });
 
@@ -53,7 +54,7 @@ Template.livechatDepartmentCustomFieldsForm.onCreated(function() {
 
 	if (!contextDepartment && _id) {
 		this.autorun(async () => {
-			const { department } = await APIClient.v1.get(`livechat/department/${ _id }`);
+			const { department } = await APIClient.v1.get(`livechat/department/${ _id }?includeAgents=false`);
 			if (department.departmentsAllowedToForward) {
 				const { departments } = await APIClient.v1.get(`livechat/department.listByIds?${ mountArrayQueryParameters('ids', department.departmentsAllowedToForward) }&fields=${ JSON.stringify({ fields: { name: 1 } }) }`);
 				this.selectedDepartments.set(departments.map((dept) => ({

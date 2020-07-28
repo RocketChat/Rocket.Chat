@@ -1961,6 +1961,12 @@
 	background-size: contain;
 }
 
+.rc-old .popup-user-not_in_channel {
+	display: inline-block;
+
+	float: right;
+}
+
 .rc-old .popup-user-status {
 	display: inline-block;
 
@@ -3165,18 +3171,6 @@
 		& > span {
 			padding: 0 1em;
 		}
-	}
-}
-
-.rc-old .avatarPrompt {
-	& header p {
-		font-size: 14px;
-		font-weight: 300;
-		line-height: 22px;
-	}
-
-	& img {
-		width: 200px;
 	}
 }
 
