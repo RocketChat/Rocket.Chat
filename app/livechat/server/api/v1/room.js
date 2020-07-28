@@ -202,9 +202,9 @@ API.v1.addRoute('livechat/room.requestFileSharing', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			// if (!room.open) {
-			// 	throw new Meteor.Error('room-closed');
-			// }
+			if (!room.open) {
+				throw new Meteor.Error('room-closed');
+			}
 			if (messageType === 'screen_sharing_request_rejected') {
 				ScreensharingManager.screenSharingRequestRejected(rid, visitor);
 			} else if (messageType === 'screen_sharing_request_accepted') {

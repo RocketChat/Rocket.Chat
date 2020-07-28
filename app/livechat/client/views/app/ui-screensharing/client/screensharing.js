@@ -98,7 +98,7 @@ Template.screenSharinDialog.onCreated(function() {
 		$(window).on('resize', set);
 
 		this.isWindowMaximized.set(true);
-		this.iframeWidth.set(width - 10);
+		this.iframeWidth.set(width - 20);
 		this.iframeHeight.set(height - 30 - 10);
 	};
 
