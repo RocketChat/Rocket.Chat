@@ -91,7 +91,7 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 					<VerticalBar.Text dangerouslySetInnerHTML={{ __html: headerTitle }} />
 					<VerticalBar.Action aria-label={expandLabel} onClick={handleExpandButton} name={expandIcon}/>
 					<VerticalBar.Action aria-label={actionLabel} onClick={handleFollowButton} name={button}/>
-					<VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
+					<VerticalBar.Close onClick={handleClose}/>
 				</VerticalBar.Header>
 				<VerticalBar.Content paddingInline={0} flexShrink={1} flexGrow={1} ref={ref}/>
 			</VerticalBar>
