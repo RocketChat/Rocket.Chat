@@ -8,7 +8,7 @@ import { MentionsParser } from '../../../mentions/lib/MentionsParser';
 
 export const normalizeThreadTitle = ({ ...message }) => {
 	if (message.msg) {
-		const filteredMessage = filterMarkdown(message.msg);
+		const filteredMessage = filterMarkdown(s.escapeHTML(message.msg));
 		if (!message.channels && !message.mentions) {
 			return filteredMessage;
 		}

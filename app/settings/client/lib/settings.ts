@@ -15,20 +15,18 @@ class Settings extends SettingsBase {
 		return this.dict.get(_id);
 	}
 
+	private _storeSettingValue(record: { _id: string; value: SettingValue }, initialLoad: boolean): void {
+		Meteor.settings[record._id] = record.value;
+		this.dict.set(record._id, record.value);
+		this.load(record._id, record.value, initialLoad);
+	}
+
 	init(): void {
 		let initialLoad = true;
 		this.collection.find().observe({
-			added: (record: {_id: string; value: SettingValue}) => {
-				Meteor.settings[record._id] = record.value;
-				this.dict.set(record._id, record.value);
-				this.load(record._id, record.value, initialLoad);
-			},
-			changed: (record: {_id: string; value: SettingValue}) => {
-				Meteor.settings[record._id] = record.value;
-				this.dict.set(record._id, record.value);
-				this.load(record._id, record.value, initialLoad);
-			},
-			removed: (record: {_id: string}) => {
+			added: (record: { _id: string; value: SettingValue }) => this._storeSettingValue(record, initialLoad),
+			changed: (record: { _id: string; value: SettingValue }) => this._storeSettingValue(record, initialLoad),
+			removed: (record: { _id: string }) => {
 				delete Meteor.settings[record._id];
 				this.dict.set(record._id, null);
 				this.load(record._id, undefined, initialLoad);

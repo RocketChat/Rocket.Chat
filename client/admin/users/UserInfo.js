@@ -32,6 +32,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			bio,
 			utcOffset,
 			lastLogin,
+			nickname,
 		} = user;
 		return {
 			name: showRealNames ? name : username,
@@ -48,6 +49,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			createdAt: user.createdAt,
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
+			nickname,
 		};
 	}, [data, showRealNames]);
 

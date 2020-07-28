@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Field, TextInput, TextAreaInput, MultiSelectFiltered, Box, ToggleSwitch, Icon, Divider } from '@rocket.chat/fuselage';
+import { Field, TextInput, TextAreaInput, PasswordInput, MultiSelectFiltered, Box, ToggleSwitch, Icon, Divider } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
@@ -89,7 +89,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 		{useMemo(() => <Field>
 			<Field.Label>{t('Password')}</Field.Label>
 			<Field.Row>
-				<TextInput flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
+				<PasswordInput autoComplete='off' flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
 			</Field.Row>
 		</Field>, [t, password, handlePassword])}
 		{useMemo(() => <Field>
