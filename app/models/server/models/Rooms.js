@@ -220,6 +220,29 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setAvatarData(_id, origin, etag) {
+		const update = {
+			$set: {
+				avatarOrigin: origin,
+				avatarETag: etag,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	unsetAvatarData(_id) {
+		const update = {
+			$unset: {
+				avatarOrigin: 1,
+				avatarETag: 1,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+
 	setSystemMessagesById = function(_id, systemMessages) {
 		const query = {
 			_id,

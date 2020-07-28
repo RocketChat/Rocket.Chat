@@ -7,6 +7,7 @@ export const deleteRoom = function(rid) {
 	Messages.removeByRoomId(rid);
 	callbacks.run('beforeDeleteRoom', rid);
 	Subscriptions.removeByRoomId(rid);
+	FileUpload.getStore('RoomAvatars').deleteByName(rid);
 	callbacks.run('afterDeleteRoom', rid);
 	return Rooms.removeById(rid);
 };
