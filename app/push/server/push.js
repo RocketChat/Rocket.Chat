@@ -8,6 +8,7 @@ import _ from 'underscore';
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger, LoggerManager } from './logger';
+import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
@@ -68,6 +69,12 @@ export class PushClass {
 
 	_removeToken(token) {
 		appTokensCollection.rawCollection().deleteOne({ token });
+	}
+
+	_shouldUseGateway() {
+		return !!this.options.gateways
+			&& settings.get('Register_Server')
+			&& settings.get('Cloud_Service_Agree_PrivacyTerms');
 	}
 
 	sendNotificationNative(app, notification, countApn, countGcm) {
@@ -186,7 +193,7 @@ export class PushClass {
 		appTokensCollection.find(query).forEach((app) => {
 			logger.debug('send to token', app.token);
 
-			if (this.options.gateways) {
+			if (this._shouldUseGateway()) {
 				return this.sendNotificationGateway(app, notification, countApn, countGcm);
 			}
 

@@ -1,18 +1,33 @@
 .contextual-bar {
-	z-index: 10;
+	&.contextual-bar {
+		z-index: 10;
 
-	display: flex;
+		display: flex;
 
-	overflow: hidden;
-	flex-direction: column;
-	flex: 0 0 var(--flex-tab-width);
+		overflow: hidden;
+		flex-direction: column;
+		flex: 0 0 var(--flex-tab-width);
 
-	width: var(--flex-tab-width);
-	height: 100%;
+		width: var(--flex-tab-width);
+		height: 100%;
 
-	background: var(--color-white);
+		background: var(--color-white);
 
-	border-inline-start: 2px solid var(--color-gray-lightest);
+		border-inline-start: 2px solid var(--color-gray-lightest);
+
+		& > .flex-tab {
+			width: 100%;
+		}
+
+		& & {
+			margin-left: -2px;
+		}
+
+		.rtl & & {
+			margin-right: -2px;
+			margin-left: 0;
+		}
+	}
 
 	&-wrap {
 		position: relative;
@@ -22,10 +37,6 @@
 		flex: 1 1 100%;
 
 		max-height: 100%;
-	}
-
-	& > .flex-tab {
-		width: 100%;
 	}
 
 	&__content {

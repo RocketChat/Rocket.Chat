@@ -1,10 +1,11 @@
-import { Box, Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Throbber, Callout } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
 import Subtitle from '../../components/basic/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
+import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
 function ConnectToCloudSection({
@@ -18,6 +19,7 @@ function ConnectToCloudSection({
 
 	const registerWorkspace = useMethod('cloud:registerWorkspace');
 	const syncWorkspace = useMethod('cloud:syncWorkspace');
+	const hasAcceptedTerms = useSetting('Cloud_Service_Agree_PrivacyTerms');
 
 	const handleRegisterButtonClick = async () => {
 		setConnecting(true);
@@ -29,7 +31,6 @@ function ConnectToCloudSection({
 				throw Error(t('An error occured'));
 			}
 
-			// TODO: sync on register?
 			const isSynced = await syncWorkspace();
 
 			if (!isSynced) {
@@ -47,14 +48,19 @@ function ConnectToCloudSection({
 
 	return <Box is='section' {...props}>
 		<Subtitle>{t('Cloud_registration_required')}</Subtitle>
-		<Box withRichContent>
+		<Box withRichContent color='neutral-800'>
 			<p>{t('Cloud_registration_required_description')}</p>
 		</Box>
 		<ButtonGroup>
-			<Button primary disabled={isConnecting} minHeight='x40' onClick={handleRegisterButtonClick}>
+			<Button primary disabled={isConnecting || !hasAcceptedTerms} minHeight='x40' onClick={handleRegisterButtonClick}>
 				{isConnecting ? <Throbber is='span' inheritColor /> : t('Cloud_registration_required_link_text')}
 			</Button>
 		</ButtonGroup>
+		{!hasAcceptedTerms && <Box mb='x12'>
+			<Callout type='warning'>
+				{t('Cloud_Service_Agree_PrivacyTerms_Login_Disabled_Warning')}
+			</Callout>
+		</Box>}
 	</Box>;
 }
 
