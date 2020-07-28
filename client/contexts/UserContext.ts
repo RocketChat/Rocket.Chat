@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 type SubscriptionQuery = {
-	_id: string | Mongo.ObjectID;
+	rid: string | Mongo.ObjectID;
 } | {
 	name: string;
 }
@@ -47,9 +47,9 @@ export const useUserPreference = <T>(key: string | Mongo.ObjectID, defaultValue?
 	return useSubscription(subscription);
 };
 
-export const useUserSubscription = <T>(_id: string | Mongo.ObjectID, fields: Fields): T | undefined => {
+export const useUserSubscription = <T>(rid: string | Mongo.ObjectID, fields: Fields): T | undefined => {
 	const { querySubscription } = useContext(UserContext);
-	const subscription = useMemo(() => querySubscription({ _id }, fields), [querySubscription, _id, fields]);
+	const subscription = useMemo(() => querySubscription({ rid }, fields), [querySubscription, rid, fields]);
 	return useSubscription(subscription);
 };
 
