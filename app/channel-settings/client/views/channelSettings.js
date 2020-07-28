@@ -62,7 +62,7 @@ function roomExcludePinned(room) {
 		return room.retention.excludePinned;
 	}
 
-	return settings.get('RetentionPolicy_ExcludePinned');
+	return settings.get('RetentionPolicy_DoNotPrunePinned');
 }
 
 function roomHasGlobalPurge(room) {
