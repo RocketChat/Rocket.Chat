@@ -117,6 +117,7 @@ settings.addGroup('LDAP', function() {
 		this.add('LDAP_Sync_User_Data_Groups_Enforce_AutoChannels', false, { type: 'boolean', enableQuery: syncGroupsChannelsQuery });
 
 		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean', enableQuery });
+		this.add('LDAP_Avatar_Field', '', { type: 'string', enableQuery });
 
 		this.add('LDAP_Background_Sync', false, { type: 'boolean', enableQuery });
 		this.add('LDAP_Background_Sync_Interval', 'Every 24 hours', { type: 'string', enableQuery: backgroundSyncQuery });

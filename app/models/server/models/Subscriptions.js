@@ -543,8 +543,7 @@ export class Subscriptions extends Base {
 	}
 
 	findByRoomId(roomId, options) {
-		const query =			{ rid: roomId };
-
+		const query = { rid: roomId };
 		return this.find(query, options);
 	}
 
@@ -554,16 +553,6 @@ export class Subscriptions extends Base {
 			'u._id': {
 				$ne: userId,
 			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findByRoomAndUsersWithUserHighlights(roomId, users, options) {
-		const query = {
-			rid: roomId,
-			'u._id': { $in: users },
-			'userHighlights.0': { $exists: true },
 		};
 
 		return this.find(query, options);
@@ -989,6 +978,50 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	setAlertForRoomIdAndUserIds(roomId, uids) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: uids },
+			alert: { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	setOpenForRoomIdAndUserIds(roomId, uids) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: uids },
+			open: { $ne: true },
+		};
+
+		const update = {
+			$set: {
+				open: true,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	setLastReplyForRoomIdAndUserIds(roomId, uids, lr) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: uids },
+		};
+
+		const update = {
+			$set: {
+				lr,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
 	setBlockedByRoomId(rid, blocked, blocker) {
 		const query = {
 			rid,
@@ -1275,6 +1308,10 @@ export class Subscriptions extends Base {
 
 		Rooms.incUsersCountById(room._id);
 
+		if (!['d', 'l'].includes(room.t)) {
+			Users.addRoomByUserId(user._id, room._id);
+		}
+
 		return result;
 	}
 
@@ -1293,6 +1330,8 @@ export class Subscriptions extends Base {
 			Rooms.incUsersCountNotDMsByIds(roomIds, -1);
 		}
 
+		Users.removeAllRoomsByUserId(userId);
+
 		return result;
 	}
 
@@ -1306,6 +1345,8 @@ export class Subscriptions extends Base {
 		if (Match.test(result, Number) && result > 0) {
 			Rooms.incUsersCountById(roomId, - result);
 		}
+
+		Users.removeRoomByRoomId(roomId);
 
 		return result;
 	}
@@ -1322,26 +1363,35 @@ export class Subscriptions extends Base {
 			Rooms.incUsersCountById(roomId, - result);
 		}
 
+		Users.removeRoomByUserId(userId, roomId);
+
 		return result;
 	}
 
 	removeByRoomIds(rids) {
-		return this.remove({ rid: { $in: rids } });
+		const result = this.remove({ rid: { $in: rids } });
+
+		Users.removeRoomByRoomIds(rids);
+
+		return result;
 	}
 
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
-	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid) {
+	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid, { groupMention = false, userMention = false } = {}) {
 		if (!users) {
 			return;
 		}
+
 		return this.update({
 			'u._id': { $in: users },
 			rid,
 		}, {
 			$addToSet: {
 				tunread: tmid,
+				...groupMention && { tunreadGroup: tmid },
+				...userMention && { tunreadUser: tmid },
 			},
 		}, { multi: true });
 	}
@@ -1353,6 +1403,8 @@ export class Subscriptions extends Base {
 		}, {
 			$pull: {
 				tunread: tmid,
+				tunreadGroup: tmid,
+				tunreadUser: tmid,
 			},
 		});
 	}

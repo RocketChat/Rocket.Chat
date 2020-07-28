@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
 
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry } from '../../../models/server';
+import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
@@ -357,4 +357,47 @@ export const userCanTakeInquiry = (user) => {
 	const { roles, status, statusLivechat } = user;
 	// TODO: hasRole when the user has already been fetched from DB
 	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
+};
+
+export const updateDepartmentAgents = (departmentId, agents) => {
+	check(departmentId, String);
+	check(agents, Match.ObjectIncluding({
+		upsert: Match.Maybe(Array),
+		remove: Match.Maybe(Array),
+	}));
+
+	const { upsert = [], remove = [] } = agents;
+	const agentsRemoved = [];
+	const agentsAdded = [];
+	remove.forEach(({ agentId }) => {
+		LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
+		agentsRemoved.push(agentId);
+	});
+
+	if (agentsRemoved.length > 0) {
+		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
+	}
+
+	upsert.forEach((agent) => {
+		LivechatDepartmentAgents.saveAgent({
+			agentId: agent.agentId,
+			departmentId,
+			username: agent.username,
+			count: agent.count ? parseInt(agent.count) : 0,
+			order: agent.order ? parseInt(agent.order) : 0,
+		});
+		agentsAdded.push(agent.agentId);
+	});
+
+	if (agentsAdded.length > 0) {
+		callbacks.runAsync('livechat.saveAgentDepartment', {
+			departmentId,
+			agentsId: agentsAdded,
+		});
+	}
+
+	if (agentsRemoved.length > 0 || agentsAdded.length > 0) {
+		const numAgents = LivechatDepartmentAgents.find({ departmentId }).count();
+		LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
+	}
 };

@@ -32,7 +32,7 @@ TabBar.addButton({
 
 TabBar.addButton({
 	groups: ['live'],
-	id: 'conatct-chat-history',
+	id: 'contact-chat-history',
 	i18nTitle: 'Contact_Chat_History',
 	icon: 'clock',
 	template: 'contactChatHistory',

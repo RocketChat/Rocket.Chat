@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 
 import { TranslationContext } from '../contexts/TranslationContext';
@@ -33,31 +33,37 @@ const createTranslateFunction = (language) => {
 	return translate;
 };
 
+const getLanguages = () => {
+	const result = Object.entries(TAPi18n.getLanguages())
+		.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+		.sort((a, b) => a.key - b.key);
+
+	result.unshift({
+		name: 'Default',
+		en: 'Default',
+		key: '',
+	});
+
+	return result;
+};
+
+const getLanguage = () => TAPi18n.getLanguage();
+
+const loadLanguage = (language) => TAPi18n._loadLanguage(language);
+
 export function TranslationProvider({ children }) {
-	const languages = useReactiveValue(() => {
-		const result = Object.entries(TAPi18n.getLanguages())
-			.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
-			.sort((a, b) => a.key - b.key);
-
-		result.unshift({
-			name: 'Default',
-			en: 'Default',
-			key: '',
-		});
-
-		return result;
-	}, []);
-	const language = useReactiveValue(() => TAPi18n.getLanguage());
-	const loadLanguage = useCallback((language) => TAPi18n._loadLanguage(language), []);
+	const languages = useReactiveValue(getLanguages);
+	const language = useReactiveValue(getLanguage);
 	const translate = useMemo(() => createTranslateFunction(language), [language]);
-
+	const value = useMemo(() => ({
+		languages,
+		language,
+		loadLanguage,
+		translate,
+	}),
+	[languages, language, loadLanguage, translate]);
 	return <TranslationContext.Provider
 		children={children}
-		value={{
-			languages,
-			language,
-			loadLanguage,
-			translate,
-		}}
+		value={value}
 	/>;
 }

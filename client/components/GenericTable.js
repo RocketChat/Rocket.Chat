@@ -1,6 +1,7 @@
-import React, { useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
 import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
+import flattenChildren from 'react-keyed-flatten-children';
 
 import { useTranslation } from '../contexts/TranslationContext';
 
@@ -14,7 +15,7 @@ function SortIcon({ direction }) {
 export function Th({ children, active, direction, sort, onClick, align, ...props }) {
 	const fn = useMemo(() => () => onClick && onClick(sort), [sort, onClick]);
 	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
-		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon mod-active={active} direction={active && direction} />}</Box>
+		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon direction={active && direction} />}</Box>
 	</Table.Cell>;
 }
 
@@ -36,6 +37,7 @@ const LoadingRow = ({ cols }) => <Table.Row>
 </Table.Row>;
 
 export const GenericTable = forwardRef(function GenericTable({
+	children,
 	results,
 	total,
 	renderRow: RenderRow,
@@ -58,7 +60,10 @@ export const GenericTable = forwardRef(function GenericTable({
 		setParams({ ...params, current, itemsPerPage });
 	}, [params, current, itemsPerPage, setParams]);
 
-	const Loading = useCallback(() => Array.from({ length: 10 }, (_, i) => <LoadingRow cols={header.length} key={i}/>), [header.length]);
+	const Loading = useCallback(() => {
+		const headerCells = flattenChildren(header);
+		return Array.from({ length: 10 }, (_, i) => <LoadingRow key={i} cols={headerCells.length} />);
+	}, [header]);
 
 	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 
@@ -74,15 +79,18 @@ export const GenericTable = forwardRef(function GenericTable({
 				<Scrollable>
 					<Box mi='neg-x24' pi='x24' flexGrow={1} ref={ref}>
 						<Table fixed sticky>
-							{ header && <Table.Head>
+							{header && <Table.Head>
 								<Table.Row>
 									{header}
 								</Table.Row>
-							</Table.Head> }
+							</Table.Head>}
 							<Table.Body>
-								{results
-									? results.map((props, index) => <RenderRow key={props._id || index} { ...props }/>)
-									:	<Loading/>}
+								{RenderRow && (
+									results
+										? results.map((props, index) => <RenderRow key={props._id || index} { ...props }/>)
+										:	<Loading/>
+								)}
+								{children && (results ? results.map(children) : <Loading />)}
 							</Table.Body>
 						</Table>
 					</Box>
@@ -100,4 +108,8 @@ export const GenericTable = forwardRef(function GenericTable({
 			</>
 		}
 	</>;
+});
+
+export default Object.assign(GenericTable, {
+	HeaderCell: Th,
 });
