@@ -1894,6 +1894,7 @@
   "Livechat_Take_Confirm": "Quer levar este cliente?",
   "Livechat_title": "Título Livechat",
   "Livechat_title_color": "Cor de fundo do título do Livechat",
+  "Livechat_message_character_limit": "Limite de caracteres da mensagem de livechat",
   "Livechat_transcript_sent": "Transcrição de Livechat enviada",
   "Livechat_Users": "Utilizadores Livechat",
   "LiveStream & Broadcasting": "Livestream e Broadcasting",

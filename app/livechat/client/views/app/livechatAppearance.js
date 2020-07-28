@@ -136,7 +136,7 @@ Template.livechatAppearance.onCreated(async function() {
 
 	const livechatTitle = getSettingFromAppearance(this, 'Livechat_title');
 	const livechatTitleColor = getSettingFromAppearance(this, 'Livechat_title_color');
-	const livechatTitleLimitTextLength = getSettingFromAppearance(this, 'Livechat_title_character_limit');
+	const livechatMessageCharacterLimit = getSettingFromAppearance(this, 'Livechat_message_character_limit');
 	const livechatShowAgentInfo = getSettingFromAppearance(this, 'Livechat_show_agent_info');
 	const livechatShowAgentEmail = getSettingFromAppearance(this, 'Livechat_show_agent_email');
 	const livechatDisplayOfflineForm = getSettingFromAppearance(this, 'Livechat_display_offline_form');
@@ -155,7 +155,7 @@ Template.livechatAppearance.onCreated(async function() {
 
 	this.title.set(livechatTitle && livechatTitle.value);
 	this.color.set(livechatTitleColor && livechatTitleColor.value);
-	this.limitTextLength.set(livechatTitleLimitTextLength && livechatTitleLimitTextLength.value);
+	this.limitTextLength.set(livechatMessageCharacterLimit && livechatMessageCharacterLimit.value);
 	this.showAgentInfo.set(livechatShowAgentInfo && livechatShowAgentInfo.value);
 	this.showAgentEmail.set(livechatShowAgentEmail && livechatShowAgentEmail.value);
 	this.displayOfflineForm.set(livechatDisplayOfflineForm && livechatDisplayOfflineForm.value);
@@ -193,8 +193,8 @@ Template.livechatAppearance.events({
 		const settingTitleColor = getSettingFromAppearance(instance, 'Livechat_title_color');
 		instance.color.set(settingTitleColor && settingTitleColor.value);
 
-		const settingTitleLimitTextLength = getSettingFromAppearance(instance, 'Livechat_title_character_limit');
-		instance.limitTextLength.set(settingTitleLimitTextLength && settingTitleLimitTextLength.value);
+		const settinglivechatMessageCharacterLimit = getSettingFromAppearance(instance, 'Livechat_message_character_limit');
+		instance.limitTextLength.set(settinglivechatMessageCharacterLimit && settinglivechatMessageCharacterLimit.value);
 
 		const settingShowAgentInfo = getSettingFromAppearance(instance, 'Livechat_show_agent_info');
 		instance.showAgentInfo.set(settingShowAgentInfo && settingShowAgentInfo.value);
@@ -250,7 +250,7 @@ Template.livechatAppearance.events({
 				value: instance.color.get(),
 			},
 			{
-				_id: 'Livechat_title_character_limit',
+				_id: 'Livechat_message_character_limit',
 				value: instance.limitTextLength.get(),
 			},
 			{
