@@ -26,7 +26,7 @@ export const normalizeThreadTitle = ({ ...message }) => {
 			roomTemplate: ({ channel }) => `<strong> ${ channel } </strong>`,
 		});
 		
-		html = emojiParser({html:filteredMessage}).html;
+		html = emojiParser({ html:filteredMessage }).html;
 		return instance.parse({ ...message, msg: filteredMessage, html }).html;
 	}
 
