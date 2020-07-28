@@ -1,0 +1,11 @@
+{
+  "error-guests-cant-have-other-roles": "کاربران میهمان دسترسی به نقش دیگری ندارند.",
+  "error-max-guests-number-reached": "شما به حداکثر تعداد کاربر میهمان بر اساس لایسنس خود رسیدید. برای لایسنس جدید با sale@rocket.chat مکاتبه کنید.",
+  "error-max-number-simultaneous-chats-reached": "به حداکثر تعداد چت همزمان به ازای هر عامل رسیده اید.",
+  "Add_monitor": "اضافه کردن monitor",
+  "Edit_Tag": "ویرایش برچسب",
+  "Edit_Unit": "ویرایش واحد",
+  "Edit_Priority": "ویرایش اولویت",
+  "Enterprise_License": "مجوز سازمانی",
+  "LDAP_Default_Role_To_User": "نقش پیشفرض کاربر"
+}

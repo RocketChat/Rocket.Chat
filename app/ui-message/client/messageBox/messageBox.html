@@ -30,19 +30,24 @@
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</span>
 					{{else}}
-						{{#if canSend}}
-							{{> messageBoxAudioMessage rid=rid tmid=tmid}}
-							<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true">
-								{{#if actions}}
-									<span class="rc-message-box__icon js-plus">
-										{{> icon block="rc-input__icon-svg" icon="plus"}}
-									</span>
-								{{/if}}
-							</span>
-						{{else}}
-							<button class="js-join rc-button rc-button--primary rc-message-box__join-button">
-								{{_ "join"}}
-							</button>
+						{{# if customAction }}
+							{{> Template.dynamic template=customAction.template data=customAction.data }}
+						{{ else }}
+
+							{{#if canSend}}
+								{{> messageBoxAudioMessage rid=rid tmid=tmid}}
+								<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true">
+									{{#if actions}}
+										<span class="rc-message-box__icon">
+											{{> icon block="rc-input__icon-svg" icon="plus"}}
+										</span>
+									{{/if}}
+								</span>
+							{{else}}
+								<button class="js-join rc-button rc-button--primary rc-message-box__join-button">
+									{{_ "join"}}
+								</button>
+							{{/if}}
 						{{/if}}
 					{{/if}}
 

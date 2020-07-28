@@ -72,6 +72,9 @@ Template.loginForm.helpers({
 	manuallyApproveNewUsers() {
 		return settings.get('Accounts_ManuallyApproveNewUsers');
 	},
+	typedEmail() {
+		return s.trim(Template.instance().typedEmail);
+	},
 });
 
 Template.loginForm.events({
@@ -138,16 +141,22 @@ Template.loginForm.events({
 			return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
 				instance.loading.set(false);
 				if (error != null) {
-					if (error.error === 'no-valid-email') {
-						instance.state.set('email-verification');
-					} else if (error.error === 'error-user-is-not-activated') {
+					if (error.error === 'error-user-is-not-activated') {
+						return toastr.error(t('Wait_activation_warning'));
+					} if (error.error === 'error-invalid-email') {
+						instance.typedEmail = formData.emailOrUsername;
+						return instance.state.set('email-verification');
+					} if (error.error === 'error-user-is-not-activated') {
 						toastr.error(t('Wait_activation_warning'));
 					} else if (error.error === 'error-app-user-is-not-allowed-to-login') {
 						toastr.error(t('App_user_not_allowed_to_login'));
+					} else if (error.error === 'error-login-blocked-for-ip') {
+						toastr.error(t('Error_login_blocked_for_ip'));
+					} else if (error.error === 'error-login-blocked-for-user') {
+						toastr.error(t('Error_login_blocked_for_user'));
 					} else {
-						toastr.error(t('User_not_found_or_incorrect_password'));
+						return toastr.error(t('User_not_found_or_incorrect_password'));
 					}
-					return;
 				}
 				callbacks.run('onUserLogin');
 				Session.set('forceLogin', false);
@@ -189,6 +198,14 @@ Template.loginForm.onCreated(function() {
 	} else {
 		this.state = new ReactiveVar('login');
 	}
+
+	Tracker.autorun(() => {
+		const registrationForm = settings.get('Accounts_RegistrationForm');
+		if (registrationForm === 'Disabled' && this.state.get() === 'register') {
+			this.state.set('login');
+		}
+	});
+
 	this.validSecretURL = new ReactiveVar(false);
 	const validateCustomFields = function(formObj, validationObj) {
 		const customFields = instance.customFields.get();
@@ -236,7 +253,7 @@ Template.loginForm.onCreated(function() {
 				validationObj.emailOrUsername = t('Invalid_email');
 			}
 		}
-		if (state !== 'forgot-password') {
+		if (state !== 'forgot-password' && state !== 'email-verification') {
 			if (!formObj.pass) {
 				validationObj.pass = t('Invalid_pass');
 			}

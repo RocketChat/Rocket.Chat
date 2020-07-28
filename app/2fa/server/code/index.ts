@@ -95,7 +95,7 @@ export function isAuthorizedForToken(connection: IMethodConnection, user: IUser,
 export function rememberAuthorization(connection: IMethodConnection, user: IUser): void {
 	const currentToken = Accounts._getLoginToken(connection.id);
 
-	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor'));
+	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor') as string, 10);
 
 	if (rememberFor <= 0) {
 		return;

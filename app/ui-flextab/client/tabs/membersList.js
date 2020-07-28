@@ -4,12 +4,12 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getActions } from './userActions';
-import { RoomManager, popover } from '../../../ui-utils';
-import { ChatRoom, Subscriptions } from '../../../models';
-import { settings } from '../../../settings';
-import { t, isRtl, handleError, roomTypes } from '../../../utils';
+import { RoomManager, popover } from '../../../ui-utils/client';
+import { ChatRoom, Subscriptions } from '../../../models/client';
+import { settings } from '../../../settings/client';
+import { t, isRtl, isMobile, handleError, roomTypes, getUserAvatarURL } from '../../../utils/client';
 import { WebRTC } from '../../../webrtc/client';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/client';
 
 Template.membersList.helpers({
 	ignored() {
@@ -128,6 +128,11 @@ Template.membersList.helpers({
 
 	loadingMore() {
 		return Template.instance().loadingMore.get();
+	},
+
+	avatarUrl() {
+		const { user: { username, avatarETag } } = this;
+		return getUserAvatarURL(username, avatarETag);
 	},
 });
 
@@ -311,7 +316,9 @@ Template.membersList.onCreated(function() {
 });
 
 Template.membersList.onRendered(function() {
-	this.firstNode.parentNode.querySelector('#user-search').focus();
+	if (!isMobile()) {
+		this.firstNode.parentNode.querySelector('#user-search').focus();
+	}
 	this.autorun(() => {
 		const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');

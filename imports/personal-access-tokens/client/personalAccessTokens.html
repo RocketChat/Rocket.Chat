@@ -8,7 +8,7 @@
 				<div class="section-content border-component-color">
 					<div class="input-line double-col">
 						<label for="tokenName" class="setting-label">{{_ "API_Personal_Access_Tokens_To_REST_API"}}</label>
-						<div style="display: flex;">
+						<div class="add-token">
 							<div class="setting-field" style="flex-grow: 1;">
 								<input type="text" class="rc-input__element js-search" name="tokenName" id="tokenName"
 									placeholder={{_ "API_Add_Personal_Access_Token"}} autocomplete="off" />
@@ -20,8 +20,8 @@
 								</select>
 								{{> icon block="rc-select__arrow" icon="arrow-down"}}
 							</div>
+							<button name="add" class="rc-button rc-button--primary setting-action save-token">{{_ "Add"}}</button>
 						</div>
-						<button name="add" class="rc-button rc-button--primary setting-action save-token">{{_ "Add"}}</button>
 					</div>
 				</div>
 			</form>

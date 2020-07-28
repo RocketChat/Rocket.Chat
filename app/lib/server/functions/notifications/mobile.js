@@ -3,16 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../../settings';
 import { Subscriptions, PushNotificationSubscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';
-import { PushNotification } from '../../../../push-notifications/server';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 const webpush = require('web-push');
-
-let alwaysNotifyMobileBoolean;
-settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
-	alwaysNotifyMobileBoolean = value;
-});
 
 let SubscriptionRaw;
 Meteor.startup(() => {
@@ -47,30 +41,19 @@ function enableNotificationReplyButton(room, username) {
 	return !room.muted.includes(username);
 }
 
-export async function sendSinglePush({
-	room,
-	message,
-	userId,
-	receiverUsername,
-	senderUsername,
-	senderName,
-	notificationMessage,
-}) {
+export async function getPushData({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
 	let username = '';
 	if (settings.get('Push_show_username_room')) {
 		username = settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
 	}
 
-	PushNotification.send({
-		roomId: message.rid,
+	return {
 		payload: {
-			host: Meteor.absoluteUrl(),
-			rid: message.rid,
 			sender: message.u,
 			type: room.t,
 			name: room.name,
 			messageType: message.t,
-			messageId: message._id,
+			tmid: message.tmid,
 		},
 		roomName:
 			settings.get('Push_show_username_room') && room.t !== 'd'
@@ -82,11 +65,11 @@ export async function sendSinglePush({
 		usersTo: {
 			userId,
 		},
-		category: enableNotificationReplyButton(room, receiverUsername)
-			? CATEGORY_MESSAGE
-			: CATEGORY_MESSAGE_NOREPLY,
-	});
+		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
+	};
+}
 
+export function sendWebPush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
 	const gcmKey = settings.get('Push_gcm_api_key');
 	const vapidPublic = settings.get('Vapid_public_key');
 	const vapidPrivate = settings.get('Vapid_private_key');
@@ -143,8 +126,8 @@ export function shouldNotifyMobile({
 	isHighlighted,
 	hasMentionToUser,
 	hasReplyToThread,
-	statusConnection,
 	roomType,
+	isThread,
 }) {
 	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
@@ -154,12 +137,8 @@ export function shouldNotifyMobile({
 		return false;
 	}
 
-	if (!alwaysNotifyMobileBoolean && statusConnection === 'online') {
-		return false;
-	}
-
 	if (!mobilePushNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all') {
+		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all' && (!isThread || hasReplyToThread)) {
 			return true;
 		}
 		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing') {
@@ -167,5 +146,5 @@ export function shouldNotifyMobile({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser || hasReplyToThread;
+	return (roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
 }

@@ -16,6 +16,10 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw {
 		return this.find({ agentId });
 	}
 
+	findByDepartmentIds(departmentIds, options) {
+		return this.find({ departmentId: { $in: departmentIds } }, options);
+	}
+
 	findActiveDepartmentsByAgentId(agentId) {
 		const match = {
 			$match: { agentId },

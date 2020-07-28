@@ -30,7 +30,7 @@ WebApp.connectHandlers.stack.unshift({
 		const path = parsedUrl.pathname.substr(UploadFS.config.storesPath.length + 1);
 
 		// Get store
-		const regExp = new RegExp('^\/([^\/\?]+)\/([^\/\?]+)$');
+		const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
 		const match = regExp.exec(path);
 
 		// Request is not valid

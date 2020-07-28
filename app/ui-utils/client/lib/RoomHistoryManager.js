@@ -11,9 +11,12 @@ import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
 import { call } from './callMethod';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { filterMarkdown } from '../../../markdown/lib/markdown';
 
-export const normalizeThreadMessage = (message) => {
+export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
+		message.msg = filterMarkdown(message.msg);
+		delete message.mentions;
 		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
 	}
 

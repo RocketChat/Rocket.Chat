@@ -14,6 +14,7 @@ export const fields = {
 	t: 1,
 	cl: 1,
 	u: 1,
+	lm: 1,
 	// usernames: 1,
 	topic: 1,
 	announcement: 1,
@@ -52,6 +53,8 @@ export const fields = {
 	e2eKeyId: 1,
 	departmentId: 1,
 	servedBy: 1,
+	priorityId: 1,
+	transcriptRequest: 1,
 
 	// fields used by DMs
 	usernames: 1,

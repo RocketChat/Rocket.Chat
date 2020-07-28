@@ -20,6 +20,12 @@ function hasSameHash(firstUrl, secondUrl) {
 	}
 }
 
+function handleAvatar(request, response) {
+	const clonedResponse = response.clone();
+	const url = request.url.split('?')[0];
+	caches.open(version).then((cache) => cache.put(new Request(url), clonedResponse));
+}
+
 const fetchFromNetwork = (event) => {
 	const requestToFetch = event.request.clone();
 	return fetch(requestToFetch, { cache: 'reload' }).then((response) => {
@@ -42,6 +48,12 @@ const fetchFromNetwork = (event) => {
 					}
 				})));
 			}
+
+			if (/avatar\/.*\?_dc/.test(event.request.url)) {
+				// handle the avatar updates
+				handleAvatar(event.request, response);
+			}
+
 			caches.open(version).then((cache) => cache.put(event.request, clonedResponse));
 		}
 		return response;
@@ -90,12 +102,15 @@ self.addEventListener('fetch', (event) => {
 
 	event.respondWith(
 		caches.match(event.request.clone()).then((cached) => {
-			const fetchEvent = fetchFromNetwork(event);
 			// We don't return cached HTML (except if fetch failed)
 			if (cached) {
 				const resourceType = cached.headers.get('content-type');
 				// We only return non css/js/html cached response e.g images
 				if (!hasHash(event.request.url) && !/text\/html/.test(resourceType)) {
+					// Refresh resources which are not(sound or assets)
+					if (!/sounds/.test(event.request.url) && !/assets/.test(event.request.url) && !/font/.test(event.request.url)) {
+						fetchFromNetwork(event);
+					}
 					return cached;
 				}
 
@@ -107,7 +122,7 @@ self.addEventListener('fetch', (event) => {
 					return cached;
 				}
 			}
-			return fetchEvent;
+			return fetchFromNetwork(event);
 		}),
 	);
 });

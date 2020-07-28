@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"module": "esNext",
+		"module": "CommonJS",
 		"target": "es2018",
 		"lib": ["esnext", "dom"],
 
@@ -14,6 +14,7 @@
 		"strict": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
+		"strictPropertyInitialization": false,
 
 		/* Additional Checks */
 		"noUnusedLocals": true,
@@ -29,7 +30,6 @@
 		},
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
-		"types": ["node", "mocha"],
 		"esModuleInterop": true,
 		"preserveSymlinks": true,
 

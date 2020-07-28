@@ -376,8 +376,10 @@ export class Sessions extends Base {
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 });
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, userId: 1 });
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1 });
+		this.tryEnsureIndex({ sessionId: 1 });
 		this.tryEnsureIndex({ year: 1, month: 1, day: 1, type: 1 });
 		this.tryEnsureIndex({ type: 1 });
+		this.tryEnsureIndex({ ip: 1, loginAt: 1 });
 		this.tryEnsureIndex({ _computedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 45 });
 	}
 

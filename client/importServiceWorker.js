@@ -45,32 +45,43 @@ Meteor.startup(() => {
 					scope: './',
 				})
 				.then(function(reg) {
-					reg.pushManager.getSubscription().then(function(sub) {
-						if (sub === null) {
-							console.log('Not subscribed to push service!');
-							if (settingsReady) {
-								modal.open({
-									title: t('Important'),
-									type: 'info',
-									text: t('Please subscribe to push notifications to continue'),
-									showCancelButton: true,
-									confirmButtonText: t('Subscribe'),
-									cancelButtonText: t('Cancel'),
-									closeOnConfirm: true,
-								}, () => {
-									Notification.requestPermission().then(function(permission) {
-										if (permission === 'granted') {
-											subscribeUser();
-										}
+					if (reg.installing) {
+						const sw = reg.installing || reg.waiting;
+						sw.onstatechange = function() {
+							if (sw.state === 'installed') {
+								// SW installed. Reload page.
+								window.location.reload();
+							}
+						};
+						console.log(`Service worker has been registered for scope: ${reg.scope}`);
+					} else {
+						reg.pushManager.getSubscription().then(function(sub) {
+							if (sub === null) {
+								console.log('Not subscribed to push service!');
+								if (settingsReady) {
+									modal.open({
+										title: t('Important'),
+										type: 'info',
+										text: t('Please subscribe to push notifications to continue'),
+										showCancelButton: true,
+										confirmButtonText: t('Subscribe'),
+										cancelButtonText: t('Cancel'),
+										closeOnConfirm: true,
+									}, () => {
+										Notification.requestPermission().then(function(permission) {
+											if (permission === 'granted') {
+												subscribeUser();
+											}
+										});
 									});
-								});
+									computation.stop();
+								}
+							} else {
+								console.log('Subscribed to push service');
 								computation.stop();
 							}
-						} else {
-							console.log('Subscribed to push service');
-							computation.stop();
-						}
-					});
+						});
+					}
 				});
 		}
 	});

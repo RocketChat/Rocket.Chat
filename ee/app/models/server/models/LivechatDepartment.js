@@ -32,6 +32,9 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 		if (args.length > 2 && !args[1].type) {
 			args[1].type = 'd';
 		}
+		if (args[1] && args[1].departmentsAllowedToForward) {
+			args[1].departmentsAllowedToForward = args[1].departmentsAllowedToForward.split(',');
+		}
 
 		return originalFn.apply(this, args);
 	},
@@ -48,5 +51,9 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 		return this.update(query, update, { multi: true });
 	},
 });
+
+LivechatDepartment.prototype.removeDepartmentFromForwardListById = function(_id) {
+	return this.update({ departmentsAllowedToForward: _id }, { $pull: { departmentsAllowedToForward: _id } }, { multi: true });
+};
 
 export default LivechatDepartment;

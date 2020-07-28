@@ -49,6 +49,7 @@
 @import 'imports/components/table.css';
 @import 'imports/components/tabs.css';
 @import 'imports/components/share.css';
+@import 'imports/components/pushMessage.css';
 
 /* Modal */
 @import 'imports/components/modal/full-modal.css';
@@ -59,3 +60,6 @@
 
 /* RTL */
 @import 'imports/general/rtl.css';
+
+/* Legacy theming */
+@import 'imports/general/theme_old.css';

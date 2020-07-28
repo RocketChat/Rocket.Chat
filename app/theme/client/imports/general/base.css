@@ -29,6 +29,7 @@ body {
 
 	background-color: var(--rc-color-primary);
 
+	font-family: var(--body-font-family);
 	font-size: var(--text-small-size);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;

@@ -327,16 +327,19 @@ Template.messagePopup.events({
 			e.stopPropagation();
 		}
 	},
-	'mouseup .popup-item'() {
+	'mouseup .popup-item'(e) {
 		// To prevent refreshing of page in Mobile client.
 		if (isMobile()) {
 			return;
 		}
 		const template = Template.instance();
+		const wasMenuIconClicked = e.target.classList.contains('sidebar-item__menu-icon');
 		template.clickingItem = false;
-		template.value.set(this._id);
-		template.enterValue();
-		template.open.set(false);
+		if (!wasMenuIconClicked) {
+			template.value.set(this._id);
+			template.enterValue();
+			template.open.set(false);
+		}
 	},
 });
 
