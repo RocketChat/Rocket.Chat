@@ -275,7 +275,24 @@ export const FileUpload = {
 		return fut.wait();
 	},
 
+	avatarRoomOnFinishUpload(file) {
+		if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
+			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+		}
+
+		const oldAvatar = Avatars.findOneByName(file.rid);
+
+		if (oldAvatar) {
+			Avatars.deleteFile(oldAvatar._id);
+		}
+
+		Avatars.updateFileNameById(file._id, file.rid);
+	},
 	avatarsOnFinishUpload(file) {
+		if (file.rid) {
+			return FileUpload.avatarRoomOnFinishUpload(file);
+		}
+
 		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}

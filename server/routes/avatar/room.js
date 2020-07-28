@@ -6,7 +6,8 @@ import {
 	wasFallbackModified,
 	setCacheAndDispositionHeaders,
 } from './utils';
-import { Rooms } from '../../../app/models/server';
+import { FileUpload } from '../../../app/file-upload';
+import { Rooms, Avatars } from '../../../app/models/server';
 import { roomTypes } from '../../../app/utils';
 
 
@@ -22,6 +23,26 @@ const getRoom = (roomId) => {
 
 export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 	const roomId = req.url.substr(1);
+	const file = Avatars.findOneByName(roomId);
+	const reqModifiedHeader = req.headers['if-modified-since'];
+	if (file) {
+		res.setHeader('Content-Security-Policy', 'default-src \'none\'');
+
+		if (reqModifiedHeader && reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
+			res.setHeader('Last-Modified', reqModifiedHeader);
+			res.writeHead(304);
+			res.end();
+			return;
+		}
+
+		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		res.setHeader('Content-Type', file.type);
+		res.setHeader('Content-Length', file.size);
+
+		return FileUpload.get(file, req, res);
+	}
+
+
 	const room = getRoom(roomId);
 
 	if (!room) {
@@ -34,7 +55,6 @@ export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 
 	setCacheAndDispositionHeaders(req, res);
 
-	const reqModifiedHeader = req.headers['if-modified-since'];
 	if (!wasFallbackModified(reqModifiedHeader, res)) {
 		res.writeHead(304);
 		res.end();

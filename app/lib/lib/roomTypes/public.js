@@ -134,20 +134,7 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		// TODO: change to always get avatar from _id when rooms have avatars
-
-		// if room is not a discussion, returns the avatar for its name
-		if (!roomData.prid) {
-			return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
-		}
-
-		// if discussion's parent room is known, get his avatar
-		const proom = ChatRoom.findOne({ _id: roomData.prid }, { reactive: false });
-		if (proom) {
-			return roomTypes.getConfig(proom.t).getAvatarPath(proom);
-		}
-
-		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+		return getAvatarURL({ roomId: roomData._id });
 	}
 
 	getDiscussionType() {

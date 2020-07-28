@@ -43,6 +43,7 @@ Meteor.startup(function() {
 		{ _id: 'edit-other-user-avatar',             roles: ['admin'] },
 		{ _id: 'edit-privileged-setting',            roles: ['admin'] },
 		{ _id: 'edit-room',                          roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'edit-room-avatar',                   roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'edit-room-retention-policy',         roles: ['admin'] },
 		{ _id: 'force-delete-message',               roles: ['admin', 'owner'] },
 		{ _id: 'join-without-join-code',             roles: ['admin', 'bot', 'app'] },

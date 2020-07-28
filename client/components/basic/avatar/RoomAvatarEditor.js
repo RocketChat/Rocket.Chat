@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import RoomAvatar from './RoomAvatar';
 import { useFileInput } from '../../../hooks/useFileInput';
@@ -13,16 +14,16 @@ const RoomAvatarEditor = ({ room, onChangeAvatar, ...props }) => {
 	const t = useTranslation();
 	const [newAvatar, setNewAvatar] = useState();
 
-	const handleChangeAvatar = useCallback((file) => {
+	const handleChangeAvatar = useMutableCallback((file) => {
 		setNewAvatar(URL.createObjectURL(file));
 		reader.readAsDataURL(file);
 		reader.onloadend = () => {
 			onChangeAvatar(reader.result);
 		};
-	}, [onChangeAvatar]);
+	});
 
 	const clickUpload = useFileInput(handleChangeAvatar);
-	const clickReset = () => setNewAvatar('reset');
+	const clickReset = useMutableCallback(() => setNewAvatar('reset'));
 
 	return <Box borderRadius='x2' size='x332' position='relative' {...props}>
 		{!newAvatar && <RoomAvatar room={room} size='full'/>}
@@ -30,12 +31,12 @@ const RoomAvatarEditor = ({ room, onChangeAvatar, ...props }) => {
 
 		<Box className={[css`bottom: 0; right: 0;`]} position='absolute' m='x12'>
 			<ButtonGroup>
-				<Button title={t('Upload_user_avatar')} onClick={clickUpload}>
+				<Button small title={t('Upload_user_avatar')} onClick={clickUpload}>
 					<Icon name='upload' size='x16' />
 					{t('Upload')}
 				</Button>
 
-				<Button primary danger title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
+				<Button primary small danger title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
 					<Icon name='trash' size='x16' />
 				</Button>
 			</ButtonGroup>
