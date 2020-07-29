@@ -12,7 +12,6 @@ import { t, handleError, getUserPreference } from '../../../../utils';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { Notifications } from '../../../../notifications/client';
 import { initializeLivechatInquiryStream } from '../../lib/stream/queueManager';
-import { screenSharingStreamer } from '../../lib/stream/screenSharingStream';
 
 import './livechat.html';
 
@@ -46,17 +45,7 @@ Template.livechat.helpers({
 
 		const sortBy = getUserPreference(user, 'sidebarSortby');
 		const sort = sortBy === 'activity' ? { _updatedAt: - 1 } : { fname: 1 };
-		let rooms = ChatSubscription.find(query, { sort });
-		const activeScreenSharingSessions = Template.instance().activeScreenSharingSessions.get();
-		rooms = rooms.map((room) => {
-			if (activeScreenSharingSessions.includes(room.rid)) {
-				room.isScreenSharingActive = true;
-			} else {
-				room.isScreenSharingActive = false;
-			}
-			return room;
-		});
-		return rooms;
+		return ChatSubscription.find(query, { sort });
 	},
 
 	inquiries() {
@@ -128,7 +117,6 @@ Template.livechat.onCreated(function() {
 	this.statusLivechat = new ReactiveVar();
 	this.routingConfig = new ReactiveVar({});
 	this.inquiriesLimit = new ReactiveVar();
-	this.activeScreenSharingSessions = new ReactiveVar([]);
 
 	Meteor.call('livechat:getRoutingConfig', (err, config) => {
 		if (config) {
@@ -143,16 +131,6 @@ Template.livechat.onCreated(function() {
 		} else {
 			this.statusLivechat.set();
 		}
-	});
-
-	Meteor.call('livechat:getActiveSessions', (err, data) => {
-		this.activeScreenSharingSessions.set(data);
-	});
-
-	this.autorun(() => {
-		screenSharingStreamer.on('active-sessions-modified', ({ sessions, sessionAdded }) => {
-			this.activeScreenSharingSessions.set(sessions);
-		});
 	});
 
 	initializeLivechatInquiryStream(Meteor.userId());

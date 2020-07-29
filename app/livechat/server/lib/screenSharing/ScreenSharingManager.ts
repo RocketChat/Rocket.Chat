@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../settings/server';
-import { Messages } from '../../../../models/server';
+import { Messages, LivechatRooms } from '../../../../models/server';
 import { IScreenSharingProvider } from './IScreenSharingProvider';
 import { screenSharingStreamer } from '../stream/screenSharingStream';
 import { Users } from '../../../../models';
@@ -58,6 +58,8 @@ export class ScreenSharingManager {
 		this.pendingSessions = this.pendingSessions.filter((id) => id !== roomId);
 		this.pendingSessions.push(roomId);
 		screenSharingStreamer.emit('pending-sessions-modified', { sessions: this.pendingSessions });
+		LivechatRooms.updateScreenSharingStatus(roomId, false);
+		console.log(LivechatRooms.findOneById(roomId, null));
 	}
 
 	screenSharingRequestRejected(roomId: string, visitor: any): void {
@@ -72,11 +74,15 @@ export class ScreenSharingManager {
 		screenSharingStreamer.emit('pending-sessions-modified', { sessions: this.pendingSessions });
 		const user = Users.findOneByUsernameIgnoringCase(agent.username);
 		this.addActiveScreenSharing(roomId, user);
+		LivechatRooms.updateScreenSharingStatus(roomId, true);
+		console.log(LivechatRooms.findOneById(roomId, null));
 	}
 
 	endScreenSharingSession(roomId: string, user: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('end_screen_sharing_session', roomId, '', user, {});
 		this.removeActiveScreenSharing(roomId);
+		LivechatRooms.updateScreenSharingStatus(roomId, false);
+		console.log(LivechatRooms.findOneById(roomId, null));
 	}
 
 	addActiveScreenSharing(roomId: string, agent: any): void {

@@ -32,6 +32,7 @@ Template.chatRoomItem.helpers({
 			archivedClass,
 			status: this.t === 'd' || this.t === 'l',
 			isGroupChat: roomType.isGroupChat(room),
+			screenSharing: room.screenSharing,
 		};
 		roomData.username = roomData.username || roomData.name;
 

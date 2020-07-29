@@ -50,6 +50,9 @@ Template.sidebarItem.helpers({
 
 		return this.lastMessage.ts > this.ls;
 	},
+	isScreenSharingActive() {
+		return this.screenSharing && this.screenSharing.active;
+	},
 	badgeClass() {
 		const { unread, userMentions, groupMentions, tunread = [], tunreadGroup = [], tunreadUser = [] } = this;
 
