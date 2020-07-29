@@ -25,7 +25,7 @@ const RoomAvatarEditor = ({ room, onChangeAvatar, ...props }) => {
 	const clickUpload = useFileInput(handleChangeAvatar);
 	const clickReset = useMutableCallback(() => setNewAvatar('reset'));
 
-	return <Box borderRadius='x2' size='x332' position='relative' {...props}>
+	return <Box borderRadius='x2' maxWidth='x332' w='full' position='relative' {...props}>
 		{!newAvatar && <RoomAvatar room={room} size='full'/>}
 		{newAvatar && <BaseAvatar url={newAvatar} size='full'/>}
 

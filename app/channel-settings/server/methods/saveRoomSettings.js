@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
@@ -145,6 +146,7 @@ Meteor.methods({
 
 		Object.keys(settings).forEach((setting) => {
 			const value = settings[setting];
+			console.log(setting);
 			switch (setting) {
 				case 'roomName':
 					saveRoomName(rid, value, user);
