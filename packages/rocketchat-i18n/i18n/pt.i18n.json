@@ -2022,6 +2022,7 @@
   "Message_AudioRecorderEnabled_Description": "Requer arquivos 'áudio / mp3' para ser um tipo de leitor aceite dentro das configurações 'Carregar ficheiro'.",
   "Message_BadWordsFilterList": "Adicione palavrões para a lista negra",
   "Message_BadWordsFilterListDescription": "Adicione palavrões separados por vírgula para filtrar",
+  "Message_Characther_Limit": "Limite do caráter da mensagem",
   "Message_DateFormat": "Formato de Data",
   "Message_DateFormat_Description": "Veja também: <a href=\"http://momentjs.com/docs/#/displaying/format/\" target=\"momemt\">Moment.js</a>",
   "Message_deleting_blocked": "Esta mensagem não pode ser mais apagada",

@@ -2169,6 +2169,7 @@
   "Message_AudioRecorderEnabled_Description": "Requer arquivos 'audio / mp3' para ser um tipo de mídia aceito dentro das configurações 'Upload de arquivo'.",
   "Message_BadWordsFilterList": "Adicione palavrões para a lista negra",
   "Message_BadWordsFilterListDescription": "Adicione palavrões separados por vírgula para filtrar",
+  "Message_Characther_Limit": "Limite do caráter da mensagem",
   "message_counter": "__counter__ mensagem",
   "message_counter_plural": "__counter__ mensagens",
   "Message_DateFormat": "Formato de Data",
