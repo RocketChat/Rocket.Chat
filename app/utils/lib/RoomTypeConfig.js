@@ -303,4 +303,8 @@ export class RoomTypeConfig {
 	getDiscussionType() {
 		return 'p';
 	}
+
+	getCustomBadges() {
+		return '';
+	}
 }

@@ -133,4 +133,10 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		instance.tabBar.open();
 		return true;
 	}
+
+	getCustomBadges(room) {
+		if (room.screenSharing && room.screenSharing.active) {
+			return 'icon-video';
+		}
+	}
 }

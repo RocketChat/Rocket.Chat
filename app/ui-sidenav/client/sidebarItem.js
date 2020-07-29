@@ -71,6 +71,8 @@ Template.sidebarItem.helpers({
 		if (unread) {
 			return 'badge';
 		}
+
+		return roomTypes.getCustomBadges('l', this);
 	},
 });
 
