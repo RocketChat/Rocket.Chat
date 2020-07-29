@@ -379,6 +379,10 @@ export const updateDepartmentAgents = (departmentId, agents) => {
 	}
 
 	upsert.forEach((agent) => {
+		if (!Users.findOneById(agent.agentId, { fields: { _id: 1 } })) {
+			return;
+		}
+
 		LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
 			departmentId,

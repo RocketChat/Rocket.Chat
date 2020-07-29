@@ -880,7 +880,7 @@ export const Livechat = {
 		}
 
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
-		if (departmentDB) {
+		if (departmentDB && departmentAgents) {
 			updateDepartmentAgents(departmentDB._id, departmentAgents);
 		}
 
