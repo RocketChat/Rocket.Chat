@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Box, Button, Margins, TextInput, Field, ToggleSwitch, Icon, Callout, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, Callout, TextAreaInput } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import RoomAvatarEditor from './basic/avatar/RoomAvatarEditor';
@@ -94,10 +94,10 @@ const EditRoomForm = ({ values, handlers, onSave, onDelete, canDelete, onReset, 
 			<Field>
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-						<Margins inlineEnd='x4'>
-							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges || deleted} onClick={onReset}>{t('Reset')}</Button>
-							<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges || deleted} onClick={onSave}>{t('Save')}</Button>
-						</Margins>
+						<ButtonGroup stretch flexGrow={1}>
+							<Button type='reset' disabled={!hasUnsavedChanges || deleted} onClick={onReset}>{t('Reset')}</Button>
+							<Button flexGrow={1} disabled={!hasUnsavedChanges || deleted} onClick={onSave}>{t('Save')}</Button>
+						</ButtonGroup>
 					</Box>
 				</Field.Row>
 			</Field>

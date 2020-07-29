@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useMemo } from 'react';
 import { Box, Skeleton, Field, TextInput, ToggleSwitch, MultiSelect } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../components/basic/VerticalBar';
 // import NotAuthorizedPage from '../../components/NotAuthorizedPage';
@@ -121,7 +122,7 @@ function EditChannel({ room, onChange = () => {} }) {
 	const saveAction = useEndpointActionExperimental('POST', 'rooms.saveRoomSettings', t('Room_updated_successfully'));
 	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
 
-	const handleSave = async () => {
+	const handleSave = useMutableCallback(async () => {
 		const save = () => saveAction({
 			rid: room._id,
 			roomName,
@@ -140,14 +141,14 @@ function EditChannel({ room, onChange = () => {} }) {
 
 		await Promise.all([hasUnsavedChanges && save(), changeArchivation && archive()].filter(Boolean));
 		onChange();
-	};
+	});
 
 	const deleteRoom = useMethod('eraseRoom');
 
-	const handleDelete = useCallback(async () => {
+	const handleDelete = useMutableCallback(async () => {
 		await deleteRoom(room._id);
 		setDeleted(true);
-	}, [deleteRoom, room._id]);
+	});
 
 	const append = useMemo(() => <>
 		{canChangeJoinCode && <Field>
@@ -170,7 +171,7 @@ function EditChannel({ room, onChange = () => {} }) {
 		</Field>}
 	</>, [canChangeHideSysMes, canChangeJoinCode, deleted, handleHideSysMes, handleJoinCode, handleJoinCodeRequired, handleSystemMessages, hideSysMes, joinCode, joinCodeRequired, sysMesOptions, systemMessages, t]);
 
-	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])}>
+	return <VerticalBar.ScrollableContent p='0' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())} >
 		<EditRoomForm
 			values={values}
 			handlers={handlers}
