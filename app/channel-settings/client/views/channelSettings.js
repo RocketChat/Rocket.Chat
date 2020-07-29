@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
-import { HTML } from 'meteor/htmljs';
 import moment from 'moment';
 import s from 'underscore.string';
 

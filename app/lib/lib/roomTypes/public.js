@@ -4,7 +4,7 @@ import { openRoom } from '../../../ui-utils';
 import { ChatRoom, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions, roomTypes } from '../../../utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions } from '../../../utils';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
