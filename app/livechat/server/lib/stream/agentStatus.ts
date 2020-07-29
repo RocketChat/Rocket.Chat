@@ -48,6 +48,7 @@ const onlineAgents = {
 		if (!this.exists(userId)) {
 			return;
 		}
+		this.users.delete(userId);
 
 		if (this.queue.has(userId)) {
 			clearTimeout(this.queue.get(userId));
