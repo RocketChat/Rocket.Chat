@@ -404,4 +404,6 @@ export const updateDepartmentAgents = (departmentId, agents) => {
 		const numAgents = LivechatDepartmentAgents.find({ departmentId }).count();
 		LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
 	}
+
+	return true;
 };
