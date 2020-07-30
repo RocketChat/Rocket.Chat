@@ -146,7 +146,6 @@ Meteor.methods({
 
 		Object.keys(settings).forEach((setting) => {
 			const value = settings[setting];
-			console.log(setting);
 			switch (setting) {
 				case 'roomName':
 					saveRoomName(rid, value, user);
