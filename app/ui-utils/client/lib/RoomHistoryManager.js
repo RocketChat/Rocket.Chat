@@ -15,7 +15,7 @@ import { filterMarkdown } from '../../../markdown/lib/markdown';
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
-		message.msg = filterMarkdown(message.msg);
+		message.msg = filterMarkdown(s.escapeHTML(message.msg));
 		delete message.mentions;
 		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
 	}
