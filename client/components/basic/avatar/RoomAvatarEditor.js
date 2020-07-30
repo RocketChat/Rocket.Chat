@@ -23,10 +23,10 @@ const RoomAvatarEditor = ({ room, onChangeAvatar, ...props }) => {
 	});
 
 	const clickUpload = useFileInput(handleChangeAvatar);
-	const clickReset = useMutableCallback(() => setNewAvatar('reset'));
+	const clickReset = useMutableCallback(() => setNewAvatar(true));
 
 	return <Box borderRadius='x2' maxWidth='x332' w='full' position='relative' {...props}>
-		{!newAvatar && <RoomAvatar { ...!newAvatar && { url: getAvatarURL(room._id) } } room={room} size='full'/>}
+		<RoomAvatar { ...newAvatar && { url: getAvatarURL({ username: `@${ room.name }` }) } } room={room} size='full'/>
 		<Box className={[css`bottom: 0; right: 0;`]} position='absolute' m='x12'>
 			<ButtonGroup>
 				<Button small title={t('Upload_user_avatar')} onClick={clickUpload}>

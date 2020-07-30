@@ -74,7 +74,7 @@ const useInitialValues = (room, settings) => {
 		roomAvatar: undefined,
 		joinCode: '',
 		joinCodeRequired: !!joinCodeRequired,
-		systemMessages: sysMes ?? [],
+		systemMessages: Array.isArray(sysMes) ? sysMes : [],
 		hideSysMes: !!sysMes?.length,
 		encrypted,
 		...retentionPolicyEnabled && {
@@ -253,13 +253,13 @@ function EditChannel({ room }) {
 		setDeleted(true);
 	});
 
-	const changeRoomType = useCallback(() => {
+	const changeRoomType = useMutableCallback(() => {
 		handleRoomType(roomType === 'p' ? 'c' : 'p');
-	}, [handleRoomType, roomType]);
+	});
 
-	const onChangeMaxAge = useCallback((e) => {
+	const onChangeMaxAge = useMutableCallback((e) => {
 		handleRetentionMaxAge(Math.max(1, Number(e.currentTarget.value)));
-	}, [handleRetentionMaxAge]);
+	});
 
 	return <VerticalBar.ScrollableContent p='0' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())} >
 		{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
