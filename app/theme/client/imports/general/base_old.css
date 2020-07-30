@@ -1971,16 +1971,13 @@
 .rc-old .popup-user {
 	display: flex;
 	align-items: center;
-}
 
-.rc-old .popup-user {
 	&-avatar_wrap,
 	&-name {
 		margin-right: 4px;
 		flex-shrink: 0;
 	}
 }
-
 
 .rc-old .popup-user-notice {
 	min-width: 0;
