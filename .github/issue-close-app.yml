@@ -6,12 +6,12 @@ comment: |
 
   Please make sure to use it and fill it as much as you can so we can provide better and fast support.
 
-  The issue **must** contain at least the following info:
+  The following sections **must not** be removed, or else the BOT will close it immediately again:
 
     * Steps to reproduce
     * Expected behavior
     * Actual behavior
-    * Version of Rocket.Chat Server
+    * Server Setup Information
 issueConfigs:
 # There can be several configs for different kind of issues.
 - content:
@@ -19,6 +19,7 @@ issueConfigs:
   - "Steps to reproduce"
   - "Expected behavior"
   - "Actual behavior"
+  - "Server Setup Information"
   - "Version of Rocket.Chat Server"
 - content:
 # Release issue
