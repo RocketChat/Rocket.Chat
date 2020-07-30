@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
 	Field,
 	TextInput,
@@ -26,7 +26,6 @@ import { roomTypes, RoomSettingsEnum } from '../../../app/utils/client';
 import { MessageTypesValues } from '../../../app/lib/lib/MessageTypes';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetModal } from '../../contexts/ModalContext';
-import { useSession } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { usePermission, useAtLeastOnePermission, useRole } from '../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
