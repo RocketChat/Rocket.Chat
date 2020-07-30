@@ -1962,9 +1962,28 @@
 }
 
 .rc-old .popup-user-not_in_channel {
-	display: inline-block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 
-	float: right;
+.rc-old .popup-user {
+	display: flex;
+	align-items: center;
+}
+
+.rc-old .popup-user {
+	&-avatar_wrap,
+	&-name{
+		flex-shrink: 0;
+		margin-right: 4px;
+	}
+}
+
+
+.rc-old .popup-user-notice {
+	margin-left: auto;
+	min-width: 0;
 }
 
 .rc-old .popup-user-status {
