@@ -1962,8 +1962,9 @@
 }
 
 .rc-old .popup-user-not_in_channel {
-	white-space: nowrap;
 	overflow: hidden;
+
+	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 
@@ -1974,16 +1975,16 @@
 
 .rc-old .popup-user {
 	&-avatar_wrap,
-	&-name{
-		flex-shrink: 0;
+	&-name {
 		margin-right: 4px;
+		flex-shrink: 0;
 	}
 }
 
 
 .rc-old .popup-user-notice {
-	margin-left: auto;
 	min-width: 0;
+	margin-left: auto;
 }
 
 .rc-old .popup-user-status {
