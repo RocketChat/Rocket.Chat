@@ -19,6 +19,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import VerticalBar from '../../components/basic/VerticalBar';
 import RawText from '../../components/basic/RawText';
 import RoomAvatarEditor from '../../components/basic/avatar/RoomAvatarEditor';
+import DeleteChannelWarning from '../../components/DeleteChannelWarning';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useForm } from '../../hooks/useForm';
@@ -26,6 +27,7 @@ import { roomTypes, RoomSettingsEnum } from '../../../app/utils/client';
 import { ChatRoom } from '../../../app/models';
 import { MessageTypesValues } from '../../../app/lib/lib/MessageTypes';
 import { useMethod } from '../../contexts/ServerContext';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useSession } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { usePermission, useAtLeastOnePermission, useRole } from '../../contexts/AuthorizationContext';
@@ -121,6 +123,8 @@ function EditChannel({ room }) {
 	const t = useTranslation();
 
 	const [deleted, setDeleted] = useState(false);
+
+	const setModal = useSetModal();
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const maxAgeDefault = useSetting(`RetentionPolicy_MaxAge_${ typeMap[room.t] }`) || 30;
@@ -248,9 +252,15 @@ function EditChannel({ room }) {
 
 	const deleteRoom = useMethod('eraseRoom');
 
-	const handleDelete = useMutableCallback(async () => {
-		await deleteRoom(room._id);
-		setDeleted(true);
+	const handleDelete = useMutableCallback(() => {
+		const onCancel = () => setModal(undefined);
+		const onConfirm = async () => {
+			await deleteRoom(room._id);
+			onCancel();
+			setDeleted(true);
+		};
+
+		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
 	});
 
 	const changeRoomType = useMutableCallback(() => {

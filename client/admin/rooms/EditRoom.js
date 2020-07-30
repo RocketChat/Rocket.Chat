@@ -1,10 +1,13 @@
 import React, { useCallback, useState, useMemo } from 'react';
 import { Box, Skeleton, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, Callout, TextAreaInput } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 
 import VerticalBar from '../../components/basic/VerticalBar';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import RoomAvatarEditor from '../../components/basic/avatar/RoomAvatarEditor';
+import DeleteChannelWarning from '../../components/DeleteChannelWarning';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -57,6 +60,8 @@ function EditRoom({ room, onChange }) {
 	const t = useTranslation();
 
 	const [deleted, setDeleted] = useState(false);
+
+	const setModal = useSetModal();
 
 	const { values, handlers, hasUnsavedChanges, reset } = useForm(getInitialValues(room));
 
@@ -146,10 +151,16 @@ function EditRoom({ room, onChange }) {
 
 	const deleteRoom = useMethod('eraseRoom');
 
-	const handleDelete = useCallback(async () => {
-		await deleteRoom(room._id);
-		setDeleted(true);
-	}, [deleteRoom, room._id]);
+	const handleDelete = useMutableCallback(() => {
+		const onCancel = () => setModal(undefined);
+		const onConfirm = async () => {
+			await deleteRoom(room._id);
+			onCancel();
+			setDeleted(true);
+		};
+
+		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
+	});
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])}>
 		{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
@@ -246,7 +257,7 @@ function EditRoom({ room, onChange }) {
 		</Field>
 		<Field>
 			<Field.Row>
-				<Button primary danger disabled={deleted || !canDelete} onClick={handleDelete} ><Icon name='trash' size='x16' />{t('Delete')}</Button>
+				<Button primary flexGrow={1} danger disabled={deleted || !canDelete} onClick={handleDelete} ><Icon name='trash' size='x16' />{t('Delete')}</Button>
 			</Field.Row>
 		</Field>
 	</VerticalBar.ScrollableContent>;
