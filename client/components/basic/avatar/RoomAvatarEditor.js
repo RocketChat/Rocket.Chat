@@ -10,7 +10,7 @@ import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 
 const reader = new FileReader();
 
-const RoomAvatarEditor = ({ room, onChangeAvatar, ...props }) => {
+const RoomAvatarEditor = ({ room, onChangeAvatar = () => {}, ...props }) => {
 	const t = useTranslation();
 	const [newAvatar, setNewAvatar] = useState();
 
@@ -18,15 +18,19 @@ const RoomAvatarEditor = ({ room, onChangeAvatar, ...props }) => {
 		setNewAvatar(URL.createObjectURL(file));
 		reader.readAsDataURL(file);
 		reader.onloadend = () => {
+			setNewAvatar(reader.result);
 			onChangeAvatar(reader.result);
 		};
 	});
 
 	const clickUpload = useFileInput(handleChangeAvatar);
-	const clickReset = useMutableCallback(() => setNewAvatar(true));
+	const clickReset = useMutableCallback(() => {
+		onChangeAvatar(null);
+		setNewAvatar(null);
+	});
 
 	return <Box borderRadius='x2' maxWidth='x332' w='full' position='relative' {...props}>
-		<RoomAvatar { ...newAvatar && { url: getAvatarURL({ username: `@${ room.name }` }) } } room={room} size='full'/>
+		<RoomAvatar { ...newAvatar !== undefined && { url: newAvatar === null ? getAvatarURL({ username: `@${ room.name }` }) : newAvatar } } room={room} size='332px' maxWidth='100%'/>
 		<Box className={[css`bottom: 0; right: 0;`]} position='absolute' m='x12'>
 			<ButtonGroup>
 				<Button small title={t('Upload_user_avatar')} onClick={clickUpload}>

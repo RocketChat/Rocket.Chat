@@ -122,7 +122,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		return getAvatarURL({ roomId: roomData._id });
+		return getAvatarURL({ roomId: roomData._id, cache: roomData.avatarETag });
 	}
 
 	includeInDashboard() {

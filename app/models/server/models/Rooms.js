@@ -233,9 +233,11 @@ export class Rooms extends Base {
 
 	unsetAvatarData(_id) {
 		const update = {
+			$set: {
+				avatarETag: Date.now(),
+			},
 			$unset: {
 				avatarOrigin: 1,
-				avatarETag: 1,
 			},
 		};
 

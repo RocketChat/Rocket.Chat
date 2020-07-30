@@ -134,7 +134,7 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		return getAvatarURL({ roomId: roomData._id });
+		return getAvatarURL({ roomId: roomData._id, cache: roomData.avatarETag });
 	}
 
 	getDiscussionType() {

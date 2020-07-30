@@ -124,7 +124,7 @@ function EditRoom({ room, onChange }) {
 	const saveAction = useEndpointActionExperimental('POST', 'rooms.saveRoomSettings', t('Room_updated_successfully'));
 	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
 
-	const handleSave = async () => {
+	const handleSave = useMutableCallback(async () => {
 		const save = () => saveAction({
 			rid: room._id,
 			roomName,
@@ -143,11 +143,11 @@ function EditRoom({ room, onChange }) {
 
 		await Promise.all([hasUnsavedChanges && save(), changeArchivation && archive()].filter(Boolean));
 		onChange();
-	};
+	});
 
-	const changeRoomType = useCallback(() => {
+	const changeRoomType = useMutableCallback(() => {
 		handleRoomType(roomType === 'p' ? 'c' : 'p');
-	}, [handleRoomType, roomType]);
+	});
 
 	const deleteRoom = useMethod('eraseRoom');
 
@@ -162,7 +162,7 @@ function EditRoom({ room, onChange }) {
 		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
 	});
 
-	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])}>
+	return <VerticalBar.ScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 		{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
 		{room.t !== 'd' && <RoomAvatarEditor room={room} onChangeAvatar={handleRoomAvatar}/>}
 		<Field>

@@ -4,8 +4,7 @@ import { HTTP } from 'meteor/http';
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload';
 import { Notifications } from '../../../notifications';
-import { RealAppBridges } from '../../../apps/server/bridges';
-import { Rooms } from '../../../models/server/models/Rooms';
+import Rooms from '../../../models/server/models/Rooms';
 
 export const setRoomAvatar = function(rid, dataURI, contentType, service) {
 	const fileStore = FileUpload.getStore('Avatars');
@@ -14,8 +13,8 @@ export const setRoomAvatar = function(rid, dataURI, contentType, service) {
 	let encoding;
 	let image;
 
-	if (service === 'initials') {
-		return Rooms.setAvatarData(RealAppBridges, service, null);
+	if (service === 'initials' || !dataURI) {
+		return Rooms.unsetAvatarData(rid);
 	}
 
 	if (service === 'url') {
