@@ -21,10 +21,8 @@ import RawText from '../../components/basic/RawText';
 import RoomAvatarEditor from '../../components/basic/avatar/RoomAvatarEditor';
 import DeleteChannelWarning from '../../components/DeleteChannelWarning';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useForm } from '../../hooks/useForm';
 import { roomTypes, RoomSettingsEnum } from '../../../app/utils/client';
-import { ChatRoom } from '../../../app/models';
 import { MessageTypesValues } from '../../../app/lib/lib/MessageTypes';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -32,8 +30,7 @@ import { useSession } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { usePermission, useAtLeastOnePermission, useRole } from '../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
-
-const useRoom = (rid) => useReactiveValue(useCallback(() => ChatRoom.findOne(rid), [rid]));
+import { useUserRoom } from '../hooks/useUserRoom';
 
 const typeMap = {
 	c: 'Channels',
@@ -110,9 +107,8 @@ const useInitialValues = (room, settings) => {
 	]);
 };
 
-function EditChannelWithData() {
-	const rid = useSession('openedRoom');
-	const room = useRoom(rid);
+function EditChannelWithData({ rid }) {
+	const room = useUserRoom(rid);
 
 	return <EditChannel room={{ type: room?.t, ...room }}/>;
 }
