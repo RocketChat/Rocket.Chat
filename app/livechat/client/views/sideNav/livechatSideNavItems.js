@@ -20,7 +20,7 @@ addSidebarItem('Agents', 'livechat-agents', 'manage-livechat-agents');
 addSidebarItem('Departments', 'livechat-departments', 'view-livechat-departments');
 addSidebarItem('Custom_Fields', 'livechat-customfields', 'view-livechat-customfields');
 addSidebarItem('Livechat_Triggers', 'livechat-triggers', 'view-livechat-triggers');
-addSidebarItem('Livechat_Installation', 'livechat-installation', 'view-livechat-installation');
+addSidebarItem('Livechat_Installation', 'omnichannel-installation', 'view-livechat-installation');
 addSidebarItem('Livechat_Appearance', 'livechat-appearance', 'view-livechat-appearance');
 addSidebarItem('Webhooks', 'livechat-webhooks', 'view-livechat-webhooks');
 addSidebarItem('Facebook Messenger', 'livechat-facebook', 'view-livechat-facebook');
