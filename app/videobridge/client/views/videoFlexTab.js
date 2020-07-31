@@ -131,7 +131,7 @@ Template.videoFlexTab.onRendered(function() {
 				return Tracker.nonreactive(async () => {
 					await start();
 
-					const queryString = accessToken && `?jwt=${ accessToken }`;
+					const queryString = accessToken ? `?jwt=${ accessToken }` : '';
 
 					const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, jitsiRoom);
 					if (newWindow) {
