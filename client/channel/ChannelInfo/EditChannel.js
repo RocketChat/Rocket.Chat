@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import {
 	Field,
 	TextInput,
@@ -26,7 +26,6 @@ import { roomTypes, RoomSettingsEnum } from '../../../app/utils/client';
 import { MessageTypesValues } from '../../../app/lib/lib/MessageTypes';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetModal } from '../../contexts/ModalContext';
-import { useSession } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { usePermission, useAtLeastOnePermission, useRole } from '../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
@@ -79,7 +78,7 @@ const useInitialValues = (room, settings) => {
 		...retentionPolicyEnabled && {
 			retentionEnabled: retention.enabled ?? retentionEnabledDefault,
 			retentionOverrideGlobal: !!retention.overrideGlobal,
-			retentionMaxAge: Math.min(retention.maxAge, maxAgeDefault),
+			retentionMaxAge: Math.min(retention.maxAge, maxAgeDefault) || maxAgeDefault,
 			retentionExcludePinned: retention.excludePinned ?? excludePinnedDefault,
 			retentionFilesOnly: retention.filesOnly ?? filesOnlyDefault,
 		},
@@ -118,14 +117,23 @@ const getCanChangeType = (room, canCreateChannel, canCreateGroup, isAdmin) => (!
 function EditChannel({ room }) {
 	const t = useTranslation();
 
-	const [deleted, setDeleted] = useState(false);
-
 	const setModal = useSetModal();
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const maxAgeDefault = useSetting(`RetentionPolicy_MaxAge_${ typeMap[room.t] }`) || 30;
 
-	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(useInitialValues(room, { retentionPolicyEnabled, maxAgeDefault }));
+	const saveData = useRef({});
+
+	const onChange = useCallback(({ initialValue, value, key }) => {
+		const { current } = saveData;
+		if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
+			current[key] = value;
+		} else {
+			delete current[key];
+		}
+	}, []);
+
+	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(useInitialValues(room, { retentionPolicyEnabled, maxAgeDefault }), onChange);
 
 	const sysMesOptions = useMemo(() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel)]), [t]);
 
@@ -136,7 +144,6 @@ function EditChannel({ room }) {
 		encrypted,
 		archived,
 		roomTopic,
-		roomAvatar,
 		roomDescription,
 		roomAnnouncement,
 		reactWhenReadOnly,
@@ -220,29 +227,18 @@ function EditChannel({ room }) {
 	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
 
 	const handleSave = useMutableCallback(async () => {
+		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
 		const save = () => saveAction({
 			rid: room._id,
-			roomName,
-			roomTopic,
-			roomType,
-			readOnly,
-			roomDescription,
-			roomAnnouncement,
-			roomAvatar,
+			...data,
 			...joinCode && { joinCode: joinCodeRequired ? joinCode : '' },
-			systemMessages: hideSysMes ? systemMessages : [],
-			...retentionPolicyEnabled && {
-				retentionEnabled,
-				...retentionOverrideGlobal !== room.retention?.overrideGlobal && { retentionOverrideGlobal },
-				retentionMaxAge,
-				retentionExcludePinned,
-				retentionFilesOnly,
-			},
+			...data.systemMessages && { systemMessages: hideSysMes ? systemMessages : [] },
 		});
 
 		const archive = () => archiveAction({ rid: room._id, action: archiveSelector });
 
 		await Promise.all([hasUnsavedChanges && save(), changeArchivation && archive()].filter(Boolean));
+		saveData.current = {};
 		commit();
 	});
 
@@ -253,7 +249,6 @@ function EditChannel({ room }) {
 		const onConfirm = async () => {
 			await deleteRoom(room._id);
 			onCancel();
-			setDeleted(true);
 		};
 
 		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
@@ -268,37 +263,36 @@ function EditChannel({ room }) {
 	});
 
 	return <VerticalBar.ScrollableContent p='0' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())} >
-		{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
 		<RoomAvatarEditor room={room} onChangeAvatar={handleRoomAvatar}/>
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
 			<Field.Row>
-				<TextInput disabled={deleted || !canViewName} value={roomName} onChange={handleRoomName} flexGrow={1}/>
+				<TextInput disabled={!canViewName} value={roomName} onChange={handleRoomName} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 		{canViewDescription && <Field>
 			<Field.Label>{t('Description')}</Field.Label>
 			<Field.Row>
-				<TextAreaInput rows={4} disabled={deleted} value={roomDescription} onChange={handleRoomDescription} flexGrow={1}/>
+				<TextAreaInput rows={4} value={roomDescription} onChange={handleRoomDescription} flexGrow={1}/>
 			</Field.Row>
 		</Field>}
 		{canViewAnnouncement && <Field>
 			<Field.Label>{t('Announcement')}</Field.Label>
 			<Field.Row>
-				<TextAreaInput rows={4} disabled={deleted} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1}/>
+				<TextAreaInput rows={4} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1}/>
 			</Field.Row>
 		</Field>}
 		{canViewTopic && <Field>
 			<Field.Label>{t('Topic')}</Field.Label>
 			<Field.Row>
-				<TextAreaInput rows={4} disabled={deleted} value={roomTopic} onChange={handleRoomTopic} flexGrow={1}/>
+				<TextAreaInput rows={4} value={roomTopic} onChange={handleRoomTopic} flexGrow={1}/>
 			</Field.Row>
 		</Field>}
 		{canViewType && <Field>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 				<Field.Label>{t('Private')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch disabled={deleted || !canChangeType} checked={roomType === 'p'} onChange={changeRoomType}/>
+					<ToggleSwitch disabled={!canChangeType} checked={roomType === 'p'} onChange={changeRoomType}/>
 				</Field.Row>
 			</Box>
 			<Field.Hint>{t('Just_invited_people_can_access_this_channel')}</Field.Hint>
@@ -307,7 +301,7 @@ function EditChannel({ room }) {
 			<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 				<Field.Label>{t('Read_only')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch disabled={deleted || !canSetRo} checked={readOnly} onChange={handleReadOnly}/>
+					<ToggleSwitch disabled={!canSetRo} checked={readOnly} onChange={handleReadOnly}/>
 				</Field.Row>
 			</Box>
 			<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
@@ -316,7 +310,7 @@ function EditChannel({ room }) {
 			<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 				<Field.Label>{t('React_when_read_only')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch disabled={deleted || !canSetReactWhenRo} checked={reactWhenReadOnly} onChange={handleReactWhenReadOnly}/>
+					<ToggleSwitch disabled={!canSetReactWhenRo} checked={reactWhenReadOnly} onChange={handleReactWhenReadOnly}/>
 				</Field.Row>
 			</Box>
 			<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
@@ -325,7 +319,7 @@ function EditChannel({ room }) {
 			<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 				<Field.Label>{t('Archived')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch disabled={deleted || !canArchiveOrUnarchive} checked={archived} onChange={handleArchived}/>
+					<ToggleSwitch disabled={!canArchiveOrUnarchive} checked={archived} onChange={handleArchived}/>
 				</Field.Row>
 			</Box>
 		</Field>}
@@ -333,40 +327,40 @@ function EditChannel({ room }) {
 			<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 				<Field.Label>{t('Password_to_access')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch disabled={deleted} checked={joinCodeRequired} onChange={handleJoinCodeRequired}/>
+					<ToggleSwitch checked={joinCodeRequired} onChange={handleJoinCodeRequired}/>
 				</Field.Row>
 			</Box>
 			<Field.Row>
-				<TextInput disabled={deleted || !joinCodeRequired} value={joinCode} onChange={handleJoinCode} placeholder={t('Reset_password')} flexGrow={1}/>
+				<TextInput disabled={!joinCodeRequired} value={joinCode} onChange={handleJoinCode} placeholder={t('Reset_password')} flexGrow={1}/>
 			</Field.Row>
 		</Field>}
 		{canViewHideSysMes && <Field>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 				<Field.Label>{t('Hide_System_Messages')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch disabled={deleted} checked={hideSysMes} onChange={handleHideSysMes}/>
+					<ToggleSwitch checked={hideSysMes} onChange={handleHideSysMes}/>
 				</Field.Row>
 			</Box>
 			<Field.Row>
-				<MultiSelect options={sysMesOptions} disabled={deleted || !hideSysMes} value={systemMessages} onChange={handleSystemMessages} placeholder={t('Select_an_option')} flexGrow={1}/>
+				<MultiSelect options={sysMesOptions} disabled={!hideSysMes} value={systemMessages} onChange={handleSystemMessages} placeholder={t('Select_an_option')} flexGrow={1}/>
 			</Field.Row>
 		</Field>}
 		{canViewEncrypted && <Field>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 				<Field.Label>{t('Encrypted')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch disabled={deleted} checked={encrypted} onChange={handleEncrypted}/>
+					<ToggleSwitch checked={encrypted} onChange={handleEncrypted}/>
 				</Field.Row>
 			</Box>
 		</Field>}
 		{retentionPolicyEnabled && <Accordion>
-			<Accordion.Item disabled={deleted} title={t('Prune')}>
+			<Accordion.Item title={t('Prune')}>
 				<FieldGroup>
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('RetentionPolicyRoom_Enabled')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={deleted} checked={retentionEnabled} onChange={handleRetentionEnabled}/>
+								<ToggleSwitch checked={retentionEnabled} onChange={handleRetentionEnabled}/>
 							</Field.Row>
 						</Box>
 					</Field>
@@ -374,7 +368,7 @@ function EditChannel({ room }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('RetentionPolicyRoom_OverrideGlobal')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={deleted || !retentionEnabled || !canEditPrivilegedSetting} checked={retentionOverrideGlobal} onChange={handleRetentionOverrideGlobal}/>
+								<ToggleSwitch disabled={!retentionEnabled || !canEditPrivilegedSetting} checked={retentionOverrideGlobal} onChange={handleRetentionOverrideGlobal}/>
 							</Field.Row>
 						</Box>
 					</Field>
@@ -383,16 +377,16 @@ function EditChannel({ room }) {
 							<RawText>{t('RetentionPolicyRoom_ReadTheDocs')}</RawText>
 						</Callout>
 						<Field>
-							<Field.Label>{t('RetentionPolicyRoom_MaxAge')}</Field.Label>
+							<Field.Label>{t('RetentionPolicyRoom_MaxAge', { max: maxAgeDefault })}</Field.Label>
 							<Field.Row>
-								<NumberInput disabled={deleted} value={retentionMaxAge} onChange={onChangeMaxAge} flexGrow={1}/>
+								<NumberInput value={retentionMaxAge} onChange={onChangeMaxAge} flexGrow={1}/>
 							</Field.Row>
 						</Field>
 						<Field>
 							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 								<Field.Label>{t('RetentionPolicyRoom_ExcludePinned')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch disabled={deleted} checked={retentionExcludePinned} onChange={handleRetentionExcludePinned}/>
+									<ToggleSwitch checked={retentionExcludePinned} onChange={handleRetentionExcludePinned}/>
 								</Field.Row>
 							</Box>
 						</Field>
@@ -400,7 +394,7 @@ function EditChannel({ room }) {
 							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 								<Field.Label>{t('RetentionPolicyRoom_FilesOnly')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch disabled={deleted} checked={retentionFilesOnly} onChange={handleRetentionFilesOnly}/>
+									<ToggleSwitch checked={retentionFilesOnly} onChange={handleRetentionFilesOnly}/>
 								</Field.Row>
 							</Box>
 						</Field>
@@ -412,15 +406,15 @@ function EditChannel({ room }) {
 			<Field.Row>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 					<ButtonGroup stretch flexGrow={1}>
-						<Button type='reset' disabled={!hasUnsavedChanges || deleted} onClick={reset}>{t('Reset')}</Button>
-						<Button flexGrow={1} disabled={!hasUnsavedChanges || deleted} onClick={handleSave}>{t('Save')}</Button>
+						<Button type='reset' disabled={!hasUnsavedChanges} onClick={reset}>{t('Reset')}</Button>
+						<Button flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
 					</ButtonGroup>
 				</Box>
 			</Field.Row>
 		</Field>
 		<Field>
 			<Field.Row>
-				<Button flexGrow={1} primary danger disabled={deleted || !canDelete} onClick={handleDelete} ><Icon name='trash' size='x16' />{t('Delete')}</Button>
+				<Button flexGrow={1} primary danger disabled={!canDelete} onClick={handleDelete} ><Icon name='trash' size='x16' />{t('Delete')}</Button>
 			</Field.Row>
 		</Field>
 	</VerticalBar.ScrollableContent>;
