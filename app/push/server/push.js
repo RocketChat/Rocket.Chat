@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { EJSON } from 'meteor/ejson';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { HTTP } from 'meteor/http';
@@ -79,8 +78,6 @@ export class PushClass {
 
 	sendNotificationNative(app, notification, countApn, countGcm) {
 		logger.debug('send to token', app.token);
-
-		notification.payload = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
 		if (app.token.apn) {
 			countApn.push(app._id);
