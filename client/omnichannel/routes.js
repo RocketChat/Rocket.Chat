@@ -1,30 +1,6 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
-// import { Meteor } from 'meteor/meteor';
+import { createRouteGroup } from '../helpers/createRouteGroup';
 
-import { renderRouteComponent } from '../reactAdapters';
-
-const routeGroup = FlowRouter.group({
-	name: 'omnichannel',
-	prefix: '/omnichannel',
-});
-
-export const registerOmnichannelRoute = (path, { lazyRouteComponent, props, action, ...options } = {}) => {
-	routeGroup.route(path, {
-		...options,
-		action: (params, queryParams) => {
-			if (action) {
-				action(params, queryParams);
-				return;
-			}
-
-			renderRouteComponent(() => import('./OmnichannelRouter'), {
-				template: 'main',
-				region: 'center',
-				propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams, ...props }),
-			});
-		},
-	});
-};
+const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
 
 registerOmnichannelRoute('/installation', {
 	name: 'omnichannel-installation',
