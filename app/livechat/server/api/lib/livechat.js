@@ -6,6 +6,7 @@ import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } 
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
+import { settings as ClientSettings } from '../../../../settings';
 
 export function online(department) {
 	return Livechat.online(department);
@@ -66,6 +67,19 @@ export function findOpenRoom(token, departmentId) {
 	return room;
 }
 
+export function findLimitTextLength({ Livechat_show_message_character_limit, Livechat_message_character_limit}) {
+	if (!Livechat_show_message_character_limit) {
+		return false;
+	}
+	const messageMaxAllowedSize = ClientSettings.get('Message_MaxAllowedSize');
+
+	if (Livechat_message_character_limit && messageMaxAllowedSize > Livechat_message_character_limit) {
+		return Livechat_message_character_limit;
+	}
+
+	return messageMaxAllowedSize;
+}
+
 export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
 	const token = guest && guest.token;
 
@@ -94,6 +108,7 @@ export function settings() {
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
 	const emojis = Meteor.call('listEmojiCustom');
+	const limitTextLength = findLimitTextLength(initSettings);
 
 	return {
 		enabled: initSettings.Livechat_enabled,
@@ -111,7 +126,7 @@ export function settings() {
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
-			limitTextLength: parseInt(initSettings.Livechat_message_character_limit),
+			limitTextLength,
 		},
 		theme: {
 			title: initSettings.Livechat_title,

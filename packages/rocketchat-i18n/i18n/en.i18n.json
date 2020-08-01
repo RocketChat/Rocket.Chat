@@ -2272,6 +2272,7 @@
   "Livechat_Take_Confirm": "Do you want to take this client?",
   "Livechat_title": "Livechat Title",
   "Livechat_title_color": "Livechat Title Background Color",
+  "Livechat_show_message_character_limit": "Livechat message character limit",
   "Livechat_message_character_limit": "Livechat message character limit",
   "Livechat_transcript_already_requested_warning": "The transcript of this chat has already been requested and will be sent as soon as the conversation ends.",
   "Livechat_transcript_request_has_been_canceled": "The chat transcription request has been canceled.",

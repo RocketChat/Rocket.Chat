@@ -428,6 +428,7 @@ export const Livechat = {
 		Settings.findNotHiddenPublic([
 			'Livechat_title',
 			'Livechat_title_color',
+			'Livechat_show_message_character_limit',
 			'Livechat_message_character_limit',
 			'Livechat_enabled',
 			'Livechat_registration_form',
