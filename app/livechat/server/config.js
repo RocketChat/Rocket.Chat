@@ -27,8 +27,8 @@ Meteor.startup(function() {
 		public: true,
 	});
 
-	settings.add('Livechat_show_message_character_limit', false, {
-		type: 'int',
+	settings.add('Livechat_enable_message_character_limit', false, {
+		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Livechat',
 		public: true,

@@ -11,8 +11,15 @@ import { APIClient } from '../../../../utils/client';
 const getSettingFromAppearance = (instance, settingName) => instance.appearance.get() && instance.appearance.get().find((setting) => setting._id === settingName);
 
 Template.livechatAppearance.helpers({
-	showLimitTextLength() {
-		return Template.instance().showLimitTextLength.get();
+	showLimitTextLengthFormTrueChecked() {
+		if (Template.instance().showLimitTextLength.get()) {
+			return 'checked';
+		}
+	},
+	showLimitTextLengthFormFalseChecked() {
+		if (!Template.instance().showLimitTextLength.get()) {
+			return 'checked';
+		}
 	},
 	limitTextLength() {
 		return Template.instance().limitTextLength.get();
@@ -139,7 +146,7 @@ Template.livechatAppearance.onCreated(async function() {
 
 	const livechatTitle = getSettingFromAppearance(this, 'Livechat_title');
 	const livechatTitleColor = getSettingFromAppearance(this, 'Livechat_title_color');
-	const livechatShowMessageCharacterLimit = getSettingFromAppearance(this, 'Livechat_show_message_character_limit');
+	const livechatShowMessageCharacterLimit = getSettingFromAppearance(this, 'Livechat_enable_message_character_limit');
 	const livechatMessageCharacterLimit = getSettingFromAppearance(this, 'Livechat_message_character_limit');
 	const livechatShowAgentInfo = getSettingFromAppearance(this, 'Livechat_show_agent_info');
 	const livechatShowAgentEmail = getSettingFromAppearance(this, 'Livechat_show_agent_email');
@@ -198,7 +205,7 @@ Template.livechatAppearance.events({
 		const settingTitleColor = getSettingFromAppearance(instance, 'Livechat_title_color');
 		instance.color.set(settingTitleColor && settingTitleColor.value);
 
-		const settinglivechatShowMessageCharacterLimit = getSettingFromAppearance(instance, 'Livechat_show_message_character_limit');
+		const settinglivechatShowMessageCharacterLimit = getSettingFromAppearance(instance, 'Livechat_enable_message_character_limit');
 		instance.showLimitTextLength.set(settinglivechatShowMessageCharacterLimit && settinglivechatShowMessageCharacterLimit.value);
 
 		const settinglivechatMessageCharacterLimit = getSettingFromAppearance(instance, 'Livechat_message_character_limit');
@@ -258,12 +265,12 @@ Template.livechatAppearance.events({
 				value: instance.color.get(),
 			},
 			{
-				_id: 'Livechat_show_message_character_limit',
+				_id: 'Livechat_enable_message_character_limit',
 				value: instance.showLimitTextLength.get(),
 			},
 			{
 				_id: 'Livechat_message_character_limit',
-				value: instance.limitTextLength.get(),
+				value: parseInt(instance.limitTextLength.get()),
 			},
 			{
 				_id: 'Livechat_show_agent_info',
