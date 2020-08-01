@@ -1,4 +1,44 @@
 
+# 3.5.1
+`2020-08-01  ·  8 🐛  ·  6 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.16.0`
+
+### 🐛 Bug fixes
+
+
+- Migration 194 ([#18457](https://github.com/RocketChat/Rocket.Chat/pull/18457) by [@thirsch](https://github.com/thirsch))
+
+- Omnichannel session monitor is not starting ([#18412](https://github.com/RocketChat/Rocket.Chat/pull/18412))
+
+- Invalid MIME type when uploading audio files ([#18426](https://github.com/RocketChat/Rocket.Chat/pull/18426))
+
+- Error when updating omnichannel department without agents parameter ([#18428](https://github.com/RocketChat/Rocket.Chat/pull/18428))
+
+- Omnichannel Take Inquiry endpoint checking wrong permission ([#18446](https://github.com/RocketChat/Rocket.Chat/pull/18446))
+
+- Multiple push notifications sent via native drivers ([#18442](https://github.com/RocketChat/Rocket.Chat/pull/18442))
+
+- Appending 'false' to Jitsi URL ([#18430](https://github.com/RocketChat/Rocket.Chat/pull/18430))
+
+- Can't send long messages as attachment ([#18355](https://github.com/RocketChat/Rocket.Chat/pull/18355))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@thirsch](https://github.com/thirsch)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 3.5.0
 `2020-07-27  ·  8 🎉  ·  5 🚀  ·  29 🐛  ·  34 🔍  ·  21 👩‍💻👨‍💻`
 
