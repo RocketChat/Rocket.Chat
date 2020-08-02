@@ -54,7 +54,7 @@ export const {
 		href: 'omnichannel/installation',
 		i18nLabel: 'Livechat_Installation',
 		icon: 'discover',
-		permissionGranted: () => hasRole(Meteor.userId(), 'view-livechat-installation'),
+		permissionGranted: () => hasPermission('view-livechat-installation'),
 	}, {
 		href: 'omnichannel/appearance',
 		i18nLabel: 'Livechat_Appearance',
