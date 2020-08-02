@@ -1,7 +1,8 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-// import { Meteor } from 'meteor/meteor';
 
-import { renderRouteComponent } from '../reactAdapters';
+import { renderRouteComponent, createTemplateForComponent } from '../reactAdapters';
+
+createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'));
 
 const routeGroup = FlowRouter.group({
 	name: 'omnichannel',
