@@ -142,6 +142,7 @@ function EditChannel({ room }) {
 		roomType,
 		readOnly,
 		encrypted,
+		roomAvatar,
 		archived,
 		roomTopic,
 		roomDescription,
@@ -263,7 +264,7 @@ function EditChannel({ room }) {
 	});
 
 	return <VerticalBar.ScrollableContent p='0' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())} >
-		<RoomAvatarEditor room={room} onChangeAvatar={handleRoomAvatar}/>
+		<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar}/>
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
 			<Field.Row>

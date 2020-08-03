@@ -164,7 +164,7 @@ function EditRoom({ room, onChange }) {
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 		{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
-		{room.t !== 'd' && <RoomAvatarEditor room={room} onChangeAvatar={handleRoomAvatar}/>}
+		{room.t !== 'd' && <RoomAvatarEditor roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar}/>}
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
 			<Field.Row>

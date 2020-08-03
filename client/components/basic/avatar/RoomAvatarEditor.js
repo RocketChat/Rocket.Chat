@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -8,29 +8,29 @@ import { useFileInput } from '../../../hooks/useFileInput';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 
-const reader = new FileReader();
-
-const RoomAvatarEditor = ({ room, onChangeAvatar = () => {}, ...props }) => {
+const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...props }) => {
 	const t = useTranslation();
-	const [newAvatar, setNewAvatar] = useState();
 
 	const handleChangeAvatar = useMutableCallback((file) => {
-		setNewAvatar(URL.createObjectURL(file));
+		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onloadend = () => {
-			setNewAvatar(reader.result);
 			onChangeAvatar(reader.result);
 		};
 	});
 
-	const clickUpload = useFileInput(handleChangeAvatar);
+	const [clickUpload, reset] = useFileInput(handleChangeAvatar);
 	const clickReset = useMutableCallback(() => {
+		reset();
 		onChangeAvatar(null);
-		setNewAvatar(null);
 	});
 
+	useEffect(() => {
+		!roomAvatar && reset();
+	}, [roomAvatar, reset]);
+
 	return <Box borderRadius='x2' maxWidth='x332' w='full' position='relative' {...props}>
-		<RoomAvatar { ...newAvatar !== undefined && { url: newAvatar === null ? getAvatarURL({ username: `@${ room.name }` }) : newAvatar } } room={room} size='332px' maxWidth='100%'/>
+		<RoomAvatar { ...roomAvatar !== undefined && { url: roomAvatar === null ? getAvatarURL({ username: `@${ room.name }` }) : roomAvatar } } room={room} size='332px' maxWidth='100%'/>
 		<Box className={[css`bottom: 0; right: 0;`]} position='absolute' m='x12'>
 			<ButtonGroup>
 				<Button small title={t('Upload_user_avatar')} onClick={clickUpload}>
@@ -38,7 +38,7 @@ const RoomAvatarEditor = ({ room, onChangeAvatar = () => {}, ...props }) => {
 					{t('Upload')}
 				</Button>
 
-				<Button primary small danger title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
+				<Button primary small danger title={t('Accounts_SetDefaultAvatar')} disabled={roomAvatar === null } onClick={clickReset}>
 					<Icon name='trash' size='x16' />
 				</Button>
 			</ButtonGroup>
