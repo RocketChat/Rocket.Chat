@@ -72,7 +72,7 @@ Template.sidebarItem.helpers({
 			return 'badge';
 		}
 
-		return roomTypes.getCustomBadges('l', this);
+		return roomTypes.getCustomBadges(this.t, this);
 	},
 });
 

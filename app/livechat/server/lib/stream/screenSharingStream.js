@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../../authorization/server';
+// import { hasPermission } from '../../../../authorization/server';
 
 export const screenSharingStreamer = new Meteor.Streamer('screen-sharing');
 

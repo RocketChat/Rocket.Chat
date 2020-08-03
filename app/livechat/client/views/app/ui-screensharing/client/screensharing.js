@@ -83,15 +83,13 @@ Template.screenSharinDialog.onCreated(function() {
 		this.iframeHeight.set(240);
 	};
 
-	this.maximizeWindow = function(dialog, source) {
+	this.maximizeWindow = function(dialog) {
 		const room = $('.main-content').offset();
 		console.log(room);
 		const { top, left } = room;
 		const width = $('.main-content').width();
 		const height = $('.main-content').height();
-		const _set = () => {
-			return dialog.css({ top: `${ top }px`, left: `${ left }px`, width: `${ width }px`, height: `${ height }px` });
-		};
+		const _set = () => dialog.css({ top: `${ top }px`, left: `${ left }px`, width: `${ width }px`, height: `${ height }px` });
 		const set = _.debounce(_set, 2000);
 		_set();
 		this.remove = set;

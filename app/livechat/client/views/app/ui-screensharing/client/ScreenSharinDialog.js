@@ -39,7 +39,7 @@ export const ScreenSharinDialog = new class {
 
 	maximize() {
 		const dialog = $('.screensharing-dialog');
-		this.dialogView.templateInstance().maximizeWindow(dialog, this.source);
+		this.dialogView.templateInstance().maximizeWindow(dialog);
 		this.windowMaximized = true;
 	}
 

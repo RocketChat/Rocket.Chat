@@ -27,6 +27,8 @@ function allowAccessClosedRoomOfSameDepartment(room, user) {
 Meteor.startup(async () => {
 	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
+	LivechatRooms.resetScreenSharingStatus();
+
 	addRoomAccessValidator(function(room, user) {
 		return room && room.t === 'l' && user && hasPermission(user._id, 'view-livechat-rooms');
 	});
