@@ -596,17 +596,17 @@ export class LivechatRooms extends Base {
 	}
 
 	resetScreenSharingStatus() {
-		console.log('reset ho gya reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
 		const query = {
 			t: 'l',
+			screenSharing: { $exists: true },
 		};
 		const update = {
 			$unset: {
-				screenSharing: '',
+				screenSharing: 1,
 			},
 		};
 
-		return this.update(query, update);
+		return this.update(query, update, { multi: true });
 	}
 
 	updateScreenSharingStatus(roomId, status) {

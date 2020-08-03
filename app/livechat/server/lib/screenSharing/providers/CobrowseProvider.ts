@@ -10,10 +10,6 @@ export class CobrowseProvider implements IScreenSharingProvider {
 		providerBundle: 'https://ashwaniYDV.github.io/sstest/ssbundle.js',
 	}
 
-	getInfo(): any {
-		return 'info from cobrowse.io';
-	}
-
 	getJWT(agent: any): any {
 		const payload = {
 			displayName: agent.username,

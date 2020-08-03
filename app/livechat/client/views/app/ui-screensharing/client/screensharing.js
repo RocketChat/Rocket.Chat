@@ -85,7 +85,6 @@ Template.screenSharinDialog.onCreated(function() {
 
 	this.maximizeWindow = function(dialog) {
 		const room = $('.main-content').offset();
-		console.log(room);
 		const { top, left } = room;
 		const width = $('.main-content').width();
 		const height = $('.main-content').height();

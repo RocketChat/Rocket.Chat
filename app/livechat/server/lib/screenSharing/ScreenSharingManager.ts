@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../settings/server';
-import { Messages, LivechatRooms } from '../../../../models/server';
+import { LivechatRooms, Messages, Users } from '../../../../models/server';
 import { IScreenSharingProvider } from './IScreenSharingProvider';
 import { screenSharingStreamer } from '../stream/screenSharingStream';
-import { Users } from '../../../../models';
 
 export class ScreenSharingManager {
 	providerName = '';
@@ -71,7 +70,7 @@ export class ScreenSharingManager {
 		Messages.createWithTypeRoomIdMessageAndUser('screen_sharing_request_accepted', roomId, '', visitor, {});
 		this.pendingSessions = this.pendingSessions.filter((id) => id !== roomId);
 		screenSharingStreamer.emit('pending-sessions-modified', { sessions: this.pendingSessions });
-		const user = Users.findOneByUsernameIgnoringCase(agent.username);
+		const user = Users.findOneByUsernameIgnoringCase(agent.username, null);
 		this.addActiveScreenSharing(roomId, user);
 		LivechatRooms.updateScreenSharingStatus(roomId, true);
 	}
@@ -116,6 +115,9 @@ export class ScreenSharingManager {
 
 export const ScreensharingManager = new ScreenSharingManager();
 
-settings.get('Livechat_screen_sharing_provider', function(key, value) {
-	ScreensharingManager.setProviderName(value);
+settings.get('Livechat_screen_sharing_provider', function(_key, value) {
+	if (!value) {
+		return;
+	}
+	ScreensharingManager.setProviderName(value.toString());
 });
