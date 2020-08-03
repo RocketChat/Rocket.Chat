@@ -41,14 +41,16 @@ export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 	if (file) {
 		res.setHeader('Content-Security-Policy', 'default-src \'none\'');
 
-		if (reqModifiedHeader && reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
+		if (reqModifiedHeader && reqModifiedHeader === file.uploadedAt?.toUTCString()) {
 			res.setHeader('Last-Modified', reqModifiedHeader);
 			res.writeHead(304);
 			res.end();
 			return;
 		}
 
-		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		if (file.uploadedAt) {
+			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		}
 		res.setHeader('Content-Type', file.type);
 		res.setHeader('Content-Length', file.size);
 
