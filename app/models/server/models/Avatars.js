@@ -13,6 +13,7 @@ export class Avatars extends Base {
 		});
 
 		this.tryEnsureIndex({ name: 1 }, { sparse: true });
+		this.tryEnsureIndex({ rid: 1 }, { sparse: true });
 	}
 
 	insertAvatarFileInit(name, userId, store, file, extra) {
@@ -61,6 +62,10 @@ export class Avatars extends Base {
 
 	findOneByName(name) {
 		return this.findOne({ name });
+	}
+
+	findOneByRoomId(rid) {
+		return this.findOne({ rid });
 	}
 
 	updateFileNameById(fileId, name) {

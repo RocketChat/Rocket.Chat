@@ -8,7 +8,7 @@ import Rooms from '../../../models/server/models/Rooms';
 
 export const setRoomAvatar = function(rid, dataURI, contentType, service) {
 	const fileStore = FileUpload.getStore('Avatars');
-	fileStore.deleteById(rid);
+	fileStore.deleteByRoomId(rid);
 
 	let encoding;
 	let image;

@@ -514,6 +514,19 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
+
+	deleteByRoomId(rid) {
+		const file = this.model.findOneByRoomId(rid);
+
+		if (!file) {
+			return;
+		}
+
+		const store = FileUpload.getStoreByName(file.store);
+
+		return store.delete(file._id);
+	}
+
 	_doInsert(fileData, streamOrBuffer, cb) {
 		const fileId = this.store.create(fileData);
 		const token = this.store.createToken(fileId);

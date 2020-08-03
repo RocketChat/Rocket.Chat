@@ -23,7 +23,7 @@ const getRoom = (roomId) => {
 
 export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 	const roomId = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
-	const file = Avatars.findOneById(roomId);
+	const file = Avatars.findOneByRoomId(roomId);
 	const reqModifiedHeader = req.headers['if-modified-since'];
 	if (file) {
 		res.setHeader('Content-Security-Policy', 'default-src \'none\'');
