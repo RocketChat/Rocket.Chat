@@ -7,7 +7,7 @@ import { Migrations } from '../../../app/migrations/server';
 function updateFieldMap() {
 	const _id = 'SAML_Custom_Default_user_data_fieldmap';
 	const setting = Settings.findOne({ _id });
-	if (!setting.value) {
+	if (!setting || !setting.value) {
 		return;
 	}
 
