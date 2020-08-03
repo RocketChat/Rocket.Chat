@@ -280,13 +280,11 @@ export const FileUpload = {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
-		const oldAvatar = Avatars.findOneByName(file.rid);
+		const oldAvatar = Avatars.findOneById(file.rid);
 
 		if (oldAvatar) {
 			Avatars.deleteFile(oldAvatar._id);
 		}
-
-		Avatars.updateFileNameById(file._id, file.rid);
 	},
 	avatarsOnFinishUpload(file) {
 		if (file.rid) {

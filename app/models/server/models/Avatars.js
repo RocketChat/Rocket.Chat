@@ -12,7 +12,7 @@ export class Avatars extends Base {
 			doc.instanceId = InstanceStatus.id();
 		});
 
-		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ name: 1 }, { sparse: true });
 	}
 
 	insertAvatarFileInit(name, userId, store, file, extra) {
