@@ -6,28 +6,24 @@ import { hasPermission } from '../../../../app/authorization/client';
 registerOmnichannelSidebarItem({
 	href: 'omnichannel/monitors',
 	i18nLabel: 'Livechat_Monitors',
-	icon: 'user',
 	permissionGranted: () => hasPermission('manage-livechat-monitors'),
 });
 
 registerOmnichannelSidebarItem({
 	href: 'omnichannel/units',
 	i18nLabel: 'Units',
-	icon: 'user',
 	permissionGranted: () => hasPermission('manage-livechat-units'),
 });
 
 registerOmnichannelSidebarItem({
 	href: 'omnichannel/tags',
 	i18nLabel: 'Tags',
-	icon: 'user',
 	permissionGranted: () => hasPermission('manage-livechat-tags'),
 });
 
 registerOmnichannelSidebarItem({
 	href: 'omnichannel/priorities',
 	i18nLabel: 'Priorities',
-	icon: 'user',
 	permissionGranted: () => hasPermission('manage-livechat-priorities'),
 });
 
