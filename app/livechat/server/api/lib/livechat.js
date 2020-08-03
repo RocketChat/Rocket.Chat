@@ -114,6 +114,8 @@ export function settings() {
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
+			limitTextLength: initSettings.Livechat_enable_message_character_limit
+			&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
 		},
 		theme: {
 			title: initSettings.Livechat_title,

@@ -5,7 +5,7 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Mailer } from './Mailer';
-import NotAuthorizedPage from '../NotAuthorizedPage';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 
 
 const useSendMail = () => {
