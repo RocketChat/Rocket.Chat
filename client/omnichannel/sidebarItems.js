@@ -1,10 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-
-import { hasPermission, hasRole } from '../../app/authorization/client';
+import { hasPermission } from '../../app/authorization/client';
 import { createSidebarItems } from '../components/basic/Sidebar';
 
 export const {
-	registerSidebarItem: registerAdminSidebarItem,
+	registerSidebarItem: registerOmnichannelSidebarItem,
 	unregisterSidebarItem,
 	itemsSubscription,
 } = createSidebarItems([
