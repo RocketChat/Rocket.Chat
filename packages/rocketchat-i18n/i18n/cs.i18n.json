@@ -2643,7 +2643,6 @@
   "Number_of_federated_users": "Počet Federation uživatelů",
   "Number_of_federated_servers": "Počet federovaných serverů",
   "Number_of_messages": "Počet zpráv",
-  "RetentionPolicy_DoNotExcludeDiscussion": "Nevylučovat diskusní zprávy",
   "OAuth Apps": "Aplikace OAuth",
   "OAuth_Application": "OAuth Aplikace",
   "OAuth_Applications": "OAuth Aplikace",
