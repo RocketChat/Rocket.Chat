@@ -228,7 +228,7 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.update(_id, update);
+		return this.update({ _id }, update);
 	}
 
 	unsetAvatarData(_id) {
@@ -241,7 +241,7 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.update(_id, update);
+		return this.update({ _id }, update);
 	}
 
 

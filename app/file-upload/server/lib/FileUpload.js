@@ -279,12 +279,6 @@ export const FileUpload = {
 		if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
-
-		const oldAvatar = Avatars.findOneById(file.rid);
-
-		if (oldAvatar) {
-			Avatars.deleteFile(oldAvatar._id);
-		}
 	},
 	avatarsOnFinishUpload(file) {
 		if (file.rid) {
