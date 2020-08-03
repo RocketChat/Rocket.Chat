@@ -40,7 +40,7 @@ class AudioEncoder extends EventEmitter {
 	handleWorkerMessage = (event) => {
 		switch (event.data.command) {
 			case 'end': {
-				const blob = new Blob(event.data.buffer, { type: 'audio/mp3' });
+				const blob = new Blob(event.data.buffer, { type: 'audio/mpeg' });
 				this.emit('encoded', blob);
 				this.worker.terminate();
 				break;
