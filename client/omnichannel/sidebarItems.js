@@ -31,7 +31,7 @@ export const {
 		i18nLabel: 'Departments',
 		permissionGranted: () => hasPermission('view-livechat-departments'),
 	}, {
-		href: 'omnichannel/customfields',
+		href: 'omnichannel-customfields',
 		i18nLabel: 'Custom_Fields',
 		permissionGranted: () => hasPermission('view-livechat-customfields'),
 	}, {
@@ -39,7 +39,7 @@ export const {
 		i18nLabel: 'Livechat_Triggers',
 		permissionGranted: () => hasPermission('view-livechat-triggers'),
 	}, {
-		href: 'omnichannel/installation',
+		href: 'omnichannel-installation',
 		i18nLabel: 'Livechat_Installation',
 		permissionGranted: () => hasPermission('view-livechat-installation'),
 	}, {

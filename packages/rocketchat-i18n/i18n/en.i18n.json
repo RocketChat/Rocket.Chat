@@ -1472,7 +1472,7 @@
   "error-invalid-urls": "Invalid URLs",
   "error-invalid-user": "Invalid user",
   "error-invalid-username": "Invalid username",
-  "error-invalid-value": "Invalid valid",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "The webhook URL responded with a status other than 200",
   "error-message-deleting-blocked": "Message deleting is blocked",
   "error-message-editing-blocked": "Message editing is blocked",
