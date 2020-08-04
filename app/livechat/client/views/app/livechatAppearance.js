@@ -11,6 +11,19 @@ import { APIClient } from '../../../../utils/client';
 const getSettingFromAppearance = (instance, settingName) => instance.appearance.get() && instance.appearance.get().find((setting) => setting._id === settingName);
 
 Template.livechatAppearance.helpers({
+	showLimitTextLengthFormTrueChecked() {
+		if (Template.instance().showLimitTextLength.get()) {
+			return 'checked';
+		}
+	},
+	showLimitTextLengthFormFalseChecked() {
+		if (!Template.instance().showLimitTextLength.get()) {
+			return 'checked';
+		}
+	},
+	limitTextLength() {
+		return Template.instance().limitTextLength.get();
+	},
 	color() {
 		return Template.instance().color.get();
 	},
@@ -110,7 +123,8 @@ Template.livechatAppearance.onCreated(async function() {
 	this.appearance = new ReactiveVar([]);
 	this.title = new ReactiveVar(null);
 	this.color = new ReactiveVar(null);
-
+	this.showLimitTextLength = new ReactiveVar(null);
+	this.limitTextLength = new ReactiveVar(null);
 	this.showAgentInfo = new ReactiveVar(null);
 	this.showAgentEmail = new ReactiveVar(null);
 	this.displayOfflineForm = new ReactiveVar(null);
@@ -132,6 +146,8 @@ Template.livechatAppearance.onCreated(async function() {
 
 	const livechatTitle = getSettingFromAppearance(this, 'Livechat_title');
 	const livechatTitleColor = getSettingFromAppearance(this, 'Livechat_title_color');
+	const livechatShowMessageCharacterLimit = getSettingFromAppearance(this, 'Livechat_enable_message_character_limit');
+	const livechatMessageCharacterLimit = getSettingFromAppearance(this, 'Livechat_message_character_limit');
 	const livechatShowAgentInfo = getSettingFromAppearance(this, 'Livechat_show_agent_info');
 	const livechatShowAgentEmail = getSettingFromAppearance(this, 'Livechat_show_agent_email');
 	const livechatDisplayOfflineForm = getSettingFromAppearance(this, 'Livechat_display_offline_form');
@@ -150,6 +166,8 @@ Template.livechatAppearance.onCreated(async function() {
 
 	this.title.set(livechatTitle && livechatTitle.value);
 	this.color.set(livechatTitleColor && livechatTitleColor.value);
+	this.showLimitTextLength.set(livechatShowMessageCharacterLimit && livechatShowMessageCharacterLimit.value);
+	this.limitTextLength.set(livechatMessageCharacterLimit && livechatMessageCharacterLimit.value);
 	this.showAgentInfo.set(livechatShowAgentInfo && livechatShowAgentInfo.value);
 	this.showAgentEmail.set(livechatShowAgentEmail && livechatShowAgentEmail.value);
 	this.displayOfflineForm.set(livechatDisplayOfflineForm && livechatDisplayOfflineForm.value);
@@ -186,6 +204,12 @@ Template.livechatAppearance.events({
 
 		const settingTitleColor = getSettingFromAppearance(instance, 'Livechat_title_color');
 		instance.color.set(settingTitleColor && settingTitleColor.value);
+
+		const settinglivechatShowMessageCharacterLimit = getSettingFromAppearance(instance, 'Livechat_enable_message_character_limit');
+		instance.showLimitTextLength.set(settinglivechatShowMessageCharacterLimit && settinglivechatShowMessageCharacterLimit.value);
+
+		const settinglivechatMessageCharacterLimit = getSettingFromAppearance(instance, 'Livechat_message_character_limit');
+		instance.limitTextLength.set(settinglivechatMessageCharacterLimit && settinglivechatMessageCharacterLimit.value);
 
 		const settingShowAgentInfo = getSettingFromAppearance(instance, 'Livechat_show_agent_info');
 		instance.showAgentInfo.set(settingShowAgentInfo && settingShowAgentInfo.value);
@@ -239,6 +263,14 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_title_color',
 				value: instance.color.get(),
+			},
+			{
+				_id: 'Livechat_enable_message_character_limit',
+				value: instance.showLimitTextLength.get(),
+			},
+			{
+				_id: 'Livechat_message_character_limit',
+				value: parseInt(instance.limitTextLength.get()),
 			},
 			{
 				_id: 'Livechat_show_agent_info',
