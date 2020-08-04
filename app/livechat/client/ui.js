@@ -17,7 +17,7 @@ AccountBox.addItem({
 	name: 'Omnichannel',
 	icon: 'omnichannel',
 	href: 'livechat-current-chats',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
 });
 

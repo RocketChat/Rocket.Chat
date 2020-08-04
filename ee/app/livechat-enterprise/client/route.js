@@ -4,15 +4,16 @@ import { livechatManagerRoutes, load } from '../../../../app/livechat/client/rou
 AccountBox.addRoute({
 	name: 'livechat-monitors',
 	path: '/monitors',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Livechat_Monitors',
 	pageTemplate: 'livechatMonitors',
 }, livechatManagerRoutes);
 
+
 AccountBox.addRoute({
 	name: 'livechat-units',
 	path: '/units',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Units',
 	pageTemplate: 'livechatUnits',
 }, livechatManagerRoutes);
@@ -20,7 +21,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-unit-edit',
 	path: '/units/:_id/edit',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Edit_Unit',
 	pageTemplate: 'livechatUnitForm',
 }, livechatManagerRoutes);
@@ -28,7 +29,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-unit-new',
 	path: '/units/new',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'New_Unit',
 	pageTemplate: 'livechatUnitForm',
 }, livechatManagerRoutes);
@@ -36,7 +37,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-tags',
 	path: '/tags',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Tags',
 	pageTemplate: 'livechatTags',
 }, livechatManagerRoutes);
@@ -44,7 +45,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-tag-edit',
 	path: '/tags/:_id/edit',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Edit_Tag',
 	pageTemplate: 'livechatTagForm',
 }, livechatManagerRoutes);
@@ -52,7 +53,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-tag-new',
 	path: '/tags/new',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'New_Tag',
 	pageTemplate: 'livechatTagForm',
 }, livechatManagerRoutes);
@@ -60,7 +61,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-priorities',
 	path: '/priorities',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Priorities',
 	pageTemplate: 'livechatPriorities',
 }, livechatManagerRoutes);
@@ -68,7 +69,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-priority-edit',
 	path: '/priorities/:_id/edit',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Edit_Priority',
 	pageTemplate: 'livechatPriorityForm',
 }, livechatManagerRoutes);
@@ -76,7 +77,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-priority-new',
 	path: '/priorities/new',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'New_Priority',
 	pageTemplate: 'livechatPriorityForm',
 }, livechatManagerRoutes);
@@ -84,7 +85,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-business-hour-edit',
 	path: '/business-hours/:_id/:type/edit',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Edit_Business_Hour',
 	pageTemplate: 'livechatBusinessHoursForm',
 }, livechatManagerRoutes, load);
@@ -92,7 +93,7 @@ AccountBox.addRoute({
 AccountBox.addRoute({
 	name: 'livechat-business-hour-new',
 	path: '/business-hours/new',
-	sideNav: 'livechatFlex',
+	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'New_Business_Hour',
 	pageTemplate: 'livechatBusinessHoursForm',
 }, livechatManagerRoutes, load);
