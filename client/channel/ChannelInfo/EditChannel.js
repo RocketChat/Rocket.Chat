@@ -233,7 +233,7 @@ function EditChannel({ room }) {
 			rid: room._id,
 			...data,
 			...joinCode && { joinCode: joinCodeRequired ? joinCode : '' },
-			...data.systemMessages && { systemMessages: hideSysMes ? systemMessages : [] },
+			...(data.systemMessages || !hideSysMes) && { systemMessages: hideSysMes ? systemMessages : [] },
 		});
 
 		const archive = () => archiveAction({ rid: room._id, action: archiveSelector });
