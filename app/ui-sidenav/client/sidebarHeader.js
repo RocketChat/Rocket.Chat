@@ -375,7 +375,7 @@ Template.sidebarHeader.events({
 										type: 'open',
 										id: 'account',
 										action: () => {
-											FlowRouter.go('account');
+											FlowRouter.go('account', { group: 'profile' });
 											popover.close();
 										},
 									},
