@@ -6,7 +6,7 @@ import { SideNav } from '../../app/ui-utils/client';
 function OmnichannelRouter({ lazyRouteComponent, ...props }) {
 	const LazyRouteComponent = useMemo(() => lazy(lazyRouteComponent), [lazyRouteComponent]);
 	useEffect(() => {
-		SideNav.setFlex('livechatFlex');
+		SideNav.setFlex('omnichannelFlex');
 		SideNav.openFlex();
 	}, []);
 
