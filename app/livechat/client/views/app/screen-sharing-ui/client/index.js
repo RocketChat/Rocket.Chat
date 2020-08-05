@@ -1,8 +1,8 @@
 import './screensharing.html';
 import './screensharing';
-import { ScreenSharinDialog } from './ScreenSharinDialog';
+import { ScreenSharingDialog } from './ScreenSharingDialog';
 import './screensharing.css';
 
 export {
-	ScreenSharinDialog,
+	ScreenSharingDialog,
 };

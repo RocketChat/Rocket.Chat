@@ -45,6 +45,7 @@ Template.livechat.helpers({
 
 		const sortBy = getUserPreference(user, 'sidebarSortby');
 		const sort = sortBy === 'activity' ? { _updatedAt: - 1 } : { fname: 1 };
+
 		return ChatSubscription.find(query, { sort });
 	},
 

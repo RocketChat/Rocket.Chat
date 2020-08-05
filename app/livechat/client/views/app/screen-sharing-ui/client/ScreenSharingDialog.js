@@ -1,7 +1,7 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
-export const ScreenSharinDialog = new class {
+export const ScreenSharingDialog = new class {
 	opened = false;
 
 	windowMaximized = false;
@@ -15,7 +15,7 @@ export const ScreenSharinDialog = new class {
 	src = null;
 
 	init() {
-		this.dialogView = Blaze.render(Template.screenSharinDialog, document.body);
+		this.dialogView = Blaze.render(Template.screenSharingDialog, document.body);
 	}
 
 	open(source, { rid, src }) {

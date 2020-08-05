@@ -5,17 +5,17 @@ import { Tracker } from 'meteor/tracker';
 import { messageBox } from '../../ui-utils/client';
 import { settings } from '../../settings/client';
 import { Rooms } from '../../models';
-import { ScreenSharinDialog } from './views/app/ui-screensharing/client';
+import { ScreenSharingDialog } from './views/app/screen-sharing-ui/client';
 import { callbacks } from '../../callbacks/client';
 
 const openSessionIframe = (rid, src) => {
 	const messageBoxRef = document.querySelector('.rc-message-box');
 
-	if (ScreenSharinDialog.opened) {
-		ScreenSharinDialog.close();
+	if (ScreenSharingDialog.opened) {
+		ScreenSharingDialog.close();
 	}
 
-	ScreenSharinDialog.open(messageBoxRef, { rid, src });
+	ScreenSharingDialog.open(messageBoxRef, { rid, src });
 };
 
 messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
@@ -50,7 +50,7 @@ Meteor.startup(function() {
 });
 
 callbacks.add('roomExit', () => {
-	if (ScreenSharinDialog.opened) {
-		ScreenSharinDialog.close();
+	if (ScreenSharingDialog.opened) {
+		ScreenSharingDialog.close();
 	}
 });

@@ -4,9 +4,9 @@ import { Session } from 'meteor/session';
 import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
-import { ScreenSharinDialog } from './ScreenSharinDialog';
+import { ScreenSharingDialog } from './ScreenSharingDialog';
 
-Template.screenSharinDialog.helpers({
+Template.screenSharingDialog.helpers({
 	src() {
 		return Template.instance().src.get();
 	},
@@ -21,21 +21,21 @@ Template.screenSharinDialog.helpers({
 	},
 });
 
-Template.screenSharinDialog.events({
+Template.screenSharingDialog.events({
 	'click .screensharing-dialog .cancel'() {
 		const rid = Session.get('openedRoom');
 		Meteor.call('livechat:endScreenSharingSession', rid);
-		ScreenSharinDialog.close();
+		ScreenSharingDialog.close();
 	},
 	'click .screensharing-dialog .maximize'() {
-		ScreenSharinDialog.maximize();
+		ScreenSharingDialog.maximize();
 	},
 	'click .screensharing-dialog .minimize'() {
-		ScreenSharinDialog.minimize();
+		ScreenSharingDialog.minimize();
 	},
 });
 
-Template.screenSharinDialog.onCreated(function() {
+Template.screenSharingDialog.onCreated(function() {
 	this.width = 400;
 	this.height = 290;
 
@@ -100,10 +100,10 @@ Template.screenSharinDialog.onCreated(function() {
 	};
 
 	this.autorun(() => {
-		this.isWindowMaximized.set(ScreenSharinDialog.windowMaximized);
+		this.isWindowMaximized.set(ScreenSharingDialog.windowMaximized);
 	});
 });
 
-Template.screenSharinDialog.onDestroyed(function() {
+Template.screenSharingDialog.onDestroyed(function() {
 	$(window).off('resize', this.remove);
 });
