@@ -609,14 +609,15 @@ export class LivechatRooms extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateScreenSharingStatus(roomId, status) {
+	updateScreenSharingStatus(roomId, { active, sessionUrl }) {
 		const query = {
 			_id: roomId,
 			t: 'l',
 		};
 		const update = {
 			$set: {
-				'screenSharing.active': status,
+				'screenSharing.active': active,
+				'screenSharing.sessionUrl': sessionUrl,
 			},
 		};
 

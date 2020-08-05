@@ -25,15 +25,3 @@ Meteor.methods({
 		ScreensharingManager.endScreenSharingSession(roomId, user);
 	},
 });
-
-Meteor.methods({
-	'livechat:getActiveSessions'() {
-		return ScreensharingManager.getActiveSessions();
-	},
-});
-
-Meteor.methods({
-	'livechat:getSessionUrl'(roomId) {
-		return ScreensharingManager.getSessionUrl(roomId);
-	},
-});
