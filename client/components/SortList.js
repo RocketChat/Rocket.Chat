@@ -36,7 +36,7 @@ export function SortList() {
 	return <>
 		<div className='rc-popover__column'>
 			{!isMobile() && <ViewModeList/>}
-			<Divider/>
+			{!isMobile() && <Divider/>}
 			<SortModeList/>
 			<Divider/>
 			<GroupingList/>
