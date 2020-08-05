@@ -47,11 +47,11 @@ export class ScreenSharingManager {
 	}
 
 	screenSharingRequestRejected(roomId: string, visitor: any): void {
-		Messages.createWithTypeRoomIdMessageAndUser('screen_sharing_request_rejected', roomId, '', visitor, {});
+		Messages.createWithTypeRoomIdMessageAndUser('livechat_screen_sharing_request_rejected', roomId, '', visitor, {});
 	}
 
 	screenSharingRequestAccepted(roomId: string, visitor: any, agent: any): void {
-		Messages.createWithTypeRoomIdMessageAndUser('screen_sharing_request_accepted', roomId, '', visitor, {});
+		Messages.createWithTypeRoomIdMessageAndUser('livechat_screen_sharing_request_accepted', roomId, '', visitor, {});
 		const user = Users.findOneByUsernameIgnoringCase(agent.username, null);
 		const sessionUrl = this.screenShareProvider.getURL(roomId, user);
 		LivechatRooms.updateScreenSharingStatus(roomId, { active: true, sessionUrl });

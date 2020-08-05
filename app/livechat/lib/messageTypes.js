@@ -94,15 +94,15 @@ MessageTypes.registerType({
 });
 
 MessageTypes.registerType({
-	id: 'screen_sharing_request_accepted',
+	id: 'livechat_screen_sharing_request_accepted',
 	system: true,
-	message: 'screen_sharing_request_accepted',
+	message: 'livechat_screen_sharing_request_accepted',
 });
 
 MessageTypes.registerType({
-	id: 'screen_sharing_request_rejected',
+	id: 'livechat_screen_sharing_request_rejected',
 	system: true,
-	message: 'screen_sharing_request_rejected',
+	message: 'livechat_screen_sharing_request_rejected',
 });
 
 MessageTypes.registerType({

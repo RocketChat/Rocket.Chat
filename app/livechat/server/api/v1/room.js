@@ -205,9 +205,9 @@ API.v1.addRoute('livechat/room.screenSharing', {
 			if (!room.open) {
 				throw new Meteor.Error('room-closed');
 			}
-			if (messageType === 'screen_sharing_request_rejected') {
+			if (messageType === 'livechat_screen_sharing_request_rejected') {
 				ScreensharingManager.screenSharingRequestRejected(rid, visitor);
-			} else if (messageType === 'screen_sharing_request_accepted') {
+			} else if (messageType === 'livechat_screen_sharing_request_accepted') {
 				ScreensharingManager.screenSharingRequestAccepted(rid, visitor, room.servedBy);
 			} else if (messageType === 'guest_requesting_livechat_screen_sharing') {
 				ScreensharingManager.guestRequestingScreenSharing(rid, visitor);

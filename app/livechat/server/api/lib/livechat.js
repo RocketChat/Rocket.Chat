@@ -95,11 +95,11 @@ export function settings() {
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
 	const emojis = Meteor.call('listEmojiCustom');
-	const screenSharingConfig = ScreensharingManager.getConfig();
+	const screenSharing = ScreensharingManager.getConfig();
 
 	return {
 		enabled: initSettings.Livechat_enabled,
-		screenSharingConfig,
+		screenSharing,
 		settings: {
 			registrationForm: initSettings.Livechat_registration_form,
 			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
