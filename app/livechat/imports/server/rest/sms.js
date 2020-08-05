@@ -92,7 +92,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 			if (!file) {
 				const details = {
-					name: 'Twilio Upload File',
+					name: 'Upload File',
 					type: contentType,
 					rid,
 					visitorToken: token,
