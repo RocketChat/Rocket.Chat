@@ -82,15 +82,15 @@ MessageTypes.registerType({
 });
 
 MessageTypes.registerType({
-	id: 'request_screen_sharing_access',
+	id: 'request_livechat_screen_sharing_access',
 	system: true,
-	message: 'request_screen_sharing_access',
+	message: 'request_livechat_screen_sharing_access',
 });
 
 MessageTypes.registerType({
-	id: 'end_screen_sharing_session',
+	id: 'end_livechat_screen_sharing_session',
 	system: true,
-	message: 'end_screen_sharing_session',
+	message: 'end_livechat_screen_sharing_session',
 });
 
 MessageTypes.registerType({
@@ -106,7 +106,7 @@ MessageTypes.registerType({
 });
 
 MessageTypes.registerType({
-	id: 'guest_requesting_screen_sharing',
+	id: 'guest_requesting_livechat_screen_sharing',
 	system: true,
-	message: 'guest_requesting_screen_sharing',
+	message: 'guest_requesting_livechat_screen_sharing',
 });

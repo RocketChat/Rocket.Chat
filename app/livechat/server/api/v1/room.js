@@ -181,7 +181,7 @@ API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('livechat/room.requestFileSharing', {
+API.v1.addRoute('livechat/room.screenSharing', {
 	post() {
 		try {
 			check(this.bodyParams, {
@@ -209,7 +209,7 @@ API.v1.addRoute('livechat/room.requestFileSharing', {
 				ScreensharingManager.screenSharingRequestRejected(rid, visitor);
 			} else if (messageType === 'screen_sharing_request_accepted') {
 				ScreensharingManager.screenSharingRequestAccepted(rid, visitor, room.servedBy);
-			} else if (messageType === 'guest_requesting_screen_sharing') {
+			} else if (messageType === 'guest_requesting_livechat_screen_sharing') {
 				ScreensharingManager.guestRequestingScreenSharing(rid, visitor);
 			}
 

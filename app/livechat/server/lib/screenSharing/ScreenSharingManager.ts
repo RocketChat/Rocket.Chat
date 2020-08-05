@@ -42,7 +42,7 @@ export class ScreenSharingManager {
 	}
 
 	requestScreenSharing(roomId: string, user: any): void {
-		Messages.createWithTypeRoomIdMessageAndUser('request_screen_sharing_access', roomId, '', user, {});
+		Messages.createWithTypeRoomIdMessageAndUser('request_livechat_screen_sharing_access', roomId, '', user, {});
 		LivechatRooms.updateScreenSharingStatus(roomId, { active: false, sessionUrl: '' });
 	}
 
@@ -58,12 +58,12 @@ export class ScreenSharingManager {
 	}
 
 	endScreenSharingSession(roomId: string, user: any): void {
-		Messages.createWithTypeRoomIdMessageAndUser('end_screen_sharing_session', roomId, '', user, {});
+		Messages.createWithTypeRoomIdMessageAndUser('end_livechat_screen_sharing_session', roomId, '', user, {});
 		LivechatRooms.updateScreenSharingStatus(roomId, { active: false, sessionUrl: '' });
 	}
 
 	guestRequestingScreenSharing(roomId: string, visitor: any): void {
-		Messages.createWithTypeRoomIdMessageAndUser('guest_requesting_screen_sharing', roomId, 'guest_requesting_screen_sharing', visitor, {});
+		Messages.createWithTypeRoomIdMessageAndUser('guest_requesting_livechat_screen_sharing', roomId, 'guest_requesting_livechat_screen_sharing', visitor, {});
 	}
 }
 
