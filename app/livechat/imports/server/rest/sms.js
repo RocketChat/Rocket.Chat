@@ -1,10 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import axios from 'axios';
 
+import { FileUpload } from '../../../../file-upload';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models';
 import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
+
+const fileStore = FileUpload.getStore('Uploads');
+
+const getUploadFile = async (details, fileUrl) => {
+	try {
+		const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+		const { data } = response;
+		const size = Buffer.byteLength(data);
+		return fileStore.insertSync({ ...details, size }, data);
+	} catch (error) {
+		throw new Error(error);
+	}
+};
 
 const defineDepartment = (idOrName) => {
 	if (!idOrName || idOrName === '') {
@@ -40,7 +55,7 @@ const defineVisitor = (smsNumber) => {
 };
 
 const normalizeLocationSharing = (payload) => {
-	const { extra: { fromLatitude: latitude, fromLongitude: longitude } = { } } = payload;
+	const { extra: { fromLatitude: latitude, fromLongitude: longitude } = {} } = payload;
 	if (!latitude || !longitude) {
 		return;
 	}
@@ -60,15 +75,9 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const { token } = visitor;
 		const room = LivechatRooms.findOneOpenByVisitorToken(token);
 		const location = normalizeLocationSharing(sms);
+		const rid = (room && room._id) || Random.id();
 
 		const sendMessage = {
-			message: {
-				_id: Random.id(),
-				rid: (room && room._id) || Random.id(),
-				token,
-				msg: sms.body,
-				...location && { location },
-			},
 			guest: visitor,
 			roomInfo: {
 				sms: {
@@ -77,30 +86,57 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			},
 		};
 
-		sendMessage.message.attachments = sms.media.map((curr) => {
+		let file;
+		const attachments = Promise.await(Promise.all(sms.media.map(async (curr) => {
+			const { url: twilioUrl, contentType } = curr;
+
+			if (!file) {
+				const details = {
+					name: 'Twilio Upload File',
+					type: contentType,
+					rid,
+					visitorToken: token,
+				};
+
+				const upload = await getUploadFile(details, twilioUrl);
+				file = Object.assign({}, { _id: upload._id, name: upload.name, type: upload.type });
+			}
+
+			const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+
 			const attachment = {
-				message_link: curr.url,
+				message_link: url,
 			};
 
-			const { contentType } = curr;
 			switch (contentType.substr(0, contentType.indexOf('/'))) {
 				case 'image':
-					attachment.image_url = curr.url;
+					attachment.image_url = url;
 					break;
 				case 'video':
-					attachment.video_url = curr.url;
+					attachment.video_url = url;
 					break;
 				case 'audio':
-					attachment.audio_url = curr.url;
+					attachment.audio_url = url;
 					break;
 			}
 
 			return attachment;
-		});
+		})));
+
+		const message = {
+			_id: Random.id(),
+			rid: (room && room._id) || Random.id(),
+			token,
+			msg: sms.body,
+			...location && { location },
+			...attachments && { attachments },
+			...file && { file },
+		};
+
+		Object.assign(sendMessage, { message });
 
 		try {
-			const message = SMSService.response.call(this, Promise.await(Livechat.sendMessage(sendMessage)));
-
+			const msg = SMSService.response.call(this, Promise.await(Livechat.sendMessage(sendMessage)));
 			Meteor.defer(() => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
@@ -115,7 +151,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				}
 			});
 
-			return message;
+			return msg;
 		} catch (e) {
 			return SMSService.error.call(this, e);
 		}
