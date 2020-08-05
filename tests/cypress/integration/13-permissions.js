@@ -35,6 +35,12 @@ describe.skip('[Permissions]', () => {
 			admin.rolesUserCreateP.click();
 		}
 
+		if (!admin.rolesUserCreateRo.isSelected()) {
+			admin.rolesUserCreateRo.waitForVisible(5000);
+			admin.rolesUserCreateRo.scroll();
+			admin.rolesUserCreateRo.click();
+		}
+
 		if (!admin.rolesUserMentionAll.isSelected()) {
 			admin.rolesUserMentionAll.scrollIntoView();
 			admin.rolesUserMentionAll.click();
@@ -101,6 +107,14 @@ describe.skip('[Permissions]', () => {
 			if (admin.rolesUserCreateP.isSelected()) {
 				admin.rolesUserCreateP.scrollIntoView();
 				admin.rolesUserCreateP.click();
+			}
+		});
+
+		it('it should change the create ro room permission', () => {
+			if (admin.rolesUserCreateRo.isSelected()) {
+				admin.rolesUserCreateRo.waitForVisible(5000);
+				admin.rolesUserCreateRo.scroll();
+				admin.rolesUserCreateRo.click();
 			}
 		});
 

@@ -6,6 +6,7 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { useUserPreference } from '../contexts/UserContext';
 import { useMethod } from '../contexts/ServerContext';
 import { useSetting } from '../contexts/SettingsContext';
+import { isMobile } from '../../app/utils/client';
 
 function SortListItem({ text, icon, input }) {
 	return <Flex.Container>
@@ -34,7 +35,7 @@ const style = {
 export function SortList() {
 	return <>
 		<div className='rc-popover__column'>
-			<ViewModeList/>
+			{!isMobile() && <ViewModeList/>}
 			<Divider/>
 			<SortModeList/>
 			<Divider/>

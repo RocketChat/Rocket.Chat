@@ -6,7 +6,7 @@ class Global {
 
 	get modalConfirm() { return browser.element('.rc-modal .js-confirm'); }
 
-	get modalCancel() { return browser.element('.rc-modal .js-modal'); }
+	get modalCancel() { return browser.element('.rc-modal .js-close'); }
 
 	get modalPasswordField() { return browser.element('.rc-modal [type="password"]'); }
 
@@ -22,7 +22,7 @@ class Global {
 
 	confirmPopup() {
 		this.modalConfirm.waitForVisible(5000);
-		browser.pause(500);
+		cy.wait(500);
 		this.modalConfirm.click();
 		this.modal.waitForVisible(5000, true);
 	}

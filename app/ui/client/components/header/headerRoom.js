@@ -6,7 +6,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { t, roomTypes, handleError } from '../../../../utils';
+import { t, roomTypes, handleError, isMobile } from '../../../../utils';
 import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from '../../../../models';
 import { settings } from '../../../../settings';
@@ -29,6 +29,7 @@ const getUserStatusText = (id) => {
 
 Template.headerRoom.helpers({
 	isDiscussion: () => Template.instance().state.get('discussion'),
+	isNotMobile: () => !isMobile(),
 	hasPresence() {
 		const room = Rooms.findOne(this._id);
 		return !roomTypes.getConfig(room.t).isGroupChat(room);
@@ -38,11 +39,23 @@ Template.headerRoom.helpers({
 	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
 	toggleFavoriteButtonIcon: () => (Template.instance().state.get('favorite') ? 'star-filled' : 'star'),
+	showSearchButton: () => isMobile(),
+	openSearchPage() {
+		if (!isMobile()) {
+			return;
+		}
+		return Session.get('openSearchPage');
+	},
 	uid() {
 		return getUidDirectMessage(this._id);
 	},
 	back() {
 		return Template.instance().data.back;
+	},
+	getSearchButton() {
+		return TabBar.getButtons().filter(function(item) {
+			return item.id === 'rocket-search';
+		})[0];
 	},
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
@@ -142,6 +155,14 @@ Template.headerRoom.helpers({
 });
 
 Template.headerRoom.events({
+	'click .js-open-search'() {
+		if (!Session.get('openSearchPage')) {
+			Session.set('openSearchPage', true);
+		} else {
+			Session.set('openSearchPage', false);
+		}
+	},
+
 	'click .iframe-toolbar .js-iframe-action'(e) {
 		fireGlobalEvent('click-toolbar-button', { id: this.id });
 		e.currentTarget.querySelector('button').blur();
@@ -235,7 +256,7 @@ const loadUserStatusText = () => {
 
 Template.headerRoom.onCreated(function() {
 	this.state = new ReactiveDict();
-
+	Session.set('openSearchPage', false);
 	const isFavoritesEnabled = () => settings.get('Favorite_Rooms');
 
 	const isDiscussion = (rid) => {

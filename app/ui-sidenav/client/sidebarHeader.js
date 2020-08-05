@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
-import { t } from '../../utils';
+import { t, isMobile } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
@@ -19,13 +19,44 @@ const setStatus = (status, statusText) => {
 	popover.close();
 };
 
-const showToolbar = new ReactiveVar(false);
+const sortAction = async (e) => {
+	const options = [];
+	const config = {
+		template: createTemplateForComponent('SortList', () => import('../../../client/components/SortList')),
+		currentTarget: e.currentTarget,
+		data: {
+			options,
+		},
+		offsetVertical: e.currentTarget.clientHeight + 10,
+	};
 
+	// Close popup, if open
+	if (popover.renderedPopover) {
+		popover.close();
+	}
+	popover.open(config);
+};
+
+const showToolbar = new ReactiveVar(false);
+let hideHeader = true;
+
+const selectorSearch = '.toolbar__search .rc-input__element';
 export const toolbarSearch = {
 	shortcut: false,
-	show(fromShortcut) {
+	clear() {
+		const $inputMessage = $('.js-input-message');
+
+		if ($inputMessage.length === 0) {
+			return;
+		}
+
+		$inputMessage.focus();
+		$(selectorSearch).val('');
+	},
+	show(fromShortcut, header = true) {
 		menu.open();
 		showToolbar.set(true);
+		hideHeader = header;
 		this.shortcut = fromShortcut;
 	},
 	close() {
@@ -39,7 +70,7 @@ export const toolbarSearch = {
 const toolbarButtons = (/* user */) => [{
 	name: t('Home'),
 	icon: 'home',
-	condition: () => settings.get('Layout_Show_Home_Button'),
+	condition: () => !isMobile() && settings.get('Layout_Show_Home_Button'),
 	action: () => {
 		FlowRouter.go('home');
 	},
@@ -47,13 +78,24 @@ const toolbarButtons = (/* user */) => [{
 {
 	name: t('Search'),
 	icon: 'magnifier',
+	condition: () => !isMobile(),
 	action: () => {
 		toolbarSearch.show(false);
 	},
 },
 {
+	name: t('Search Input'),
+	icon: '',
+	condition: () => isMobile(),
+	action: () => {
+		toolbarSearch.show(false, false);
+	},
+	searchBar: true,
+},
+{
 	name: t('Directory'),
 	icon: 'discover',
+	condition: () => !isMobile() && settings.get('UI_DisplayDirectory'),
 	action: () => {
 		menu.close();
 		FlowRouter.go('directory');
@@ -62,19 +104,9 @@ const toolbarButtons = (/* user */) => [{
 {
 	name: t('Sort'),
 	icon: 'sort',
+	condition: () => !isMobile(),
 	hasPopup: true,
-	action: async (e) => {
-		const options = [];
-		const config = {
-			template: createTemplateForComponent('SortList', () => import('../../../client/components/SortList')),
-			currentTarget: e.currentTarget,
-			data: {
-				options,
-			},
-			offsetVertical: e.currentTarget.clientHeight + 10,
-		};
-		popover.open(config);
-	},
+	action: sortAction,
 },
 {
 	name: t('Create_new'),
@@ -148,7 +180,6 @@ const toolbarButtons = (/* user */) => [{
 {
 	name: t('Options'),
 	icon: 'menu',
-	condition: () => AccountBox.getItems().length || hasAtLeastOnePermission(['manage-emoji', 'manage-oauth-apps', 'manage-outgoing-integrations', 'manage-incoming-integrations', 'manage-own-outgoing-integrations', 'manage-own-incoming-integrations', 'manage-selected-settings', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration', 'access-setting-permissions']),
 	hasPopup: true,
 	action: (e) => {
 		let adminOption;
@@ -159,11 +190,26 @@ const toolbarButtons = (/* user */) => [{
 				type: 'open',
 				id: 'administration',
 				action: () => {
-					FlowRouter.go('admin', { group: 'info' });
-					popover.close();
+					import('../../../client/admin').then(() => {
+						FlowRouter.go('admin', { group: 'info' });
+						popover.close();
+					});
 				},
 			};
 		}
+
+		const sortOption = {
+			name: t('Sort'),
+			icon: 'sort',
+			hasPopup: true,
+			action: sortAction,
+		};
+
+		const shareOption = {
+			name: t('Share'),
+			icon: 'share',
+			type: 'share-action',
+		};
 
 		const config = {
 			popoverClass: 'sidebar-header',
@@ -206,6 +252,10 @@ const toolbarButtons = (/* user */) => [{
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
+		if (isMobile()) {
+			config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([sortOption]);
+		}
+		config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([shareOption]);
 
 		popover.open(config);
 	},
@@ -222,13 +272,17 @@ Template.sidebarHeader.helpers({
 		}
 		return id && Meteor.users.findOne(id, { fields: {
 			username: 1, status: 1, statusText: 1,
-		} });
+		},
+		});
 	},
 	toolbarButtons() {
 		return toolbarButtons(/* Meteor.userId() */).filter((button) => !button.condition || button.condition());
 	},
 	showToolbar() {
 		return showToolbar.get();
+	},
+	hideHeader() {
+		return hideHeader;
 	},
 });
 
@@ -238,6 +292,15 @@ Template.sidebarHeader.events({
 			e.currentTarget.blur();
 		}
 		return this.action && this.action.apply(this, [e]);
+	},
+	'click #searchBar'() {
+		toolbarSearch.show(false, false);
+	},
+	'focus #searchBar'() {
+		toolbarSearch.show(false, false);
+	},
+	'blur #searchBar'() {
+		toolbarSearch.clear();
 	},
 	'click .sidebar__header .avatar'(e) {
 		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {

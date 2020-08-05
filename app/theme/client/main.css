@@ -48,6 +48,8 @@
 @import 'imports/components/emojiPicker.css';
 @import 'imports/components/table.css';
 @import 'imports/components/tabs.css';
+@import 'imports/components/share.css';
+@import 'imports/components/pushMessage.css';
 
 /* Modal */
 @import 'imports/components/modal/full-modal.css';

@@ -27,7 +27,7 @@ messageBox.actions.add('Create_new', 'Video_message', {
 
 messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
-	icon: 'computer',
+	icon: 'clip',
 	condition: () => settings.get('FileUpload_Enabled'),
 	action({ rid, tmid, event, messageBox }) {
 		event.preventDefault();

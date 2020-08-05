@@ -6,12 +6,15 @@ import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
+import { callbacks } from '../../callbacks';
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
+
+const crypto = require('crypto');
 
 const logger = new Logger('CustomOAuth');
 
@@ -323,6 +326,9 @@ export class CustomOAuth {
 			if (serviceData.username) {
 				const user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
 				if (!user) {
+					// send GA event that a new user has registered
+					const cid = crypto.createHash('sha1').update(serviceData.username).digest('hex');
+					callbacks.run('customOauthRegisterNewUser', cid);
 					return;
 				}
 

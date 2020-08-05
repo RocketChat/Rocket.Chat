@@ -86,3 +86,16 @@
 		}
 	}
 }
+
+/* WIDECHAT */
+.message-custom-status[aria-label] {
+	&:hover::before,
+	&:hover::after,
+	&:focus::before,
+	&:focus::after {
+		transform: translate(var(--translation-x), 0);
+		pointer-events: auto;
+
+		opacity: 1;
+	}
+}

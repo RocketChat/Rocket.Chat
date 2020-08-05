@@ -11,7 +11,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
+import { t, roomTypes, getUserPreference, handleError, isMobile } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
@@ -23,6 +23,7 @@ import {
 	modal,
 	Layout,
 	MessageAction,
+	MessageTypes,
 	RocketChatTabBar,
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
@@ -93,8 +94,15 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 	e.stopPropagation();
 };
 
+const showMessageActions = (e, outerContext) => {
+	const { msg } = messageArgs(outerContext);
+	return e.target && e.target.nodeName === 'DIV' && !msg.private && !MessageTypes.isSystemMessage(msg);
+};
+
 const mountPopover = (e, i, outerContext) => {
-	let context = $(e.target).parents('.message').data('context');
+	let context = $(e.target).parents('.message').data('context')
+		|| ($(e.target).parents('.message').hasClass('mentions') && 'mentions');
+
 	if (!context) {
 		context = 'message';
 	}
@@ -118,7 +126,7 @@ const mountPopover = (e, i, outerContext) => {
 			modifier: item.color,
 		}));
 
-		menuItems = menuItems.concat(messageItems);
+		menuItems = messageItems.concat(menuItems);
 	}
 
 	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
@@ -141,14 +149,8 @@ const mountPopover = (e, i, outerContext) => {
 		onRendered: () => new Clipboard('.rc-popover__item'),
 	};
 
-	popover.open(config);
-};
-
-const wipeFailedUploads = () => {
-	const uploads = Session.get('uploading');
-
-	if (uploads) {
-		Session.set('uploading', uploads.filter((upload) => !upload.error));
+	if (!popover.renderedPopover) {
+		popover.open(config);
 	}
 };
 
@@ -252,7 +254,7 @@ function addToInput(text) {
 	$(input).change().trigger('input');
 }
 
-callbacks.add('enter-room', wipeFailedUploads);
+// callbacks.add('enter-room', wipeFailedUploads);
 
 export const dropzoneHelpers = {
 	dragAndDrop() {
@@ -276,6 +278,14 @@ export const dropzoneHelpers = {
 
 Template.room.helpers({
 	...dropzoneHelpers,
+
+	openSearchPage() {
+		if (!isMobile()) {
+			return false;
+		}
+		return Session.get('openSearchPage');
+	},
+
 	isTranslated() {
 		const { state } = Template.instance();
 		return settings.get('AutoTranslate_Enabled')
@@ -291,6 +301,7 @@ Template.room.helpers({
 	},
 	subscribed() {
 		const { state } = Template.instance();
+		console.log(state);
 		return state.get('subscribed');
 	},
 	messagesHistory() {
@@ -320,7 +331,6 @@ Template.room.helpers({
 				ts: 1,
 			},
 		};
-
 		return ChatMessage.find(query, options);
 	},
 
@@ -338,10 +348,6 @@ Template.room.helpers({
 
 	windowId() {
 		return `chat-window-${ this._id }`;
-	},
-
-	uploading() {
-		return Session.get('uploading');
 	},
 
 	roomLeader() {
@@ -775,6 +781,8 @@ Template.room.events({
 			}
 
 			window.open(e.target.href);
+		} else if (isMobile() && !touchMoved && showMessageActions(e, this)) {
+			mountPopover(e, t, this);
 		}
 	},
 
@@ -858,7 +866,9 @@ Template.room.events({
 
 	'click .new-message'(event, instance) {
 		instance.atBottom = true;
-		chatMessages[RoomManager.openedRoom].input.focus();
+		if (!isMobile()) {
+			chatMessages[RoomManager.openedRoom].input.focus();
+		}
 	},
 	'click .message-actions__menu'(e, i) {
 		const messageContext = messageArgs(this);
@@ -898,11 +908,13 @@ Template.room.events({
 
 		popover.open(config);
 	},
-	'click .time a'(e) {
+	'click .time-link'(e) {
 		e.preventDefault();
 		const { msg } = messageArgs(this);
-		const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
-		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
+		const link = msg.attachments ? msg.attachments[0].message_link : this.message_link;
+		const repliedMessageId = link.split('?msg=')[1];
+		const { pathname } = new URL(link);
+		FlowRouter.go(pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
 	'click .mention-link'(e, instance) {
 		e.stopPropagation();
@@ -1066,6 +1078,8 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
+	Session.set('openSearchPage', false);
+
 	const rid = this.data._id;
 
 	this.onFile = (filesToUpload) => {
@@ -1240,6 +1254,8 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
+	Session.set('openSearchPage', false);
+
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {

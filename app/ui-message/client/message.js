@@ -456,6 +456,10 @@ Template.message.helpers({
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
+	isPushMessage() {
+		const { msg } = this;
+		return msg.isPushMessage;
+	},
 	showStar() {
 		const { msg } = this;
 		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
