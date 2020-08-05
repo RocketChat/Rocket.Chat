@@ -4,8 +4,6 @@ import { Template } from 'meteor/templating';
 export const ScreenSharingDialog = new class {
 	opened = false;
 
-	windowMaximized = false;
-
 	dialogView = null;
 
 	source = null;
@@ -34,24 +32,20 @@ export const ScreenSharingDialog = new class {
 		this.dialogView.templateInstance().setPosition(dialog, source);
 		dialog.addClass('show');
 		this.opened = true;
-		this.windowMaximized = false;
 	}
 
 	maximize() {
 		const dialog = $('.screensharing-dialog');
 		this.dialogView.templateInstance().maximizeWindow(dialog);
-		this.windowMaximized = true;
 	}
 
 	minimize() {
 		const dialog = $('.screensharing-dialog');
 		this.dialogView.templateInstance().setPosition(dialog, this.source);
-		this.windowMaximized = false;
 	}
 
 	close() {
 		$('.screensharing-dialog').removeClass('show');
 		this.opened = false;
-		this.windowMaximized = false;
 	}
 }();

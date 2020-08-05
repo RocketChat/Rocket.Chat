@@ -796,6 +796,8 @@
   "Cloud_Service_Agree_PrivacyTerms_Description": "I agree with the <a href='https://rocket.chat/terms'>Terms</a> & <a href='https://rocket.chat/privacy'>Privacy Policy</a>",
   "Cloud_token_instructions": "To Register your workspace go to Cloud Console. Login or Create an account and click register self-managed. Paste the token provided below",
   "Cloud_troubleshooting": "Troubleshooting",
+  "Cobrowse_io_Private_Key": "Cobrowse.io Private Key",
+  "Cobrowse_io_License_Key": "Cobrowse.io License Key",
   "Collaborative": "Collaborative",
   "Collapse_Embedded_Media_By_Default": "Collapse Embedded Media by Default",
   "color": "Color",
