@@ -35,7 +35,6 @@ const CustomFieldsRow = memo(function CustomFieldsRow({
 		visibility,
 	} = props;
 
-	console.log(props);
 	const t = useTranslation();
 
 	const cfRoute = useRoute('omnichannel-customfields');
