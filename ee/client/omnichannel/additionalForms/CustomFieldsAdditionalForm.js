@@ -26,8 +26,7 @@ const CustomFieldsAdditionalFormContainer = ({ data = {}, state, onChange, class
 		} else {
 			delete current[key];
 		}
-		onChange({ data: saveData.current });
-	}, [onChange]);
+	}, []);
 
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data), onChangeValue);
 
@@ -38,12 +37,8 @@ const CustomFieldsAdditionalFormContainer = ({ data = {}, state, onChange, class
 	const hasError = useMemo(() => !!Object.values(errors).filter(Boolean).length, [errors]);
 
 	useEffect(() => {
-		onChange({ hasError });
-	}, [hasError, onChange]);
-
-	useEffect(() => {
-		onChange({ hasUnsavedChanges });
-	}, [hasUnsavedChanges, onChange]);
+		onChange({ data: saveData.current, hasError, hasUnsavedChanges });
+	}, [hasError, hasUnsavedChanges, onChange]);
 
 	return <CustomFieldsAdditionalForm values={values} handlers={handlers} state={state} className={className} errors={errors}/>;
 };

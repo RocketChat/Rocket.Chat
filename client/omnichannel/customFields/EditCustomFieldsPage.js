@@ -95,7 +95,7 @@ const EditCustomFieldsPage = ({ customField, id }) => {
 				<Button onClick={handleReturn}>
 					<Icon size='x16' name='back'/>{t('Back')}
 				</Button>
-				<Button primary onClick={handleSave} disabled={canSave}>
+				<Button primary onClick={handleSave} disabled={!canSave}>
 					{t('Save')}
 				</Button>
 			</ButtonGroup>
