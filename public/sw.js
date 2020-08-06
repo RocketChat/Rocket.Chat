@@ -1,4 +1,3 @@
-importScripts('localforage.min.js');
 const HTMLToCache = '/';
 const version = 'viasat-0.1';
 
@@ -76,22 +75,22 @@ self.addEventListener('install', (event) => {
 	}));
 });
 
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
 	event.waitUntil(
 		caches
 			.keys()
-			.then(cacheNames =>
+			.then((cacheNames) =>
 				Promise.all(
-					cacheNames.map(cacheName => {
+					cacheNames.map((cacheName) => {
 						let res;
 						if (version !== cacheName) {
 							res = caches.delete(cacheName);
 						}
 						return res;
-					})
-				)
+					}),
+				),
 			)
-			.then(self.clients.claim())
+			.then(self.clients.claim()),
 	);
 });
 
@@ -116,8 +115,8 @@ self.addEventListener('fetch', (event) => {
 
 				// If the CSS/JS didn't change since it's been cached, return the cached version
 				if (
-					hasHash(event.request.url) &&
-					hasSameHash(event.request.url, cached.url)
+					hasHash(event.request.url)
+					&& hasSameHash(event.request.url, cached.url)
 				) {
 					return cached;
 				}
@@ -127,7 +126,7 @@ self.addEventListener('fetch', (event) => {
 	);
 });
 
-self.addEventListener('push', function (event) {
+self.addEventListener('push', function(event) {
 	const data = JSON.parse(event.data.text());
 
 	const options = {
@@ -139,20 +138,21 @@ self.addEventListener('push', function (event) {
 			redirectURL: data.redirectURL,
 		},
 		actions: [
-			{action: 'reply', title: 'Reply'},  
-			{action: 'close', title: 'Close'}
+			{ action: 'reply', title: 'Reply' },
+			{ action: 'close', title: 'Close' },
 		],
 	};
 
 	event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
-self.addEventListener('notificationclick', function(event) {  
-	var data = event.notification.data;
+self.addEventListener('notificationclick', function(event) {
+	const { data } = event.notification;
 
-	event.notification.close();  
+	event.notification.close();
 
-	if (event.action === 'reply') {  
-		event.waitUntil(clients.openWindow(event.notification.data.redirectURL));
-	}  
+	if (event.action === 'reply') {
+		// eslint-disable-next-line no-undef
+		event.waitUntil(clients.openWindow(data.redirectURL));
+	}
 }, false);

@@ -21,5 +21,3 @@ imports/client/
 !/.storybook/
 app/utils/client/lib/sha1.js
 app/analytics/server/trackEvents.js
-public/localforage.min.js
-public/sw.js
