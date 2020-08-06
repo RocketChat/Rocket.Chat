@@ -8,5 +8,9 @@ registerOmnichannelRoute('/installation', {
 });
 registerOmnichannelRoute('/managers', {
 	name: 'omnichannel-managers',
-	lazyRouteComponent: () => import('./managers/ManagersRoute'),
+	lazyRouteComponent: () => import('./ManagersRoute'),
+});
+registerOmnichannelRoute('/agents', {
+	name: 'omnichannel-agents',
+	lazyRouteComponent: () => import('./AgentsRoute'),
 });
