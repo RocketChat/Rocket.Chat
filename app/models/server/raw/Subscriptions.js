@@ -34,4 +34,24 @@ export class SubscriptionsRaw extends BaseRaw {
 
 		return this.findOne(query, { fields: { roles: 1 } });
 	}
+
+	setAsReadByRoomIdAndUserId(rid, uid, alert = false) {
+		const query = {
+			rid,
+			'u._id': uid,
+		};
+
+		const update = {
+			$set: {
+				open: true,
+				alert,
+				unread: 0,
+				userMentions: 0,
+				groupMentions: 0,
+				ls: new Date(),
+			},
+		};
+
+		return this.col.update(query, update);
+	}
 }
