@@ -17,7 +17,7 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 
 	const fileData = RocketChatFile.dataURIParse(dataURI);
 
-	const buffer = new Buffer(fileData.image, 'base64');
+	const buffer = Buffer.from(fileData.image, 'base64');
 
 	const file = {
 		rid,

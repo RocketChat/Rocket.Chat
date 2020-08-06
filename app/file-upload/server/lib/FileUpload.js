@@ -97,7 +97,7 @@ export const FileUpload = {
 	},
 
 	validateAvatarUpload(file) {
-		if (!Match.test(file.rid, String)) {
+		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
 			return false;
 		}
 
