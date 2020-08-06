@@ -43,22 +43,6 @@ AccountBox.addRoute({
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-managers',
-	path: '/managers',
-	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_Managers',
-	pageTemplate: 'livechatManagers',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
-	name: 'livechat-agents',
-	path: '/agents',
-	sideNav: 'livechatFlex',
-	pageTemplate: 'livechatAgents',
-	customContainer: true,
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
 	name: 'livechat-departments',
 	path: '/departments',
 	sideNav: 'livechatFlex',
