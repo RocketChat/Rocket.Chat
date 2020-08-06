@@ -96,6 +96,31 @@ export const FileUpload = {
 		return true;
 	},
 
+	validateAvatarUpload(file) {
+		if (!Match.test(file.rid, String)) {
+			return false;
+		}
+
+		const user = file.uid ? Meteor.users.findOne(file.uid, { fields: { language: 1 } }) : null;
+		const language = user?.language || 'en';
+
+		// accept only images
+		if (!/^image\//.test(file.type)) {
+			const reason = TAPi18n.__('File_type_is_not_accepted', language);
+			throw new Meteor.Error('error-invalid-file-type', reason);
+		}
+
+		// -1 maxFileSize means there is no limit
+		if (maxFileSize > -1 && file.size > maxFileSize) {
+			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
+				size: filesize(maxFileSize),
+			}, language);
+			throw new Meteor.Error('error-file-too-large', reason);
+		}
+
+		return true;
+	},
+
 	defaultUploads() {
 		return {
 			collection: Uploads.model,
@@ -121,9 +146,9 @@ export const FileUpload = {
 	defaultAvatars() {
 		return {
 			collection: Avatars.model,
-			// filter: new UploadFS.Filter({
-			// 	onCheck: FileUpload.validateFileUpload
-			// }),
+			filter: new UploadFS.Filter({
+				onCheck: FileUpload.validateAvatarUpload,
+			}),
 			getPath(file) {
 				return `${ settings.get('uniqueID') }/avatars/${ file.userId }`;
 			},
