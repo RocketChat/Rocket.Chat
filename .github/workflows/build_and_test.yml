@@ -109,14 +109,16 @@ jobs:
       run: |
         meteor npm install
 
-    - run: npm run lint
+    - run: meteor npm run lint
 
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
         mongoDBVersion: "4.0"
 
-    - run: npm run testunit
+    - run: meteor npm run testunit
+
+    - run: meteor npm run typecheck
 
     # To reduce memory need during actual build, build the packages solely first
     # - name: Build a Meteor cache
