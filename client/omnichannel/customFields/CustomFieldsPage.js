@@ -1,5 +1,6 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../components/basic/Page';
 import { useRoute } from '../../contexts/RouterContext';
@@ -11,7 +12,7 @@ const CustomFieldsPage = () => {
 
 	const router = useRoute('omnichannel-customfields');
 
-	const onAddNew = useCallback(() => router.push({ context: 'new' }), [router]);
+	const onAddNew = useMutableCallback(() => router.push({ context: 'new' }));
 
 	return <Page>
 		<Page.Header title={t('Custom_Fields')}>
