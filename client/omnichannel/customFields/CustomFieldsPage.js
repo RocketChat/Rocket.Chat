@@ -17,7 +17,7 @@ const CustomFieldsPage = () => {
 		<Page.Header title={t('Custom_Fields')}>
 			<Button onClick={onAddNew}>
 				<Icon name='plus' size='x16'/>
-				{t('Add_new')}
+				{t('Add')}
 			</Button>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
