@@ -133,30 +133,6 @@ AccountBox.addRoute({
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-customfields',
-	path: '/customfields',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Custom_Fields',
-	pageTemplate: 'livechatCustomFields',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
-	name: 'livechat-customfield-edit',
-	path: '/customfields/:_id/edit',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Edit_Custom_Field',
-	pageTemplate: 'livechatCustomFieldForm',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
-	name: 'livechat-customfield-new',
-	path: '/customfields/new',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'New_Custom_Field',
-	pageTemplate: 'livechatCustomFieldForm',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
 	name: 'livechat-webhooks',
 	path: '/webhooks',
 	sideNav: 'omnichannelFlex',
