@@ -53,7 +53,7 @@ const EditCustomFieldsPage = ({ customField, id }) => {
 
 	const [additionalValues, setAdditionalValues] = useState({});
 
-	const { useCustomFieldsAdditionalForm } = useSubscription(formsSubscription);
+	const { useCustomFieldsAdditionalForm = () => {} } = useSubscription(formsSubscription);
 	const AdditionalForm = useCustomFieldsAdditionalForm();
 
 	const router = useRoute('omnichannel-customfields');
