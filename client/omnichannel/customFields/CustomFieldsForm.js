@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Field, TextInput, ToggleSwitch, RadioButton } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
+import { Box, Field, TextInput, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 
@@ -22,6 +22,11 @@ const CustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
 		handleRegexp,
 	} = handlers;
 
+	const scopeOptions = useMemo(() => [
+		['visitor', t('Visitor')],
+		['room', t('Room')],
+	], [t]);
+
 	return <>
 		<Field className={className}>
 			<Field.Label>{t('Field')}</Field.Label>
@@ -38,12 +43,7 @@ const CustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
 		<Field className={className}>
 			<Field.Label>{t('Scope')}</Field.Label>
 			<Field.Row>
-				{t('Visitor')}
-				<RadioButton value='visitor' name='scope' checked={scope === 'visitor'} onChange={() => handleScope('visitor')}/>
-			</Field.Row>
-			<Field.Row>
-				{t('Room')}
-				<RadioButton value='room' name='scope' checked={scope === 'room'} onChange={() => handleScope('room')}/>
+				<Select options={scopeOptions} value={scope} onChange={handleScope}/>
 			</Field.Row>
 		</Field>
 		<Field className={className}>

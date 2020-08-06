@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useMemo, useEffect } from 'react';
-import { Box, Field, TextInput, ToggleSwitch, RadioButton } from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
@@ -65,6 +65,11 @@ const CustomFieldsAdditionalForm = ({ values = {}, handlers = {}, state, classNa
 
 	const { optionsError } = errors;
 
+	const typeOptions = useMemo(() => [
+		['input', t('Input')],
+		['select', t('Select')],
+	], [t]);
+
 	return <>
 		<Field className={className}>
 			<Box display='flex' flexDirection='row'>
@@ -77,12 +82,7 @@ const CustomFieldsAdditionalForm = ({ values = {}, handlers = {}, state, classNa
 		<Field className={className}>
 			<Field.Label>{t('Type')}</Field.Label>
 			<Field.Row>
-				{t('Input')}
-				<RadioButton value='input' name='type' checked={type === 'input'} onChange={() => handleType('input')}/>
-			</Field.Row>
-			<Field.Row>
-				{t('Select')}
-				<RadioButton value='select' name='type' checked={type === 'select'} onChange={() => handleType('select')}/>
+				<Select options={typeOptions} value={type} onChange={handleType}/>
 			</Field.Row>
 		</Field>
 		<Field className={className}>
