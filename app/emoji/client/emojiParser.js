@@ -22,6 +22,9 @@ Tracker.autorun(() => {
 			// &#39; to apostrophe (') for emojis such as :')
 			html = html.replace(/&#39;/g, '\'');
 
+			// convert (Y) to thumbsup emoji
+			html = html.replace(/(^|\s)\(Y\)(\s|$)/ig, ' :thumbsup: ');
+
 			// '<br>' to ' <br> ' for emojis such at line breaks
 			html = html.replace(/<br>/g, ' <br> ');
 
