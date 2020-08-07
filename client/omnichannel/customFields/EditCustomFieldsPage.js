@@ -26,9 +26,9 @@ const EditCustomFieldsPageContainer = () => {
 	const t = useTranslation();
 	const id = useRouteParameter('id');
 
-	const { data, status, error } = useEndpointDataExperimental(`livechat/custom-fields/${ id }`);
+	const { data, state, error } = useEndpointDataExperimental(`livechat/custom-fields/${ id }`);
 
-	if (status === ENDPOINT_STATES.LOADING) {
+	if (state === ENDPOINT_STATES.LOADING) {
 		return <PageSkeleton />;
 	}
 
