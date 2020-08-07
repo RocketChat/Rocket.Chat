@@ -54,6 +54,7 @@ const UserCard = forwardRef(({
 	open,
 	name = <Skeleton width='100%'/>,
 	username,
+	etag,
 	customStatus = <Skeleton width='100%'/>,
 	roles = <>
 		<Skeleton width='32%' mi='x2'/>
@@ -73,7 +74,7 @@ const UserCard = forwardRef(({
 	t = (e) => e,
 }, ref) => <UserCardContainer className={className} ref={ref} style={style}>
 	<Box>
-		<UserAvatar username={username} size='x124'/>
+		<UserAvatar username={username} etag={etag} size='x124'/>
 		{ actions && <Box flexGrow={0} display='flex' mb='x8' align='center' justifyContent='center'>
 			{actions}
 		</Box>}
