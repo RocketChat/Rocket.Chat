@@ -50,15 +50,17 @@ const FileExport = () => {
 	);
 };
 
-const MailExport = () => {
+const MailExport = ({ onClearSelection }) => {
 	const t = useTranslation();
+
+	const [selected, setSelected] = useState(10);
 
 	const { values, handlers } = useForm({
 		dateFrom: '',
 		dateTo: '',
 		toUsers: '',
 		additionalEmails: '',
-		subject: '',
+		subject: t('Mail_Messages_Subject', selected), // TODO i18n replace
 	});
 
 	const {
@@ -75,16 +77,36 @@ const MailExport = () => {
 
 	return (
 		<>
+			<Box className={`mail-messages__instructions ${ selected > 0 ? 'mail-messages__instructions--selected' : '' }`}>
+				<Box className='mail-messages__instructions-wrapper'>
+					{selected > 0
+						? <>
+							<Icon name='checkmark-circled' size='x20'/>
+							<Box className='mail-messages__instructions-text' onClick={() => { setSelected(0); onClearSelection(); }}>
+								{t('Messages selected')}
+								<Box className='mail-messages__instructions-text-selected'>{`${ selected } Messages selected`}</Box>
+								<Box>{t('Click here to clear the selection')}</Box>
+							</Box>
+						</>
+						: <>
+							<Icon name='hand-pointer' size='x20'/>
+							<Box className='mail-messages__instructions-text'>
+								{t('Click_the_messages_you_would_like_to_send_by_email')}
+							</Box>
+						</>
+					}
+				</Box>
+			</Box>
 			<Field>
 				<Field.Label>{t('To_users')}</Field.Label>
 				<Field.Row>
-					<TextInput value={toUsers} onChange={(e) => handleToUsers(e.currentTarget.value)} addon={<Icon name='at' size='x20'/>} />
+					<TextInput placeholder={t('Username_Placeholder')} value={toUsers} onChange={(e) => handleToUsers(e.currentTarget.value)} addon={<Icon name='at' size='x20'/>} />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('To_additional_emails')}</Field.Label>
 				<Field.Row>
-					<TextInput value={additionalEmails} onChange={(e) => handleAdditionalEmails(e.currentTarget.value)} addon={<Icon name='mail' size='x20'/>} />
+					<TextInput placeholder={t('Email_Placeholder_any')} value={additionalEmails} onChange={(e) => handleAdditionalEmails(e.currentTarget.value)} addon={<Icon name='mail' size='x20'/>} />
 				</Field.Row>
 			</Field>
 			<Field>
@@ -97,10 +119,10 @@ const MailExport = () => {
 	);
 };
 
-export const ExportMessages = function ExportMessages({ uid, username, tabBar, rid, onClose, video, showBackButton, ...props }) {
+export const ExportMessages = function ExportMessages({ onClearSelection }) {
 	const t = useTranslation();
 
-	const [type, setType] = useState('');
+	const [type, setType] = useState('email');
 
 	const exportOptions = [
 		['email', t('Send_via_Email')],
@@ -121,7 +143,7 @@ export const ExportMessages = function ExportMessages({ uid, username, tabBar, r
 					</Field.Row>
 				</Field>
 				{type && type === 'file' && <FileExport />}
-				{type && type === 'email' && <MailExport />}
+				{type && type === 'email' && <MailExport onClearSelection={onClearSelection} />}
 				<ButtonGroup stretch mb='x12'>
 					<Button onClick={() => {}}>
 						{t('Cancel')}
