@@ -91,7 +91,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const [media] = sms.media;
 		if (media) {
-			const { url: twilioUrl, contentType } = media;
+			const { url: smsUrl, contentType } = media;
 			const details = {
 				name: 'Upload File',
 				type: contentType,
@@ -99,7 +99,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				visitorToken: token,
 			};
 
-			const uploadedFile = Promise.await(getUploadFile(details, twilioUrl));
+			const uploadedFile = Promise.await(getUploadFile(details, smsUrl));
 			file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
 
 			const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
