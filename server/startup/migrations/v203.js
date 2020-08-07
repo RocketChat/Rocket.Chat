@@ -6,8 +6,5 @@ Migrations.add({
 	up() {
 		Avatars.tryDropIndex({ name: 1 });
 		Avatars.tryEnsureIndex({ name: 1 }, { sparse: true });
-
-		Avatars.tryDropIndex({ rid: 1 });
-		Avatars.tryEnsureIndex({ rid: 1 }, { sparse: true });
 	},
 });
