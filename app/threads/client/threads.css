@@ -1,8 +1,6 @@
 .message.thread-main {
 	padding-top: var(--default-padding);
 	padding-bottom: var(--default-padding);
-
-	border-bottom: 1px solid var(--color-gray-light);
 }
 
 .message.sequential[data-tmid] > .thread-replied > .thumb,
@@ -28,10 +26,35 @@
 }
 
 .thread-list {
-	overflow: auto;
+	overflow-x: hidden;
+	overflow-y: auto;
 
 	word-wrap: break-word;
+	flex-grow: 1;
 	flex-shrink: 1;
+}
+
+.thread-footer {
+	display: flex;
+
+	padding: 0 1.5rem 1rem;
+
+	align-items: center;
+}
+
+@media (width < 500px) {
+	.thread-footer {
+		padding-right: var(--default-small-padding);
+		padding-left: var(--default-small-padding);
+	}
+}
+
+.thread-footer__text {
+	color: var(--color-gray);
+
+	font-size: 12px;
+
+	margin-inline-start: 0.5rem;
 }
 
 .message {
@@ -52,6 +75,15 @@
 		flex-flow: row nowrap;
 	}
 
+	&:hover,
+	&:focus {
+		.thread-icons {
+			&--bell-off {
+				opacity: 1;
+			}
+		}
+	}
+
 	.thread-icons {
 		display: block;
 		flex: 0 0 20px;
@@ -59,7 +91,6 @@
 		width: 20px;
 
 		&--thread {
-			position: absolute;
 			left: 40px;
 
 			width: 20px;
@@ -68,22 +99,39 @@
 			color: var(--rc-color-alert-message-primary);
 		}
 
+		&--bell-off {
+			opacity: 0;
+		}
+
 		&--bell,
 		&--bell-off {
 			cursor: pointer;
 
-			color: #a0a0a0;
+			color: #6c727a;
 
-			font-size: 1rem;
+			font-size: 1.25rem;
+		}
+
+		&--large {
+			font-size: 1.25rem;
 		}
 	}
 
-	& > .thread-quote {
-
+	& .thread-quote {
 		display: flex;
 
-		margin: calc((var(--default-padding) /2) - 2px) 0 2px 0;
+		margin: 0 -24px 8px;
+
+		font-size: 12px;
+
 		align-items: center;
+
+		.thread-icons {
+			&--bell,
+			&--bell-off {
+				font-size: 1rem;
+			}
+		}
 	}
 
 	.thread-quote__message {
@@ -91,6 +139,8 @@
 		display: flex;
 
 		overflow: hidden;
+
+		margin: 0 0.25rem;
 
 		cursor: pointer;
 
@@ -101,7 +151,7 @@
 
 		align-items: center;
 
-		> .message-body--unstyled {
+		& > .message-body--unstyled {
 			overflow: hidden;
 
 			text-overflow: ellipsis;
@@ -109,11 +159,12 @@
 	}
 
 	& .thread-reply-preview {
-		display: none;
 		overflow: hidden;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
+
+		font-size: 12px;
 	}
 
 	&.collapsed .thread-reply-preview {
@@ -130,7 +181,7 @@
 	margin-top: calc(var(--default-padding) / 2);
 }
 
-.message.collapsed > .thread-replied > .thumb {
+.message > .thread-replied > .thumb {
 	bottom: 0;
 	left: 40px;
 
@@ -140,9 +191,9 @@
 	margin-bottom: auto;
 	margin-left: 0;
 
-	& .avatar {
-		width: 20px;
-		height: 20px;
+	& > .avatar {
+		width: 20px !important;
+		height: 20px !important;
 	}
 }
 

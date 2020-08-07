@@ -15,21 +15,21 @@ function IntegrationsPage() {
 
 	const handleNewButtonClick = useCallback(() => {
 		router.push({ context: 'new', type: 'incoming' });
-	}, []);
+	}, [router]);
 
 	const context = useRouteParameter('context');
 	useEffect(() => {
 		if (!context) {
 			router.push({ context: 'webhook-incoming' });
 		}
-	}, [context]);
+	}, [context, router]);
 
 	const showTable = !['zapier', 'bots'].includes(context);
 
-	const goToIncoming = useCallback(() => router.push({ context: 'webhook-incoming' }), []);
-	const goToOutgoing = useCallback(() => router.push({ context: 'webhook-outgoing' }), []);
-	const goToZapier = useCallback(() => router.push({ context: 'zapier' }), []);
-	const goToBots = useCallback(() => router.push({ context: 'bots' }), []);
+	const goToIncoming = useCallback(() => router.push({ context: 'webhook-incoming' }), [router]);
+	const goToOutgoing = useCallback(() => router.push({ context: 'webhook-outgoing' }), [router]);
+	const goToZapier = useCallback(() => router.push({ context: 'zapier' }), [router]);
+	const goToBots = useCallback(() => router.push({ context: 'bots' }), [router]);
 
 	return <Page flexDirection='column'>
 		<Page.Header title={t('Integrations')}>

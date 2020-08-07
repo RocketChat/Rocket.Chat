@@ -1,1 +1,22 @@
-{ }
+{
+  "error-canned-response-not-found": "پاسخ آماده پیدا نشد",
+  "error-forwarding-department-target-not-allowed": "ارسال به بخش مورد نظر اجازه داده نشده است.",
+  "error-guests-cant-have-other-roles": "کاربران میهمان نمیتوانند نقش دیگری داشته باشند.",
+  "error-invalid-priority": "اولویت نامعتبر است",
+  "error-max-guests-number-reached": "شما به حداکثر تعداد کاربر میهمان بر اساس لایسنس خود رسیدید. برای لایسنس جدید با sale@rocket.chat مکاتبه کنید.",
+  "error-max-number-simultaneous-chats-reached": "به حداکثر تعداد چت همزمان به ازای هر عامل رسیده اید.",
+  "Add_monitor": "اضافه کردن مانیتور",
+  "Available_departments": "بخش های موجود",
+  "Business_Hour": "ساعت کاری",
+  "Business_Hour_Removed": "ساعت کاری حذف شد",
+  "Canned Responses": "پاسخ های آماده",
+  "Canned_Responses_Enable": "فعال کردن پاسخ های آماده",
+  "Closed_automatically": "به طور خودکار توسط سیستم بسته شد",
+  "Default_value": "مقدار پیش فرض",
+  "Edit_Business_Hour": "تنظیم ساعت کاری",
+  "Edit_Tag": "ویرایش برچسب",
+  "Edit_Unit": "ویرایش واحد",
+  "Edit_Priority": "ویرایش اولویت",
+  "Enterprise_License": "مجوز سازمانی",
+  "LDAP_Default_Role_To_User": "نقش پیشفرض کاربر"
+}

@@ -91,10 +91,10 @@ settings.addGroup('RetentionPolicy', function() {
 			}, globalQuery],
 		});
 
-		this.add('RetentionPolicy_ExcludePinned', false, {
+		this.add('RetentionPolicy_DoNotPrunePinned', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'RetentionPolicy_ExcludePinned',
+			i18nLabel: 'RetentionPolicy_DoNotPrunePinned',
 			enableQuery: globalQuery,
 		});
 		this.add('RetentionPolicy_FilesOnly', false, {

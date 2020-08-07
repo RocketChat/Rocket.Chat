@@ -33,13 +33,9 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 	}
 
 	if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
-			_id: Random.id(),
+		throw new Meteor.Error('error-not-allowed', TAPi18n.__('You_have_been_muted', {}, user.language), {
 			rid: room._id,
-			ts: new Date(),
-			msg: TAPi18n.__('You_have_been_muted', {}, user.language),
 		});
-		return false;
 	}
 
 	const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
@@ -88,26 +84,45 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 	msgStream.emit(message.rid, message);
 }
 
+export const executeSetReaction = async function(reaction, messageId, shouldReact) {
+	const user = Meteor.user();
+
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
+	}
+
+	const message = Messages.findOneById(messageId);
+
+	if (!message) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
+	}
+
+	const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
+
+	if (!room) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
+	}
+
+	return setReaction(room, user, message, reaction, shouldReact);
+};
+
 Meteor.methods({
 	setReaction(reaction, messageId, shouldReact) {
-		const user = Meteor.user();
+		try {
+			return Promise.await(executeSetReaction(reaction, messageId, shouldReact));
+		} catch (e) {
+			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
+				Notifications.notifyUser(Meteor.userId(), 'message', {
+					_id: Random.id(),
+					rid: e.details.rid,
+					ts: new Date(),
+					msg: e.reason,
+				});
 
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
+				return false;
+			}
+
+			throw e;
 		}
-
-		const message = Messages.findOneById(messageId);
-
-		if (!message) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
-		}
-
-		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
-
-		if (!room) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
-		}
-
-		setReaction(room, user, message, reaction, shouldReact);
 	},
 });

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -11,16 +11,17 @@ import { AddCustomUserStatus } from './AddCustomUserStatus';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import VerticalBar from '../../components/basic/VerticalBar';
-import NotAuthorizedPage from '../NotAuthorizedPage';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-export const useQuery = (params, sort, cache) => useMemo(() => ({
-	query: JSON.stringify({ name: { $regex: params.text || '', $options: 'i' } }),
-	sort: JSON.stringify({ [sort[0]]: sortDir(sort[1]) }),
-	...params.itemsPerPage && { count: params.itemsPerPage },
-	...params.current && { offset: params.current },
-}), [JSON.stringify(params), JSON.stringify(sort), cache]);
+export const useQuery = ({ text, itemsPerPage, current }, [column, direction], cache) => useMemo(() => ({
+	query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
+	sort: JSON.stringify({ [column]: sortDir(direction) }),
+	...itemsPerPage && { count: itemsPerPage },
+	...current && { offset: current },
+	// TODO: remove cache. Is necessary for data invalidation
+}), [text, itemsPerPage, current, column, direction, cache]);
 
 export default function CustomUserStatusRoute({ props }) {
 	const t = useTranslation();
@@ -40,9 +41,6 @@ export default function CustomUserStatusRoute({ props }) {
 	const data = useEndpointData('custom-user-status.list', query) || {};
 
 	const router = useRoute(routeName);
-
-	const mobile = useMediaQuery('(max-width: 420px)');
-	const small = useMediaQuery('(max-width: 780px)');
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -68,17 +66,17 @@ export default function CustomUserStatusRoute({ props }) {
 		router.push({ context });
 	}, [router]);
 
-	const close = () => {
+	const close = useCallback(() => {
 		router.push({});
-	};
-
-	if (!canManageUserStatus) {
-		return <NotAuthorizedPage />;
-	}
+	}, [router]);
 
 	const onChange = useCallback(() => {
 		setCache(new Date());
 	}, []);
+
+	if (!canManageUserStatus) {
+		return <NotAuthorizedPage />;
+	}
 
 	return <Page {...props} flexDirection='row'>
 		<Page name='admin-custom-user-status'>
@@ -92,15 +90,15 @@ export default function CustomUserStatusRoute({ props }) {
 			</Page.Content>
 		</Page>
 		{ context
-			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+			&& <VerticalBar className='contextual-bar' width='x380' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
 				<VerticalBar.Header>
 					{ context === 'edit' && t('Custom_User_Status_Edit') }
 					{ context === 'new' && t('Custom_User_Status_Add') }
-					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
-				<VerticalBar.Content>
-					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
-					{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} onChange={onChange}/>}
-				</VerticalBar.Content>
+					<VerticalBar.Close onClick={close}/>
+				</VerticalBar.Header>
+
+				{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
+				{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} onChange={onChange}/>}
 			</VerticalBar>}
 	</Page>;
 }

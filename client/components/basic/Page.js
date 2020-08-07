@@ -1,7 +1,10 @@
 import { Box, Scrollable } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { createContext, useContext, useState } from 'react';
 
-import { BurgerMenuButton } from './BurgerMenuButton';
+import { useSidebar } from '../../contexts/SidebarContext';
+import BurgerMenuButton from './burger/BurgerMenuButton';
+import { useSession } from '../../contexts/SessionContext';
 
 const PageContext = createContext();
 
@@ -9,6 +12,7 @@ function Page(props) {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
 		<Box
+			backgroundColor='surface'
 			is='section'
 			display='flex'
 			flexDirection='column'
@@ -23,6 +27,14 @@ function Page(props) {
 
 function PageHeader({ children, title, ...props }) {
 	const [border] = useContext(PageContext);
+	const hasBurgerMenuButton = useMediaQuery('(max-width: 780px)');
+	const [isSidebarOpen, setSidebarOpen] = useSidebar();
+	const unreadMessagesBadge = useSession('unread');
+
+	const handleBurgerMenuButtonClick = () => {
+		setSidebarOpen((isSidebarOpen) => !isSidebarOpen);
+	};
+
 	return <Box borderBlockEndWidth='x2' borderBlockEndColor={border ? 'neutral-200' : 'transparent'}>
 		<Box
 			marginBlock='x16'
@@ -32,17 +44,24 @@ function PageHeader({ children, title, ...props }) {
 			flexDirection='row'
 			flexWrap='nowrap'
 			alignItems='center'
+			color='neutral-800'
 			{...props}
 		>
-			<BurgerMenuButton marginInlineEnd='x8' />
+			{hasBurgerMenuButton && <BurgerMenuButton
+				open={isSidebarOpen}
+				badge={unreadMessagesBadge}
+				marginInlineEnd='x8'
+				onClick={handleBurgerMenuButtonClick}
+			/>}
 			<Box is='h1' fontScale='h1' flexGrow={1}>{title}</Box>
 			{children}
 		</Box>
 	</Box>;
 }
 
-function PageContent(props) {
+const PageContent = React.forwardRef(function PageContent(props, ref) {
 	return <Box
+		ref={ref}
 		paddingInline='x24'
 		display='flex'
 		flexDirection='column'
@@ -50,11 +69,11 @@ function PageContent(props) {
 		height='full'
 		{...props}
 	/>;
-}
+});
 
 function PageScrollableContent({ onScrollContent, ...props }) {
 	return <Scrollable onScrollContent={onScrollContent} >
-		<Box padding='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
+		<Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
 	</Scrollable>;
 }
 

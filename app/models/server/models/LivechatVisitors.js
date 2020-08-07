@@ -8,6 +8,9 @@ import Settings from './Settings';
 export class LivechatVisitors extends Base {
 	constructor() {
 		super('livechat_visitor');
+
+		this.tryEnsureIndex({ token: 1 });
+		this.tryEnsureIndex({ 'phone.phoneNumber': 1 }, { sparse: true });
 	}
 
 	/**

@@ -1,19 +1,19 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Box, Button, ButtonGroup, Icon, Menu } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Menu, Modal, Option } from '@rocket.chat/fuselage';
+import React, { useCallback, useMemo } from 'react';
 
-import { Modal } from '../../components/basic/Modal';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useRoute } from '../../contexts/RouterContext';
+import { useUserInfoActionsSpread } from '../../channel/hooks/useUserInfoActions';
+import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
+import UserInfo from '../../components/basic/UserInfo';
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useMethod } from '../../contexts/ServerContext';
+import { useSetModal } from '../../contexts/ModalContext';
+import { useRoute } from '../../contexts/RouterContext';
+import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 
-
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
+const DeleteWarningModal = ({ onDelete, onCancel, erasureType, ...props }) => {
 	const t = useTranslation();
-	const erasureType = useSetting('Message_ErasureType');
 
 	return <Modal {...props}>
 		<Modal.Header>
@@ -52,10 +52,9 @@ const SuccessModal = ({ onClose, ...props }) => {
 	</Modal>;
 };
 
-
-export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ...props }) => {
+export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) => {
 	const t = useTranslation();
-	const [modal, setModal] = useState();
+	const setModal = useSetModal();
 
 	const directRoute = useRoute('direct');
 	const userRoute = useRoute('admin-users');
@@ -67,20 +66,52 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 	const canEditOtherUserActiveStatus = usePermission('edit-other-user-active-status');
 	const canDeleteUser = usePermission('delete-user');
 
-	const deleteUserQuery = useMemo(() => ({ userId: _id }), [_id]);
-	const deleteUser = useEndpointAction('POST', 'users.delete', deleteUserQuery);
+	const confirmOwnerChanges = (action, modalProps = {}) => async () => {
+		try {
+			return await action();
+		} catch (error) {
+			if (error.xhr?.responseJSON?.errorType === 'user-last-owner') {
+				const { shouldChangeOwner, shouldBeRemoved } = error.xhr.responseJSON.details;
+				setModal(<ConfirmOwnerChangeWarningModal
+					shouldChangeOwner={shouldChangeOwner}
+					shouldBeRemoved={shouldBeRemoved}
+					{...modalProps}
+					onConfirm={async () => {
+						await action(true);
+						setModal();
+					}}
+					onCancel={() => { setModal(); onChange(); }}
+				/>);
+				return;
+			}
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	};
 
-	const willDeleteUser = useCallback(async () => {
-		const result = await deleteUser();
+	const deleteUserQuery = useMemo(() => ({ userId: _id }), [_id]);
+	const deleteUserEndpoint = useEndpoint('POST', 'users.delete');
+
+	const erasureType = useSetting('Message_ErasureType');
+
+	const deleteUser = confirmOwnerChanges(async (confirm = false) => {
+		if (confirm) {
+			deleteUserQuery.confirmRelinquish = confirm;
+		}
+
+		const result = await deleteUserEndpoint(deleteUserQuery);
 		if (result.success) {
 			setModal(<SuccessModal onClose={() => { setModal(); onChange(); }}/>);
 		} else {
 			setModal();
 		}
-	}, [deleteUser]);
+	}, {
+		contentTitle: t(`Delete_User_Warning_${ erasureType }`),
+		confirmLabel: t('Delete'),
+	});
+
 	const confirmDeleteUser = useCallback(() => {
-		setModal(<DeleteWarningModal onDelete={willDeleteUser} onCancel={() => setModal()}/>);
-	}, [deleteUser]);
+		setModal(<DeleteWarningModal onDelete={deleteUser} onCancel={() => setModal()} erasureType={erasureType}/>);
+	}, [deleteUser, erasureType, setModal]);
 
 	const setAdminStatus = useMethod('setAdminStatus');
 	const changeAdminStatus = useCallback(() => {
@@ -92,66 +123,91 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, ..
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [isAdmin]);
+	}, [_id, dispatchToastMessage, isAdmin, onChange, setAdminStatus, t]);
 
 	const activeStatusQuery = useMemo(() => ({
 		userId: _id,
 		activeStatus: !isActive,
 	}), [_id, isActive]);
 	const changeActiveStatusMessage = isActive ? 'User_has_been_deactivated' : 'User_has_been_activated';
-	const changeActiveStatus = useEndpointAction('POST', 'users.setActiveStatus', activeStatusQuery, t(changeActiveStatusMessage));
+	const changeActiveStatusRequest = useEndpoint('POST', 'users.setActiveStatus');
 
-	const directMessageClick = () => directRoute.push({
-		rid: username,
+	const changeActiveStatus = confirmOwnerChanges(async (confirm = false) => {
+		if (confirm) {
+			activeStatusQuery.confirmRelinquish = confirm;
+		}
+
+		try {
+			const result = await changeActiveStatusRequest(activeStatusQuery);
+			if (result.success) {
+				dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
+				onChange();
+			}
+		} catch (error) {
+			throw error;
+		}
+	}, {
+		confirmLabel: t('Yes_deactivate_it'),
 	});
 
-	const editUserClick = () => userRoute.push({
+	const directMessageClick = useCallback(() => directRoute.push({
+		rid: username,
+	}), [directRoute, username]);
+
+	const editUserClick = useCallback(() => userRoute.push({
 		context: 'edit',
 		id: _id,
-	});
+	}), [_id, userRoute]);
 
-	const menuOptions = useMemo(() => ({
+	const options = useMemo(() => ({
 		...canDirectMessage && { directMessage: {
-			label: <><Icon name='chat' size='x16' mie='x8'/>{t('Direct_Message')}</>,
+			icon: 'chat',
+			label: t('Direct_Message'),
 			action: directMessageClick,
 		} },
 		...canEditOtherUserInfo && { editUser: {
-			label: <><Icon name='edit' size='x16' mie='x8'/>{t('Edit')}</>,
+			icon: 'edit',
+			label: t('Edit'),
 			action: editUserClick,
 		} },
 		...canAssignAdminRole && { makeAdmin: {
-			label: <><Icon mie='x4' name='key' size='x16'/>{ isAdmin ? t('Remove_Admin') : t('Make_Admin')}</>,
+			icon: 'key',
+			label: isAdmin ? t('Remove_Admin') : t('Make_Admin'),
 			action: changeAdminStatus,
 		} },
 		...canDeleteUser && { delete: {
-			label: <Box color='danger'><Icon mie='x4' name='trash' size='x16'/>{t('Delete')}</Box>,
+			icon: 'trash',
+			label: t('Delete'),
 			action: confirmDeleteUser,
 		} },
 		...canEditOtherUserActiveStatus && { changeActiveStatus: {
-			label: <><Icon mie='x4' name='user' size='x16'/>{ isActive ? t('Deactivate') : t('Activate')}</>,
-			action: async () => {
-				const result = await changeActiveStatus();
-				result.success ? onChange() : undefined;
-			},
+			icon: 'user',
+			label: isActive ? t('Deactivate') : t('Activate'),
+			action: changeActiveStatus,
 		} },
-	}), [canAssignAdminRole, canDeleteUser, canEditOtherUserActiveStatus, canEditOtherUserInfo, canDirectMessage, isActive, isAdmin]);
+	}), [
+		t,
+		canDirectMessage,
+		directMessageClick,
+		canEditOtherUserInfo,
+		editUserClick,
+		canAssignAdminRole,
+		isAdmin,
+		changeAdminStatus,
+		canDeleteUser,
+		confirmDeleteUser,
+		canEditOtherUserActiveStatus,
+		isActive,
+		changeActiveStatus,
+	]);
 
-	const [actions, moreActions] = useMemo(() => {
-		const keys = Object.keys(menuOptions);
+	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(options);
 
-		const firstHalf = keys.slice(0, 2);
-		const secondHalf = keys.slice(2, keys.length);
+	const menu = menuOptions && <Menu mi='x4' placement='bottom-start' small={false} ghost={false} flexShrink={0} key='menu' renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>} options={menuOptions}/>;
 
-		return [firstHalf.length && firstHalf.map((key) => menuOptions[key]), secondHalf.length && Object.fromEntries(secondHalf.map((key) => [key, menuOptions[key]]))];
-	}, menuOptions);
+	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
 
-	return <>
-		<Box display='flex' flexDirection='row' {...props}>
-			<ButtonGroup flexGrow={1} justifyContent='center'>
-				{ actions && actions.map((action, index) => (<Button key={index} onClick={action.action}>{action.label}</Button>))}
-				{ moreActions && <Menu options={moreActions} placement='bottom left'/> }
-			</ButtonGroup>
-		</Box>
-		{ modal }
-	</>;
+	return <ButtonGroup flexGrow={0} justifyContent='center'>
+		{actions}
+	</ButtonGroup>;
 };

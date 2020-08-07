@@ -10,6 +10,8 @@ import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry } from '.
 import { RoutingManager } from './lib/RoutingManager';
 import { createLivechatQueueView } from './lib/Helper';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
+import { businessHourManager } from './business-hour';
+import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 
 function allowAccessClosedRoomOfSameDepartment(room, user) {
 	if (!room || !user || room.t !== 'l' || !room.departmentId || room.open) {
@@ -22,7 +24,7 @@ function allowAccessClosedRoomOfSameDepartment(room, user) {
 	return hasPermission(user._id, 'view-livechat-room-closed-same-department');
 }
 
-Meteor.startup(() => {
+Meteor.startup(async () => {
 	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
 	addRoomAccessValidator(function(room, user) {
@@ -95,5 +97,13 @@ Meteor.startup(() => {
 		}
 
 		monitor.start();
+	});
+	await createDefaultBusinessHourIfNotExists();
+
+	settings.get('Livechat_enable_business_hours', async (key, value) => {
+		if (value) {
+			return businessHourManager.startManager();
+		}
+		return businessHourManager.stopManager();
 	});
 });
