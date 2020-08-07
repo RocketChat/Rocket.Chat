@@ -2,6 +2,7 @@ import './polyfills';
 
 import './lib/meteorCallWrapper';
 import './importPackages';
+import './importServiceWorker';
 import '../imports/startup/client';
 
 import '../lib/RegExp';

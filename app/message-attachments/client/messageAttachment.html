@@ -1,5 +1,5 @@
 <template name="messageAttachment">
-	<div class="attachment">
+	<div class="attachment {{# if temp}}attachment-temp{{/if}}">
 		<!-- <div>fallback: {{fallback}}</div> -->
 		{{#if markdownInPretext}}
 			{{{parsedPretext}}}
@@ -150,6 +150,23 @@
 					</div>
 				{{/unless}}
 			{{/if}}
+
+			{{#with uploading}}
+				<div class="attachment-upload-progress color-primary-action-color background-component-color {{#if error}}error-background error-border{{/if}}">
+					{{#if error}}
+						<div class="attachment-upload-progress-text">
+							{{error}}
+						</div>
+					{{else}}
+					<div class="progress">
+						<div class="progress-bar progress-bar-success color-primary-action-color" role="progressbar"
+						aria-valuenow="{{percentage}}" aria-valuemin="0" aria-valuemax="100" style="width:{{percentage}}%">
+							{{percentage}}%
+						</div>
+					</div>                            
+					{{/if}}
+				</div>
+			{{/with}}
 
 			{{#unless image_url}}
 				{{#if description}}

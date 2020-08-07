@@ -39,5 +39,8 @@ export const updateAvatarOfUsername = function(username) {
 	$(`.sidebar-item.js-sidebar-type-d .sidebar-item__link[aria-label='${ username }'] .avatar-image`)
 		.attr('src', url);
 
+	// force reload of avatar on sidenav header
+	$(`.sidebar__header .sidebar__header-thumb .avatar-image[alt='${ username }']`).attr('src', url);
+
 	return true;
 };

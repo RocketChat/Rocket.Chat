@@ -84,6 +84,10 @@ export const openRoom = async function(type, name) {
 				return;
 			}
 
+			BlazeLayout.render('main', {
+				center: 'loading',
+			});
+
 			if (RoomManager.open(type + name).ready() !== true) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
 					BlazeLayout.render('main');
@@ -91,10 +95,6 @@ export const openRoom = async function(type, name) {
 				await replaceCenterDomBy(() => getDomOfLoading());
 				return;
 			}
-
-			BlazeLayout.render('main', {
-				center: 'loading',
-			});
 
 			c.stop();
 
