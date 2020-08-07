@@ -1,6 +1,7 @@
+import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import axios from 'axios';
+
 
 import { FileUpload } from '../../../../file-upload';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models';
@@ -12,12 +13,12 @@ const fileStore = FileUpload.getStore('Uploads');
 
 const getUploadFile = async (details, fileUrl) => {
 	try {
-		const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
-		const { data } = response;
-		const size = Buffer.byteLength(data);
-		return fileStore.insertSync({ ...details, size }, data);
-	} catch (error) {
-		throw new Error(error);
+		const response = HTTP.get(fileUrl, { npmRequestOptions: { encoding: null } });
+		const buffer = new Buffer(response.content);
+		const size = buffer.length;
+		return fileStore.insertSync({ ...details, size }, buffer);
+	} catch (err) {
+		throw new Error(err.message);
 	}
 };
 
@@ -87,20 +88,20 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		};
 
 		let file;
-		const attachments = Promise.await(Promise.all(sms.media.map(async (curr) => {
-			const { url: twilioUrl, contentType } = curr;
+		let attachments;
 
-			if (!file) {
-				const details = {
-					name: 'Upload File',
-					type: contentType,
-					rid,
-					visitorToken: token,
-				};
+		const [media] = sms.media;
+		if (media) {
+			const { url: twilioUrl, contentType } = media;
+			const details = {
+				name: 'Upload File',
+				type: contentType,
+				rid,
+				visitorToken: token,
+			};
 
-				const upload = await getUploadFile(details, twilioUrl);
-				file = Object.assign({}, { _id: upload._id, name: upload.name, type: upload.type });
-			}
+			const uploadedFile = Promise.await(getUploadFile(details, twilioUrl));
+			file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
 
 			const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 
@@ -120,20 +121,18 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					break;
 			}
 
-			return attachment;
-		})));
+			attachments = [attachment];
+		}
 
-		const message = {
+		sendMessage.message = {
 			_id: Random.id(),
-			rid: (room && room._id) || Random.id(),
+			rid,
 			token,
 			msg: sms.body,
 			...location && { location },
 			...attachments && { attachments },
 			...file && { file },
 		};
-
-		Object.assign(sendMessage, { message });
 
 		try {
 			const msg = SMSService.response.call(this, Promise.await(Livechat.sendMessage(sendMessage)));
