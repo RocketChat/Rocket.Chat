@@ -50,7 +50,7 @@ const FileExport = () => {
 	);
 };
 
-const MailExport = ({ onClearSelection }) => {
+const MailExport = ({ onClearSelection = () => {} }) => {
 	const t = useTranslation();
 
 	const [selected, setSelected] = useState(10);
