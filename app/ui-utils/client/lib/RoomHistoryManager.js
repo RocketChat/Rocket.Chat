@@ -333,7 +333,18 @@ export const RoomHistoryManager = new class {
 	}
 
 	clear(rid) {
+		const query = { rid };
+		const options = {
+			sort: {
+				ls: -1,
+			},
+			limit: 50,
+		};
+		const retain = ChatMessage.find(query, options).fetch();
 		ChatMessage.remove({ rid });
+		retain.forEach((message) => {
+			ChatMessage.insert(message);
+		});
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);

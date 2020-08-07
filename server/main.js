@@ -68,6 +68,7 @@ import './methods/toogleFavorite';
 import './methods/unmuteUserInRoom';
 import './methods/userSetUtcOffset';
 import './publications/messages';
+import './publications/ownUser';
 import './publications/room';
 import './publications/settings';
 import './publications/spotlight';
