@@ -1,11 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
-import { Field, TextInput, TextAreaInput, MultiSelectFiltered, Box, ToggleSwitch, Icon } from '@rocket.chat/fuselage';
+import { Field, TextInput, TextAreaInput, PasswordInput, MultiSelectFiltered, Box, ToggleSwitch, Icon, Divider } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import VerticalBar from '../../components/basic/VerticalBar';
-import CustomFieldsForm from './CustomFieldsForm';
-
+import CustomFieldsForm from '../../components/CustomFieldsForm';
 
 export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, ...props }) {
 	const t = useTranslation();
@@ -90,7 +89,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 		{useMemo(() => <Field>
 			<Field.Label>{t('Password')}</Field.Label>
 			<Field.Row>
-				<TextInput flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
+				<PasswordInput autoComplete='off' flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
 			</Field.Row>
 		</Field>, [t, password, handlePassword])}
 		{useMemo(() => <Field>
@@ -127,6 +126,8 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 				</Box>
 			</Field.Row>
 		</Field>, [handleSendWelcomeEmail, t, sendWelcomeEmail])}
+		<Divider />
+		<Box fontScale='s2'>{t('Custom_Fields')}</Box>
 		<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields}/>
 		{ append }
 	</VerticalBar.ScrollableContent>;

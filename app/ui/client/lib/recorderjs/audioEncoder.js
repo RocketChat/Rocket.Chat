@@ -11,7 +11,7 @@ class AudioEncoder extends EventEmitter {
 	} = {}) {
 		super();
 
-		const workerPath = Meteor.absoluteUrl('mp3-realtime-worker.js');
+		const workerPath = Meteor.absoluteUrl('workers/mp3-encoder/index.js');
 
 		this.worker = new Worker(workerPath);
 		this.worker.onmessage = this.handleWorkerMessage;
@@ -40,7 +40,7 @@ class AudioEncoder extends EventEmitter {
 	handleWorkerMessage = (event) => {
 		switch (event.data.command) {
 			case 'end': {
-				const blob = new Blob(event.data.buffer, { type: 'audio/mp3' });
+				const blob = new Blob(event.data.buffer, { type: 'audio/mpeg' });
 				this.emit('encoded', blob);
 				this.worker.terminate();
 				break;

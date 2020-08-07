@@ -529,6 +529,7 @@ settings.addGroup('Accounts', function() {
 
 		this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
 			type: 'boolean',
+			public: true,
 		});
 
 		return this.add('Accounts_SetDefaultAvatar', true, {
@@ -1197,10 +1198,20 @@ settings.addGroup('Push', function() {
 	this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
+		enableQuery: [
+			{
+				_id: 'Push_enable',
+				value: true,
+			},
+			{
+				_id: 'Register_Server',
+				value: true,
+			},
+			{
+				_id: 'Cloud_Service_Agree_PrivacyTerms',
+				value: true,
+			},
+		],
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
@@ -1283,9 +1294,17 @@ settings.addGroup('Push', function() {
 			type: 'boolean',
 			public: true,
 		});
-		return this.add('Push_show_message', true, {
+		this.add('Push_show_message', true, {
 			type: 'boolean',
 			public: true,
+		});
+		this.add('Push_request_content_from_server', true, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: [
+				'push-privacy',
+			],
 		});
 	});
 });
@@ -1374,6 +1393,12 @@ settings.addGroup('Layout', function() {
 			type: 'boolean',
 			public: true,
 		});
+
+		this.add('Number_of_users_autocomplete_suggestions', 5, {
+			type: 'int',
+			public: true,
+		});
+
 		this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
 			type: 'select',
 			values: [

@@ -22,19 +22,19 @@ export function MeteorProvider({ children }) {
 					<SessionProvider>
 						<SidebarProvider>
 							<ToastMessagesProvider>
-								<ModalProvider>
-									<SettingsProvider>
-										<CustomSoundProvider>
-											<AvatarUrlProvider>
-												<UserProvider>
-													<AuthorizationProvider>
+								<SettingsProvider>
+									<CustomSoundProvider>
+										<AvatarUrlProvider>
+											<UserProvider>
+												<AuthorizationProvider>
+													<ModalProvider>
 														{children}
-													</AuthorizationProvider>
-												</UserProvider>
-											</AvatarUrlProvider>
-										</CustomSoundProvider>
-									</SettingsProvider>
-								</ModalProvider>
+													</ModalProvider>
+												</AuthorizationProvider>
+											</UserProvider>
+										</AvatarUrlProvider>
+									</CustomSoundProvider>
+								</SettingsProvider>
 							</ToastMessagesProvider>
 						</SidebarProvider>
 					</SessionProvider>

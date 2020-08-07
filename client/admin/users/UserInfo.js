@@ -1,42 +1,57 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Box, Avatar, Margins, Chip, Tag } from '@rocket.chat/fuselage';
-import moment from 'moment';
+import React, { useMemo, useState } from 'react';
+import { Box } from '@rocket.chat/fuselage';
 
+import { UserInfo } from '../../components/basic/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { roomTypes } from '../../../app/utils/client';
-import { DateFormat } from '../../../app/lib';
+import { useSetting } from '../../contexts/SettingsContext';
+import * as UserStatus from '../../components/basic/UserStatus';
+import UserCard from '../../components/basic/UserCard';
 import { UserInfoActions } from './UserInfoActions';
-import MarkdownText from '../../components/basic/MarkdownText';
-import VerticalBar from '../../components/basic/VerticalBar';
 import { FormSkeleton } from './Skeleton';
 
-const useTimezoneClock = (utcOffset = 0, updateInterval) => {
-	const [time, setTime] = useState();
-	useEffect(() => {
-		const updateTime = () => setTime(DateFormat.formatTime(moment().get().utcOffset(utcOffset)));
-		const interval = setInterval(() => updateTime(), updateInterval);
-		updateTime();
-
-		return () => clearInterval(interval);
-	}, [utcOffset, updateInterval]);
-
-	return time;
-};
-
-const UTCClock = ({ utcOffset, ...props }) => {
-	const time = useTimezoneClock(utcOffset, 10000);
-	return <Box {...props}>{time} UTC {utcOffset}</Box>;
-};
-
-export function UserInfoWithData({ uid, ...props }) {
+export function UserInfoWithData({ uid, username, ...props }) {
 	const t = useTranslation();
 	const [cache, setCache] = useState();
+	const showRealNames = useSetting('UI_Use_Real_Name');
+	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
 	const onChange = () => setCache(new Date());
 
 	// TODO: remove cache. Is necessary for data invalidation
-	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId: uid }), [uid, cache]));
+	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ ...uid && { userId: uid }, ...username && { username } }), [uid, username, cache]));
+
+	const user = useMemo(() => {
+		const { user } = data || { user: {} };
+		const {
+			name,
+			username,
+			roles = [],
+			status,
+			statusText,
+			bio,
+			utcOffset,
+			lastLogin,
+			nickname,
+		} = user;
+		return {
+			name: showRealNames ? name : username,
+			username,
+			lastLogin,
+			roles: roles.map((role, index) => (
+				<UserCard.Role key={index}>{role}</UserCard.Role>
+			)),
+			bio,
+			phone: user.phone,
+			utcOffset,
+			customFields: [approveManuallyUsers && user.active === false && user.reason && { label: 'Reason', value: user.reason }, ...Array.isArray(user.customFields) ? user.customFields : []].filter(Boolean),
+			email: user.emails?.find(({ address }) => !!address)?.address,
+			createdAt: user.createdAt,
+			status: UserStatus.getStatus(status),
+			customStatus: statusText,
+			nickname,
+		};
+	}, [data, showRealNames]);
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <FormSkeleton/>;
@@ -46,63 +61,11 @@ export function UserInfoWithData({ uid, ...props }) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
-	return <UserInfo data={data.user} onChange={onChange} {...props} />;
-}
-
-
-export function UserInfo({ data, onChange, ...props }) {
-	const t = useTranslation();
-
-	const createdAt = DateFormat.formatDateAndTime(data.createdAt);
-
-	const lastLogin = data.lastLogin ? DateFormat.formatDateAndTime(data.lastLogin) : '';
-
-	const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: data.username || data.name, type: 'd', _id: data._id });
-
-	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
-		<Box display='flex' flexDirection='column' alignItems='center' flexShrink={0} withTruncatedText>
-			<Margins block='x2' inline='auto'>
-				<Avatar size={'x120'} title={data.username} url={avatarUrl}/>
-				<Box fontScale='h1' withTruncatedText>{data.name || data.username}{data.nickname && ` (${ data.nickname })`}</Box>
-				{!!data.name && <Box fontScale='p1' color='hint' withTruncatedText>@{data.username}</Box>}
-				<Box fontScale='p1' color='hint' withTruncatedText>{data.status}</Box>
-			</Margins>
-		</Box>
-
-		<UserInfoActions isActive={data.active} isAdmin={data.roles.includes('admin')} _id={data._id} username={data.username} onChange={onChange}/>
-		<Box display='flex' flexDirection='column' w='full' backgroundColor='neutral-200' p='x16' withTruncatedText flexShrink={0}>
-			<Margins blockEnd='x4'>
-				{data.bio && data.bio.trim().length > 0 && <MarkdownText withTruncatedText fontScale='s1' content={data.bio} />}
-				{!!data.roles.length && <>
-					<Box fontScale='micro' color='hint' mbs='none'>{t('Roles')}</Box>
-					<Box display='flex' flexDirection='row' flexWrap='wrap'>
-						<Margins inlineEnd='x4' blockEnd='x4'>
-							{data.roles.map((val) => <Chip pi='x4' key={val}>{val}</Chip>)}
-						</Margins>
-					</Box>
-				</>}
-
-				{data.emails && <> <Box fontScale='micro' color='hint'>{t('Email')}</Box>
-					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Box fontScale='s1' withTruncatedText>{data.emails[0].address}</Box>
-						<Margins inline='x4'>
-							{data.emails[0].verified && <Tag variant='primary'>{t('Verified')}</Tag>}
-							{data.emails[0].verified || <Tag disabled>{t('Not_verified')}</Tag>}
-						</Margins>
-					</Box>
-				</>}
-
-				<Box fontScale='micro' color='hint'>{t('Created_at')}</Box>
-				<Box fontScale='s1'>{createdAt}</Box>
-
-				<Box fontScale='micro' color='hint'>{t('Last_login')}</Box>
-				<Box fontScale='s1' >{lastLogin || t('Never')}</Box>
-
-				{!!data.utcOffset && <>
-					<Box fontScale='micro' color='hint'>{t('Timezone')}</Box>
-					<UTCClock utcOffset={data.utcOffset} mbe='none' fontScale='s1' />
-				</>}
-			</Margins>
-		</Box>
-	</VerticalBar.ScrollableContent>;
+	return <UserInfo
+		{...user}
+		data={data.user}
+		onChange={onChange}
+		actions={data && data.user && <UserInfoActions isActive={data.user.active} isAdmin={data.user.roles.includes('admin')} _id={data.user._id} username={data.user.username} onChange={onChange}/>}
+		{...props}
+	/>;
 }

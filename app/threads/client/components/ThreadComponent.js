@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { Tracker } from 'meteor/tracker';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
 import { ChatMessage } from '../../../models/client';
 import { useRoute } from '../../../../client/contexts/RouterContext';
@@ -11,7 +12,6 @@ import { roomTypes, APIClient } from '../../../utils/client';
 import { call } from '../../../ui-utils/client';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useLocalStorage } from '../../../../client/Channel/hooks/useLocalstorage';
 import { normalizeThreadTitle } from '../lib/normalizeThreadTitle';
 
 export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
@@ -88,10 +88,10 @@ export default function ThreadComponent({ mid, rid, jump, room, ...props }) {
 			<VerticalBar rcx-thread-view width='full' style={style} display='flex' flexDirection='column' position='absolute' { ...!expanded && { width: '380px' } }>
 				<VerticalBar.Header>
 					<VerticalBar.Icon name='thread' />
-					<VerticalBar.Text>{headerTitle}</VerticalBar.Text>
+					<VerticalBar.Text dangerouslySetInnerHTML={{ __html: headerTitle }} />
 					<VerticalBar.Action aria-label={expandLabel} onClick={handleExpandButton} name={expandIcon}/>
 					<VerticalBar.Action aria-label={actionLabel} onClick={handleFollowButton} name={button}/>
-					<VerticalBar.Close aria-label={t('Close')} onClick={handleClose}/>
+					<VerticalBar.Close onClick={handleClose}/>
 				</VerticalBar.Header>
 				<VerticalBar.Content paddingInline={0} flexShrink={1} flexGrow={1} ref={ref}/>
 			</VerticalBar>
