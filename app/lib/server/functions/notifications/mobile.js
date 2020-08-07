@@ -42,10 +42,7 @@ function enableNotificationReplyButton(room, username) {
 }
 
 export async function getPushData({ room, message, userId, senderUsername, senderName, notificationMessage, receiver, shouldOmitMessage = true }) {
-	let username = '';
-	if (settings.get('Push_show_username_room')) {
-		username = settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
-	}
+	const username = (settings.get('Push_show_username_room') && settings.get('UI_Use_Real_Name') && senderName) || senderUsername;
 
 	const lng = receiver.language || settings.get('Language') || 'en';
 
