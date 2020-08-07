@@ -9,3 +9,8 @@ registerOmnichannelRoute('/installation', {
 	name: 'omnichannel-installation',
 	lazyRouteComponent: () => import('./installation/Installation'),
 });
+
+registerOmnichannelRoute('/webhooks', {
+	name: 'omnichannel-webhooks',
+	lazyRouteComponent: () => import('./webhooks/WebhooksPage'),
+});
