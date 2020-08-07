@@ -2,7 +2,6 @@ import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-
 import { FileUpload } from '../../../../file-upload';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models';
 import { API } from '../../../../api/server';
