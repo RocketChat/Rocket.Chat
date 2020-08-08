@@ -151,7 +151,6 @@ FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
 	collectionName: 'rocketchat_avatars',
 });
 
-
 new FileUploadClass({
 	name: 'GridFS:Uploads',
 
