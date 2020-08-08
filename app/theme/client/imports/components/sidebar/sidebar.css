@@ -63,10 +63,52 @@
 		}
 	}
 
-	& .unread-rooms {
-		padding: calc(var(--sidebar-small-default-padding) - 8px);
+	& .wrapper-unread {
+		position: relative;
+		z-index: 2;
 
-		text-align: center;
+		& .unread-rooms {
+			position: absolute;
+			left: 50%;
+
+			overflow: hidden;
+
+			min-width: 120px;
+			max-width: 100%;
+
+			padding: 8px var(--sidebar-small-default-padding);
+
+			-webkit-transform: translateX(-50%);
+			transform: translateX(-50%);
+
+			animation: fade 0.3s;
+
+			text-align: center;
+
+			white-space: nowrap;
+
+			text-overflow: ellipsis;
+
+			border-radius: 25px;
+
+			&.bottom-unread-rooms {
+				bottom: 0;
+			}
+
+			&.top-unread-rooms {
+				top: 0;
+			}
+		}
+	}
+}
+
+@keyframes fade {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
 	}
 }
 

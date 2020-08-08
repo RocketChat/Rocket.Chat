@@ -2,20 +2,39 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
+import { HTML } from 'meteor/htmljs';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { chatMessages, ChatMessages } from '../../../ui';
-import { normalizeThreadMessage, call } from '../../../ui-utils/client';
+import { call, keyCodes } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
 import { getUserPreference } from '../../../utils';
+import { settings } from '../../../settings/client';
+import { callbacks } from '../../../callbacks/client';
+import './messageBoxFollow';
+
+createTemplateForComponent('Checkbox', async () => {
+	const { CheckBox } = await import('@rocket.chat/fuselage');
+	return { default: CheckBox };
+}, {
+	// eslint-disable-next-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'rcx-checkbox', style: 'display: flex;' }),
+});
 
 const sort = { ts: 1 };
+
+createTemplateForComponent('ThreadComponent', () => import('../components/ThreadComponent'), {
+	// eslint-disable-next-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar', style: 'display: flex; height: 100%;' }),
+});
 
 Template.thread.events({
 	...dropzoneEvents,
@@ -27,11 +46,7 @@ Template.thread.events({
 	},
 	'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }, i) => {
 		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
-	}, 50),
-	'load img'() {
-		const { atBottom } = this;
-		atBottom && this.sendToBottom();
-	},
+	}, 150),
 	'click .toggle-hidden'(e) {
 		const id = e.currentTarget.dataset.message;
 		document.querySelector(`#thread-${ id }`).classList.toggle('message--ignored');
@@ -40,11 +55,10 @@ Template.thread.events({
 
 Template.thread.helpers({
 	...dropzoneHelpers,
-	threadTitle() {
-		return normalizeThreadMessage(Template.currentData().mainMessage);
-	},
 	mainMessage() {
-		return Template.parentData().mainMessage;
+		const { Threads, state } = Template.instance();
+		const tmid = state.get('tmid');
+		return Threads.findOne({ _id: tmid });
 	},
 	isLoading() {
 		return Template.instance().state.get('loading') !== false;
@@ -52,7 +66,8 @@ Template.thread.helpers({
 	messages() {
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
-		return Threads.find({ tmid }, { sort });
+
+		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
 	messageContext() {
 		const result = messageContext.call(this, { rid: this.mainMessage.rid });
@@ -67,19 +82,55 @@ Template.thread.helpers({
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid }, subscription } = this;
+		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
 
+		const thread = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
+
+		const following = thread?.replies?.includes(Meteor.userId());
+
+		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		return {
+			showFormattingTips,
+			tshow: instance.state.get('sendToChannel'),
 			subscription,
+			...!following && {
+				customAction: {
+					template: 'messageBoxFollow',
+					data: { tmid },
+				},
+			},
 			rid,
 			tmid,
-			onSend: (...args) => instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args),
+			onSend: (...args) => {
+				instance.sendToBottom();
+				instance.state.set('sendToChannel', false);
+				return instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args);
+			},
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
-			onKeyDown: (...args) => instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args),
+			onKeyDown: (...args) => {
+				const result = instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args);
+				const [event] = args;
+
+				const { which: keyCode } = event;
+
+				if (keyCode === keyCodes.ESCAPE && !result && !event.target.value.trim()) {
+					const { route: { name }, params: { context, tab, ...params } } = FlowRouter.current();
+					FlowRouter.go(name, params);
+				}
+			},
 		};
 	},
 	hideUsername() {
 		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
+	},
+	checkboxData() {
+		const instance = Template.instance();
+		const checked = instance.state.get('sendToChannel');
+		return {
+			id: 'sendAlso',
+			checked,
+			onChange: () => instance.state.set('sendToChannel', !checked),
+		};
 	},
 });
 
@@ -87,24 +138,53 @@ Template.thread.helpers({
 Template.thread.onRendered(function() {
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
+	this.atBottom = true;
 
 	this.chatMessages = new ChatMessages();
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 
+	this.sendToBottom = _.throttle(() => {
+		this.atBottom = true;
+		this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
+	}, 300);
+
+	this.sendToBottomIfNecessary = () => {
+		this.atBottom && this.sendToBottom();
+	};
+
+	const observer = new ResizeObserver(this.sendToBottomIfNecessary);
+	observer.observe(this.firstNode.querySelector('.js-scroll-thread ul'));
+
 	this.onFile = (filesToUpload) => {
 		fileUpload(filesToUpload, this.chatMessages.input, { rid: this.state.get('rid'), tmid: this.state.get('tmid') });
 	};
 
-	this.sendToBottom = _.throttle(() => {
-		this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
-	}, 300);
+
+	this.autorun(() => {
+		const rid = this.state.get('rid');
+		const tmid = this.state.get('tmid');
+		if (!rid) {
+			return;
+		}
+		this.callbackRemove && this.callbackRemove();
+
+		this.callbackRemove = () => callbacks.remove('streamNewMessage', `thread-${ rid }`);
+
+		callbacks.add('streamNewMessage', _.debounce((msg) => {
+			if (rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
+				return;
+			}
+			Meteor.call('readThreads', tmid);
+		}, 1000), callbacks.priority.MEDIUM, `thread-${ rid }`);
+	});
+
 
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ tmid, _hidden: { $ne: true } }, {
+		this.threadsObserve = Messages.find({ $or: [{ tmid }, { _id: tmid }], _hidden: { $ne: true } }, {
 			fields: {
 				collapsed: 0,
 				threadMsg: 0,
@@ -112,14 +192,10 @@ Template.thread.onRendered(function() {
 			},
 		}).observe({
 			added: ({ _id, ...message }) => {
-				const { atBottom } = this;
 				this.Threads.upsert({ _id }, message);
-				atBottom && this.sendToBottom();
 			},
 			changed: ({ _id, ...message }) => {
-				const { atBottom } = this;
 				this.Threads.update({ _id }, message);
-				atBottom && this.sendToBottom();
 			},
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
@@ -138,7 +214,9 @@ Template.thread.onRendered(function() {
 
 
 	this.autorun(() => {
-		const { mainMessage, jump } = Template.currentData();
+		FlowRouter.watchPathChange();
+		const jump = FlowRouter.getQueryParam('jump');
+		const { mainMessage } = Template.currentData();
 		this.state.set({
 			tmid: mainMessage._id,
 			rid: mainMessage.rid,
@@ -175,14 +253,14 @@ Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
 
 	this.state = new ReactiveDict({
+		sendToChannel: !this.data.mainMessage.tcount,
 	});
 
-	this.loadMore = _.debounce(async () => {
-		if (this.state.get('loading') === true) {
+	this.loadMore = async () => {
+		const { tmid } = Tracker.nonreactive(() => this.state.all());
+		if (!tmid) {
 			return;
 		}
-
-		const { tmid } = Tracker.nonreactive(() => this.state.all());
 
 		this.state.set('loading', true);
 
@@ -193,11 +271,19 @@ Template.thread.onCreated(async function() {
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
 		});
-	}, 500);
+	};
 });
 
 Template.thread.onDestroyed(function() {
-	const { Threads, threadsObserve } = this;
+	const { Threads, threadsObserve, callbackRemove, state } = this;
 	Threads.remove({});
 	threadsObserve && threadsObserve.stop();
+
+	callbackRemove && callbackRemove();
+
+	const tmid = state.get('tmid');
+	const rid = state.get('rid');
+	if (rid && tmid) {
+		delete chatMessages[`${ rid }-${ tmid }`];
+	}
 });

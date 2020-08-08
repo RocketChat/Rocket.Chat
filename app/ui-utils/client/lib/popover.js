@@ -55,6 +55,7 @@ Template.popover.onRendered(function() {
 	});
 	const { offsetVertical = 0, offsetHorizontal = 0 } = this.data;
 	const { activeElement } = this.data;
+	const originalWidth = window.innerWidth;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
@@ -74,9 +75,11 @@ Template.popover.onRendered(function() {
 		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
 		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
 
+		const leftDiff = window.innerWidth - originalWidth;
+
 		if (position) {
 			popoverContent.style.top = `${ position.top }px`;
-			popoverContent.style.left = `${ position.left }px`;
+			popoverContent.style.left = `${ position.left + leftDiff }px`;
 		} else {
 			const clientHeight = this.data.targetRect.height;
 			const popoverWidth = popoverContent.offsetWidth;
@@ -113,7 +116,7 @@ Template.popover.onRendered(function() {
 			}
 
 			popoverContent.style.top = `${ top }px`;
-			popoverContent.style.left = `${ left }px`;
+			popoverContent.style.left = `${ left + leftDiff }px`;
 		}
 
 		if (customCSSProperties) {
@@ -132,7 +135,6 @@ Template.popover.onRendered(function() {
 		if (activeElement) {
 			$(activeElement).addClass('active');
 		}
-
 		popoverContent.style.opacity = 1;
 	}, 50);
 	$(window).on('resize', position);

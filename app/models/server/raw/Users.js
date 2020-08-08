@@ -1,6 +1,14 @@
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
+	constructor(...args) {
+		super(...args);
+
+		this.defaultFields = {
+			__rooms: 0,
+		};
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -9,6 +17,12 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneByUsername(username, options = null) {
+		const query = { username };
+
+		return this.findOne(query, options);
 	}
 
 	findUsersInRolesWithQuery(roles, query, options) {
@@ -120,6 +134,8 @@ export class UsersRaw extends BaseRaw {
 				username: termRegex,
 			}, {
 				name: termRegex,
+			}, {
+				nickname: termRegex,
 			}],
 			active: true,
 			type: {
@@ -288,6 +304,144 @@ export class UsersRaw extends BaseRaw {
 		const update = {
 			$set: {
 				status,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	openAgentsBusinessHoursByBusinessHourId(businessHourIds) {
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: { $each: businessHourIds },
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
+		const query = {
+			_id: { $in: agentIds },
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	removeBusinessHourByAgentIds(agentIds = [], businessHourId) {
+		const query = {
+			_id: { $in: agentIds },
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+		const query = {
+			_id: { $nin: agentIdsWithDepartment },
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+		const query = {
+			_id: { $nin: agentIdsWithDepartment },
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds) {
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: { $in: businessHourIds },
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
+		const query = {
+			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
+			roles: 'livechat-agent',
+			...Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } },
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'not-available',
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	async isAgentWithinBusinessHours(agentId) {
+		return await this.find({
+			_id: agentId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		}).count() > 0;
+	}
+
+	removeBusinessHoursFromAllUsers() {
+		const query = {
+			roles: 'livechat-agent',
+			openBusinessHours: {
+				$exists: true,
+			},
+		};
+
+		const update = {
+			$unset: {
+				openBusinessHours: 1,
 			},
 		};
 

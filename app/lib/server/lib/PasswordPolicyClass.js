@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 
 class PasswordPolicy {
 	constructor({
@@ -87,6 +88,59 @@ class PasswordPolicy {
 		}
 
 		return true;
+	}
+
+	getPasswordPolicy() {
+		const data = {
+			enabled: false,
+			policy: [],
+		};
+		if (this.enabled) {
+			data.enabled = true;
+			if (this.minLength >= 1) {
+				data.policy.push('get-password-policy-minLength', { minLength: this.minLength });
+			}
+			if (this.maxLength >= 1) {
+				data.policy.push('get-password-policy-maxLength', { maxLength: this.maxLength });
+			}
+			if (this.forbidRepeatingCharacters) {
+				data.policy.push('get-password-policy-forbidRepeatingCharacters');
+			}
+			if (this.forbidRepeatingCharactersCount) {
+				data.policy.push('get-password-policy-forbidRepeatingCharactersCount', { forbidRepeatingCharactersCount: this.forbidRepeatingCharactersCount });
+			}
+			if (this.mustContainAtLeastOneLowercase) {
+				data.policy.push('get-password-policy-mustContainAtLeastOneLowercase');
+			}
+			if (this.mustContainAtLeastOneUppercase) {
+				data.policy.push('get-password-policy-mustContainAtLeastOneUppercase');
+			}
+			if (this.mustContainAtLeastOneNumber) {
+				data.policy.push('get-password-policy-mustContainAtLeastOneNumber');
+			}
+			if (this.mustContainAtLeastOneSpecialCharacter) {
+				data.policy.push('get-password-policy-mustContainAtLeastOneSpecialCharacter');
+			}
+		}
+		return data;
+	}
+
+	generatePassword() {
+		if (this.enabled) {
+			for (let i = 0; i < 10; i++) {
+				const password = this._generatePassword();
+				if (this.validate(password)) {
+					return password;
+				}
+			}
+		}
+
+		return Random.id();
+	}
+
+	_generatePassword() {
+		const length = Math.min(Math.max(this.minLength, 12), this.maxLength > 0 ? this.maxLength : Number.MAX_SAFE_INTEGER);
+		return new Array(length).fill().map(() => String.fromCharCode(Math.random() * 86 + 40)).join('');
 	}
 }
 

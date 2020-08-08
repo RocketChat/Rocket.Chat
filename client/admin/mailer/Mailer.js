@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { isJSON } from '../../../app/utils/lib/isJSON.js';
 import Page from '../../components/basic/Page';
-import RawText from '../../components/basic/RawText';
 import { useTranslation } from '../../contexts/TranslationContext';
 
 export function Mailer({ sendMail = () => {} }) {
@@ -25,7 +24,7 @@ export function Mailer({ sendMail = () => {} }) {
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
-			<FieldGroup maxWidth='x600' is='form' method='post'>
+			<FieldGroup maxWidth='x600' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} method='post'>
 				<Field>
 					<Field.Label>{t('From')}</Field.Label>
 					<Field.Row>
@@ -95,9 +94,7 @@ export function Mailer({ sendMail = () => {} }) {
 							onChange={(e) => setEmailBody(e.currentTarget.value)}
 						/>
 					</Field.Row>
-					<Field.Hint>
-						<RawText>{t('Mailer_body_tags')}</RawText>
-					</Field.Hint>
+					<Field.Hint dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }} />
 				</Field>
 			</FieldGroup>
 		</Page.ScrollableContentWithShadow>

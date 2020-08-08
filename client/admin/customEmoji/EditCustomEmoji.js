@@ -52,6 +52,7 @@ export function EditCustomEmojiWithData({ _id, cache, onChange, ...props }) {
 	const t = useTranslation();
 	const query = useMemo(() => ({
 		query: JSON.stringify({ _id }),
+	// TODO: remove cache. Is necessary for data invalidation
 	}), [_id, cache]);
 
 	const { data = { emojis: {} }, state, error } = useEndpointDataExperimental('emoji-custom.list', query);
@@ -101,7 +102,7 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 		setNewEmojiPreview(URL.createObjectURL(file));
 	}, [setEmojiFile]);
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || aliases !== previousAliases.join(', ') || !!emojiFile, [name, aliases, emojiFile]);
+	const hasUnsavedChanges = useMemo(() => previousName !== name || aliases !== previousAliases.join(', ') || !!emojiFile, [previousName, name, aliases, previousAliases, emojiFile]);
 
 	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
 
@@ -115,7 +116,7 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 		if (result.success) {
 			onChange();
 		}
-	}, [name, _id, aliases, emojiFile]);
+	}, [emojiFile, _id, name, aliases, saveAction, onChange]);
 
 	const deleteAction = useEndpointAction('POST', 'emoji-custom.delete', useMemo(() => ({ emojiId: _id }), [_id]));
 
@@ -124,13 +125,13 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 		if (result.success) {
 			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
 		}
-	}, [_id]);
+	}, [close, deleteAction, onChange]);
 
 	const openConfirmDelete = useCallback(() => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>), [onDeleteConfirm, setModal]);
 
-	const handleAliasesChange = useCallback((e) => setAliases(e.currentTarget.value, []));
+	const handleAliasesChange = useCallback((e) => setAliases(e.currentTarget.value), [setAliases]);
 
-	const clickUpload = useFileInput(setEmojiPreview, 'emoji');
+	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
 
 	return <>
 		<VerticalBar.ScrollableContent {...props}>

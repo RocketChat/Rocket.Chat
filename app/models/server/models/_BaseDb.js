@@ -8,13 +8,15 @@ import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 
 const baseName = 'rocketchat_';
 
-const trash = new Mongo.Collection(`${ baseName }_trash`);
+export const trash = new Mongo.Collection(`${ baseName }_trash`);
 try {
-	trash._ensureIndex({ collection: 1 });
+	trash._ensureIndex({ __collection__: 1 });
 	trash._ensureIndex(
 		{ _deletedAt: 1 },
 		{ expireAfterSeconds: 60 * 60 * 24 * 30 },
 	);
+
+	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
 	console.log(e);
 }
@@ -122,28 +124,52 @@ export class BaseDb extends EventEmitter {
 		};
 	}
 
-	_doNotMixInclusionAndExclusionFields(options) {
-		if (options && options.fields) {
-			const keys = Object.keys(options.fields);
-			const removeKeys = keys.filter((key) => options.fields[key] === 0);
-			if (keys.length > removeKeys.length) {
-				removeKeys.forEach((key) => delete options.fields[key]);
-			}
+	_ensureDefaultFields(options) {
+		if (!this.baseModel.defaultFields) {
+			return options;
 		}
+
+		if (!options) {
+			return { fields: this.baseModel.defaultFields };
+		}
+
+		if (options.fields != null && Object.keys(options.fields).length > 0) {
+			return options;
+		}
+
+		return {
+			...options,
+			fields: this.baseModel.defaultFields,
+		};
 	}
 
-	find(...args) {
-		this._doNotMixInclusionAndExclusionFields(args[1]);
-		return this.model.find(...args);
+	_doNotMixInclusionAndExclusionFields(options) {
+		const optionsDef = this._ensureDefaultFields(options);
+		if (!optionsDef?.fields) {
+			return optionsDef;
+		}
+
+		const keys = Object.keys(optionsDef.fields);
+		const removeKeys = keys.filter((key) => optionsDef.fields[key] === 0);
+		if (keys.length > removeKeys.length) {
+			removeKeys.forEach((key) => delete optionsDef.fields[key]);
+		}
+
+		return optionsDef;
+	}
+
+	find(query = {}, options = {}) {
+		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.find(query, optionsDef);
 	}
 
 	findById(_id, options) {
 		return this.find({ _id }, options);
 	}
 
-	findOne(...args) {
-		this._doNotMixInclusionAndExclusionFields(args[1]);
-		return this.model.findOne(...args);
+	findOne(query = {}, options = {}) {
+		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.findOne(query, optionsDef);
 	}
 
 	findOneById(_id, options) {

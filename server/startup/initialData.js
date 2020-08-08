@@ -31,17 +31,20 @@ Meteor.startup(function() {
 
 			addUserRoles('rocket.cat', 'bot');
 
-			const rs = RocketChatFile.bufferToStream(new Buffer(Assets.getBinary('avatars/rocketcat.png'), 'utf8'));
+			const buffer = Buffer.from(Assets.getBinary('avatars/rocketcat.png'));
+
+			const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
 			const fileStore = FileUpload.getStore('Avatars');
 			fileStore.deleteByName('rocket.cat');
 
 			const file = {
 				userId: 'rocket.cat',
 				type: 'image/png',
+				size: buffer.length,
 			};
 
 			Meteor.runAsUser('rocket.cat', () => {
-				fileStore.insert(file, rs, () => Users.setAvatarOrigin('rocket.cat', 'local'));
+				fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
 			});
 		}
 

@@ -1,25 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRef, useEffect } from 'react';
 
-export const useFileInput = (onSetFile, fileType = 'image') => {
-	const [openInput, setOpenInput] = useState();
+export const useFileInput = (onSetFile, fileType = 'image/*') => {
+	const ref = useRef();
 
 	useEffect(() => {
 		const fileInput = document.createElement('input');
 		const formData = new FormData();
 		fileInput.setAttribute('type', 'file');
+		fileInput.setAttribute('accept', fileType);
 		fileInput.setAttribute('style', 'display: none');
 		document.body.appendChild(fileInput);
 
-		const handleFiles = function() {
-			formData.append(fileType, this.files[0]);
-			onSetFile(this.files[0], formData);
+		ref.current = fileInput;
+		const handleFiles = () => {
+			formData.append(fileType, fileInput.files[0]);
+			onSetFile(fileInput.files[0], formData);
 		};
 		fileInput.addEventListener('change', handleFiles, false);
-		setOpenInput(() => () => fileInput.click());
+
 		return () => {
 			fileInput.parentNode.removeChild(fileInput);
 		};
-	}, [onSetFile]);
+	}, [fileType, onSetFile]);
 
-	return openInput;
+	const onClick = useMutableCallback(() => ref.current.click());
+	const reset = useMutableCallback(() => {
+		ref.current.value = '';
+	});
+	return [onClick, reset];
 };
