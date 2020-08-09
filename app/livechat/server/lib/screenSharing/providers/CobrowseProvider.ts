@@ -4,10 +4,14 @@ import { IScreenSharingProvider } from '../IScreenSharingProvider';
 import { ScreensharingManager } from '../ScreenSharingManager';
 import { settings } from '../../../../../settings/server';
 
+// eslint-disable-next-line @typescript-eslint/camelcase
+declare let __meteor_runtime_config__: any;
+
 export class CobrowseProvider implements IScreenSharingProvider {
 	config = {
 		name: 'Cobrowse.io',
-		providerBundle: 'https://ashwaniYDV.github.io/sstest/ssbundle.js',
+		// eslint-disable-next-line @typescript-eslint/camelcase
+		providerBundle: `${ __meteor_runtime_config__.ROOT_URL }/livechat/screen-sharing/cobrowse.js`,
 	}
 
 	getJWT(agent: any): any {

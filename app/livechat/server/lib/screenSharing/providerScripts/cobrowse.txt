@@ -1,0 +1,59 @@
+const loadSDKScript = () => {
+	(function(w, t, c, p, s, e) {
+		p = new Promise(function(r) {
+			w[c] = { client() {
+				if (!s) {
+					s = document.createElement(t); s.src = 'https://js.cobrowse.io/CobrowseIO.js'; s.async = 1;
+					e = document.getElementsByTagName(t)[0]; e.parentNode.insertBefore(s, e); s.onload = function() { r(w[c]); };
+				} return p;
+			} };
+		});
+	}(window, 'script', 'CobrowseIO'));
+	CobrowseIO.license = '#LICENSE_KEY';
+};
+
+loadSDKScript();
+
+const onStartScreenSharing = (roomId) => {
+	CobrowseIO.client().then(function() {
+		CobrowseIO.start();
+		CobrowseIO.customData = {
+			roomId,
+		};
+	});
+};
+
+const onEndScreenSharing = (roomId) => {
+	if (CobrowseIO.currentSession) { CobrowseIO.currentSession.end(); }
+};
+
+window.addEventListener('message', (msg) => {
+	console.log(msg);
+	if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
+		if (msg.data.fn !== undefined && msg.data.fn === 'callback') {
+			const { args } = msg.data;
+			if (args[0] === 'start-screen-sharing') {
+				onStartScreenSharing(args[1].roomId);
+			} else if (args[0] === 'end-screen-sharing') {
+				onEndScreenSharing(args[1].roomId);
+			}
+		}
+	}
+}, false);
+
+const onFinishScreenSharing = () => {
+	if (CobrowseIO.currentSession) { CobrowseIO.currentSession.end(); }
+	CobrowseIO.client().then(function() {
+		CobrowseIO.stop();
+	});
+};
+
+const setMetaData = (guest_id) => {
+	CobrowseIO.customData = {
+		guest_id,
+	};
+};
+
+const endSession = () => {
+	if (CobrowseIO.currentSession) { CobrowseIO.currentSession.end(); }
+};
