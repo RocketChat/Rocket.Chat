@@ -151,27 +151,3 @@ API.v1.addRoute('livechat/visitor.status', {
 		}
 	},
 });
-
-API.v1.addRoute('livechat/visitor/search', { authRequired: true }, {
-	get() {
-		if (!hasPermission(this.userId, 'view-l-room')) {
-			return API.v1.unauthorized();
-		}
-
-		check(this.queryParams, {
-			email: Match.Maybe(String),
-			phone: Match.Maybe(String),
-			username: Match.Maybe(String),
-			name: Match.Maybe(String),
-		});
-
-		const visitor = Promise.await(LivechatVisitors.findOneByEmailOrPhoneOrNameOrUsername({
-			email: this.queryParams.email,
-			phone: this.queryParams.phone,
-			username: this.queryParams.username,
-			name: this.queryParams.name,
-		}));
-
-		return API.v1.success({ visitor });
-	},
-});

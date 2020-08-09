@@ -246,32 +246,6 @@ export class LivechatVisitors extends Base {
 		const query = { _id };
 		return this.remove(query);
 	}
-
-	/**
-	 * Find a visitor by their email or phone or username or name
-	 * @return {object} Visitor from db
-	 */
-	findOneByEmailOrPhoneOrNameOrUsername({ email, phone, username, name }) {
-		const query = {};
-
-		if (email) {
-			query['visitorEmails.address'] = new RegExp(`^${ s.escapeRegExp(email) }$`, 'i');
-		}
-
-		if (phone) {
-			query['phone.phoneNumber'] = phone;
-		}
-
-		if (username) {
-			query.username = username;
-		}
-
-		if (name) {
-			query.name = name;
-		}
-
-		return this.findOne(query);
-	}
 }
 
 export default new LivechatVisitors();
