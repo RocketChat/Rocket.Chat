@@ -103,7 +103,7 @@ API.v1.addRoute('livechat/visitors.autocomplete', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('livechat/visitors/search', { authRequired: true }, {
+API.v1.addRoute('livechat/visitors.search', { authRequired: true }, {
 	get() {
 		const { term } = this.requestParams();
 
