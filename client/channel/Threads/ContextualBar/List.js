@@ -11,7 +11,7 @@ import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';
-import { useUserId } from '../../../contexts/UserContext';
+import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { Messages } from '../../../../app/models/client';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useUserRoom } from '../../hooks/useUserRoom';
@@ -20,7 +20,6 @@ import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { clickableItem } from '../../helpers/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
-import { useUserSubscription } from '../../../contexts/SubscriptionContext';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 
 function mapProps(WrappedComponent) {

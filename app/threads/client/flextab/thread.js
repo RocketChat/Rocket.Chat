@@ -84,7 +84,7 @@ Template.thread.helpers({
 		const instance = Template.instance();
 		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
 
-		const thread = Messages.findOne({ _id: tmid }, { fields: { replies: 1 } });
+		const thread = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
 
 		const following = thread?.replies?.includes(Meteor.userId());
 
@@ -275,9 +275,15 @@ Template.thread.onCreated(async function() {
 });
 
 Template.thread.onDestroyed(function() {
-	const { Threads, threadsObserve, callbackRemove } = this;
+	const { Threads, threadsObserve, callbackRemove, state } = this;
 	Threads.remove({});
 	threadsObserve && threadsObserve.stop();
 
 	callbackRemove && callbackRemove();
+
+	const tmid = state.get('tmid');
+	const rid = state.get('rid');
+	if (rid && tmid) {
+		delete chatMessages[`${ rid }-${ tmid }`];
+	}
 });

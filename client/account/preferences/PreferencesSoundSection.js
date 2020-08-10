@@ -65,7 +65,7 @@ const PreferencesSoundSection = ({ onChange, ...props }) => {
 				</Field.Label>
 				<Field.Row >
 					<Box is='input' flexGrow={1} type='range' value={notificationsSoundVolume} onChange={onChangeNotificationsSoundVolume} min='0' max='100'/>
-					<Tooltip arrowPosition='left' mis='x8'>{notificationsSoundVolume}</Tooltip>
+					<Tooltip placement='right-middle' mis='x8'>{notificationsSoundVolume}</Tooltip>
 				</Field.Row>
 			</Field>, [notificationsSoundVolume, onChangeNotificationsSoundVolume, t])}
 		</FieldGroup>
