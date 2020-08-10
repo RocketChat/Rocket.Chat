@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Field, TextInput, ToggleSwitch, Accordion, FieldGroup, InputBox, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, ToggleSwitch, Accordion, FieldGroup, InputBox, TextAreaInput, NumberInput } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 
@@ -24,6 +25,8 @@ const AppearanceForm = ({ values = {}, handlers = {} }) => {
 		Livechat_registration_form_message,
 		Livechat_conversation_finished_message,
 		Livechat_conversation_finished_text,
+		Livechat_enable_message_character_limit,
+		Livechat_message_character_limit,
 	} = values;
 
 	const {
@@ -44,7 +47,13 @@ const AppearanceForm = ({ values = {}, handlers = {} }) => {
 		handleLivechat_registration_form_message,
 		handleLivechat_conversation_finished_message,
 		handleLivechat_conversation_finished_text,
+		handleLivechat_enable_message_character_limit,
+		handleLivechat_message_character_limit,
 	} = handlers;
+
+	const onChangeCharacterLimit = useMutableCallback(({ currentTarget: { value } }) => {
+		handleLivechat_message_character_limit(Number(value) < 0 ? 0 : value);
+	});
 
 	return <Accordion>
 		<Accordion.Item defaultExpanded title={t('Livechat_online')}>
@@ -59,6 +68,17 @@ const AppearanceForm = ({ values = {}, handlers = {} }) => {
 					<Field.Label>{t('Title_bar_color')}</Field.Label>
 					<Field.Row>
 						<InputBox type='color' value={Livechat_title_color} onChange={handleLivechat_title_color}/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row'>
+						<Field.Label >{t('Message_Characther_Limit')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch checked={Livechat_enable_message_character_limit} onChange={handleLivechat_enable_message_character_limit}/>
+						</Field.Row>
+					</Box>
+					<Field.Row>
+						<NumberInput disabled={!Livechat_enable_message_character_limit} value={Livechat_message_character_limit} onChange={onChangeCharacterLimit}/>
 					</Field.Row>
 				</Field>
 				<Field>
