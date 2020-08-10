@@ -3,7 +3,6 @@ import './app/analytics/livechatAnalyticsCustomDaterange';
 import './app/analytics/livechatAnalyticsDaterange';
 import './app/analytics/livechatRealTimeMonitoring';
 import './app/livechatAgents';
-import './app/livechatAppearance';
 import './app/livechatDashboard.html';
 import './app/livechatCurrentChats';
 import './app/livechatDepartmentForm';

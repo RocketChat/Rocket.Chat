@@ -108,22 +108,6 @@ AccountBox.addRoute({
 	pageTemplate: 'livechatTriggersForm',
 }, livechatManagerRoutes, load);
 
-// AccountBox.addRoute({
-// 	name: 'livechat-installation',
-// 	path: '/installation',
-// 	sideNav: 'omnichannelFlex',
-// 	i18nPageTitle: 'Installation',
-// 	pageTemplate: 'livechatInstallation',
-// }, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
-	name: 'livechat-appearance',
-	path: '/appearance',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Appearance',
-	pageTemplate: 'livechatAppearance',
-}, livechatManagerRoutes, load);
-
 AccountBox.addRoute({
 	name: 'livechat-business-hours',
 	path: '/businessHours',
