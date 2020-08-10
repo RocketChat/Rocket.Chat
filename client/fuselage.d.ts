@@ -1,16 +1,21 @@
 declare module '@rocket.chat/fuselage' {
-	import { createElement, CSSProperties, RefForwardingComponent, AllHTMLAttributes } from 'react';
 	import { css } from '@rocket.chat/css-in-js';
-
-	type Component = Parameters<typeof createElement>[0];
+	import {
+		CSSProperties,
+		AllHTMLAttributes,
+		ElementType,
+		ForwardRefExoticComponent,
+		PropsWithChildren,
+		RefAttributes,
+	} from 'react';
 
 	type CssClassName = ReturnType<typeof css>;
 	type BoxSimpleClassName = string | CssClassName;
 	type BoxClassName = BoxSimpleClassName | BoxSimpleClassName[];
 	type FontScale = 'h1' | 's1' | 's2' | 'p1' | 'p2' | 'c1' | 'c2' | 'micro';
 
-	type BoxProps = AllHTMLAttributes<HTMLElement> & {
-		is?: Component;
+	type BoxProps = PropsWithChildren<{
+		is?: ElementType;
 		className?: BoxClassName;
 		style?: CSSProperties;
 		border?: CSSProperties['border'];
@@ -136,7 +141,74 @@ declare module '@rocket.chat/fuselage' {
 		minSize?: CSSProperties['blockSize'];
 		maxSize?: CSSProperties['blockSize'];
 		fontScale?: FontScale;
+	}> & AllHTMLAttributes<HTMLOrSVGElement> & RefAttributes<unknown>;
+
+	export const Box: ForwardRefExoticComponent<BoxProps>;
+
+	type TileProps = BoxProps;
+	export const Tile: ForwardRefExoticComponent<TileProps>;
+
+	type ButtonProps = BoxProps & {
+		primary?: boolean;
+	};
+	export const Button: ForwardRefExoticComponent<ButtonProps>;
+
+	type FieldProps = BoxProps;
+	export const Field: ForwardRefExoticComponent<FieldProps> & {
+		Row: ForwardRefExoticComponent<BoxProps>;
+		Label: ForwardRefExoticComponent<BoxProps>;
+		Hint: ForwardRefExoticComponent<BoxProps>;
+		Error: ForwardRefExoticComponent<BoxProps>;
 	};
 
-	export const Box: RefForwardingComponent<Element, BoxProps>;
+	type ThrobberProps = Omit<BoxProps, 'size'> & {
+		size?: BoxProps['width'];
+		inheritColor?: boolean;
+	};
+	export const Throbber: ForwardRefExoticComponent<ThrobberProps>;
+
+	type ToggleSwitchProps = BoxProps;
+	export const ToggleSwitch: ForwardRefExoticComponent<ToggleSwitchProps>;
+
+	type ButtonGroupProps = BoxProps & {
+		align?: 'start' | 'center' | 'end';
+	};
+	export const ButtonGroup: ForwardRefExoticComponent<ButtonGroupProps>;
+
+	type CalloutProps = BoxProps;
+	export const Callout: ForwardRefExoticComponent<CalloutProps>;
+
+	type FieldGroupProps = BoxProps;
+	export const FieldGroup: ForwardRefExoticComponent<FieldGroupProps>;
+
+	type TextInputProps = BoxProps & {
+		error?: string;
+	};
+	export const TextInput: ForwardRefExoticComponent<TextInputProps>;
+
+	type ChevronProps = Omit<BoxProps, 'size'> & {
+		size?: BoxProps['width'];
+		right?: boolean;
+		left?: boolean;
+		top?: boolean;
+		bottom?: boolean;
+	};
+	export const Chevron: ForwardRefExoticComponent<ChevronProps>;
+
+	type MarginsProps = PropsWithChildren<{
+		all?: BoxProps['margin'];
+		block?: BoxProps['marginBlock'];
+		blockStart?: BoxProps['marginBlockStart'];
+		blockEnd?: BoxProps['marginBlockEnd'];
+		inline?: BoxProps['marginInline'];
+		inlineStart?: BoxProps['marginInlineStart'];
+		inlineEnd?: BoxProps['marginInlineEnd'];
+	}>;
+	export const Margins: ForwardRefExoticComponent<MarginsProps>;
+
+	type ScrollableProps = PropsWithChildren<{
+		horizontal?: boolean;
+		vertical?: boolean;
+	}>;
+	export const Scrollable: ForwardRefExoticComponent<ScrollableProps>;
 }
