@@ -10,6 +10,11 @@ registerOmnichannelRoute('/installation', {
 	lazyRouteComponent: () => import('./installation/Installation'),
 });
 
+registerOmnichannelRoute('/webhooks', {
+	name: 'omnichannel-webhooks',
+	lazyRouteComponent: () => import('./webhooks/WebhooksPage'),
+});
+
 registerOmnichannelRoute('/customfields/:context?/:id?', {
 	name: 'omnichannel-customfields',
 	lazyRouteComponent: () => import('./customFields/CustomFieldsRouter'),

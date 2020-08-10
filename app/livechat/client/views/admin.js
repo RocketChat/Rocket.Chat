@@ -10,7 +10,6 @@ import './app/livechatDepartments';
 import './app/livechatTriggers';
 import './app/livechatTriggersForm';
 import './app/livechatManagers';
-import './app/integrations/livechatIntegrationWebhook';
 import './app/integrations/livechatIntegrationFacebook';
 import './app/triggers/livechatTriggerAction';
 import './app/triggers/livechatTriggerCondition';
