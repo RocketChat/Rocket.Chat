@@ -155,7 +155,7 @@ function EditSound({ close, onChange, data, ...props }) {
 
 	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
 
-	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
 	return <>
 		<VerticalBar.ScrollableContent {...props}>

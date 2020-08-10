@@ -28,7 +28,7 @@ export function UserAvatarEditor({ username, setAvatarObj, suggestions, disabled
 		setNewAvatarSource(URL.createObjectURL(file));
 	}, [setAvatarObj]);
 
-	const clickUpload = useFileInput(setUploadedPreview);
+	const [clickUpload] = useFileInput(setUploadedPreview);
 
 	const clickUrl = () => {
 		setNewAvatarSource(avatarFromUrl);
