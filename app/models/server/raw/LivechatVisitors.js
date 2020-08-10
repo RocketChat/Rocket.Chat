@@ -53,4 +53,24 @@ export class LivechatVisitorsRaw extends BaseRaw {
 
 		return this.col.aggregate(params);
 	}
+
+	/**
+	 * Find visitors by their email or phone or username or name
+	 * @return [{object}] List of Visitors from db
+	 */
+	findVisitorsByEmailOrPhoneOrNameOrUsername(_emailOrPhoneOrNameOrUsername, options) {
+		const query = {
+			$or: [{
+				'visitorEmails.address': new RegExp(`^${ s.escapeRegExp(_emailOrPhoneOrNameOrUsername) }$`, 'i'),
+			}, {
+				'phone.phoneNumber': _emailOrPhoneOrNameOrUsername,
+			}, {
+				name: new RegExp(`^${ s.escapeRegExp(_emailOrPhoneOrNameOrUsername).trim() }`, 'i'),
+			}, {
+				username: _emailOrPhoneOrNameOrUsername,
+			}],
+		};
+
+		return this.find(query, options);
+	}
 }
