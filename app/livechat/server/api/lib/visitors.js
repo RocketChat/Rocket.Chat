@@ -137,6 +137,14 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term,
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
+		fields: {
+			_id: 1,
+			username: 1,
+			name: 1,
+			phone: 1,
+			livechatData: 1,
+			visitorEmails: 1,
+		},
 	});
 
 	const total = await cursor.count();
