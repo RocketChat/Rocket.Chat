@@ -375,9 +375,7 @@ Template.sidebarHeader.events({
 										type: 'open',
 										id: 'account',
 										action: () => {
-											SideNav.setFlex('accountFlex');
-											SideNav.openFlex();
-											FlowRouter.go('account');
+											FlowRouter.go('account', { group: 'profile' });
 											popover.close();
 										},
 									},

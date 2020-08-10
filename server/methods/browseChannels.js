@@ -126,6 +126,7 @@ Meteor.methods({
 			fields: {
 				username: 1,
 				name: 1,
+				nickname: 1,
 				bio: 1,
 				createdAt: 1,
 				emails: 1,
@@ -158,6 +159,7 @@ Meteor.methods({
 					username: user.username,
 					name: user.name,
 					bio: user.bio,
+					nickname: user.nickname,
 					emails: user.emails,
 					federation: user.federation,
 					isRemote: true,

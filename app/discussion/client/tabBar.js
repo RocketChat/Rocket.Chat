@@ -10,6 +10,7 @@ Meteor.startup(function() {
 		i18nTitle: 'Discussions',
 		icon: 'discussion',
 		template: 'discussionsTabbar',
+		full: true,
 		order: 1,
 		condition: () => settings.get('Discussion_enabled'),
 	});

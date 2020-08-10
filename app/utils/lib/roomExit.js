@@ -25,6 +25,7 @@ export const roomExit = function() {
 		}
 		callbacks.run('roomExit');
 
+		Session.set('lastOpenedRoom', Session.get('openedRoom'));
 		Session.set('openedRoom', null);
 		RoomManager.openedRoom = null;
 

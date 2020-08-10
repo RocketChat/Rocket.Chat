@@ -1,6 +1,14 @@
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
+	constructor(...args) {
+		super(...args);
+
+		this.defaultFields = {
+			__rooms: 0,
+		};
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -126,6 +134,8 @@ export class UsersRaw extends BaseRaw {
 				username: termRegex,
 			}, {
 				name: termRegex,
+			}, {
+				nickname: termRegex,
 			}],
 			active: true,
 			type: {

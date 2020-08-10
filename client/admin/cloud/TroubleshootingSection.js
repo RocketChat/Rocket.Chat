@@ -41,7 +41,7 @@ function TroubleshootingSection({
 	return <Box is='section' {...props}>
 		<Subtitle>{t('Cloud_troubleshooting')}</Subtitle>
 
-		<Box withRichContent>
+		<Box withRichContent color='neutral-800'>
 			<p>{t('Cloud_workspace_support')}</p>
 		</Box>
 
@@ -51,7 +51,7 @@ function TroubleshootingSection({
 			</Button>
 		</ButtonGroup>
 
-		<Box withRichContent>
+		<Box withRichContent color='neutral-800'>
 			<p>
 				{t('Cloud_status_page_description')}:{' '}
 				<a href={statusPageUrl} target='_blank' rel='noopener noreferrer'>{statusPageUrl}</a>
