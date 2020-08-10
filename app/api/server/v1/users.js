@@ -342,8 +342,12 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 									return callback(new Meteor.Error('error-not-allowed', 'Not allowed'));
 								}
 							}
-							setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
-							callback();
+							try {
+								setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
+								callback();
+							} catch (e) {
+								callback(e);
+							}
 						}));
 					}));
 					busboy.on('field', (fieldname, val) => {

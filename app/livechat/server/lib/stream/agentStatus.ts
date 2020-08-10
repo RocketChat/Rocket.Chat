@@ -17,17 +17,8 @@ settings.get('Livechat_agent_leave_action_timeout', (_key, value) => {
 });
 
 settings.get('Livechat_agent_leave_action', (_key, value) => {
-	if (typeof value !== 'boolean') {
-		return;
-	}
-	monitorAgents = value;
-});
-
-settings.get('Livechat_agent_leave_action', (_key, value) => {
-	if (typeof value !== 'string') {
-		return;
-	}
-	action = value;
+	monitorAgents = value !== 'none';
+	action = value as string;
 });
 
 settings.get('Livechat_agent_leave_comment', (_key, value) => {
@@ -57,6 +48,7 @@ const onlineAgents = {
 		if (!this.exists(userId)) {
 			return;
 		}
+		this.users.delete(userId);
 
 		if (this.queue.has(userId)) {
 			clearTimeout(this.queue.get(userId));

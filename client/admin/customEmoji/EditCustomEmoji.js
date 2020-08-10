@@ -131,7 +131,7 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 
 	const handleAliasesChange = useCallback((e) => setAliases(e.currentTarget.value), [setAliases]);
 
-	const clickUpload = useFileInput(setEmojiPreview, 'emoji');
+	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
 
 	return <>
 		<VerticalBar.ScrollableContent {...props}>
