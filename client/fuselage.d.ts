@@ -145,13 +145,36 @@ declare module '@rocket.chat/fuselage' {
 
 	export const Box: ForwardRefExoticComponent<BoxProps>;
 
-	type TileProps = BoxProps;
-	export const Tile: ForwardRefExoticComponent<TileProps>;
+	type AccordionProps = BoxProps;
+	type AccordionItemProps = Omit<BoxProps, 'title'> & {
+		defaultExpanded?: boolean;
+		title?: string;
+	};
+	export const Accordion: ForwardRefExoticComponent<AccordionProps> & {
+		Item: ForwardRefExoticComponent<AccordionItemProps>;
+	};
 
 	type ButtonProps = BoxProps & {
 		primary?: boolean;
 	};
 	export const Button: ForwardRefExoticComponent<ButtonProps>;
+
+	type ButtonGroupProps = BoxProps & {
+		align?: 'start' | 'center' | 'end';
+	};
+	export const ButtonGroup: ForwardRefExoticComponent<ButtonGroupProps>;
+
+	type CalloutProps = BoxProps;
+	export const Callout: ForwardRefExoticComponent<CalloutProps>;
+
+	type ChevronProps = Omit<BoxProps, 'size'> & {
+		size?: BoxProps['width'];
+		right?: boolean;
+		left?: boolean;
+		top?: boolean;
+		bottom?: boolean;
+	};
+	export const Chevron: ForwardRefExoticComponent<ChevronProps>;
 
 	type FieldProps = BoxProps;
 	export const Field: ForwardRefExoticComponent<FieldProps> & {
@@ -160,6 +183,18 @@ declare module '@rocket.chat/fuselage' {
 		Hint: ForwardRefExoticComponent<BoxProps>;
 		Error: ForwardRefExoticComponent<BoxProps>;
 	};
+
+	type FieldGroupProps = BoxProps;
+	export const FieldGroup: ForwardRefExoticComponent<FieldGroupProps>;
+
+	type InputBoxProps = BoxProps;
+	export const InputBox: ForwardRefExoticComponent<InputBoxProps>;
+
+	type TextAreaInputProps = BoxProps;
+	export const TextAreaInput: ForwardRefExoticComponent<TextAreaInputProps>;
+
+	type TileProps = BoxProps;
+	export const Tile: ForwardRefExoticComponent<TileProps>;
 
 	type ThrobberProps = Omit<BoxProps, 'size'> & {
 		size?: BoxProps['width'];
@@ -170,30 +205,10 @@ declare module '@rocket.chat/fuselage' {
 	type ToggleSwitchProps = BoxProps;
 	export const ToggleSwitch: ForwardRefExoticComponent<ToggleSwitchProps>;
 
-	type ButtonGroupProps = BoxProps & {
-		align?: 'start' | 'center' | 'end';
-	};
-	export const ButtonGroup: ForwardRefExoticComponent<ButtonGroupProps>;
-
-	type CalloutProps = BoxProps;
-	export const Callout: ForwardRefExoticComponent<CalloutProps>;
-
-	type FieldGroupProps = BoxProps;
-	export const FieldGroup: ForwardRefExoticComponent<FieldGroupProps>;
-
 	type TextInputProps = BoxProps & {
 		error?: string;
 	};
 	export const TextInput: ForwardRefExoticComponent<TextInputProps>;
-
-	type ChevronProps = Omit<BoxProps, 'size'> & {
-		size?: BoxProps['width'];
-		right?: boolean;
-		left?: boolean;
-		top?: boolean;
-		bottom?: boolean;
-	};
-	export const Chevron: ForwardRefExoticComponent<ChevronProps>;
 
 	type MarginsProps = PropsWithChildren<{
 		all?: BoxProps['margin'];
