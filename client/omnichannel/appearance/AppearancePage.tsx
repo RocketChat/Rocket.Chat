@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Callout, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -12,16 +12,25 @@ import Page from '../../components/basic/Page';
 import AppearanceForm from './AppearanceForm';
 import PageSkeleton from '../../components/PageSkeleton';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import { ISetting } from '../../../definition/ISetting';
 
-const reduceAppearance = (settings) => settings.reduce((acc, { _id, value }) => {
-	acc = { ...acc, [_id]: value };
-	return acc;
-}, {});
+type LivechatAppearanceEndpointData = {
+	success: boolean;
+	appearance: ISetting[];
+};
 
-const AppearancePageContainer = () => {
+type AppearanceSettings = Record<ISetting['_id'], ISetting['value']>;
+
+const reduceAppearance = (settings: LivechatAppearanceEndpointData['appearance']): AppearanceSettings =>
+	settings.reduce<AppearanceSettings>((acc, { _id, value }) => {
+		acc = { ...acc, [_id]: value };
+		return acc;
+	}, {});
+
+const AppearancePageContainer: FC = () => {
 	const t = useTranslation();
 
-	const { data, state, error } = useEndpointDataExperimental('livechat/appearance');
+	const { data, state, error } = useEndpointDataExperimental<LivechatAppearanceEndpointData>('livechat/appearance');
 
 	const canViewAppearance = usePermission('view-livechat-appearance');
 
@@ -35,7 +44,7 @@ const AppearancePageContainer = () => {
 
 	if (!data || !data.success || !data.appearance || error) {
 		return <Page>
-			<Page.Header title={t('Edit_Custom_Field')}/>
+			<Page.Header title={t('Edit_Custom_Field')} />
 			<Page.ScrollableContentWithShadow>
 				<Callout type='danger'>
 					{t('Error')}
@@ -47,7 +56,11 @@ const AppearancePageContainer = () => {
 	return <AppearancePage settings={reduceAppearance(data.appearance)}/>;
 };
 
-const AppearancePage = ({ settings }) => {
+type AppearancePageProps = {
+	settings: ReturnType<typeof reduceAppearance>;
+};
+
+const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -67,10 +80,14 @@ const AppearancePage = ({ settings }) => {
 		}
 	});
 
+	const handleResetButtonClick = (): void => {
+		reset();
+	};
+
 	return <Page>
 		<Page.Header title={t('Appearance')}>
 			<ButtonGroup align='end'>
-				<Button onClick={() => reset()}>
+				<Button onClick={handleResetButtonClick}>
 					<Icon size='x16' name='back'/>{t('Back')}
 				</Button>
 				<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>

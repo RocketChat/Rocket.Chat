@@ -187,6 +187,11 @@ declare module '@rocket.chat/fuselage' {
 	type FieldGroupProps = BoxProps;
 	export const FieldGroup: ForwardRefExoticComponent<FieldGroupProps>;
 
+	type IconProps = Omit<BoxProps, 'size'> & {
+		size?: BoxProps['width'];
+	};
+	export const Icon: ForwardRefExoticComponent<IconProps>;
+
 	type InputBoxProps = BoxProps;
 	export const InputBox: ForwardRefExoticComponent<InputBoxProps>;
 

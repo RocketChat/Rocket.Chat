@@ -1,4 +1,4 @@
-export type SettingId = string | Mongo.ObjectID;
+export type SettingId = string;
 export type GroupId = SettingId;
 export type SectionName = string;
 

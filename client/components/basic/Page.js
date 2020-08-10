@@ -25,7 +25,7 @@ function Page(props) {
 	</PageContext.Provider>;
 }
 
-function PageHeader({ children, title, ...props }) {
+function PageHeader({ children = undefined, title, ...props }) {
 	const [border] = useContext(PageContext);
 	const hasBurgerMenuButton = useMediaQuery('(max-width: 780px)');
 	const [isSidebarOpen, setSidebarOpen] = useSidebar();
@@ -77,7 +77,7 @@ function PageScrollableContent({ onScrollContent, ...props }) {
 	</Scrollable>;
 }
 
-function PageScrollableContentWithShadow({ onScrollContent, ...props }) {
+function PageScrollableContentWithShadow({ onScrollContent = undefined, ...props }) {
 	const [, setBorder] = useContext(PageContext);
 	return <PageScrollableContent
 		onScrollContent={({ top, ...args }) => {
