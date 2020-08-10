@@ -2459,7 +2459,6 @@
   "Retail": "Handel",
   "Retention_setting_changed_successfully": "Die Einstellung für die Aufbewahrungsrichtlinie wurde erfolgreich geändert",
   "RetentionPolicy": "Aufbewahrungsrichtlinie",
-  "RetentionPolicy_DoNotExcludeDiscussion": "Unterhaltungen nicht ausschließen",
   "RetentionPolicy_RoomWarning": "Nachrichten, die älter als __time__ sind, werden hier automatisch gelöscht",
   "RetentionPolicy_RoomWarning_Unpinned": "Nicht gepinnte Nachrichten, die älter als __time__ sind, werden hier automatisch bereinigt",
   "RetentionPolicy_RoomWarning_FilesOnly": "Dateien älter als __time__ werden hier automatisch bereinigt (Nachrichten bleiben erhalten)",

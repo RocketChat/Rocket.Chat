@@ -17,6 +17,19 @@
 						<input type="color" class="preview-settings rc-input__element" name="color" id="color" value="{{color}}" />
 					</div>
 					<div class="input-line">
+						<label for="showLimitTextLength">{{_ "Livechat_enable_message_character_limit"}}</label>
+						<div class="inline-fields">
+							<input type="radio" class="preview-settings" name="showLimitTextLength" id="showLimitTextLengthFormTrue" checked="{{showLimitTextLengthFormTrueChecked}}" value="true">
+							<label for="showLimitTextLengthFormTrue">{{_ "True"}}</label>
+							<input type="radio" class="preview-settings" name="showLimitTextLength" id="showLimitTextLengthFormFalse" checked="{{showLimitTextLengthFormFalseChecked}}" value="false">
+							<label for="showLimitTextLengthFormFalse">{{_ "False"}}</label>
+						</div>
+					</div>
+					<div class="input-line">
+						<label for="limitTextLength">{{_ "Message_Characther_Limit"}}</label>
+						<input type="number" class="preview-settings rc-input__element" name="limitTextLength" id="limitTextLength" value="{{limitTextLength}}">
+					</div>
+					<div class="input-line">
 							<label for="showAgentInfo">{{_ "Show_agent_info"}}</label>
 							<div class="inline-fields">
 								<input type="radio" class="preview-settings" name="showAgentInfo" id="showAgentInfoFormTrue" checked="{{showAgentInfoFormTrueChecked}}" value="true">
