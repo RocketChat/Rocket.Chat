@@ -1,14 +1,19 @@
-import { Box, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Scrollable, ScrollableProps } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, FC, Dispatch, SetStateAction } from 'react';
 
 import { useSidebar } from '../../contexts/SidebarContext';
 import BurgerMenuButton from './burger/BurgerMenuButton';
 import { useSession } from '../../contexts/SessionContext';
 
-const PageContext = createContext();
+type PageContextValue = [
+	boolean,
+	Dispatch<SetStateAction<boolean>>,
+];
 
-function Page(props) {
+const PageContext = createContext<PageContextValue>([false, (): void => undefined]);
+
+const Page: FC = (props) => {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
 		<Box
@@ -23,15 +28,19 @@ function Page(props) {
 			{...props}
 		/>
 	</PageContext.Provider>;
-}
+};
 
-function PageHeader({ children = undefined, title, ...props }) {
+type PageHeaderProps = {
+	title: string;
+};
+
+const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props }) => {
 	const [border] = useContext(PageContext);
 	const hasBurgerMenuButton = useMediaQuery('(max-width: 780px)');
 	const [isSidebarOpen, setSidebarOpen] = useSidebar();
 	const unreadMessagesBadge = useSession('unread');
 
-	const handleBurgerMenuButtonClick = () => {
+	const handleBurgerMenuButtonClick = (): void => {
 		setSidebarOpen((isSidebarOpen) => !isSidebarOpen);
 	};
 
@@ -57,7 +66,7 @@ function PageHeader({ children = undefined, title, ...props }) {
 			{children}
 		</Box>
 	</Box>;
-}
+};
 
 const PageContent = React.forwardRef(function PageContent(props, ref) {
 	return <Box
@@ -71,26 +80,29 @@ const PageContent = React.forwardRef(function PageContent(props, ref) {
 	/>;
 });
 
-function PageScrollableContent({ onScrollContent, ...props }) {
-	return <Scrollable onScrollContent={onScrollContent} >
+type PageScrollableContentProps = {
+	onScrollContent?: ScrollableProps['onScrollContent'];
+};
+
+const PageScrollableContent: FC<PageScrollableContentProps> = ({ onScrollContent, ...props }) =>
+	<Scrollable onScrollContent={onScrollContent} >
 		<Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
 	</Scrollable>;
-}
 
-function PageScrollableContentWithShadow({ onScrollContent = undefined, ...props }) {
+const PageScrollableContentWithShadow: FC<PageScrollableContentProps> = ({ onScrollContent, ...props }) => {
 	const [, setBorder] = useContext(PageContext);
 	return <PageScrollableContent
-		onScrollContent={({ top, ...args }) => {
+		onScrollContent={({ top, ...args }): void => {
 			setBorder(!top);
 			onScrollContent && onScrollContent({ top, ...args });
 		}}
 		{ ...props }
 	/>;
-}
+};
 
-Page.Header = PageHeader;
-Page.Content = PageContent;
-Page.ScrollableContent = PageScrollableContent;
-Page.ScrollableContentWithShadow = PageScrollableContentWithShadow;
-
-export default Page;
+export default Object.assign(Page, {
+	Header: PageHeader,
+	Content: PageContent,
+	ScrollableContent: PageScrollableContent,
+	ScrollableContentWithShadow: PageScrollableContentWithShadow,
+});
