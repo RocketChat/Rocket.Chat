@@ -375,7 +375,7 @@ export class ChatMessages {
 				showCancelButton: true,
 				confirmButtonText: t('Yes'),
 				cancelButtonText: t('No'),
-				closeOnConfirm: true,
+				closeOnConfirm: false,
 			});
 
 			const contentType = 'text/plain';
