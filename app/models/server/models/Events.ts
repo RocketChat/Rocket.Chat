@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { SHA256 } from 'meteor/sha';
 import deepMapKeys from 'deep-map-keys';
 import { EJSON } from 'meteor/ejson';
+import { Random } from 'meteor/random';
 
 import { IEventDataUpdate } from '../../../events/definitions/data/IEventDataUpdate';
 import { EventContext, EventTypeDescriptor, EventDataDefinition, IEventData, IEvent } from '../../../events/definitions/IEvent';
@@ -55,10 +56,15 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 	}
 
 	public getEventIdHash<T extends EventDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
+		console.log('process.env.DISABLE_ID_SHA:', process.env);
+		if (process.env.DISABLE_ID_SHA === '1') { return Random.id(); }
+
 		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event.pids.join(',') }${ event.t }${ event.ts }${ event.dHash }`);
 	}
 
 	public getEventDataHash<T extends EventDataDefinition>(event: IEvent<T>): string {
+		if (process.env.DISABLE_DATA_SHA === '1') { return Random.id(); }
+
 		// Always use the consolidated (o), unchanged data
 		let data: any = event.o;
 
@@ -75,11 +81,17 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 	public async createEvent<T extends EventDataDefinition>(src: string, contextQuery: IContextQuery, stub: IEventStub<T>): Promise<IEvent<T>> {
 		// Get the previous events
 		let pids = []; // Previous ids
+		let previousEvents = [];
 
-		const previousEvents = await this.model
-			.rawCollection()
-			.find({ ...contextQuery, isLeaf: true })
-			.toArray();
+
+		if (process.env.DISABLE_LEAF_SEARCH === '1') {
+			previousEvents = [Random.id()];
+		} else {
+			previousEvents = await this.model
+				.rawCollection()
+				.find({ ...contextQuery, isLeaf: true })
+				.toArray();
+		}
 
 		pids = previousEvents.map((e: IEvent<any>) => e._id);
 
@@ -133,28 +145,36 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 
 		// If it does not, we insert it, checking for the parents
 		if (!existingEvent) {
-			// Check if we have the parents
-			const parents: Array<IEvent<any>> = await this.model.rawCollection().find({ ...contextQuery, _id: { $in: event.pids } }, { _id: 1 }).toArray();
-			const pids: Array<string> = parents.map((e: IEvent<any>) => e._id);
+			if (process.env.DISABLE_LEAF_SEARCH !== '1') {
+				// Check if we have the parents
+				const parents: Array<IEvent<any>> = await this.model.rawCollection().find({
+					...contextQuery,
+					_id: { $in: event.pids },
+				}, { _id: 1 }).toArray();
+				const pids: Array<string> = parents.map((e: IEvent<any>) => e._id);
 
-			// This means that we do not have the parents of the event we are adding
-			if (pids.length !== event.pids.length) {
-				const { src } = event;
+				// This means that we do not have the parents of the event we are adding
+				if (pids.length !== event.pids.length) {
+					const { src } = event;
 
-				// Get the latest events for that context and src
-				const latestEvents = await this.model.rawCollection().find({ ...contextQuery, src }, { _id: 1 }).toArray();
-				const latestEventIds = latestEvents.map((e: IEvent<any>) => e._id);
+					// Get the latest events for that context and src
+					const latestEvents = await this.model.rawCollection().find({
+						...contextQuery,
+						src,
+					}, { _id: 1 }).toArray();
+					const latestEventIds = latestEvents.map((e: IEvent<any>) => e._id);
 
-				return {
-					success: false,
-					reason: 'missingParents',
-					missingParentIds: event.pids.filter((_id) => pids.indexOf(_id) === -1),
-					latestEventIds,
-				};
+					return {
+						success: false,
+						reason: 'missingParents',
+						missingParentIds: event.pids.filter((_id) => pids.indexOf(_id) === -1),
+						latestEventIds,
+					};
+				}
+
+				// Clear the "isLeaf" of the parent events
+				await this.update({ _id: { $in: pids } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
 			}
-
-			// Clear the "isLeaf" of the parent events
-			await this.update({ _id: { $in: pids } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
 
 			this.insert(event);
 		}
