@@ -13,7 +13,11 @@ registerOmnichannelRoute('/managers', {
 	name: 'omnichannel-managers',
 	lazyRouteComponent: () => import('./ManagersRoute'),
 });
-registerOmnichannelRoute('/agents', {
+// registerOmnichannelRoute('/agents', {
+// 	name: 'omnichannel-agents',
+// 	lazyRouteComponent: () => import('./AgentsRoute'),
+// });
+registerOmnichannelRoute('/agents/:context?/:id?', {
 	name: 'omnichannel-agents',
 	lazyRouteComponent: () => import('./AgentsRoute'),
 });
