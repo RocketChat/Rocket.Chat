@@ -41,29 +41,30 @@ export class ScreenSharingManager {
 		return { enabled: this.enabled(), ...this.screenShareProvider.config } || {};
 	}
 
-	requestScreenSharing(roomId: string, user: any): void {
-		Messages.createWithTypeRoomIdMessageAndUser('request_livechat_screen_sharing_access', roomId, '', user, {});
-		LivechatRooms.updateScreenSharingStatus(roomId, { active: false, sessionUrl: '' });
+	requestSession(roomId: string, user: any, type: string): void {
+		if (type === 'agent') {
+			Messages.createWithTypeRoomIdMessageAndUser('request_livechat_screen_sharing_access', roomId, '', user, {});
+			LivechatRooms.updateScreenSharingStatus(roomId, { active: false, sessionUrl: '', status: 'requested' });
+		} else if (type === 'visitor') {
+			Messages.createWithTypeRoomIdMessageAndUser('guest_requesting_livechat_screen_sharing', roomId, 'guest_requesting_livechat_screen_sharing', user, {});
+		}
 	}
 
-	screenSharingRequestRejected(roomId: string, visitor: any): void {
+	rejectRequest(roomId: string, visitor: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('livechat_screen_sharing_request_rejected', roomId, '', visitor, {});
+		LivechatRooms.updateScreenSharingStatus(roomId, { active: false, sessionUrl: '', status: 'inactive' });
 	}
 
-	screenSharingRequestAccepted(roomId: string, visitor: any, agent: any): void {
+	acceptRequest(roomId: string, visitor: any, agent: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('livechat_screen_sharing_request_accepted', roomId, '', visitor, {});
 		const user = Users.findOneByUsernameIgnoringCase(agent.username, null);
 		const sessionUrl = this.screenShareProvider.getURL(roomId, user);
-		LivechatRooms.updateScreenSharingStatus(roomId, { active: true, sessionUrl });
+		LivechatRooms.updateScreenSharingStatus(roomId, { active: true, sessionUrl, status: 'active' });
 	}
 
-	endScreenSharingSession(roomId: string, user: any): void {
+	endSession(roomId: string, user: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('end_livechat_screen_sharing_session', roomId, '', user, {});
-		LivechatRooms.updateScreenSharingStatus(roomId, { active: false, sessionUrl: '' });
-	}
-
-	guestRequestingScreenSharing(roomId: string, visitor: any): void {
-		Messages.createWithTypeRoomIdMessageAndUser('guest_requesting_livechat_screen_sharing', roomId, 'guest_requesting_livechat_screen_sharing', visitor, {});
+		LivechatRooms.updateScreenSharingStatus(roomId, { active: false, sessionUrl: '', status: 'inactive' });
 	}
 }
 

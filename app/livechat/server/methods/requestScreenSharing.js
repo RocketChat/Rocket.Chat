@@ -10,7 +10,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		ScreensharingManager.requestScreenSharing(roomId, user);
+		ScreensharingManager.requestSession(roomId, user, 'agent');
 	},
 });
 
@@ -22,6 +22,6 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		ScreensharingManager.endScreenSharingSession(roomId, user);
+		ScreensharingManager.endSession(roomId, user);
 	},
 });

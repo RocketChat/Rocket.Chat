@@ -8,16 +8,6 @@ import { Rooms } from '../../models';
 import { ScreenSharingDialog } from './views/app/screen-sharing-ui/client';
 import { callbacks } from '../../callbacks/client';
 
-const openSessionIframe = (rid, src) => {
-	const messageBoxRef = document.querySelector('.rc-message-box');
-
-	if (ScreenSharingDialog.opened) {
-		ScreenSharingDialog.close();
-	}
-
-	ScreenSharingDialog.open(messageBoxRef, { rid, src });
-};
-
 messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 	id: 'request-screen-sharing',
 	icon: 'video',
@@ -27,11 +17,13 @@ messageBox.actions.add('Screen_Sharing', 'Request_Screen_Sharing', {
 		}
 		const rid = Session.get('openedRoom');
 		const room = Rooms.findOne({ _id: rid, t: 'l' });
-
-		if (!room || (room && room.screenSharing && room.screenSharing.active)) {
+		if (!room) {
+			return;
+		}
+		const { screenSharing: { status } = {} } = room;
+		if (status === 'active' || status === 'requested') {
 			return false;
 		}
-
 		return true;
 	},
 	action: ({ rid }) => {
@@ -43,14 +35,18 @@ Meteor.startup(function() {
 	Tracker.autorun(function() {
 		const rid = Session.get('openedRoom');
 		const room = Rooms.findOne({ _id: rid, t: 'l' });
-		if (room && room.screenSharing && room.screenSharing.active) {
-			openSessionIframe(rid, room.screenSharing.sessionUrl);
+		if (!room) {
+			return;
 		}
+		const { screenSharing: { status, sessionUrl } = {} } = room;
+		if (status !== 'active') {
+			return;
+		}
+		const messageBoxRef = document.querySelector('.rc-message-box');
+		ScreenSharingDialog.open(messageBoxRef, { rid, src: sessionUrl });
 	});
 });
 
 callbacks.add('roomExit', () => {
-	if (ScreenSharingDialog.opened) {
-		ScreenSharingDialog.close();
-	}
+	ScreenSharingDialog.close();
 });

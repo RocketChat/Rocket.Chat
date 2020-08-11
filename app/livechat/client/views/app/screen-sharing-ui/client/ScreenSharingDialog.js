@@ -17,6 +17,9 @@ export const ScreenSharingDialog = new class {
 	}
 
 	open(source, { rid, src }) {
+		if (this.opened) {
+			this.close();
+		}
 		if (!this.dialogView) {
 			this.init();
 		}
@@ -45,6 +48,9 @@ export const ScreenSharingDialog = new class {
 	}
 
 	close() {
+		if (!this.opened) {
+			return;
+		}
 		$('.screensharing-dialog').removeClass('show');
 		this.opened = false;
 	}
