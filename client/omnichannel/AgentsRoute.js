@@ -11,6 +11,7 @@ import { usePermission } from '../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../components/NotAuthorizedPage';
 import ManageAgents from './agentManager/ManageAgents';
 import AgentManagerEdit from './agentManager/AgentManagerEdit';
+import AgentInfo from './agentManager/AgentInfo';
 import UserAvatar from '../components/basic/avatar/UserAvatar';
 import { useRouteParameter, useRoute } from '../contexts/RouterContext';
 import VerticalBar from '../components/basic/VerticalBar';
@@ -31,7 +32,6 @@ export function RemoveAgentButton({ _id, reload }) {
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
-
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
 	fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
@@ -75,7 +75,7 @@ function AgentsRoute() {
 	}, [sort]);
 
 	const onRowClick = useCallback((id) => () => agentsRoute.push({
-		context: 'edit',
+		context: 'info',
 		id,
 	}), [agentsRoute]);
 
@@ -108,26 +108,38 @@ function AgentsRoute() {
 		<RemoveAgentButton _id={_id} reload={reload}/>
 	</Table.Row>, [mediaQuery, reload, onRowClick]);
 
-	const handleVerticalBarCloseButtonClick = () => {
-		agentsRoute.push({});
-	};
 
 	const EditAgentsTab = useCallback(() => {
-		console.log(context, id);
-		if (context !== 'edit') {
+		if (!context) {
 			return '';
 		}
+		const handleVerticalBarCloseButtonClick = () => {
+			agentsRoute.push({});
+		};
+
+		const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${ _id }`);
+
+		const handleRemoveClick = (async () => {
+			const result = await deleteAction();
+			if (result.success === true) {
+				reload();
+			}
+		}, [deleteAction, reload]);
+
+		const actions = <AgentInfo.Action title={t('Remove')} label={t('Remove')} onClick={() => { handleRemoveClick(id, reload); }} icon={'trash'} />;
 
 		return <VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
 				{context === 'edit' && t('Edit_User')}
+				{context === 'info' && t('User_Info')}
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
 
 			{context === 'edit' && <AgentManagerEdit uid={id}/>}
+			{context === 'info' && <AgentInfo uid={id} actions={actions}/>}
 
 		</VerticalBar>;
-	}, [t, context, id]);
+	}, [t, context, id, agentsRoute]);
 
 	if (!canViewAgents) {
 		return <NotAuthorizedPage />;
@@ -144,8 +156,7 @@ function AgentsRoute() {
 		header={header}
 		renderRow={renderRow}
 		title={'Agents'}
-		endpoint={endpoint}
-		EditAgentsTab={EditAgentsTab}>
+		endpoint={endpoint}>
 		<EditAgentsTab />
 	</ManageAgents>;
 }

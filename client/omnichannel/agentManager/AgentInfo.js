@@ -5,7 +5,10 @@ import { css } from '@rocket.chat/css-in-js';
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/basic/VerticalBar';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import UserCard from '../../components/basic/UserCard';
+import * as UserStatus from '../../components/basic/UserStatus';
+import { FormSkeleton } from './Skeleton';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -13,19 +16,38 @@ const wordBreak = css`
 	word-break: break-word;
 `;
 
+// username,
+// 	status,
+// 	data,
+// 	// onChange,
+// 	statusLivechat,
+// 	departments,
+// 	actions,
+// 	...props
+
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
 
-export const UserInfo = React.memo(function UserInfo({
-	username,
-	status,
-	data,
-	// onChange,
-	statusLivechat,
-	departments,
+export const AgentInfo = React.memo(function UserInfo({
+	uid,
 	actions,
 	...props
 }) {
 	const t = useTranslation();
+	const { data, state } = useEndpointDataExperimental(`livechat/users/agent/${ uid }`);
+
+	if (state === 'LOADING') {
+		return <FormSkeleton/>;
+	}
+
+
+	const { user } = data || { user: {} };
+	const {
+		username,
+		statusLivechat,
+	} = user;
+
+	const status = UserStatus.getStatus(data.status);
+	console.log(actions);
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
@@ -52,6 +74,6 @@ export const Action = ({ icon, label, ...props }) => (
 	</Button>
 );
 
-UserInfo.Action = Action;
+AgentInfo.Action = Action;
 
-export default UserInfo;
+export default AgentInfo;
