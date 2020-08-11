@@ -595,7 +595,7 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	resetScreenSharingStatus() {
+	resetScreenSharingStatus({ roomId }) {
 		const query = {
 			t: 'l',
 			screenSharing: { $exists: true },
@@ -606,19 +606,23 @@ export class LivechatRooms extends Base {
 			},
 		};
 
+		if (roomId) {
+			query._id = roomId;
+			return this.update(query, update);
+		}
+
 		return this.update(query, update, { multi: true });
 	}
 
-	updateScreenSharingStatus(roomId, { active, sessionUrl, status }) {
+	updateScreenSharingStatus(roomId, { sessionUrl, status }) {
 		const query = {
 			_id: roomId,
 			t: 'l',
 		};
 		const update = {
 			$set: {
-				'screenSharing.active': active,
-				'screenSharing.sessionUrl': sessionUrl,
 				'screenSharing.status': status,
+				'screenSharing.sessionUrl': sessionUrl,
 			},
 		};
 
