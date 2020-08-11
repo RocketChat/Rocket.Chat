@@ -102,7 +102,7 @@ export function ManagersRoute() {
 		return <NotAuthorizedPage />;
 	}
 
-	return <ManageAgents setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data} useQuery={useQuery} reload={reload} header={header} renderRow={renderRow} title={'Manager'} endpoint={endpoint} />;
+	return <ManageAgents setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data} useQuery={useQuery} reload={reload} header={header} renderRow={renderRow} title={t('Managers')} endpoint={endpoint} />;
 }
 
 export default ManagersRoute;
