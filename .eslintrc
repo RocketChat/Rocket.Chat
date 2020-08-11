@@ -73,12 +73,14 @@
         "@typescript-eslint"
       ],
       "rules": {
+        "func-call-spacing": "off",
         "jsx-quotes": [
           "error",
           "prefer-single"
         ],
         "indent": "off",
         "no-extra-parens": "off",
+        "no-spaced-func": "off",
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
         "react/jsx-no-undef": "error",

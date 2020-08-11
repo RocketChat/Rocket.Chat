@@ -19,10 +19,32 @@ type LivechatAppearanceEndpointData = {
 	appearance: ISetting[];
 };
 
-type AppearanceSettings = Record<ISetting['_id'], ISetting['value']>;
+type LivechatAppearanceSettings = {
+	Livechat_title: string;
+	Livechat_title_color: string;
+	Livechat_show_agent_info: boolean;
+	Livechat_show_agent_email: boolean;
+	Livechat_display_offline_form: boolean;
+	Livechat_offline_form_unavailable: string;
+	Livechat_offline_message: string;
+	Livechat_offline_title: string;
+	Livechat_offline_title_color: string;
+	Livechat_offline_email: string;
+	Livechat_offline_success_message: string;
+	Livechat_registration_form: boolean;
+	Livechat_name_field_registration_form: boolean;
+	Livechat_email_field_registration_form: boolean;
+	Livechat_registration_form_message: string;
+	Livechat_conversation_finished_message: string;
+	Livechat_conversation_finished_text: string;
+	Livechat_enable_message_character_limit: boolean;
+	Livechat_message_character_limit: number;
+};
+
+type AppearanceSettings = Partial<LivechatAppearanceSettings>;
 
 const reduceAppearance = (settings: LivechatAppearanceEndpointData['appearance']): AppearanceSettings =>
-	settings.reduce<AppearanceSettings>((acc, { _id, value }) => {
+	settings.reduce<Partial<LivechatAppearanceSettings>>((acc, { _id, value }) => {
 		acc = { ...acc, [_id]: value };
 		return acc;
 	}, {});
@@ -53,20 +75,20 @@ const AppearancePageContainer: FC = () => {
 		</Page>;
 	}
 
-	return <AppearancePage settings={reduceAppearance(data.appearance)}/>;
+	return <AppearancePage settings={data.appearance}/>;
 };
 
 type AppearancePageProps = {
-	settings: ReturnType<typeof reduceAppearance>;
+	settings: LivechatAppearanceEndpointData['appearance'];
 };
 
 const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const save = useMethod('livechat:saveAppearance');
+	const save: (settings: Pick<ISetting, '_id' | 'value'>[]) => Promise<void> = useMethod('livechat:saveAppearance');
 
-	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(settings);
+	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(reduceAppearance(settings));
 
 	const handleSave = useMutableCallback(async () => {
 		const mappedAppearance = Object.entries(values).map(([_id, value]) => ({ _id, value }));
