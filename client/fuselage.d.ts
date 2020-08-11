@@ -195,6 +195,9 @@ declare module '@rocket.chat/fuselage' {
 	type InputBoxProps = BoxProps;
 	export const InputBox: ForwardRefExoticComponent<InputBoxProps>;
 
+	type NumberInputProps = BoxProps;
+	export const NumberInput: ForwardRefExoticComponent<NumberInputProps>;
+
 	type TextAreaInputProps = BoxProps;
 	export const TextAreaInput: ForwardRefExoticComponent<TextAreaInputProps>;
 
