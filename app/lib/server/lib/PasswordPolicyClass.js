@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 
 class PasswordPolicy {
 	constructor({
@@ -122,6 +123,24 @@ class PasswordPolicy {
 			}
 		}
 		return data;
+	}
+
+	generatePassword() {
+		if (this.enabled) {
+			for (let i = 0; i < 10; i++) {
+				const password = this._generatePassword();
+				if (this.validate(password)) {
+					return password;
+				}
+			}
+		}
+
+		return Random.id();
+	}
+
+	_generatePassword() {
+		const length = Math.min(Math.max(this.minLength, 12), this.maxLength > 0 ? this.maxLength : Number.MAX_SAFE_INTEGER);
+		return new Array(length).fill().map(() => String.fromCharCode(Math.random() * 86 + 40)).join('');
 	}
 }
 

@@ -21,3 +21,23 @@ registerOmnichannelRoute('/agents/:context?/:id?', {
 	name: 'omnichannel-agents',
 	lazyRouteComponent: () => import('./AgentsRoute'),
 });
+
+registerOmnichannelRoute('/webhooks', {
+	name: 'omnichannel-webhooks',
+	lazyRouteComponent: () => import('./webhooks/WebhooksPage'),
+});
+
+registerOmnichannelRoute('/customfields/:context?/:id?', {
+	name: 'omnichannel-customfields',
+	lazyRouteComponent: () => import('./customFields/CustomFieldsRouter'),
+});
+
+registerOmnichannelRoute('/appearance', {
+	name: 'omnichannel-appearance',
+	lazyRouteComponent: () => import('./appearance/AppearancePage'),
+});
+
+registerOmnichannelRoute('/managers', {
+	name: 'omnichannel-managers',
+	lazyRouteComponent: () => import('./ManagersRoute'),
+});

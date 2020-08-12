@@ -342,8 +342,12 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 									return callback(new Meteor.Error('error-not-allowed', 'Not allowed'));
 								}
 							}
-							setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
-							callback();
+							try {
+								setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
+								callback();
+							} catch (e) {
+								callback(e);
+							}
 						}));
 					}));
 					busboy.on('field', (fieldname, val) => {
@@ -766,6 +770,9 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 	get() {
 		const { selector } = this.queryParams;
+
+		console.log(this.queryParams);
+
 		if (!selector) {
 			return API.v1.failure('The \'selector\' param is required');
 		}

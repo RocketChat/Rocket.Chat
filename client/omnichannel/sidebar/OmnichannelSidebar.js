@@ -26,11 +26,10 @@ export default React.memo(function OmnichannelSidebar() {
 	const currentRoute = useCurrentRoute();
 	const currentPath = useRoutePath(...currentRoute);
 	const absoluteUrl = useAbsoluteUrl();
-	const pathSection = 'omnichannel';
 
 	useEffect(() => {
 		const { pathname: omnichannelPath } = new URL(absoluteUrl('omnichannel/'));
-		console.log(omnichannelPath);
+
 		if (!currentPath.startsWith(omnichannelPath)) {
 			SideNav.closeFlex();
 		}
@@ -40,7 +39,7 @@ export default React.memo(function OmnichannelSidebar() {
 		<Sidebar>
 			<Sidebar.Header onClose={closeOmnichannelFlex} title={<>{t('Omnichannel')}</>}/>
 			<Sidebar.Content>
-				<Sidebar.ItemsAssembler pathSection={pathSection} items={items} currentPath={currentPath}/>
+				<Sidebar.ItemsAssembler items={items} currentPath={currentPath}/>
 			</Sidebar.Content>
 		</Sidebar>
 	</SettingsProvider>;
