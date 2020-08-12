@@ -81,6 +81,7 @@
         "indent": "off",
         "no-extra-parens": "off",
         "no-spaced-func": "off",
+        "no-useless-constructor": "off",
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
         "react/jsx-no-undef": "error",
