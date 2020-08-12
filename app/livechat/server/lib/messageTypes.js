@@ -24,3 +24,11 @@ actionLinks.register('denyLivechatCall', function(message/* , params*/) {
 		Messages.setHiddenById(message._id);
 	});
 });
+
+actionLinks.register('acceptScreenSharingRequest', function(message) {
+	Meteor.call('livechat:requestScreenSharing', message.rid);
+	Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
+	Meteor.defer(() => {
+		Messages.setHiddenById(message._id);
+	});
+});

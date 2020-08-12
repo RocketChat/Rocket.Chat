@@ -1,2 +1,1 @@
 export const addServerUrlToIndex = (file) => file.replace('<body>', `<body><script> SERVER_URL = '${ __meteor_runtime_config__.ROOT_URL }'; </script>`);
-export const addCobrowseLicenseKey = (file, key) => file.replace('#LICENSE_KEY', key);

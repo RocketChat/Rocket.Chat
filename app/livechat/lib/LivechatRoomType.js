@@ -136,6 +136,9 @@ export default class LivechatRoomType extends RoomTypeConfig {
 
 	getCustomBadges(room) {
 		if (room.screenSharing && room.screenSharing.status === 'active') {
+			return 'icon-videocam';
+		}
+		if (room.screenSharing && room.screenSharing.status === 'requested') {
 			return 'icon-video';
 		}
 	}

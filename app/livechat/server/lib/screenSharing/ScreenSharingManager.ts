@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../settings/server';
-import { LivechatRooms, Messages, Users } from '../../../../models/server';
+import { LivechatRooms, Messages, Users, Rooms } from '../../../../models/server';
 import { IScreenSharingProvider } from './IScreenSharingProvider';
 
 export class ScreenSharingManager {
@@ -23,6 +24,7 @@ export class ScreenSharingManager {
 		this.providers.set(name, Provider);
 		if (name === this.providerName) {
 			this.setProvider();
+			this.setupBundle();
 		}
 	}
 
@@ -37,16 +39,32 @@ export class ScreenSharingManager {
 		this.screenShareProvider = this.getProvider();
 	}
 
+	setupBundle(): void {
+		this.screenShareProvider.setupBundle();
+	}
+
 	getConfig(): any {
-		return { enabled: this.enabled(), ...this.screenShareProvider.config } || {};
+		return { enabled: this.enabled(), ...this.screenShareProvider.config };
 	}
 
 	requestSession(roomId: string, user: any, type: string): void {
+		const room = Rooms.findOneById(roomId);
+		if (!room) {
+			return;
+		}
+		const { screenSharing } = room;
+		if (screenSharing && screenSharing.status === 'active') {
+			return;
+		}
+		LivechatRooms.updateScreenSharingStatus(roomId, { status: 'requested', sessionUrl: '' });
 		if (type === 'agent') {
 			Messages.createWithTypeRoomIdMessageAndUser('request_livechat_screen_sharing_access', roomId, '', user, {});
-			LivechatRooms.updateScreenSharingStatus(roomId, { status: 'requested', sessionUrl: '' });
 		} else if (type === 'visitor') {
-			Messages.createWithTypeRoomIdMessageAndUser('guest_requesting_livechat_screen_sharing', roomId, 'guest_requesting_livechat_screen_sharing', user, {});
+			Messages.createWithTypeRoomIdMessageAndUser('guest_requesting_livechat_screen_sharing', roomId, 'guest_requesting_livechat_screen_sharing', user, {
+				actionLinks: [
+					{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'acceptScreenSharingRequest', params: '' },
+				],
+			});
 		}
 	}
 
