@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo } from 'react';
-import { useSubscription, Unsubscribe, Subscription } from 'use-subscription';
+import { useSubscription, Subscription } from 'use-subscription';
 
 type RouteName = string;
 
@@ -7,29 +7,19 @@ type RouteParameters = Record<string, string>;
 
 type QueryStringParameters = Record<string, string>;
 
+type RouteGroupName = string;
+
 export type RouterContextValue = {
-	getRoutePath: (
+	queryRoutePath: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
-	) => string | undefined;
-	subscribeToRoutePath: (
+	) => Subscription<string | undefined>;
+	queryRouteUrl: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
-		callback: () => void,
-	) => Unsubscribe;
-	getRouteUrl: (
-		name: RouteName,
-		parameters: RouteParameters | undefined,
-		queryStringParameters: QueryStringParameters | undefined,
-	) => string | undefined;
-	subscribeToRouteUrl: (
-		name: RouteName,
-		parameters: RouteParameters | undefined,
-		queryStringParameters: QueryStringParameters | undefined,
-		callback: () => void,
-	) => Unsubscribe;
+	) => Subscription<string | undefined>;
 	pushRoute: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
@@ -40,43 +30,39 @@ export type RouterContextValue = {
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
 	) => void;
-	getRouteParameter: (
-		name: string
-	) => string | undefined;
-	subscribeToRouteParameter: (
-		name: string,
-		callback: () => void
-	) => Unsubscribe;
-	getQueryStringParameter: (
-		name: string
-	) => string | undefined;
-	subscribeToQueryStringParameter: (
-		name: string,
-		callback: () => void
-	) => Unsubscribe;
-	getCurrentRoute: () => [
+	queryRouteParameter: (name: string) => Subscription<string | undefined>;
+	queryQueryStringParameter: (name: string) => Subscription<string | undefined>;
+	queryCurrentRoute: () => Subscription<[
 		RouteName?,
 		RouteParameters?,
 		QueryStringParameters?,
-	];
-	subscribeToCurrentRoute: (
-		callback: () => void
-	) => Unsubscribe;
+		RouteGroupName?,
+	]>;
 };
 
 export const RouterContext = createContext<RouterContextValue>({
-	getRoutePath: () => undefined,
-	subscribeToRoutePath: () => (): void => undefined,
-	getRouteUrl: () => undefined,
-	subscribeToRouteUrl: () => (): void => undefined,
+	queryRoutePath: () => ({
+		getCurrentValue: (): undefined => undefined,
+		subscribe: () => (): void => undefined,
+	}),
+	queryRouteUrl: () => ({
+		getCurrentValue: (): undefined => undefined,
+		subscribe: () => (): void => undefined,
+	}),
 	pushRoute: () => undefined,
 	replaceRoute: () => undefined,
-	getRouteParameter: () => undefined,
-	subscribeToRouteParameter: () => (): void => undefined,
-	getQueryStringParameter: () => undefined,
-	subscribeToQueryStringParameter: () => (): void => undefined,
-	getCurrentRoute: () => [],
-	subscribeToCurrentRoute: () => (): void => undefined,
+	queryRouteParameter: () => ({
+		getCurrentValue: (): undefined => undefined,
+		subscribe: () => (): void => undefined,
+	}),
+	queryQueryStringParameter: () => ({
+		getCurrentValue: (): undefined => undefined,
+		subscribe: () => (): void => undefined,
+	}),
+	queryCurrentRoute: () => ({
+		getCurrentValue: (): [undefined, {}, {}, undefined] => [undefined, {}, {}, undefined],
+		subscribe: () => (): void => undefined,
+	}),
 });
 
 type Route = {
@@ -87,18 +73,23 @@ type Route = {
 }
 
 export const useRoute = (name: string): Route => {
-	const { getRoutePath, getRouteUrl, pushRoute, replaceRoute } = useContext(RouterContext);
+	const {
+		queryRoutePath,
+		queryRouteUrl,
+		pushRoute,
+		replaceRoute,
+	} = useContext(RouterContext);
 
 	return useMemo<Route>(() => ({
-		getPath: (parameters, queryStringParameters): ReturnType<Route['getPath']> =>
-			getRoutePath(name, parameters, queryStringParameters),
+		getPath: (parameters, queryStringParameters): string | undefined =>
+			queryRoutePath(name, parameters, queryStringParameters).getCurrentValue(),
 		getUrl: (parameters, queryStringParameters): ReturnType<Route['getUrl']> =>
-			getRouteUrl(name, parameters, queryStringParameters),
+			queryRouteUrl(name, parameters, queryStringParameters).getCurrentValue(),
 		push: (parameters, queryStringParameters): ReturnType<Route['push']> =>
 			pushRoute(name, parameters, queryStringParameters),
 		replace: (parameters, queryStringParameters): ReturnType<Route['replace']> =>
 			replaceRoute(name, parameters, queryStringParameters),
-	}), [getRoutePath, getRouteUrl, name, pushRoute, replaceRoute]);
+	}), [queryRoutePath, queryRouteUrl, name, pushRoute, replaceRoute]);
 };
 
 export const useRoutePath = (
@@ -106,16 +97,14 @@ export const useRoutePath = (
 	parameters?: RouteParameters,
 	queryStringParameters?: QueryStringParameters,
 ): string | undefined => {
-	const { getRoutePath, subscribeToRoutePath } = useContext(RouterContext);
+	const { queryRoutePath } = useContext(RouterContext);
 
-	const subscription = useMemo<Subscription<string | undefined>>(() => ({
-		getCurrentValue: (): string | undefined =>
-			getRoutePath(name, parameters, queryStringParameters),
-		subscribe: (callback): Unsubscribe =>
-			subscribeToRoutePath(name, parameters, queryStringParameters, callback),
-	}), [name, parameters, queryStringParameters, getRoutePath, subscribeToRoutePath]);
-
-	return useSubscription(subscription);
+	return useSubscription(
+		useMemo(
+			() => queryRoutePath(name, parameters, queryStringParameters),
+			[queryRoutePath, name, parameters, queryStringParameters],
+		),
+	);
 };
 
 export const useRouteUrl = (
@@ -123,53 +112,45 @@ export const useRouteUrl = (
 	parameters?: RouteParameters,
 	queryStringParameters?: QueryStringParameters,
 ): string | undefined => {
-	const { getRouteUrl, subscribeToRouteUrl } = useContext(RouterContext);
+	const { queryRouteUrl } = useContext(RouterContext);
 
-	const subscription = useMemo<Subscription<string | undefined>>(() => ({
-		getCurrentValue: (): string | undefined =>
-			getRouteUrl(name, parameters, queryStringParameters),
-		subscribe: (callback): Unsubscribe =>
-			subscribeToRouteUrl(name, parameters, queryStringParameters, callback),
-	}), [name, parameters, queryStringParameters, getRouteUrl, subscribeToRouteUrl]);
-
-	return useSubscription(subscription);
+	return useSubscription(
+		useMemo(
+			() => queryRouteUrl(name, parameters, queryStringParameters),
+			[queryRouteUrl, name, parameters, queryStringParameters],
+		),
+	);
 };
 
 export const useRouteParameter = (name: string): string | undefined => {
-	const { getRouteParameter, subscribeToRouteParameter } = useContext(RouterContext);
+	const { queryRouteParameter } = useContext(RouterContext);
 
-	const subscription = useMemo<Subscription<string | undefined>>(() => ({
-		getCurrentValue: (): string | undefined =>
-			getRouteParameter(name),
-		subscribe: (callback): Unsubscribe =>
-			subscribeToRouteParameter(name, callback),
-	}), [name, getRouteParameter, subscribeToRouteParameter]);
-
-	return useSubscription(subscription);
+	return useSubscription(
+		useMemo(
+			() => queryRouteParameter(name),
+			[queryRouteParameter, name],
+		),
+	);
 };
 
 export const useQueryStringParameter = (name: string): string | undefined => {
-	const { getQueryStringParameter, subscribeToQueryStringParameter } = useContext(RouterContext);
+	const { queryQueryStringParameter } = useContext(RouterContext);
 
-	const subscription = useMemo<Subscription<string | undefined>>(() => ({
-		getCurrentValue: (): string | undefined =>
-			getQueryStringParameter(name),
-		subscribe: (callback): Unsubscribe =>
-			subscribeToQueryStringParameter(name, callback),
-	}), [name, getQueryStringParameter, subscribeToQueryStringParameter]);
-
-	return useSubscription(subscription);
+	return useSubscription(
+		useMemo(
+			() => queryQueryStringParameter(name),
+			[queryQueryStringParameter, name],
+		),
+	);
 };
 
-export const useCurrentRoute = (): [RouteName?, RouteParameters?, QueryStringParameters?] => {
-	const { getCurrentRoute, subscribeToCurrentRoute } = useContext(RouterContext);
+export const useCurrentRoute = (): [RouteName?, RouteParameters?, QueryStringParameters?, RouteGroupName?] => {
+	const { queryCurrentRoute } = useContext(RouterContext);
 
-	const subscription = useMemo<Subscription<[RouteName?, RouteParameters?, QueryStringParameters?]>>(() => ({
-		getCurrentValue: (): [RouteName?, RouteParameters?, QueryStringParameters?] =>
-			getCurrentRoute(),
-		subscribe: (callback): Unsubscribe =>
-			subscribeToCurrentRoute(callback),
-	}), [getCurrentRoute, subscribeToCurrentRoute]);
-
-	return useSubscription(subscription);
+	return useSubscription(
+		useMemo(
+			() => queryCurrentRoute(),
+			[queryCurrentRoute],
+		),
+	);
 };

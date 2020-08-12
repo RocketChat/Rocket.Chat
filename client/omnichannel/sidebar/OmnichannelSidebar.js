@@ -5,7 +5,6 @@ import { useSubscription } from 'use-subscription';
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
-import { useAbsoluteUrl } from '../../contexts/ServerContext';
 import Sidebar from '../../components/basic/Sidebar';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { itemsSubscription } from '../sidebarItems';
@@ -25,15 +24,13 @@ export default React.memo(function OmnichannelSidebar() {
 
 	const currentRoute = useCurrentRoute();
 	const currentPath = useRoutePath(...currentRoute);
-	const absoluteUrl = useAbsoluteUrl();
+	const [,,, currentRouteGroupName] = currentRoute;
 
 	useEffect(() => {
-		const { pathname: omnichannelPath } = new URL(absoluteUrl('omnichannel/'));
-
-		if (!currentPath.startsWith(omnichannelPath)) {
+		if (currentRouteGroupName !== 'omnichannel') {
 			SideNav.closeFlex();
 		}
-	}, [absoluteUrl, currentPath]);
+	}, [currentRouteGroupName]);
 
 	return <SettingsProvider privileged>
 		<Sidebar>
