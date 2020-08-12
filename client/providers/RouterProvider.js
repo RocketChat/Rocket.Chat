@@ -4,22 +4,13 @@ import React from 'react';
 
 import { RouterContext } from '../contexts/RouterContext';
 
-const pushRoute = (name, parameters, queryStringParameters) => {
-	FlowRouter.go(name, parameters, queryStringParameters);
-};
-
-const replaceRoute = (name, parameters, queryStringParameters) => {
-	FlowRouter.withReplaceState(() => {
-		FlowRouter.go(name, parameters, queryStringParameters);
-	});
-};
-
 const getRoutePath = (name, parameters, queryStringParameters) =>
 	Tracker.nonreactive(() => FlowRouter.path(name, parameters, queryStringParameters));
 
 const subscribeToRoutePath = (name, parameters, queryStringParameters, callback) => {
 	const computation = Tracker.autorun(() => {
-		callback(FlowRouter.path(name, parameters, queryStringParameters));
+		FlowRouter.path(name, parameters, queryStringParameters);
+		callback();
 	});
 
 	return () => {
@@ -32,7 +23,8 @@ const getRouteUrl = (name, parameters, queryStringParameters) =>
 
 const subscribeToRouteUrl = (name, parameters, queryStringParameters, callback) => {
 	const computation = Tracker.autorun(() => {
-		callback(FlowRouter.url(name, parameters, queryStringParameters));
+		FlowRouter.url(name, parameters, queryStringParameters);
+		callback();
 	});
 
 	return () => {
@@ -40,11 +32,23 @@ const subscribeToRouteUrl = (name, parameters, queryStringParameters, callback) 
 	};
 };
 
-const getRouteParameter = (name) => Tracker.nonreactive(() => FlowRouter.getParam(name));
+const pushRoute = (name, parameters, queryStringParameters) => {
+	FlowRouter.go(name, parameters, queryStringParameters);
+};
+
+const replaceRoute = (name, parameters, queryStringParameters) => {
+	FlowRouter.withReplaceState(() => {
+		FlowRouter.go(name, parameters, queryStringParameters);
+	});
+};
+
+const getRouteParameter = (name) =>
+	Tracker.nonreactive(() => FlowRouter.getParam(name));
 
 const subscribeToRouteParameter = (name, callback) => {
 	const computation = Tracker.autorun(() => {
-		callback(FlowRouter.getParam(name));
+		FlowRouter.getParam(name);
+		callback();
 	});
 
 	return () => {
@@ -52,11 +56,13 @@ const subscribeToRouteParameter = (name, callback) => {
 	};
 };
 
-const getQueryStringParameter = (name) => Tracker.nonreactive(() => FlowRouter.getQueryParam(name));
+const getQueryStringParameter = (name) =>
+	Tracker.nonreactive(() => FlowRouter.getQueryParam(name));
 
 const subscribeToQueryStringParameter = (name, callback) => {
 	const computation = Tracker.autorun(() => {
-		callback(FlowRouter.getQueryParam(name));
+		FlowRouter.getQueryParam(name);
+		callback();
 	});
 
 	return () => {
