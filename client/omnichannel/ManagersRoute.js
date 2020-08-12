@@ -32,13 +32,7 @@ const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
 	fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
-	query: JSON.stringify({
-		$or: [
-			{ 'emails.address': { $regex: text || '', $options: 'i' } },
-			{ username: { $regex: text || '', $options: 'i' } },
-			{ name: { $regex: text || '', $options: 'i' } },
-		],
-	}),
+	text,
 	sort: JSON.stringify({ [column]: sortDir(direction), usernames: column === 'name' ? sortDir(direction) : undefined }),
 	...itemsPerPage && { count: itemsPerPage },
 	...current && { offset: current },
