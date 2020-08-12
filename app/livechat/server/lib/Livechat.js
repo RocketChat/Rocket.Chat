@@ -1119,6 +1119,13 @@ export const Livechat = {
 
 		return Promise.await(businessHourManager.allowAgentChangeServiceStatus(agentId));
 	},
+
+	notifyRoomVisitorChange(roomId, visitor) {
+		Livechat.stream.emit(roomId, {
+			type: 'visitorChange',
+			visitor,
+		});
+	},
 };
 
 Livechat.stream = new Meteor.Streamer('livechat-room');

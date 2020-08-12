@@ -9,6 +9,8 @@ import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
+import { findVisitorInfo } from '../lib/visitors';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -177,5 +179,50 @@ API.v1.addRoute('livechat/room.survey', {
 API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
 	post() {
 		API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
+	},
+});
+
+API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
+	put() {
+		try {
+			check(this.bodyParams, {
+				rid: String,
+				visitorId: String,
+			});
+
+			if (!Promise.await(hasPermissionAsync(this.userId, 'change-livechat-room-visitor'))) {
+				throw new Error('error-not-authorized');
+			}
+
+			const { rid, visitorId } = this.bodyParams;
+
+			const visitorInfo = Promise.await(findVisitorInfo({ userId: this.userId, visitorId }));
+			const { visitor } = visitorInfo;
+			if (!visitor) {
+				throw new Meteor.Error('invalid-visitor-token');
+			}
+
+			const room = Promise.await(LivechatRooms.findOneById(rid));
+			if (!room) {
+				throw new Meteor.Error('invalid-room-id');
+			}
+
+			Promise.await(LivechatRooms.changeVisitorByRoomId(rid, visitor));
+
+			Livechat.notifyRoomVisitorChange(rid, visitor);
+
+			return API.v1.success({
+				room: {
+					rid,
+					v: {
+						_id: visitor._id,
+						username: visitor.username,
+						token: visitor.token,
+					},
+				},
+			});
+		} catch (e) {
+			return API.v1.failure(e);
+		}
 	},
 });
