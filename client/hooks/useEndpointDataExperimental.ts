@@ -3,22 +3,34 @@ import { useEffect, useState } from 'react';
 import { useEndpoint } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
-export const ENDPOINT_STATES = {
-	LOADING: 'LOADING',
-	DONE: 'DONE',
-	ERROR: 'ERROR',
+export enum ENDPOINT_STATES {
+	LOADING = 'LOADING',
+	DONE = 'DONE',
+	ERROR = 'ERROR',
+}
+
+type EndpointState<T> = {
+	data: T | null;
+	state: ENDPOINT_STATES;
+	error?: Error;
+	delaying?: boolean;
+	reload?: () => Promise<void>;
 };
 
-const defaultState = { data: null, state: ENDPOINT_STATES.LOADING };
-const defaultParams = {};
-const defaultOptions = {};
+type EndpointOptions = {
+	delayTimeout?: number;
+};
 
-export const useEndpointDataExperimental = (
-	endpoint,
+const defaultState: EndpointState<any> = { data: null, state: ENDPOINT_STATES.LOADING };
+const defaultParams: Record<string, unknown> = {};
+const defaultOptions: EndpointOptions = {};
+
+export const useEndpointDataExperimental = <T>(
+	endpoint: string,
 	params = defaultParams,
 	{ delayTimeout = 1000 } = defaultOptions,
-) => {
-	const [data, setData] = useState(defaultState);
+): EndpointState<T> => {
+	const [data, setData] = useState<EndpointState<T>>(defaultState);
 
 	const getData = useEndpoint('GET', endpoint);
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -26,13 +38,13 @@ export const useEndpointDataExperimental = (
 	useEffect(() => {
 		let mounted = true;
 
-		const fetchData = async () => {
+		const fetchData = async (): Promise<void> => {
 			const timer = setTimeout(() => {
 				if (!mounted) {
 					return;
 				}
 
-				setData({ delaying: true, state: ENDPOINT_STATES.LOADING, reload: fetchData });
+				setData({ data: null, delaying: true, state: ENDPOINT_STATES.LOADING, reload: fetchData });
 			}, delayTimeout);
 
 			try {
@@ -54,7 +66,7 @@ export const useEndpointDataExperimental = (
 					return;
 				}
 
-				setData({ error, state: ENDPOINT_STATES.ERROR, reload: fetchData });
+				setData({ data: null, error, state: ENDPOINT_STATES.ERROR, reload: fetchData });
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				clearTimeout(timer);
@@ -63,7 +75,7 @@ export const useEndpointDataExperimental = (
 
 		fetchData();
 
-		return () => {
+		return (): void => {
 			mounted = false;
 		};
 	}, [delayTimeout, dispatchToastMessage, getData, params]);

@@ -1,10 +1,56 @@
-import React from 'react';
+/* eslint-disable @typescript-eslint/camelcase */
+import React, { FC, FormEvent } from 'react';
 import { Box, Field, TextInput, ToggleSwitch, Accordion, FieldGroup, InputBox, TextAreaInput, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const AppearanceForm = ({ values = {}, handlers = {} }) => {
+type AppearanceFormProps = {
+	values: {
+		Livechat_title?: string;
+		Livechat_title_color?: string;
+		Livechat_show_agent_info?: boolean;
+		Livechat_show_agent_email?: boolean;
+		Livechat_display_offline_form?: boolean;
+		Livechat_offline_form_unavailable?: string;
+		Livechat_offline_message?: string;
+		Livechat_offline_title?: string;
+		Livechat_offline_title_color?: string;
+		Livechat_offline_email?: string;
+		Livechat_offline_success_message?: string;
+		Livechat_registration_form?: boolean;
+		Livechat_name_field_registration_form?: boolean;
+		Livechat_email_field_registration_form?: boolean;
+		Livechat_registration_form_message?: string;
+		Livechat_conversation_finished_message?: string;
+		Livechat_conversation_finished_text?: string;
+		Livechat_enable_message_character_limit?: boolean;
+		Livechat_message_character_limit?: number;
+	};
+	handlers: {
+		handleLivechat_title?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_title_color?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_show_agent_info?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_show_agent_email?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_display_offline_form?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_offline_form_unavailable?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_offline_message?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_offline_title?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_offline_title_color?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_offline_email?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_offline_success_message?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_registration_form?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_name_field_registration_form?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_email_field_registration_form?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_registration_form_message?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_conversation_finished_message?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_conversation_finished_text?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_enable_message_character_limit?: (event: FormEvent<HTMLInputElement>) => void;
+		handleLivechat_message_character_limit?: (value: number) => void;
+	};
+};
+
+const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} }) => {
 	const t = useTranslation();
 
 	const {
@@ -52,7 +98,7 @@ const AppearanceForm = ({ values = {}, handlers = {} }) => {
 	} = handlers;
 
 	const onChangeCharacterLimit = useMutableCallback(({ currentTarget: { value } }) => {
-		handleLivechat_message_character_limit(Number(value) < 0 ? 0 : value);
+		handleLivechat_message_character_limit && handleLivechat_message_character_limit(Number(value) < 0 ? 0 : value);
 	});
 
 	return <Accordion>
