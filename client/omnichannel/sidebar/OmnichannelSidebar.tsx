@@ -1,5 +1,5 @@
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, FC, memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
@@ -9,7 +9,7 @@ import Sidebar from '../../components/basic/Sidebar';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { itemsSubscription } from '../sidebarItems';
 
-export default React.memo(function OmnichannelSidebar() {
+const OmnichannelSidebar: FC = () => {
 	const items = useSubscription(itemsSubscription);
 	const t = useTranslation();
 
@@ -23,8 +23,8 @@ export default React.memo(function OmnichannelSidebar() {
 	}, []);
 
 	const currentRoute = useCurrentRoute();
-	const currentPath = useRoutePath(...currentRoute);
-	const [,,, currentRouteGroupName] = currentRoute;
+	const [currentRouteName, currentRouteParams, currentQueryStringParams, currentRouteGroupName] = currentRoute;
+	const currentPath = useRoutePath(currentRouteName ?? '', currentRouteParams, currentQueryStringParams);
 
 	useEffect(() => {
 		if (currentRouteGroupName !== 'omnichannel') {
@@ -40,4 +40,6 @@ export default React.memo(function OmnichannelSidebar() {
 			</Sidebar.Content>
 		</Sidebar>
 	</SettingsProvider>;
-});
+};
+
+export default memo(OmnichannelSidebar);
