@@ -771,8 +771,6 @@ API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 	get() {
 		const { selector } = this.queryParams;
 
-		console.log(this.queryParams);
-
 		if (!selector) {
 			return API.v1.failure('The \'selector\' param is required');
 		}
