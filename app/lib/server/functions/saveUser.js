@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
-import { Random } from 'meteor/random';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -238,7 +237,7 @@ export const saveUser = function(userId, userData) {
 
 	if (userData.hasOwnProperty('setRandomPassword')) {
 		if (userData.setRandomPassword) {
-			userData.password = Random.id();
+			userData.password = passwordPolicy.generatePassword();
 			userData.requirePasswordChange = true;
 			sendPassword = true;
 		}
