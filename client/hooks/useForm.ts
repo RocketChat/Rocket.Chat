@@ -138,8 +138,8 @@ const getValue = (eventOrValue: ChangeEvent | unknown): unknown => {
 	return target.value;
 };
 
-export const useForm = <K extends string>(
-	initialValues: Partial<Record<K, unknown>>,
+export const useForm = (
+	initialValues: Record<string, unknown>,
 	onChange: ((...args: unknown[]) => void) = (): void => undefined,
 ): UseFormReturnType => {
 	const [state, dispatch] = useReducer(reduceForm, initialValues, initForm);
