@@ -1,10 +1,12 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { TextInput, Button, Box, Icon } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { GenericTable } from '../../components/GenericTable';
+import { UserAutoComplete } from '../../components/basic/AutoComplete';
 
 
 const FilterByText = ({ setFilter, ...props }) => {
@@ -21,25 +23,26 @@ const FilterByText = ({ setFilter, ...props }) => {
 };
 
 
-function AgentsManagerAdd({ reload, endpoint }) {
+function AgentsManagerAdd({ reload, ...props }) {
 	const t = useTranslation();
-	const [username, setUsername] = useState('');
-	const handleChange = useCallback((event) => setUsername(event.currentTarget.value), []);
+	const [username, setUsername] = useState();
 
+	const saveAction = useEndpointAction('POST', 'livechat/users/manager', { username });
 
-	const saveAction = useEndpointAction('POST', endpoint, { username });
-
-	const handleSave = useCallback(async () => {
-		if (username) {
-			const result = await saveAction();
-			if (result.success === true) {
-				reload();
-				setUsername('');
-			}
+	const handleSave = useMutableCallback(async () => {
+		if (!username) {
+			return;
 		}
-	}, [username, saveAction, reload]);
-	return <Box display='flex' alignItems='center'>
-		<TextInput value={username} onSubmit={handleSave} onChange={handleChange} maxWidth={400} /><Button onClick={handleSave} marginInlineStart={4} primary margin>{t('Add')}</Button>
+		const result = await saveAction();
+		if (!result.success) {
+			return;
+		}
+		reload();
+		setUsername();
+	});
+	return <Box display='flex' alignItems='center' {...props}>
+		<UserAutoComplete value={username} onChange={setUsername}/>
+		<Button disabled={!username} onClick={handleSave} mis='x8' primary>{t('Add')}</Button>
 	</Box>;
 }
 
@@ -51,15 +54,13 @@ function ManageAgents({
 	params,
 	title,
 	renderRow,
-	endpoint,
 	children,
 }) {
 	return <Page flexDirection='row'>
 		<Page>
-			<Page.Header title={title}>
-			</Page.Header>
+			<Page.Header title={title}/>
+			<AgentsManagerAdd reload={reload} pi='x24'/>
 			<Page.Content>
-				<AgentsManagerAdd reload={reload} endpoint={endpoint}/>
 				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.users} total={data && data.total} setParams={setParams} params={params} />
 			</Page.Content>
 		</Page>

@@ -67,9 +67,8 @@ export function ManagersRoute() {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const endpoint = 'livechat/users/manager';
 
-	const { data, reload } = useEndpointDataExperimental(endpoint, query) || {};
+	const { data, reload } = useEndpointDataExperimental('livechat/users/manager', query) || {};
 
 
 	const header = useMemo(() => [
@@ -102,7 +101,7 @@ export function ManagersRoute() {
 		return <NotAuthorizedPage />;
 	}
 
-	return <ManageAgents setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data} useQuery={useQuery} reload={reload} header={header} renderRow={renderRow} title={t('Managers')} endpoint={endpoint} />;
+	return <ManageAgents setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data} useQuery={useQuery} reload={reload} header={header} renderRow={renderRow} title={t('Managers')} />;
 }
 
 export default ManagersRoute;
