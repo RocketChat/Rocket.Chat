@@ -20,6 +20,7 @@ export function RemoveManagerButton({ _id, reload }) {
 		if (result.success === true) {
 			reload();
 		}
+	});
 	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
 }
 
