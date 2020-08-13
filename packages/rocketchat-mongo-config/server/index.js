@@ -3,6 +3,20 @@ import { PassThrough } from 'stream';
 
 import { EmailTest } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
+import { HTTP } from 'meteor/http';
+
+// Set default HTTP call timeout to 20s
+const envTimeout = parseInt(process.env.HTTP_DEFAULT_TIMEOUT, 10);
+const timeout = !isNaN(envTimeout) ? envTimeout : 20000;
+
+const { call } = HTTP;
+HTTP.call = function _call(method, url, options = {}, callback) {
+	if (!options.timeout) {
+		options.timeout = timeout;
+	}
+
+	return call.call(HTTP, method, url, options, callback);
+};
 
 // FIX For TLS error see more here https://github.com/RocketChat/Rocket.Chat/issues/9316
 // TODO: Remove after NodeJS fix it, more information
