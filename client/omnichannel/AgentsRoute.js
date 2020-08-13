@@ -44,7 +44,15 @@ export function AgentInfoActions({ reload }) {
 		}
 	});
 
-	return <AgentInfo.Action title={t('Remove')} label={t('Remove')} onClick={handleRemoveClick} icon={'trash'} />;
+	const handleEditClick = useMutableCallback(() => agentsRoute.push({
+		context: 'edit',
+		id: _id,
+	}));
+
+	return [
+		<AgentInfo.Action key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleRemoveClick} icon={'trash'} />,
+		<AgentInfo.Action key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon={'edit'} />,
+	];
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
@@ -143,7 +151,6 @@ function AgentsRoute() {
 		return <NotAuthorizedPage />;
 	}
 
-	console.log(data);
 
 	return <ManageAgents
 		setParams={setParams}

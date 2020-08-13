@@ -79,7 +79,6 @@ function ManageAgents({
 	children,
 }) {
 	const currRoute = useCurrentRoute();
-	console.log(currRoute);
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}/>
