@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Field } from '@rocket.chat/fuselage';
+import { useStableArray } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import TimeRangeInput from './TimeRangeInput';
+import { DAYS_OF_WEEK } from './BusinessHoursForm';
 
 const TimeRangeFieldsAssembler = ({ onChange, daysOpen, daysTime, className }) => {
 	const t = useTranslation();
-	const handleChange = (day) => (start, finish) => onChange({ [day]: { start, finish } });
+	const handleChange = (day) => (start, finish) => onChange({ ...daysTime, [day]: { start, finish } });
 
-	return daysOpen.map((day) => <>
+	const stableDaysOpen = useStableArray(daysOpen);
+	const daysList = useMemo(() => DAYS_OF_WEEK.filter((day) => stableDaysOpen.includes(day)), [stableDaysOpen]);
+
+	return daysList.map((day) => <>
 		<Field className={className}>
 			<Field.Label>
 				{t(day)}

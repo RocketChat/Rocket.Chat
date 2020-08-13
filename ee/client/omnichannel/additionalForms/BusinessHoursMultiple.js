@@ -1,21 +1,24 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Field, TextInput, ToggleSwitch, MultiSelectFiltered, Box, Skeleton } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
 import { useForm } from '../../../../client/hooks/useForm';
 
-const BusinessHoursMultipleContainer = ({ onChange, initialData }) => {
+const mapDepartments = (departments) => departments.map(({ _id }) => _id);
+
+const getInitialData = (data = {}) => ({
+	active: data.active ?? true,
+	name: data.name ?? '',
+	departments: mapDepartments(data.departments),
+});
+
+const BusinessHoursMultipleContainer = ({ onChange, data: initialData, className }) => {
 	const { data, state } = useEndpointDataExperimental('livechat/department');
 
-	const { values, handlers, hasUnsavedChanges } = useForm(initialData);
+	const { values, handlers } = useForm(getInitialData(initialData));
 
-	useEffect(() => {
-		onChange({
-			data: values,
-			hasUnsavedChanges,
-		});
-	}, [hasUnsavedChanges, onChange, values]);
+	onChange(values);
 
 	const departmentList = useMemo(() => data && data.departments?.map(({ _id, name }) => [_id, name]), [data]);
 
@@ -27,20 +30,20 @@ const BusinessHoursMultipleContainer = ({ onChange, initialData }) => {
 		</>;
 	}
 
-	return <BusinessHoursMultiple values={values} handlers={handlers} departmentList={departmentList}/>;
+	return <BusinessHoursMultiple values={values} handlers={handlers} departmentList={departmentList} className={className}/>;
 };
 
 export const BusinessHoursMultiple = ({ values = {}, handlers = {}, className, departmentList = [] }) => {
 	const t = useTranslation();
 
 	const {
-		enabled,
+		active,
 		name,
 		departments,
 	} = values;
 
 	const {
-		handleEnabled,
+		handleActive,
 		handleName,
 		handleDepartments,
 	} = handlers;
@@ -50,7 +53,7 @@ export const BusinessHoursMultiple = ({ values = {}, handlers = {}, className, d
 			<Box display='flex' flexDirection='row'>
 				<Field.Label>{t('Enabled')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch checked={enabled} onChange={handleEnabled}/>
+					<ToggleSwitch checked={active} onChange={handleActive}/>
 				</Field.Row>
 			</Box>
 		</Field>

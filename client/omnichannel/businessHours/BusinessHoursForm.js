@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
-import { Field, MultiSelect, FieldGroup } from '@rocket.chat/fuselage';
+import { Field, MultiSelect } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import TimeRangeFieldsAssembler from './TimeRangeFieldsAssembler';
 
-const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const BusinessHoursForm = ({ values, handlers }) => {
+const BusinessHoursForm = ({ values, handlers, className }) => {
 	const t = useTranslation();
 
 	const daysOptions = useMemo(() => DAYS_OF_WEEK.map((day) => [day, t(day)]), [t]);
@@ -21,17 +21,17 @@ const BusinessHoursForm = ({ values, handlers }) => {
 		handleDaysTime,
 	} = handlers;
 
-	return <FieldGroup>
-		<Field>
+	return <>
+		<Field className={className}>
 			<Field.Label>
 				{t('Open_days_of_the_week')}
 			</Field.Label>
 			<Field.Row>
-				<MultiSelect options={daysOptions} onChange={handleDaysOpen} value={daysOpen} placeholder={t('Select_an_option')}/>
+				<MultiSelect options={daysOptions} onChange={handleDaysOpen} value={daysOpen} placeholder={t('Select_an_option')} w='full'/>
 			</Field.Row>
 		</Field>
-		<TimeRangeFieldsAssembler onChange={handleDaysTime} daysOpen={daysOpen} daysTime={daysTime}/>
-	</FieldGroup>;
+		<TimeRangeFieldsAssembler onChange={handleDaysTime} daysOpen={daysOpen} daysTime={daysTime} className={className}/>
+	</>;
 };
 
 export default BusinessHoursForm;

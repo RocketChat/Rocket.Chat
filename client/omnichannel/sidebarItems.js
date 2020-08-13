@@ -58,5 +58,9 @@ export const {
 		href: 'omnichannel/businessHours',
 		i18nLabel: 'Business_Hours',
 		permissionGranted: () => hasPermission('view-livechat-business-hours'),
+	}, {
+		href: 'omnichannel-businessHours',
+		i18nLabel: 'Business_Hours',
+		permissionGranted: () => hasPermission('view-livechat-business-hours'),
 	},
 ]);

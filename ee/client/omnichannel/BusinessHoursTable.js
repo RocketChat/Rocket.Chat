@@ -31,6 +31,7 @@ const BusinessHoursRow = memo(function BusinessHoursRow(props) {
 		timezone,
 		workHours,
 		active,
+		type,
 	} = props;
 
 	const t = useTranslation();
@@ -40,6 +41,7 @@ const BusinessHoursRow = memo(function BusinessHoursRow(props) {
 	const handleClick = () => {
 		bhRoute.push({
 			context: 'edit',
+			type,
 			id: _id,
 		});
 	};

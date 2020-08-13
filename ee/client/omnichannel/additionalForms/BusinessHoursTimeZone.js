@@ -5,10 +5,10 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useTimezoneNameList } from '../../../../client/hooks/useTimezoneNameList';
 
-const BusinessHoursTimeZone = ({ onChange, value, className }) => {
+const BusinessHoursTimeZone = ({ onChange, data, className }) => {
 	const t = useTranslation();
 
-	const [timezone, setTimezone] = useState(value);
+	const [timezone, setTimezone] = useState(data);
 
 	const timeZones = useTimezoneNameList();
 
@@ -19,7 +19,7 @@ const BusinessHoursTimeZone = ({ onChange, value, className }) => {
 
 	const handleChange = useMutableCallback((value) => {
 		setTimezone(value);
-		onChange(value);
+		onChange({ name: value });
 	});
 
 	return <Field className={className}>
