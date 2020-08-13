@@ -12,8 +12,6 @@ import NotAuthorizedPage from '../components/NotAuthorizedPage';
 import ManageAgents from './agentManager/ManageAgents';
 import UserAvatar from '../components/basic/avatar/UserAvatar';
 
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
-
 export function RemoveManagerButton({ _id, reload }) {
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/manager/${ _id }`);
 
@@ -22,9 +20,7 @@ export function RemoveManagerButton({ _id, reload }) {
 		if (result.success === true) {
 			reload();
 		}
-	}, [deleteAction, reload]);
-
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} style={style}><Icon name='trash' size='x20'/></Table.Cell>;
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
@@ -47,7 +43,7 @@ export function ManagersRoute() {
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const onHeaderClick = useCallback((id) => {
+	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
 
 		if (sortBy === id) {
@@ -55,7 +51,7 @@ export function ManagersRoute() {
 			return;
 		}
 		setSort([id, 'asc']);
-	}, [sort]);
+	});
 
 
 	const debouncedParams = useDebouncedValue(params, 500);
@@ -73,21 +69,21 @@ export function ManagersRoute() {
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const renderRow = useCallback(({ emails, _id, username, name, avatarETag }) => <Table.Row key={_id} tabIndex={0} role='link' action qa-user-id={_id}>
-		<Table.Cell style={style}>
+		<Table.Cell withTruncatedText>
 			<Box display='flex' alignItems='center'>
 				<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
-				<Box display='flex' style={style} mi='x8'>
-					<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
-						<Box fontScale='p2' style={style} color='default'>{name || username}</Box>
-						{!mediaQuery && name && <Box fontScale='p1' color='hint' style={style}> {`@${ username }`} </Box>}
+				<Box display='flex' withTruncatedText mi='x8'>
+					<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
+						<Box fontScale='p2' withTruncatedText color='default'>{name || username}</Box>
+						{!mediaQuery && name && <Box fontScale='p1' color='hint' withTruncatedText> {`@${ username }`} </Box>}
 					</Box>
 				</Box>
 			</Box>
 		</Table.Cell>
 		{mediaQuery && <Table.Cell>
-			<Box fontScale='p2' style={style} color='hint'>{ username }</Box> <Box mi='x4'/>
+			<Box fontScale='p2' withTruncatedText color='hint'>{ username }</Box> <Box mi='x4'/>
 		</Table.Cell>}
-		<Table.Cell style={style}>{emails && emails.length && emails[0].address}</Table.Cell>
+		<Table.Cell withTruncatedText>{emails && emails.length && emails[0].address}</Table.Cell>
 		<RemoveManagerButton _id={_id} reload={reload}/>
 	</Table.Row>, [mediaQuery, reload]);
 
