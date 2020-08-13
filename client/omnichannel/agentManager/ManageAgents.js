@@ -7,7 +7,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { GenericTable } from '../../components/GenericTable';
 import { UserAutoComplete } from '../../components/basic/AutoComplete';
-
+import { useCurrentRoute } from '../../contexts/RouterContext';
 
 const FilterByText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
@@ -22,8 +22,30 @@ const FilterByText = ({ setFilter, ...props }) => {
 	</Box>;
 };
 
+function AddAgent({ reload, ...props }) {
+	const t = useTranslation();
+	const [username, setUsername] = useState();
 
-function AgentsManagerAdd({ reload, ...props }) {
+	const saveAction = useEndpointAction('POST', 'livechat/users/agent', { username });
+
+	const handleSave = useMutableCallback(async () => {
+		if (!username) {
+			return;
+		}
+		const result = await saveAction();
+		if (!result.success) {
+			return;
+		}
+		reload();
+		setUsername();
+	});
+	return <Box display='flex' alignItems='center' {...props}>
+		<UserAutoComplete value={username} onChange={setUsername}/>
+		<Button disabled={!username} onClick={handleSave} mis='x8' primary>{t('Add')}</Button>
+	</Box>;
+}
+
+function AddManager({ reload, ...props }) {
 	const t = useTranslation();
 	const [username, setUsername] = useState();
 
@@ -56,10 +78,13 @@ function ManageAgents({
 	renderRow,
 	children,
 }) {
+	const currRoute = useCurrentRoute();
+	console.log(currRoute);
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}/>
-			<AgentsManagerAdd reload={reload} pi='x24'/>
+			{currRoute[0] === 'omnichannel-agents' && <AddAgent reload={reload} pi='x24'/>}
+			{currRoute[0] === 'omnichannel-managers' && <AddManager reload={reload} pi='x24'/>}
 			<Page.Content>
 				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.users} total={data && data.total} setParams={setParams} params={params} />
 			</Page.Content>

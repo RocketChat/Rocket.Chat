@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Margins, Tag, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Margins, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -29,7 +29,7 @@ const Info = ({ className, ...props }) => <UserCard.Info className={[className, 
 
 export const AgentInfo = React.memo(function UserInfo({
 	uid,
-	actions,
+	children,
 	...props
 }) {
 	const t = useTranslation();
@@ -47,13 +47,14 @@ export const AgentInfo = React.memo(function UserInfo({
 	} = user;
 
 	const status = UserStatus.getStatus(data.status);
-	console.log(actions);
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
 		<UserAvatar margin='auto' size={'x332'} title={username} username={username}/>
 
-		{actions}
+		<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center' flexShrink={0}>
+			{children}
+		</ButtonGroup>
 
 		<Margins block='x4'>
 			<UserCard.Username name={username} status={status} />

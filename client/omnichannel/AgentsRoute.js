@@ -10,38 +10,48 @@ import { useEndpointAction } from '../hooks/useEndpointAction';
 import { usePermission } from '../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../components/NotAuthorizedPage';
 import ManageAgents from './agentManager/ManageAgents';
-import AgentManagerEdit from './agentManager/AgentManagerEdit';
+import AgentEdit from './agentManager/AgentManagerEdit';
 import AgentInfo from './agentManager/AgentInfo';
 import UserAvatar from '../components/basic/avatar/UserAvatar';
 import { useRouteParameter, useRoute } from '../contexts/RouterContext';
 import VerticalBar from '../components/basic/VerticalBar';
 
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
-
 export function RemoveAgentButton({ _id, reload }) {
+	const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${ _id }`);
+
+	const handleRemoveClick = useMutableCallback(async (e) => {
+		e.preventDefault();
+		const result = await deleteAction();
+		if (result.success === true) {
+			reload();
+		}
+	});
+
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+}
+
+export function AgentInfoActions({ reload }) {
+	const t = useTranslation();
+	const _id = useRouteParameter('id');
+	const agentsRoute = useRoute('omnichannel-agents');
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${ _id }`);
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
 		if (result.success === true) {
+			agentsRoute.push({});
 			reload();
 		}
-	}, [deleteAction, reload]);
+	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} style={style}><Icon name='trash' size='x20'/></Table.Cell>;
+	return <AgentInfo.Action title={t('Remove')} label={t('Remove')} onClick={handleRemoveClick} icon={'trash'} />;
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
 	fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
-	query: JSON.stringify({
-		$or: [
-			{ 'emails.address': { $regex: text || '', $options: 'i' } },
-			{ username: { $regex: text || '', $options: 'i' } },
-			{ name: { $regex: text || '', $options: 'i' } },
-		],
-	}),
+	text,
 	sort: JSON.stringify({ [column]: sortDir(direction), usernames: column === 'name' ? sortDir(direction) : undefined }),
 	...itemsPerPage && { count: itemsPerPage },
 	...current && { offset: current },
@@ -59,12 +69,11 @@ function AgentsRoute() {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const endpoint = 'livechat/users/agent';
 	const agentsRoute = useRoute('omnichannel-agents');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const onHeaderClick = useCallback((id) => {
+	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
 
 		if (sortBy === id) {
@@ -72,14 +81,14 @@ function AgentsRoute() {
 			return;
 		}
 		setSort([id, 'asc']);
-	}, [sort]);
+	});
 
-	const onRowClick = useCallback((id) => () => agentsRoute.push({
+	const onRowClick = useMutableCallback((id) => () => agentsRoute.push({
 		context: 'info',
 		id,
-	}), [agentsRoute]);
+	}));
 
-	const { data, reload } = useEndpointDataExperimental(endpoint, query) || {};
+	const { data, reload } = useEndpointDataExperimental('livechat/users/agent', query) || {};
 
 
 	const header = useMemo(() => [
@@ -90,21 +99,21 @@ function AgentsRoute() {
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const renderRow = useCallback(({ emails, _id, username, name, avatarETag }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
-		<Table.Cell style={style}>
+		<Table.Cell withTruncatedText>
 			<Box display='flex' alignItems='center'>
 				<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
-				<Box display='flex' style={style} mi='x8'>
-					<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
-						<Box fontScale='p2' style={style} color='default'>{name || username}</Box>
-						{!mediaQuery && name && <Box fontScale='p1' color='hint' style={style}> {`@${ username }`} </Box>}
+				<Box display='flex' withTruncatedText mi='x8'>
+					<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
+						<Box fontScale='p2' withTruncatedText color='default'>{name || username}</Box>
+						{!mediaQuery && name && <Box fontScale='p1' color='hint' withTruncatedText> {`@${ username }`} </Box>}
 					</Box>
 				</Box>
 			</Box>
 		</Table.Cell>
 		{mediaQuery && <Table.Cell>
-			<Box fontScale='p2' style={style} color='hint'>{ username }</Box> <Box mi='x4'/>
+			<Box fontScale='p2' withTruncatedText color='hint'>{ username }</Box> <Box mi='x4'/>
 		</Table.Cell>}
-		<Table.Cell style={style}>{emails && emails.length && emails[0].address}</Table.Cell>
+		<Table.Cell withTruncatedText>{emails && emails.length && emails[0].address}</Table.Cell>
 		<RemoveAgentButton _id={_id} reload={reload}/>
 	</Table.Row>, [mediaQuery, reload, onRowClick]);
 
@@ -117,17 +126,6 @@ function AgentsRoute() {
 			agentsRoute.push({});
 		};
 
-		const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${ _id }`);
-
-		const handleRemoveClick = (async () => {
-			const result = await deleteAction();
-			if (result.success === true) {
-				reload();
-			}
-		}, [deleteAction, reload]);
-
-		const actions = <AgentInfo.Action title={t('Remove')} label={t('Remove')} onClick={() => { handleRemoveClick(id, reload); }} icon={'trash'} />;
-
 		return <VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
 				{context === 'edit' && t('Edit_User')}
@@ -135,11 +133,11 @@ function AgentsRoute() {
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
 
-			{context === 'edit' && <AgentManagerEdit uid={id}/>}
-			{context === 'info' && <AgentInfo uid={id} actions={actions}/>}
+			{context === 'edit' && <AgentEdit uid={id}/>}
+			{context === 'info' && <AgentInfo uid={id}><AgentInfoActions id={id} reload={reload} /></AgentInfo>}
 
 		</VerticalBar>;
-	}, [t, context, id, agentsRoute]);
+	}, [t, context, id, agentsRoute, reload]);
 
 	if (!canViewAgents) {
 		return <NotAuthorizedPage />;
@@ -155,8 +153,7 @@ function AgentsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Agents'}
-		endpoint={endpoint}>
+		title={'Agents'}>
 		<EditAgentsTab />
 	</ManageAgents>;
 }

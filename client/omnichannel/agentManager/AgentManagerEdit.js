@@ -1,50 +1,50 @@
-import React, { useMemo, useState } from 'react';
-import { Box } from '@rocket.chat/fuselage';
+import React, { useCallback, useMemo } from 'react';
+import { Field, TextInput, TextAreaInput, PasswordInput, MultiSelectFiltered, Box, ToggleSwitch, Icon } from '@rocket.chat/fuselage';
 
-
-import { FormSkeleton } from './Skeleton';
-import { UserInfo } from './AgentInfo';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
-import * as UserStatus from '../../components/basic/UserStatus';
+import { isEmail } from '../../../app/utils/lib/isEmail.js';
+import VerticalBar from '../../components/basic/VerticalBar';
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
+import { FormSkeleton } from './Skeleton';
 
-const AgentManagerEdit = function({ uid, username, reload, ...props }) {
+export default function AgentEdit({ uid, ...props }) {
 	const t = useTranslation();
-
-	const onChange = () => reload();
-
-	// TODO: remove cache. Is necessary for data invalidation
-	// livechat/agents/:agentId/departments
-	const department = useEndpointDataExperimental(`livechat/agents/${ uid }/departments`);
 	const { data, state } = useEndpointDataExperimental(`livechat/users/agent/${ uid }`);
-	console.log(data, department);
-	// const { data, error } = useEndpointDataExperimental('users.info', { userId: uid });
-
-	const user = useMemo(() => {
-		const { user } = data || { user: {} };
-		const {
-			username,
-			status,
-			statusLivechat,
-		} = user;
-		return {
-			username,
-			status: UserStatus.getStatus(status),
-			statusLivechat,
-		};
-	}, [data]);
 
 	if (state === 'LOADING') {
 		return <FormSkeleton/>;
 	}
+	console.log(data);
+	
+	const { user } = data || { user: {} };
+	const {
+		name,
+		username,
+		email,
+	} = user;
 
-	return <UserInfo
-		state={state}
-		{...user}
-		data={data && data.user}
-		onChange={onChange}
-		{...props}
-	/>;
-};
 
-export default AgentManagerEdit;
+	return <VerticalBar.ScrollableContent is='form' { ...props }>
+		<UserAvatar margin='auto' size={'x332'} title={username} username={username}/>
+		<Field>
+			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Row>
+				<TextInput flexGrow={1} value={name} disabled/>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('Username')}</Field.Label>
+			<Field.Row>
+				<TextInput flexGrow={1} value={username} disabled addon={<Icon name='at' size='x20'/>}/>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('Email')}</Field.Label>
+			<Field.Row>
+				<TextInput flexGrow={1} value={email} disabled addon={<Icon name='mail' size='x20'/>}/>
+			</Field.Row>
+
+		</Field>
+	</VerticalBar.ScrollableContent>;
+}
