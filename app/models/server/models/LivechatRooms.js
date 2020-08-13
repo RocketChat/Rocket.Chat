@@ -652,14 +652,16 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	changeVisitorByRoomId(roomId, newVisitor) {
+	changeVisitorByRoomId(roomId, { _id, username, token }) {
 		const query = {
 			_id: roomId,
 			t: 'l',
 		};
 		const update = {
 			$set: {
-				'v._id': newVisitor._id,
+				'v._id': _id,
+				'v.username': username,
+				'v.token': token,
 				'v.username': newVisitor.username,
 				'v.token': newVisitor.token,
 			},

@@ -1122,7 +1122,7 @@ export const Livechat = {
 
 	notifyRoomVisitorChange(roomId, visitor) {
 		Livechat.stream.emit(roomId, {
-			type: 'visitorChange',
+			type: 'visitorData',
 			visitor,
 		});
 	},

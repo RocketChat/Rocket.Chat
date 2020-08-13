@@ -187,16 +187,24 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 		try {
 			check(this.bodyParams, {
 				rid: String,
-				visitorId: String,
+				oldVisitorId: String,
+				newVisitorId: String,
 			});
+		const user = Users.findOneById(this.userId);
+		if (!user) {
+			throw new Error('error-user-not-found');
+		}
 
+		if (!canAccessRoom(room, user)) {
+			throw new Error('error-not-allowed');
+		}
 			if (!Promise.await(hasPermissionAsync(this.userId, 'change-livechat-room-visitor'))) {
 				throw new Error('error-not-authorized');
 			}
 
 			const { rid, visitorId } = this.bodyParams;
 
-			const visitorInfo = Promise.await(findVisitorInfo({ userId: this.userId, visitorId }));
+			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId }));
 			const { visitor } = visitorInfo;
 			if (!visitor) {
 				throw new Meteor.Error('invalid-visitor-token');
