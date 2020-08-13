@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ScreensharingManager } from '../lib/screenSharing/ScreenSharingManager';
+import { ScreenSharingManager } from '../lib/screenSharing/ScreenSharingManager';
 
 Meteor.methods({
 	async 'livechat:requestScreenSharing'(roomId) {
@@ -10,7 +10,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		ScreensharingManager.requestSession(roomId, user, 'agent');
+		ScreenSharingManager.requestSession(roomId, user, 'agent');
 	},
 });
 
@@ -22,6 +22,6 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		ScreensharingManager.endSession(roomId, user);
+		ScreenSharingManager.endSession(roomId, user);
 	},
 });

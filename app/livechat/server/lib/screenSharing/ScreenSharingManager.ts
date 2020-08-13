@@ -5,7 +5,7 @@ import { settings } from '../../../../settings/server';
 import { LivechatRooms, Messages, Users, Rooms } from '../../../../models/server';
 import { IScreenSharingProvider } from './IScreenSharingProvider';
 
-export class ScreenSharingManager {
+export class ScreenSharingManagerClass {
 	providerName = '';
 
 	private providers = new Map<string, IScreenSharingProvider>();
@@ -52,25 +52,27 @@ export class ScreenSharingManager {
 		if (!room) {
 			return;
 		}
-		const { screenSharing } = room;
-		if (screenSharing && screenSharing.status === 'active') {
+		const { screenSharing: { status = null } = {} } = room;
+		if (status === 'active') {
 			return;
 		}
 		LivechatRooms.updateScreenSharingStatus(roomId, { status: 'requested', sessionUrl: '' });
-		if (type === 'agent') {
-			Messages.createWithTypeRoomIdMessageAndUser('request_livechat_screen_sharing_access', roomId, '', user, {});
-		} else if (type === 'visitor') {
-			Messages.createWithTypeRoomIdMessageAndUser('guest_requesting_livechat_screen_sharing', roomId, 'guest_requesting_livechat_screen_sharing', user, {
-				actionLinks: [
-					{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'acceptScreenSharingRequest', params: '' },
-				],
-			});
+		switch (type) {
+			case 'agent':
+				Messages.createWithTypeRoomIdMessageAndUser('request_livechat_screen_sharing_access', roomId, '', user, {});
+				break;
+			case 'visitor':
+				Messages.createWithTypeRoomIdMessageAndUser('guest_requesting_livechat_screen_sharing', roomId, 'guest_requesting_livechat_screen_sharing', user, {
+					actionLinks: [
+						{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'acceptScreenSharingRequest', params: '' },
+					],
+				});
 		}
 	}
 
 	rejectRequest(roomId: string, visitor: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('livechat_screen_sharing_request_rejected', roomId, '', visitor, {});
-		LivechatRooms.updateScreenSharingStatus(roomId, { status: 'inactive', sessionUrl: '' });
+		LivechatRooms.resetScreenSharingStatus(roomId);
 	}
 
 	acceptRequest(roomId: string, visitor: any, agent: any): void {
@@ -82,15 +84,15 @@ export class ScreenSharingManager {
 
 	endSession(roomId: string, user: any): void {
 		Messages.createWithTypeRoomIdMessageAndUser('end_livechat_screen_sharing_session', roomId, '', user, {});
-		LivechatRooms.resetScreenSharingStatus({ roomId });
+		LivechatRooms.resetScreenSharingStatus(roomId);
 	}
 }
 
-export const ScreensharingManager = new ScreenSharingManager();
+export const ScreenSharingManager = new ScreenSharingManagerClass();
 
 settings.get('Livechat_screen_sharing_provider', function(_key, value) {
 	if (!value) {
 		return;
 	}
-	ScreensharingManager.setProviderName(value.toString());
+	ScreenSharingManager.setProviderName(value.toString());
 });

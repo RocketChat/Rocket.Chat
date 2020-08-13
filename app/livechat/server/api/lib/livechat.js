@@ -6,7 +6,7 @@ import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } 
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
-import { ScreensharingManager } from '../../lib/screenSharing/ScreenSharingManager';
+import { ScreenSharingManager } from '../../lib/screenSharing/ScreenSharingManager';
 
 export function online(department) {
 	return Livechat.online(department);
@@ -95,7 +95,7 @@ export function settings() {
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
 	const emojis = Meteor.call('listEmojiCustom');
-	const screenSharing = ScreensharingManager.getConfig();
+	const screenSharing = ScreenSharingManager.getConfig();
 
 	return {
 		enabled: initSettings.Livechat_enabled,

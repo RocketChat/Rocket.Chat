@@ -595,21 +595,17 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	resetScreenSharingStatus({ roomId }) {
+	resetScreenSharingStatus(roomId) {
 		const query = {
 			t: 'l',
 			screenSharing: { $exists: true },
+			...roomId && { _id: roomId },
 		};
 		const update = {
 			$unset: {
 				screenSharing: 1,
 			},
 		};
-
-		if (roomId) {
-			query._id = roomId;
-			return this.update(query, update);
-		}
 
 		return this.update(query, update, { multi: true });
 	}

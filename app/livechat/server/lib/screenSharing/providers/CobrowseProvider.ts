@@ -3,7 +3,7 @@ import fs from 'fs';
 import * as jwt from 'jsonwebtoken';
 
 import { IScreenSharingProvider } from '../IScreenSharingProvider';
-import { ScreensharingManager } from '../ScreenSharingManager';
+import { ScreenSharingManager } from '../ScreenSharingManager';
 import { settings } from '../../../../../settings/server';
 
 // eslint-disable-next-line @typescript-eslint/camelcase
@@ -107,4 +107,4 @@ export class CobrowseProvider implements IScreenSharingProvider {
 	}
 }
 
-ScreensharingManager.registerProvider('Cobrowse.io', new CobrowseProvider());
+ScreenSharingManager.registerProvider('Cobrowse.io', new CobrowseProvider());

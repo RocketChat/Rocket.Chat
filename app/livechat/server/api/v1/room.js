@@ -9,7 +9,7 @@ import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import { ScreensharingManager } from '../../lib/screenSharing/ScreenSharingManager';
+import { ScreenSharingManager } from '../../lib/screenSharing/ScreenSharingManager';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -206,11 +206,11 @@ API.v1.addRoute('livechat/room.screenSharing', {
 				throw new Meteor.Error('room-closed');
 			}
 			if (messageType === 'livechat_screen_sharing_request_rejected') {
-				ScreensharingManager.rejectRequest(rid, visitor);
+				ScreenSharingManager.rejectRequest(rid, visitor);
 			} else if (messageType === 'livechat_screen_sharing_request_accepted') {
-				ScreensharingManager.acceptRequest(rid, visitor, room.servedBy);
+				ScreenSharingManager.acceptRequest(rid, visitor, room.servedBy);
 			} else if (messageType === 'guest_requesting_livechat_screen_sharing') {
-				ScreensharingManager.requestSession(rid, visitor, 'visitor');
+				ScreenSharingManager.requestSession(rid, visitor, 'visitor');
 			}
 
 			return API.v1.success();
