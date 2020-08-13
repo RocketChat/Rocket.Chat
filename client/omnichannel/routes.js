@@ -24,3 +24,8 @@ registerOmnichannelRoute('/appearance', {
 	name: 'omnichannel-appearance',
 	lazyRouteComponent: () => import('./appearance/AppearancePage'),
 });
+
+registerOmnichannelRoute('/managers', {
+	name: 'omnichannel-managers',
+	lazyRouteComponent: () => import('./ManagersRoute'),
+});
