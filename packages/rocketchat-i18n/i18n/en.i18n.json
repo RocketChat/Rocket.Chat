@@ -2741,6 +2741,7 @@
   "Page_URL": "Page URL",
   "Parent_channel_doesnt_exist": "Channel does not exist.",
   "Password": "Password",
+  "Password_to_access": "Password to access",
   "Password_Change_Disabled": "Your Rocket.Chat administrator has disabled the changing of passwords",
   "Password_Changed_Description": "You may use the following placeholders: <br/><ul><li>[password] for the temporary password.</li><li>[name], [fname], [lname] for the user's full name, first name or last name, respectively.</li><li>[email] for the user's email.</li><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
   "Password_Changed_Email_Subject": "[Site_Name] - Password Changed",
