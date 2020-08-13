@@ -24,7 +24,7 @@ const addVersionCheckJob = () => {
 
 
 Meteor.startup(() => {
-	checkVersionUpdate();
+	Meteor.defer(() => checkVersionUpdate());
 });
 
 settings.get('Register_Server', (key, value) => {
