@@ -1,6 +1,32 @@
 
+# 3.5.2
+`2020-08-13  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.16.0`
+
+### 🐛 Bug fixes
+
+
+- Sending notifications from senders without a name ([#18479](https://github.com/RocketChat/Rocket.Chat/pull/18479))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Defer startup checks ([#18547](https://github.com/RocketChat/Rocket.Chat/pull/18547))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.5.1
-`2020-08-01  ·  8 🐛  ·  6 👩‍💻👨‍💻`
+`2020-08-03  ·  8 🐛  ·  6 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.16.1`
