@@ -245,10 +245,6 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				history.firstUnread = normalizeMessageFileUpload(firstUnread);
 			}
 
-			if (history.firstUnread) {
-				history.firstUnread = normalizeMessageFileUpload(history.firstUnread);
-			}
-
 			return API.v1.success(history);
 		} catch (e) {
 			return API.v1.failure(e);
