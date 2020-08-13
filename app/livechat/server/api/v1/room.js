@@ -4,13 +4,14 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings as rcSettings } from '../../../../settings';
-import { Messages, LivechatRooms } from '../../../../models';
+import { Messages, LivechatRooms, Users } from '../../../../models';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { canAccessRoom } from '../../../../authorization/server/functions/canAccessRoom';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -190,14 +191,12 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				oldVisitorId: String,
 				newVisitorId: String,
 			});
-		const user = Users.findOneById(this.userId);
-		if (!user) {
-			throw new Error('error-user-not-found');
-		}
 
-		if (!canAccessRoom(room, user)) {
-			throw new Error('error-not-allowed');
-		}
+			const user = Promise.await(Users.findOneById(this.userId));
+			if (!user) {
+				throw new Error('error-user-not-found');
+			}
+
 			if (!Promise.await(hasPermissionAsync(this.userId, 'change-livechat-room-visitor'))) {
 				throw new Error('error-not-authorized');
 			}
@@ -205,7 +204,6 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 			const { rid, visitorId } = this.bodyParams;
 
 			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId }));
-			const { visitor } = visitorInfo;
 			if (!visitor) {
 				throw new Meteor.Error('invalid-visitor-token');
 			}
@@ -215,18 +213,19 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Meteor.Error('invalid-room-id');
 			}
 
+			if (!canAccessRoom(room, user)) {
+				throw new Error('error-not-allowed');
+			}
+
 			Promise.await(LivechatRooms.changeVisitorByRoomId(rid, visitor));
 
-			Livechat.notifyRoomVisitorChange(rid, visitor);
+			const { _id, username, token } = visitor;
+			Promise.await(Livechat.notifyRoomVisitorChange(rid, { _id, username, token }));
 
 			return API.v1.success({
 				room: {
 					rid,
-					v: {
-						_id: visitor._id,
-						username: visitor.username,
-						token: visitor.token,
-					},
+					v: { _id, username, token },
 				},
 			});
 		} catch (e) {

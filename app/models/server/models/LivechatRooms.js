@@ -662,8 +662,6 @@ export class LivechatRooms extends Base {
 				'v._id': _id,
 				'v.username': username,
 				'v.token': token,
-				'v.username': newVisitor.username,
-				'v.token': newVisitor.token,
 			},
 		};
 
