@@ -13,8 +13,7 @@ import { getConfig } from '../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../app/models/client';
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import RawText from '../../../components/basic/RawText';
-import { useUserId } from '../../../contexts/UserContext';
+import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { MessageSkeleton } from '../../components/Message';
@@ -22,7 +21,6 @@ import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../helpers/clickableItem';
-import { useUserSubscription } from '../../../contexts/SubscriptionContext';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
@@ -188,7 +186,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 	return <VerticalBar>
 		<VerticalBar.Header>
 			<VerticalBar.Icon name='discussion'/>
-			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><RawText>{t('Discussions')}</RawText></Box>
+			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Discussions')}</Box>
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>

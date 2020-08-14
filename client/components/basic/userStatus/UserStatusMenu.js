@@ -15,7 +15,7 @@ const UserStatusMenu = ({
 	onChange = () => {},
 	optionWidth,
 	initialStatus = 'offline',
-	placement = 'bottom right',
+	placement = 'bottom-end',
 	...props
 }) => {
 	const t = useTranslation();

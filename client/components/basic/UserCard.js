@@ -47,13 +47,14 @@ const Role = ({ children }) => <Tag
 	children={children}
 />;
 
-const UserCardConteiner = forwardRef((props, ref) => <Box rcx-user-card bg='surface' elevation='2' p='x24' display='flex' borderRadius='x2' width='439px' {...props} ref={ref}/>);
+const UserCardContainer = forwardRef((props, ref) => <Box rcx-user-card bg='surface' elevation='2' p='x24' display='flex' borderRadius='x2' width='439px' {...props} ref={ref}/>);
 const UserCard = forwardRef(({
 	className,
 	style,
 	open,
 	name = <Skeleton width='100%'/>,
 	username,
+	etag,
 	customStatus = <Skeleton width='100%'/>,
 	roles = <>
 		<Skeleton width='32%' mi='x2'/>
@@ -69,16 +70,18 @@ const UserCard = forwardRef(({
 	actions,
 	localTime = <Skeleton width='100%'/>,
 	onClose,
+	nickname,
 	t = (e) => e,
-}, ref) => <UserCardConteiner className={className} ref={ref} style={style}>
+}, ref) => <UserCardContainer className={className} ref={ref} style={style}>
 	<Box>
-		<UserAvatar username={username} size='x124'/>
+		<UserAvatar username={username} etag={etag} size='x124'/>
 		{ actions && <Box flexGrow={0} display='flex' mb='x8' align='center' justifyContent='center'>
 			{actions}
 		</Box>}
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
 		<Username status={status} name={name}/>
+		{nickname && <Info title={t('Nickname')}>{nickname}</Info>}
 		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
@@ -86,7 +89,7 @@ const UserCard = forwardRef(({
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
 	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}
-</UserCardConteiner>);
+</UserCardContainer>);
 
 
 export default UserCard;
