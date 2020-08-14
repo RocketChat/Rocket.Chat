@@ -20,6 +20,7 @@ import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
 import './hooks/beforeNewRoom';
 import './hooks/beforeRoutingChat';
+import './hooks/beforeShouldNotifyMobile';
 import './hooks/checkAgentBeforeTakeInquiry';
 import './hooks/handleLastChattedAgentPreferredEvents';
 import './hooks/onCheckRoomParamsApi';
