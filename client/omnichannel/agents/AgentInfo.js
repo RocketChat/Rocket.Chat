@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Margins, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
-import { css } from '@rocket.chat/css-in-js';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/basic/VerticalBar';
