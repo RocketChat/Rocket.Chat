@@ -4,7 +4,6 @@ import { css } from '@rocket.chat/css-in-js';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/basic/VerticalBar';
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { UserInfo } from '../../components/basic/UserInfo';
 import * as UserStatus from '../../components/basic/UserStatus';

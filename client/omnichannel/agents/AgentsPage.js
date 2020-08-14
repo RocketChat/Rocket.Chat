@@ -7,7 +7,6 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { GenericTable } from '../../components/GenericTable';
 import { UserAutoComplete } from '../../components/basic/AutoComplete';
-import { useCurrentRoute } from '../../contexts/RouterContext';
 
 const FilterByText = ({ setFilter, ...props }) => {
 	const t = useTranslation();

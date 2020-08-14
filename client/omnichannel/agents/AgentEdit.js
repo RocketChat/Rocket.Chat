@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
-import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon } from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/basic/VerticalBar';
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import { UserInfo } from '../../components/basic/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
@@ -16,7 +16,7 @@ import { useRoute } from '../../contexts/RouterContext';
 export default function AgentEditWithData({ uid }) {
 	const t = useTranslation();
 	const { data, state, error } = useEndpointDataExperimental(`livechat/users/agent/${ uid }`);
-	const { data: userDepartments, state: userDepartmentsState, error: userDepartmentsError} = useEndpointDataExperimental(`livechat/agents/${ uid }/departments`);
+	const { data: userDepartments, state: userDepartmentsState, error: userDepartmentsError } = useEndpointDataExperimental(`livechat/agents/${ uid }/departments`);
 	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
 
 	if ([state, availableDepartmentsState, userDepartmentsState].includes(ENDPOINT_STATES.LOADING)) {
@@ -34,32 +34,38 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, ..
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-agents');
 
-	const options = useMemo(() => (availableDepartments && availableDepartments.departments ? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id]) : []), [availableDepartments]);
-	const initialDepartmentValue = useMemo(() => (userDepartments && userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []), [userDepartments]);
-
-	const { values, handlers, reset, hasUnsavedChanges } = useForm({ departments: initialDepartmentValue });
-
-	const {
-		handleDepartments,
-	} = handlers;
-	const {
-		departments,
-	} = values;
-
 	const { user } = data || { user: {} };
 	const {
 		name,
 		username,
 		email,
+		statusLivechat,
 	} = user;
 
+	const options = useMemo(() => (availableDepartments && availableDepartments.departments ? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id]) : []), [availableDepartments]);
+	const statusOptions = [['available', t('Available')], ['not-available', t('Not_Available')]];
+	const initialDepartmentValue = useMemo(() => (userDepartments && userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []), [userDepartments]);
+
+	const { values, handlers, reset, hasUnsavedChanges } = useForm({ departments: initialDepartmentValue, status: statusLivechat });
+
+	const {
+		handleDepartments,
+		handleStatus,
+	} = handlers;
+	const {
+		departments,
+		status,
+	} = values;
+
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
+	const saveAgentStatus = useMethod('livechat:changeLivechatStatus');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleSave = useMutableCallback(async () => {
 		try {
 			saveAgentInfo(uid, {}, departments);
+			saveAgentStatus(uid);
 			dispatchToastMessage({ type: 'success', message: t('saved') });
 			agentsRoute.push({});
 		} catch (error) {
@@ -68,7 +74,7 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, ..
 	});
 
 	return <VerticalBar.ScrollableContent is='form' { ...props }>
-		<UserAvatar margin='auto' size={'x332'} title={username} username={username}/>
+		<UserInfo.Avatar margin='auto' size={'x332'} title={username} username={username}/>
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
 			<Field.Row>
@@ -91,6 +97,12 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, ..
 			<Field.Label>{t('Departments')}</Field.Label>
 			<Field.Row>
 				<MultiSelect options={options} value={departments} placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('Status')}</Field.Label>
+			<Field.Row>
+				<Select options={statusOptions} value={status} placeholder={t('Select_an_option')} onChange={handleStatus} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 
