@@ -6,11 +6,11 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/basic/VerticalBar';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
-import UserInfo from '../../components/basic/UserInfo';
+import { UserInfo } from '../../components/basic/UserInfo';
 import * as UserStatus from '../../components/basic/UserStatus';
 import { FormSkeleton } from './Skeleton';
 
-export const AgentInfo = React.memo(function UserInfo({
+export const AgentInfo = React.memo(function AgentInfo({
 	uid,
 	children,
 	...props
