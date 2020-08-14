@@ -84,7 +84,11 @@ export const ReadReceipt = {
 			}
 
 			try {
-				rawReadReceipts.insertMany(receipts);
+				rawReadReceipts.insertMany(receipts, (err) => {
+					if (err) {
+						console.error('Error inserting read receipts per user');	
+					}
+				});
 			} catch (e) {
 				console.error('Error inserting read receipts per user');
 			}
