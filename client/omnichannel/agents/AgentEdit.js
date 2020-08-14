@@ -13,7 +13,7 @@ import { useForm } from '../../hooks/useForm';
 import { useRoute } from '../../contexts/RouterContext';
 
 
-export default function AgentEditWithData({ uid }) {
+export default function AgentEditWithData({ uid, reload }) {
 	const t = useTranslation();
 	const { data, state, error } = useEndpointDataExperimental(`livechat/users/agent/${ uid }`);
 	const { data: userDepartments, state: userDepartmentsState, error: userDepartmentsError } = useEndpointDataExperimental(`livechat/agents/${ uid }/departments`);
@@ -27,10 +27,10 @@ export default function AgentEditWithData({ uid }) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
-	return <AgentEdit uid={uid} data={data} userDepartments={userDepartments} availableDepartments={availableDepartments}/>;
+	return <AgentEdit uid={uid} data={data} userDepartments={userDepartments} availableDepartments={availableDepartments} reset={reload}/>;
 }
 
-export function AgentEdit({ data, userDepartments, availableDepartments, uid, ...props }) {
+export function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ...props }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-agents');
 
@@ -46,7 +46,7 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, ..
 	const statusOptions = [['available', t('Available')], ['not-available', t('Not_Available')]];
 	const initialDepartmentValue = useMemo(() => (userDepartments && userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []), [userDepartments]);
 
-	const { values, handlers, reset, hasUnsavedChanges } = useForm({ departments: initialDepartmentValue, status: statusLivechat });
+	const { values, handlers, hasUnsavedChanges } = useForm({ departments: initialDepartmentValue, status: statusLivechat });
 
 	const {
 		handleDepartments,
@@ -69,8 +69,9 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, ..
 			dispatchToastMessage({ type: 'success', message: t('saved') });
 			agentsRoute.push({});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: t(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
+		reset();
 	});
 
 	return <VerticalBar.ScrollableContent is='form' { ...props }>

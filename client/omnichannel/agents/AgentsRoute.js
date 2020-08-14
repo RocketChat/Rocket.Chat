@@ -5,7 +5,7 @@ import { Box, Table, Icon } from '@rocket.chat/fuselage';
 
 import { Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
@@ -103,10 +103,11 @@ function AgentsRoute() {
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
 		mediaQuery && <Th key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</Th>,
 		<Th key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</Th>,
+		<Th key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x120'>{t('Livechat_status')}</Th>,
 		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
-	const renderRow = useCallback(({ emails, _id, username, name, avatarETag }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
+	const renderRow = useCallback(({ emails, _id, username, name, avatarETag, statusLivechat }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 		<Table.Cell withTruncatedText>
 			<Box display='flex' alignItems='center'>
 				<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
@@ -122,8 +123,9 @@ function AgentsRoute() {
 			<Box fontScale='p2' withTruncatedText color='hint'>{ username }</Box> <Box mi='x4'/>
 		</Table.Cell>}
 		<Table.Cell withTruncatedText>{emails && emails.length && emails[0].address}</Table.Cell>
+		<Table.Cell withTruncatedText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</Table.Cell>
 		<RemoveAgentButton _id={_id} reload={reload}/>
-	</Table.Row>, [mediaQuery, reload, onRowClick]);
+	</Table.Row>, [mediaQuery, reload, onRowClick, t]);
 
 
 	const EditAgentsTab = useCallback(() => {
@@ -141,7 +143,7 @@ function AgentsRoute() {
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
 
-			{context === 'edit' && <AgentEdit uid={id}/>}
+			{context === 'edit' && <AgentEdit uid={id} reload={reload}/>}
 			{context === 'info' && <AgentInfo uid={id}><AgentInfoActions id={id} reload={reload} /></AgentInfo>}
 
 		</VerticalBar>;
