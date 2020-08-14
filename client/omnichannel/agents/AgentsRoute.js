@@ -5,7 +5,7 @@ import { Box, Table, Icon } from '@rocket.chat/fuselage';
 
 import { Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
