@@ -1,4 +1,4 @@
-export const guestPermissions = [
+export const guestPermissions: string[] = [
 	'view-d-room',
 	'view-joined-room',
 	'view-p-room',

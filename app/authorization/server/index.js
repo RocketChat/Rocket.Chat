@@ -14,7 +14,7 @@ import {
 } from './functions/hasPermission';
 import { hasRole, subscriptionHasRole } from './functions/hasRole';
 import { removeUserFromRoles } from './functions/removeUserFromRoles';
-import { AuthorizationUtils } from '../lib/AuthorizationUtils';
+import { AuthorizationUtils } from './AuthorizationUtils';
 import './methods/addPermissionToRole';
 import './methods/addUserToRole';
 import './methods/deleteRole';
@@ -23,6 +23,7 @@ import './methods/removeUserFromRole';
 import './methods/saveRole';
 import './streamer/permissions';
 import './startup';
+import { IAuthorization } from '../lib/IAuthorizationUtils';
 
 export {
 	getRoles,
@@ -40,4 +41,5 @@ export {
 	hasAtLeastOnePermission,
 	hasPermission,
 	AuthorizationUtils,
+	IAuthorization,
 };
