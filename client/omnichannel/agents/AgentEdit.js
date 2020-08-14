@@ -38,10 +38,10 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 	const {
 		name,
 		username,
-		email,
 		statusLivechat,
 	} = user;
 
+	const email = user && user.emails && user.emails[0].address;
 	const options = useMemo(() => (availableDepartments && availableDepartments.departments ? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id]) : []), [availableDepartments]);
 	const statusOptions = [['available', t('Available')], ['not-available', t('Not_Available')]];
 	const initialDepartmentValue = useMemo(() => (userDepartments && userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []), [userDepartments]);
