@@ -201,26 +201,30 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Error('error-not-authorized');
 			}
 
-			const { rid, visitorId } = this.bodyParams;
+			const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
 
-			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId }));
+			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }));
 			if (!visitor) {
-				throw new Meteor.Error('invalid-visitor-token');
+				throw new Meteor.Error('invalid-new-visitor-id');
 			}
+			const { _id, username, token } = visitor;
+
 
 			const room = Promise.await(LivechatRooms.findOneById(rid));
 			if (!room) {
 				throw new Meteor.Error('invalid-room-id');
 			}
 
+			const { v: { _id: oldVisitorIdFromDb } } = room;
+			if (oldVisitorIdFromDb !== oldVisitorId) {
+				throw new Meteor.Error('invalid-old-visitor-id');
+			}
+
 			if (!canAccessRoom(room, user)) {
 				throw new Error('error-not-allowed');
 			}
 
-			Promise.await(LivechatRooms.changeVisitorByRoomId(rid, visitor));
-
-			const { _id, username, token } = visitor;
-			Promise.await(Livechat.notifyRoomVisitorChange(rid, { _id, username, token }));
+			Promise.await(Livechat.changeRoomVisitor(rid, { _id, username, token }));
 
 			return API.v1.success({
 				room: {

@@ -1126,6 +1126,11 @@ export const Livechat = {
 			visitor,
 		});
 	},
+
+	changeRoomVisitor(roomId, visitor) {
+		Promise.await(LivechatRooms.changeVisitorByRoomId(roomId, visitor));
+		Promise.await(Livechat.notifyRoomVisitorChange(roomId, visitor));
+	},
 };
 
 Livechat.stream = new Meteor.Streamer('livechat-room');
