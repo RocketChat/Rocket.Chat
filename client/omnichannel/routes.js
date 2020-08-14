@@ -11,12 +11,12 @@ registerOmnichannelRoute('/installation', {
 });
 registerOmnichannelRoute('/managers', {
 	name: 'omnichannel-managers',
-	lazyRouteComponent: () => import('./ManagersRoute'),
+	lazyRouteComponent: () => import('./managers/ManagersRoute'),
 });
 
 registerOmnichannelRoute('/agents/:context?/:id?', {
 	name: 'omnichannel-agents',
-	lazyRouteComponent: () => import('./AgentsRoute'),
+	lazyRouteComponent: () => import('./agents/AgentsRoute'),
 });
 
 registerOmnichannelRoute('/webhooks', {

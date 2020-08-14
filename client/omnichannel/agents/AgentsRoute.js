@@ -3,18 +3,18 @@ import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.ch
 import React, { useMemo, useCallback, useState } from 'react';
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
 
-import { Th } from '../components/GenericTable';
-import { useTranslation } from '../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../hooks/useEndpointDataExperimental';
-import { useEndpointAction } from '../hooks/useEndpointAction';
-import { usePermission } from '../contexts/AuthorizationContext';
-import NotAuthorizedPage from '../components/NotAuthorizedPage';
-import ManageAgents from './agentManager/ManageAgents';
-import AgentEdit from './agentManager/AgentManagerEdit';
-import AgentInfo from './agentManager/AgentInfo';
-import UserAvatar from '../components/basic/avatar/UserAvatar';
-import { useRouteParameter, useRoute } from '../contexts/RouterContext';
-import VerticalBar from '../components/basic/VerticalBar';
+import { Th } from '../../components/GenericTable';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import AgentsPage from './AgentsPage';
+import AgentEdit from './AgentEdit';
+import AgentInfo from './AgentInfo';
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
+import VerticalBar from '../../components/basic/VerticalBar';
 
 export function RemoveAgentButton({ _id, reload }) {
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${ _id }`);
@@ -152,7 +152,7 @@ function AgentsRoute() {
 	}
 
 
-	return <ManageAgents
+	return <AgentsPage
 		setParams={setParams}
 		params={params}
 		onHeaderClick={onHeaderClick}
@@ -162,7 +162,7 @@ function AgentsRoute() {
 		renderRow={renderRow}
 		title={'Agents'}>
 		<EditAgentsTab />
-	</ManageAgents>;
+	</AgentsPage>;
 }
 
 export default AgentsRoute;

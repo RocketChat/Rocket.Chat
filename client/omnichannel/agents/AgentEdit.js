@@ -14,12 +14,17 @@ import { useRoute } from '../../contexts/RouterContext';
 
 
 export default function AgentEditWithData({ uid }) {
-	const { data, state } = useEndpointDataExperimental(`livechat/users/agent/${ uid }`);
-	const { data: userDepartments, state: userDepartmentsState } = useEndpointDataExperimental(`livechat/agents/${ uid }/departments`);
-	const { data: availableDepartments, state: availableDepartmentsState } = useEndpointDataExperimental('livechat/department');
+	const t = useTranslation();
+	const { data, state, error } = useEndpointDataExperimental(`livechat/users/agent/${ uid }`);
+	const { data: userDepartments, state: userDepartmentsState, error: userDepartmentsError} = useEndpointDataExperimental(`livechat/agents/${ uid }/departments`);
+	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
 
 	if ([state, availableDepartmentsState, userDepartmentsState].includes(ENDPOINT_STATES.LOADING)) {
 		return <FormSkeleton/>;
+	}
+
+	if (error || userDepartmentsError || availableDepartmentsError) {
+		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
 	return <AgentEdit uid={uid} data={data} userDepartments={userDepartments} availableDepartments={availableDepartments}/>;
@@ -82,10 +87,13 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, ..
 				<TextInput flexGrow={1} value={email} disabled addon={<Icon name='mail' size='x20'/>}/>
 			</Field.Row>
 		</Field>
+		<Field>
+			<Field.Label>{t('Departments')}</Field.Label>
+			<Field.Row>
+				<MultiSelect options={options} value={departments} placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
+			</Field.Row>
+		</Field>
 
-		<Field.Row>
-			<MultiSelect options={options} value={departments} placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
-		</Field.Row>
 
 		<Field.Row>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
