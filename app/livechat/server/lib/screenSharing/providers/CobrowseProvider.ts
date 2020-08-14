@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import * as jwt from 'jsonwebtoken';
+import { KJUR, KEYUTIL } from 'jsrsasign';
 
 import { IScreenSharingProvider } from '../IScreenSharingProvider';
 import { ScreenSharingManager } from '../ScreenSharingManager';
@@ -71,24 +71,21 @@ export class CobrowseProvider implements IScreenSharingProvider {
 	}
 
 	getJWT(agent: any): any {
-		const payload = {
-			displayName: agent.username,
-		};
-
+		const header = { alg: 'RS256', typ: 'JWT' };
 		const privateKEY = settings.get('Cobrowse.io_Private_Key');
 		const i = settings.get('Cobrowse.io_License_Key');
 		const s = agent.emails[0].address;
 		const a = 'https://cobrowse.io';
-		const signOptions = {
-			issuer: i,
-			subject: s,
-			audience: a,
-			expiresIn: '12h',
-			algorithm: 'RS256',
+		const payload = {
+			iat: KJUR.jws.IntDate.get('now'),
+			iss: i,
+			sub: s,
+			aud: a,
+			exp: KJUR.jws.IntDate.get('now + 1day'),
+			displayName: agent.username,
 		};
 
-		const token = jwt.sign(payload, privateKEY, signOptions);
-		return token;
+		return KJUR.jws.JWS.sign('RS256', JSON.stringify(header), JSON.stringify(payload), KEYUTIL.getKey(privateKEY));
 	}
 
 	getURL(sessionId: string, agent: any): string {
