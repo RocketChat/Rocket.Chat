@@ -11,11 +11,9 @@ const timeout = !isNaN(envTimeout) ? envTimeout : 20000;
 
 const { call } = HTTP;
 HTTP.call = function _call(method, url, options = {}, callback) {
-	if (!options.timeout) {
-		options.timeout = timeout;
-	}
+	const defaultTimeout = 'timeout' in options ? options : { ...options, timeout };
 
-	return call.call(HTTP, method, url, options, callback);
+	return call.call(HTTP, method, url, defaultTimeout, callback);
 };
 
 // FIX For TLS error see more here https://github.com/RocketChat/Rocket.Chat/issues/9316
