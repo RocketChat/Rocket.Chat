@@ -134,8 +134,9 @@ export class PushClass {
 
 			logger.error(`Error sending push to gateway (${ tries } try) ->`, error);
 
-			if (tries <= 6) {
-				const ms = Math.pow(10, tries + 2);
+			if (tries <= 4) {
+				// [1, 2, 4, 8, 16] minutes (total 31)
+				const ms = 60000 * Math.pow(2, tries);
 
 				logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
 
