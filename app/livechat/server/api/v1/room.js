@@ -215,9 +215,9 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Meteor.Error('invalid-room-id');
 			}
 
-			const { v: { _id: oldVisitorIdFromDb } } = room;
-			if (oldVisitorIdFromDb !== oldVisitorId) {
-				throw new Meteor.Error('invalid-old-visitor-id');
+			const { v: { _id: roomVisitorId } = {} } = room;
+			if (roomVisitorId !== oldVisitorId) {
+				throw new Meteor.Error('invalid-room-visitor-id');
 			}
 
 			if (!canAccessRoom(room, user)) {
