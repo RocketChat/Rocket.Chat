@@ -2,7 +2,7 @@
   "error-canned-response-not-found": "예상 답변을 찾을 수 없음",
   "error-forwarding-department-target-not-allowed": "지정된 부서로 전달하도록 허용할 수 없습니다..",
   "error-guests-cant-have-other-roles": "게스트 사용자는 다른 역할을 할 수 없습니다.",
-  "error-invalid-priority": "우선순위가 잘못 지정되었습니다. ",
+  "error-invalid-priority": "우선순위가 지정이 잘못되었습니다. ",
   "error-max-guests-number-reached": "게스트 사용자 수가 허용된 라이센스 최대 수량에 도달했습니다. 라이센스 증설을 원하시면, sale@rocket.chat에 문의하십시오.",
   "error-max-number-simultaneous-chats-reached": "상담사가 동시에 할 수 있는 최대 대화 수에 도달했습니다.",
   "Add_monitor": "모니터링 추가",
