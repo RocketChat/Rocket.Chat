@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -10,6 +10,7 @@ import { UserInfo } from '../../components/basic/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
+import { getUserEmailAddress } from '../../helpers/getUserEmailAddress';
 import { useRoute } from '../../contexts/RouterContext';
 
 
@@ -41,9 +42,8 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 		statusLivechat,
 	} = user;
 
-	const email = user && user.emails && user.emails[0].address;
+	const email = getUserEmailAddress(user);
 	const options = useMemo(() => (availableDepartments && availableDepartments.departments ? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id]) : []), [availableDepartments]);
-	const statusOptions = [['available', t('Available')], ['not-available', t('Not_Available')]];
 	const initialDepartmentValue = useMemo(() => (userDepartments && userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []), [userDepartments]);
 
 	const { values, handlers, hasUnsavedChanges } = useForm({ departments: initialDepartmentValue, status: statusLivechat });
@@ -64,12 +64,13 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 
 	const handleSave = useMutableCallback(async () => {
 		try {
-			saveAgentInfo(uid, {}, departments);
-			saveAgentStatus(uid);
+			await saveAgentInfo(uid, {}, departments);
+			await saveAgentStatus({ status, agentId: uid });
 			dispatchToastMessage({ type: 'success', message: t('saved') });
 			agentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+			console.log(error);
 		}
 		reset();
 	});
@@ -103,7 +104,7 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 		<Field>
 			<Field.Label>{t('Status')}</Field.Label>
 			<Field.Row>
-				<Select options={statusOptions} value={status} placeholder={t('Select_an_option')} onChange={handleStatus} flexGrow={1}/>
+				<Select options={[['available', t('Available')], ['not-available', t('Not_Available')]]} value={status} placeholder={t('Select_an_option')} onChange={handleStatus} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 
