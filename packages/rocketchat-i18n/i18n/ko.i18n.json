@@ -3437,7 +3437,7 @@
   "The_application_name_is_required": "응용프로그램명이 필요합니다.",
   "The_channel_name_is_required": "채널명이 필요합니다.",
   "The_emails_are_being_sent": "이메일을 전송 중입니다.",
-  "The_empty_room__roomName__will_be_removed_automatically": "빈 대화방 <span style=\"font-weight: bold;\">__roomName__</span>은 자동으로 제거됩니다.",
+  "The_empty_room__roomName__will_be_removed_automatically": "사용하지 않는 대화방 <span style=\"font-weight: bold;\">__roomName__</span>은 자동으로 제거됩니다.",
   "The_field_is_required": "%s 필드는 필수 항목입니다.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "서버에 ImageMagick 또는 GraphicMagick이 설치되어 있지 않아 이미지 크기를 재조정할 수 없습니다.",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "그 메시지는 메시지 복구가 불가능한 토론입니다.",
