@@ -5,6 +5,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import Page from '../../components/basic/Page';
 import PageSkeleton from '../../components/PageSkeleton';
+import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -20,6 +21,9 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	const saveData = useRef({ form: {} });
 
 	const save = useMethod('livechat:saveBusinessHour');
+	const deleteBH = useMethod('livechat:removeBusinessHour');
+
+	const router = useRoute('omnichannel-businessHours');
 
 	const handleSave = useMutableCallback(async () => {
 		if (state !== ENDPOINT_STATES.DONE || !data.success) {
@@ -56,6 +60,20 @@ const EditBusinessHoursPage = ({ id, type }) => {
 		}
 	});
 
+	const handleDelete = useMutableCallback(async () => {
+		if (type !== 'custom') {
+			return;
+		}
+
+		try {
+			await deleteBH(id, type);
+			dispatchToastMessage({ type: 'success', message: t('Business_Hour_Removed') });
+			router.push({});
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	});
+
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <PageSkeleton />;
 	}
@@ -63,6 +81,9 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	return <Page>
 		<Page.Header title={t('Business_Hours')}>
 			<ButtonGroup>
+				{type === 'custom' && <Button primary danger onClick={handleDelete}>
+					{t('Delete')}
+				</Button>}
 				<Button primary onClick={handleSave}>
 					{t('Save')}
 				</Button>
