@@ -4,8 +4,6 @@ import './customTemplates/livechatAgentEditCustomFieldsForm';
 import './customTemplates/livechatAgentInfoCustomFieldsForm';
 import './customTemplates/visitorEditCustomFieldsForm';
 import './customTemplates/visitorInfoCustomForm';
-import './customTemplates/businessHoursCustomFieldsForm';
-import './customTemplates/businessHoursFormField';
 
 addCustomFormTemplate('livechatAgentEditForm', 'livechatAgentEditCustomFieldsForm');
 addCustomFormTemplate('livechatAgentInfoForm', 'livechatAgentInfoCustomFieldsForm');

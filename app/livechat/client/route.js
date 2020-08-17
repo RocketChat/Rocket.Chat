@@ -109,14 +109,6 @@ AccountBox.addRoute({
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-business-hours',
-	path: '/businessHours',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Business_Hours',
-	pageTemplate: 'livechatMainBusinessHours',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
 	name: 'livechat-facebook',
 	path: '/facebook',
 	sideNav: 'omnichannelFlex',
