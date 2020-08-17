@@ -1,31 +1,32 @@
-import React, { lazy, useMemo } from 'react';
-// import { Box } from '@rocket.chat/fuselage';\
+import React, { lazy, useMemo, useEffect } from 'react';
+import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../components/basic/Page';
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { businessHourManager } from '../../../app/livechat/client/views/app/business-hours/BusinessHours';
-
-const useBHView = () => useReactiveValue(() => businessHourManager.getTemplate());
 
 const BusinessHoursPage = () => {
 	const t = useTranslation();
-	const view = useBHView();
 
 	const router = useRoute('omnichannel-businessHours');
 
-	if (view === 'livechatBusinessHoursForm') {
-		router.push({
-			context: 'edit',
-			type: 'default',
-		});
-	}
-
 	const Table = useMemo(() => lazy(() => import('../../../ee/client/omnichannel/BusinessHoursTable')), []);
 
+	const handleNew = useMutableCallback(() => {
+		router.push({
+			context: 'new',
+		});
+	});
+
 	return <Page>
-		<Page.Header title={t('Business_Hours')}/>
+		<Page.Header title={t('Business_Hours')}>
+			<ButtonGroup>
+				<Button small square onClick={handleNew}>
+					<Icon name='plus'/>
+				</Button>
+			</ButtonGroup>
+		</Page.Header>
 		<Page.ScrollableContentWithShadow>
 			<Table />
 		</Page.ScrollableContentWithShadow>

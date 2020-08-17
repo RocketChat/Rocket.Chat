@@ -19,8 +19,9 @@ const BusinessHoursTimeZone = ({ onChange, data, className }) => {
 
 	const handleChange = useMutableCallback((value) => {
 		setTimezone(value);
-		onChange({ name: value });
 	});
+
+	onChange({ name: timezone });
 
 	return <Field className={className}>
 		<Field.Label>

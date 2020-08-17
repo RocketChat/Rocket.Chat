@@ -21,11 +21,18 @@ const getInitalData = ({ workHours }) => ({
 	}, {}),
 });
 
+const cleanFunc = () => {};
+
 const BusinessHoursFormContainer = ({ data, saveRef }) => {
 	const forms = useSubscription(formsSubscription);
 
-	const TimezoneForm = forms.useBusinessHoursTimeZone();
-	const MultipleBHForm = forms.useBusinessHoursMultiple();
+	const {
+		useBusinessHoursTimeZone = cleanFunc,
+		useBusinessHoursMultiple = cleanFunc,
+	} = forms;
+
+	const TimezoneForm = useBusinessHoursTimeZone();
+	const MultipleBHForm = useBusinessHoursMultiple();
 
 	const showTimezone = useReactiveValue(useMutableCallback(() => businessHourManager.showTimezoneTemplate()));
 	const showMultipleBHForm = useReactiveValue(useMutableCallback(() => businessHourManager.showCustomTemplate(data)));
@@ -39,7 +46,7 @@ const BusinessHoursFormContainer = ({ data, saveRef }) => {
 
 	return <FieldGroup>
 		{showMultipleBHForm && MultipleBHForm && <MultipleBHForm onChange={onChangeMultipleBHForm} data={data}/>}
-		{showTimezone && TimezoneForm && <TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name}/>}
+		{showTimezone && TimezoneForm && <TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name ?? data?.timezoneName}/>}
 		<BusinessHourForm values={values} handlers={handlers}/>
 	</FieldGroup>;
 };

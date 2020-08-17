@@ -13,16 +13,17 @@ const TimeRangeFieldsAssembler = ({ onChange, daysOpen, daysTime, className }) =
 	const stableDaysOpen = useStableArray(daysOpen);
 	const daysList = useMemo(() => DAYS_OF_WEEK.filter((day) => stableDaysOpen.includes(day)), [stableDaysOpen]);
 
-	return daysList.map((day) => <>
-		<Field className={className}>
-			<Field.Label>
-				{t(day)}
-			</Field.Label>
-			<Field.Row>
-				<TimeRangeInput onChange={handleChange(day)} start={daysTime[day]?.start} finish={daysTime[day]?.finish}/>
-			</Field.Row>
-		</Field>
-	</>);
+	return <>
+		{daysList.map((day) =>
+			<Field className={className} key={day}>
+				<Field.Label>
+					{t(day)}
+				</Field.Label>
+				<Field.Row>
+					<TimeRangeInput onChange={handleChange(day)} start={daysTime[day]?.start} finish={daysTime[day]?.finish}/>
+				</Field.Row>
+			</Field>)}
+	</>;
 };
 
 export default TimeRangeFieldsAssembler;
