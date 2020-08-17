@@ -72,7 +72,7 @@ export class CobrowseProvider implements IScreenSharingProvider {
 
 	getJWT(agent: any): any {
 		const header = { alg: 'RS256', typ: 'JWT' };
-		const privateKEY = settings.get('Cobrowse.io_Private_Key');
+		const privateKEY = settings.get('Cobrowse.io_Private_Key') || '';
 		const i = settings.get('Cobrowse.io_License_Key');
 		const s = agent.emails[0].address;
 		const a = 'https://cobrowse.io';
@@ -85,7 +85,7 @@ export class CobrowseProvider implements IScreenSharingProvider {
 			displayName: agent.username,
 		};
 
-		return KJUR.jws.JWS.sign('RS256', JSON.stringify(header), JSON.stringify(payload), KEYUTIL.getKey(privateKEY));
+		return KJUR.jws.JWS.sign('RS256', JSON.stringify(header), JSON.stringify(payload), KEYUTIL.getKey(privateKEY.toString()).toString());
 	}
 
 	getURL(sessionId: string, agent: any): string {
