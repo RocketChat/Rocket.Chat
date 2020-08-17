@@ -13,5 +13,3 @@ import './app/livechatManagers';
 import './app/integrations/livechatIntegrationFacebook';
 import './app/triggers/livechatTriggerAction';
 import './app/triggers/livechatTriggerCondition';
-import './app/business-hours/livechatBusinessHoursForm';
-import './app/business-hours/livechatMainBusinessHours';

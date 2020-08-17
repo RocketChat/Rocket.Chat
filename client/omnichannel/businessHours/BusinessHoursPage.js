@@ -1,4 +1,4 @@
-import React, { lazy, useMemo, useEffect } from 'react';
+import React, { lazy, useMemo } from 'react';
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
