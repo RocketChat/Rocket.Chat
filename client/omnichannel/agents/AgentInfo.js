@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Margins, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { useSubscription } from 'use-subscription';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/basic/VerticalBar';
@@ -7,6 +8,8 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { UserInfo } from '../../components/basic/UserInfo';
 import * as UserStatus from '../../components/basic/UserStatus';
 import { FormSkeleton } from './Skeleton';
+import { formsSubscription } from '../additionalForms';
+
 
 export const AgentInfo = React.memo(function AgentInfo({
 	uid,
@@ -15,6 +18,13 @@ export const AgentInfo = React.memo(function AgentInfo({
 }) {
 	const t = useTranslation();
 	const { data, state, error } = useEndpointDataExperimental(`livechat/users/agent/${ uid }`);
+	const eeForms = useSubscription(formsSubscription);
+
+	const {
+		useMaxChatsPerAgentDisplay = () => {},
+	} = eeForms;
+
+	const MaxChats = useMaxChatsPerAgentDisplay();
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <FormSkeleton/>;
@@ -47,6 +57,9 @@ export const AgentInfo = React.memo(function AgentInfo({
 				<UserInfo.Label>{t('Livechat_Status')}</UserInfo.Label>
 				<UserInfo.Info>{t(statusLivechat)}</UserInfo.Info>
 			</>}
+
+			{MaxChats && <MaxChats data={user}/>}
+
 		</Margins>
 
 	</VerticalBar.ScrollableContent>;
