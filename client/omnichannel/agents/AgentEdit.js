@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSubscription } from 'use-subscription';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -12,6 +13,7 @@ import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
 import { getUserEmailAddress } from '../../helpers/getUserEmailAddress';
 import { useRoute } from '../../contexts/RouterContext';
+import { formsSubscription } from '../additionalForms';
 
 
 export default function AgentEditWithData({ uid, reload }) {
@@ -34,6 +36,7 @@ export default function AgentEditWithData({ uid, reload }) {
 export function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ...props }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-agents');
+	const [maxChatUnsaved, setMaxChatUnsaved] = useState();
 
 	const { user } = data || { user: {} };
 	const {
@@ -45,8 +48,29 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 	const email = getUserEmailAddress(user);
 	const options = useMemo(() => (availableDepartments && availableDepartments.departments ? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id]) : []), [availableDepartments]);
 	const initialDepartmentValue = useMemo(() => (userDepartments && userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []), [userDepartments]);
+	const eeForms = useSubscription(formsSubscription);
 
-	const { values, handlers, hasUnsavedChanges } = useForm({ departments: initialDepartmentValue, status: statusLivechat });
+	const saveRef = useRef({ values: {}, hasUnsavedChanges: false });
+
+	const onChangeMaxChats = useMutableCallback(({ hasUnsavedChanges, ...value }) => {
+		saveRef.current = value;
+
+		if (hasUnsavedChanges !== maxChatUnsaved) {
+			setMaxChatUnsaved(hasUnsavedChanges);
+		}
+	});
+
+	const {
+		useMaxChatsPerAgent = () => {},
+	} = eeForms;
+
+	console.log(eeForms, useMaxChatsPerAgent());
+
+	const { values, handlers, hasUnsavedChanges, commit } = useForm({ departments: initialDepartmentValue, status: statusLivechat, maxChats: 0 });
+	const {
+		reset: resetMaxChats,
+		commit: commitMaxChats,
+	} = saveRef.current;
 
 	const {
 		handleDepartments,
@@ -57,14 +81,21 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 		status,
 	} = values;
 
+	const MaxChats = useMaxChatsPerAgent();
+
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
 	const saveAgentStatus = useMethod('livechat:changeLivechatStatus');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const handleReset = useMutableCallback(() => {
+		reset();
+		resetMaxChats();
+	});
+
 	const handleSave = useMutableCallback(async () => {
 		try {
-			await saveAgentInfo(uid, {}, departments);
+			await saveAgentInfo(uid, saveRef.current.values, departments);
 			await saveAgentStatus({ status, agentId: uid });
 			dispatchToastMessage({ type: 'success', message: t('saved') });
 			agentsRoute.push({});
@@ -72,7 +103,8 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 			dispatchToastMessage({ type: 'error', message: error });
 			console.log(error);
 		}
-		reset();
+		commit();
+		commitMaxChats();
 	});
 
 	return <VerticalBar.ScrollableContent is='form' { ...props }>
@@ -108,12 +140,13 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 			</Field.Row>
 		</Field>
 
+		{MaxChats && <MaxChats data={user} onChange={onChangeMaxChats}/>}
 
 		<Field.Row>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
-					<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={reset}>{t('Reset')}</Button>
-					<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
+					<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges && !maxChatUnsaved} onClick={handleReset}>{t('Reset')}</Button>
+					<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !maxChatUnsaved} onClick={handleSave}>{t('Save')}</Button>
 				</Margins>
 			</Box>
 		</Field.Row>
