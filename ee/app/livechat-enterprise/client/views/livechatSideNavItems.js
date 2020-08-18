@@ -2,7 +2,7 @@ import { registerOmnichannelSidebarItem } from '../../../../../client/omnichanne
 import { hasPermission } from '../../../../../app/authorization/client';
 
 registerOmnichannelSidebarItem({
-	href: 'omnichannel/monitors',
+	href: 'omnichannel-monitors',
 	i18nLabel: 'Livechat_Monitors',
 	permissionGranted: () => hasPermission('manage-livechat-monitors'),
 });
