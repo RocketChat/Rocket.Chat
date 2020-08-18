@@ -1147,7 +1147,7 @@
   "Custom_Sound_Saved_Successfully": "Brugerdefineret lyd blev gemt",
   "Custom_Sounds": "Brugerdefinerede lyde",
   "Custom_Translations": "Brugerdefinerede oversættelser",
-  "Custom_Translations_Description": "Skal være et gyldigt JSON, hvor nøgler er sprog, der indeholder en ordbog med nøgle og oversættelser. F.eks: <br/><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n\"pt\": {\n  \"Channels\": \"Salas\"\n }\n}</code>",
+  "Custom_Translations_Description": "Skal være et gyldigt JSON, hvor nøgler er sprog, der indeholder en ordbog med nøgle og oversættelser. F.eks: <br/><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n\"pt\": {\n  \"Channels\": \"Salas\"\n }\n}</code>",
   "Custom_User_Status": "Tilpasset brugerstatus",
   "Custom_User_Status_Edit": "Redigér tilpasset brugerstatus",
   "Custom_User_Status_Add": "Tilføj brugerdefineret brugerstatus",

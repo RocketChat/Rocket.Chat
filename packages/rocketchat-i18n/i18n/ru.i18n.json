@@ -53,7 +53,7 @@
   "Accounts_BlockedDomainsList_Description": "Список запрещённых доменов, разделенных запятой",
   "Accounts_BlockedUsernameList": "Список заблокированных пользователей",
   "Accounts_BlockedUsernameList_Description": "Список заблокированных имен пользователей (без учета регистра), разделенных запятой",
-  "Accounts_CustomFields_Description": "Ожидается корректный JSON-объект, в котором каждый ключ - это имя поля, а содержимое - справочник параметров поля. Пример:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}\n</code>",
+  "Accounts_CustomFields_Description": "Ожидается корректный JSON-объект, в котором каждый ключ - это имя поля, а содержимое - справочник параметров поля. Пример:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}\n</code>",
   "Accounts_CustomFieldsToShowInUserInfo": "Кастомные поля, отображающиеся в информации о пользователе",
   "Accounts_Default_User_Preferences": "Настройки пользователя по умолчанию",
   "Accounts_Default_User_Preferences_audioNotifications": "Сигнал по умолчанию для десктопных уведомлений",
