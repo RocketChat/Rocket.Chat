@@ -76,7 +76,7 @@ const MonitorsPage = () => {
 	}
 
 	return <Page>
-		<Page.Header title={t('Business_Hours')} />
+		<Page.Header title={t('Livechat_Monitors')} />
 		<Page.ScrollableContentWithShadow>
 			<Box display='flex' flexDirection='1'>
 				<UserAutoComplete value={username} onChange={setUsername}/>
