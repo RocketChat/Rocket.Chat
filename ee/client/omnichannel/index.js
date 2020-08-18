@@ -5,5 +5,6 @@ hasLicense('livechat-enterprise').then((enabled) => {
 		return;
 	}
 
+	require('./routes');
 	require('./additionalForms/register');
 });
