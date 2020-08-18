@@ -150,7 +150,8 @@ export const FileUpload = {
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
 			getPath(file) {
-				return `${ settings.get('uniqueID') }/avatars/${ file.userId }`;
+				const avatarFile = file.rid ? `room-${ file.rid }` : file.userId;
+				return `${ settings.get('uniqueID') }/avatars/${ avatarFile }`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
 			onFinishUpload: FileUpload.avatarsOnFinishUpload,
