@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Field, TextInput, TextAreaInput, PasswordInput, MultiSelectFiltered, Box, ToggleSwitch, Icon, Divider } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -8,6 +8,7 @@ import CustomFieldsForm from '../../components/CustomFieldsForm';
 
 export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, ...props }) {
 	const t = useTranslation();
+	const [hasCustomFields, setHasCustomFields] = useState(false);
 
 	const {
 		name,
@@ -42,6 +43,8 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 		handleJoinDefaultChannels,
 		handleSendWelcomeEmail,
 	} = formHandlers;
+
+	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
 		{ prepend }
@@ -126,9 +129,11 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 				</Box>
 			</Field.Row>
 		</Field>, [handleSendWelcomeEmail, t, sendWelcomeEmail])}
-		<Divider />
-		<Box fontScale='s2'>{t('Custom_Fields')}</Box>
-		<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields}/>
+		{hasCustomFields && <>
+			<Divider />
+			<Box fontScale='s2'>{t('Custom_Fields')}</Box>
+		</>}
+		<CustomFieldsForm onLoadFields={onLoadCustomFields} customFieldsData={customFields} setCustomFieldsData={handleCustomFields}/>
 		{ append }
 	</VerticalBar.ScrollableContent>;
 }
