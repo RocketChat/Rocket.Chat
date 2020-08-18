@@ -1,8 +1,8 @@
 
 
-import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
-import { Box, Table, Icon } from '@rocket.chat/fuselage';
+import { Table, Icon } from '@rocket.chat/fuselage';
 
 import { Th } from '../../../../client/components/GenericTable';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -13,6 +13,7 @@ import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import PrioritiesPage from './PrioritiesPage';
+import { PriorityEditWithData, PriorityNew } from './EditPriority';
 
 export function RemovePriorityButton({ _id, reload }) {
 	const deleteAction = useMethod('livechat:removePriority');
@@ -35,7 +36,7 @@ export function RemovePriorityButton({ _id, reload }) {
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
-	fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
+	fields: JSON.stringify({ name: 1 }),
 	text,
 	sort: JSON.stringify({ [column]: sortDir(direction), usernames: column === 'name' ? sortDir(direction) : undefined }),
 	...itemsPerPage && { count: itemsPerPage },
@@ -49,14 +50,13 @@ function PrioritiesRoute() {
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
 
-	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const agentsRoute = useRoute('omnichannel-agents');
+	const prioritiesRoute = useRoute('omnichannel-priorities');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
+	console.log(id);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -68,25 +68,24 @@ function PrioritiesRoute() {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () => agentsRoute.push({
-		context: 'info',
+	const onRowClick = useMutableCallback((id) => () => prioritiesRoute.push({
+		context: 'edit',
 		id,
 	}));
 
-    const { data, reload } = useEndpointDataExperimental('livechat/priorities.list', query) || {};
-    
-    console.log(data);
-
+	const { data, reload } = useEndpointDataExperimental('livechat/priorities.list', query) || {};
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
-		<Th key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x120'>{t('Description')}</Th>,
+		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</Th>,
+		<Th key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x200'>{t('Description')}</Th>,
+		<Th key={'dueTimeInMinutes'} direction={sort[1]} active={sort[0] === 'dueTimeInMinutes'} onClick={onHeaderClick} sort='dueTimeInMinutes' w='x120'>{t('Estimated_due_time')}</Th>,
 		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
-	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
+	].filter(Boolean), [sort, onHeaderClick, t]);
 
-	const renderRow = useCallback(({ _id, name, description }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
+	const renderRow = useCallback(({ _id, name, description, dueTimeInMinutes }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 		<Table.Cell withTruncatedText>{name}</Table.Cell>
 		<Table.Cell withTruncatedText>{description}</Table.Cell>
+		<Table.Cell withTruncatedText>{dueTimeInMinutes}  {t('minutes')}</Table.Cell>
 		<RemovePriorityButton _id={_id} reload={reload}/>
 	</Table.Row>, [reload, onRowClick]);
 
@@ -96,21 +95,21 @@ function PrioritiesRoute() {
 			return '';
 		}
 		const handleVerticalBarCloseButtonClick = () => {
-			agentsRoute.push({});
+			prioritiesRoute.push({});
 		};
 
 		return <VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
-				{context === 'edit' && t('Edit_User')}
-				{context === 'info' && t('User_Info')}
+				{context === 'edit' && t('Edit_Priority')}
+				{context === 'new' && t('New_Priority')}
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
 
-			{/* {context === 'edit' && <PriorityEdit uid={id} reload={reload}/>}
-			{context === 'new' && <PriorityNew uid={id} />} */}
+			{context === 'edit' && <PriorityEditWithData priorityId={id} reload={reload}/>}
+			{context === 'new' && <PriorityNew reload={reload} />}
 
 		</VerticalBar>;
-	}, [t, context, id, agentsRoute, reload]);
+	}, [t, context, id, prioritiesRoute, reload]);
 
 	if (!canViewAgents) {
 		return <NotAuthorizedPage />;

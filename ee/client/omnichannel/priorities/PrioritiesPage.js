@@ -4,9 +4,9 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../../../client/components/basic/Page';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpointAction } from '../../../../client/hooks/useEndpointAction';
 import { GenericTable } from '../../../../client/components/GenericTable';
-import { UserAutoComplete } from '../../../../client/components/basic/AutoComplete';
+import { useRoute } from '../../../../client/contexts/RouterContext';
+
 
 const FilterByText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
@@ -24,32 +24,8 @@ const FilterByText = ({ setFilter, ...props }) => {
 };
 
 
-function AddAgent({ reload, ...props }) {
-	const t = useTranslation();
-	const [username, setUsername] = useState();
-
-	const saveAction = useEndpointAction('POST', 'livechat/users/agent', { username });
-
-	const handleSave = useMutableCallback(async () => {
-		if (!username) {
-			return;
-		}
-		const result = await saveAction();
-		if (!result.success) {
-			return;
-		}
-		reload();
-		setUsername();
-	});
-	return <Box display='flex' alignItems='center' {...props}>
-		<UserAutoComplete value={username} onChange={setUsername}/>
-		<Button disabled={!username} onClick={handleSave} mis='x8' primary>{t('Add')}</Button>
-	</Box>;
-}
-
 function PrioritiesPage({
 	data,
-	reload,
 	header,
 	setParams,
 	params,
@@ -57,11 +33,22 @@ function PrioritiesPage({
 	renderRow,
 	children,
 }) {
+	const t = useTranslation();
+
+	const prioritiesRoute = useRoute('omnichannel-priorities');
+
+	const handleClick = useMutableCallback(() => prioritiesRoute.push({
+		context: 'new',
+	}));
+
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}/>
 			<Page.Content>
 				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.priorities} total={data && data.total} setParams={setParams} params={params} />
+				<Box display='flex' width='100%' justifyContent='end' padding='x8' mbe='x4'>
+					<Button onClick={handleClick} mis='x8' primary>{t('New_Priority')}</Button>
+				</Box>
 			</Page.Content>
 		</Page>
 		{children}
