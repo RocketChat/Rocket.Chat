@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldGroup } from '@rocket.chat/fuselage';
+import { FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
@@ -44,11 +44,13 @@ const BusinessHoursFormContainer = ({ data, saveRef }) => {
 
 	saveRef.current.form = values;
 
-	return <FieldGroup>
-		{showMultipleBHForm && MultipleBHForm && <MultipleBHForm onChange={onChangeMultipleBHForm} data={data}/>}
-		{showTimezone && TimezoneForm && <TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name ?? data?.timezoneName}/>}
-		<BusinessHourForm values={values} handlers={handlers}/>
-	</FieldGroup>;
+	return <Box maxWidth='600px' w='full' alignSelf='center'>
+		<FieldGroup>
+			{showMultipleBHForm && MultipleBHForm && <MultipleBHForm onChange={onChangeMultipleBHForm} data={data}/>}
+			{showTimezone && TimezoneForm && <TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name ?? data?.timezoneName}/>}
+			<BusinessHourForm values={values} handlers={handlers}/>
+		</FieldGroup>
+	</Box>;
 };
 
 export default BusinessHoursFormContainer;
