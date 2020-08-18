@@ -9,6 +9,15 @@ registerOmnichannelRoute('/installation', {
 	name: 'omnichannel-installation',
 	lazyRouteComponent: () => import('./installation/Installation'),
 });
+registerOmnichannelRoute('/managers', {
+	name: 'omnichannel-managers',
+	lazyRouteComponent: () => import('./managers/ManagersRoute'),
+});
+
+registerOmnichannelRoute('/agents/:context?/:id?', {
+	name: 'omnichannel-agents',
+	lazyRouteComponent: () => import('./agents/AgentsRoute'),
+});
 
 registerOmnichannelRoute('/webhooks', {
 	name: 'omnichannel-webhooks',
@@ -32,5 +41,5 @@ registerOmnichannelRoute('/businessHours/:context?/:type?/:id?', {
 
 registerOmnichannelRoute('/managers', {
 	name: 'omnichannel-managers',
-	lazyRouteComponent: () => import('./ManagersRoute'),
+	lazyRouteComponent: () => import('./managers/ManagersRoute'),
 });

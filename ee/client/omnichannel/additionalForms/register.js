@@ -8,6 +8,9 @@ hasLicense('livechat-enterprise').then((enabled) => {
 		return;
 	}
 
+  registerForm({ useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalForm')), []) });
+  registerForm({ useMaxChatsPerAgent: () => useMemo(() => lazy(() => import('./MaxChatsPerAgent')), []) });
+  registerForm({ useMaxChatsPerAgentDisplay: () => useMemo(() => lazy(() => import('./MaxChatsPerAgentDisplay')), []) });
 	registerForm({ useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalForm')), []) });
 	registerForm({ useBusinessHoursTimeZone: () => useMemo(() => lazy(() => import('./BusinessHoursTimeZone')), []) });
 	registerForm({ useBusinessHoursMultiple: () => useMemo(() => lazy(() => import('./BusinessHoursMultiple')), []) });
