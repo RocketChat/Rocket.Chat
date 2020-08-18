@@ -48,7 +48,7 @@ const MonitorsPage = () => {
 
 	const addMonitor = useMethod('livechat:addMonitor');
 
-	const onHeaderClick = (id) => {
+	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
 
 		if (sortBy === id) {
@@ -56,7 +56,7 @@ const MonitorsPage = () => {
 			return;
 		}
 		setSort([id, 'asc']);
-	};
+	});
 
 	const handleAdd = useMutableCallback(async () => {
 		try {
