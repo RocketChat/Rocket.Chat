@@ -2,8 +2,6 @@ import { addCustomFormTemplate } from '../../../../../../app/livechat/client/vie
 import './customTemplates/livechatDepartmentCustomFieldsForm';
 import './customTemplates/visitorEditCustomFieldsForm';
 import './customTemplates/visitorInfoCustomForm';
-import './customTemplates/businessHoursCustomFieldsForm';
-import './customTemplates/businessHoursFormField';
 
 addCustomFormTemplate('livechatDepartmentForm', 'livechatDepartmentCustomFieldsForm');
 addCustomFormTemplate('livechatVisitorEditForm', 'visitorEditCustomFieldsForm');

@@ -55,7 +55,7 @@ export const {
 		i18nLabel: 'Facebook Messenger',
 		permissionGranted: () => hasPermission('view-livechat-facebook'),
 	}, {
-		href: 'omnichannel/businessHours',
+		href: 'omnichannel-businessHours',
 		i18nLabel: 'Business_Hours',
 		permissionGranted: () => hasPermission('view-livechat-business-hours'),
 	},
