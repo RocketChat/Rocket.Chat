@@ -8,10 +8,10 @@ import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { GenericTable } from '../../components/GenericTable';
 import { UserAutoComplete } from '../../components/basic/AutoComplete';
 
-
 const FilterByText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
+
 	const handleChange = useMutableCallback((event) => setText(event.currentTarget.value));
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
 
@@ -24,11 +24,11 @@ const FilterByText = ({ setFilter, ...props }) => {
 };
 
 
-function AgentsManagerAdd({ reload, ...props }) {
+function AddAgent({ reload, ...props }) {
 	const t = useTranslation();
 	const [username, setUsername] = useState();
 
-	const saveAction = useEndpointAction('POST', 'livechat/users/manager', { username });
+	const saveAction = useEndpointAction('POST', 'livechat/users/agent', { username });
 
 	const handleSave = useMutableCallback(async () => {
 		if (!username) {
@@ -47,7 +47,7 @@ function AgentsManagerAdd({ reload, ...props }) {
 	</Box>;
 }
 
-function ManageAgents({
+function AgentsPage({
 	data,
 	reload,
 	header,
@@ -60,7 +60,7 @@ function ManageAgents({
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}/>
-			<AgentsManagerAdd reload={reload} pi='x24'/>
+			<AddAgent reload={reload} pi='x24'/>
 			<Page.Content>
 				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.users} total={data && data.total} setParams={setParams} params={params} />
 			</Page.Content>
@@ -69,4 +69,4 @@ function ManageAgents({
 	</Page>;
 }
 
-export default ManageAgents;
+export default AgentsPage;

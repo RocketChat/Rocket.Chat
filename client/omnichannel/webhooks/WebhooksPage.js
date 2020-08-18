@@ -28,7 +28,7 @@ const integrationsUrl = 'https://rocket.chat/docs/administrator-guides/livechat/
 const WebhooksPageContainer = () => {
 	const t = useTranslation();
 
-	const { data, status, error } = useEndpointDataExperimental('livechat/integrations.settings');
+	const { data, state, error } = useEndpointDataExperimental('livechat/integrations.settings');
 
 	const canViewLivechatWebhooks = usePermission('view-livechat-webhooks');
 
@@ -36,7 +36,7 @@ const WebhooksPageContainer = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	if (status === ENDPOINT_STATES.LOADING) {
+	if (state === ENDPOINT_STATES.LOADING) {
 		return <PageSkeleton />;
 	}
 

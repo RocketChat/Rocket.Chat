@@ -1,4 +1,4 @@
-import { hasLicense } from '../../app/license/client';
+import './additionalForms/register';
 
 hasLicense('livechat-enterprise').then((enabled) => {
 	if (!enabled) {
