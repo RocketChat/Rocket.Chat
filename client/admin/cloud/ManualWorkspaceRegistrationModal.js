@@ -1,8 +1,7 @@
-import { Box, Button, ButtonGroup, Icon, Scrollable, Throbber } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Icon, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
 import Clipboard from 'clipboard';
 import React, { useEffect, useState, useRef } from 'react';
 
-import { Modal } from '../../components/basic/Modal';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
