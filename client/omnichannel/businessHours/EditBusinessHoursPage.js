@@ -1,10 +1,11 @@
 import React, { useRef, useMemo } from 'react';
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import Page from '../../components/basic/Page';
 import PageSkeleton from '../../components/PageSkeleton';
+import { useIsSingleBusinessHours } from './BusinessHoursRouter';
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -15,6 +16,7 @@ import { mapBusinessHoursForm } from './mapBusinessHoursForm';
 const EditBusinessHoursPage = ({ id, type }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const isSingleBH = useIsSingleBusinessHours();
 
 	const { data, state } = useEndpointDataExperimental('livechat/business-hour', useMemo(() => ({ _id: id, type }), [id, type]));
 
@@ -74,13 +76,35 @@ const EditBusinessHoursPage = ({ id, type }) => {
 		}
 	});
 
+	const handleReturn = useMutableCallback(() => {
+		router.push({});
+	});
+
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <PageSkeleton />;
+	}
+
+	if (state === ENDPOINT_STATES.ERROR || (ENDPOINT_STATES.DONE && !data.businessHour)) {
+		return <Page>
+			<Page.Header title={t('Business_Hours')}>
+				<Button onClick={handleReturn}>
+					{t('Back')}
+				</Button>
+			</Page.Header>
+			<Page.ScrollableContentWithShadow>
+				<Callout type='danger'>
+					{t('Error')}
+				</Callout>
+			</Page.ScrollableContentWithShadow>
+		</Page>;
 	}
 
 	return <Page>
 		<Page.Header title={t('Business_Hours')}>
 			<ButtonGroup>
+				{!isSingleBH && <Button onClick={handleReturn}>
+					{t('Back')}
+				</Button>}
 				{type === 'custom' && <Button primary danger onClick={handleDelete}>
 					{t('Delete')}
 				</Button>}

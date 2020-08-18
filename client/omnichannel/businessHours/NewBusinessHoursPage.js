@@ -73,9 +73,16 @@ const NewBusinessHoursPage = () => {
 		}
 	});
 
+	const handleReturn = useMutableCallback(() => {
+		router.push({});
+	});
+
 	return <Page>
 		<Page.Header title={t('Business_Hours')}>
 			<ButtonGroup>
+				<Button onClick={handleReturn}>
+					{t('Back')}
+				</Button>
 				<Button primary onClick={handleSave}>
 					{t('Save')}
 				</Button>
