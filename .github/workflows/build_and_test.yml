@@ -238,7 +238,8 @@ jobs:
         MONGO_URL: mongodb://localhost:27017/rocketchat
         MONGO_OPLOG_URL: mongodb://localhost:27017/local
       run: |
-        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && Xvfb -screen 0 1024x768x24 :99 & npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
+        Xvfb -screen 0 1024x768x24 :99 &
+        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
 #   notification:
 #     runs-on: ubuntu-latest
