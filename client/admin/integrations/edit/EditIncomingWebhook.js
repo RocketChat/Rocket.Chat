@@ -8,6 +8,7 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useSetModal } from '../../../contexts/ModalContext';
 import { useForm } from '../../../hooks/useForm';
 import IncomingWebhookForm from '../IncomingWebhookForm';
 
@@ -58,7 +59,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values: formValues, handlers: formHandlers, reset } = useForm(getInitialValue(data));
-	const [modal, setModal] = useState();
+	const setModal = useSetModal();
 
 	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [data._id]);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
@@ -99,8 +100,5 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 	</Field>, [handleDeleteIntegration, handleSave, reset, t]);
 
 
-	return <>
-		<IncomingWebhookForm formHandlers={formHandlers} formValues={formValues} extraData={{ _id: data._id, token: data.token }} append={actionButtons} {...props}/>
-		{ modal }
-	</>;
+	return <IncomingWebhookForm formHandlers={formHandlers} formValues={formValues} extraData={{ _id: data._id, token: data.token }} append={actionButtons} {...props}/>;
 }
