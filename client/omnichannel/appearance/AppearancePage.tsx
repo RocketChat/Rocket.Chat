@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Callout, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -12,16 +12,47 @@ import Page from '../../components/basic/Page';
 import AppearanceForm from './AppearanceForm';
 import PageSkeleton from '../../components/PageSkeleton';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import { ISetting } from '../../../definition/ISetting';
 
-const reduceAppearance = (settings) => settings.reduce((acc, { _id, value }) => {
-	acc = { ...acc, [_id]: value };
-	return acc;
-}, {});
+type LivechatAppearanceEndpointData = {
+	success: boolean;
+	appearance: ISetting[];
+};
 
-const AppearancePageContainer = () => {
+type LivechatAppearanceSettings = {
+	Livechat_title: string;
+	Livechat_title_color: string;
+	Livechat_show_agent_info: boolean;
+	Livechat_show_agent_email: boolean;
+	Livechat_display_offline_form: boolean;
+	Livechat_offline_form_unavailable: string;
+	Livechat_offline_message: string;
+	Livechat_offline_title: string;
+	Livechat_offline_title_color: string;
+	Livechat_offline_email: string;
+	Livechat_offline_success_message: string;
+	Livechat_registration_form: boolean;
+	Livechat_name_field_registration_form: boolean;
+	Livechat_email_field_registration_form: boolean;
+	Livechat_registration_form_message: string;
+	Livechat_conversation_finished_message: string;
+	Livechat_conversation_finished_text: string;
+	Livechat_enable_message_character_limit: boolean;
+	Livechat_message_character_limit: number;
+};
+
+type AppearanceSettings = Partial<LivechatAppearanceSettings>;
+
+const reduceAppearance = (settings: LivechatAppearanceEndpointData['appearance']): AppearanceSettings =>
+	settings.reduce<Partial<LivechatAppearanceSettings>>((acc, { _id, value }) => {
+		acc = { ...acc, [_id]: value };
+		return acc;
+	}, {});
+
+const AppearancePageContainer: FC = () => {
 	const t = useTranslation();
 
-	const { data, state, error } = useEndpointDataExperimental('livechat/appearance');
+	const { data, state, error } = useEndpointDataExperimental<LivechatAppearanceEndpointData>('livechat/appearance');
 
 	const canViewAppearance = usePermission('view-livechat-appearance');
 
@@ -35,7 +66,7 @@ const AppearancePageContainer = () => {
 
 	if (!data || !data.success || !data.appearance || error) {
 		return <Page>
-			<Page.Header title={t('Edit_Custom_Field')}/>
+			<Page.Header title={t('Edit_Custom_Field')} />
 			<Page.ScrollableContentWithShadow>
 				<Callout type='danger'>
 					{t('Error')}
@@ -44,16 +75,20 @@ const AppearancePageContainer = () => {
 		</Page>;
 	}
 
-	return <AppearancePage settings={reduceAppearance(data.appearance)}/>;
+	return <AppearancePage settings={data.appearance}/>;
 };
 
-const AppearancePage = ({ settings }) => {
+type AppearancePageProps = {
+	settings: LivechatAppearanceEndpointData['appearance'];
+};
+
+const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const save = useMethod('livechat:saveAppearance');
+	const save: (settings: Pick<ISetting, '_id' | 'value'>[]) => Promise<void> = useMethod('livechat:saveAppearance');
 
-	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(settings);
+	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(reduceAppearance(settings));
 
 	const handleSave = useMutableCallback(async () => {
 		const mappedAppearance = Object.entries(values).map(([_id, value]) => ({ _id, value }));
@@ -67,10 +102,14 @@ const AppearancePage = ({ settings }) => {
 		}
 	});
 
+	const handleResetButtonClick = (): void => {
+		reset();
+	};
+
 	return <Page>
 		<Page.Header title={t('Appearance')}>
 			<ButtonGroup align='end'>
-				<Button onClick={() => reset()}>
+				<Button onClick={handleResetButtonClick}>
 					<Icon size='x16' name='back'/>{t('Back')}
 				</Button>
 				<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
