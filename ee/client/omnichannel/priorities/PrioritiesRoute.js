@@ -45,7 +45,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMe
 
 function PrioritiesRoute() {
 	const t = useTranslation();
-	const canViewAgents = usePermission('manage-livechat-agents');
+	const canViewPriorities = usePermission('manage-livechat-priorities');
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
@@ -111,7 +111,7 @@ function PrioritiesRoute() {
 		</VerticalBar>;
 	}, [t, context, id, prioritiesRoute, reload]);
 
-	if (!canViewAgents) {
+	if (!canViewPriorities) {
 		return <NotAuthorizedPage />;
 	}
 
