@@ -40,6 +40,7 @@ Meteor.startup(function() {
 		}
 		const { screenSharing: { status, sessionUrl } = {} } = room;
 		if (status !== 'active') {
+			ScreenSharingDialog.close();
 			return;
 		}
 		const messageBoxRef = document.querySelector('.rc-message-box');

@@ -29,6 +29,10 @@ const onStartScreenSharing = (roomId) => {
 		CobrowseIO.customData = {
 			roomId,
 		};
+		CobrowseIO.showSessionControls = function() {
+		}
+		CobrowseIO.hideSessionControls = function() {
+		}
 	});
 };
 const onEndScreenSharing = (roomId) => {

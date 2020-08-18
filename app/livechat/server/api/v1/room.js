@@ -211,6 +211,8 @@ API.v1.addRoute('livechat/room.screenSharing', {
 				ScreenSharingManager.acceptRequest(rid, visitor, room.servedBy);
 			} else if (messageType === 'guest_requesting_livechat_screen_sharing') {
 				ScreenSharingManager.requestSession(rid, visitor, 'visitor');
+			} else if (messageType === 'guest_ended_livechat_screen_sharing') {
+				ScreenSharingManager.endSession(rid, visitor);
 			}
 
 			return API.v1.success();
