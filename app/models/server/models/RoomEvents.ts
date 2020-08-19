@@ -82,7 +82,9 @@ class RoomEventsModel extends EventsModel {
 	}
 
 	public async createMessageEvent<T extends IRoomEventDataMessage>(src: string, roomId: string, clid: string, d: T): Promise<IEvent<T>> {
+		console.time('ensureSrc');
 		src = this.ensureSrc(src);
+		console.timeEnd('ensureSrc');
 
 		const stub: IEventStub<T> = {
 			clid,
@@ -90,7 +92,11 @@ class RoomEventsModel extends EventsModel {
 			d,
 		};
 
-		return super.createEvent(src, getContextQuery(roomId), stub);
+		console.time('getContextQuery');
+		const ctx = getContextQuery(roomId);
+		console.timeEnd('getContextQuery');
+
+		return super.createEvent(src, ctx, stub);
 	}
 
 	public async createEditMessageEvent<T extends IEventDataUpdate<IRoomEventDataMessage>>(src: string, roomId: string, clid: string, d: T): Promise<IEvent<T>> {

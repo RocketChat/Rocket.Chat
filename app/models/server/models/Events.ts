@@ -56,7 +56,6 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 	}
 
 	public getEventIdHash<T extends EventDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
-		console.log('process.env.DISABLE_ID_SHA:', process.env);
 		if (process.env.DISABLE_ID_SHA === '1') { return Random.id(); }
 
 		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event.pids.join(',') }${ event.t }${ event.ts }${ event.dHash }`);
@@ -83,7 +82,7 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 		let pids = []; // Previous ids
 		let previousEvents = [];
 
-
+		console.time('leafSearch');
 		if (process.env.DISABLE_LEAF_SEARCH === '1') {
 			previousEvents = [Random.id()];
 		} else {
@@ -92,7 +91,9 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 				.find({ ...contextQuery, isLeaf: true })
 				.toArray();
 		}
+		console.timeEnd('leafSearch');
 
+		console.time('map');
 		pids = previousEvents.map((e: IEvent<any>) => e._id);
 
 		const event: IEvent<T> = {
@@ -109,14 +110,19 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 			d: stub.d,
 			isLeaf: true,
 		};
+		console.timeEnd('map');
 
 		//
 		// Create the data hash
+		console.time('getEventDataHash');
 		event.dHash = this.getEventDataHash(event);
+		console.timeEnd('getEventDataHash');
 
 		//
 		// Create ID hash
+		console.time('getEventIdHash');
 		event._id = this.getEventIdHash(contextQuery, event);
+		console.timeEnd('getEventIdHash');
 
 		return event;
 	}

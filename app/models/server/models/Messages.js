@@ -193,15 +193,28 @@ export class Messages extends Base {
 	}
 
 	insert(...args) {
+		console.time('Messages.insert');
 		const [message] = args;
 
+		console.time('fromV1Data');
 		const v2Data = RoomEvents.fromV1Data(message);
+		console.timeEnd('fromV1Data');
 
+		console.time('createMessageEvent');
 		const event = Promise.await(RoomEvents.createMessageEvent(getLocalSrc(), message.rid, message._id, v2Data));
+		console.timeEnd('createMessageEvent');
 
+		console.time('dispatchEvent');
 		Promise.await(this.dispatchEvent(event));
+		console.timeEnd('dispatchEvent');
 
-		return RoomEvents.toV1(event)._id;
+		console.time('toV1');
+		const v1 = RoomEvents.toV1(event)._id;
+		console.timeEnd('toV1');
+
+		console.timeEnd('Messages.insert');
+
+		return v1;
 	}
 
 	update(...args) {
