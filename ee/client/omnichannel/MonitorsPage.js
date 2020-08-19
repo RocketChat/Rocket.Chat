@@ -80,7 +80,7 @@ const MonitorsPage = () => {
 		<Page.ScrollableContentWithShadow>
 			<Box display='flex' flexDirection='1'>
 				<UserAutoComplete value={username} onChange={setUsername}/>
-				<Button primary onClick={handleAdd}>{t('Add')}</Button>
+				<Button primary onClick={handleAdd} mis='x8'>{t('Add')}</Button>
 			</Box>
 			<MonitorsTable
 				monitors={data?.monitors}

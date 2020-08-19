@@ -87,10 +87,10 @@ const MonitorsRow = memo(function MonitorsRow(props) {
 			{username}
 		</Table.Cell>
 		<Table.Cell withTruncatedText>
-			{emails.find(({ address }) => !!address).address}
+			{emails?.find(({ address }) => !!address)?.address}
 		</Table.Cell>
 		<Table.Cell withTruncatedText>
-			<Button small primary danger title={t('Remove')} onClick={handleRemove}>
+			<Button small ghost title={t('Remove')} onClick={handleRemove}>
 				<Icon name='trash' size='x16'/>
 			</Button>
 		</Table.Cell>
@@ -120,7 +120,7 @@ export function MonitorsTable({ monitors, totalMonitors, params, sort, onHeaderC
 			<GenericTable.HeaderCell>
 				{t('Email')}
 			</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell width='x60' />
+			<GenericTable.HeaderCell width='x60'>{t('Remove')}</GenericTable.HeaderCell>
 		</>}
 		results={monitors}
 		total={totalMonitors}
