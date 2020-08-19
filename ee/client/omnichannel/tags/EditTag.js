@@ -43,10 +43,10 @@ export function TagNew({ reload }) {
 		return <Box mbs='x16'>{t('Not_found')}</Box>;
 	}
 
-	return <TagEdit reload={reload} availableDepartments={availableDepartments}/>;
+	return <TagEdit reload={reload} isNew availableDepartments={availableDepartments}/>;
 }
 
-export function TagEdit({ data, tagId, availableDepartments, reload, ...props }) {
+export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...props }) {
 	const t = useTranslation();
 	const tagsRoute = useRoute('omnichannel-tags');
 
@@ -121,7 +121,7 @@ export function TagEdit({ data, tagId, availableDepartments, reload, ...props })
 		<Field.Row>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
-					<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button>
+					{!isNew && <Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button>}
 					<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !canSave} onClick={handleSave}>{t('Save')}</Button>
 				</Margins>
 			</Box>

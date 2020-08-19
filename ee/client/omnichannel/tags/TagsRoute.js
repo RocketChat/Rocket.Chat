@@ -16,14 +16,15 @@ import TagsPage from './TagsPage';
 import { TagEditWithData, TagNew } from './EditTag';
 
 export function RemoveTagButton({ _id, reload }) {
-	const deleteAction = useMethod('livechat:removeTag');
+	const removeTag = useMethod('livechat:removeTag');
 	const tagsRoute = useRoute('omnichannel-tags');
 
 
 	const handleRemoveClick = useMutableCallback(async (e) => {
 		e.preventDefault();
+		e.stopPropagation();
 		try {
-			await deleteAction(_id);
+			await removeTag(_id);
 		} catch (error) {
 			console.log(error);
 		}

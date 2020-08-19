@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextInput, Button, Box, Icon } from '@rocket.chat/fuselage';
+import { TextInput, Button, Box, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../../../client/components/basic/Page';
@@ -19,7 +19,7 @@ const FilterByText = ({ setFilter, ...props }) => {
 		setFilter({ text });
 	}, [setFilter, text]);
 	return <Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
-		<TextInput flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+		<TextInput  flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 };
 
@@ -44,7 +44,9 @@ function TagsPage({
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}>
-				<Button onClick={handleClick} mis='x8' primary>{t('New_Tag')}</Button>
+				<ButtonGroup>
+					<Button small onClick={handleClick} title={t('New_Tag')}><Icon name='plus'/></Button>
+				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
 				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.tags} total={data && data.total} setParams={setParams} params={params} />
