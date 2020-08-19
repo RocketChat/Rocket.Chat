@@ -51,14 +51,6 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
-	name: 'livechat-priorities',
-	path: '/priorities',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Priorities',
-	pageTemplate: 'livechatPriorities',
-}, livechatManagerRoutes);
-
-AccountBox.addRoute({
 	name: 'livechat-priority-edit',
 	path: '/priorities/:_id/edit',
 	sideNav: 'omnichannelFlex',
