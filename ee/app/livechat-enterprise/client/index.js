@@ -1,7 +1,5 @@
 import { hasLicense } from '../../license/client';
 import '../lib/messageTypes';
-import './views/livechatUnits';
-import './views/livechatUnitForm';
 import './route';
 import './startup';
 

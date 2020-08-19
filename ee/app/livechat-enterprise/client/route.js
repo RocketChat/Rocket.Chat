@@ -2,30 +2,6 @@ import { AccountBox } from '../../../../app/ui-utils';
 import { livechatManagerRoutes, load } from '../../../../app/livechat/client/route';
 
 AccountBox.addRoute({
-	name: 'livechat-units',
-	path: '/units',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Units',
-	pageTemplate: 'livechatUnits',
-}, livechatManagerRoutes);
-
-AccountBox.addRoute({
-	name: 'livechat-unit-edit',
-	path: '/units/:_id/edit',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Edit_Unit',
-	pageTemplate: 'livechatUnitForm',
-}, livechatManagerRoutes);
-
-AccountBox.addRoute({
-	name: 'livechat-unit-new',
-	path: '/units/new',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'New_Unit',
-	pageTemplate: 'livechatUnitForm',
-}, livechatManagerRoutes);
-
-AccountBox.addRoute({
 	name: 'livechat-tag-edit',
 	path: '/tags/:_id/edit',
 	sideNav: 'omnichannelFlex',

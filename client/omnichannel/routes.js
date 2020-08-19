@@ -44,6 +44,11 @@ registerOmnichannelRoute('/managers', {
 	lazyRouteComponent: () => import('./managers/ManagersRoute'),
 });
 
+registerOmnichannelRoute('/units/:context?/:id?', {
+	name: 'omnichannel-units',
+	lazyRouteComponent: () => import('../../ee/client/omnichannel/units/UnitsRoute'),
+});
+
 registerOmnichannelRoute('/tags/:context?/:id?', {
 	name: 'omnichannel-tags',
 	lazyRouteComponent: () => import('../../ee/client/omnichannel/tags/TagsRoute'),
