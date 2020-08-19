@@ -62,7 +62,7 @@
   "Block_Multiple_Failed_Logins_By_User": "مسدود کردن تلاش های ناموفق ورود به سیستم با نام کاربری",
   "Accounts_BlockedUsernameList": "لیست نام های کاربری مسدود شده",
   "Accounts_BlockedUsernameList_Description": "لیست کاما جدا از نام های کاربری مسدود شده (غیر حساس به کوچکی و بزرگی حروف)",
-  "Accounts_CustomFields_Description": "باید از یک JSON معتبر که شامل یک لیست از کلید ها و مقادیر باشد، مثل: <br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "باید از یک JSON معتبر که شامل یک لیست از کلید ها و مقادیر باشد، مثل: <br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
   "Accounts_CustomFieldsToShowInUserInfo": "فیلد های سفارشی برای نمایش در اطلاعات کاربری",
   "Accounts_Default_User_Preferences": "تنظیمات پیش فرض کاربر",
   "Accounts_Default_User_Preferences_audioNotifications": "هشدار پیش فرض اعلان های صوتی",

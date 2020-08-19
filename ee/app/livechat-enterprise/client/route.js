@@ -2,22 +2,6 @@ import { AccountBox } from '../../../../app/ui-utils';
 import { livechatManagerRoutes, load } from '../../../../app/livechat/client/route';
 
 AccountBox.addRoute({
-	name: 'livechat-monitors',
-	path: '/monitors',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Livechat_Monitors',
-	pageTemplate: 'livechatMonitors',
-}, livechatManagerRoutes);
-
-AccountBox.addRoute({
-	name: 'livechat-tags',
-	path: '/tags',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Tags',
-	pageTemplate: 'livechatTags',
-}, livechatManagerRoutes);
-
-AccountBox.addRoute({
 	name: 'livechat-tag-edit',
 	path: '/tags/:_id/edit',
 	sideNav: 'omnichannelFlex',
@@ -31,14 +15,6 @@ AccountBox.addRoute({
 	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'New_Tag',
 	pageTemplate: 'livechatTagForm',
-}, livechatManagerRoutes);
-
-AccountBox.addRoute({
-	name: 'livechat-priorities',
-	path: '/priorities',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Priorities',
-	pageTemplate: 'livechatPriorities',
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
