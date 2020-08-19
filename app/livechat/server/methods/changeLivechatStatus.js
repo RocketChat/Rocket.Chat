@@ -5,7 +5,7 @@ import { hasPermission } from '../../../authorization';
 import Users from '../../../models/server/models/Users';
 
 Meteor.methods({
-	'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() }) {
+	'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
 		const uid = Meteor.userId();
 
 		if (!uid || !agentId) {
