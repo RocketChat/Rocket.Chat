@@ -40,7 +40,7 @@
   "Accounts_BlockedDomainsList_Description": "Danh sách tên miền bị cấm cách nhau bằng dấu phẩy",
   "Accounts_BlockedUsernameList": "Danh sách tên truy cập bị cấm",
   "Accounts_BlockedUsernameList_Description": "Danh sách tên truy cập bị cấm cách nhau bằng dấu phẩy (không phân biệt hoa thường)",
-  "Accounts_CustomFields_Description": "Phải là cấu trúc JSON hợp lệ, trong đó các key là các trường chứa \"a dictionary of field settings\". Ví dụ:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
+  "Accounts_CustomFields_Description": "Phải là cấu trúc JSON hợp lệ, trong đó các key là các trường chứa \"a dictionary of field settings\". Ví dụ:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
   "Accounts_CustomFieldsToShowInUserInfo": "Các trường tùy chỉnh để hiển thị thông tin của người dùng",
   "Accounts_Default_User_Preferences": "Tuỳ chọn Người dùng Mặc định",
   "Accounts_Default_User_Preferences_audioNotifications": "Thông báo Âm thanh Cảnh báo Mặc định",

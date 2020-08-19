@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission, hasRole } from '../../app/authorization/client';
 import { createTemplateForComponent } from '../reactAdapters';
-import { createSidebarItems } from '../components/basic/Sidebar';
+import { createSidebarItems } from '../helpers/createSidebarItems';
 
 createTemplateForComponent('adminFlex', () => import('./sidebar/AdminSidebar'));
 

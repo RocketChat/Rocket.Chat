@@ -1,10 +1,9 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import Page from '../../../components/basic/Page';
 import EditIncomingWebhookWithData from './EditIncomingWebhook';
 import EditOutgoingWebhookWithData from './EditOutgoingWebhook';
-import { Modal } from '../../../components/basic/Modal';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 
@@ -47,7 +46,7 @@ export const SuccessModal = ({ onClose, ...props }) => {
 	</Modal>;
 };
 
-export default function NewIntegrationsPage({ ...props }) {
+export default function EditIntegrationsPage({ ...props }) {
 	const t = useTranslation();
 
 	const router = useRoute('admin-integrations');
