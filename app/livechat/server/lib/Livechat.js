@@ -1127,7 +1127,10 @@ export const Livechat = {
 		});
 	},
 
-	changeRoomVisitor(roomId, visitor) {
+	changeRoomVisitor(userId, roomId, visitor) {
+		if (!hasPermission(userId, 'change-livechat-room-visitor')) {
+			throw new Error('error-not-authorized');
+		}
 		Promise.await(LivechatRooms.changeVisitorByRoomId(roomId, visitor));
 		Promise.await(Livechat.notifyRoomVisitorChange(roomId, visitor));
 	},

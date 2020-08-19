@@ -10,7 +10,6 @@ import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } 
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../../authorization/server/functions/canAccessRoom';
 
 API.v1.addRoute('livechat/room', {
@@ -197,10 +196,6 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Error('error-user-not-found');
 			}
 
-			if (!Promise.await(hasPermissionAsync(this.userId, 'change-livechat-room-visitor'))) {
-				throw new Error('error-not-authorized');
-			}
-
 			const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
 
 			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }));
@@ -208,7 +203,6 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Meteor.Error('invalid-new-visitor-id');
 			}
 			const { _id, username, token } = visitor;
-
 
 			const room = Promise.await(LivechatRooms.findOneById(rid));
 			if (!room) {
@@ -224,7 +218,7 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Error('error-not-allowed');
 			}
 
-			Promise.await(Livechat.changeRoomVisitor(rid, { _id, username, token }));
+			Promise.await(Livechat.changeRoomVisitor(this.userId, rid, { _id, username, token }));
 
 			return API.v1.success({
 				room: {
