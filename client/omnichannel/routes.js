@@ -43,3 +43,8 @@ registerOmnichannelRoute('/managers', {
 	name: 'omnichannel-managers',
 	lazyRouteComponent: () => import('./managers/ManagersRoute'),
 });
+
+registerOmnichannelRoute('/priorities/:context?/:id?', {
+	name: 'omnichannel-priorities',
+	lazyRouteComponent: () => import('../../ee/client/omnichannel/priorities/PrioritiesRoute'),
+});
