@@ -19,7 +19,7 @@ const FilterByText = ({ setFilter, ...props }) => {
 		setFilter({ text });
 	}, [setFilter, text]);
 	return <Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
-		<TextInput  flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
+		<TextInput disabled flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 };
 
