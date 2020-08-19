@@ -53,7 +53,7 @@
   "Accounts_BlockedDomainsList_Description": "Blokkolt tartományok vesszővel elválasztott listája",
   "Accounts_BlockedUsernameList": "Blokkolt felhasználónevek listája",
   "Accounts_BlockedUsernameList_Description": "Blokkolt felhasználónevek vesszővel elválasztott listája (nem érzékeny a kis- és nagybetűkre)",
-  "Accounts_CustomFields_Description": "Érvényes JSON adatnak kell lennie, ahol a kulcsok a mezőbeállítások szótárát tartalmazó mezőnevek. Például:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "Érvényes JSON adatnak kell lennie, ahol a kulcsok a mezőbeállítások szótárát tartalmazó mezőnevek. Például:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
   "Accounts_CustomFieldsToShowInUserInfo": "A felhasználó-információkban megjelenítendő egyéni mezők",
   "Accounts_Default_User_Preferences": "Alapértelmezett felhasználói beállítások",
   "Accounts_Default_User_Preferences_audioNotifications": "Hangértesítések alapértelmezett riasztása",
