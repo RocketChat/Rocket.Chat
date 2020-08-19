@@ -578,7 +578,7 @@ async function processDataDownloads() {
 	await ExportOperations.updateOperation(operation);
 
 	if (operation.status === 'completed') {
-		const file = operation.fileId ? UserDataFiles.findOneById(operation.fileId) : UserDataFiles.findLastFileByUser(userId);
+		const file = operation.fileId ? UserDataFiles.findOneById(operation.fileId) : UserDataFiles.findLastFileByUser(operation.userId);
 		if (!file) {
 			return;
 		}

@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Field, TextInput, Select, ButtonGroup, Button, PasswordInput, MultiSelectFiltered, Box, ToggleSwitch, Icon, Divider } from '@rocket.chat/fuselage';
+import React, { useState } from 'react';
+import { Field, TextInput, Select, ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
 
 import VerticalBar from '../../components/basic/VerticalBar';
 import { useTranslation } from '../../contexts/TranslationContext';
