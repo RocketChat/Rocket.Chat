@@ -39,6 +39,10 @@ export const {
 		i18nLabel: 'Livechat_Triggers',
 		permissionGranted: () => hasPermission('view-livechat-triggers'),
 	}, {
+		href: 'omnichannel-triggers',
+		i18nLabel: 'Livechat_Triggers',
+		permissionGranted: () => hasPermission('view-livechat-triggers'),
+	}, {
 		href: 'omnichannel-installation',
 		i18nLabel: 'Livechat_Installation',
 		permissionGranted: () => hasPermission('view-livechat-installation'),
