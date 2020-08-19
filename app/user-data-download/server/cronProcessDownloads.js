@@ -76,7 +76,7 @@ export const loadUserSubscriptions = function(exportOperation, fileType, userId)
 	return roomList;
 };
 
-const getAttachmentData = function(attachment) {
+const getAttachmentData = function(attachment, message) {
 	const attachmentData = {
 		type: attachment.type,
 		title: attachment.title,
@@ -100,68 +100,53 @@ const getAttachmentData = function(attachment) {
 	const url = attachment.title_link || attachment.image_url || attachment.audio_url || attachment.video_url || attachment.message_link;
 	if (url) {
 		attachmentData.url = url;
+	}
 
-		const urlMatch = /\:\/\//.exec(url);
-		if (urlMatch && urlMatch.length > 0) {
-			attachmentData.remote = true;
-		} else {
-			const match = /^\/([^\/]+)\/([^\/]+)\/(.*)/.exec(url);
-
-			if (match && match[2]) {
-				const file = Uploads.findOneById(match[2]);
-
-				if (file) {
-					attachmentData.fileId = file._id;
-					attachmentData.fileName = file.name;
-				}
-			}
-		}
+	if (message.file?._id) {
+		attachmentData.fileId = message.file._id;
+		attachmentData.fileName = message.file.name;
+	} else {
+		attachmentData.remote = true;
 	}
 
 	return attachmentData;
 };
 
-const addToFileList = function(exportOperation, attachment) {
-	const targetFile = path.join(exportOperation.assetsPath, `${ attachment.fileId }-${ attachment.fileName }`);
+// const addToFileList = function(assetsPath, attachment) {
+// 	return {
+// 		url: attachment.url,
+// 		copied: false,
+// 		remote: attachment.remote,
+// 		fileId: attachment.fileId,
+// 		fileName: attachment.fileName,
+// 		targetFile: path.join(assetsPath, `${ attachment.fileId }-${ attachment.fileName }`),
+// 	};
+// };
 
-	const attachmentData = {
-		url: attachment.url,
-		copied: false,
-		remote: attachment.remote,
-		fileId: attachment.fileId,
-		fileName: attachment.fileName,
-		targetFile,
-	};
-
-	// exportOperation.fileList.push(attachmentData);
-
-	return attachmentData;
-};
-
-const hideUserName = function(username, exportOperation) {
-	if (!exportOperation.userNameTable) {
-		exportOperation.userNameTable = {};
+const hideUserName = function(username, userData, usersMap) {
+	if (!usersMap.userNameTable) {
+		usersMap.userNameTable = {};
 	}
 
-	if (!exportOperation.userNameTable[username]) {
-		if (exportOperation.userData && username === exportOperation.userData.username) {
-			exportOperation.userNameTable[username] = username;
+	if (!usersMap.userNameTable[username]) {
+		if (userData && username === userData.username) {
+			usersMap.userNameTable[username] = username;
 		} else {
-			exportOperation.userNameTable[username] = `User_${ Object.keys(exportOperation.userNameTable).length + 1 }`;
+			usersMap.userNameTable[username] = `User_${ Object.keys(usersMap.userNameTable).length + 1 }`;
 		}
 	}
 
-	return exportOperation.userNameTable[username];
+	return usersMap.userNameTable[username];
 };
 
-const getMessageData = function(msg, exportOperation) {
-	const username = hideUserName(msg.u.username || msg.u.name, exportOperation);
+const getMessageData = function(msg, hideUsers, userData, usersMap) {
+	const username = hideUsers ? hideUserName(msg.u.username || msg.u.name, userData, usersMap) : msg.u.username;
 
 	const messageObject = {
 		msg: msg.msg,
 		username,
 		ts: msg.ts,
-		...msg.attachments && { attachments: msg.attachments.map((attachment) => getAttachmentData(attachment)) },
+		...msg.attachments && { attachments: msg.attachments.map((attachment) => getAttachmentData(attachment, msg)) },
 	};
 
 	if (msg.t) {
@@ -175,13 +160,13 @@ const getMessageData = function(msg, exportOperation) {
 				messageObject.msg = TAPi18n.__('User_left');
 				break;
 			case 'au':
-				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, exportOperation), user_by: username });
+				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, userData, usersMap), user_by: username });
 				break;
 			case 'r':
 				messageObject.msg = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: username });
 				break;
 			case 'ru':
-				messageObject.msg = TAPi18n.__('User_removed_by', { user_removed: hideUserName(msg.msg, exportOperation), user_by: username });
+				messageObject.msg = TAPi18n.__('User_removed_by', { user_removed: hideUserName(msg.msg, userData, usersMap), user_by: username });
 				break;
 			case 'wm':
 				messageObject.msg = TAPi18n.__('Welcome', { user: username });
@@ -195,22 +180,25 @@ const getMessageData = function(msg, exportOperation) {
 	return messageObject;
 };
 
-export const copyFile = function(attachmentData) {
-	if (attachmentData.copied || attachmentData.remote || !attachmentData.fileId) {
-		attachmentData.copied = true;
-		return;
-	}
+export const copyFile = function(attachmentData, assetsPath) {
+	const file = Uploads.findOneById(attachmentData._id);
+	FileUpload.copy(file, path.join(assetsPath, `${ attachmentData._id }-${ attachmentData.name }`));
 
-	const file = Uploads.findOneById(attachmentData.fileId);
+	// if (attachmentData.copied || attachmentData.remote || !attachmentData.fileId) {
+	// 	attachmentData.copied = true;
+	// 	return;
+	// }
 
-	if (file) {
-		if (FileUpload.copy(file, attachmentData.targetFile)) {
-			attachmentData.copied = true;
-		}
-	}
+	// const file = Uploads.findOneById(attachmentData.fileId);
+
+	// if (file) {
+	// 	if (FileUpload.copy(file, attachmentData.targetFile)) {
+	// 		attachmentData.copied = true;
+	// 	}
+	// }
 };
 
-const exportMessageObject = (type, messageObject) => {
+const exportMessageObject = (type, messageObject, messageFile) => {
 	if (type === 'json') {
 		return JSON.stringify(messageObject);
 	}
@@ -219,27 +207,22 @@ const exportMessageObject = (type, messageObject) => {
 
 	const messageType = messageObject.type;
 	const timestamp = messageObject.ts ? new Date(messageObject.ts).toUTCString() : '';
-	let message = messageObject.msg;
 
 	const italicTypes = ['uj', 'ul', 'au', 'r', 'ru', 'wm', 'livechat-close'];
 
-	if (italicTypes.includes(messageType)) {
-		message = `<i>${ message }</i>`;
-	}
+	const message = italicTypes.includes(messageType) ? `<i>${ messageObject.msg }</i>` : messageObject.msg;
 
 	file.push(`<p><strong>${ messageObject.username }</strong> (${ timestamp }):<br/>`);
 	file.push(message);
 
-	if (messageObject.attachments && messageObject.attachments.length > 0) {
-		messageObject.attachments.forEach((attachment) => {
-			if (attachment.type === 'file') {
-				const description = attachment.description || attachment.title || TAPi18n.__('Message_Attachments');
+	if (messageFile?._id) {
+		const attachment = messageObject.attachments.find((att) => att.type === 'file' && att.title_link.includes(messageFile._id));
 
-				const assetUrl = `./assets/${ attachment.fileId }-${ attachment.fileName }`;
-				const link = `<br/><a href="${ assetUrl }">${ description }</a>`;
-				file.push(link);
-			}
-		});
+		const description = attachment.description || attachment.title || TAPi18n.__('Message_Attachments');
+
+		const assetUrl = `./assets/${ messageFile._id }-${ messageFile.name }`;
+		const link = `<br/><a href="${ assetUrl }">${ description }</a>`;
+		file.push(link);
 	}
 
 	file.push('</p>');
@@ -247,20 +230,7 @@ const exportMessageObject = (type, messageObject) => {
 	return file.join('\n');
 };
 
-export async function continueExportingRoom(rid, exportType, skip, limit, exportOperation, exportOpRoomData) {
-	createDir(exportOperation.exportPath);
-	createDir(exportOperation.assetsPath);
-
-	const filePath = path.join(exportOperation.exportPath, exportOpRoomData.targetFile);
-
-	if (exportOpRoomData.status === 'pending') {
-		exportOpRoomData.status = 'exporting';
-		startFile(filePath, '');
-		if (exportType === 'html') {
-			writeToFile(filePath, '<meta http-equiv="content-type" content="text/html; charset=utf-8">');
-		}
-	}
-
+export async function exportRoomMessages(rid, exportType, skip, limit, assetsPath, exportOpRoomData, userData, usersMap = {}, hideUsers = true) {
 	const cursor = Messages.model.rawCollection().find({ rid }, {
 		sort: { ts: 1 },
 		skip,
@@ -273,22 +243,18 @@ export async function continueExportingRoom(rid, exportType, skip, limit, export
 	const result = {
 		total,
 		exported: results.length,
-		attachments: [],
+		messages: [],
+		uploads: [],
 	};
 
 	results.forEach(Meteor.bindEnvironment((msg) => {
-		const messageObject = getMessageData(msg, exportOperation);
+		const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
 
-		const msgAttachments = messageObject.attachments
-			?.map((attachmentData) => addToFileList(exportOperation, attachmentData));
-
-		if (msgAttachments) {
-			result.attachments.push(...msgAttachments);
+		if (msg.file) {
+			result.uploads.push(msg.file);
 		}
 
-		const messageString = exportMessageObject(exportType, messageObject);
-
-		writeToFile(filePath, `${ messageString }\n`);
+		result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
 	}));
 
 	return result;
@@ -300,17 +266,13 @@ export const isExportComplete = function(exportOperation) {
 	return !incomplete;
 };
 
-const isDownloadFinished = function(exportOperation) {
-	const anyDownloadPending = exportOperation.fileList.some((fileData) => !fileData.copied && !fileData.remote);
+// const isDownloadFinished = function(exportOperation) {
+// 	const anyDownloadPending = exportOperation.fileList.some((fileData) => !fileData.copied && !fileData.remote);
 
-	return !anyDownloadPending;
-};
+// 	return !anyDownloadPending;
+// };
 
-export const sendEmail = function(userId, subject, body) {
-	const userData = Users.findOneById(userId);
-	if (!userData || !userData.emails || !userData.emails[0] || !userData.emails[0].address) {
-		return;
-	}
+export const sendEmail = function(userData, subject, body) {
 	const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
 	const fromAddress = settings.get('From_Email');
 
@@ -326,46 +288,24 @@ export const sendEmail = function(userId, subject, body) {
 	});
 };
 
-export const makeZipFile = function(exportOperation) {
-	createDir(zipFolder);
-
-	const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
-	if (fs.existsSync(targetFile)) {
-		exportOperation.status = 'uploading';
-		return;
-	}
-
+export const makeZipFile = function(folderToZip, targetFile) {
 	return new Promise((resolve, reject) => {
 		const output = fs.createWriteStream(targetFile);
 
-		exportOperation.generatedFile = targetFile;
-
 		const archive = archiver('zip');
 
-		output.on('close', () => {
-			exportOperation.status = 'uploading';
-			resolve();
-		});
+		output.on('close', () => resolve());
 
-		archive.on('error', (err) => {
-			reject(err);
-		});
+		archive.on('error', (err) => reject(err));
 
 		archive.pipe(output);
-		archive.directory(exportOperation.exportPath, false);
+		archive.directory(folderToZip, false);
 		archive.finalize();
 	});
 };
 
-const statSync = Meteor.wrapAsync(fs.stat.bind(fs));
-
 export const uploadZipFile = function(filePath, userId, exportType) {
-	const userDataStore = FileUpload.getStore('UserDataFiles');
-
-
-	const stat = statSync(filePath);
-	console.log('stat ->', stat);
-	const stream = fs.createReadStream(filePath);
+	const stat = fs.statSync(filePath);
 
 	const contentType = 'application/zip';
 	const { size } = stat;
@@ -388,9 +328,23 @@ export const uploadZipFile = function(filePath, userId, exportType) {
 		name: newFileName,
 	};
 
-	const file = userDataStore.insertSync(details, stream);
+	return new Promise((resolve, reject) => {
+		fs.open(filePath, Meteor.bindEnvironment((error, fd) => {
+			if (error) {
+				return reject(error);
+			}
+			const stream = fs.createReadStream('', { fd });
 
-	return file._id;
+			const userDataStore = FileUpload.getStore('UserDataFiles');
+
+			try {
+				const file = userDataStore.insertSync(details, stream);
+				resolve(file);
+			} catch (e) {
+				reject(e);
+			}
+		}));
+	});
 };
 
 const generateChannelsFile = function(type, exportPath, exportOperation) {
@@ -409,12 +363,52 @@ const generateChannelsFile = function(type, exportPath, exportOperation) {
 		).join('\n'));
 };
 
-const generateUserFile = function(exportOperation) {
-	if (!exportOperation.userData) {
+export const exportRoomMessagesToFile = async function(exportPath, assetsPath, exportType, roomList, userData, usersMap = {}, hideUsers = true) {
+	createDir(exportPath);
+	createDir(assetsPath);
+
+	const result = {
+		fileList: [],
+	};
+
+	const limit = settings.get('UserData_MessageLimitPerRequest') > 0 ? settings.get('UserData_MessageLimitPerRequest') : 1000;
+	for (const exportOpRoomData of roomList) {
+		const filePath = path.join(exportPath, exportOpRoomData.targetFile);
+		if (exportOpRoomData.status === 'pending') {
+			exportOpRoomData.status = 'exporting';
+			startFile(filePath, exportType === 'html' ? '<meta http-equiv="content-type" content="text/html; charset=utf-8">' : '');
+		}
+
+		const skip = exportOpRoomData.exportedCount;
+
+		const {
+			total,
+			exported,
+			uploads,
+			messages,
+		// eslint-disable-next-line no-await-in-loop
+		} = await exportRoomMessages(exportOpRoomData.roomId, exportType, skip, limit, assetsPath, exportOpRoomData, userData, usersMap, hideUsers);
+
+		result.fileList.push(...uploads);
+
+		exportOpRoomData.exportedCount += exported;
+
+		if (total <= exported) {
+			exportOpRoomData.status = 'completed';
+		}
+
+		writeToFile(filePath, `${ messages.join('\n') }\n`);
+	}
+
+	return result;
+};
+
+const generateUserFile = function(exportOperation, userData) {
+	if (!userData) {
 		return;
 	}
 
-	const { username, name, statusText, emails, roles, services } = exportOperation.userData;
+	const { username, name, statusText, emails, roles, services } = userData;
 
 	const dataToSave = {
 		username,
@@ -458,12 +452,12 @@ const generateUserFile = function(exportOperation) {
 	}
 };
 
-const generateUserAvatarFile = function(exportOperation) {
-	if (!exportOperation.userData) {
+const generateUserAvatarFile = function(exportOperation, userData) {
+	if (!userData) {
 		return;
 	}
 
-	const file = Avatars.findOneByName(exportOperation.userData.username);
+	const file = Avatars.findOneByName(userData.username);
 	if (!file) {
 		return;
 	}
@@ -482,7 +476,7 @@ const continueExportOperation = async function(exportOperation) {
 	const exportType = exportOperation.fullExport ? 'json' : 'html';
 
 	if (!exportOperation.roomList) {
-		exportOperation.roomsList = loadUserSubscriptions(exportOperation, exportType, exportOperation.userId);
+		exportOperation.roomList = loadUserSubscriptions(exportOperation, exportType, exportOperation.userId);
 
 		if (exportOperation.fullExport) {
 			exportOperation.status = 'exporting-rooms';
@@ -493,11 +487,11 @@ const continueExportOperation = async function(exportOperation) {
 
 	try {
 		if (!exportOperation.generatedUserFile) {
-			generateUserFile(exportOperation);
+			generateUserFile(exportOperation, exportOperation.userData);
 		}
 
 		if (!exportOperation.generatedAvatar) {
-			generateUserAvatarFile(exportOperation);
+			generateUserAvatarFile(exportOperation, exportOperation.userData);
 		}
 
 		if (exportOperation.status === 'exporting-rooms') {
@@ -508,26 +502,15 @@ const continueExportOperation = async function(exportOperation) {
 
 		// Run every room on every request, to avoid missing new messages on the rooms that finished first.
 		if (exportOperation.status === 'exporting') {
-			const limit = settings.get('UserData_MessageLimitPerRequest') > 0 ? settings.get('UserData_MessageLimitPerRequest') : 1000;
-			for (const exportOpRoomData of exportOperation.roomList) {
-				// exportOperation.roomList.forEach((exportOpRoomData) => {
-				const skip = exportOpRoomData.exportedCount;
-
-				const {
-					total,
-					exported,
-					attachments,
-				// eslint-disable-next-line no-await-in-loop
-				} = await continueExportingRoom(exportOpRoomData.roomId, exportType, skip, limit, exportOperation, exportOpRoomData);
-
-				exportOperation.fileList.push(...attachments);
-
-				exportOpRoomData.exportedCount += exported;
-
-				if (total <= exported) {
-					exportOpRoomData.status = 'completed';
-				}
-			}
+			const { fileList } = await exportRoomMessagesToFile(
+				exportOperation.exportPath,
+				exportOperation.assetsPath,
+				exportOperation.exportType,
+				exportOperation.roomList,
+				exportOperation.userData,
+				exportOperation.userNameTable,
+			);
+			exportOperation.fileList = fileList;
 
 			if (isExportComplete(exportOperation)) {
 				exportOperation.status = 'downloading';
@@ -536,25 +519,31 @@ const continueExportOperation = async function(exportOperation) {
 
 		if (exportOperation.status === 'downloading') {
 			exportOperation.fileList.forEach((attachmentData) => {
-				copyFile(exportOperation, attachmentData);
+				copyFile(attachmentData, exportOperation.assetsPath);
 			});
 
-			if (isDownloadFinished(exportOperation)) {
-				const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
-				if (fs.existsSync(targetFile)) {
-					fs.unlinkSync(targetFile);
-				}
-
-				exportOperation.status = 'compressing';
+			const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
+			if (fs.existsSync(targetFile)) {
+				fs.unlinkSync(targetFile);
 			}
+
+			exportOperation.status = 'compressing';
 		}
 
 		if (exportOperation.status === 'compressing') {
-			await makeZipFile(exportOperation);
+			createDir(zipFolder);
+
+			exportOperation.generatedFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
+			if (!fs.existsSync(exportOperation.generatedFile)) {
+				await makeZipFile(exportOperation.exportPath, exportOperation.generatedFile);
+			}
+
+			exportOperation.status = 'uploading';
 		}
 
 		if (exportOperation.status === 'uploading') {
-			exportOperation.fileId = uploadZipFile(exportOperation.generatedFile, exportOperation.userId, exportType);
+			const { _id: fileId } = await uploadZipFile(exportOperation.generatedFile, exportOperation.userId, exportType);
+			exportOperation.fileId = fileId;
 
 			exportOperation.status = 'completed';
 			ExportOperations.updateOperation(exportOperation);
@@ -597,7 +586,7 @@ async function processDataDownloads() {
 		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
 		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: file.url });
 
-		sendEmail(operation.userId, subject, body);
+		sendEmail(operation.userData, subject, body);
 	}
 }
 

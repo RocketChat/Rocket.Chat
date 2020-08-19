@@ -1,6 +1,10 @@
+import path from 'path';
+
 import moment from 'moment';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import mkdirp from 'mkdirp';
 
 import * as Mailer from '../../app/mailer';
@@ -8,7 +12,8 @@ import { Messages, Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { Message } from '../../app/ui-utils/server';
 import {
-	continueExportingRoom,
+	exportRoomMessages,
+	exportRoomMessagesToFile,
 	copyFile,
 	isExportComplete,
 	loadUserSubscriptions,
@@ -91,11 +96,11 @@ const sendViaEmail = (data: ExportEmail, user: IUser): void => {
 const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
 	const exportType = data.type;
 
-	const baseDir = `/tmp/sendFile-${ data.rid }-${ user._id }`;
+	const baseDir = `/tmp/sendFile-${ Random.id() }`;
 
 	const exportOperation = {
-		exportPath: `${ baseDir }/data`,
-		assetsPath: `${ baseDir }/assets`,
+		exportPath: baseDir,
+		assetsPath: path.join(baseDir, 'assets'),
 	} as any;
 
 	mkdirp.sync(exportOperation.exportPath);
@@ -107,45 +112,36 @@ const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
 
 	roomData.targetFile = `${ (data.type === 'json' && roomData.roomName) || roomData.roomId }.${ data.type }`;
 
-	const attachmentsList: never[] = [];
+	console.log('exportType ->', exportType);
 
-	const getMessages = async (): Promise<void> => {
-		const skip = roomData.exportedCount;
+	const { fileList } = await exportRoomMessagesToFile(
+		exportOperation.exportPath,
+		exportOperation.assetsPath,
+		exportType,
+		[roomData],
+		user,
+		{},
+		false,
+	);
 
-		console.log('getMessages', skip, roomData.exportedCount);
-
-		const {
-			total,
-			exported,
-			attachments,
-		} = await continueExportingRoom(data.rid, exportType, skip, 1000, exportOperation, roomData);
-
-		attachmentsList.push(...attachments);
-
-		roomData.exportedCount += exported;
-
-		console.log('getMessages done', total, exported, roomData.exportedCount);
-
-		if (total > roomData.exportedCount) {
-			return getMessages();
-		}
-	};
-
-	await getMessages();
-
-	console.log('copy attachments');
-	attachmentsList.forEach((attachmentData: any) => {
-		copyFile(attachmentData);
+	console.log('copy attachments', fileList);
+	fileList.forEach((attachmentData: any) => {
+		copyFile(attachmentData, exportOperation.assetsPath);
 	});
 
-	console.log('make zip');
-	await makeZipFile(exportOperation);
+	console.log('make zip', exportOperation.exportPath);
+	const exportFile = `${ baseDir }-export.zip`;
+	await makeZipFile(exportOperation.exportPath, exportFile);
 
-	console.log('upload zip', exportOperation);
-	const fileId = uploadZipFile(exportOperation.generatedFile, user._id, exportType);
+	console.log('upload zip', exportFile, exportOperation);
+	const file = await uploadZipFile(exportFile, user._id, exportType);
 
 	console.log('send email');
-	sendEmail(user._id, fileId);
+	const subject = TAPi18n.__('UserDataDownload_EmailSubject');
+	// eslint-disable-next-line @typescript-eslint/camelcase
+	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: file.url });
+
+	sendEmail(user, subject, body);
 };
 
 export async function channelExport(data: ExportInput, user: IUser): Promise<void> {
