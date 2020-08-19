@@ -29,7 +29,7 @@ import {
 	LivechatInquiry,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { addUserRoles, hasPermission, hasRole, removeUserFromRoles } from '../../../authorization';
+import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -1128,11 +1128,29 @@ export const Livechat = {
 	},
 
 	changeRoomVisitor(userId, roomId, visitor) {
+		const user = Promise.await(Users.findOneById(userId));
+		if (!user) {
+			throw new Error('error-user-not-found');
+		}
+
 		if (!hasPermission(userId, 'change-livechat-room-visitor')) {
 			throw new Error('error-not-authorized');
 		}
-		Promise.await(LivechatRooms.changeVisitorByRoomId(roomId, visitor));
-		Promise.await(Livechat.notifyRoomVisitorChange(roomId, visitor));
+
+		const room = Promise.await(LivechatRooms.findOneById(roomId));
+		if (!room) {
+			throw new Meteor.Error('invalid-room-id');
+		}
+
+		if (!canAccessRoom(room, user)) {
+			throw new Error('error-not-allowed');
+		}
+
+		LivechatRooms.changeVisitorByRoomId(room._id, visitor);
+
+		Livechat.notifyRoomVisitorChange(room._id, visitor);
+
+		return room;
 	},
 };
 

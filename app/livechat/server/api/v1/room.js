@@ -4,13 +4,12 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings as rcSettings } from '../../../../settings';
-import { Messages, LivechatRooms, Users } from '../../../../models';
+import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { canAccessRoom } from '../../../../authorization/server/functions/canAccessRoom';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -191,11 +190,6 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				newVisitorId: String,
 			});
 
-			const user = Promise.await(Users.findOneById(this.userId));
-			if (!user) {
-				throw new Error('error-user-not-found');
-			}
-
 			const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
 
 			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }));
@@ -204,7 +198,7 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 			}
 			const { _id, username, token } = visitor;
 
-			const room = Promise.await(LivechatRooms.findOneById(rid));
+			let room = Promise.await(LivechatRooms.findOneById(rid));
 			if (!room) {
 				throw new Meteor.Error('invalid-room-id');
 			}
@@ -214,18 +208,9 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Meteor.Error('invalid-room-visitor-id');
 			}
 
-			if (!canAccessRoom(room, user)) {
-				throw new Error('error-not-allowed');
-			}
+			room = Promise.await(Livechat.changeRoomVisitor(this.userId, rid, { _id, username, token }));
 
-			Promise.await(Livechat.changeRoomVisitor(this.userId, rid, { _id, username, token }));
-
-			return API.v1.success({
-				room: {
-					rid,
-					v: { _id, username, token },
-				},
-			});
+			return API.v1.success({ room });
 		} catch (e) {
 			return API.v1.failure(e);
 		}
