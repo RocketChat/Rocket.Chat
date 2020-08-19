@@ -6,8 +6,4 @@ import './app/livechatDashboard.html';
 import './app/livechatCurrentChats';
 import './app/livechatDepartmentForm';
 import './app/livechatDepartments';
-import './app/livechatTriggers';
-import './app/livechatTriggersForm';
 import './app/integrations/livechatIntegrationFacebook';
-import './app/triggers/livechatTriggerAction';
-import './app/triggers/livechatTriggerCondition';
