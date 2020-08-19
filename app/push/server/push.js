@@ -132,6 +132,11 @@ export class PushClass {
 				return;
 			}
 
+			if (response?.statusCode === 422) {
+				logger.info('gateway rejected push notification. not retrying.');
+				return;
+			}
+
 			logger.error(`Error sending push to gateway (${ tries } try) ->`, error);
 
 			if (tries <= 4) {
