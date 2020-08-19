@@ -1,17 +1,13 @@
 import React from 'react';
 
-import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter } from '../../contexts/RouterContext';
-import { GroupSelector } from './GroupSelector';
-import NotAuthorizedPage from '../NotAuthorizedPage';
-import { SettingsState } from './SettingsState';
+import { useIsPrivilegedSettingsContext } from '../../contexts/SettingsContext';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import EditableSettingsProvider from '../../providers/EditableSettingsProvider';
+import GroupSelector from './GroupSelector';
 
 export function SettingsRoute() {
-	const hasPermission = useAtLeastOnePermission([
-		'view-privileged-setting',
-		'edit-privileged-setting',
-		'manage-selected-settings',
-	]);
+	const hasPermission = useIsPrivilegedSettingsContext();
 
 	const groupId = useRouteParameter('group');
 
@@ -19,9 +15,9 @@ export function SettingsRoute() {
 		return <NotAuthorizedPage />;
 	}
 
-	return <SettingsState>
+	return <EditableSettingsProvider>
 		<GroupSelector groupId={groupId} />
-	</SettingsState>;
+	</EditableSettingsProvider>;
 }
 
 export default SettingsRoute;

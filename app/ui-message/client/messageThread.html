@@ -1,28 +1,14 @@
 <template name="messageThread">
-	<q role="button" aria-label="{{_ " Open_thread "}}" class="thread-quote">
-		<div class="thread-quote__message js-open-thread"><span class="message-body--unstyled">{{{parentMessage}}}</span> {{> icon icon="thread" block="thread-icons"}}</div>
-
+	<q role="button" title="{{_ " Open_thread "}}" class="thread-quote js-open-thread">
+		{{> icon icon="thread" block="thread-icons"}} <div class="thread-quote__message "><span class="message-body--unstyled">{{{parentMessage}}}</span></div>
 		{{# if following }}
-		<div role="button" class="rc-tooltip js-unfollow-thread" aria-label="{{_ "Following"}}">
+		<div role="button" class="js-unfollow-thread" title="{{_ "Following"}}">
 			{{> icon icon="bell" block="thread-icons"}}
 		</div>
 		{{else}}
-		<div role="button" class="rc-tooltip js-follow-thread" aria-label="{{_ "Not_following"}}">
+		<div role="button" class="js-follow-thread" title="{{_ "Not_following"}}">
 			{{> icon icon="bell-off" block="thread-icons"}}
 		</div>
 		{{/if}}
 	</q>
-
-	<div class="thread-replied js-open-thread">
-		<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
-			{{> avatar username=avatar}}
-		</button>
-		<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
-			{{# if threadMessage}}
-				<span class="message-body--unstyled">{{{threadMessage}}}</span>
-			{{else}}
-				<div class="{{class}}" dir="auto">{{{body}}}</div>
-			{{/if}}
-		</span>
-	</div>
 </template>

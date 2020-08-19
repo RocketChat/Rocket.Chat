@@ -57,6 +57,7 @@ import './components/header/headerRoom';
 import './components/contextualBar.html';
 import './components/contextualBar';
 import './components/tooltip';
+import './lib/Tooltip';
 
 export { ChatMessages } from './lib/chatMessages';
 export { fileUpload } from './lib/fileUpload';
@@ -68,4 +69,4 @@ export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 export { chatMessages } from './views/app/room';
 export * from './lib/userPopoverStatus';
 
-createTemplateForComponent('RoomForeword', () => import('./views/app/RoomForeword'));
+createTemplateForComponent('RoomForeword', () => import('../../../client/components/RoomForeword'));

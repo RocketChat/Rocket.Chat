@@ -14,6 +14,7 @@ export const fields = {
 	t: 1,
 	cl: 1,
 	u: 1,
+	lm: 1,
 	// usernames: 1,
 	topic: 1,
 	announcement: 1,
@@ -29,6 +30,7 @@ export const fields = {
 	lastMessage: 1,
 	retention: 1,
 	prid: 1,
+	avatarETag: 1,
 	usersCount: 1,
 
 	// @TODO create an API to register this fields based on room type
@@ -53,6 +55,7 @@ export const fields = {
 	departmentId: 1,
 	servedBy: 1,
 	priorityId: 1,
+	transcriptRequest: 1,
 
 	// fields used by DMs
 	usernames: 1,

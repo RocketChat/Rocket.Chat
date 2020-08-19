@@ -1,10 +1,9 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import Page from '../../../components/basic/Page';
 import EditIncomingWebhookWithData from './EditIncomingWebhook';
 import EditOutgoingWebhookWithData from './EditOutgoingWebhook';
-import { Modal } from '../../../components/basic/Modal';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 
@@ -47,7 +46,7 @@ export const SuccessModal = ({ onClose, ...props }) => {
 	</Modal>;
 };
 
-export default function NewIntegrationsPage({ ...props }) {
+export default function EditIntegrationsPage({ ...props }) {
 	const t = useTranslation();
 
 	const router = useRoute('admin-integrations');
@@ -57,11 +56,11 @@ export default function NewIntegrationsPage({ ...props }) {
 
 	const handleClickReturn = useCallback(() => {
 		router.push({ });
-	}, []);
+	}, [router]);
 
 	const handleClickHistory = useCallback(() => {
 		router.push({ context: 'history', type: 'outgoing', id: integrationId });
-	}, [integrationId]);
+	}, [integrationId, router]);
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={type === 'incoming' ? t('Integration_Incoming_WebHook') : t('Integration_Outgoing_WebHook')} >

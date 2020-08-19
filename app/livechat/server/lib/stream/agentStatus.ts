@@ -9,19 +9,22 @@ let actionTimeout = 60000;
 let action = 'none';
 let comment = '';
 
-settings.get('Livechat_agent_leave_action_timeout', function(_key: string, value: number) {
+settings.get('Livechat_agent_leave_action_timeout', (_key, value) => {
+	if (typeof value !== 'number') {
+		return;
+	}
 	actionTimeout = value * 1000;
 });
 
-settings.get('Livechat_agent_leave_action', function(_key: string, value: boolean) {
-	monitorAgents = value;
+settings.get('Livechat_agent_leave_action', (_key, value) => {
+	monitorAgents = value !== 'none';
+	action = value as string;
 });
 
-settings.get('Livechat_agent_leave_action', function(_key: string, value: string) {
-	action = value;
-});
-
-settings.get('Livechat_agent_leave_comment', function(_key: string, value: string) {
+settings.get('Livechat_agent_leave_comment', (_key, value) => {
+	if (typeof value !== 'string') {
+		return;
+	}
 	comment = value;
 });
 
@@ -45,6 +48,7 @@ const onlineAgents = {
 		if (!this.exists(userId)) {
 			return;
 		}
+		this.users.delete(userId);
 
 		if (this.queue.has(userId)) {
 			clearTimeout(this.queue.get(userId));

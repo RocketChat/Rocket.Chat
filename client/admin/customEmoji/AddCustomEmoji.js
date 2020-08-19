@@ -32,9 +32,9 @@ export function AddCustomEmoji({ close, onChange, ...props }) {
 			onChange();
 			close();
 		}
-	}, [name, aliases, emojiFile]);
+	}, [emojiFile, name, aliases, saveAction, onChange, close]);
 
-	const clickUpload = useFileInput(setEmojiPreview, 'emoji');
+	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
 
 	return <VerticalBar.ScrollableContent {...props}>
 		<Field>

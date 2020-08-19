@@ -13,6 +13,7 @@ import TroubleshootingSection from './TroubleshootingSection';
 import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
 import WorkspaceLoginSection from './WorkspaceLoginSection';
 import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';
+import { useSetModal } from '../../contexts/ModalContext';
 import { cloudConsoleUrl } from './constants';
 
 function CloudPage() {
@@ -58,10 +59,10 @@ function CloudPage() {
 		};
 
 		acceptOAuthAuthorization();
-	}, [errorCode, code, state]);
+	}, [errorCode, code, state, page, dispatchToastMessage, t, cloudRoute, finishOAuthAuthorization]);
 
 	const [registerStatus, setRegisterStatus] = useSafely(useState());
-	const [modal, setModal] = useState(null);
+	const setModal = useSetModal();
 
 	const fetchRegisterStatus = useMutableCallback(async () => {
 		try {
@@ -92,7 +93,7 @@ function CloudPage() {
 		};
 
 		acceptWorkspaceToken();
-	}, [token]);
+	}, [connectWorkspace, dispatchToastMessage, fetchRegisterStatus, t, token]);
 
 	const handleManualWorkspaceRegistrationButtonClick = () => {
 		const handleModalClose = () => {
@@ -102,7 +103,7 @@ function CloudPage() {
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
-	const isConnectedToCloud = registerStatus?.connectToCloud;
+	const isConnectToCloudDesired = registerStatus?.connectToCloud;
 	const isWorkspaceRegistered = registerStatus?.workspaceRegistered;
 
 	return <Page>
@@ -117,14 +118,16 @@ function CloudPage() {
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
-			{modal}
 			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 				<Margins block='x24'>
 					<WhatIsItSection />
 
-					{isConnectedToCloud && <>
+					{isConnectToCloudDesired && <>
 						{isWorkspaceRegistered
-							? <WorkspaceLoginSection onRegisterStatusChange={fetchRegisterStatus} />
+							? <>
+								<WorkspaceLoginSection onRegisterStatusChange={fetchRegisterStatus} />
+								<TroubleshootingSection onRegisterStatusChange={fetchRegisterStatus} />
+							</>
 							: <WorkspaceRegistrationSection
 								email={registerStatus?.email}
 								token={registerStatus?.token}
@@ -132,11 +135,9 @@ function CloudPage() {
 								uniqueId={registerStatus?.uniqueId}
 								onRegisterStatusChange={fetchRegisterStatus}
 							/>}
-
-						<TroubleshootingSection onRegisterStatusChange={fetchRegisterStatus} />
 					</>}
 
-					{!isConnectedToCloud && <ConnectToCloudSection onRegisterStatusChange={fetchRegisterStatus} />}
+					{!isConnectToCloudDesired && <ConnectToCloudSection onRegisterStatusChange={fetchRegisterStatus} />}
 				</Margins>
 			</Box>
 		</Page.ScrollableContentWithShadow>

@@ -46,7 +46,7 @@ export const useEndpointData = (endpoint, params = {}) => {
 		return () => {
 			mounted = false;
 		};
-	}, [getData, params]);
+	}, [dispatchToastMessage, getData, params]);
 
 	return data;
 };

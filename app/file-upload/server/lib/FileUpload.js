@@ -96,6 +96,31 @@ export const FileUpload = {
 		return true;
 	},
 
+	validateAvatarUpload(file) {
+		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
+			return false;
+		}
+
+		const user = file.uid ? Meteor.users.findOne(file.uid, { fields: { language: 1 } }) : null;
+		const language = user?.language || 'en';
+
+		// accept only images
+		if (!/^image\//.test(file.type)) {
+			const reason = TAPi18n.__('File_type_is_not_accepted', language);
+			throw new Meteor.Error('error-invalid-file-type', reason);
+		}
+
+		// -1 maxFileSize means there is no limit
+		if (maxFileSize > -1 && file.size > maxFileSize) {
+			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
+				size: filesize(maxFileSize),
+			}, language);
+			throw new Meteor.Error('error-file-too-large', reason);
+		}
+
+		return true;
+	},
+
 	defaultUploads() {
 		return {
 			collection: Uploads.model,
@@ -121,11 +146,12 @@ export const FileUpload = {
 	defaultAvatars() {
 		return {
 			collection: Avatars.model,
-			// filter: new UploadFS.Filter({
-			// 	onCheck: FileUpload.validateFileUpload
-			// }),
+			filter: new UploadFS.Filter({
+				onCheck: FileUpload.validateAvatarUpload,
+			}),
 			getPath(file) {
-				return `${ settings.get('uniqueID') }/avatars/${ file.userId }`;
+				const avatarFile = file.rid ? `room-${ file.rid }` : file.userId;
+				return `${ settings.get('uniqueID') }/avatars/${ avatarFile }`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
 			onFinishUpload: FileUpload.avatarsOnFinishUpload,
@@ -245,7 +271,7 @@ export const FileUpload = {
 			};
 
 			const reorientation = (cb) => {
-				if (!metadata.orientation) {
+				if (!metadata.orientation || metadata.orientation === 1 || settings.get('FileUpload_RotateImages') !== true) {
 					return cb();
 				}
 				s.rotate()
@@ -275,7 +301,16 @@ export const FileUpload = {
 		return fut.wait();
 	},
 
+	avatarRoomOnFinishUpload(file) {
+		if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
+			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+		}
+	},
 	avatarsOnFinishUpload(file) {
+		if (file.rid) {
+			return FileUpload.avatarRoomOnFinishUpload(file);
+		}
+
 		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
@@ -307,7 +342,7 @@ export const FileUpload = {
 		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
 		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
 		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
-		const isAuthorizedByJWT = !settings.get('FileUpload_Enable_json_web_token_for_files') || (token && isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files')));
+		const isAuthorizedByJWT = settings.get('FileUpload_Enable_json_web_token_for_files') && token && isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
 		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
 	},
 	addExtensionTo(file) {
@@ -489,6 +524,19 @@ export class FileUploadClass {
 
 	deleteByName(fileName) {
 		const file = this.model.findOneByName(fileName);
+
+		if (!file) {
+			return;
+		}
+
+		const store = FileUpload.getStoreByName(file.store);
+
+		return store.delete(file._id);
+	}
+
+
+	deleteByRoomId(rid) {
+		const file = this.model.findOneByRoomId(rid);
 
 		if (!file) {
 			return;

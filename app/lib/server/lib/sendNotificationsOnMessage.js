@@ -66,6 +66,8 @@ export const sendNotification = async ({
 		return;
 	}
 
+	const isThread = !!message.tmid && !message.tshow;
+
 	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
@@ -89,6 +91,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		notifyAudioUser(subscription.u._id, message, room);
 	}
@@ -105,6 +108,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		notifyDesktopUser({
 			notificationMessage,
@@ -125,6 +129,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		queueItems.push({
 			type: 'push',
@@ -135,25 +140,35 @@ export const sendNotification = async ({
 				userId: subscription.u._id,
 				senderUsername: sender.username,
 				senderName: sender.name,
-				receiverUsername: receiver.username,
+				receiver,
 			}),
 		});
 	}
 
 	if (receiver.emails && shouldNotifyEmail({
 		disableAllMessageNotifications,
+		statusConnection: receiver.statusConnection,
 		emailNotifications,
 		isHighlighted,
 		hasMentionToUser,
 		hasMentionToAll,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
-					data: getEmailData({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser }),
+					data: getEmailData({
+						message,
+						receiver,
+						sender,
+						subscription,
+						room,
+						emailAddress: email.address,
+						hasMentionToUser,
+					}),
 				});
 
 				return true;
@@ -164,6 +179,7 @@ export const sendNotification = async ({
 
 	if (queueItems.length) {
 		Notification.scheduleItem({
+			user: receiver,
 			uid: subscription.u._id,
 			rid: room._id,
 			mid: message._id,
@@ -180,6 +196,7 @@ const project = {
 		mobilePushNotifications: 1,
 		muteGroupMentions: 1,
 		name: 1,
+		rid: 1,
 		userHighlights: 1,
 		'u._id': 1,
 		'receiver.active': 1,

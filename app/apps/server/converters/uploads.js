@@ -53,7 +53,7 @@ export class AppUploadsConverter {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters().get('users').convertByToken(upload.visitorToken);
+				const result = this.orch.getConverters().get('visitors').convertByToken(upload.visitorToken);
 				delete upload.visitorToken;
 				return result;
 			},

@@ -10,4 +10,7 @@
 {{#if release.mongo_versions}}
 - MongoDB: `{{ join release.mongo_versions ', ' }}`
 {{/if}}
+{{#if release.apps_engine_version}}
+- Apps-Engine: `{{ release.apps_engine_version }}`
+{{/if}}
 {{/if}}

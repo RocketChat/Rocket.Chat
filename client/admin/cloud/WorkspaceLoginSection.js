@@ -82,10 +82,10 @@ function WorkspaceLoginSection({
 		};
 
 		checkLoginState();
-	}, []);
+	}, [checkUserLoggedIn, dispatchToastMessage, setLoading, setLoggedIn]);
 
 	return <Box is='section' {...props}>
-		<Box withRichContent>
+		<Box withRichContent color='neutral-800'>
 			<p>{t('Cloud_workspace_connected')}</p>
 		</Box>
 
@@ -95,7 +95,7 @@ function WorkspaceLoginSection({
 				: <Button primary disabled={isLoading} onClick={handleLoginButtonClick}>{t('Cloud_login_to_cloud')}</Button>}
 		</ButtonGroup>
 
-		<Box withRichContent>
+		<Box withRichContent color='neutral-800'>
 			<p>{t('Cloud_workspace_disconnect')}</p>
 		</Box>
 
