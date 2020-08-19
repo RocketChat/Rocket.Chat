@@ -16,17 +16,16 @@ import PrioritiesPage from './PrioritiesPage';
 import { PriorityEditWithData, PriorityNew } from './EditPriority';
 
 export function RemovePriorityButton({ _id, reload }) {
-	const deleteAction = useMethod('livechat:removePriority');
+	const removePriority = useMethod('livechat:removePriority');
 
 	const handleRemoveClick = useMutableCallback(async (e) => {
 		e.preventDefault();
-		let result;
+		e.stopPropagation();
 		try {
-			result = await deleteAction(_id);
+			await removePriority(_id);
 		} catch (error) {
 			console.log(error);
 		}
-		console.log(result);
 		reload();
 	});
 
@@ -56,7 +55,6 @@ function PrioritiesRoute() {
 	const prioritiesRoute = useRoute('omnichannel-priorities');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
-	console.log(id);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
