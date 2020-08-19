@@ -1,5 +1,5 @@
 import { hasPermission } from '../../app/authorization/client';
-import { createSidebarItems } from '../components/basic/Sidebar';
+import { createSidebarItems } from '../helpers/createSidebarItems';
 
 export const {
 	registerSidebarItem: registerOmnichannelSidebarItem,

@@ -3,7 +3,7 @@ import { createRouteGroup } from '../helpers/createRouteGroup';
 
 createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'));
 
-const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
+export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
 
 registerOmnichannelRoute('/installation', {
 	name: 'omnichannel-installation',
@@ -47,4 +47,14 @@ registerOmnichannelRoute('/managers', {
 registerOmnichannelRoute('/units/:context?/:id?', {
 	name: 'omnichannel-units',
 	lazyRouteComponent: () => import('../../ee/client/omnichannel/units/UnitsRoute'),
+});
+
+registerOmnichannelRoute('/tags/:context?/:id?', {
+	name: 'omnichannel-tags',
+	lazyRouteComponent: () => import('../../ee/client/omnichannel/tags/TagsRoute'),
+});
+
+registerOmnichannelRoute('/priorities/:context?/:id?', {
+	name: 'omnichannel-priorities',
+	lazyRouteComponent: () => import('../../ee/client/omnichannel/priorities/PrioritiesRoute'),
 });
