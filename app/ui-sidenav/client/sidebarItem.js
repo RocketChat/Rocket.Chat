@@ -1,57 +1,55 @@
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, getUserPreference, roomTypes } from '../../utils';
+import { t, roomTypes } from '../../utils';
 import { popover, renderMessageBody, menu } from '../../ui-utils';
-import { Users, ChatSubscription } from '../../models/client';
-import { settings } from '../../settings';
+import { ChatSubscription } from '../../models/client';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { timeAgo } from '../../lib/client/lib/formatDate';
 import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 
 Template.sidebarItem.helpers({
 	streaming() {
-		return this.streamingOptions && Object.keys(this.streamingOptions).length;
+		return this.room.streamingOptions && Object.keys(this.room.streamingOptions).length;
 	},
 	isRoom() {
-		return this.rid || this._id;
+		return this.room.rid || this.room._id;
 	},
 	isExtendedViewMode() {
-		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
+		return Template.currentData().settings.extended;
 	},
 	lastMessage() {
-		return this.lastMessage && Template.instance().renderedMessage;
+		return this.room.lastMessage && Template.instance().renderedMessage;
 	},
 	lastMessageTs() {
-		return this.lastMessage && Template.instance().lastMessageTs.get();
+		return this.room.lastMessage && Template.instance().lastMessageTs.get();
 	},
 	mySelf() {
-		return this.t === 'd' && this.name === Template.instance().user.username;
+		return this.room.t === 'd' && this.room.name === Template.instance().user.username;
 	},
 	isLivechatQueue() {
-		return this.pathSection === 'livechat-queue';
+		return this.room.pathSection === 'livechat-queue';
 	},
 	showUnread() {
-		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
+		return this.room.unread > 0 || (!this.room.hideUnreadStatus && this.room.alert);
 	},
 	unread() {
 		const { unread = 0, tunread = [] } = this;
 		return unread + tunread.length;
 	},
 	lastMessageUnread() {
-		if (!this.ls) {
+		if (!this.room.ls) {
 			return true;
 		}
-		if (!this.lastMessage?.ts) {
+		if (!this.room.lastMessage?.ts) {
 			return false;
 		}
 
-		return this.lastMessage.ts > this.ls;
+		return this.room.lastMessage.ts > this.room.ls;
 	},
 	badgeClass() {
-		const { unread, userMentions, groupMentions, tunread = [], tunreadGroup = [], tunreadUser = [] } = this;
+		const { unread, userMentions, groupMentions, tunread = [], tunreadGroup = [], tunreadUser = [] } = this.room;
 
 		if (userMentions || tunreadUser.length > 0) {
 			return 'badge badge--user-mentions';
@@ -84,37 +82,37 @@ function setLastMessageTs(instance, ts) {
 }
 
 Template.sidebarItem.onCreated(function() {
-	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
+	this.user = this.data.user;
 
 	this.lastMessageTs = new ReactiveVar();
 
 	this.autorun(() => {
-		const currentData = Template.currentData();
+		const { room, uid, settings: { extended, useRealName } } = Template.currentData();
 
-		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
+		if (!room.lastMessage || !extended) {
 			return clearInterval(this.timeAgoInterval);
 		}
 
-		if (!currentData.lastMessage._id) {
-			this.renderedMessage = currentData.lastMessage.msg;
+		if (!room.lastMessage._id) {
+			this.renderedMessage = room.lastMessage.msg;
 			return;
 		}
 
-		setLastMessageTs(this, currentData.lm || currentData.lastMessage.ts);
+		setLastMessageTs(this, room.lm || room.lastMessage.ts);
 
-		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
+		if (room.lastMessage.t === 'e2e' && room.lastMessage.e2e !== 'done') {
 			this.renderedMessage = '******';
 			return;
 		}
 
-		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
-		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
-		const sender = this.user && this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
+		const otherUser = useRealName ? room.lastMessage.u.name || room.lastMessage.u.username : room.lastMessage.u.username;
+		const renderedMessage = renderMessageBody(room.lastMessage).replace(/<br\s?\\?>/g, ' ');
+		const sender = this.user && this.user._id === room.lastMessage.u._id ? t('You') : otherUser;
 
-		if (!currentData.isGroupChat && Meteor.userId() !== currentData.lastMessage.u._id) {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
+		if (!room.isGroupChat && uid !== room.lastMessage.u._id) {
+			this.renderedMessage = room.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
 		} else {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
+			this.renderedMessage = room.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
 		}
 	});
 });
@@ -138,7 +136,7 @@ Template.sidebarItem.events({
 			return !(((roomData.cl != null) && !roomData.cl) || ['d', 'l'].includes(roomData.t));
 		};
 
-		const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
+		const canFavorite = Template.currentData().settings.favoriteRooms && ChatSubscription.find({ rid: this.rid }).count() > 0;
 		const isFavorite = () => {
 			const sub = ChatSubscription.findOne({ rid: this.rid }, { fields: { f: 1 } });
 			if (((sub != null ? sub.f : undefined) != null) && sub.f) {
@@ -216,21 +214,21 @@ Template.sidebarItem.events({
 
 Template.sidebarItemIcon.helpers({
 	uid() {
-		if (!this.rid) {
-			return this._id;
+		if (!this.room.rid) {
+			return this.room._id;
 		}
-		return getUidDirectMessage(this.rid);
+		return getUidDirectMessage(this.room.rid);
 	},
 	isRoom() {
-		return this.rid || this._id;
+		return this.room.rid || this.room._id;
 	},
 	status() {
-		if (this.t === 'd') {
-			return Session.get(`user_${ this.username }_status`) || 'offline';
+		if (this.room.t === 'd') {
+			return Session.get(`user_${ this.room.username }_status`) || 'offline';
 		}
 
-		if (this.t === 'l') {
-			return roomTypes.getUserStatus('l', this.rid) || 'offline';
+		if (this.room.t === 'l') {
+			return roomTypes.getUserStatus('l', this.room.rid) || 'offline';
 		}
 
 		return false;

@@ -6,6 +6,7 @@ import * as Models from '../../models';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
 function atLeastOne(permissions = [], scope, userId) {
+	console.log('atLeastOne', permissions);
 	userId = userId || Meteor.userId();
 	const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 
@@ -30,6 +31,7 @@ function atLeastOne(permissions = [], scope, userId) {
 }
 
 function all(permissions = [], scope, userId) {
+	console.log('all', permissions);
 	userId = userId || Meteor.userId();
 	const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 

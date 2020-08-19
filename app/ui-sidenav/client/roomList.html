@@ -8,11 +8,13 @@
 						<span class="rooms-list__type-text">{{_ ../label}}</span>
 					</h3>
 					<ul class="rooms-list__list {{ roomType ..}}">
-						{{#each room in this}}
-							{{> chatRoomItem room }}
-						{{else}}
-							<p class="rooms-list__empty-room">{{_ noSubscriptionText }}</p>
-						{{/each}}
+						{{# with roomListContext }}
+							{{#each room in .. }}
+								{{> chatRoomItem room=room settings=settings user=user }}
+							{{else}}
+								<p class="rooms-list__empty-room">{{_ noSubscriptionText }}</p>
+							{{/each}}
+						{{/with}}
 					</ul>
 				{{/if}}
 		{{/with}}

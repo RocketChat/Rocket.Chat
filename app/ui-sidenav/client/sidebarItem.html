@@ -9,8 +9,8 @@
 </template>
 
 <template name="sidebarItem">
-	<li class="sidebar-item{{#if showUnread }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}} js-sidebar-type-{{t}}" data-id="{{_id}}">
-		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" aria-label="{{name}}">
+	<li class="sidebar-item{{#if showUnread }} sidebar-item--unread{{/if}}{{#if room.active}} sidebar-item--active{{/if}}{{#if room.toolbar}} popup-item{{/if}} js-sidebar-type-{{room.t}}" data-id="{{room._id}}">
+		<a class="sidebar-item__link" href="{{#if room.route}}{{room.route}}{{else}}{{pathFor room.pathSection group=room.pathGroup}}{{/if}}" aria-label="{{room.name}}">
 			{{#unless isLivechatQueue}}
 
 				<div class=" {{#if isRoom}}sidebar-item__picture{{else}}sidebar-item-option-icon{{/if}}">
@@ -22,13 +22,12 @@
 						{{/if}}
 					{{else}}
 						<div class="sidebar-item__user-thumb">
-							{{> avatar url=avatar roomIcon=icon lazy=true}}
+							{{> avatar url=room.avatar roomIcon=room.icon lazy=true}}
 						</div>
 					{{/if}}
 				</div>
 			{{/unless}}
 			<div class="sidebar-item__body">
-				{{# let extended=isExtendedViewMode}}
 				<div class="sidebar-item__message">
 					<div class="sidebar-item__message-top">
 						<div class="sidebar-item__name">
@@ -37,21 +36,21 @@
 							{{/unless}}
 
 							<div class="sidebar-item__ellipsis">
-								{{name}}
+								{{room.name}}
 								{{#if mySelf}}
 									<span class="sidebar-item__me">({{_ "You"}})</span>
 								{{/if}}
 							</div>
-							{{#if streaming}} {{>icon icon="video" block="sidebar-item__video pulse"}} {{/if}}
+							{{#if room.streaming}} {{>icon icon="video" block="sidebar-item__video pulse"}} {{/if}}
 						</div>
-						{{#if extended}}
+						{{#if settings.extended}}
 							{{#if lastMessageTs}}
 								<span class="sidebar-item__time">{{lastMessageTs}}</span>
 							{{/if}}
 						{{/if}}
 					</div>
 					<div class="sidebar-item__message-bottom">
-						{{#if extended}}
+						{{#if settings.extended}}
 							{{#if lastMessage}}
 								<div class="sidebar-item__last-message {{#if showUnread }}{{#if lastMessageUnread }} sidebar-item__last-message--unread{{/if}}{{/if}}">
 									<span class="message-body--unstyled">{{{lastMessage}}}</span>
@@ -63,8 +62,6 @@
 						{{/if}}
 					</div>
 				</div>
-				{{/let}}
-
 				{{#if isRoom}}
 					<div class="sidebar-item__menu" aria-haspopup="true">
 						{{> icon block="sidebar-item__menu-icon rc-icon--default-size" icon="menu"}}

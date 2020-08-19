@@ -1,45 +1,49 @@
 import { Template } from 'meteor/templating';
 
 import { t, roomTypes } from '../../utils/client';
-import { settings } from '../../settings/client';
 import { Rooms } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 
 Template.chatRoomItem.helpers({
 	roomData() {
-		const unread = this.unread > 0 ? this.unread : false;
-		// if (this.unread > 0 && (!hasFocus || openedRoom !== this.rid)) {
-		// 	unread = this.unread;
+		const { user, settings } = Template.currentData();
+		const unread = this.room.unread > 0 ? this.room.unread : false;
+		// if (this.room.unread > 0 && (!hasFocus || openedRoom !== this.room.rid)) {
+		// 	unread = this.room.unread;
 		// }
 
-		const roomType = roomTypes.getConfig(this.t);
+		const roomType = roomTypes.getConfig(this.room.t);
 
-		const archivedClass = this.archived ? 'archived' : false;
+		const archivedClass = this.room.archived ? 'archived' : false;
 
-		const room = Rooms.findOne(this.rid);
+		const room = Rooms.findOne(this.room.rid);
 
-		const icon = roomTypes.getIcon(this.t === 'd' ? room : this);
+		const icon = roomTypes.getIcon(this.room.t === 'd' ? room : this.room);
 
 		const roomData = {
-			...this,
+			...this.room,
 			icon: icon !== 'at' && icon,
-			avatar: roomTypes.getConfig(this.t).getAvatarPath(room || this),
-			username: this.name,
-			route: roomTypes.getRouteLink(this.t, this),
-			name: roomType.roomName(this),
+			avatar: roomTypes.getConfig(this.room.t).getAvatarPath(room || this.room),
+			username: this.room.name,
+			route: roomTypes.getRouteLink(this.room.t, this.room),
+			name: roomType.roomName(this.room),
 			unread,
 			active: false,
 			archivedClass,
-			status: this.t === 'd' || this.t === 'l',
+			status: this.room.t === 'd' || this.room.t === 'l',
 			isGroupChat: roomType.isGroupChat(room),
 		};
 		roomData.username = roomData.username || roomData.name;
 
-		if (!this.lastMessage && settings.get('Store_Last_Message')) {
-			const room = Rooms.findOne(this.rid || this._id, { fields: { lastMessage: 1 } });
+		if (!this.room.lastMessage && settings.storeLastMessage) {
+			const room = Rooms.findOne(this.room.rid || this.room._id, { fields: { lastMessage: 1 } });
 			roomData.lastMessage = (room && room.lastMessage) || { msg: t('No_messages_yet') };
 		}
-		return roomData;
+		return {
+			room: roomData,
+			user,
+			settings,
+		};
 	},
 });
 

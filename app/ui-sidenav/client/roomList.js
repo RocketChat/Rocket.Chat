@@ -103,6 +103,20 @@ Template.roomList.helpers({
 		return ChatSubscription.find(query, { sort });
 	},
 
+	roomListContext() {
+		const uid = Meteor.userId();
+		return {
+			uid,
+			user: Meteor.users.findOne(uid, { fields: { username: 1 } }),
+			settings: {
+				extended: getUserPreference(uid, 'sidebarViewMode') === 'extended',
+				useRealName: settings.get('UI_Use_Real_Name'),
+				storeLastMessage: settings.get('Store_Last_Message'),
+				favoriteRooms: settings.get('Favorite_Rooms'),
+			},
+		};
+	},
+
 	isLivechat() {
 		return this.identifier === 'l';
 	},
