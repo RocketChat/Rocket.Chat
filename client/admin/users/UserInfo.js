@@ -44,7 +44,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			bio,
 			phone: user.phone,
 			utcOffset,
-			customFields: [approveManuallyUsers && user.active === false && user.reason && { label: 'Reason', value: user.reason }, ...Array.isArray(user.customFields) ? user.customFields : []].filter(Boolean),
+			customFields: { ...user.customFields, ...approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason } },
 			email: user.emails?.find(({ address }) => !!address)?.address,
 			createdAt: user.createdAt,
 			status: UserStatus.getStatus(status),

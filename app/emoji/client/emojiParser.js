@@ -12,72 +12,76 @@ import { emoji } from '../lib/rocketchat';
  * @param {Object} message - The message object
  */
 
+const emojiParser = function(message) {
+	let html = s.trim(message.html);
+	if (html) {
+		// &#39; to apostrophe (') for emojis such as :')
+		html = html.replace(/&#39;/g, '\'');
+
+		// '<br>' to ' <br> ' for emojis such at line breaks
+		html = html.replace(/<br>/g, ' <br> ');
+
+		html = Object.entries(emoji.packages).reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
+
+		const checkEmojiOnly = document.createElement('div');
+
+		checkEmojiOnly.innerHTML = html;
+
+		const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
+
+		let hasText = false;
+
+		if (!isIE11()) {
+			const filter = (node) => {
+				if (node.nodeType === Node.ELEMENT_NODE && (
+					node.classList.contains('emojione')
+						|| node.classList.contains('emoji')
+				)) {
+					return NodeFilter.FILTER_REJECT;
+				}
+				return NodeFilter.FILTER_ACCEPT;
+			};
+
+			const walker = document.createTreeWalker(
+				checkEmojiOnly,
+				NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+				filter,
+			);
+
+
+			while (walker.nextNode()) {
+				if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
+					hasText = true;
+					break;
+				}
+			}
+			const emojiOnly = emojis.length && !hasText;
+
+			if (emojiOnly) {
+				for (let i = 0, len = emojis.length; i < len; i++) {
+					const { classList } = emojis[i];
+					classList.add('big');
+				}
+				html = checkEmojiOnly.innerHTML;
+			}
+		}
+
+
+		// apostrophe (') back to &#39;
+		html = html.replace(/\'/g, '&#39;');
+
+		// line breaks ' <br> ' back to '<br>'
+		html = html.replace(/ <br> /g, '<br>');
+	}
+
+	return { ...message, html };
+};
+
 Tracker.autorun(() => {
 	if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
 		return callbacks.remove('renderMessage', 'emoji');
 	}
-	callbacks.add('renderMessage', (message) => {
-		let html = s.trim(message.html);
-		if (html) {
-			// &#39; to apostrophe (') for emojis such as :')
-			html = html.replace(/&#39;/g, '\'');
-
-			// '<br>' to ' <br> ' for emojis such at line breaks
-			html = html.replace(/<br>/g, ' <br> ');
-
-			html = Object.entries(emoji.packages).reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
-
-			const checkEmojiOnly = document.createElement('div');
-
-			checkEmojiOnly.innerHTML = html;
-
-			const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
-
-			let hasText = false;
-
-			if (!isIE11()) {
-				const filter = (node) => {
-					if (node.nodeType === Node.ELEMENT_NODE && (
-						node.classList.contains('emojione')
-							|| node.classList.contains('emoji')
-					)) {
-						return NodeFilter.FILTER_REJECT;
-					}
-					return NodeFilter.FILTER_ACCEPT;
-				};
-
-				const walker = document.createTreeWalker(
-					checkEmojiOnly,
-					NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-					filter,
-				);
-
-
-				while (walker.nextNode()) {
-					if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
-						hasText = true;
-						break;
-					}
-				}
-				const emojiOnly = emojis.length && !hasText;
-
-				if (emojiOnly) {
-					for (let i = 0, len = emojis.length; i < len; i++) {
-						const { classList } = emojis[i];
-						classList.add('big');
-					}
-					html = checkEmojiOnly.innerHTML;
-				}
-			}
-
-
-			// apostrophe (') back to &#39;
-			html = html.replace(/\'/g, '&#39;');
-
-			// line breaks ' <br> ' back to '<br>'
-			html = html.replace(/ <br> /g, '<br>');
-		}
-
-		return { ...message, html };
-	}, callbacks.priority.LOW, 'emoji');
+	callbacks.add('renderMessage', emojiParser, callbacks.priority.LOW, 'emoji');
 });
+
+export { emojiParser };

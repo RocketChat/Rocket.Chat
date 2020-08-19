@@ -12,13 +12,14 @@ import {
 	TextAreaInput,
 	ToggleSwitch,
 	FieldGroup,
+	Modal,
 } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod, useAbsoluteUrl } from '../../contexts/ServerContext';
 import { useRoute } from '../../contexts/RouterContext';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { Modal } from '../../components/basic/Modal';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import VerticalBar from '../../components/basic/VerticalBar';
 
@@ -109,7 +110,7 @@ function EditOauthApp({ onChange, data, ...props }) {
 		active: data.active,
 		redirectUri: Array.isArray(data.redirectUri) ? data.redirectUri.join('\n') : data.redirectUri,
 	});
-	const [modal, setModal] = useState();
+	const setModal = useSetModal();
 
 	const router = useRoute('admin-oauth-apps');
 
@@ -154,70 +155,67 @@ function EditOauthApp({ onChange, data, ...props }) {
 		redirectUri,
 	} = newData;
 
-	return <>
-		<VerticalBar.ScrollableContent w='full' {...props}>
-			<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
-				<Field>
-					<Field.Label display='flex' justifyContent='space-between' w='full'>
-						{t('Active')}
-						<ToggleSwitch checked={active} onChange={handleChange('active', () => !active)}/>
-					</Field.Label>
-				</Field>
-				<Field>
-					<Field.Label>{t('Application_Name')}</Field.Label>
-					<Field.Row>
-						<TextInput value={name} onChange={handleChange('name')} />
-					</Field.Row>
-					<Field.Hint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</Field.Hint>
-				</Field>
-				<Field>
-					<Field.Label>{t('Redirect_URI')}</Field.Label>
-					<Field.Row>
-						<TextAreaInput rows={5} value={redirectUri} onChange={handleChange('redirectUri')}/>
-					</Field.Row>
-					<Field.Hint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</Field.Hint>
-				</Field>
-				<Field>
-					<Field.Label>{t('Client_ID')}</Field.Label>
-					<Field.Row>
-						<TextInput value={data.clientId} onChange={handleChange('clientId')} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label>{t('Client_Secret')}</Field.Label>
-					<Field.Row>
-						<TextInput value={data.clientSecret} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label>{t('Authorization_URL')}</Field.Label>
-					<Field.Row>
-						<TextInput value={authUrl} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label>{t('Access_Token_URL')}</Field.Label>
-					<Field.Row>
-						<TextInput value={tokenUrl} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
-							<Button onClick={close}>{t('Cancel')}</Button>
-							<Button primary onClick={handleSave} >{t('Save')}</Button>
-						</ButtonGroup>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
-							<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
-						</ButtonGroup>
-					</Field.Row>
-				</Field>
-			</FieldGroup>
-		</VerticalBar.ScrollableContent>
-		{ modal }
-	</>;
+	return <VerticalBar.ScrollableContent w='full' {...props}>
+		<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
+			<Field>
+				<Field.Label display='flex' justifyContent='space-between' w='full'>
+					{t('Active')}
+					<ToggleSwitch checked={active} onChange={handleChange('active', () => !active)}/>
+				</Field.Label>
+			</Field>
+			<Field>
+				<Field.Label>{t('Application_Name')}</Field.Label>
+				<Field.Row>
+					<TextInput value={name} onChange={handleChange('name')} />
+				</Field.Row>
+				<Field.Hint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</Field.Hint>
+			</Field>
+			<Field>
+				<Field.Label>{t('Redirect_URI')}</Field.Label>
+				<Field.Row>
+					<TextAreaInput rows={5} value={redirectUri} onChange={handleChange('redirectUri')}/>
+				</Field.Row>
+				<Field.Hint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</Field.Hint>
+			</Field>
+			<Field>
+				<Field.Label>{t('Client_ID')}</Field.Label>
+				<Field.Row>
+					<TextInput value={data.clientId} onChange={handleChange('clientId')} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Client_Secret')}</Field.Label>
+				<Field.Row>
+					<TextInput value={data.clientSecret} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Authorization_URL')}</Field.Label>
+				<Field.Row>
+					<TextInput value={authUrl} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Access_Token_URL')}</Field.Label>
+				<Field.Row>
+					<TextInput value={tokenUrl} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<ButtonGroup stretch w='full'>
+						<Button onClick={close}>{t('Cancel')}</Button>
+						<Button primary onClick={handleSave} >{t('Save')}</Button>
+					</ButtonGroup>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<ButtonGroup stretch w='full'>
+						<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
+					</ButtonGroup>
+				</Field.Row>
+			</Field>
+		</FieldGroup>
+	</VerticalBar.ScrollableContent>;
 }

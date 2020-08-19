@@ -45,7 +45,7 @@
   "Accounts_BlockedDomainsList_Description": "Čiarkami oddelený zoznam blokovaných domén",
   "Accounts_BlockedUsernameList": "Zoznam blokovaných používateľov",
   "Accounts_BlockedUsernameList_Description": "Čiarkami oddelený zoznam blokovaných používateľských mien (bez rozoznávania malých a veľkých písmen)",
-  "Accounts_CustomFields_Description": "Malo by ísť o platný JSON, kde kľúčami sú názvy polí obsahujúce slovník nastavenia polí. Príklad: <br/><code>{\n\"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "Malo by ísť o platný JSON, kde kľúčami sú názvy polí obsahujúce slovník nastavenia polí. Príklad: <br/><code>{\n\"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
   "Accounts_CustomFieldsToShowInUserInfo": "Vlastné polia na zobrazenie v informáciách o používateľovi",
   "Accounts_Default_User_Preferences": "Predvolené používateľské nastavenia",
   "Accounts_Default_User_Preferences_audioNotifications": "Predvolené zvukové upozornenie ",
