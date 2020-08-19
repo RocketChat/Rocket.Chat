@@ -19,14 +19,14 @@ Meteor.methods({
 			},
 		});
 
+		if (!agent) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAgentInfo' });
+		}
+
 		const newStatus = status || (agent.statusLivechat === 'available' ? 'not-available' : 'available');
 
 		if (newStatus === agent.statusLivechat) {
 			return;
-		}
-
-		if (!agent) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAgentInfo' });
 		}
 
 		if (agentId !== uid) {
