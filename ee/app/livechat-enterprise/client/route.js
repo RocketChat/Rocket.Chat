@@ -2,15 +2,6 @@ import { AccountBox } from '../../../../app/ui-utils';
 import { livechatManagerRoutes, load } from '../../../../app/livechat/client/route';
 
 AccountBox.addRoute({
-	name: 'livechat-monitors',
-	path: '/monitors',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Livechat_Monitors',
-	pageTemplate: 'livechatMonitors',
-}, livechatManagerRoutes);
-
-
-AccountBox.addRoute({
 	name: 'livechat-units',
 	path: '/units',
 	sideNav: 'omnichannelFlex',

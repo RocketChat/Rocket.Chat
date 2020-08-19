@@ -6,6 +6,7 @@
   "error-max-guests-number-reached": "You reached the maximum number of guest users allowed by your license. Contact sale@rocket.chat for a new license.",
   "error-max-number-simultaneous-chats-reached": "The maximum number of simultaneous chats per agent has been reached.",
   "Add_monitor": "Add monitor",
+  "Monitor_added": "Monitor Added",
   "Available_departments": "Available Departments",
   "Business_Hour": "Business Hour",
   "Business_Hour_Removed": "Business Hour Removed",
