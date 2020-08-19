@@ -30,10 +30,10 @@ export function PriorityEditWithData({ priorityId, reload }) {
 }
 
 export function PriorityNew({ reload }) {
-	return <PriorityEdit reload={reload}/>;
+	return <PriorityEdit isNew reload={reload}/>;
 }
 
-export function PriorityEdit({ data, priorityId, reload, ...props }) {
+export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 	const t = useTranslation();
 	const prioritiesRoute = useRoute('omnichannel-priorities');
 
@@ -106,7 +106,7 @@ export function PriorityEdit({ data, priorityId, reload, ...props }) {
 		<Field.Row>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
-					<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button>
+					{ !isNew && <Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button> }
 					<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !canSave} onClick={handleSave}>{t('Save')}</Button>
 				</Margins>
 			</Box>
