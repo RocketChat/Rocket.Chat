@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Field, TextInput, Button, Margins, Box, MultiSelect } from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Margins, Box, MultiSelect, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -24,7 +24,7 @@ export function TagEditWithData({ tagId, reload }) {
 	}
 
 	if (error || availableDepartmentsError) {
-		return <Box mbs='x16'>{t('Not_found')}</Box>;
+		return <Callout m='x16' type='danger'>{t('Not_Available')}</Callout>;
 	}
 
 	return <TagEdit tagId={tagId} data={data} availableDepartments={availableDepartments} reload={reload}/>;
