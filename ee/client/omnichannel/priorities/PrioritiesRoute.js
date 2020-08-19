@@ -87,7 +87,7 @@ function PrioritiesRoute() {
 		<Table.Cell withTruncatedText>{description}</Table.Cell>
 		<Table.Cell withTruncatedText>{dueTimeInMinutes}  {t('minutes')}</Table.Cell>
 		<RemovePriorityButton _id={_id} reload={reload}/>
-	</Table.Row>, [reload, onRowClick]);
+	</Table.Row>, [reload, onRowClick, t]);
 
 
 	const EditPrioritiesTab = useCallback(() => {

@@ -3,7 +3,7 @@ import { createRouteGroup } from '../helpers/createRouteGroup';
 
 createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'));
 
-export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
+const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
 
 registerOmnichannelRoute('/installation', {
 	name: 'omnichannel-installation',

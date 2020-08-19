@@ -52,9 +52,9 @@ export function PriorityEdit({ data, priorityId, reload, ...props }) {
 		dueTimeInMinutes,
 	} = values;
 
-	const nameError = useMemo(() => (!name || name.length === 0 ? t('Empty_fields') : undefined), [name, t]);
-	const descriptionError = useMemo(() => (!description || description.length === 0 ? t('Empty_fields') : undefined), [description, t]);
-	const dueTimeInMinutesError = useMemo(() => (!dueTimeInMinutes || dueTimeInMinutes <= 0 ? t('Empty_fields') : undefined), [dueTimeInMinutes, t]);
+	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined), [name, t]);
+	const descriptionError = useMemo(() => (!description || description.length === 0 ? t('The_field_is_required', 'description') : undefined), [description, t]);
+	const dueTimeInMinutesError = useMemo(() => (!dueTimeInMinutes || dueTimeInMinutes <= 0 ? t('The_field_is_required', 'Estimated_due_time_in_minutes') : undefined), [dueTimeInMinutes, t]);
 
 	const savePriority = useMethod('livechat:savePriority');
 
@@ -70,7 +70,7 @@ export function PriorityEdit({ data, priorityId, reload, ...props }) {
 		const payload = { name, description, dueTimeInMinutes: `${ dueTimeInMinutes }` };
 
 		if (!canSave) {
-			return dispatchToastMessage({ type: 'error', message: t('Fill_all_fields') });
+			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
 		}
 
 		try {
