@@ -201,7 +201,19 @@ export class Messages extends Base {
 		console.timeEnd('fromV1Data');
 
 		console.time('createMessageEvent');
-		const event = Promise.await(RoomEvents.createMessageEvent(getLocalSrc(), message.rid, message._id, v2Data));
+
+		console.time('getLocalSrc');
+		const localSrc = getLocalSrc();
+		console.timeEnd('getLocalSrc');
+
+		const event = Promise.await((async () => {
+			console.time('inside');
+			const data = await RoomEvents.createMessageEvent(localSrc, message.rid, message._id, v2Data);
+			console.timeEnd('inside');
+			return data;
+		})());
+
+		// const event = Promise.await(RoomEvents.createMessageEvent(localSrc, message.rid, message._id, v2Data));
 		console.timeEnd('createMessageEvent');
 
 		console.time('dispatchEvent');
