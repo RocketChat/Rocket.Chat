@@ -74,6 +74,9 @@ Template.sidebarItem.helpers({
 
 		return roomTypes.getCustomBadges(this.t, this);
 	},
+	customBadgeClass() {
+		return roomTypes.getCustomBadges(this.t, this);
+	},
 });
 
 function setLastMessageTs(instance, ts) {

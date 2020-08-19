@@ -50,6 +50,11 @@
 			align-items: center;
 		}
 	}
+
+	&__badges {
+		display: flex;
+		justify-content: center;
+	}
 }
 
 .sidebar--medium .sidebar-item {
