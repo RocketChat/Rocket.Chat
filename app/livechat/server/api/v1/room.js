@@ -181,7 +181,7 @@ API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('livechat/room.screenSharing', {
+API.v1.addRoute('livechat/room.screenShare', {
 	post() {
 		try {
 			check(this.bodyParams, {
