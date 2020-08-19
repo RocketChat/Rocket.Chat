@@ -42,16 +42,17 @@ export function UnitNew({ reload }) {
 	const t = useTranslation();
 
 	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
+	const { data: availableMonitors, state: availableMonitorsState, error: availableMonitorsError } = useEndpointDataExperimental('livechat/monitors.list');
 
-	if (availableDepartmentsState === ENDPOINT_STATES.LOADING) {
+	if ([availableDepartmentsState, availableMonitorsState].includes(ENDPOINT_STATES.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
-	if (availableDepartmentsError) {
+	if (availableDepartmentsError || availableMonitorsError) {
 		return <Box mbs='x16'>{t('Not_found')}</Box>;
 	}
 
-	return <UnitEdit reload={reload} isNew availableDepartments={availableDepartments}/>;
+	return <UnitEdit reload={reload} isNew availableDepartments={availableDepartments} availableMonitors={availableMonitors}/>;
 }
 
 export function UnitEdit({ data, unitId, isNew, availableDepartments, availableMonitors, unitMonitors, reload, ...props }) {
