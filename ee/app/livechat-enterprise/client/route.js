@@ -35,14 +35,6 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
-	name: 'livechat-tags',
-	path: '/tags',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Tags',
-	pageTemplate: 'livechatTags',
-}, livechatManagerRoutes);
-
-AccountBox.addRoute({
 	name: 'livechat-tag-edit',
 	path: '/tags/:_id/edit',
 	sideNav: 'omnichannelFlex',
