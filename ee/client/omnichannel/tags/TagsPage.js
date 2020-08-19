@@ -43,11 +43,10 @@ function TagsPage({
 
 	return <Page flexDirection='row'>
 		<Page>
-			<Page.Header title={title}/>
+			<Page.Header title={title}>
+				<Button onClick={handleClick} mis='x8' primary>{t('New_Tag')}</Button>
+			</Page.Header>
 			<Page.Content>
-				<Box display='flex' width='100%' justifyContent='end' padding='x8' mbe='x4'>
-					<Button onClick={handleClick} mis='x8' primary>{t('New_Tag')}</Button>
-				</Box>
 				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.tags} total={data && data.total} setParams={setParams} params={params} />
 			</Page.Content>
 		</Page>
