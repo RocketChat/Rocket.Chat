@@ -5,8 +5,6 @@ import './views/livechatUnitForm';
 import './route';
 import './views/livechatTags';
 import './views/livechatTagForm';
-import './views/livechatPriorities';
-import './views/livechatPriorityForm';
 import './startup';
 
 hasLicense('livechat-enterprise').then((enabled) => {
