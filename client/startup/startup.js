@@ -8,7 +8,7 @@ import toastr from 'toastr';
 
 
 import hljs from '../../app/markdown/lib/hljs';
-import { fireGlobalEvent } from '../../app/ui-utils';
+import { fireGlobalEvent, alerts } from '../../app/ui-utils';
 import { getUserPreference } from '../../app/utils';
 import 'highlight.js/styles/github.css';
 import { syncUserdata } from '../lib/userData';
@@ -61,5 +61,28 @@ Meteor.startup(function() {
 			status = user.status;
 			fireGlobalEvent('status-changed', status);
 		}
+	});
+
+	Tracker.autorun(async function() {
+		const uid = Meteor.userId();
+		if (!uid) {
+			return;
+		}
+
+		Meteor.call('cloud:checkRegisterStatus', (err, data) => {
+			if (err) {
+				console.log(err);
+				return;
+			}
+
+			const { connectToCloud = false, workspaceRegistered = false } = data;
+			if (connectToCloud === true && workspaceRegistered !== true) {
+				alerts.open({
+					title: 'Cloud registration is still pending',
+					html: '<span>Mobile notifications will not work until the registration is finished. <a href="https://docs.rocket.chat/guides/administrator-guides/connectivity-services">Learn more</a></spam>',
+					modifiers: ['large', 'danger'],
+				});
+			}
+		});
 	});
 });
