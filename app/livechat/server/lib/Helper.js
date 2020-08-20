@@ -263,16 +263,16 @@ export const forwardRoomToAgent = async (room, transferData) => {
 			removeAgentFromSubscription(rid, oldServedBy);
 		}
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
-	}
 
-	Meteor.defer(() => {
-		Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
-			type: LivechatTransferEventType.AGENT,
-			room: rid,
-			from: oldServedBy._id,
-			to: servedBy._id,
+		Meteor.defer(() => {
+			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+				type: LivechatTransferEventType.AGENT,
+				room: rid,
+				from: oldServedBy?._id,
+				to: servedBy._id,
+			});
 		});
-	});
+	}
 
 	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
 	return true;
