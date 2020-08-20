@@ -182,6 +182,10 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 
 export const copyFile = function(attachmentData, assetsPath) {
 	const file = Uploads.findOneById(attachmentData._id);
+	console.log('copyFile', attachmentData._id, file);
+	if (!file) {
+		return;
+	}
 	FileUpload.copy(file, path.join(assetsPath, `${ attachmentData._id }-${ attachmentData.name }`));
 
 	// if (attachmentData.copied || attachmentData.remote || !attachmentData.fileId) {

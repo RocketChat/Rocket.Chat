@@ -5,6 +5,7 @@ import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
 import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom } from '../lib/rooms';
+import { sendFile } from '../../../../server/lib/channelExport';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -352,5 +353,23 @@ API.v1.addRoute('rooms.changeArchivationState', { authRequired: true }, {
 		}
 
 		return API.v1.success({ result });
+	},
+});
+
+API.v1.addRoute('rooms.export', { authRequired: true }, {
+	post() {
+		// const room = findRoomByIdOrName({ params: this.bodyParams });
+
+		const user = Meteor.users.findOne({ _id: this.userId });
+
+		const { rid, type, dateFrom, dateTo, format } = this.bodyParams;
+
+		// TODO: canAccessRoom(room)
+
+		if (type === 'file') {
+			sendFile({ rid, dateFrom, dateTo, format }, user);
+		}
+
+		return API.v1.success();
 	},
 });

@@ -37,7 +37,7 @@ type ExportFile = {
 	rid: string;
 	dateFrom: Date;
 	dateTo: Date;
-	type: 'html' | 'json';
+	format: 'html' | 'json';
 }
 
 type ExportInput = {
@@ -93,8 +93,8 @@ const sendViaEmail = (data: ExportEmail, user: IUser): void => {
 	} as any);
 };
 
-const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
-	const exportType = data.type;
+export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
+	const exportType = data.format;
 
 	const baseDir = `/tmp/sendFile-${ Random.id() }`;
 
@@ -110,7 +110,7 @@ const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
 	const roomData = getRoomData(data.rid);
 	console.log('get room', roomData);
 
-	roomData.targetFile = `${ (data.type === 'json' && roomData.roomName) || roomData.roomId }.${ data.type }`;
+	roomData.targetFile = `${ (data.format === 'json' && roomData.roomName) || roomData.roomId }.${ data.format }`;
 
 	console.log('exportType ->', exportType);
 
@@ -152,4 +152,4 @@ export async function channelExport(data: ExportInput, user: IUser): Promise<voi
 	return sendFile(data.data, user);
 }
 
-Meteor.methods({ sendFile });
+// Meteor.methods({ sendFile });
