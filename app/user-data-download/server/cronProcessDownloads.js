@@ -1,4 +1,5 @@
 import fs from 'fs';
+import util from 'util';
 import path from 'path';
 
 import _ from 'underscore';
@@ -8,10 +9,15 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 import moment from 'moment';
 
-import { settings } from '../../settings';
-import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models';
-import { FileUpload } from '../../file-upload';
+import { settings } from '../../settings/server';
+import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
+import { FileUpload } from '../../file-upload/server';
 import * as Mailer from '../../mailer';
+
+const fsStat = util.promisify(fs.stat);
+const fsOpen = util.promisify(fs.open);
+const fsExists = util.promisify(fs.exists);
+const fsUnlink = util.promisify(fs.unlink);
 
 let zipFolder = '/tmp/zipFiles';
 if (settings.get('UserData_FileSystemZipPath') != null) {
@@ -284,7 +290,7 @@ export const sendEmail = function(userData, subject, body) {
 		return;
 	}
 
-	return Mailer.sendNoWrap({
+	return Mailer.send({
 		to: emailAddress,
 		from: fromAddress,
 		subject,
@@ -308,8 +314,8 @@ export const makeZipFile = function(folderToZip, targetFile) {
 	});
 };
 
-export const uploadZipFile = function(filePath, userId, exportType) {
-	const stat = fs.statSync(filePath);
+export const uploadZipFile = async function(filePath, userId, exportType) {
+	const stat = await fsStat(filePath);
 
 	const contentType = 'application/zip';
 	const { size } = stat;
@@ -332,23 +338,17 @@ export const uploadZipFile = function(filePath, userId, exportType) {
 		name: newFileName,
 	};
 
-	return new Promise((resolve, reject) => {
-		fs.open(filePath, Meteor.bindEnvironment((error, fd) => {
-			if (error) {
-				return reject(error);
-			}
-			const stream = fs.createReadStream('', { fd });
+	const fd = await fsOpen(filePath);
 
-			const userDataStore = FileUpload.getStore('UserDataFiles');
+	const stream = fs.createReadStream('', { fd });
 
-			try {
-				const file = userDataStore.insertSync(details, stream);
-				resolve(file);
-			} catch (e) {
-				reject(e);
-			}
-		}));
-	});
+	const userDataStore = FileUpload.getStore('UserDataFiles');
+
+	const file = userDataStore.insertSync(details, stream);
+
+	fs.close(fd);
+
+	return file;
 };
 
 const generateChannelsFile = function(type, exportPath, exportOperation) {
@@ -527,8 +527,8 @@ const continueExportOperation = async function(exportOperation) {
 			});
 
 			const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
-			if (fs.existsSync(targetFile)) {
-				fs.unlinkSync(targetFile);
+			if (await fsExists(targetFile)) {
+				await fsUnlink(targetFile);
 			}
 
 			exportOperation.status = 'compressing';
@@ -538,7 +538,7 @@ const continueExportOperation = async function(exportOperation) {
 			createDir(zipFolder);
 
 			exportOperation.generatedFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
-			if (!fs.existsSync(exportOperation.generatedFile)) {
+			if (!await fsExists(exportOperation.generatedFile)) {
 				await makeZipFile(exportOperation.exportPath, exportOperation.generatedFile);
 			}
 
