@@ -1,30 +1,14 @@
-import { Table, Box, TextInput, Icon, Button, Modal, ButtonGroup } from '@rocket.chat/fuselage';
+import { Table, Box, TextInput, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useEffect } from 'react';
 
 import GenericTable from '../../../client/components/GenericTable';
+import DeleteWarningModal from '../../../client/omnichannel/DeleteWarningModal';
 import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
-
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
 
 const FilterByText = memo(({ setFilter, ...props }) => {
 	const t = useTranslation();
