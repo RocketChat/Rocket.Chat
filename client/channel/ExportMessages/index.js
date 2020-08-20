@@ -135,13 +135,21 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
+	// rid,
+	// toUsers,
+	// toEmails,
+	// subject,
+	// messages,
+
+
 	const handleSubmit = () => {
 		roomsExport({
 			rid,
 			type: 'email',
 			toUsers,
-			additionalEmails,
+			toEmails: additionalEmails,
 			subject,
+			messages: selectedMessages,
 		});
 	};
 

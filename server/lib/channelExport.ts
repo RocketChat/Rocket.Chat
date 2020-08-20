@@ -12,11 +12,11 @@ import { Messages, Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { Message } from '../../app/ui-utils/server';
 import {
-	exportRoomMessages,
+	// exportRoomMessages,
 	exportRoomMessagesToFile,
 	copyFile,
-	isExportComplete,
-	loadUserSubscriptions,
+	// isExportComplete,
+	// loadUserSubscriptions,
 	getRoomData,
 	makeZipFile,
 	sendEmail,
@@ -26,8 +26,8 @@ import { IUser } from '../../definition/IUser';
 
 type ExportEmail = {
 	rid: string;
-	to_users: string[];
-	to_emails: string;
+	toUsers: string[];
+	toEmails: string;
 	subject: string;
 	messages: string[];
 	language: string;
@@ -48,11 +48,11 @@ type ExportInput = {
 	data: ExportFile;
 };
 
-const sendViaEmail = (data: ExportEmail, user: IUser): void => {
-	const emails = _.compact(data.to_emails.trim().split(','));
+export const sendViaEmail = (data: ExportEmail, user: IUser): void => {
+	const emails = _.compact(data.toEmails.trim().split(','));
 	const missing = [];
-	if (data.to_users.length > 0) {
-		_.each(data.to_users, (username) => {
+	if (data.toUsers.length > 0) {
+		_.each(data.toUsers, (username) => {
 			const user = Users.findOneByUsernameIgnoringCase(username, {});
 			if (user && user.emails && user.emails[0] && user.emails[0].address) {
 				emails.push(user.emails[0].address);

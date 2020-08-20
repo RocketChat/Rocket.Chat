@@ -5,7 +5,7 @@ import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
 import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom } from '../lib/rooms';
-import { sendFile } from '../../../../server/lib/channelExport';
+import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -362,14 +362,42 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 
 		const user = Meteor.users.findOne({ _id: this.userId });
 
-		const { rid, type, dateFrom, dateTo, format } = this.bodyParams;
+		const { rid, type } = this.bodyParams;
 
 		// TODO: canAccessRoom(room)
 
+		// TODO receive hours from UI
+		console.log('this.bodyParams', this.bodyParams);
+
 		if (type === 'file') {
-			sendFile({ rid, dateFrom, dateTo, format }, user);
+			const { dateFrom, dateTo, format } = this.bodyParams;
+			sendFile({
+				rid,
+				format,
+				...dateFrom && { dateFrom: new Date(dateFrom) },
+				...dateTo && { dateTo: new Date(dateTo) },
+			}, user);
+			return API.v1.success();
 		}
 
-		return API.v1.success();
+		if (type === 'email') {
+			const { toUsers, toEmails, subject, messages } = this.bodyParams;
+
+			try {
+				sendViaEmail({
+					rid,
+					toUsers,
+					toEmails,
+					subject,
+					messages,
+					// language,
+				}, user);
+				return API.v1.success();
+			} catch (e) {
+				console.error('deu ruim', e);
+			}
+		}
+
+		return API.v1.error();
 	},
 });
