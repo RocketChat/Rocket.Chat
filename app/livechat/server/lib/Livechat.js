@@ -839,7 +839,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartmentAgents' });
 		}
 
-		return updateDepartmentAgents(_id, departmentAgents);
+		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -883,7 +883,7 @@ export const Livechat = {
 
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
-			updateDepartmentAgents(departmentDB._id, departmentAgents);
+			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
 		}
 
 		return departmentDB;

@@ -3671,6 +3671,8 @@
   "URL": "URL",
   "URL_room_prefix": "URL room prefix",
   "URL_room_suffix": "URL room suffix",
+  "URL_room_hash": "Enable room name hash",
+  "URL_room_hash_description": "Recommended to enable if the Jitsi instance doesn't use any authentication mechanism.",
   "Use_Server_configuration": "Use server configuration",
   "Use_Room_configuration": "Overwrites the server configuration and use room config",
   "Use_account_preference": "Use account preference",
