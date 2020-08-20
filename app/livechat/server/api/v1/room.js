@@ -196,9 +196,8 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 			if (!visitor) {
 				throw new Meteor.Error('invalid-visitor');
 			}
-			const { _id, username, token } = visitor;
 
-			let room = Promise.await(LivechatRooms.findOneById(rid, { _id: 1, v: 1 }));
+			let room = LivechatRooms.findOneById(rid, { _id: 1 });
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}
@@ -208,7 +207,7 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Meteor.Error('invalid-room-visitor');
 			}
 
-			room = Promise.await(Livechat.changeRoomVisitor(this.userId, rid, { _id, username, token }));
+			room = Livechat.changeRoomVisitor(this.userId, rid, visitor);
 
 			return API.v1.success({ room });
 		} catch (e) {
