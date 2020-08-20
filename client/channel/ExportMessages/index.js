@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Component } from 'react';
 import { Field, TextInput, Select, ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
 
 import VerticalBar from '../../components/basic/VerticalBar';
@@ -50,17 +50,17 @@ const FileExport = () => {
 	);
 };
 
-const MailExport = ({ onClearSelection = () => {} }) => {
+const MailExportForm = ({ totalSelected, onClearSelection }) => {
 	const t = useTranslation();
 
-	const [selected, setSelected] = useState(10);
+	// const [selectedMessages, setSelected] = useState([]);
 
 	const { values, handlers } = useForm({
 		dateFrom: '',
 		dateTo: '',
 		toUsers: '',
 		additionalEmails: '',
-		subject: t('Mail_Messages_Subject', selected), // TODO i18n replace
+		subject: t('Mail_Messages_Subject', totalSelected), // TODO i18n replace
 	});
 
 	const {
@@ -77,14 +77,14 @@ const MailExport = ({ onClearSelection = () => {} }) => {
 
 	return (
 		<>
-			<Box className={`mail-messages__instructions ${ selected > 0 ? 'mail-messages__instructions--selected' : '' }`}>
+			<Box className={`mail-messages__instructions ${ totalSelected > 0 ? 'mail-messages__instructions--selected' : '' }`}>
 				<Box className='mail-messages__instructions-wrapper'>
-					{selected > 0
+					{totalSelected > 0
 						? <>
 							<Icon name='checkmark-circled' size='x20'/>
-							<Box className='mail-messages__instructions-text' onClick={() => { setSelected(0); onClearSelection(); }}>
+							<Box className='mail-messages__instructions-text' onClick={() => { setSelected([]); onClearSelection(); }}>
 								{t('Messages selected')}
-								<Box className='mail-messages__instructions-text-selected'>{`${ selected } Messages selected`}</Box>
+								<Box className='mail-messages__instructions-text-selected'>{`${ totalSelected } Messages selected`}</Box>
 								<Box>{t('Click here to clear the selection')}</Box>
 							</Box>
 						</>
@@ -117,7 +117,43 @@ const MailExport = ({ onClearSelection = () => {} }) => {
 			</Field>
 		</>
 	);
-};
+}
+class MailExport extends Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			selectedMessages: [],
+		};
+	}
+
+	componentWillUnmount() {
+		// $('.messages-box .message').
+	}
+
+	clearSelection() {
+		this.setState({ selectedMessages: [] });
+	}
+
+	componentDidMount() {
+		const self = this;
+		$('.messages-box .message').on('click', function() {
+			const { id } = this;
+
+			if (this.classList.contains('selected')) {
+				this.classList.remove('selected');
+				self.setState(self.state.selectedMessages.filter((message) => message !== id));
+			} else {
+				this.classList.add('selected');
+				self.setState(self.state.selectedMessages.concat(id));
+			}
+		});
+	}
+
+	render() {
+		return (<MailExportForm totalSelected={this.state.selectedMessages.length} onClearSelection={() => this.clearSelection()} />);
+	}
+}
 
 export const ExportMessages = function ExportMessages({ onClearSelection }) {
 	const t = useTranslation();

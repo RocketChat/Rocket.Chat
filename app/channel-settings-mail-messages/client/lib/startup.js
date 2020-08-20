@@ -7,11 +7,12 @@ import { hasAllPermission } from '../../../authorization';
 Meteor.startup(() => {
 	TabBar.addButton({
 		groups: ['channel', 'group', 'direct'],
-		id: 'mail-messages',
+		id: 'export-messages',
 		anonymous: true,
-		i18nTitle: 'Mail_Messages',
+		i18nTitle: 'Export_Messages',
 		icon: 'mail',
-		template: 'mailMessagesInstructions',
+		template: 'ExportMessages',
+		full: true,
 		order: 12,
 		condition: () => hasAllPermission('mail-messages'),
 	});

@@ -9,3 +9,7 @@ createTemplateForComponent('DiscussionMessageList', () => import('./Discussions/
 createTemplateForComponent('ThreadsList', () => import('./Threads/ContextualBar/List'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
+
+createTemplateForComponent('ExportMessages', () => import('./ExportMessages'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
