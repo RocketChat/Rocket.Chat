@@ -1150,7 +1150,7 @@ export const Livechat = {
 
 		Livechat.notifyRoomVisitorChange(room._id, visitor);
 
-		return LivechatRooms.findOneById(roomId, { _id: 1 });
+		return LivechatRooms.findOneById(roomId);
 	},
 };
 
