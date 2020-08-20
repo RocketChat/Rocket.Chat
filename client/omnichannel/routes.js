@@ -58,3 +58,8 @@ registerOmnichannelRoute('/priorities/:context?/:id?', {
 	name: 'omnichannel-priorities',
 	lazyRouteComponent: () => import('../../ee/client/omnichannel/priorities/PrioritiesRoute'),
 });
+
+registerOmnichannelRoute('/facebook2', {
+	name: 'omnichannel-facebook',
+	lazyRouteComponent: () => import('./facebook/FacebookPage'),
+});
