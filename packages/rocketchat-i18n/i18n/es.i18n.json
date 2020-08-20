@@ -69,7 +69,7 @@
   "Block_Multiple_Failed_Logins_By_User": "Bloquear los intentos fallidos de acceso por nombre de usuario",
   "Accounts_BlockedUsernameList": "Lista de nombres de usuario bloqueados",
   "Accounts_BlockedUsernameList_Description": "Lista de nombres de usuarios bloqueados separada por comas (no distingue mayúsculas y minúsculas)",
-  "Accounts_CustomFields_Description": "Debe ser un JSON válido, donde las llaves son los nombres de los campos que contienen las opciones de los campos. Example:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
+  "Accounts_CustomFields_Description": "Debe ser un JSON válido, donde las llaves son los nombres de los campos que contienen las opciones de los campos. Example:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
   "Accounts_CustomFieldsToShowInUserInfo": "Campos Personalizados para Mostrar en la Información del Usuario",
   "Accounts_Default_User_Preferences": "Preferencias de usuario por omisión",
   "Accounts_Default_User_Preferences_audioNotifications": "Alerta de notificaciones de audio por omisión",

@@ -5,32 +5,6 @@ import { Box, Scrollable, Button, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath } from '../../contexts/RouterContext';
 
-export const createSidebarItems = (initialItems = []) => {
-	const items = initialItems;
-	let updateCb = () => {};
-
-	const itemsSubscription = {
-		subscribe: (cb) => {
-			updateCb = cb;
-			return () => {
-				updateCb = () => {};
-			};
-		},
-		getCurrentValue: () => items,
-	};
-	const registerSidebarItem = (item) => {
-		items.push(item);
-		updateCb();
-	};
-	const unregisterSidebarItem = (label) => {
-		const index = items.findIndex(({ i18nLabel }) => i18nLabel === label);
-		delete items[index];
-		updateCb();
-	};
-
-	return { registerSidebarItem, unregisterSidebarItem, itemsSubscription };
-};
-
 const Sidebar = ({ children, ...props }) => <Box display='flex' flexDirection='column' h='100vh' {...props}>
 	{children}
 </Box>;
