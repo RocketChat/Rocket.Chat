@@ -1139,7 +1139,7 @@ export const Livechat = {
 
 		const room = Promise.await(LivechatRooms.findOneById(roomId));
 		if (!room) {
-			throw new Meteor.Error('invalid-room-id');
+			throw new Meteor.Error('invalid-room');
 		}
 
 		if (!canAccessRoom(room, user)) {

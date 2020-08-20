@@ -194,18 +194,18 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 
 			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }));
 			if (!visitor) {
-				throw new Meteor.Error('invalid-new-visitor-id');
+				throw new Meteor.Error('invalid-visitor');
 			}
 			const { _id, username, token } = visitor;
 
 			let room = Promise.await(LivechatRooms.findOneById(rid));
 			if (!room) {
-				throw new Meteor.Error('invalid-room-id');
+				throw new Meteor.Error('invalid-room');
 			}
 
 			const { v: { _id: roomVisitorId } = {} } = room;
 			if (roomVisitorId !== oldVisitorId) {
-				throw new Meteor.Error('invalid-room-visitor-id');
+				throw new Meteor.Error('invalid-room-visitor');
 			}
 
 			room = Promise.await(Livechat.changeRoomVisitor(this.userId, rid, { _id, username, token }));
