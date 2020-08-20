@@ -69,30 +69,6 @@ AccountBox.addRoute({
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-triggers',
-	path: '/triggers',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Triggers',
-	pageTemplate: 'livechatTriggers',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
-	name: 'livechat-trigger-edit',
-	path: '/triggers/:_id/edit',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Edit_Trigger',
-	pageTemplate: 'livechatTriggersForm',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
-	name: 'livechat-trigger-new',
-	path: '/triggers/new',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'New_Trigger',
-	pageTemplate: 'livechatTriggersForm',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
 	name: 'livechat-facebook',
 	path: '/facebook',
 	sideNav: 'omnichannelFlex',

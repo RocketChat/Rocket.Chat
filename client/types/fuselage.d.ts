@@ -141,7 +141,7 @@ declare module '@rocket.chat/fuselage' {
 		minSize?: CSSProperties['blockSize'];
 		maxSize?: CSSProperties['blockSize'];
 		fontScale?: FontScale;
-	}> & AllHTMLAttributes<HTMLOrSVGElement> & RefAttributes<unknown>;
+	}> & Omit<AllHTMLAttributes<HTMLOrSVGElement>, 'className'> & RefAttributes<unknown>;
 
 	export const Box: ForwardRefExoticComponent<BoxProps>;
 
@@ -240,4 +240,11 @@ declare module '@rocket.chat/fuselage' {
 		onScrollContent?: (touching: { top: boolean }) => void;
 	}>;
 	export const Scrollable: ForwardRefExoticComponent<ScrollableProps>;
+
+	type SelectOptions = [string, string][];
+	type SelectProps = BoxProps & {
+		error?: string;
+		options: SelectOptions;
+	};
+	export const Select: ForwardRefExoticComponent<SelectProps>;
 }
