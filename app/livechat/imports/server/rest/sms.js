@@ -2,23 +2,22 @@ import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { FileUpload } from '../../../../file-upload';
-import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models';
+import { FileUpload } from '../../../../file-upload/server';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
 
 const fileStore = FileUpload.getStore('Uploads');
 
-const getUploadFile = async (details, fileUrl) => {
-	try {
-		const response = HTTP.get(fileUrl, { npmRequestOptions: { encoding: null } });
-		const buffer = new Buffer(response.content);
-		const size = buffer.length;
-		return fileStore.insertSync({ ...details, size }, buffer);
-	} catch (err) {
-		throw new Error(err.message);
+const getUploadFile = (details, fileUrl) => {
+	const response = HTTP.get(fileUrl, { npmRequestOptions: { encoding: null } });
+	if (response.statusCode !== 200 || !response.content || response.content.length === 0) {
+		throw new Meteor.Error('error-invalid-file-uploaded', 'Invalid file uploaded');
 	}
+
+	const { content, content: { length: size } } = response;
+	return fileStore.insertSync({ ...details, size }, content);
 };
 
 const defineDepartment = (idOrName) => {
@@ -99,7 +98,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				visitorToken: token,
 			};
 
-			const uploadedFile = Promise.await(getUploadFile(details, smsUrl));
+			const uploadedFile = getUploadFile(details, smsUrl);
 			file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
 
 			const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
