@@ -240,8 +240,12 @@ const exportMessageObject = (type, messageObject, messageFile) => {
 	return file.join('\n');
 };
 
-export async function exportRoomMessages(rid, exportType, skip, limit, assetsPath, exportOpRoomData, userData, usersMap = {}, hideUsers = true) {
-	const cursor = Messages.model.rawCollection().find({ rid }, {
+export async function exportRoomMessages(rid, exportType, skip, limit, assetsPath, exportOpRoomData, userData, filter = {}, usersMap = {}, hideUsers = true) {
+	const query = { ...filter, rid };
+
+	// console.log('query ->', query);
+
+	const cursor = Messages.model.rawCollection().find(query, {
 		sort: { ts: 1 },
 		skip,
 		limit,
@@ -367,7 +371,7 @@ const generateChannelsFile = function(type, exportPath, exportOperation) {
 		).join('\n'));
 };
 
-export const exportRoomMessagesToFile = async function(exportPath, assetsPath, exportType, roomList, userData, usersMap = {}, hideUsers = true) {
+export const exportRoomMessagesToFile = async function(exportPath, assetsPath, exportType, roomList, userData, messagesFilter = {}, usersMap = {}, hideUsers = true) {
 	createDir(exportPath);
 	createDir(assetsPath);
 
@@ -391,13 +395,13 @@ export const exportRoomMessagesToFile = async function(exportPath, assetsPath, e
 			uploads,
 			messages,
 		// eslint-disable-next-line no-await-in-loop
-		} = await exportRoomMessages(exportOpRoomData.roomId, exportType, skip, limit, assetsPath, exportOpRoomData, userData, usersMap, hideUsers);
+		} = await exportRoomMessages(exportOpRoomData.roomId, exportType, skip, limit, assetsPath, exportOpRoomData, userData, messagesFilter, usersMap, hideUsers);
 
 		result.fileList.push(...uploads);
 
 		exportOpRoomData.exportedCount += exported;
 
-		if (total <= exported) {
+		if (total <= exportOpRoomData.exportedCount) {
 			exportOpRoomData.status = 'completed';
 		}
 
@@ -512,9 +516,10 @@ const continueExportOperation = async function(exportOperation) {
 				exportOperation.exportType,
 				exportOperation.roomList,
 				exportOperation.userData,
+				{},
 				exportOperation.userNameTable,
 			);
-			exportOperation.fileList = fileList;
+			exportOperation.fileList = exportOperation.fileList.push(...fileList);
 
 			if (isExportComplete(exportOperation)) {
 				exportOperation.status = 'downloading';

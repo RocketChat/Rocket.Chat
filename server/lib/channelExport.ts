@@ -94,6 +94,7 @@ const sendViaEmail = (data: ExportEmail, user: IUser): void => {
 };
 
 export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
+	// console.log('data ->', data);
 	const exportType = data.format;
 
 	const baseDir = `/tmp/sendFile-${ Random.id() }`;
@@ -106,26 +107,56 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	mkdirp.sync(exportOperation.exportPath);
 	mkdirp.sync(exportOperation.assetsPath);
 
-	console.log('get room');
+	// console.log('get room');
 	const roomData = getRoomData(data.rid);
-	console.log('get room', roomData);
+	// console.log('get room', roomData);
 
 	roomData.targetFile = `${ (data.format === 'json' && roomData.roomName) || roomData.roomId }.${ data.format }`;
 
-	console.log('exportType ->', exportType);
+	// console.log('exportType ->', exportType);
 
-	const { fileList } = await exportRoomMessagesToFile(
-		exportOperation.exportPath,
-		exportOperation.assetsPath,
-		exportType,
-		[roomData],
-		user,
-		{},
-		false,
-	);
+	const fullFileList: any[] = [];
 
-	console.log('copy attachments', fileList);
-	fileList.forEach((attachmentData: any) => {
+	const roomsToExport = [roomData];
+
+	const filter = !data.dateFrom && !data.dateTo
+		? {}
+		: {
+			ts: {
+				...data.dateFrom && { $gte: data.dateFrom },
+				...data.dateTo && { $lte: data.dateTo },
+			},
+		};
+
+	// console.log('filter ->', filter);
+
+	const exportMessages = async (): Promise<void> => {
+		const { fileList } = await exportRoomMessagesToFile(
+			exportOperation.exportPath,
+			exportOperation.assetsPath,
+			exportType,
+			roomsToExport,
+			user,
+			filter,
+			{},
+			false,
+		);
+
+		fullFileList.push(...fileList);
+
+		const [roomData] = roomsToExport;
+
+		// console.log('roomData ->', roomData);
+
+		if (roomData.status !== 'completed') {
+			await exportMessages();
+		}
+	};
+
+	await exportMessages();
+
+	// console.log('copy attachments', fullFileList);
+	fullFileList.forEach((attachmentData: any) => {
 		copyFile(attachmentData, exportOperation.assetsPath);
 	});
 
@@ -137,7 +168,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	const file = await uploadZipFile(exportFile, user._id, exportType);
 
 	console.log('send email');
-	const subject = TAPi18n.__('UserDataDownload_EmailSubject');
+	const subject = TAPi18n.__('Channel_Export');
 	// eslint-disable-next-line @typescript-eslint/camelcase
 	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: file.url });
 

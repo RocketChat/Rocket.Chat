@@ -6,32 +6,45 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import VerticalBar from '../../components/basic/VerticalBar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
+import { useEndpoint } from '../../contexts/ServerContext';
 
-const FileExport = () => {
+const FileExport = ({ onCancel, rid }) => {
 	const t = useTranslation();
 
 	const { values, handlers } = useForm({
 		dateFrom: '',
 		dateTo: '',
-		output: '',
+		format: '',
 	});
 
 	const {
 		dateFrom,
 		dateTo,
-		output,
+		format,
 	} = values;
 
 	const {
 		handleDateFrom,
 		handleDateTo,
-		handleOutput,
+		handleFormat,
 	} = handlers;
 
 	const outputOptions = useMemo(() => [
 		['html', t('HTML')],
 		['json', t('JSON')],
 	], [t]);
+
+	const roomsExport = useEndpoint('POST', 'rooms.export');
+
+	const handleSubmit = () => {
+		roomsExport({
+			rid,
+			type: 'file',
+			dateFrom,
+			dateTo,
+			format,
+		});
+	};
 
 	return (
 		<>
@@ -45,9 +58,17 @@ const FileExport = () => {
 			<Field>
 				<Field.Label>{t('Output_format')}</Field.Label>
 				<Field.Row>
-					<Select value={output} onChange={handleOutput} placeholder={t('Format')} options={outputOptions}/>
+					<Select value={format} onChange={handleFormat} placeholder={t('Format')} options={outputOptions}/>
 				</Field.Row>
 			</Field>
+			<ButtonGroup stretch mb='x12'>
+				<Button onClick={onCancel}>
+					{t('Cancel')}
+				</Button>
+				<Button primary onClick={() => handleSubmit()}>
+					{t('Export')}
+				</Button>
+			</ButtonGroup>
 		</>
 	);
 };
@@ -56,7 +77,7 @@ const clickable = css`
 	cursor: pointer;
 `;
 
-const MailExportForm = ({ onClearSelection, rid }) => {
+const MailExportForm = ({ onCancel, rid }) => {
 	const t = useTranslation();
 
 	const [selectedMessages, setSelected] = useState([]);
@@ -79,7 +100,6 @@ const MailExportForm = ({ onClearSelection, rid }) => {
 	const remove = useMutableCallback((id) => setSelected(selectedMessages.filter((message) => message !== id)));
 	const reset = useMutableCallback(() => {
 		setSelected([]);
-		onClearSelection?.();
 		$(`#chat-window-${ rid }.messages-box .message.selected`)
 			.removeClass('selected');
 	});
@@ -107,12 +127,23 @@ const MailExportForm = ({ onClearSelection, rid }) => {
 		};
 	}, [rid]);
 
-
 	const {
 		handleToUsers,
 		handleAdditionalEmails,
 		handleSubject,
 	} = handlers;
+
+	const roomsExport = useEndpoint('POST', 'rooms.export');
+
+	const handleSubmit = () => {
+		roomsExport({
+			rid,
+			type: 'email',
+			toUsers,
+			additionalEmails,
+			subject,
+		});
+	};
 
 	return (
 		<>
@@ -139,12 +170,20 @@ const MailExportForm = ({ onClearSelection, rid }) => {
 					<TextInput value={subject} onChange={handleSubject} addon={<Icon name='edit' size='x20'/>} />
 				</Field.Row>
 			</Field>
+			<ButtonGroup stretch mb='x12'>
+				<Button onClick={onCancel}>
+					{t('Cancel')}
+				</Button>
+				<Button primary onClick={() => handleSubmit()}>
+					{t('Send')}
+				</Button>
+			</ButtonGroup>
 		</>
 	);
 };
 
 
-export const ExportMessages = function ExportMessages({ onClearSelection, rid }) {
+export const ExportMessages = function ExportMessages({ rid, tabBar }) {
 	const t = useTranslation();
 
 	const [type, setType] = useState('email');
@@ -158,7 +197,7 @@ export const ExportMessages = function ExportMessages({ onClearSelection, rid })
 		<VerticalBar>
 			<VerticalBar.Header>
 				{t('Export_Messages')}
-				<VerticalBar.Close />
+				<VerticalBar.Close onClick={() => tabBar.close()} />
 			</VerticalBar.Header>
 			<VerticalBar.Content>
 				<Field>
@@ -167,16 +206,8 @@ export const ExportMessages = function ExportMessages({ onClearSelection, rid })
 						<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions}/>
 					</Field.Row>
 				</Field>
-				{type && type === 'file' && <FileExport rid={rid}/>}
-				{type && type === 'email' && <MailExportForm rid={rid} onClearSelection={onClearSelection} />}
-				<ButtonGroup stretch mb='x12'>
-					<Button onClick={() => {}}>
-						{t('Cancel')}
-					</Button>
-					<Button primary onClick={() => {}}>
-						{t('Export')}
-					</Button>
-				</ButtonGroup>
+				{type && type === 'file' && <FileExport rid={rid} onCancel={() => tabBar.close()} />}
+				{type && type === 'email' && <MailExportForm rid={rid} onCancel={() => tabBar.close()} />}
 			</VerticalBar.Content>
 		</VerticalBar>
 	);
