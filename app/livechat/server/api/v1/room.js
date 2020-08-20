@@ -198,7 +198,7 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 			}
 			const { _id, username, token } = visitor;
 
-			let room = Promise.await(LivechatRooms.findOneById(rid, { _id: 1 }));
+			let room = Promise.await(LivechatRooms.findOneById(rid, { _id: 1, v: 1 }));
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}
