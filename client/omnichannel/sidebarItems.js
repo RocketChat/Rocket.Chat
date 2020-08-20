@@ -51,7 +51,7 @@ export const {
 		i18nLabel: 'Webhooks',
 		permissionGranted: () => hasPermission('view-livechat-webhooks'),
 	}, {
-		href: 'omnichannel/facebook',
+		href: 'omnichannel-facebook',
 		i18nLabel: 'Facebook Messenger',
 		permissionGranted: () => hasPermission('view-livechat-facebook'),
 	}, {
