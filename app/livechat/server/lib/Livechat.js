@@ -1137,7 +1137,7 @@ export const Livechat = {
 			throw new Error('error-not-authorized');
 		}
 
-		const room = Promise.await(LivechatRooms.findOneById(roomId));
+		const room = Promise.await(LivechatRooms.findOneById(roomId, { _id: 1 }));
 		if (!room) {
 			throw new Meteor.Error('invalid-room');
 		}
@@ -1150,7 +1150,7 @@ export const Livechat = {
 
 		Livechat.notifyRoomVisitorChange(room._id, visitor);
 
-		return room;
+		return LivechatRooms.findOneById(roomId, { _id: 1 });
 	},
 };
 
