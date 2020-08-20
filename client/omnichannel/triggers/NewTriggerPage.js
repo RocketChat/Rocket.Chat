@@ -1,16 +1,15 @@
 import React from 'react';
-import { Button, FieldGroup, Box } from '@rocket.chat/fuselage';
+import { Button, FieldGroup, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import TriggersForm from './TriggersForm';
-import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useForm } from '../../hooks/useForm';
 import { useRoute } from '../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
-const NewTriggerPage = () => {
+const NewTriggerPage = ({ onSave }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -53,26 +52,23 @@ const NewTriggerPage = () => {
 				}],
 			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			onSave();
 			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	return <Page>
-		<Page.Header title={t('Trigger')} >
-			<Button small onClick={handleSave}>
+	return 	<>
+		<FieldGroup>
+			<TriggersForm values={values} handlers={handlers}/>
+		</FieldGroup>
+		<ButtonGroup align='end'>
+			<Button primary onClick={handleSave}>
 				{t('Save')}
 			</Button>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<Box maxWidth='x600' alignSelf='center' w='full'>
-				<FieldGroup>
-					<TriggersForm values={values} handlers={handlers}/>
-				</FieldGroup>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+		</ButtonGroup>
+	</>;
 };
 
 export default NewTriggerPage;

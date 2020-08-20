@@ -86,7 +86,7 @@ const TriggersRow = memo(function TriggersRow(props) {
 	</Table.Row>;
 });
 
-const TriggersTableContainer = () => {
+const TriggersTableContainer = ({ reloadRef }) => {
 	const t = useTranslation();
 	const [params, setParams] = useState(() => ({ current: 0, itemsPerPage: 25 }));
 
@@ -96,6 +96,8 @@ const TriggersTableContainer = () => {
 	} = params;
 
 	const { data, state, reload } = useEndpointDataExperimental('livechat/triggers', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
+
+	reloadRef.current = reload;
 
 	if (state === ENDPOINT_STATES.ERROR) {
 		return <Callout>

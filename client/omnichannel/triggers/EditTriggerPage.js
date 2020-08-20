@@ -1,9 +1,8 @@
 import React from 'react';
-import { Button, Callout, Box, FieldGroup } from '@rocket.chat/fuselage';
+import { Button, Callout, FieldGroup, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import TriggersForm from './TriggersForm';
-import Page from '../../components/basic/Page';
 import PageSkeleton from '../../components/PageSkeleton';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -12,7 +11,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { useRoute } from '../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
-const EditTriggerPageContainer = ({ id }) => {
+const EditTriggerPageContainer = ({ id, onSave }) => {
 	const t = useTranslation();
 	const { data, state } = useEndpointDataExperimental(`livechat/triggers/${ id }`);
 
@@ -26,7 +25,7 @@ const EditTriggerPageContainer = ({ id }) => {
 		</Callout>;
 	}
 
-	return <EditTriggerPage data={data.trigger}/>;
+	return <EditTriggerPage data={data.trigger} onSave={onSave}/>;
 };
 
 const getInitialValues = ({
@@ -65,7 +64,7 @@ const getInitialValues = ({
 	},
 });
 
-const EditTriggerPage = ({ data }) => {
+const EditTriggerPage = ({ data, onSave }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -92,26 +91,23 @@ const EditTriggerPage = ({ data }) => {
 				}],
 			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			onSave();
 			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	return <Page>
-		<Page.Header title={t('Trigger')} >
-			<Button small onClick={handleSave}>
+	return 	<>
+		<FieldGroup>
+			<TriggersForm values={values} handlers={handlers}/>
+		</FieldGroup>
+		<ButtonGroup align='end'>
+			<Button primary onClick={handleSave}>
 				{t('Save')}
 			</Button>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<Box maxWidth='x600' alignSelf='center' w='full'>
-				<FieldGroup>
-					<TriggersForm values={values} handlers={handlers}/>
-				</FieldGroup>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+		</ButtonGroup>
+	</>;
 };
 
 export default EditTriggerPageContainer;
