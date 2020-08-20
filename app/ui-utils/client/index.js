@@ -15,7 +15,7 @@ export { renderMessageBody } from './lib/renderMessageBody';
 export { Layout } from './lib/Layout';
 export { IframeLogin, iframeLogin } from './lib/IframeLogin';
 export { fireGlobalEvent } from './lib/fireGlobalEvent';
-export { getAvatarAsPng, updateAvatarOfUsername } from './lib/avatar';
+export { getAvatarAsPng } from './lib/avatar';
 export { TabBar, TABBAR_DEFAULT_VISIBLE_ICON_COUNT } from './lib/TabBar';
 export { RocketChatTabBar } from './lib/RocketChatTabBar';
 export { popout } from './lib/popout';

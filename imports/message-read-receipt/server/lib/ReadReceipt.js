@@ -67,7 +67,7 @@ export const ReadReceipt = {
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
 	},
 
-	storeReadReceipts(messages, roomId, userId, extraData = {}) {
+	async storeReadReceipts(messages, roomId, userId, extraData = {}) {
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			const ts = new Date();
 			const receipts = messages.map((message) => ({
@@ -84,7 +84,7 @@ export const ReadReceipt = {
 			}
 
 			try {
-				rawReadReceipts.insertMany(receipts);
+				await rawReadReceipts.insertMany(receipts);
 			} catch (e) {
 				console.error('Error inserting read receipts per user');
 			}
