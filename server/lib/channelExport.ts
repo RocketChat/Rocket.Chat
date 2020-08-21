@@ -106,7 +106,7 @@ export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
 export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
 	const exportType = data.format;
 
-	const baseDir = `/tmp/sendFile-${ Random.id() }`;
+	const baseDir = `/tmp/exportFile-${ Random.id() }`;
 
 	const exportOperation = {
 		exportPath: baseDir,
@@ -160,15 +160,13 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 		copyFile(attachmentData, exportOperation.assetsPath);
 	});
 
-	console.log('make zip', exportOperation.exportPath);
 	const exportFile = `${ baseDir }-export.zip`;
 	await makeZipFile(exportOperation.exportPath, exportFile);
 
-	console.log('upload zip', exportFile, exportOperation);
 	const file = await uploadZipFile(exportFile, user._id, exportType);
 
-	console.log('send email');
 	const subject = TAPi18n.__('Channel_Export');
+
 	// eslint-disable-next-line @typescript-eslint/camelcase
 	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: file.url });
 

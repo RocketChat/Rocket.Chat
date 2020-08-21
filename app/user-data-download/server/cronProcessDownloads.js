@@ -119,17 +119,6 @@ const getAttachmentData = function(attachment, message) {
 	return attachmentData;
 };
 
-// const addToFileList = function(assetsPath, attachment) {
-// 	return {
-// 		url: attachment.url,
-// 		copied: false,
-// 		remote: attachment.remote,
-// 		fileId: attachment.fileId,
-// 		fileName: attachment.fileName,
-// 		targetFile: path.join(assetsPath, `${ attachment.fileId }-${ attachment.fileName }`),
-// 	};
-// };
-
 const hideUserName = function(username, userData, usersMap) {
 	if (!usersMap.userNameTable) {
 		usersMap.userNameTable = {};
@@ -189,24 +178,10 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 
 export const copyFile = function(attachmentData, assetsPath) {
 	const file = Uploads.findOneById(attachmentData._id);
-	console.log('copyFile', attachmentData._id, file);
 	if (!file) {
 		return;
 	}
 	FileUpload.copy(file, path.join(assetsPath, `${ attachmentData._id }-${ attachmentData.name }`));
-
-	// if (attachmentData.copied || attachmentData.remote || !attachmentData.fileId) {
-	// 	attachmentData.copied = true;
-	// 	return;
-	// }
-
-	// const file = Uploads.findOneById(attachmentData.fileId);
-
-	// if (file) {
-	// 	if (FileUpload.copy(file, attachmentData.targetFile)) {
-	// 		attachmentData.copied = true;
-	// 	}
-	// }
 };
 
 const exportMessageObject = (type, messageObject, messageFile) => {
@@ -244,8 +219,6 @@ const exportMessageObject = (type, messageObject, messageFile) => {
 export async function exportRoomMessages(rid, exportType, skip, limit, assetsPath, exportOpRoomData, userData, filter = {}, usersMap = {}, hideUsers = true) {
 	const query = { ...filter, rid };
 
-	// console.log('query ->', query);
-
 	const cursor = Messages.model.rawCollection().find(query, {
 		sort: { ts: 1 },
 		skip,
@@ -280,12 +253,6 @@ export const isExportComplete = function(exportOperation) {
 
 	return !incomplete;
 };
-
-// const isDownloadFinished = function(exportOperation) {
-// 	const anyDownloadPending = exportOperation.fileList.some((fileData) => !fileData.copied && !fileData.remote);
-
-// 	return !anyDownloadPending;
-// };
 
 export const sendEmail = function(userData, subject, body) {
 	const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
