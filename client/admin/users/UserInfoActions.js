@@ -67,6 +67,8 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 	const canEditOtherUserActiveStatus = usePermission('edit-other-user-active-status');
 	const canDeleteUser = usePermission('delete-user');
 
+	const enforcePassword = useSetting('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback');
+
 	const confirmOwnerChanges = (action, modalProps = {}) => async () => {
 		try {
 			return await action();
@@ -190,7 +192,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 			label: isAdmin ? t('Remove_Admin') : t('Make_Admin'),
 			action: changeAdminStatus,
 		} },
-		...canResetE2EEKey && { resetE2EEKey: {
+		...canResetE2EEKey && enforcePassword && { resetE2EEKey: {
 			icon: 'key',
 			label: t('Reset_E2E_Key'),
 			action: confirmResetE2EEKey,
@@ -219,6 +221,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		canEditOtherUserActiveStatus,
 		isActive,
 		changeActiveStatus,
+		enforcePassword,
 		canResetE2EEKey,
 		confirmResetE2EEKey,
 	]);
