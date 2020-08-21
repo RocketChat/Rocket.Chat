@@ -11,7 +11,7 @@ import { Permissions } from '../../models';
 import { settings } from '../../settings/server';
 
 if (Permissions) {
-	Permissions.createOrUpdate('manage-cloud', ['admin']);
+	Permissions.create('manage-cloud', ['admin']);
 }
 
 const licenseCronName = 'Cloud Workspace Sync';
@@ -27,7 +27,7 @@ Meteor.startup(function() {
 			return SyncedCron.remove(licenseCronName);
 		}
 
-		syncWorkspace();
+		Meteor.defer(() => syncWorkspace());
 
 		SyncedCron.add({
 			name: licenseCronName,

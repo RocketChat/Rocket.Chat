@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
 	Collection,
 	ObjectId,
@@ -11,6 +12,19 @@ export class NotificationQueueRaw extends BaseRaw {
 
 	unsetSendingById(_id: string) {
 		return this.col.updateOne({ _id }, {
+			$unset: {
+				sending: 1,
+			},
+		});
+	}
+
+	setErrorById(_id: string, error: any) {
+		return this.col.updateOne({
+			_id,
+		}, {
+			$set: {
+				error,
+			},
 			$unset: {
 				sending: 1,
 			},
@@ -54,6 +68,8 @@ export class NotificationQueueRaw extends BaseRaw {
 					{ schedule: { $exists: false } },
 					{ schedule: { $lte: now } },
 				],
+			}, {
+				error: { $exists: false },
 			}],
 		}, {
 			$set: {

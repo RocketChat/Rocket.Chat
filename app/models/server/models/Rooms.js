@@ -4,24 +4,25 @@ import s from 'underscore.string';
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
+import { getValidRoomName } from '../../../utils';
 
 export class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
-		this.tryEnsureIndex({ default: 1 });
-		this.tryEnsureIndex({ featured: 1 });
+		this.tryEnsureIndex({ default: 1 }, { sparse: true });
+		this.tryEnsureIndex({ featured: 1 }, { sparse: true });
+		this.tryEnsureIndex({ muted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ ts: 1 });
+		// Tokenpass
+		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ tokenpass: 1 }, { sparse: true });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
-		// Livechat - statistics
-		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
-
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 	}
@@ -219,6 +220,31 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setAvatarData(_id, origin, etag) {
+		const update = {
+			$set: {
+				avatarOrigin: origin,
+				avatarETag: etag,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	unsetAvatarData(_id) {
+		const update = {
+			$set: {
+				avatarETag: Date.now(),
+			},
+			$unset: {
+				avatarOrigin: 1,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
+
 	setSystemMessagesById = function(_id, systemMessages) {
 		const query = {
 			_id,
@@ -253,6 +279,22 @@ export class Rooms extends Base {
 		const query = { importIds: _id };
 
 		return this.findOne(query, options);
+	}
+
+	findOneByNonValidatedName(name, options) {
+		const room = this.findOneByName(name, options);
+		if (room) {
+			return room;
+		}
+
+		let channelName = s.trim(name);
+		try {
+			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
+		} catch (e) {
+			console.error(e);
+		}
+
+		return this.findOneByName(channelName, options);
 	}
 
 	findOneByName(name, options) {
@@ -962,6 +1004,18 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				'retention.excludePinned': value === true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveRetentionIgnoreThreadsById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			[value === true ? '$set' : '$unset']: {
+				'retention.ignoreThreads': true,
 			},
 		};
 

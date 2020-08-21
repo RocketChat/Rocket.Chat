@@ -90,6 +90,10 @@ Template.livechatAgents.helpers({
 			data: Template.instance().tabBarData.get(),
 		};
 	},
+	statusService() {
+		const { status, statusLivechat } = this;
+		return statusLivechat === 'available' && status !== 'offline' ? t('Available') : t('Unavailable');
+	},
 });
 
 const DEBOUNCE_TIME_FOR_SEARCH_AGENTS_IN_MS = 300;

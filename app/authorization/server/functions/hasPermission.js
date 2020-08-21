@@ -1,13 +1,18 @@
 import mem from 'mem';
 
 import { Permissions, Users, Subscriptions } from '../../../models/server/raw';
+import { AuthorizationUtils } from '../../lib/AuthorizationUtils';
 
 const rolesHasPermission = mem(async (permission, roles) => {
+	if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
+		return false;
+	}
+
 	const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
 	return !!result;
 }, {
 	cacheKey: JSON.stringify,
-	...process.env.TEST_MODE === 'true' && { maxAge: 0 },
+	...process.env.TEST_MODE === 'true' && { maxAge: 1 },
 });
 
 const getRoles = mem(async (uid, scope) => {

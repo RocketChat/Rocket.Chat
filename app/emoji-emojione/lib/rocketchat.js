@@ -229,7 +229,7 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 			return `${ m2 }<span class="emojione emojione-${ category } _${ unicode }"  ${ title }>${ alt }</span>`;
 		}
 		return `${ m2 }<img class="emojione" alt="${ alt }" ${ title } src="${ ePath }${ unicode }${ ns.fileExtension }"/>`;
-	}, { maxAge: 1000 });
+	}, { maxAge: 1000, cacheKey: JSON.stringify });
 
 	ns.shortnameToImage = function(str) {
 		// replace regular shortnames first

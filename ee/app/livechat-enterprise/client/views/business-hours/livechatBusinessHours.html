@@ -1,0 +1,86 @@
+<template name="livechatBusinessHours">
+    {{#if hasLicense}}
+        {{#requiresPermission 'view-livechat-business-hours'}}
+            <div class="rc-table-content">
+                <form class="search-form" role="form">
+                    <div class="rc-input__wrapper">
+                        <div class="rc-input__icon">
+                            {{#if isReady}}
+                                {{> icon block="rc-input__icon-svg" icon="magnifier" }}
+                            {{else}}
+                                {{> loading }}
+                            {{/if}}
+                        </div>
+                        <input id="business-hour-filter" type="text" class="rc-input__element"
+                               placeholder="{{_ "Search"}}" autofocus dir="auto">
+                    </div>
+                </form>
+                <div class="results">
+                    {{{_ "Showing_results" businessHours.length}}}
+                </div>
+
+                {{#table fixed='true' onScroll=onTableScroll}}
+                    <thead>
+                    <tr>
+                        <th>
+                            <div class="table-fake-th">{{_ "Name"}}</div>
+                        </th>
+                        <th>
+                            <div class="table-fake-th">{{_ "Timezone"}}</div>
+                        </th>
+                        <th>
+                            <div class="table-fake-th">{{_ "Open_Days"}}</div>
+                        </th>
+                        <th>
+                            <div class="table-fake-th">{{_ "Enabled"}}</div>
+                        </th>
+                        <th width='40px'>
+                            <div class="table-fake-th">&nbsp;</div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each businessHours}}
+                        <tr class="business-hour-info row-link" data-id="{{_id}}">
+                            <td>
+                                <div class="rc-table-wrapper">
+                                    <div class="rc-table-info"><span class="rc-table-title">{{#if
+                                            name}}{{name}}{{else}}{{_ "Default"}}{{/if}}</span></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="rc-table-wrapper">
+                                    <div class="rc-table-info"><span class="rc-table-title">{{timezone.name}}</span></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="rc-table-wrapper">
+                                    <div class="rc-table-info"><span class="rc-table-title">{{openDays}}</span></div>
+                                </div>
+                            </td>
+                            <td>{{#if active}}
+                                    {{_ "Yes"}}
+                                    {{#if isDefault}}
+                                        / {{_ "Default"}}
+                                    {{/if}}
+                                {{else}}
+                                {{_ "No"}}
+                                {{/if}}</td>
+                            <td>
+                                {{#unless isDefault}}
+                                    <a href="#remove" class="remove-business-hour"><i class="icon-trash"></i></a>
+                                {{/unless}}
+                            </td>
+                        </tr>
+                    {{/each}}
+                    </tbody>
+                {{/table}}
+            </div>
+            <div class="rc-button__group">
+                <a href="{{pathFor 'livechat-business-hour-new'}}" class="rc-button rc-button--primary">{{_
+                        "New_Business_Hour"}}</a>
+            </div>
+        {{else}}
+        {{/requiresPermission}}
+    {{/if}}
+</template>

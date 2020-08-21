@@ -19,16 +19,16 @@ const fileUploadMediaWhiteList = function(customWhiteList) {
 	});
 };
 
-export const fileUploadIsValidContentType = function(type, customWhiteList) {
-	const list = fileUploadMediaWhiteList(customWhiteList);
-	if (!list) {
-		return true;
+const fileUploadMediaBlackList = function() {
+	const blacklist = settings.get('FileUpload_MediaTypeBlackList');
+	if (!blacklist) {
+		return;
 	}
 
-	if (!type) {
-		return false;
-	}
+	return _.map(blacklist.split(','), (item) => item.trim());
+};
 
+const isTypeOnList = function(type, list) {
 	if (_.contains(list, type)) {
 		return true;
 	}
@@ -39,6 +39,23 @@ export const fileUploadIsValidContentType = function(type, customWhiteList) {
 	if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {
 		return true;
 	}
+};
 
-	return false;
+export const fileUploadIsValidContentType = function(type, customWhiteList) {
+	const blackList = fileUploadMediaBlackList();
+	const whiteList = fileUploadMediaWhiteList(customWhiteList);
+
+	if (!type && blackList) {
+		return false;
+	}
+
+	if (blackList && isTypeOnList(type, blackList)) {
+		return false;
+	}
+
+	if (!whiteList) {
+		return true;
+	}
+
+	return isTypeOnList(type, whiteList);
 };

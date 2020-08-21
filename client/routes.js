@@ -1,5 +1,4 @@
 import mem from 'mem';
-import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
@@ -97,7 +96,7 @@ FlowRouter.route('/home', {
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		renderRouteComponent(() => import('../app/ui/client/views/app/components/Directory'), { template: 'main', region: 'center' });
+		renderRouteComponent(() => import('./views/directory/DirectoryPage'), { template: 'main', region: 'center' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
@@ -106,12 +105,8 @@ FlowRouter.route('/directory/:tab?', {
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
-	action: (params) => {
-		if (!params.group) {
-			params.group = 'Profile';
-		}
-		params.group = s.capitalize(params.group, true);
-		BlazeLayout.render('main', { center: `account${ params.group }` });
+	action: () => {
+		renderRouteComponent(() => import('./account/AccountRoute'), { template: 'main', region: 'center' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
@@ -167,13 +162,13 @@ FlowRouter.route('/invite/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		renderRouteComponent(() => import('./components/setupWizard/SetupWizardRoute'));
+		renderRouteComponent(() => import('./views/setupWizard/SetupWizardRoute'));
 	},
 });
 
 FlowRouter.notFound = {
 	action: () => {
-		renderRouteComponent(() => import('./components/pageNotFound/PageNotFound'));
+		renderRouteComponent(() => import('./views/notFound/NotFoundPage'));
 	},
 };
 

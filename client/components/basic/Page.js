@@ -1,48 +1,96 @@
-import { Box, Flex, Margins, Scrollable } from '@rocket.chat/fuselage';
-import React, { useMemo, createContext, useContext, useState } from 'react';
+import { Box, Scrollable } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import React, { createContext, useContext, useState } from 'react';
 
-import { BurgerMenuButton } from './BurgerMenuButton';
+import { useSidebar } from '../../contexts/SidebarContext';
+import BurgerMenuButton from './burger/BurgerMenuButton';
+import { useSession } from '../../contexts/SessionContext';
 
 const PageContext = createContext();
-export function Page(props) {
+
+function Page(props) {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
-		<Flex.Container direction='column'>
-			<Box is='section' style={useMemo(() => ({ overflow: 'hidden', flex: '1 1 auto', height: '100%' }), [])} {...props} />
-		</Flex.Container>
+		<Box
+			backgroundColor='surface'
+			is='section'
+			display='flex'
+			flexDirection='column'
+			flexGrow={1}
+			flexShrink={1}
+			height='full'
+			overflow='hidden'
+			{...props}
+		/>
 	</PageContext.Provider>;
 }
 
-export function PageHeader({ children, title, ...props }) {
+function PageHeader({ children, title, ...props }) {
 	const [border] = useContext(PageContext);
-	return <Box style={{ borderBlockEndColor: border ? 'var(--color-gray-lightest)' : 'transparent', transition: 'border-block-end-color 0.3s', borderBlockEnd: '2px solid transparent' }}>
-		<Margins block='x16' all='x24'>
-			<Flex.Container wrap='no-wrap' alignItems='center' direction='row'>
-				<Box {...props}>
-					<Margins inlineEnd='x8'>
-						<BurgerMenuButton />
-					</Margins>
-					<Flex.Item grow={1}>
-						<Box is='h1' textStyle='h1' textColor='default'>{title}</Box>
-					</Flex.Item>
-					{children}
-				</Box>
-			</Flex.Container>
-		</Margins>
+	const hasBurgerMenuButton = useMediaQuery('(max-width: 780px)');
+	const [isSidebarOpen, setSidebarOpen] = useSidebar();
+	const unreadMessagesBadge = useSession('unread');
+
+	const handleBurgerMenuButtonClick = () => {
+		setSidebarOpen((isSidebarOpen) => !isSidebarOpen);
+	};
+
+	return <Box borderBlockEndWidth='x2' borderBlockEndColor={border ? 'neutral-200' : 'transparent'}>
+		<Box
+			marginBlock='x16'
+			marginInline='x24'
+			minHeight='x40'
+			display='flex'
+			flexDirection='row'
+			flexWrap='nowrap'
+			alignItems='center'
+			color='neutral-800'
+			{...props}
+		>
+			{hasBurgerMenuButton && <BurgerMenuButton
+				open={isSidebarOpen}
+				badge={unreadMessagesBadge}
+				marginInlineEnd='x8'
+				onClick={handleBurgerMenuButtonClick}
+			/>}
+			<Box is='h1' fontScale='h1' flexGrow={1}>{title}</Box>
+			{children}
+		</Box>
 	</Box>;
 }
 
-export function PageContentShadowScroll({ onScrollContent, ...props }) {
-	const [, setBorder] = useContext(PageContext);
-	return <PageContent onScrollContent={({ top, ...args }) => { setBorder(!top); onScrollContent && onScrollContent({ top, ...args }); }} { ...props } ></PageContent>;
+const PageContent = React.forwardRef(function PageContent(props, ref) {
+	return <Box
+		ref={ref}
+		paddingInline='x24'
+		display='flex'
+		flexDirection='column'
+		overflowY='hidden'
+		height='full'
+		{...props}
+	/>;
+});
+
+function PageScrollableContent({ onScrollContent, ...props }) {
+	return <Scrollable onScrollContent={onScrollContent} >
+		<Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
+	</Scrollable>;
 }
 
-export function PageContent({ onScrollContent, ...props }) {
-	return <Scrollable onScrollContent={onScrollContent} >
-		<Box style={useMemo(() => ({ padding: '1rem' }), [])} {...props} />
-	</Scrollable>;
+function PageScrollableContentWithShadow({ onScrollContent, ...props }) {
+	const [, setBorder] = useContext(PageContext);
+	return <PageScrollableContent
+		onScrollContent={({ top, ...args }) => {
+			setBorder(!top);
+			onScrollContent && onScrollContent({ top, ...args });
+		}}
+		{ ...props }
+	/>;
 }
 
 Page.Header = PageHeader;
 Page.Content = PageContent;
-Page.ContentShadowScroll = PageContentShadowScroll;
+Page.ScrollableContent = PageScrollableContent;
+Page.ScrollableContentWithShadow = PageScrollableContentWithShadow;
+
+export default Page;

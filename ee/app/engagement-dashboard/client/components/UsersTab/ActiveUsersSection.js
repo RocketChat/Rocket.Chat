@@ -4,10 +4,15 @@ import moment from 'moment';
 import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { CounterSet } from '../data/CounterSet';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
-import { useEndpointData } from '../../hooks/useEndpointData';
 import { Section } from '../Section';
+import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
+import { saveFile } from '../../../../../../client/lib/saveFile';
+
+const convertDataToCSV = ({ countDailyActiveUsers, diffDailyActiveUsers, countWeeklyActiveUsers, diffWeeklyActiveUsers, countMonthlyActiveUsers, diffMonthlyActiveUsers, dauValues, wauValues, mauValues }) => `// countDailyActiveUsers, diffDailyActiveUsers, countWeeklyActiveUsers, diffWeeklyActiveUsers, countMonthlyActiveUsers, diffMonthlyActiveUsers, dauValues, wauValues, mauValues
+${ countDailyActiveUsers }, ${ diffDailyActiveUsers }, ${ countWeeklyActiveUsers }, ${ diffWeeklyActiveUsers }, ${ countMonthlyActiveUsers }, ${ diffMonthlyActiveUsers }, ${ dauValues }, ${ wauValues }, ${ mauValues }`;
 
 export function ActiveUsersSection() {
 	const t = useTranslation();
@@ -22,7 +27,7 @@ export function ActiveUsersSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/users/active-users', params);
+	const data = useEndpointData('engagement-dashboard/users/active-users', params);
 
 	const [
 		countDailyActiveUsers,
@@ -91,7 +96,22 @@ export function ActiveUsersSection() {
 		];
 	}, [period, data]);
 
-	return <Section title={t('Active_users')} filter={null}>
+	const downloadData = () => {
+		saveFile(convertDataToCSV({
+			countDailyActiveUsers,
+			diffDailyActiveUsers,
+			countWeeklyActiveUsers,
+			diffWeeklyActiveUsers,
+			countMonthlyActiveUsers,
+			diffMonthlyActiveUsers,
+			dauValues,
+			wauValues,
+			mauValues,
+		}), `ActiveUsersSection_start_${ params.start }_end_${ params.end }.csv`);
+	};
+
+
+	return <Section title={t('Active_users')} filter={<ActionButton disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/>}>
 		<CounterSet
 			counters={[
 				{
@@ -206,7 +226,7 @@ export function ActiveUsersSection() {
 									enableSlices='x'
 									sliceTooltip={({ slice: { points } }) => <Tile elevation='2'>
 										{points.map(({ serieId, data: { y: activeUsers } }) =>
-											<Box key={serieId} textStyle='p2'>
+											<Box key={serieId} fontScale='p2'>
 												{(serieId === 'dau' && t('DAU_value', { value: activeUsers }))
 										|| (serieId === 'wau' && t('WAU_value', { value: activeUsers }))
 										|| (serieId === 'mau' && t('MAU_value', { value: activeUsers }))}

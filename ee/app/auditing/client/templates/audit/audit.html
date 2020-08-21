@@ -18,12 +18,15 @@
 				<select id="type" class="rc-select__element js-type rc-input__wrapper" name="type">
 					<option value="">{{_ 'Others'}}</option>
 					<option value="d">{{_ 'Direct_Messages'}}</option>
+					<option value="l">{{_ 'Omnichannel'}}</option>
 				</select>
 				{{> icon block="rc-select__arrow" icon="arrow-down" }}
 			</label>
 
-			{{> auditAutocomplete key='room' hide=typeD onChange=onChange prepare=prepareRoom field='name' term='name' icon='hashtag' label="room_name" placeholder='Channel_Name_Placeholder'}}
-			{{> auditAutocompleteDirectMessage key='users' hide=nTypeD onChange=onChange collection='UserAndRoom' modifier=modifierUser endpoint='users.autocomplete' field='username' icon='at' label="From" placeholder='Username_Placeholder'}}
+			{{> auditAutocomplete key='room' hide=nTypeOthers onChange=onChange prepare=prepareRoom field='name' term='name' icon='hashtag' label="room_name" placeholder='Channel_Name_Placeholder'}}
+			{{> auditAutocompleteDirectMessage key='users' hide=nTypeDM onChange=onChange collection='UserAndRoom' modifier=modifierUser endpoint='users.autocomplete' field='username' icon='at' label="From" placeholder='Username_Placeholder'}}
+			{{> auditAutocomplete key='visitor' hide=nTypeOmni onChange=onChange collection='CachedVisitorsList' modifier=modifierUser endpoint='livechat/visitors.autocomplete' field='custom_name' term='custom_name' icon='omnichannel' label="Visitor" templateItem="popupList_item_custom" placeholder='Visitor_Name_Placeholder'}}
+			{{> auditAutocomplete key='agent' hide=nTypeOmni onChange=onChange collection='CachedAgentsList' conditions=agentConditions modifier=modifierUser endpoint='users.autocomplete' field='username' icon='omnichannel' label="Agent" placeholder='Agent_Name_Placeholder'}}
 
 			<div class="rc-input rc-input--small rc-audit-date">
 				<label class="rc-input__label">

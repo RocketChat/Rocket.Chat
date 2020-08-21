@@ -10,7 +10,21 @@ import { t, handleError } from '../../../../utils';
 import { hasPermission } from '../../../../authorization';
 import { getCustomFormTemplate } from './customTemplates/register';
 import './livechatDepartmentForm.html';
-import { APIClient } from '../../../../utils/client';
+import { APIClient, roomTypes } from '../../../../utils/client';
+
+const LIST_SIZE = 50;
+
+const saveDepartmentsAgents = async (_id, instance) => {
+	const upsert = [...instance.agentsToUpsert.values()];
+	const remove = [...instance.agentsToRemove.values()];
+	if (!upsert.length && !remove.length) {
+		return;
+	}
+	return APIClient.v1.post(`livechat/department/${ _id }/agents`, {
+		upsert,
+		remove,
+	});
+};
 
 Template.livechatDepartmentForm.helpers({
 	department() {
@@ -91,6 +105,36 @@ Template.livechatDepartmentForm.helpers({
 	hasChatClosingTags() {
 		return [...Template.instance().chatClosingTags.get()].length > 0;
 	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (currentTarget.offsetHeight + currentTarget.scrollTop < currentTarget.scrollHeight - 100) {
+				return;
+			}
+			const agents = instance.departmentAgents.get();
+			if (instance.total.get() > agents.length) {
+				instance.offset.set(instance.offset.get() + LIST_SIZE);
+			}
+		};
+	},
+	onClickTagOfflineMessageChannel() {
+		return Template.instance().onClickTagOfflineMessageChannel;
+	},
+	selectedOfflineMessageChannel() {
+		return Template.instance().offlineMessageChannel.get();
+	},
+	onSelectOfflineMessageChannel() {
+		return Template.instance().onSelectOfflineMessageChannel;
+	},
+	offlineMessageChannelModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	channelSelector() {
+		return (expression) => ({ name: expression });
+	},
 });
 
 Template.livechatDepartmentForm.events({
@@ -111,6 +155,9 @@ Template.livechatDepartmentForm.events({
 			const showOnOfflineForm = instance.$('input[name=showOnOfflineForm]:checked').val();
 			const requestTagBeforeClosingChat = instance.$('input[name=requestTagBeforeClosingChat]:checked').val();
 			const chatClosingTags = instance.chatClosingTags.get();
+			const [offlineMessageChannel] = instance.offlineMessageChannel.get();
+			const offlineMessageChannelName = (offlineMessageChannel && roomTypes.getRoomName(offlineMessageChannel.t, offlineMessageChannel)) || '';
+
 			if (enabled !== '1' && enabled !== '0') {
 				return toastr.error(t('Please_select_enabled_yes_or_no'));
 			}
@@ -132,6 +179,7 @@ Template.livechatDepartmentForm.events({
 				requestTagBeforeClosingChat: requestTagBeforeClosingChat === '1',
 				email: email.trim(),
 				chatClosingTags,
+				offlineMessageChannelName,
 			};
 		}
 
@@ -144,28 +192,19 @@ Template.livechatDepartmentForm.events({
 			departmentData[name] = elField.val();
 		});
 
-		const departmentAgents = [];
-		instance.departmentAgents.get().forEach((agent) => {
-			agent.count = instance.$(`.count-${ agent.agentId }`).val();
-			agent.order = instance.$(`.order-${ agent.agentId }`).val();
-
-			departmentAgents.push(agent);
-		});
-
-		const callback = (error) => {
-			$btn.html(oldBtnValue);
-			if (error) {
-				return handleError(error);
-			}
-
-			toastr.success(t('Saved'));
-			FlowRouter.go('livechat-departments');
-		};
-
 		if (hasPermission('manage-livechat-departments')) {
-			Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, callback);
+			Meteor.call('livechat:saveDepartment', _id, departmentData, [], async function(err, result) {
+				$btn.html(oldBtnValue);
+				if (err) {
+					return handleError(err);
+				}
+
+				await saveDepartmentsAgents(result._id, instance);
+				toastr.success(t('Saved'));
+				FlowRouter.go('livechat-departments');
+			});
 		} else if (hasPermission('add-livechat-department-agents')) {
-			Meteor.call('livechat:saveDepartmentAgents', _id, departmentAgents, callback);
+			saveDepartmentsAgents(_id, instance);
 		} else {
 			throw new Error(t('error-not-authorized'));
 		}
@@ -175,7 +214,6 @@ Template.livechatDepartmentForm.events({
 		e.preventDefault();
 
 		const users = instance.selectedAgents.get();
-
 		users.forEach(async (user) => {
 			const { _id, username } = user;
 
@@ -183,10 +221,13 @@ Template.livechatDepartmentForm.events({
 			if (departmentAgents.find(({ agentId }) => agentId === _id)) {
 				return toastr.error(t('This_agent_was_already_selected'));
 			}
-
 			const newAgent = _.clone(user);
 			newAgent.agentId = _id;
 			delete newAgent._id;
+			if (instance.agentsToRemove.has(newAgent.agentId)) {
+				instance.agentsToRemove.delete(newAgent.agentId);
+			}
+			instance.agentsToUpsert.set(newAgent.agentId, { ...newAgent, count: 0, order: 0 });
 			departmentAgents.push(newAgent);
 			instance.departmentAgents.set(departmentAgents);
 			instance.selectedAgents.set(instance.selectedAgents.get().filter((user) => user.username !== username));
@@ -200,8 +241,22 @@ Template.livechatDepartmentForm.events({
 
 	'click .remove-agent'(e, instance) {
 		e.preventDefault();
+		if (instance.agentsToUpsert.has(this.agentId)) {
+			instance.agentsToUpsert.delete(this.agentId);
+		}
+		instance.agentsToRemove.set(this.agentId, this);
 
 		instance.departmentAgents.set(instance.departmentAgents.get().filter((agent) => agent.agentId !== this.agentId));
+	},
+
+	'keyup .count'(event, instance) {
+		const agent = instance.agentsToUpsert.get(this.agentId) || this;
+		instance.agentsToUpsert.set(this.agentId, { ...agent, count: parseInt(event.currentTarget.value) || 0 });
+	},
+
+	'keyup .order'(event, instance) {
+		const agent = instance.agentsToUpsert.get(this.agentId) || this;
+		instance.agentsToUpsert.set(this.agentId, { ...agent, order: parseInt(event.currentTarget.value) || 0 });
 	},
 
 	'click #addTag'(e, instance) {
@@ -233,6 +288,8 @@ Template.livechatDepartmentForm.events({
 });
 
 Template.livechatDepartmentForm.onCreated(async function() {
+	this.agentsToUpsert = new Map();
+	this.agentsToRemove = new Map();
 	this.department = new ReactiveVar({ enabled: true });
 	this.departmentAgents = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
@@ -242,7 +299,20 @@ Template.livechatDepartmentForm.onCreated(async function() {
 	this.chatClosingTags = new ReactiveVar([]);
 	this.availableTags = new ReactiveVar([]);
 	this.availableDepartmentTags = new ReactiveVar([]);
+	this.offset = new ReactiveVar(0);
+	this.total = new ReactiveVar(0);
+	this.offlineMessageChannel = new ReactiveVar([]);
 
+
+	this.onClickTagOfflineMessageChannel = () => {
+		this.offlineMessageChannel.set([]);
+	};
+
+	this.onSelectOfflineMessageChannel = async ({ item }) => {
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ item._id }`);
+		room.text = room.name;
+		this.offlineMessageChannel.set([room]);
+	};
 	this.onSelectAgents = ({ item: agent }) => {
 		this.selectedAgents.set([agent]);
 	};
@@ -261,15 +331,37 @@ Template.livechatDepartmentForm.onCreated(async function() {
 			this.availableDepartmentTags.set(availableTags);
 		});
 	};
+	this.autorun(async () => {
+		const offset = this.offset.get();
+		const { agents, total } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }/agents?count=${ LIST_SIZE }&offset=${ offset }`);
+		this.total.set(total);
+		if (offset === 0) {
+			this.departmentAgents.set(agents);
+		} else {
+			this.departmentAgents.set(this.departmentAgents.get().concat(agents));
+		}
+	});
 
 	this.autorun(async () => {
 		const id = FlowRouter.getParam('_id');
 		if (id) {
-			const { department, agents = [] } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }`);
+			const { department } = await APIClient.v1.get(`livechat/department/${ FlowRouter.getParam('_id') }?includeAgents=false`);
 			this.department.set(department);
-			this.departmentAgents.set(agents);
 			this.chatClosingTags.set((department && department.chatClosingTags) || []);
 			this.loadAvailableTags(id);
 		}
+	});
+
+	this.autorun(async () => {
+		const department = this.department.get();
+		let offlineChannel = [];
+		if (department?.offlineMessageChannelName) {
+			const { room } = await APIClient.v1.get(`rooms.info?roomName=${ department?.offlineMessageChannelName }`);
+			if (room) {
+				room.text = room.name;
+				offlineChannel = [{ ...room }];
+			}
+		}
+		this.offlineMessageChannel.set(offlineChannel);
 	});
 });

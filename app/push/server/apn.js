@@ -1,4 +1,5 @@
 import apn from 'apn';
+import { EJSON } from 'meteor/ejson';
 
 import { logger } from './logger';
 
@@ -34,7 +35,7 @@ export const sendAPN = ({ userToken, notification, _removeToken }) => {
 	}
 
 	// Allow the user to set payload data
-	note.payload = notification.payload || {};
+	note.payload = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
 	note.payload.messageFrom = notification.from;
 	note.priority = priority;
@@ -111,5 +112,10 @@ export const initAPN = ({ options, absoluteUrl }) => {
 	}
 
 	// Rig apn connection
-	apnConnection = new apn.Provider(options.apn);
+	try {
+		apnConnection = new apn.Provider(options.apn);
+	} catch (e) {
+		console.error('Error trying to initialize APN');
+		console.error(e);
+	}
 };

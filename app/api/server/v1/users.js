@@ -30,6 +30,9 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			password: String,
 			username: String,
 			active: Match.Maybe(Boolean),
+			bio: Match.Maybe(String),
+			nickname: Match.Maybe(String),
+			statusText: Match.Maybe(String),
 			roles: Match.Maybe(Array),
 			joinDefaultChannels: Match.Maybe(Boolean),
 			requirePasswordChange: Match.Maybe(Boolean),
@@ -74,9 +77,10 @@ API.v1.addRoute('users.delete', { authRequired: true }, {
 		}
 
 		const user = this.getUserFromParams();
+		const { confirmRelinquish = false } = this.requestParams();
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('deleteUser', user._id);
+			Meteor.call('deleteUser', user._id, confirmRelinquish);
 		});
 
 		return API.v1.success();
@@ -120,6 +124,7 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 		check(this.bodyParams, {
 			userId: String,
 			activeStatus: Boolean,
+			confirmRelinquish: Match.Maybe(Boolean),
 		});
 
 		if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
@@ -127,7 +132,7 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus);
+			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus, this.bodyParams.confirmRelinquish);
 		});
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
 	},
@@ -337,8 +342,12 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 									return callback(new Meteor.Error('error-not-allowed', 'Not allowed'));
 								}
 							}
-							setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
-							callback();
+							try {
+								setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
+								callback();
+							} catch (e) {
+								callback(e);
+							}
 						}));
 					}));
 					busboy.on('field', (fieldname, val) => {
@@ -431,6 +440,8 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 				name: Match.Maybe(String),
 				password: Match.Maybe(String),
 				username: Match.Maybe(String),
+				bio: Match.Maybe(String),
+				nickname: Match.Maybe(String),
 				statusText: Match.Maybe(String),
 				active: Match.Maybe(Boolean),
 				roles: Match.Maybe(Array),
@@ -468,6 +479,7 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 				email: Match.Maybe(String),
 				name: Match.Maybe(String),
 				username: Match.Maybe(String),
+				nickname: Match.Maybe(String),
 				statusText: Match.Maybe(String),
 				currentPassword: Match.Maybe(String),
 				newPassword: Match.Maybe(String),
@@ -479,6 +491,7 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			email: this.bodyParams.data.email,
 			realname: this.bodyParams.data.name,
 			username: this.bodyParams.data.username,
+			nickname: this.bodyParams.data.nickname,
 			statusText: this.bodyParams.data.statusText,
 			newPassword: this.bodyParams.data.newPassword,
 			typedPassword: this.bodyParams.data.currentPassword,
@@ -536,9 +549,9 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				mobileNotifications: Match.Maybe(String),
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
-				desktopNotificationDuration: Match.Maybe(Number),
 				desktopNotificationRequireInteraction: Match.Maybe(Boolean),
 				messageViewMode: Match.Maybe(Number),
+				showMessageInMainThread: Match.Maybe(Boolean),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
 				hideAvatars: Match.Maybe(Boolean),
@@ -712,6 +725,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 				status: 1,
 				utcOffset: 1,
 				statusText: 1,
+				avatarETag: 1,
 			},
 		};
 
