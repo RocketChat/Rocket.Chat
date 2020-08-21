@@ -236,6 +236,8 @@
   "Accounts_TwoFactorAuthentication_By_Email_Code_Expiration": "Time to expire the code sent via email in seconds",
   "Accounts_TwoFactorAuthentication_Enabled": "Enable Two Factor Authentication via TOTP",
   "Accounts_TwoFactorAuthentication_Enabled_Description": "Users can setup their Two Factor Authentication using any TOTP app, like Google Authenticator or Authy",
+  "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Enforce password fallback",
+  "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Users will be forced to enter their password, for important actions, if no other Two Factor Authentication method is enabled for that user and a password is set for him.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
   "Accounts_UserAddedEmail_Default": "<h1>Welcome to <strong>[Site_Name]</strong></h1><p>Go to <a href=\"[Site_URL]\">[Site_URL]</a> and try the best open source chat solution available today!</p><p>You may login using your email: [email] and password: [password]. You may be required to change it after your first login.",
   "Accounts_TwoFactorAuthentication_MaxDelta_Description": "The Maximum Delta determines how many tokens are valid at any given time. Tokens are generated every 30 seconds, and are valid for (30 * Maximum Delta) seconds. <br/>Example: With a Maximum Delta set to 10, each token can be used up to 300 seconds before or after it's timestamp. This is useful when the client's clock is not properly synced with the server.",
