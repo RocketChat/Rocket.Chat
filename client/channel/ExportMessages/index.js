@@ -8,7 +8,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useUserRoom } from '../hooks/useUserRoom';
 import { useEndpoint } from '../../contexts/ServerContext';
-import { roomTypes } from '../../../app/utils';
+import { roomTypes, isEmail } from '../../../app/utils';
 
 const FileExport = ({ onCancel, rid }) => {
 	const t = useTranslation();
@@ -87,6 +87,8 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const [selectedMessages, setSelected] = useState([]);
 
+	const [errorMessage, setErrorMessage] = useState();
+
 	const { values, handlers } = useForm({
 		dateFrom: '',
 		dateTo: '',
@@ -143,6 +145,20 @@ const MailExportForm = ({ onCancel, rid }) => {
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
 	const handleSubmit = () => {
+		if (toUsers.length === 0 && additionalEmails === '') {
+			setErrorMessage(t('Mail_Message_Missing_to'));
+			return;
+		}
+		if (additionalEmails !== '' && !isEmail(additionalEmails)) {
+			setErrorMessage(t('Mail_Message_Invalid_emails', additionalEmails));
+			return;
+		}
+		if (selectedMessages.length === 0) {
+			setErrorMessage(t('Mail_Message_No_messages_selected_select_all'));
+			return;
+		}
+		setErrorMessage(null);
+
 		roomsExport({
 			rid,
 			type: 'email',
@@ -178,6 +194,9 @@ const MailExportForm = ({ onCancel, rid }) => {
 					<TextInput value={subject} onChange={handleSubject} addon={<Icon name='edit' size='x20'/>} />
 				</Field.Row>
 			</Field>
+
+			{errorMessage && <Callout title={errorMessage} type={'danger'} />}
+
 			<ButtonGroup stretch mb='x12'>
 				<Button onClick={onCancel}>
 					{t('Cancel')}
