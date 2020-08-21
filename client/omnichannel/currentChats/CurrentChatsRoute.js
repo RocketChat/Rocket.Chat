@@ -107,7 +107,7 @@ function CurrentChatsRoute() {
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
 	const renderRow = useCallback(({ _id, fname, servedBy, ts, lm, department, open }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
-		<Table.Cell withTruncatedText>{fname}{_id}</Table.Cell>
+		<Table.Cell withTruncatedText>{fname}</Table.Cell>
 		<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
 		<Table.Cell withTruncatedText>{servedBy && servedBy.username}</Table.Cell>
 		<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
