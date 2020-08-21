@@ -72,7 +72,7 @@ export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
 		emails.push(emailAddress);
 	});
 
-	const email = user.emails && user.emails[0] && user.emails[0].address;
+	const email = user.emails?.[0]?.address;
 	const lang = data.language || user.language || 'en';
 
 	const localMoment = moment();
