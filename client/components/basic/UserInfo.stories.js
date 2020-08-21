@@ -23,4 +23,10 @@ const user = {
 	},
 };
 
+const nickname = {
+	...user,
+	nickname: 'Nickname',
+};
+
 export const Default = () => <VerticalBar><UserInfo { ...user } /></VerticalBar>;
+export const Nickname = () => <VerticalBar><UserInfo { ...nickname } /></VerticalBar>;
