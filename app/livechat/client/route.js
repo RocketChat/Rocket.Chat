@@ -19,14 +19,6 @@ AccountBox.addRoute({
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-current-chats',
-	path: '/current',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Current_Chats',
-	pageTemplate: 'livechatCurrentChats',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
 	name: 'livechat-analytics',
 	path: '/analytics',
 	sideNav: 'omnichannelFlex',
