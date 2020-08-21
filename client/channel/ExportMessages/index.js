@@ -215,8 +215,8 @@ export const ExportMessages = function ExportMessages({ rid, tabBar }) {
 	const [type, setType] = useState('email');
 
 	const exportOptions = useMemo(() => [
-		['email', t('Send_via_Email')],
-		['file', t('Export_as_File')],
+		['email', t('Send_via_email')],
+		['file', t('Export_as_file')],
 	], [t]);
 
 	return (
@@ -227,7 +227,7 @@ export const ExportMessages = function ExportMessages({ rid, tabBar }) {
 			</VerticalBar.Header>
 			<VerticalBar.Content>
 				<Field>
-					<Field.Label>{t('Export_type')}</Field.Label>
+					<Field.Label>{t('Method')}</Field.Label>
 					<Field.Row>
 						<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions}/>
 					</Field.Row>
