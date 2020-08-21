@@ -69,7 +69,7 @@ registerOmnichannelRoute('/facebook', {
 	lazyRouteComponent: () => import('./facebook/FacebookPage'),
 });
 
-registerOmnichannelRoute('/current-chats', {
+registerOmnichannelRoute('/current', {
 	name: 'omnichannel-current-chats',
 	lazyRouteComponent: () => import('./currentChats/CurrentChatsRoute'),
 });
