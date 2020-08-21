@@ -63,7 +63,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{username !== name && <>
 				<Label>{t('Username')}</Label>
-				<UserCard.Roles>{username}</UserCard.Roles>
+				<Info>{username}</Info>
 			</>}
 
 			<Label>{t('Last_login')}</Label>
