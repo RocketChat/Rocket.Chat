@@ -386,7 +386,7 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 			try {
 				sendViaEmail({
 					rid,
-					toUsers,
+					toUsers: toUsers.split(','),
 					toEmails,
 					subject,
 					messages,

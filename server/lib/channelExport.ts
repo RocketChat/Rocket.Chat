@@ -1,8 +1,6 @@
 import path from 'path';
 
 import moment from 'moment';
-import _ from 'underscore';
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import mkdirp from 'mkdirp';
@@ -12,17 +10,15 @@ import { Messages, Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { Message } from '../../app/ui-utils/server';
 import {
-	// exportRoomMessages,
 	exportRoomMessagesToFile,
 	copyFile,
-	// isExportComplete,
-	// loadUserSubscriptions,
 	getRoomData,
 	makeZipFile,
 	sendEmail,
 	uploadZipFile,
 } from '../../app/user-data-download/server/cronProcessDownloads';
 import { IUser } from '../../definition/IUser';
+import { getMomentLocale } from './getMomentLocale';
 
 type ExportEmail = {
 	rid: string;
@@ -48,38 +44,50 @@ type ExportInput = {
 	data: ExportFile;
 };
 
-export const sendViaEmail = (data: ExportEmail, user: IUser): void => {
-	const emails = _.compact(data.toEmails.trim().split(','));
-	const missing = [];
-	if (data.toUsers.length > 0) {
-		_.each(data.toUsers, (username) => {
-			const user = Users.findOneByUsernameIgnoringCase(username, {});
-			if (user && user.emails && user.emails[0] && user.emails[0].address) {
-				emails.push(user.emails[0].address);
-			} else {
-				missing.push(username);
-			}
-		});
-	}
-	_.each(emails, (email) => {
-		if (!Mailer.checkAddressFormat(email.trim())) {
+type ISentViaEmail = {
+	missing: string[];
+};
+
+export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
+	const emails = data.toEmails.split(',').map((email) => email.trim()).filter(Boolean);
+
+	const missing = [...data.toUsers];
+
+	Users.findUsersByUsernames(data.toUsers, { fields: { username: 1, 'emails.address': 1 } }).forEach((user: IUser) => {
+		const emailAddress = user.emails?.[0].address;
+
+		if (!emailAddress) {
+			return;
+		}
+
+		if (!Mailer.checkAddressFormat(emailAddress)) {
 			throw new Error('error-invalid-email');
 		}
+
+		const found = missing.indexOf(String(user.username));
+		if (found !== -1) {
+			missing.splice(found, 1);
+		}
+
+		emails.push(emailAddress);
 	});
 
 	const email = user.emails && user.emails[0] && user.emails[0].address;
-	const lang = typeof data.language !== 'undefined' ? data.language.split('-').shift().toLowerCase() : '';
+	const lang = data.language || user.language || 'en';
+
+	const localMoment = moment();
+
 	if (lang !== 'en') {
-		const localeFn = Meteor.call('loadLocale', lang);
+		const localeFn = getMomentLocale(lang);
 		if (localeFn) {
 			Function(localeFn).call({ moment });
-			moment.locale(lang);
+			localMoment.locale(lang);
 		}
 	}
 
 	const html = Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
 		sort: {	ts: 1 },
-	}).map(function(message: any) {
+	}).fetch().map(function(message: any) {
 		const dateTime = moment(message.ts).locale(lang).format('L LT');
 		return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br/>${ Message.parse(message, data.language) }</p>`;
 	}).join('');
@@ -91,10 +99,11 @@ export const sendViaEmail = (data: ExportEmail, user: IUser): void => {
 		subject: data.subject,
 		html,
 	} as any);
+
+	return { missing };
 };
 
 export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
-	// console.log('data ->', data);
 	const exportType = data.format;
 
 	const baseDir = `/tmp/sendFile-${ Random.id() }`;
@@ -107,13 +116,9 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	mkdirp.sync(exportOperation.exportPath);
 	mkdirp.sync(exportOperation.assetsPath);
 
-	// console.log('get room');
 	const roomData = getRoomData(data.rid);
-	// console.log('get room', roomData);
 
 	roomData.targetFile = `${ (data.format === 'json' && roomData.roomName) || roomData.roomId }.${ data.format }`;
-
-	// console.log('exportType ->', exportType);
 
 	const fullFileList: any[] = [];
 
@@ -127,8 +132,6 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 				...data.dateTo && { $lte: data.dateTo },
 			},
 		};
-
-	// console.log('filter ->', filter);
 
 	const exportMessages = async (): Promise<void> => {
 		const { fileList } = await exportRoomMessagesToFile(
@@ -146,8 +149,6 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 		const [roomData] = roomsToExport;
 
-		// console.log('roomData ->', roomData);
-
 		if (roomData.status !== 'completed') {
 			await exportMessages();
 		}
@@ -155,7 +156,6 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	await exportMessages();
 
-	// console.log('copy attachments', fullFileList);
 	fullFileList.forEach((attachmentData: any) => {
 		copyFile(attachmentData, exportOperation.assetsPath);
 	});
@@ -175,12 +175,10 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	sendEmail(user, subject, body);
 };
 
-export async function channelExport(data: ExportInput, user: IUser): Promise<void> {
+export async function channelExport(data: ExportInput, user: IUser): Promise<ISentViaEmail | void> {
 	if (data.type === 'email') {
 		return sendViaEmail(data.data, user);
 	}
 
 	return sendFile(data.data, user);
 }
-
-// Meteor.methods({ sendFile });
