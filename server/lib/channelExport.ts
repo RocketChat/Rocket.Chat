@@ -23,7 +23,7 @@ import { getMomentLocale } from './getMomentLocale';
 type ExportEmail = {
 	rid: string;
 	toUsers: string[];
-	toEmails: string;
+	toEmails: string[];
 	subject: string;
 	messages: string[];
 	language: string;
@@ -49,9 +49,9 @@ type ISentViaEmail = {
 };
 
 export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
-	const emails = data.toEmails.split(',').map((email) => email.trim()).filter(Boolean);
+	const emails = data.toEmails.map((email) => email.trim()).filter(Boolean);
 
-	const missing = [...data.toUsers];
+	const missing = [...data.toUsers].filter(Boolean);
 
 	Users.findUsersByUsernames(data.toUsers, { fields: { username: 1, 'emails.address': 1 } }).forEach((user: IUser) => {
 		const emailAddress = user.emails?.[0].address;
@@ -108,13 +108,11 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	const baseDir = `/tmp/exportFile-${ Random.id() }`;
 
-	const exportOperation = {
-		exportPath: baseDir,
-		assetsPath: path.join(baseDir, 'assets'),
-	} as any;
+	const exportPath = baseDir;
+	const assetsPath = path.join(baseDir, 'assets');
 
-	mkdirp.sync(exportOperation.exportPath);
-	mkdirp.sync(exportOperation.assetsPath);
+	mkdirp.sync(exportPath);
+	mkdirp.sync(assetsPath);
 
 	const roomData = getRoomData(data.rid);
 
@@ -135,8 +133,8 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	const exportMessages = async (): Promise<void> => {
 		const { fileList } = await exportRoomMessagesToFile(
-			exportOperation.exportPath,
-			exportOperation.assetsPath,
+			exportPath,
+			assetsPath,
 			exportType,
 			roomsToExport,
 			user,
@@ -157,11 +155,11 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	await exportMessages();
 
 	fullFileList.forEach((attachmentData: any) => {
-		copyFile(attachmentData, exportOperation.assetsPath);
+		copyFile(attachmentData, assetsPath);
 	});
 
 	const exportFile = `${ baseDir }-export.zip`;
-	await makeZipFile(exportOperation.exportPath, exportFile);
+	await makeZipFile(exportPath, exportFile);
 
 	const file = await uploadZipFile(exportFile, user._id, exportType);
 

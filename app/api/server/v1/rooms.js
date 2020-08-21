@@ -399,7 +399,7 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 		if (type === 'email') {
 			const { toUsers, toEmails, subject, messages } = this.bodyParams;
 
-			if (!toUsers && !toEmails) {
+			if ((!toUsers || toUsers.length === 0) && (!toEmails || toEmails.length === 0)) {
 				throw new Meteor.Error('error-invalid-recipient');
 			}
 
@@ -409,11 +409,10 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 
 			const result = sendViaEmail({
 				rid,
-				toUsers: toUsers.split(','),
+				toUsers,
 				toEmails,
 				subject,
 				messages,
-				// language,
 			}, user);
 
 			return API.v1.success(result);
