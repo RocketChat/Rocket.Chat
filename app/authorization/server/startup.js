@@ -24,6 +24,7 @@ Meteor.startup(function() {
 		{ _id: 'assign-roles',                       roles: ['admin'] },
 		{ _id: 'ban-user',                           roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'bulk-register-user',                 roles: ['admin'] },
+		{ _id: 'change-livechat-room-visitor',       roles: ['admin', 'livechat-manager', 'livechat-agent'] },
 		{ _id: 'create-c',                           roles: ['admin', 'user', 'bot', 'app'] },
 		{ _id: 'create-d',                           roles: ['admin', 'user', 'bot', 'app'] },
 		{ _id: 'create-p',                           roles: ['admin', 'user', 'bot', 'app'] },

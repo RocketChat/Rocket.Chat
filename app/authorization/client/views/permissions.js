@@ -11,7 +11,6 @@ import { hasAllPermission } from '../hasPermission';
 import { t } from '../../../utils/client';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 import { CONSTANTS, AuthorizationUtils } from '../../lib';
-
 import { hasAtLeastOnePermission } from '..';
 
 Template.permissions.helpers({
