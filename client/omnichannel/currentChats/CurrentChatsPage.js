@@ -38,7 +38,7 @@ const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, ...props }) =
 			},
 		},
 	};
-	return <Menu options={menuOptions} placement='bottom-start' {...props}/>;
+	return <Menu alignSelf='flex-end' small={false} square options={menuOptions} placement='bottom-start' {...props}/>;
 };
 
 
