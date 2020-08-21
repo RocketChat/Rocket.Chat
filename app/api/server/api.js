@@ -338,7 +338,7 @@ export class APIClass extends Restivus {
 				} else {
 					const extraOptions = { ...endpoints[method] };
 					delete extraOptions.action;
-					Object.apply(_options, extraOptions);
+					Object.assign(_options, extraOptions);
 				}
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
