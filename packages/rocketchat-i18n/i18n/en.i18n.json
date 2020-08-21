@@ -656,6 +656,7 @@
   "Channel_Archived": "Channel with name `#%s` has been archived successfully",
   "Channel_created": "Channel `#%s` created.",
   "Channel_doesnt_exist": "The channel `#%s` does not exist.",
+  "Channel_Export": "Channel Export",
   "Channel_name": "Channel Name",
   "Channel_Name_Placeholder": "Please enter channel name...",
   "Channel_to_listen_on": "Channel to listen on",
