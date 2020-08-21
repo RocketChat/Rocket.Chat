@@ -107,7 +107,7 @@ const TriggersTableContainer = ({ reloadRef }) => {
 
 	return <TriggersTable
 		triggers={data?.triggers}
-		totaltriggers={data?.total}
+		totalTriggers={data?.total}
 		params={params}
 		onChangeParams={setParams}
 		onDelete={reload}

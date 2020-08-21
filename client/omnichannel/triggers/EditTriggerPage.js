@@ -34,15 +34,15 @@ const getInitialValues = ({
 	enabled,
 	runOnce,
 	conditions: [{
-		condName,
-		condValue,
+		name: condName,
+		value: condValue,
 	}],
 	actions: [{
-		actName,
+		action: actName,
 		params: {
-			actSender,
-			actMsg,
-			actSenderName,
+			sender: actSender,
+			msg: actMsg,
+			name: actSenderName,
 		},
 	}],
 }) => ({
@@ -76,7 +76,7 @@ const EditTriggerPage = ({ data, onSave }) => {
 
 	const handleSave = useMutableCallback(async () => {
 		try {
-			const { actions: { sender, msg, name }, ...restValues } = values;
+			const { actions: { params: { sender, msg, name } }, ...restValues } = values;
 			await save({
 				_id: data._id,
 				...restValues,
