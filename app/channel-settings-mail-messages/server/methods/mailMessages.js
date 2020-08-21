@@ -1,13 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import _ from 'underscore';
-import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
-import { Users, Messages } from '../../../models';
-import { settings } from '../../../settings';
-import { Message } from '../../../ui-utils';
-import * as Mailer from '../../../mailer';
+import { sendViaEmail } from '../../../../server/lib/channelExport';
 
 Meteor.methods({
 	'mailMessages'(data) {
@@ -38,51 +33,16 @@ Meteor.methods({
 			});
 		}
 
-		const emails = _.compact(data.to_emails.trim().split(','));
-		const missing = [];
-		if (data.to_users.length > 0) {
-			_.each(data.to_users, (username) => {
-				const user = Users.findOneByUsernameIgnoringCase(username);
-				if (user && user.emails && user.emails[0] && user.emails[0].address) {
-					emails.push(user.emails[0].address);
-				} else {
-					missing.push(username);
-				}
-			});
-		}
-		_.each(emails, (email) => {
-			if (!Mailer.checkAddressFormat(email.trim())) {
-				throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, {
-					method: 'mailMessages',
-					email,
-				});
-			}
-		});
 		const user = Meteor.user();
-		const email = user.emails && user.emails[0] && user.emails[0].address;
-		data.language = data.language.split('-').shift().toLowerCase();
-		if (data.language !== 'en') {
-			const localeFn = Meteor.call('loadLocale', data.language);
-			if (localeFn) {
-				Function(localeFn).call({ moment });
-				moment.locale(data.language);
-			}
-		}
 
-		const html = Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
-			sort: {	ts: 1 },
-		}).map(function(message) {
-			const dateTime = moment(message.ts).locale(data.language).format('L LT');
-			return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br/>${ Message.parse(message, data.language) }</p>`;
-		}).join('');
-
-		Mailer.send({
-			to: emails,
-			from: settings.get('From_Email'),
-			replyTo: email,
+		const { missing } = sendViaEmail({
+			rid: data.rid,
+			toUsers: data.to_users,
+			toEmails: data.to_emails,
 			subject: data.subject,
-			html,
-		});
+			messages: data.messages,
+			language: data.language,
+		}, user);
 
 		return {
 			success: true,

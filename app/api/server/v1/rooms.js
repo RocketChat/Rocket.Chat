@@ -6,6 +6,7 @@ import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
 import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -358,19 +359,34 @@ API.v1.addRoute('rooms.changeArchivationState', { authRequired: true }, {
 
 API.v1.addRoute('rooms.export', { authRequired: true }, {
 	post() {
-		// const room = findRoomByIdOrName({ params: this.bodyParams });
+		const { rid, type } = this.bodyParams;
+
+		if (!rid || !type || !['email', 'file'].includes(type)) {
+			throw new Meteor.Error('error-invalid-params');
+		}
+
+		if (!hasPermission(this.userId, 'mail-messages')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
+		}
+
+		const room = Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room');
+		}
 
 		const user = Meteor.users.findOne({ _id: this.userId });
 
-		const { rid, type } = this.bodyParams;
-
-		// TODO: canAccessRoom(room)
-
-		// TODO receive hours from UI
-		console.log('this.bodyParams', this.bodyParams);
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
 
 		if (type === 'file') {
 			const { dateFrom, dateTo, format } = this.bodyParams;
+
+			if (!['html', 'json'].includes(format)) {
+				throw new Meteor.Error('error-invalid-format');
+			}
+
 			sendFile({
 				rid,
 				format,
@@ -383,19 +399,24 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 		if (type === 'email') {
 			const { toUsers, toEmails, subject, messages } = this.bodyParams;
 
-			try {
-				sendViaEmail({
-					rid,
-					toUsers: toUsers.split(','),
-					toEmails,
-					subject,
-					messages,
-					// language,
-				}, user);
-				return API.v1.success();
-			} catch (e) {
-				console.error('deu ruim', e);
+			if (!toUsers && !toEmails) {
+				throw new Meteor.Error('error-invalid-recipient');
 			}
+
+			if (messages.length === 0) {
+				throw new Meteor.Error('error-invalid-messages');
+			}
+
+			const result = sendViaEmail({
+				rid,
+				toUsers: toUsers.split(','),
+				toEmails,
+				subject,
+				messages,
+				// language,
+			}, user);
+
+			return API.v1.success(result);
 		}
 
 		return API.v1.error();

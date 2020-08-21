@@ -10,13 +10,17 @@ import { useUserRoom } from '../hooks/useUserRoom';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { roomTypes, isEmail } from '../../../app/utils';
 
+const clickable = css`
+	cursor: pointer;
+`;
+
 const FileExport = ({ onCancel, rid }) => {
 	const t = useTranslation();
 
 	const { values, handlers } = useForm({
 		dateFrom: '',
 		dateTo: '',
-		format: '',
+		format: 'html',
 	});
 
 	const {
@@ -42,8 +46,8 @@ const FileExport = ({ onCancel, rid }) => {
 		roomsExport({
 			rid,
 			type: 'file',
-			dateFrom,
-			dateTo,
+			...dateFrom && { dateFrom: new Date(dateFrom) },
+			...dateTo && { dateTo: new Date(dateTo) },
 			format,
 		});
 	};
@@ -74,10 +78,6 @@ const FileExport = ({ onCancel, rid }) => {
 		</>
 	);
 };
-
-const clickable = css`
-	cursor: pointer;
-`;
 
 const MailExportForm = ({ onCancel, rid }) => {
 	const t = useTranslation();
@@ -195,7 +195,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 				</Field.Row>
 			</Field>
 
-			{errorMessage && <Callout title={errorMessage} type={'danger'} />}
+			{ errorMessage && <Callout type={'danger'} title={errorMessage} /> }
 
 			<ButtonGroup stretch mb='x12'>
 				<Button onClick={onCancel}>
