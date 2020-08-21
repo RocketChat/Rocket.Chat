@@ -22,9 +22,8 @@ export const Action = ({ icon, label, ...props }) => (
 
 export const Info = (props) => (
 	<Box
-		mb='x4'
+		mbe='x4'
 		is='span'
-		fontSize='p1'
 		fontScale='p1'
 		color='hint'
 		withTruncatedText
@@ -32,7 +31,7 @@ export const Info = (props) => (
 	/>
 );
 
-export const Username = ({ name, status = <Status.Offline/> }) => <Box display='flex' flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
+export const Username = ({ name, status = <Status.Offline/>, title }) => <Box display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
 	{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
 </Box>;
 
@@ -81,8 +80,9 @@ const UserCard = forwardRef(({
 		</Box>}
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
-		<Username status={status} name={name}/>
-		{nickname && <Info title={t('Nickname')}>{nickname}</Info>}
+		<Box withTruncatedText display='flex'>
+			<Username status={status} name={name} title={username !== name && username}/> {nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText> ({ nickname }) </Box> }
+		</Box>
 		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
