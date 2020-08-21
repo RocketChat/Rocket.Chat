@@ -1,8 +1,7 @@
-// import resetSelection from '../resetSelection';
 import { Meteor } from 'meteor/meteor';
 
-import { TabBar } from '../../../ui-utils';
-import { hasAllPermission } from '../../../authorization';
+import { TabBar } from '../../../app/ui-utils/client';
+import { hasAllPermission } from '../../../app/authorization/client';
 
 Meteor.startup(() => {
 	TabBar.addButton({
@@ -16,6 +15,4 @@ Meteor.startup(() => {
 		order: 12,
 		condition: () => hasAllPermission('mail-messages'),
 	});
-
-	// RocketChat.callbacks.add('roomExit', () => resetSelection(false), RocketChat.callbacks.priority.MEDIUM, 'room-exit-mail-messages');
 });
