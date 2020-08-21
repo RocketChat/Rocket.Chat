@@ -6,7 +6,9 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import VerticalBar from '../../components/basic/VerticalBar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
+import { useUserRoom } from '../hooks/useUserRoom';
 import { useEndpoint } from '../../contexts/ServerContext';
+import { roomTypes } from '../../../app/utils';
 
 const FileExport = ({ onCancel, rid }) => {
 	const t = useTranslation();
@@ -80,6 +82,9 @@ const clickable = css`
 const MailExportForm = ({ onCancel, rid }) => {
 	const t = useTranslation();
 
+	const room = useUserRoom(rid);
+	const roomName = room && room.t && roomTypes.getRoomName(room.t, room);
+
 	const [selectedMessages, setSelected] = useState([]);
 
 	const { values, handlers } = useForm({
@@ -87,7 +92,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 		dateTo: '',
 		toUsers: '',
 		additionalEmails: '',
-		subject: t('Mail_Messages_Subject', selectedMessages.length), // TODO i18n replace
+		subject: t('Mail_Messages_Subject', roomName), // TODO i18n replace
 	});
 
 	const {
@@ -106,6 +111,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	useEffect(() => {
 		const $root = $(`#chat-window-${ rid }`);
+		$('.messages-box', $root).addClass('selectable');
 		const handler = function() {
 			const { id } = this;
 
@@ -120,6 +126,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 		$('.messages-box .message', $root).on('click', handler);
 
 		return () => {
+			$('.messages-box', $root).removeClass('selectable');
 			$('.messages-box .message', $root)
 				.off('click', handler)
 				.filter('.selected')
@@ -134,13 +141,6 @@ const MailExportForm = ({ onCancel, rid }) => {
 	} = handlers;
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');
-
-	// rid,
-	// toUsers,
-	// toEmails,
-	// subject,
-	// messages,
-
 
 	const handleSubmit = () => {
 		roomsExport({
@@ -189,7 +189,6 @@ const MailExportForm = ({ onCancel, rid }) => {
 		</>
 	);
 };
-
 
 export const ExportMessages = function ExportMessages({ rid, tabBar }) {
 	const t = useTranslation();

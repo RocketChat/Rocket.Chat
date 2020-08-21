@@ -62,6 +62,7 @@ export const getRoomData = (roomId) => {
 		exportedCount: 0,
 		status: 'pending',
 		type: roomData.t,
+		targetFile: '',
 	};
 };
 
