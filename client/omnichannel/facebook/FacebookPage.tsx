@@ -188,17 +188,6 @@ const FacebookPage: FC<FacebookPageProps> = ({
 					</>}
 				</>}
 				{enabled && <>
-					<ButtonGroup stretch vertical>
-						<Button onClick={onRefresh}>
-							{t('Reload_Pages')}
-						</Button>
-						<Button danger onClick={onDisable}>
-							{t('Disable')}
-						</Button>
-					</ButtonGroup>
-					<Box w='full' mb='x16'>
-						<Divider />
-					</Box>
 					<Box fontScale='h1' mbe='x8'>{t('Pages')}</Box>
 					{
 							pages?.length
@@ -207,7 +196,18 @@ const FacebookPage: FC<FacebookPageProps> = ({
 								</FieldGroup>
 								: t('No_pages_yet_Try_hitting_Reload_Pages_button')
 					}
+					<Box w='full' mb='x16'>
+						<Divider />
+					</Box>
 				</>}
+				<ButtonGroup stretch vertical>
+					<Button onClick={onRefresh}>
+						{t('Reload_Pages')}
+					</Button>
+					<Button danger onClick={onDisable}>
+						{t('Disable')}
+					</Button>
+				</ButtonGroup>
 			</Box>
 		</Page.ScrollableContentWithShadow>
 	</Page>;
