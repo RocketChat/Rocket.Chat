@@ -156,11 +156,16 @@ declare module '@rocket.chat/fuselage' {
 
 	type ButtonProps = BoxProps & {
 		primary?: boolean;
+		ghost?: boolean;
+		danger?: boolean;
 	};
 	export const Button: ForwardRefExoticComponent<ButtonProps>;
 
 	type ButtonGroupProps = BoxProps & {
 		align?: 'start' | 'center' | 'end';
+		stretch?: boolean;
+		wrap?: boolean;
+		vertical?: boolean;
 	};
 	export const ButtonGroup: ForwardRefExoticComponent<ButtonGroupProps>;
 
@@ -242,4 +247,6 @@ declare module '@rocket.chat/fuselage' {
 		options: SelectOptions;
 	};
 	export const Select: ForwardRefExoticComponent<SelectProps>;
+
+	export const Divider: React.FC;
 }
