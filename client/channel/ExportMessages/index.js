@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Field, TextInput, Select, ButtonGroup, Button, Box, Icon, Callout } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import toastr from 'toastr';
 
 import VerticalBar from '../../components/basic/VerticalBar';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -42,14 +43,21 @@ const FileExport = ({ onCancel, rid }) => {
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
-	const handleSubmit = () => {
-		roomsExport({
-			rid,
-			type: 'file',
-			...dateFrom && { dateFrom: new Date(dateFrom) },
-			...dateTo && { dateTo: new Date(dateTo) },
-			format,
-		});
+	const handleSubmit = async () => {
+		try {
+			await roomsExport({
+				rid,
+				type: 'file',
+				...dateFrom && { dateFrom: new Date(dateFrom) },
+				...dateTo && { dateTo: new Date(dateTo) },
+				format,
+			});
+
+			toastr.success(t('Your_email_has_been_queued_for_sending'));
+			return;
+		} catch (error) {
+			toastr.error(t('Error'));
+		}
 	};
 
 	return (
@@ -94,7 +102,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 		dateTo: '',
 		toUsers: '',
 		additionalEmails: '',
-		subject: t('Mail_Messages_Subject', roomName), // TODO i18n replace
+		subject: t('Mail_Messages_Subject', roomName),
 	});
 
 	const {
@@ -144,7 +152,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		if (toUsers.length === 0 && additionalEmails === '') {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
@@ -159,14 +167,21 @@ const MailExportForm = ({ onCancel, rid }) => {
 		}
 		setErrorMessage(null);
 
-		roomsExport({
-			rid,
-			type: 'email',
-			toUsers,
-			toEmails: additionalEmails,
-			subject,
-			messages: selectedMessages,
-		});
+		try {
+			await roomsExport({
+				rid,
+				type: 'email',
+				toUsers: [toUsers],
+				toEmails: additionalEmails.split(','),
+				subject,
+				messages: selectedMessages,
+			});
+
+			toastr.success(t('Your_email_has_been_queued_for_sending'));
+			return;
+		} catch (error) {
+			toastr.error(t('Error'));
+		}
 	};
 
 	return (
