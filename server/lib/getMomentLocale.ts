@@ -12,4 +12,4 @@ export function getMomentLocale(locale: string): string | undefined {
 			throw new Meteor.Error('moment-locale-not-found', `Moment locale not found: ${ locale }`);
 		}
 	}
-};
+}
