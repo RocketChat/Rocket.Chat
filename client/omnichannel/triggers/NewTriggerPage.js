@@ -38,7 +38,7 @@ const NewTriggerPage = ({ onSave }) => {
 
 	const handleSave = useMutableCallback(async () => {
 		try {
-			const { actions: { sender, msg, name }, ...restValues } = values;
+			const { actions: { params: { sender, msg, name } }, ...restValues } = values;
 			await save({
 				...restValues,
 				conditions: [values.conditions],
