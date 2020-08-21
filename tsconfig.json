@@ -6,8 +6,8 @@
 
 		"allowJs": true,
 		"checkJs": false,
+		// "incremental": true,
 		"jsx": "react",
-		"incremental": true,
 		"noEmit": true,
 
 		/* Strict Type-Checking Options */
