@@ -13,6 +13,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
 import { call, callMethod } from './callMethod';
+
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 
 window.currentTracker = undefined;

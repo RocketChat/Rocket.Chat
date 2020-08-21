@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { hasPermission } from '../../../authorization';
+
 import { Importers } from '..';
 
 function downloadHttpFile(fileUrl, writeStream) {

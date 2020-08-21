@@ -359,7 +359,7 @@ export const userCanTakeInquiry = (user) => {
 	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
 };
 
-export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) => {
+export const updateDepartmentAgents = (departmentId, agents) => {
 	check(departmentId, String);
 	check(agents, Match.ObjectIncluding({
 		upsert: Match.Maybe(Array),
@@ -389,7 +389,6 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 			username: agent.username,
 			count: agent.count ? parseInt(agent.count) : 0,
 			order: agent.order ? parseInt(agent.order) : 0,
-			departmentEnabled,
 		});
 		agentsAdded.push(agent.agentId);
 	});

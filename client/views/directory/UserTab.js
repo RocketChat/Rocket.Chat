@@ -11,7 +11,8 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import MarkdownText from '../../components/basic/MarkdownText';
+
+const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
 const FilterByText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
@@ -78,24 +79,24 @@ function UserTable({
 					<Flex.Item>
 						<UserAvatar size='x40' title={username} username={username} etag={avatarETag} />
 					</Flex.Item>
-					<Box withTruncatedText grow={1} mi='x8'>
+					<Box style={style} grow={1} mi='x8'>
 						<Box display='flex'>
-							<Box fontScale='p2' withTruncatedText>{name || username}{nickname && ` (${ nickname })`}</Box> <Box mi='x4'/> <Box fontScale='p1' color='hint' withTruncatedText>{username}</Box>
+							<Box fontScale='p2' style={style}>{name || username}{nickname && ` (${ nickname })`}</Box> <Box mi='x4'/> <Box fontScale='p1' color='hint' style={style}>{username}</Box>
 						</Box>
-						<MarkdownText fontScale='p1' color='hint' content={bio}/>
+						<Box fontScale='p1' color='hint' style={style}> {bio} </Box>
 					</Box>
 				</Box>
 			</Flex.Container>
 		</Table.Cell>
 		{mediaQuery && canViewFullOtherUserInfo
-			&& <Table.Cell withTruncatedText >
+			&& <Table.Cell style={style} >
 				{emails && emails[0].address}
 			</Table.Cell>}
 		{federation
-		&& <Table.Cell withTruncatedText>
+		&& <Table.Cell style={style}>
 			{domain}
 		</Table.Cell>}
-		{mediaQuery && <Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		{mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
 			{formatDate(createdAt)}
 		</Table.Cell>}
 	</Table.Row>, [mediaQuery, federation, canViewFullOtherUserInfo, formatDate, onClick]);

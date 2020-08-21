@@ -18,7 +18,6 @@ Meteor.methods({
 				globalRoles: [
 					'anonymous',
 				],
-				active: true,
 			});
 
 			const stampedLoginToken = Accounts._generateStampedLoginToken();
