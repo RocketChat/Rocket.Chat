@@ -58,3 +58,8 @@ registerOmnichannelRoute('/priorities/:context?/:id?', {
 	name: 'omnichannel-priorities',
 	lazyRouteComponent: () => import('../../ee/client/omnichannel/priorities/PrioritiesRoute'),
 });
+
+registerOmnichannelRoute('/triggers/:context?/:id?', {
+	name: 'omnichannel-triggers',
+	lazyRouteComponent: () => import('./triggers/TriggersPage'),
+});
