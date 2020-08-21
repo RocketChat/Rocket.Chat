@@ -38,7 +38,7 @@ export function RemoveCurrentChatButton({ _id, reload }) {
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ guest, servedBy, department, status, from, to, itemsPerPage, current }, [column, direction]) => useMemo(() => {
+const useQuery = ({ guest, servedBy, department, status, from, to, tags, itemsPerPage, current }, [column, direction]) => useMemo(() => {
 	const query = {
 		roomName: guest,
 		sort: JSON.stringify({ [column]: sortDir(direction), usernames: column === 'name' ? sortDir(direction) : undefined }),
@@ -56,13 +56,16 @@ const useQuery = ({ guest, servedBy, department, status, from, to, itemsPerPage,
 		query.agents = servedBy;
 	}
 	if (department && department.length > 0) {
-		console.log(department);
-		query.departmentId = department;
+		if (department !== 'all') {
+			query.departmentId = department;
+		}
+	}
+	if (tags && tags.length > 0) {
+		query.tags = tags;
 	}
 
-	console.log(query);
 	return query;
-}, [guest, servedBy, department, from, to, status, column, direction, itemsPerPage, current]);
+}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags]);
 
 function CurrentChatsRoute() {
 	const t = useTranslation();
@@ -95,8 +98,6 @@ function CurrentChatsRoute() {
 	const { data, reload } = useEndpointDataExperimental('livechat/rooms', query) || {};
 	const { data: departments } = useEndpointDataExperimental('livechat/department', query) || {};
 
-	console.log(data, departments);
-
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</Th>,
 		<Th key={'departmentId'} direction={sort[1]} active={sort[0] === 'departmentId'} onClick={onHeaderClick} sort='departmentId' w='x200'>{t('Department')}</Th>,
@@ -107,7 +108,7 @@ function CurrentChatsRoute() {
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
 	const renderRow = useCallback(({ _id, fname, servedBy, ts, lm, department, open }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
-		<Table.Cell withTruncatedText>{fname}{_id}</Table.Cell>
+		<Table.Cell withTruncatedText>{fname}</Table.Cell>
 		<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
 		<Table.Cell withTruncatedText>{servedBy && servedBy.username}</Table.Cell>
 		<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>

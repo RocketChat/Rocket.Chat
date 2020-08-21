@@ -481,10 +481,8 @@ class E2E {
 	}
 
 	closeAlert() {
-		if (showingE2EAlert) {
-			alerts.close();
-		}
 		showingE2EAlert = false;
+		alerts.close();
 	}
 }
 

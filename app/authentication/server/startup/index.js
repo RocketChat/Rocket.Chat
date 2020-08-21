@@ -153,7 +153,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
-	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
+	user.active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
 	if (!user.name) {
 		if (options.profile) {

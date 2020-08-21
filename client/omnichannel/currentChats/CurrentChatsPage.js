@@ -2,7 +2,9 @@ import React, { useEffect, useMemo } from 'react';
 import { TextInput, Box, Icon, MultiSelect, Select, InputBox, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
+import { useSubscription } from 'use-subscription';
 
+import { formsSubscription } from '../additionalForms';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
@@ -30,13 +32,13 @@ const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, ...props }) =
 		...canRemove && {
 			removeClosed: {
 				label: <Box color='danger'>
-					<Icon name='trash' size='x16' marginInlineEnd='x4' />{t('Remove')}
+					<Icon name='trash' size='x16' marginInlineEnd='x4' />{t('Delete_all_closed_chats')}
 				</Box>,
 				action: handleRemoveClosed,
 			},
 		},
 	};
-	return <Menu options={menuOptions} {...props}/>;
+	return <Menu options={menuOptions} placement='bottom-start' {...props}/>;
 };
 
 
@@ -50,7 +52,11 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 	const agentOptions = useMemo(() => (agents && agents.users ? agents.users.map(({ _id, username }) => [_id, username || _id]) : []), [agents]);
 	const statusOptions = [['all', t('All')], ['closed', t('Closed')], ['opened', t('Open')]];
 
-	const { values, handlers, reset } = useForm({ guest: '', servedBy: [], status: 'all', department: undefined, from: '', to: '' });
+	useEffect(() => {
+		!depOptions.find((dep) => dep[0] === 'all') && depOptions.unshift(['all', t('All')]);
+	}, [depOptions, t]);
+
+	const { values, handlers, reset } = useForm({ guest: '', servedBy: [], status: 'all', department: 'all', from: '', to: '', tags: [] });
 	const {
 		handleGuest,
 		handleServedBy,
@@ -58,6 +64,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 		handleDepartment,
 		handleFrom,
 		handleTo,
+		handleTags,
 	} = handlers;
 	const {
 		guest,
@@ -66,7 +73,17 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 		department,
 		from,
 		to,
+		tags,
 	} = values;
+
+	const forms = useSubscription(formsSubscription);
+
+	const {
+		useCurrentChatTags = () => {},
+	} = forms;
+
+	const Tags = useCurrentChatTags();
+
 
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
 
@@ -78,9 +95,9 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			department,
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
+			tags,
 		});
-		console.log(servedBy);
-	}, [setFilter, guest, servedBy, status, department, from, to]);
+	}, [setFilter, guest, servedBy, status, department, from, to, tags]);
 
 	const handleClearFilters = useMutableCallback(() => {
 		reset();
@@ -90,36 +107,44 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 
 	const handleRemoveClosed = useMutableCallback(async () => {
 		await removeClosedChats();
-		console.log(props);
 		reload();
 	});
 
-	return <Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='row' {...props}>
-		<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-			<Label mb='x4' >{t('Guest')}:</Label>
-			<TextInput flexShrink={0} placeholder={t('Guest')} onChange={handleGuest} value={guest} />
+	return <Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
+		<Box display='flex' flexDirection='row' flexWrap='wrap' {...props}>
+			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+				<Label mb='x4' >{t('Guest')}:</Label>
+				<TextInput flexShrink={0} placeholder={t('Guest')} onChange={handleGuest} value={guest} />
+			</Box>
+			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+				<Label mb='x4'>{t('Served_By')}:</Label>
+				<MultiSelect flexShrink={0} options={agentOptions} value={servedBy} onChange={handleServedBy} placeholder={t('Served_By')}/>
+			</Box>
+			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+				<Label mb='x4'>{t('Department')}:</Label>
+				<Select flexShrink={0} options={depOptions} value={department} onChange={handleDepartment} placeholder={t('Department')}/>
+			</Box>
+			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+				<Label mb='x4'>{t('Status')}:</Label>
+				<Select flexShrink={0} options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')}/>
+			</Box>
+			<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
+				<Label mb='x4'>{t('From')}:</Label>
+				<InputBox type='date' flexShrink={0} placeholder={t('From')} onChange={handleFrom} value={from} />
+			</Box>
+			<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
+				<Label mb='x4'>{t('To')}:</Label>
+				<InputBox type='date' flexShrink={0} placeholder={t('To')} onChange={handleTo} value={to} />
+			</Box>
+
+			<RemoveAllClosed handleClearFilters={handleClearFilters} handleRemoveClosed={handleRemoveClosed}/>
 		</Box>
-		<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-			<Label mb='x4'>{t('Served_By')}:</Label>
-			<MultiSelect flexShrink={0} options={agentOptions} value={servedBy} onChange={handleServedBy} placeholder={t('Served_By')}/>
-		</Box>
-		<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-			<Label mb='x4'>{t('Department')}:</Label>
-			<Select flexShrink={0} options={depOptions} value={department} onChange={handleDepartment} placeholder={t('Department')}/>
-		</Box>
-		<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-			<Label mb='x4'>{t('Status')}:</Label>
-			<Select flexShrink={0} options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')}/>
-		</Box>
-		<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-			<Label mb='x4'>{t('From')}:</Label>
-			<InputBox type='date' flexShrink={0} placeholder={t('From')} onChange={handleFrom} value={from} />
-		</Box>
-		<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-			<Label mb='x4'>{t('To')}:</Label>
-			<InputBox type='date' flexShrink={0} placeholder={t('To')} onChange={handleTo} value={to} />
-		</Box>
-		<RemoveAllClosed handleClearFilters={handleClearFilters} handleRemoveClosed={handleRemoveClosed}/>
+		{Tags && <Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
+			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+				<Label mb='x4'>{t('Tags')}:</Label>
+				<Tags value={tags} handler={handleTags} />
+			</Box>
+		</Box>}
 	</Box>;
 };
 

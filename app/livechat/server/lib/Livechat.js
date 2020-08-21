@@ -29,7 +29,7 @@ import {
 	LivechatInquiry,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
+import { addUserRoles, hasPermission, hasRole, removeUserFromRoles } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -839,7 +839,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartmentAgents' });
 		}
 
-		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
+		return updateDepartmentAgents(_id, departmentAgents);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -883,7 +883,7 @@ export const Livechat = {
 
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
-			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+			updateDepartmentAgents(departmentDB._id, departmentAgents);
 		}
 
 		return departmentDB;
@@ -1118,39 +1118,6 @@ export const Livechat = {
 		}
 
 		return Promise.await(businessHourManager.allowAgentChangeServiceStatus(agentId));
-	},
-
-	notifyRoomVisitorChange(roomId, visitor) {
-		Livechat.stream.emit(roomId, {
-			type: 'visitorData',
-			visitor,
-		});
-	},
-
-	changeRoomVisitor(userId, roomId, visitor) {
-		const user = Promise.await(Users.findOneById(userId));
-		if (!user) {
-			throw new Error('error-user-not-found');
-		}
-
-		if (!hasPermission(userId, 'change-livechat-room-visitor')) {
-			throw new Error('error-not-authorized');
-		}
-
-		const room = Promise.await(LivechatRooms.findOneById(roomId, { _id: 1, t: 1 }));
-		if (!room) {
-			throw new Meteor.Error('invalid-room');
-		}
-
-		if (!canAccessRoom(room, user)) {
-			throw new Error('error-not-allowed');
-		}
-
-		LivechatRooms.changeVisitorByRoomId(room._id, visitor);
-
-		Livechat.notifyRoomVisitorChange(room._id, visitor);
-
-		return LivechatRooms.findOneById(roomId);
 	},
 };
 
