@@ -45,7 +45,7 @@ const createDir = function(folderName) {
 	}
 };
 
-export const getRoomData = (roomId) => {
+export const getRoomData = (roomId, ownUserId) => {
 	const roomData = Rooms.findOneById(roomId);
 
 	if (!roomData) {
@@ -53,7 +53,7 @@ export const getRoomData = (roomId) => {
 	}
 
 	const roomName = roomData.name && roomData.t !== 'd' ? roomData.name : roomId;
-	const [userId] = roomData.t === 'd' ? roomData.uids.filter((uid) => uid !== userId) : [null];
+	const [userId] = roomData.t === 'd' ? roomData.uids.filter((uid) => uid !== ownUserId) : [null];
 
 	return {
 		roomId,
@@ -71,7 +71,7 @@ export const loadUserSubscriptions = function(exportOperation, fileType, userId)
 
 	const cursor = Subscriptions.findByUserId(userId);
 	cursor.forEach((subscription) => {
-		const roomData = getRoomData(subscription.rid);
+		const roomData = getRoomData(subscription.rid, userId);
 		const targetFile = `${ (fileType === 'json' && roomData.roomName) || subscription.rid }.${ fileType }`;
 
 		roomList.push({
@@ -481,13 +481,16 @@ const continueExportOperation = async function(exportOperation) {
 			const { fileList } = await exportRoomMessagesToFile(
 				exportOperation.exportPath,
 				exportOperation.assetsPath,
-				exportOperation.exportType,
+				exportType,
 				exportOperation.roomList,
 				exportOperation.userData,
 				{},
 				exportOperation.userNameTable,
 			);
-			exportOperation.fileList = exportOperation.fileList.push(...fileList);
+			if (!exportOperation.fileList) {
+				exportOperation.fileList = [];
+			}
+			exportOperation.fileList.push(...fileList);
 
 			if (isExportComplete(exportOperation)) {
 				exportOperation.status = 'downloading';
