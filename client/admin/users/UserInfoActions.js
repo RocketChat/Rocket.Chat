@@ -12,7 +12,7 @@ import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const ConfirmWarningModal = ({ onConfirm, onCancel, confirmText = 'Confirm', text, ...props }) => {
+const ConfirmWarningModal = ({ onConfirm, onCancel, confirmText, text, ...props }) => {
 	const t = useTranslation();
 
 	return <Modal {...props}>
@@ -27,7 +27,7 @@ const ConfirmWarningModal = ({ onConfirm, onCancel, confirmText = 'Confirm', tex
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onConfirm}>{t(confirmText)}</Button>
+				<Button primary danger onClick={onConfirm}>{confirmText}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;
@@ -38,11 +38,11 @@ const SuccessModal = ({ onClose, title, text, ...props }) => {
 	return <Modal {...props}>
 		<Modal.Header>
 			<Icon color='success' name='checkmark-circled' size={20}/>
-			<Modal.Title>{t(title)}</Modal.Title>
+			<Modal.Title>{title}</Modal.Title>
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t(text)}
+			{text}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -103,7 +103,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 		const result = await deleteUserEndpoint(deleteUserQuery);
 		if (result.success) {
-			setModal(<SuccessModal title='Deleted' text='User_has_been_deleted' onClose={() => { setModal(); onChange(); }}/>);
+			setModal(<SuccessModal title={t('Deleted')} text={t('User_has_been_deleted')} onClose={() => { setModal(); onChange(); }}/>);
 		} else {
 			setModal();
 		}
@@ -113,7 +113,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 	});
 
 	const confirmDeleteUser = useCallback(() => {
-		setModal(<ConfirmWarningModal onConfirm={deleteUser} onCancel={() => setModal()} text={t(`Delete_User_Warning_${ erasureType }`)} confirmText='Delete' />);
+		setModal(<ConfirmWarningModal onConfirm={deleteUser} onCancel={() => setModal()} text={t(`Delete_User_Warning_${ erasureType }`)} confirmText={t('Delete')} />);
 	}, [deleteUser, erasureType, setModal, t]);
 
 	const setAdminStatus = useMethod('setAdminStatus');
@@ -134,12 +134,12 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		const result = await resetE2EEKeyMethod(_id);
 
 		if (result) {
-			setModal(<SuccessModal title='Success' text='Users_key_has_been_reset' onClose={() => { setModal(); onChange(); }}/>);
+			setModal(<SuccessModal title={t('Success')} text={t('Users_key_has_been_reset')} onClose={() => { setModal(); onChange(); }}/>);
 		}
-	}, [resetE2EEKeyMethod, onChange, setModal, _id]);
+	}, [resetE2EEKeyMethod, onChange, setModal, t, _id]);
 
 	const confirmResetE2EEKey = useCallback(() => {
-		setModal(<ConfirmWarningModal onConfirm={resetE2EEKey} onCancel={() => setModal()} text={t('E2E_Reset_Other_Key_Warning')} confirmText='Reset'/>);
+		setModal(<ConfirmWarningModal onConfirm={resetE2EEKey} onCancel={() => setModal()} text={t('E2E_Reset_Other_Key_Warning')} confirmText={t('Reset')} />);
 	}, [resetE2EEKey, t, setModal]);
 
 	const activeStatusQuery = useMemo(() => ({
