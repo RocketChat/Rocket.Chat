@@ -1,7 +1,7 @@
 
 
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { Table, Icon } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -13,8 +13,7 @@ import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperime
 import { useMethod } from '../../contexts/ServerContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
-import { useForm } from '../../hooks/useForm';
+import { useRoute } from '../../contexts/RouterContext';
 import CurrentChatsPage from './CurrentChatsPage';
 
 export function RemoveCurrentChatButton({ _id, reload }) {
