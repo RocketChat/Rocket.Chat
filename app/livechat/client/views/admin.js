@@ -6,4 +6,3 @@ import './app/livechatDashboard.html';
 import './app/livechatCurrentChats';
 import './app/livechatDepartmentForm';
 import './app/livechatDepartments';
-import './app/integrations/livechatIntegrationFacebook';
