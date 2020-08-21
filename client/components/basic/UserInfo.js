@@ -50,7 +50,7 @@ export const UserInfo = React.memo(function UserInfo({
 		{actions}
 
 		<Margins block='x4'>
-			<Username name={username} status={status} />
+			<UserCard.Username name={name || username} status={status} />
 			<Info>{customStatus}</Info>
 
 			{!!roles && <>
@@ -61,6 +61,11 @@ export const UserInfo = React.memo(function UserInfo({
 			{Number.isInteger(utcOffset) && <>
 				<Label>{t('Local Time')}</Label>
 				<Info><UTCClock utcOffset={utcOffset}/></Info>
+			</>}
+
+			{username !== name && <>
+				<Label>{t('Username')}</Label>
+				<Info>{username}</Info>
 			</>}
 
 			<Label>{t('Last_login')}</Label>
