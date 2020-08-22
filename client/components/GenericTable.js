@@ -45,6 +45,7 @@ export const GenericTable = forwardRef(function GenericTable({
 	setParams = () => { },
 	params: paramsDefault = '',
 	FilterComponent = () => null,
+	...props
 }, ref) {
 	const t = useTranslation();
 
@@ -70,7 +71,7 @@ export const GenericTable = forwardRef(function GenericTable({
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <>
-		<FilterComponent setFilter={setFilter} />
+		<FilterComponent setFilter={setFilter} { ...props}/>
 		{results && !results.length
 			? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
 				{t('No_data_found')}

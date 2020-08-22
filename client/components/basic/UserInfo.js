@@ -17,6 +17,8 @@ const wordBreak = css`
 `;
 
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
+const Avatar = ({ username, ...props }) => <UserAvatar title={username} username={username} {...props}/>;
+const Username = ({ username, status, ...props }) => <UserCard.Username name={username} status={status} {...props}/>;
 
 export const UserInfo = React.memo(function UserInfo({
 	username,
@@ -43,7 +45,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
-		<UserAvatar margin='auto' size={'x332'} title={username} username={username}/>
+		<Avatar margin='auto' size={'x332'} username={username}/>
 
 		{actions}
 
@@ -121,5 +123,9 @@ export const Action = ({ icon, label, ...props }) => (
 );
 
 UserInfo.Action = Action;
+UserInfo.Avatar = Avatar;
+UserInfo.Info = Info;
+UserInfo.Label = Label;
+UserInfo.Username = Username;
 
 export default UserInfo;
