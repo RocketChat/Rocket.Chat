@@ -79,7 +79,7 @@ Tracker.autorun(() => {
 	const isConnected = Meteor.status().connected;
 	if (!Meteor.userId() || (wasConnected && !isConnected)) {
 		wasConnected = isConnected;
-		return Meteor.users.update({}, { $unset: { status: '' } }, { multi: true });
+		return Meteor.users.update({ status: { $exists: true } }, { $unset: { status: true } }, { multi: true });
 	}
 	mem.clear(get);
 	wasConnected = isConnected;
