@@ -852,7 +852,7 @@
   "Custom_Sound_Saved_Successfully": "تم حفظ الصوت المخصص بنجاح",
   "Custom_Sounds": "أصوات مخصصة",
   "Custom_Translations": "ترجمة مخصصة",
-  "Custom_Translations_Description": "يجب أن يكون كود  JSON صالح. حيث تكون المفاتيح لغات تحتوي على قاموس المفتاح والترجمة. مثال:\n <br/><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n \"pt\": {\n  \"Channels\": \"Salas\"\n }\n</code>\n}",
+  "Custom_Translations_Description": "يجب أن يكون كود  JSON صالح. حيث تكون المفاتيح لغات تحتوي على قاموس المفتاح والترجمة. مثال:\n <br/><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n \"pt\": {\n  \"Channels\": \"Salas\"\n }\n</code>\n}",
   "Customize": "يعدل أو يكيف",
   "CustomSoundsFilesystem": "ملفات الأصوات المخصصة",
   "Dashboard": "لوحة القيادة",

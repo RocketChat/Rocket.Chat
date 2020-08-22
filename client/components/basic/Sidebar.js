@@ -5,32 +5,6 @@ import { Box, Scrollable, Button, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath } from '../../contexts/RouterContext';
 
-export const createSidebarItems = (initialItems = []) => {
-	const items = initialItems;
-	let updateCb = () => {};
-
-	const itemsSubscription = {
-		subscribe: (cb) => {
-			updateCb = cb;
-			return () => {
-				updateCb = () => {};
-			};
-		},
-		getCurrentValue: () => items,
-	};
-	const registerSidebarItem = (item) => {
-		items.push(item);
-		updateCb();
-	};
-	const unregisterSidebarItem = (label) => {
-		const index = items.findIndex(({ i18nLabel }) => i18nLabel === label);
-		delete items[index];
-		updateCb();
-	};
-
-	return { registerSidebarItem, unregisterSidebarItem, itemsSubscription };
-};
-
 const Sidebar = ({ children, ...props }) => <Box display='flex' flexDirection='column' h='100vh' {...props}>
 	{children}
 </Box>;
@@ -41,7 +15,7 @@ const Content = ({ children, ...props }) => <Scrollable {...props}>
 	</Box>
 </Scrollable>;
 
-const Header = ({ title, onClose, children, ...props }) => <Box is='header' display='flex' flexDirection='column' pb='x16' {...props}>
+const Header = ({ title, onClose, children = undefined, ...props }) => <Box is='header' display='flex' flexDirection='column' pb='x16' {...props}>
 	{(title || onClose) && <Box display='flex' flexDirection='row' alignItems='center' pi='x24' justifyContent='space-between' flexGrow={1}>
 		{title && <Box color='neutral-800' fontSize='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{title}</Box>}
 		{onClose && <Button square small ghost onClick={onClose}><Icon name='cross' size='x20'/></Button>}

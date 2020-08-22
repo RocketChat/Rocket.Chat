@@ -72,7 +72,7 @@ API.v1.addRoute('settings.oauth', { authRequired: false }, {
 	},
 });
 
-API.v1.addRoute('settings.addCustomOAuth', { authRequired: true }, {
+API.v1.addRoute('settings.addCustomOAuth', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		if (!this.requestParams().name || !this.requestParams().name.trim()) {
 			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
@@ -121,33 +121,36 @@ API.v1.addRoute('settings/:_id', { authRequired: true }, {
 
 		return API.v1.success(_.pick(Settings.findOneNotHiddenById(this.urlParams._id), '_id', 'value'));
 	},
-	post() {
-		if (!hasPermission(this.userId, 'edit-privileged-setting')) {
-			return API.v1.unauthorized();
-		}
+	post: {
+		twoFactorRequired: true,
+		action() {
+			if (!hasPermission(this.userId, 'edit-privileged-setting')) {
+				return API.v1.unauthorized();
+			}
 
-		// allow special handling of particular setting types
-		const setting = Settings.findOneNotHiddenById(this.urlParams._id);
-		if (setting.type === 'action' && this.bodyParams && this.bodyParams.execute) {
-			// execute the configured method
-			Meteor.call(setting.value);
-			return API.v1.success();
-		}
+			// allow special handling of particular setting types
+			const setting = Settings.findOneNotHiddenById(this.urlParams._id);
+			if (setting.type === 'action' && this.bodyParams && this.bodyParams.execute) {
+				// execute the configured method
+				Meteor.call(setting.value);
+				return API.v1.success();
+			}
 
-		if (setting.type === 'color' && this.bodyParams && this.bodyParams.editor && this.bodyParams.value) {
-			Settings.updateOptionsById(this.urlParams._id, { editor: this.bodyParams.editor });
-			Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
-			return API.v1.success();
-		}
+			if (setting.type === 'color' && this.bodyParams && this.bodyParams.editor && this.bodyParams.value) {
+				Settings.updateOptionsById(this.urlParams._id, { editor: this.bodyParams.editor });
+				Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+				return API.v1.success();
+			}
 
-		check(this.bodyParams, {
-			value: Match.Any,
-		});
-		if (Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
-			return API.v1.success();
-		}
+			check(this.bodyParams, {
+				value: Match.Any,
+			});
+			if (Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
+				return API.v1.success();
+			}
 
-		return API.v1.failure();
+			return API.v1.failure();
+		},
 	},
 });
 

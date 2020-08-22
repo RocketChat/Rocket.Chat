@@ -1,13 +1,13 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox, Modal } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { Modal } from '../../components/basic/Modal';
 import { useFileInput } from '../../hooks/useFileInput';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { validate, createSoundData } from './lib';
+import { useSetModal } from '../../contexts/ModalContext';
 import VerticalBar from '../../components/basic/VerticalBar';
 
 const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
@@ -88,7 +88,7 @@ function EditSound({ close, onChange, data, ...props }) {
 
 	const [name, setName] = useState('');
 	const [sound, setSound] = useState();
-	const [modal, setModal] = useState();
+	const setModal = useSetModal();
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -157,41 +157,38 @@ function EditSound({ close, onChange, data, ...props }) {
 
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
-	return <>
-		<VerticalBar.ScrollableContent {...props}>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
-				</Field.Row>
-			</Field>
+	return <VerticalBar.ScrollableContent {...props}>
+		<Field>
+			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Row>
+				<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+			</Field.Row>
+		</Field>
 
-			<Field>
-				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
-				<Box display='flex' flexDirection='row' mbs='none'>
-					<Margins inline='x4'>
-						<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
-						{(sound && sound.name) || 'none'}
-					</Margins>
-				</Box>
-			</Field>
+		<Field>
+			<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+			<Box display='flex' flexDirection='row' mbs='none'>
+				<Margins inline='x4'>
+					<Button square onClick={clickUpload}><Icon name='upload' size='x20'/></Button>
+					{(sound && sound.name) || 'none'}
+				</Margins>
+			</Box>
+		</Field>
 
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button onClick={close}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-		</VerticalBar.ScrollableContent>
-		{ modal }
-	</>;
+		<Field>
+			<Field.Row>
+				<ButtonGroup stretch w='full'>
+					<Button onClick={close}>{t('Cancel')}</Button>
+					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
+				</ButtonGroup>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Row>
+				<ButtonGroup stretch w='full'>
+					<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
+				</ButtonGroup>
+			</Field.Row>
+		</Field>
+	</VerticalBar.ScrollableContent>;
 }

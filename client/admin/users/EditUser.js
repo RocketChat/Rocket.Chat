@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Box, Field, Margins, Button } from '@rocket.chat/fuselage';
+import { Box, Field, Margins, Button, Callout } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -21,7 +21,7 @@ export function EditUserWithData({ uid, ...props }) {
 	}
 
 	if (error || roleError) {
-		return <Box mbs='x16' {...props}>{t('User_not_found')}</Box>;
+		return <Callout m='x16' type='danger'>{t('User_not_found')}</Callout>;
 	}
 
 	return <EditUser data={data.user} roles={roleData.roles} {...props}/>;

@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { hasPermission } from '../../../authorization';
-
 import { TranslationProviderRegistry } from '..';
 
 Meteor.methods({
