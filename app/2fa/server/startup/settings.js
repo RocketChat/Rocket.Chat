@@ -44,6 +44,7 @@ settings.addGroup('Accounts', function() {
 		// TODO: Remove this setting for version 4.0
 		this.add('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback', true, {
 			type: 'boolean',
+			public: true,
 		});
 	});
 });
