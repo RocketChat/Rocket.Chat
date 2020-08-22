@@ -118,6 +118,7 @@ Meteor.startup(function() {
 		{ _id: 'view-livechat-room-customfields',    roles: ['livechat-manager', 'livechat-agent', 'admin'] },
 		{ _id: 'edit-livechat-room-customfields',    roles: ['livechat-manager', 'livechat-agent', 'admin'] },
 		{ _id: 'send-omnichannel-chat-transcript',   roles: ['livechat-manager', 'admin'] },
+		{ _id: 'mail-messages',                      roles: ['admin'] },
 	];
 
 	for (const permission of permissions) {
