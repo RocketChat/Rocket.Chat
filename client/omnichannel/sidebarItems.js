@@ -15,7 +15,7 @@ export const {
 		i18nLabel: 'Analytics',
 		permissionGranted: () => hasPermission('view-livechat-analytics'),
 	}, {
-		href: 'omnichannel/real-time-monitoring',
+		href: 'omnichannel-realTime',
 		i18nLabel: 'Real_Time_Monitoring',
 		permissionGranted: () => hasPermission('view-livechat-real-time-monitoring'),
 	}, {
