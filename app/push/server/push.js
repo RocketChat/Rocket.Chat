@@ -116,7 +116,7 @@ export class PushClass {
 		}
 
 		return HTTP.post(`${ gateway }/push/${ service }/send`, data, (error, response) => {
-			if (response && response.statusCode === 406) {
+			if (response?.statusCode === 406) {
 				logger.info('removing push token', token);
 				appTokensCollection.remove({
 					$or: [{
@@ -125,6 +125,11 @@ export class PushClass {
 						'token.gcm': token,
 					}],
 				});
+				return;
+			}
+
+			if (response?.statusCode === 401) {
+				logger.warn('Error sending push to gateway (not authorized)', response);
 				return;
 			}
 

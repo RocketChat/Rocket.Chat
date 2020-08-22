@@ -4,6 +4,7 @@ import { Box, Tag, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
 import { ActionButton } from './Buttons/ActionButton';
 import UserAvatar from './avatar/UserAvatar';
 import * as Status from './UserStatus';
+import MarkdownText from './MarkdownText';
 
 const clampStyle = {
 	display: '-webkit-box',
@@ -85,7 +86,7 @@ const UserCard = forwardRef(({
 		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
-		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'>{bio}</Info> }
+		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info> }
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
 	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}
