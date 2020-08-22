@@ -771,6 +771,7 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 	get() {
 		const { selector } = this.queryParams;
+
 		if (!selector) {
 			return API.v1.failure('The \'selector\' param is required');
 		}
