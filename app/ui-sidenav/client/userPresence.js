@@ -6,7 +6,7 @@ import _ from 'underscore';
 import mem from 'mem';
 
 import { APIClient } from '../../utils/client';
-import { saveUser } from '../../../imports/startup/client/listenActiveUsers';
+import { saveUser, interestedUserIds } from '../../../imports/startup/client/listenActiveUsers';
 
 import './userPresence.html';
 
@@ -45,6 +45,7 @@ const getAll = _.debounce(async function getAll() {
 }, 1000);
 
 const get = mem(function get(id) {
+	interestedUserIds.add(id);
 	const promise = pending.get(id) || new Promise((resolve, reject) => {
 		promises.set(id, { resolve, reject });
 	});
@@ -96,6 +97,6 @@ Template.userPresence.onRendered(function() {
 		return observer.observe(this.firstNode);
 	}
 
-	get(this.data.uid);
-	getAll();
+	// get(this.data.uid);
+	// getAll();
 });
