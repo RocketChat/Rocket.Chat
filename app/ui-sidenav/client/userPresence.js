@@ -72,11 +72,17 @@ const featureExists = !!window.IntersectionObserver;
 
 const observer = featureExists && new IntersectionObserver(handleEntries, options);
 
+let wasConnected = Meteor.status().connected;
+
 Tracker.autorun(() => {
-	if (!Meteor.userId() || !Meteor.status().connected) {
+	// Only clear statuses on disconnect, prevent process it on reconnect again
+	const isConnected = Meteor.status().connected;
+	if (!Meteor.userId() || (wasConnected && !isConnected)) {
+		wasConnected = isConnected;
 		return Meteor.users.update({}, { $unset: { status: '' } }, { multi: true });
 	}
 	mem.clear(get);
+	wasConnected = isConnected;
 
 	if (featureExists) {
 		for (const node of data.keys()) {
