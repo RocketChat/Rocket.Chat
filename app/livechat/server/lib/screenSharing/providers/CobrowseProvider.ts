@@ -51,20 +51,6 @@ window.addEventListener('message', (msg) => {
 		}
 	}
 }, false);
-const onFinishScreenSharing = () => {
-	if (CobrowseIO.currentSession) { CobrowseIO.currentSession.end(); }
-	CobrowseIO.client().then(function() {
-		CobrowseIO.stop();
-	});
-};
-const setMetaData = (guest_id) => {
-	CobrowseIO.customData = {
-		guest_id,
-	};
-};
-const endSession = () => {
-	if (CobrowseIO.currentSession) { CobrowseIO.currentSession.end(); }
-};
 `;
 
 export class CobrowseProvider implements IScreenSharingProvider {
