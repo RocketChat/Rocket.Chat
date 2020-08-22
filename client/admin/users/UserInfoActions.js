@@ -128,15 +128,15 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		}
 	}, [_id, dispatchToastMessage, isAdmin, onChange, setAdminStatus, t]);
 
-	const resetE2EEKeyMethod = useMethod('e2e.resetOtherE2EKey');
+	const resetE2EEKeyRequest = useEndpoint('POST', 'users.resetE2EKey');
 	const resetE2EEKey = useCallback(async () => {
 		setModal();
-		const result = await resetE2EEKeyMethod(_id);
+		const result = await resetE2EEKeyRequest({ userId: _id });
 
 		if (result) {
 			setModal(<SuccessModal title={t('Success')} text={t('Users_key_has_been_reset')} onClose={() => { setModal(); onChange(); }}/>);
 		}
-	}, [resetE2EEKeyMethod, onChange, setModal, t, _id]);
+	}, [resetE2EEKeyRequest, onChange, setModal, t, _id]);
 
 	const confirmResetE2EEKey = useCallback(() => {
 		setModal(<ConfirmWarningModal onConfirm={resetE2EEKey} onCancel={() => setModal()} text={t('E2E_Reset_Other_Key_Warning')} confirmText={t('Reset')} />);
