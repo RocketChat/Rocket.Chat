@@ -16,6 +16,11 @@ const user = {
 	localTime: 'Local Time: 7:44 AM',
 };
 
+const nickname = {
+	...user,
+	nickname: 'nicknamenickname',
+};
+
 const largeName = {
 	...user,
 	customStatus:
@@ -59,8 +64,8 @@ const noBioNoLocalTimeNoRoles = {
 
 
 export const Basic = () => <UserCard {...user} />;
+export const Nickname = () => <UserCard {...nickname} />;
 export const LargeName = () => <UserCard {...largeName} />;
-
 export const NoRoles = () => <UserCard {...noRoles} />;
 export const NoActions = () => <UserCard {...noActions} />;
 export const NoLocalTime = () => <UserCard {...noLocalTime} />;
