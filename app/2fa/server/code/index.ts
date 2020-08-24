@@ -58,7 +58,7 @@ export function getFingerprintFromConnection(connection: IMethodConnection): str
 		clientAddress: connection.clientAddress,
 	});
 
-	return crypto.createHash('md5').update(data).digest('hex');
+	return crypto.createHash('sha256').update(data).digest('hex');
 }
 
 export function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
