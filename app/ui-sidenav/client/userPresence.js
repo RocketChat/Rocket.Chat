@@ -102,7 +102,4 @@ Template.userPresence.onRendered(function() {
 	if (featureExists) {
 		return observer.observe(this.firstNode);
 	}
-
-	// get(this.data.uid);
-	// getAll();
 });
