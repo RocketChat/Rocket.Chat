@@ -238,7 +238,7 @@ const methodCall = () => ({
 
 		const { method, params, id } = EJSON.parse(this.bodyParams.message);
 
-		const connectionId = this.token || crypto.createHash('md5').update(this.requestIp + this.request.headers['user-agent']).digest('hex');
+		const connectionId = this.token || crypto.createHash('sha256').update(this.requestIp + this.request.headers['user-agent']).digest('hex');
 
 		const rateLimiterInput = {
 			userId: this.userId,
