@@ -128,12 +128,12 @@ export class PushClass {
 				return;
 			}
 
-			if (!error) {
+			if (response?.statusCode === 422) {
+				logger.info('gateway rejected push notification. not retrying.');
 				return;
 			}
 
-			if (response?.statusCode === 422) {
-				logger.info('gateway rejected push notification. not retrying.');
+			if (!error) {
 				return;
 			}
 
