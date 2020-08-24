@@ -47,8 +47,4 @@ Meteor.startup(function() {
 
 		saveUser({ _id, username, status: STATUS_MAP[status], statusText }, true);
 	});
-
-	Accounts.onLogout(() => {
-		interestedUserIds.clear();
-	});
 });

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-// import { ReactiveVar } from 'meteor/reactive-var';
+import { Accounts } from 'meteor/accounts-base';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
@@ -92,6 +92,10 @@ Tracker.autorun(() => {
 		return;
 	}
 	getAll();
+
+	Accounts.onLogout(() => {
+		interestedUserIds.clear();
+	});
 });
 
 Template.userPresence.onRendered(function() {
