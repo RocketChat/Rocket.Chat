@@ -48074,6 +48074,28 @@
           ]
         }
       ]
+    },
+    "3.5.4": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.16.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18621",
+          "title": "[FIX] MarkdownText usage",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.4",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
