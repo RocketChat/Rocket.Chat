@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
-import { Box, Table, Flex, Avatar, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Box, Table, Flex, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
 import { GenericTable, Th } from '../../components/GenericTable';
@@ -7,12 +7,11 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useQuery } from './hooks';
-import { getUserAvatarURL } from '../../../app/utils/client';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
-import NotAuthorizedPage from '../../admin/NotAuthorizedPage';
-
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import MarkdownText from '../../components/basic/MarkdownText';
 
 const FilterByText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
@@ -72,38 +71,34 @@ function UserTable({
 
 	const formatDate = useFormatDate();
 
-	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio, avatarETag }) => {
-		const avatarUrl = getUserAvatarURL(username, avatarETag);
-
-		return <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
-			<Table.Cell>
-				<Flex.Container>
-					<Box>
-						<Flex.Item>
-							<Avatar size='x40' title={username} url={avatarUrl} />
-						</Flex.Item>
-						<Box style={style} grow={1} mi='x8'>
-							<Box display='flex'>
-								<Box fontScale='p2' style={style}>{name || username}</Box> <Box mi='x4'/> <Box fontScale='p1' color='hint' style={style}>{username}</Box>
-							</Box>
-							<Box fontScale='p1' color='hint' style={style}> {bio} </Box>
+	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio, avatarETag, nickname }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
+		<Table.Cell>
+			<Flex.Container>
+				<Box>
+					<Flex.Item>
+						<UserAvatar size='x40' title={username} username={username} etag={avatarETag} />
+					</Flex.Item>
+					<Box withTruncatedText grow={1} mi='x8'>
+						<Box display='flex'>
+							<Box fontScale='p2' withTruncatedText>{name || username}{nickname && ` (${ nickname })`}</Box> <Box mi='x4'/> <Box fontScale='p1' color='hint' withTruncatedText>{username}</Box>
 						</Box>
+						<MarkdownText fontScale='p1' color='hint' content={bio}/>
 					</Box>
-				</Flex.Container>
-			</Table.Cell>
-			{mediaQuery && canViewFullOtherUserInfo
-			&& <Table.Cell style={style} >
+				</Box>
+			</Flex.Container>
+		</Table.Cell>
+		{mediaQuery && canViewFullOtherUserInfo
+			&& <Table.Cell withTruncatedText >
 				{emails && emails[0].address}
 			</Table.Cell>}
-			{federation
-		&& <Table.Cell style={style}>
+		{federation
+		&& <Table.Cell withTruncatedText>
 			{domain}
 		</Table.Cell>}
-			{mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
-				{formatDate(createdAt)}
-			</Table.Cell>}
-		</Table.Row>;
-	}, [mediaQuery, federation, canViewFullOtherUserInfo, formatDate, onClick]);
+		{mediaQuery && <Table.Cell fontScale='p1' color='hint' withTruncatedText>
+			{formatDate(createdAt)}
+		</Table.Cell>}
+	</Table.Row>, [mediaQuery, federation, canViewFullOtherUserInfo, formatDate, onClick]);
 
 	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
 }

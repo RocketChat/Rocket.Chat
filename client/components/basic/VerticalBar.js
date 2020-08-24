@@ -2,8 +2,8 @@ import { Box, Button, Icon, Margins, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
+import { useTranslation } from '../../contexts/TranslationContext';
 import Page from './Page';
-import RawText from './RawText';
 
 function VerticalBar({ children, ...props }) {
 	const mobile = useDebouncedValue(useMediaQuery('(max-width: 500px)'), 50);
@@ -11,6 +11,7 @@ function VerticalBar({ children, ...props }) {
 
 	return <Box
 		rcx-vertical-bar
+		backgroundColor='surface'
 		display='flex'
 		flexDirection='column'
 		flexShrink={0}
@@ -18,7 +19,6 @@ function VerticalBar({ children, ...props }) {
 		height='full'
 		position={small ? 'absolute' : undefined}
 		insetInlineEnd={small ? 'none' : undefined}
-		backgroundColor='white'
 		{...props}
 	>
 		{children}
@@ -33,10 +33,10 @@ function VerticalBarHeader({ children, ...props }) {
 		display='flex'
 		alignItems='center'
 		justifyContent='space-between'
-		backgroundColor='white'
 		borderBlockColor='neutral-200'
 		borderBlockEndWidth='x2'
 		fontScale='s2'
+		color='neutral-800'
 		{...props}
 	>
 		<Margins inline='x4'>{children}</Margins>
@@ -48,15 +48,16 @@ function VerticalBarIcon(props) {
 }
 
 function VerticalBarClose(props) {
-	return <VerticalBarAction {...props} name='cross' />;
+	const t = useTranslation();
+	return <VerticalBarAction {...props} title={t('Close')} name='cross' />;
 }
 
 const VerticalBarContent = React.forwardRef(function VerticalBarContent(props, ref) {
 	return <Page.Content {...props} ref={ref}/>;
 });
 
-const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScrollableContent({ children, props }, ref) {
-	return <Page.ScrollableContent padding='x24' mi='neg-x24' {...props} ref={ref}>
+const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScrollableContent({ children, ...props }, ref) {
+	return <Page.ScrollableContent p='x24' {...props} ref={ref}>
 		<Margins blockEnd='x16'>{children}</Margins>
 	</Page.ScrollableContent>;
 });
@@ -79,8 +80,8 @@ function VerticalBarSkeleton(props) {
 	</VerticalBar>;
 }
 
-function VerticalBarText({ children, ...props }) {
-	return <Box flexShrink={1} flexGrow={1} withTruncatedText {...props}><RawText>{children}</RawText></Box>;
+function VerticalBarText(props) {
+	return <Box flexShrink={1} flexGrow={1} withTruncatedText {...props}/>;
 }
 
 VerticalBar.Icon = React.memo(VerticalBarIcon);

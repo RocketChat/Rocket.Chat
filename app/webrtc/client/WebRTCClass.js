@@ -11,7 +11,6 @@ import { Notifications } from '../../notifications';
 import { settings } from '../../settings';
 import { modal } from '../../ui-utils';
 import { ChatSubscription } from '../../models';
-
 import { WEB_RTC_EVENTS } from '..';
 
 class WebRTCTransportClass extends EventEmitter {
