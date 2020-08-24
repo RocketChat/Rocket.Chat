@@ -48035,6 +48035,45 @@
           ]
         }
       ]
+    },
+    "3.5.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.16.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18598",
+          "title": "[FIX] UIKit Select and Multiselects not working",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18597",
+          "title": "[FIX] React being loaded on the main bundle",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18594",
+          "title": "[FIX] Users page in admin not working for inactive user joining",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.5.3",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
