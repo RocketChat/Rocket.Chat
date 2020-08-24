@@ -1,6 +1,26 @@
-import { addSidebarItem } from '../../../../../app/livechat/client/views/sideNav/livechatSideNavItems';
+import { registerOmnichannelSidebarItem } from '../../../../../client/omnichannel/sidebarItems';
+import { hasPermission } from '../../../../../app/authorization/client';
 
-addSidebarItem('Monitors', 'livechat-monitors', 'manage-livechat-monitors');
-addSidebarItem('Units', 'livechat-units', 'manage-livechat-units');
-addSidebarItem('Tags', 'livechat-tags', 'manage-livechat-tags');
-addSidebarItem('Priorities', 'livechat-priorities', 'manage-livechat-priorities');
+registerOmnichannelSidebarItem({
+	href: 'omnichannel-monitors',
+	i18nLabel: 'Livechat_Monitors',
+	permissionGranted: () => hasPermission('manage-livechat-monitors'),
+});
+
+registerOmnichannelSidebarItem({
+	href: 'omnichannel/units',
+	i18nLabel: 'Units',
+	permissionGranted: () => hasPermission('manage-livechat-units'),
+});
+
+registerOmnichannelSidebarItem({
+	href: 'omnichannel/tags',
+	i18nLabel: 'Tags',
+	permissionGranted: () => hasPermission('manage-livechat-tags'),
+});
+
+registerOmnichannelSidebarItem({
+	href: 'omnichannel/priorities',
+	i18nLabel: 'Priorities',
+	permissionGranted: () => hasPermission('manage-livechat-priorities'),
+});
