@@ -1,4 +1,22 @@
 
+# 3.5.4
+`2020-08-24  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.16.0`
+
+### 🐛 Bug fixes
+
+
+- MarkdownText usage ([#18621](https://github.com/RocketChat/Rocket.Chat/pull/18621))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 # 3.5.3
 `2020-08-19  ·  3 🐛  ·  2 👩‍💻👨‍💻`
 
