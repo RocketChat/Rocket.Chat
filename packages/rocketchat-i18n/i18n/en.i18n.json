@@ -2421,6 +2421,7 @@
   "Message_AllowEditing_BlockEditInMinutesDescription": "Enter 0 to disable blocking.",
   "Message_AllowPinning": "Allow Message Pinning",
   "Message_AllowPinning_Description": "Allow messages to be pinned to any of the channels.",
+  "Message_AllowPrefetch_PrefetchRoomLimit": "Number of rooms for which messages will be fetched on startup",
   "Message_AllowSnippeting": "Allow Message Snippeting",
   "Message_AllowStarring": "Allow Message Starring",
   "Message_AllowUnrecognizedSlashCommand": "Allow Unrecognized Slash Commands",

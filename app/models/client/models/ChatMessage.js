@@ -9,6 +9,7 @@ import { getConfig } from '../../../ui-utils/client/config';
 import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
+import { settings } from '../../../settings';
 
 export const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
 
@@ -88,12 +89,13 @@ function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
 const messagePreFetch = () => {
 	let messagesFetched = false;
 	Tracker.autorun(() => {
-		if (!messagesFetched && CachedChatSubscription.ready.get()) {
+		if (!messagesFetched && CachedChatSubscription.ready.get() && settings.cachedCollection.ready.get()) {
 			const status = Meteor.status();
 			if (status.status !== 'connected') {
 				return;
 			}
 			messagesFetched = true;
+			const roomLimit = settings.get('Message_AllowPrefetch_PrefetchRoomLimit');
 			const subscriptions = ChatSubscription.find(
 				{
 					open: true,
@@ -103,8 +105,9 @@ const messagePreFetch = () => {
 						rid: 1,
 						ls: 1,
 					},
+					limit: roomLimit,
 				},
-			);
+			).fetch();
 			const limit = parseInt(getConfig('roomListLimit')) || 50;
 			subscriptions.forEach((subscription) => {
 				const ts = undefined;
