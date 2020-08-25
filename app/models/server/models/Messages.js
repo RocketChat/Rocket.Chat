@@ -10,6 +10,16 @@ import { RoomEvents } from './RoomEvents';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
 import { RoomEventTypeDescriptor } from '../../../events/definitions/room/IRoomEvent';
 
+function measureLag(iteration) {
+	const start = new Date();
+	setTimeout(() => {
+		const lag = new Date() - start;
+		console.log(`===========================> Loop ${ iteration } took\t${ lag } ms`);
+		measureLag(iteration + 1); // Recurse
+	});
+}
+measureLag(1);
+
 export class Messages extends Base {
 	constructor() {
 		super('message');
