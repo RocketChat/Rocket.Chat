@@ -1028,6 +1028,11 @@ settings.addGroup('Message', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Message_AllowPrefetch_PrefetchRoomLimit', 20, {
+		type: 'int',
+		public: true,
+		i18nDescription: 'Message_AllowPrefetch_PrefetchRoomLimit',
+	});
 	this.add('Message_AllowEditing_BlockEditInMinutes', 0, {
 		type: 'int',
 		public: true,
