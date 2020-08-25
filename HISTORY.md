@@ -1,13 +1,35 @@
 
 # 3.6.0 (Under Release Candidate Process)
 
+## 3.6.0-rc.1
+`2020-08-25  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Revert silent: true ([#18671](https://github.com/RocketChat/Rocket.Chat/pull/18671))
+
+- Improve performance of client presence monitor ([#18645](https://github.com/RocketChat/Rocket.Chat/pull/18645))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 3.6.0-rc.0
-`2020-08-22  ·  9 🎉  ·  6 🚀  ·  33 🐛  ·  19 🔍  ·  22 👩‍💻👨‍💻`
+`2020-08-22  ·  10 🎉  ·  6 🚀  ·  33 🐛  ·  19 🔍  ·  22 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
 
 - **APPS-ENGINE:** Implement new IPostLivechatRoomTransferred event ([#18625](https://github.com/RocketChat/Rocket.Chat/pull/18625))
+
+- Admin option to reset other users’ E2E encryption key ([#18642](https://github.com/RocketChat/Rocket.Chat/pull/18642))
+
+  Requires the 2FA password fallback enforcement enabled to work
 
 - UiKit Livechat Support ([#18643](https://github.com/RocketChat/Rocket.Chat/pull/18643))
 
@@ -197,6 +219,141 @@
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
+# 3.5.4
+`2020-08-24  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.16.0`
+
+### 🐛 Bug fixes
+
+
+- MarkdownText usage ([#18621](https://github.com/RocketChat/Rocket.Chat/pull/18621))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.5.4 ([#18665](https://github.com/RocketChat/Rocket.Chat/pull/18665))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.5.3
+`2020-08-19  ·  3 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.16.0`
+
+### 🐛 Bug fixes
+
+
+- UIKit Select and Multiselects not working ([#18598](https://github.com/RocketChat/Rocket.Chat/pull/18598))
+
+- React being loaded on the main bundle ([#18597](https://github.com/RocketChat/Rocket.Chat/pull/18597))
+
+- Users page in admin not working for inactive user joining ([#18594](https://github.com/RocketChat/Rocket.Chat/pull/18594))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.5.3 ([#18610](https://github.com/RocketChat/Rocket.Chat/pull/18610))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.5.2
+`2020-08-13  ·  1 🐛  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.16.0`
+
+### 🐛 Bug fixes
+
+
+- Sending notifications from senders without a name ([#18479](https://github.com/RocketChat/Rocket.Chat/pull/18479))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.5.2 ([#18548](https://github.com/RocketChat/Rocket.Chat/pull/18548))
+
+- Defer startup checks ([#18547](https://github.com/RocketChat/Rocket.Chat/pull/18547))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.5.1
+`2020-08-03  ·  8 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.16.0`
+
+### 🐛 Bug fixes
+
+
+- Migration 194 ([#18457](https://github.com/RocketChat/Rocket.Chat/pull/18457) by [@thirsch](https://github.com/thirsch))
+
+- Omnichannel session monitor is not starting ([#18412](https://github.com/RocketChat/Rocket.Chat/pull/18412))
+
+- Invalid MIME type when uploading audio files ([#18426](https://github.com/RocketChat/Rocket.Chat/pull/18426))
+
+- Error when updating omnichannel department without agents parameter ([#18428](https://github.com/RocketChat/Rocket.Chat/pull/18428))
+
+- Omnichannel Take Inquiry endpoint checking wrong permission ([#18446](https://github.com/RocketChat/Rocket.Chat/pull/18446))
+
+- Multiple push notifications sent via native drivers ([#18442](https://github.com/RocketChat/Rocket.Chat/pull/18442))
+
+- Appending 'false' to Jitsi URL ([#18430](https://github.com/RocketChat/Rocket.Chat/pull/18430))
+
+- Can't send long messages as attachment ([#18355](https://github.com/RocketChat/Rocket.Chat/pull/18355))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.5.1 ([#18452](https://github.com/RocketChat/Rocket.Chat/pull/18452) by [@thirsch](https://github.com/thirsch))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@thirsch](https://github.com/thirsch)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 
