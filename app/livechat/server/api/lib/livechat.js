@@ -112,6 +112,7 @@ export function settings() {
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
 			limitTextLength: initSettings.Livechat_enable_message_character_limit
 			&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			displayUserName: initSettings.Livechat_display_user_name === true
 		},
 		theme: {
 			title: initSettings.Livechat_title,

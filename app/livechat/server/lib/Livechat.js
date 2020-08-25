@@ -455,6 +455,7 @@ export const Livechat = {
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
+			'Livechat_display_user_name'
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
