@@ -52,8 +52,8 @@ const sendResetNotitification = function(uid: string): void {
 	}
 };
 
-export function resetUserE2EEncriptionKey(uid: string): boolean {
-	if (uid !== Meteor.userId()) {
+export function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): boolean {
+	if (notifyUser) {
 		sendResetNotitification(uid);
 	}
 
