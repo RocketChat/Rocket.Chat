@@ -2,17 +2,18 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Users, Subscriptions } from '../../app/models/server';
-import { settings } from '../../app/settings';
+import { settings } from '../../app/settings/server';
 import * as Mailer from '../../app/mailer';
+import { IUser } from '../../definition/IUser';
 
 const sendResetNotitification = function(uid: string): void {
-	const user = Users.findOneById(uid);
+	const user: IUser = Users.findOneById(uid, {});
 	if (!user) {
 		throw new Meteor.Error('invalid-user');
 	}
 
 	const language = user.language || settings.get('Language') || 'en';
-	const addresses = user.emails?.filter(({ verified }) => verified).map((e) => e.address);
+	const addresses = user.emails?.filter(({ verified }: { verified: boolean}) => verified).map((e) => e.address);
 	if (!addresses?.length) {
 		return;
 	}
@@ -38,11 +39,9 @@ const sendResetNotitification = function(uid: string): void {
 					to: address,
 					from,
 					subject,
-					replyTo: undefined,
-					headers: undefined,
 					text,
 					html,
-				});
+				} as any);
 			} catch (error) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
 					function: 'resetUserE2EEncriptionKey',
