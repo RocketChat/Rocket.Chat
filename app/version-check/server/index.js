@@ -32,7 +32,7 @@ Meteor.startup(() => {
 	});
 });
 
-settings.get(/(Register_Server)|(Update_EnableChecker)/, _.debounce(() => {
+settings.get(/Register_Server|Update_EnableChecker/, _.debounce(() => {
 	const checkForUpdates = settings.get('Register_Server') && settings.get('Update_EnableChecker');
 
 	if (checkForUpdates && SyncedCron.nextScheduledAtDate(jobName)) {
