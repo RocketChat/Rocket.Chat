@@ -242,16 +242,18 @@ export const ExportMessages = function ExportMessages({ rid, tabBar }) {
 				{t('Export_Messages')}
 				<VerticalBar.Close onClick={() => tabBar.close()} />
 			</VerticalBar.Header>
-			<VerticalBar.Content>
-				<Field>
-					<Field.Label>{t('Method')}</Field.Label>
-					<Field.Row>
-						<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions}/>
-					</Field.Row>
-				</Field>
+			<VerticalBar.ScrollableContent>
+				<FieldGroup>
+					<Field>
+						<Field.Label>{t('Method')}</Field.Label>
+						<Field.Row>
+							<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions}/>
+						</Field.Row>
+					</Field>
+				</FieldGroup>
 				{type && type === 'file' && <FileExport rid={rid} onCancel={() => tabBar.close()} />}
 				{type && type === 'email' && <MailExportForm rid={rid} onCancel={() => tabBar.close()} />}
-			</VerticalBar.Content>
+			</VerticalBar.ScrollableContent>
 		</VerticalBar>
 	);
 };
