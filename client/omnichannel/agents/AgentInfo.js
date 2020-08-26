@@ -30,7 +30,7 @@ export const AgentInfo = React.memo(function AgentInfo({
 		return <FormSkeleton/>;
 	}
 
-	if (error) {
+	if (error || !data || !data.user) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 

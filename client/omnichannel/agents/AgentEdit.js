@@ -26,7 +26,7 @@ export default function AgentEditWithData({ uid, reload }) {
 		return <FormSkeleton/>;
 	}
 
-	if (error || userDepartmentsError || availableDepartmentsError) {
+	if (error || userDepartmentsError || availableDepartmentsError || !data || !data.user) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
