@@ -10,15 +10,15 @@ import { RoomEvents } from './RoomEvents';
 import { getLocalSrc } from '../../../events/server/lib/getLocalSrc';
 import { RoomEventTypeDescriptor } from '../../../events/definitions/room/IRoomEvent';
 
-function measureLag(iteration) {
-	const start = new Date();
-	setTimeout(() => {
-		const lag = new Date() - start;
-		console.log(`===========================> Loop ${ iteration } took\t${ lag } ms`);
-		measureLag(iteration + 1); // Recurse
-	});
-}
-measureLag(1);
+// function measureLag(iteration) {
+// 	const start = new Date();
+// 	setTimeout(() => {
+// 		const lag = new Date() - start;
+// 		console.log(`===========================> Loop ${ iteration } took\t${ lag } ms`);
+// 		measureLag(iteration + 1); // Recurse
+// 	});
+// }
+// measureLag(1);
 
 export class Messages extends Base {
 	constructor() {
@@ -203,38 +203,40 @@ export class Messages extends Base {
 	}
 
 	insert(...args) {
-		console.time('Messages.insert');
+		const counter = process.hrtime();
+
+		console.time(`[${ counter }] Messages.insert`);
 		const [message] = args;
 
-		console.time('fromV1Data');
+		console.time(`[${ counter }] fromV1Data`);
 		const v2Data = RoomEvents.fromV1Data(message);
-		console.timeEnd('fromV1Data');
+		console.timeEnd(`[${ counter }] fromV1Data`);
 
-		console.time('createMessageEvent');
+		console.time(`[${ counter }] createMessageEvent`);
 
-		console.time('getLocalSrc');
+		console.time(`[${ counter }] getLocalSrc`);
 		const localSrc = getLocalSrc();
-		console.timeEnd('getLocalSrc');
+		console.timeEnd(`[${ counter }] getLocalSrc`);
 
 		const event = Promise.await((async () => {
-			console.time('inside');
-			const data = await RoomEvents.createMessageEvent(localSrc, message.rid, message._id, v2Data);
-			console.timeEnd('inside');
+			console.time(`[${ counter }] inside`);
+			const data = await RoomEvents.createMessageEvent(localSrc, message.rid, message._id, v2Data, counter);
+			console.timeEnd(`[${ counter }] inside`);
 			return data;
 		})());
 
 		// const event = Promise.await(RoomEvents.createMessageEvent(localSrc, message.rid, message._id, v2Data));
-		console.timeEnd('createMessageEvent');
+		console.timeEnd(`[${ counter }] createMessageEvent`);
 
-		console.time('dispatchEvent');
-		Promise.await(this.dispatchEvent(event));
-		console.timeEnd('dispatchEvent');
+		console.time(`[${ counter }] dispatchEvent`);
+		Promise.await(this.dispatchEvent(event, null, counter));
+		console.timeEnd(`[${ counter }] dispatchEvent`);
 
-		console.time('toV1');
+		console.time(`[${ counter }] toV1`);
 		const v1 = RoomEvents.toV1(event)._id;
-		console.timeEnd('toV1');
+		console.timeEnd(`[${ counter }] toV1`);
 
-		console.timeEnd('Messages.insert');
+		console.timeEnd(`[${ counter }] Messages.insert`);
 
 		return v1;
 	}

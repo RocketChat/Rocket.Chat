@@ -35,6 +35,7 @@ class RoomEventsModel extends EventsModel {
 		super('room_event');
 
 		this.tryEnsureIndex({ 'd.u._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ clid: 1 });
 		this.tryEnsureIndex({ cid: 1, t: 1, 'd.u._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'd.expireAt': 1 }, { expireAfterSeconds: 0 });
 		this.tryEnsureIndex({ 'd.msg': 'text' }, { sparse: true });
@@ -61,8 +62,8 @@ class RoomEventsModel extends EventsModel {
 		return src || getLocalSrc();
 	}
 
-	public async addRoomEvent<T extends EventDataDefinition>(event: IEvent<T>): Promise<IAddEventResult> {
-		return super.addEvent(getContextQuery(event), event);
+	public async addRoomEvent<T extends EventDataDefinition>(event: IEvent<T>, counter: number): Promise<IAddEventResult> {
+		return super.addEvent(getContextQuery(event), event, counter);
 	}
 
 	public async updateRoomEventData<T extends EventDataDefinition>(event: IEvent<T>, dataToUpdate: IEventDataUpdate<IEventData>): Promise<void> {
@@ -81,10 +82,10 @@ class RoomEventsModel extends EventsModel {
 		return super.createGenesisEvent(src, getContextQuery(room._id), RoomEventTypeDescriptor.ROOM, event);
 	}
 
-	public async createMessageEvent<T extends IRoomEventDataMessage>(src: string, roomId: string, clid: string, d: T): Promise<IEvent<T>> {
-		console.time('ensureSrc');
+	public async createMessageEvent<T extends IRoomEventDataMessage>(src: string, roomId: string, clid: string, d: T, counter: number): Promise<IEvent<T>> {
+		console.time(`[${ counter }] ensureSrc`);
 		src = this.ensureSrc(src);
-		console.timeEnd('ensureSrc');
+		console.timeEnd(`[${ counter }] ensureSrc`);
 
 		const stub: IEventStub<T> = {
 			clid,
@@ -92,11 +93,11 @@ class RoomEventsModel extends EventsModel {
 			d,
 		};
 
-		console.time('getContextQuery');
+		console.time(`[${ counter }] getContextQuery`);
 		const ctx = getContextQuery(roomId);
-		console.timeEnd('getContextQuery');
+		console.timeEnd(`[${ counter }] getContextQuery`);
 
-		return super.createEvent(src, ctx, stub);
+		return super.createEvent(src, ctx, stub, counter);
 	}
 
 	public async createEditMessageEvent<T extends IEventDataUpdate<IRoomEventDataMessage>>(src: string, roomId: string, clid: string, d: T): Promise<IEvent<T>> {

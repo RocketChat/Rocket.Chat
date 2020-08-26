@@ -18,14 +18,16 @@ const typesHandler: TypesHandler = {
 	// Room
 	room: (event) => room(event as IEvent<IRoomEventDataRoom>),
 	droom: (event) => roomDelete(event as IEvent<IEventDataUpdate<IEventDataEmpty>>),
-	msg: (event) => roomMessage(event as IEvent<IRoomEventDataMessage>),
+	msg: (event, counter) => roomMessage(event as IEvent<IRoomEventDataMessage>, counter),
 	emsg: (event) => roomEditMessage(event as IEvent<IEventDataUpdate<IEventDataEmpty>>),
 	dmsg: (event) => roomDeleteMessage(event as IEvent<IEventDataUpdate<IEventDataEmpty>>),
 };
 
-export async function handleEvents<T extends EventDataDefinition>(events: [IEvent<T>]) {
+export async function handleEvents<T extends EventDataDefinition>(events: [IEvent<T>], counter: number) {
+	console.time(`[${ counter }] handleEventsLoop`);
 	for (const event of events) {
 		// eslint-disable-next-line no-await-in-loop
-		await typesHandler[event.t](event);
+		await typesHandler[event.t](event, counter);
 	}
+	console.timeEnd(`[${ counter }] handleEventsLoop`);
 }

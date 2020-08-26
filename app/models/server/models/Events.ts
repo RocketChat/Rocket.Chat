@@ -77,12 +77,12 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 		return SHA256(JSON.stringify(data));
 	}
 
-	public async createEvent<T extends EventDataDefinition>(src: string, contextQuery: IContextQuery, stub: IEventStub<T>): Promise<IEvent<T>> {
+	public async createEvent<T extends EventDataDefinition>(src: string, contextQuery: IContextQuery, stub: IEventStub<T>, counter: number): Promise<IEvent<T>> {
 		// Get the previous events
 		let pids = []; // Previous ids
 		let previousEvents = [];
 
-		console.time('leafSearch');
+		console.time(`[${ counter }] leafSearch`);
 		if (process.env.DISABLE_LEAF_SEARCH === '1') {
 			previousEvents = [Random.id()];
 		} else {
@@ -91,9 +91,9 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 				.find({ ...contextQuery, isLeaf: true })
 				.toArray();
 		}
-		console.timeEnd('leafSearch');
+		console.timeEnd(`[${ counter }] leafSearch`);
 
-		console.time('map');
+		console.time(`[${ counter }] map`);
 		pids = previousEvents.map((e: IEvent<any>) => e._id);
 
 		const event: IEvent<T> = {
@@ -110,19 +110,19 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 			d: stub.d,
 			isLeaf: true,
 		};
-		console.timeEnd('map');
+		console.timeEnd(`[${ counter }] map`);
 
 		//
 		// Create the data hash
-		console.time('getEventDataHash');
+		console.time(`[${ counter }] getEventDataHash`);
 		event.dHash = this.getEventDataHash(event);
-		console.timeEnd('getEventDataHash');
+		console.timeEnd(`[${ counter }] getEventDataHash`);
 
 		//
 		// Create ID hash
-		console.time('getEventIdHash');
+		console.time(`[${ counter }] getEventIdHash`);
 		event._id = this.getEventIdHash(contextQuery, event);
-		console.timeEnd('getEventIdHash');
+		console.timeEnd(`[${ counter }] getEventIdHash`);
 
 		return event;
 	}
@@ -142,48 +142,62 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 			d,
 		};
 
-		return this.createEvent(src, contextQuery, stub);
+		return this.createEvent(src, contextQuery, stub, 0);
 	}
 
-	public async addEvent<T extends EventDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): Promise<IAddEventResult> {
-		// Check if the event does not exit
-		const existingEvent = this.findOne({ _id: event._id });
+	public async 	addEvent<T extends EventDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>, counter: number): Promise<IAddEventResult> {
+		// console.time(`[${ counter }] findOne`);
+		// // Check if the event does not exit
+		// const existingEvent = this.findOne({ _id: event._id });
+		// console.timeEnd(`[${ counter }] findOne`);
+		//
+		// // If it does not, we insert it, checking for the parents
+		// if (!existingEvent) {
+		// 	if (process.env.DISABLE_LEAF_SEARCH !== '1') {
+		// 		// Check if we have the parents
+		// 		console.time(`[${ counter }] findLeaf`);
+		// 		const parents: Array<IEvent<any>> = await this.model.rawCollection().find({
+		// 			...contextQuery,
+		// 			_id: { $in: event.pids },
+		// 		}, { _id: 1 }).toArray();
+		// 		console.timeEnd(`[${ counter }] findLeaf`);
+		// 		const pids: Array<string> = parents.map((e: IEvent<any>) => e._id);
+		//
+		// 		// This means that we do not have the parents of the event we are adding
+		// 		if (pids.length !== event.pids.length) {
+		// 			const { src } = event;
+		//
+		// 			// Get the latest events for that context and src
+		// 			console.time(`[${ counter }] findLatest`);
+		// 			const latestEvents = await this.model.rawCollection().find({
+		// 				...contextQuery,
+		// 				src,
+		// 			}, { _id: 1 }).toArray();
+		// 			console.timeEnd(`[${ counter }] findLatest`);
+		// 			const latestEventIds = latestEvents.map((e: IEvent<any>) => e._id);
+		//
+		// 			return {
+		// 				success: false,
+		// 				reason: 'missingParents',
+		// 				missingParentIds: event.pids.filter((_id) => pids.indexOf(_id) === -1),
+		// 				latestEventIds,
+		// 			};
+		// 		}
+		//
+		// 		// Clear the "isLeaf" of the parent events
+		// 		console.time(`[${ counter }] update`);
+		// 		await this.update({ _id: { $in: pids } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
+		// 		console.timeEnd(`[${ counter }] update`);
+		// 	}
+		//
+		// 	console.time(`[${ counter }] insert`);
+		// 	this.insert(event, counter);
+		// 	console.timeEnd(`[${ counter }] insert`);
+		// }
 
-		// If it does not, we insert it, checking for the parents
-		if (!existingEvent) {
-			if (process.env.DISABLE_LEAF_SEARCH !== '1') {
-				// Check if we have the parents
-				const parents: Array<IEvent<any>> = await this.model.rawCollection().find({
-					...contextQuery,
-					_id: { $in: event.pids },
-				}, { _id: 1 }).toArray();
-				const pids: Array<string> = parents.map((e: IEvent<any>) => e._id);
-
-				// This means that we do not have the parents of the event we are adding
-				if (pids.length !== event.pids.length) {
-					const { src } = event;
-
-					// Get the latest events for that context and src
-					const latestEvents = await this.model.rawCollection().find({
-						...contextQuery,
-						src,
-					}, { _id: 1 }).toArray();
-					const latestEventIds = latestEvents.map((e: IEvent<any>) => e._id);
-
-					return {
-						success: false,
-						reason: 'missingParents',
-						missingParentIds: event.pids.filter((_id) => pids.indexOf(_id) === -1),
-						latestEventIds,
-					};
-				}
-
-				// Clear the "isLeaf" of the parent events
-				await this.update({ _id: { $in: pids } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
-			}
-
-			this.insert(event);
-		}
+		console.time(`[${ counter }] insert`);
+		this.insert(event, counter);
+		console.timeEnd(`[${ counter }] insert`);
 
 		return {
 			success: true,
@@ -237,10 +251,16 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 		return record;
 	}
 
-	insert(record: any): any {
+	insert(record: any, counter: number): any {
+		console.time(`[${ counter }] setUpdatedAt`);
 		this.setUpdatedAt(record);
+		console.timeEnd(`[${ counter }] setUpdatedAt`);
 
-		return super.insert(record, { skipUpdatedAt: true });
+		console.time(`[${ counter }] superInsert`);
+		const result = super.insert(record, { skipUpdatedAt: true });
+		console.timeEnd(`[${ counter }] superInsert`);
+
+		return result;
 	}
 
 	update(query: any, update: any, options: any = {}) {
