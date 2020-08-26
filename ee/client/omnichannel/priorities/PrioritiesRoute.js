@@ -25,7 +25,7 @@ export function RemovePriorityButton({ _id, reload }) {
 	const t = useTranslation();
 
 
-	const handleRemoveClick = useMutableCallback(async (e) => {
+	const handleRemoveClick = useMutableCallback(async () => {
 		try {
 			await removePriority(_id);
 		} catch (error) {
