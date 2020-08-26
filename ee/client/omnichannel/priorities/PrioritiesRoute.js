@@ -14,13 +14,18 @@ import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterC
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import PrioritiesPage from './PrioritiesPage';
 import { PriorityEditWithData, PriorityNew } from './EditPriority';
+import DeleteWarningModal from '../../../../client/omnichannel/DeleteWarningModal';
+import { useSetModal } from '../../../../client/contexts/ModalContext';
+import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 
 export function RemovePriorityButton({ _id, reload }) {
 	const removePriority = useMethod('livechat:removePriority');
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
+
 
 	const handleRemoveClick = useMutableCallback(async (e) => {
-		e.preventDefault();
-		e.stopPropagation();
 		try {
 			await removePriority(_id);
 		} catch (error) {
@@ -29,7 +34,22 @@ export function RemovePriorityButton({ _id, reload }) {
 		reload();
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteAgent = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Priority_removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+	});
+
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
