@@ -128,35 +128,36 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 	}
 
 	public async addEvent<T extends EventDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): Promise<IAddEventResult> {
-		// Check if the event does not exit
-		const existingEvent = this.findOne({ _id: event._id });
+		// Check if we have the parents
+		const parents: Array<IEvent<any>> = await this.model.rawCollection().find({ ...contextQuery, _id: { $in: event.pids } }, { _id: 1 }).toArray();
+		const pids: Array<string> = parents.map((e: IEvent<any>) => e._id);
 
-		// If it does not, we insert it, checking for the parents
-		if (!existingEvent) {
-			// Check if we have the parents
-			const parents: Array<IEvent<any>> = await this.model.rawCollection().find({ ...contextQuery, _id: { $in: event.pids } }, { _id: 1 }).toArray();
-			const pids: Array<string> = parents.map((e: IEvent<any>) => e._id);
+		// This means that we do not have the parents of the event we are adding
+		if (pids.length !== event.pids.length) {
+			const { src } = event;
 
-			// This means that we do not have the parents of the event we are adding
-			if (pids.length !== event.pids.length) {
-				const { src } = event;
+			// Get the latest events for that context and src
+			const latestEvents = await this.model.rawCollection().find({ ...contextQuery, src }, { _id: 1 }).toArray();
+			const latestEventIds = latestEvents.map((e: IEvent<any>) => e._id);
 
-				// Get the latest events for that context and src
-				const latestEvents = await this.model.rawCollection().find({ ...contextQuery, src }, { _id: 1 }).toArray();
-				const latestEventIds = latestEvents.map((e: IEvent<any>) => e._id);
+			return {
+				success: false,
+				reason: 'missingParents',
+				missingParentIds: event.pids.filter((_id) => pids.indexOf(_id) === -1),
+				latestEventIds,
+			};
+		}
 
-				return {
-					success: false,
-					reason: 'missingParents',
-					missingParentIds: event.pids.filter((_id) => pids.indexOf(_id) === -1),
-					latestEventIds,
-				};
-			}
+		// Clear the "isLeaf" of the parent events
+		await this.update({ _id: { $in: pids } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
 
-			// Clear the "isLeaf" of the parent events
-			await this.update({ _id: { $in: pids } }, { $unset: { isLeaf: 1 } }, { multi: 1 });
-
+		try {
 			this.insert(event);
+		} catch (err) {
+			// Ignore duplicate errors
+			if (err.code !== 11000) {
+				throw err;
+			}
 		}
 
 		return {
