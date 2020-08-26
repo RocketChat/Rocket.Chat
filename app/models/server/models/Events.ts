@@ -56,13 +56,13 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 	}
 
 	public getEventIdHash<T extends EventDataDefinition>(contextQuery: IContextQuery, event: IEvent<T>): string {
-		if (process.env.DISABLE_ID_SHA === '1') { return Random.id(); }
+		if (process.env.DISABLE_ID_SHA === '1') { return process.hrtime().toString(); }
 
 		return SHA256(`${ event.src }${ JSON.stringify(contextQuery) }${ event.pids.join(',') }${ event.t }${ event.ts }${ event.dHash }`);
 	}
 
 	public getEventDataHash<T extends EventDataDefinition>(event: IEvent<T>): string {
-		if (process.env.DISABLE_DATA_SHA === '1') { return Random.id(); }
+		if (process.env.DISABLE_DATA_SHA === '1') { return process.hrtime().toString(); }
 
 		// Always use the consolidated (o), unchanged data
 		let data: any = event.o;
@@ -84,7 +84,7 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 
 		console.time(`[${ counter }] leafSearch`);
 		if (process.env.DISABLE_LEAF_SEARCH === '1') {
-			previousEvents = [Random.id()];
+			previousEvents = [process.hrtime().toString()];
 		} else {
 			previousEvents = await this.model
 				.rawCollection()
