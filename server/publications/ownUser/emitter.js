@@ -18,7 +18,7 @@ Users.on('change', ({ clientAction, id, data }) => {
 			break;
 	}
 	// Notifications.streamUser.__emit(data._id, clientAction, data);
-	Notifications.notifyUserInThisInstance(
+	Notifications.notifyUser(
 		id,
 		'ownUser-changed',
 		clientAction,
