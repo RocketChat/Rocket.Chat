@@ -228,15 +228,11 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff.toString('base64'), true, marketplaceInfo));
+				const aff = Promise.await(manager.add(buff, true, marketplaceInfo));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
 					return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
-				}
-
-				if (aff.getCompilerErrors().length) {
-					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
 				}
 
 				if (aff.hasAppUserError()) {
