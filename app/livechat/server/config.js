@@ -27,6 +27,20 @@ Meteor.startup(function() {
 		public: true,
 	});
 
+	settings.add('Livechat_enable_message_character_limit', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+	});
+
+	settings.add('Livechat_message_character_limit', 0, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+	});
+
 	settings.add('Livechat_display_offline_form', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
@@ -145,6 +159,16 @@ Meteor.startup(function() {
 		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Show_preregistration_form',
+	});
+
+	settings.add('Livechat_skip_registration_form_DomainsList', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		enableQuery: { _id: 'Livechat_registration_form', value: true },
+		public: true,
+		i18nLabel: 'Livechat_SkipRegistrationFormDomainsList',
+		i18nDescription: 'Domains_on_which_skip_livechat_registration_form',
 	});
 
 	settings.add('Livechat_name_field_registration_form', true, {

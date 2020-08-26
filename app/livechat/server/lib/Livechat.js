@@ -428,6 +428,9 @@ export const Livechat = {
 		Settings.findNotHiddenPublic([
 			'Livechat_title',
 			'Livechat_title_color',
+			'Livechat_enable_message_character_limit',
+			'Livechat_message_character_limit',
+			'Message_MaxAllowedSize',
 			'Livechat_enabled',
 			'Livechat_registration_form',
 			'Livechat_allow_switching_departments',
@@ -448,10 +451,12 @@ export const Livechat = {
 			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
+			'Assets_livechat_guest_default_avatar',
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
+			'Livechat_skip_registration_form_DomainsList',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
