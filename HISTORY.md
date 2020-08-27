@@ -1,6 +1,26 @@
 
 # 3.6.0 (Under Release Candidate Process)
 
+## 3.6.0-rc.2
+`2020-08-26  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Margins on Export Messages ([#18682](https://github.com/RocketChat/Rocket.Chat/pull/18682))
+
+- Regression: Update checker not being disabled properly. ([#18676](https://github.com/RocketChat/Rocket.Chat/pull/18676))
+
+- Missing email notification when an admin resets your E2E key ([#18673](https://github.com/RocketChat/Rocket.Chat/pull/18673))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+
 ## 3.6.0-rc.1
 `2020-08-25  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
