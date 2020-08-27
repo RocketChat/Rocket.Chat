@@ -26,7 +26,7 @@ export function RemoveUnitButton({ _id, reload }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const handleRemoveClick = useMutableCallback(async (e) => {
+	const handleRemoveClick = useMutableCallback(async () => {
 		try {
 			await removeUnit(_id);
 		} catch (error) {

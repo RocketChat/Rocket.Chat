@@ -25,7 +25,7 @@ export function RemoveTagButton({ _id, reload }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const handleRemoveClick = useMutableCallback(async (e) => {
+	const handleRemoveClick = useMutableCallback(async () => {
 		try {
 			await removeTag(_id);
 		} catch (error) {
