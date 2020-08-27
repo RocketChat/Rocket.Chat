@@ -4,6 +4,7 @@ import { Box, Tag, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
 import { ActionButton } from './Buttons/ActionButton';
 import UserAvatar from './avatar/UserAvatar';
 import * as Status from './UserStatus';
+import MarkdownText from './MarkdownText';
 
 const clampStyle = {
 	display: '-webkit-box',
@@ -21,9 +22,8 @@ export const Action = ({ icon, label, ...props }) => (
 
 export const Info = (props) => (
 	<Box
-		mb='x4'
+		mbe='x4'
 		is='span'
-		fontSize='p1'
 		fontScale='p1'
 		color='hint'
 		withTruncatedText
@@ -31,7 +31,7 @@ export const Info = (props) => (
 	/>
 );
 
-export const Username = ({ name, status = <Status.Offline/> }) => <Box display='flex' flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
+export const Username = ({ name, status = <Status.Offline/>, title }) => <Box display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
 	{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
 </Box>;
 
@@ -54,6 +54,7 @@ const UserCard = forwardRef(({
 	open,
 	name = <Skeleton width='100%'/>,
 	username,
+	etag,
 	customStatus = <Skeleton width='100%'/>,
 	roles = <>
 		<Skeleton width='32%' mi='x2'/>
@@ -73,18 +74,19 @@ const UserCard = forwardRef(({
 	t = (e) => e,
 }, ref) => <UserCardContainer className={className} ref={ref} style={style}>
 	<Box>
-		<UserAvatar username={username} size='x124'/>
+		<UserAvatar username={username} etag={etag} size='x124'/>
 		{ actions && <Box flexGrow={0} display='flex' mb='x8' align='center' justifyContent='center'>
 			{actions}
 		</Box>}
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
-		<Username status={status} name={name}/>
-		{nickname && <Info title={t('Nickname')}>{nickname}</Info>}
+		<Box withTruncatedText display='flex'>
+			<Username status={status} name={name} title={username !== name && username}/>{nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>({ nickname })</Box> }
+		</Box>
 		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
-		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'>{bio}</Info> }
+		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info> }
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
 	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}

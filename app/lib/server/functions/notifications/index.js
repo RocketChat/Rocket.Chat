@@ -13,10 +13,6 @@ import { settings } from '../../../../settings';
 export function parseMessageTextPerUser(messageText, message, receiver) {
 	const lng = receiver.language || settings.get('Language') || 'en';
 
-	if (settings.get('Push_request_content_from_server')) {
-		return TAPi18n.__('You_have_a_new_message', { lng });
-	}
-
 	if (!message.msg && message.attachments && message.attachments[0]) {
 		return message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', { lng }) : TAPi18n.__('User_uploaded_file', { lng });
 	}

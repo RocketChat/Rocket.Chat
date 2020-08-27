@@ -103,6 +103,12 @@ function _OAuthServicesUpdate() {
 				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
 			}
 
+			// If there's no data other than the service name, then put the service name in the data object so the operation won't fail
+			const keys = Object.keys(data).filter((key) => data[key] !== undefined);
+			if (!keys.length) {
+				data.service = serviceName.toLowerCase();
+			}
+
 			ServiceConfiguration.configurations.upsert({
 				service: serviceName.toLowerCase(),
 			}, {

@@ -857,7 +857,7 @@
   "Custom_Sound_Saved_Successfully": "Pielāgotais signāls tika veiksmīgi saglabāts",
   "Custom_Sounds": "Pielāgotie signāli",
   "Custom_Translations": "Pielāgotie tulkojumi",
-  "Custom_Translations_Description": "Jābūt derīgam JSON, kur taustiņi ir valodas, kurās ir taustiņu vārdnīca un tulkojumi.  Piemērs:<br/><code>{\n \"en\": {\n  \"Kanāli\": \"Istabas\"\n },\n \"pt\": {\n  \"Kanāli\": \"Salas\"\n }\n}</code> ",
+  "Custom_Translations_Description": "Jābūt derīgam JSON, kur taustiņi ir valodas, kurās ir taustiņu vārdnīca un tulkojumi.  Piemērs:<br/><code>{\n \"en\": {\n  \"Kanāli\": \"Istabas\"\n },\n \"pt\": {\n  \"Kanāli\": \"Salas\"\n }\n}</code> ",
   "Customize": "Pielāgot",
   "CustomSoundsFilesystem": "Pielāgoto signālu failu sistēma",
   "Dashboard": "Instrumentu panelis",

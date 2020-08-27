@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission, hasRole } from '../../app/authorization/client';
 import { createTemplateForComponent } from '../reactAdapters';
-import { createSidebarItems } from '../components/basic/Sidebar';
+import { createSidebarItems } from '../helpers/createSidebarItems';
 
 createTemplateForComponent('adminFlex', () => import('./sidebar/AdminSidebar'));
 
@@ -15,6 +15,7 @@ export const {
 		href: 'admin-info',
 		i18nLabel: 'Info',
 		icon: 'info-circled',
+		permissionGranted: () => hasPermission('view-statistics'),
 	}, {
 		href: 'admin-import',
 		i18nLabel: 'Import',
