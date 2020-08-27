@@ -14,15 +14,18 @@ import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterC
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import TagsPage from './TagsPage';
 import { TagEditWithData, TagNew } from './EditTag';
+import DeleteWarningModal from '../../../../client/omnichannel/DeleteWarningModal';
+import { useSetModal } from '../../../../client/contexts/ModalContext';
+import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 
 export function RemoveTagButton({ _id, reload }) {
 	const removeTag = useMethod('livechat:removeTag');
 	const tagsRoute = useRoute('omnichannel-tags');
-
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
 
 	const handleRemoveClick = useMutableCallback(async (e) => {
-		e.preventDefault();
-		e.stopPropagation();
 		try {
 			await removeTag(_id);
 		} catch (error) {
@@ -32,7 +35,22 @@ export function RemoveTagButton({ _id, reload }) {
 		reload();
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteAgent = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Tag_removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+	});
+
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
