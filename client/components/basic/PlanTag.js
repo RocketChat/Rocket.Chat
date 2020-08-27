@@ -16,7 +16,7 @@ function PlanTag() {
 		})();
 	}, []);
 
-	return plans.map(({ plan, background }) => <Tag key={plan} backgroundColor={background} marginInline='x4' color='#fff' textTransform='capitalize'>{plan}</Tag>);
+	return plans.map(({ plan, background }) => <Tag key={plan} verticalAlign='middle' backgroundColor={background} marginInline='x4' color='#fff' textTransform='capitalize'>{plan}</Tag>);
 }
 
 export default PlanTag;
