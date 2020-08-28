@@ -1,15 +1,55 @@
-import { Icon, Table, Button, Callout } from '@rocket.chat/fuselage';
+import { Icon, Table, Callout } from '@rocket.chat/fuselage';
 import React, { useState, memo } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+
 
 import GenericTable from '../../components/GenericTable';
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import DeleteWarningModal from '../DeleteWarningModal';
+import { useSetModal } from '../../contexts/ModalContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useMethod } from '../../contexts/ServerContext';
+
+export function RemoveCustomFieldButton({ _id, reload }) {
+	const removeChat = useMethod('livechat:removeCustomField');
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
+
+	const handleRemoveClick = useMutableCallback(async () => {
+		try {
+			await removeChat(_id);
+		} catch (error) {
+			console.log(error);
+		}
+		reload();
+	});
+
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteAgent = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Custom_Field_Removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+	});
+
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+}
+
 
 const CustomFieldsRow = memo(function CustomFieldsRow({
 	medium,
-	onDelete = () => {},
+	reload,
 	...props
 }) {
 	const {
@@ -19,7 +59,6 @@ const CustomFieldsRow = memo(function CustomFieldsRow({
 		visibility,
 	} = props;
 
-	const t = useTranslation();
 
 	const cfRoute = useRoute('omnichannel-customfields');
 
@@ -63,9 +102,7 @@ const CustomFieldsRow = memo(function CustomFieldsRow({
 			{visibility}
 		</Table.Cell>
 		<Table.Cell withTruncatedText onClick={preventClickPropagation}>
-			<Button small primary danger onClick={onDelete} title={t('Delete')}>
-				<Icon name='trash' size='x16'/>
-			</Button>
+			<RemoveCustomFieldButton _id={_id} reload={reload}/>
 		</Table.Cell>
 	</Table.Row>;
 });
@@ -74,7 +111,7 @@ const CustomFieldsTableContainer = () => {
 	const t = useTranslation();
 	const [params, setParams] = useState(() => ({ current: 0, itemsPerPage: 25 }));
 
-	const { data, state } = useEndpointDataExperimental(`livechat/custom-fields?count=${ params.itemsPerPage }&offset=${ params.current }`);
+	const { data, state, reload } = useEndpointDataExperimental(`livechat/custom-fields?count=${ params.itemsPerPage }&offset=${ params.current }`);
 
 	if (state === ENDPOINT_STATES.ERROR) {
 		return <Callout>
@@ -87,10 +124,11 @@ const CustomFieldsTableContainer = () => {
 		totalCustomFields={data?.total}
 		params={params}
 		onChangeParams={setParams}
+		reload={reload}
 	/>;
 };
 
-export function CustomFieldsTable({ customFields, totalCustomFields, params, onChangeParams }) {
+export function CustomFieldsTable({ customFields, totalCustomFields, params, onChangeParams, reload }) {
 	const t = useTranslation();
 
 	const [ref, onMediumBreakpoint] = useResizeInlineBreakpoint([600], 200);
@@ -117,7 +155,7 @@ export function CustomFieldsTable({ customFields, totalCustomFields, params, onC
 		params={params}
 		setParams={onChangeParams}
 	>
-		{(props) => <CustomFieldsRow key={props._id} medium={onMediumBreakpoint} {...props} />}
+		{(props) => <CustomFieldsRow key={props._id} medium={onMediumBreakpoint} reload={reload} {...props} />}
 	</GenericTable>;
 }
 
