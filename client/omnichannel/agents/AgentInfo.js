@@ -34,7 +34,7 @@ export const AgentInfo = React.memo(function AgentInfo({
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
-	const { user } = data || { user: {} };
+	const { user } = data;
 	const {
 		username,
 		statusLivechat,
