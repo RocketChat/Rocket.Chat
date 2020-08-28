@@ -15,33 +15,49 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { useRoute } from '../../contexts/RouterContext';
 import CurrentChatsPage from './CurrentChatsPage';
+import DeleteWarningModal from '../DeleteWarningModal';
+import { useSetModal } from '../../contexts/ModalContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
-export function RemoveCurrentChatButton({ _id, reload }) {
-	const removeCurrentChat = useMethod('livechat:removeCurrentChat');
-	const currentChatsRoute = useRoute('omnichannel-currentChats');
+export function RemoveChatButton({ _id, reload }) {
+	const removeChat = useMethod('livechat:removeRoom');
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
 
-
-	const handleRemoveClick = useMutableCallback(async (e) => {
-		e.preventDefault();
-		e.stopPropagation();
+	const handleRemoveClick = useMutableCallback(async () => {
 		try {
-			await removeCurrentChat(_id);
+			await removeChat(_id);
 		} catch (error) {
 			console.log(error);
 		}
-		currentChatsRoute.push({});
 		reload();
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteAgent = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+	});
+
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ guest, servedBy, department, status, from, to, tags, itemsPerPage, current }, [column, direction]) => useMemo(() => {
+const useQuery = ({ guest, servedBy, department, status, from, to, tags, customFields, itemsPerPage, current }, [column, direction]) => useMemo(() => {
 	const query = {
 		roomName: guest,
-		sort: JSON.stringify({ [column]: sortDir(direction), usernames: column === 'name' ? sortDir(direction) : undefined }),
+		sort: JSON.stringify({ [column]: sortDir(direction), ts: column === 'ts' ? sortDir(direction) : undefined }),
 		...itemsPerPage && { count: itemsPerPage },
 		...current && { offset: current },
 	};
@@ -64,15 +80,19 @@ const useQuery = ({ guest, servedBy, department, status, from, to, tags, itemsPe
 		query.tags = tags;
 	}
 
+	if (customFields && Object.keys(customFields).length > 0) {
+		query.customFields = JSON.stringify(customFields);
+	}
+
 	return query;
-}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags]);
+}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags, customFields]);
 
 function CurrentChatsRoute() {
 	const t = useTranslation();
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 
-	const [params, setParams] = useState({ fname: '', servedBy: [], status: '', department: '', from: '', to: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['name', 'asc']);
+	const [params, setParams] = useState({ fname: '', servedBy: [], status: '', department: '', from: '', to: '', customFields: {}, current: 0, itemsPerPage: 25 });
+	const [sort, setSort] = useState(['ts', 'desc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
@@ -101,10 +121,11 @@ function CurrentChatsRoute() {
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</Th>,
 		<Th key={'departmentId'} direction={sort[1]} active={sort[0] === 'departmentId'} onClick={onHeaderClick} sort='departmentId' w='x200'>{t('Department')}</Th>,
-		<Th key={'servedBy'} direction={sort[1]} active={sort[0] === 'servedBy'} onClick={onHeaderClick} sort='servedBy' w='x120'>{t('Served_by')}</Th>,
-		<Th key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts' w='x120'>{t('Started_at')}</Th>,
-		<Th key={'lm'} direction={sort[1]} active={sort[0] === 'lm'} onClick={onHeaderClick} sort='visibility' w='x120'>{t('Last_message')}</Th>,
+		<Th key={'servedBy'} direction={sort[1]} active={sort[0] === 'servedBy'} onClick={onHeaderClick} sort='servedBy' w='x120'>{t('Served_By')}</Th>,
+		<Th key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts' w='x120'>{t('Started_At')}</Th>,
+		<Th key={'lm'} direction={sort[1]} active={sort[0] === 'lm'} onClick={onHeaderClick} sort='visibility' w='x120'>{t('Last_Message')}</Th>,
 		<Th key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x120'>{t('Status')}</Th>,
+		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
 	const renderRow = useCallback(({ _id, fname, servedBy, ts, lm, department, open }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
@@ -114,7 +135,8 @@ function CurrentChatsRoute() {
 		<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
 		<Table.Cell withTruncatedText>{moment(lm).format('L LTS')}</Table.Cell>
 		<Table.Cell withTruncatedText>{open ? t('Open') : t('Closed')}</Table.Cell>
-	</Table.Row>, [onRowClick, t]);
+		{!open && <RemoveChatButton _id={_id} reload={reload}/>}
+	</Table.Row>, [onRowClick, reload, t]);
 
 	if (!canViewCurrentChats) {
 		return <NotAuthorizedPage />;
