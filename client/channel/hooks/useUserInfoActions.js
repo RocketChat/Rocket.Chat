@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import s from 'underscore.string';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -145,7 +146,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 		},
 	};
 
-	const roomName = room && room.t && roomTypes.getRoomName(room.t, room);
+	const roomName = room && room.t && s.escapeHTML(roomTypes.getRoomName(room.t, room));
 
 	const userCanSetOwner = usePermission('set-owner', rid);
 	const userCanSetLeader = usePermission('set-leader', rid);
