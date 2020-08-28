@@ -7,6 +7,7 @@ import { metrics } from '../../../metrics/server';
 import * as CONSTANTS from '../../constants';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
+import { settings } from '../../../settings';
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid) => {
@@ -20,6 +21,7 @@ Meteor.methods({
 			fields: {
 				username: 1,
 				type: 1,
+				language: 1,
 			},
 		});
 
@@ -37,14 +39,15 @@ Meteor.methods({
 			}
 
 			if (!jitsiTimeout || currentTime > jitsiTimeout) {
+				const language = (user && user.language) || settings.get('Language') || 'en';
 				metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 
 				const message = Messages.createWithTypeRoomIdMessageAndUser('jitsi_call_started', rid, '', Meteor.user(), {
 					actionLinks: [
-						{ icon: 'icon-videocam', label: TAPi18n.__('Click_to_join'), method_id: 'joinJitsiCall', params: '' },
+						{ icon: 'icon-videocam', label: TAPi18n.__('Click_to_join', {}, language), method_id: 'joinJitsiCall', params: '' },
 					],
 				});
-				message.msg = TAPi18n.__('Started_a_video_call');
+				message.msg = TAPi18n.__('Started_a_video_call', {}, language);
 				message.mentions = [
 					{
 						_id: 'here',
