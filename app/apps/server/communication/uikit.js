@@ -7,7 +7,7 @@ import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { findGuest } from '../../../livechat/server/api/lib/livechat';
+import { Apps } from '../orchestrator';
 
 const apiServer = express();
 
@@ -39,9 +39,8 @@ router.use((req, res, next) => {
 	const {
 		'x-user-id': userId,
 		'x-auth-token': authToken,
+		'x-visitor-token': visitorToken,
 	} = req.headers;
-
-	const { token: visitorToken } = req.body;
 
 	if (userId && authToken) {
 		req.user = Users.findOneByIdAndLoginToken(userId, authToken);
@@ -49,7 +48,7 @@ router.use((req, res, next) => {
 	}
 
 	if (visitorToken) {
-		req.visitor = findGuest(visitorToken);
+		req.visitor = Apps.getConverters().get('visitors').convertByToken(visitorToken);
 	}
 
 	if (!req.user && !req.visitor) {
@@ -86,9 +85,9 @@ export class AppUIKitInteractionApi {
 						container,
 					} = req.body;
 
+					const { visitor } = req;
 					const room = this.orch.getConverters().get('rooms').convertById(rid);
 					const user = this.orch.getConverters().get('users').convertToApp(req.user);
-					const visitor = this.orch.getConverters().get('visitors').convertByToken(req.visitor.token);
 					const message = mid && this.orch.getConverters().get('messages').convertById(mid);
 
 					const action = {
