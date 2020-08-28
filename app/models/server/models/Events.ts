@@ -43,7 +43,9 @@ export class EventsModel extends Base<IEvent<EventDataDefinition>> {
 		this.tryEnsureIndex({ ct: 1, cid: 1 });
 		this.tryEnsureIndex({ ct: 1, cid: 1, ts: 1 });
 		this.tryEnsureIndex({ ts: 1 });
-		this.tryEnsureIndex({ isLeaf: 1 }, { sparse: true });
+		this.tryEnsureIndex({ ct: 1, cid: 1, isLeaf: 1 }, { sparse: true });
+		this.tryEnsureIndex({ clid: 1 });
+		this.tryEnsureIndex({ clid: 1, t: 1, deletedAt: 1 }, { sparse: true });
 
 		this.dataHashOptions = this.dataHashOptionsDefinition.reduce((acc, item) => {
 			for (const t of item.t) {
