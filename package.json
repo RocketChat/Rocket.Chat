@@ -22,7 +22,6 @@
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
-		"postinstall": "node .scripts/npm-postinstall.js",
 		"coverage": "nyc -r html mocha --config ./mocha.opts.js",
 		"testci": "node .scripts/start.js",
 		"testui": "cypress run --project tests",
