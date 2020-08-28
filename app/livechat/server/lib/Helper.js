@@ -1,14 +1,14 @@
-import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { MongoInternals } from 'meteor/mongo';
+import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry } from '../../../models/server';
+import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
-import { Apps } from '../../../apps/server';
+import { Apps, AppEvents } from '../../../apps/server';
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
@@ -45,8 +45,11 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 
 	const roomId = Rooms.insert(room);
 
-	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatRoomStarted, room);
-	callbacks.run('livechat.newRoom', room);
+	Meteor.defer(() => {
+		Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
+		callbacks.run('livechat.newRoom', room);
+	});
+
 	return roomId;
 };
 
@@ -167,7 +170,34 @@ export const removeAgentFromSubscription = (rid, { _id, username }) => {
 	Subscriptions.removeByRoomIdAndUserId(rid, _id);
 	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
 
-	Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.IPostLivechatAgentUnassigned, { room, user });
+	Meteor.defer(() => {
+		Apps.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
+	});
+};
+
+export const parseAgentCustomFields = (customFields) => {
+	if (!customFields) {
+		return;
+	}
+
+	const externalCustomFields = () => {
+		const accountCustomFields = settings.get('Accounts_CustomFields');
+		if (!accountCustomFields || accountCustomFields.trim() === '') {
+			return [];
+		}
+
+		try {
+			const parseCustomFields = JSON.parse(accountCustomFields);
+			return Object.keys(parseCustomFields)
+				.filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
+		} catch (error) {
+			console.error(error);
+			return [];
+		}
+	};
+
+	const externalCF = externalCustomFields();
+	return Object.keys(customFields).reduce((newObj, key) => (externalCF.includes(key) ? { ...newObj, [key]: customFields[key] } : newObj), null);
 };
 
 export const normalizeAgent = (agentId) => {
@@ -175,7 +205,15 @@ export const normalizeAgent = (agentId) => {
 		return;
 	}
 
-	return settings.get('Livechat_show_agent_info') ? Users.getAgentInfo(agentId) : { hiddenInfo: true };
+	if (!settings.get('Livechat_show_agent_info')) {
+		return { hiddenInfo: true };
+	}
+
+	const agent = Users.getAgentInfo(agentId);
+	const { customFields: agentCustomFields, ...extraData } = agent;
+	const customFields = parseAgentCustomFields(agentCustomFields);
+
+	return Object.assign(extraData, { ...customFields && { customFields } });
 };
 
 export const dispatchAgentDelegated = (rid, agentId) => {
@@ -225,6 +263,15 @@ export const forwardRoomToAgent = async (room, transferData) => {
 			removeAgentFromSubscription(rid, oldServedBy);
 		}
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
+
+		Meteor.defer(() => {
+			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+				type: LivechatTransferEventType.AGENT,
+				room: rid,
+				from: oldServedBy?._id,
+				to: servedBy._id,
+			});
+		});
 	}
 
 	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
@@ -234,6 +281,15 @@ export const forwardRoomToAgent = async (room, transferData) => {
 export const updateChatDepartment = ({ rid, newDepartmentId, oldDepartmentId }) => {
 	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
+
+	Meteor.defer(() => {
+		Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+			type: LivechatTransferEventType.DEPARTMENT,
+			room: rid,
+			from: oldDepartmentId,
+			to: newDepartmentId,
+		});
+	});
 
 	return callbacks.run('livechat.afterForwardChatToDepartment', { rid, newDepartmentId, oldDepartmentId });
 };
@@ -325,4 +381,54 @@ export const userCanTakeInquiry = (user) => {
 	const { roles, status, statusLivechat } = user;
 	// TODO: hasRole when the user has already been fetched from DB
 	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
+};
+
+export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) => {
+	check(departmentId, String);
+	check(agents, Match.ObjectIncluding({
+		upsert: Match.Maybe(Array),
+		remove: Match.Maybe(Array),
+	}));
+
+	const { upsert = [], remove = [] } = agents;
+	const agentsRemoved = [];
+	const agentsAdded = [];
+	remove.forEach(({ agentId }) => {
+		LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
+		agentsRemoved.push(agentId);
+	});
+
+	if (agentsRemoved.length > 0) {
+		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
+	}
+
+	upsert.forEach((agent) => {
+		if (!Users.findOneById(agent.agentId, { fields: { _id: 1 } })) {
+			return;
+		}
+
+		LivechatDepartmentAgents.saveAgent({
+			agentId: agent.agentId,
+			departmentId,
+			username: agent.username,
+			count: agent.count ? parseInt(agent.count) : 0,
+			order: agent.order ? parseInt(agent.order) : 0,
+			departmentEnabled,
+		});
+		agentsAdded.push(agent.agentId);
+	});
+
+	if (agentsAdded.length > 0) {
+		callbacks.runAsync('livechat.saveAgentDepartment', {
+			departmentId,
+			agentsId: agentsAdded,
+		});
+	}
+
+	if (agentsRemoved.length > 0 || agentsAdded.length > 0) {
+		const numAgents = LivechatDepartmentAgents.find({ departmentId }).count();
+		LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
+	}
+
+	return true;
 };

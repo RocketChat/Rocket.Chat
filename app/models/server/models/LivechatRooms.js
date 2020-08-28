@@ -16,6 +16,10 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
+		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
+		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -164,6 +168,18 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			closedAt: { $exists: true },
+			servedBy: { $exists: true },
+		};
+
+		options.sort = { closedAt: -1 };
+		return this.findOne(query, options);
+	}
+
 	findOneByVisitorToken(visitorToken, fields) {
 		const options = {};
 
@@ -236,6 +252,16 @@ export class LivechatRooms extends Base {
 		};
 
 		return this.find(query);
+	}
+
+	findByVisitorIdAndAgentId(visitorId, agentId, options) {
+		const query = {
+			t: 'l',
+			...visitorId && { 'v._id': visitorId },
+			...agentId && { 'servedBy._id': agentId },
+		};
+
+		return this.find(query, options);
 	}
 
 	findByVisitorId(visitorId) {
@@ -463,6 +489,35 @@ export class LivechatRooms extends Base {
 		});
 	}
 
+	requestTranscriptByRoomId(roomId, transcriptInfo = {}) {
+		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
+
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				transcriptRequest: {
+					requestedAt,
+					requestedBy,
+					email,
+					subject,
+				},
+			},
+		});
+	}
+
+	removeTranscriptRequestByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$unset: {
+				transcriptRequest: 1,
+			},
+		});
+	}
+
 	findOpenByAgent(userId) {
 		const query = {
 			t: 'l',
@@ -591,6 +646,22 @@ export class LivechatRooms extends Base {
 		const update = {
 			$set: {
 				'metrics.visitorInactivity': visitorInactivity,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	changeVisitorByRoomId(roomId, { _id, username, token }) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				'v._id': _id,
+				'v.username': username,
+				'v.token': token,
 			},
 		};
 

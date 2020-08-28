@@ -1,10 +1,10 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { Box, Button, ButtonGroup, TextInput, Field, Select, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, TextInput, Field, Select, Icon, Skeleton, Throbber, InputBox, Modal } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { Modal } from '../../components/basic/Modal';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import VerticalBar from '../../components/basic/VerticalBar';
 
@@ -51,7 +51,8 @@ export function EditCustomUserStatusWithData({ _id, cache, ...props }) {
 	const t = useTranslation();
 	const query = useMemo(() => ({
 		query: JSON.stringify({ _id }),
-	}), [_id]);
+		// TODO: remove cache. Is necessary for data invalidation
+	}), [_id, cache]);
 
 	const { data, state, error } = useEndpointDataExperimental('custom-user-status.list', query);
 
@@ -86,7 +87,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 
 	const [name, setName] = useState('');
 	const [statusType, setStatusType] = useState('');
-	const [modal, setModal] = useState();
+	const setModal = useSetModal();
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -96,7 +97,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const saveStatus = useMethod('insertOrUpdateUserStatus');
 	const deleteStatus = useMethod('deleteCustomUserStatus');
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousStatusType !== statusType, [name, statusType]);
+	const hasUnsavedChanges = useMemo(() => previousName !== name || previousStatusType !== statusType, [name, previousName, previousStatusType, statusType]);
 	const handleSave = useCallback(async () => {
 		try {
 			await saveStatus({
@@ -111,7 +112,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [name, statusType, _id]);
+	}, [saveStatus, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
 
 	const onDeleteConfirm = useCallback(async () => {
 		try {
@@ -121,7 +122,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			dispatchToastMessage({ type: 'error', message: error });
 			onChange();
 		}
-	}, [_id]);
+	}, [_id, close, deleteStatus, dispatchToastMessage, onChange]);
 
 	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
 
@@ -132,36 +133,33 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		['offline', t('Offline')],
 	];
 
-	return <>
-		<VerticalBar.ScrollableContent {...props}>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Presence')}</Field.Label>
-				<Field.Row>
-					<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions}/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button onClick={close}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-		</VerticalBar.ScrollableContent>
-		{ modal }
-	</>;
+	return <VerticalBar.ScrollableContent {...props}>
+		<Field>
+			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Row>
+				<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Label>{t('Presence')}</Field.Label>
+			<Field.Row>
+				<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions}/>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Row>
+				<ButtonGroup stretch w='full'>
+					<Button onClick={close}>{t('Cancel')}</Button>
+					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
+				</ButtonGroup>
+			</Field.Row>
+		</Field>
+		<Field>
+			<Field.Row>
+				<ButtonGroup stretch w='full'>
+					<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
+				</ButtonGroup>
+			</Field.Row>
+		</Field>
+	</VerticalBar.ScrollableContent>;
 }

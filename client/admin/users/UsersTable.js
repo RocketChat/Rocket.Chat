@@ -1,10 +1,10 @@
-import { Box, Table, Avatar, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
-import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import { GenericTable, Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { roomTypes } from '../../../app/utils/client';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 
@@ -17,27 +17,27 @@ const FilterByText = ({ setFilter, ...props }) => {
 
 	useEffect(() => {
 		setFilter({ text });
-	}, [text]);
-	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+	}, [setFilter, text]);
+	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 		<TextInput flexShrink={0} placeholder={t('Search_Users')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 };
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = (params, sort) => useMemo(() => ({
-	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1 }),
+const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
+	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1, avatarETag: 1 }),
 	query: JSON.stringify({
 		$or: [
-			{ 'emails.address': { $regex: params.text || '', $options: 'i' } },
-			{ username: { $regex: params.text || '', $options: 'i' } },
-			{ name: { $regex: params.text || '', $options: 'i' } },
+			{ 'emails.address': { $regex: text || '', $options: 'i' } },
+			{ username: { $regex: text || '', $options: 'i' } },
+			{ name: { $regex: text || '', $options: 'i' } },
 		],
 	}),
-	sort: JSON.stringify({ [sort[0]]: sortDir(sort[1]), usernames: sort[0] === 'name' ? sortDir(sort[1]) : undefined }),
-	...params.itemsPerPage && { count: params.itemsPerPage },
-	...params.current && { offset: params.current },
-}), [JSON.stringify(params), JSON.stringify(sort)]);
+	sort: JSON.stringify({ [column]: sortDir(direction), usernames: column === 'name' ? sortDir(direction) : undefined }),
+	...itemsPerPage && { count: itemsPerPage },
+	...current && { offset: current },
+}), [text, itemsPerPage, current, column, direction]);
 
 export function UsersTable() {
 	const t = useTranslation();
@@ -53,12 +53,12 @@ export function UsersTable() {
 
 	const usersRoute = useRoute('admin-users');
 
-	const onClick = (username) => () => usersRoute.push({
+	const onClick = useCallback((username) => () => usersRoute.push({
 		context: 'info',
 		id: username,
-	});
+	}), [usersRoute]);
 
-	const onHeaderClick = (id) => {
+	const onHeaderClick = useCallback((id) => {
 		const [sortBy, sortDirection] = sort;
 
 		if (sortBy === id) {
@@ -66,7 +66,7 @@ export function UsersTable() {
 			return;
 		}
 		setSort([id, 'asc']);
-	};
+	}, [sort]);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -76,31 +76,27 @@ export function UsersTable() {
 		<Th key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</Th>,
 		mediaQuery && <Th key={'roles'} direction={sort[1]} active={sort[0] === 'roles'} onClick={onHeaderClick} sort='roles' w='x120'>{t('Roles')}</Th>,
 		<Th key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x100'>{t('Status')}</Th>,
-	].filter(Boolean), [sort, mediaQuery]);
+	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
-	const renderRow = useCallback(({ emails, _id, username, name, roles, status, ...args }) => {
-		const avatarUrl = roomTypes.getConfig('d').getAvatarPath({ name: username || name, type: 'd', _id, ...args });
-
-		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<Table.Cell style={style}>
-				<Box display='flex' alignItems='center'>
-					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={username} url={avatarUrl} />
-					<Box display='flex' style={style} mi='x8'>
-						<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
-							<Box fontScale='p2' style={style} color='default'>{name || username}</Box>
-							{!mediaQuery && name && <Box fontScale='p1' color='hint' style={style}> {`@${ username }`} </Box>}
-						</Box>
+	const renderRow = useCallback(({ emails, _id, username, name, roles, status, avatarETag }) => <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
+		<Table.Cell style={style}>
+			<Box display='flex' alignItems='center'>
+				<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
+				<Box display='flex' style={style} mi='x8'>
+					<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
+						<Box fontScale='p2' style={style} color='default'>{name || username}</Box>
+						{!mediaQuery && name && <Box fontScale='p1' color='hint' style={style}> {`@${ username }`} </Box>}
 					</Box>
 				</Box>
-			</Table.Cell>
-			{mediaQuery && <Table.Cell>
-				<Box fontScale='p2' style={style} color='hint'>{ username }</Box> <Box mi='x4'/>
-			</Table.Cell>}
-			<Table.Cell style={style}>{emails && emails[0].address}</Table.Cell>
-			{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
-			<Table.Cell fontScale='p1' color='hint' style={style}>{status}</Table.Cell>
-		</Table.Row>;
-	}, [mediaQuery]);
+			</Box>
+		</Table.Cell>
+		{mediaQuery && <Table.Cell>
+			<Box fontScale='p2' style={style} color='hint'>{ username }</Box> <Box mi='x4'/>
+		</Table.Cell>}
+		<Table.Cell style={style}>{emails && emails.length && emails[0].address}</Table.Cell>
+		{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
+		<Table.Cell fontScale='p1' color='hint' style={style}>{status}</Table.Cell>
+	</Table.Row>, [mediaQuery, onClick]);
 
 	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.users} total={data.total} setParams={setParams} params={params} />;
 }

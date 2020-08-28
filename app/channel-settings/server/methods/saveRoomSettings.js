@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
+import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';
 import { Rooms } from '../../../models';
 import { callbacks } from '../../../callbacks';
@@ -17,7 +18,7 @@ import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
 
-const fields = ['featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
+const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
@@ -128,10 +129,17 @@ Meteor.methods({
 					action: 'Editing_room',
 				});
 			}
+			if (setting === 'retentionIgnoreThreads' && !hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.ignoreThreads) {
+				throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+					method: 'saveRoomSettings',
+					action: 'Editing_room',
+				});
+			}
 			if (setting === 'retentionOverrideGlobal') {
 				delete settings.retentionMaxAge;
 				delete settings.retentionExcludePinned;
 				delete settings.retentionFilesOnly;
+				delete settings.retentionIgnoreThreads;
 			}
 		});
 
@@ -215,6 +223,9 @@ Meteor.methods({
 				case 'retentionFilesOnly':
 					Rooms.saveRetentionFilesOnlyById(rid, value);
 					break;
+				case 'retentionIgnoreThreads':
+					Rooms.saveRetentionIgnoreThreadsById(rid, value);
+					break;
 				case 'retentionOverrideGlobal':
 					Rooms.saveRetentionOverrideGlobalById(rid, value);
 					break;
@@ -223,6 +234,9 @@ Meteor.methods({
 					break;
 				case 'favorite':
 					Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
+					break;
+				case 'roomAvatar':
+					setRoomAvatar(rid, value, user);
 					break;
 			}
 		});

@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 
 import { APIClient, mountArrayQueryParameters } from '../../../../../../../app/utils/client';
 import './livechatDepartmentCustomFieldsForm.html';
+import { LivechatBusinessHourTypes } from '../../../../../../../definition/ILivechatBusinessHour';
 
 Template.livechatDepartmentCustomFieldsForm.helpers({
 	department() {
@@ -30,9 +31,14 @@ Template.livechatDepartmentCustomFieldsForm.helpers({
 		const department = Template.instance().department.get();
 		return [department && department._id, ...Template.instance().selectedDepartments.get().map((dept) => dept._id)];
 	},
+	businessHourName() {
+		const businessHour = Template.instance().businessHour.get();
+		return businessHour?.name;
+	},
 });
 
 Template.livechatDepartmentCustomFieldsForm.onCreated(function() {
+	this.businessHour = new ReactiveVar({});
 	this.selectedDepartments = new ReactiveVar([]);
 	const { id: _id, department: contextDepartment } = this.data;
 
@@ -48,10 +54,17 @@ Template.livechatDepartmentCustomFieldsForm.onCreated(function() {
 
 	if (!contextDepartment && _id) {
 		this.autorun(async () => {
-			const { department } = await APIClient.v1.get(`livechat/department/${ _id }`);
+			const { department } = await APIClient.v1.get(`livechat/department/${ _id }?includeAgents=false`);
 			if (department.departmentsAllowedToForward) {
 				const { departments } = await APIClient.v1.get(`livechat/department.listByIds?${ mountArrayQueryParameters('ids', department.departmentsAllowedToForward) }&fields=${ JSON.stringify({ fields: { name: 1 } }) }`);
-				this.selectedDepartments.set(departments.map((dept) => ({ _id: dept._id, text: dept.name })));
+				this.selectedDepartments.set(departments.map((dept) => ({
+					_id: dept._id,
+					text: dept.name,
+				})));
+			}
+			if (department.businessHourId) {
+				const { businessHour } = await APIClient.v1.get(`livechat/business-hour?_id=${ department.businessHourId }&type=${ LivechatBusinessHourTypes.CUSTOM }`);
+				this.businessHour.set(businessHour);
 			}
 			this.department.set(department);
 		});

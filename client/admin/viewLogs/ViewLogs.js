@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 
 import Page from '../../components/basic/Page';
-import RawText from '../../components/basic/RawText';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -62,7 +61,7 @@ function ViewLogs() {
 		};
 
 		fetchLines();
-	}, []);
+	}, [dispatchToastMessage, getStdoutQueue]);
 
 	useEffect(() => {
 		const stdoutStreamer = new Meteor.Streamer('stdout');
@@ -118,13 +117,14 @@ function ViewLogs() {
 	}, [isAtBottom, sendToBottom]);
 
 	useEffect(() => {
+		const wrapper = wrapperRef.current;
 		if (window.MutationObserver) {
 			const observer = new MutationObserver((mutations) => {
 				mutations.forEach(() => {
 					sendToBottomIfNecessary();
 				});
 			});
-			observer.observe(wrapperRef.current, { childList: true });
+			observer.observe(wrapper, { childList: true });
 
 			return () => {
 				observer.disconnect();
@@ -134,10 +134,10 @@ function ViewLogs() {
 		const handleSubtreeModified = () => {
 			sendToBottomIfNecessary();
 		};
-		wrapperRef.current.addEventListener('DOMSubtreeModified', handleSubtreeModified);
+		wrapper.addEventListener('DOMSubtreeModified', handleSubtreeModified);
 
 		return () => {
-			wrapperRef.current.removeEventListener('DOMSubtreeModified', handleSubtreeModified);
+			wrapper.removeEventListener('DOMSubtreeModified', handleSubtreeModified);
 		};
 	}, [sendToBottomIfNecessary]);
 
@@ -212,7 +212,7 @@ function ViewLogs() {
 						onScroll={handleScroll}
 					>
 						{lines.sort((a, b) => a.ts - b.ts).map(({ string }, i) =>
-							<RawText key={i}>{ansispan(string)}</RawText>)}
+							<span key={i} dangerouslySetInnerHTML={{ __html: ansispan(string) }} />)}
 					</Box>
 				</Scrollable>
 				<Box

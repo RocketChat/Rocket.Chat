@@ -5,6 +5,8 @@ import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
 import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom } from '../lib/rooms';
+import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -198,8 +200,9 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 			oldest,
 			inclusive,
 			limit: this.bodyParams.limit,
-			excludePinned: this.bodyParams.excludePinned,
-			filesOnly: this.bodyParams.filesOnly,
+			excludePinned: [true, 'true', 1, '1'].includes(this.bodyParams.excludePinned),
+			filesOnly: [true, 'true', 1, '1'].includes(this.bodyParams.filesOnly),
+			ignoreThreads: [true, 'true', 1, '1'].includes(this.bodyParams.ignoreThreads),
 			fromUsers: this.bodyParams.users,
 		}));
 
@@ -351,5 +354,70 @@ API.v1.addRoute('rooms.changeArchivationState', { authRequired: true }, {
 		}
 
 		return API.v1.success({ result });
+	},
+});
+
+API.v1.addRoute('rooms.export', { authRequired: true }, {
+	post() {
+		const { rid, type } = this.bodyParams;
+
+		if (!rid || !type || !['email', 'file'].includes(type)) {
+			throw new Meteor.Error('error-invalid-params');
+		}
+
+		if (!hasPermission(this.userId, 'mail-messages')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
+		}
+
+		const room = Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room');
+		}
+
+		const user = Meteor.users.findOne({ _id: this.userId });
+
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+
+		if (type === 'file') {
+			const { dateFrom, dateTo, format } = this.bodyParams;
+
+			if (!['html', 'json'].includes(format)) {
+				throw new Meteor.Error('error-invalid-format');
+			}
+
+			sendFile({
+				rid,
+				format,
+				...dateFrom && { dateFrom: new Date(dateFrom) },
+				...dateTo && { dateTo: new Date(dateTo) },
+			}, user);
+			return API.v1.success();
+		}
+
+		if (type === 'email') {
+			const { toUsers, toEmails, subject, messages } = this.bodyParams;
+
+			if ((!toUsers || toUsers.length === 0) && (!toEmails || toEmails.length === 0)) {
+				throw new Meteor.Error('error-invalid-recipient');
+			}
+
+			if (messages.length === 0) {
+				throw new Meteor.Error('error-invalid-messages');
+			}
+
+			const result = sendViaEmail({
+				rid,
+				toUsers,
+				toEmails,
+				subject,
+				messages,
+			}, user);
+
+			return API.v1.success(result);
+		}
+
+		return API.v1.error();
 	},
 });

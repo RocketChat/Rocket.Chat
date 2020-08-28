@@ -16,8 +16,8 @@ Tracker.autorun((c) => {
 AccountBox.addItem({
 	name: 'Omnichannel',
 	icon: 'omnichannel',
-	href: 'livechat-current-chats',
-	sideNav: 'livechatFlex',
+	href: '/omnichannel/current',
+	sideNav: 'omnichannelFlex',
 	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
 });
 
@@ -32,10 +32,10 @@ TabBar.addButton({
 
 TabBar.addButton({
 	groups: ['live'],
-	id: 'visitor-history',
-	i18nTitle: 'Past_Chats',
+	id: 'contact-chat-history',
+	i18nTitle: 'Contact_Chat_History',
 	icon: 'clock',
-	template: 'visitorHistory',
+	template: 'contactChatHistory',
 	order: 11,
 });
 

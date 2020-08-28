@@ -81,7 +81,6 @@ Template.flexTabBar.helpers({
 	template() {
 		return Template.instance().tabBar.getTemplate();
 	},
-
 	flexData() {
 		return Object.assign(Template.currentData().data || {}, {
 			tabBar: Template.instance().tabBar,
@@ -110,6 +109,7 @@ const commonEvents = {
 
 		$flexTab.attr('template', this.template);
 		t.tabBar.setData({
+			...this,
 			label: this.i18nTitle,
 			icon: this.icon,
 		});
@@ -132,6 +132,7 @@ const action = function(e, t) {
 	}
 	$flexTab.attr('template', this.template);
 	t.tabBar.setData({
+		...this,
 		label: this.i18nTitle,
 		icon: this.icon,
 	});

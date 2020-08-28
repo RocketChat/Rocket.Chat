@@ -4,7 +4,6 @@ import './sidebarItem.html';
 import './sideNav.html';
 import './toolbar.html';
 import './roomList.html';
-import './userStatus.html';
 import './chatRoomItem';
 import { toolbarSearch } from './sidebarHeader';
 import './sidebarItem';

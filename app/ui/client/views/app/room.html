@@ -128,7 +128,7 @@
 								{{/if}}
 
 								{{# with messageContext}}
-									{{#each msg in messagesHistory}}{{> message index=@index shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+									{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
 								{{/with}}
 
 								{{#if hasMoreNext}}
@@ -145,9 +145,14 @@
 						{{> messageBox messageboxData}}
 					</footer>
 				</div>
-				{{#with flexData}}
-					{{> contextualBar}}
+				{{# with openedThread}}
+					{{> ThreadComponent}}
 				{{/with}}
+				{{# unless shouldCloseFlexTab}}
+					{{#with flexData}}
+						{{> contextualBar}}
+					{{/with}}
+				{{/unless}}
 			</div>
 		</section>
 	</div>

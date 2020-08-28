@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization/server';
 import {
 	findAllChatsStatus,

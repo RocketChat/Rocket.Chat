@@ -2,7 +2,7 @@ import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Box, Table, TextInput, Icon, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { GenericTable, Th } from '../../../app/ui/client/components/GenericTable';
+import { GenericTable, Th } from '../../components/GenericTable';
 import { useCustomSound } from '../../contexts/CustomSoundContext';
 
 const FilterByText = ({ setFilter, ...props }) => {
@@ -13,7 +13,7 @@ const FilterByText = ({ setFilter, ...props }) => {
 	useEffect(() => {
 		setFilter({ text });
 	}, [text]);
-	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
+	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 		<TextInput flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
 	</Box>;
 };

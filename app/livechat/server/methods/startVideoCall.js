@@ -30,10 +30,16 @@ Meteor.methods({
 			],
 		});
 
+		let rname;
+		if (settings.get('Jitsi_URL_Room_Hash')) {
+			rname = settings.get('uniqueID') + roomId;
+		} else {
+			rname = encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+		}
 		return {
 			roomId: room._id,
 			domain: settings.get('Jitsi_Domain'),
-			jitsiRoom: settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + roomId,
+			jitsiRoom: settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix'),
 		};
 	},
 });

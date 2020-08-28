@@ -1,5 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { TabBar } from './TabBar';
 
@@ -58,12 +59,16 @@ export class RocketChatTabBar {
 			$('.contextual-bar__container').scrollTop(0).find('input[type=text]:first').focus();
 		});
 
+		const current = FlowRouter.current();
+		FlowRouter.go(current.route.name, { ...current.params, tab: null, context: null });
+
 		if (!button) {
 			return;
 		}
 		if (typeof button !== 'object' || !button.id) {
 			button = TabBar.getButton(button);
 		}
+
 		$('.flex-tab, .contextual-bar').css('width', button.width ? `${ button.width }px` : '');
 		this.template.set(button.template);
 		this.id.set(button.id);
