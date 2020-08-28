@@ -13,7 +13,6 @@ import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperime
 import { useMethod } from '../../contexts/ServerContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import { useRoute } from '../../contexts/RouterContext';
 import CurrentChatsPage from './CurrentChatsPage';
 import DeleteWarningModal from '../DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';

@@ -15,9 +15,6 @@ import DeleteWarningModal from '../DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
-
-// moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss')
-// guest: '', servedBy: '', status: '', department: '', from: '', to: ''
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
 const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, ...props }) => {
