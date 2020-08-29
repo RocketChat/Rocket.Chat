@@ -48989,6 +48989,102 @@
           ]
         }
       ]
+    },
+    "3.6.0": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.17.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18665",
+          "title": "Release 3.5.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18457",
+          "title": "[FIX] Migration 194",
+          "userLogin": "thirsch",
+          "contributors": [
+            "thirsch",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18412",
+          "title": "[FIX] Omnichannel session monitor is not starting",
+          "userLogin": "renatobecker",
+          "milestone": "3.5.1",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18426",
+          "title": "[FIX] Invalid MIME type when uploading audio files",
+          "userLogin": "renatobecker",
+          "milestone": "3.5.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "18428",
+          "title": "[FIX] Error when updating omnichannel department without agents parameter",
+          "userLogin": "renatobecker",
+          "milestone": "3.5.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "18446",
+          "title": "[FIX] Omnichannel Take Inquiry endpoint checking wrong permission",
+          "userLogin": "renatobecker",
+          "milestone": "3.5.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "18442",
+          "title": "[FIX] Multiple push notifications sent via native drivers",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.5.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18430",
+          "title": "[FIX] Appending 'false' to Jitsi URL",
+          "userLogin": "ggazzo",
+          "milestone": "3.5.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18355",
+          "title": "[FIX] Can't send long messages as attachment",
+          "userLogin": "gabriellsh",
+          "milestone": "3.5.1",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
