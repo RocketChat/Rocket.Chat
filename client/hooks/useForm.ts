@@ -152,18 +152,19 @@ export const useForm = (
 		dispatch(formReset());
 	}, []);
 
-	const handlers = useMemo(() => state.fields.reduce((handlers, { name, initialValue }) => ({
-		...handlers,
-		[`handle${ capitalize(name) }`]: (eventOrValue: ChangeEvent | unknown): void => {
-			const newValue = getValue(eventOrValue);
-			dispatch(valueChanged(name, newValue));
-			onChange({
-				initialValue,
-				value: newValue,
-				key: name,
-			});
-		},
-	}), {}), [onChange, state.fields]);
+	const handlers = useMemo<Record<string, (eventOrValue: ChangeEvent | unknown) => void>>(
+		() => state.fields.reduce((handlers, { name, initialValue }) => ({
+			...handlers,
+			[`handle${ capitalize(name) }`]: (eventOrValue: ChangeEvent | unknown): void => {
+				const newValue = getValue(eventOrValue);
+				dispatch(valueChanged(name, newValue));
+				onChange({
+					initialValue,
+					value: newValue,
+					key: name,
+				});
+			},
+		}), {}), [onChange, state.fields]);
 
 	return {
 		handlers,

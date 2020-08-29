@@ -22,14 +22,14 @@ export default React.memo(function AccountSidebar() {
 		SideNav.closeFlex();
 	}, []);
 
-	const currentRoute = useCurrentRoute();
-	const currentPath = useRoutePath(...currentRoute);
+	const [currentRouteName, ...rest] = useCurrentRoute();
+	const currentPath = useRoutePath(currentRouteName, ...rest);
 
 	useEffect(() => {
-		if (currentRoute[0] !== 'account') {
+		if (currentRouteName !== 'account') {
 			SideNav.closeFlex();
 		}
-	}, [currentRoute, currentPath]);
+	}, [currentRouteName]);
 
 	// TODO: uplift this provider
 	return <SettingsProvider privileged>

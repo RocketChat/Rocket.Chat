@@ -15,6 +15,7 @@ export const {
 		href: 'admin-info',
 		i18nLabel: 'Info',
 		icon: 'info-circled',
+		permissionGranted: () => hasPermission('view-statistics'),
 	}, {
 		href: 'admin-import',
 		i18nLabel: 'Import',

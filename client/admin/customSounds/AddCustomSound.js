@@ -23,7 +23,7 @@ export function AddCustomSound({ goToNew, close, onChange, ...props }) {
 		setSound(soundFile);
 	}, []);
 
-	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(async (name, soundFile) => {
 		const soundData = createSoundData(soundFile, name);

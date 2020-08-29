@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../../models';
-
 import { TranslationProviderRegistry } from '..';
 
 Meteor.methods({

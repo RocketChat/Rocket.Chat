@@ -7,14 +7,14 @@
 			</div>
 
 			{{#if isDiscussion}}
-				<div class="rc-header__block rc-header__block--action js-open-parent-channel rc-tooltip rc-tooltip--down rc-tooltip--start" aria-label={{_ "Back_to_room"}}>
+				<div class="rc-header__block rc-header__block--action js-open-parent-channel" title={{_ "Back_to_room"}}>
 					<span class="rc-header__first-icon">{{> icon block="rc-header__icon rc-header__icon" icon="back"}}</span>
 				</div>
 			{{/if}}
 
 			{{#if isToggleFavoriteButtonVisible}}
 				<div class="rc-header__block rc-header__favorite rc-header__block--action">
-					<button aria-label="{{toggleFavoriteButtonIconLabel}}" type="button" class="rc-header__toggle-favorite {{#if isToggleFavoriteButtonChecked}}rc-header__toggle-favorite--checked{{/if}} rc-header__first-icon rc-tooltip rc-tooltip--down rc-tooltip--start js-favorite">
+					<button title="{{toggleFavoriteButtonIconLabel}}" type="button" class="rc-header__toggle-favorite {{#if isToggleFavoriteButtonChecked}}rc-header__toggle-favorite--checked{{/if}} rc-header__first-icon js-favorite">
 						{{> icon block="rc-header__icon" icon=toggleFavoriteButtonIcon}}
 					</button>
 				</div>
@@ -55,7 +55,7 @@
 				<span class="sentiment">{{sentimentSmile}}</span>
 				{{/if}}
 				{{#if isTranslated}}
-				<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
+				<i class="icon-language" title="{{_ "Translated"}}"></i>
 				{{/if}}
 			</div>
 
@@ -65,7 +65,7 @@
 			{{#if encryptionState}}
 			<div class="rc-header__block rc-header__block-action rc-header__encryption">
 				<div class="rc-room-actions">
-					<button aria-label="{{_ 'E2E_Enabled'}}" class="rc-tooltip rc-tooltip--down rc-room-actions__action tab-button rc-header__toggle-encryption js-toggle-encryption {{encryptionState}}">{{> icon icon="key"}}</button>
+					<button title="{{_ 'E2E_Enabled'}}" class="rc-room-actions__action tab-button rc-header__toggle-encryption js-toggle-encryption {{encryptionState}}">{{> icon icon="key"}}</button>
 				</div>
 			</div>
 			{{/if}}
