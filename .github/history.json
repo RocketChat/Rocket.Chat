@@ -48875,6 +48875,120 @@
           ]
         }
       ]
+    },
+    "3.6.0-rc.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.17.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18718",
+          "title": "Regression: Omnichannel Current Chat issues",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18726",
+          "title": "Regression: Use user autocomplete on export messages",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18724",
+          "title": "Regression: Split date fields on export messages contextual bar",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.6.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18706",
+          "title": "Regression: Accept visitors for uikit interactions",
+          "userLogin": "d-gubert",
+          "milestone": "3.6.0",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18719",
+          "title": "Regression: Add remove popup to omnichannel custom fields",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "18723",
+          "title": "Regression: Omnichannel Business Hours Issues",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "18715",
+          "title": "Regression: Bundle the package `hepburn`",
+          "userLogin": "tassoevan",
+          "milestone": "3.6.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "18674",
+          "title": "Regression: Toast Messages",
+          "userLogin": "ggazzo",
+          "milestone": "3.6.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "18684",
+          "title": "Regression: Agents Page issues",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.6.0",
+          "contributors": [
+            "MartinSchoeler",
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18705",
+          "title": "Regression: Omnichannel Tags and Units issues",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "18685",
+          "title": "Regression: Priorities Page issues",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
