@@ -63,9 +63,14 @@ const FileExport = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Field.Label>{t('Date')}</Field.Label>
+				<Field.Label>{t('Date_From')}</Field.Label>
 				<Field.Row>
 					<TextInput type='date' value={dateFrom} onChange={handleDateFrom} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Date_to')}</Field.Label>
+				<Field.Row>
 					<TextInput type='date' value={dateTo} onChange={handleDateTo} />
 				</Field.Row>
 			</Field>
