@@ -79,9 +79,7 @@ const TriggersRow = memo(function TriggersRow(props) {
 			{enabled ? t('Yes') : t('No')}
 		</Table.Cell>
 		<Table.Cell withTruncatedText>
-			<Button onClick={handleDelete} small>
-				<Icon name='trash' size='x16' />
-			</Button>
+			<Icon name='trash' size='x16' onClick={handleDelete} />
 		</Table.Cell>
 	</Table.Row>;
 });
@@ -131,7 +129,10 @@ export function TriggersTable({ triggers, totalTriggers, params, onChangeParams,
 			<GenericTable.HeaderCell>
 				{t('Enabled')}
 			</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell width='x60'/>
+			<GenericTable.HeaderCell width='x60'>
+				{t('Remove')}
+			</GenericTable.HeaderCell>
+
 		</>}
 		results={triggers}
 		total={totalTriggers}
