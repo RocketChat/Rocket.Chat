@@ -1,7 +1,7 @@
 
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
-import { Box, Table, Icon } from '@rocket.chat/fuselage';
+import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
 
 import { Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -13,6 +13,7 @@ import ManagersPage from './ManagersPage';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 
 export function RemoveManagerButton({ _id, reload }) {
+	const t = useTranslation();
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/manager/${ _id }`);
 
 	const handleRemoveClick = useMutableCallback(async () => {
@@ -21,7 +22,11 @@ export function RemoveManagerButton({ _id, reload }) {
 			reload();
 		}
 	});
-	return <Table.Cell fontScale='p1' clickable={true} color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	return <Table.Cell fontScale='p1' clickable={true} color='hint' onClick={handleRemoveClick} withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleRemoveClick}>
+			<Icon name='trash' size='x16'/>
+		</Button>
+	</Table.Cell>;
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);

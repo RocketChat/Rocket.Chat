@@ -1,4 +1,4 @@
-import { Icon, Table, Callout } from '@rocket.chat/fuselage';
+import { Icon, Table, Callout, Button } from '@rocket.chat/fuselage';
 import React, { useState, memo } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -43,7 +43,11 @@ export function RemoveCustomFieldButton({ _id, reload }) {
 		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleDelete}>
+			<Icon name='trash' size='x16'/>
+		</Button>
+	</Table.Cell>;
 }
 
 

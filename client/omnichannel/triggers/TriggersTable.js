@@ -1,5 +1,5 @@
 import { Table, Callout, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, Button } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useMemo } from 'react';
 
 import GenericTable from '../../components/GenericTable';
@@ -79,7 +79,9 @@ const TriggersRow = memo(function TriggersRow(props) {
 			{enabled ? t('Yes') : t('No')}
 		</Table.Cell>
 		<Table.Cell withTruncatedText>
-			<Icon name='trash' size='x16' onClick={handleDelete} />
+			<Button small ghost title={t('Remove')} onClick={handleDelete}>
+				<Icon name='trash' size='x16'/>
+			</Button>
 		</Table.Cell>
 	</Table.Row>;
 });
