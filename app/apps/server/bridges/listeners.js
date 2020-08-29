@@ -29,9 +29,6 @@ export class AppListenerBridge {
 				case AppInterface.IPreRoomUserJoined:
 				case AppInterface.IPostRoomUserJoined:
 					return 'roomEvent';
-				case AppInterface.IPostExternalComponentOpened:
-				case AppInterface.IPostExternalComponentClosed:
-					return 'externalComponentEvent';
 				/**
 				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
 				 */
@@ -43,11 +40,18 @@ export class AppListenerBridge {
 				case AppInterface.IPostLivechatRoomTransferred:
 					return 'livechatEvent';
 				case AppInterface.IUIKitInteractionHandler:
-					return 'uiKitInteractionEvent';
+				case AppInterface.IUIKitLivechatInteractionHandler:
+				case AppInterface.IPostExternalComponentOpened:
+				case AppInterface.IPostExternalComponentClosed:
+					return 'defaultEvent';
 			}
 		})();
 
 		return this[method](event, ...payload);
+	}
+
+	async defaultEvent(inte, payload) {
+		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
 	}
 
 	async messageEvent(inte, message) {
@@ -84,14 +88,6 @@ export class AppListenerBridge {
 			return result;
 		}
 		return this.orch.getConverters().get('rooms').convertAppRoom(result);
-	}
-
-	async externalComponentEvent(inte, externalComponent) {
-		return this.orch.getManager().getListenerManager().executeListener(inte, externalComponent);
-	}
-
-	async uiKitInteractionEvent(inte, action) {
-		return this.orch.getManager().getListenerManager().executeListener(inte, action);
 	}
 
 	async livechatEvent(inte, data) {
