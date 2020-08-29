@@ -66,7 +66,7 @@ export const BusinessHoursMultiple = ({ values = {}, handlers = {}, className, d
 		<Field className={className}>
 			<Field.Label>{t('Departments')}</Field.Label>
 			<Field.Row>
-				<MultiSelectFiltered options={departmentList} value={departments} onChange={handleDepartments} placeholder={t('Departments')}/>
+				<MultiSelectFiltered options={departmentList} value={departments} onChange={handleDepartments} maxWidth='100%' placeholder={t('Departments')}/>
 			</Field.Row>
 		</Field>
 	</>;

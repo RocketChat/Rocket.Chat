@@ -22,7 +22,7 @@ export function PriorityEditWithData({ priorityId, reload }) {
 		return <FormSkeleton/>;
 	}
 
-	if (error) {
+	if (error || !data || !data.priorities) {
 		return <Callout m='x16' type='danger'>{t('Not_Available')}</Callout>;
 	}
 
