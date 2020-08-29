@@ -1,85 +1,12 @@
 
-# 3.6.0 (Under Release Candidate Process)
+# 3.6.0
+`2020-08-29  ·  10 🎉  ·  6 🚀  ·  25 🐛  ·  36 🔍  ·  21 👩‍💻👨‍💻`
 
-## 3.6.0-rc.3
-`2020-08-29  ·  11 🔍  ·  5 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Omnichannel Current Chat issues ([#18718](https://github.com/RocketChat/Rocket.Chat/pull/18718))
-
-- Regression: Use user autocomplete on export messages ([#18726](https://github.com/RocketChat/Rocket.Chat/pull/18726))
-
-- Regression: Split date fields on export messages contextual bar ([#18724](https://github.com/RocketChat/Rocket.Chat/pull/18724))
-
-- Regression: Accept visitors for uikit interactions ([#18706](https://github.com/RocketChat/Rocket.Chat/pull/18706))
-
-- Regression: Add remove popup to omnichannel custom fields ([#18719](https://github.com/RocketChat/Rocket.Chat/pull/18719))
-
-- Regression: Omnichannel Business Hours Issues ([#18723](https://github.com/RocketChat/Rocket.Chat/pull/18723))
-
-- Regression: Bundle the package `hepburn` ([#18715](https://github.com/RocketChat/Rocket.Chat/pull/18715))
-
-- Regression: Toast Messages ([#18674](https://github.com/RocketChat/Rocket.Chat/pull/18674))
-
-- Regression: Agents Page issues ([#18684](https://github.com/RocketChat/Rocket.Chat/pull/18684))
-
-- Regression: Omnichannel Tags and Units issues ([#18705](https://github.com/RocketChat/Rocket.Chat/pull/18705))
-
-- Regression: Priorities Page issues ([#18685](https://github.com/RocketChat/Rocket.Chat/pull/18685))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 3.6.0-rc.2
-`2020-08-26  ·  3 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Margins on Export Messages ([#18682](https://github.com/RocketChat/Rocket.Chat/pull/18682))
-
-- Regression: Update checker not being disabled properly. ([#18676](https://github.com/RocketChat/Rocket.Chat/pull/18676))
-
-- Missing email notification when an admin resets your E2E key ([#18673](https://github.com/RocketChat/Rocket.Chat/pull/18673))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-
-## 3.6.0-rc.1
-`2020-08-25  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Revert silent: true ([#18671](https://github.com/RocketChat/Rocket.Chat/pull/18671))
-
-- Improve performance of client presence monitor ([#18645](https://github.com/RocketChat/Rocket.Chat/pull/18645))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@rodrigok](https://github.com/rodrigok)
-
-## 3.6.0-rc.0
-`2020-08-22  ·  10 🎉  ·  6 🚀  ·  33 🐛  ·  19 🔍  ·  22 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.17.0`
 
 ### 🎉 New features
 
@@ -111,10 +38,8 @@
 
 - 2FA password enforcement setting and 2FA protection when saving settings or resetting E2E encryption ([#18640](https://github.com/RocketChat/Rocket.Chat/pull/18640))
 
-  - Increase the 2FA remembering time from 5min to 30min
-
-  - Add new setting to enforce 2FA password fallback (enabled only for new installations)
-
+  - Increase the 2FA remembering time from 5min to 30min  
+  - Add new setting to enforce 2FA password fallback (enabled only for new installations)  
   - Require 2FA to save settings and reset E2E Encryption keys
 
 - Slack bridge: add support to threads ([#15992](https://github.com/RocketChat/Rocket.Chat/pull/15992) by [@antkaz](https://github.com/antkaz))
@@ -187,23 +112,7 @@
 
 - Error when reading uploads from Livechat Visitor through the Apps Engine ([#18474](https://github.com/RocketChat/Rocket.Chat/pull/18474))
 
-- Migration 194 ([#18457](https://github.com/RocketChat/Rocket.Chat/pull/18457) by [@thirsch](https://github.com/thirsch))
-
-- Omnichannel session monitor is not starting ([#18412](https://github.com/RocketChat/Rocket.Chat/pull/18412))
-
-- Invalid MIME type when uploading audio files ([#18426](https://github.com/RocketChat/Rocket.Chat/pull/18426))
-
-- Error when updating omnichannel department without agents parameter ([#18428](https://github.com/RocketChat/Rocket.Chat/pull/18428))
-
-- Omnichannel Take Inquiry endpoint checking wrong permission ([#18446](https://github.com/RocketChat/Rocket.Chat/pull/18446))
-
-- Multiple push notifications sent via native drivers ([#18442](https://github.com/RocketChat/Rocket.Chat/pull/18442))
-
-- Appending 'false' to Jitsi URL ([#18430](https://github.com/RocketChat/Rocket.Chat/pull/18430))
-
 - Thread reply disappearing and threads result on search ([#18349](https://github.com/RocketChat/Rocket.Chat/pull/18349))
-
-- Can't send long messages as attachment ([#18355](https://github.com/RocketChat/Rocket.Chat/pull/18355))
 
 - Room Mentions on Threads ([#18336](https://github.com/RocketChat/Rocket.Chat/pull/18336))
 
@@ -212,6 +121,8 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
+
+- Release 3.5.4 ([#18665](https://github.com/RocketChat/Rocket.Chat/pull/18665))
 
 - Omnichannel Admin rewritten in React (#18438) ([#18438](https://github.com/RocketChat/Rocket.Chat/pull/18438))
 
@@ -253,6 +164,38 @@
 
 - Merge master into develop & Set version to 3.6.0-develop ([#18401](https://github.com/RocketChat/Rocket.Chat/pull/18401) by [@densik](https://github.com/densik) & [@dudizilla](https://github.com/dudizilla) & [@omarchehab98](https://github.com/omarchehab98) & [@paulobernardoaf](https://github.com/paulobernardoaf))
 
+- Regression: Revert silent: true ([#18671](https://github.com/RocketChat/Rocket.Chat/pull/18671))
+
+- Improve performance of client presence monitor ([#18645](https://github.com/RocketChat/Rocket.Chat/pull/18645))
+
+- Regression: Margins on Export Messages ([#18682](https://github.com/RocketChat/Rocket.Chat/pull/18682))
+
+- Regression: Update checker not being disabled properly. ([#18676](https://github.com/RocketChat/Rocket.Chat/pull/18676))
+
+- Missing email notification when an admin resets your E2E key ([#18673](https://github.com/RocketChat/Rocket.Chat/pull/18673))
+
+- Regression: Omnichannel Current Chat issues ([#18718](https://github.com/RocketChat/Rocket.Chat/pull/18718))
+
+- Regression: Use user autocomplete on export messages ([#18726](https://github.com/RocketChat/Rocket.Chat/pull/18726))
+
+- Regression: Split date fields on export messages contextual bar ([#18724](https://github.com/RocketChat/Rocket.Chat/pull/18724))
+
+- Regression: Accept visitors for uikit interactions ([#18706](https://github.com/RocketChat/Rocket.Chat/pull/18706))
+
+- Regression: Add remove popup to omnichannel custom fields ([#18719](https://github.com/RocketChat/Rocket.Chat/pull/18719))
+
+- Regression: Omnichannel Business Hours Issues ([#18723](https://github.com/RocketChat/Rocket.Chat/pull/18723))
+
+- Regression: Bundle the package `hepburn` ([#18715](https://github.com/RocketChat/Rocket.Chat/pull/18715))
+
+- Regression: Toast Messages ([#18674](https://github.com/RocketChat/Rocket.Chat/pull/18674))
+
+- Regression: Agents Page issues ([#18684](https://github.com/RocketChat/Rocket.Chat/pull/18684))
+
+- Regression: Omnichannel Tags and Units issues ([#18705](https://github.com/RocketChat/Rocket.Chat/pull/18705))
+
+- Regression: Priorities Page issues ([#18685](https://github.com/RocketChat/Rocket.Chat/pull/18685))
+
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
@@ -266,7 +209,6 @@
 - [@oguhpereira](https://github.com/oguhpereira)
 - [@omarchehab98](https://github.com/omarchehab98)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
-- [@thirsch](https://github.com/thirsch)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -461,12 +403,9 @@
 
 - Mention autocomplete UI and performance improvements  ([#18309](https://github.com/RocketChat/Rocket.Chat/pull/18309))
 
-  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)
-
-  * The UI shows whenever the user is not a member of the room
-
-  * The UI shows when the suggestion came from the last messages for quick selection/reply
-
+  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)  
+  * The UI shows whenever the user is not a member of the room  
+  * The UI shows when the suggestion came from the last messages for quick selection/reply  
   * The suggestions follow this order:
     * The user with the exact username and member of the room
     * The user with the exact username but not a member of the room (if allowed to list non-members)
@@ -1322,12 +1261,9 @@
 
 - Notification sounds ([#17616](https://github.com/RocketChat/Rocket.Chat/pull/17616))
 
-  * Global CDN config was ignored when loading the sound files
-
-  * Upload of custom sounds wasn't getting the file extension correctly
-
-  * Some translations were missing
-
+  * Global CDN config was ignored when loading the sound files  
+  * Upload of custom sounds wasn't getting the file extension correctly  
+  * Some translations were missing  
   * Edit and delete of custom sounds were not working correctly
 
 - Resolve 'app already exists' error on app update ([#17544](https://github.com/RocketChat/Rocket.Chat/pull/17544))
@@ -1610,16 +1546,11 @@
 - Better Push and Email Notification logic ([#17357](https://github.com/RocketChat/Rocket.Chat/pull/17357))
 
   We are still using the same logic to define which notifications every new message will generate, it takes some servers' settings, users's preferences and subscriptions' settings in consideration to determine who will receive each notification type (desktop, audio, email and mobile push), but now it doesn't check the user's status (online, away, offline) for email and mobile push notifications but send those notifications to a new queue with the following rules:
-
-
-  - When the user is online the notification is scheduled to be sent in 120 seconds
-
-  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away
-
-  - When the user is offline the notification is scheduled to be sent right away
-
-  - When the user reads a channel all the notifications for that user are removed (clear queue)
-
+  
+  - When the user is online the notification is scheduled to be sent in 120 seconds  
+  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away  
+  - When the user is offline the notification is scheduled to be sent right away  
+  - When the user reads a channel all the notifications for that user are removed (clear queue)  
   - When a notification is processed to be sent to a user and there are other scheduled notifications:
     - All the scheduled notifications for that user are rescheduled to now
     - The current notification goes back to the queue to be processed ordered by creation date
