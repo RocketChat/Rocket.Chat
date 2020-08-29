@@ -136,11 +136,11 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 				<Label mb='x4' >{t('Guest')}:</Label>
 				<TextInput flexShrink={0} placeholder={t('Guest')} onChange={handleGuest} value={guest} />
 			</Box>
-			<Box display='flex' mie='x8' flexGrow={1} width='15%' flexDirection='column'>
+			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Label mb='x4'>{t('Served_By')}:</Label>
 				<AutoCompleteAgent value={servedBy} onChange={handleServedBy}/>
 			</Box>
-			<Box display='flex' mie='x8' flexGrow={1} width='15%' flexDirection='column'>
+			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Label mb='x4'>{t('Department')}:</Label>
 				<AutoCompleteDepartment value={department} onChange={handleDepartment}/>
 			</Box>
@@ -182,7 +182,6 @@ function CurrentChatsPage({
 	params,
 	title,
 	renderRow,
-	departments,
 	reload,
 	children,
 }) {
@@ -190,7 +189,7 @@ function CurrentChatsPage({
 		<Page>
 			<Page.Header title={title} />
 			<Page.Content>
-				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.rooms} departments={departments} total={data && data.total} setParams={setParams} params={params} reload={reload}/>
+				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.rooms} total={data && data.total} setParams={setParams} params={params} reload={reload}/>
 			</Page.Content>
 		</Page>
 		{children}

@@ -114,7 +114,6 @@ function CurrentChatsRoute() {
 	});
 
 	const { data, reload } = useEndpointDataExperimental('livechat/rooms', query) || {};
-	const { data: departments } = useEndpointDataExperimental('livechat/department', query) || {};
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</Th>,
@@ -149,7 +148,6 @@ function CurrentChatsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		departments={departments}
 		title={'Current Chats'}>
 	</CurrentChatsPage>;
 }
