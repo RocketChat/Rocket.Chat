@@ -2,7 +2,7 @@
 
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
-import { Table, Icon } from '@rocket.chat/fuselage';
+import { Table, Icon, Button } from '@rocket.chat/fuselage';
 
 import { Th } from '../../../../client/components/GenericTable';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -50,7 +50,11 @@ export function RemoveTagButton({ _id, reload }) {
 		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleDelete}>
+			<Icon name='trash' size='x16'/>
+		</Button>
+	</Table.Cell>;
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);

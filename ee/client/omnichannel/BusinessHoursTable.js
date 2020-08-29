@@ -1,4 +1,4 @@
-import { Table, Callout, Box, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Table, Callout, Box, TextInput, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useMemo, useEffect } from 'react';
 
@@ -43,7 +43,11 @@ export function RemoveBusinessHourButton({ _id, type, reload }) {
 		setModal(<DeleteWarningModal onDelete={onBusinessHour} onCancel={() => setModal()}/>);
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleDelete}>
+			<Icon name='trash' size='x16'/>
+		</Button>
+	</Table.Cell>;
 }
 
 const FilterByText = memo(({ setFilter, ...props }) => {
