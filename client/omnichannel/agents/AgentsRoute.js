@@ -1,7 +1,7 @@
 
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
-import { Box, Table, Icon } from '@rocket.chat/fuselage';
+import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
 
 import { Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -49,7 +49,11 @@ export function RemoveAgentButton({ _id, reload }) {
 		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleDelete}>
+			<Icon name='trash' size='x16'/>
+		</Button>
+	</Table.Cell>;
 }
 
 export function AgentInfoActions({ reload }) {

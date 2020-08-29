@@ -1,5 +1,5 @@
-import { Table, Callout, Icon, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Table, Callout, Icon } from '@rocket.chat/fuselage';
+import { useMutableCallback, Button } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useMemo } from 'react';
 
 import GenericTable from '../../components/GenericTable';
@@ -79,8 +79,8 @@ const TriggersRow = memo(function TriggersRow(props) {
 			{enabled ? t('Yes') : t('No')}
 		</Table.Cell>
 		<Table.Cell withTruncatedText>
-			<Button onClick={handleDelete} small>
-				<Icon name='trash' size='x16' />
+			<Button small ghost title={t('Remove')} onClick={handleDelete}>
+				<Icon name='trash' size='x16'/>
 			</Button>
 		</Table.Cell>
 	</Table.Row>;
@@ -131,7 +131,10 @@ export function TriggersTable({ triggers, totalTriggers, params, onChangeParams,
 			<GenericTable.HeaderCell>
 				{t('Enabled')}
 			</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell width='x60'/>
+			<GenericTable.HeaderCell width='x60'>
+				{t('Remove')}
+			</GenericTable.HeaderCell>
+
 		</>}
 		results={triggers}
 		total={totalTriggers}
