@@ -109,14 +109,16 @@ jobs:
       run: |
         meteor npm install
 
-    - run: npm run lint
+    - run: meteor npm run lint
 
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
         mongoDBVersion: "4.0"
 
-    - run: npm run testunit
+    - run: meteor npm run testunit
+
+    - run: meteor npm run typecheck
 
     # To reduce memory need during actual build, build the packages solely first
     # - name: Build a Meteor cache
@@ -236,7 +238,9 @@ jobs:
         MONGO_URL: mongodb://localhost:27017/rocketchat
         MONGO_OPLOG_URL: mongodb://localhost:27017/local
       run: |
-        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && xvfb-run --auto-servernum npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
+        echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+        Xvfb -screen 0 1024x768x24 :99 &
+        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
 #   notification:
 #     runs-on: ubuntu-latest

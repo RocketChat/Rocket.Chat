@@ -1,6 +1,290 @@
 
+# 3.6.0 (Under Release Candidate Process)
+
+## 3.6.0-rc.3
+`2020-08-29  ·  11 🔍  ·  5 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Omnichannel Current Chat issues ([#18718](https://github.com/RocketChat/Rocket.Chat/pull/18718))
+
+- Regression: Use user autocomplete on export messages ([#18726](https://github.com/RocketChat/Rocket.Chat/pull/18726))
+
+- Regression: Split date fields on export messages contextual bar ([#18724](https://github.com/RocketChat/Rocket.Chat/pull/18724))
+
+- Regression: Accept visitors for uikit interactions ([#18706](https://github.com/RocketChat/Rocket.Chat/pull/18706))
+
+- Regression: Add remove popup to omnichannel custom fields ([#18719](https://github.com/RocketChat/Rocket.Chat/pull/18719))
+
+- Regression: Omnichannel Business Hours Issues ([#18723](https://github.com/RocketChat/Rocket.Chat/pull/18723))
+
+- Regression: Bundle the package `hepburn` ([#18715](https://github.com/RocketChat/Rocket.Chat/pull/18715))
+
+- Regression: Toast Messages ([#18674](https://github.com/RocketChat/Rocket.Chat/pull/18674))
+
+- Regression: Agents Page issues ([#18684](https://github.com/RocketChat/Rocket.Chat/pull/18684))
+
+- Regression: Omnichannel Tags and Units issues ([#18705](https://github.com/RocketChat/Rocket.Chat/pull/18705))
+
+- Regression: Priorities Page issues ([#18685](https://github.com/RocketChat/Rocket.Chat/pull/18685))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@d-gubert](https://github.com/d-gubert)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
+## 3.6.0-rc.2
+`2020-08-26  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Margins on Export Messages ([#18682](https://github.com/RocketChat/Rocket.Chat/pull/18682))
+
+- Regression: Update checker not being disabled properly. ([#18676](https://github.com/RocketChat/Rocket.Chat/pull/18676))
+
+- Missing email notification when an admin resets your E2E key ([#18673](https://github.com/RocketChat/Rocket.Chat/pull/18673))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+
+## 3.6.0-rc.1
+`2020-08-25  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Revert silent: true ([#18671](https://github.com/RocketChat/Rocket.Chat/pull/18671))
+
+- Improve performance of client presence monitor ([#18645](https://github.com/RocketChat/Rocket.Chat/pull/18645))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+
+## 3.6.0-rc.0
+`2020-08-22  ·  10 🎉  ·  6 🚀  ·  33 🐛  ·  19 🔍  ·  22 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- **APPS-ENGINE:** Implement new IPostLivechatRoomTransferred event ([#18625](https://github.com/RocketChat/Rocket.Chat/pull/18625))
+
+- Admin option to reset other users’ E2E encryption key ([#18642](https://github.com/RocketChat/Rocket.Chat/pull/18642))
+
+  Requires the 2FA password fallback enforcement enabled to work
+
+- UiKit Livechat Support ([#18643](https://github.com/RocketChat/Rocket.Chat/pull/18643))
+
+- Export room messages as file or directly via email ([#18606](https://github.com/RocketChat/Rocket.Chat/pull/18606))
+
+- Banner for servers in the middle of the registration process ([#18623](https://github.com/RocketChat/Rocket.Chat/pull/18623))
+
+- Add new endpoint to change Omnichannel room's visitor ([#18528](https://github.com/RocketChat/Rocket.Chat/pull/18528))
+
+- Add REST API endpoint to search Livechat visitors ([#18514](https://github.com/RocketChat/Rocket.Chat/pull/18514))
+
+- Channel avatar ([#18443](https://github.com/RocketChat/Rocket.Chat/pull/18443))
+
+- Add the ability to set the character message limit on Livechat widget ([#18261](https://github.com/RocketChat/Rocket.Chat/pull/18261) by [@oguhpereira](https://github.com/oguhpereira))
+
+- Tooltips ([#18399](https://github.com/RocketChat/Rocket.Chat/pull/18399))
+
+### 🚀 Improvements
+
+
+- 2FA password enforcement setting and 2FA protection when saving settings or resetting E2E encryption ([#18640](https://github.com/RocketChat/Rocket.Chat/pull/18640))
+
+  - Increase the 2FA remembering time from 5min to 30min
+
+  - Add new setting to enforce 2FA password fallback (enabled only for new installations)
+
+  - Require 2FA to save settings and reset E2E Encryption keys
+
+- Slack bridge: add support to threads ([#15992](https://github.com/RocketChat/Rocket.Chat/pull/15992) by [@antkaz](https://github.com/antkaz))
+
+- UserCard and UserInfo Show Real Names Setting ([#18628](https://github.com/RocketChat/Rocket.Chat/pull/18628))
+
+- Jitsi room name hash or plain ([#17481](https://github.com/RocketChat/Rocket.Chat/pull/17481))
+
+- Add agentId parameter to changeLivechatStatus method ([#18571](https://github.com/RocketChat/Rocket.Chat/pull/18571))
+
+- Info page requires permission ([#18408](https://github.com/RocketChat/Rocket.Chat/pull/18408))
+
+  Users now require the `view-statistics` permission to be access the `admin/info` page
+
+### 🐛 Bug fixes
+
+
+- findOrCreateInvite REST endpoint ignoring `days` and `maxUses` params ([#18565](https://github.com/RocketChat/Rocket.Chat/pull/18565))
+
+- SMS integration not storing media files ([#18491](https://github.com/RocketChat/Rocket.Chat/pull/18491))
+
+- Wrong rooms list order when last message date is missing ([#18639](https://github.com/RocketChat/Rocket.Chat/pull/18639))
+
+- MarkdownText usage ([#18621](https://github.com/RocketChat/Rocket.Chat/pull/18621))
+
+- Anonymous users were created as inactive if the manual approval setting was enabled ([#17427](https://github.com/RocketChat/Rocket.Chat/pull/17427) by [@MarcosSpessatto](https://github.com/MarcosSpessatto))
+
+- Agents enabledDepartment attribute not set on collection ([#18614](https://github.com/RocketChat/Rocket.Chat/pull/18614) by [@paulobernardoaf](https://github.com/paulobernardoaf))
+
+- UIKit Select and Multiselects not working ([#18598](https://github.com/RocketChat/Rocket.Chat/pull/18598))
+
+- Auto complete user suggestions ([#18437](https://github.com/RocketChat/Rocket.Chat/pull/18437))
+
+  Fixes the issue with broken user suggestions in threads when using `@`
+
+- Backdrop on front of modal. ([#18596](https://github.com/RocketChat/Rocket.Chat/pull/18596))
+
+- React being loaded on the main bundle ([#18597](https://github.com/RocketChat/Rocket.Chat/pull/18597))
+
+- Invalid sample JSON on admin settings ([#18595](https://github.com/RocketChat/Rocket.Chat/pull/18595))
+
+- Custom fields title when no custom fields ([#18374](https://github.com/RocketChat/Rocket.Chat/pull/18374))
+
+- Emojis on thread replies ([#18407](https://github.com/RocketChat/Rocket.Chat/pull/18407))
+
+  Users can now see the emojis on thread replies
+
+- 2FA by Email setting showing for the user even when disabled by the admin ([#18473](https://github.com/RocketChat/Rocket.Chat/pull/18473))
+
+  The option to disable/enable the **Two-factor authentication via Email** at `Account > Security > Two Factor Authentication
+  ` was visible even when the setting **Enable Two Factor Authentication via Email** at `Admin > Accounts > Two Factor Authentication` was disabled leading to misbehavior since the functionality was disabled.
+
+- Users page in admin not working for inactive user joining ([#18594](https://github.com/RocketChat/Rocket.Chat/pull/18594))
+
+- Read receipts duplicate key error ([#18560](https://github.com/RocketChat/Rocket.Chat/pull/18560) by [@galshiff](https://github.com/galshiff))
+
+  Fixed receipt duplicate key error bug
+
+- Enabling Apple OAuth crashes other OAuth services ([#18563](https://github.com/RocketChat/Rocket.Chat/pull/18563))
+
+- Sending notifications from senders without a name ([#18479](https://github.com/RocketChat/Rocket.Chat/pull/18479))
+
+- UserCard avatar cache (avatarETag) ([#18466](https://github.com/RocketChat/Rocket.Chat/pull/18466))
+
+- Marking room as read with unread threads still ([#18410](https://github.com/RocketChat/Rocket.Chat/pull/18410))
+
+- Random generated password not matching the Password Policy ([#18475](https://github.com/RocketChat/Rocket.Chat/pull/18475))
+
+  Generates a password with all the possible requirements of the Password Policy and matching the size limitations when enabled.
+
+- Error when reading uploads from Livechat Visitor through the Apps Engine ([#18474](https://github.com/RocketChat/Rocket.Chat/pull/18474))
+
+- Migration 194 ([#18457](https://github.com/RocketChat/Rocket.Chat/pull/18457) by [@thirsch](https://github.com/thirsch))
+
+- Omnichannel session monitor is not starting ([#18412](https://github.com/RocketChat/Rocket.Chat/pull/18412))
+
+- Invalid MIME type when uploading audio files ([#18426](https://github.com/RocketChat/Rocket.Chat/pull/18426))
+
+- Error when updating omnichannel department without agents parameter ([#18428](https://github.com/RocketChat/Rocket.Chat/pull/18428))
+
+- Omnichannel Take Inquiry endpoint checking wrong permission ([#18446](https://github.com/RocketChat/Rocket.Chat/pull/18446))
+
+- Multiple push notifications sent via native drivers ([#18442](https://github.com/RocketChat/Rocket.Chat/pull/18442))
+
+- Appending 'false' to Jitsi URL ([#18430](https://github.com/RocketChat/Rocket.Chat/pull/18430))
+
+- Thread reply disappearing and threads result on search ([#18349](https://github.com/RocketChat/Rocket.Chat/pull/18349))
+
+- Can't send long messages as attachment ([#18355](https://github.com/RocketChat/Rocket.Chat/pull/18355))
+
+- Room Mentions on Threads ([#18336](https://github.com/RocketChat/Rocket.Chat/pull/18336))
+
+- Uncaught (in promise) undefined ([#18393](https://github.com/RocketChat/Rocket.Chat/pull/18393))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Omnichannel Admin rewritten in React (#18438) ([#18438](https://github.com/RocketChat/Rocket.Chat/pull/18438))
+
+- Update Apps-Engine version ([#18641](https://github.com/RocketChat/Rocket.Chat/pull/18641))
+
+- Do not retry and log warning when push notification was not authorised ([#18562](https://github.com/RocketChat/Rocket.Chat/pull/18562))
+
+- Update dependencies ([#18593](https://github.com/RocketChat/Rocket.Chat/pull/18593))
+
+- Bump bcrypt from 3.0.7 to 5.0.0 ([#18622](https://github.com/RocketChat/Rocket.Chat/pull/18622) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+- Explain why issue is closed when not using an issue template ([#18420](https://github.com/RocketChat/Rocket.Chat/pull/18420))
+
+- Prevent directory API to return emails if the user has no permission ([#18478](https://github.com/RocketChat/Rocket.Chat/pull/18478))
+
+- Set default timeout of 20s for HTTP calls ([#18549](https://github.com/RocketChat/Rocket.Chat/pull/18549))
+
+- LingoHub based on develop ([#18586](https://github.com/RocketChat/Rocket.Chat/pull/18586))
+
+- Reduce Push Notifications retry from max 31 hours to max 31 minutes ([#18558](https://github.com/RocketChat/Rocket.Chat/pull/18558))
+
+  Previews logic was retring in **0.1s, 1s, 11s, 2m, 18m, 3h and 31h**, now it’s retrying in **1m, 3m, 7m, 15m and 31m**
+
+- Defer startup checks ([#18547](https://github.com/RocketChat/Rocket.Chat/pull/18547))
+
+- Regression: Fix room avatar file name ([#18544](https://github.com/RocketChat/Rocket.Chat/pull/18544))
+
+- Add new enterprise bundle option `omnichannel-mobile-enterprise` ([#18533](https://github.com/RocketChat/Rocket.Chat/pull/18533))
+
+- LingoHub based on develop ([#18516](https://github.com/RocketChat/Rocket.Chat/pull/18516))
+
+- Update README.md ([#18503](https://github.com/RocketChat/Rocket.Chat/pull/18503))
+
+- Fix typo in setting description ([#18476](https://github.com/RocketChat/Rocket.Chat/pull/18476))
+
+- LingoHub based on develop ([#18465](https://github.com/RocketChat/Rocket.Chat/pull/18465))
+
+- Add type checking to CI ([#18411](https://github.com/RocketChat/Rocket.Chat/pull/18411))
+
+- Merge master into develop & Set version to 3.6.0-develop ([#18401](https://github.com/RocketChat/Rocket.Chat/pull/18401) by [@densik](https://github.com/densik) & [@dudizilla](https://github.com/dudizilla) & [@omarchehab98](https://github.com/omarchehab98) & [@paulobernardoaf](https://github.com/paulobernardoaf))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@antkaz](https://github.com/antkaz)
+- [@densik](https://github.com/densik)
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@dudizilla](https://github.com/dudizilla)
+- [@galshiff](https://github.com/galshiff)
+- [@oguhpereira](https://github.com/oguhpereira)
+- [@omarchehab98](https://github.com/omarchehab98)
+- [@paulobernardoaf](https://github.com/paulobernardoaf)
+- [@thirsch](https://github.com/thirsch)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@Sing-Li](https://github.com/Sing-Li)
+- [@d-gubert](https://github.com/d-gubert)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@juliagrala](https://github.com/juliagrala)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 3.5.4
-`2020-08-24  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2020-08-24  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.16.1`
@@ -13,12 +297,21 @@
 
 - MarkdownText usage ([#18621](https://github.com/RocketChat/Rocket.Chat/pull/18621))
 
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.5.4 ([#18665](https://github.com/RocketChat/Rocket.Chat/pull/18665))
+
+</details>
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.5.3
-`2020-08-19  ·  3 🐛  ·  2 👩‍💻👨‍💻`
+`2020-08-19  ·  3 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.16.1`
@@ -35,13 +328,22 @@
 
 - Users page in admin not working for inactive user joining ([#18594](https://github.com/RocketChat/Rocket.Chat/pull/18594))
 
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.5.3 ([#18610](https://github.com/RocketChat/Rocket.Chat/pull/18610))
+
+</details>
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@ggazzo](https://github.com/ggazzo)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.5.2
-`2020-08-13  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+`2020-08-13  ·  1 🐛  ·  2 🔍  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.16.1`
@@ -58,6 +360,8 @@
 <summary>🔍 Minor changes</summary>
 
 
+- Release 3.5.2 ([#18548](https://github.com/RocketChat/Rocket.Chat/pull/18548))
+
 - Defer startup checks ([#18547](https://github.com/RocketChat/Rocket.Chat/pull/18547))
 
 </details>
@@ -67,7 +371,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.5.1
-`2020-08-03  ·  8 🐛  ·  6 👩‍💻👨‍💻`
+`2020-08-03  ·  8 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.16.1`
@@ -93,6 +397,14 @@
 - Appending 'false' to Jitsi URL ([#18430](https://github.com/RocketChat/Rocket.Chat/pull/18430))
 
 - Can't send long messages as attachment ([#18355](https://github.com/RocketChat/Rocket.Chat/pull/18355))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.5.1 ([#18452](https://github.com/RocketChat/Rocket.Chat/pull/18452) by [@thirsch](https://github.com/thirsch))
+
+</details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
@@ -149,9 +461,12 @@
 
 - Mention autocomplete UI and performance improvements  ([#18309](https://github.com/RocketChat/Rocket.Chat/pull/18309))
 
-  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)  
-  * The UI shows whenever the user is not a member of the room  
-  * The UI shows when the suggestion came from the last messages for quick selection/reply  
+  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)
+
+  * The UI shows whenever the user is not a member of the room
+
+  * The UI shows when the suggestion came from the last messages for quick selection/reply
+
   * The suggestions follow this order:
     * The user with the exact username and member of the room
     * The user with the exact username but not a member of the room (if allowed to list non-members)
@@ -1007,9 +1322,12 @@
 
 - Notification sounds ([#17616](https://github.com/RocketChat/Rocket.Chat/pull/17616))
 
-  * Global CDN config was ignored when loading the sound files  
-  * Upload of custom sounds wasn't getting the file extension correctly  
-  * Some translations were missing  
+  * Global CDN config was ignored when loading the sound files
+
+  * Upload of custom sounds wasn't getting the file extension correctly
+
+  * Some translations were missing
+
   * Edit and delete of custom sounds were not working correctly
 
 - Resolve 'app already exists' error on app update ([#17544](https://github.com/RocketChat/Rocket.Chat/pull/17544))
@@ -1292,11 +1610,16 @@
 - Better Push and Email Notification logic ([#17357](https://github.com/RocketChat/Rocket.Chat/pull/17357))
 
   We are still using the same logic to define which notifications every new message will generate, it takes some servers' settings, users's preferences and subscriptions' settings in consideration to determine who will receive each notification type (desktop, audio, email and mobile push), but now it doesn't check the user's status (online, away, offline) for email and mobile push notifications but send those notifications to a new queue with the following rules:
-  
-  - When the user is online the notification is scheduled to be sent in 120 seconds  
-  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away  
-  - When the user is offline the notification is scheduled to be sent right away  
-  - When the user reads a channel all the notifications for that user are removed (clear queue)  
+
+
+  - When the user is online the notification is scheduled to be sent in 120 seconds
+
+  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away
+
+  - When the user is offline the notification is scheduled to be sent right away
+
+  - When the user reads a channel all the notifications for that user are removed (clear queue)
+
   - When a notification is processed to be sent to a user and there are other scheduled notifications:
     - All the scheduled notifications for that user are rescheduled to now
     - The current notification goes back to the queue to be processed ordered by creation date
