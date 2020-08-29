@@ -14,6 +14,8 @@ import { useMethod } from '../../contexts/ServerContext';
 import DeleteWarningModal from '../DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { AutoCompleteDepartment } from '../../components/basic/AutoCompleteDepartment';
+import { AutoCompleteAgent } from '../../components/basic/AutoCompleteAgent';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -46,21 +48,12 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const { data: departments } = useEndpointDataExperimental('livechat/department') || {};
-	const { data: agents } = useEndpointDataExperimental('livechat/users/agent');
 	const { data: allCustomFields } = useEndpointDataExperimental('livechat/custom-fields');
-
-	const depOptions = useMemo(() => (departments && departments.departments ? departments.departments.map(({ _id, name }) => [_id, name || _id]) : []), [departments]);
-	const agentOptions = useMemo(() => (agents && agents.users ? agents.users.map(({ _id, username }) => [_id, username || _id]) : []), [agents]);
 	const statusOptions = [['all', t('All')], ['closed', t('Closed')], ['opened', t('Open')]];
 	const customFieldsOptions = useMemo(() => (allCustomFields && allCustomFields.customFields ? allCustomFields.customFields.map(({ _id, label }) => [_id, label]) : []), [allCustomFields]);
 
-	useEffect(() => {
-		!depOptions.find((dep) => dep[0] === 'all') && depOptions.unshift(['all', t('All')]);
-	}, [depOptions, t]);
-
 	const [guest, setGuest] = useLocalStorage('guest', '');
-	const [servedBy, setServedBy] = useLocalStorage('servedBy', []);
+	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'all');
 	const [department, setDepartment] = useLocalStorage('department', 'all');
 	const [from, setFrom] = useLocalStorage('from', '');
@@ -79,7 +72,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 
 	const reset = useMutableCallback(() => {
 		setGuest('');
-		setServedBy([]);
+		setServedBy('all');
 		setStatus('all');
 		setDepartment('all');
 		setFrom('');
@@ -145,11 +138,11 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Label mb='x4'>{t('Served_By')}:</Label>
-				<MultiSelect flexShrink={0} options={agentOptions} value={servedBy} onChange={handleServedBy} placeholder={t('Served_By')}/>
+				<AutoCompleteAgent value={servedBy} onChange={handleServedBy}/>
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Label mb='x4'>{t('Department')}:</Label>
-				<Select flexShrink={0} options={depOptions} value={department} onChange={handleDepartment} placeholder={t('Department')}/>
+				<AutoCompleteDepartment value={department} onChange={handleDepartment}/>
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Label mb='x4'>{t('Status')}:</Label>

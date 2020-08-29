@@ -55,7 +55,7 @@ const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
 const useQuery = ({ guest, servedBy, department, status, from, to, tags, customFields, itemsPerPage, current }, [column, direction]) => useMemo(() => {
 	const query = {
-		roomName: guest,
+		...guest && { roomName: guest },
 		sort: JSON.stringify({ [column]: sortDir(direction), ts: column === 'ts' ? sortDir(direction) : undefined }),
 		...itemsPerPage && { count: itemsPerPage },
 		...current && { offset: current },
@@ -67,14 +67,13 @@ const useQuery = ({ guest, servedBy, department, status, from, to, tags, customF
 	if (status !== 'all') {
 		query.open = status === 'open';
 	}
-	if (servedBy && servedBy.length > 0) {
-		query.agents = servedBy;
+	if (servedBy && servedBy !== 'all') {
+		query.agents = [servedBy];
 	}
-	if (department && department.length > 0) {
-		if (department !== 'all') {
-			query.departmentId = department;
-		}
+	if (department && department !== 'all') {
+		query.departmentId = department;
 	}
+
 	if (tags && tags.length > 0) {
 		query.tags = tags;
 	}
