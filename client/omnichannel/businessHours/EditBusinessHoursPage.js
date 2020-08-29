@@ -57,6 +57,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 
 			await save(payload);
 			dispatchToastMessage({ type: 'success', message: t('Business_hours_updated') });
+			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
