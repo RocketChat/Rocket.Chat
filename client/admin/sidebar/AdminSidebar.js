@@ -8,7 +8,6 @@ import { SettingType } from '../../../definition/ISetting';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
-import { useAbsoluteUrl } from '../../contexts/ServerContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import Sidebar from '../../components/basic/Sidebar';
 import SettingsProvider from '../../providers/SettingsProvider';
@@ -123,14 +122,13 @@ export default React.memo(function AdminSidebar() {
 
 	const currentRoute = useCurrentRoute();
 	const currentPath = useRoutePath(...currentRoute);
-	const absoluteUrl = useAbsoluteUrl();
+	const [,,, currentRouteGroupName] = currentRoute;
 
 	useEffect(() => {
-		const { pathname: adminPath } = new URL(absoluteUrl('admin/'));
-		if (!currentPath.startsWith(adminPath)) {
+		if (currentRouteGroupName !== 'admin') {
 			SideNav.closeFlex();
 		}
-	}, [absoluteUrl, currentPath]);
+	}, [currentRouteGroupName]);
 
 	// TODO: uplift this provider
 	return <SettingsProvider privileged>

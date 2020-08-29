@@ -46,7 +46,7 @@ function AppInstallPage() {
 		queryUrl && handleUrl(queryUrl);
 	}, [queryUrl, handleUrl]);
 
-	const handleUploadButtonClick = useFileInput(handleFile, 'app');
+	const [handleUploadButtonClick] = useFileInput(handleFile, 'app');
 
 	const install = useCallback(async () => {
 		setInstalling(true);

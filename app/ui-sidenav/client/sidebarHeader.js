@@ -174,18 +174,17 @@ const toolbarButtons = (/* user */) => [{
 							items: AccountBox.getItems().map((item) => {
 								let action;
 
-								if (item.href) {
+								if (item.href || item.sideNav) {
 									action = () => {
-										FlowRouter.go(item.href);
-										popover.close();
-									};
-								}
-
-								if (item.sideNav) {
-									action = () => {
-										SideNav.setFlex(item.sideNav);
-										SideNav.openFlex();
-										popover.close();
+										if (item.href) {
+											FlowRouter.go(item.href);
+											popover.close();
+										}
+										if (item.sideNav) {
+											SideNav.setFlex(item.sideNav);
+											SideNav.openFlex();
+											popover.close();
+										}
 									};
 								}
 

@@ -113,7 +113,7 @@ export const SideNav = new class {
 		return false;
 	}
 
-	openFlex(callback) {
+	openFlex(callback = () => {}) {
 		if (!this.initiated) {
 			return this.openQueue.push({
 				config: this.getFlex(),

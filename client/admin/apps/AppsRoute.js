@@ -4,7 +4,7 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import PageSkeleton from '../PageSkeleton';
+import PageSkeleton from '../../components/PageSkeleton';
 import AppDetailsPage from './AppDetailsPage';
 import MarketplacePage from './MarketplacePage';
 import AppsPage from './AppsPage';

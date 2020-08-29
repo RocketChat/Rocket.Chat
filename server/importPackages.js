@@ -11,7 +11,6 @@ import '../app/autotranslate/server';
 import '../app/bot-helpers/server';
 import '../app/cas/server';
 import '../app/channel-settings';
-import '../app/channel-settings-mail-messages/server';
 import '../app/cloud/server';
 import '../app/colors/server';
 import '../app/crowd/server';

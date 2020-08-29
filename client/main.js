@@ -20,6 +20,7 @@ import './notifications/updateAvatar';
 import './notifications/updateUserState';
 import './notifications/UsersNameChanged';
 import './routes';
+import './startup/contextualBar';
 import './startup/emailVerification';
 import './startup/i18n';
 import './startup/loginViaQuery';
