@@ -116,7 +116,7 @@ export class PushClass {
 		}
 
 		return HTTP.post(`${ gateway }/push/${ service }/send`, data, (error, response) => {
-			if (response && response.statusCode === 406) {
+			if (response?.statusCode === 406) {
 				logger.info('removing push token', token);
 				appTokensCollection.remove({
 					$or: [{
@@ -128,14 +128,20 @@ export class PushClass {
 				return;
 			}
 
+			if (response?.statusCode === 401) {
+				logger.warn('Error sending push to gateway (not authorized)', response);
+				return;
+			}
+
 			if (!error) {
 				return;
 			}
 
 			logger.error(`Error sending push to gateway (${ tries } try) ->`, error);
 
-			if (tries <= 6) {
-				const ms = Math.pow(10, tries + 2);
+			if (tries <= 4) {
+				// [1, 2, 4, 8, 16] minutes (total 31)
+				const ms = 60000 * Math.pow(2, tries);
 
 				logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
 

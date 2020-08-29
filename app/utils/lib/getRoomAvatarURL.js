@@ -1,7 +1,7 @@
 import { getAvatarURL } from './getAvatarURL';
 import { settings } from '../../settings';
 
-export const getRoomAvatarURL = function(roomId) {
+export const getRoomAvatarURL = function(roomId, etag) {
 	const externalSource = (settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
 	if (externalSource !== '') {
 		return externalSource.replace('{roomId}', roomId);
@@ -9,5 +9,5 @@ export const getRoomAvatarURL = function(roomId) {
 	if (!roomId) {
 		return;
 	}
-	return getAvatarURL({ roomId });
+	return getAvatarURL({ roomId, cache: etag });
 };
