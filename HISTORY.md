@@ -1,6 +1,45 @@
 
 # 3.6.0 (Under Release Candidate Process)
 
+## 3.6.0-rc.3
+`2020-08-29  ·  11 🔍  ·  5 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Omnichannel Current Chat issues ([#18718](https://github.com/RocketChat/Rocket.Chat/pull/18718))
+
+- Regression: Use user autocomplete on export messages ([#18726](https://github.com/RocketChat/Rocket.Chat/pull/18726))
+
+- Regression: Split date fields on export messages contextual bar ([#18724](https://github.com/RocketChat/Rocket.Chat/pull/18724))
+
+- Regression: Accept visitors for uikit interactions ([#18706](https://github.com/RocketChat/Rocket.Chat/pull/18706))
+
+- Regression: Add remove popup to omnichannel custom fields ([#18719](https://github.com/RocketChat/Rocket.Chat/pull/18719))
+
+- Regression: Omnichannel Business Hours Issues ([#18723](https://github.com/RocketChat/Rocket.Chat/pull/18723))
+
+- Regression: Bundle the package `hepburn` ([#18715](https://github.com/RocketChat/Rocket.Chat/pull/18715))
+
+- Regression: Toast Messages ([#18674](https://github.com/RocketChat/Rocket.Chat/pull/18674))
+
+- Regression: Agents Page issues ([#18684](https://github.com/RocketChat/Rocket.Chat/pull/18684))
+
+- Regression: Omnichannel Tags and Units issues ([#18705](https://github.com/RocketChat/Rocket.Chat/pull/18705))
+
+- Regression: Priorities Page issues ([#18685](https://github.com/RocketChat/Rocket.Chat/pull/18685))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@d-gubert](https://github.com/d-gubert)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.6.0-rc.2
 `2020-08-26  ·  3 🔍  ·  2 👩‍💻👨‍💻`
 
