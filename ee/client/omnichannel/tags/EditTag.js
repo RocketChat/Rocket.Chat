@@ -114,7 +114,7 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 		<Field>
 			<Field.Label>{t('Departments')}</Field.Label>
 			<Field.Row>
-				<MultiSelect options={options} value={departments} error={hasUnsavedChanges && departmentError} placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
+				<MultiSelect options={options} value={departments} error={hasUnsavedChanges && departmentError} maxWidth='100%' placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 

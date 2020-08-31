@@ -5,6 +5,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import toastr from 'toastr';
 
 import VerticalBar from '../../components/basic/VerticalBar';
+import { UserAutoComplete } from '../../components/basic/AutoComplete';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useUserRoom } from '../hooks/useUserRoom';
@@ -63,9 +64,14 @@ const FileExport = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Field.Label>{t('Date')}</Field.Label>
+				<Field.Label>{t('Date_From')}</Field.Label>
 				<Field.Row>
 					<TextInput type='date' value={dateFrom} onChange={handleDateFrom} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Date_to')}</Field.Label>
+				<Field.Row>
 					<TextInput type='date' value={dateTo} onChange={handleDateTo} />
 				</Field.Row>
 			</Field>
@@ -196,7 +202,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			<Field>
 				<Field.Label>{t('To_users')}</Field.Label>
 				<Field.Row>
-					<TextInput placeholder={t('Username_Placeholder')} value={toUsers} onChange={handleToUsers} addon={<Icon name='at' size='x20'/>} />
+					<UserAutoComplete value={toUsers} onChange={handleToUsers}/>
 				</Field.Row>
 			</Field>
 			<Field>
