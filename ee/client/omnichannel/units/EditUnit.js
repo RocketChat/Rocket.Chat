@@ -65,13 +65,14 @@ export function UnitEdit({ data, unitId, isNew, availableDepartments, availableM
 	const monOptions = useMemo(() => (availableMonitors && availableMonitors.monitors ? availableMonitors.monitors.map(({ _id, name }) => [_id, name || _id]) : []), [availableMonitors]);
 	const currUnitMonitors = useMemo(() => (unitMonitors && unitMonitors.monitors ? unitMonitors.monitors.map(({ monitorId }) => monitorId) : []), [unitMonitors]);
 	const visibilityOpts = [['public', t('Public')], ['private', t('Private')]];
-	const unitDepartments = useMemo(() => (availableDepartments && availableDepartments.departments ? availableDepartments.departments.map((department) => {
+	const unitDepartments = useMemo(() => (availableDepartments && (availableDepartments.departments && unitId) ? availableDepartments.departments.map((department) => {
 		let result;
 		if (department.parentId === unitId) {
 			result = department._id;
 		}
 		return result;
-	}) : []), [availableDepartments, unitId]);
+	}).filter((department) => !!department) : []), [availableDepartments, unitId]);
+
 
 	const { values, handlers, hasUnsavedChanges } = useForm({ name: unit.name, visibility: unit.visibility, departments: unitDepartments, monitors: currUnitMonitors });
 
@@ -141,13 +142,13 @@ export function UnitEdit({ data, unitId, isNew, availableDepartments, availableM
 		<Field>
 			<Field.Label>{t('Departments')}</Field.Label>
 			<Field.Row>
-				<MultiSelect options={depOptions} value={departments} error={hasUnsavedChanges && departmentError} placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
+				<MultiSelect options={depOptions} value={departments} error={hasUnsavedChanges && departmentError} maxWidth='100%' placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 		<Field>
 			<Field.Label>{t('Monitors')}</Field.Label>
 			<Field.Row>
-				<MultiSelect options={monOptions} value={monitors} error={hasUnsavedChanges && unitMonitorsError} placeholder={t('Select_an_option')} onChange={handleMonitors} flexGrow={1}/>
+				<MultiSelect options={monOptions} value={monitors} error={hasUnsavedChanges && unitMonitorsError} maxWidth='100%' placeholder={t('Select_an_option')} onChange={handleMonitors} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 
