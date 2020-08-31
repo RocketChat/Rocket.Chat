@@ -214,55 +214,10 @@ API.v1.addRoute('directory', { authRequired: true }, {
 
 API.v1.addRoute('manifest', { authRequired: false }, {
 	get() {
+		const manifestFile = require('../../../../public/manifest.json');
 		const gcm_sender_id = settings.get('Gcm_sender_id');
 		const manifest = {
-			name: 'Viasat Connect',
-			short_name: 'Viasat Connect',
-			background_color: '#0B6379',
-			icons: [
-				{
-					src: '/images/icons/icon-72x72.png',
-					sizes: '72x72',
-					type: 'image/png',
-				},
-				{
-					src: '/images/icons/icon-96x96.png',
-					sizes: '96x96',
-					type: 'image/png',
-				},
-				{
-					src: '/images/icons/icon-128x128.png',
-					sizes: '128x128',
-					type: 'image/png',
-				},
-				{
-					src: '/images/icons/icon-144x144.png',
-					sizes: '144x144',
-					type: 'image/png',
-				},
-				{
-					src: '/images/icons/icon-152x152.png',
-					sizes: '152x152',
-					type: 'image/png',
-				},
-				{
-					src: '/images/icons/icon-192x192.png',
-					sizes: '192x192',
-					type: 'image/png',
-				},
-				{
-					src: '/images/icons/icon-384x384.png',
-					sizes: '384x384',
-					type: 'image/png',
-				},
-				{
-					src: '/images/icons/icon-512x512.png',
-					sizes: '512x512',
-					type: 'image/png',
-				},
-			],
-			start_url: '/',
-			display: 'standalone',
+			...manifestFile,
 			gcm_sender_id,
 		};
 		return {

@@ -55,16 +55,10 @@ export async function getPushData({ room, message, userId, receiverUsername, sen
 			messageType: message.t,
 			tmid: message.tmid,
 		},
-		roomName:
-			settings.get('Push_show_username_room') && room.t !== 'd'
-				? `#${ roomTypes.getRoomName(room.t, room) }`
-				: '',
+		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
 		username,
 		message: settings.get('Push_show_message') ? notificationMessage : ' ',
 		badge: await getBadgeCount(userId),
-		usersTo: {
-			userId,
-		},
 		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	};
 }
@@ -80,7 +74,6 @@ export function sendWebPush({ room, message, userId, receiverUsername, senderUse
 		vapidSubject,
 		vapidPublic,
 		vapidPrivate,
-		'aes128gcm',
 	);
 
 	const pushSubscriptions = PushNotificationSubscriptions.findByUserId(userId);
