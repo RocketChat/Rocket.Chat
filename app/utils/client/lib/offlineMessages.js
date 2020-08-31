@@ -16,6 +16,7 @@ const action = {
 	},
 
 	send: (msg) => {
+		msg.ts = new Date();
 		if (msg.file && msg.meta) {
 			action.sendFile(msg);
 			return;
