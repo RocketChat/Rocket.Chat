@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Field, TextInput, NumberInput, SelectFiltered, Box, MultiSelect, Icon, Select, ToggleSwitch, TextAreaInput } from '@rocket.chat/fuselage';
+import { Field, TextInput, NumberInput, SelectFiltered, Box, MultiSelect, Icon, Select, ToggleSwitch, TextAreaInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
@@ -62,20 +62,19 @@ export function EditDepartment({ data, userDepartments, availableDepartments, id
 	const { department } = data || { department: {} };
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
-		name: department.name,
-		email: department.email,
-		description: department.description,
-		enabled: department.enabled,
-		maxNumberSimultaneousChat: department.maxNumberSimultaneousChat,
-		showOnRegistration: department.showOnRegistration,
-		showOnOfflineForm: department.showOnOfflineForm,
-		abandonedRoomsCloseCustomMessage: department.abandonedRoomsCloseCustomMessage,
-		chatClosingTags: department.chatClosingTags,
-		numAgents: department.numAgents,
-		requestTagBeforeClosingChat: department.requestTagBeforeClosingChat,
-		offlineMessageChannelName: department.offlineMessageChannelName,
-		visitorInactivityTimeoutInSeconds: department.visitorInactivityTimeoutInSeconds,
-		waitingQueueMessage: department.waitingQueueMessage,
+		name: (department && department.name) || '',
+		email: (department && department.email) || '',
+		description: (department && department.description) || '',
+		enabled: (department && department.enabled) || '',
+		maxNumberSimultaneousChat: (department && department.maxNumberSimultaneousChat) || undefined,
+		showOnRegistration: (department && department.showOnRegistration) || true,
+		showOnOfflineForm: (department && department.showOnOfflineForm) || true,
+		abandonedRoomsCloseCustomMessage: (department && department.abandonedRoomsCloseCustomMessage) || '',
+		chatClosingTags: (department && department.chatClosingTags) || '',
+		requestTagBeforeClosingChat: (department && department.requestTagBeforeClosingChat) || false,
+		offlineMessageChannelName: (department && department.offlineMessageChannelName) || '',
+		visitorInactivityTimeoutInSeconds: (department && department.visitorInactivityTimeoutInSeconds) || undefined,
+		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
 	});
 	const {
 		handleName,
@@ -159,7 +158,13 @@ export function EditDepartment({ data, userDepartments, availableDepartments, id
 
 	return <Page flexDirection='row'>
 		<Page>
-			<Page.Header title={title}/>
+			<Page.Header title={title}>
+				<ButtonGroup>
+					<Button primary disabled={!hasUnsavedChanges} onClick={handleSave}>
+						{t('Save_department')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Field>
 					<Field.Label>{t('Enabled')}</Field.Label>
