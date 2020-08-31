@@ -49,7 +49,7 @@ export const SideNav = new class {
 	closeFlex(callback = null) {
 		const routesNamesForRooms = roomTypes.getTypes().filter((i) => i.route).map((i) => i.route.name);
 		if (!routesNamesForRooms.includes(FlowRouter.current().route.name)) {
-			const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') });
+			const subscription = Subscriptions.findOne({ rid: Session.get('lastOpenedRoom') });
 			if (subscription) {
 				if (isMobile()) {
 					FlowRouter.go('home');

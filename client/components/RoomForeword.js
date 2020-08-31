@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
 
 import { Rooms, Users } from '../../app/models/client';
@@ -11,7 +11,7 @@ const RoomForeword = ({ _id: rid }) => {
 	const t = useTranslation();
 
 	const user = useUser();
-	const room = useReactiveValue(() => Rooms.findOne({ _id: rid }));
+	const room = useReactiveValue(useCallback(() => Rooms.findOne({ _id: rid }), [rid]));
 
 	if (room.t !== 'd') {
 		return t('Start_of_conversation');

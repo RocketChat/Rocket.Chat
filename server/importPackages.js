@@ -3,6 +3,7 @@ import '../app/sms';
 import '../app/2fa/server';
 import '../app/analytics/server';
 import '../app/api/server';
+import '../app/apple/server';
 import '../app/assets/server';
 import '../app/authorization';
 import '../app/autolinker/server';

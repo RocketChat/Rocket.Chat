@@ -36,7 +36,7 @@ export class LivechatDepartmentRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	addBusinessHourToDepartamentsByIds(ids = [], businessHourId) {
+	addBusinessHourToDepartmentsByIds(ids = [], businessHourId) {
 		const query = {
 			_id: { $in: ids },
 		};

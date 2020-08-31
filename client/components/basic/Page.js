@@ -12,6 +12,7 @@ function Page(props) {
 	const [border, setBorder] = useState(false);
 	return <PageContext.Provider value={[border, setBorder]}>
 		<Box
+			backgroundColor='surface'
 			is='section'
 			display='flex'
 			flexDirection='column'
@@ -43,6 +44,7 @@ function PageHeader({ children, title, ...props }) {
 			flexDirection='row'
 			flexWrap='nowrap'
 			alignItems='center'
+			color='neutral-800'
 			{...props}
 		>
 			{hasBurgerMenuButton && <BurgerMenuButton
@@ -71,7 +73,7 @@ const PageContent = React.forwardRef(function PageContent(props, ref) {
 
 function PageScrollableContent({ onScrollContent, ...props }) {
 	return <Scrollable onScrollContent={onScrollContent} >
-		<Box padding='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
+		<Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
 	</Scrollable>;
 }
 

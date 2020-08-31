@@ -277,6 +277,8 @@ const methodCall = () => ({
 			const result = Meteor.call(method, ...params);
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
+			Meteor._debug(`Exception while invoking method ${ method }`, error.stack);
+
 			return API.v1.success(mountResult({ id, error }));
 		}
 	},

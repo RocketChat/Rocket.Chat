@@ -128,7 +128,23 @@ API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 
 API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post() {
-		const messageReturn = processWebhookMessage(this.bodyParams, this.user)[0];
+		// WIDECHAT only
+		let messageReturn;
+		if (this.user.username === settings.get('Notification_Service_User_Username')) {
+			const { hostname_id } = this.requestParams();
+			if (!hostname_id) {
+				throw new Meteor.Error('error-hostname-id-not-provided', 'Body param "hostname_id" is required');
+			}
+			const hostuser = Users.findOneById(hostname_id);
+			messageReturn = processWebhookMessage(this.bodyParams, hostuser, undefined, true)[0];
+		} else {
+			messageReturn = processWebhookMessage(this.bodyParams, this.user, undefined, true)[0];
+		}
+		//
+
+		// RC code
+		// const messageReturn = processWebhookMessage(this.bodyParams, this.user)[0];
+
 
 		if (!messageReturn) {
 			return API.v1.failure('unknown-error');
@@ -697,7 +713,7 @@ API.v1.addRoute('chat.getSnippetedMessages', { authRequired: true }, {
 
 API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
 	get() {
-		const { roomId } = this.queryParams;
+		const { roomId, text } = this.queryParams;
 		const { sort } = this.parseJsonQuery();
 		const { offset, count } = this.getPaginationItems();
 
@@ -707,6 +723,7 @@ API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
 		const messages = Promise.await(findDiscussionsFromRoom({
 			uid: this.userId,
 			roomId,
+			text,
 			pagination: {
 				offset,
 				count,
