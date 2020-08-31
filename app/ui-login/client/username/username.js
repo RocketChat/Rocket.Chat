@@ -81,6 +81,7 @@ Template.username.events({
 
 			Button.reset(button);
 			instance.username.set(username);
+			location.href = location.href;
 			return callbacks.run('usernameSet');
 		});
 	},
