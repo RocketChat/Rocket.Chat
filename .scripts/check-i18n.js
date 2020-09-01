@@ -34,8 +34,9 @@ const checkFiles = async (path, source) => {
 
 	const i18nFiles = await fg([`${ path }/**/*.i18n.json`]);
 
-	const result = i18nFiles.filter((file) => {
+	let totalErrors = 0;
 
+	const result = i18nFiles.filter((file) => {
 		const json = JSON.parse(fs.readFileSync(file, 'utf8'));
 
 		const result = validateKeys(json);
@@ -43,6 +44,8 @@ const checkFiles = async (path, source) => {
 		if (result.length === 0) {
 			return true;
 		}
+
+		totalErrors += result.length;
 
 		console.log('\n## File', file, `(${ result.length } errors)`);
 
@@ -54,6 +57,7 @@ const checkFiles = async (path, source) => {
 	});
 
 	if (result.length > 0) {
+		console.error(`\n${ totalErrors } errors found`);
 		process.exit(1);
 	}
 
