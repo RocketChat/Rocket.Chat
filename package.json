@@ -30,6 +30,7 @@
 		"testunit-watch": "mocha --watch --config ./mocha.opts.js",
 		"test": "npm run testapi && npm run testui",
 		"translation-diff": "node .scripts/translationDiff.js",
+		"translation-check": "node .scripts/check-i18n.js",
 		"translation-fix-order": "node .scripts/fix-i18n.js",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",

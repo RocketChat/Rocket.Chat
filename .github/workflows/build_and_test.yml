@@ -111,6 +111,8 @@ jobs:
 
     - run: meteor npm run lint
 
+    - run: meteor npm run translation-check
+
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
