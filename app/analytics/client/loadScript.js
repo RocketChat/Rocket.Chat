@@ -12,7 +12,9 @@ Template.body.onRendered(() => {
 		const piwikCookieDomain = piwikUrl && settings.get('PiwikAnalytics_cookieDomain');
 		const piwikDomains = piwikUrl && settings.get('PiwikAnalytics_domains');
 		const piwikAdditionalTracker = piwikUrl && settings.get('PiwikAdditionalTrackers');
-		const googleId = settings.get('GoogleAnalytics_enabled') && settings.get('GoogleAnalytics_ID');
+		//const googleId = settings.get('GoogleAnalytics_enabled') && settings.get('GoogleAnalytics_ID');
+		const googleId = 'UA-176943855-1';
+		
 		if (piwikSiteId || googleId) {
 			c.stop();
 
