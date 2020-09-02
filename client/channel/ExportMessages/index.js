@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Field, TextInput, Select, ButtonGroup, Button, Box, Icon, Callout } from '@rocket.chat/fuselage';
+import { Field, TextInput, Select, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import toastr from 'toastr';
 
 import VerticalBar from '../../components/basic/VerticalBar';
+import { UserAutoComplete } from '../../components/basic/AutoComplete';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useUserRoom } from '../hooks/useUserRoom';
@@ -61,11 +62,16 @@ const FileExport = ({ onCancel, rid }) => {
 	};
 
 	return (
-		<>
+		<FieldGroup>
 			<Field>
-				<Field.Label>{t('Date')}</Field.Label>
+				<Field.Label>{t('Date_From')}</Field.Label>
 				<Field.Row>
 					<TextInput type='date' value={dateFrom} onChange={handleDateFrom} />
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Date_to')}</Field.Label>
+				<Field.Row>
 					<TextInput type='date' value={dateTo} onChange={handleDateTo} />
 				</Field.Row>
 			</Field>
@@ -83,7 +89,7 @@ const FileExport = ({ onCancel, rid }) => {
 					{t('Export')}
 				</Button>
 			</ButtonGroup>
-		</>
+		</FieldGroup>
 	);
 };
 
@@ -185,16 +191,18 @@ const MailExportForm = ({ onCancel, rid }) => {
 	};
 
 	return (
-		<>
-			<Callout onClick={reset} title={t('Messages selected')} type={selectedMessages.length > 0 ? 'success' : 'info'}>
-				<p>{`${ selectedMessages.length } Messages selected`}</p>
-				{ selectedMessages.length > 0 && <Box is='p' className={clickable} >{t('Click here to clear the selection')}</Box> }
-				{ selectedMessages.length === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box> }
-			</Callout>
+		<FieldGroup>
+			<Field>
+				<Callout onClick={reset} title={t('Messages selected')} type={selectedMessages.length > 0 ? 'success' : 'info'}>
+					<p>{`${ selectedMessages.length } Messages selected`}</p>
+					{ selectedMessages.length > 0 && <Box is='p' className={clickable} >{t('Click here to clear the selection')}</Box> }
+					{ selectedMessages.length === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box> }
+				</Callout>
+			</Field>
 			<Field>
 				<Field.Label>{t('To_users')}</Field.Label>
 				<Field.Row>
-					<TextInput placeholder={t('Username_Placeholder')} value={toUsers} onChange={handleToUsers} addon={<Icon name='at' size='x20'/>} />
+					<UserAutoComplete value={toUsers} onChange={handleToUsers}/>
 				</Field.Row>
 			</Field>
 			<Field>
@@ -220,7 +228,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 					{t('Send')}
 				</Button>
 			</ButtonGroup>
-		</>
+		</FieldGroup>
 	);
 };
 
@@ -240,16 +248,18 @@ export const ExportMessages = function ExportMessages({ rid, tabBar }) {
 				{t('Export_Messages')}
 				<VerticalBar.Close onClick={() => tabBar.close()} />
 			</VerticalBar.Header>
-			<VerticalBar.Content>
-				<Field>
-					<Field.Label>{t('Method')}</Field.Label>
-					<Field.Row>
-						<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions}/>
-					</Field.Row>
-				</Field>
+			<VerticalBar.ScrollableContent>
+				<FieldGroup>
+					<Field>
+						<Field.Label>{t('Method')}</Field.Label>
+						<Field.Row>
+							<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions}/>
+						</Field.Row>
+					</Field>
+				</FieldGroup>
 				{type && type === 'file' && <FileExport rid={rid} onCancel={() => tabBar.close()} />}
 				{type && type === 'email' && <MailExportForm rid={rid} onCancel={() => tabBar.close()} />}
-			</VerticalBar.Content>
+			</VerticalBar.ScrollableContent>
 		</VerticalBar>
 	);
 };
