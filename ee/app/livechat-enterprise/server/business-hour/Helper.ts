@@ -54,7 +54,7 @@ export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
 			return;
 		}
 		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour({ fields: { _id: 1 } });
-		LivechatBusinessHours.update({ _id: defaultBusinessHour._id }, {
+		defaultBusinessHour && LivechatBusinessHours.update({ _id: defaultBusinessHour._id }, {
 			$set: {
 				timezone: {
 					name: moment.tz.guess(),

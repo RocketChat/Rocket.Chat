@@ -1,5 +1,7 @@
 import './polyfills';
 
+import './importServiceWorker';
+
 import './lib/meteorCallWrapper';
 import './importPackages';
 import '../imports/startup/client';

@@ -9,8 +9,8 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';
+import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 
 export const normalizeThreadMessage = ({ ...message }) => {
@@ -234,8 +234,7 @@ export const RoomHistoryManager = new class {
 		if (!message || !message.rid) {
 			return;
 		}
-
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
+		const instance = Blaze.getView($('.messages-box .wrapper')[0]).parentView.templateInstance();
 
 		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
 			const wrapper = $('.messages-box .wrapper');
@@ -262,7 +261,6 @@ export const RoomHistoryManager = new class {
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
 		if (subscription) {
-			// const { ls } = subscription;
 			typeName = subscription.t + subscription.name;
 		} else {
 			const curRoomDoc = ChatRoom.findOne({ _id: message.rid });
@@ -333,7 +331,18 @@ export const RoomHistoryManager = new class {
 	}
 
 	clear(rid) {
+		const query = { rid };
+		const options = {
+			sort: {
+				ls: -1,
+			},
+			limit: 50,
+		};
+		const retain = ChatMessage.find(query, options).fetch();
 		ChatMessage.remove({ rid });
+		retain.forEach((message) => {
+			ChatMessage.insert(message);
+		});
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);

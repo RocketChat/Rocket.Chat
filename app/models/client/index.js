@@ -14,7 +14,7 @@ import { CachedChatSubscription } from './models/CachedChatSubscription';
 import { CachedUserList } from './models/CachedUserList';
 import { ChatRoom } from './models/ChatRoom';
 import { ChatSubscription } from './models/ChatSubscription';
-import { ChatMessage } from './models/ChatMessage';
+import { ChatMessage, CachedChatMessage } from './models/ChatMessage';
 import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
@@ -48,6 +48,7 @@ export {
 	AuthzCachedCollection,
 	ChatPermissions,
 	ChatMessage,
+	CachedChatMessage,
 	ChatSubscription,
 	Rooms,
 	CustomSounds,

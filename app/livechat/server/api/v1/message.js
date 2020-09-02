@@ -18,13 +18,14 @@ API.v1.addRoute('livechat/message', {
 				token: String,
 				rid: String,
 				msg: String,
+				avatar: String,
 				agent: Match.Maybe({
 					agentId: String,
 					username: String,
 				}),
 			});
 
-			const { token, rid, agent, msg } = this.bodyParams;
+			const { token, rid, agent, msg, avatar } = this.bodyParams;
 
 			const guest = findGuest(token);
 			if (!guest) {
@@ -48,6 +49,7 @@ API.v1.addRoute('livechat/message', {
 					_id,
 					rid,
 					msg,
+					avatar,
 					token,
 				},
 				agent,

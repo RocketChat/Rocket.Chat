@@ -179,7 +179,7 @@ const mergeRoomSub = (room) => {
 
 	Subscriptions.update({
 		rid: room._id,
-		lm: { $lt: room.lm },
+		lm: { $lt: (room.lastMessage && room.lastMessage.ts) || room.lm },
 	}, {
 		$set: {
 			lm: room.lm,

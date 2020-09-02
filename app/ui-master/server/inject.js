@@ -71,7 +71,7 @@ Meteor.startup(() => {
 		}
 	});
 
-	settings.get('theme-color-sidebar-background', (key, value) => {
+	settings.get('theme-color-rc-color-primary', (key, value) => {
 		const escapedValue = s.escapeHTML(value);
 		injectIntoHead(key, `<meta name="msapplication-TileColor" content="${ escapedValue }" />`
 							+ `<meta name="theme-color" content="${ escapedValue }" />`);
