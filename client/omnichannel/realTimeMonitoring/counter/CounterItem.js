@@ -9,7 +9,7 @@ const CounterItem = ({ title = '', count = '-', ...props }) => <Box
 	flexGrow={1}
 	{...props}
 >
-	<Box fontScale='s1' textTransform='uppercase' color='hint'>
+	<Box fontScale='s1' textTransform='uppercase' color='hint' textAlign='center' pi='x8'>
 		{title}
 	</Box>
 	<Box fontScale='h1'>
