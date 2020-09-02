@@ -45,7 +45,7 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName }) => {
 		});
 	}, [chartName, departmentId, draw, end, start, t]);
 
-	return <Chart border='none' ref={canvas} flexGrow={1}/>;
+	return <Chart border='none' pi='none' ref={canvas} flexGrow={1}/>;
 };
 
 export default InterchangeableChart;

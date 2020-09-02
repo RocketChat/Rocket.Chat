@@ -28,13 +28,6 @@ const useOptions = (type) => {
 	}, [t, type]);
 };
 
-const border = {
-	borderStyle: 'solid',
-	borderWidth: 'x2',
-	borderRadius: 'x2',
-	borderColor: 'neutral-300',
-};
-
 const AnalyticsPage = () => {
 	const t = useTranslation();
 	const [type, setType] = useState('Conversations');
@@ -67,6 +60,7 @@ const AnalyticsPage = () => {
 					<DateRangePicker onChange={setDateRange}/>
 				</Box>
 				<Overview type={type} dateRange={dateRange} departmentId={departmentId}/>
+				<Select options={graphOptions} value={chartName} onChange={setChartName} flexGrow={0}/>
 				<Box display='flex' flexDirection='row' flexGrow={1}>
 					<Box
 						display='flex'
@@ -76,9 +70,7 @@ const AnalyticsPage = () => {
 						flexShrink={1}
 						flexBasis='100%'
 						mie='x4'
-						{...border}
 					>
-						<Select options={graphOptions} value={chartName} onChange={setChartName} flexGrow={0}/>
 						<InterchangeableChart flexGrow={1} chartName={chartName} departmentId={departmentId} dateRange={dateRange}/>
 					</Box>
 					<Box
@@ -89,7 +81,6 @@ const AnalyticsPage = () => {
 						flexBasis='100%'
 						p='x10'
 						mis='x4'
-						{...border}
 					>
 						<AgentOverview type={chartName} dateRange={dateRange} departmentId={departmentId}/>
 					</Box>

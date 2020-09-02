@@ -42,10 +42,6 @@ const Overview = ({ type, dateRange, departmentId }) => {
 
 	return <Box
 		pb='x28'
-		borderStyle='solid'
-		borderWidth='x2'
-		borderRadius='x2'
-		borderColor='neutral-300'
 		flexDirection='column'
 	>
 		{
