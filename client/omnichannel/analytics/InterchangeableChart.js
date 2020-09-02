@@ -8,7 +8,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { drawLineChart } from '../../../app/livechat/client/lib/chartHandler';
 
 
-const InterchangeableChart = ({ departmentId, dateRange, chartName }) => {
+const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -45,7 +45,7 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName }) => {
 		});
 	}, [chartName, departmentId, draw, end, start, t]);
 
-	return <Chart border='none' pi='none' ref={canvas} flexGrow={1}/>;
+	return <Chart border='none' pi='none' ref={canvas} {...props}/>;
 };
 
 export default InterchangeableChart;
