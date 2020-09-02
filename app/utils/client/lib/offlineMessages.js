@@ -6,7 +6,6 @@ import localforage from 'localforage';
 import { call } from '../../../ui-utils/client';
 import { getConfig } from '../../../ui-utils/client/config';
 import { ChatMessage, CachedChatMessage } from '../../../models/client';
-
 import { SWCache, APIClient } from '..';
 
 const action = {
