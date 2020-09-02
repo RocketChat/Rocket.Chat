@@ -61,14 +61,14 @@ const RealTimeMonitoringPage = () => {
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
 			<Margins block='x4'>
-				<Box flexDirection='row' display='flex' maxWidth='x600' alignSelf='center' w='full'>
-					<Field mie='x2'>
+				<Box flexDirection='row' display='flex' justifyContent='space-between' alignSelf='center' w='full'>
+					<Field mie='x4'>
 						<Field.Label>{t('Department')}</Field.Label>
 						<Field.Row>
-							<DepartmentAutoComplete value={department} onChange={setDepartment}/>
+							<DepartmentAutoComplete placeholder={t('All')} value={department} onChange={setDepartment}/>
 						</Field.Row>
 					</Field>
-					<Field mis='x2'>
+					<Field mis='x4'>
 						<Field.Label>{t('Update_every')}</Field.Label>
 						<Field.Row>
 							<Select options={reloadOptions} onChange={useMutableCallback((val) => setReloadFrequency(val))} value={reloadFrequency}/>

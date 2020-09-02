@@ -10,10 +10,6 @@ const CounterRow = ({ children, ...props }) => <Box
 	justifyContent='space-around'
 	alignItems='center'
 	flexGrow={1}
-	borderStyle='solid'
-	borderWidth='x2'
-	borderRadius='x2'
-	borderColor='neutral-300'
 	{...props}
 >
 	{children && flattenChildren(children).reduce((acc, child, i) => {
