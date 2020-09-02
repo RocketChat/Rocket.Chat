@@ -28,11 +28,11 @@ Template.livechatAnalyticsCustomDaterange.onRendered(function() {
 Template.livechatAnalyticsCustomDaterange.events({
 	'click .lc-custom-daterange-submit'(e) {
 		e.preventDefault();
-		const from = document.getElementsByClassName('lc-custom-daterange-from')[0].value;
-		const to = document.getElementsByClassName('lc-custom-daterange-to')[0].value;
+		const from = moment(document.getElementsByClassName('lc-custom-daterange-from')[0].value, ['DD-MM-YYYY', 'MM-DD-YYYY']);
+		const to = moment(document.getElementsByClassName('lc-custom-daterange-to')[0].value, ['DD-MM-YYYY', 'MM-DD-YYYY']);
 
-		if (moment(from).isValid() && moment(to).isValid()) {
-			Template.currentData().daterange.set(setDateRange('custom', moment(new Date(from)), moment(new Date(to))));
+		if (from.isValid() && to.isValid()) {
+			Template.currentData().daterange.set(setDateRange('custom', from.toDate(), to.toDate()));
 		} else {
 			handleError({ details: { errorTitle: 'Invalid_dates' }, error: 'Error_in_custom_dates' });
 		}

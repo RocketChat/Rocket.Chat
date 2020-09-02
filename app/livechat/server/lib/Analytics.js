@@ -8,7 +8,7 @@ export const Analytics = {
 		const from = moment(options.daterange.from);
 		const to = moment(options.daterange.to);
 
-		if (!(moment(from).isValid() && moment(to).isValid())) {
+		if (!from.isValid() && to.isValid()) {
 			console.log('livechat:getAgentOverviewData => Invalid dates');
 			return;
 		}
@@ -33,7 +33,7 @@ export const Analytics = {
 		const from = moment(options.daterange.from);
 		const to = moment(options.daterange.to);
 
-		if (!(moment(from).isValid() && moment(to).isValid())) {
+		if (!from.isValid() && to.isValid()) {
 			console.log('livechat:getAnalyticsChartData => Invalid dates');
 			return;
 		}
@@ -80,7 +80,7 @@ export const Analytics = {
 		const to = moment(options.daterange.to);
 		const { departmentId } = options;
 
-		if (!(moment(from).isValid() && moment(to).isValid())) {
+		if (!from.isValid() && to.isValid()) {
 			console.log('livechat:getAnalyticsOverviewData => Invalid dates');
 			return;
 		}
