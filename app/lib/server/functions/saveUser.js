@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
-import { Random } from 'meteor/random';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -215,13 +214,30 @@ const handleBio = (updateUser, bio) => {
 	}
 };
 
+const handleNickname = (updateUser, nickname) => {
+	if (nickname) {
+		if (nickname.trim()) {
+			if (typeof nickname !== 'string' || nickname.length > 120) {
+				throw new Meteor.Error('error-invalid-field', 'nickname', {
+					method: 'saveUserProfile',
+				});
+			}
+			updateUser.$set = updateUser.$set || {};
+			updateUser.$set.nickname = nickname;
+		} else {
+			updateUser.$unset = updateUser.$unset || {};
+			updateUser.$unset.nickname = 1;
+		}
+	}
+};
+
 export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
 	let sendPassword = false;
 
 	if (userData.hasOwnProperty('setRandomPassword')) {
 		if (userData.setRandomPassword) {
-			userData.password = Random.id();
+			userData.password = passwordPolicy.generatePassword();
 			userData.requirePasswordChange = true;
 			sendPassword = true;
 		}
@@ -261,6 +277,7 @@ export const saveUser = function(userId, userData) {
 		}
 
 		handleBio(updateUser, userData.bio);
+		handleNickname(updateUser, userData.nickname);
 
 		Meteor.users.update({ _id }, updateUser);
 
@@ -320,6 +337,7 @@ export const saveUser = function(userId, userData) {
 	};
 
 	handleBio(updateUser, userData.bio);
+	handleNickname(updateUser, userData.nickname);
 
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;

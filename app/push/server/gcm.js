@@ -1,4 +1,5 @@
 import gcm from 'node-gcm';
+import { EJSON } from 'meteor/ejson';
 
 import { logger } from './logger';
 
@@ -21,7 +22,7 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	logger.debug('sendGCM', userTokens, notification);
 
 	// Allow user to set payload
-	const data = notification.payload || {};
+	const data = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
 	data.title = notification.title;
 	data.message = notification.text;

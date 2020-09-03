@@ -1,6 +1,7 @@
 export const getDefaultUserFields = () => ({
 	name: 1,
 	username: 1,
+	nickname: 1,
 	emails: 1,
 	status: 1,
 	statusDefault: 1,

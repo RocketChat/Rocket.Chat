@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Box, Field, Margins, Button } from '@rocket.chat/fuselage';
+import { Box, Field, Margins, Button, Callout } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -21,7 +21,7 @@ export function EditUserWithData({ uid, ...props }) {
 	}
 
 	if (error || roleError) {
-		return <Box mbs='x16' {...props}>{t('User_not_found')}</Box>;
+		return <Callout m='x16' type='danger'>{t('User_not_found')}</Callout>;
 	}
 
 	return <EditUser data={data.user} roles={roleData.roles} {...props}/>;
@@ -34,6 +34,7 @@ const getInitialValue = (data) => ({
 	username: data.username,
 	status: data.status,
 	bio: data.bio ?? '',
+	nickname: data.nickname ?? '',
 	email: (data.emails && data.emails[0].address) || '',
 	verified: (data.emails && data.emails[0].verified) || false,
 	setRandomPassword: false,
@@ -102,7 +103,7 @@ export function EditUser({ data, roles, ...props }) {
 
 	const canSaveOrReset = hasUnsavedChanges || avatarObj;
 
-	const prepend = useMemo(() => <UserAvatarEditor username={data.username} setAvatarObj={setAvatarObj}/>, [data.username]);
+	const prepend = useMemo(() => <UserAvatarEditor username={data.username} etag={data.avatarETag} setAvatarObj={setAvatarObj}/>, [data.username, data.avatarETag]);
 
 	const append = useMemo(() => <Field>
 		<Field.Row>
