@@ -29,6 +29,10 @@ const renderMessage = (message) => {
 	if (!s.trim(message.html)) {
 		return message;
 	}
+	
+	if(typeof message.tokens === "undefined") {
+		message.tokens = []
+	}
 
 	let msgParts;
 	let regexTokens;
