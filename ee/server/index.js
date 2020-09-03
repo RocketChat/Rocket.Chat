@@ -1,3 +1,5 @@
+import './broker';
+
 import '../app/models';
 import '../app/api-enterprise/server/index';
 import '../app/auditing/server/index';
