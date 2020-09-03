@@ -756,6 +756,9 @@ Template.channelSettingsEditing.helpers({
 		const { room } = Template.instance();
 		return TAPi18n.__(label, { max: roomMaxAgeDefault(room.t) });
 	},
+	announcementEnabled() {
+		return settings.get('Allow_Announcements');
+	},
 });
 
 Template.channelSettings.helpers({

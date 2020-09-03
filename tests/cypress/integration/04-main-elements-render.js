@@ -44,7 +44,7 @@ describe('[Main Elements Render]', function() {
 			});
 
 			it('it should add text to the spotlight and show the channel list', () => {
-				sideNav.spotlightSearch.type('rocket.cat');
+				sideNav.spotlightSearch.type('genius');
 				sideNav.spotlightSearchPopUp.should('be.visible');
 			});
 

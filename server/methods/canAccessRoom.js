@@ -3,7 +3,6 @@ import { Match, check } from 'meteor/check';
 
 import { Users, Rooms } from '../../app/models/server';
 import { canAccessRoom } from '../../app/authorization/server';
-import { settings } from '../../app/settings/server';
 
 Meteor.methods({
 	canAccessRoom(rid, userId, extraData) {
@@ -45,12 +44,6 @@ Meteor.methods({
 				room.username = user.username;
 			}
 			return room;
-		}
-
-		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'canAccessRoom',
-			});
 		}
 
 		return false;

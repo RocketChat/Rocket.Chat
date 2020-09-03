@@ -11,9 +11,7 @@ Meteor.methods({
 		check(rid, String);
 
 		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadHistory',
-			});
+			return false;
 		}
 
 		const fromId = Meteor.userId();

@@ -126,7 +126,7 @@ Template.RocketSearch.events = {
 			t.suggest(value);
 		}
 	}, 300),
-	'click .rocket-search-suggestion-item'(e, t) {
+	'click .chitchat-search-suggestion-item'(e, t) {
 		if (this.action) {
 			const value = this.action();
 			if (value) {
@@ -138,7 +138,7 @@ Template.RocketSearch.events = {
 			t.search(this.text);
 		}
 	},
-	'mouseenter .rocket-search-suggestion-item'(e, t) {
+	'mouseenter .chitchat-search-suggestion-item'(e, t) {
 		t.suggestionActive.set(t.suggestions.get().indexOf(this));
 	},
 };
@@ -174,7 +174,7 @@ Template.RocketSearch.helpers({
 // add closer to suggestions
 Template.RocketSearch.onRendered(function() {
 	$(document).on(`click.suggestionclose.${ this.data.rid }`, () => {
-		// if (e.target.id !== 'rocket-search-suggestions' && !$(e.target).parents('#rocket-search-suggestions').length) {
+		// if (e.target.id !== 'chitchat-search-suggestions' && !$(e.target).parents('#chitchat-search-suggestions').length) {
 		this.suggestions.set();
 		// }
 	});

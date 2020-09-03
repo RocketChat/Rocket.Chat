@@ -6,10 +6,9 @@ import { Rooms } from '../../models';
 
 export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	let slugifiedName = displayName;
-
 	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		if (options.allowDuplicates !== true) {
-			const room = Rooms.findOneByDisplayName(displayName);
+			const room = Rooms.findOneByDisplayName(displayName, options);
 			if (room && room._id !== rid) {
 				if (room.archived) {
 					throw new Meteor.Error('error-archived-duplicate-name', `There's an archived channel with name ${ displayName }`, { function: 'RocketChat.getValidRoomName', channel_name: displayName });
@@ -19,6 +18,10 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 			}
 		}
 		slugifiedName = limax(displayName);
+	}
+
+	if (options.groupId) {
+		slugifiedName = `${ slugifiedName }-${ options.groupId }`;
 	}
 
 	let nameValidation;

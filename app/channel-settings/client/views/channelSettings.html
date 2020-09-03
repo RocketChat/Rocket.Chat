@@ -35,18 +35,20 @@
 			</div>
 		{{/with}}
 
-		{{#with settings.announcement}}
-			<div class="rc-user-info__row">
-				<div class="rc-input">
-					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
-						<div class="rc-input__wrapper">
-							<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
-						</div>
-					</label>
+		{{#if announcementEnabled}}
+			{{#with settings.announcement}}
+				<div class="rc-user-info__row">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+							<div class="rc-input__wrapper">
+								<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+							</div>
+						</label>
+					</div>
 				</div>
-			</div>
-		{{/with}}
+			{{/with}}
+		{{/if}}
 		{{#unless isDirectMessage}}
 			{{#with settings.description}}
 				<div class="rc-user-info__row">
@@ -368,12 +370,14 @@
 					</div>
 				</label>
 			{{/unless}}
-			<label class="rc-user-info__label">
-				{{_ "Announcement"}}
-				<div class="rc-user-info__description">
-					{{{RocketChatMarkdown announcement}}}
-				</div>
-			</label>
+			{{#if announcementEnabled}}
+				<label class="rc-user-info__label">
+					{{_ "Announcement"}}
+					<div class="rc-user-info__description">
+						{{{RocketChatMarkdown announcement}}}
+					</div>
+				</label>
+			{{/if}}
 			<label class="rc-user-info__label">
 				{{_ "Topic"}}
 				<div class="rc-user-info__description">
@@ -419,7 +423,6 @@
 		{{#if canEditRoom}}
 		<button class="rc-button rc-button--icon rc-button--outline js-edit" type="submit">{{> icon icon='edit'}}{{_ "Edit"}}</button>
 		{{/if}}
-		<button class="rc-button rc-button--icon rc-button--outline js-hide" type="submit">{{> icon icon='eye-off'}}{{_ "Hide"}}</button>
 		{{#if canLeaveRoom}}
 		<button class="rc-button rc-button--icon rc-button--outline rc-button--cancel js-leave">{{> icon icon='sign-out'}}{{_ 'Leave'}}</button>
 		{{/if}}

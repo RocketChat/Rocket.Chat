@@ -72,6 +72,7 @@ Meteor.methods({
 		const canViewAnonymous = settings.get('Accounts_AllowAnonymousRead') === true;
 
 		const user = Meteor.user();
+		const { customFields: { groupId } = {} } = user;
 
 		if (type === 'channels') {
 			const sort = sortChannels(sortBy, sortDirection);
@@ -99,6 +100,7 @@ Meteor.methods({
 					usersCount: 1,
 					prid: 1,
 				},
+				groupId,
 			});
 
 			return {
@@ -113,7 +115,7 @@ Meteor.methods({
 		}
 
 		// type === users
-		if (!hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
+		if (!hasPermission(user._id, 'view-d-room')) {
 			return;
 		}
 
@@ -129,11 +131,14 @@ Meteor.methods({
 				createdAt: 1,
 				emails: 1,
 				federation: 1,
+				customFields: 1,
 			},
 		};
 
 		let result;
-		if (workspace === 'all') {
+		if (!hasPermission(user._id, 'view-outside-room')) {
+			result = Users.findPrivateActiveByUsernameOrNameRegexWithExceptions(user._id, text, [], options);
+		} else if (workspace === 'all') {
 			result = Users.findByActiveUsersExcept(text, [], options, forcedSearchFields);
 		} else if (workspace === 'external') {
 			result = Users.findByActiveExternalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());

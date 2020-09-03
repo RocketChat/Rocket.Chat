@@ -134,12 +134,7 @@ Template.sidebarItem.events({
 			return false;
 		};
 
-		const items = [{
-			icon: 'eye-off',
-			name: t('Hide_room'),
-			type: 'sidebar-item',
-			id: 'hide',
-		}];
+		const items = [];
 
 		if (this.alert) {
 			items.push({

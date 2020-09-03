@@ -9,6 +9,11 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 	}
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
+
+	const user = await Users.findOneById(uid);
+	const { customFields: { groupId } = {} } = user;
+	if (groupId) { conditions['customFields.groupId'] = groupId; }
+
 	const options = {
 		fields: {
 			name: 1,

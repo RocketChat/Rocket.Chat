@@ -66,7 +66,7 @@ describe('The AppMessagesConverter instance', function() {
 			expect(appMessage).to.have.property('createdAt').which.equalTime(createdAt);
 			expect(appMessage).to.have.property('updatedAt').which.equalTime(updatedAt);
 			expect(appMessage).to.have.property('groupable', false);
-			expect(appMessage).to.have.property('sender').which.includes({ id: 'rocket.cat' });
+			expect(appMessage).to.have.property('sender').which.includes({ id: 'genius' });
 			expect(appMessage).to.have.property('room').which.includes({ id: 'GENERAL' });
 
 			expect(appMessage).not.to.have.property('editor');
@@ -88,10 +88,10 @@ describe('The AppMessagesConverter instance', function() {
 				t: 'uj',
 				rid: 'GENERAL',
 				ts: new Date('2019-03-30T01:22:08.389Z'),
-				msg: 'rocket.cat',
+				msg: 'genius',
 				u: {
-					_id: 'rocket.cat',
-					username: 'rocket.cat',
+					_id: 'genius',
+					username: 'genius',
 				},
 				groupable: false,
 				_updatedAt: new Date('2019-03-30T01:22:08.412Z'),
@@ -133,9 +133,9 @@ describe('The AppMessagesConverter instance', function() {
 			expect(rocketchatMessage).to.have.property('ts').which.equalTime(createdAt);
 			expect(rocketchatMessage).to.have.property('_updatedAt').which.equalTime(updatedAt);
 			expect(rocketchatMessage).to.have.property('u').which.includes({
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
-				name: 'Rocket.Cat',
+				_id: 'genius',
+				username: 'genius',
+				name: 'Genius',
 			});
 		});
 

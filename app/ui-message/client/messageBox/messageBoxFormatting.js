@@ -50,6 +50,11 @@ export const formattingButtons = [
 		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
+		label: 'giphy',
+		text: 'GIF',
+		pattern: '/giphy {{text}}',
+	},
+	{
 		label: 'KaTeX',
 		text: () => {
 			if (!katex.isEnabled()) {

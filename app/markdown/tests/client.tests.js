@@ -80,7 +80,7 @@ const strike = {
 
 const headersLevel1 = {
 	'# Hello': headerWrapper('Hello', 1),
-	'# Rocket.Cat': headerWrapper('Rocket.Cat', 1),
+	'# Rocket.Cat': headerWrapper('Genius', 1),
 	'# Hi': headerWrapper('Hi', 1),
 	'# Hello this is dog': headerWrapper('Hello this is dog', 1),
 	'# Rocket cat says Hello': headerWrapper('Rocket cat says Hello', 1),
@@ -92,7 +92,7 @@ const headersLevel1 = {
 
 const headersLevel2 = {
 	'## Hello': headerWrapper('Hello', 2),
-	'## Rocket.Cat': headerWrapper('Rocket.Cat', 2),
+	'## Rocket.Cat': headerWrapper('Genius', 2),
 	'## Hi': headerWrapper('Hi', 2),
 	'## Hello this is dog': headerWrapper('Hello this is dog', 2),
 	'## Rocket cat says Hello': headerWrapper('Rocket cat says Hello', 2),
@@ -104,7 +104,7 @@ const headersLevel2 = {
 
 const headersLevel3 = {
 	'### Hello': headerWrapper('Hello', 3),
-	'### Rocket.Cat': headerWrapper('Rocket.Cat', 3),
+	'### Rocket.Cat': headerWrapper('Genius', 3),
 	'### Hi': headerWrapper('Hi', 3),
 	'### Hello this is dog': headerWrapper('Hello this is dog', 3),
 	'### Rocket cat says Hello': headerWrapper('Rocket cat says Hello', 3),
@@ -116,7 +116,7 @@ const headersLevel3 = {
 
 const headersLevel4 = {
 	'#### Hello': headerWrapper('Hello', 4),
-	'#### Rocket.Cat': headerWrapper('Rocket.Cat', 4),
+	'#### Rocket.Cat': headerWrapper('Genius', 4),
 	'#### Hi': headerWrapper('Hi', 4),
 	'#### Hello this is dog': headerWrapper('Hello this is dog', 4),
 	'#### Rocket cat says Hello': headerWrapper('Rocket cat says Hello', 4),
@@ -141,7 +141,7 @@ const quote = {
 	'Roc&gt;ket cat says Hello': s.escapeHTML('Roc&gt;ket cat says Hello'),
 	'He said Hello to her&gt;': s.escapeHTML('He said Hello to her&gt;'),
 	'>Hello': quoteWrapper('Hello'),
-	'>Rocket.Cat': quoteWrapper('Rocket.Cat'),
+	'>Rocket.Cat': quoteWrapper('Genius'),
 	'>Hi': quoteWrapper('Hi'),
 	'> Hello this is dog': quoteWrapper(' Hello this is dog'),
 	'> Rocket cat says Hello': quoteWrapper(' Rocket cat says Hello'),

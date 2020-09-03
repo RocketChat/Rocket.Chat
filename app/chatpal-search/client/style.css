@@ -371,7 +371,7 @@
 	display: none;
 }
 
-.rocket-search-suggestion-item.active .chatpal-suggestion-hint {
+.chitchat-search-suggestion-item.active .chatpal-suggestion-hint {
 	display: block;
 }
 
@@ -387,8 +387,8 @@
 	font-size: 26px !important;
 }
 
-.chatpalProvider .rocket-search-suggestion-item.active,
-.chatpalProvider .rocket-search-suggestion-item:hover {
+.chatpalProvider .chitchat-search-suggestion-item.active,
+.chatpalProvider .chitchat-search-suggestion-item:hover {
 	color: white;
 	background-color: #125074;
 }

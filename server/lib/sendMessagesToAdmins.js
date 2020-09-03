@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Roles, Users } from '../../app/models/server';
 
 export function sendMessagesToAdmins({
-	fromId = 'rocket.cat',
+	fromId = 'genius',
 	checkFrom = true,
 	msgs = [],
 	banners = [],

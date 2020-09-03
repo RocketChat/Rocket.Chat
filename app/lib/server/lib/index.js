@@ -5,6 +5,7 @@
 	for the *server* pieces of code which does include the shared
 	library files.
 */
+import './notifyUsersOnLogin';
 import './notifyUsersOnMessage';
 import './meteorFixes';
 

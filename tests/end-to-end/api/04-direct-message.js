@@ -21,7 +21,7 @@ describe('[Direct Messages]', function() {
 		request.post(api('chat.postMessage'))
 			.set(credentials)
 			.send({
-				channel: 'rocket.cat',
+				channel: 'genius',
 				text: 'This message was sent using the API',
 			})
 			.expect('Content-Type', 'application/json')
@@ -75,7 +75,7 @@ describe('[Direct Messages]', function() {
 			request.post(api('im.create'))
 				.set(credentials)
 				.send({
-					username: 'rocket.cat',
+					username: 'genius',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -166,7 +166,7 @@ describe('[Direct Messages]', function() {
 			.set(credentials)
 			.query({
 				roomId: directMessage._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -208,7 +208,7 @@ describe('[Direct Messages]', function() {
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -244,7 +244,7 @@ describe('[Direct Messages]', function() {
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)

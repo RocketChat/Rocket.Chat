@@ -9,12 +9,23 @@ import { Session } from 'meteor/session';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../app/ui';
-import { ChatSubscription } from '../app/models';
+import { ChatSubscription, Rooms } from '../app/models';
 import { roomTypes, handleError } from '../app/utils';
 import { call } from '../app/ui-utils';
 import { renderRouteComponent } from './reactAdapters';
 
 const getRoomById = mem((rid) => call('getRoomById', rid));
+
+const goToGroupPrivateRoom = () => {
+	const user = Meteor.users.findOne(Meteor.userId());
+	const { customFields: { groupId } = {} } = user || {};
+	if (groupId) {
+		const privateRoom = Rooms.findOne({ t: 'p', 'customFields.groupId': groupId }, { fields: { name: 1 } });
+		if (privateRoom) {
+			FlowRouter.go(`/group/${ privateRoom.name }`);
+		}
+	}
+};
 
 FlowRouter.goToRoomById = async (rid) => {
 	if (!rid) {
@@ -71,6 +82,10 @@ FlowRouter.route('/home', {
 
 	action(params, queryParams) {
 		KonchatNotification.getDesktopPermission();
+		if (Meteor.user()) {
+			return goToGroupPrivateRoom();
+		}
+
 		if (queryParams.saml_idp_credentialToken !== undefined) {
 			Accounts.callLoginMethod({
 				methodArguments: [{

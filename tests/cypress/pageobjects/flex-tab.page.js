@@ -80,7 +80,7 @@ class FlexTab extends Page {
 	// Search Tab
 	get searchTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--magnifier'); }
 
-	get searchTabContent() { return browser.element('.rocket-search-result'); }
+	get searchTabContent() { return browser.element('.chitchat-search-result'); }
 
 	get messageSearchBar() { return browser.element('#message-search'); }
 

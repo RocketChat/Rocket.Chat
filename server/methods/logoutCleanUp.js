@@ -5,6 +5,10 @@ import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	logoutCleanUp(user) {
+		if (!user) {
+			return;
+		}
+
 		check(user, Object);
 
 		Meteor.defer(function() {

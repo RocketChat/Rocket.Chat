@@ -7,10 +7,10 @@ export class MessagesMock extends BaseModelMock {
 			t: 'uj',
 			rid: 'GENERAL',
 			ts: new Date('2019-03-30T01:22:08.389Z'),
-			msg: 'rocket.cat',
+			msg: 'genius',
 			u: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
+				_id: 'genius',
+				username: 'genius',
 			},
 			groupable: false,
 			_updatedAt: new Date('2019-03-30T01:22:08.412Z'),

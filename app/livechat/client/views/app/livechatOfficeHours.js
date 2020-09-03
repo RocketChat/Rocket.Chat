@@ -88,7 +88,7 @@ Template.livechatOfficeHours.events({
 			instance[e.currentTarget.name].set(value);
 		}
 	},
-	'submit .rocket-form'(e, instance) {
+	'submit .chitchat-form'(e, instance) {
 		e.preventDefault();
 
 		// convert all times to utc then update them in db

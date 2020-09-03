@@ -361,7 +361,7 @@ Template.room.helpers({
 	},
 
 	announcement() {
-		return Template.instance().state.get('announcement');
+		return settings.get('Allow_Announcements') && Template.instance().state.get('announcement');
 	},
 
 	messageboxData() {

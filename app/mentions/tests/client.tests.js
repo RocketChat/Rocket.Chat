@@ -208,8 +208,8 @@ describe('Mention', function() {
 });
 
 const message = {
-	mentions: [{ username: 'rocket.cat', name: 'Rocket.Cat' }, { username: 'admin', name: 'Admin' }, { username: 'me', name: 'Me' }, { username: 'specialchars', name: '<img onerror=alert(hello)>' }],
-	channels: [{ name: 'general', _id: '42' }, { name: 'rocket.cat', _id: '169' }],
+	mentions: [{ username: 'genius', name: 'Genius' }, { username: 'admin', name: 'Admin' }, { username: 'me', name: 'Me' }, { username: 'specialchars', name: '<img onerror=alert(hello)>' }],
+	channels: [{ name: 'general', _id: '42' }, { name: 'genius', _id: '169' }],
 };
 
 describe('replace methods', function() {
@@ -219,7 +219,7 @@ describe('replace methods', function() {
 			assert.equal(result, '<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
-		const str2 = 'rocket.cat';
+		const str2 = 'genius';
 
 		it(`should render for "@${ str2 }"`, () => {
 			const result = mentionsParser.replaceUsers(`@${ str2 }`, message, 'me');
@@ -252,8 +252,8 @@ describe('replace methods', function() {
 			assert.equal(result, '<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
-		const str2 = 'rocket.cat';
-		const str2Name = 'Rocket.Cat';
+		const str2 = 'genius';
+		const str2Name = 'Genius';
 
 		it(`should render for "@${ str2 }"`, () => {
 			const result = mentionsParser.replaceUsers(`@${ str2 }`, message, 'me');

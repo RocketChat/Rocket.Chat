@@ -48,22 +48,6 @@ API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
-	post() {
-		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
-
-		if (!findResult.subscription.open) {
-			return API.v1.failure(`The direct message room, ${ this.bodyParams.name }, is already closed to the sender`);
-		}
-
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('hideRoom', findResult.room._id);
-		});
-
-		return API.v1.success();
-	},
-});
-
 API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true }, {
 	get() {
 		const access = hasPermission(this.userId, 'view-room-administration');

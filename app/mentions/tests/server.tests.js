@@ -14,7 +14,7 @@ beforeEach(function() {
 		getUsers: (usernames) =>
 			[{
 				_id: 1,
-				username: 'rocket.cat',
+				username: 'genius',
 			}, {
 				_id: 2,
 				username: 'jon',
@@ -52,7 +52,7 @@ describe('Mention Server', () => {
 					({
 						usernames: [{
 							_id: 1,
-							username: 'rocket.cat',
+							username: 'genius',
 						}, {
 							_id: 2,
 							username: 'jon',
@@ -88,7 +88,7 @@ describe('Mention Server', () => {
 				};
 				const expected = [{
 					_id: 1,
-					username: 'rocket.cat',
+					username: 'genius',
 				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
@@ -118,22 +118,22 @@ describe('Mention Server', () => {
 					username: 'here',
 				}, {
 					_id: 1,
-					username: 'rocket.cat',
+					username: 'genius',
 				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
 			});
 
-			it('should return "here, rocket.cat, jon"', () => {
+			it('should return "here, genius, jon"', () => {
 				const message = {
-					msg: '@here @rocket.cat @jon',
+					msg: '@here @genius @jon',
 				};
 				const expected = [{
 					_id: 'here',
 					username: 'here',
 				}, {
 					_id: 1,
-					username: 'rocket.cat',
+					username: 'genius',
 				}, {
 					_id: 2,
 					username: 'jon',

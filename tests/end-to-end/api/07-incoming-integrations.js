@@ -42,7 +42,7 @@ describe('[Incoming Integrations]', function() {
 						name: 'Incoming test',
 						enabled: true,
 						alias: 'test',
-						username: 'rocket.cat',
+						username: 'genius',
 						scriptEnabled: false,
 						channel: '#general',
 					})
@@ -65,7 +65,7 @@ describe('[Incoming Integrations]', function() {
 						name: 'Incoming test',
 						enabled: true,
 						alias: 'test',
-						username: 'rocket.cat',
+						username: 'genius',
 						scriptEnabled: false,
 						channel: '#general',
 					})
@@ -87,7 +87,7 @@ describe('[Incoming Integrations]', function() {
 					name: 'Incoming test',
 					enabled: true,
 					alias: 'test',
-					username: 'rocket.cat',
+					username: 'genius',
 					scriptEnabled: false,
 					channel: '#general',
 				})
@@ -110,7 +110,7 @@ describe('[Incoming Integrations]', function() {
 						name: 'Incoming test',
 						enabled: true,
 						alias: 'test',
-						username: 'rocket.cat',
+						username: 'genius',
 						scriptEnabled: false,
 						channel: '#general',
 					})
@@ -135,7 +135,7 @@ describe('[Incoming Integrations]', function() {
 							name: 'Incoming test 2',
 							enabled: true,
 							alias: 'test2',
-							username: 'rocket.cat',
+							username: 'genius',
 							scriptEnabled: false,
 							channel: '#general',
 						})
@@ -190,7 +190,7 @@ describe('[Incoming Integrations]', function() {
 							name: 'Incoming test',
 							enabled: true,
 							alias: 'test',
-							username: 'rocket.cat',
+							username: 'genius',
 							scriptEnabled: false,
 							channel: '#general',
 						}, userCredentials).then((integration) => {

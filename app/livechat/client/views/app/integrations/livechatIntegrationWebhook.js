@@ -92,7 +92,7 @@ Template.livechatIntegrationWebhook.events({
 
 		instance.disableTest.set(!webhookUrl || _.isEmpty(webhookUrl.value));
 	},
-	'submit .rocket-form'(e, instance) {
+	'submit .chitchat-form'(e, instance) {
 		e.preventDefault();
 
 		const settings = {

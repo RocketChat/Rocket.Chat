@@ -67,7 +67,7 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 
 	users
 		.slice(0, 5)
-		.forEach(({ username, name, status }) => {
+		.forEach(({ username, name, status, customFields }) => {
 			if (records.length < 5) {
 				records.push({
 					_id: username,
@@ -75,6 +75,8 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 					name,
 					status,
 					sort: 3,
+					userType: customFields && customFields.userType,
+					store: customFields && customFields.store,
 				});
 			}
 		});
@@ -224,6 +226,8 @@ Template.messagePopupConfig.helpers({
 
 				// If needed, add to list the online users
 				if (items.length < 5 && filterRegex) {
+					const user = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1, 'customFields.groupId': 1 } });
+					const { customFields: { groupId } = {} } = user || {};
 					const usernamesAlreadyFetched = items.map(({ username }) => username);
 					if (!hasAllPermission('view-outside-room')) {
 						const usernamesFromDMs = Subscriptions
@@ -255,12 +259,16 @@ Template.messagePopupConfig.helpers({
 									username: {
 										$in: usernamesFromDMs,
 									},
+									'customFields.groupId': {
+										$in: [groupId, null],
+									},
 								},
 								{
 									fields: {
 										username: 1,
 										name: 1,
 										status: 1,
+										customFields: 1,
 									},
 									limit: 5 - usernamesAlreadyFetched.length,
 								},
@@ -276,7 +284,6 @@ Template.messagePopupConfig.helpers({
 
 						items.push(...newItems);
 					} else {
-						const user = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
 						const newItems = Meteor.users.find({
 							$and: [
 								{
@@ -295,6 +302,11 @@ Template.messagePopupConfig.helpers({
 										],
 									},
 								},
+								{
+									'customFields.groupId': {
+										$in: [groupId, null],
+									},
+								},
 							],
 						},
 						{
@@ -302,6 +314,7 @@ Template.messagePopupConfig.helpers({
 								username: 1,
 								name: 1,
 								status: 1,
+								customFields: 1,
 							},
 							limit: 5 - usernamesAlreadyFetched.length,
 						})

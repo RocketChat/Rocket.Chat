@@ -17,7 +17,7 @@ Template.integrationsIncoming.onCreated(async function _incomingIntegrationsOnCr
 	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
 	this.integration = new ReactiveVar({});
 	this.record = new ReactiveVar({
-		username: 'rocket.cat',
+		username: 'genius',
 	});
 	if (params && params.id) {
 		const integration = await getIntegration(params.id, Meteor.userId());

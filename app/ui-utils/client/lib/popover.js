@@ -5,7 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { hide, leave } from './ChannelActions';
+import { leave } from './ChannelActions';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
 import { RoomManager } from './RoomManager';
@@ -181,10 +181,6 @@ Template.popover.events({
 		popover.close();
 		const { rid, name, template } = instance.data.data;
 		const action = e.currentTarget.dataset.id;
-
-		if (action === 'hide') {
-			hide(template, rid, name);
-		}
 
 		if (action === 'leave') {
 			leave(template, rid, name);

@@ -1,6 +1,7 @@
 import { Notifications } from '../../../app/notifications';
 import { Subscriptions } from '../../../app/models';
 import { msgStream } from '../../../app/lib/server/lib/msgStream';
+import { notifyStream, shouldNotifyStream } from '../../../app/lib/server/functions/notifications/stream';
 
 import { fields } from '.';
 
@@ -27,4 +28,8 @@ Subscriptions.on('change', ({ clientAction, id, data }) => {
 		clientAction,
 		data,
 	);
+
+	if (shouldNotifyStream()) {
+		notifyStream(data.u._id);
+	}
 });

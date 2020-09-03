@@ -1,7 +1,7 @@
 import Page from './Page';
 
 class PreferencesMainContent extends Page {
-	get formTextInput() { return browser.element('.rocket-form'); }
+	get formTextInput() { return browser.element('.chitchat-form'); }
 
 	get realNameTextInput() { return browser.element('input[name="realname"]'); }
 

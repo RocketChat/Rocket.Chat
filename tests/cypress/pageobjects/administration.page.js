@@ -27,9 +27,9 @@ class Administration extends Page {
 
 	get customScriptLoggedInTextArea() { return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)'); }
 
-	get infoRocketChatTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="rocket-chat-title"]'); }
+	get infoRocketChatTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="chit-chat-title"]'); }
 
-	get infoRocketChatTable() { return browser.element('[data-qa="admin-info"] [data-qa="rocket-chat-list"]'); }
+	get infoRocketChatTable() { return browser.element('[data-qa="admin-info"] [data-qa="chit-chat-list"]'); }
 
 	get infoCommitTableTitle() { return browser.element('[data-qa="admin-info"] [data-qa="commit-title"]'); }
 

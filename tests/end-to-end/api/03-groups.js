@@ -182,7 +182,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -200,7 +200,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -215,7 +215,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -230,7 +230,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -245,7 +245,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -260,7 +260,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -275,7 +275,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -290,7 +290,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -307,7 +307,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -325,7 +325,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				userId: 'rocket.cat',
+				userId: 'genius',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -597,7 +597,7 @@ describe('[Groups]', function() {
 										name: 'Incoming test',
 										enabled: true,
 										alias: 'test',
-										username: 'rocket.cat',
+										username: 'genius',
 										scriptEnabled: false,
 										channel: `#${ createdGroup.name }`,
 									}, userCredentials).then((integration) => {
@@ -1000,7 +1000,7 @@ describe('[Groups]', function() {
 				.set(credentials)
 				.send({
 					roomId: testGroup._id,
-					userId: 'rocket.cat',
+					userId: 'genius',
 				})
 				.end(done);
 		});
@@ -1009,7 +1009,7 @@ describe('[Groups]', function() {
 				.set(credentials)
 				.send({
 					roomId: testGroup._id,
-					userId: 'rocket.cat',
+					userId: 'genius',
 				})
 				.end(done);
 		});
@@ -1018,7 +1018,7 @@ describe('[Groups]', function() {
 				.set(credentials)
 				.send({
 					roomId: testGroup._id,
-					userId: 'rocket.cat',
+					userId: 'genius',
 				})
 				.end(done);
 		});
@@ -1070,7 +1070,7 @@ describe('[Groups]', function() {
 				.set(credentials)
 				.send({
 					roomId: testGroup._id,
-					userId: 'rocket.cat',
+					userId: 'genius',
 				})
 				.end(done);
 		});
@@ -1079,7 +1079,7 @@ describe('[Groups]', function() {
 				.set(credentials)
 				.send({
 					roomId: testGroup._id,
-					userId: 'rocket.cat',
+					userId: 'genius',
 				})
 				.end(done);
 		});
@@ -1094,7 +1094,7 @@ describe('[Groups]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
-					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
+					expect(res.body.moderators[0].username).to.be.equal('genius');
 				})
 				.end(done);
 		});

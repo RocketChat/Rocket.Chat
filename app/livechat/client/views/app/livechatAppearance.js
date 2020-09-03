@@ -229,7 +229,7 @@ Template.livechatAppearance.events({
 		const settingRegistrationFormMessage = getSettingFromAppearance(instance, 'Livechat_registration_form_message');
 		instance.registrationFormMessage.set(settingRegistrationFormMessage && settingRegistrationFormMessage.value);
 	},
-	'submit .rocket-form'(e, instance) {
+	'submit .chitchat-form'(e, instance) {
 		e.preventDefault();
 		const settings = [
 			{

@@ -190,7 +190,7 @@ export class SlackImporter extends Base {
 
 	performUserImport(user, startedByUserId) {
 		if (user.is_bot) {
-			this._saveUserIdReference(user.id, 'rocket.cat', user.name, 'rocket.cat');
+			this._saveUserIdReference(user.id, 'genius', user.name, 'genius');
 		}
 
 		if (!user.do_import) {
@@ -249,7 +249,7 @@ export class SlackImporter extends Base {
 		const useRocketCat = !rocketUser;
 
 		if (useRocketCat) {
-			rocketUser = this.getRocketUserFromUserId('rocket.cat');
+			rocketUser = this.getRocketUserFromUserId('genius');
 		}
 
 		if (!rocketUser) {
@@ -279,7 +279,7 @@ export class SlackImporter extends Base {
 			}
 			case 'bot_message':
 			case 'slackbot_response': {
-				const botUser = this.getRocketUserFromUserId('rocket.cat');
+				const botUser = this.getRocketUserFromUserId('genius');
 				const botUsername = this.bots[message.bot_id] ? this.bots[message.bot_id].name : message.username;
 				const msgObj = {
 					...msgDataDefaults,
@@ -557,8 +557,8 @@ export class SlackImporter extends Base {
 		return channel.members.reduce((ret, member) => {
 			if (includeCreator || member !== channel.creator) {
 				const user = this.getRocketUserFromUserId(member);
-				// Don't add bots to the room's member list; Since they are all replaced with rocket.cat, it could cause duplicated subscriptions
-				if (user && user.username && user._id !== 'rocket.cat') {
+				// Don't add bots to the room's member list; Since they are all replaced with genius, it could cause duplicated subscriptions
+				if (user && user.username && user._id !== 'genius') {
 					if (returnObject) {
 						ret.push(user);
 					} else {
@@ -922,8 +922,8 @@ export class SlackImporter extends Base {
 	}
 
 	getRocketUserFromUserId(userId) {
-		if (userId === 'rocket.cat' || userId === 'USLACKBOT') {
-			return this._getBasicUserData('rocket.cat');
+		if (userId === 'genius' || userId === 'USLACKBOT') {
+			return this._getBasicUserData('genius');
 		}
 
 		const rocketId = this._getUserRocketId(userId);
@@ -932,13 +932,13 @@ export class SlackImporter extends Base {
 		}
 
 		if (userId in this.bots) {
-			return this._getBasicUserData('rocket.cat');
+			return this._getBasicUserData('genius');
 		}
 	}
 
 	getImportedRocketUserIdFromSlackUserId(slackUserId) {
 		if (slackUserId.toUpperCase() === 'USLACKBOT') {
-			return 'rocket.cat';
+			return 'genius';
 		}
 
 		for (const user of this.users.users) {
@@ -951,7 +951,7 @@ export class SlackImporter extends Base {
 			}
 
 			if (user.is_bot) {
-				return 'rocket.cat';
+				return 'genius';
 			}
 		}
 	}

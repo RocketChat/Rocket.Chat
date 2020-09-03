@@ -1046,7 +1046,7 @@ describe('[Users]', function() {
 	describe('[/users.setPreferences]', () => {
 		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
 			const userPreferences = {
-				userId: 'rocket.cat',
+				userId: 'genius',
 				data: {
 					...preferences.data,
 				},
@@ -1088,7 +1088,7 @@ describe('[Users]', function() {
 		});
 		it('should set some preferences of another user successfully', (done) => {
 			const userPreferences = {
-				userId: 'rocket.cat',
+				userId: 'genius',
 				data: {
 					...preferences.data,
 				},
@@ -1102,7 +1102,7 @@ describe('[Users]', function() {
 					.expect((res) => {
 						expect(res.body.user).to.have.property('settings');
 						expect(res.body.user.settings).to.have.property('preferences');
-						expect(res.body.user._id).to.be.equal('rocket.cat');
+						expect(res.body.user._id).to.be.equal('genius');
 						expect(res.body).to.have.property('success', true);
 					})
 					.end(done);
@@ -1800,7 +1800,7 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('status');
-					expect(res.body._id).to.be.equal('rocket.cat');
+					expect(res.body._id).to.be.equal('genius');
 				})
 				.end(done);
 		});

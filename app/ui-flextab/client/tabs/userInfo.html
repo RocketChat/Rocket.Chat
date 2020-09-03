@@ -30,7 +30,6 @@
 								{{> avatar username=username}}
 							</div>
 							<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
-							{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
 							{{# userPresence uid=uid}}<span class="rc-header__status rc-user-info__status">
 								<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>
 								<div class="rc-header__visual-status">{{userStatusText}}</div>
@@ -81,14 +80,18 @@
 									</div>
 								{{/if}}
 								{{#if createdAt}}
-									<div class="rc-user-info-details__item">
-										<label class="rc-user-info-details__label">{{_ "Created_at"}}</label>
-										<p class="rc-user-info-details__info">{{createdAt}}</p>
-									</div>
-									<div class="rc-user-info-details__item">
-										<label class="rc-user-info-details__label">{{_ "Last_login"}}</label>
-										<p class="rc-user-info-details__info">{{lastLogin}}</p>
-									</div>
+									{{#if hasPermission 'view-full-other-user-info_created_at'}}
+										<div class="rc-user-info-details__item">
+												<label class="rc-user-info-details__label">{{_ "Created_at"}}</label>
+												<p class="rc-user-info-details__info">{{createdAt}}</p>
+											</div>
+									{{/if}}
+									{{#if hasPermission 'view-full-other-user-info_last_login'}}
+										<div class="rc-user-info-details__item">
+											<label class="rc-user-info-details__label">{{_ "Last_login"}}</label>
+											<p class="rc-user-info-details__info">{{lastLogin}}</p>
+										</div>
+									{{/if}}
 								{{/if}}
 								{{#if shouldDisplayReason}}
 									<div class="rc-user-info-details__item">

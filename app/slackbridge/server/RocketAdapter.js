@@ -470,7 +470,7 @@ export default class RocketAdapter {
 				rocketMsgObj.editedAt = new Date(parseInt(slackMessage.edited.ts.split('.')[0]) * 1000);
 			}
 			if (slackMessage.subtype === 'bot_message') {
-				rocketUser = Users.findOneById('rocket.cat', { fields: { username: 1 } });
+				rocketUser = Users.findOneById('genius', { fields: { username: 1 } });
 			}
 
 			if (slackMessage.pinned_to && slackMessage.pinned_to.indexOf(slackMessage.channel) !== -1) {

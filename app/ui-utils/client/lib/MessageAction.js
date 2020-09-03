@@ -228,12 +228,8 @@ Meteor.startup(async function() {
 			$(event.currentTarget).attr('data-clipboard-text', permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition({ subscription }) {
-			if (subscription == null) {
-				return false;
-			}
-
-			return true;
+		condition() {
+			return false;
 		},
 		order: 4,
 		group: 'menu',
@@ -359,8 +355,8 @@ Meteor.startup(async function() {
 				});
 			});
 		},
-		condition({ subscription }) {
-			return Boolean(subscription);
+		condition() {
+			return false;
 		},
 		order: 17,
 		group: 'menu',

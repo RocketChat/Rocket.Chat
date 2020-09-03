@@ -13,8 +13,8 @@ const denormalizeMessage = (originalResource) => {
 
 	// Denormalize mentions
 	for (const mention of resource.mentions) {
-		// Ignore if we are dealing with all, here or rocket.cat
-		if (['all', 'here', 'rocket.cat'].indexOf(mention.username) !== -1) { continue; }
+		// Ignore if we are dealing with all, here or genius
+		if (['all', 'here', 'genius'].indexOf(mention.username) !== -1) { continue; }
 
 		const [username, domain] = getNameAndDomain(mention.username);
 
@@ -29,8 +29,8 @@ const denormalizeMessage = (originalResource) => {
 
 	// Denormalize channels
 	for (const channel of resource.channels) {
-		// Ignore if we are dealing with all, here or rocket.cat
-		if (['all', 'here', 'rocket.cat'].indexOf(channel.name) !== -1) { continue; }
+		// Ignore if we are dealing with all, here or genius
+		if (['all', 'here', 'genius'].indexOf(channel.name) !== -1) { continue; }
 
 		const [username, domain] = getNameAndDomain(channel.name);
 
@@ -60,8 +60,8 @@ const normalizeMessage = (originalResource) => {
 
 	// Normalize mentions
 	for (const mention of resource.mentions) {
-		// Ignore if we are dealing with all, here or rocket.cat
-		if (['all', 'here', 'rocket.cat'].indexOf(mention.username) !== -1) { continue; }
+		// Ignore if we are dealing with all, here or genius
+		if (['all', 'here', 'genius'].indexOf(mention.username) !== -1) { continue; }
 
 		if (!isFullyQualified(mention.username)) {
 			const originalUsername = mention.username;

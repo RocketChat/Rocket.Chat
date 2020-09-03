@@ -59,7 +59,7 @@ import '../app/apps/client';
 import '../app/slackbridge/client';
 import '../app/slashcommands-archiveroom/client';
 import '../app/slashcommand-asciiarts/client';
-import '../app/slashcommands-create/client';
+// import '../app/slashcommands-create/client';
 import '../app/slashcommands-hide/client';
 import '../app/slashcommands-invite/client';
 import '../app/slashcommands-inviteall/client';

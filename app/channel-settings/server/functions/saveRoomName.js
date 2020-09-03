@@ -4,11 +4,16 @@ import { Rooms, Messages, Subscriptions, Integrations } from '../../../models';
 import { roomTypes, getValidRoomName } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 
-const updateRoomName = (rid, displayName, isDiscussion) => {
+const getRoomNameOptions = (room, user) => {
+	const { customFields: { groupId = null } = {} } = user;
+	return { groupId: groupId || room.groupId };
+};
+
+const updateRoomName = (rid, displayName, isDiscussion, options) => {
 	if (isDiscussion) {
 		return Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
 	}
-	const slugifiedRoomName = getValidRoomName(displayName, rid);
+	const slugifiedRoomName = getValidRoomName(displayName, rid, options);
 	return Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
 };
 
@@ -23,7 +28,8 @@ export const saveRoomName = function(rid, displayName, user, sendMessage = true)
 		return;
 	}
 	const isDiscussion = Boolean(room && room.prid);
-	const update = updateRoomName(rid, displayName, isDiscussion);
+	const options = getRoomNameOptions(room, user);
+	const update = updateRoomName(rid, displayName, isDiscussion, options);
 	if (!update) {
 		return;
 	}

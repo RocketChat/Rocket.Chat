@@ -1,5 +1,5 @@
 <template name="DefaultSearchResultTemplate">
-	<div class="rocket-default-search-settings">
+	<div class="chitchat-default-search-settings">
 		<div>
 			{{#if globalSearchEnabled}}
 				<label>
@@ -8,7 +8,7 @@
 			{{/if}}
 		</div>
 	</div>
-	<div class="rocket-default-search-results">
+	<div class="chitchat-default-search-results">
 		{{#if result}}
 			{{#if $and result.message result.message.docs}}
 				<div class="flex-tab__result js-list">

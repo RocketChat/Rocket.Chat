@@ -18,7 +18,7 @@ import { getIntegration } from '../getIntegration';
 Template.integrationsOutgoing.onCreated(async function _integrationsOutgoingOnCreated() {
 	const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
 	this.record = new ReactiveVar({
-		username: 'rocket.cat',
+		username: 'genius',
 		token: Random.id(24),
 		retryFailedCalls: true,
 		retryCount: 6,

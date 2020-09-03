@@ -514,7 +514,7 @@ export const Livechat = {
 
 	savePageHistory(token, roomId, pageInfo) {
 		if (pageInfo.change === Livechat.historyMonitorType) {
-			const user = Users.findOneById('rocket.cat');
+			const user = Users.findOneById('genius');
 
 			const pageTitle = pageInfo.title;
 			const pageUrl = pageInfo.location.href;

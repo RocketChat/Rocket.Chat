@@ -16,7 +16,7 @@ export class VisitorInactivityMonitor {
 	start() {
 		this._startMonitoring();
 		this._initializeMessageCache();
-		this.userToPerformAutomaticClosing = Users.findOneById('rocket.cat');
+		this.userToPerformAutomaticClosing = Users.findOneById('genius');
 	}
 
 	_startMonitoring() {

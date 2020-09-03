@@ -41,7 +41,7 @@ Meteor.startup(function() {
 });
 
 Template.DefaultSearchResultTemplate.onRendered(function() {
-	const list = this.firstNode.parentNode.querySelector('.rocket-default-search-results');
+	const list = this.firstNode.parentNode.querySelector('.chitchat-default-search-results');
 	this.autorun(() => {
 		const result = this.data.result.get();
 		if (result && this.hasMore.get()) {
@@ -78,7 +78,7 @@ Template.DefaultSearchResultTemplate.events({
 		t.data.result.set(undefined);
 		t.data.search();
 	},
-	'scroll .rocket-default-search-results': _.throttle(function(e, t) {
+	'scroll .chitchat-default-search-results': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight) && t.hasMore.get()) {
 			t.data.payload.limit = (t.data.payload.limit || t.pageSize) + t.pageSize;
 			t.data.search();

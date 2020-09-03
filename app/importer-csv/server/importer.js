@@ -147,7 +147,7 @@ export class CsvImporter extends Base {
 			tempChannels.push({
 				id: '#directmessages#',
 				name: t('Direct_Messages'),
-				creator: 'rocket.cat',
+				creator: 'genius',
 				isPrivate: false,
 				isDirect: true,
 				members: [],

@@ -812,6 +812,10 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Allow_Announcements', true, {
+		type: 'boolean',
+		public: false,
+	});
 	this.add('First_Channel_After_Login', '', {
 		type: 'string',
 		public: true,

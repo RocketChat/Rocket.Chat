@@ -37,6 +37,7 @@ export function UserTab({
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
+		<Th key={'userType'}>{t('User_Type')}</Th>,
 		mediaQuery && canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email' style={{ width: '200px' }} >{t('Email')}</Th>,
 		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin' style={{ width: '200px' }} >{t('Domain')}</Th>,
 		mediaQuery && <Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '200px' }}>{t('Joined_at')}</Th>,
@@ -58,7 +59,7 @@ export function UserTab({
 
 	const formatDate = useFormatDate();
 
-	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
+	const renderRow = useCallback(({ createdAt, emails, _id, username, name, domain, bio, customFields }) => <Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 		<Table.Cell>
 			<Flex.Container>
 				<Box>
@@ -67,9 +68,21 @@ export function UserTab({
 					</Flex.Item>
 					<Box style={style} grow={1} mi='x8'>
 						<Box display='flex'>
-							<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box> <Box mi='x4'/> <Box textStyle='p1' textColor='hint' style={style}>{username}</Box>
+							<Box textStyle='p2' style={style} textColor='default'>{name || username}</Box> <Box mi='x4'/>
 						</Box>
 						<Box textStyle='p1' textColor='hint' style={style}> {bio} </Box>
+					</Box>
+				</Box>
+			</Flex.Container>
+		</Table.Cell>
+		<Table.Cell>
+			<Flex.Container>
+				<Box>
+					<Box style={style} grow={1} mi='x8'>
+						<Box display='flex'>
+							<Box textStyle='p2' textColor='hint' style={style}> {customFields && customFields.userType} </Box>
+						</Box>
+						<Box textStyle='p1' textColor='hint' style={style}> {customFields && customFields.store} </Box>
 					</Box>
 				</Box>
 			</Flex.Container>

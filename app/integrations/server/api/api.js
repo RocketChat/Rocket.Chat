@@ -105,7 +105,7 @@ function createIntegration(options, user) {
 					options.data.channel_name = `#${ options.data.channel_name }`;
 				}
 				return Meteor.call('addOutgoingIntegration', {
-					username: 'rocket.cat',
+					username: 'genius',
 					urls: [options.target_url],
 					name: options.name,
 					channel: options.data.channel_name,
@@ -116,7 +116,7 @@ function createIntegration(options, user) {
 					options.data.username = `@${ options.data.username }`;
 				}
 				return Meteor.call('addOutgoingIntegration', {
-					username: 'rocket.cat',
+					username: 'genius',
 					urls: [options.target_url],
 					name: options.name,
 					channel: options.data.username,
@@ -281,7 +281,7 @@ function integrationSampleRest() {
 				channel_name: 'general',
 				timestamp: new Date(),
 				user_id: Random.id(),
-				user_name: 'rocket.cat',
+				user_name: 'genius',
 				text: 'Sample text 1',
 				trigger_word: 'Sample',
 			}, {
@@ -290,7 +290,7 @@ function integrationSampleRest() {
 				channel_name: 'general',
 				timestamp: new Date(),
 				user_id: Random.id(),
-				user_name: 'rocket.cat',
+				user_name: 'genius',
 				text: 'Sample text 2',
 				trigger_word: 'Sample',
 			}, {
@@ -299,7 +299,7 @@ function integrationSampleRest() {
 				channel_name: 'general',
 				timestamp: new Date(),
 				user_id: Random.id(),
-				user_name: 'rocket.cat',
+				user_name: 'genius',
 				text: 'Sample text 3',
 				trigger_word: 'Sample',
 			},

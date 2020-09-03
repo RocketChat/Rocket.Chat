@@ -272,7 +272,7 @@ describe('[Rooms]', function() {
 				});
 		});
 		it('create a direct message', (done) => {
-			createRoom({ type: 'd', username: 'rocket.cat' })
+			createRoom({ type: 'd', username: 'genius' })
 				.end((err, res) => {
 					directMessageChannel = res.body.room;
 					done();
@@ -367,7 +367,7 @@ describe('[Rooms]', function() {
 				});
 		});
 		it('create a Direct message room with rocket.cat', (done) => {
-			createRoom({ type: 'd', username: 'rocket.cat' })
+			createRoom({ type: 'd', username: 'genius' })
 				.end((err, res) => {
 					testDM = res.body.room;
 					done();
@@ -485,7 +485,7 @@ describe('[Rooms]', function() {
 				});
 		});
 		it('create a Direct message room with rocket.cat', (done) => {
-			createRoom({ type: 'd', username: 'rocket.cat' })
+			createRoom({ type: 'd', username: 'genius' })
 				.end((err, res) => {
 					testDM = res.body.room;
 					done();
@@ -572,7 +572,7 @@ describe('[Rooms]', function() {
 							.set(credentials)
 							.send({
 								roomId: testChannel._id,
-								userId: 'rocket.cat',
+								userId: 'genius',
 							})
 							.end(() => {
 								request.post(api('rooms.leave'))
@@ -601,7 +601,7 @@ describe('[Rooms]', function() {
 							.set(credentials)
 							.send({
 								roomId: testGroup._id,
-								userId: 'rocket.cat',
+								userId: 'genius',
 							})
 							.end(() => {
 								request.post(api('rooms.leave'))
@@ -778,7 +778,7 @@ describe('[Rooms]', function() {
 					prid: testChannel._id,
 					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 					reply: 'reply from discussion tests',
-					users: ['rocket.cat'],
+					users: ['genius'],
 				})
 				.expect(200)
 				.expect((res) => {
@@ -794,7 +794,7 @@ describe('[Rooms]', function() {
 					prid: testChannel._id,
 					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 					reply: 'reply from discussion tests',
-					users: ['rocket.cat'],
+					users: ['genius'],
 					pmid: messageSent._id,
 				})
 				.expect(200)

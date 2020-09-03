@@ -223,7 +223,7 @@
 			margin-bottom: 1em;
 		}
 
-		& .rocket-form {
+		& .chitchat-form {
 			& fieldset {
 				display: block;
 
@@ -748,7 +748,7 @@ rc-old select,
 	}
 }
 
-.rc-old #rocket-chat {
+.rc-old #chit-chat {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -1559,7 +1559,7 @@ rc-old select,
 		user-select: text;
 	}
 
-	& .rocket-form {
+	& .chitchat-form {
 		width: 100%;
 		max-width: none;
 		padding: 0;
@@ -4362,7 +4362,7 @@ rc-old select,
 	}
 }
 
-.rc-old .rocket-team {
+.rc-old .chitchat-team {
 	display: block;
 
 	& li {

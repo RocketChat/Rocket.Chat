@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
   pull_request:
-    branches: '**'
+    branches: 'develop'
   push:
     branches:
       - develop

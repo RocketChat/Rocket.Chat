@@ -10,7 +10,7 @@
 		}
 	}
 
-	& .rc-old .page-container .content .rocket-form .submit {
+	& .rc-old .page-container .content .chitchat-form .submit {
 		text-align: left;
 	}
 
@@ -492,7 +492,7 @@
 		}
 	}
 
-	& .rocket-form {
+	& .chitchat-form {
 		& legend::after {
 			right: 0;
 		}
@@ -533,7 +533,7 @@
 	}
 
 	@media (width <= 1100px) {
-		& #rocket-chat .flex-opened {
+		& #chit-chat .flex-opened {
 			left: 0;
 
 			& .flex-tab {
@@ -543,7 +543,7 @@
 	}
 
 	@media (width <= 780px) {
-		& #rocket-chat {
+		& #chit-chat {
 			& .main-content {
 				right: 0;
 			}

@@ -42,6 +42,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'customFields.groupId': 1 });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -127,13 +128,13 @@ export class Users extends Base {
 	findOneOnlineAgentByUsername(username) {
 		const query = queryStatusAgentOnline({ username });
 
-		return this.findOne(query);
+		return this.findOneInGroup(query);
 	}
 
 	findOneOnlineAgentById(_id) {
 		const query = queryStatusAgentOnline({ _id });
 
-		return this.findOne(query);
+		return this.findOneInGroup(query);
 	}
 
 	findOneAgentById(_id, options) {
@@ -142,7 +143,7 @@ export class Users extends Base {
 			roles: 'livechat-agent',
 		};
 
-		return this.findOne(query, options);
+		return this.findOneInGroup(query, options);
 	}
 
 	findAgents() {
@@ -160,7 +161,7 @@ export class Users extends Base {
 
 		const query = queryStatusAgentOnline({ username });
 
-		return this.find(query);
+		return this.findInGroup(query);
 	}
 
 	getNextAgent() {
@@ -483,7 +484,7 @@ export class Users extends Base {
 			roles: { $in: roles },
 		};
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findOneByAppId(appId, options) {
@@ -503,7 +504,7 @@ export class Users extends Base {
 
 		const query = { username };
 
-		return this.findOne(query, options);
+		return this.findOneInGroup(query, options);
 	}
 
 	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
@@ -513,19 +514,19 @@ export class Users extends Base {
 
 		const query = { username, [`services.${ serviceName }.id`]: userId };
 
-		return this.findOne(query, options);
+		return this.findOneInGroup(query, options);
 	}
 
 	findOneByUsername(username, options) {
 		const query = { username };
 
-		return this.findOne(query, options);
+		return this.findOneInGroup(query, options);
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
 		const query = { 'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i') };
 
-		return this.findOne(query, options);
+		return this.findOneInGroup(query, options);
 	}
 
 	findOneAdmin(admin, options) {
@@ -546,7 +547,7 @@ export class Users extends Base {
 	findOneById(userId, options) {
 		const query = { _id: userId };
 
-		return this.findOne(query, options);
+		return this.findOneInGroup(query, options);
 	}
 
 	findOneByIdOrUsername(idOrUsername, options) {
@@ -558,13 +559,13 @@ export class Users extends Base {
 			}],
 		};
 
-		return this.findOne(query, options);
+		return this.findOneInGroup(query, options);
 	}
 
 	// FIND
 	findByIds(users, options) {
 		const query = { _id: { $in: users } };
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findNotOfflineByIds(users, options) {
@@ -574,7 +575,7 @@ export class Users extends Base {
 				$in: ['online', 'away', 'busy'],
 			},
 		};
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findUsersNotOffline(options) {
@@ -587,7 +588,7 @@ export class Users extends Base {
 			},
 		};
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findNotIdUpdatedFrom(uid, from, options) {
@@ -599,7 +600,7 @@ export class Users extends Base {
 			_updatedAt: { $gte: from },
 		};
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findByRoomId(rid, options) {
@@ -610,17 +611,17 @@ export class Users extends Base {
 			},
 		};
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findByUsername(username, options) {
 		const query = { username };
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findActive(options = {}) {
-		return this.find({
+		return this.findInGroup({
 			active: true,
 			type: { $nin: ['app'] },
 			roles: { $ne: ['guest'] },
@@ -646,7 +647,45 @@ export class Users extends Base {
 			query._id = { $nin: idExceptions };
 		}
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
+	}
+
+	findPrivateActiveByUsernameOrNameRegexWithExceptions(uid, searchTerm, exceptions, options) {
+		if (exceptions == null) { exceptions = []; }
+		if (options == null) { options = {}; }
+		if (!_.isArray(exceptions)) {
+			exceptions = [exceptions];
+		}
+
+		const roomIds = Subscriptions.findByUserIdAndType(uid, 'p', { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+		const userIds = Subscriptions.findByRoomIdsAndNotUserId(roomIds, uid).fetch().map((s) => s.u._id);
+		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+		const query = {
+			$or: [{
+				username: termRegex,
+			}, {
+				name: termRegex,
+			}],
+			active: true,
+			type: {
+				$in: ['user', 'bot'],
+			},
+			$and: [{
+				username: {
+					$exists: true,
+				},
+			}, {
+				username: {
+					$nin: exceptions,
+				},
+			}, {
+				_id: {
+					$in: userIds,
+				},
+			}],
+		};
+
+		return this.findInGroup(query, options);
 	}
 
 	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
@@ -668,7 +707,7 @@ export class Users extends Base {
 				],
 			};
 
-			return this._db.find(query, options);
+			return this.findNoCachedInGroup(query, options);
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
@@ -692,7 +731,7 @@ export class Users extends Base {
 		};
 
 		// do not use cache
-		return this._db.find(query, options);
+		return this.findNoCachedInGroup(query, options);
 	}
 
 	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
@@ -731,7 +770,7 @@ export class Users extends Base {
 			},
 		};
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findByUsernameNameOrEmailAddress(usernameNameOrEmailAddress, options) {
@@ -746,19 +785,19 @@ export class Users extends Base {
 			},
 		};
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findLDAPUsers(options) {
 		const query = { ldap: true };
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findCrowdUsers(options) {
 		const query = { crowd: true };
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	getLastLogin(options) {
@@ -766,7 +805,7 @@ export class Users extends Base {
 		const query = { lastLogin: { $exists: 1 } };
 		options.sort = { lastLogin: -1 };
 		options.limit = 1;
-		const [user] = this.find(query, options).fetch();
+		const [user] = this.findInGroup(query, options).fetch();
 		return user && user.lastLogin;
 	}
 
@@ -777,7 +816,7 @@ export class Users extends Base {
 			},
 		};
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findUsersByIds(ids, options) {
@@ -786,7 +825,7 @@ export class Users extends Base {
 				$in: ids,
 			},
 		};
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findUsersWithUsernameByIds(ids, options) {
@@ -799,7 +838,7 @@ export class Users extends Base {
 			},
 		};
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	findUsersWithUsernameByIdsNotOffline(ids, options) {
@@ -815,13 +854,13 @@ export class Users extends Base {
 			},
 		};
 
-		return this.find(query, options);
+		return this.findInGroup(query, options);
 	}
 
 	getOldest(fields = { _id: 1 }) {
 		const query = {
 			_id: {
-				$ne: 'rocket.cat',
+				$ne: 'genius',
 			},
 		};
 
@@ -832,7 +871,7 @@ export class Users extends Base {
 			},
 		};
 
-		return this.findOne(query, options);
+		return this.findOneInGroup(query, options);
 	}
 
 	findRemote(options = {}) {
@@ -1315,9 +1354,11 @@ export class Users extends Base {
 
 	// INSERT
 	create(data) {
+		const { customFields: { groupId = null } = {} } = data;
 		const user = {
 			createdAt: new Date(),
 			avatarOrigin: 'none',
+			groupId,
 		};
 
 		_.extend(user, data);
@@ -1394,6 +1435,45 @@ Find users to send a message by email if:
 				},
 			},
 		});
+	}
+
+	findNoCachedInGroup(query, options) {
+		const groupId = this.getGroupId();
+		if (groupId) {
+			query['customFields.groupId'] = groupId;
+		}
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
+	findOneInGroup(query, options) {
+		this.addGroupFilter(query);
+		return this.findOne(query, options);
+	}
+
+	findInGroup(query, options) {
+		this.addGroupFilter(query);
+		return this.find(query, options);
+	}
+
+	addGroupFilter(query)	{
+		const groupId = this.getGroupId();
+		if (groupId) {
+			query['customFields.groupId'] = { $in: [groupId, null] };
+		}
+	}
+
+	getGroupId() {
+		if (Meteor.isServer) {
+			try {
+				const { customFields: { groupId } = {} } = Meteor.user() || {};
+				return groupId;
+			} catch (e) {
+				return null;
+			}
+		}
+		return null;
 	}
 }
 

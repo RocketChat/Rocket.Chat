@@ -93,28 +93,6 @@ API.v1.addRoute('channels.archive', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('channels.close', { authRequired: true }, {
-	post() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
-
-		const sub = Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
-
-		if (!sub) {
-			return API.v1.failure(`The user/callee is not in the channel "${ findResult.name }.`);
-		}
-
-		if (!sub.open) {
-			return API.v1.failure(`The channel, ${ findResult.name }, is already closed to the sender`);
-		}
-
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('hideRoom', findResult._id);
-		});
-
-		return API.v1.success();
-	},
-});
-
 API.v1.addRoute('channels.counters', { authRequired: true }, {
 	get() {
 		const access = hasPermission(this.userId, 'view-room-administration');

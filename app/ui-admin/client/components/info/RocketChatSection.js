@@ -12,8 +12,8 @@ export function RocketChatSection({ info, statistics, isLoading }) {
 	const appsEngineVersion = info && info.marketplaceApiVersion;
 
 	return <>
-		<Subtitle data-qa='rocket-chat-title'>{t('Rocket.Chat')}</Subtitle>
-		<DescriptionList data-qa='rocket-chat-list'>
+		<Subtitle data-qa='chit-chat-title'>{t('Rocket.Chat')}</Subtitle>
+		<DescriptionList data-qa='chit-chat-list'>
 			<DescriptionList.Entry label={t('Version')}>{s(() => statistics.version)}</DescriptionList.Entry>
 			{appsEngineVersion && <DescriptionList.Entry label={t('Apps_Engine_Version')}>{appsEngineVersion}</DescriptionList.Entry>}
 			<DescriptionList.Entry label={t('DB_Migration')}>{s(() => statistics.migration.version)}</DescriptionList.Entry>

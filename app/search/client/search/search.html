@@ -1,18 +1,18 @@
 <template name="RocketSearch">
 	{{#unless isActive}}
 		{{#if error}}
-			<div class="rocket-search-error">
+			<div class="chitchat-search-error">
 				{{_ error}}
 			</div>
 		{{/if}}
 	{{else}}
-	<div class="rocket-search-tab list-view {{provider.key}}">
+	<div class="chitchat-search-tab list-view {{provider.key}}">
 		{{#if provider.description}}
 			<div class="title">
 				<p>{{{_ provider.description}}}</p>
 			</div>
 		{{/if}}
-		<div class="control rocket-search-input">
+		<div class="control chitchat-search-input">
 			<form class="search-form" role="form">
 				<div class="rc-input">
 					<label class="rc-input__label">
@@ -25,9 +25,9 @@
 					</label>
 				</div>
 				{{#if suggestions}}
-				<div id="rocket-search-suggestions">
+				<div id="chitchat-search-suggestions">
 					{{#each suggestions}}
-						<div class="rocket-search-suggestion-item {{suggestionSelected @index}}">
+						<div class="chitchat-search-suggestion-item {{suggestionSelected @index}}">
 							{{> Template.dynamic template=provider.suggestionItemTemplate}}
 						</div>
 					{{/each}}
@@ -36,7 +36,7 @@
 			</form>
 		</div>
 
-		<div class="rocket-search-result">
+		<div class="chitchat-search-result">
 			{{> Template.dynamic template=provider.resultTemplate data=scope}}
 		</div>
 	</div>

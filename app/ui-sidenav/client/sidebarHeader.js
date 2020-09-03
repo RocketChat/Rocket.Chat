@@ -7,7 +7,7 @@ import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
 import { t } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
-import { hasAtLeastOnePermission } from '../../authorization';
+import { hasAtLeastOnePermission, hasRole } from '../../authorization';
 import { userStatus } from '../../user-status';
 import { hasPermission } from '../../authorization/client';
 import { createTemplateForComponent } from '../../../client/reactAdapters';
@@ -306,42 +306,47 @@ Template.sidebarHeader.events({
 								title: t('User'),
 								items: userStatusList,
 							},
-							{
-								items: [
-									{
-										icon: 'user',
-										name: t('My_Account'),
-										type: 'open',
-										id: 'account',
-										action: () => {
-											SideNav.setFlex('accountFlex');
-											SideNav.openFlex();
-											FlowRouter.go('account');
-											popover.close();
-										},
-									},
-									{
-										icon: 'sign-out',
-										name: t('Logout'),
-										type: 'open',
-										id: 'logout',
-										action: () => {
-											Meteor.logout(() => {
-												callbacks.run('afterLogoutCleanUp', user);
-												Meteor.call('logoutCleanUp', user);
-												FlowRouter.go('home');
-												popover.close();
-											});
-										},
-									},
-								],
-							},
 						],
 					},
 				],
 				currentTarget: e.currentTarget,
 				offsetVertical: e.currentTarget.clientHeight + 10,
 			};
+
+			if (hasRole(Meteor.userId(), 'admin')) {
+				config.columns[0].groups.push(
+					{
+						items: [
+							{
+								icon: 'user',
+								name: t('My_Account'),
+								type: 'open',
+								id: 'account',
+								action: () => {
+									SideNav.setFlex('accountFlex');
+									SideNav.openFlex();
+									FlowRouter.go('account');
+									popover.close();
+								},
+							},
+							{
+								icon: 'sign-out',
+								name: t('Logout'),
+								type: 'open',
+								id: 'logout',
+								action: () => {
+									Meteor.logout(() => {
+										callbacks.run('afterLogoutCleanUp', user);
+										Meteor.call('logoutCleanUp', user);
+										FlowRouter.go('home');
+										popover.close();
+									});
+								},
+							},
+						],
+					},
+				);
+			}
 
 			popover.open(config);
 		}

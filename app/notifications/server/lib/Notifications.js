@@ -4,6 +4,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { WEB_RTC_EVENTS } from '../../../webrtc';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
+import { hasRole } from '../../../authorization';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
@@ -65,19 +66,16 @@ class Notifications {
 		this.notifyUser = this.notifyUser.bind(this);
 		this.streamAll = new Meteor.Streamer('notify-all');
 		this.streamLogged = new Meteor.Streamer('notify-logged');
+		this.streamAdmin = new Meteor.Streamer('notify-admin');
 		this.streamRoom = new Meteor.Streamer('notify-room');
 		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
 		this.streamUser = new RoomStreamer('notify-user');
 		this.streamAll.allowWrite('none');
 		this.streamLogged.allowWrite('none');
+		this.streamAdmin.allowWrite('none');
 		this.streamRoom.allowWrite('none');
 		this.streamRoomUsers.allowWrite(function(eventName, ...args) {
 			const [roomId, e] = eventName.split('/');
-			// const user = Meteor.users.findOne(this.userId, {
-			// 	fields: {
-			// 		username: 1
-			// 	}
-			// });
 			if (Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId) != null) {
 				const subscriptions = Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId).fetch();
 				subscriptions.forEach((subscription) => self.notifyUser(subscription.u._id, e, ...args));
@@ -87,6 +85,9 @@ class Notifications {
 		this.streamUser.allowWrite('logged');
 		this.streamAll.allowRead('all');
 		this.streamLogged.allowRead('logged');
+		this.streamAdmin.allowRead(function() {
+			return this.userId && hasRole(this.userId, 'admin');
+		});
 		this.streamRoom.allowRead(function(eventName, extraData) {
 			const [roomId] = eventName.split('/');
 			const room = Rooms.findOneById(roomId);
@@ -140,6 +141,14 @@ class Notifications {
 		}
 		args.unshift(`${ userId }/${ eventName }`);
 		return this.streamUser.emit.apply(this.streamUser, args);
+	}
+
+	notifyAdmin(userId, eventName, ...args) {
+		if (this.debug === true) {
+			console.log('notifyAdmin', [eventName, ...args]);
+		}
+		args.unshift(eventName);
+		return this.streamAdmin.emit.apply(this.streamAdmin, args);
 	}
 
 	notifyAllInThisInstance(eventName, ...args) {

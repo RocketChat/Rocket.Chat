@@ -88,7 +88,7 @@ export const deleteUser = function(userId) {
 				Messages.removeByUserId(userId);
 				break;
 			case 'Unlink':
-				const rocketCat = Users.findOneById('rocket.cat');
+				const rocketCat = Users.findOneById('genius');
 				const nameAlias = TAPi18n.__('Removed_User');
 				Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
 				break;

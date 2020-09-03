@@ -35,11 +35,7 @@
 				{{/if}}
 
 				<div class="rc-header__data">
-					{{#unless secondaryName}}
 					<div class="rc-header__name">{{> icon block="rc-header__icon" icon=roomIcon}}{{roomName}}</div>
-					{{else}}
-					<div class="rc-header__name">{{roomName}} <div class="rc-header__username">@{{secondaryName}}</div></div>
-					{{/unless}}
 
 					{{#if hasPresence}}
 					{{# userPresence uid=uid}}<span class="rc-header__status">

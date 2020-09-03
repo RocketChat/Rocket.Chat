@@ -7,7 +7,7 @@ import { roomTypes } from '../../utils/client';
 
 TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
-	id: 'rocket-search',
+	id: 'chitchat-search',
 	i18nTitle: 'Search_Messages',
 	icon: 'magnifier',
 	template: 'RocketSearch',

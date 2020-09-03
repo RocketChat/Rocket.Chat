@@ -204,7 +204,7 @@ describe('[Administration]', () => {
 			describe('filter text:', () => {
 				before(() => {
 					admin.usersFilter.click();
-					admin.usersFilter.type('Rocket.Cat');
+					admin.usersFilter.type('Genius');
 				});
 
 				after(() => {

@@ -753,7 +753,7 @@ export default class SlackAdapter {
 	processMessageDeleted(slackMessage) {
 		if (slackMessage.previous_message) {
 			const rocketChannel = this.rocket.getChannel(slackMessage);
-			const rocketUser = Users.findOneById('rocket.cat', { fields: { username: 1 } });
+			const rocketUser = Users.findOneById('genius', { fields: { username: 1 } });
 
 			if (rocketChannel && rocketUser) {
 				// Find the Rocket message to delete
@@ -807,7 +807,7 @@ export default class SlackAdapter {
 		const rocketChannel = this.rocket.getChannel(slackMessage);
 		let rocketUser = null;
 		if (slackMessage.subtype === 'bot_message') {
-			rocketUser = Users.findOneById('rocket.cat', { fields: { username: 1 } });
+			rocketUser = Users.findOneById('genius', { fields: { username: 1 } });
 		} else {
 			rocketUser = slackMessage.user ? this.rocket.findUser(slackMessage.user) || this.rocket.addUser(slackMessage.user) : null;
 		}

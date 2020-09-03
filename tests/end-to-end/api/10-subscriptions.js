@@ -86,7 +86,7 @@ describe('[Subscriptions]', function() {
 
 		let testDM;
 		it('create a DM', (done) => {
-			createRoom({ type: 'd', username: 'rocket.cat' })
+			createRoom({ type: 'd', username: 'genius' })
 				.end((err, res) => {
 					testDM = res.body.room;
 					done();

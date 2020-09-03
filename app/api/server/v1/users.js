@@ -21,6 +21,7 @@ import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
+import { getNotificationsCount } from '../../../lib/server/functions/notifications/stream';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -770,5 +771,17 @@ API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 API.v1.addRoute('users.removeOtherTokens', { authRequired: true }, {
 	post() {
 		API.v1.success(Meteor.call('removeOtherTokens'));
+	},
+});
+
+API.v1.addRoute('users.getUnreadMessagesCount', { authRequired: true }, {
+	get() {
+		const { userId } = this.requestParams();
+		if (!userId) {
+			return API.v1.failure('User not found.');
+		}
+
+		const result = Promise.await(getNotificationsCount(userId));
+		return API.v1.success(result);
 	},
 });

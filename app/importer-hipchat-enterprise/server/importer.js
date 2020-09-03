@@ -303,7 +303,7 @@ export class HipChatEnterpriseImporter extends Base {
 					roomMsgs.push({
 						type: 'user',
 						id: newId,
-						userId: 'rocket.cat',
+						userId: 'genius',
 						alias: m.NotificationMessage.sender,
 						text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
 						ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
@@ -564,7 +564,7 @@ export class HipChatEnterpriseImporter extends Base {
 			}, {
 				$unwind: '$messages',
 			}, {
-				$match: { 'messages.userId': { $ne: 'rocket.cat' } },
+				$match: { 'messages.userId': { $ne: 'genius' } },
 			}, {
 				$group: { _id: '$messages.userId' },
 			}]).toArray()).map((i) => i._id);
@@ -1291,8 +1291,8 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	getRocketUserFromUserId(userId) {
-		if (userId === 'rocket.cat') {
-			return this._getBasicUserData('rocket.cat');
+		if (userId === 'genius') {
+			return this._getBasicUserData('genius');
 		}
 
 		const rocketId = this._getUserRocketId(userId);
