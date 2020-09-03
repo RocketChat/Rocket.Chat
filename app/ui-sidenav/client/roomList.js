@@ -149,10 +149,15 @@ const mergeSubRoom = (subscription) => {
 			streamingOptions: 1,
 		},
 	};
-	const room = Rooms.findOne({ _id: subscription.rid }, options) || { lm: subscription.ts };
+
+	const room = Rooms.findOne({ _id: subscription.rid }, options) || { };
+
+	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
+
 	subscription.lastMessage = room.lastMessage;
-	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, room.lm)) : room.lm;
+	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
 	subscription.streamingOptions = room.streamingOptions;
+
 	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 

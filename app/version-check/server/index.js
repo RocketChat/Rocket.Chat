@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
@@ -24,18 +25,24 @@ const addVersionCheckJob = () => {
 
 
 Meteor.startup(() => {
-	checkVersionUpdate();
+	Meteor.defer(() => {
+		if (settings.get('Register_Server') && settings.get('Update_EnableChecker')) {
+			checkVersionUpdate();
+		}
+	});
 });
 
-settings.get('Register_Server', (key, value) => {
-	if (value && SyncedCron.nextScheduledAtDate(jobName)) {
+settings.get(/Register_Server|Update_EnableChecker/, _.debounce(() => {
+	const checkForUpdates = settings.get('Register_Server') && settings.get('Update_EnableChecker');
+
+	if (checkForUpdates && SyncedCron.nextScheduledAtDate(jobName)) {
 		return;
 	}
 
-	if (value && settings.get('Update_EnableChecker')) {
+	if (checkForUpdates) {
 		addVersionCheckJob();
 		return;
 	}
 
 	SyncedCron.remove(jobName);
-});
+}, 1000));
