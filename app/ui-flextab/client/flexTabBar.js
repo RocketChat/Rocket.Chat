@@ -136,6 +136,7 @@ const action = function(e, t) {
 	}
 	$flexTab.attr('template', this.template);
 	t.tabBar.setData({
+		...this,
 		label: this.i18nTitle,
 		icon: this.icon,
 	});

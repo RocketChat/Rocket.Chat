@@ -168,7 +168,9 @@ export const menu = new class extends EventEmitter {
 		this.on('open', ignore(() => {
 			// WIDECHAT close main content
 			this.mainContent.css('transform', 'translate3d( 100%, 0 , 0)');
-			if (!FlowRouter.current().path.startsWith('/admin') && !FlowRouter.current().path.startsWith('/account')) {
+			if (!FlowRouter.current().path.startsWith('/admin')
+				&& !FlowRouter.current().path.startsWith('/account')
+				&& !FlowRouter.current().path.startsWith('/omnichannel')) {
 				FlowRouter.withReplaceState(function() {
 					FlowRouter.go('/home');
 				});

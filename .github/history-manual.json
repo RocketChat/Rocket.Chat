@@ -21,5 +21,12 @@
 		"title": "[BREAK] TLS v1.0 and TLS v1.1 were disabled by due to NodeJS update to v12. You can still enable them by using flags like `--tls-min-v1.0` and `--tls-min-v1.1`",
 		"userLogin": "sampaiodiego",
 		"contributors": []
+	}],
+	"3.6.0-rc.0": [{
+		"pr": "18642",
+		"title": "[NEW] Admin option to reset other users’ E2E encryption key",
+		"userLogin": "rodrigok",
+		"contributors": [],
+		"description": "Requires the 2FA password fallback enforcement enabled to work"
 	}]
 }

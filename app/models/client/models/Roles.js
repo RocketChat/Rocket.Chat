@@ -1,5 +1,4 @@
 import { CachedCollection } from '../../../ui-cached-collection';
-
 import * as Models from '..';
 
 const CachedRoles = new CachedCollection({ name: 'roles' });

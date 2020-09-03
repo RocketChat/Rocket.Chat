@@ -1,4 +1,6 @@
 .contextual-bar {
+	box-sizing: content-box;
+
 	&.contextual-bar {
 		z-index: 10;
 
