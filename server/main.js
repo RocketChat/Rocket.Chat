@@ -3,7 +3,7 @@ import '../imports/startup/server';
 
 import '../lib/RegExp';
 
-import '../sdk/startup';
+import './services/startup';
 
 import '../ee/server';
 import './lib/pushConfig';

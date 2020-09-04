@@ -1,4 +1,4 @@
-import { Authorization } from '../../../../sdk';
+import { Authorization } from '../../../../server/sdk';
 
 export const clearCache = () => {
 	// TODO need to implement a way to tell authorization service to clear its cache or not use cache at all

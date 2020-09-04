@@ -2,7 +2,7 @@ import { WebApp } from 'meteor/webapp';
 
 import { roomAvatar } from './room';
 import { userAvatar } from './user';
-import { Authorization } from '../../../sdk';
+import { Authorization } from '../../sdk';
 
 import './middlewares';
 

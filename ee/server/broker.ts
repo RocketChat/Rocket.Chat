@@ -1,9 +1,9 @@
 import { ServiceBroker } from 'moleculer';
 
-import { api } from '../../sdk/api';
-import { onLicense } from '../app/license/server';
-import { IBroker } from '../../sdk/types/IBroker';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { api } from '../../server/sdk/api';
+import { IBroker } from '../../server/sdk/types/IBroker';
+import { ServiceClass } from '../../server/sdk/types/ServiceClass';
+// import { onLicense } from '../app/license/server';
 
 class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;

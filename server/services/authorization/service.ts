@@ -1,8 +1,8 @@
 // import mem from 'mem';
 import { Db, Collection } from 'mongodb';
 
-import { IAuthorization } from '../../types/IAuthorization';
-import { ServiceClass } from '../../types/ServiceClass';
+import { IAuthorization } from '../../sdk/types/IAuthorization';
+import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { IUser } from '../../../definition/IUser';
 
