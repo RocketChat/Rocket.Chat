@@ -1,10 +1,10 @@
 // import mem from 'mem';
 import { Db, Collection } from 'mongodb';
 
-import { IAuthorization } from '../types/IAuthorization';
-import { ServiceClass } from '../types/ServiceClass';
-import { AuthorizationUtils } from '../../app/authorization/lib/AuthorizationUtils';
-import { IUser } from '../../definition/IUser';
+import { IAuthorization } from '../../types/IAuthorization';
+import { ServiceClass } from '../../types/ServiceClass';
+import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
+import { IUser } from '../../../definition/IUser';
 
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
