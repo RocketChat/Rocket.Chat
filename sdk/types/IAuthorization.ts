@@ -1,5 +1,6 @@
 export interface IAuthorization {
-	hasPermission(permission: string, user: string): boolean;
-	hasPermission2(permission: string, user: string, bla: number): number;
+	hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean>;
+	hasPermission(userId: string, permissionId: string, scope?: string): Promise<boolean>;
+	hasAtLeastOnePermission(userId: string, permissions: string[], scope?: string): Promise<boolean>;
 	prop?: string;
 }

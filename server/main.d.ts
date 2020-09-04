@@ -1,4 +1,5 @@
 import { EJSON } from 'meteor/ejson';
+import { Db } from 'mongodb';
 
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {
@@ -73,5 +74,18 @@ declare module 'meteor/littledata:synced-cron' {
 	namespace SyncedCron {
 		function add(params: ICronAddParameters): string;
 		function remove(name: string): string;
+	}
+}
+
+declare module 'meteor/mongo' {
+	interface RemoteCollectionDriver {
+		mongo: MongoConnection;
+	}
+	interface MongoConnection {
+		db: Db;
+	}
+
+	namespace MongoInternals {
+		function defaultRemoteCollectionDriver(): RemoteCollectionDriver;
 	}
 }

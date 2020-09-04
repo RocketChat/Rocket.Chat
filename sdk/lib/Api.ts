@@ -7,10 +7,6 @@ export class Api {
 
 	private broker: IBroker;
 
-	protected log(...args: Array<any>): void {
-		console.log('BROKER:', ...args);
-	}
-
 	// set a broker for the API and registers all services in the broker
 	setBroker(broker: IBroker): void {
 		this.broker = broker;
@@ -27,8 +23,6 @@ export class Api {
 	}
 
 	async call(method: string, data: any): Promise<any> {
-		this.log('BROKER.call', method);
-
 		return this.broker.call(method, data);
 	}
 }
