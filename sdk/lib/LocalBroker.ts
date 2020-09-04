@@ -23,7 +23,7 @@ export class LocalBroker implements IBroker {
 			}
 			const i = instance as any;
 
-			this.methods.set(`${ namespace }.${ method }`, i[method]);
+			this.methods.set(`${ namespace }.${ method }`, i[method].bind(i));
 		}
 	}
 }
