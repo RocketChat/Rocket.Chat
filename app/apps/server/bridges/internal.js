@@ -6,6 +6,10 @@ export class AppInternalBridge {
 	}
 
 	getUsernamesOfRoomById(roomId) {
+		if (!roomId) {
+			return [];
+		}
+
 		const records = Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
 			fields: {
 				'u.username': 1,

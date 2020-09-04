@@ -134,10 +134,22 @@ export class AppLivechatBridge {
 			currentRoom,
 		} = transferData;
 
+		const appUser = Users.findOneByAppId(appId);
+		if (!appUser) {
+			throw new Error('Invalid app user, cannot transfer');
+		}
+		const { _id, username, name, type } = appUser;
+		const transferredBy = {
+			_id,
+			username,
+			name,
+			type,
+		};
+
 		return Livechat.transfer(
 			this.orch.getConverters().get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent.id, departmentId },
+			{ userId: targetAgent ? targetAgent.id : undefined, departmentId, transferredBy },
 		);
 	}
 

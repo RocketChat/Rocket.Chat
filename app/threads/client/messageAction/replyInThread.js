@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
-import { chatMessages } from '../../../ui/client';
-import { addMessageToList } from '../../../ui-utils/client/lib/MessageAction';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
@@ -19,16 +18,11 @@ Meteor.startup(function() {
 			context: ['message', 'message-mobile'],
 			action() {
 				const { msg: message } = messageArgs(this);
-				const { input } = chatMessages[message.rid];
-				const $input = $(input);
 
-				const messages = addMessageToList($input.data('reply') || [], message, input);
-
-				$(input)
-					.focus()
-					.data('mention-user', true)
-					.data('reply', messages)
-					.trigger('dataChange');
+				FlowRouter.setParams({
+					tab: 'thread',
+					context: message.tmid || message._id,
+				});
 			},
 			condition({ subscription }) {
 				return Boolean(subscription);

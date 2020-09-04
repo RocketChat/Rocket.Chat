@@ -10,13 +10,35 @@
 			<i class="icon-angle-down"></i>
 		</div>
 
+		{{#if hasDepartments }}
+			<div class="form-group ">
+				{{> livechatAutocompleteUser
+					onClickTag=onClickTagDepartment
+					list=selectedDepartments
+					onSelect=onSelectDepartments
+					collection='CachedDepartmentList'
+					endpoint='livechat/department.autocomplete'
+					field='name'
+					sort='name'
+					placeholder="Select_a_department"
+					name="department"
+					icon="queue"
+					noMatchTemplate="userSearchEmpty"
+					templateItem="popupList_item_channel"
+					template="roomSearch"
+					noMatchTemplate="roomSearchEmpty"
+					modifier=departmentModifier
+				}}
+			</div>
+		{{/if}}
+
 		<div class="form-group lc-analytics-header">
 			{{#if showLeftNavButton}}
 			<button class="lc-daterange-prev">
 				<i class="icon-left-circled"></i>
 			</button>
 			{{/if}}
-			<button class="rc-tooltip rc-tooltip--down js-button lc-date-picker-btn">
+			<button class="js-button lc-date-picker-btn">
 				{{#with daterange}}
 				<span class="lc-datarange-from">{{from}}</span>
 				<span class="fade">{{_ "to" }}</span>

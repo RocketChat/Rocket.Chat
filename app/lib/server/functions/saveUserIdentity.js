@@ -20,22 +20,25 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 	const user = Users.findOneById(_id);
 
 	const previousUsername = user.username;
+	const previousName = user.name;
+	const nameChanged = previousName !== name;
+	const usernameChanged = previousUsername !== username;
 
-	if (typeof rawUsername !== 'undefined') {
+	if (typeof rawUsername !== 'undefined' && usernameChanged) {
 		if (!setUsername(_id, username, user)) {
 			return false;
 		}
 		user.username = username;
 	}
 
-	if (typeof rawName !== 'undefined') {
+	if (typeof rawName !== 'undefined' && nameChanged) {
 		if (!setRealName(_id, name, user)) {
 			return false;
 		}
 	}
 
 	// if coming from old username, update all references
-	if (previousUsername) {
+	if (previousUsername && usernameChanged) {
 		if (typeof rawUsername !== 'undefined') {
 			Messages.updateAllUsernamesByUserId(user._id, username);
 			Messages.updateUsernameOfEditByUserId(user._id, username);

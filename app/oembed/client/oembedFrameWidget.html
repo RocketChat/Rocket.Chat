@@ -18,15 +18,13 @@
 				<a href="{{meta.oembedUrl}}" rel="noopener noreferrer" target="_blank">{{meta.oembedTitle}}</a>
 			{{/if}}
 		{{/if}}
-		{{#if collapsed}}
-			<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span><br/>
-		{{else}}
-			<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span><br/>
+		{{> collapseArrow collapsedMedia=collapsedMediaVar}} <br>
+		{{#unless collapsed}}
 			{{#if meta.oembedDescription}}
 				<p>{{meta.oembedDescription}}</p>
 			{{/if}}
 			{{{meta.oembedHtml}}}
-		{{/if}}
+		{{/unless}}
 	</blockquote>
 {{/if}}
 </template>

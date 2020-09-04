@@ -25,8 +25,4 @@ Template.oembedVideoWidget.helpers({
 	title() {
 		return getTitle(this);
 	},
-	collapsed() {
-		return this.collapsedMedia;
-	},
-
 });

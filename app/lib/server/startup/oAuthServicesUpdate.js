@@ -47,6 +47,7 @@ function _OAuthServicesUpdate() {
 				data.tokenSentVia = settings.get(`${ service.key }-token_sent_via`);
 				data.identityTokenSentVia = settings.get(`${ service.key }-identity_token_sent_via`);
 				data.usernameField = settings.get(`${ service.key }-username_field`);
+				data.emailField = settings.get(`${ service.key }-email_field`);
 				data.nameField = settings.get(`${ service.key }-name_field`);
 				data.avatarField = settings.get(`${ service.key }-avatar_field`);
 				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
@@ -63,6 +64,7 @@ function _OAuthServicesUpdate() {
 					tokenSentVia: data.tokenSentVia,
 					identityTokenSentVia: data.identityTokenSentVia,
 					usernameField: data.usernameField,
+					emailField: data.emailField,
 					nameField: data.nameField,
 					avatarField: data.avatarField,
 					rolesClaim: data.rolesClaim,
@@ -91,6 +93,12 @@ function _OAuthServicesUpdate() {
 				data.buttonLabelText = settings.get('Accounts_OAuth_Nextcloud_button_label_text');
 				data.buttonLabelColor = settings.get('Accounts_OAuth_Nextcloud_button_label_color');
 				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
+			}
+
+			// If there's no data other than the service name, then put the service name in the data object so the operation won't fail
+			const keys = Object.keys(data).filter((key) => data[key] !== undefined);
+			if (!keys.length) {
+				data.service = serviceName.toLowerCase();
 			}
 
 			ServiceConfiguration.configurations.upsert({

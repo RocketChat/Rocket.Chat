@@ -30,19 +30,24 @@
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</span>
 					{{else}}
-						{{#if canSend}}
-							{{> messageBoxAudioMessage rid=rid tmid=tmid}}
-							<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true">
-								{{#if actions}}
-									<span class="rc-message-box__icon">
-										{{> icon block="rc-input__icon-svg" icon="plus"}}
-									</span>
-								{{/if}}
-							</span>
-						{{else}}
-							<button class="js-join rc-button rc-button--primary rc-message-box__join-button">
-								{{_ "join"}}
-							</button>
+						{{# if customAction }}
+							{{> Template.dynamic template=customAction.template data=customAction.data }}
+						{{ else }}
+
+							{{#if canSend}}
+								{{> messageBoxAudioMessage rid=rid tmid=tmid}}
+								<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true">
+									{{#if actions}}
+										<span class="rc-message-box__icon">
+											{{> icon block="rc-input__icon-svg" icon="plus"}}
+										</span>
+									{{/if}}
+								</span>
+							{{else}}
+								<button class="js-join rc-button rc-button--primary rc-message-box__join-button">
+									{{_ "join"}}
+								</button>
+							{{/if}}
 						{{/if}}
 					{{/if}}
 
@@ -63,11 +68,11 @@
 					<div class="rc-message-box__toolbar-formatting">
 						{{#each formattingButton in formattingButtons}}
 							{{#if formattingButton.icon}}
-								<button class="rc-message-box__toolbar-formatting-item rc-tooltip js-format" data-id="{{formattingButton.label}}" aria-label="{{_ formattingButton.label}}">
+								<button class="rc-message-box__toolbar-formatting-item js-format" data-id="{{formattingButton.label}}" title="{{_ formattingButton.label}}">
 									{{> icon block="rc-message-box__toolbar-formatting-icon" icon=formattingButton.icon }}
 								</button>
 							{{else}}
-								<span class="rc-message-box__toolbar-formatting-item rc-tooltip" aria-label="{{_ formattingButton.label}}">
+								<span class="rc-message-box__toolbar-formatting-item" title="{{_ formattingButton.label}}">
 									<a href="{{formattingButton.link}}" target="_blank" rel="noopener noreferrer" class="rc-message-box__toolbar-formatting-link">{{formattingButton.text}}</a>
 								</span>
 							{{/if}}

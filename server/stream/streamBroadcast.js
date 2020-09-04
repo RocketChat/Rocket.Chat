@@ -164,8 +164,7 @@ Meteor.methods({
 		}
 
 		if (instance.serverOnly) {
-			const scope = {};
-			instance.emitWithScope(eventName, scope, ...args);
+			instance.__emit(eventName, ...args);
 		} else {
 			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
 		}
@@ -216,8 +215,7 @@ function startStreamCastBroadcast(value) {
 		}
 
 		if (instance.serverOnly) {
-			const scope = {};
-			return instance.emitWithScope(eventName, scope, args);
+			return instance.__emit(eventName, ...args);
 		}
 		return instance._emit(eventName, args);
 	});
@@ -287,8 +285,20 @@ function startStreamBroadcast() {
 		return results;
 	}
 
-	return Meteor.StreamerCentral.on('broadcast', function(streamName, eventName, args) {
+	const onBroadcast = function(streamName, eventName, args) {
 		return broadcast(streamName, eventName, args);
+	};
+
+	let TroubleshootDisableInstanceBroadcast;
+	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+		if (TroubleshootDisableInstanceBroadcast === value) { return; }
+		TroubleshootDisableInstanceBroadcast = value;
+
+		if (value) {
+			return Meteor.StreamerCentral.removeListener('broadcast', onBroadcast);
+		}
+
+		Meteor.StreamerCentral.on('broadcast', onBroadcast);
 	});
 }
 

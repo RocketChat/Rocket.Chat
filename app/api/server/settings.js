@@ -11,5 +11,10 @@ settings.addGroup('General', function() {
 		this.add('API_Shield_user_require_auth', false, { type: 'boolean', public: false, enableQuery: { _id: 'API_Enable_Shields', value: true } });
 		this.add('API_Enable_CORS', false, { type: 'boolean', public: false });
 		this.add('API_CORS_Origin', '*', { type: 'string', public: false, enableQuery: { _id: 'API_Enable_CORS', value: true } });
+
+		this.add('API_Use_REST_For_DDP_Calls', true, {
+			type: 'boolean',
+			public: true,
+		});
 	});
 });

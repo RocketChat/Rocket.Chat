@@ -2,14 +2,21 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { HTML } from 'meteor/htmljs';
 
 import { getActions } from './userActions';
-import { RoomManager, popover } from '../../../ui-utils';
-import { ChatRoom, Subscriptions } from '../../../models';
-import { settings } from '../../../settings';
-import { t, isRtl, handleError, roomTypes } from '../../../utils';
+import { RoomManager, popover } from '../../../ui-utils/client';
+import { ChatRoom, Subscriptions } from '../../../models/client';
+import { settings } from '../../../settings/client';
+import { t, isRtl, handleError, roomTypes, getUserAvatarURL } from '../../../utils/client';
 import { WebRTC } from '../../../webrtc/client';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/client';
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
+
+createTemplateForComponent('UserInfoWithData', () => import('../../../../client/channel/UserInfo'), {
+	// eslint-disable-next-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar', style: 'flex-grow: 1;' }),
+});
 
 Template.membersList.helpers({
 	ignored() {
@@ -39,17 +46,6 @@ Template.membersList.helpers({
 		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
 		let totalOnline = 0;
 		let users = roomUsers;
-
-		const filter = Template.instance().filter.get();
-		let reg = null;
-		try {
-			reg = new RegExp(filter, 'i');
-		} catch (e) {
-			console.log(e);
-		}
-		if (filter && reg) {
-			users = users.filter((user) => reg.test(user.username) || reg.test(user.name));
-		}
 
 		users = users.map(function(user) {
 			let utcOffset;
@@ -118,13 +114,15 @@ Template.membersList.helpers({
 
 	userInfoDetail() {
 		const room = ChatRoom.findOne(this.rid, { fields: { t: 1, usernames: 1 } });
-
+		const username = Template.instance().userDetail.get();
+		if (!username) {
+			return;
+		}
 		return {
 			tabBar: Template.currentData().tabBar,
-			username: Template.instance().userDetail.get(),
-			clear: Template.instance().clearUserDetail,
-			showAll: roomTypes.getConfig(room.t).userDetailShowAll(room) || false,
-			hideAdminControls: roomTypes.getConfig(room.t).userDetailShowAdmin(room) || false,
+			username,
+			rid: Template.currentData().rid,
+			onClose: Template.instance().clearUserDetail,
 			video: ['d'].includes(room && room.t),
 			showBackButton: roomTypes.getConfig(room.t).isGroupChat(room),
 		};
@@ -139,6 +137,11 @@ Template.membersList.helpers({
 
 	loadingMore() {
 		return Template.instance().loadingMore.get();
+	},
+
+	avatarUrl() {
+		const { user: { username, avatarETag } } = this;
+		return getUserAvatarURL(username, avatarETag);
 	},
 });
 
@@ -247,10 +250,10 @@ Template.membersList.events({
 	},
 
 	'click .show-more-users'(e, instance) {
-		const { showAllUsers, usersLimit, users, total, loadingMore } = instance;
+		const { showAllUsers, usersLimit, users, total, loadingMore, filter } = instance;
 
 		loadingMore.set(true);
-		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: usersLimit.get() + 100, skip: 0 }, (error, result) => {
+		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: usersLimit.get() + 100, skip: 0 }, filter.get(), (error, result) => {
 			if (error) {
 				console.error(error);
 				loadingMore.set(false);
@@ -283,7 +286,7 @@ Template.membersList.onCreated(function() {
 	this.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
-		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
+		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, this.filter.get(), (error, users) => {
 			if (error) {
 				console.error(error);
 				this.loading.set(false);
@@ -297,6 +300,7 @@ Template.membersList.onCreated(function() {
 
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);
+		this.userDetail.set(null);
 		this.tabBar.setData({
 			label: 'Members',
 			icon: 'team',
@@ -322,7 +326,7 @@ Template.membersList.onCreated(function() {
 });
 
 Template.membersList.onRendered(function() {
-	this.firstNode.parentNode.querySelector('#user-search').focus();
+	this.firstNode.parentNode.querySelector('#user-search')?.focus();
 	this.autorun(() => {
 		const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');

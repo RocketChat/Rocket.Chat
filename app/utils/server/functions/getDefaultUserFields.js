@@ -1,11 +1,13 @@
 export const getDefaultUserFields = () => ({
 	name: 1,
 	username: 1,
+	nickname: 1,
 	emails: 1,
 	status: 1,
 	statusDefault: 1,
 	statusText: 1,
 	statusConnection: 1,
+	bio: 1,
 	avatarOrigin: 1,
 	utcOffset: 1,
 	language: 1,
@@ -29,4 +31,5 @@ export const getDefaultUserFields = () => ({
 	banners: 1,
 	'oauth.authorizedClients': 1,
 	_updatedAt: 1,
+	avatarETag: 1,
 });

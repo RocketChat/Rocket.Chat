@@ -4,9 +4,14 @@ import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../hooks/useEndpointData';
-import { CounterSet } from '../data/CounterSet';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
+import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
+import { saveFile } from '../../../../../../client/lib/saveFile';
+
+const convertDataToCSV = (data) => `// date, newUsers
+${ data.map(({ date, newUsers }) => `${ date }, ${ newUsers }`).join('\n') }`;
 
 export function NewUsersSection() {
 	const t = useTranslation();
@@ -48,7 +53,7 @@ export function NewUsersSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/users/new-users', params);
+	const data = useEndpointData('engagement-dashboard/users/new-users', params);
 
 	const [
 		countFromPeriod,
@@ -67,7 +72,9 @@ export function NewUsersSection() {
 		}));
 		for (const { day, users } of data.days) {
 			const i = moment(day).diff(period.start, 'days');
-			values[i].newUsers += users;
+			if (i >= 0) {
+				values[i].newUsers += users;
+			}
 		}
 
 		return [
@@ -79,9 +86,13 @@ export function NewUsersSection() {
 		];
 	}, [data, period]);
 
+	const downloadData = () => {
+		saveFile(convertDataToCSV(values), `NewUsersSection_start_${ params.start }_end_${ params.end }.csv`);
+	};
+
 	return <Section
 		title={t('New_users')}
-		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
+		filter={<><Select small options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
 	>
 		<CounterSet
 			counters={[
@@ -155,7 +166,7 @@ export function NewUsersSection() {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 										{t('Value_users', { value })}
 									</Box>}
 								/>

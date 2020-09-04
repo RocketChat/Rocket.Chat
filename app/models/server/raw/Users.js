@@ -1,10 +1,14 @@
-import s from 'underscore.string';
-
 import { BaseRaw } from './BaseRaw';
 
-import { Users } from '..';
-
 export class UsersRaw extends BaseRaw {
+	constructor(...args) {
+		super(...args);
+
+		this.defaultFields = {
+			__rooms: 0,
+		};
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -13,6 +17,12 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneByUsername(username, options = null) {
+		const query = { username };
+
+		return this.findOne(query, options);
 	}
 
 	findUsersInRolesWithQuery(roles, query, options) {
@@ -54,10 +64,24 @@ export class UsersRaw extends BaseRaw {
 
 		const [agent] = await this.col.aggregate(aggregate).toArray();
 		if (agent) {
-			Users.setLastRoutingTime(agent.agentId);
+			await this.setLastRoutingTime(agent.agentId);
 		}
 
 		return agent;
+	}
+
+	setLastRoutingTime(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				lastRoutingTime: new Date(),
+			},
+		};
+
+		return this.col.updateOne(query, update);
 	}
 
 	async getAgentAndAmountOngoingChats(userId) {
@@ -97,7 +121,7 @@ export class UsersRaw extends BaseRaw {
 		]).toArray();
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(termRegex, exceptions, conditions, options) {
 		if (exceptions == null) { exceptions = []; }
 		if (conditions == null) { conditions = {}; }
 		if (options == null) { options = {}; }
@@ -105,12 +129,13 @@ export class UsersRaw extends BaseRaw {
 			exceptions = [exceptions];
 		}
 
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 		const query = {
 			$or: [{
 				username: termRegex,
 			}, {
 				name: termRegex,
+			}, {
+				nickname: termRegex,
 			}],
 			active: true,
 			type: {
@@ -206,12 +231,220 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 		const params = [match];
-		if (departmentId) {
+		if (departmentId && departmentId !== 'undefined') {
 			params.push(lookup);
 			params.push(unwind);
 			params.push(departmentsMatch);
 		}
 		params.push(group);
 		return this.col.aggregate(params).toArray();
+	}
+
+	getTotalOfRegisteredUsersByDate({ start, end, options = {} }) {
+		const params = [
+			{
+				$match: {
+					createdAt: { $gte: start, $lte: end },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						$concat: [
+							{ $substr: ['$createdAt', 0, 4] },
+							{ $substr: ['$createdAt', 5, 2] },
+							{ $substr: ['$createdAt', 8, 2] },
+						],
+					},
+					users: { $sum: 1 },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						$toInt: '$_id',
+					},
+					users: { $sum: '$users' },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					date: '$_id',
+					users: 1,
+					type: 'users',
+				},
+			},
+		];
+		if (options.sort) {
+			params.push({ $sort: options.sort });
+		}
+		if (options.count) {
+			params.push({ $limit: options.count });
+		}
+		return this.col.aggregate(params).toArray();
+	}
+
+	updateStatusText(_id, statusText) {
+		const update = {
+			$set: {
+				statusText,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	updateStatusByAppId(appId, status) {
+		const query = {
+			appId,
+			status: { $ne: status },
+		};
+
+		const update = {
+			$set: {
+				status,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	openAgentsBusinessHoursByBusinessHourId(businessHourIds) {
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: { $each: businessHourIds },
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
+		const query = {
+			_id: { $in: agentIds },
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	removeBusinessHourByAgentIds(agentIds = [], businessHourId) {
+		const query = {
+			_id: { $in: agentIds },
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+		const query = {
+			_id: { $nin: agentIdsWithDepartment },
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+		const query = {
+			_id: { $nin: agentIdsWithDepartment },
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds) {
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$pull: {
+				openBusinessHours: { $in: businessHourIds },
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
+		const query = {
+			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
+			roles: 'livechat-agent',
+			...Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } },
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'not-available',
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	async isAgentWithinBusinessHours(agentId) {
+		return await this.find({
+			_id: agentId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		}).count() > 0;
+	}
+
+	removeBusinessHoursFromAllUsers() {
+		const query = {
+			roles: 'livechat-agent',
+			openBusinessHours: {
+				$exists: true,
+			},
+		};
+
+		const update = {
+			$unset: {
+				openBusinessHours: 1,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 }

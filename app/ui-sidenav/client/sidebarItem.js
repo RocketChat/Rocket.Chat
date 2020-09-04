@@ -36,25 +36,38 @@ Template.sidebarItem.helpers({
 	showUnread() {
 		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
-	badgeClass() {
-		const { t, unread, userMentions, groupMentions } = this;
+	unread() {
+		const { unread = 0, tunread = [] } = this;
+		return unread + tunread.length;
+	},
+	lastMessageUnread() {
+		if (!this.ls) {
+			return true;
+		}
+		if (!this.lastMessage?.ts) {
+			return false;
+		}
 
-		const badges = ['badge'];
+		return this.lastMessage.ts > this.ls;
+	},
+	badgeClass() {
+		const { unread, userMentions, groupMentions, tunread = [], tunreadGroup = [], tunreadUser = [] } = this;
+
+		if (userMentions || tunreadUser.length > 0) {
+			return 'badge badge--user-mentions';
+		}
+
+		if (groupMentions || tunreadGroup.length > 0) {
+			return 'badge badge--group-mentions';
+		}
+
+		if (tunread.length) {
+			return 'badge badge--thread';
+		}
 
 		if (unread) {
-			badges.push('badge--unread');
-			if (t === 'd') {
-				badges.push('badge--dm');
-			}
+			return 'badge';
 		}
-
-		if (userMentions) {
-			badges.push('badge--user-mentions');
-		} else if (groupMentions) {
-			badges.push('badge--group-mentions');
-		}
-
-		return badges.join(' ');
 	},
 });
 
@@ -87,7 +100,7 @@ Template.sidebarItem.onCreated(function() {
 			return;
 		}
 
-		setLastMessageTs(this, currentData.lastMessage.ts);
+		setLastMessageTs(this, currentData.lm || currentData.lastMessage.ts);
 
 		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
 			this.renderedMessage = '******';

@@ -3,12 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import { Settings } from '../../../app/models/server';
 import { Notifications } from '../../../app/notifications/server';
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/server';
-import { getSettingPermissionId } from '../../../app/authorization/lib.js';
+import { getSettingPermissionId } from '../../../app/authorization/lib';
+import { SettingsEvents } from '../../../app/settings/server/functions/settings';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
 		if (updatedAt instanceof Date) {
 			const records = Settings.findNotHiddenPublicUpdatedAfter(updatedAt).fetch();
+			SettingsEvents.emit('fetch-settings', records);
+
 			return {
 				update: records,
 				remove: Settings.trashFindDeletedAfter(updatedAt, {
@@ -24,7 +27,11 @@ Meteor.methods({
 				}).fetch(),
 			};
 		}
-		return Settings.findNotHiddenPublic().fetch();
+
+		const publicSettings = Settings.findNotHiddenPublic().fetch();
+		SettingsEvents.emit('fetch-settings', publicSettings);
+
+		return publicSettings;
 	},
 	'private-settings/get'(updatedAfter) {
 		const uid = Meteor.userId();
@@ -84,7 +91,10 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 				value: setting.value,
 				editor: setting.editor,
 				properties: setting.properties,
+				enterprise: setting.enterprise,
 			};
+
+			SettingsEvents.emit('change-setting', setting, value);
 
 			if (setting.public === true) {
 				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);

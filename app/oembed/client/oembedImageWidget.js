@@ -13,7 +13,4 @@ Template.oembedImageWidget.helpers({
 		}
 		return true;
 	},
-	collapsed() {
-		return this.collapsedMedia;
-	},
 });

@@ -1,15 +1,32 @@
 import moment from 'moment';
 
-import Analytics from '../../../../../app/models/server/raw/Analytics';
+import AnalyticsRaw from '../../../../../app/models/server/raw/Analytics';
 import Sessions from '../../../../../app/models/server/raw/Sessions';
+import { Users } from '../../../../../app/models/server/raw';
+import { Analytics } from '../../../../../app/models/server';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = (user) => {
-	Promise.await(Analytics.saveUserData({
+	Promise.await(AnalyticsRaw.saveUserData({
 		date: convertDateToInt(user.ts),
 		user,
 	}));
 	return user;
+};
+
+export const fillFirstDaysOfUsersIfNeeded = async (date) => {
+	const usersFromAnalytics = await AnalyticsRaw.findByTypeBeforeDate({
+		type: 'users',
+		date: convertDateToInt(date),
+	}).toArray();
+	if (!usersFromAnalytics.length) {
+		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
+		const users = await Users.getTotalOfRegisteredUsersByDate({
+			start: startOfPeriod,
+			end: date,
+		});
+		users.forEach((user) => Analytics.insert(user));
+	}
 };
 
 export const findWeeklyUsersRegisteredData = async ({ start, end }) => {
@@ -18,12 +35,12 @@ export const findWeeklyUsersRegisteredData = async ({ start, end }) => {
 	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
 	const today = convertDateToInt(end);
 	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
-	const currentPeriodUsers = await Analytics.getTotalOfRegisteredUsersByDate({
+	const currentPeriodUsers = await AnalyticsRaw.getTotalOfRegisteredUsersByDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	});
-	const lastPeriodUsers = await Analytics.getTotalOfRegisteredUsersByDate({
+	const lastPeriodUsers = await AnalyticsRaw.getTotalOfRegisteredUsersByDate({
 		start: convertDateToInt(startOfLastWeek),
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
