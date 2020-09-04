@@ -3,12 +3,13 @@
 		"module": "CommonJS",
 		"target": "es2018",
 		"lib": ["esnext", "dom"],
+		"types" : ["node"],
 
 		"allowJs": true,
 		"checkJs": false,
 		"jsx": "react",
 		// "incremental": true,
-		"noEmit": true,
+		// "noEmit": true,
 
 		/* Strict Type-Checking Options */
 		"strict": true,
@@ -40,5 +41,6 @@
 		// "experimentalDecorators": true,
 	},
 	"exclude": [
+		"./dist"
 	]
 }
