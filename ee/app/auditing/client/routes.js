@@ -4,6 +4,7 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
 createTemplateForComponent('auditPage', () => import('../../../client/audit/AuditPage'));
+createTemplateForComponent('auditLogPage', () => import('../../../client/audit/AuditLogPage'));
 
 FlowRouter.route('/audit', {
 	name: 'audit-home',
@@ -15,6 +16,6 @@ FlowRouter.route('/audit', {
 FlowRouter.route('/audit-log', {
 	name: 'audit-log',
 	action() {
-		BlazeLayout.render('main', { center: 'auditLog' });
+		BlazeLayout.render('main', { center: 'auditLogPage' });
 	},
 });
