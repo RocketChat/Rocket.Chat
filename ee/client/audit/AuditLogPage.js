@@ -28,7 +28,7 @@ const AuditLogPage = () => {
 	const [data] = useMethodData('auditGetAuditions', params);
 
 	return <Page>
-		<Page.Header title={t('Message_auditing')} />
+		<Page.Header title={t('Message_auditing_log')} />
 		<Page.Content>
 			<Field alignSelf='stretch'>
 				<Field.Label>{t('Date')}</Field.Label>

@@ -1,5 +1,5 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { Box, Field, TextInput, Select, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
+import React, { useRef, useState } from 'react';
+import { Box, Field, TextInput, ButtonGroup, Button, Margins, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../../client/components/basic/Page';
@@ -8,7 +8,7 @@ import RoomAutoComplete from './RoomAutoComplete';
 import UserAutoCompleteMultiple from './UserAutoCompleteMultiple';
 import VisitorAutoComplete from './VisitorAutoComplete';
 import Result from './Result';
-import { UserAutoComplete } from '../../../client/components/basic/AutoComplete';
+import { AutoCompleteAgent } from '../../../client/components/basic/AutoCompleteAgent';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useForm } from '../../../client/hooks/useForm';
 
@@ -56,11 +56,9 @@ const AuditPage = () => {
 		handleDateRange,
 	} = handlers;
 
-	const typeOptions = useMemo(() => [
-		['', t('Others')],
-		['d', t('Direct_Messages')],
-		['l', t('Omnichannel')],
-	], [t]);
+	const useHandleType = (type) => useMutableCallback(() => {
+		handleType(type);
+	});
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
@@ -116,6 +114,11 @@ const AuditPage = () => {
 
 	return <Page>
 		<Page.Header title={t('Message_auditing')} />
+		<Tabs>
+			<Tabs.Item selected={type === ''} onClick={useHandleType('')}>{t('Others')}</Tabs.Item>
+			<Tabs.Item selected={type === 'd'} onClick={useHandleType('d')}>{t('Direct_Messages')}</Tabs.Item>
+			<Tabs.Item selected={type === 'l'} onClick={useHandleType('l')}>{t('Omnichannel')}</Tabs.Item>
+		</Tabs>
 		<Page.ScrollableContentWithShadow mb='neg-x4'>
 			<Margins block='x4'>
 				<Box display='flex' flexDirection='row' mi='neg-x4'>
@@ -127,15 +130,9 @@ const AuditPage = () => {
 							</Field.Row>
 						</Field>
 						<Field>
-							<Field.Label>{t('Type')}</Field.Label>
-							<Field.Row>
-								<Select options={typeOptions} value={type} onChange={handleType} />
-							</Field.Row>
-						</Field>
-						<Field>
 							<Field.Label>{t('Date')}</Field.Label>
 							<Field.Row>
-								<DateRangePicker onChange={handleDateRange} display='flex' placeholder={t('')} flexGrow={1} justifyContent='stretch'/>
+								<DateRangePicker onChange={handleDateRange} display='flex' flexGrow={1}/>
 							</Field.Row>
 						</Field>
 					</Margins>
@@ -173,7 +170,7 @@ const AuditPage = () => {
 							<Field>
 								<Field.Label>{t('Agent')}</Field.Label>
 								<Field.Row>
-									<UserAutoComplete error={errors.agent} value={agent} onChange={handleAgent} placeholder={t('Username_Placeholder')}/>
+									<AutoCompleteAgent error={errors.agent} value={agent} onChange={handleAgent} placeholder={t('Username_Placeholder')}/>
 								</Field.Row>
 								{errors.agent && <Field.Error>
 									{errors.agent}

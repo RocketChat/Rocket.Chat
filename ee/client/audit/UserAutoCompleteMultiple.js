@@ -22,7 +22,7 @@ const UserAutoCompleteMultiple = React.memo((props) => {
 		{...props}
 		filter={filter}
 		setFilter={setFilter}
-		renderSelected={({ value: selected }) => selected?.map((value) => <Chip key={value} {...props} value={value} onClick={onClickRemove} mie='x4'><UserAvatar size='x20' username={value} />{value}</Chip>)}
+		renderSelected={({ value: selected }) => selected?.map((value) => <Chip key={value} {...props} height='x20' value={value} onClick={onClickRemove} mie='x4'><UserAvatar size='x20' username={value} />{value}</Chip>)}
 		renderItem={({ value, ...props }) => <Option key={value} {...props} avatar={<Avatar value={value} />} />}
 		options={ options }
 	/>;
