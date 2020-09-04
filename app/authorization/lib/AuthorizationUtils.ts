@@ -1,7 +1,7 @@
 const restrictedRolePermissions = new Map();
 
 export const AuthorizationUtils = class {
-	static addRolePermissionWhiteList(roleId: string, list: [string]): void {
+	static addRolePermissionWhiteList(roleId: string, list: string[]): void {
 		if (!roleId) {
 			throw new Error('invalid-param');
 		}
@@ -38,7 +38,7 @@ export const AuthorizationUtils = class {
 		return !rules.has(permissionId);
 	}
 
-	static isPermissionRestrictedForRoleList(permissionId: string, roleList: [string]): boolean {
+	static isPermissionRestrictedForRoleList(permissionId: string, roleList: string[]): boolean {
 		if (!roleList || !permissionId) {
 			throw new Error('invalid-param');
 		}

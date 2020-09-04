@@ -1,4 +1,4 @@
-import mem from 'mem';
+// import mem from 'mem';
 import { Db, Collection } from 'mongodb';
 
 import { IAuthorization } from '../types/IAuthorization';
@@ -45,7 +45,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return this.atLeastOne(userId, permissions, scope);
 	}
 
-	private rolesHasPermission = mem(async (permission, roles) => {
+	private async rolesHasPermission(permission: string, roles: string[]): Promise<boolean> {
 		// TODO this AuthorizationUtils should be brought to this service. currently its state is kept on the application only, but it needs to kept here
 		if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
 			return false;
@@ -53,16 +53,18 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 		const result = await this.Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
 		return !!result;
-	}, {
-		cacheKey: JSON.stringify,
-		...process.env.TEST_MODE === 'true' && { maxAge: 1 },
-	});
+	}
+	// , {
+	// 	cacheKey: JSON.stringify,
+	// 	...process.env.TEST_MODE === 'true' && { maxAge: 1 },
+	// });
 
-	private getRoles = mem(async (uid, scope) => {
+	private async getRoles(uid: string, scope?: string): Promise<string[]> {
 		const { roles: userRoles = [] } = await this.Users.findOne<IUser>({ _id: uid }, { projection: { roles: 1 } }) || {};
 		const { roles: subscriptionsRoles = [] } = (scope && await this.Subscriptions.findOne<{ roles: string[] }>({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
-	}, { maxAge: 1000, cacheKey: JSON.stringify });
+	}
+	// , { maxAge: 1000, cacheKey: JSON.stringify });
 
 	// private clearCache = (): void => {
 	// 	mem.clear(getRoles);
