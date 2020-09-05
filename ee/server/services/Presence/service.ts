@@ -1,46 +1,36 @@
-// import PromService from 'moleculer-prometheus';
+import { newConnection } from './newConnection';
+import { removeConnection } from './removeConnection';
+import { removeLostConnections } from './removeLostConnections';
+import { setStatus, setConnectionStatus } from './setStatus';
+import { updateUserPresence } from './updateUserPresence';
+import { ServiceClass } from '../../../../../server/sdk/types/ServiceClass';
+import { IPresence } from '../../../../../server/sdk/types/IPresence';
+import { USER_STATUS } from '../../../../../definition/UserStatus';
 
-// import { afterAll } from './hooks';
-// import actions from './actions';
+export class Presence extends ServiceClass implements IPresence {
+	protected name = 'presence';
 
-// const { PROMETHEUS_PORT = 9100 } = process.env;
+	async newConnection(uid: string, session: object): Promise<any> {
+		return newConnection(uid, session, this.context);
+	}
 
-// export default {
-// settings: {
-// 	port: PROMETHEUS_PORT,
-// 	$noVersionPrefix: true,
-// },
-// mixins: PROMETHEUS_PORT !== 'false' ? [PromService] : [],
-// name: 'presence',
-// TODO: implement hooks
-// hooks: {
-// 	after: {
-// 		setConnectionStatus: 'afterAll',
-// 		newConnection: 'afterAll',
-// 		removeConnection: 'afterAll',
-// 	},
-// },
-// TODO: implement events
-// events: {
-// 	async '$node.disconnected'({ node }): Promise<void> {
-// 		// this.removeNode(node._id);
-// 		const affectedUsers = await this.broker.call('presence.removeLostConnections', { node._id });
-// 		return affectedUsers.forEach(({ _id: uid }) => this.broker.call('presence.updateUserPresence', { uid }));
-// 	},
-// },
-// actions,
-// methods: {
-// 	// async removeNode(nodeID: string): Promise<void> {
-// 	// 	const affectedUsers = await this.broker.call('presence.removeLostConnections', { nodeID });
-// 	// 	return affectedUsers.forEach(({ _id: uid }) => this.broker.call('presence.updateUserPresence', { uid }));
-// 	// },
-// 	afterAll,
-// },
-// TODO: check
-// async started(): Promise<void> {
-// 	setTimeout(async () => {
-// 		const affectedUsers = await this.broker.call('presence.removeLostConnections');
-// 		return affectedUsers.forEach(({ _id: uid }) => this.broker.call('presence.updateUserPresence', { uid }));
-// 	}, 100);
-// },
-// };
+	async removeConnection(uid: string, session: object): Promise<any> {
+		return removeConnection(uid, session);
+	}
+
+	async removeLostConnections(nodeID: string): Promise<string[]> {
+		return removeLostConnections(nodeID, this.context);
+	}
+
+	async setStatus(uid: string, status: USER_STATUS, statusText?: string): Promise<boolean> {
+		return setStatus(uid, status, statusText);
+	}
+
+	async setConnectionStatus(uid: string, status: USER_STATUS, session: string): Promise<boolean> {
+		return setConnectionStatus(uid, status, session);
+	}
+
+	async updateUserPresence(uid: string): Promise<void> {
+		return updateUserPresence(uid);
+	}
+}
