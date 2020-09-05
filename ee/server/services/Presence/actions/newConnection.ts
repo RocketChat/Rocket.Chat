@@ -3,7 +3,7 @@ import { IServiceContext } from '../../../../../server/sdk/types/ServiceClass';
 
 const status = 'online';
 
-export async function newConnection(uid: string, session: object, context?: IServiceContext): Promise<any> {
+export async function newConnection(uid: string, session: string, context?: IServiceContext): Promise<{uid: string; connectionId: string} | undefined> {
 	const instanceId = context?.nodeID;
 
 	if (!instanceId) {
