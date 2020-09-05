@@ -41,6 +41,7 @@
 		// "experimentalDecorators": true,
 	},
 	"exclude": [
-		"./dist"
+		"./dist",
+		"./ecosystem.config.js"
 	]
 }
