@@ -1,19 +1,25 @@
 module.exports = {
 	apps: [{
 		name: 'Authorization',
-		script: 'ts-node Authorization/Authorization.ts',
+		script: 'ts-node Authorization/service.ts',
 		watch: true,
 		instances: 1,
 		// interpreter: '',
 	}, {
 		name: 'Presence',
-		script: 'ts-node Presence/Presence.ts',
+		script: 'ts-node Presence/service.ts',
 		watch: true,
 		instances: 1,
 		// interpreter: '',
 	}, {
 		name: 'Account',
-		script: 'ts-node Account/Account.ts',
+		script: 'ts-node Account/service.ts',
+		watch: true,
+		instances: 1,
+		// interpreter: '',
+	}, {
+		name: 'StreamHub',
+		script: 'ts-node StreamHub/service.ts',
 		watch: true,
 		instances: 1,
 		// interpreter: '',
