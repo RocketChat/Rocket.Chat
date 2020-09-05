@@ -3,7 +3,13 @@ module.exports = {
 		name: 'Authorization',
 		script: 'ts-node Authorization/Authorization.ts',
 		watch: true,
-		instances: 2,
+		instances: 1,
+		// interpreter: '',
+	}, {
+		name: 'Presence',
+		script: 'ts-node Presence/Presence.ts',
+		watch: true,
+		instances: 1,
 		// interpreter: '',
 	}],
 };
