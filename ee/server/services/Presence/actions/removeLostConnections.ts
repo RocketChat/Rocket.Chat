@@ -8,7 +8,8 @@ async function getAffectedUsers(model: Collection, query: object): Promise<strin
 	return list.map(({ _id }) => _id);
 }
 
-export async function removeLostConnections(nodeID: string, context?: IServiceContext): Promise<string[]> {
+// TODO: Change this to use find and modify
+export async function removeLostConnections(nodeID?: string, context?: IServiceContext): Promise<string[]> {
 	const UserSession = await getCollection(Collections.UserSession);
 
 	if (nodeID) {

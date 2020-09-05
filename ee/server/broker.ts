@@ -1,10 +1,22 @@
-import { ServiceBroker, Context } from 'moleculer';
+import { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { asyncLocalStorage } from '../../server/sdk';
 import { api } from '../../server/sdk/api';
 import { IBroker, IBrokerNode } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 // import { onLicense } from '../app/license/server';
+
+const events: {[k: string]: string} = {
+	onNodeConnected: '$node.connected',
+	onNodeUpdated: '$node.updated',
+	onNodeDisconnected: '$node.disconnected',
+};
+
+const lifecycle: {[k: string]: string} = {
+	created: 'created',
+	started: 'started',
+	stopped: 'stopped',
+};
 
 class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
@@ -20,17 +32,33 @@ class NetworkBroker implements IBroker {
 	createService(instance: ServiceClass): void {
 		const name = instance.getName();
 
-		const service = {
+		const service: ServiceSchema = {
 			name,
-			actions: {} as any,
+			actions: {},
+			events: {},
 		};
+
+		if (!service.events || !service.actions) {
+			return;
+		}
 
 		const methods = instance.constructor?.name === 'Object' ? Object.getOwnPropertyNames(instance) : Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
 		for (const method of methods) {
 			if (method === 'constructor') {
 				continue;
 			}
+
 			const i = instance as any;
+
+			if (method.match(/^on[A-Z]/)) {
+				service.events[events[method]] = i[method].bind(i);
+				continue;
+			}
+
+			if (lifecycle[method]) {
+				service[method] = i[method].bind(i);
+				continue;
+			}
 
 			service.actions[method] = async (ctx: Context<[]>): Promise<any> => asyncLocalStorage.run({
 				id: ctx.id,

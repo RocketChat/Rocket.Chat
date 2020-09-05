@@ -1,5 +1,5 @@
 import { asyncLocalStorage } from '..';
-import { IBroker } from './IBroker';
+import { IBroker, IBrokerNode } from './IBroker';
 
 export interface IServiceContext {
 	id: string; // Context ID
@@ -20,7 +20,18 @@ export interface IServiceContext {
 	// span: Span; // Current active span.
 }
 
-export abstract class ServiceClass {
+export interface IServiceClass {
+	getName(): string;
+	onNodeConnected?({ node, reconnected }: {node: IBrokerNode; reconnected: boolean}): void;
+	onNodeUpdated?({ node }: {node: IBrokerNode }): void;
+	onNodeDisconnected?({ node, unexpected }: {node: IBrokerNode; unexpected: boolean}): Promise<void>;
+
+	created?(): Promise<void>;
+	started?(): Promise<void>;
+	stopped?(): Promise<void>;
+}
+
+export abstract class ServiceClass implements IServiceClass {
 	protected name: string;
 
 	getName(): string {
