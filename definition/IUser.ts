@@ -1,3 +1,5 @@
+import { USER_STATUS } from './UserStatus';
+
 export interface ILoginToken {
 	hashedToken: string;
 	twoFactorAuthorizedUntil?: Date;
@@ -89,7 +91,7 @@ export interface IUser {
 	avatarOrigin?: string;
 	utcOffset?: number;
 	language?: string;
-	statusDefault?: string;
+	statusDefault?: USER_STATUS;
 	oauth?: {
 		authorizedClients: string[];
 	};
