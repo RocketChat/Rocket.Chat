@@ -11,5 +11,11 @@ module.exports = {
 		watch: true,
 		instances: 1,
 		// interpreter: '',
+	}, {
+		name: 'Account',
+		script: 'ts-node Account/Account.ts',
+		watch: true,
+		instances: 1,
+		// interpreter: '',
 	}],
 };

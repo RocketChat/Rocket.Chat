@@ -29,7 +29,7 @@ export interface IUserEmailCode {
 	expire: Date;
 }
 
-type LoginToken = ILoginToken & IPersonalAccessToken;
+type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
 
 export interface IUserServices {
 	password?: {
