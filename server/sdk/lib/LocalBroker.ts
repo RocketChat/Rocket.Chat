@@ -1,4 +1,4 @@
-import { IBroker } from '../types/IBroker';
+import { IBroker, IBrokerNode } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
 import { asyncLocalStorage } from '..';
 
@@ -28,5 +28,9 @@ export class LocalBroker implements IBroker {
 
 			this.methods.set(`${ namespace }.${ method }`, i[method].bind(i));
 		}
+	}
+
+	async nodeList(): Promise<IBrokerNode[]> {
+		return [];
 	}
 }

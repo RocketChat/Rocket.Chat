@@ -2,7 +2,7 @@ import { ServiceBroker, Context } from 'moleculer';
 
 import { asyncLocalStorage } from '../../server/sdk';
 import { api } from '../../server/sdk/api';
-import { IBroker } from '../../server/sdk/types/IBroker';
+import { IBroker, IBrokerNode } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 // import { onLicense } from '../app/license/server';
 
@@ -41,6 +41,10 @@ class NetworkBroker implements IBroker {
 		}
 
 		this.broker.createService(service);
+	}
+
+	async nodeList(): Promise<IBrokerNode[]> {
+		return this.broker.call('$node.list');
 	}
 }
 
