@@ -69,6 +69,7 @@
 		"@types/mock-require": "^2.0.0",
 		"@types/moment-timezone": "^0.5.30",
 		"@types/mongodb": "^3.5.26",
+		"@types/node": "^14.6.4",
 		"@types/react-dom": "^16.9.8",
 		"@types/toastr": "^2.1.38",
 		"@typescript-eslint/eslint-plugin": "^2.34.0",

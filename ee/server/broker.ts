@@ -1,5 +1,6 @@
-import { ServiceBroker } from 'moleculer';
+import { ServiceBroker, Context } from 'moleculer';
 
+import { asyncLocalStorage } from '../../server/sdk';
 import { api } from '../../server/sdk/api';
 import { IBroker } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
@@ -31,7 +32,12 @@ class NetworkBroker implements IBroker {
 			}
 			const i = instance as any;
 
-			service.actions[method] = (ctx: any): any => i[method](...ctx.params);
+			service.actions[method] = async (ctx: Context<[]>): Promise<any> => asyncLocalStorage.run({
+				id: ctx.id,
+				nodeID: ctx.nodeID,
+				requestID: ctx.requestID,
+				broker: this,
+			}, (): any => i[method](...ctx.params));
 		}
 
 		this.broker.createService(service);

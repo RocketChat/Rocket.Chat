@@ -1,11 +1,18 @@
 import { IBroker } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
+import { asyncLocalStorage } from '..';
 
 export class LocalBroker implements IBroker {
 	private methods = new Map<string, Function>();
 
 	async call(method: string, data: any): Promise<any> {
-		const result = this.methods.get(method)?.(...data);
+		const result = await asyncLocalStorage.run({
+			id: 'ctx.id',
+			nodeID: 'ctx.nodeID',
+			requestID: 'ctx.requestID',
+			broker: this,
+		}, (): any => this.methods.get(method)?.(...data));
+
 		return result;
 	}
 
