@@ -71,6 +71,10 @@ class NetworkBroker implements IBroker {
 		this.broker.createService(service);
 	}
 
+	async broadcast<D>(eventName: string, data: D): Promise<void> {
+		return this.broker.broadcast(eventName, data);
+	}
+
 	async nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.call('$node.list');
 	}

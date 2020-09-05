@@ -25,4 +25,8 @@ export class Api {
 	async call(method: string, data: any): Promise<any> {
 		return this.broker.call(method, data);
 	}
+
+	async broadcast<D>(eventName: string, data: D): Promise<void> {
+		return this.broker.broadcast(eventName, data);
+	}
 }

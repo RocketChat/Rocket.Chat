@@ -16,8 +16,10 @@
   "author": "Rocket.Chat",
   "license": "MIT",
   "dependencies": {
-    "mongodb": "^3.6.1",
+    "@types/msgpack5": "^3.4.1",
     "bcrypt": "^4.0.1",
+    "mongodb": "^3.6.1",
+    "msgpack5": "^4.2.1",
     "uuid": "^7.0.3"
   },
   "devDependencies": {

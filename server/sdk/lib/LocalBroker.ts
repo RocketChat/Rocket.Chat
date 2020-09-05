@@ -30,6 +30,12 @@ export class LocalBroker implements IBroker {
 		}
 	}
 
+	async broadcast<D>(eventName: string, data: D): Promise<void> {
+		// TODO:
+		console.log('broadcast implementation missing', eventName, data);
+		// return this.broker.broadcast(eventName, data);
+	}
+
 	async nodeList(): Promise<IBrokerNode[]> {
 		return [];
 	}

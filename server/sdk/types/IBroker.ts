@@ -22,5 +22,6 @@ export interface IBrokerNode {
 export interface IBroker {
 	createService(service: ServiceClass): void;
 	call(method: string, data: any): Promise<any>;
+	broadcast<D>(eventName: string, data: D): Promise<void>;
 	nodeList(): Promise<IBrokerNode[]>;
 }

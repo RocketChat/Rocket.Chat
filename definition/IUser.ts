@@ -92,6 +92,7 @@ export interface IUser {
 	utcOffset?: number;
 	language?: string;
 	statusDefault?: USER_STATUS;
+	statusText?: string;
 	oauth?: {
 		authorizedClients: string[];
 	};
