@@ -53,7 +53,7 @@ class NetworkBroker implements IBroker {
 		logger: {
 			type: 'Console',
 			options: {
-				formatter: 'short', // or `null`
+				formatter: 'short',
 			},
 		},
 		registry: {
