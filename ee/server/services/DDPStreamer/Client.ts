@@ -9,13 +9,13 @@ import { server, SERVER_ID } from './Server';
 import { IPacket } from './types/IPacket';
 
 export class Client extends EventEmitter {
-	protected kind = 'default';
-
 	private timeout: NodeJS.Timeout;
 
 	private chain = Promise.resolve();
 
-	public session = uuidv1();
+	public kind = 'default';
+
+	public readonly session = uuidv1();
 
 	public subscriptions = new Map();
 
@@ -150,7 +150,7 @@ export class Client extends EventEmitter {
 }
 
 export class MeteorClient extends Client {
-	kind = 'meteor';
+	public kind = 'meteor';
 
 	// TODO implement meteor errors
 	// a["{\"msg\":\"result\",\"id\":\"12\",\"error\":{\"isClientSafe\":true,\"error\":403,\"reason\":\"User has no password set\",\"message\":\"User has no password set [403]\",\"errorType\":\"Meteor.Error\"}}"]

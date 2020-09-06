@@ -15,7 +15,7 @@ const broadcastData = (message: string): Buffer[] => {
 };
 
 export const sendBroadcast = async (subscriptions: Set<ISubscription>, message: string): Promise<void> => {
-	const frames = {
+	const frames: {[k: string]: Buffer[]} = {
 		default: broadcastData(message),
 		meteor: broadcastData(`a${ JSON.stringify([message]) }`),
 	};
