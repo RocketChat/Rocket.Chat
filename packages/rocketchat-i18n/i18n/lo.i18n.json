@@ -29,7 +29,7 @@
   "Access_not_authorized": "ການເຂົ້າເຖິງບໍ່ໄດ້ຮັບອະນຸຍາດ",
   "Access_Token_URL": "ເຂົ້າເຖິງ Token URL",
   "Accessing_permissions": "ການເຂົ້າເຖິງສິດອະນຸຍາດ",
-  "Account_SID": "SID ບັນຊີ",
+  "Account_SID": "ບັນຊີ SID",
   "Accounts": "ບັນຊີ",
   "Accounts_Admin_Email_Approval_Needed_Default": "<p>ຜູ້ໃຊ້ <b>[ຊື່] ([ອີເມວ])</b>ຖືກລົງທະບຽນ.</p><p>ກະລຸນາກວດເບິ່ງ \"Administration-LH_HTML_END> ຜູ້ໃຊ້\" ເພື່ອເປີດໃຊ້ຫຼືລຶບມັນ.</p>",
   "Accounts_Admin_Email_Approval_Needed_Subject_Default": "ຜູ້ໃຊ້ໃຫມ່ໄດ້ລົງທະບຽນແລະຕ້ອງການການອະນຸມັດ",
