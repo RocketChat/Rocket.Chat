@@ -251,7 +251,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									{t('Integration_Run_When_Message_Is_Edited')}
 									<ToggleSwitch checked={runOnEdits} onChange={handleRunOnEdits} />
 								</Field.Label>
-								<Field.Hint>{t('Integration_Run_When_Message_Is_Edited_Description')}</Field.Hint>
+								<Field.Hint dangerouslySetInnerHTML={{ __html: t('Integration_Run_When_Message_Is_Edited_Description') }}/>
 							</Field>
 						</FieldGroup>, [event, t, triggerWordAnywhere, handleTriggerWordAnywhere, runOnEdits, handleRunOnEdits])}
 					</FieldGroup>
