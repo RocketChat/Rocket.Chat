@@ -76,7 +76,7 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			if (roomTypes.readOnly(room._id, user._id)) {
+			if (roomTypes.readOnly(room._id, user._id) && !room.reactWhenReadOnly) {
 				return false;
 			}
 

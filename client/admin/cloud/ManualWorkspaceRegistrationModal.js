@@ -1,8 +1,7 @@
-import { Box, Button, ButtonGroup, Icon, Scrollable, Throbber } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Icon, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
 import Clipboard from 'clipboard';
 import React, { useEffect, useState, useRef } from 'react';
 
-import { Modal } from '../../components/basic/Modal';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -24,7 +23,7 @@ function CopyStep({ onNextButtonClick }) {
 		};
 
 		loadWorkspaceRegisterData();
-	}, []);
+	}, [getWorkspaceRegisterData]);
 
 	const copyRef = useRef();
 
@@ -37,7 +36,7 @@ function CopyStep({ onNextButtonClick }) {
 		return () => {
 			clipboard.destroy();
 		};
-	}, []);
+	}, [dispatchToastMessage, t]);
 
 	return <>
 		<Modal.Content>
@@ -67,11 +66,7 @@ function CopyStep({ onNextButtonClick }) {
 					<Icon name='copy' /> {t('Copy')}
 				</Button>
 			</Box>
-			<Box withRichContent>
-				<p>
-					<MarkdownText>{t('Cloud_click_here', { cloudConsoleUrl })}</MarkdownText>
-				</p>
-			</Box>
+			<MarkdownText is='p' preserveHtml={true} withRichContent content={t('Cloud_click_here', { cloudConsoleUrl })} />
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup>

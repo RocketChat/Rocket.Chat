@@ -27,6 +27,7 @@ export function AddUser({ roles, ...props }) {
 		username: '',
 		statusText: '',
 		bio: '',
+		nickname: '',
 		email: '',
 		password: '',
 		verified: false,
@@ -37,11 +38,12 @@ export function AddUser({ roles, ...props }) {
 		customFields: {},
 	});
 
-	const goToUser = (id) => router.push({
+	const goToUser = useCallback((id) => router.push({
 		context: 'info',
 		id,
-	});
+	}), [router]);
 
+	// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
 	const saveQuery = useMemo(() => values, [JSON.stringify(values)]);
 
 	const saveAction = useEndpointAction('POST', 'users.create', saveQuery, t('User_created_successfully'));
@@ -51,9 +53,9 @@ export function AddUser({ roles, ...props }) {
 		if (result.success) {
 			goToUser(result.user._id);
 		}
-	}, [saveAction]);
+	}, [goToUser, saveAction]);
 
-	const availableRoles = useMemo(() => (roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : []), [JSON.stringify(roleData)]);
+	const availableRoles = useMemo(() => (roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : []), [roleData]);
 
 	const append = useMemo(() => <Field>
 		<Field.Row>
@@ -62,7 +64,7 @@ export function AddUser({ roles, ...props }) {
 				<Button flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
 			</Box>
 		</Field.Row>
-	</Field>, [reset, handleSave]);
+	</Field>, [hasUnsavedChanges, reset, t, handleSave]);
 
 	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props}/>;
 }

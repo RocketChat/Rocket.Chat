@@ -19,15 +19,15 @@ export function AddCustomSound({ goToNew, close, onChange, ...props }) {
 
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
-	const handleChangeFile = (soundFile) => {
+	const handleChangeFile = useCallback((soundFile) => {
 		setSound(soundFile);
-	};
+	}, []);
 
-	const clickUpload = useFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
-	const saveAction = async (name, soundFile) => {
+	const saveAction = useCallback(async (name, soundFile) => {
 		const soundData = createSoundData(soundFile, name);
-		const validation = validate(soundData, sound);
+		const validation = validate(soundData, soundFile);
 		if (validation.length === 0) {
 			let soundId;
 			try {
@@ -56,7 +56,7 @@ export function AddCustomSound({ goToNew, close, onChange, ...props }) {
 			return soundId;
 		}
 		validation.forEach((error) => { throw new Error({ type: 'error', message: t('error-the-field-is-required', { field: t(error) }) }); });
-	};
+	}, [dispatchToastMessage, insertOrUpdateSound, t, uploadCustomSound]);
 
 	const handleSave = useCallback(async () => {
 		try {
@@ -70,7 +70,7 @@ export function AddCustomSound({ goToNew, close, onChange, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [name, sound]);
+	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 
 	return <VerticalBar.ScrollableContent {...props}>
 		<Field>

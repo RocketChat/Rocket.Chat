@@ -1,30 +1,8 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 
-import { renderRouteComponent } from '../reactAdapters';
+import { createRouteGroup } from '../helpers/createRouteGroup';
 
-const routeGroup = FlowRouter.group({
-	name: 'admin',
-	prefix: '/admin',
-});
-
-export const registerAdminRoute = (path, { lazyRouteComponent, props, action, ...options } = {}) => {
-	routeGroup.route(path, {
-		...options,
-		action: (params, queryParams) => {
-			if (action) {
-				action(params, queryParams);
-				return;
-			}
-
-			renderRouteComponent(() => import('./AdministrationRouter'), {
-				template: 'main',
-				region: 'center',
-				propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams, ...props }),
-			});
-		},
-	});
-};
+export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
 
 registerAdminRoute('/', {
 	triggersEnter: [(context, redirect) => {
@@ -37,6 +15,20 @@ registerAdminRoute('/custom-sounds/:context?/:id?', {
 	lazyRouteComponent: () => import('./customSounds/AdminSoundsRoute'),
 });
 
+registerAdminRoute('/apps/what-is-it', {
+	name: 'admin-apps-disabled',
+	lazyRouteComponent: () => import('./apps/AppsWhatIsIt'),
+});
+
+registerAdminRoute('/marketplace/:context?/:id?/:version?', {
+	name: 'admin-marketplace',
+	lazyRouteComponent: () => import('./apps/AppsRoute'),
+});
+
+registerAdminRoute('/apps/:context?/:id?/:version?', {
+	name: 'admin-apps',
+	lazyRouteComponent: () => import('./apps/AppsRoute'),
+});
 
 registerAdminRoute('/info', {
 	name: 'admin-info',
@@ -115,6 +107,11 @@ registerAdminRoute('/cloud/:page?', {
 registerAdminRoute('/view-logs', {
 	name: 'admin-view-logs',
 	lazyRouteComponent: () => import('./viewLogs/ViewLogsRoute'),
+});
+
+registerAdminRoute('/federation-dashboard', {
+	name: 'federation-dashboard',
+	lazyRouteComponent: () => import('./federationDashboard/FederationDashboardRoute'),
 });
 
 Meteor.startup(() => {

@@ -1,5 +1,6 @@
 import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
+import { Random } from 'meteor/random';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -20,16 +21,17 @@ const mountRoot = async () => {
 	}
 
 	const [
-		{ Component, Suspense, createElement, lazy, useLayoutEffect, useState },
+		{ PureComponent, Suspense, createElement, lazy, useLayoutEffect, useState },
 		{ render },
 	] = await Promise.all([
 		import('react'),
 		import('react-dom'),
+		import('@rocket.chat/fuselage-hooks'),
 	]);
 
 	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
 
-	class PortalWrapper extends Component {
+	class PortalWrapper extends PureComponent {
 		state = { errored: false }
 
 		static getDerivedStateFromError = () => ({ errored: true })
@@ -55,7 +57,7 @@ const mountRoot = async () => {
 
 		return createElement(Suspense, { fallback: null },
 			createElement(LazyMeteorProvider, {},
-				...portals.map((portal, key) => createElement(PortalWrapper, { key, portal })),
+				portals.map(({ key, portal }) => createElement(PortalWrapper, { key, portal })),
 			),
 		);
 	}
@@ -63,34 +65,36 @@ const mountRoot = async () => {
 	render(createElement(AppRoot), rootNode);
 };
 
+const unregisterPortal = (key) => {
+	portalsMap.delete(key);
+	invalidatePortals();
+};
+
 export const registerPortal = (key, portal) => {
 	if (!rootNode) {
 		mountRoot();
 	}
 
-	portalsMap.set(key, portal);
+	portalsMap.set(key, { portal, key: Random.id() });
 	invalidatePortals();
+	return () => unregisterPortal(key);
 };
 
-export const unregisterPortal = (key) => {
-	portalsMap.delete(key);
-	invalidatePortals();
-};
 
 const createLazyElement = async (importFn, propsFn) => {
-	const { createElement, lazy, useEffect, useState } = await import('react');
+	const { createElement, lazy, useEffect, useState, memo, Suspense } = await import('react');
 	const LazyComponent = lazy(importFn);
 
 	if (!propsFn) {
 		return createElement(LazyComponent);
 	}
 
-	const WrappedComponent = () => {
+	const WrappedComponent = memo(() => {
 		const [props, setProps] = useState(() => Tracker.nonreactive(propsFn));
 
 		useEffect(() => {
 			const computation = Tracker.autorun(() => {
-				setProps(propsFn);
+				setProps(propsFn());
 			});
 
 			return () => {
@@ -98,8 +102,8 @@ const createLazyElement = async (importFn, propsFn) => {
 			};
 		}, []);
 
-		return createElement(LazyComponent, props);
-	};
+		return createElement(Suspense, { fallback: null }, createElement(LazyComponent, props));
+	});
 
 	return createElement(WrappedComponent);
 };
@@ -107,6 +111,11 @@ const createLazyElement = async (importFn, propsFn) => {
 const createLazyPortal = async (importFn, propsFn, node) => {
 	const { createPortal } = await import('react-dom');
 	return createPortal(await createLazyElement(importFn, propsFn), node);
+};
+
+export const createEphemeralPortal = async (importFn, propsFn, node) => {
+	const portal = await createLazyPortal(importFn, propsFn, node);
+	return registerPortal(node, portal);
 };
 
 export const createTemplateForComponent = (
@@ -121,7 +130,7 @@ export const createTemplateForComponent = (
 	}
 
 	const template = new Blaze.Template(name, renderContainerView);
-
+	let unregister;
 	template.onRendered(async function() {
 		const props = new ReactiveVar(this.data);
 		this.autorun(() => {
@@ -134,11 +143,11 @@ export const createTemplateForComponent = (
 			return;
 		}
 
-		registerPortal(this, portal);
+		unregister = await registerPortal(this, portal);
 	});
 
 	template.onDestroyed(function() {
-		unregisterPortal(this);
+		unregister && unregister();
 	});
 
 	Template[name] = template;
@@ -206,6 +215,8 @@ export const renderRouteComponent = (importFn, {
 			Template[routeName] = blazeTemplate;
 		}
 
-		BlazeLayout.render(template, { [region]: routeName });
+		Tracker.afterFlush(() => {
+			BlazeLayout.render(template, { [region]: routeName });
+		});
 	});
 };

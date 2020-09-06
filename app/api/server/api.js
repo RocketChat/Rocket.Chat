@@ -25,11 +25,31 @@ let prometheusAPIUserAgent = false;
 
 export let API = {};
 
-const getRequestIP = (req) =>
-	req.headers['x-forwarded-for']
-	|| (req.connection && req.connection.remoteAddress)
-	|| (req.socket && req.socket.remoteAddress)
-	|| (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
+const getRequestIP = (req) => {
+	const socket = req.socket || req.connection?.socket;
+	const remoteAddress = req.headers['x-real-ip'] || socket?.remoteAddress || req.connection?.remoteAddress || null;
+	let forwardedFor = req.headers['x-forwarded-for'];
+
+	if (!socket) {
+		return remoteAddress || forwardedFor || null;
+	}
+
+	const httpForwardedCount = parseInt(process.env.HTTP_FORWARDED_COUNT) || 0;
+	if (httpForwardedCount <= 0) {
+		return remoteAddress;
+	}
+
+	if (!_.isString(forwardedFor)) {
+		return remoteAddress;
+	}
+
+	forwardedFor = forwardedFor.trim().split(/\s*,\s*/);
+	if (httpForwardedCount > forwardedFor.length) {
+		return remoteAddress;
+	}
+
+	return forwardedFor[forwardedFor.length - httpForwardedCount];
+};
 
 export class APIClass extends Restivus {
 	constructor(properties) {
@@ -311,8 +331,14 @@ export class APIClass extends Restivus {
 		routes.forEach((route) => {
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			Object.keys(endpoints).forEach((method) => {
+				const _options = { ...options };
+
 				if (typeof endpoints[method] === 'function') {
 					endpoints[method] = { action: endpoints[method] };
+				} else {
+					const extraOptions = { ...endpoints[method] };
+					delete extraOptions.action;
+					Object.assign(_options, extraOptions);
 				}
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
@@ -344,9 +370,9 @@ export class APIClass extends Restivus {
 					try {
 						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
-						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, options.permissionsRequired))) {
+						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, _options.permissionsRequired))) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
-								permissions: options.permissionsRequired,
+								permissions: _options.permissionsRequired,
 							});
 						}
 
@@ -361,8 +387,8 @@ export class APIClass extends Restivus {
 						};
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
-						if (options.twoFactorRequired) {
-							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: options.twoFactorOptions, connection });
+						if (_options.twoFactorRequired) {
+							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
 						}
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
@@ -462,6 +488,8 @@ export class APIClass extends Restivus {
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
 						close() {},
+						httpHeaders: this.request.headers,
+						clientAddress: getRequestIP(this.request),
 					},
 				});
 
@@ -616,7 +644,7 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 			this.response.writeHead(200, {
 				'Access-Control-Allow-Origin': settings.get('API_CORS_Origin'),
 				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token',
+				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
 			});
 		} else {
 			this.response.writeHead(405);

@@ -12,21 +12,15 @@ export function UsersTab() {
 		<Divider />
 		<ActiveUsersSection />
 		<Divider />
-		<Flex.Container>
+		<Box display='flex' mi='x12'>
 			<Margins inline='x12'>
-				<Box>
-					<Margins inline='x12'>
-						<Flex.Item grow={1} shrink={0} basis='0'>
-							<UsersByTimeOfTheDaySection />
-						</Flex.Item>
-						<Flex.Item grow={1} shrink={0} basis='0'>
-							<Box>
-								<BusiestChatTimesSection />
-							</Box>
-						</Flex.Item>
-					</Margins>
+				<Flex.Item grow={1} shrink={0} basis='0'>
+					<UsersByTimeOfTheDaySection />
+				</Flex.Item>
+				<Box flexGrow={1} flexShrink={0} flexBasis='0'>
+					<BusiestChatTimesSection />
 				</Box>
 			</Margins>
-		</Flex.Container>
+		</Box>
 	</>;
 }

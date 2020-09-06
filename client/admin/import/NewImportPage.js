@@ -49,7 +49,7 @@ function NewImportPage() {
 		if (importerKey && !importer) {
 			newImportRoute.replace();
 		}
-	}, [importerKey, !importer]);
+	}, [importer, importerKey, newImportRoute]);
 
 	const formatMemorySize = useFormatMemorySize();
 

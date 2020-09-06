@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
-import { updateAvatarOfUsername } from '../../app/ui-utils';
 import { Notifications } from '../../app/notifications';
 
 Meteor.startup(function() {
 	Notifications.onLogged('updateAvatar', function(data) {
-		updateAvatarOfUsername(data.username);
+		const { username, etag } = data;
+		username && Meteor.users.update({ username }, { $set: { avatarETag: etag } });
 	});
 });

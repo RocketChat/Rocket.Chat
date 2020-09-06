@@ -1,7 +1,13 @@
 import { withKnobs } from '@storybook/addon-knobs';
-import { addDecorator } from '@storybook/react';
+import { addDecorator, addParameters } from '@storybook/react';
 
-import { rocketChatDecorator } from './mocks/decorators';
+import { rocketChatDecorator } from './decorators';
 
 addDecorator(rocketChatDecorator);
 addDecorator(withKnobs);
+
+addParameters({
+	options: {
+		showRoots: true,
+	},
+});

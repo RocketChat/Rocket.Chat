@@ -72,6 +72,37 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 		total,
 	};
 }
+export async function searchChats({ userId, roomId, visitorId, searchText, closedChatsOnly, servedChatsOnly: served, pagination: { offset, count, sort } }) {
+	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+	const room = await LivechatRooms.findOneById(roomId);
+	if (!room) {
+		throw new Error('invalid-room');
+	}
+
+	if (!await canAccessRoomAsync(room, { _id: userId })) {
+		throw new Error('error-not-allowed');
+	}
+
+	const options = {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+	};
+
+	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, open: !closedChatsOnly, served, searchText, onlyCount: true }).toArray();
+	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, open: !closedChatsOnly, served, searchText, options });
+
+	const history = await cursor.toArray();
+
+	return {
+		history,
+		count: history.length,
+		offset,
+		total: (total && total.count) || 0,
+	};
+}
 
 export async function findVisitorsToAutocomplete({ userId, selector }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
@@ -94,5 +125,36 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	const items = await LivechatVisitors.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
 	return {
 		items,
+	};
+}
+
+export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term, pagination: { offset, count, sort } }) {
+	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+
+	const cursor = LivechatVisitors.findVisitorsByEmailOrPhoneOrNameOrUsername(term, {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+		fields: {
+			_id: 1,
+			username: 1,
+			name: 1,
+			phone: 1,
+			livechatData: 1,
+			visitorEmails: 1,
+		},
+	});
+
+	const total = await cursor.count();
+
+	const visitors = await cursor.toArray();
+
+	return {
+		visitors,
+		count: visitors.length,
+		offset,
+		total,
 	};
 }

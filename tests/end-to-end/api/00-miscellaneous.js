@@ -126,6 +126,7 @@ describe('miscellaneous', function() {
 					'mobileNotifications',
 					'enableAutoAway',
 					// 'highlights',
+					'showMessageInMainThread',
 					'desktopNotificationRequireInteraction',
 					'messageViewMode',
 					'hideUsernames',
@@ -188,7 +189,7 @@ describe('miscellaneous', function() {
 					done();
 				});
 		});
-		it('should return an array(result) when search by user and execute succesfully', (done) => {
+		it('should return an array(result) when search by user and execute successfully', (done) => {
 			request.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -213,7 +214,54 @@ describe('miscellaneous', function() {
 				})
 				.end(done);
 		});
-		it('should return an array(result) when search by channel and execute succesfully', (done) => {
+
+		let normalUser;
+		before((done) => {
+			request.post(api('login'))
+				.send({
+					username: user.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'success');
+					expect(res.body).to.have.property('data').and.to.be.an('object');
+					expect(res.body.data).to.have.property('userId');
+					expect(res.body.data).to.have.property('authToken');
+					normalUser = res.body.data;
+				})
+				.end(done);
+		});
+		it('should not return the emails field for non admins', (done) => {
+			request.get(api('directory'))
+				.set({
+					'X-Auth-Token': normalUser.authToken,
+					'X-User-Id': normalUser.userId,
+				})
+				.query({
+					query: JSON.stringify({
+						text: user.username,
+						type: 'users',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('result').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body.result[0]).to.have.property('_id');
+					expect(res.body.result[0]).to.have.property('createdAt');
+					expect(res.body.result[0]).to.have.property('username');
+					expect(res.body.result[0]).to.not.have.property('emails');
+					expect(res.body.result[0]).to.have.property('name');
+				})
+				.end(done);
+		});
+		it('should return an array(result) when search by channel and execute successfully', (done) => {
 			request.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -237,7 +285,7 @@ describe('miscellaneous', function() {
 				})
 				.end(done);
 		});
-		it('should return an array(result) when search by channel with sort params correctly and execute succesfully', (done) => {
+		it('should return an array(result) when search by channel with sort params correctly and execute successfully', (done) => {
 			request.get(api('directory'))
 				.set(credentials)
 				.query({

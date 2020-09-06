@@ -36,12 +36,17 @@ API.v1.addRoute('livechat/video.call/:token', {
 			Messages.createWithTypeRoomIdMessageAndUser('livechat_video_call', room._id, '', guest, {
 				actionLinks: config.theme.actionLinks,
 			});
-
+			let rname;
+			if (rcSettings.get('Jitsi_URL_Room_Hash')) {
+				rname = rcSettings.get('uniqueID') + rid;
+			} else {
+				rname = encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+			}
 			const videoCall = {
 				rid,
 				domain: rcSettings.get('Jitsi_Domain'),
 				provider: 'jitsi',
-				room: rcSettings.get('Jitsi_URL_Room_Prefix') + rcSettings.get('uniqueID') + rid,
+				room: rcSettings.get('Jitsi_URL_Room_Prefix') + rname + rcSettings.get('Jitsi_URL_Room_Suffix'),
 				timeout: new Date(Date.now() + 3600 * 1000),
 			};
 

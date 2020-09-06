@@ -4,38 +4,40 @@
 
 .message-actions {
 	position: absolute;
-	top: 2px;
+	z-index: 2;
+	top: -18px;
 	right: 0.4rem;
 
 	display: none;
+
+	box-sizing: border-box;
+
+	padding: 2px;
 
 	user-select: none;
 
 	color: var(--color-darkest);
 
-	font-size: 1rem;
+	border: 2px solid #f2f3f7;
+	border-radius: 4px;
+
+	background: var(rcx-surface, #ffffff);
+
+	font-size: 1.25rem;
 
 	&__buttons {
 		display: flex;
 	}
 
-	&__button {
-		margin: 0 0.2rem;
-
-		font-size: inherit;
-
-		&:hover {
-			color: var(--rc-color-button-primary);
-		}
-	}
-
+	&__button,
 	&__menu {
-		padding: 2px 0;
+		padding: 2px;
 
 		cursor: pointer;
 
-		&:hover &-icon {
-			fill: var(--rc-color-button-primary);
+		&:hover {
+			border-radius: 2px;
+			background: #eeeff1;
 		}
 
 		&-icon {
@@ -53,6 +55,15 @@
 }
 
 .message {
+	&:hover,
+	&.active {
+		background-color: #f7f8fa;
+
+		& .message-actions {
+			display: flex;
+		}
+	}
+
 	& .toggle-hidden {
 		display: none;
 	}
@@ -85,6 +96,7 @@
 		& .message-oembed,
 		& .attachment,
 		& .message-discussion,
+		& .message-thread,
 		& .reactions,
 		& .edited,
 		& .role-tag {
@@ -199,19 +211,6 @@
 .rtl .message-actions {
 	right: auto;
 	left: 2px;
-}
-
-@media (width >= 500px) {
-	.message {
-		&:hover,
-		&.active {
-			background-color: rgba(15, 34, 0, 0.05);
-
-			& .message-actions {
-				display: flex;
-			}
-		}
-	}
 }
 
 .compact {

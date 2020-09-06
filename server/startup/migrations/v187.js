@@ -61,6 +61,13 @@ Migrations.add({
 		Settings.remove({ _id: 'Push_debug' });
 		Settings.remove({ _id: 'Notifications_Always_Notify_Mobile' });
 
-		Promise.await(migrateNotifications());
+		try {
+			Promise.await(migrateNotifications());
+		} catch (err) {
+			// Ignore if the collection does not exist
+			if (!err.code || err.code !== 26) {
+				throw err;
+			}
+		}
 	},
 });

@@ -11,12 +11,15 @@ export class Rooms extends Base {
 		super(...args);
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
-		this.tryEnsureIndex({ default: 1 });
-		this.tryEnsureIndex({ featured: 1 });
+		this.tryEnsureIndex({ default: 1 }, { sparse: true });
+		this.tryEnsureIndex({ featured: 1 }, { sparse: true });
+		this.tryEnsureIndex({ muted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ ts: 1 });
+		// Tokenpass
+		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ tokenpass: 1 }, { sparse: true });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
@@ -216,6 +219,31 @@ export class Rooms extends Base {
 		};
 		return this.update(query, update);
 	}
+
+	setAvatarData(_id, origin, etag) {
+		const update = {
+			$set: {
+				avatarOrigin: origin,
+				avatarETag: etag,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	unsetAvatarData(_id) {
+		const update = {
+			$set: {
+				avatarETag: Date.now(),
+			},
+			$unset: {
+				avatarOrigin: 1,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
 
 	setSystemMessagesById = function(_id, systemMessages) {
 		const query = {
@@ -976,6 +1004,18 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				'retention.excludePinned': value === true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveRetentionIgnoreThreadsById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			[value === true ? '$set' : '$unset']: {
+				'retention.ignoreThreads': true,
 			},
 		};
 

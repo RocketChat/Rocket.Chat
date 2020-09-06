@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Field, Box, Skeleton, Margins, Button } from '@rocket.chat/fuselage';
 
 import { SuccessModal, DeleteWarningModal } from './EditIntegrationsPage';
@@ -8,6 +8,7 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useSetModal } from '../../../contexts/ModalContext';
 import { useForm } from '../../../hooks/useForm';
 import IncomingWebhookForm from '../IncomingWebhookForm';
 
@@ -15,6 +16,7 @@ export default function EditIncomingWebhookWithData({ integrationId, ...props })
 	const t = useTranslation();
 	const [cache, setCache] = useState();
 
+	// TODO: remove cache. Is necessary for data validation
 	const { data, state, error } = useEndpointDataExperimental('integrations.get', useMemo(() => ({ integrationId }), [integrationId, cache]));
 
 	const onChange = () => setCache(new Date());
@@ -57,7 +59,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values: formValues, handlers: formHandlers, reset } = useForm(getInitialValue(data));
-	const [modal, setModal] = useState();
+	const setModal = useSetModal();
 
 	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [data._id]);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
@@ -65,7 +67,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 
 	const router = useRoute('admin-integrations');
 
-	const handleDeleteIntegration = () => {
+	const handleDeleteIntegration = useCallback(() => {
 		const closeModal = () => setModal();
 		const onDelete = async () => {
 			const result = await deleteIntegration();
@@ -73,9 +75,9 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 		};
 
 		setModal(<DeleteWarningModal onDelete={onDelete} onCancel={closeModal} />);
-	};
+	}, [deleteIntegration, router]);
 
-	const handleSave = async () => {
+	const handleSave = useCallback(async () => {
 		try {
 			await saveIntegration(data._id, { ...formValues });
 			dispatchToastMessage({ type: 'success', message: t('Integration_updated') });
@@ -83,7 +85,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
 		}
-	};
+	}, [data._id, dispatchToastMessage, formValues, onChange, saveIntegration, t]);
 
 	const actionButtons = useMemo(() => <Field>
 		<Field.Row display='flex' flexDirection='column'>
@@ -95,11 +97,8 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 			</Box>
 			<Button mbs='x4' primary danger w='full' onClick={handleDeleteIntegration} >{t('Delete')}</Button>
 		</Field.Row>
-	</Field>);
+	</Field>, [handleDeleteIntegration, handleSave, reset, t]);
 
 
-	return <>
-		<IncomingWebhookForm formHandlers={formHandlers} formValues={formValues} extraData={{ _id: data._id, token: data.token }} append={actionButtons} {...props}/>
-		{ modal }
-	</>;
+	return <IncomingWebhookForm formHandlers={formHandlers} formValues={formValues} extraData={{ _id: data._id, token: data.token }} append={actionButtons} {...props}/>;
 }
