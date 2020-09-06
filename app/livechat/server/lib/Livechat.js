@@ -29,7 +29,7 @@ import {
 	LivechatInquiry,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { addUserRoles, hasPermission, hasRole, removeUserFromRoles } from '../../../authorization';
+import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -428,6 +428,9 @@ export const Livechat = {
 		Settings.findNotHiddenPublic([
 			'Livechat_title',
 			'Livechat_title_color',
+			'Livechat_enable_message_character_limit',
+			'Livechat_message_character_limit',
+			'Message_MaxAllowedSize',
 			'Livechat_enabled',
 			'Livechat_registration_form',
 			'Livechat_allow_switching_departments',
@@ -448,10 +451,12 @@ export const Livechat = {
 			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
+			'Assets_livechat_guest_default_avatar',
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
+			'Livechat_skip_registration_form_DomainsList',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
@@ -836,7 +841,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartmentAgents' });
 		}
 
-		return updateDepartmentAgents(_id, departmentAgents);
+		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -880,7 +885,7 @@ export const Livechat = {
 
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
-			updateDepartmentAgents(departmentDB._id, departmentAgents);
+			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
 		}
 
 		return departmentDB;
@@ -1115,6 +1120,39 @@ export const Livechat = {
 		}
 
 		return Promise.await(businessHourManager.allowAgentChangeServiceStatus(agentId));
+	},
+
+	notifyRoomVisitorChange(roomId, visitor) {
+		Livechat.stream.emit(roomId, {
+			type: 'visitorData',
+			visitor,
+		});
+	},
+
+	changeRoomVisitor(userId, roomId, visitor) {
+		const user = Promise.await(Users.findOneById(userId));
+		if (!user) {
+			throw new Error('error-user-not-found');
+		}
+
+		if (!hasPermission(userId, 'change-livechat-room-visitor')) {
+			throw new Error('error-not-authorized');
+		}
+
+		const room = Promise.await(LivechatRooms.findOneById(roomId, { _id: 1, t: 1 }));
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		if (!canAccessRoom(room, user)) {
+			throw new Error('error-not-allowed');
+		}
+
+		LivechatRooms.changeVisitorByRoomId(room._id, visitor);
+
+		Livechat.notifyRoomVisitorChange(room._id, visitor);
+
+		return LivechatRooms.findOneById(roomId);
 	},
 };
 

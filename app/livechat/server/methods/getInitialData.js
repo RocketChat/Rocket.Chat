@@ -28,6 +28,7 @@ Meteor.methods({
 			conversationFinishedText: null,
 			nameFieldRegistrationForm: null,
 			emailFieldRegistrationForm: null,
+			guestDefaultAvatar: null,
 			registrationFormMessage: null,
 			showConnecting: false,
 		};
@@ -83,6 +84,7 @@ Meteor.methods({
 		info.conversationFinishedText = initSettings.Livechat_conversation_finished_text;
 		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
+		info.guestDefaultAvatar = initSettings.Assets_livechat_guest_default_avatar;
 		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
 		info.showConnecting = initSettings.Livechat_Show_Connecting;
 

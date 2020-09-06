@@ -123,5 +123,15 @@ Template.DefaultSearchResultTemplate.helpers({
 		msg.searchedText = text;
 		return { customClass: 'search', actionContext: 'search', ...msg, groupable: false };
 	},
-	messageContext,
+	messageContext() {
+		const result = messageContext.call(this, { rid: Session.get('openedRoom') });
+		return {
+			...result,
+			settings: {
+				...result.settings,
+				showReplyButton: false,
+				showreply: false,
+			},
+		};
+	},
 });

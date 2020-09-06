@@ -1,30 +1,8 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 
-import { renderRouteComponent } from '../reactAdapters';
+import { createRouteGroup } from '../helpers/createRouteGroup';
 
-const routeGroup = FlowRouter.group({
-	name: 'admin',
-	prefix: '/admin',
-});
-
-export const registerAdminRoute = (path, { lazyRouteComponent, props, action, ...options } = {}) => {
-	routeGroup.route(path, {
-		...options,
-		action: (params, queryParams) => {
-			if (action) {
-				action(params, queryParams);
-				return;
-			}
-
-			renderRouteComponent(() => import('./AdministrationRouter'), {
-				template: 'main',
-				region: 'center',
-				propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams, ...props }),
-			});
-		},
-	});
-};
+export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
 
 registerAdminRoute('/', {
 	triggersEnter: [(context, redirect) => {

@@ -41,6 +41,7 @@ export const KonchatNotification = {
 					body: s.stripTags(message.msg),
 					tag: notification.payload._id,
 					canReply: true,
+					silent: true,
 					requireInteraction,
 				});
 
