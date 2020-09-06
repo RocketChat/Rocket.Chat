@@ -18,8 +18,14 @@ const emojiParser = function(message) {
 		// &#39; to apostrophe (') for emojis such as :')
 		html = html.replace(/&#39;/g, '\'');
 
+		// replaces ’ to ' for emojis such as :') (for Marked Markdown Smartypants which replaces ' to ’)
+		html = html.replace(/’/g, '\'');
+
 		// '<br>' to ' <br> ' for emojis such at line breaks
 		html = html.replace(/<br>/g, ' <br> ');
+
+		// remove <p> & </p> tags that Marked Markdown has (and Original Markdown hasn't)
+		html = html.replace(/^<p>/, '').replace(/<\/p>$/, '');
 
 		html = Object.entries(emoji.packages).reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
 
