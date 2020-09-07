@@ -6,9 +6,16 @@ import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { IUser } from '../../../definition/IUser';
 import { canAccessRoom } from './canAccessRoom';
+import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
+import { SettingsRaw } from '../../../app/models/server/raw/Settings';
+import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
+
+export let Subscriptions: SubscriptionsRaw;
+export let Settings: SettingsRaw;
+export let Rooms: RoomsRaw;
 
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
@@ -18,14 +25,15 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private Users: Collection;
 
-	private Subscriptions: Collection;
-
 	constructor(db: Db) {
 		super();
 
 		this.Permissions = db.collection('rocketchat_permissions');
-		this.Subscriptions = db.collection('rocketchat_subscriptions');
 		this.Users = db.collection('users');
+
+		Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
+		Settings = new SettingsRaw(db.collection('rocketchat_settings'));
+		Rooms = new RoomsRaw(db.collection('rocketchat_room'));
 	}
 
 	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
@@ -67,7 +75,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private async getRoles(uid: string, scope?: string): Promise<string[]> {
 		const { roles: userRoles = [] } = await this.Users.findOne<IUser>({ _id: uid }, { projection: { roles: 1 } }) || {};
-		const { roles: subscriptionsRoles = [] } = (scope && await this.Subscriptions.findOne<{ roles: string[] }>({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
+		const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 	// , { maxAge: 1000, cacheKey: JSON.stringify });

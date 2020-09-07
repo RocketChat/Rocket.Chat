@@ -1,16 +1,16 @@
 
 import { Authorization } from '../../sdk';
 // TODO: change to MS instance
-import { getValue } from '../../../app/settings/server/raw';
-import { Subscriptions, Rooms } from '../../../app/models/server/raw';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
+import { Subscriptions, Rooms, Settings } from './service';
 
-export const roomAccessValidators: RoomAccessValidator[] = [
+const roomAccessValidators: RoomAccessValidator[] = [
 	async function(room, user): Promise<boolean> {
 		if (room.t === 'c') {
-			const anonymous = await getValue('Accounts_AllowAnonymousRead');
+			// TODO: it was using cached version from /app/settings/server/raw.js
+			const anonymous = await Settings.getValueById('Accounts_AllowAnonymousRead');
 			if (!user._id && anonymous === true) {
 				return true;
 			}
@@ -38,7 +38,7 @@ export const roomAccessValidators: RoomAccessValidator[] = [
 	canAccessRoomTokenpass,
 ];
 
-export const canAccessRoom: RoomAccessValidator = async (room, user, extraData) => {
+export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
 	if (!room || !user) {
 		return false;
 	}
