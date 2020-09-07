@@ -1,6 +1,7 @@
-import http from 'http';
-
+import http, { RequestOptions, IncomingMessage, ServerResponse } from 'http';
 // import msgpack from 'msgpack-lite';
+import url from 'url';
+
 import WebSocket from 'ws';
 // import PromService from 'moleculer-prometheus';
 // import config from 'moleculer.config';
@@ -12,6 +13,7 @@ import { Client, MeteorClient } from './Client';
 import { isEmpty } from './lib/utils';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 
+
 const msgpack = msgpack5();
 
 // const broker = new ServiceBroker(config);
@@ -20,12 +22,36 @@ const {
 // 	PROMETHEUS_PORT = 9100,
 } = process.env;
 
+const proxy = function(req: IncomingMessage, res: ServerResponse): void {
+	// console.log(`request ${ req.url }`);
+	req.pause();
+	const options: RequestOptions = url.parse(req.url || '');
+	options.headers = req.headers;
+	options.method = req.method;
+	options.agent = false;
+	options.hostname = 'localhost';
+	options.port = 3000;
+
+	const connector = http.request(options, function(serverResponse) {
+		serverResponse.pause();
+		if (serverResponse.statusCode) {
+			res.writeHead(serverResponse.statusCode, serverResponse.headers);
+		}
+		serverResponse.pipe(res);
+		serverResponse.resume();
+	});
+	req.pipe(connector);
+	req.resume();
+};
+
 const httpServer = http.createServer((req, res) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
 	if (!/^\/sockjs\/info\?cb=/.test(req.url || '')) {
-		res.writeHead(404);
-		return res.end();
+		return proxy(req, res);
+
+		// res.writeHead(404);
+		// return res.end();
 	}
 
 	res.writeHead(200, { 'Content-Type': 'text/plain' });
