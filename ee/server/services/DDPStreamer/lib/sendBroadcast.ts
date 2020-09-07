@@ -23,7 +23,8 @@ export const sendBroadcast = async (subscriptions: Set<ISubscription>, message: 
 	for (const subscription of subscriptions) {
 		// eslint-disable-next-line
 		await new Promise((resolve) => {
-			subscription.client.ws._sender.sendFrame(
+			// TODO: missing typing
+			(subscription.client.ws as any)._sender.sendFrame(
 				frames[subscription.client.kind],
 				resolve,
 			);
