@@ -5,6 +5,10 @@ import { IAuthorization } from '../../sdk/types/IAuthorization';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { IUser } from '../../../definition/IUser';
+import { canAccessRoom } from './canAccessRoom';
+
+import './canAccessRoomLivechat';
+import './canAccessRoomTokenpass';
 
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
@@ -44,6 +48,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		}
 		return this.atLeastOne(userId, permissions, scope);
 	}
+
+	canAccessRoom = canAccessRoom;
 
 	private async rolesHasPermission(permission: string, roles: string[]): Promise<boolean> {
 		// TODO this AuthorizationUtils should be brought to this service. currently its state is kept on the application only, but it needs to kept here
