@@ -1,7 +1,7 @@
 // import mem from 'mem';
 import { Db, Collection } from 'mongodb';
 
-import { IAuthorization } from '../../sdk/types/IAuthorization';
+import { IAuthorization, RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { IUser } from '../../../definition/IUser';
@@ -57,7 +57,9 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return this.atLeastOne(userId, permissions, scope);
 	}
 
-	canAccessRoom = canAccessRoom;
+	async canAccessRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
+		return canAccessRoom(...args);
+	}
 
 	private async rolesHasPermission(permission: string, roles: string[]): Promise<boolean> {
 		// TODO this AuthorizationUtils should be brought to this service. currently its state is kept on the application only, but it needs to kept here
