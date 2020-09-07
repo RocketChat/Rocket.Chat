@@ -1,5 +1,6 @@
 import { asyncLocalStorage } from '..';
 import { IBroker, IBrokerNode } from './IBroker';
+import { EventSignatures } from '../lib/Events';
 
 export interface IServiceContext {
 	id: string; // Context ID
@@ -34,11 +35,21 @@ export interface IServiceClass {
 export abstract class ServiceClass implements IServiceClass {
 	protected name: string;
 
+	protected events = new Map<string, Function>();
+
 	getName(): string {
 		return this.name;
 	}
 
 	get context(): IServiceContext | undefined {
 		return asyncLocalStorage.getStore();
+	}
+
+	protected onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void {
+		if (this.events.has(event)) {
+			throw new Error('event already registered');
+		}
+
+		this.events.set(event, handler);
 	}
 }

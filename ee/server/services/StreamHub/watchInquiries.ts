@@ -9,6 +9,9 @@ export async function watchInquiries(event: ChangeEvent<IInquiry>): Promise<void
 		case 'insert':
 		case 'update':
 			const record = event.fullDocument;
+			if (!record) {
+				return;
+			}
 			return api.broadcast('livechat-inquiry-queue-observer', { action: normalize[event.operationType], inquiry: record });
 		default:
 	}

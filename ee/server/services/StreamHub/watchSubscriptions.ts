@@ -14,10 +14,13 @@ export function watchSubscriptions(Trash: Collection) {
 				subscription = event.fullDocument;
 				break;
 			case 'delete':
-				subscription = await Trash.findOne(event.documentKey, { fields: { u: 1, rid: 1 } });
+				subscription = await Trash.findOne<Partial<ISubscription>>(event.documentKey, { fields: { u: 1, rid: 1 } });
 				break;
 			default:
 				return;
+		}
+		if (!subscription) {
+			return;
 		}
 		api.broadcast('subscription', { action: normalize[event.operationType], subscription });
 		// TODO:

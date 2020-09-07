@@ -5,6 +5,7 @@ import { api } from '../../server/sdk/api';
 import { IBroker, IBrokerNode } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 // import { onLicense } from '../app/license/server';
+import { EventSignatures } from '../../server/sdk/lib/Events';
 
 const events: {[k: string]: string} = {
 	onNodeConnected: '$node.connected',
@@ -71,8 +72,8 @@ class NetworkBroker implements IBroker {
 		this.broker.createService(service);
 	}
 
-	async broadcast<D>(eventName: string, data: D): Promise<void> {
-		return this.broker.broadcast(eventName, data);
+	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		return this.broker.broadcast(event, args);
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {

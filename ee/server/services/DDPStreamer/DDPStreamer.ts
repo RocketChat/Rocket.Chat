@@ -1,8 +1,5 @@
 import http from 'http';
 
-import {
-	ServiceBroker,
-} from 'moleculer';
 // import msgpack from 'msgpack-lite';
 import WebSocket from 'ws';
 // import PromService from 'moleculer-prometheus';
@@ -11,23 +8,22 @@ import msgpack5 from 'msgpack5';
 
 import * as Streamer from './streams';
 import { Client, MeteorClient } from './Client';
-import { server } from './Server';
-import { STREAMER_EVENTS, DDP_EVENTS, STREAM_NAMES } from './constants';
+// import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
 import { isEmpty } from './lib/utils';
-import { Presence } from '../../../../server/sdk';
+import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 
 const msgpack = msgpack5();
 
-const broker = new ServiceBroker(config);
+// const broker = new ServiceBroker(config);
 const {
 	PORT: port = 4000,
-	PROMETHEUS_PORT = 9100,
+// 	PROMETHEUS_PORT = 9100,
 } = process.env;
 
 const httpServer = http.createServer((req, res) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
-	if (!/^\/sockjs\/info\?cb=/.test(req.url)) {
+	if (!/^\/sockjs\/info\?cb=/.test(req.url || '')) {
 		return;
 	}
 	res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -42,7 +38,7 @@ const wss = new WebSocket.Server({ server: httpServer });
 wss.on('connection', (ws, req) => {
 	const isMobile = /^RC Mobile/.test(req.headers['user-agent'] || '');
 
-	return isMobile ? new Client(ws, broker) : new MeteorClient(ws, broker);
+	return isMobile ? new Client(ws) : new MeteorClient(ws);
 });
 
 // export default {
@@ -65,42 +61,56 @@ wss.on('connection', (ws, req) => {
 // 		},
 // 	},
 // };
-broker.createService({
-	name: 'streamer',
-	// settings: {
-	// 	port: PROMETHEUS_PORT,
-	// 	metrics: {
-	// 		streamer_users_connected: {
-	// 			type: 'Gauge',
-	// 			labelNames: ['nodeID'],
-	// 			help: 'Users connecteds by streamer',
-	// 		},
-	// 		streamer_users_logged: {
-	// 			type: 'Gauge',
-	// 			labelNames: ['nodeID'],
-	// 			help: 'Users logged by streamer',
-	// 		},
-	// 	},
-	// },
-	// mixins: PROMETHEUS_PORT !== 'false' ? [PromService] : [],
-	events: {
-		[STREAM_NAMES.LIVECHAT_INQUIRY]({ action, inquiry }) {
+
+// broker.createService({
+// 	settings: {
+// 		port: PROMETHEUS_PORT,
+// 		metrics: {
+// 			streamer_users_connected: {
+// 				type: 'Gauge',
+// 				labelNames: ['nodeID'],
+// 				help: 'Users connecteds by streamer',
+// 			},
+// 			streamer_users_logged: {
+// 				type: 'Gauge',
+// 				labelNames: ['nodeID'],
+// 				help: 'Users logged by streamer',
+// 			},
+// 		},
+// 	},
+// 	mixins: PROMETHEUS_PORT !== 'false' ? [PromService] : [],
+
+export class DDPStreamer extends ServiceClass {
+	protected name = 'streamer';
+
+	constructor() {
+		super();
+
+		// [STREAM_NAMES.LIVECHAT_INQUIRY]({ action, inquiry }) {
+		this.onEvent('livechat-inquiry-queue-observer', ({ action, inquiry }): void => {
 			if (!inquiry.department) {
-				return Streamer.streamLivechatInquiry.emit('public', action, inquiry);
+				Streamer.streamLivechatInquiry.emit('public', action, inquiry);
+				return;
 			}
 			Streamer.streamLivechatInquiry.emit(`department/${ inquiry.department }`, action, inquiry);
 			Streamer.streamLivechatInquiry.emit(inquiry._id, action, inquiry);
-		},
-		[STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
+		});
+
+		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
+		this.onEvent('stream', ([streamer, eventName, payload]): void => {
 			const stream = Streamer.Streams.get(streamer);
 			return stream && stream.emitPayload(eventName, payload);
-		},
-		message({ message }) {
+		});
+
+		// message({ message }) {
+		this.onEvent('message', ({ message }): void => {
 			// roomMessages.emitWithoutBroadcast('__my_messages__', record, {});
 			Streamer.roomMessages.emit(message.rid, message);
-		},
-		userpresence(payload) {
-			const STATUS_MAP = {
+		});
+
+		// userpresence(payload) {
+		this.onEvent('userpresence', (payload): void => {
+			const STATUS_MAP: {[k: string]: number} = {
 				offline: 0,
 				online: 1,
 				away: 2,
@@ -113,11 +123,13 @@ broker.createService({
 			// Streamer.userpresence.emit(_id, status);
 			Streamer.notifyLogged.emit('user-status', [_id, username, STATUS_MAP[status], statusText]);
 			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user); // use this method
-		},
-		user(payload) {
+		});
+
+		// user(payload) {
+		this.onEvent('user', (payload): void => {
 			const {
 				action,
-				user: { _id, _updatedAt, ...user },
+				user: { _id, ...user },
 			} = msgpack.decode(payload);
 			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user);
 
@@ -125,7 +137,12 @@ broker.createService({
 				return;
 			}
 
-			const data = {
+			const data: {
+				type: string;
+				diff?: object;
+				data?: object;
+				id?: string;
+			} = {
 				type: action,
 			};
 
@@ -147,16 +164,24 @@ broker.createService({
 			);
 
 			// Notifications.notifyUserInThisInstance(id, 'userData', { diff, type: clientAction });
-		},
-		'user.name'(payload) {
+		});
+
+		// 'user.name'(payload) {
+		this.onEvent('user.name', (payload): void => {
 			const {
 				user: { _id, name, username },
 			} = msgpack.decode(payload);
 			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user);
 			Streamer.notifyLogged.emit('Users:NameChanged', { _id, name, username });
-		},
+		});
+
 		// 'setting'() { },
-		subscription({ action, subscription }) {
+		// subscription({ action, subscription }) {
+		this.onEvent('subscription', ({ action, subscription }): void => {
+			if (!subscription.u?._id) {
+				return;
+			}
+
 			Streamer.notifyUser.emit(
 				`${ subscription.u._id }/subscriptions-changed`,
 				action,
@@ -176,12 +201,17 @@ broker.createService({
 			// notifyUser.emit(subscription.u._id, 'subscriptions-changed', action, subscription);
 			// RocketChat.Notifications.streamUser.__emit(subscription.u._id, action, subscription);
 			// RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', action, subscription);
-		},
-		room({ room, action }) {
+		});
+
+		// room({ room, action }) {
+		this.onEvent('room', ({ room, action }): void => {
 			// RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
+			if (!room._id) {
+				return;
+			}
 			Streamer.notifyUser.__emit(room._id, action, room);
 			Streamer.streamRoomData.emit(room._id, action, room); // TODO REMOVE
-		},
+		});
 		// stream: {
 		// 	group: 'streamer',
 		// 	handler(payload) {
@@ -189,60 +219,11 @@ broker.createService({
 		// 		Streamer.central.emit(stream, ev, data);
 		// 	},
 		// },
-		role(payload) {
+		// role(payload) {
+		this.onEvent('role', (payload): void => {
 			Streamer.streamRoles.emit('roles', payload);
-		},
-	},
-});
-
-broker.start();
-
-server.on(DDP_EVENTS.LOGGED, ({ uid, session }) => {
-	Presence.newConnection(uid, session);
-});
-
-server.on(DDP_EVENTS.DISCONNECTED, ({ uid, session }) => {
-	if (!uid) {
-		return;
-	}
-	Presence.removeConnection(uid, session);
-});
-
-server.on(DDP_EVENTS.CONNECTED, () => {
-	broker.emit('metrics.update', {
-		name: 'streamer_users_connected',
-		method: 'inc',
-		labels: {
-			nodeID: broker.nodeID,
-		},
-	});
-});
-
-server.on(DDP_EVENTS.LOGGED, (/* client*/) => {
-	broker.emit('metrics.update', {
-		name: 'streamer_users_logged',
-		method: 'inc',
-		labels: {
-			nodeID: broker.nodeID,
-		},
-	});
-});
-
-server.on(DDP_EVENTS.DISCONNECTED, ({ uid }) => {
-	broker.emit('metrics.update', {
-		name: 'streamer_users_connected',
-		method: 'dec',
-		labels: {
-			nodeID: broker.nodeID,
-		},
-	});
-	if (uid) {
-		broker.emit('metrics.update', {
-			name: 'streamer_users_logged',
-			method: 'dec',
-			labels: {
-				nodeID: broker.nodeID,
-			},
 		});
 	}
-});
+}
+
+// broker.start();

@@ -23,5 +23,11 @@ module.exports = {
 		watch: true,
 		instances: 1,
 		// interpreter: '',
+	}, {
+		name: 'DDPStreamer',
+		script: 'ts-node DDPStreamer/service.ts',
+		watch: true,
+		instances: 1,
+		// interpreter: '',
 	}],
 };

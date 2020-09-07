@@ -1,6 +1,7 @@
 // import { BaseBroker } from './BaseBroker';
 import { IBroker } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
+import { EventSignatures } from './Events';
 
 export class Api {
 	private services: ServiceClass[] = [];
@@ -26,7 +27,7 @@ export class Api {
 		return this.broker.call(method, data);
 	}
 
-	async broadcast<D>(eventName: string, data: D): Promise<void> {
-		return this.broker.broadcast(eventName, data);
+	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		return this.broker.broadcast(event, ...args);
 	}
 }

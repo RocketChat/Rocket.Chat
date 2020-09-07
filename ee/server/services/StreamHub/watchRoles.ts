@@ -9,6 +9,10 @@ export async function watchRoles(event: ChangeEvent<IRole>): Promise<void> {
 	switch (event.operationType) {
 		case 'insert':
 		case 'update':
+			if (!event.fullDocument) {
+				return;
+			}
+
 			api.broadcast('role', {
 				type: 'changed',
 				...event.fullDocument,

@@ -3,6 +3,7 @@ import { STREAM_NAMES } from '../constants';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import { getCollection, Collections } from '../../mongo';
 import { Publication } from '../Publication';
+import { Authorization } from '../../../../../server/sdk';
 
 class RoomStreamer extends Stream {
 	async [publish](publication: Publication, eventName = '', options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
@@ -66,9 +67,5 @@ notifyUser.allowRead('logged');
 
 export const streamRoomData = new Stream(STREAM_NAMES.ROOM_DATA);
 streamRoomData.allowRead(function(rid) {
-	// TODO: missing method
-	return this.client.broker.call('authorization.canAccessRoom', {
-		room: { _id: rid },
-		user: { _id: this.uid },
-	});
+	return Authorization.canAccessRoom({ _id: rid }, { _id: this.uid });
 });

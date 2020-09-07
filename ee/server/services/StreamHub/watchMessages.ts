@@ -11,6 +11,9 @@ export async function watchMessages(event: ChangeEvent<IMessage>): Promise<void>
 			// const message = await Messages.findOne(documentKey);
 			const message = event.fullDocument;
 			// Streamer.emitWithoutBroadcast('__my_messages__', message, {});
+			if (!message) {
+				return;
+			}
 			api.broadcast('message', { action: normalize[event.operationType], message });
 				// TODO:
 				// RocketChat.Logger.info('Message record', fullDocument);

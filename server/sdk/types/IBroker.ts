@@ -1,4 +1,5 @@
 import { ServiceClass } from './ServiceClass';
+import { EventSignatures } from '../lib/Events';
 
 export interface IBrokerNode {
 	id: string;
@@ -22,6 +23,6 @@ export interface IBrokerNode {
 export interface IBroker {
 	createService(service: ServiceClass): void;
 	call(method: string, data: any): Promise<any>;
-	broadcast<D>(eventName: string, data: D): Promise<void>;
+	broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
 	nodeList(): Promise<IBrokerNode[]>;
 }

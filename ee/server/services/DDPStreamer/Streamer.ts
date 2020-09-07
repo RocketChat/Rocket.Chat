@@ -1,11 +1,12 @@
 import { EventEmitter } from 'events';
 
-import { server } from './Server';
-import { STREAMER_EVENTS, DDP_EVENTS, STREAM_NAMES } from './constants';
+import { server } from './configureServer';
+import { DDP_EVENTS, STREAM_NAMES } from './constants';
 import { sendBroadcast } from './lib/sendBroadcast';
 import { isEmpty } from './lib/utils';
 import { Publication } from './Publication';
 import { Client } from './Client';
+import { api } from '../../../../server/sdk/api';
 
 type Rule = (this: Publication, eventName: string, ...args: any) => Promise<boolean>;
 
@@ -209,10 +210,17 @@ export class Stream extends EventEmitter {
 				if (isAllowed !== true) {
 					return;
 				}
-				this.broker.broadcast(STREAMER_EVENTS.STREAM, [
+
+				const payload = changedPayload(subscriptionName, { eventName, args });
+
+				if (!payload) {
+					return;
+				}
+
+				api.broadcast('stream', [
 					name,
 					eventName,
-					changedPayload(subscriptionName, { eventName, args }),
+					payload,
 				]);
 			},
 		};

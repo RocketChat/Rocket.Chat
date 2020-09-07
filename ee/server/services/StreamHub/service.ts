@@ -2,7 +2,7 @@
 // import config from 'moleculer.config';
 
 import { api } from '../../../../server/sdk/api';
-import { StreamHub } from './service';
+import { StreamHub } from './StreamHub';
 
 import '../../broker';
 
