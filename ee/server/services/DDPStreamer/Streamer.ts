@@ -120,18 +120,24 @@ export class Stream extends EventEmitter {
 		return this[allow](this._allowWrite, 'allowWrite')(eventName, fn);
 	}
 
-	[isAllowed](rules: IRules) {
+	[isAllowed](rules: IRules, defaultPermission = false) {
 		return async (scope: Publication, eventName: string, args: any): Promise<boolean> => {
 			if (rules[eventName]) {
 				return rules[eventName].call(scope, eventName, ...args);
 			}
 
-			return rules.__all__.call(scope, eventName, ...args);
+			if (rules.__all__) {
+				return rules.__all__.call(scope, eventName, ...args);
+			}
+
+			// TODO: Check this since we have permissions not defined here yet
+			return defaultPermission;
 		};
 	}
 
 	async isReadAllowed(scope: Publication, eventName: string, args: any): Promise<boolean> {
-		return this[isAllowed](this._allowRead)(scope, eventName, args);
+		// TODO: Check this since we have permissions not defined here yet
+		return this[isAllowed](this._allowRead, true)(scope, eventName, args);
 	}
 
 	async isWriteAllowed(scope: Publication, eventName: string, args: any): Promise<boolean> {
@@ -194,7 +200,7 @@ export class Stream extends EventEmitter {
 
 	async iniPublication(): Promise<void> {
 		const p = this[publish].bind(this);
-		const { initMethod } = this;
+		const initMethod = this.initMethod.bind(this);
 		server.subscribe(this.subscriptionName, function(publication, _client, eventName, options) {
 			initMethod(publication);
 			return p(publication, eventName, options);
