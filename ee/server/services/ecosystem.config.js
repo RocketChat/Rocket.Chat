@@ -1,33 +1,20 @@
+const watch = ['.', '../broker.ts', '../../../server/sdk'];
+
 module.exports = {
 	apps: [{
 		name: 'Authorization',
-		script: 'ts-node Authorization/service.ts',
-		watch: true,
-		instances: 1,
-		// interpreter: '',
+		watch: [...watch, '../../../server/services/authorization'],
 	}, {
 		name: 'Presence',
-		script: 'ts-node Presence/service.ts',
-		watch: true,
-		instances: 1,
-		// interpreter: '',
 	}, {
 		name: 'Account',
-		script: 'ts-node Account/service.ts',
-		watch: true,
-		instances: 1,
-		// interpreter: '',
 	}, {
 		name: 'StreamHub',
-		script: 'ts-node StreamHub/service.ts',
-		watch: true,
-		instances: 1,
-		// interpreter: '',
 	}, {
 		name: 'DDPStreamer',
-		script: 'ts-node DDPStreamer/service.ts',
-		watch: true,
+	}].map((app) => Object.assign(app, {
+		script: app.script || `ts-node ${ app.name }/service.ts`,
+		watch: app.watch || ['.', '../broker.ts', '../../../server/sdk'],
 		instances: 1,
-		// interpreter: '',
-	}],
+	})),
 };
