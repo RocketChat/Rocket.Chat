@@ -36,7 +36,7 @@ class NetworkBroker implements IBroker {
 		const service: ServiceSchema = {
 			name,
 			actions: {},
-			events: {},
+			events: instance.getEvents(),
 		};
 
 		if (!service.events || !service.actions) {

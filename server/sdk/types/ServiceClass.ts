@@ -37,6 +37,10 @@ export abstract class ServiceClass implements IServiceClass {
 
 	protected events = new Map<string, Function>();
 
+	getEvents(): Record<string, Function> {
+		return Object.fromEntries(this.events.entries());
+	}
+
 	getName(): string {
 		return this.name;
 	}
