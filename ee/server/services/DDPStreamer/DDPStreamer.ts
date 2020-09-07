@@ -24,8 +24,10 @@ const httpServer = http.createServer((req, res) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
 	if (!/^\/sockjs\/info\?cb=/.test(req.url || '')) {
-		return;
+		res.writeHead(404);
+		return res.end();
 	}
+
 	res.writeHead(200, { 'Content-Type': 'text/plain' });
 
 	res.end('{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":666}');
