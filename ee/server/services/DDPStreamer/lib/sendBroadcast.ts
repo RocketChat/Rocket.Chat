@@ -1,9 +1,10 @@
-import { Sender } from 'ws';
+import WebSocket from 'ws';
 
 import { ISubscription } from '../Streamer';
 
 const broadcastData = (message: string): Buffer[] => {
-	const data = Sender.frame(Buffer.from(message), {
+	// TODO: missing typing
+	const data = (WebSocket as any).Sender.frame(Buffer.from(message), {
 		fin: true, // sending a single fragment message
 		rsv1: false, // don"t set rsv1 bit (no compression)
 		opcode: 1, // opcode for a text frame

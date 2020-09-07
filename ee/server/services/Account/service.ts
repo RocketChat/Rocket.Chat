@@ -1,5 +1,5 @@
 import { api } from '../../../../server/sdk/api';
-import { Account } from './service';
+import { Account } from './Account';
 
 import '../../broker';
 
