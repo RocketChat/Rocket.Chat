@@ -2,16 +2,16 @@ import { EventEmitter } from 'events';
 
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
-import { ServiceBroker } from 'moleculer';
 
 import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
-import { server, SERVER_ID } from './Server';
+import { SERVER_ID } from './Server';
+import { server } from './configureServer';
 import { IPacket } from './types/IPacket';
 
 export class Client extends EventEmitter {
-	private timeout: NodeJS.Timeout;
-
 	private chain = Promise.resolve();
+
+	protected timeout: NodeJS.Timeout;
 
 	public kind = 'default';
 
@@ -25,7 +25,6 @@ export class Client extends EventEmitter {
 
 	constructor(
 		public ws: WebSocket,
-		public broker: ServiceBroker,
 	) {
 		super();
 

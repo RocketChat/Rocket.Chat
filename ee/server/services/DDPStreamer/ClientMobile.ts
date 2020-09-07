@@ -1,18 +1,17 @@
-import { v1 as uuidv1 } from 'uuid';
+import WebSocket from 'ws';
 
 import { Client } from './Client';
 import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
-import { server, SERVER_ID } from './Server';
+import { SERVER_ID } from './Server';
+import { server } from './configureServer';
+import { IPacket } from './types/IPacket';
 
 export class ClientMobile extends Client {
-	session = uuidv1();
+	constructor(
+		public ws: WebSocket,
+	) {
+		super(ws);
 
-	subscriptions = new Map();
-
-	constructor(socket, broker) {
-		super();
-		this.broker = broker;
-		this.ws = socket;
 		this.renewTimeout(TIMEOUT / 1000);
 		this.ws.on('message', this.handler);
 		this.ws.on('close', (...args) => {
@@ -31,17 +30,17 @@ export class ClientMobile extends Client {
 
 		this.once('message', ({ msg }) => {
 			if (msg !== DDP_EVENTS.CONNECT) {
-				return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.PROTOCOL_ERROR);
+				return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
 			}
 			return this.send(
-				server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session })
+				server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session }),
 			);
 		});
 
 		this.send(SERVER_ID);
 	}
 
-	process(action, packet) {
+	process(action: string, packet: IPacket): void {
 		switch (action) {
 			case DDP_EVENTS.PING:
 				this.pong(packet.id);
@@ -77,29 +76,29 @@ export class ClientMobile extends Client {
 		}
 	}
 
-	closeTimeout = () => {
+	closeTimeout = (): void => {
 		this.ws.close(WS_ERRORS.TIMEOUT, WS_ERRORS_MESSAGES.TIMEOUT);
 	};
 
-	ping(id) {
+	ping(id?: string): void {
 		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...id && { [DDP_EVENTS.ID]: id } }));
 	}
 
-	pong(id) {
+	pong(id?: string): void {
 		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...id && { [DDP_EVENTS.ID]: id } }));
 	}
 
-	handleIdle = () => {
+	handleIdle = (): void => {
 		this.ping();
 		this.timeout = setTimeout(this.closeTimeout, TIMEOUT);
 	};
 
-	renewTimeout(timeout = TIMEOUT) {
+	renewTimeout(timeout = TIMEOUT): void {
 		clearTimeout(this.timeout);
 		this.timeout = setTimeout(this.handleIdle, timeout);
 	}
 
-	handler = (payload) => {
+	handler = async (payload: string): Promise<void> => {
 		try {
 			const packet = server.parse(payload);
 			this.emit('message', packet);
@@ -107,12 +106,12 @@ export class ClientMobile extends Client {
 		} catch (err) {
 			return this.ws.close(
 				WS_ERRORS.UNSUPPORTED_DATA,
-				WS_ERRORS_MESSAGES.UNSUPPORTED_DATA
+				WS_ERRORS_MESSAGES.UNSUPPORTED_DATA,
 			);
 		}
 	};
 
-	send(payload) {
+	send(payload: string): void {
 		// Meteor format
 		return this.ws.send(`a${ JSON.stringify([payload]) }`);
 	}

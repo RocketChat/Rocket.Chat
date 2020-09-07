@@ -1,7 +1,8 @@
 import { EventEmitter } from 'events';
 
 import { DDP_EVENTS } from './constants';
-import { server, Server } from './Server';
+import { Server } from './Server';
+import { server } from './configureServer';
 import { sendBroadcast } from './lib/sendBroadcast';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
