@@ -248,6 +248,7 @@
 		"url-polyfill": "^1.1.10",
 		"use-subscription": "^1.4.1",
 		"uuid": "^3.4.0",
+		"web-push": "^3.4.3",
 		"webdav": "^2.10.2",
 		"wolfy87-eventemitter": "^5.2.9",
 		"xml-crypto": "^1.5.3",

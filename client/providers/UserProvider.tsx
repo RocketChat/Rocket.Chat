@@ -6,6 +6,7 @@ import { UserContext } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 import { Subscriptions } from '../../app/models/client';
+import { callbacks } from '../../app/callbacks/client';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -20,6 +21,7 @@ const loginWithPassword = (user: string | object, password: string): Promise<voi
 			}
 
 			resolve();
+			callbacks.run('onUserLogin');
 		});
 	});
 

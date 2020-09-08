@@ -19,6 +19,7 @@ import './methods/toggleFavorite';
 import './methods/updateMessage';
 import './notifications/notification';
 import './notifications/updateAvatar';
+import './notifications/updateUserDetailsForPushSubscription';
 import './notifications/updateUserState';
 import './notifications/UsersNameChanged';
 import './routes';

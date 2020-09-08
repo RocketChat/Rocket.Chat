@@ -2,11 +2,15 @@ const HTMLToCache = '/';
 const version = 'viasat-0.1';
 
 function removeHash(element) {
-	if (typeof element === 'string') { return element.split('?hash=')[0]; }
+	if (typeof element === 'string') {
+		return element.split('?hash=')[0];
+	}
 }
 
 function hasHash(element) {
-	if (typeof element === 'string') { return /\?hash=.*/.test(element); }
+	if (typeof element === 'string') {
+		return /\?hash=.*/.test(element);
+	}
 }
 
 function hasSameHash(firstUrl, secondUrl) {
@@ -73,17 +77,20 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
 	event.waitUntil(
-		caches.keys().then(
-			(cacheNames) => Promise.all(cacheNames.map(
-				(cacheName) => {
-					let res;
-					if (version !== cacheName) {
-						res = caches.delete(cacheName);
-					}
-					return res;
-				},
-			)),
-		).then(self.clients.claim()),
+		caches
+			.keys()
+			.then((cacheNames) =>
+				Promise.all(
+					cacheNames.map((cacheName) => {
+						let res;
+						if (version !== cacheName) {
+							res = caches.delete(cacheName);
+						}
+						return res;
+					}),
+				),
+			)
+			.then(self.clients.claim()),
 	);
 });
 
@@ -107,7 +114,10 @@ self.addEventListener('fetch', (event) => {
 				}
 
 				// If the CSS/JS didn't change since it's been cached, return the cached version
-				if (hasHash(event.request.url) && hasSameHash(event.request.url, cached.url)) {
+				if (
+					hasHash(event.request.url)
+					&& hasSameHash(event.request.url, cached.url)
+				) {
 					return cached;
 				}
 			}
@@ -115,3 +125,34 @@ self.addEventListener('fetch', (event) => {
 		}),
 	);
 });
+
+self.addEventListener('push', function(event) {
+	const data = JSON.parse(event.data.text());
+
+	const options = {
+		body: data.message,
+		icon: data.icon,
+		vibrate: data.vibrate,
+		data: {
+			dateOfArrival: Date.now(),
+			redirectURL: data.redirectURL,
+		},
+		actions: [
+			{ action: 'reply', title: 'Reply' },
+			{ action: 'close', title: 'Close' },
+		],
+	};
+
+	event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+self.addEventListener('notificationclick', function(event) {
+	const { data } = event.notification;
+
+	event.notification.close();
+
+	if (event.action === 'reply') {
+		// eslint-disable-next-line no-undef
+		event.waitUntil(clients.openWindow(data.redirectURL));
+	}
+}, false);

@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../settings';
-import { Subscriptions } from '../../../../models';
+import { Subscriptions, PushNotificationSubscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
+const webpush = require('web-push');
 
 let SubscriptionRaw;
 Meteor.startup(() => {
@@ -69,6 +70,59 @@ export async function getPushData({ room, message, userId, senderUsername, sende
 		badge: await getBadgeCount(userId),
 		category: enableNotificationReplyButton(room, receiver.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	};
+}
+
+export function sendWebPush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
+	const gcmKey = settings.get('Push_gcm_api_key');
+	const vapidPublic = settings.get('Vapid_public_key');
+	const vapidPrivate = settings.get('Vapid_private_key');
+	const vapidSubject = settings.get('Vapid_subject');
+
+	webpush.setGCMAPIKey(gcmKey);
+	webpush.setVapidDetails(
+		vapidSubject,
+		vapidPublic,
+		vapidPrivate,
+	);
+
+	const pushSubscriptions = PushNotificationSubscriptions.findByUserId(userId);
+	const options = {
+		TTL: 3600,
+	};
+	const title = room.t === 'd' ? message.u.name : room.name;
+	const displayMessage = room.t === 'd' ? notificationMessage : `${ message.u.name }: ${ notificationMessage }`;
+
+	let redirectURL;
+	if (room.t === 'd') {
+		redirectURL = '/direct/';
+	} else if (room.t === 'p') {
+		redirectURL = '/group/';
+	} else if (room.t === 'c') {
+		redirectURL = '/channel/';
+	}
+	redirectURL += message.rid;
+
+	const payload = {
+		host: Meteor.absoluteUrl(),
+		title,
+		message: displayMessage,
+		receiverUsername,
+		senderUsername,
+		senderName,
+		redirectURL,
+		vibrate: [100, 50, 100],
+		icon: '/images/icons/icon-72x72.png',
+	};
+	const stringifiedPayload = JSON.stringify(payload);
+
+	pushSubscriptions.forEach((pushSubscription) => {
+		webpush.sendNotification(pushSubscription, stringifiedPayload, options)
+			.catch((error) => {
+				if (error.statusCode === 410) {
+					PushNotificationSubscriptions.removeById(pushSubscription._id);
+				}
+			});
+	});
 }
 
 export function shouldNotifyMobile({

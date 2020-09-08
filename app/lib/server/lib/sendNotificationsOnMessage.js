@@ -8,7 +8,7 @@ import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
-import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
+import { sendWebPush, getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
@@ -142,6 +142,15 @@ export const sendNotification = async ({
 				senderName: sender.name,
 				receiver,
 			}),
+		});
+		sendWebPush({
+			notificationMessage,
+			room,
+			message,
+			userId: subscription.u._id,
+			senderUsername: sender.username,
+			senderName: sender.name,
+			receiverUsername: receiver.username,
 		});
 	}
 

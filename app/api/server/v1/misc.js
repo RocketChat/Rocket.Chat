@@ -212,6 +212,21 @@ API.v1.addRoute('directory', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('manifest', { authRequired: false }, {
+	get() {
+		const manifestFile = require('../../../../public/manifest.json');
+		const gcm_sender_id = settings.get('Gcm_sender_id');
+		const manifest = {
+			...manifestFile,
+			gcm_sender_id,
+		};
+		return {
+			headers: { 'Content-Type': 'application/json;charset=utf-8' },
+			body: manifest,
+		};
+	},
+});
+
 API.v1.addRoute('stdout.queue', { authRequired: true }, {
 	get() {
 		if (!hasPermission(this.userId, 'view-logs')) {

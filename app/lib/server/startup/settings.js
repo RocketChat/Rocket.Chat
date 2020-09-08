@@ -1310,10 +1310,26 @@ settings.addGroup('Push', function() {
 			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
+		this.add('Vapid_public_key', '', {
+			type: 'string',
+			public: true,
+		});
+		this.add('Vapid_private_key', '', {
+			type: 'string',
+			secret: true,
+		});
+		this.add('Vapid_subject', 'https://www.viasat.com', {
+			type: 'string',
+			public: false,
+		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
 			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
+		});
+		this.add('Gcm_sender_id', '', {
+			type: 'string',
+			public: true,
 		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
