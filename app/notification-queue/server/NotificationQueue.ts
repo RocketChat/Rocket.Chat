@@ -5,6 +5,7 @@ import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
 import { IUser } from '../../../definition/IUser';
+import { settings } from '../../settings/server';
 
 const {
 	NOTIFICATIONS_WORKER_TIMEOUT = 2000,
@@ -92,6 +93,10 @@ class NotificationClass {
 	}
 
 	push({ uid, rid, mid }: INotification, item: INotificationItemPush): void {
+		if (settings.get('Push_enable') !== true) {
+			return;
+		}
+
 		PushNotification.send({
 			rid,
 			uid,
