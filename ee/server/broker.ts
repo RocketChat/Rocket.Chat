@@ -65,9 +65,10 @@ class NetworkBroker implements IBroker {
 			// Prevent listen events when not allowed except by `license.module`
 			events: Object.fromEntries(Object.entries(instance.getEvents()).map(([event, fn]) => {
 				if (!this.whitelist.events.includes(event)) {
+					const originalFn = fn;
 					fn = (...args: any[]): any => {
 						if (this.allowed) {
-							return fn(...args);
+							return originalFn(...args);
 						}
 					};
 				}
