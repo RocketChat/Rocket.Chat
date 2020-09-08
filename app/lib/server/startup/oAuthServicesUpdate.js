@@ -132,3 +132,15 @@ settings.get(/^Accounts_OAuth_Custom-[a-z0-9_]+/, function(key, value) {
 		return OAuthServicesRemove(key);// eslint-disable-line new-cap
 	}
 });
+
+function customOAuthServicesInit() {
+	// Add settings for custom OAuth providers to the settings so they get
+	// automatically added when they are defined in ENV variables
+	Object.keys(process.env).forEach((key) => {
+		if (/Accounts_OAuth_Custom-[a-zA-Z0-9_-]+$/.test(key)) {
+			settings.add(key, process.env[key]);
+		}
+	});
+}
+
+customOAuthServicesInit();
