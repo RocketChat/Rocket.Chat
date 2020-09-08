@@ -1,3 +1,4 @@
+import '../ee/server/broker';
 import './importPackages';
 import '../imports/startup/server';
 

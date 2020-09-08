@@ -133,32 +133,28 @@ class NetworkBroker implements IBroker {
 	}
 }
 
-// onLicense('scalability', async () => {
-(async (): Promise<void> => {
-	const network = new ServiceBroker({
-		transporter: 'TCP',
-		// logLevel: 'debug',
-		logLevel: {
-			// "TRACING": "trace",
-			// "TRANS*": "warn",
-			BROKER: 'debug',
-			TRANSIT: 'debug',
-			'**': 'info',
+const network = new ServiceBroker({
+	transporter: 'TCP',
+	// logLevel: 'debug',
+	logLevel: {
+		// "TRACING": "trace",
+		// "TRANS*": "warn",
+		BROKER: 'debug',
+		TRANSIT: 'debug',
+		'**': 'info',
+	},
+	logger: {
+		type: 'Console',
+		options: {
+			formatter: 'short',
 		},
-		logger: {
-			type: 'Console',
-			options: {
-				formatter: 'short',
-			},
-		},
-		registry: {
-			strategy: 'RoundRobin',
-			preferLocal: false,
-		},
-	});
+	},
+	registry: {
+		strategy: 'RoundRobin',
+		preferLocal: false,
+	},
+});
 
-	await network.start();
+api.setBroker(new NetworkBroker(network));
 
-	api.setBroker(new NetworkBroker(network));
-})();
-// });
+network.start();
