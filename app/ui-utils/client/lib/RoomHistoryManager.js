@@ -334,14 +334,16 @@ export const RoomHistoryManager = new class {
 		const query = { rid };
 		const options = {
 			sort: {
-				ls: -1,
+				ts: -1,
 			},
 			limit: 50,
 		};
 		const retain = ChatMessage.find(query, options).fetch();
-		ChatMessage.remove({ rid });
-		retain.forEach((message) => {
-			ChatMessage.insert(message);
+		ChatMessage.remove({
+			rid,
+			ts: {
+				$lt: retain[retain.length - 1].ts,
+			},
 		});
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);

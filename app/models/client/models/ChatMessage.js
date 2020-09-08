@@ -10,6 +10,7 @@ import { cleanMessagesAtStartup, triggerOfflineMsgs } from '../../../utils';
 import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
+import { settings } from '../../../settings';
 
 export const CachedChatMessage = new CachedCollection({ name: 'chatMessage' });
 
@@ -99,7 +100,7 @@ const messagePreFetch = () => {
 		timeout = setTimeout(cleanMessagesAtStartup, 3000);
 	}
 	Tracker.autorun(() => {
-		if (!messagesFetched && CachedChatSubscription.ready.get()) {
+		if (!messagesFetched && CachedChatSubscription.ready.get() && settings.cachedCollection.ready.get()) {
 			const status = Meteor.status();
 			if (status.status !== 'connected') {
 				return;
@@ -107,6 +108,7 @@ const messagePreFetch = () => {
 			clearTimeout(timeout);
 			triggerOfflineMsgs();
 			messagesFetched = true;
+			const roomLimit = settings.get('Message_AllowPrefetch_PrefetchRoomLimit');
 			const subscriptions = ChatSubscription.find(
 				{
 					open: true,
@@ -116,8 +118,9 @@ const messagePreFetch = () => {
 						rid: 1,
 						ls: 1,
 					},
+					limit: roomLimit,
 				},
-			);
+			).fetch();
 			const limit = parseInt(getConfig('roomListLimit')) || 50;
 			subscriptions.forEach((subscription) => {
 				const ts = undefined;
