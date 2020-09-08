@@ -18,7 +18,7 @@ API.v1.addRoute('livechat/message', {
 				token: String,
 				rid: String,
 				msg: String,
-				avatar: String,
+				avatar: Match.Optional(String),
 				agent: Match.Maybe({
 					agentId: String,
 					username: String,
