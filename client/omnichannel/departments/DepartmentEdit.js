@@ -1,20 +1,15 @@
 /* eslint-disable complexity */
-import React, { useMemo, useRef, useState } from 'react';
-import { Field, TextInput, NumberInput, SelectFiltered, Box, MultiSelect, Icon, Divider, ToggleSwitch, TextAreaInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
+import { Field, TextInput, NumberInput, SelectFiltered, Box, Icon, Divider, ToggleSwitch, TextAreaInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSubscription } from 'use-subscription';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import VerticalBar from '../../components/basic/VerticalBar';
-import { UserInfo } from '../../components/basic/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
-import { getUserEmailAddress } from '../../helpers/getUserEmailAddress';
 import { useRoute } from '../../contexts/RouterContext';
-import { formsSubscription } from '../additionalForms';
 import Page from '../../components/basic/Page';
 import { AutoCompleteDepartment } from '../../components/basic/AutoCompleteDepartment';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
@@ -58,7 +53,7 @@ export default function EditDepartmentWithData({ id, reload }) {
 
 const useQuery = ({ name }) => useMemo(() => ({ selector: JSON.stringify({ name }) }), [name]);
 
-export function EditDepartment({ data, userDepartments, availableDepartments, id, reload, title }) {
+export function EditDepartment({ data, id, title }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-departments');
 
@@ -88,10 +83,10 @@ export function EditDepartment({ data, userDepartments, availableDepartments, id
 		handleMaxNumberSimultaneousChat,
 		handleShowOnRegistration,
 		handleShowOnOfflineForm,
-		handleAbandonedRoomsCloseCustomMessage,
-		handleChatClosingTags,
-		handleNumAgents,
-		handleRequestTagBeforeClosingChat,
+		// handleAbandonedRoomsCloseCustomMessage,
+		// handleChatClosingTags,
+		// handleNumAgents,
+		// handleRequestTagBeforeClosingChat,
 		handleOfflineMessageChannelName,
 		handleVisitorInactivityTimeoutInSeconds,
 		handleWaitingQueueMessage,
@@ -105,10 +100,10 @@ export function EditDepartment({ data, userDepartments, availableDepartments, id
 		maxNumberSimultaneousChat,
 		showOnRegistration,
 		showOnOfflineForm,
-		abandonedRoomsCloseCustomMessage,
-		chatClosingTags,
-		numAgents,
-		requestTagBeforeClosingChat,
+		// abandonedRoomsCloseCustomMessage,
+		// chatClosingTags,
+		// numAgents,
+		// requestTagBeforeClosingChat,
 		offlineMessageChannelName,
 		visitorInactivityTimeoutInSeconds,
 		waitingQueueMessage,

@@ -1,7 +1,7 @@
 
-import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
-import { Box, Table, Icon } from '@rocket.chat/fuselage';
+import { Table, Icon } from '@rocket.chat/fuselage';
 
 import { Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -12,9 +12,7 @@ import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
 import EditDepartmentWithData from './DepartmentEdit';
 // import AgentInfo from './AgentInfo';
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
-import VerticalBar from '../../components/basic/VerticalBar';
 
 export function RemoveAgentButton({ _id, reload }) {
 	const deleteAction = useEndpointAction('DELETE', `livechat/department/${ _id }`);

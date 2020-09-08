@@ -1,15 +1,12 @@
 
-import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useCallback, useState } from 'react';
 import { Box, Table, Icon, Button, NumberInput } from '@rocket.chat/fuselage';
 
 import { Th, GenericTable } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
-import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
-import VerticalBar from '../../components/basic/VerticalBar';
 import DeleteWarningModal from '../DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -88,7 +85,7 @@ export function RemoveAgentButton({ _id, setAgentList, agentList }) {
 
 export function Count({ agentId, setAgentList, agentList }) {
 	const t = useTranslation();
-	const [agentCount, setAgentCount] = useState(agentList.find((agent) => agent.agentId === agentId).count);
+	const [agentCount, setAgentCount] = useState(agentList.find((agent) => agent.agentId === agentId).counta);
 	const [updatedList, setUpdatedList] = useState(agentList);
 
 	useMemo(() => setAgentList(updatedList), [setAgentList, updatedList]);
@@ -100,8 +97,6 @@ export function Count({ agentId, setAgentList, agentList }) {
 			}
 			return agent;
 		}));
-		debugger
-		console.log('NEWLIST', updatedList);
 		// setAgentList(newList);
 		// debugger
 		// console.log(agentList);
@@ -118,9 +113,7 @@ export function Count({ agentId, setAgentList, agentList }) {
 	</Table.Cell>;
 }
 
-const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
-
-function DepartmentsAgentsTable({ _id, agents }) {
+function DepartmentsAgentsTable({ agents }) {
 	const t = useTranslation();
 
 	console.log(agents);
@@ -139,7 +132,7 @@ function DepartmentsAgentsTable({ _id, agents }) {
 		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
 	].filter(Boolean), [t]);
 
-	const renderRow = useCallback(({ emails, agentId, username, name, avatarETag }) => <Table.Row key={agentId} tabIndex={0} role='link' action qa-user-id={agentId}>
+	const renderRow = useCallback(({ agentId, username, name, avatarETag }) => <Table.Row key={agentId} tabIndex={0} role='link' action qa-user-id={agentId}>
 		<Table.Cell withTruncatedText>
 			<Box display='flex' alignItems='center'>
 				<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
@@ -154,7 +147,7 @@ function DepartmentsAgentsTable({ _id, agents }) {
 		<Count agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
 		<RemoveAgentButton agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
 		<RemoveAgentButton agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
-	</Table.Row>, [ agentList, mediaQuery]);
+	</Table.Row>, [agentList, mediaQuery]);
 
 	return <AgentsPage
 		data={data}
