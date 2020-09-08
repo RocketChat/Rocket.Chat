@@ -10,7 +10,7 @@ import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
-import EditDepartmentWithData from './AgentEdit';
+import EditDepartmentWithData from './DepartmentEdit';
 // import AgentInfo from './AgentInfo';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';

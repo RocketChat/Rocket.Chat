@@ -1,5 +1,6 @@
+/* eslint-disable complexity */
 import React, { useMemo, useRef, useState } from 'react';
-import { Field, TextInput, NumberInput, SelectFiltered, Box, MultiSelect, Icon, Select, ToggleSwitch, TextAreaInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, NumberInput, SelectFiltered, Box, MultiSelect, Icon, Divider, ToggleSwitch, TextAreaInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
@@ -15,6 +16,8 @@ import { getUserEmailAddress } from '../../helpers/getUserEmailAddress';
 import { useRoute } from '../../contexts/RouterContext';
 import { formsSubscription } from '../additionalForms';
 import Page from '../../components/basic/Page';
+import { AutoCompleteDepartment } from '../../components/basic/AutoCompleteDepartment';
+import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 
 export default function EditDepartmentWithData({ id, reload }) {
 	const t = useTranslation();
@@ -29,7 +32,7 @@ export default function EditDepartmentWithData({ id, reload }) {
 	if (error) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
-
+	console.log(data);
 	return <EditDepartment id={id} data={data} reset={reload}/>;
 }
 
@@ -75,6 +78,7 @@ export function EditDepartment({ data, userDepartments, availableDepartments, id
 		offlineMessageChannelName: (department && department.offlineMessageChannelName) || '',
 		visitorInactivityTimeoutInSeconds: (department && department.visitorInactivityTimeoutInSeconds) || undefined,
 		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
+		forwardDepartment: (department && department.forwardDepartment) || '',
 	});
 	const {
 		handleName,
@@ -91,6 +95,7 @@ export function EditDepartment({ data, userDepartments, availableDepartments, id
 		handleOfflineMessageChannelName,
 		handleVisitorInactivityTimeoutInSeconds,
 		handleWaitingQueueMessage,
+		handleForwardDepartment,
 	} = handlers;
 	const {
 		name,
@@ -107,6 +112,7 @@ export function EditDepartment({ data, userDepartments, availableDepartments, id
 		offlineMessageChannelName,
 		visitorInactivityTimeoutInSeconds,
 		waitingQueueMessage,
+		forwardDepartment,
 	} = values;
 
 	// const defaultValidations = {
@@ -226,9 +232,16 @@ export function EditDepartment({ data, userDepartments, availableDepartments, id
 						<TextAreaInput flexGrow={1} value={waitingQueueMessage} onChange={handleWaitingQueueMessage} />
 					</Field.Row>
 				</Field>
+				<Field>
+					<Field.Label mb='x4'>{t('Department')}:</Field.Label>
+					<AutoCompleteDepartment value={forwardDepartment} onChange={handleForwardDepartment}/>
+				</Field>
+				<Divider mb='x16' />
+				<Field>
+					<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
+					<DepartmentsAgentsTable agents={data && data.agents}/>
+				</Field>
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	</Page>;
 }
-
-
