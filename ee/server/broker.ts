@@ -29,7 +29,7 @@ class NetworkBroker implements IBroker {
 
 	private whitelist = {
 		events: ['license.module'],
-		actions: ['hasLicense'],
+		actions: ['license.hasLicense'],
 	}
 
 	constructor(broker: ServiceBroker) {
@@ -51,9 +51,10 @@ class NetworkBroker implements IBroker {
 		const name = instance.getName();
 
 		// Listen for module license
-		instance.onEvent('license.module', ({ module, valid }) => {
+		instance.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability') {
-				this.allowed = valid;
+				// Should we believe on the event only? Could it be a call from the CE version?
+				this.allowed = valid && await License.hasLicense('scalability');
 				console.log('on license.module', { allowed: this.allowed });
 			}
 		});
@@ -110,7 +111,7 @@ class NetworkBroker implements IBroker {
 				requestID: ctx.requestID,
 				broker: this,
 			}, (): any => {
-				if (this.allowed || this.whitelist.actions.includes(method)) {
+				if (this.allowed || this.whitelist.actions.includes(`${ name }.${ method }`)) {
 					return i[method](...ctx.params);
 				}
 			});
