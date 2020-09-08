@@ -20,4 +20,5 @@ export type EventSignatures = {
 	'user'(payload: BufferList): void;
 	'user.name'(payload: BufferList): void;
 	'role'(data: {type: 'changed' | 'removed' } & Partial<IRole>): void;
+	'license.module'(data: {module: string; valid: boolean}): void;
 }

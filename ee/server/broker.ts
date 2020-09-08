@@ -1,11 +1,12 @@
 import { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
-import { asyncLocalStorage } from '../../server/sdk';
+import { asyncLocalStorage, License } from '../../server/sdk';
 import { api } from '../../server/sdk/api';
 import { IBroker, IBrokerNode } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 // import { onLicense } from '../app/license/server';
 import { EventSignatures } from '../../server/sdk/lib/Events';
+import { LocalBroker } from '../../server/sdk/lib/LocalBroker';
 
 const events: {[k: string]: string} = {
 	onNodeConnected: '$node.connected',
@@ -22,21 +23,63 @@ const lifecycle: {[k: string]: string} = {
 class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
 
+	private localBroker = new LocalBroker();
+
+	private allowed = false;
+
+	private whitelist = {
+		events: ['license.module'],
+		actions: ['hasLicense'],
+	}
+
 	constructor(broker: ServiceBroker) {
 		this.broker = broker;
 	}
 
 	async call(method: string, data: any): Promise<any> {
+		if (!this.allowed && !this.whitelist.actions.includes(method)) {
+			return this.localBroker.call(method, data);
+		}
+
+		await this.broker.waitForServices(method.split('.')[0]);
 		return this.broker.call(method, data);
 	}
 
 	createService(instance: ServiceClass): void {
+		this.localBroker.createService(instance);
+
 		const name = instance.getName();
+
+		// Listen for module license
+		instance.onEvent('license.module', ({ module, valid }) => {
+			if (module === 'scalability') {
+				this.allowed = valid;
+				console.log('on license.module', { allowed: this.allowed });
+			}
+		});
 
 		const service: ServiceSchema = {
 			name,
 			actions: {},
-			events: instance.getEvents(),
+			// Prevent listen events when not allowed except by `license.module`
+			events: Object.fromEntries(Object.entries(instance.getEvents()).map(([event, fn]) => {
+				if (!this.whitelist.events.includes(event)) {
+					fn = (...args: any[]): any => {
+						if (this.allowed) {
+							return fn(...args);
+						}
+					};
+				}
+				return [event, (data: any[]): void => fn(...data)];
+			})),
+			started: async (): Promise<void> => {
+				if (name === 'license') {
+					return;
+				}
+
+				this.allowed = await License.hasLicense('scalability');
+				console.log('on started', { allowed: this.allowed });
+			},
 		};
 
 		if (!service.events || !service.actions) {
@@ -66,13 +109,20 @@ class NetworkBroker implements IBroker {
 				nodeID: ctx.nodeID,
 				requestID: ctx.requestID,
 				broker: this,
-			}, (): any => i[method](...ctx.params));
+			}, (): any => {
+				if (this.allowed || this.whitelist.actions.includes(method)) {
+					return i[method](...ctx.params);
+				}
+			});
 		}
 
 		this.broker.createService(service);
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		if (!this.allowed && !this.whitelist.events.includes(event)) {
+			return this.localBroker.broadcast(event, ...args);
+		}
 		return this.broker.broadcast(event, args);
 	}
 

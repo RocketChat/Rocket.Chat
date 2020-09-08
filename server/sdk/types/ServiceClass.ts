@@ -49,7 +49,7 @@ export abstract class ServiceClass implements IServiceClass {
 		return asyncLocalStorage.getStore();
 	}
 
-	protected onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void {
+	public onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void {
 		if (this.events.has(event)) {
 			throw new Error('event already registered');
 		}

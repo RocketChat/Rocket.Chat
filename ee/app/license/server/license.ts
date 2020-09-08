@@ -6,6 +6,7 @@ import { resetEnterprisePermissions } from '../../authorization/server/resetEnte
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
+import { api } from '../../../../server/sdk/api';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -62,6 +63,7 @@ class LicenseClass {
 
 			modules.forEach((module) => {
 				this.modules.add(module);
+				api.broadcast('license.module', { module, valid: true });
 				EnterpriseLicenses.emit(`valid:${ module }`);
 			});
 		});
@@ -73,7 +75,10 @@ class LicenseClass {
 				? getBundleModules(licenseModule)
 				: [licenseModule];
 
-			modules.forEach((module) => EnterpriseLicenses.emit(`invalid:${ module }`));
+			modules.forEach((module) => {
+				api.broadcast('license.module', { module, valid: false });
+				EnterpriseLicenses.emit(`invalid:${ module }`);
+			});
 		});
 	}
 
