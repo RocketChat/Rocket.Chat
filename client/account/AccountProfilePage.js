@@ -128,7 +128,7 @@ const AccountProfilePage = () => {
 		nickname,
 	} = values;
 
-	const { handleAvatar } = handlers;
+	const { handleAvatar, handlePassword, handleConfirmationPassword } = handlers;
 
 	const updateAvatar = useUpdateAvatar(avatar, user._id);
 
@@ -140,7 +140,7 @@ const AccountProfilePage = () => {
 				await saveFn({
 					...allowRealNameChange && { realname },
 					...allowEmailChange && getUserEmailAddress(user) !== email && { email },
-					...allowPasswordChange && { password },
+					...allowPasswordChange && { newPassword: password },
 					...canChangeUsername && { username },
 					...allowUserStatusMessageChange && { statusText },
 					...typedPassword && { typedPassword: SHA256(typedPassword) },
@@ -148,6 +148,8 @@ const AccountProfilePage = () => {
 					nickname,
 					bio: bio || '',
 				}, customFields);
+				handlePassword('');
+				handleConfirmationPassword('');
 				commit();
 				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 			} catch (error) {
@@ -191,6 +193,8 @@ const AccountProfilePage = () => {
 		setModal,
 		commit,
 		nickname,
+		handlePassword,
+		handleConfirmationPassword,
 	]);
 
 	const handleLogoutOtherLocations = useCallback(async () => {
