@@ -231,12 +231,14 @@ export async function exportRoomMessages(rid, exportType, afterTimestamp, limit,
 		limit,
 	});
 
+	const results = await cursor.toArray();
+
 	const result = {
 		messages: [],
 		uploads: [],
 	};
 
-	cursor.forEach(Meteor.bindEnvironment((msg) => {
+	results.forEach(Meteor.bindEnvironment((msg) => {
 		const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
 
 		if (msg.file) {
