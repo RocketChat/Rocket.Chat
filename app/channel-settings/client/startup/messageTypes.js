@@ -64,4 +64,15 @@ Meteor.startup(function() {
 			};
 		},
 	});
+
+	MessageTypes.registerType({
+		id: 'room_changed_avatar',
+		system: true,
+		message: 'room_changed_avatar',
+		data(message) {
+			return {
+				user_by: message.u && message.u.username,
+			};
+		},
+	});
 });
