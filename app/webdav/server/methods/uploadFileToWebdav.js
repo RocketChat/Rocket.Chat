@@ -1,9 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings';
+import { Logger } from '../../../logger';
 import { getWebdavCredentials } from './getWebdavCredentials';
 import { WebdavAccounts } from '../../../models';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
+
+const logger = new Logger('WebDAV_Upload', {});
 
 Meteor.methods({
 	async uploadFileToWebdav(accountId, fileData, name) {
@@ -30,6 +33,7 @@ Meteor.methods({
 			await client.putFileContents(`${ uploadFolder }/${ name }`, buffer, { overwrite: false });
 			return { success: true };
 		} catch (error) {
+			logger.error(error);
 			if (error.response) {
 				const { status } = error.response;
 				if (status === 404) {
