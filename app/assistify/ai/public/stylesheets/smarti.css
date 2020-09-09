@@ -1,0 +1,153 @@
+.smarti-widget .loading-notification {
+	margin: 0 20px;
+
+	text-align: justify;
+
+	font-style: italic;
+	line-height: 1.4;
+}
+
+.external-search-content .smarti {
+	overflow-y: auto;
+}
+
+.smarti #widgetContainer {
+	position: absolute;
+
+	top: 0;
+	right: 0;
+
+	overflow: hidden;
+
+	width: 400px;
+	height: 100%;
+
+	color: #3d3d3d;
+
+	border-right: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+	background: #f4f4f4;
+
+	font-family: "Helvetica Neue", Arial, sans-serif;
+	font-size: 16px;
+
+	line-height: normal;
+}
+
+.smarti #widgetContainer #widgetWrapper {
+	position: relative;
+
+	display: flex;
+	flex-direction: column;
+
+	height: 100%;
+}
+
+.smarti #widgetContainer #widgetWrapper #widgetHeader {
+	position: relative;
+}
+
+.smarti #widgetContainer #widgetWrapper #widgetHeader .widgetHeaderWrapper {
+	padding: 15px;
+}
+
+.smarti #widgetContainer #widgetWrapper #widgetHeader h4 {
+
+	margin-top: -10px;
+
+	letter-spacing: 0;
+
+	color: #3d3d3d;
+
+	font-size: 20px;
+}
+
+.smarti #widgetContainer #widgetWrapper #widgetHeader h4 img {
+	position: relative;
+	top: 5px;
+
+	height: 30px;
+	margin-right: 4px;
+}
+
+.smarti #widgetContainer #widgetWrapper #widgetBody {
+	position: relative;
+
+	overflow-y: auto;
+	flex: 1;
+
+	width: 100%;
+	padding: 10px;
+
+	background: #ffffff;
+}
+
+.smarti #widgetContainer #widgetWrapper #widgetFooter {
+	position: relative;
+
+	width: 100%;
+
+	transition: 0.2s;
+
+	text-align: center;
+
+	opacity: 1;
+	color: #747474;
+
+	border-top: 1px solid #cbcbcb;
+
+	background: #f4f4f4;
+}
+
+.smarti #widgetContainer #widgetWrapper #widgetFooter .help-request-actions {
+	margin: 0;
+}
+
+.smarti #widgetContainer #widgetWrapper #widgetFooter button {
+
+	position: relative;
+
+	display: inline-block;
+
+	width: calc(100% - 20px);
+
+	margin: 10px;
+
+	padding: 15px 30px;
+
+	-o-transition: 0.2s;
+	-ms-transition: 0.2s;
+	-moz-transition: 0.2s;
+	-webkit-transition: 0.2s;
+	transition: 0.2s;
+
+	text-align: center;
+
+	text-decoration: none;
+
+	text-transform: uppercase;
+
+	color: #747474;
+	border-radius: 3px;
+
+	background: #cbcbcb;
+
+	font-size: 14px;
+}
+
+.smarti #widgetContainer #widgetWrapper #widgetFooter button:hover {
+	color: #ffffff;
+	background: #d5195b;
+}
+
+.recognized-term {
+	cursor: pointer;
+}
+
+.recognized-term .text {
+	color: #008378;
+}
+
+.recognized-term .text:hover {
+	border-bottom: 1px dashed;
+}

@@ -722,6 +722,20 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', options) {
+		const neverActive = { $and: [{ lastLogin: { $exists: 0 } }, { createdAt: { $lte: latestLastLoginDate } }] };
+		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
+		const hasRole = { roles: role };
+		const query = {
+			$and: [
+				{ $or: [neverActive, idleTooLong] },
+				hasRole,
+				{ active: true },
+			],
+		};
+		return this.find(query, options);
+	}
+
 	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }

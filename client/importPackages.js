@@ -96,6 +96,7 @@ import '../app/user-status';
 import '../app/utils';
 import '../app/settings';
 import '../app/models';
+import '../app/assistify/ai/client';
 import '../app/callbacks';
 import '../app/notifications';
 import '../app/promises/client';
