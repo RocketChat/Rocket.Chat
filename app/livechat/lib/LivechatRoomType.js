@@ -86,7 +86,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	allowMemberAction(room, action) {
-		return action === RoomMemberActions.INVITE || RoomMemberActions.JOIN;
+		return [RoomMemberActions.INVITE, RoomMemberActions.JOIN].includes(action);
 	}
 
 	getUiText(context) {
