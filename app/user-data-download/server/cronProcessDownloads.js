@@ -216,7 +216,7 @@ const exportMessageObject = (type, messageObject, messageFile) => {
 	return file.join('\n');
 };
 
-export async function exportRoomMessages(rid, exportType, afterTimestamp, limit, assetsPath, exportOpRoomData, userData, filter = {}, usersMap = {}, hideUsers = true) {
+export async function exportRoomMessages(rid, exportType, afterTimestamp, skip, limit, assetsPath, exportOpRoomData, userData, filter = {}, usersMap = {}, hideUsers = true) {
 	const query = {
 		...filter,
 		rid,
@@ -228,6 +228,9 @@ export async function exportRoomMessages(rid, exportType, afterTimestamp, limit,
 
 	const cursor = Messages.model.rawCollection().find(query, {
 		sort: { ts: 1 },
+		// Support old format using skip for those exports still running
+		// This can be removed in the future
+		...afterTimestamp != null && skip > 0 && { skip },
 		limit,
 	});
 
@@ -359,11 +362,12 @@ export const exportRoomMessagesToFile = async function(exportPath, assetsPath, e
 		}
 
 		const afterTimestamp = exportOpRoomData.lastExportedTimestamp;
+		const skip = exportOpRoomData.exportedCount;
 
 		const {
 			uploads,
 			messages,
-		} = await exportRoomMessages(exportOpRoomData.roomId, exportType, afterTimestamp, limit, assetsPath, exportOpRoomData, userData, messagesFilter, usersMap, hideUsers);
+		} = await exportRoomMessages(exportOpRoomData.roomId, exportType, afterTimestamp, skip, limit, assetsPath, exportOpRoomData, userData, messagesFilter, usersMap, hideUsers);
 
 		result.fileList.push(...uploads);
 
