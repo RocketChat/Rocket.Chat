@@ -5,7 +5,6 @@ import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../callbacks';
 import { Messages, Rooms, Subscriptions } from '../../../models';
 import { RoomMemberActions, roomTypes } from '../../../utils/server';
-import { hasPermission } from '../../../authorization';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
@@ -22,10 +21,6 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		return;
 	}
 
-	if (room.t === 'l' && !hasPermission(user._id, 'view-l-room')) {
-		throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', { method: 'addUserToRoom' });
-	}
-
 	try {
 		Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter));
 	} catch (error) {
@@ -36,7 +31,7 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		throw error;
 	}
 
-	if (room.t === 'c' || room.t === 'p') {
+	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
 		callbacks.run('beforeAddedToRoom', { user, inviter }, room);
 
