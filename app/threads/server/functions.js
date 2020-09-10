@@ -36,19 +36,6 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	);
 };
 
-export const undoReply = ({ tmid }) => {
-	if (!tmid) {
-		return false;
-	}
-
-	const { ts } = Messages.getFirstReplyTsByThreadId(tmid) || {};
-	if (!ts) {
-		return Messages.unsetThreadByThreadId(tmid);
-	}
-
-	return Messages.updateThreadLastMessageAndCountByThreadId(tmid, ts, -1);
-};
-
 export const follow = ({ tmid, uid }) => {
 	if (!tmid || !uid) {
 		return false;

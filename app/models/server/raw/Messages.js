@@ -42,11 +42,12 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoom(rid, options) {
-		const query = { rid, drid: { $exists: true } };
+	// not used
+	// findDiscussionsByRoom(rid, options) {
+	// 	const query = { rid, drid: { $exists: true } };
 
-		return this.find(query, options);
-	}
+	// 	return this.find(query, options);
+	// }
 
 	findDiscussionsByRoomAndText(rid, text, options) {
 		const query = {

@@ -9,10 +9,10 @@ export class Messages extends Base {
 	constructor() {
 		super('message');
 
-		this.tryEnsureIndex({ rid: 1, ts: 1, _updatedAt: 1 });
-		this.tryEnsureIndex({ ts: 1 });
+		this.tryEnsureIndex({ rid: 1, ts: -1, _updatedAt: 1 });
+		this.tryEnsureIndex({ ts: -1 }); // change to sort desc for 'getLastTimestamp' - consider adding to a compound index
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ editedAt: 1 }, { sparse: true });
+		// this.tryEnsureIndex({ editedAt: 1 }, { sparse: true }); // not used
 		this.tryEnsureIndex({ 'editedBy._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ rid: 1, t: 1, 'u._id': 1 });
 		this.tryEnsureIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
@@ -20,16 +20,22 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: true });
 		this.tryEnsureIndex({ pinned: 1 }, { sparse: true });
-		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true });
-		this.tryEnsureIndex({ location: '2dsphere' });
+		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true }); // rid, snippeted?
+		// this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: true });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 
 		// discussions
-		this.tryEnsureIndex({ drid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ rid: 1, drid: 1 }, { sparse: true });
+
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
-		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
+
+		this.tryEnsureIndex({ tcount: 1 }, { sparse: true }); // improved for countThreads
+
+		// partialFilterExpression for a field that doesn't exists all the time -> findThreadsByRoomId
+		this.tryEnsureIndex({ rid: 1, tlm: -1 }, { partialFilterExpression: { tcount: { $exists: true } } });
+
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
@@ -397,24 +403,25 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleCreatedOrEditedAfterTimestamp(timestamp, options) {
-		const query = {
-			_hidden: { $ne: true },
-			$or: [{
-				ts: {
-					$gt: timestamp,
-				},
-			},
-			{
-				editedAt: {
-					$gt: timestamp,
-				},
-			},
-			],
-		};
+	// not used
+	// findVisibleCreatedOrEditedAfterTimestamp(timestamp, options) {
+	// 	const query = {
+	// 		_hidden: { $ne: true },
+	// 		$or: [{
+	// 			ts: {
+	// 				$gt: timestamp,
+	// 			},
+	// 		},
+	// 		{
+	// 			editedAt: {
+	// 				$gt: timestamp,
+	// 			},
+	// 		},
+	// 		],
+	// 	};
 
-		return this.find(query, options);
-	}
+	// 	return this.find(query, options);
+	// }
 
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
@@ -447,13 +454,17 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	getLastTimestamp(options) {
-		if (options == null) { options = {}; }
-		const query = { ts: { $exists: 1 } };
-		options.sort = { ts: -1 };
-		options.limit = 1;
+	getLastTimestamp() {
+		const query = {};
+
+		const options = {
+			sort: { ts: -1 },
+			fields: { ts: 1, _id: 0 }, // remove _id field to make it a Covered Query
+			limit: 1,
+		};
+
 		const [message] = this.find(query, options).fetch();
-		return message && message.ts;
+		return message?.ts;
 	}
 
 	findByRoomIdAndMessageIds(rid, messageIds, options) {
@@ -1085,18 +1096,20 @@ export class Messages extends Base {
 	// threads
 
 	countThreads() {
-		return this.find({ tcount: { $exists: true } }).count();
+		// remove _id to use covered query
+		return this.find({ tcount: { $exists: true } }, { fields: { tcount: 1, _id: 0 } }).count();
 	}
 
-	removeThreadRefByThreadId(tmid) {
-		const query = { tmid };
-		const update = {
-			$unset: {
-				tmid: 1,
-			},
-		};
-		return this.update(query, update, { multi: true });
-	}
+	// not used
+	// removeThreadRefByThreadId(tmid) {
+	// 	const query = { tmid };
+	// 	const update = {
+	// 		$unset: {
+	// 			tmid: 1,
+	// 		},
+	// 	};
+	// 	return this.update(query, update, { multi: true });
+	// }
 
 	updateRepliesByThreadId(tmid, replies, ts) {
 		const query = {
@@ -1123,10 +1136,6 @@ export class Messages extends Base {
 	getThreadFollowsByThreadId(tmid) {
 		const msg = this.findOneById(tmid, { fields: { replies: 1 } });
 		return msg && msg.replies;
-	}
-
-	getFirstReplyTsByThreadId(tmid) {
-		return this.findOne({ tmid }, { fields: { ts: 1 }, sort: { ts: 1 } });
 	}
 
 	unsetThreadByThreadId(tmid) {
@@ -1201,7 +1210,7 @@ export class Messages extends Base {
 			token: { $exists: false },
 		};
 
-		return this.findOne(query, { sort: { ts: 1 } });
+		return this.findOne(query, { sort: { ts: 1 } }); // TODO should this be -1?
 	}
 
 	findAllImportedMessagesWithFilesToDownload() {
@@ -1221,6 +1230,21 @@ export class Messages extends Base {
 		};
 
 		return this.find(query);
+	}
+
+	// remove this
+	findDiscussionsByRoomAndText(rid, text, options) {
+		const query = {
+			rid,
+			drid: { $exists: true },
+			...text && {
+				$text: {
+					$search: text,
+				},
+			},
+		};
+
+		return this.find(query, options);
 	}
 }
 
