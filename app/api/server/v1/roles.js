@@ -13,6 +13,19 @@ API.v1.addRoute('roles.list', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('roles.getRole', { authRequired: true }, {
+	get() {
+		const { id, name } = this.queryParams;
+
+		if (!id && !name) {
+			throw new Meteor.Error('error-id-or-name-required', 'Param "id" or "name" must be provided');
+		}
+		const role = Roles.findOneByIdOrName(id, { fields: { _updatedAt: 0 } }).fetch();
+
+		return API.v1.success({ role });
+	},
+});
+
 API.v1.addRoute('roles.sync', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;

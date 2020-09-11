@@ -2,6 +2,10 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { registerAdminRoute } from '../../../client/admin';
 import { t } from '../../utils/client';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
+createTemplateForComponent('newRole', () => import('../../../client/admin/permissions/NewRolePage'));
+createTemplateForComponent('editRole', () => import('../../../client/admin/permissions/EditRolePage'));
 
 registerAdminRoute('/permissions', {
 	name: 'admin-permissions',
@@ -19,9 +23,9 @@ registerAdminRoute('/permissions/:name?/edit', {
 	async action(/* params*/) {
 		await import('./views');
 		return BlazeLayout.render('main', {
-			center: 'pageContainer',
-			pageTitle: t('Role_Editing'),
-			pageTemplate: 'permissionsRole',
+			center: 'editRole',
+			// pageTitle: t('Role_Editing'),
+			// pageTemplate: 'permissionsRole',
 		});
 	},
 });
@@ -31,9 +35,9 @@ registerAdminRoute('/permissions/new', {
 	async action(/* params*/) {
 		await import('./views');
 		return BlazeLayout.render('main', {
-			center: 'pageContainer',
-			pageTitle: t('Role_Editing'),
-			pageTemplate: 'permissionsRole',
+			center: 'newRole',
+			// pageTitle: t('Role_Editing'),
+			// pageTemplate: 'permissionsRole',
 		});
 	},
 });
