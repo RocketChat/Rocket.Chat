@@ -348,22 +348,22 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
-
-			request.get(api('users.info'))
-				.set(credentials)
-				.query({
-					username: 'ufs',
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.user).to.have.property('type', 'user');
-					expect(res.body.user).to.have.property('name', 'testuser');
-					expect(res.body.user).to.have.property('username', 'ufs');
-					expect(res.body.user).to.have.property('active', true);
-				})
-				.end(done);
+				.then(() => {
+					request.get(api('users.info'))
+						.set(credentials)
+						.query({
+							username: 'ufs',
+						})
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.user).to.have.property('type', 'user');
+							expect(res.body.user).to.have.property('name', 'testuser');
+							expect(res.body.user).to.have.property('username', 'ufs');
+							expect(res.body.user).to.have.property('active', true);
+						})
+						.end(done);
+				});
 		});
 	});
 	describe('[/users.getPresence]', () => {
