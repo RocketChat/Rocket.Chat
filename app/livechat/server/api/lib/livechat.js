@@ -4,13 +4,17 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger, LivechatFilter } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
 
 export function online(department) {
 	return Livechat.online(department);
+}
+
+export function findFilters() {
+	return LivechatFilter.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'regex', 'slug'));
 }
 
 export function findTriggers() {
@@ -94,6 +98,7 @@ export function normalizeHttpHeaderData(headers = {}) {
 export function settings(url) {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = findTriggers();
+	const filters = findFilters();
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
 	const emojis = Meteor.call('listEmojiCustom');
@@ -172,6 +177,7 @@ export function settings(url) {
 			values: ['1', '2', '3', '4', '5'],
 		},
 		triggers,
+		filters,
 		departments,
 		resources: {
 			sound,

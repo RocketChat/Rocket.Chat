@@ -13,8 +13,9 @@ type TriggerActions = {
 	name: string;
 	params: {
 		sender: string | undefined;
-		msg: string;
-		name: string;
+		department: string | undefined;
+		msg: string | undefined;
+		name: string | undefined;
 	};
 }
 
@@ -66,16 +67,24 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 	} = conditions;
 
 	const {
+		name: actionName,
 		params: {
 			sender: actionSender,
 			msg: actionMsg,
 			name: actionAgentName,
+			department: actionDepartmentName,
 		},
 	} = actions;
 
 	const conditionOptions: SelectOptions = useMemo(() => [
 		['page-url', t('Visitor_page_URL')],
 		['time-on-site', t('Visitor_time_on_site')],
+		['open-chat-window', t('Visitor_opens_chat_window')],
+	], [t]);
+
+	const actionOptions: SelectOptions = useMemo(() => [
+		['send-message', t('Send_a_message')],
+		['start-session', t('Start_a_session')],
 	], [t]);
 
 	const senderOptions: SelectOptions = useMemo(() => [
@@ -97,12 +106,31 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 		});
 	});
 
+	const handleActionName = useMutableCallback((name) => {
+		handleActions({
+			name,
+			params: {
+				...actions.params,
+			},
+		});
+	});
+
 	const handleActionAgentName = useMutableCallback(({ currentTarget: { value: name } }) => {
 		handleActions({
 			...actions,
 			params: {
 				...actions.params,
 				name,
+			},
+		});
+	});
+
+	const handleActionDepartmentName = useMutableCallback(({ currentTarget: { value: department } }) => {
+		handleActions({
+			...actions,
+			params: {
+				...actions.params,
+				department,
 			},
 		});
 	});
@@ -160,24 +188,29 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 			<Field.Row>
 				<Select options={conditionOptions} value={conditionName} onChange={handleConditionName}/>
 			</Field.Row>
-			<Field.Row>
+			{conditionName !== 'open-chat-window' && <Field.Row>
 				<TextInput value={conditionValue} onChange={handleConditionValue} placeholder={conditionName === 'page-url' ? t('Enter_a_regex') : t('Time_in_seconds')}/>
-			</Field.Row>
+			</Field.Row>}
 		</Field>
 		<Field className={className}>
 			<Field.Label>{t('Action')}</Field.Label>
 			<Field.Row>
-				<TextInput value={t('Send_a_message')} disabled/>
+				<Select options={actionOptions} value={actionName} onChange={handleActionName}/>
 			</Field.Row>
-			<Field.Row>
-				<Select options={senderOptions} value={actionSender} onChange={handleActionSender} placeholder={t('Select_an_option')}/>
-			</Field.Row>
-			{actionSender === 'custom' && <Field.Row>
-				<TextInput value={actionAgentName} onChange={handleActionAgentName} placeholder={t('Name_of_agent')}/>
+			{actionName === 'start-session' && <Field.Row>
+				<TextInput value={actionDepartmentName} onChange={handleActionDepartmentName} placeholder={t('Name_of_department')}/>
 			</Field.Row>}
-			<Field.Row>
-				<TextAreaInput rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={t('Message')}/>
-			</Field.Row>
+			{actionName === 'send-message' && <>
+				<Field.Row>
+					<Select options={senderOptions} value={actionSender} onChange={handleActionSender} placeholder={t('Select_an_option')}/>
+				</Field.Row>
+				{actionSender === 'custom' && <Field.Row>
+					<TextInput value={actionAgentName} onChange={handleActionAgentName} placeholder={t('Name_of_agent')}/>
+				</Field.Row>}
+				<Field.Row>
+					<TextAreaInput rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={t('Message')}/>
+				</Field.Row>
+			</>}
 		</Field>
 	</>;
 };

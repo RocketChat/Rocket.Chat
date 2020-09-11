@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Callout, FieldGroup, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import TriggersForm from './TriggersForm';
+import FiltersForm from './FiltersForm';
 import PageSkeleton from '../../components/PageSkeleton';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -11,87 +11,52 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { useRoute } from '../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
-const EditTriggerPageContainer = ({ id, onSave }) => {
+const EditFilterPageContainer = ({ id, onSave }) => {
 	const t = useTranslation();
-	const { data, state } = useEndpointDataExperimental(`livechat/triggers/${ id }`);
+	const { data, state } = useEndpointDataExperimental(`livechat/filters/${ id }`);
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <PageSkeleton />;
 	}
 
-	if (state === ENDPOINT_STATES.ERROR || !data?.trigger) {
+	if (state === ENDPOINT_STATES.ERROR || !data?.filter) {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;
 	}
 
-	return <EditTriggerPage data={data.trigger} onSave={onSave}/>;
+	return <EditFilterPage data={data.filter} onSave={onSave}/>;
 };
 
 const getInitialValues = ({
 	name,
 	description,
 	enabled,
-	runOnce,
-	conditions: [{
-		name: condName,
-		value: condValue,
-	}],
-	actions: [{
-		name: actName,
-		params: {
-			sender: actSender,
-			msg: actMsg,
-			name: actSenderName,
-			department: actDept,
-		},
-	}],
+	regex,
+	slug,
 }) => ({
 	name: name ?? '',
 	description: description ?? '',
 	enabled: !!enabled,
-	runOnce: !!runOnce,
-	conditions: {
-		name: condName ?? 'page-url',
-		value: condValue ?? '',
-	},
-	actions: {
-		name: actName ?? 'send-message',
-		params: {
-			sender: actSender ?? 'queue',
-			msg: actMsg ?? '',
-			name: actSenderName ?? '',
-			department: actDept ?? '',
-		},
-	},
+	regex: regex ?? '',
+	slug: slug ?? '',
 });
 
-const EditTriggerPage = ({ data, onSave }) => {
+const EditFilterPage = ({ data, onSave }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const router = useRoute('omnichannel-triggers');
+	const router = useRoute('omnichannel-filters');
 
-	const save = useMethod('livechat:saveTrigger');
+	const save = useMethod('livechat:saveFilter');
 
 	const { values, handlers } = useForm(getInitialValues(data));
 
 	const handleSave = useMutableCallback(async () => {
 		try {
-			const { actions: { name: actionName, params: { sender, msg, name, department } }, ...restValues } = values;
 			await save({
 				_id: data._id,
-				...restValues,
-				conditions: [values.conditions],
-				actions: [{
-					name: actionName,
-					params: {
-						sender,
-						msg,
-						department,
-						...sender === 'custom' && { name },
-					},
-				}],
+				...values,
 			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			onSave();
@@ -103,7 +68,7 @@ const EditTriggerPage = ({ data, onSave }) => {
 
 	return 	<>
 		<FieldGroup>
-			<TriggersForm values={values} handlers={handlers}/>
+			<FiltersForm values={values} handlers={handlers}/>
 		</FieldGroup>
 		<ButtonGroup align='end'>
 			<Button primary onClick={handleSave}>
@@ -113,4 +78,4 @@ const EditTriggerPage = ({ data, onSave }) => {
 	</>;
 };
 
-export default EditTriggerPageContainer;
+export default EditFilterPageContainer;

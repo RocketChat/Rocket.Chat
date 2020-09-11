@@ -64,6 +64,11 @@ registerOmnichannelRoute('/triggers/:context?/:id?', {
 	lazyRouteComponent: () => import('./triggers/TriggersPage'),
 });
 
+registerOmnichannelRoute('/filters/:context?/:id?', {
+	name: 'omnichannel-filters',
+	lazyRouteComponent: () => import('./filters/FiltersPage'),
+});
+
 registerOmnichannelRoute('/facebook', {
 	name: 'omnichannel-facebook',
 	lazyRouteComponent: () => import('./facebook/FacebookPage'),

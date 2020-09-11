@@ -12,7 +12,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 
-const TriggersRow = memo(function TriggersRow(props) {
+const FiltersRow = memo(function FiltersRow(props) {
 	const {
 		_id,
 		name,
@@ -26,9 +26,9 @@ const TriggersRow = memo(function TriggersRow(props) {
 
 	const setModal = useSetModal();
 
-	const bhRoute = useRoute('omnichannel-triggers');
+	const bhRoute = useRoute('omnichannel-filters');
 
-	const deleteTrigger = useMethod('livechat:removeTrigger');
+	const deleteFilter = useMethod('livechat:removeFilter');
 
 	const handleClick = useMutableCallback(() => {
 		bhRoute.push({
@@ -47,10 +47,10 @@ const TriggersRow = memo(function TriggersRow(props) {
 
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
-		const onDeleteTrigger = async () => {
+		const onDeleteFilter = async () => {
 			try {
-				await deleteTrigger(_id);
-				dispatchToastMessage({ type: 'success', message: t('Trigger_removed') });
+				await deleteFilter(_id);
+				dispatchToastMessage({ type: 'success', message: t('Filter_removed') });
 				onDelete();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -58,7 +58,7 @@ const TriggersRow = memo(function TriggersRow(props) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteTrigger} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal onDelete={onDeleteFilter} onCancel={() => setModal()}/>);
 	});
 
 	return <Table.Row
@@ -86,7 +86,7 @@ const TriggersRow = memo(function TriggersRow(props) {
 	</Table.Row>;
 });
 
-const TriggersTableContainer = ({ reloadRef }) => {
+const FiltersTableContainer = ({ reloadRef }) => {
 	const t = useTranslation();
 	const [params, setParams] = useState(() => ({ current: 0, itemsPerPage: 25 }));
 
@@ -95,7 +95,7 @@ const TriggersTableContainer = ({ reloadRef }) => {
 		itemsPerPage,
 	} = params;
 
-	const { data, state, reload } = useEndpointDataExperimental('livechat/triggers', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
+	const { data, state, reload } = useEndpointDataExperimental('livechat/filters', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
 
 	reloadRef.current = reload;
 
@@ -105,16 +105,16 @@ const TriggersTableContainer = ({ reloadRef }) => {
 		</Callout>;
 	}
 
-	return <TriggersTable
-		triggers={data?.triggers}
-		totalTriggers={data?.total}
+	return <FiltersTable
+		filters={data?.filters}
+		totalFilters={data?.total}
 		params={params}
 		onChangeParams={setParams}
 		onDelete={reload}
 	/>;
 };
 
-export function TriggersTable({ triggers, totalTriggers, params, onChangeParams, onDelete }) {
+export function FiltersTable({ filters, totalFilters, params, onChangeParams, onDelete }) {
 	const t = useTranslation();
 
 	const [ref, onMediumBreakpoint] = useResizeInlineBreakpoint([600], 200);
@@ -136,13 +136,13 @@ export function TriggersTable({ triggers, totalTriggers, params, onChangeParams,
 			</GenericTable.HeaderCell>
 
 		</>}
-		results={triggers}
-		total={totalTriggers}
+		results={filters}
+		total={totalFilters}
 		params={params}
 		setParams={onChangeParams}
 	>
-		{(props) => <TriggersRow key={props._id} onDelete={onDelete} medium={onMediumBreakpoint} {...props} />}
+		{(props) => <FiltersRow key={props._id} onDelete={onDelete} medium={onMediumBreakpoint} {...props} />}
 	</GenericTable>;
 }
 
-export default TriggersTableContainer;
+export default FiltersTableContainer;

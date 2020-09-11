@@ -7,6 +7,7 @@ import '../imports/server/rest/upload.js';
 import '../imports/server/rest/inquiries.js';
 import '../imports/server/rest/rooms.js';
 import '../imports/server/rest/appearance.js';
+import '../imports/server/rest/filters.js';
 import '../imports/server/rest/triggers.js';
 import '../imports/server/rest/integrations.js';
 import '../imports/server/rest/messages.js';
