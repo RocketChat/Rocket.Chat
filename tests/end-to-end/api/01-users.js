@@ -335,8 +335,8 @@ describe('[Users]', function() {
 			});
 		});
 
-		it('should correctly route users that have `ufs` in their username', async () => {
-			await request.post(api('users.create'))
+		it('should correctly route users that have `ufs` in their username', (done) => {
+			request.post(api('users.create'))
 				.set(credentials)
 				.send({
 					email: 'me@email.com',
@@ -347,9 +347,10 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				});
+				})
+				.end(done);
 
-			await request.get(api('users.info'))
+			request.get(api('users.info'))
 				.set(credentials)
 				.query({
 					username: 'ufs',
@@ -361,7 +362,8 @@ describe('[Users]', function() {
 					expect(res.body.user).to.have.property('name', 'testuser');
 					expect(res.body.user).to.have.property('username', 'ufs');
 					expect(res.body.user).to.have.property('active', true);
-				});
+				})
+				.end(done);
 		});
 	});
 	describe('[/users.getPresence]', () => {
