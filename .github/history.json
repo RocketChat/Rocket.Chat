@@ -15363,14 +15363,6 @@
       ]
     },
     "HEAD": {
-      "node_version": "12.16.1",
-      "npm_version": "6.14.0",
-      "apps_engine_version": "1.17.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
       "pull_requests": []
     },
     "0.66.0-rc.0": {
@@ -48026,8 +48018,8 @@
           ]
         }
       ]
-		},
-		"3.6.0-rc.0": {
+    },
+    "3.6.0-rc.0": {
       "node_version": "12.16.1",
       "npm_version": "6.14.0",
       "apps_engine_version": "1.17.0-beta.3629",
@@ -49194,6 +49186,81 @@
             "gabriellsh",
             "tassoevan",
             "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.6.1": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.17.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18862",
+          "title": "[FIX] Showing alerts during setup wizard",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.6.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18852",
+          "title": "[FIX] User can't invite or join other Omnichannel rooms",
+          "userLogin": "renatobecker",
+          "milestone": "3.6.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "18851",
+          "title": "[FIX] User administration throwing a blank page if user has no role",
+          "userLogin": "ggazzo",
+          "milestone": "3.6.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18850",
+          "title": "[FIX] IE11 support livechat widget",
+          "userLogin": "ggazzo",
+          "milestone": "3.6.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18841",
+          "title": "[FIX] File upload (Avatars, Emoji, Sounds)",
+          "userLogin": "ggazzo",
+          "milestone": "3.6.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "18835",
+          "title": "[FIX][ENTERPRISE] Omnichannel service status switching to unavailable",
+          "userLogin": "renatobecker",
+          "milestone": "3.6.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "18795",
+          "title": "[FIX] Omnichannel Current Chats open status filter not working",
+          "userLogin": "renatobecker",
+          "milestone": "3.6.1",
+          "contributors": [
+            "renatobecker"
           ]
         }
       ]
