@@ -47,7 +47,7 @@ Meteor.startup(function() {
 			throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
 		}
 
-		return room;
+		return user;
 	});
 });
 
