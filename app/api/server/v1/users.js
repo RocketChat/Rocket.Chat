@@ -124,8 +124,6 @@ API.v1.addRoute('users.getAvatar', { authRequired: false }, {
 
 API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 	post() {
-		console.log('bodyParams');
-		console.log(JSON.stringify(this.bodyParams));
 		check(this.bodyParams, {
 			userId: String,
 			activeStatus: Boolean,
