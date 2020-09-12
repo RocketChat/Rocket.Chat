@@ -1,5 +1,4 @@
 import { Random } from 'meteor/random';
-import { ReadPreference } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import Analytics from '../models/Analytics';

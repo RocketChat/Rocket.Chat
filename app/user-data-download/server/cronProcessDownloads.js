@@ -8,7 +8,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 import moment from 'moment';
-import { ReadPreference } from 'mongodb';
 
 import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';

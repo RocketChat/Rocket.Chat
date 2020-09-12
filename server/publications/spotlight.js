@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
-import { ReadPreference } from 'mongodb';
 
 import { hasAllPermission, hasPermission, canAccessRoom } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../../app/models/server';

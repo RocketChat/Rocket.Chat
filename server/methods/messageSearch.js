@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import s from 'underscore.string';
-import { ReadPreference } from 'mongodb';
 
 import { Subscriptions } from '../../app/models/server';
 import { Messages } from '../../app/models/server/raw';

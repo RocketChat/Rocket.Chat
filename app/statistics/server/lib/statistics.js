@@ -3,7 +3,6 @@ import os from 'os';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { ReadPreference } from 'mongodb';
 
 import {
 	Sessions,

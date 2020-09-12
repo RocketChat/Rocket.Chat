@@ -1,5 +1,3 @@
-import { ReadPreference } from 'mongodb';
-
 import { Base } from './_Base';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
