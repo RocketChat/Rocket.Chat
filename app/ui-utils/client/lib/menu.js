@@ -181,6 +181,10 @@ export const menu = new class extends EventEmitter {
 
 			// Close main content
 			this.mainContent.css('transform', 'translate3d( 100%, 0 , 0)');
+			const currentPath = FlowRouter.current().path;
+			if (currentPath.startsWith('/admin') || currentPath.startsWith('/account') || currentPath.startsWith('/omnichannel')) {
+				return;
+			}
 			FlowRouter.withReplaceState(function() {
 				FlowRouter.go('/home');
 			});

@@ -43,7 +43,7 @@ Template.sideNav.helpers({
 			return 'extended';
 		}
 		const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
-		return viewMode || 'extended';
+		return viewMode || 'condensed';
 	},
 
 	sidebarHideAvatar() {
@@ -109,7 +109,7 @@ const redirectToDefaultChannelIfNeeded = () => {
 
 const openMainContentIfNeeded = () => {
 	const currentRouteState = FlowRouter.current();
-	const defaults = ['/', '/home', '/account'];
+	const defaults = ['/', '/home'];
 
 	if (defaults.includes(currentRouteState.path)) {
 		menu.open();
