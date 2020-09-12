@@ -1,3 +1,5 @@
+import { ReadPreference } from 'mongodb';
+
 import { Base } from './_Base';
 
 export const aggregates = {
@@ -381,6 +383,8 @@ export class Sessions extends Base {
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ ip: 1, loginAt: 1 });
 		this.tryEnsureIndex({ _computedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 45 });
+
+		this.secondaryCollection = this.model.rawDatabase().collection(this.model._name, { readPreference: ReadPreference.SECONDARY_PREFERRED });
 	}
 
 	getUniqueUsersOfYesterday() {
@@ -395,7 +399,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueUsersOfYesterday(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueUsersOfYesterday(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
@@ -411,7 +415,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueUsersOfLastMonth(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueUsersOfLastMonth(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
@@ -427,7 +431,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueDevicesOfYesterday(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueDevicesOfYesterday(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
@@ -443,7 +447,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueDevicesOfLastMonth(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueDevicesOfLastMonth(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
@@ -459,7 +463,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueOSOfYesterday(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueOSOfYesterday(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
@@ -475,7 +479,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueOSOfLastMonth(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueOSOfLastMonth(this.secondaryCollection, { year, month, day })),
 		};
 	}
 

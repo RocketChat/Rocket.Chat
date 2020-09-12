@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import s from 'underscore.string';
+import { ReadPreference } from 'mongodb';
 
-import { Subscriptions, Messages } from '../../app/models';
+import { Subscriptions } from '../../app/models/server';
+import { Messages } from '../../app/models/server/raw';
 import { settings } from '../../app/settings';
 
 Meteor.methods({
@@ -40,6 +42,7 @@ Meteor.methods({
 
 		const query = {};
 		const options = {
+			projection: {},
 			sort: {
 				ts: -1,
 			},
@@ -213,7 +216,7 @@ Meteor.methods({
 				query.$text = {
 					$search: text,
 				};
-				options.fields = {
+				options.projection = {
 					score: {
 						$meta: 'textScore',
 					},
@@ -240,12 +243,15 @@ Meteor.methods({
 			}
 
 			if (!settings.get('Message_ShowEditedStatus')) {
-				options.fields = {
+				options.projection = {
 					editedAt: 0,
 				};
 			}
 
-			result.message.docs = Messages.find(query, options).fetch();
+			result.message.docs = Promise.await(Messages.find(query, {
+				readPreference: ReadPreference.SECONDARY_PREFERRED,
+				...options,
+			}).toArray());
 		}
 
 		return result;

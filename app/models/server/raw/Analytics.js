@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+import { ReadPreference } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import Analytics from '../models/Analytics';
@@ -146,4 +147,4 @@ export class AnalyticsRaw extends BaseRaw {
 	}
 }
 
-export default new AnalyticsRaw(Analytics.model.rawCollection());
+export default new AnalyticsRaw(Analytics.model.rawDatabase().collection(Analytics.model._name, { readPreference: ReadPreference.SECONDARY_PREFERRED }));

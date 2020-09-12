@@ -3,6 +3,7 @@ import os from 'os';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { ReadPreference } from 'mongodb';
 
 import {
 	Sessions,
@@ -131,7 +132,9 @@ export const statistics = {
 		statistics.enterpriseReady = true;
 
 		statistics.uploadsTotal = Uploads.find().count();
-		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
+		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{
+			$group: { _id: 'total', total: { $sum: '$size' } },
+		}], { readPreference: ReadPreference.SECONDARY_PREFERRED }).toArray());
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
 		statistics.migration = Migrations._getControl();
@@ -156,7 +159,15 @@ export const statistics = {
 			totalActive: Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length,
 		};
 
-		const integrations = Integrations.find().fetch();
+		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
+			projection: {
+				_id: 0,
+				type: 1,
+				enabled: 1,
+				scriptEnabled: 1,
+			},
+			readPreference: ReadPreference.SECONDARY_PREFERRED,
+		}).toArray());
 
 		statistics.integrations = {
 			totalIntegrations: integrations.length,
