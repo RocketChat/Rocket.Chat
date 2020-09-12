@@ -6,6 +6,7 @@ import { ReadPreference } from 'mongodb';
 import { Subscriptions } from '../../app/models/server';
 import { Messages } from '../../app/models/server/raw';
 import { settings } from '../../app/settings';
+import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 Meteor.methods({
 	messageSearch(text, rid, limit) {
@@ -249,7 +250,7 @@ Meteor.methods({
 			}
 
 			result.message.docs = Promise.await(Messages.find(query, {
-				readPreference: ReadPreference.SECONDARY_PREFERRED,
+				readPreference: readSecondaryPreferred(Messages.col.s.db),
 				...options,
 			}).toArray());
 		}

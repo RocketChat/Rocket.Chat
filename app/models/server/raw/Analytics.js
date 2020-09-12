@@ -3,6 +3,7 @@ import { ReadPreference } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import Analytics from '../models/Analytics';
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 export class AnalyticsRaw extends BaseRaw {
 	saveMessageSent({ room, date }) {
@@ -147,4 +148,5 @@ export class AnalyticsRaw extends BaseRaw {
 	}
 }
 
-export default new AnalyticsRaw(Analytics.model.rawDatabase().collection(Analytics.model._name, { readPreference: ReadPreference.SECONDARY_PREFERRED }));
+const db = Analytics.model.rawDatabase();
+export default new AnalyticsRaw(db.collection(Analytics.model._name, { readPreference: readSecondaryPreferred(db) }));

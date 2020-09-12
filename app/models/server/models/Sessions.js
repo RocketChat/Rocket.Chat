@@ -1,6 +1,7 @@
 import { ReadPreference } from 'mongodb';
 
 import { Base } from './_Base';
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 export const aggregates = {
 	dailySessionsOfYesterday(collection, { year, month, day }) {
@@ -384,7 +385,8 @@ export class Sessions extends Base {
 		this.tryEnsureIndex({ ip: 1, loginAt: 1 });
 		this.tryEnsureIndex({ _computedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 45 });
 
-		this.secondaryCollection = this.model.rawDatabase().collection(this.model._name, { readPreference: ReadPreference.SECONDARY_PREFERRED });
+		const db = this.model.rawDatabase();
+		this.secondaryCollection = db.collection(this.model._name, { readPreference: readSecondaryPreferred(db) });
 	}
 
 	getUniqueUsersOfYesterday() {

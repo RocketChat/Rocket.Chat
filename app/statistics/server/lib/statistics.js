@@ -23,6 +23,7 @@ import { Migrations } from '../../../migrations/server';
 import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { NotificationQueue } from '../../../models/server/raw';
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 const wizardFields = [
 	'Organization_Type',
@@ -36,6 +37,8 @@ const wizardFields = [
 
 export const statistics = {
 	get: function _getStatistics() {
+		const readPreference = readSecondaryPreferred(Uploads.model.rawDatabase());
+
 		const statistics = {};
 
 		// Setup Wizard
@@ -134,7 +137,7 @@ export const statistics = {
 		statistics.uploadsTotal = Uploads.find().count();
 		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{
 			$group: { _id: 'total', total: { $sum: '$size' } },
-		}], { readPreference: ReadPreference.SECONDARY_PREFERRED }).toArray());
+		}], { readPreference }).toArray());
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
 		statistics.migration = Migrations._getControl();
@@ -166,7 +169,7 @@ export const statistics = {
 				enabled: 1,
 				scriptEnabled: 1,
 			},
-			readPreference: ReadPreference.SECONDARY_PREFERRED,
+			readPreference,
 		}).toArray());
 
 		statistics.integrations = {

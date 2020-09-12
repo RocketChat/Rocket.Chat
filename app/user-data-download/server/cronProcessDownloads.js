@@ -14,6 +14,7 @@ import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
 import { FileUpload } from '../../file-upload/server';
 import * as Mailer from '../../mailer';
+import { readSecondaryPreferred } from '../../../server/database/readSecondaryPreferred';
 
 const fsStat = util.promisify(fs.stat);
 const fsOpen = util.promisify(fs.open);
@@ -224,7 +225,7 @@ export async function exportRoomMessages(rid, exportType, skip, limit, assetsPat
 		sort: { ts: 1 },
 		skip,
 		limit,
-		readPreference: ReadPreference.SECONDARY_PREFERRED,
+		readPreference: readSecondaryPreferred(Messages.model.rawDatabase()),
 	});
 
 	const total = await cursor.count();

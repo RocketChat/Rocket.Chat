@@ -8,6 +8,7 @@ import { Subscriptions, Rooms } from '../../app/models/server';
 import { Users } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
 import { roomTypes } from '../../app/utils/server';
+import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 function fetchRooms(userId, rooms) {
 	if (!settings.get('Store_Last_Message') || hasPermission(userId, 'preview-c-room')) {
@@ -121,7 +122,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 		sort: {
 			[settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1,
 		},
-		readPreference: ReadPreference.SECONDARY_PREFERRED,
+		readPreference: readSecondaryPreferred(Users.col.s.db),
 	};
 
 	const room = Rooms.findOneById(rid, { fields: { _id: 1, t: 1, uids: 1 } });
