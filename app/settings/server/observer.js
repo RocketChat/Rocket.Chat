@@ -10,10 +10,20 @@ const updateValue = (id, fields) => {
 	setValue(id, fields.value);
 };
 
-Meteor.startup(() => Settings.find({}, { fields: { value: 1 } }).observeChanges({
-	added: updateValue,
-	changed: updateValue,
-	removed(id) {
-		setValue(id, undefined);
-	},
-}));
+Meteor.startup(() => {
+	Settings.find({}, { fields: { value: 1 } }).fetch().forEach((record) => updateValue(record._id, { value: record.value }));
+
+	Settings.on('change', ({ clientAction, id, data }) => {
+		switch (clientAction) {
+			case 'inserted':
+			case 'updated':
+				if (data.value) {
+					updateValue(id, { value: data.value });
+				}
+				break;
+			case 'removed':
+				setValue(id, undefined);
+				break;
+		}
+	});
+});

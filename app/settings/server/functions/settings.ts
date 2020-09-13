@@ -385,13 +385,27 @@ class Settings extends SettingsBase {
 	*/
 	init(): void {
 		this.initialLoad = true;
-		SettingsModel.find().observe({
-			added: (record: ISettingRecord) => this.storeSettingValue(record, this.initialLoad),
-			changed: (record: ISettingRecord) => this.storeSettingValue(record, this.initialLoad),
-			removed: (record: ISettingRecord) => this.removeSettingValue(record, this.initialLoad),
+		SettingsModel.find().forEach((record: ISettingRecord) => {
+			this.storeSettingValue(record, this.initialLoad);
 		});
 		this.initialLoad = false;
 		this.afterInitialLoad.forEach((fn) => fn(Meteor.settings));
+
+		SettingsModel.on('change', ({ clientAction, id, data }) => {
+			switch (clientAction) {
+				case 'inserted':
+					this.storeSettingValue(data, this.initialLoad);
+					break;
+				case 'updated':
+					data = SettingsModel.findOneById(id);
+					this.storeSettingValue(data, this.initialLoad);
+					break;
+				case 'removed':
+					data = SettingsModel.trashFindOneById(id);
+					this.removeSettingValue(data, this.initialLoad);
+					break;
+			}
+		});
 	}
 
 	onAfterInitialLoad(fn: (settings: Meteor.Settings) => void): void {
