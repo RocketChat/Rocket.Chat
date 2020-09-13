@@ -25,7 +25,7 @@ try {
 const actions = {
 	i: 'insert',
 	u: 'update',
-	d: 'delete',
+	d: 'remove',
 };
 
 export class BaseDb extends EventEmitter {
@@ -43,6 +43,8 @@ export class BaseDb extends EventEmitter {
 		}
 
 		this.baseModel = baseModel;
+
+		this.preventSetUpdatedAt = !!options.preventSetUpdatedAt;
 
 		this.wrapModel();
 
@@ -92,6 +94,9 @@ export class BaseDb extends EventEmitter {
 	}
 
 	setUpdatedAt(record = {}) {
+		if (this.preventSetUpdatedAt) {
+			return record;
+		}
 		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
 		// setUpdatedAt(record = {}, checkQuery = false, query) {
 		// if (checkQuery === true) {
