@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import { settings } from '../../settings';
-import { Rooms, Settings } from '../../models';
+import { settings } from '../../settings/server';
+import { Rooms } from '../../models';
 import { cleanRoomHistory } from '../../lib';
 
 let types = [];
@@ -106,24 +106,7 @@ function reloadPolicy() {
 
 Meteor.startup(function() {
 	Meteor.defer(function() {
-		Settings.find({
-			_id: {
-				$in: [
-					'RetentionPolicy_Enabled',
-					'RetentionPolicy_Precision',
-					'RetentionPolicy_AppliesToChannels',
-					'RetentionPolicy_AppliesToGroups',
-					'RetentionPolicy_AppliesToDMs',
-					'RetentionPolicy_MaxAge_Channels',
-					'RetentionPolicy_MaxAge_Groups',
-					'RetentionPolicy_MaxAge_DMs',
-				],
-			},
-		}).observe({
-			changed() {
-				reloadPolicy();
-			},
-		});
+		settings.get(/^RetentionPolicy_/, () => reloadPolicy());
 
 		reloadPolicy();
 	});
