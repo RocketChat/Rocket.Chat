@@ -4,7 +4,6 @@ import objectPath from 'object-path';
 import _ from 'underscore';
 
 import { BaseDb } from './_BaseDb';
-import { oplogEvents } from '../oplogEvents';
 
 export class Base {
 	constructor(nameOrModel, options) {
@@ -17,16 +16,6 @@ export class Base {
 		this.emit = this._db.emit.bind(this._db);
 
 		this.db = this;
-
-		this._db.on('change', ({ action, oplog }) => {
-			if (!oplog) {
-				return;
-			}
-			oplogEvents.emit('record', {
-				collection: this.collectionName,
-				op: action,
-			});
-		});
 	}
 
 	get origin() {

@@ -5,6 +5,7 @@ import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
 import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
+import { metrics } from '../../../metrics/server/lib/metrics';
 
 const baseName = 'rocketchat_';
 
@@ -20,6 +21,12 @@ try {
 } catch (e) {
 	console.log(e);
 }
+
+const actions = {
+	i: 'insert',
+	u: 'update',
+	d: 'delete',
+};
 
 export class BaseDb extends EventEmitter {
 	constructor(model, baseModel, options = {}) {
@@ -189,62 +196,68 @@ export class BaseDb extends EventEmitter {
 		);
 	}
 
-	processOplogRecord(action) {
-		if (action.op.op === 'i') {
+	processOplogRecord({ id, op }) {
+		const action = actions[op.op];
+		metrics.oplog.inc({
+			collection: this.collectionName,
+			op: action,
+		});
+
+		if (action === 'insert') {
 			this.emit('change', {
-				action: 'insert',
+				action,
 				clientAction: 'inserted',
-				id: action.op.o._id,
-				data: action.op.o,
+				id: op.o._id,
+				data: op.o,
 				oplog: true,
 			});
 			return;
 		}
 
-		if (action.op.op === 'u') {
-			if (!action.op.o.$set && !action.op.o.$unset) {
+		if (action === 'update') {
+			if (!op.o.$set && !op.o.$unset) {
 				this.emit('change', {
-					action: 'update',
+					action,
 					clientAction: 'updated',
-					id: action.id,
-					data: action.op.o,
+					id,
+					data: op.o,
 					oplog: true,
 				});
 				return;
 			}
 
 			const diff = {};
-			if (action.op.o.$set) {
-				for (const key in action.op.o.$set) {
-					if (action.op.o.$set.hasOwnProperty(key)) {
-						diff[key] = action.op.o.$set[key];
+			if (op.o.$set) {
+				for (const key in op.o.$set) {
+					if (op.o.$set.hasOwnProperty(key)) {
+						diff[key] = op.o.$set[key];
 					}
 				}
 			}
 
-			if (action.op.o.$unset) {
-				for (const key in action.op.o.$unset) {
-					if (action.op.o.$unset.hasOwnProperty(key)) {
+			if (op.o.$unset) {
+				for (const key in op.o.$unset) {
+					if (op.o.$unset.hasOwnProperty(key)) {
 						diff[key] = undefined;
 					}
 				}
 			}
 
 			this.emit('change', {
-				action: 'update',
+				action,
 				clientAction: 'updated',
-				id: action.id,
+				id,
 				diff,
 				oplog: true,
 			});
 			return;
 		}
 
-		if (action.op.op === 'd') {
+		if (action === 'remove') {
 			this.emit('change', {
-				action: 'remove',
+				action,
 				clientAction: 'removed',
-				id: action.id,
+				id,
 				oplog: true,
 			});
 		}
