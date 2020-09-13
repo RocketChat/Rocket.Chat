@@ -1,8 +1,12 @@
+import { promisify } from 'util';
+
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import s from 'underscore.string';
 import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
-import urlParser from 'mongodb/lib/url_parser';
+import _urlParser from 'mongodb/lib/url_parser';
+
+const urlParser = promisify(_urlParser);
 
 class OplogHandle {
 	dbName: string;
@@ -27,10 +31,10 @@ class OplogHandle {
 
 	async start(): Promise<OplogHandle> {
 		this.usingChangeStream = await this.isChangeStreamAvailable();
-		console.log({ usingChangeStream: this.usingChangeStream });
 		const oplogUrl = this.usingChangeStream ? process.env.MONGO_URL : process.env.MONGO_OPLOG_URL;
 
-		if (!this.usingChangeStream && (!oplogUrl || urlParser(oplogUrl).database !== 'local')) {
+		const urlParsed = await urlParser(oplogUrl);
+		if (!this.usingChangeStream && (!oplogUrl || urlParsed.dbName !== 'local')) {
 			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
 		}
 
@@ -39,7 +43,8 @@ class OplogHandle {
 		}
 
 		if (process.env.MONGO_OPLOG_URL) {
-			this.dbName = urlParser(process.env.MONGO_URL).database;
+			const urlParsed = await urlParser(process.env.MONGO_URL);
+			this.dbName = urlParsed.dbName;
 		}
 
 		this.client = new MongoClient(oplogUrl, {
@@ -149,7 +154,9 @@ class OplogHandle {
 	}
 }
 
-// process.env.USE_NEW_OPLOG = 'true';
+process.env.USE_NEW_OPLOG = 'true';
+process.env.IGNORE_CHANGE_STREAM = 'true';
+
 const oplogHandle = process.env.USE_NEW_OPLOG ? new OplogHandle().start() : undefined;
 
 export const getOplogHandle = async (): Promise<OplogHandle | undefined> => {
