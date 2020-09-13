@@ -13,10 +13,11 @@ const updateValue = (id, fields) => {
 Meteor.startup(() => {
 	Settings.find({}, { fields: { value: 1 } }).fetch().forEach((record) => updateValue(record._id, { value: record.value }));
 
-	Settings.on('change', ({ clientAction, id, data }) => {
+	Settings.on('change', ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
+				data = data ?? diff;
 				if (data.value) {
 					updateValue(id, { value: data.value });
 				}

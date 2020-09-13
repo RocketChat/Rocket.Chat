@@ -41,7 +41,7 @@ Users.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
-			const user = data || Users.findOneById(id);
+			const user = data ?? Users.findOneById(id);
 			eventService.promoteEvent('user.save', id, user);
 			break;
 
@@ -55,7 +55,7 @@ Rooms.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
-			const room = data || Rooms.findOneById(id);
+			const room = data ?? Rooms.findOneById(id);
 			eventService.promoteEvent('room.save', id, room);
 			break;
 

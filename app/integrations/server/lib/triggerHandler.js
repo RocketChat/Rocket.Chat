@@ -32,7 +32,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 					}
 					break;
 				case 'updated':
-					data = Models.Integrations.findOneById(id);
+					data = data ?? Models.Integrations.findOneById(id);
 					if (data.type === 'webhook-outgoing') {
 						this.removeIntegration(data);
 						this.addIntegration(data);

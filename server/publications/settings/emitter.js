@@ -9,7 +9,7 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted': {
-			const setting = data || Settings.findOneById(id);
+			const setting = data ?? Settings.findOneById(id);
 			const value = {
 				_id: setting._id,
 				value: setting.value,

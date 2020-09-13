@@ -3,6 +3,7 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
+disable-oplog
 rocketchat:mongo-config
 
 accounts-facebook@1.3.2

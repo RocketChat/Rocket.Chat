@@ -385,7 +385,7 @@ class Settings extends SettingsBase {
 	*/
 	init(): void {
 		this.initialLoad = true;
-		SettingsModel.find().forEach((record: ISettingRecord) => {
+		SettingsModel.find().fetch().forEach((record: ISettingRecord) => {
 			this.storeSettingValue(record, this.initialLoad);
 		});
 		this.initialLoad = false;
@@ -394,10 +394,8 @@ class Settings extends SettingsBase {
 		SettingsModel.on('change', ({ clientAction, id, data }) => {
 			switch (clientAction) {
 				case 'inserted':
-					this.storeSettingValue(data, this.initialLoad);
-					break;
 				case 'updated':
-					data = SettingsModel.findOneById(id);
+					data = data ?? SettingsModel.findOneById(id);
 					this.storeSettingValue(data, this.initialLoad);
 					break;
 				case 'removed':

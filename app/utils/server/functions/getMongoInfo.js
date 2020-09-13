@@ -3,7 +3,7 @@ import { MongoInternals } from 'meteor/mongo';
 export function getOplogInfo() {
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-	const oplogEnabled = Boolean(mongo._oplogHandle && mongo._oplogHandle.onOplogEntry);
+	const oplogEnabled = true; // Boolean(mongo._oplogHandle && mongo._oplogHandle.onOplogEntry);
 
 	return { oplogEnabled, mongo };
 }

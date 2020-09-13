@@ -52,9 +52,9 @@ Meteor.startup(function() {
 					UserPresenceMonitor.processUserSession(data, 'added');
 					break;
 				case 'updated':
-					const record = UsersSessionsModel.findOneById(id);
-					if (record) {
-						UserPresenceMonitor.processUserSession(record, 'changed');
+					data = data ?? UsersSessionsModel.findOneById(id);
+					if (data) {
+						UserPresenceMonitor.processUserSession(data, 'changed');
 					}
 					break;
 				case 'removed':

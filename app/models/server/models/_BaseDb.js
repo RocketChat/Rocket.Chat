@@ -6,6 +6,7 @@ import _ from 'underscore';
 
 import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 import { metrics } from '../../../metrics/server/lib/metrics';
+import { oplog } from './_oplogHandle';
 
 const baseName = 'rocketchat_';
 
@@ -48,10 +49,10 @@ export class BaseDb extends EventEmitter {
 
 		this.wrapModel();
 
-		const { oplogEnabled, mongo } = getMongoInfo();
+		const { oplogEnabled/* , mongo */ } = getMongoInfo();
 
 		// When someone start listening for changes we start oplog if available
-		const handleListener = (event /* , listener*/) => {
+		const handleListener = async (event /* , listener*/) => {
 			if (event !== 'change') {
 				return;
 			}
@@ -61,8 +62,12 @@ export class BaseDb extends EventEmitter {
 			const query = {
 				collection: this.collectionName,
 			};
+			console.log(this.collectionName);
 
-			if (!mongo._oplogHandle) {
+			const _oplogHandle = await oplog;
+			// const { _oplogHandle } = mongo;
+
+			if (!_oplogHandle) {
 				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
 				1. Start your mongodb in a replicaset mode: mongod --smallfiles --oplogSize 128 --replSet rs0\n
 				2. Start the replicaset via mongodb shell: mongo mongo/meteor --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"\n
@@ -70,13 +75,13 @@ export class BaseDb extends EventEmitter {
 				`);
 			}
 
-			mongo._oplogHandle.onOplogEntry(
+			_oplogHandle.onOplogEntry(
 				query,
 				this.processOplogRecord.bind(this),
 			);
 			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
 			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
-				mongo._oplogHandle._defineTooFarBehind(
+				_oplogHandle._defineTooFarBehind(
 					Number.MAX_SAFE_INTEGER,
 				);
 			}
