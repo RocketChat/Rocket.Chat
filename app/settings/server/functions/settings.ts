@@ -5,6 +5,8 @@ import _ from 'underscore';
 
 import { SettingsBase, SettingValue } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
+import { updateValue } from '../observer';
+import { setValue } from '../raw';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
@@ -387,6 +389,7 @@ class Settings extends SettingsBase {
 		this.initialLoad = true;
 		SettingsModel.find().fetch().forEach((record: ISettingRecord) => {
 			this.storeSettingValue(record, this.initialLoad);
+			updateValue(record._id, { value: record.value });
 		});
 		this.initialLoad = false;
 		this.afterInitialLoad.forEach((fn) => fn(Meteor.settings));
@@ -397,10 +400,12 @@ class Settings extends SettingsBase {
 				case 'updated':
 					data = data ?? SettingsModel.findOneById(id);
 					this.storeSettingValue(data, this.initialLoad);
+					updateValue(id, { value: data.value });
 					break;
 				case 'removed':
 					data = SettingsModel.trashFindOneById(id);
 					this.removeSettingValue(data, this.initialLoad);
+					setValue(id, undefined);
 					break;
 			}
 		});
