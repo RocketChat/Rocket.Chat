@@ -4,9 +4,8 @@ import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
-import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 import { metrics } from '../../../metrics/server/lib/metrics';
-import { oplog } from './_oplogHandle';
+import { getOplogHandle } from './_oplogHandle';
 
 const baseName = 'rocketchat_';
 
@@ -49,7 +48,7 @@ export class BaseDb extends EventEmitter {
 
 		this.wrapModel();
 
-		const { oplogEnabled/* , mongo */ } = getMongoInfo();
+		const _oplogHandle = Promise.await(getOplogHandle());
 
 		// When someone start listening for changes we start oplog if available
 		const handleListener = async (event /* , listener*/) => {
@@ -63,9 +62,6 @@ export class BaseDb extends EventEmitter {
 				collection: this.collectionName,
 			};
 			console.log(this.collectionName);
-
-			const _oplogHandle = await oplog;
-			// const { _oplogHandle } = mongo;
 
 			if (!_oplogHandle) {
 				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
@@ -87,7 +83,7 @@ export class BaseDb extends EventEmitter {
 			}
 		};
 
-		if (oplogEnabled) {
+		if (_oplogHandle) {
 			this.on('newListener', handleListener);
 		}
 
