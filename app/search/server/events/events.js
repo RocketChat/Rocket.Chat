@@ -67,7 +67,6 @@ function onRoomsChange({ clientAction, id, data }) {
 }
 
 settings.get('Search.Provider', _.debounce((key, value) => {
-	console.log('searchProviderService.activeProvider?.on', searchProviderService.activeProvider?.on);
 	if (searchProviderService.activeProvider?.on) {
 		Users.on('change', onUsersChange);
 		Rooms.on('change', onRoomsChange);
