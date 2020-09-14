@@ -3,7 +3,7 @@ import { Box, Field, TextInput, Select, ToggleSwitch } from '@rocket.chat/fusela
 
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const RoleForm = ({ values, handlers, className, disabledFields = false }) => {
+const RoleForm = ({ values, handlers, className, editing = false, isProtected = false }) => {
 	const t = useTranslation();
 
 	const {
@@ -29,7 +29,7 @@ const RoleForm = ({ values, handlers, className, disabledFields = false }) => {
 		<Field className={className}>
 			<Field.Label>{t('Role')}</Field.Label>
 			<Field.Row>
-				<TextInput disabled={disabledFields} value={name} onChange={handleName} placeholder={t('Role')}/>
+				<TextInput disabled={editing} value={name} onChange={handleName} placeholder={t('Role')}/>
 			</Field.Row>
 		</Field>
 		<Field className={className}>
@@ -42,7 +42,7 @@ const RoleForm = ({ values, handlers, className, disabledFields = false }) => {
 		<Field className={className}>
 			<Field.Label>{t('Scope')}</Field.Label>
 			<Field.Row>
-				<Select disabled={disabledFields} options={options} value={scope} onChange={handleScope} placeholder={t('Scope')}/>
+				<Select disabled={isProtected} options={options} value={scope} onChange={handleScope} placeholder={t('Scope')}/>
 			</Field.Row>
 		</Field>
 		<Field className={className}>

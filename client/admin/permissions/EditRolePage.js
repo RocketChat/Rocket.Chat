@@ -1,21 +1,20 @@
 import React from 'react';
-import { Box, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Field, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../components/basic/Page';
 import RoleForm from './RoleForm';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useForm } from '../../hooks/useForm';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { Roles } from '../../../app/models/client';
+import { useRole } from './useRole';
 
 const EditRolePageContainer = () => {
 	const name = useRouteParameter('name');
 
-	const role = useReactiveValue(useMutableCallback(() => Roles.find({ name }).fetch()[0]));
+	const role = useRole(name);
 
 	if (!role) {
 		return null;
@@ -28,6 +27,7 @@ const EditRolePage = ({ data }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRoute('admin-permissions');
+	const usersInRoleRouter = useRoute('admin-permissions-users-role');
 
 	const { values, handlers } = useForm({
 		name: data.name,
@@ -40,6 +40,12 @@ const EditRolePage = ({ data }) => {
 
 	const handleReturn = useMutableCallback(() => {
 		router.push({});
+	});
+
+	const handleManageUsers = useMutableCallback(() => {
+		usersInRoleRouter.push({
+			name: data.name,
+		});
 	});
 
 	const handleSave = useMutableCallback(() => {
@@ -62,7 +68,12 @@ const EditRolePage = ({ data }) => {
 		<Page.ScrollableContentWithShadow>
 			<Box maxWidth='x600' w='full' alignSelf='center'>
 				<FieldGroup>
-					<RoleForm values={values} handlers={handlers} disabledFields={true}/>
+					<RoleForm values={values} handlers={handlers} editing isProtected={data.protected}/>
+					<Field>
+						<Field.Row>
+							<Button onClick={handleManageUsers}>{t('Users_in_role')}</Button>
+						</Field.Row>
+					</Field>
 				</FieldGroup>
 			</Box>
 		</Page.ScrollableContentWithShadow>
