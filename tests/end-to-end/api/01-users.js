@@ -344,6 +344,7 @@ describe('[Users]', function() {
 					username: 'ufs',
 					password: '1234',
 				})
+				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -354,6 +355,7 @@ describe('[Users]', function() {
 				.query({
 					username: 'ufs',
 				})
+				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
