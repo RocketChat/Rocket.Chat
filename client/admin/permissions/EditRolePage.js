@@ -1,33 +1,31 @@
 import React from 'react';
-import { Box, Field, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Field, FieldGroup, Button, Margins, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Page from '../../components/basic/Page';
 import RoleForm from './RoleForm';
-import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useForm } from '../../hooks/useForm';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useRole } from './useRole';
 
-const EditRolePageContainer = () => {
-	const name = useRouteParameter('name');
-
-	const role = useRole(name);
+const EditRolePageContainer = ({ _id }) => {
+	const t = useTranslation();
+	const role = useRole(_id);
 
 	if (!role) {
-		return null;
+		return <Callout type='danger'>{t('error-invalid-role')}</Callout>;
 	}
 
-	return <EditRolePage data={role} />;
+	return <EditRolePage key={_id} data={role} />;
 };
 
 const EditRolePage = ({ data }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const router = useRoute('admin-permissions');
 	const usersInRoleRouter = useRoute('admin-permissions-users-role');
+	const router = useRoute('permissions-test');
 
 	const { values, handlers } = useForm({
 		name: data.name,
@@ -37,10 +35,7 @@ const EditRolePage = ({ data }) => {
 	});
 
 	const saveRole = useMethod('authorization:saveRole');
-
-	const handleReturn = useMutableCallback(() => {
-		router.push({});
-	});
+	const deleteRole = useMethod('authorization:deleteRole');
 
 	const handleManageUsers = useMutableCallback(() => {
 		usersInRoleRouter.push({
@@ -48,36 +43,47 @@ const EditRolePage = ({ data }) => {
 		});
 	});
 
-	const handleSave = useMutableCallback(() => {
+	const handleSave = useMutableCallback(async () => {
 		try {
-			const result = saveRole(values);
-			console.log(result);
+			await saveRole(values);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	return <Page>
-		<Page.Header title={t('New_role')}>
-			<ButtonGroup>
-				<Button primary onClick={handleSave}>{t('Save')}</Button>
-				<Button onClick={handleReturn}>{t('Back')}</Button>
-			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<Box maxWidth='x600' w='full' alignSelf='center'>
-				<FieldGroup>
-					<RoleForm values={values} handlers={handlers} editing isProtected={data.protected}/>
-					<Field>
-						<Field.Row>
-							<Button onClick={handleManageUsers}>{t('Users_in_role')}</Button>
-						</Field.Row>
-					</Field>
-				</FieldGroup>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+	const handleDelete = useMutableCallback(async () => {
+		try {
+			await deleteRole(values);
+			dispatchToastMessage({ type: 'success', message: t('Role_removed') });
+			router.push({});
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	});
+
+	return <Box w='full' alignSelf='center' mb='neg-x8'>
+		<Margins block='x8'>
+			<FieldGroup>
+				<RoleForm values={values} handlers={handlers} editing isProtected={data.protected}/>
+				<Field>
+					<Field.Row>
+						<Button primary w='full' onClick={handleSave}>{t('Save')}</Button>
+					</Field.Row>
+				</Field>
+				{!data.protected && <Field>
+					<Field.Row>
+						<Button danger w='full' onClick={handleDelete}>{t('Delete')}</Button>
+					</Field.Row>
+				</Field>}
+				<Field>
+					<Field.Row>
+						<Button w='full' onClick={handleManageUsers}>{t('Users_in_role')}</Button>
+					</Field.Row>
+				</Field>
+			</FieldGroup>
+		</Margins>
+	</Box>;
 };
 
 export default EditRolePageContainer;

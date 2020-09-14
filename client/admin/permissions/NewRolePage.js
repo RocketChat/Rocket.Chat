@@ -1,8 +1,7 @@
 import React from 'react';
-import { Box, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Page from '../../components/basic/Page';
 import RoleForm from './RoleForm';
 import { useRoute } from '../../contexts/RouterContext';
 import { useForm } from '../../hooks/useForm';
@@ -25,10 +24,6 @@ const NewRolePage = () => {
 
 	const saveRole = useMethod('authorization:saveRole');
 
-	const handleReturn = useMutableCallback(() => {
-		router.push({});
-	});
-
 	const handleSave = useMutableCallback(() => {
 		try {
 			const result = saveRole(values);
@@ -39,21 +34,16 @@ const NewRolePage = () => {
 		}
 	});
 
-	return <Page>
-		<Page.Header title={t('New_role')}>
-			<ButtonGroup>
+	return <Box w='full' alignSelf='center' mb='neg-x8'>
+		<Margins block='x8'>
+			<FieldGroup>
+				<RoleForm values={values} handlers={handlers}/>
+			</FieldGroup>
+			<ButtonGroup stretch w='full'>
 				<Button primary onClick={handleSave}>{t('Save')}</Button>
-				<Button onClick={handleReturn}>{t('Back')}</Button>
 			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<Box maxWidth='x600' w='full' alignSelf='center'>
-				<FieldGroup>
-					<RoleForm values={values} handlers={handlers}/>
-				</FieldGroup>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+		</Margins>
+	</Box>;
 };
 
 export default NewRolePage;
