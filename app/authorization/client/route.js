@@ -6,6 +6,7 @@ import { createTemplateForComponent } from '../../../client/reactAdapters';
 
 createTemplateForComponent('newRole', () => import('../../../client/admin/permissions/NewRolePage'));
 createTemplateForComponent('editRole', () => import('../../../client/admin/permissions/EditRolePage'));
+createTemplateForComponent('usersInRole', () => import('../../../client/admin/permissions/UsersInRole'));
 
 registerAdminRoute('/permissions', {
 	name: 'admin-permissions',
@@ -24,6 +25,18 @@ registerAdminRoute('/permissions/:name?/edit', {
 		await import('./views');
 		return BlazeLayout.render('main', {
 			center: 'editRole',
+			// pageTitle: t('Role_Editing'),
+			// pageTemplate: 'permissionsRole',
+		});
+	},
+});
+
+registerAdminRoute('/permissions/:name?/users-in-role', {
+	name: 'admin-permissions-users-role',
+	async action(/* params*/) {
+		await import('./views');
+		return BlazeLayout.render('main', {
+			center: 'usersInRole',
 			// pageTitle: t('Role_Editing'),
 			// pageTemplate: 'permissionsRole',
 		});
