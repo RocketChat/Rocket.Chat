@@ -4,6 +4,7 @@ import { Settings } from '../../../app/models/server';
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { SettingsEvents } from '../../../app/settings/server/functions/settings';
+import './emitter';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
