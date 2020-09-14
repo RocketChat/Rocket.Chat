@@ -1,5 +1,7 @@
+
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
+import semver from 'semver';
 import s from 'underscore.string';
 import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
 
@@ -22,8 +24,8 @@ class OplogHandle {
 		}
 
 		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-		const { storageEngine } = await mongo.db.command({ serverStatus: 1 });
-		return storageEngine?.name === 'wiredTiger';
+		const { version, storageEngine } = await mongo.db.command({ serverStatus: 1 });
+		return storageEngine?.name === 'wiredTiger' && semver.satisfies(semver.coerce(version) || '', '>=3.6.0');
 	}
 
 	async start(): Promise<OplogHandle> {

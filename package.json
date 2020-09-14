@@ -70,6 +70,7 @@
 		"@types/moment-timezone": "^0.5.30",
 		"@types/mongodb": "^3.5.26",
 		"@types/react-dom": "^16.9.8",
+		"@types/semver": "^7.3.3",
 		"@types/toastr": "^2.1.38",
 		"@typescript-eslint/eslint-plugin": "^2.34.0",
 		"@typescript-eslint/parser": "^2.34.0",
