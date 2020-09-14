@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import { PushNotificationSubscriptions } from '../../../models';
 
 Meteor.methods({
-	savePushNotificationSubscription(subscription) {
+	savePushNotificationSubscription(subscription, platform) {
 		subscription = JSON.parse(subscription);
 
 		check(subscription.endpoint, String);
@@ -16,7 +16,7 @@ Meteor.methods({
 				username: user.username,
 			};
 		}
-		PushNotificationSubscriptions.createWithUserAndSubscription(user, subscription);
+		PushNotificationSubscriptions.createWithUserAndSubscription(user, subscription, platform);
 
 		return subscription;
 	},

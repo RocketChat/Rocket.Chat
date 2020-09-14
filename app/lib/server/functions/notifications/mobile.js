@@ -68,15 +68,54 @@ export async function getPushData({ room, message, userId, senderUsername, sende
 		username,
 		message: messageText,
 		badge: await getBadgeCount(userId),
+		userId,
 		category: enableNotificationReplyButton(room, receiver.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	};
 }
 
-export function sendWebPush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
+export function getNotificationPayload({
+	userId,
+	user,
+	message,
+	room,
+	duration,
+	notificationMessage,
+}) {
+	const { title, text } = roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
+
+	return {
+		title,
+		text,
+		duration,
+		payload: {
+			_id: message._id,
+			rid: message.rid,
+			tmid: message.tmid,
+			sender: message.u,
+			type: room.t,
+			name: room.name,
+			message: {
+				msg: message.msg,
+				t: message.t,
+			},
+		},
+		userId,
+	};
+}
+
+export function sendWebPush(notification, platform) {
+	if (settings.get('Push_enable') !== true) {
+		return;
+	}
+
 	const gcmKey = settings.get('Push_gcm_api_key');
 	const vapidPublic = settings.get('Vapid_public_key');
 	const vapidPrivate = settings.get('Vapid_private_key');
 	const vapidSubject = settings.get('Vapid_subject');
+
+	if (!gcmKey || !vapidPublic || !vapidPrivate || !vapidSubject) {
+		return;
+	}
 
 	webpush.setGCMAPIKey(gcmKey);
 	webpush.setVapidDetails(
@@ -85,38 +124,35 @@ export function sendWebPush({ room, message, userId, receiverUsername, senderUse
 		vapidPrivate,
 	);
 
+	const { userId, payload: { rid, type } } = notification;
 	const pushSubscriptions = PushNotificationSubscriptions.findByUserId(userId);
 	const options = {
 		TTL: 3600,
 	};
-	const title = room.t === 'd' ? message.u.name : room.name;
-	const displayMessage = room.t === 'd' ? notificationMessage : `${ message.u.name }: ${ notificationMessage }`;
 
 	let redirectURL;
-	if (room.t === 'd') {
+	if (type === 'd') {
 		redirectURL = '/direct/';
-	} else if (room.t === 'p') {
+	} else if (type === 'p') {
 		redirectURL = '/group/';
-	} else if (room.t === 'c') {
+	} else if (type === 'c') {
 		redirectURL = '/channel/';
 	}
-	redirectURL += message.rid;
+	redirectURL += rid;
+	notification.redirectURL = redirectURL;
 
-	const payload = {
-		host: Meteor.absoluteUrl(),
-		title,
-		message: displayMessage,
-		receiverUsername,
-		senderUsername,
-		senderName,
-		redirectURL,
-		vibrate: [100, 50, 100],
-		icon: '/images/icons/icon-72x72.png',
-	};
+	if (platform === 'mobile') {
+		notification.platform = platform;
+		notification.vibrate = [100, 50, 100];
+		notification.icon = '/images/icons/icon-96x96.png';
+	}
+
+	const payload = notification;
 	const stringifiedPayload = JSON.stringify(payload);
 
 	pushSubscriptions.forEach((pushSubscription) => {
-		webpush.sendNotification(pushSubscription, stringifiedPayload, options)
+		pushSubscription.platform === platform
+		&& webpush.sendNotification(pushSubscription, stringifiedPayload, options)
 			.catch((error) => {
 				if (error.statusCode === 410) {
 					PushNotificationSubscriptions.removeById(pushSubscription._id);

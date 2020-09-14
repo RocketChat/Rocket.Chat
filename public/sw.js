@@ -126,33 +126,83 @@ self.addEventListener('fetch', (event) => {
 	);
 });
 
+function isClientFocused(url) {
+	return self.clients.matchAll({
+		type: 'window',
+		includeUncontrolled: true,
+	}).then((windowClients) => {
+		let clientIsFocused = false;
+		let pathMatched = false;
+
+		for (let i = 0; i < windowClients.length; i++) {
+			const windowClient = windowClients[i];
+			if (windowClient.focused) {
+				clientIsFocused = true;
+
+				const windowURL = new URL(windowClient.url);
+				if (windowURL.pathname === url) {
+					pathMatched = true;
+				}
+				break;
+			}
+		}
+
+		return { clientIsFocused, pathMatched };
+	});
+}
+
 self.addEventListener('push', function(event) {
-	const data = JSON.parse(event.data.text());
+	self.clients.matchAll().then((clients) => {
+		const data = JSON.parse(event.data.text());
+		if (clients && clients.length && data.platform !== 'mobile') {
+			const client = clients[0];
+			client.postMessage(data);
+		} else {
+			const options = {
+				body: data.text,
+				icon: data.icon,
+				vibrate: data.vibrate,
+				data: {
+					dateOfArrival: Date.now(),
+					redirectURL: data.redirectURL,
+				},
+				actions: [
+					{ action: 'reply', title: 'Reply' },
+					{ action: 'close', title: 'Close' },
+				],
+			};
 
-	const options = {
-		body: data.message,
-		icon: data.icon,
-		vibrate: data.vibrate,
-		data: {
-			dateOfArrival: Date.now(),
-			redirectURL: data.redirectURL,
-		},
-		actions: [
-			{ action: 'reply', title: 'Reply' },
-			{ action: 'close', title: 'Close' },
-		],
-	};
+			const promiseChain = isClientFocused(data.redirectURL)
+				.then(({ clientIsFocused, pathMatched }) => {
+					if (clientIsFocused && pathMatched) {
+						// 'Don\'t need to show a notification.
+						return;
+					}
 
-	event.waitUntil(self.registration.showNotification(data.title, options));
+					// Client isn't focused, we need to show a notification.
+					return self.registration.showNotification(data.title, options);
+				});
+
+			event.waitUntil(promiseChain);
+		}
+	});
 });
 
 self.addEventListener('notificationclick', function(event) {
 	const { data } = event.notification;
 
-	event.notification.close();
+	if (event.action !== 'close') {
+		const promiseChain = self.clients.matchAll({
+			type: 'window',
+			includeUncontrolled: true,
+		}).then((clients) => {
+			if (clients && clients.length) {
+				return clients[0].focus();
+			}
+			return self.clients.openWindow(data.redirectURL);
+		});
 
-	if (event.action === 'reply') {
-		// eslint-disable-next-line no-undef
-		event.waitUntil(clients.openWindow(data.redirectURL));
+		event.waitUntil(promiseChain);
 	}
+	event.notification.close();
 }, false);

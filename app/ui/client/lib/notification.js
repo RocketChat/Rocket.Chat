@@ -168,5 +168,11 @@ Meteor.startup(() => {
 		} else {
 			CustomSounds.pause(newRoomNotification);
 		}
+
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.onmessage = (event) => {
+				KonchatNotification.showDesktop(event.data);
+			};
+		}
 	});
 });

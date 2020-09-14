@@ -18,6 +18,21 @@ function urlBase64ToUint8Array(base64String) {
 	return outputArray;
 }
 
+
+function isMobile() {
+	const toMatch = [
+		/Android/i,
+		/webOS/i,
+		/iPhone/i,
+		/iPad/i,
+		/iPod/i,
+		/BlackBerry/i,
+		/Windows Phone/i,
+	];
+
+	return toMatch.some((toMatchItem) => navigator.userAgent.match(toMatchItem));
+}
+
 function subscribeUser() {
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker.ready.then(async function(reg) {
@@ -28,7 +43,9 @@ function subscribeUser() {
 						userVisibleOnly: true,
 						applicationServerKey: urlBase64ToUint8Array(vapidKey),
 					});
-				Meteor.call('savePushNotificationSubscription', JSON.stringify(subscription));
+
+				const platform = isMobile() ? 'mobile' : 'desktop';
+				Meteor.call('savePushNotificationSubscription', JSON.stringify(subscription), platform);
 			} catch (e) {
 				handleError(e);
 			}
@@ -55,6 +72,10 @@ Meteor.startup(() => {
 						};
 						console.log(`Service worker has been registered for scope: ${ reg.scope }`);
 					} else {
+						if (settings.get('Push_enable') !== true) {
+							return;
+						}
+
 						reg.pushManager.getSubscription().then(function(sub) {
 							if (sub === null) {
 								console.log('Not subscribed to push service!');

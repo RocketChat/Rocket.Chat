@@ -7,13 +7,14 @@ export class PushNotificationSubscriptions extends Base {
 		this.tryEnsureIndex({ u: 1 });
 	}
 
-	createWithUserAndSubscription(user, subscription) {
+	createWithUserAndSubscription(user, subscription, platform) {
 		const pushNotificationSubscription = {
 			...subscription,
 		};
 		if (user && user._id != null) {
 			pushNotificationSubscription.u = { ...user };
 		}
+		pushNotificationSubscription.platform = platform;
 		const result = this.insert(pushNotificationSubscription);
 		return result;
 	}
