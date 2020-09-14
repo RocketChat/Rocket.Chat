@@ -23,7 +23,7 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ open: 1 });
 		this.tryEnsureIndex({ alert: 1 });
 		this.tryEnsureIndex({ ts: 1 });
-		this.tryEnsureIndex({ ls: 1 });
+		this.tryEnsureIndex({ ls: -1 });
 		this.tryEnsureIndex({ audioNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ desktopNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ mobilePushNotifications: 1 }, { sparse: 1 });
