@@ -1,4 +1,36 @@
 
+# 3.6.1
+`2020-09-11  ·  7 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.17.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel service status switching to unavailable ([#18835](https://github.com/RocketChat/Rocket.Chat/pull/18835))
+
+- File upload (Avatars, Emoji, Sounds) ([#18841](https://github.com/RocketChat/Rocket.Chat/pull/18841))
+
+- IE11 support livechat widget ([#18850](https://github.com/RocketChat/Rocket.Chat/pull/18850))
+
+- Omnichannel Current Chats open status filter not working ([#18795](https://github.com/RocketChat/Rocket.Chat/pull/18795))
+
+- Showing alerts during setup wizard ([#18862](https://github.com/RocketChat/Rocket.Chat/pull/18862))
+
+- User administration throwing a blank page if user has no role ([#18851](https://github.com/RocketChat/Rocket.Chat/pull/18851))
+
+- User can't invite or join other Omnichannel rooms ([#18852](https://github.com/RocketChat/Rocket.Chat/pull/18852))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.6.0
 `2020-08-29  ·  10 🎉  ·  5 🚀  ·  26 🐛  ·  36 🔍  ·  23 👩‍💻👨‍💻`
 

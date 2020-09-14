@@ -1532,7 +1532,7 @@
   "error-transcript-already-requested": "Transcript already requested",
   "error-user-has-no-roles": "User has no roles",
   "error-user-is-not-activated": "User is not activated",
-  "error-user-is-not-agent": "User is not a Omnichannel Agent",
+  "error-user-is-not-agent": "User is not an Omnichannel Agent",
   "error-user-is-offline": "User if offline",
   "error-user-limit-exceeded": "The number of users you are trying to invite to #channel_name exceeds the limit set by the administrator",
   "error-user-not-in-room": "User is not in this room",

@@ -2780,7 +2780,7 @@ settings.addGroup('Setup_Wizard', function() {
 		this.add('Allow_Marketing_Emails', true, {
 			type: 'boolean',
 		});
-		this.add('Register_Server', true, {
+		this.add('Register_Server', false, {
 			type: 'boolean',
 		});
 		this.add('Organization_Email', '', {
