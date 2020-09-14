@@ -7,6 +7,12 @@ declare module 'meteor/random' {
 	}
 }
 
+declare module 'meteor/mongo' {
+	namespace MongoInternals {
+		function defaultRemoteCollectionDriver(): any;
+	}
+}
+
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
 		function _bcryptRounds(): number;

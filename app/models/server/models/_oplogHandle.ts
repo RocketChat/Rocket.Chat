@@ -1,12 +1,9 @@
-import { promisify } from 'util';
-
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import s from 'underscore.string';
 import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
-import _urlParser from 'mongodb/lib/url_parser';
 
-const urlParser = promisify(_urlParser);
+import { urlParser } from './_oplogUrlParser';
 
 class OplogHandle {
 	dbName: string;
@@ -154,18 +151,17 @@ class OplogHandle {
 	}
 }
 
-process.env.USE_NEW_OPLOG = 'true';
-process.env.IGNORE_CHANGE_STREAM = 'true';
+// process.env.USE_OLD_OPLOG = 'true';
+// process.env.IGNORE_CHANGE_STREAM = 'true';
 
-const oplogHandle = process.env.USE_NEW_OPLOG ? new OplogHandle().start() : undefined;
+const oplogHandle = !process.env.USE_OLD_OPLOG ? new OplogHandle().start() : undefined;
 
 export const getOplogHandle = async (): Promise<OplogHandle | undefined> => {
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
-	if (process.env.USE_NEW_OPLOG) {
+	if (oplogHandle) {
 		return oplogHandle;
 	}
 
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 	if (mongo._oplogHandle?.onOplogEntry) {
 		return mongo._oplogHandle;
 	}
