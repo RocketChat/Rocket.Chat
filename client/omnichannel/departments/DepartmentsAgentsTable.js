@@ -1,6 +1,6 @@
 
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useLayoutEffect } from 'react';
 import { Box, Table, Icon, Button, NumberInput } from '@rocket.chat/fuselage';
 
 import { Th, GenericTable } from '../../components/GenericTable';
@@ -60,7 +60,7 @@ function AgentsPage({
 }
 
 
-export function RemoveAgentButton({ _id, setAgentList, agentList }) {
+export function RemoveAgentButton({ agentId, setAgentList, agentList }) {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
@@ -68,7 +68,10 @@ export function RemoveAgentButton({ _id, setAgentList, agentList }) {
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
 		const onDeleteAgent = async () => {
-			setAgentList([...agentList.filter((e) => e._id !== _id)]);
+			const newList = agentList.filter((listItem) => listItem.agentId !== agentId);
+			console.log(newList);
+			debugger
+			setAgentList(newList);
 			dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 			setModal();
 		};
@@ -85,35 +88,55 @@ export function RemoveAgentButton({ _id, setAgentList, agentList }) {
 
 export function Count({ agentId, setAgentList, agentList }) {
 	const t = useTranslation();
-	const [agentCount, setAgentCount] = useState(agentList.find((agent) => agent.agentId === agentId).counta);
+	const [agentCount, setAgentCount] = useState(agentList.find((agent) => agent.agentId === agentId).count || 0);
 	const [updatedList, setUpdatedList] = useState(agentList);
 
-	useMemo(() => setAgentList(updatedList), [setAgentList, updatedList]);
+	useLayoutEffect(() => setAgentList(updatedList), [setAgentList, updatedList]);
 
-	const changeList = () => {
-		setUpdatedList(agentList.map((agent) => {
-			if (agent.agentId === agentId) {
-				agent.count = agentCount;
-			}
-			return agent;
-		}));
-		// setAgentList(newList);
-		// debugger
-		// console.log(agentList);
-	};
 	console.log(agentCount);
 
 	const handleCount = useMutableCallback(async (e) => {
-		setAgentCount(Number(e.currentTarget.value));
-		changeList();
+		const countValue = Number(e.currentTarget.value);
+		setAgentCount(countValue);
+		setUpdatedList(agentList.map((agent) => {
+			if (agent.agentId === agentId) {
+				agent.count = countValue;
+			}
+			return agent;
+		}));
 	});
 
 	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
-		<NumberInput title={t('Count')} value={agentCount} onChange={handleCount} />
+		<NumberInput key={`${ agentId }-count`} title={t('Count')} value={agentCount} onChange={handleCount} />
 	</Table.Cell>;
 }
 
-function DepartmentsAgentsTable({ agents }) {
+export function Order({ agentId, setAgentList, agentList }) {
+	const t = useTranslation();
+	const [agentOrder, setAgentOrder] = useState(agentList.find((agent) => agent.agentId === agentId).order || 0);
+	const [updatedList, setUpdatedList] = useState(agentList);
+
+	useLayoutEffect(() => setAgentList(updatedList), [setAgentList, updatedList]);
+
+	console.log(agentOrder);
+
+	const handleOrder = useMutableCallback(async (e) => {
+		const orderValue = Number(e.currentTarget.value);
+		setAgentOrder(orderValue);
+		setUpdatedList(agentList.map((agent) => {
+			if (agent.agentId === agentId) {
+				agent.order = orderValue;
+			}
+			return agent;
+		}));
+	});
+
+	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<NumberInput key={`${ agentId }-order`} title={t('Order')} value={agentOrder} onChange={handleOrder} />
+	</Table.Cell>;
+}
+
+function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 	const t = useTranslation();
 
 	console.log(agents);
@@ -122,13 +145,14 @@ function DepartmentsAgentsTable({ agents }) {
 	const [data, setData] = useState({});
 
 	useMemo(() => setData({ users: agentList }), [agentList]);
+	useMemo(() => setAgentListFinal(agentList && agentList.users), [agentList, setAgentListFinal]);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const header = useMemo(() => [
 		<Th key={'name'} w='x200'>{t('Name')}</Th>,
-		<Th key={'username'} w='x140'>{t('Username')}</Th>,
-		<Th key={'email'} w='x120'>{t('Email')}</Th>,
+		<Th key={'Count'} w='x140'>{t('Count')}</Th>,
+		<Th key={'Order'} w='x120'>{t('Order')}</Th>,
 		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
 	].filter(Boolean), [t]);
 
@@ -145,7 +169,7 @@ function DepartmentsAgentsTable({ agents }) {
 			</Box>
 		</Table.Cell>
 		<Count agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
-		<RemoveAgentButton agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
+		<Order agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
 		<RemoveAgentButton agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
 	</Table.Row>, [agentList, mediaQuery]);
 
