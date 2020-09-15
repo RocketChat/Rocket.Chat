@@ -8,10 +8,6 @@ Meteor.methods({
 	updateOutgoingIntegration(integrationId, integration) {
 		integration = integrations.validateOutgoing(integration, this.userId);
 
-		if (!integration.token || integration.token.trim() === '') {
-			throw new Meteor.Error('error-invalid-token', 'Invalid token', { method: 'updateOutgoingIntegration' });
-		}
-
 		let currentIntegration;
 
 		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
