@@ -34,7 +34,9 @@ Meteor.methods({
 			await client.putFileContents(`${ uploadFolder }/${ name }`, buffer, { overwrite: false });
 			return { success: true };
 		} catch (error) {
+			// @ts-ignore
 			logger.error(error);
+
 			if (error.response) {
 				const { status } = error.response;
 				if (status === 404) {

@@ -1,4 +1,6 @@
-import { createClient, WebDavClient, Stat } from 'webdav';
+import { createClient } from 'webdav';
+
+import type { WebDavClient, Stat } from '../../../../definition/webdav';
 
 export type ServerCredentials = {
 	token?: string;
@@ -52,7 +54,7 @@ export class WebdavClientAdapter {
 
 	async getFileContents(filename: string): Promise<Buffer> {
 		try {
-			return await this._client.getFileContents(filename);
+			return await this._client.getFileContents(filename) as Buffer;
 		} catch (error) {
 			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting file contents webdav');
 		}
