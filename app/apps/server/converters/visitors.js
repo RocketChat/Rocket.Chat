@@ -32,6 +32,7 @@ export class AppVisitorsConverter {
 			token: 'token',
 			phone: 'phone',
 			visitorEmails: 'visitorEmails',
+			customFields: 'livechatData',
 		};
 
 		return transformMappedData(visitor, map);
