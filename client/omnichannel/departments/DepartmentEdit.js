@@ -12,7 +12,6 @@ import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
 import { useRoute } from '../../contexts/RouterContext';
 import Page from '../../components/basic/Page';
-import { AutoCompleteDepartment } from '../../components/basic/AutoCompleteDepartment';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
 
@@ -85,7 +84,7 @@ export function EditDepartment({ data, id, title }) {
 
 	console.log(data);
 
-	const { values, handlers, hasUnsavedChanges } = useForm({
+	const { values, handlers } = useForm({
 		name: (department && department.name) || '',
 		email: (department && department.email) || '',
 		description: (department && department.description) || '',

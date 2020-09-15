@@ -70,7 +70,6 @@ export function RemoveAgentButton({ agentId, setAgentList, agentList }) {
 		const onDeleteAgent = async () => {
 			const newList = agentList.filter((listItem) => listItem.agentId !== agentId);
 			console.log(newList);
-			debugger
 			setAgentList(newList);
 			dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 			setModal();
