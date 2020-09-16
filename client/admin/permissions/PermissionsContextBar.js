@@ -12,7 +12,7 @@ const PermissionsContextBar = () => {
 	const _id = useRouteParameter('_id');
 	const context = useRouteParameter('context');
 
-	const router = useRoute('permissions-test');
+	const router = useRoute('admin-permissions');
 
 	const handleVerticalBarCloseButton = useMutableCallback(() => {
 		router.push({});

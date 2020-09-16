@@ -3,7 +3,6 @@ import { Box, FieldGroup, ButtonGroup, Button, Margins } from '@rocket.chat/fuse
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import RoleForm from './RoleForm';
-import { useRoute } from '../../contexts/RouterContext';
 import { useForm } from '../../hooks/useForm';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -13,7 +12,6 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 const NewRolePage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const router = useRoute('admin-permissions');
 
 	const { values, handlers } = useForm({
 		name: '',

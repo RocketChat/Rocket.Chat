@@ -13,9 +13,9 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useRole } from './useRole';
 
 const UsersInRolePageContainer = () => {
-	const name = useRouteParameter('name');
+	const _id = useRouteParameter('_id');
 
-	const role = useRole(name);
+	const role = useRole(_id);
 
 	if (!role) {
 		return null;
@@ -35,12 +35,15 @@ const UsersInRolePage = ({ data }) => {
 
 	const { name } = data;
 
-	const editRoleRouter = useRoute('admin-permissions-edit');
+	const router = useRoute('admin-permissions');
 
 	const addUser = useMethod('authorization:addUserToRole');
 
 	const handleReturn = useMutableCallback(() => {
-		editRoleRouter.push({ name });
+		router.push({
+			context: 'edit',
+			_id: name,
+		});
 	});
 
 	const handleAdd = useMutableCallback(async () => {

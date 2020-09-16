@@ -24,8 +24,8 @@ const EditRolePageContainer = ({ _id }) => {
 const EditRolePage = ({ data }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const usersInRoleRouter = useRoute('admin-permissions-users-role');
-	const router = useRoute('permissions-test');
+	const usersInRoleRouter = useRoute('admin-permissions');
+	const router = useRoute('admin-permissions');
 
 	const { values, handlers } = useForm({
 		name: data.name,
@@ -39,7 +39,8 @@ const EditRolePage = ({ data }) => {
 
 	const handleManageUsers = useMutableCallback(() => {
 		usersInRoleRouter.push({
-			name: data.name,
+			context: 'users-in-role',
+			_id: data.name,
 		});
 	});
 

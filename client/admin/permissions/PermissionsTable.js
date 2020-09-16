@@ -190,7 +190,7 @@ const PermissionsTable = () => {
 	const [type, setType] = useState('permissions');
 	const [params, setParams] = useState({ limit: 25, skip: 0 });
 
-	const router = useRoute('permissions-test');
+	const router = useRoute('admin-permissions');
 
 	const grantRole = useMethod('authorization:addPermissionToRole');
 	const removeRole = useMethod('authorization:removeRoleFromPermission');

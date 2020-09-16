@@ -28,7 +28,7 @@ Meteor.startup(() => {
 			Roles.upsert({ _id: role.name }, role);
 		},
 		removed: (role) => {
-			Roles.remove({ _id: role.name.name });
+			Roles.remove({ _id: role.name });
 		},
 	};
 

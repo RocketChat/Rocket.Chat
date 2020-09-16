@@ -5,7 +5,7 @@ import { hasPermission } from '../functions/hasPermission';
 import { rolesStreamer } from '../lib/streamer';
 
 Meteor.methods({
-	'authorization:deleteRole'(roleName) {
+	'authorization:deleteRole'(deletedRole) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:deleteRole',
@@ -13,7 +13,7 @@ Meteor.methods({
 			});
 		}
 
-		const role = Models.Roles.findOne(roleName);
+		const role = Models.Roles.findOne(deletedRole);
 		if (!role) {
 			throw new Meteor.Error('error-invalid-role', 'Invalid role', {
 				method: 'authorization:deleteRole',
@@ -28,18 +28,20 @@ Meteor.methods({
 
 		const roleScope = role.scope || 'Users';
 		const model = Models[roleScope];
-		const existingUsers = model && model.findUsersInRoles && model.findUsersInRoles(roleName);
+		const existingUsers = model && model.findUsersInRoles && model.findUsersInRoles(deletedRole);
 
 		if (existingUsers && existingUsers.count() > 0) {
 			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use', {
 				method: 'authorization:deleteRole',
 			});
 		}
+
+		console.log(deletedRole);
 		const removed = Models.Roles.remove(role.name);
 		if (removed) {
 			rolesStreamer.emit('roles', {
 				type: 'removed',
-				name: roleName,
+				name: deletedRole.name,
 			});
 		}
 		return removed;
