@@ -69,7 +69,7 @@ const useQuery = ({ guest, servedBy, department, status, from, to, tags, customF
 		query.createdAt = JSON.stringify({ start: from, end: to });
 	}
 	if (status !== 'all') {
-		query.open = status === 'open';
+		query.open = status === 'opened';
 	}
 	if (servedBy && servedBy !== 'all') {
 		query.agents = [servedBy];
