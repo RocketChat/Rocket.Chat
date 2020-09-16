@@ -107,10 +107,6 @@ const PermissionRow = React.memo(({ permission, t, roleList, onGrant, onRemove, 
 		roles,
 	} = permission;
 
-	console.log({
-		_id, roles, t,
-	});
-
 	const [hovered, setHovered] = useState(false);
 
 	const onMouseEnter = useMutableCallback(() => setHovered(true));
@@ -177,7 +173,6 @@ const FilterComponent = ({ onChange }) => {
 	}, [debouncedFilter, onChange]);
 
 	const handleFilter = useMutableCallback(({ currentTarget: { value } }) => {
-		console.log('value', value);
 		setFilter(value);
 	});
 
@@ -202,8 +197,6 @@ const PermissionsTable = () => {
 		total,
 		roleList,
 	] = permissionsData;
-
-	console.log(permissions);
 
 	const handleParams = useMutableCallback(({ current, itemsPerPage }) => {
 		setParams({ skip: current, limit: itemsPerPage });

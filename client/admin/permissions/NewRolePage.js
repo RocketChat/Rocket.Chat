@@ -22,10 +22,9 @@ const NewRolePage = () => {
 
 	const saveRole = useMethod('authorization:saveRole');
 
-	const handleSave = useMutableCallback(() => {
+	const handleSave = useMutableCallback(async () => {
 		try {
-			const result = saveRole(values);
-			console.log(result);
+			await saveRole(values);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

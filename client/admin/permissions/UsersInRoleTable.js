@@ -53,8 +53,7 @@ export function UsersInRoleTable({ data, reload, roleName, total, params, setPar
 	const onRemove = useMutableCallback((username) => {
 		const remove = async () => {
 			try {
-				const result = await removeUser(roleName, username, rid);
-				console.log(result);
+				await removeUser(roleName, username, rid);
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'erroor', message: error });
