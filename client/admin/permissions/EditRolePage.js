@@ -55,7 +55,7 @@ const EditRolePage = ({ data }) => {
 
 	const handleDelete = useMutableCallback(async () => {
 		try {
-			await deleteRole(values);
+			await deleteRole(data.name);
 			dispatchToastMessage({ type: 'success', message: t('Role_removed') });
 			router.push({});
 		} catch (error) {
