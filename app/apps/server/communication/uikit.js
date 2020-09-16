@@ -141,7 +141,7 @@ export class AppUIKitInteractionApi {
 					try {
 						Promise.await(this.orch.triggerEvent('IUIKitInteractionHandler', action));
 
-						res.send(200);
+						res.sendStatus(200);
 					} catch (e) {
 						console.log(e);
 						res.status(500).send(e.message);

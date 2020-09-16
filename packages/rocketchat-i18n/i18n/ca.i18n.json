@@ -1017,7 +1017,7 @@
   "Custom_Sound_Saved_Successfully": "So personalitzat guardat correctament",
   "Custom_Sounds": "Sons personalitzats",
   "Custom_Translations": "Traduccions personalitzades",
-  "Custom_Translations_Description": "Ha de ser un objecte JSON vàlid on les claus són el codi de l'idioma i contenen un diccionari de clau i traducció. Exemple:<br/><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n \"ca\": {\n  \"Channels\": \"Sales\"\n }\n}</code> ",
+  "Custom_Translations_Description": "Ha de ser un objecte JSON vàlid on les claus són el codi de l'idioma i contenen un diccionari de clau i traducció. Exemple:<br/><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n \"pt\":{\n  \"Channels\": \"Salas\"\n }\n}</code> ",
   "Custom_User_Status": "Estat d’usuari personalitzat",
   "Custom_User_Status_Add": "Afegir estat d'usuari personalitzat",
   "Custom_User_Status_Added_Successfully": "Afegir estat d'usuari personalitzat",
