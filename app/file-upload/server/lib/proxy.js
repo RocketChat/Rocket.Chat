@@ -84,6 +84,7 @@ WebApp.connectHandlers.stack.unshift({
 			method: 'POST',
 		};
 
+		console.warn('UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload');
 		const proxy = http.request(options, function(proxy_res) {
 			proxy_res.pipe(res, {
 				end: true,
