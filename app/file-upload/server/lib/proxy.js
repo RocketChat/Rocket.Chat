@@ -15,7 +15,7 @@ WebApp.connectHandlers.stack.unshift({
 	route: '',
 	handle: Meteor.bindEnvironment(function(req, res, next) {
 		// Quick check to see if request should be catch
-		if (req.url.indexOf(UploadFS.config.storesPath) === -1) {
+		if (!req.url.includes(`/${ UploadFS.config.storesPath }/`)) {
 			return next();
 		}
 
