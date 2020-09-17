@@ -2,8 +2,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload';
-import { Messages, Rooms } from '../../../models';
+import { Messages, Rooms, Subscriptions } from '../../../models';
 import { Notifications } from '../../../notifications';
+
 
 export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
 	const gt = inclusive ? '$gte' : '$gt';
@@ -40,6 +41,10 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 	}
 
 	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
+
+	if (!ignoreThreads) {
+		Subscriptions.deleteAllThreadsByRoomId(rid, ts, fromUsers);
+	}
 	if (count) {
 		Rooms.resetLastMessageById(rid);
 		Notifications.notifyRoom(rid, 'deleteMessageBulk', {

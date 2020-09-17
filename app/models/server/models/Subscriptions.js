@@ -1429,6 +1429,25 @@ export class Subscriptions extends Base {
 
 		return this.update(query, update);
 	}
+
+	deleteAllThreadsByRoomId(rid, ts, users) {
+		const query = {
+			rid,
+			ts,
+		};
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
+		}
+
+		const update = {
+			$set: {
+				tunread: [],
+			},
+		};
+
+		return this.update(query, update);
+	}
 }
 
 export default new Subscriptions('subscription', true);
