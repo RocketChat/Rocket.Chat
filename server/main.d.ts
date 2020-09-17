@@ -34,7 +34,7 @@ declare module 'meteor/meteor' {
 		interface Error extends globalError {
 			error: string | number;
 			reason?: string;
-			details?: string | undefined;
+			details?: string | undefined | Record<string, string>;
 		}
 
 		const server: any;
