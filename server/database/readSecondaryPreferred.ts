@@ -3,10 +3,12 @@ import { ReadPreference, Db } from 'mongodb';
 export function readSecondaryPreferred(db: Db, tags: any[] = []): ReadPreference | string {
 	const { readPreferenceTags, readPreference } = db.options as any;
 
-	if (tags.length === 0 && Array.isArray(readPreferenceTags) && readPreferenceTags.length) {
-		tags = readPreferenceTags;
-	} else if (tags.length === 0 && readPreference instanceof ReadPreference) {
-		tags = readPreference.tags;
+	if (tags.length === 0) {
+		if (Array.isArray(readPreferenceTags) && readPreferenceTags.length) {
+			tags = readPreferenceTags;
+		} else if (readPreference instanceof ReadPreference) {
+			tags = readPreference.tags;
+		}
 	}
 
 	// For some reason the new ReadPreference definition requires the tags parameter even not been
