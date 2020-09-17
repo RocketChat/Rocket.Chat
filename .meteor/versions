@@ -1,10 +1,10 @@
-accounts-base@1.6.0
+accounts-base@1.7.0
 accounts-facebook@1.3.2
 accounts-github@1.4.3
 accounts-google@1.3.3
 accounts-meteor-developer@1.4.2
 accounts-oauth@1.2.0
-accounts-password@1.6.1
+accounts-password@1.6.2
 accounts-twitter@1.4.2
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
@@ -27,7 +27,7 @@ dandv:caret-position@2.1.1
 ddp@1.4.0
 ddp-client@2.3.3
 ddp-common@1.4.0
-ddp-rate-limiter@1.0.8
+ddp-rate-limiter@1.0.9
 ddp-server@2.3.2
 deepwell:bootstrap-datepicker2@1.3.0
 deps@1.0.12
@@ -36,11 +36,11 @@ dispatch:run-as-user@1.1.1
 dynamic-import@0.5.2
 ecmascript@0.14.3
 ecmascript-runtime@0.7.0
-ecmascript-runtime-client@0.10.0
-ecmascript-runtime-server@0.9.0
+ecmascript-runtime-client@0.11.0
+ecmascript-runtime-server@0.10.0
 edgee:slingshot@0.7.1
 ejson@1.1.1
-email@1.2.3
+email@2.0.0
 es5-shim@4.8.0
 facebook-oauth@1.7.0
 facts-base@1.0.1
@@ -97,7 +97,7 @@ mystor:device-detection@0.2.0
 nimble:restivus@0.8.12
 nooitaf:colors@1.1.2_1
 npm-bcrypt@0.9.3
-npm-mongo@3.7.1
+npm-mongo@3.8.0
 oauth@1.3.0
 oauth1@1.3.0
 oauth2@1.3.0

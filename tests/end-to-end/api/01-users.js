@@ -335,6 +335,37 @@ describe('[Users]', function() {
 					.end(done);
 			});
 		});
+
+		it('should correctly route users that have `ufs` in their username', async () => {
+			await request.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email: 'me@email.com',
+					name: 'testuser',
+					username: 'ufs',
+					password: '1234',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					username: 'ufs',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.user).to.have.property('type', 'user');
+					expect(res.body.user).to.have.property('name', 'testuser');
+					expect(res.body.user).to.have.property('username', 'ufs');
+					expect(res.body.user).to.have.property('active', true);
+				});
+		});
 	});
 	describe('[/users.getPresence]', () => {
 		it('should query a user\'s presence by userId', (done) => {
