@@ -39,7 +39,7 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 			.forEach(({ drid }) => deleteRoom(drid));
 	}
 
-	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers);
+	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
 	if (count) {
 		Rooms.resetLastMessageById(rid);
 		Notifications.notifyRoom(rid, 'deleteMessageBulk', {
