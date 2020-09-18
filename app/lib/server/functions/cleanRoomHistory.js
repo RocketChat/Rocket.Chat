@@ -42,7 +42,7 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 
 	const { count, deletedMessages } = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
 
-	if (!ignoreThreads && deletedMessages.length) {
+	if (!ignoreThreads && deletedMessages && deletedMessages.length) {
 		Subscriptions.deleteAllThreadsById(rid, deletedMessages, fromUsers);
 	}
 	if (count) {
