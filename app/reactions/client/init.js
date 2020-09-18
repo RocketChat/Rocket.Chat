@@ -10,15 +10,27 @@ import { EmojiPicker } from '../../emoji';
 import { tooltip } from '../../ui/client/components/tooltip';
 
 Template.room.events({
-	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
+	'click .add-reaction'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
-		const { msg: { rid, _id: mid } } = messageArgs(data);
+		const { msg: { rid, _id: mid, private: isPrivate } } = messageArgs(data);
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: rid });
 
-		if (roomTypes.readOnly(room._id, user._id)) {
+		if (!room) {
+			return false;
+		}
+
+		if (!instance.subscription.get()) {
+			return false;
+		}
+
+		if (isPrivate) {
+			return false;
+		}
+
+		if (roomTypes.readOnly(room._id, user._id) && !room.reactWhenReadOnly) {
 			return false;
 		}
 
