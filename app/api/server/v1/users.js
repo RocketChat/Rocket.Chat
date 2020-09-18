@@ -99,8 +99,10 @@ API.v1.addRoute('users.deleteOwnAccount', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
+		const { confirmRelinquish = false } = this.requestParams();
+
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('deleteUserOwnAccount', password);
+			Meteor.call('deleteUserOwnAccount', password, confirmRelinquish);
 		});
 
 		return API.v1.success();
@@ -134,7 +136,8 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus, this.bodyParams.confirmRelinquish);
+			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
+			Meteor.call('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
 		});
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
 	},
@@ -466,8 +469,10 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 		}
 
 		if (typeof this.bodyParams.data.active !== 'undefined') {
+			const { userId, data: { active }, confirmRelinquish = false } = this.bodyParams;
+
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.data.active);
+				Meteor.call('setUserActiveStatus', userId, active, confirmRelinquish);
 			});
 		}
 		const { fields } = this.parseJsonQuery();
