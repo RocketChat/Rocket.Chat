@@ -128,23 +128,25 @@ export const useUserInfoActions = (user = {}, rid) => {
 
 	const roomConfig = room && room.t && roomTypes.getConfig(room.t);
 
-	const {
+	const [
 		roomCanSetOwner,
 		roomCanSetLeader,
 		roomCanSetModerator,
+		roomCanIgnore,
 		roomCanBlock,
 		roomCanMute,
 		roomCanRemove,
-	} = {
-		...roomConfig && {
-			roomCanSetOwner: roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER),
-			roomCanSetLeader: roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER),
-			roomCanSetModerator: roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR),
-			roomCanBlock: roomConfig.allowMemberAction(room, RoomMemberActions.IGNORE),
-			roomCanMute: roomConfig.allowMemberAction(room, RoomMemberActions.MUTE),
-			roomCanRemove: roomConfig.allowMemberAction(room, RoomMemberActions.REMOVE_USER),
-		},
-	};
+	] = [
+		...roomConfig && [
+			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER),
+			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER),
+			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR),
+			roomConfig.allowMemberAction(room, RoomMemberActions.IGNORE),
+			roomConfig.allowMemberAction(room, RoomMemberActions.BLOCK),
+			roomConfig.allowMemberAction(room, RoomMemberActions.MUTE),
+			roomConfig.allowMemberAction(room, RoomMemberActions.REMOVE_USER),
+		],
+	];
 
 	const roomName = room && room.t && s.escapeHTML(roomTypes.getRoomName(room.t, room));
 
@@ -234,17 +236,33 @@ export const useUserInfoActions = (user = {}, rid) => {
 	const ignoreUser = useMethod('ignoreUser');
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
-			await ignoreUser({ rid, ignoredUser: uid, ignore: !isIgnored });
+			await ignoreUser({ rid, userId: uid, ignore: !isIgnored });
 			dispatchToastMessage({ type: 'success', message: t('User_has_been_unignored') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
-	const ignoreUserOption = useMemo(() => roomCanBlock && uid !== ownUserId && {
+	const ignoreUserOption = useMemo(() => roomCanIgnore && uid !== ownUserId && {
 		label: t(isIgnored ? 'Unignore' : 'Ignore'),
 		icon: 'ban',
 		action: ignoreUserAction,
-	}, [ignoreUserAction, isIgnored, ownUserId, roomCanBlock, t, uid]);
+	}, [ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid]);
+
+	const isUserBlocked = currentSubscription.blocker;
+	const toggleBlock = useMethod(isUserBlocked ? 'unblockUser' : 'blockUser');
+	const toggleBlockUserAction = useMutableCallback(async () => {
+		try {
+			await toggleBlock({ rid, blocked: uid });
+			dispatchToastMessage({ type: 'success', message: t(isUserBlocked ? 'User_is_unblocked' : 'User_is_blocked') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	});
+	const toggleBlockUserOption = useMemo(() => roomCanBlock && uid !== ownUserId && {
+		label: t(isUserBlocked ? 'Unblock' : 'Block'),
+		icon: 'ban',
+		action: toggleBlockUserAction,
+	}, [isUserBlocked, ownUserId, roomCanBlock, t, toggleBlockUserAction, uid]);
 
 	const muteFn = useMethod(isMuted ? 'unmuteUserInRoom' : 'muteUserInRoom');
 	const muteUserOption = useMemo(() => {
@@ -311,6 +329,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 		...ignoreUserOption && { ignoreUser: ignoreUserOption },
 		...muteUserOption && { muteUser: muteUserOption },
 		...removeUserOption && { removeUser: removeUserOption },
+		...toggleBlockUserOption && { toggleBlock: toggleBlockUserOption },
 	}),
 	[
 		audioCallOption,
@@ -322,5 +341,6 @@ export const useUserInfoActions = (user = {}, rid) => {
 		openDirectMessageOption,
 		removeUserOption,
 		videoCallOption,
+		toggleBlockUserOption,
 	]);
 };
