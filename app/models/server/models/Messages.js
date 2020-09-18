@@ -932,6 +932,7 @@ export class Messages extends Base {
 	}
 
 	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {
+		let messagesToDelete;
 		const query = {
 			rid,
 			ts,
@@ -960,10 +961,10 @@ export class Messages extends Base {
 			// decrease message count
 			Rooms.decreaseMessageCountById(rid, count);
 
-			return count;
+			return { count, deletedMessages: messagesToDelete };
 		}
 
-		const messagesToDelete = this.find(query, {
+		messagesToDelete = this.find(query, {
 			fields: {
 				_id: 1,
 			},
@@ -978,8 +979,7 @@ export class Messages extends Base {
 
 		// decrease message count
 		Rooms.decreaseMessageCountById(rid, count);
-
-		return count;
+		return { count, deletedMessages: messagesToDelete };
 	}
 
 	removeByUserId(userId) {

@@ -1430,10 +1430,9 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
-	deleteAllThreadsByRoomId(rid, ts, users) {
+	deleteAllThreadsById(rid, threadIds, users = []) {
 		const query = {
 			rid,
-			ts,
 		};
 
 		if (users.length) {
@@ -1441,8 +1440,8 @@ export class Subscriptions extends Base {
 		}
 
 		const update = {
-			$set: {
-				tunread: [],
+			$pullAll: {
+				tunread: threadIds,
 			},
 		};
 

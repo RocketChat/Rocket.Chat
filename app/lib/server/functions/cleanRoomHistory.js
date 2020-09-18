@@ -40,10 +40,10 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 			.forEach(({ drid }) => deleteRoom(drid));
 	}
 
-	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
+	const { count, deletedMessages } = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
 
-	if (!ignoreThreads) {
-		Subscriptions.deleteAllThreadsByRoomId(rid, ts, fromUsers);
+	if (!ignoreThreads && deletedMessages.length) {
+		Subscriptions.deleteAllThreadsById(rid, deletedMessages, fromUsers);
 	}
 	if (count) {
 		Rooms.resetLastMessageById(rid);
