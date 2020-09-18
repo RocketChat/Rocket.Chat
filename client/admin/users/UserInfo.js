@@ -61,11 +61,13 @@ export function UserInfoWithData({ uid, username, ...props }) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
+	const admin = data.user?.roles?.includes('admin');
+
 	return <UserInfo
 		{...user}
 		data={data.user}
 		onChange={onChange}
-		actions={data && data.user && <UserInfoActions isActive={data.user.active} isAdmin={data.user.roles.includes('admin')} _id={data.user._id} username={data.user.username} onChange={onChange}/>}
+		actions={data && data.user && <UserInfoActions isActive={data.user.active} isAdmin={admin} _id={data.user._id} username={data.user.username} onChange={onChange}/>}
 		{...props}
 	/>;
 }

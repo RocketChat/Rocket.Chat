@@ -1,7 +1,17 @@
 import { createClient } from 'webdav';
 
+import type { WebDavClient, Stat } from '../../../../definition/webdav';
+
+export type ServerCredentials = {
+	token?: string;
+	username?: string;
+	password?: string;
+};
+
 export class WebdavClientAdapter {
-	constructor(serverConfig, cred) {
+	_client: WebDavClient;
+
+	constructor(serverConfig: string, cred: ServerCredentials) {
 		if (cred.token) {
 			this._client = createClient(
 				serverConfig,
@@ -18,7 +28,7 @@ export class WebdavClientAdapter {
 		}
 	}
 
-	async stat(path) {
+	async stat(path: string): Promise<undefined> {
 		try {
 			return await this._client.stat(path);
 		} catch (error) {
@@ -26,7 +36,7 @@ export class WebdavClientAdapter {
 		}
 	}
 
-	async createDirectory(path) {
+	async createDirectory(path: string): Promise<Response> {
 		try {
 			return await this._client.createDirectory(path);
 		} catch (error) {
@@ -34,7 +44,7 @@ export class WebdavClientAdapter {
 		}
 	}
 
-	async deleteFile(path) {
+	async deleteFile(path: string): Promise<Response> {
 		try {
 			return await this._client.deleteFile(path);
 		} catch (error) {
@@ -42,15 +52,15 @@ export class WebdavClientAdapter {
 		}
 	}
 
-	async getFileContents(filename) {
+	async getFileContents(filename: string): Promise<Buffer> {
 		try {
-			return await this._client.getFileContents(filename);
+			return await this._client.getFileContents(filename) as Buffer;
 		} catch (error) {
 			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting file contents webdav');
 		}
 	}
 
-	async getDirectoryContents(path) {
+	async getDirectoryContents(path: string): Promise<Array<Stat>> {
 		try {
 			return await this._client.getDirectoryContents(path);
 		} catch (error) {
@@ -58,11 +68,19 @@ export class WebdavClientAdapter {
 		}
 	}
 
-	createReadStream(path, options) {
+	async putFileContents(path: string, data: Buffer, options: Record<string, any> = {}): Promise<any> {
+		try {
+			return await this._client.putFileContents(path, data, options);
+		} catch (error) {
+			throw new Error(error.response?.statusText ?? 'Error updating file contents.');
+		}
+	}
+
+	createReadStream(path: string, options?: Record<string, any>): ReadableStream {
 		return this._client.createReadStream(path, options);
 	}
 
-	createWriteStream(path) {
+	createWriteStream(path: string): WritableStream {
 		return this._client.createWriteStream(path);
 	}
 }
