@@ -178,6 +178,10 @@ export const FileUpload = {
 	},
 
 	avatarsOnValidate(file) {
+		if (file.rid) {
+			return FileUpload.avatarRoomOnFinishUpload(file);
+		}
+
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
