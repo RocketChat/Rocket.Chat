@@ -19,14 +19,6 @@ AccountBox.addRoute({
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({
-	name: 'livechat-analytics',
-	path: '/analytics',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Analytics',
-	pageTemplate: 'livechatAnalytics',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
 	name: 'livechat-departments',
 	path: '/departments',
 	sideNav: 'omnichannelFlex',
