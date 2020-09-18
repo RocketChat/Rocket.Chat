@@ -236,11 +236,14 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(userId, 'edit-room', rid) && (!Object.keys(settings).includes('encrypted') && room.t === 'd')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
+		if (!hasPermission(userId, 'edit-room', rid)) {
+			if (!(Object.keys(settings).includes('encrypted') && room.t === 'd')) {
+				throw new Meteor.Error('error-action-not-allowed', 'Editing room is not allowed', {
+					method: 'saveRoomSettings',
+					action: 'Editing_room',
+				});
+			}
+			settings = { encrypted: settings.encrypted };
 		}
 
 		if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {

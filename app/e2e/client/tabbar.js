@@ -22,11 +22,12 @@ Meteor.startup(() => {
 				},
 				order: 13,
 				condition: () => {
-					const room = ChatRoom.findOne(Session.get('openedRoom'));
+					const session = Session.get('openedRoom');
+					const room = ChatRoom.findOne(session);
 					if (room && room.t === 'd') {
 						return true;
 					}
-					return hasAllPermission('edit-room', Session.get('openedRoom'));
+					return hasAllPermission('edit-room', session);
 				},
 			});
 		} else {
