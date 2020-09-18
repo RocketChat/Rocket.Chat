@@ -312,6 +312,7 @@ export const Livechat = {
 		const ret = LivechatVisitors.saveGuestById(_id, updateData);
 
 		Meteor.defer(() => {
+			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatGuestSaved, _id);
 			callbacks.run('livechat.saveGuest', updateData);
 		});
 
@@ -495,6 +496,7 @@ export const Livechat = {
 		}
 
 		Meteor.defer(() => {
+			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 			callbacks.run('livechat.saveRoom', roomData);
 		});
 
