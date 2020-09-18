@@ -61,7 +61,6 @@ export class BaseDb extends EventEmitter {
 			const query = {
 				collection: this.collectionName,
 			};
-			console.log(this.collectionName);
 
 			if (!_oplogHandle) {
 				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n

@@ -82,11 +82,14 @@ class OplogHandle {
 			...lastOplogEntry && { ts: { $gt: lastOplogEntry.ts } },
 		};
 
-		console.log(oplogSelector);
+		// console.log(oplogSelector);
 		this.stream = oplogCollection.find(oplogSelector, {
 			tailable: true,
 			// awaitData: true,
 		}).stream();
+
+		// Prevent warning about many listeners, we add 11
+		this.stream.setMaxListeners(20);
 	}
 
 	onOplogEntry(query: {collection: string}, callback: Function): void {
@@ -153,10 +156,11 @@ class OplogHandle {
 	}
 }
 
-// process.env.USE_OLD_OPLOG = 'true';
 // process.env.IGNORE_CHANGE_STREAM = 'true';
 
-const oplogHandle = !process.env.USE_OLD_OPLOG ? new OplogHandle().start() : undefined;
+// @ts-ignore
+// eslint-disable-next-line no-undef
+const oplogHandle = Package['disable-oplog'] ? new OplogHandle().start() : undefined;
 
 export const getOplogHandle = async (): Promise<OplogHandle | undefined> => {
 	if (oplogHandle) {
