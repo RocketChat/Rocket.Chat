@@ -34,9 +34,32 @@ const checkFiles = async (path, source) => {
 
 	const i18nFiles = await fg([`${ path }/**/*.i18n.json`]);
 
-	let totalErrors = 0;
+	// const getInvalidKeys = (json) =>
+	// 	usedKeys
+	// 		.filter(({ key }) => typeof json[key] !== 'undefined')
+	// 		.filter(({ key, replaces }) => {
+	// 			const miss = replaces.filter((replace) => json[key].indexOf(replace) === -1);
 
-	const result = i18nFiles.filter((file) => {
+	// 			return miss.length > 0;
+	// 		})
+	// 		.map(({ key }) => key);
+
+	// const removeMissingKeys = () => {
+	// 	const allKeys = Object.keys(sourceFile);
+	// 	i18nFiles.forEach((file) => {
+	// 		const json = JSON.parse(fs.readFileSync(file, 'utf8'));
+
+	// 		const invalidKeys = getInvalidKeys(json);
+
+	// 		const validKeys = allKeys.filter((key) => !invalidKeys.includes(key));
+	// 		// console.log('validKeys', file, validKeys);
+
+	// 		fs.writeFileSync(file, JSON.stringify(json, validKeys, 2));
+	// 	});
+	// };
+
+	let totalErrors = 0;
+	i18nFiles.filter((file) => {
 		const json = JSON.parse(fs.readFileSync(file, 'utf8'));
 
 		const result = validateKeys(json);
@@ -56,7 +79,7 @@ const checkFiles = async (path, source) => {
 		return false;
 	});
 
-	if (result.length > 0) {
+	if (totalErrors > 0) {
 		console.error(`\n${ totalErrors } errors found`);
 		process.exit(1);
 	}
