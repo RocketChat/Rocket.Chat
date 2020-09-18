@@ -31,7 +31,7 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		throw error;
 	}
 
-	if (room.t === 'c' || room.t === 'p') {
+	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
 		callbacks.run('beforeAddedToRoom', { user, inviter }, room);
 

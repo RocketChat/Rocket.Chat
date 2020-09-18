@@ -32,6 +32,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			bio,
 			utcOffset,
 			lastLogin,
+			nickname,
 		} = user;
 		return {
 			name: showRealNames ? name : username,
@@ -43,11 +44,12 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			bio,
 			phone: user.phone,
 			utcOffset,
-			customFields: [approveManuallyUsers && user.active === false && user.reason && { label: 'Reason', value: user.reason }, ...Array.isArray(user.customFields) ? user.customFields : []].filter(Boolean),
+			customFields: { ...user.customFields, ...approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason } },
 			email: user.emails?.find(({ address }) => !!address)?.address,
 			createdAt: user.createdAt,
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
+			nickname,
 		};
 	}, [data, showRealNames]);
 
@@ -59,11 +61,13 @@ export function UserInfoWithData({ uid, username, ...props }) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
+	const admin = data.user?.roles?.includes('admin');
+
 	return <UserInfo
 		{...user}
 		data={data.user}
 		onChange={onChange}
-		actions={data && data.user && <UserInfoActions isActive={data.user.active} isAdmin={data.user.roles.includes('admin')} _id={data.user._id} username={data.user.username} onChange={onChange}/>}
+		actions={data && data.user && <UserInfoActions isActive={data.user.active} isAdmin={admin} _id={data.user._id} username={data.user.username} onChange={onChange}/>}
 		{...props}
 	/>;
 }

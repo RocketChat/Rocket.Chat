@@ -556,6 +556,7 @@ Template.room.helpers({
 		const mid = FlowRouter.getParam('context');
 		const rid = Template.currentData()._id;
 		const jump = FlowRouter.getQueryParam('jump');
+		const subscription = Template.instance().subscription.get();
 
 		if (tab !== 'thread' || !mid || rid !== Session.get('openedRoom')) {
 			return;
@@ -575,6 +576,7 @@ Template.room.helpers({
 			mid,
 			room,
 			jump,
+			subscription,
 		};
 	},
 });
@@ -1218,6 +1220,8 @@ Template.room.onCreated(function() {
 			this.sendToBottom();
 		}
 	};
+
+	this.sendToBottomIfNecessaryDebounced = () => {};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {

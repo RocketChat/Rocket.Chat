@@ -1,12 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import s from 'underscore.string';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { usePermission, useAllPermissions } from '../../contexts/AuthorizationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useUserId } from '../../contexts/UserContext';
+import { useUserId, useUserSubscription, useUserSubscriptionByName } from '../../contexts/UserContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { WebRTC } from '../../../app/webrtc/client';
 import { useRoute } from '../../contexts/RouterContext';
@@ -15,7 +16,6 @@ import { RoomRoles } from '../../../app/models/client';
 import { roomTypes, RoomMemberActions } from '../../../app/utils';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { useUserRoom } from './useUserRoom';
-import { useUserSubscription, useUserSubscriptionByName } from '../../contexts/SubscriptionContext';
 
 
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
@@ -146,7 +146,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 		},
 	};
 
-	const roomName = room && room.t && roomTypes.getRoomName(room.t, room);
+	const roomName = room && room.t && s.escapeHTML(roomTypes.getRoomName(room.t, room));
 
 	const userCanSetOwner = usePermission('set-owner', rid);
 	const userCanSetLeader = usePermission('set-leader', rid);
@@ -234,7 +234,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 	const ignoreUser = useMethod('ignoreUser');
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
-			await ignoreUser({ rid, ignoredUser: uid, ignore: !isIgnored });
+			await ignoreUser({ rid, userId: uid, ignore: !isIgnored });
 			dispatchToastMessage({ type: 'success', message: t('User_has_been_unignored') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

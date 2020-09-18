@@ -127,3 +127,34 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 		items,
 	};
 }
+
+export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term, pagination: { offset, count, sort } }) {
+	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+
+	const cursor = LivechatVisitors.findVisitorsByEmailOrPhoneOrNameOrUsername(term, {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+		fields: {
+			_id: 1,
+			username: 1,
+			name: 1,
+			phone: 1,
+			livechatData: 1,
+			visitorEmails: 1,
+		},
+	});
+
+	const total = await cursor.count();
+
+	const visitors = await cursor.toArray();
+
+	return {
+		visitors,
+		count: visitors.length,
+		offset,
+		total,
+	};
+}

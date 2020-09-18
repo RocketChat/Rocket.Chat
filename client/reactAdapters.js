@@ -1,5 +1,6 @@
 import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
+import { Random } from 'meteor/random';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -25,6 +26,7 @@ const mountRoot = async () => {
 	] = await Promise.all([
 		import('react'),
 		import('react-dom'),
+		import('@rocket.chat/fuselage-hooks'),
 	]);
 
 	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
@@ -73,7 +75,7 @@ export const registerPortal = (key, portal) => {
 		mountRoot();
 	}
 
-	portalsMap.set(key, { portal, key: Date.now() });
+	portalsMap.set(key, { portal, key: Random.id() });
 	invalidatePortals();
 	return () => unregisterPortal(key);
 };

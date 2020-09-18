@@ -81,7 +81,7 @@ export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessa
 
 const defaultLimit = parseInt(getConfig('roomListLimit')) || 50;
 
-const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 70);
+const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 10);
 
 export const RoomHistoryManager = new class {
 	constructor() {
@@ -167,7 +167,7 @@ export const RoomHistoryManager = new class {
 
 		if (wrapper) {
 			waitAfterFlush(() => {
-				if (wrapper.scrollHeight <= wrapper.offsetHeight) {
+				if (wrapper.children[0].scrollHeight <= wrapper.offsetHeight) {
 					return this.getMore(rid);
 				}
 				const heightDiff = wrapper.scrollHeight - previousHeight;
