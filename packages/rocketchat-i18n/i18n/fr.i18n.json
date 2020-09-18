@@ -2551,7 +2551,7 @@
   "Show_room_counter_on_sidebar": "Afficher le compteur du salon dans la barre latérale",
   "Show_the_keyboard_shortcut_list": "Afficher la liste des raccourcis clavier",
   "Showing_archived_results": "<p>Affichage de <b>%s</b> résultats archivés</p>",
-  "Showing_online_users": "<b>__total_showing__</b> utilisateur(s) affichés sur un total de __total__",
+  "Showing_online_users": "Affichage de <b>__total_showing__</b>, en ligne : __online__, total : __total__ utilisateurs",
   "Showing_results": "<p><b>%s</b> résultat(s)</p>",
   "Sidebar": "Barre latérale",
   "Sidebar_list_mode": "Mode de liste de canaux de la barre latérale",
