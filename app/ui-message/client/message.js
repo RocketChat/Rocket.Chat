@@ -156,7 +156,7 @@ Template.message.helpers({
 		return msg.alias || (settings.UI_Use_Real_Name && msg.u && msg.u.name);
 	},
 	own() {
-		const { msg, u } = this;
+		const { msg, u = {} } = this;
 		if (msg.u && msg.u._id === u._id) {
 			return 'own';
 		}
