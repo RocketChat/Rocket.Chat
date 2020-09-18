@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
@@ -31,6 +33,74 @@ export class UsersRaw extends BaseRaw {
 		Object.assign(query, { roles: { $in: roles } });
 
 		return this.find(query, options);
+	}
+
+	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = {
+			__rooms: rid,
+			username,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
+		if (exceptions == null) { exceptions = []; }
+		if (options == null) { options = {}; }
+		if (Array.isArray(exceptions)) {
+			exceptions = [exceptions];
+		}
+
+		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+		if (searchTerm === '') {
+			const query = {
+				$and: [
+					{
+						active: true,
+						username: { $exists: true, $nin: exceptions },
+					},
+					...extraQuery,
+				],
+			};
+
+			return this.find(query, options);
+		}
+
+		const termRegex = new RegExp((startsWith ? '^' : '') + s.escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+
+		// const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
+
+		const orStmt = (searchFields || []).reduce(function(acc, el) {
+			acc.push({ [el.trim()]: termRegex });
+			return acc;
+		}, []);
+
+		const query = {
+			$and: [
+				{
+					active: true,
+					username: { $exists: true, $nin: exceptions },
+					$or: orStmt,
+				},
+				...extraQuery,
+			],
+		};
+
+		return this.find(query, options);
+	}
+
+	findOneByUsernameIgnoringCase(username, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = { username };
+
+		return this.findOne(query, options);
 	}
 
 	isUserInRole(userId, roleName) {
