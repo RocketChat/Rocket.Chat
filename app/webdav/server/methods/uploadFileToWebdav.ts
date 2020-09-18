@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings';
-import { Logger } from '../../../logger';
+import { settings } from '../../../settings/server';
+import { Logger } from '../../../logger/server';
 import { getWebdavCredentials } from './getWebdavCredentials';
-import { WebdavAccounts } from '../../../models';
+import { WebdavAccounts } from '../../../models/server';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 const logger = new Logger('WebDAV_Upload', {});
@@ -29,11 +29,14 @@ Meteor.methods({
 		try {
 			const cred = getWebdavCredentials(account);
 			const client = new WebdavClientAdapter(account.server_url, cred);
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			await client.createDirectory(uploadFolder).catch(() => {});
 			await client.putFileContents(`${ uploadFolder }/${ name }`, buffer, { overwrite: false });
 			return { success: true };
 		} catch (error) {
+			// @ts-ignore
 			logger.error(error);
+
 			if (error.response) {
 				const { status } = error.response;
 				if (status === 404) {
