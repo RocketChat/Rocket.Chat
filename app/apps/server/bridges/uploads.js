@@ -26,4 +26,13 @@ export class AppUploadBridge {
 			});
 		});
 	}
+
+	createUpload(details, buffer, appId) {
+		this.orch.debugLog(`The App ${ appId } is creating an upload "${ details.name }"`);
+
+		const fileStore = FileUpload.getStore('Uploads');
+		const uploadedFile = fileStore.insertSync(details, buffer);
+
+		return this.orch.getConverters().get('uploads').convertToApp(uploadedFile);
+	}
 }

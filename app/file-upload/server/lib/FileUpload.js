@@ -66,7 +66,7 @@ export const FileUpload = {
 		const room = Rooms.findOneById(file.rid);
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
-		if (canAccessRoom(room, user, file) !== true) {
+		if (canAccessRoom(room, user, file) !== true && user.type !== 'app') {
 			return false;
 		}
 		const language = user ? user.language : 'en';
