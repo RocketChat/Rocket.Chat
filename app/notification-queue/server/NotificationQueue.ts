@@ -93,10 +93,6 @@ class NotificationClass {
 	}
 
 	push({ uid, rid, mid }: INotification, item: INotificationItemPush): void {
-		if (settings.get('Push_enable') !== true) {
-			return;
-		}
-
 		PushNotification.send({
 			rid,
 			uid,
