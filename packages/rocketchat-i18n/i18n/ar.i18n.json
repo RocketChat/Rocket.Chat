@@ -2680,7 +2680,6 @@
   "UserDataDownload_EmailBody": "ملف البيانات الخاص بك جاهز الآن للتنزيل. انقر فوق <a href=\"__download_link__\">هنا</a>لتنزيله.",
   "UserDataDownload_EmailSubject": "ملف البيانات الخاص بك جاهز للتنزيل",
   "UserDataDownload_Requested": "تنزيل الملف المطلوب",
-  "UserDataDownload_Requested_Text": "سيتم إنشاء ملف البيانات الخاص بك. سيتم إرسال رابط لتنزيله إلى عنوان بريدك الإلكتروني عندما يكون جاهزًا.",
   "UserDataDownload_RequestExisted_Text": "ملف البيانات الخاص بك يتم إنشاؤه بالفعل. سيتم إرسال رابط لتنزيله إلى عنوان بريدك الإلكتروني عندما يكون جاهزًا.",
   "Username": "اسم المستخدم",
   "Username_already_exist": "اسم المستخدم موجود بالفعل. الرجاء تجربة اسم مستخدم آخر.",
