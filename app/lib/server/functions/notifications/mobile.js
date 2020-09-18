@@ -4,6 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings } from '../../../../settings';
 import { Subscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';
+import { callbacks } from '../../../../callbacks/server';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
@@ -71,16 +72,22 @@ export async function getPushData({ room, message, userId, senderUsername, sende
 	};
 }
 
-export function shouldNotifyMobile({
-	disableAllMessageNotifications,
-	mobilePushNotifications,
-	hasMentionToAll,
-	isHighlighted,
-	hasMentionToUser,
-	hasReplyToThread,
-	roomType,
-	isThread,
-}) {
+export function shouldNotifyMobile(options) {
+	const {
+		disableAllMessageNotifications,
+		mobilePushNotifications,
+		hasMentionToAll,
+		isHighlighted,
+		hasMentionToUser,
+		hasReplyToThread,
+		roomType,
+		isThread,
+	} = options;
+
+	if (callbacks.run('beforeShouldNotifyMobile', options) === false) {
+		return false;
+	}
+
 	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
