@@ -7,7 +7,7 @@ import { useRoute } from '../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../client/hooks/useEndpointDataExperimental';
-import DeleteWarningModal from '../../../client/omnichannel/DeleteWarningModal';
+import DeleteWarningModal from '../../../client/components/DeleteWarningModal';
 import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
