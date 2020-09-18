@@ -323,6 +323,25 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	hideAddReaction() {
+		const { room, u, msg, subscription } = this;
+
+		if (!room) {
+			return true;
+		}
+
+		if (!subscription) {
+			return true;
+		}
+
+		if (msg.private) {
+			return true;
+		}
+
+		if (roomTypes.readOnly(room._id, u._id) && !room.reactWhenReadOnly) {
+			return true;
+		}
+	},
 	hideMessageActions() {
 		const { msg } = this;
 
