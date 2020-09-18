@@ -1096,7 +1096,7 @@
   "Custom_Sound_Saved_Successfully": "Sonido personalizado guardado con éxito",
   "Custom_Sounds": "Sonidos Personalizados",
   "Custom_Translations": "Traducciones Personalizadas",
-  "Custom_Translations_Description": "Debe ser un JSON válido donde las claves sean idiomas que contengan un diccionario de clave y traducciones. Ejemplo: <br/><code>{\n\"en\": {\n\"Canales\": \"Habitaciones\"\n},\n\"pt\": {\n\"Canales\": \"Salas\"\n}\n}</code>",
+  "Custom_Translations_Description": "Debe ser un JSON válido donde las claves sean idiomas que contengan un diccionario de clave y traducciones. Ejemplo: <br/><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n\"pt\": {\n  \"Channels\": \"Salas\"\n }\n}</code>",
   "Custom_User_Status": "Estado de usuario personalizado",
   "Custom_User_Status_Add": "Añadir estado de usuario personalizado",
   "Custom_User_Status_Added_Successfully": "Estado de usuario personalizado añadido con éxito",
