@@ -134,7 +134,7 @@ class NetworkBroker implements IBroker {
 }
 
 const network = new ServiceBroker({
-	transporter: 'TCP',
+	transporter: process.env.TRANSPORTER || 'TCP',
 	// logLevel: 'debug',
 	logLevel: {
 		// "TRACING": "trace",

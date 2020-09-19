@@ -34,6 +34,8 @@
 		"esModuleInterop": true,
 		"preserveSymlinks": true,
 
+		"outDir": "./dist",
+
 		// "sourceMap": true,
 		// "declaration": true,
 		// "removeComments": false,

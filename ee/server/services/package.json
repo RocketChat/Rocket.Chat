@@ -8,7 +8,8 @@
 		"pm2": "pm2",
 		"start": "ts-node index.ts",
 		"typecheck": "tsc --noEmit --skipLibCheck",
-		"build": "tsc --outDir ./dist",
+		"build": "tsc",
+		"build-containers": "npm run build && docker-compose build && rm -rf ./dist",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [
@@ -22,7 +23,10 @@
 		"ws": "^7.2.3",
 		"bcrypt": "^4.0.1",
 		"mongodb": "^3.6.1",
-		"msgpack5": "^4.2.1"
+		"msgpack5": "^4.2.1",
+		"underscore.string": "^3.3.5",
+		"moleculer": "^0.14.10",
+		"nats": "^1.4.8"
 	},
 	"devDependencies": {
 		"@types/ejson": "^2.1.2",

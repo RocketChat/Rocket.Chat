@@ -1,0 +1,62 @@
+version: '3.1'
+
+services:
+  authorization-service:
+    build:
+      context: .
+      args:
+        SERVICE: Authorization
+    # image: registry.rocket.chat/microservices_authorization-service:latest
+    environment:
+      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
+      - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
+      # - MOLECULER_LOG_LEVEL=info
+
+  account-service:
+    build:
+      context: .
+      args:
+        SERVICE: Account
+    # image: registry.rocket.chat/microservices_accounts-service:latest
+    environment:
+      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
+      - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
+      # - MOLECULER_LOG_LEVEL=info
+
+  presence-service:
+    build:
+      context: .
+      args:
+        SERVICE: Presence
+    # image: registry.rocket.chat/microservices_presence-service:latest
+    environment:
+      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
+      - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
+      # - MOLECULER_LOG_LEVEL=info
+
+  ddp-streamer-service:
+    build:
+      context: .
+      args:
+        SERVICE: DDPStreamer
+    # image: registry.rocket.chat/microservices_ddp-streamer:latest
+    environment:
+      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
+      # - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
+      # - MOLECULER_LOG_LEVEL=info
+
+  stream-hub-service:
+    build:
+      context: .
+      args:
+        SERVICE: StreamHub
+    # image: registry.rocket.chat/microservices_mongodb-stream-hub:latest
+    environment:
+      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
+      - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
+      # - MOLECULER_LOG_LEVEL=info
+
+  nats:
+    image: nats
+    ports:
+      - "4222:4222"
