@@ -6,6 +6,7 @@ import { IRole } from '../../../definition/IRole';
 import { IRoom } from '../../../definition/IRoom';
 import { ISetting } from '../../../definition/ISetting';
 import { ISubscription } from '../../../definition/ISubscription';
+import { IUser } from '../../../definition/IUser';
 
 export type BufferList = ReturnType<MessagePack['encode']>;
 
@@ -16,9 +17,9 @@ export type EventSignatures = {
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'message'(data: { action: string; message: IMessage }): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
-	'userpresence'(payload: BufferList): void;
-	'user'(payload: BufferList): void;
-	'user.name'(payload: BufferList): void;
+	'userpresence'(data: { action: string; user: Partial<IUser> }): void;
+	'user'(data: { action: string; user: Partial<IUser> }): void;
+	'user.name'(data: { action: string; user: Partial<IUser> }): void;
 	'role'(data: {type: 'changed' | 'removed' } & Partial<IRole>): void;
 	'license.module'(data: {module: string; valid: boolean}): void;
 }

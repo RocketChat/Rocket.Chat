@@ -3,7 +3,6 @@ import url from 'url';
 
 import WebSocket from 'ws';
 // import PromService from 'moleculer-prometheus';
-import msgpack5 from 'msgpack5';
 
 import * as Streamer from './streams';
 import { Client, MeteorClient } from './Client';
@@ -11,10 +10,6 @@ import { Client, MeteorClient } from './Client';
 import { isEmpty } from './lib/utils';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 
-
-const msgpack = msgpack5();
-
-// const broker = new ServiceBroker(config);
 const {
 	PORT: port = 4000,
 // 	PROMETHEUS_PORT = 9100,
@@ -145,9 +140,11 @@ export class DDPStreamer extends ServiceClass {
 
 			const {
 				user: { _id, username, status, statusText },
-			} = msgpack.decode(payload);
+			} = payload;
 			// Streamer.userpresence.emit(_id, status);
-			Streamer.notifyLogged.emit('user-status', [_id, username, STATUS_MAP[status], statusText]);
+			if (status) {
+				Streamer.notifyLogged.emit('user-status', [_id, username, STATUS_MAP[status], statusText]);
+			}
 			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user); // use this method
 		});
 
@@ -156,7 +153,7 @@ export class DDPStreamer extends ServiceClass {
 			const {
 				action,
 				user: { _id, ...user },
-			} = msgpack.decode(payload);
+			} = payload;
 			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user);
 
 			if (isEmpty(user)) {
@@ -196,7 +193,7 @@ export class DDPStreamer extends ServiceClass {
 		this.onEvent('user.name', (payload): void => {
 			const {
 				user: { _id, name, username },
-			} = msgpack.decode(payload);
+			} = payload;
 			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user);
 			Streamer.notifyLogged.emit('Users:NameChanged', { _id, name, username });
 		});

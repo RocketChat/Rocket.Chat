@@ -8,8 +8,6 @@ import { IPresence } from '../../../../server/sdk/types/IPresence';
 import { USER_STATUS } from '../../../../definition/UserStatus';
 import { IBrokerNode } from '../../../../server/sdk/types/IBroker';
 
-// import PromService from 'moleculer-prometheus';
-
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
 
@@ -55,14 +53,3 @@ export class Presence extends ServiceClass implements IPresence {
 		return updateUserPresence(uid);
 	}
 }
-
-// const { PROMETHEUS_PORT = 9100 } = process.env;
-
-// export default {
-// settings: {
-// 	port: PROMETHEUS_PORT,
-// 	$noVersionPrefix: true,
-// },
-// mixins: PROMETHEUS_PORT !== 'false' ? [PromService] : [],
-// },
-// };

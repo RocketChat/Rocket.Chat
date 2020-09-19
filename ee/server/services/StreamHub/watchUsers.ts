@@ -1,11 +1,8 @@
 import { ChangeEvent } from 'mongodb';
-import msgpack5 from 'msgpack5';
 
 import { normalize } from './utils';
 import { IUser } from '../../../../definition/IUser';
 import { api } from '../../../../server/sdk/api';
-
-const msgpack = msgpack5();
 
 function nestStringProperties(obj: object): object {
 	if (!obj) {
@@ -47,7 +44,7 @@ export async function watchUsers(event: ChangeEvent<IUser>): Promise<void> {
 			if (updatedFields) {
 				if (updatedFields.status || updatedFields.statusText) {
 					const { status, _id, username, statusText } = user; // remove username
-					api.broadcast('userpresence', msgpack.encode({ action: normalize[event.operationType], user: { status, _id, username, statusText } })); // remove username
+					api.broadcast('userpresence', { action: normalize[event.operationType], user: { status, _id, username, statusText } }); // remove username
 					// RocketChat.Logger.info('User: userpresence', { status, _id, username, statusText });
 				}
 
@@ -60,23 +57,20 @@ export async function watchUsers(event: ChangeEvent<IUser>): Promise<void> {
 						username: username || user.username,
 					};
 
-					api.broadcast('user.name', msgpack.encode({
+					api.broadcast('user.name', {
 						action: normalize[event.operationType],
 						user: nameChange,
-					}));
+					});
 					// RocketChat.Logger.info('User: user.name', nameChange);
 				}
 			}
-			api.broadcast(
-				'user',
-				msgpack.encode({
-					action: normalize[event.operationType],
-					user: {
-						...event.documentKey,
-						...updatedFields ? nestStringProperties(updatedFields) : {},
-					},
-				}),
-			);
+			api.broadcast('user', {
+				action: normalize[event.operationType],
+				user: {
+					...event.documentKey,
+					...updatedFields ? nestStringProperties(updatedFields) : {},
+				},
+			});
 			// RocketChat.Logger.info('User record', user);
 			// return Streamer[method]({ stream: STREAM_NAMES['room-messages'], eventName: message.rid, args: message });
 			// publishMessage(operationType, message);
