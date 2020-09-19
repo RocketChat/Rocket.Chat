@@ -23,7 +23,6 @@
    * [Layershift](#layershift)
    * [Yunohost.org](#yunohostorg)
    * [IndieHosters](#indiehosters)
-   * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio)
    * [Heroku](#heroku)
    * [Helm Kubernetes](#helm-kubernetes)
