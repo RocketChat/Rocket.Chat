@@ -20,7 +20,6 @@
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
    * [DigitalOcean](#digitalocean-droplet)
-   * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
    * [Yunohost.org](#yunohostorg)
    * [IndieHosters](#indiehosters)
