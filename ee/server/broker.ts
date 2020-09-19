@@ -4,7 +4,6 @@ import { asyncLocalStorage, License } from '../../server/sdk';
 import { api } from '../../server/sdk/api';
 import { IBroker, IBrokerNode } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
-// import { onLicense } from '../app/license/server';
 import { EventSignatures } from '../../server/sdk/lib/Events';
 import { LocalBroker } from '../../server/sdk/lib/LocalBroker';
 
@@ -55,7 +54,7 @@ class NetworkBroker implements IBroker {
 			if (module === 'scalability') {
 				// Should we believe on the event only? Could it be a call from the CE version?
 				this.allowed = valid && await License.hasLicense('scalability');
-				console.log('on license.module', { allowed: this.allowed });
+				// console.log('on license.module', { allowed: this.allowed });
 			}
 		});
 
@@ -80,7 +79,7 @@ class NetworkBroker implements IBroker {
 				}
 
 				this.allowed = await License.hasLicense('scalability');
-				console.log('on started', { allowed: this.allowed });
+				// console.log('on started', { allowed: this.allowed });
 			},
 		};
 
