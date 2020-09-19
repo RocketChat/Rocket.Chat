@@ -9,6 +9,7 @@ import { createLivechatQueueView } from './lib/Helper';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
+import { hasPermission } from '../../authorization/server';
 
 import './roomAccessValidator.internalService';
 
