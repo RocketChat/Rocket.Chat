@@ -18,7 +18,7 @@ __Note:__ If there's a feature you'd like, there's a bug you'd like to fix, or y
 
 ## Development Guidelines
 
-Check out our Handbook for the [Development Guidelines](https://handbook.rocket.chat/product/development/development-guidelines) on how to setup your enviroment, do code, test and push your code. There you find our patterns on how to compose your Pull Requests' titles to have your contribution accepted.
+Check out our Handbook for the [Development Guidelines](https://handbook.rocket.chat/product/development/development-guidelines) on how to setup your environment, do code, test and push your code. There you find our patterns on how to compose your Pull Requests' titles to have your contribution accepted.
 
 ## Contributor License Agreement
 

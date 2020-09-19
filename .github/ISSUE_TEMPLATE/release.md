@@ -49,7 +49,7 @@ When you find a bug that is a regression, please open a new issue and link it to
 
 ## After Release - Conclusion - 1 business day after the 27th
 - [ ] Ensure all of the related issues were closed
-- [ ] Determine if all of the related issues were correctly assigned to the this version's milestone
+- [ ] Determine if all of the related issues were correctly assigned to this version's milestone
 - [ ] Get an update from Marketing Team about the release Blog Post
 - [ ] Check with the Documentation Team about the Docs release
 - [ ] Sync develop
