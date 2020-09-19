@@ -5,8 +5,6 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get install -y build-essential git
 
-# ADD ./moleculer.config.js .
-ADD ./dist .
 ADD ./package.json .
 
 RUN npm install --production
@@ -19,8 +17,14 @@ WORKDIR /app
 
 COPY --from=build /app .
 
+ADD ./dist .
+
 ENV NODE_ENV=production
+ENV PORT=80
 
 WORKDIR /app/ee/server/services/${SERVICE}
+
+EXPOSE 9458
+EXPOSE 80
 
 CMD ["node", "service.js"]

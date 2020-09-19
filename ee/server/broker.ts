@@ -1,4 +1,5 @@
-import { ServiceBroker, Context, ServiceSchema } from 'moleculer';
+import { ServiceBroker, Context, ServiceSchema, Serializers } from 'moleculer';
+import EJSON from 'ejson';
 
 import { asyncLocalStorage, License } from '../../server/sdk';
 import { api } from '../../server/sdk/api';
@@ -132,10 +133,23 @@ class NetworkBroker implements IBroker {
 	}
 }
 
+const Base = Serializers.Base as unknown as new () => {};
+
+class EJSONSerializer extends Base {
+	serialize(obj: {}): Buffer {
+		return Buffer.from(EJSON.stringify(obj));
+	}
+
+	deserialize(buf: Buffer): any {
+		return EJSON.parse(buf.toString());
+	}
+}
+
 const {
 	TRANSPORTER = 'TCP',
 	CACHE = 'Memory',
-	SERIALIZER = 'MsgPack',
+	// SERIALIZER = 'MsgPack',
+	SERIALIZER = 'EJSON',
 	MOLECULER_LOG_LEVEL = 'error',
 	BALANCE_STRATEGY = 'RoundRobin',
 	BALANCE_PREFER_LOCAL = 'false',
@@ -151,7 +165,7 @@ const {
 	BULKHEAD_CONCURRENCY = '10',
 	BULKHEAD_MAX_QUEUE_SIZE = '10000',
 	MS_METRICS = 'false',
-	MS_METRICS_PORT = '3030',
+	MS_METRICS_PORT = '9458',
 } = process.env;
 
 const network = new ServiceBroker({
@@ -166,7 +180,7 @@ const network = new ServiceBroker({
 		}],
 	},
 	cacher: CACHE,
-	serializer: SERIALIZER,
+	serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,
 	logLevel: MOLECULER_LOG_LEVEL as any,
 	// logLevel: {
 	// 	// "TRACING": "trace",

@@ -208,7 +208,8 @@ export class Stream extends EventEmitter {
 	}
 
 	async initMethod(publication: Publication): Promise<void> {
-		const { isWriteAllowed, name, subscriptionName } = this;
+		const { name, subscriptionName } = this;
+		const isWriteAllowed = this.isWriteAllowed.bind(this);
 
 		const method = {
 			async [this.subscriptionName](this: Client, eventName: string, ...args: any[]): Promise<void> {

@@ -7,10 +7,13 @@ services:
       args:
         SERVICE: Authorization
     # image: registry.rocket.chat/microservices_authorization-service:latest
+    ports:
+      - 9458:9458
     environment:
+      - MS_METRICS=true
       - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
       - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      # - MOLECULER_LOG_LEVEL=info
+      - MOLECULER_LOG_LEVEL=debug
 
   account-service:
     build:
@@ -19,9 +22,10 @@ services:
         SERVICE: Account
     # image: registry.rocket.chat/microservices_accounts-service:latest
     environment:
+      - MS_METRICS=true
       - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
       - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      # - MOLECULER_LOG_LEVEL=info
+      - MOLECULER_LOG_LEVEL=debug
 
   presence-service:
     build:
@@ -30,20 +34,24 @@ services:
         SERVICE: Presence
     # image: registry.rocket.chat/microservices_presence-service:latest
     environment:
+      - MS_METRICS=true
       - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
       - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      # - MOLECULER_LOG_LEVEL=info
+      - MOLECULER_LOG_LEVEL=debug
 
   ddp-streamer-service:
     build:
       context: .
       args:
         SERVICE: DDPStreamer
+    ports:
+      - 4000:80
     # image: registry.rocket.chat/microservices_ddp-streamer:latest
     environment:
+      - MS_METRICS=true
       - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
       # - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      # - MOLECULER_LOG_LEVEL=info
+      - MOLECULER_LOG_LEVEL=debug
 
   stream-hub-service:
     build:
@@ -52,11 +60,37 @@ services:
         SERVICE: StreamHub
     # image: registry.rocket.chat/microservices_mongodb-stream-hub:latest
     environment:
+      - MS_METRICS=true
       - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
       - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      # - MOLECULER_LOG_LEVEL=info
+      - MOLECULER_LOG_LEVEL=debug
 
   nats:
     image: nats
     ports:
       - "4222:4222"
+
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    ports:
+      - 5000:3000
+    volumes:
+      - ./.config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./.config/grafana/provisioning/dashboards/provider:/etc/grafana/provisioning/dashboards:ro
+      - ./.config/grafana/provisioning/dashboards/json-exports:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+
+  prometheus:
+    image: quay.io/prometheus/prometheus
+    restart: unless-stopped
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - '--storage.tsdb.retention.time=12w'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ./.config/data/prometheus:/prometheus
+      - ./.config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
