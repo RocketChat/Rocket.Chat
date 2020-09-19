@@ -23,6 +23,4 @@ ENV NODE_ENV=production
 
 WORKDIR /app/ee/server/services/${SERVICE}
 
-RUN ls .
-
 CMD ["node", "service.js"]
