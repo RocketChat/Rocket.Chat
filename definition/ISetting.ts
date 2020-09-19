@@ -1,3 +1,5 @@
+import { FilterQuery } from 'mongodb';
+
 export type SettingId = string;
 export type GroupId = SettingId;
 export type SectionName = string;
@@ -37,6 +39,6 @@ export interface ISetting {
 	editor?: SettingEditor;
 	packageEditor?: SettingEditor;
 	blocked: boolean;
-	enableQuery?: string | Mongo.ObjectID | Mongo.Query<any> | Mongo.QueryWithModifiers<any>;
+	enableQuery?: string | FilterQuery<ISetting>;
 	sorter?: number;
 }
