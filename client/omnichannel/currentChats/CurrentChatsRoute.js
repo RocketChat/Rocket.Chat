@@ -14,7 +14,7 @@ import { useMethod } from '../../contexts/ServerContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import CurrentChatsPage from './CurrentChatsPage';
-import DeleteWarningModal from '../DeleteWarningModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
@@ -69,7 +69,7 @@ const useQuery = ({ guest, servedBy, department, status, from, to, tags, customF
 		query.createdAt = JSON.stringify({ start: from, end: to });
 	}
 	if (status !== 'all') {
-		query.open = status === 'open';
+		query.open = status === 'opened';
 	}
 	if (servedBy && servedBy !== 'all') {
 		query.agents = [servedBy];

@@ -24,6 +24,14 @@ Meteor.startup(async () => {
 		}));
 	}, callbacks.priority.LOW, 'cant-leave-room');
 
+	callbacks.add('beforeJoinRoom', function(user, room) {
+		if (room.t === 'l' && !hasPermission(user._id, 'view-l-room')) {
+			throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', { method: 'beforeJoinRoom' });
+		}
+
+		return user;
+	}, callbacks.priority.LOW, 'cant-join-room');
+
 	createLivechatQueueView();
 
 	const monitor = new LivechatAgentActivityMonitor();
