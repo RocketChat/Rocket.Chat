@@ -1,6 +1,5 @@
 
 import { Authorization } from '../../sdk';
-// TODO: change to MS instance
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';

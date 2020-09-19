@@ -1,10 +1,8 @@
 import http, { RequestOptions, IncomingMessage, ServerResponse } from 'http';
-// import msgpack from 'msgpack-lite';
 import url from 'url';
 
 import WebSocket from 'ws';
 // import PromService from 'moleculer-prometheus';
-// import config from 'moleculer.config';
 import msgpack5 from 'msgpack5';
 
 import * as Streamer from './streams';

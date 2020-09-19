@@ -15,9 +15,8 @@ export async function watchMessages(event: ChangeEvent<IMessage>): Promise<void>
 				return;
 			}
 			api.broadcast('message', { action: normalize[event.operationType], message });
-				// TODO:
-				// RocketChat.Logger.info('Message record', fullDocument);
-					// return Streamer[method]({ stream: STREA	M_NAMES['room-messages'], eventName: message.rid, args: message });
-					// publishMessage(operationType, message);
+			// RocketChat.Logger.info('Message record', fullDocument);
+			// return Streamer[method]({ stream: STREA	M_NAMES['room-messages'], eventName: message.rid, args: message });
+			// publishMessage(operationType, message);
 	}
 }

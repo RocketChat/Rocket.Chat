@@ -48,7 +48,6 @@ export async function watchUsers(event: ChangeEvent<IUser>): Promise<void> {
 				if (updatedFields.status || updatedFields.statusText) {
 					const { status, _id, username, statusText } = user; // remove username
 					api.broadcast('userpresence', msgpack.encode({ action: normalize[event.operationType], user: { status, _id, username, statusText } })); // remove username
-					// TODO:
 					// RocketChat.Logger.info('User: userpresence', { status, _id, username, statusText });
 				}
 
@@ -65,7 +64,6 @@ export async function watchUsers(event: ChangeEvent<IUser>): Promise<void> {
 						action: normalize[event.operationType],
 						user: nameChange,
 					}));
-					// TODO:
 					// RocketChat.Logger.info('User: user.name', nameChange);
 				}
 			}
@@ -79,8 +77,7 @@ export async function watchUsers(event: ChangeEvent<IUser>): Promise<void> {
 					},
 				}),
 			);
-				// TODO:
-				// RocketChat.Logger.info('User record', user);
+			// RocketChat.Logger.info('User record', user);
 			// return Streamer[method]({ stream: STREAM_NAMES['room-messages'], eventName: message.rid, args: message });
 			// publishMessage(operationType, message);
 	}

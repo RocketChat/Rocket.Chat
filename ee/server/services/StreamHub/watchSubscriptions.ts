@@ -23,7 +23,6 @@ export function watchSubscriptions(Trash: Collection) {
 			return;
 		}
 		api.broadcast('subscription', { action: normalize[event.operationType], subscription });
-		// TODO:
 		// RocketChat.Logger.info('Subscription record', fullDocument);
 	};
 }

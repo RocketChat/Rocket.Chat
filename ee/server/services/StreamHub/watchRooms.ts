@@ -24,6 +24,5 @@ export async function watchRooms(event: ChangeEvent<IRoom>): Promise<void> {
 	}
 	api.broadcast('room', { action: normalize[event.operationType], room });
 	// RocketChat.Notifications.streamUser.__emit(data._id, operationType, data);
-	// TODO:
 	// RocketChat.Logger.info('Rooms record', room);
 }

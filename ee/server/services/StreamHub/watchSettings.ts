@@ -28,6 +28,5 @@ export async function watchSettings(event: ChangeEvent<ISetting>): Promise<void>
 
 	api.broadcast('setting', { action: normalize[event.operationType], setting });
 	// RocketChat.Notifications.streamUser.__emit(data._id, operationType, data);
-	// TODO:
 	// RocketChat.Logger.info('Settings record', setting);
 }

@@ -4,7 +4,6 @@ import { api } from '../../../../server/sdk/api';
 import { IRole } from '../../../../definition/IRole';
 
 export async function watchRoles(event: ChangeEvent<IRole>): Promise<void> {
-	// TODO:
 	// RocketChat.Logger.info('Role record', documentKey);
 	switch (event.operationType) {
 		case 'insert':
