@@ -19,6 +19,7 @@ scrape_configs:
       "presence-service",
       "ddp-streamer-service",
       "stream-hub-service",
+      "traefik",
     ]
     type: A
     port: 9458

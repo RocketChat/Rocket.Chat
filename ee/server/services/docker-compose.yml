@@ -128,23 +128,29 @@ services:
       # - 'traefik.frontend.redirect.entryPoint=https'
 
   traefik:
-    image: traefik:alpine
+    image: traefik
     container_name: traefik
     command:
-      - --configFile=/traefik.toml
-      - --web
-      - --logLevel=INFO
+      - --entrypoints.web.address=:80
+      # - --entrypoints.websecure.address=:443
+      - --api=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.file.directory=/servers/
     ports:
-      - "80:80"
-      # - "443:443"
+      - 80:80
+      # - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./.config/traefik/traefik.toml:/traefik.toml
+      - ./.config/traefik/servers/:/servers/
       # - ./.config/traefik/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:traefik.${HOST_NAME}"
-      - "traefik.port=8080"
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${HOST_NAME}`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.entrypoints=web"
+
 
   cadvisor:
     image: google/cadvisor
