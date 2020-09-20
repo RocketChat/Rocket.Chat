@@ -11,7 +11,7 @@ export const {
 		i18nLabel: 'Current_Chats',
 		permissionGranted: () => hasPermission('view-livechat-current-chats'),
 	}, {
-		href: 'omnichannel/analytics',
+		href: 'omnichannel-analytics',
 		i18nLabel: 'Analytics',
 		permissionGranted: () => hasPermission('view-livechat-analytics'),
 	}, {
