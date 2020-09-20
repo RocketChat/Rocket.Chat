@@ -78,6 +78,7 @@
 
 			padding: 8px var(--sidebar-small-default-padding);
 
+			cursor: pointer;
 			-webkit-transform: translateX(-50%);
 			transform: translateX(-50%);
 

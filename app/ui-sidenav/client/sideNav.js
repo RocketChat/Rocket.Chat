@@ -57,6 +57,17 @@ Template.sideNav.events({
 		return SideNav.toggleCurrent();
 	},
 
+	'click .unread-rooms'(e) {
+		const $roomsList = $('.rooms-list');
+		let unreadButtonPosition = 'first';
+		if ($(e.currentTarget).hasClass('bottom-unread-rooms')) {
+			unreadButtonPosition = 'last';
+		}
+		const $roomsListUnread = $(`.rooms-list > .rooms-list__list > .sidebar-item.sidebar-item--unread:${ unreadButtonPosition }`);
+		const scrollPosition = $roomsListUnread.offset().top - $roomsListUnread.offsetParent().offset().top + $roomsList.scrollTop();
+		$roomsList.scrollTop(scrollPosition);
+	},
+
 	'scroll .rooms-list'() {
 		return menu.updateUnreadBars();
 	},
