@@ -2,6 +2,7 @@ version: '3.1'
 
 services:
   authorization-service:
+    container_name: authorization-service
     build:
       context: .
       args:
@@ -12,6 +13,7 @@ services:
       - nats
 
   account-service:
+    container_name: account-service
     build:
       context: .
       args:
@@ -22,6 +24,7 @@ services:
       - nats
 
   presence-service:
+    container_name: presence-service
     build:
       context: .
       args:
@@ -32,6 +35,7 @@ services:
       - nats
 
   ddp-streamer-service:
+    container_name: ddp-streamer-service
     build:
       context: .
       args:
@@ -48,6 +52,7 @@ services:
       - "traefik.frontend.rule=Host:${HOST_NAME}"
 
   stream-hub-service:
+    container_name: stream-hub-service
     build:
       context: .
       args:
@@ -62,8 +67,31 @@ services:
     ports:
       - "4222:4222"
 
+  # tracing container for all tracing reporting
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "9411:9411"
+    depends_on:
+      - traefik
+    # environment:
+    #   - QUERY_BASE_PATH=/jaeger
+    labels:
+      - "traefik.enable=true"
+      - "traefik.jaeger.frontend=jaeger"
+      - "traefik.jaeger.port=16686"
+      - 'traefik.jaeger.frontend.rule=Host:jaeger.${HOST_NAME}'
+
   grafana:
     image: grafana/grafana
+    container_name: grafana
     restart: unless-stopped
     volumes:
       - ./.config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
@@ -80,6 +108,7 @@ services:
 
   prometheus:
     image: quay.io/prometheus/prometheus
+    container_name: prometheus
     restart: unless-stopped
     command:
       - --config.file=/etc/prometheus/prometheus.yml

@@ -18,15 +18,16 @@
 	"author": "Rocket.Chat",
 	"license": "MIT",
 	"dependencies": {
-		"ejson": "^2.2.0",
-		"uuid": "^7.0.3",
-		"ws": "^7.2.3",
 		"bcrypt": "^4.0.1",
+		"ejson": "^2.2.0",
+		"jaeger-client": "^3.18.1",
+		"moleculer": "^0.14.10",
 		"mongodb": "^3.6.1",
 		"msgpack5": "^4.2.1",
+		"nats": "^1.4.8",
 		"underscore.string": "^3.3.5",
-		"moleculer": "^0.14.10",
-		"nats": "^1.4.8"
+		"uuid": "^7.0.3",
+		"ws": "^7.2.3"
 	},
 	"devDependencies": {
 		"@types/ejson": "^2.1.2",
