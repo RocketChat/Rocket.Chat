@@ -1,14 +1,11 @@
 scrape_configs:
 # if you just have single or multiple, but static instances - you
 # can use the static configuration below.
-# - job_name: rocketchat_static
-#   static_configs:
-#   - targets:
-#     - authorization-service:3030
-#     - account-service:3030
-#     - presence-service:3030
-#     - ddp-streamer-service:3030
-    # - stream-hub-service:3030
+- job_name: rocketchat_static
+  static_configs:
+  - targets:
+    - cadvisor:8080
+
 
 # If you use a Docker-based setup make sure to use the DNS
 # discovery to always include all available application instances
@@ -21,7 +18,7 @@ scrape_configs:
       "account-service",
       "presence-service",
       "ddp-streamer-service",
-      "stream-hub-service:",
+      "stream-hub-service",
     ]
     type: A
     port: 9458

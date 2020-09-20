@@ -4,6 +4,8 @@ logLevel = "ERROR"
 defaultEntryPoints = ["http"]
 
 [entryPoints]
+  [entryPoints.metrics]
+    address = ":9458"
   [entryPoints.http]
   address = ":80"
 #    [entryPoints.http.redirect]
@@ -21,6 +23,12 @@ defaultEntryPoints = ["http"]
 endpoint = "unix:///var/run/docker.sock"
 watch = true
 exposedByDefault = false
+
+[metrics]
+  [metrics.prometheus]
+    buckets = [0.1,0.3,1.2,5.0]
+    addEntryPointsLabels = true
+    addServicesLabels = true
 
 # [acme]
 # email = "YOUR_EMAIL@gmail.com"
