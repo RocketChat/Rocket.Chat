@@ -7,13 +7,9 @@ services:
       args:
         SERVICE: Authorization
     # image: registry.rocket.chat/microservices_authorization-service:latest
-    ports:
-      - 9458:9458
-    environment:
-      - MS_METRICS=true
-      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
-      - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      - MOLECULER_LOG_LEVEL=debug
+    env_file: .config/services/service.env
+    depends_on:
+      - nats
 
   account-service:
     build:
@@ -21,11 +17,9 @@ services:
       args:
         SERVICE: Account
     # image: registry.rocket.chat/microservices_accounts-service:latest
-    environment:
-      - MS_METRICS=true
-      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
-      - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      - MOLECULER_LOG_LEVEL=debug
+    env_file: .config/services/service.env
+    depends_on:
+      - nats
 
   presence-service:
     build:
@@ -33,25 +27,25 @@ services:
       args:
         SERVICE: Presence
     # image: registry.rocket.chat/microservices_presence-service:latest
-    environment:
-      - MS_METRICS=true
-      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
-      - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      - MOLECULER_LOG_LEVEL=debug
+    env_file: .config/services/service.env
+    depends_on:
+      - nats
 
   ddp-streamer-service:
     build:
       context: .
       args:
         SERVICE: DDPStreamer
-    ports:
-      - 4000:80
     # image: registry.rocket.chat/microservices_ddp-streamer:latest
-    environment:
-      - MS_METRICS=true
-      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
-      # - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      - MOLECULER_LOG_LEVEL=debug
+    env_file: .config/services/service.env
+    depends_on:
+      - nats
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=ddp-streamer-service"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=Host:${HOST_NAME}"
 
   stream-hub-service:
     build:
@@ -59,11 +53,9 @@ services:
       args:
         SERVICE: StreamHub
     # image: registry.rocket.chat/microservices_mongodb-stream-hub:latest
-    environment:
-      - MS_METRICS=true
-      - TRANSPORTER=${TRANSPORTER:-nats://nats:4222}
-      - MONGO_URL=${MONGO_URL:-mongodb://host.docker.internal:27017/rocketchat}
-      - MOLECULER_LOG_LEVEL=debug
+    env_file: .config/services/service.env
+    depends_on:
+      - nats
 
   nats:
     image: nats
@@ -73,20 +65,22 @@ services:
   grafana:
     image: grafana/grafana
     restart: unless-stopped
-    ports:
-      - 5000:3000
     volumes:
       - ./.config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - ./.config/grafana/provisioning/dashboards/provider:/etc/grafana/provisioning/dashboards:ro
       - ./.config/grafana/provisioning/dashboards/json-exports:/var/lib/grafana/dashboards:ro
     depends_on:
       - prometheus
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=3000"
+      - "traefik.frontend.rule=Host:grafana.${HOST_NAME}"
+      # - 'traefik.frontend.redirect.entryPoint=https'
 
   prometheus:
     image: quay.io/prometheus/prometheus
     restart: unless-stopped
-    ports:
-      - 9090:9090
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - '--storage.tsdb.retention.time=12w'
@@ -94,3 +88,31 @@ services:
     volumes:
       - ./.config/data/prometheus:/prometheus
       - ./.config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - traefik
+    ports:
+      - 9090:9090
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:prometheus.${HOST_NAME}"
+      - "traefik.port=9090"
+      # - 'traefik.frontend.redirect.entryPoint=https'
+
+  traefik:
+    image: traefik:alpine
+    container_name: traefik
+    command:
+      - --configFile=/traefik.toml
+      - --web
+      - --logLevel=INFO
+    ports:
+      - "80:80"
+      # - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.config/traefik/traefik.toml:/traefik.toml
+      # - ./.config/traefik/acme.json:/acme.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:traefik.${HOST_NAME}"
+      - "traefik.port=8080"

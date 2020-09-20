@@ -1,0 +1,31 @@
+debug = false
+
+logLevel = "ERROR"
+defaultEntryPoints = ["http"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+#    [entryPoints.http.redirect]
+#    entryPoint = "https"
+# [entryPoints.https]
+# address = ":443"
+# [entryPoints.https.tls]
+#  [[entryPoints.https.tls.certificates]]
+#      certFile = "/etc/certs/certs-cert.pem"
+#      keyFile = "/etc/certs/certs-key.pem"
+
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+watch = true
+exposedByDefault = false
+
+# [acme]
+# email = "YOUR_EMAIL@gmail.com"
+# storage = "acme.json"
+# entryPoint = "https"
+# onHostRule = true
+# [acme.httpChallenge]
+# entryPoint = "http"
