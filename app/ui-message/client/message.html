@@ -218,9 +218,11 @@
 						</span>
 					</li>
 				{{/each}}
-				<li class="add-reaction">
-					<span class="icon-people-plus"></span>
-				</li>
+				{{#unless hideAddReaction}}
+					<li class="add-reaction">
+						<span class="icon-people-plus"></span>
+					</li>
+				{{/unless}}
 			</ul>
 			{{/unless}}
 		{{/unless}}

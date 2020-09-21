@@ -83,6 +83,10 @@ export function shouldNotifyMobile({
 	roomType,
 	isThread,
 }) {
+	if (settings.get('Push_enable') !== true) {
+		return false;
+	}
+
 	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
