@@ -58,6 +58,7 @@ export async function getPushData({ room, message, userId, senderUsername, sende
 	return {
 		payload: {
 			sender: message.u,
+			senderName: username,
 			type: room.t,
 			name: room.name,
 			messageType: message.t,
