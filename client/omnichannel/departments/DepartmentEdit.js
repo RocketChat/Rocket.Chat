@@ -16,7 +16,7 @@ import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
 
 
-export default function EditDepartmentWithData({ id, reload }) {
+export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
 	const { data, state, error } = useEndpointDataExperimental(`livechat/department/${ id }`) || {};
 	// const { data: userDepartments, state: userDepartmentsState, error: userDepartmentsError } = useEndpointDataExperimental(`livechat/agents/${ id }/departments`);
@@ -30,7 +30,7 @@ export default function EditDepartmentWithData({ id, reload }) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 	console.log(data);
-	return <EditDepartment id={id} data={data} reset={reload}/>;
+	return <EditDepartment id={id} data={data} reset={reload} title={title}/>;
 }
 
 // abandonedRoomsCloseCustomMessage: "fuk u"
@@ -291,8 +291,8 @@ export function EditDepartment({ data, id, title }) {
 						<ToggleSwitch flexGrow={1} checked={requestTagBeforeClosingChat} onChange={handleRequestTagBeforeClosingChat} />
 					</Field.Row>
 				</Field>
-				<Field mbe='x16'>
-					<Field.Label alignSelf='stretch'>{t('Tag')}</Field.Label>
+				{requestTagBeforeClosingChat && <Field mbe='x16'>
+					<Field.Label alignSelf='stretch'>{t('Conversation_closing_tags')}</Field.Label>
 					<Field.Row>
 						<TextInput error={tagError} value={tagsText} onChange={handleTagTextChange} placeholder={t('Enter_a_tag')} />
 						<Button mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
@@ -303,7 +303,7 @@ export function EditDepartment({ data, id, title }) {
 					{tags && tags.length > 0 && <Field.Row justifyContent='flex-start'>
 						{tags.map((tag, i) => <Chip key={i} onClick={handleTagChipClick(tag)} mie='x8'>{tag}</Chip>)}
 					</Field.Row>}
-				</Field>
+				</Field>}
 				{DepartmentBusinessHours && <DepartmentBusinessHours bhId={department && department.businessHourId}/>}
 				<Divider mb='x16' />
 				<Field mbe='x16'>
