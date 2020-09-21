@@ -1420,6 +1420,8 @@ export class Subscriptions extends Base {
 		const update = {
 			$unset: {
 				tunread: 1,
+				tunreadUser: 1,
+				tunreadGroup: 1,
 			},
 		};
 
@@ -1435,6 +1437,8 @@ export class Subscriptions extends Base {
 		const update = {
 			$pullAll: {
 				tunread,
+				tunreadUser: tunread,
+				tunreadGroup: tunread,
 			},
 		};
 
