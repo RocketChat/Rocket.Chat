@@ -93,13 +93,13 @@ const RealTimeMonitoringPage = () => {
 					<AgentsOverview flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams}/>
 				</Box>
 				<Box display='flex' w='full' flexShrink={1}>
-					<ChatDurationChart flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams}/>
+					<ChatDurationChart flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams}/>
 				</Box>
 				<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 					<ProductivityOverview flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams}/>
 				</Box>
 				<Box display='flex' w='full' flexShrink={1}>
-					<ResponseTimesChart flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams}/>
+					<ResponseTimesChart flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams}/>
 				</Box>
 			</Margins>
 		</Page.ScrollableContentWithShadow>

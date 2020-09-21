@@ -15,7 +15,7 @@ import AgentInfo from './AgentInfo';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import VerticalBar from '../../components/basic/VerticalBar';
-import DeleteWarningModal from '../DeleteWarningModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
