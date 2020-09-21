@@ -7,7 +7,7 @@ import { Th, GenericTable } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
-import DeleteWarningModal from '../DeleteWarningModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { AutoCompleteAgent } from '../../components/basic/AutoCompleteAgent';
