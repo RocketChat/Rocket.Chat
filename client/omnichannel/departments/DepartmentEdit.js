@@ -5,6 +5,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
 import { useMethod } from '../../contexts/ServerContext';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -59,6 +60,7 @@ export function EditDepartment({ data, id, title }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-departments');
 	const eeForms = useSubscription(formsSubscription);
+	const initialAgents = (data && data.agents) || [];
 
 	const {
 		useEeNumberInput = () => {},
@@ -177,6 +179,7 @@ export function EditDepartment({ data, id, title }) {
 	console.log(channelOpts);
 
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
+	const saveDepartmentAgentsInfo = useEndpointAction('POST', `livechat/department/${ id }/agents`);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -217,9 +220,22 @@ export function EditDepartment({ data, id, title }) {
 			waitingQueueMessage,
 			departmentsAllowedToForward: departmentsAllowedToForward && departmentsAllowedToForward[0],
 		};
-		console.log(agentList);
+
+		const finalAgentList = agentList.map((agent) => {
+			agent.agentId = agent._id;
+			return agent;
+		});
+
+
+		const agentListPayload = {
+			upsert: finalAgentList.filter((agent) => !initialAgents.some((initialAgent) => initialAgent._id === agent._id)),
+			remove: initialAgents.filter((initialAgent) => !finalAgentList.some((agent) => initialAgent._id === agent._id)),
+		};
+
 		try {
-			await saveDepartmentInfo(id, payload, agentList);
+			await saveDepartmentInfo(id, payload, []);
+
+			await saveDepartmentAgentsInfo(agentListPayload);
 			dispatchToastMessage({ type: 'success', message: t('saved') });
 			agentsRoute.push({});
 		} catch (error) {
