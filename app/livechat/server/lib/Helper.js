@@ -136,10 +136,16 @@ export const createLivechatSubscription = (rid, name, guest, agent) => {
 	return Subscriptions.insert(subscriptionData);
 };
 
-export const createLivechatQueueView = () => {
+export const createLivechatQueueView = async () => {
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-	mongo.db.createCollection('view_livechat_queue_status', { // name of the view to create
+	// recreate the view on every startup
+	const list = await mongo.db.listCollections({ name: 'view_livechat_queue_status' }).toArray();
+	if (list.length > 0) {
+		await mongo.db.dropCollection('view_livechat_queue_status');
+	}
+
+	await mongo.db.createCollection('view_livechat_queue_status', { // name of the view to create
 		viewOn: 'rocketchat_room', // name of source collection from which to create the view
 		pipeline: [
 			{

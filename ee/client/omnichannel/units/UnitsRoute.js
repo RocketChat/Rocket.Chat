@@ -14,7 +14,7 @@ import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterC
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import UnitsPage from './UnitsPage';
 import { UnitEditWithData, UnitNew } from './EditUnit';
-import DeleteWarningModal from '../../../../client/omnichannel/DeleteWarningModal';
+import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 

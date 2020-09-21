@@ -78,3 +78,13 @@ registerOmnichannelRoute('/departments/:context?/:id?', {
 	name: 'omnichannel-departments',
 	lazyRouteComponent: () => import('./departments/DepartmentsRoute'),
 });
+
+registerOmnichannelRoute('/realtime-monitoring', {
+	name: 'omnichannel-realTime',
+	lazyRouteComponent: () => import('./realTimeMonitoring/RealTimeMonitoringPage'),
+});
+
+registerOmnichannelRoute('/analytics', {
+	name: 'omnichannel-analytics',
+	lazyRouteComponent: () => import('./analytics/AnalyticsPage'),
+});

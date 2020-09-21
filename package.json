@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "3.6.0-develop",
+	"version": "3.7.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -22,7 +22,6 @@
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
-		"postinstall": "node .scripts/npm-postinstall.js",
 		"coverage": "nyc -r html mocha --config ./mocha.opts.js",
 		"testci": "node .scripts/start.js",
 		"testui": "cypress run --project tests",
@@ -55,7 +54,7 @@
 		"@babel/preset-react": "^7.10.4",
 		"@octokit/rest": "^16.43.2",
 		"@rocket.chat/eslint-config": "^0.3.0",
-		"@rocket.chat/livechat": "^1.7.2",
+		"@rocket.chat/livechat": "^1.7.3",
 		"@settlin/spacebars-loader": "^1.0.8",
 		"@storybook/addon-actions": "^5.3.19",
 		"@storybook/addon-knobs": "^5.3.19",
@@ -129,7 +128,7 @@
 		"@nivo/heatmap": "^0.61.0",
 		"@nivo/line": "^0.61.1",
 		"@nivo/pie": "^0.61.1",
-		"@rocket.chat/apps-engine": "1.17.0",
+		"@rocket.chat/apps-engine": "1.18.0-beta.3837",
 		"@rocket.chat/css-in-js": "^0.14.1",
 		"@rocket.chat/fuselage": "^0.14.1",
 		"@rocket.chat/fuselage-hooks": "^0.14.1",

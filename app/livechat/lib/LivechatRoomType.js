@@ -5,7 +5,7 @@ import { ChatRoom } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
-import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
+import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 
 let LivechatInquiry;
@@ -83,6 +83,10 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			default:
 				return true;
 		}
+	}
+
+	allowMemberAction(room, action) {
+		return [RoomMemberActions.INVITE, RoomMemberActions.JOIN].includes(action);
 	}
 
 	getUiText(context) {
