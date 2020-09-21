@@ -80,7 +80,7 @@ function deployCron(precision) {
 	});
 }
 
-const reloadPolicy = _.debounce(function reloadPolicy() {
+const reloadPolicy = _.debounce(Meteor.bindEnvironment(function reloadPolicy() {
 	types = [];
 
 	if (!settings.get('RetentionPolicy_Enabled')) {
@@ -106,7 +106,7 @@ const reloadPolicy = _.debounce(function reloadPolicy() {
 	const precision = (settings.get('RetentionPolicy_Advanced_Precision') && settings.get('RetentionPolicy_Advanced_Precision_Cron')) || getSchedule(settings.get('RetentionPolicy_Precision'));
 
 	return deployCron(precision);
-}, 100);
+}), 500);
 
 Meteor.startup(function() {
 	Meteor.defer(function() {
