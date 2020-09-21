@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
+import _ from 'underscore';
 
 import { settings } from '../../settings';
-import { Rooms, Settings } from '../../models';
+import { Rooms } from '../../models';
 import { cleanRoomHistory } from '../../lib';
 
 let types = [];
@@ -79,7 +80,7 @@ function deployCron(precision) {
 	});
 }
 
-function reloadPolicy() {
+const reloadPolicy = _.debounce(function reloadPolicy() {
 	types = [];
 
 	if (!settings.get('RetentionPolicy_Enabled')) {
@@ -105,29 +106,11 @@ function reloadPolicy() {
 	const precision = (settings.get('RetentionPolicy_Advanced_Precision') && settings.get('RetentionPolicy_Advanced_Precision_Cron')) || getSchedule(settings.get('RetentionPolicy_Precision'));
 
 	return deployCron(precision);
-}
+}, 100);
 
 Meteor.startup(function() {
 	Meteor.defer(function() {
-		Settings.find({
-			_id: {
-				$in: [
-					'RetentionPolicy_Enabled',
-					'RetentionPolicy_Precision',
-					'RetentionPolicy_AppliesToChannels',
-					'RetentionPolicy_AppliesToGroups',
-					'RetentionPolicy_AppliesToDMs',
-					'RetentionPolicy_MaxAge_Channels',
-					'RetentionPolicy_MaxAge_Groups',
-					'RetentionPolicy_MaxAge_DMs',
-				],
-			},
-		}).observe({
-			changed() {
-				reloadPolicy();
-			},
-		});
-
+		settings.get(/^RetentionPolicy_/, reloadPolicy);
 		reloadPolicy();
 	});
 });
