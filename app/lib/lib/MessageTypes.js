@@ -206,4 +206,8 @@ export const MessageTypesValues = [
 		key: 'room_changed_privacy',
 		i18nLabel: 'Message_HideType_room_changed_privacy',
 	},
+	{
+		key: 'room_changed_avatar',
+		i18nLabel: 'Message_HideType_room_changed_avatar',
+	},
 ];

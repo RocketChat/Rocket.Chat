@@ -24,7 +24,7 @@
   "Enterprise_License": "Koncernlicens",
   "Enterprise_License_Description": "Hvis dit workspace er registreret og en licens er tildelt af Rocket.Chat Cloud, behøver du ikke manuelt at opdatere licensen her",
   "Estimated_due_time_in_minutes": "Estimeret forfaldstid (tid i minutter)",
-  "Estimated_due_time": "Estimeret forfaldstidspunkt",
+  "Estimated_due_time": "Estimeret forfaldstidspunkt (tid i minutter)",
   "Failed_to_add_monitor": "Fejl ved tilføjelse af monitor",
   "Invalid Canned Response": "Ikke gyldigt opbevaret svar",
   "Invalid_Department": "Ugyldig afdeling",

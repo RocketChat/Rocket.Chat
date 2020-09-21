@@ -11,7 +11,7 @@ const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainTh
 
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
-	const user = Users.findOne({ _id: uid }, { fields });
+	const user = Users.findOne({ _id: uid }, { fields }) || {};
 	return {
 		u: user,
 		room: Rooms.findOne({ _id: rid }, {

@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useEffect } from 'react';
 
 import GenericTable from '../../../client/components/GenericTable';
-import DeleteWarningModal from '../../../client/omnichannel/DeleteWarningModal';
+import DeleteWarningModal from '../../../client/components/DeleteWarningModal';
 import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
