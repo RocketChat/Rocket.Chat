@@ -1,15 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import _ from 'underscore';
+import { debounce } from 'underscore';
 
-import { settings } from '../../settings';
-import { Rooms } from '../../models';
+import { settings } from '../../settings/server';
+import { Rooms } from '../../models/server';
 import { cleanRoomHistory } from '../../lib';
 
 let types = [];
 
 const oldest = new Date('0001-01-01T00:00:00Z');
-
 
 const maxTimes = {
 	c: 0,
@@ -80,7 +79,7 @@ function deployCron(precision) {
 	});
 }
 
-const reloadPolicy = _.debounce(Meteor.bindEnvironment(function reloadPolicy() {
+const reloadPolicy = debounce(Meteor.bindEnvironment(function reloadPolicy() {
 	types = [];
 
 	if (!settings.get('RetentionPolicy_Enabled')) {
