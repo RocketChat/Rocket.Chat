@@ -17,6 +17,7 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 				editor: setting.editor,
 				properties: setting.properties,
 				enterprise: setting.enterprise,
+				requiredOnWizard: setting.requiredOnWizard,
 			};
 
 			SettingsEvents.emit('change-setting', setting, value);

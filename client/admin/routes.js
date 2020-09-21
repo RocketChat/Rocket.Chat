@@ -114,6 +114,11 @@ registerAdminRoute('/federation-dashboard', {
 	lazyRouteComponent: () => import('./federationDashboard/FederationDashboardRoute'),
 });
 
+registerAdminRoute('/permissions/:context?/:_id?', {
+	name: 'admin-permissions',
+	lazyRouteComponent: () => import('./permissions/PermissionsRouter'),
+});
+
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
 		name: 'admin',

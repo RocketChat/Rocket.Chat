@@ -10,6 +10,7 @@ import { setValue } from '../raw';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
+const wizardRequiredSettings = new Set<string>();
 
 if (process.env.SETTINGS_BLOCKED) {
 	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings.add(settingId.trim()));
@@ -17,6 +18,10 @@ if (process.env.SETTINGS_BLOCKED) {
 
 if (process.env.SETTINGS_HIDDEN) {
 	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => hiddenSettings.add(settingId.trim()));
+}
+
+if (process.env.SETTINGS_REQUIRED_ON_WIZARD) {
+	process.env.SETTINGS_REQUIRED_ON_WIZARD.split(',').forEach((settingId) => wizardRequiredSettings.add(settingId.trim()));
 }
 
 export const SettingsEvents = new EventEmitter();
@@ -69,6 +74,7 @@ export interface ISettingAddOptions {
 	valueSource?: string;
 	hidden?: boolean;
 	blocked?: boolean;
+	requiredOnWizard?: boolean;
 	secret?: boolean;
 	sorter?: number;
 	i18nLabel?: string;
@@ -156,6 +162,7 @@ class Settings extends SettingsBase {
 		options.valueSource = 'packageValue';
 		options.hidden = options.hidden || false;
 		options.blocked = options.blocked || false;
+		options.requiredOnWizard = options.requiredOnWizard || false;
 		options.secret = options.secret || false;
 		options.enterprise = options.enterprise || false;
 
@@ -181,6 +188,9 @@ class Settings extends SettingsBase {
 		}
 		if (hiddenSettings.has(_id)) {
 			options.hidden = true;
+		}
+		if (wizardRequiredSettings.has(_id)) {
+			options.requiredOnWizard = true;
 		}
 		if (options.autocomplete == null) {
 			options.autocomplete = true;
