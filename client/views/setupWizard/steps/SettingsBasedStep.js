@@ -173,7 +173,7 @@ function SettingsBasedStep({ step, title, active }) {
 
 		<Pager
 			disabled={commiting}
-			isContinueEnabled={hasRequiredSettings ? !hasEmptyRequiredFields : true}
+			isContinueEnabled={!hasEmptyRequiredFields}
 			onBackClick={currentStep > 2 && handleBackClick}
 		/>
 	</Step>;
