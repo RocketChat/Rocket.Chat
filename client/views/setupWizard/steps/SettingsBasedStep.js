@@ -86,7 +86,7 @@ function SettingsBasedStep({ step, title, active }) {
 		}
 	};
 
-	const hasRequiredSettings = useMemo(() => fields.length > 0 && fields.map((field) => field.requiredOnWizard).length > 0, [fields]);
+	const hasRequiredSettings = useMemo(() => !!fields.find((field) => field.requiredOnWizard), [fields]);
 
 	const hasEmptyRequiredFields = useMemo(() => {
 		let hasEmptyRequiredFields = false;
