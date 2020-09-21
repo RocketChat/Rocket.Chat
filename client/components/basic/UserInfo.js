@@ -24,6 +24,7 @@ export const UserInfo = React.memo(function UserInfo({
 	username,
 	bio,
 	email,
+	showRealNames,
 	status,
 	phone,
 	customStatus,
@@ -45,12 +46,12 @@ export const UserInfo = React.memo(function UserInfo({
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
-		<Avatar margin='auto' size={'x332'} username={username}/>
+		<Avatar size={'x332'} username={username}/>
 
 		{actions}
 
 		<Margins block='x4'>
-			<UserCard.Username name={name || username} status={status} />
+			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
 			<Info>{customStatus}</Info>
 
 			{!!roles && <>
@@ -63,7 +64,7 @@ export const UserInfo = React.memo(function UserInfo({
 				<Info><UTCClock utcOffset={utcOffset}/></Info>
 			</>}
 
-			{username !== name && <>
+			{username && username !== name && <>
 				<Label>{t('Username')}</Label>
 				<Info>{username}</Info>
 			</>}
