@@ -96,7 +96,7 @@ function DepartmentsRoute() {
 		return <EditDepartmentWithData
 			reload={reload}
 			id={id}
-			title={context === 'edit' ? t('Edit_department') : t('New_department')} />;
+			title={context === 'edit' ? t('Edit_Department') : t('New_Department')} />;
 	}
 
 
