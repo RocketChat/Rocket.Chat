@@ -117,9 +117,9 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 	}, [deleteUser, erasureType, setModal, t]);
 
 	const setAdminStatus = useMethod('setAdminStatus');
-	const changeAdminStatus = useCallback(() => {
+	const changeAdminStatus = useCallback(async () => {
 		try {
-			setAdminStatus(_id, !isAdmin);
+			await setAdminStatus(_id, !isAdmin);
 			const message = isAdmin ? 'User_is_no_longer_an_admin' : 'User_is_now_an_admin';
 			dispatchToastMessage({ type: 'success', message: t(message) });
 			onChange();
@@ -187,7 +187,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 			label: t('Edit'),
 			action: editUserClick,
 		} },
-		...canAssignAdminRole && { makeAdmin: {
+		...canAssignAdminRole && username && { makeAdmin: {
 			icon: 'key',
 			label: isAdmin ? t('Remove_Admin') : t('Make_Admin'),
 			action: changeAdminStatus,
@@ -224,6 +224,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		enforcePassword,
 		canResetE2EEKey,
 		confirmResetE2EEKey,
+		username,
 	]);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(options);
