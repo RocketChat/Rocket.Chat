@@ -194,6 +194,12 @@ export class AppLivechatBridge {
 		return LivechatVisitors.find(query).fetch().map((visitor) => this.orch.getConverters().get('visitors').convertVisitor(visitor));
 	}
 
+	async setCustomFields(data, appId) {
+		this.orch.debugLog(`The App ${ appId } is setting livechat visitor's custom fields.`);
+
+		return Livechat.setCustomFields(data);
+	}
+
 	async findVisitorById(id, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
