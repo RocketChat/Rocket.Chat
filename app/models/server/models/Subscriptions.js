@@ -1430,22 +1430,19 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
-	deleteAllThreadsById(rid, threadIds, users = []) {
+	removeUnreadThreadsByRoomId(rid, tunread) {
 		const query = {
 			rid,
+			tunread,
 		};
-
-		if (users.length) {
-			query['u.username'] = { $in: users };
-		}
 
 		const update = {
 			$pullAll: {
-				tunread: threadIds,
+				tunread,
 			},
 		};
 
-		return this.update(query, update);
+		return this.update(query, update, { multi: true });
 	}
 }
 
