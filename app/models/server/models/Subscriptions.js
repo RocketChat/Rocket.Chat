@@ -1420,10 +1420,29 @@ export class Subscriptions extends Base {
 		const update = {
 			$unset: {
 				tunread: 1,
+				tunreadUser: 1,
+				tunreadGroup: 1,
 			},
 		};
 
 		return this.update(query, update);
+	}
+
+	removeUnreadThreadsByRoomId(rid, tunread) {
+		const query = {
+			rid,
+			tunread,
+		};
+
+		const update = {
+			$pullAll: {
+				tunread,
+				tunreadUser: tunread,
+				tunreadGroup: tunread,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 }
 
