@@ -69,7 +69,7 @@ function getSchedule(precision) {
 const pruneCronName = 'Prune old messages by retention policy';
 
 function deployCron(precision) {
-	const schedule = (parser) => parser.cron(getSchedule(precision), true);
+	const schedule = (parser) => parser.cron(precision, true);
 
 	SyncedCron.remove(pruneCronName);
 	SyncedCron.add({
@@ -101,7 +101,10 @@ function reloadPolicy() {
 	maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
 	maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
 
-	return deployCron(settings.get('RetentionPolicy_Precision'));
+
+	const precision = (settings.get('RetentionPolicy_Advanced_Precision') && settings.get('RetentionPolicy_Advanced_Precision_Cron')) || getSchedule(settings.get('RetentionPolicy_Precision'));
+
+	return deployCron(precision);
 }
 
 Meteor.startup(function() {
