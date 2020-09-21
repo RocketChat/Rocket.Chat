@@ -7,8 +7,7 @@ import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 
 class EventService {
-	/* eslint no-unused-vars: [2, { "args": "none" }]*/
-	_pushError(name, value, payload) {
+	_pushError(name, value/* , payload */) {
 		// TODO implement a (performant) cache
 		SearchLogger.debug(`Error on event '${ name }' with id '${ value }'`);
 	}
@@ -66,7 +65,7 @@ function onRoomsChange({ clientAction, id, data }) {
 	}
 }
 
-settings.get('Search.Provider', _.debounce((key, value) => {
+settings.get('Search.Provider', _.debounce(() => {
 	if (searchProviderService.activeProvider?.on) {
 		Users.on('change', onUsersChange);
 		Rooms.on('change', onRoomsChange);

@@ -5,8 +5,7 @@ import _ from 'underscore';
 
 import { SettingsBase, SettingValue } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
-import { updateValue } from '../observer';
-import { setValue } from '../raw';
+import { setValue, updateValue } from '../raw';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
