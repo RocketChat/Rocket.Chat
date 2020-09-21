@@ -567,15 +567,11 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	getLastSeen(options) {
-		if (options == null) {
-			options = {};
-		}
-		const query = { ls: { $exists: 1 } };
+	getLastSeen(options = { fields: { _id: 0, ls: 1 } }) {
 		options.sort = { ls: -1 };
 		options.limit = 1;
-		const [subscription] = this.find(query, options).fetch();
-		return subscription && subscription.ls;
+		const [subscription] = this.find({}, options).fetch();
+		return subscription?.ls;
 	}
 
 	findByRoomIdAndUserIds(roomId, userIds, options) {
