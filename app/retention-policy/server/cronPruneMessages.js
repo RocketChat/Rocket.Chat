@@ -56,20 +56,20 @@ function job() {
 function getSchedule(precision) {
 	switch (precision) {
 		case '0':
-			return '0 */30 * * * *'; // 30 minutes
+			return '*/30 * * * *'; // 30 minutes
 		case '1':
-			return '0 0 * * * *'; // hour
+			return '0 * * * *'; // hour
 		case '2':
-			return '0 0 */6 * * *'; // 6 hours
+			return '0 */6 * * *'; // 6 hours
 		case '3':
-			return '0 0 0 * * *'; // day
+			return '0 0 * * *'; // day
 	}
 }
 
 const pruneCronName = 'Prune old messages by retention policy';
 
 function deployCron(precision) {
-	const schedule = (parser) => parser.cron(precision, true);
+	const schedule = (parser) => parser.cron(precision);
 
 	SyncedCron.remove(pruneCronName);
 	SyncedCron.add({
