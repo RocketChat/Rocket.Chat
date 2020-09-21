@@ -17,6 +17,8 @@ const wordBreak = css`
 `;
 
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
+const Avatar = ({ username, ...props }) => <UserAvatar title={username} username={username} {...props}/>;
+const Username = ({ username, status, ...props }) => <UserCard.Username name={username} status={status} {...props}/>;
 
 export const UserInfo = React.memo(function UserInfo({
 	username,
@@ -32,6 +34,7 @@ export const UserInfo = React.memo(function UserInfo({
 	customFields = [],
 	name,
 	data,
+	nickname,
 	// onChange,
 	actions,
 	...props
@@ -42,12 +45,12 @@ export const UserInfo = React.memo(function UserInfo({
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
-		<UserAvatar size={'x332'} title={username} username={username}/>
+		<Avatar margin='auto' size={'x332'} username={username}/>
 
 		{actions}
 
 		<Margins block='x4'>
-			<UserCard.Username name={username} status={status} />
+			<UserCard.Username name={name || username} status={status} />
 			<Info>{customStatus}</Info>
 
 			{!!roles && <>
@@ -60,12 +63,22 @@ export const UserInfo = React.memo(function UserInfo({
 				<Info><UTCClock utcOffset={utcOffset}/></Info>
 			</>}
 
+			{username !== name && <>
+				<Label>{t('Username')}</Label>
+				<Info>{username}</Info>
+			</>}
+
 			<Label>{t('Last_login')}</Label>
 			<Info>{lastLogin ? timeAgo(lastLogin) : t('Never')}</Info>
 
 			{name && <>
 				<Label>{t('Full Name')}</Label>
 				<Info>{name}</Info>
+			</>}
+
+			{nickname && <>
+				<Label>{t('Nickname')}</Label>
+				<Info>{nickname}</Info>
 			</>}
 
 			{bio && <>
@@ -89,9 +102,9 @@ export const UserInfo = React.memo(function UserInfo({
 				</Info>
 			</>}
 
-			{ customFields && customFields.map((customField) => <React.Fragment key={customField.label}>
-				<Label>{t(customField.label)}</Label>
-				<Info>{customField.value}</Info>
+			{ customFields && Object.entries(customFields).map(([label, value]) => <React.Fragment key={label}>
+				<Label>{t(label)}</Label>
+				<Info>{value}</Info>
 			</React.Fragment>) }
 
 			<Label>{t('Created_at')}</Label>
@@ -110,5 +123,9 @@ export const Action = ({ icon, label, ...props }) => (
 );
 
 UserInfo.Action = Action;
+UserInfo.Avatar = Avatar;
+UserInfo.Info = Info;
+UserInfo.Label = Label;
+UserInfo.Username = Username;
 
 export default UserInfo;

@@ -54,6 +54,7 @@ const getInitialValues = (user) => ({
 	statusType: user.status ?? '',
 	bio: user.bio ?? '',
 	customFields: user.customFields ?? {},
+	nickname: user.nickname ?? '',
 });
 
 const AccountProfilePage = () => {
@@ -62,7 +63,7 @@ const AccountProfilePage = () => {
 
 	const user = useUser();
 
-	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(user));
+	const { values, handlers, hasUnsavedChanges, commit } = useForm(getInitialValues(user));
 	const [canSave, setCanSave] = useState(true);
 	const setModal = useSetModal();
 	const [loggingOut, setLoggingOut] = useState(false);
@@ -124,9 +125,10 @@ const AccountProfilePage = () => {
 		statusType,
 		customFields,
 		bio,
+		nickname,
 	} = values;
 
-	const { handleAvatar } = handlers;
+	const { handleAvatar, handlePassword, handleConfirmationPassword } = handlers;
 
 	const updateAvatar = useUpdateAvatar(avatar, user._id);
 
@@ -138,13 +140,17 @@ const AccountProfilePage = () => {
 				await saveFn({
 					...allowRealNameChange && { realname },
 					...allowEmailChange && getUserEmailAddress(user) !== email && { email },
-					...allowPasswordChange && { password },
+					...allowPasswordChange && { newPassword: password },
 					...canChangeUsername && { username },
 					...allowUserStatusMessageChange && { statusText },
 					...typedPassword && { typedPassword: SHA256(typedPassword) },
 					statusType,
+					nickname,
 					bio: bio || '',
 				}, customFields);
+				handlePassword('');
+				handleConfirmationPassword('');
+				commit();
 				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -185,6 +191,10 @@ const AccountProfilePage = () => {
 		customFields,
 		statusType,
 		setModal,
+		commit,
+		nickname,
+		handlePassword,
+		handleConfirmationPassword,
 	]);
 
 	const handleLogoutOtherLocations = useCallback(async () => {

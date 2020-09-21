@@ -5,10 +5,11 @@ import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { Users } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MentionsParser } from '../../../mentions/lib/MentionsParser';
+import { emojiParser } from '../../../emoji/client/emojiParser.js';
 
 export const normalizeThreadTitle = ({ ...message }) => {
 	if (message.msg) {
-		const filteredMessage = filterMarkdown(message.msg);
+		const filteredMessage = filterMarkdown(s.escapeHTML(message.msg));
 		if (!message.channels && !message.mentions) {
 			return filteredMessage;
 		}
@@ -22,10 +23,10 @@ export const normalizeThreadTitle = ({ ...message }) => {
 			useRealName: () => useRealName,
 			me: () => me,
 			userTemplate: ({ label }) => `<strong> ${ label } </strong>`,
-			roomTemplate: ({ channel }) => `<strong> ${ channel } </strong>`,
+			roomTemplate: ({ prefix, mention }) => `${ prefix }<strong> ${ mention } </strong>`,
 		});
-
-		return instance.parse({ ...message, msg: filteredMessage, html: filteredMessage }).html;
+		const { html } = emojiParser({ html: filteredMessage });
+		return instance.parse({ ...message, msg: filteredMessage, html }).html;
 	}
 
 	if (message.attachments) {

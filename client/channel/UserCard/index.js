@@ -59,6 +59,8 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			statusText = status,
 			bio = defaultValue,
 			utcOffset = defaultValue,
+			nickname,
+			avatarETag,
 		} = user;
 
 		return {
@@ -69,11 +71,13 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 				<UserCard.Role key={index}>{role}</UserCard.Role>
 			)),
 			bio,
+			etag: avatarETag,
 			localTime: Number.isInteger(utcOffset) && (
 				<LocalTime utcOffset={utcOffset} />
 			),
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
+			nickname,
 		};
 	}, [data, username, showRealNames, state]);
 

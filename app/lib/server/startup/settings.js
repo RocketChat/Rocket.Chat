@@ -1172,6 +1172,10 @@ settings.addGroup('Meta', function() {
 });
 
 settings.addGroup('Mobile', function() {
+	this.add('Allow_Save_Media_to_Gallery', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.section('Screen_Lock', function() {
 		this.add('Force_Screen_Lock', false, { type: 'boolean', i18nDescription: 'Force_Screen_Lock_description', public: true });
 		this.add('Force_Screen_Lock_After', 1800, { type: 'int', i18nDescription: 'Force_Screen_Lock_After_description', enableQuery: { _id: 'Force_Screen_Lock', value: true }, public: true });
@@ -1198,10 +1202,20 @@ settings.addGroup('Push', function() {
 	this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
+		enableQuery: [
+			{
+				_id: 'Push_enable',
+				value: true,
+			},
+			{
+				_id: 'Register_Server',
+				value: true,
+			},
+			{
+				_id: 'Cloud_Service_Agree_PrivacyTerms',
+				value: true,
+			},
+		],
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
@@ -2669,7 +2683,7 @@ settings.addGroup('Setup_Wizard', function() {
 		this.add('Allow_Marketing_Emails', true, {
 			type: 'boolean',
 		});
-		this.add('Register_Server', true, {
+		this.add('Register_Server', false, {
 			type: 'boolean',
 		});
 		this.add('Organization_Email', '', {

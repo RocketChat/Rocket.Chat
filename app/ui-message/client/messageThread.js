@@ -52,10 +52,7 @@ Template.messageThread.helpers({
 Template.messageThread.onCreated(function() {
 	this.parentMessage = new ReactiveVar();
 	this.autorun(async () => {
-		const { parentMessage, tmid } = Template.currentData();
-		if (parentMessage) {
-			return this.parentMessage.set(parentMessage);
-		}
+		const { tmid } = Template.currentData();
 		this.parentMessage.set(await findParentMessage(tmid));
 	});
 });

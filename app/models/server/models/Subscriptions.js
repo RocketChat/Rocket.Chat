@@ -1396,17 +1396,23 @@ export class Subscriptions extends Base {
 		}, { multi: true });
 	}
 
-	removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid) {
-		return this.update({
-			'u._id': userId,
-			rid,
-		}, {
+	removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert = false) {
+		const update = {
 			$pull: {
 				tunread: tmid,
 				tunreadGroup: tmid,
 				tunreadUser: tmid,
 			},
-		});
+		};
+
+		if (clearAlert) {
+			update.$set = { alert: false };
+		}
+
+		return this.update({
+			'u._id': userId,
+			rid,
+		}, update);
 	}
 
 	removeAllUnreadThreadsByRoomIdAndUserId(rid, userId) {
