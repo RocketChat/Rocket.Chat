@@ -38,6 +38,8 @@ export class AppListenerBridge {
 				case AppInterface.IPostLivechatAgentAssigned:
 				case AppInterface.IPostLivechatAgentUnassigned:
 				case AppInterface.IPostLivechatRoomTransferred:
+				case AppInterface.IPostLivechatGuestSaved:
+				case AppInterface.IPostLivechatRoomSaved:
 					return 'livechatEvent';
 				case AppInterface.IUIKitInteractionHandler:
 				case AppInterface.IUIKitLivechatInteractionHandler:
@@ -107,7 +109,10 @@ export class AppListenerBridge {
 					from: this.orch.getConverters().get(converter).convertById(data.from),
 					to: this.orch.getConverters().get(converter).convertById(data.to),
 				});
-
+			case AppInterface.IPostLivechatGuestSaved:
+				return this.orch.getManager().getListenerManager().executeListener(inte, this.orch.getConverters().get('visitors').convertById(data));
+			case AppInterface.IPostLivechatRoomSaved:
+				return this.orch.getManager().getListenerManager().executeListener(inte, this.orch.getConverters().get('rooms').convertById(data));
 			default:
 				const room = this.orch.getConverters().get('rooms').convertRoom(data);
 
