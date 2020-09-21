@@ -144,7 +144,7 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 	const [data, setData] = useState({});
 
 	useMemo(() => setData({ users: agentList }), [agentList]);
-	useMemo(() => setAgentListFinal(agentList && agentList.users), [agentList, setAgentListFinal]);
+	useMemo(() => setAgentListFinal((agentList && agentList.users) || []), [agentList, setAgentListFinal]);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
