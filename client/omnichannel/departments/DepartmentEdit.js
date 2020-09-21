@@ -79,7 +79,7 @@ export function EditDepartment({ data, id, title }) {
 
 	const { department } = data || { department: {} };
 
-	const [tags, setTags] = useState(department && department.chatClosingTags);
+	const [tags, setTags] = useState((department && department.chatClosingTags) || []);
 	const [tagsText, setTagsText] = useState();
 
 	console.log(data);
@@ -88,7 +88,7 @@ export function EditDepartment({ data, id, title }) {
 		name: (department && department.name) || '',
 		email: (department && department.email) || '',
 		description: (department && department.description) || '',
-		enabled: (department && department.enabled) || '',
+		enabled: (department && department.enabled) || true,
 		maxNumberSimultaneousChat: (department && department.maxNumberSimultaneousChat) || undefined,
 		showOnRegistration: (department && department.showOnRegistration) || true,
 		showOnOfflineForm: (department && department.showOnOfflineForm) || true,

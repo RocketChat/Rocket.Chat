@@ -4,9 +4,9 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { GenericTable } from '../../components/GenericTable';
-import { UserAutoComplete } from '../../components/basic/AutoComplete';
+import { useRoute } from '../../contexts/RouterContext';
+
 
 const FilterByText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
@@ -23,33 +23,8 @@ const FilterByText = ({ setFilter, ...props }) => {
 	</Box>;
 };
 
-
-function AddDepartment({ reload, ...props }) {
-	const t = useTranslation();
-	const [username, setUsername] = useState();
-
-	const saveAction = useEndpointAction('POST', 'livechat/users/department', { username });
-
-	const handleSave = useMutableCallback(async () => {
-		if (!username) {
-			return;
-		}
-		const result = await saveAction();
-		if (!result.success) {
-			return;
-		}
-		reload();
-		setUsername();
-	});
-	return <Box display='flex' alignItems='center' {...props}>
-		<UserAutoComplete value={username} onChange={setUsername}/>
-		<Button disabled={!username} onClick={handleSave} mis='x8' primary>{t('Add')}</Button>
-	</Box>;
-}
-
 function DepartmentsPage({
 	data,
-	reload,
 	header,
 	setParams,
 	params,
@@ -57,10 +32,18 @@ function DepartmentsPage({
 	renderRow,
 	children,
 }) {
+	const departmentsRoute = useRoute('omnichannel-departments');
+
+	const onAddNew = useMutableCallback(() => departmentsRoute.push({
+		context: 'new',
+	}));
 	return <Page flexDirection='row'>
 		<Page>
-			<Page.Header title={title}/>
-			<AddDepartment reload={reload} pi='x24'/>
+			<Page.Header title={title}>
+				<Button small onClick={onAddNew}>
+					<Icon name='plus' size='x16'/>
+				</Button>
+			</Page.Header>
 			<Page.Content>
 				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.departments} total={data && data.total} setParams={setParams} params={params} />
 			</Page.Content>
