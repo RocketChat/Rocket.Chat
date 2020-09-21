@@ -4,6 +4,10 @@
 // You'll likely want to set the dn value here {dn: "..."}
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import toastr from 'toastr';
+
+import { t } from '../../utils';
+import { process2faReturn } from '../../2fa/client/callWithTwoFactorRequired';
 
 Meteor.loginWithLDAP = function(...args) {
 	// Pull username and password
@@ -25,18 +29,41 @@ Meteor.loginWithLDAP = function(...args) {
 		ldapOptions: customLdapOptions,
 	};
 
+	const ldapCallback = (error) => {
+		if (!callback) {
+			return;
+		}
+
+		if (error) {
+			callback(error);
+			return;
+		}
+
+		callback();
+	};
+
 	Accounts.callLoginMethod({
 		// Call login method with ldap = true
 		// This will hook into our login handler for ldap
 		methodArguments: [loginRequest],
-		userCallback(error/* , result*/) {
-			if (error) {
-				if (callback) {
-					callback(error);
-				}
-			} else if (callback) {
-				callback();
-			}
+		userCallback(error, result) {
+			process2faReturn({
+				error,
+				result,
+				originalCallback: ldapCallback,
+				emailOrUsername: username,
+				onCode: (code) => {
+					// If LDAP resulted in a totp-required error, it means this is a login fallback, so for this second login we go straigth to password login
+					Meteor.loginWithPasswordAndTOTP(username, password, code, (error) => {
+						if (error && error.error === 'totp-invalid') {
+							toastr.error(t('Invalid_two_factor_code'));
+							ldapCallback();
+						} else {
+							ldapCallback(error);
+						}
+					});
+				},
+			});
 		},
 	});
 };

@@ -1,12 +1,12 @@
 import { hasPermission } from '../../app/authorization/client';
 import { createTemplateForComponent } from '../reactAdapters';
 import { settings } from '../../app/settings';
-import { createSidebarItems } from '../components/basic/Sidebar';
+import { createSidebarItems } from '../helpers/createSidebarItems';
 
 createTemplateForComponent('accountFlex', () => import('./AccountSidebar'));
 
 export const {
-	registerSidebarItem: registerAdminSidebarItem,
+	registerSidebarItem: registerAccountSidebarItem,
 	unregisterSidebarItem,
 	itemsSubscription,
 } = createSidebarItems([

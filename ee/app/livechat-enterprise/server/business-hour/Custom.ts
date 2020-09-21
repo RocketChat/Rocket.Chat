@@ -24,7 +24,12 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		if (!id) {
 			return;
 		}
+
 		const businessHour: ILivechatBusinessHour = await this.BusinessHourRepository.findOneById(id);
+		if (!businessHour) {
+			return;
+		}
+
 		businessHour.departments = await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, { fields: { name: 1 } }).toArray();
 		return businessHour;
 	}
@@ -77,7 +82,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		if (!departmentsToAdd.length) {
 			return;
 		}
-		await this.DepartmentsRepository.addBusinessHourToDepartamentsByIds(departmentsToAdd, businessHourId);
+		await this.DepartmentsRepository.addBusinessHourToDepartmentsByIds(departmentsToAdd, businessHourId);
 	}
 }
 

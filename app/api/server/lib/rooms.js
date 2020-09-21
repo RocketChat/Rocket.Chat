@@ -79,6 +79,8 @@ export async function findAdminRoom({ uid, rid }) {
 		msgs: 1,
 		archived: 1,
 		tokenpass: 1,
+		announcement: 1,
+		description: 1,
 	};
 
 	return Rooms.findOneById(rid, { fields });
@@ -92,6 +94,8 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 		fields: {
 			_id: 1,
 			name: 1,
+			t: 1,
+			avatarETag: 1,
 		},
 		limit: 10,
 		sort: {

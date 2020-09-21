@@ -8,11 +8,11 @@ import { SettingType } from '../../../definition/ISetting';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
-import { useAbsoluteUrl } from '../../contexts/ServerContext';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import Sidebar from '../../components/basic/Sidebar';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { itemsSubscription } from '../sidebarItems';
+import PlanTag from '../../components/basic/PlanTag';
 
 const AdminSidebarPages = React.memo(({ currentPath }) => {
 	const items = useSubscription(itemsSubscription);
@@ -83,7 +83,6 @@ const AdminSidebarSettings = ({ currentPath }) => {
 				placeholder={t('Search')}
 				onChange={handleChange}
 				addon={<Icon name='magnifier' size='x20'/>}
-				className={['asdsads']}
 			/>
 		</Box>
 		<Box pb='x16' display='flex' flexDirection='column'>
@@ -123,19 +122,18 @@ export default React.memo(function AdminSidebar() {
 
 	const currentRoute = useCurrentRoute();
 	const currentPath = useRoutePath(...currentRoute);
-	const absoluteUrl = useAbsoluteUrl();
+	const [,,, currentRouteGroupName] = currentRoute;
 
 	useEffect(() => {
-		const { pathname: adminPath } = new URL(absoluteUrl('admin/'));
-		if (!currentPath.startsWith(adminPath)) {
+		if (currentRouteGroupName !== 'admin') {
 			SideNav.closeFlex();
 		}
-	}, [absoluteUrl, currentPath]);
+	}, [currentRouteGroupName]);
 
 	// TODO: uplift this provider
 	return <SettingsProvider privileged>
 		<Sidebar>
-			<Sidebar.Header onClose={closeAdminFlex} title={t('Administration')}/>
+			<Sidebar.Header onClose={closeAdminFlex} title={<>{t('Administration')} <PlanTag/></>}/>
 			<Sidebar.Content>
 				<AdminSidebarPages currentPath={currentPath}/>
 				{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}

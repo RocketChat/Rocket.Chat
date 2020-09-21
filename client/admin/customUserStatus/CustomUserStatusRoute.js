@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -41,9 +41,6 @@ export default function CustomUserStatusRoute({ props }) {
 	const data = useEndpointData('custom-user-status.list', query) || {};
 
 	const router = useRoute(routeName);
-
-	const mobile = useMediaQuery('(max-width: 420px)');
-	const small = useMediaQuery('(max-width: 780px)');
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -93,15 +90,15 @@ export default function CustomUserStatusRoute({ props }) {
 			</Page.Content>
 		</Page>
 		{ context
-			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+			&& <VerticalBar className='contextual-bar' width='x380' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
 				<VerticalBar.Header>
 					{ context === 'edit' && t('Custom_User_Status_Edit') }
 					{ context === 'new' && t('Custom_User_Status_Add') }
-					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
-				<VerticalBar.Content>
-					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
-					{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} onChange={onChange}/>}
-				</VerticalBar.Content>
+					<VerticalBar.Close onClick={close}/>
+				</VerticalBar.Header>
+
+				{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
+				{context === 'new' && <AddCustomUserStatus goToNew={onClick} close={close} onChange={onChange}/>}
 			</VerticalBar>}
 	</Page>;
 }

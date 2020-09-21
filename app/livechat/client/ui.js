@@ -16,8 +16,8 @@ Tracker.autorun((c) => {
 AccountBox.addItem({
 	name: 'Omnichannel',
 	icon: 'omnichannel',
-	href: 'livechat-current-chats',
-	sideNav: 'livechatFlex',
+	href: '/omnichannel/current',
+	sideNav: 'omnichannelFlex',
 	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
 });
 
