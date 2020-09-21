@@ -86,11 +86,7 @@ function SettingsBasedStep({ step, title, active }) {
 		}
 	};
 
-	const hasRequiredSettings = useMemo(() => !!fields.find((field) => field.requiredOnWizard), [fields]);
-
-	const hasEmptyRequiredFields = useMemo(() => {
-		return !!fields.find((field) => field.requiredOnWizard && String(field.value).trim() === '');
-	}, [fields]);
+	const hasEmptyRequiredFields = useMemo(() => !!fields.find((field) => field.requiredOnWizard && String(field.value).trim() === ''), [fields]);
 
 
 	if (fields.length === 0) {
