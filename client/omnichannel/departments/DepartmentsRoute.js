@@ -72,16 +72,16 @@ function DepartmentsRoute() {
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
 		<Th key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x140'>{t('Description')}</Th>,
-		<Th key={'numDepartments'} direction={sort[1]} active={sort[0] === 'numDepartments'} onClick={onHeaderClick} sort='numDepartments' w='x120'>{t('Num_Departments')}</Th>,
+		<Th key={'numAgents'} direction={sort[1]} active={sort[0] === 'numAgents'} onClick={onHeaderClick} sort='numAgents' w='x120'>{t('Num_Agents')}</Th>,
 		<Th key={'enabled'} direction={sort[1]} active={sort[0] === 'enabled'} onClick={onHeaderClick} sort='enabled' w='x120'>{t('Enabled')}</Th>,
 		<Th key={'showOnRegistration'} direction={sort[1]} active={sort[0] === 'showOnRegistration'} onClick={onHeaderClick} sort='status' w='x120'>{t('Show_on_registration_page')}</Th>,
 		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
-	const renderRow = useCallback(({ name, _id, description, numDepartments, enabled, showOnRegistration }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
+	const renderRow = useCallback(({ name, _id, description, numAgents, enabled, showOnRegistration }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 		<Table.Cell withTruncatedText>{name}</Table.Cell>
 		<Table.Cell withTruncatedText>{description}</Table.Cell>
-		<Table.Cell withTruncatedText>{numDepartments || '0'}</Table.Cell>
+		<Table.Cell withTruncatedText>{numAgents || '0'}</Table.Cell>
 		<Table.Cell withTruncatedText>{enabled ? t('Yes') : t('No')}</Table.Cell>
 		<Table.Cell withTruncatedText>{showOnRegistration ? t('Yes') : t('No')}</Table.Cell>
 		<RemoveDepartmentButton _id={_id} reload={reload}/>
