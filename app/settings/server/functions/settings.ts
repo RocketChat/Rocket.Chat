@@ -5,6 +5,7 @@ import _ from 'underscore';
 
 import { SettingsBase, SettingValue } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
+import { setValue, updateValue } from '../raw';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
@@ -395,13 +396,28 @@ class Settings extends SettingsBase {
 	*/
 	init(): void {
 		this.initialLoad = true;
-		SettingsModel.find().observe({
-			added: (record: ISettingRecord) => this.storeSettingValue(record, this.initialLoad),
-			changed: (record: ISettingRecord) => this.storeSettingValue(record, this.initialLoad),
-			removed: (record: ISettingRecord) => this.removeSettingValue(record, this.initialLoad),
+		SettingsModel.find().fetch().forEach((record: ISettingRecord) => {
+			this.storeSettingValue(record, this.initialLoad);
+			updateValue(record._id, { value: record.value });
 		});
 		this.initialLoad = false;
 		this.afterInitialLoad.forEach((fn) => fn(Meteor.settings));
+
+		SettingsModel.on('change', ({ clientAction, id, data }) => {
+			switch (clientAction) {
+				case 'inserted':
+				case 'updated':
+					data = data ?? SettingsModel.findOneById(id);
+					this.storeSettingValue(data, this.initialLoad);
+					updateValue(id, { value: data.value });
+					break;
+				case 'removed':
+					data = SettingsModel.trashFindOneById(id);
+					this.removeSettingValue(data, this.initialLoad);
+					setValue(id, undefined);
+					break;
+			}
+		});
 	}
 
 	onAfterInitialLoad(fn: (settings: Meteor.Settings) => void): void {
