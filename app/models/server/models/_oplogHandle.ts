@@ -1,4 +1,3 @@
-
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { MongoInternals } from 'meteor/mongo';
@@ -89,7 +88,6 @@ class OplogHandle {
 			...lastOplogEntry && { ts: { $gt: lastOplogEntry.ts } },
 		};
 
-		// console.log(oplogSelector);
 		this.stream = oplogCollection.find(oplogSelector, {
 			tailable: true,
 			// awaitData: true,
@@ -111,7 +109,6 @@ class OplogHandle {
 		this.stream.on('data', Meteor.bindEnvironment((buffer) => {
 			const doc = buffer as any;
 			if (doc.ns === `${ this.dbName }.${ query.collection }`) {
-				// console.log('doc', doc);
 				callback({
 					id: doc.op === 'u' ? doc.o2._id : doc.o._id,
 					op: doc,
@@ -122,7 +119,6 @@ class OplogHandle {
 
 	_onOplogEntryChangeStream(query: {collection: string}, callback: Function): void {
 		this.db.collection(query.collection).watch([], { /* fullDocument: 'updateLookup' */ }).on('change', Meteor.bindEnvironment((event) => {
-			// console.log(event);
 			switch (event.operationType) {
 				case 'insert':
 					callback({
@@ -162,8 +158,6 @@ class OplogHandle {
 		//
 	}
 }
-
-// process.env.IGNORE_CHANGE_STREAM = 'true';
 
 let oplogHandle: Promise<OplogHandle>;
 
