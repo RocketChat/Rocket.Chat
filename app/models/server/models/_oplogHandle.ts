@@ -24,8 +24,23 @@ class OplogHandle {
 		}
 
 		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-		const { version, storageEngine } = await mongo.db.command({ serverStatus: 1 });
-		return storageEngine?.name === 'wiredTiger' && semver.satisfies(semver.coerce(version) || '', '>=3.6.0');
+
+		try {
+			const { version, storageEngine } = await mongo.db.command({ serverStatus: 1 });
+
+			if (!storageEngine || storageEngine.name !== 'wiredTiger' || !semver.satisfies(semver.coerce(version) || '', '>=3.6.0')) {
+				return false;
+			}
+
+			await mongo.db.admin().command({ replSetGetStatus: 1 });
+		} catch (e) {
+			if (e.message.startsWith('not authorized')) {
+				console.info('Change Stream is available for your installation, give admin permissions to your database user to use this improved version.');
+			}
+			return false;
+		}
+
+		return true;
 	}
 
 	async start(): Promise<OplogHandle> {
@@ -36,7 +51,7 @@ class OplogHandle {
 		try {
 			urlParsed = await urlParser(oplogUrl);
 		} catch (e) {
-			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
+			throw Error(`Error parsing database URL (${ oplogUrl })`);
 		}
 
 		if (!this.usingChangeStream && (!oplogUrl || urlParsed.dbName !== 'local')) {
@@ -164,9 +179,7 @@ let oplogHandle: Promise<OplogHandle>;
 // @ts-ignore
 // eslint-disable-next-line no-undef
 if (Package['disable-oplog']) {
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 	try {
-		Promise.await(mongo.db.admin().command({ replSetGetStatus: 1 }));
 		oplogHandle = Promise.await(new OplogHandle().start());
 	} catch (e) {
 		console.error(e.message);
