@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../lib/misc/determineFileType';
 
@@ -35,6 +37,12 @@ export class AppUploadBridge {
 
 		const fileStore = FileUpload.getStore('Uploads');
 		const uploadedFile = fileStore.insertSync(details, buffer);
+
+		if (details.userId) {
+			Meteor.runAsUser(details.userId, () => {
+				Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
+			});
+		}
 
 		return this.orch.getConverters().get('uploads').convertToApp(uploadedFile);
 	}
