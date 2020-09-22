@@ -1,4 +1,5 @@
 import { FileUpload } from '../../../file-upload/server';
+import { determineFileType } from '../../lib/misc/determineFileType';
 
 export class AppUploadBridge {
 	constructor(orch) {
@@ -29,6 +30,8 @@ export class AppUploadBridge {
 
 	createUpload(details, buffer, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating an upload "${ details.name }"`);
+
+		details.type = determineFileType(buffer, details);
 
 		const fileStore = FileUpload.getStore('Uploads');
 		const uploadedFile = fileStore.insertSync(details, buffer);
