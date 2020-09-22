@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { Settings } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { API } from '../api';
-import { SettingsEvents } from '../../../settings/server';
+import { SettingsEvents, settings } from '../../../settings/server';
 
 const fetchSettings = (query, sort, offset, count, fields) => {
 	const settings = Settings.find(query, {
@@ -146,6 +146,10 @@ API.v1.addRoute('settings/:_id', { authRequired: true }, {
 				value: Match.Any,
 			});
 			if (Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
+				settings.storeSettingValue({
+					_id: this.urlParams._id,
+					value: this.bodyParams.value,
+				});
 				return API.v1.success();
 			}
 

@@ -24,7 +24,7 @@
   "Enterprise_License": "Enterprise licence",
   "Enterprise_License_Description": "Pokud je vaše prostředí registrováno a máte od Rocket.Chat licenci není potřeba ji zde ručně doplňovat",
   "Estimated_due_time_in_minutes": "Odhadovaný čas v minutách",
-  "Estimated_due_time": "Odhadovaný čas",
+  "Estimated_due_time": "Odhadovaný čas (v minutách)",
   "Failed_to_add_monitor": "Nepodařilo se přidat vedoucího",
   "Invalid Canned Response": "Nevalidní zakonzervovaná odpověď",
   "Invalid_Department": "Neplatné oddělení",

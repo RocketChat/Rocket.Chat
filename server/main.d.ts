@@ -7,6 +7,12 @@ declare module 'meteor/random' {
 	}
 }
 
+declare module 'meteor/mongo' {
+	namespace MongoInternals {
+		function defaultRemoteCollectionDriver(): any;
+	}
+}
+
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
 		function _bcryptRounds(): number;
@@ -28,7 +34,7 @@ declare module 'meteor/meteor' {
 		interface Error extends globalError {
 			error: string | number;
 			reason?: string;
-			details?: string | undefined;
+			details?: string | undefined | Record<string, string>;
 		}
 
 		const server: any;
