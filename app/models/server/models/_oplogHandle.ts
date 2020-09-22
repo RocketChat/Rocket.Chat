@@ -1,5 +1,6 @@
 
 import { Meteor } from 'meteor/meteor';
+import { Promise } from 'meteor/promise';
 import { MongoInternals } from 'meteor/mongo';
 import semver from 'semver';
 import s from 'underscore.string';
@@ -32,7 +33,13 @@ class OplogHandle {
 		this.usingChangeStream = await this.isChangeStreamAvailable();
 		const oplogUrl = this.usingChangeStream ? process.env.MONGO_URL : process.env.MONGO_OPLOG_URL;
 
-		const urlParsed = await urlParser(oplogUrl);
+		let urlParsed;
+		try {
+			urlParsed = await urlParser(oplogUrl);
+		} catch (e) {
+			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
+		}
+
 		if (!this.usingChangeStream && (!oplogUrl || urlParsed.dbName !== 'local')) {
 			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
 		}
@@ -158,9 +165,19 @@ class OplogHandle {
 
 // process.env.IGNORE_CHANGE_STREAM = 'true';
 
+let oplogHandle: Promise<OplogHandle>;
+
 // @ts-ignore
 // eslint-disable-next-line no-undef
-const oplogHandle = Package['disable-oplog'] ? new OplogHandle().start() : undefined;
+if (Package['disable-oplog']) {
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+	try {
+		Promise.await(mongo.db.admin().command({ replSetGetStatus: 1 }));
+		oplogHandle = Promise.await(new OplogHandle().start());
+	} catch (e) {
+		console.error(e.message);
+	}
+}
 
 export const getOplogHandle = async (): Promise<OplogHandle | undefined> => {
 	if (oplogHandle) {
