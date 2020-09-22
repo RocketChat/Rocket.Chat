@@ -19,7 +19,7 @@ export const SERVER_ID = ejson.stringify({ server_id: '0' });
 const methods = Symbol('methods');
 const subscriptions = Symbol('subscriptions');
 
-// TODO: remove, not used by current rocket.chat versions
+// TODO: remove, web-client still receives the object of the logged in user, verify if that works
 // export const User = new Publish('user');
 
 export class Server extends EventEmitter {

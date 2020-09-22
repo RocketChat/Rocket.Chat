@@ -5,7 +5,7 @@ import { Server } from './Server';
 
 export const server = new Server();
 
-// TODO: remove, not used by current rocket.chat versions
+// TODO: remove, this was replaced by stream-notify-user/[user-id]/userData
 // server.subscribe('userData', async function(publication) {
 // 	if (!publication.uid) {
 // 		throw new Error('user should be connected');
@@ -17,18 +17,18 @@ export const server = new Server();
 // 	publication.ready();
 // });
 
-// TODO: remove, not used by current rocket.chat versions
+// TODO: remove, this was replaced by stream-notify-logged/user-status, check if sending this data
 // server.subscribe('activeUsers', function(publication) {
 // 	publication.ready();
 // });
 
 server.subscribe('meteor.loginServiceConfiguration', function(pub) {
-	// TODO implement?
+	// TODO implement to be compatible with meteor's web client
 	pub.ready();
 });
 
 server.subscribe('meteor_autoupdate_clientVersions', function(pub) {
-	// TODO implement?
+	// TODO implement to be compatible with meteor's web client
 	pub.ready();
 });
 
