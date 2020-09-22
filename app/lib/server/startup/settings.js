@@ -1172,6 +1172,10 @@ settings.addGroup('Meta', function() {
 });
 
 settings.addGroup('Mobile', function() {
+	this.add('Allow_Save_Media_to_Gallery', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.section('Screen_Lock', function() {
 		this.add('Force_Screen_Lock', false, { type: 'boolean', i18nDescription: 'Force_Screen_Lock_description', public: true });
 		this.add('Force_Screen_Lock_After', 1800, { type: 'int', i18nDescription: 'Force_Screen_Lock_After_description', enableQuery: { _id: 'Force_Screen_Lock', value: true }, public: true });

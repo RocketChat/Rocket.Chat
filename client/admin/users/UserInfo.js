@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { UserInfo } from '../../components/basic/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
@@ -12,14 +13,12 @@ import { FormSkeleton } from './Skeleton';
 
 export function UserInfoWithData({ uid, username, ...props }) {
 	const t = useTranslation();
-	const [cache, setCache] = useState();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
-	const onChange = () => setCache(new Date());
+	const { data, state, error, reload } = useEndpointDataExperimental('users.info', useMemo(() => ({ ...uid && { userId: uid }, ...username && { username } }), [uid, username]));
 
-	// TODO: remove cache. Is necessary for data invalidation
-	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ ...uid && { userId: uid }, ...username && { username } }), [uid, username, cache]));
+	const onChange = useMutableCallback(() => reload());
 
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
@@ -35,9 +34,10 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			nickname,
 		} = user;
 		return {
-			name: showRealNames ? name : username,
+			name,
 			username,
 			lastLogin,
+			showRealNames,
 			roles: roles.map((role, index) => (
 				<UserCard.Role key={index}>{role}</UserCard.Role>
 			)),
@@ -45,13 +45,13 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			phone: user.phone,
 			utcOffset,
 			customFields: { ...user.customFields, ...approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason } },
-			email: user.emails?.find(({ address }) => !!address)?.address,
+			email: user.emails?.find(({ address }) => !!address),
 			createdAt: user.createdAt,
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
 			nickname,
 		};
-	}, [data, showRealNames]);
+	}, [approveManuallyUsers, data, showRealNames]);
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <FormSkeleton/>;

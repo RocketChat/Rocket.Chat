@@ -30,10 +30,10 @@ jobs:
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
-    - name: Use Node.js 12.18.3
+    - name: Use Node.js 12.18.4
       uses: actions/setup-node@v1
       with:
-        node-version: "12.18.3"
+        node-version: "12.18.4"
 
     - uses: actions/checkout@v2
 
@@ -111,6 +111,8 @@ jobs:
 
     - run: meteor npm run lint
 
+    - run: meteor npm run translation-check
+
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
@@ -175,7 +177,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["12.18.3"]
+        node-version: ["12.18.4"]
         mongodb-version: ["3.4", "3.6", "4.0"]
 
     steps:
@@ -290,10 +292,10 @@ jobs:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Use Node.js 12.18.3
+    - name: Use Node.js 12.18.4
       uses: actions/setup-node@v1
       with:
-        node-version: "12.18.3"
+        node-version: "12.18.4"
 
     - name: Install Meteor
       run: |
