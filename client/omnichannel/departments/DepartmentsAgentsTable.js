@@ -39,33 +39,6 @@ function AddAgent({ agentList, setAgentList, ...props }) {
 	</Box>;
 }
 
-function AgentsPage({
-	data,
-	reload,
-	setParams,
-	params,
-	renderRow,
-	children,
-	agentList,
-	setAgentList,
-}) {
-	const t = useTranslation();
-
-	const [header] = useState(() => [
-		<Th key={'name'} w='x200'>{t('Name')}</Th>,
-		<Th key={'Count'} w='x140'>{t('Count')}</Th>,
-		<Th key={'Order'} w='x120'>{t('Order')}</Th>,
-		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
-	]);
-
-	return <>
-		<AddAgent reload={reload} agentList={agentList} setAgentList={setAgentList}/>
-		<GenericTable header={header} renderRow={renderRow} results={data && (data.users || data.agents)} total={data && data.total} setParams={setParams} params={params} pi='x24' />
-		{children}
-	</>;
-}
-
-
 export function RemoveAgentButton({ agentId, setAgentList, agentList }) {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -128,7 +101,31 @@ export function Order({ agentId, setAgentList, agentList }) {
 	return <Box display='flex'><NumberInput flexShrink={1} key={`${ agentId }-order`} title={t('Order')} value={agentOrder} onChange={handleOrder} /></Box>;
 }
 
+const AgentRow = React.memo(({ agentId, username, name, avatarETag, mediaQuery, agentList, setAgentList }) => <Table.Row key={agentId} tabIndex={0} role='link' action qa-user-id={agentId}>
+	<Table.Cell withTruncatedText>
+		<Box display='flex' alignItems='center'>
+			<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
+			<Box display='flex' withTruncatedText mi='x8'>
+				<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
+					<Box fontScale='p2' withTruncatedText color='default'>{name || username}</Box>
+					{!mediaQuery && name && <Box fontScale='p1' color='hint' withTruncatedText> {`@${ username }`} </Box>}
+				</Box>
+			</Box>
+		</Box>
+	</Table.Cell>
+	<Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Count agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
+	</Table.Cell>
+	<Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Order agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
+	</Table.Cell>
+	<Table.Cell fontScale='p1' color='hint'>
+		<RemoveAgentButton agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
+	</Table.Cell>
+</Table.Row>);
+
 function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
+	const t = useTranslation();
 	const [agentList, setAgentList] = useState(agents || []);
 	const [data, setData] = useState({});
 
@@ -137,36 +134,22 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const renderRow = useCallback(({ agentId, username, name, avatarETag }) => <Table.Row key={agentId} tabIndex={0} role='link' action qa-user-id={agentId}>
-		<Table.Cell withTruncatedText>
-			<Box display='flex' alignItems='center'>
-				<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
-				<Box display='flex' withTruncatedText mi='x8'>
-					<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-						<Box fontScale='p2' withTruncatedText color='default'>{name || username}</Box>
-						{!mediaQuery && name && <Box fontScale='p1' color='hint' withTruncatedText> {`@${ username }`} </Box>}
-					</Box>
-				</Box>
-			</Box>
-		</Table.Cell>
-		<Table.Cell fontScale='p1' color='hint' withTruncatedText>
-			<Count agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
-		</Table.Cell>
-		<Table.Cell fontScale='p1' color='hint' withTruncatedText>
-			<Order agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
-		</Table.Cell>
-		<Table.Cell fontScale='p1' color='hint'>
-			<RemoveAgentButton agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
-		</Table.Cell>
-	</Table.Row>, [agentList, mediaQuery]);
-
-	return <AgentsPage
-		data={data}
-		renderRow={renderRow}
-		mini
-		agentList={agentList}
-		setAgentList={setAgentList}>
-	</AgentsPage>;
+	return <>
+		<AddAgent agentList={agentList} setAgentList={setAgentList}/>
+		<GenericTable
+			header={<>
+				<Th key={'name'} w='x200'>{t('Name')}</Th>
+				<Th key={'Count'} w='x140'>{t('Count')}</Th>
+				<Th key={'Order'} w='x120'>{t('Order')}</Th>
+				<Th key={'remove'} w='x40'>{t('Remove')}</Th>
+			</>}
+			results={data && (data.users || data.agents)}
+			total={data && data.total}
+			pi='x24'
+		>
+			{({ props }) => <AgentRow mediaQuery={mediaQuery} agentList={agentList} setAgentList={setAgentList} {...props}/>}
+		</GenericTable>
+	</>;
 }
 
 export default DepartmentsAgentsTable;
