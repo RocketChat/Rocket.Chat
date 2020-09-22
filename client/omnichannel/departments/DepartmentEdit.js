@@ -222,7 +222,7 @@ export function EditDepartment({ data, id, title, reload }) {
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<FieldGroup alignSelf='center' maxWidth='x600' id={formId} is='form' autoComplete='off' onSubmit={handleSubmit}>
+				<FieldGroup w='full' alignSelf='center' maxWidth='x600' id={formId} is='form' autoComplete='off' onSubmit={handleSubmit}>
 					<Field>
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Enabled')}</Field.Label>
