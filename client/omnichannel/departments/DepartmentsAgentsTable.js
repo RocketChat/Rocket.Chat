@@ -1,6 +1,6 @@
 
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useState, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Table, Icon, Button, NumberInput } from '@rocket.chat/fuselage';
 
 import { Th, GenericTable } from '../../components/GenericTable';
@@ -26,8 +26,8 @@ function AddAgent({ agentList, setAgentList, ...props }) {
 		}
 		const { user } = await getAgent();
 
-		if (agentList.filter((e) => e._id === user._id).length === 0) {
-			setAgentList([user, ...agentList]);
+		if (agentList.filter((e) => e.agentId === user._id).length === 0) {
+			setAgentList([{ ...user, agentId: user._id }, ...agentList]);
 			setUserId();
 		} else {
 			dispatchToastMessage({ type: 'error', message: t('This_agent_was_already_selected') });
@@ -62,14 +62,11 @@ export function RemoveAgentButton({ agentId, setAgentList, agentList }) {
 export function Count({ agentId, setAgentList, agentList }) {
 	const t = useTranslation();
 	const [agentCount, setAgentCount] = useState(agentList.find((agent) => agent.agentId === agentId).count || 0);
-	const [updatedList, setUpdatedList] = useState(agentList);
-
-	useLayoutEffect(() => setAgentList(updatedList), [setAgentList, updatedList]);
 
 	const handleCount = useMutableCallback(async (e) => {
 		const countValue = Number(e.currentTarget.value);
 		setAgentCount(countValue);
-		setUpdatedList(agentList.map((agent) => {
+		setAgentList(agentList.map((agent) => {
 			if (agent.agentId === agentId) {
 				agent.count = countValue;
 			}
@@ -83,14 +80,11 @@ export function Count({ agentId, setAgentList, agentList }) {
 export function Order({ agentId, setAgentList, agentList }) {
 	const t = useTranslation();
 	const [agentOrder, setAgentOrder] = useState(agentList.find((agent) => agent.agentId === agentId).order || 0);
-	const [updatedList, setUpdatedList] = useState(agentList);
-
-	useLayoutEffect(() => setAgentList(updatedList), [setAgentList, updatedList]);
 
 	const handleOrder = useMutableCallback(async (e) => {
 		const orderValue = Number(e.currentTarget.value);
 		setAgentOrder(orderValue);
-		setUpdatedList(agentList.map((agent) => {
+		setAgentList(agentList.map((agent) => {
 			if (agent.agentId === agentId) {
 				agent.order = orderValue;
 			}
@@ -126,11 +120,9 @@ const AgentRow = React.memo(({ agentId, username, name, avatarETag, mediaQuery, 
 
 function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 	const t = useTranslation();
-	const [agentList, setAgentList] = useState(agents || []);
-	const [data, setData] = useState({});
+	const [agentList, setAgentList] = useState((agents && JSON.parse(JSON.stringify(agents))) || []);
 
-	useEffect(() => setData({ users: agentList }), [agentList]);
-	useEffect(() => setAgentListFinal((agentList && agentList.users) || []), [agentList, setAgentListFinal]);
+	useEffect(() => setAgentListFinal(agentList), [agentList, setAgentListFinal]);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -143,11 +135,11 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 				<Th key={'Order'} w='x120'>{t('Order')}</Th>
 				<Th key={'remove'} w='x40'>{t('Remove')}</Th>
 			</>}
-			results={data && (data.users || data.agents)}
-			total={data && data.total}
+			results={agentList}
+			total={agentList?.length}
 			pi='x24'
 		>
-			{({ props }) => <AgentRow mediaQuery={mediaQuery} agentList={agentList} setAgentList={setAgentList} {...props}/>}
+			{(props) => <AgentRow key={props._id} mediaQuery={mediaQuery} agentList={agentList} setAgentList={setAgentList} {...props}/>}
 		</GenericTable>
 	</>;
 }

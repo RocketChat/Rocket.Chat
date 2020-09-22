@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { FieldGroup, Field, TextInput, Chip, SelectFiltered, Box, Icon, Divider, ToggleSwitch, TextAreaInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
@@ -21,8 +21,6 @@ import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
 	const { data, state, error } = useEndpointDataExperimental(`livechat/department/${ id }`) || {};
-	// const { data: userDepartments, state: userDepartmentsState, error: userDepartmentsError } = useEndpointDataExperimental(`livechat/agents/${ id }/departments`);
-	// const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
 
 	if ([state].includes(ENDPOINT_STATES.LOADING)) {
 		return <FormSkeleton/>;
@@ -34,33 +32,13 @@ export default function EditDepartmentWithData({ id, reload, title }) {
 	return <EditDepartment id={id} data={data} reload={reload} title={title}/>;
 }
 
-// abandonedRoomsCloseCustomMessage: "fuk u"
-// chatClosingTags: ["asd"]
-// departmentsAllowedToForward: ""
-// description: "Binus is gud"
-// email: "asd@asd.com"
-// enabled: true
-// maxNumberSimultaneousChat: "3"
-// name: "binus"
-// numAgents: 2
-// offlineMessageChannelName: ""
-// requestTagBeforeClosingChat: false
-// showOnOfflineForm: true
-// showOnRegistration: true
-// visitorInactivityTimeoutInSeconds: "12"
-// waitingQueueMessage: "Wait for binus"
-// _id: "xmF2DLvaLfgorggK5"
-// _updatedAt: "2020-08-24T21:22:38.276Z"
-
-// rooms.autocomplete.channelAndPrivate
-
 const useQuery = ({ name }) => useMemo(() => ({ selector: JSON.stringify({ name }) }), [name]);
 
 export function EditDepartment({ data, id, title, reload }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-departments');
 	const eeForms = useSubscription(formsSubscription);
-	const initialAgents = (data && data.agents) || [];
+	const initialAgents = useRef((data && data.agents) || []);
 
 	const {
 		useEeNumberInput = () => {},
@@ -143,29 +121,6 @@ export function EditDepartment({ data, id, title, reload }) {
 	const handleTagTextChange = useMutableCallback((e) => {
 		setTagsText(e.target.value);
 	});
-	// const defaultValidations = {
-	// 	enabled: Boolean,
-	// 	name: String,
-	// 	description: Match.Optional(String),
-	// 	showOnRegistration: Boolean,
-	// 	email: String,
-	// 	showOnOfflineForm: Boolean,
-	// 	requestTagBeforeClosingChat: Match.Optional(Boolean),
-	// 	chatClosingTags: Match.Optional([String]),
-	// };
-
-	// // The Livechat Form department support addition/custom fields, so those fields need to be added before validating
-	// Object.keys(departmentData).forEach((field) => {
-	// 	if (!defaultValidations.hasOwnProperty(field)) {
-	// 		defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
-	// 	}
-	// });
-
-	// check(departmentData, defaultValidations);
-	// check(departmentAgents, Match.Maybe({
-	// 	upsert: Match.Maybe(Array),
-	// 	remove: Match.Maybe(Array),
-	// }));
 
 	const query = useQuery({ offlineMessageChannelName });
 
@@ -225,14 +180,12 @@ export function EditDepartment({ data, id, title, reload }) {
 			departmentsAllowedToForward: departmentsAllowedToForward && departmentsAllowedToForward[0],
 		};
 
-		const finalAgentList = agentList.map((agent) => {
-			agent.agentId = agent._id;
-			return agent;
-		});
-
 		const agentListPayload = {
-			upsert: finalAgentList.filter((agent) => !initialAgents.some((initialAgent) => initialAgent._id === agent._id)),
-			remove: initialAgents.filter((initialAgent) => !finalAgentList.some((agent) => initialAgent._id === agent._id)),
+			upsert: agentList.filter((agent) => !initialAgents.current.some((initialAgent) => initialAgent._id === agent._id
+				&& agent.count === initialAgent.count
+				&& agent.order === initialAgent.order,
+			)),
+			remove: initialAgents.current.filter((initialAgent) => !agentList.some((agent) => initialAgent._id === agent._id)),
 		};
 
 		try {
@@ -240,7 +193,7 @@ export function EditDepartment({ data, id, title, reload }) {
 				await saveDepartmentInfo(id, payload, []);
 				await saveDepartmentAgentsInfoOnEdit(agentListPayload);
 			} else {
-				await saveDepartmentInfo(id, payload, finalAgentList);
+				await saveDepartmentInfo(id, payload, agentList);
 			}
 			dispatchToastMessage({ type: 'success', message: t('saved') });
 			reload();
