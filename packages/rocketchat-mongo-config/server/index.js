@@ -5,6 +5,10 @@ import { EmailTest } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
 import { HTTP } from 'meteor/http';
 
+if (!process.env.USE_NATIVE_OPLOG) {
+	Package['disable-oplog'] = {};
+}
+
 // Set default HTTP call timeout to 20s
 const envTimeout = parseInt(process.env.HTTP_DEFAULT_TIMEOUT, 10);
 const timeout = !isNaN(envTimeout) ? envTimeout : 20000;
