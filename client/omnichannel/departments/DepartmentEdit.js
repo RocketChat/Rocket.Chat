@@ -40,6 +40,8 @@ export function EditDepartment({ data, id, title, reload }) {
 	const eeForms = useSubscription(formsSubscription);
 	const initialAgents = useRef((data && data.agents) || []);
 
+	const router = useRoute('omnichannel-departments');
+
 	const {
 		useEeNumberInput = () => {},
 		useEeTextInput = () => {},
@@ -203,6 +205,10 @@ export function EditDepartment({ data, id, title, reload }) {
 		}
 	});
 
+	const handleReturn = useMutableCallback(() => {
+		router.push({});
+	});
+
 	const invalidForm = !name || !email || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
@@ -211,16 +217,19 @@ export function EditDepartment({ data, id, title, reload }) {
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
+					<Button onClick={handleReturn}>{t('Back')}</Button>
 					<Button type='submit' form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<FieldGroup id={formId} is='form' autoComplete='off' onSubmit={handleSubmit}>
+				<FieldGroup alignSelf='center' maxWidth='x600' id={formId} is='form' autoComplete='off' onSubmit={handleSubmit}>
 					<Field>
-						<Field.Label>{t('Enabled')}</Field.Label>
-						<Field.Row>
-							<ToggleSwitch flexGrow={1} checked={enabled} onChange={handleEnabled} />
-						</Field.Row>
+						<Box display='flex' flexDirection='row'>
+							<Field.Label>{t('Enabled')}</Field.Label>
+							<Field.Row>
+								<ToggleSwitch flexGrow={1} checked={enabled} onChange={handleEnabled} />
+							</Field.Row>
+						</Box>
 					</Field>
 					<Field>
 						<Field.Label>{t('Name')}*</Field.Label>
@@ -235,10 +244,12 @@ export function EditDepartment({ data, id, title, reload }) {
 						</Field.Row>
 					</Field>
 					<Field>
-						<Field.Label>{t('Show_on_registration_page')}</Field.Label>
-						<Field.Row>
-							<ToggleSwitch flexGrow={1} checked={showOnRegistration} onChange={handleShowOnRegistration} />
-						</Field.Row>
+						<Box display='flex' flexDirection='row'>
+							<Field.Label>{t('Show_on_registration_page')}</Field.Label>
+							<Field.Row>
+								<ToggleSwitch flexGrow={1} checked={showOnRegistration} onChange={handleShowOnRegistration} />
+							</Field.Row>
+						</Box>
 					</Field>
 					<Field>
 						<Field.Label>{t('Email')}*</Field.Label>
@@ -247,10 +258,12 @@ export function EditDepartment({ data, id, title, reload }) {
 						</Field.Row>
 					</Field>
 					<Field>
-						<Field.Label>{t('Show_on_offline_page')}</Field.Label>
-						<Field.Row>
-							<ToggleSwitch flexGrow={1} checked={showOnOfflineForm} onChange={handleShowOnOfflineForm} />
-						</Field.Row>
+						<Box display='flex' flexDirection='row'>
+							<Field.Label>{t('Show_on_offline_page')}</Field.Label>
+							<Field.Row>
+								<ToggleSwitch flexGrow={1} checked={showOnOfflineForm} onChange={handleShowOnOfflineForm} />
+							</Field.Row>
+						</Box>
 					</Field>
 					<Field>
 						<Field.Label>{t('Livechat_DepartmentOfflineMessageToChannel')}</Field.Label>
@@ -264,10 +277,12 @@ export function EditDepartment({ data, id, title, reload }) {
 					{WaitingQueueMessageInput && <WaitingQueueMessageInput value={waitingQueueMessage} handler={handleWaitingQueueMessage} label={'Waiting_queue_message'} />}
 					{DepartmentForwarding && <DepartmentForwarding value={departmentsAllowedToForward} handler={handleDepartmentsAllowedToForward} label={'List_of_departments_for_forward_description'} placeholder='Enter_a_department_name' />}
 					<Field>
-						<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
-						<Field.Row>
-							<ToggleSwitch flexGrow={1} checked={requestTagBeforeClosingChat} onChange={handleRequestTagBeforeClosingChat} />
-						</Field.Row>
+						<Box display='flex' flexDirection='row'>
+							<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
+							<Field.Row>
+								<ToggleSwitch flexGrow={1} checked={requestTagBeforeClosingChat} onChange={handleRequestTagBeforeClosingChat} />
+							</Field.Row>
+						</Box>
 					</Field>
 					{requestTagBeforeClosingChat && <Field>
 						<Field.Label alignSelf='stretch'>{t('Conversation_closing_tags')}*</Field.Label>

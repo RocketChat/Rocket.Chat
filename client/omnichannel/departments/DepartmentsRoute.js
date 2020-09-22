@@ -18,6 +18,7 @@ export function RemoveDepartmentButton({ _id, reload }) {
 
 	const handleRemoveClick = useMutableCallback(async (e) => {
 		e.preventDefault();
+		e.stopPropagation();
 		const result = await deleteAction();
 		if (result.success === true) {
 			reload();
