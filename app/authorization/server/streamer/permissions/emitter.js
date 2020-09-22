@@ -12,7 +12,7 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
-			data = data || Permissions.findOneById(id);
+			data = data ?? Permissions.findOneById(id);
 			break;
 
 		case 'removed':
