@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import React, { useMemo, useState } from 'react';
-import { Field, TextInput, Chip, SelectFiltered, Box, Icon, Divider, ToggleSwitch, TextAreaInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { FieldGroup, Field, TextInput, Chip, SelectFiltered, Box, Icon, Divider, ToggleSwitch, TextAreaInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
 import { useMethod } from '../../contexts/ServerContext';
@@ -15,6 +15,7 @@ import { useRoute } from '../../contexts/RouterContext';
 import Page from '../../components/basic/Page';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
+import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 
 
 export default function EditDepartmentWithData({ id, reload, title }) {
@@ -30,7 +31,6 @@ export default function EditDepartmentWithData({ id, reload, title }) {
 	if (error) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
-	console.log(data);
 	return <EditDepartment id={id} data={data} reload={reload} title={title}/>;
 }
 
@@ -82,8 +82,6 @@ export function EditDepartment({ data, id, title, reload }) {
 
 	const [tags, setTags] = useState((department && department.chatClosingTags) || []);
 	const [tagsText, setTagsText] = useState();
-
-	console.log(data);
 
 	const { values, handlers } = useForm({
 		name: (department && department.name) || '',
@@ -175,35 +173,40 @@ export function EditDepartment({ data, id, title, reload }) {
 
 	const channelOpts = useMemo(() => (autoCompleteChannels && autoCompleteChannels.items ? autoCompleteChannels.items.map(({ name }) => [name, name]) : []), [autoCompleteChannels]);
 
-	console.log(channelOpts);
-
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
 	const saveDepartmentAgentsInfoOnEdit = useEndpointAction('POST', `livechat/department/${ id }/agents`);
 
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	// enabled: true,
-	// name: 'asdasdasdasdasd',
-	// description: 'asdsdasdad',
-	// showOnRegistration: true,
-	// showOnOfflineForm: true,
-	// requestTagBeforeClosingChat: true,
-	// email: 'asdadss@gmail.com',
-	// chatClosingTags: [ 'pinus' ],
-	// offlineMessageChannelName: 'general',
-	// maxNumberSimultaneousChat: '10',
-	// visitorInactivityTimeoutInSeconds: '20',
-	// abandonedRoomsCloseCustomMessage: 'fuk u',
-	// waitingQueueMessage: 'fuk me',
-	// departmentsAllowedToForward: 'inNc2tPHTbyBo2dmt,8rbimWYR4HLLqii3t'
-
-	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined), [name, t]);
-	const emailError = useMemo(() => (!email || email.length === 0 ? t('The_field_is_required', 'email') : undefined), [email, t]);
-	const tagError = useMemo(() => ((requestTagBeforeClosingChat && !tags) || (requestTagBeforeClosingChat && tags.length === 0) ? t('The_field_is_required', 'tags') : undefined), [tags, t]);
+	const [nameError, setNameError] = useState();
+	const [emailError, setEmailError] = useState();
+	const [tagError, setTagError] = useState();
 
 
-	const handleSave = useMutableCallback(async () => {
+	useComponentDidUpdate(() => setNameError(!name ? t('The_field_is_required', 'name') : ''), [t, name]);
+	useComponentDidUpdate(() => setEmailError(!email ? t('The_field_is_required', 'email') : ''), [t, email]);
+	useComponentDidUpdate(() => setTagError(requestTagBeforeClosingChat && (!tags || tags.length === 0) ? t('The_field_is_required', 'name') : ''), [t, tags]);
+
+	const handleSubmit = useMutableCallback(async () => {
+		let error = false;
+		if (!name) {
+			setNameError(t('The_field_is_required', 'name'));
+			error = true;
+		}
+		if (!email) {
+			setEmailError(t('The_field_is_required', 'email'));
+			error = true;
+		}
+		if (requestTagBeforeClosingChat && (!tags || tags.length === 0)) {
+			setTagError(t('The_field_is_required', 'tags'));
+			error = true;
+		}
+
+		if (error) {
+			return;
+		}
+
 		const payload = {
 			enabled,
 			name,
@@ -226,8 +229,6 @@ export function EditDepartment({ data, id, title, reload }) {
 			return agent;
 		});
 
-		console.log(finalAgentList, initialAgents);
-
 		const agentListPayload = {
 			upsert: finalAgentList.filter((agent) => !initialAgents.some((initialAgent) => initialAgent._id === agent._id)),
 			remove: initialAgents.filter((initialAgent) => !finalAgentList.some((agent) => initialAgent._id === agent._id)),
@@ -245,94 +246,95 @@ export function EditDepartment({ data, id, title, reload }) {
 			agentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
-			console.log(error);
 		}
 	});
 
-	console.log(showOnRegistration);
+	const invalidForm = !name || !email || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
+
+	const formId = useUniqueId();
 
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
-					<Button primary disabled={nameError || emailError || tagError} onClick={handleSave}>
-						{t('Save')}
-					</Button>
+					<Button form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<Field mbe='x16'>
-					<Field.Label>{t('Enabled')}</Field.Label>
-					<Field.Row>
-						<ToggleSwitch flexGrow={1} checked={enabled} onChange={handleEnabled} />
-					</Field.Row>
-				</Field>
-				<Field mbe='x16'>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
-						<TextInput flexGrow={1} error={nameError} value={name} onChange={handleName} placeholder={t('Name')} />
-					</Field.Row>
-				</Field>
-				<Field mbe='x16'>
-					<Field.Label>{t('Description')}</Field.Label>
-					<Field.Row>
-						<TextAreaInput flexGrow={1} value={description} onChange={handleDescription} placeholder={t('Description')} />
-					</Field.Row>
-				</Field>
-				<Field mbe='x16'>
-					<Field.Label>{t('Show_on_registration_page')}</Field.Label>
-					<Field.Row>
-						<ToggleSwitch flexGrow={1} checked={showOnRegistration} onChange={handleShowOnRegistration} />
-					</Field.Row>
-				</Field>
-				<Field mbe='x16'>
-					<Field.Label>{t('Email')}</Field.Label>
-					<Field.Row>
-						<TextInput flexGrow={1} error={nameError} value={email} addon={<Icon name='mail' size='x20'/>} onChange={handleEmail} placeholder={t('Email')} />
-					</Field.Row>
-				</Field>
-				<Field mbe='x16'>
-					<Field.Label>{t('Show_on_offline_page')}</Field.Label>
-					<Field.Row>
-						<ToggleSwitch flexGrow={1} checked={showOnOfflineForm} onChange={handleShowOnOfflineForm} />
-					</Field.Row>
-				</Field>
-				<Field mbe='x16'>
-					<Field.Label>{t('Livechat_DepartmentOfflineMessageToChannel')}</Field.Label>
-					<Field.Row>
-						<SelectFiltered flexGrow={1} options={channelOpts} value={offlineMessageChannelName} onChange={handleOfflineMessageChannelName} placeholder={t('Channel_name')}/>
-					</Field.Row>
-				</Field>
-				{MaxChats && <MaxChats value={maxNumberSimultaneousChat} handler={handleMaxNumberSimultaneousChat} label={'Max_number_of_chats_per_agent'} placeholder='Max_number_of_chats_per_agent_description' />}
-				{VisitorInactivity && <VisitorInactivity value={visitorInactivityTimeoutInSeconds} handler={handleVisitorInactivityTimeoutInSeconds} label={'How_long_to_wait_to_consider_visitor_abandonment_in_seconds'} placeholder='Number_in_seconds' />}
-				{AbandonedMessageInput && <AbandonedMessageInput value={abandonedRoomsCloseCustomMessage} handler={handleAbandonedRoomsCloseCustomMessage} label={'Livechat_abandoned_rooms_closed_custom_message'} placeholder='Enter_a_custom_message' />}
-				{WaitingQueueMessageInput && <WaitingQueueMessageInput value={waitingQueueMessage} handler={handleWaitingQueueMessage} label={'Waiting_queue_message'} />}
-				{DepartmentForwarding && <DepartmentForwarding value={departmentsAllowedToForward} handler={handleDepartmentsAllowedToForward} label={'List_of_departments_for_forward_description'} placeholder='Enter_a_department_name' />}
-				<Field mbe='x16'>
-					<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
-					<Field.Row>
-						<ToggleSwitch flexGrow={1} checked={requestTagBeforeClosingChat} onChange={handleRequestTagBeforeClosingChat} />
-					</Field.Row>
-				</Field>
-				{requestTagBeforeClosingChat && <Field mbe='x16'>
-					<Field.Label alignSelf='stretch'>{t('Conversation_closing_tags')}</Field.Label>
-					<Field.Row>
-						<TextInput error={tagError} value={tagsText} onChange={handleTagTextChange} placeholder={t('Enter_a_tag')} />
-						<Button mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
-							{t('Add')}
-						</Button>
-					</Field.Row>
-					<Field.Hint>{t('Conversation_closing_tags_description')}</Field.Hint>
-					{tags && tags.length > 0 && <Field.Row justifyContent='flex-start'>
-						{tags.map((tag, i) => <Chip key={i} onClick={handleTagChipClick(tag)} mie='x8'>{tag}</Chip>)}
-					</Field.Row>}
-				</Field>}
-				{DepartmentBusinessHours && <DepartmentBusinessHours bhId={department && department.businessHourId}/>}
-				<Divider mb='x16' />
-				<Field mbe='x16'>
-					<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
-					<DepartmentsAgentsTable agents={data && data.agents} setAgentListFinal={setAgentList}/>
-				</Field>
+				<FieldGroup id={formId} is='form' autoComplete='off' onSubmit={handleSubmit}>
+					<Field>
+						<Field.Label>{t('Enabled')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch flexGrow={1} checked={enabled} onChange={handleEnabled} />
+						</Field.Row>
+					</Field>
+					<Field>
+						<Field.Label>{t('Name')}*</Field.Label>
+						<Field.Row>
+							<TextInput flexGrow={1} error={nameError} value={name} onChange={handleName} placeholder={t('Name')} />
+						</Field.Row>
+					</Field>
+					<Field>
+						<Field.Label>{t('Description')}</Field.Label>
+						<Field.Row>
+							<TextAreaInput flexGrow={1} value={description} onChange={handleDescription} placeholder={t('Description')} />
+						</Field.Row>
+					</Field>
+					<Field>
+						<Field.Label>{t('Show_on_registration_page')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch flexGrow={1} checked={showOnRegistration} onChange={handleShowOnRegistration} />
+						</Field.Row>
+					</Field>
+					<Field>
+						<Field.Label>{t('Email')}*</Field.Label>
+						<Field.Row>
+							<TextInput flexGrow={1} error={emailError} value={email} addon={<Icon name='mail' size='x20'/>} onChange={handleEmail} placeholder={t('Email')} />
+						</Field.Row>
+					</Field>
+					<Field>
+						<Field.Label>{t('Show_on_offline_page')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch flexGrow={1} checked={showOnOfflineForm} onChange={handleShowOnOfflineForm} />
+						</Field.Row>
+					</Field>
+					<Field>
+						<Field.Label>{t('Livechat_DepartmentOfflineMessageToChannel')}</Field.Label>
+						<Field.Row>
+							<SelectFiltered flexGrow={1} options={channelOpts} value={offlineMessageChannelName} onChange={handleOfflineMessageChannelName} placeholder={t('Channel_name')}/>
+						</Field.Row>
+					</Field>
+					{MaxChats && <MaxChats value={maxNumberSimultaneousChat} handler={handleMaxNumberSimultaneousChat} label={'Max_number_of_chats_per_agent'} placeholder='Max_number_of_chats_per_agent_description' />}
+					{VisitorInactivity && <VisitorInactivity value={visitorInactivityTimeoutInSeconds} handler={handleVisitorInactivityTimeoutInSeconds} label={'How_long_to_wait_to_consider_visitor_abandonment_in_seconds'} placeholder='Number_in_seconds' />}
+					{AbandonedMessageInput && <AbandonedMessageInput value={abandonedRoomsCloseCustomMessage} handler={handleAbandonedRoomsCloseCustomMessage} label={'Livechat_abandoned_rooms_closed_custom_message'} placeholder='Enter_a_custom_message' />}
+					{WaitingQueueMessageInput && <WaitingQueueMessageInput value={waitingQueueMessage} handler={handleWaitingQueueMessage} label={'Waiting_queue_message'} />}
+					{DepartmentForwarding && <DepartmentForwarding value={departmentsAllowedToForward} handler={handleDepartmentsAllowedToForward} label={'List_of_departments_for_forward_description'} placeholder='Enter_a_department_name' />}
+					<Field>
+						<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch flexGrow={1} checked={requestTagBeforeClosingChat} onChange={handleRequestTagBeforeClosingChat} />
+						</Field.Row>
+					</Field>
+					{requestTagBeforeClosingChat && <Field>
+						<Field.Label alignSelf='stretch'>{t('Conversation_closing_tags')}*</Field.Label>
+						<Field.Row>
+							<TextInput error={tagError} value={tagsText} onChange={handleTagTextChange} placeholder={t('Enter_a_tag')} />
+							<Button mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
+								{t('Add')}
+							</Button>
+						</Field.Row>
+						<Field.Hint>{t('Conversation_closing_tags_description')}</Field.Hint>
+						{tags && tags.length > 0 && <Field.Row justifyContent='flex-start'>
+							{tags.map((tag, i) => <Chip key={i} onClick={handleTagChipClick(tag)} mie='x8'>{tag}</Chip>)}
+						</Field.Row>}
+					</Field>}
+					{DepartmentBusinessHours && <DepartmentBusinessHours bhId={department && department.businessHourId}/>}
+					<Divider mb='x16' />
+					<Field>
+						<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
+						<DepartmentsAgentsTable agents={data && data.agents} setAgentListFinal={setAgentList}/>
+					</Field>
+				</FieldGroup>
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	</Page>;

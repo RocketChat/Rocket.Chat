@@ -67,8 +67,6 @@ function DepartmentsRoute() {
 	}));
 
 	const { data, reload } = useEndpointDataExperimental('livechat/department', query) || {};
-	console.log(data);
-
 
 	const header = useMemo(() => [
 		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
