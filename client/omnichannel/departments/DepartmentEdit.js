@@ -31,7 +31,7 @@ export default function EditDepartmentWithData({ id, reload, title }) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 	console.log(data);
-	return <EditDepartment id={id} data={data} reset={reload} title={title}/>;
+	return <EditDepartment id={id} data={data} reload={reload} title={title}/>;
 }
 
 // abandonedRoomsCloseCustomMessage: "fuk u"
@@ -56,7 +56,7 @@ export default function EditDepartmentWithData({ id, reload, title }) {
 
 const useQuery = ({ name }) => useMemo(() => ({ selector: JSON.stringify({ name }) }), [name]);
 
-export function EditDepartment({ data, id, title }) {
+export function EditDepartment({ data, id, title, reload }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-departments');
 	const eeForms = useSubscription(formsSubscription);
@@ -78,7 +78,6 @@ export function EditDepartment({ data, id, title }) {
 	const DepartmentBusinessHours = useDepartmentBusinessHours();
 	const [agentList, setAgentList] = useState([]);
 
-
 	const { department } = data || { department: {} };
 
 	const [tags, setTags] = useState((department && department.chatClosingTags) || []);
@@ -90,10 +89,10 @@ export function EditDepartment({ data, id, title }) {
 		name: (department && department.name) || '',
 		email: (department && department.email) || '',
 		description: (department && department.description) || '',
-		enabled: department && department.enabled,
+		enabled: !!(department && department.enabled),
 		maxNumberSimultaneousChat: (department && department.maxNumberSimultaneousChat) || undefined,
-		showOnRegistration: department && department.showOnRegistration,
-		showOnOfflineForm: department && department.showOnOfflineForm,
+		showOnRegistration: !!(department && department.showOnRegistration),
+		showOnOfflineForm: !!(department && department.showOnOfflineForm),
 		abandonedRoomsCloseCustomMessage: (department && department.abandonedRoomsCloseCustomMessage) || '',
 		requestTagBeforeClosingChat: (department && department.requestTagBeforeClosingChat) || false,
 		offlineMessageChannelName: (department && department.offlineMessageChannelName) || '',
@@ -179,7 +178,8 @@ export function EditDepartment({ data, id, title }) {
 	console.log(channelOpts);
 
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
-	const saveDepartmentAgentsInfo = useEndpointAction('POST', `livechat/department/${ id }/agents`);
+	const saveDepartmentAgentsInfoOnEdit = useEndpointAction('POST', `livechat/department/${ id }/agents`);
+
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -226,6 +226,7 @@ export function EditDepartment({ data, id, title }) {
 			return agent;
 		});
 
+		console.log(finalAgentList, initialAgents);
 
 		const agentListPayload = {
 			upsert: finalAgentList.filter((agent) => !initialAgents.some((initialAgent) => initialAgent._id === agent._id)),
@@ -233,16 +234,22 @@ export function EditDepartment({ data, id, title }) {
 		};
 
 		try {
-			await saveDepartmentInfo(id, payload, []);
-
-			await saveDepartmentAgentsInfo(agentListPayload);
+			if (id) {
+				await saveDepartmentInfo(id, payload, []);
+				await saveDepartmentAgentsInfoOnEdit(agentListPayload);
+			} else {
+				await saveDepartmentInfo(id, payload, finalAgentList);
+			}
 			dispatchToastMessage({ type: 'success', message: t('saved') });
+			reload();
 			agentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 			console.log(error);
 		}
 	});
+
+	console.log(showOnRegistration);
 
 	return <Page flexDirection='row'>
 		<Page>
