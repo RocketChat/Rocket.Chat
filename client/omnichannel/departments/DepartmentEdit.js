@@ -188,7 +188,8 @@ export function EditDepartment({ data, id, title, reload }) {
 	useComponentDidUpdate(() => setEmailError(!email ? t('The_field_is_required', 'email') : ''), [t, email]);
 	useComponentDidUpdate(() => setTagError(requestTagBeforeClosingChat && (!tags || tags.length === 0) ? t('The_field_is_required', 'name') : ''), [t, tags]);
 
-	const handleSubmit = useMutableCallback(async () => {
+	const handleSubmit = useMutableCallback(async (e) => {
+		e.preventDefault();
 		let error = false;
 		if (!name) {
 			setNameError(t('The_field_is_required', 'name'));
@@ -257,7 +258,7 @@ export function EditDepartment({ data, id, title, reload }) {
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
-					<Button form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
+					<Button type='submit' form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
