@@ -8,7 +8,6 @@ import './services/startup';
 
 import '../ee/server';
 import './lib/pushConfig';
-import './lib/roomFiles';
 import './startup/migrations';
 import './startup/appcache';
 import './startup/cron';
