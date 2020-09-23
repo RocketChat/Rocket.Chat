@@ -87,8 +87,16 @@ declare module 'meteor/mongo' {
 	interface RemoteCollectionDriver {
 		mongo: MongoConnection;
 	}
+	interface OplogHandle {
+		stop(): void;
+		onOplogEntry(trigger: Record<string, any>, callback: Function): void;
+		onSkippedEntries(callback: Function): void;
+		waitUntilCaughtUp(): void;
+		_defineTooFarBehind(value: number): void;
+	}
 	interface MongoConnection {
 		db: Db;
+		_oplogHandle: OplogHandle;
 	}
 
 	namespace MongoInternals {
