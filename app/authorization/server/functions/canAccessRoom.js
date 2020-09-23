@@ -1,6 +1,7 @@
 import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions } from '../../../models/server/raw';
 import { getValue } from '../../../settings/server/raw';
+import { Users } from '../../../models/server';
 
 export const roomAccessValidators = [
 	async function(room, user = {}) {
@@ -20,6 +21,13 @@ export const roomAccessValidators = [
 
 		const exists = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
 		if (exists) {
+			return true;
+		}
+	},
+	async function(room, user) {
+		const { type } = Users.findOneById(user._id);
+
+		if (type === 'app') {
 			return true;
 		}
 	},

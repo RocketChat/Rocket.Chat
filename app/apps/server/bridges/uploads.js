@@ -30,20 +30,27 @@ export class AppUploadBridge {
 		});
 	}
 
-	createUpload(details, buffer, appId) {
+	async createUpload(details, buffer, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating an upload "${ details.name }"`);
+
+		if (!details.userId) {
+			throw new Error('Missing user to perform the upload operation');
+		}
 
 		details.type = determineFileType(buffer, details);
 
-		const fileStore = FileUpload.getStore('Uploads');
-		const uploadedFile = fileStore.insertSync(details, buffer);
+		return new Promise((resolve, reject) => Meteor.runAsUser(details.userId, () => {
+			try {
+				const fileStore = FileUpload.getStore('Uploads');
+				const insertSync = Meteor.wrapAsync(fileStore.insert.bind(fileStore));
+				const uploadedFile = insertSync(details, buffer);
 
-		if (details.userId) {
-			Meteor.runAsUser(details.userId, () => {
 				Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
-			});
-		}
 
-		return this.orch.getConverters().get('uploads').convertToApp(uploadedFile);
+				resolve(this.orch.getConverters().get('uploads').convertToApp(uploadedFile));
+			} catch (err) {
+				reject(err);
+			}
+		}));
 	}
 }
