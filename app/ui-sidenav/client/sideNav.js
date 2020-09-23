@@ -8,6 +8,9 @@ import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference } from '../../utils';
 import { Users } from '../../models';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
+createTemplateForComponent('sidebarHeader', () => import('../../../client/components/sidebar/Header'));
 
 Template.sideNav.helpers({
 	flexTemplate() {
