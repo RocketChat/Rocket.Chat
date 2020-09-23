@@ -62,11 +62,11 @@ export class Client extends EventEmitter {
 	}
 
 	async callMethod(packet: IPacket): Promise<void> {
-		this.chain = this.chain.then(() => server.callMethod(this, packet)).catch();
+		this.chain = this.chain.then(() => server.call(this, packet)).catch();
 	}
 
 	async callSubscribe(packet: IPacket): Promise<void> {
-		this.chain = this.chain.then(() => server.callSubscribe(this, packet)).catch();
+		this.chain = this.chain.then(() => server.subscribe(this, packet)).catch();
 	}
 
 	process(action: string, packet: IPacket): void {

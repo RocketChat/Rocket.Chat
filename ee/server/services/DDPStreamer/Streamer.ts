@@ -201,7 +201,7 @@ export class Stream extends EventEmitter {
 	async iniPublication(): Promise<void> {
 		const p = this[publish].bind(this);
 		const initMethod = this.initMethod.bind(this);
-		server.subscribe(this.subscriptionName, function(publication, _client, eventName, options) {
+		server.publish(this.subscriptionName, function(publication, _client, eventName, options) {
 			initMethod(publication);
 			return p(publication, eventName, options);
 		});

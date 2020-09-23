@@ -22,12 +22,12 @@ export const server = new Server();
 // 	publication.ready();
 // });
 
-server.subscribe('meteor.loginServiceConfiguration', function(pub) {
+server.publish('meteor.loginServiceConfiguration', function(pub) {
 	// TODO implement to be compatible with meteor's web client
 	pub.ready();
 });
 
-server.subscribe('meteor_autoupdate_clientVersions', function(pub) {
+server.publish('meteor_autoupdate_clientVersions', function(pub) {
 	// TODO implement to be compatible with meteor's web client
 	pub.ready();
 });

@@ -34,7 +34,7 @@ export class Server extends EventEmitter {
 		return ejson.parse(payload);
 	}
 
-	async callMethod(client: Client, packet: IPacket): Promise<void> {
+	async call(client: Client, packet: IPacket): Promise<void> {
 		try {
 			if (!this[methods].has(packet.method)) {
 				throw new Error(`Method '${ packet.method }' doesn't exist`);
@@ -61,7 +61,7 @@ export class Server extends EventEmitter {
 		});
 	}
 
-	async callSubscribe(client: Client, packet: IPacket): Promise<void> {
+	async subscribe(client: Client, packet: IPacket): Promise<void> {
 		try {
 			if (!this[subscriptions].has(packet.name)) {
 				throw new Error(`Subscription '${ packet.name }' doesn't exist`);
@@ -79,7 +79,7 @@ export class Server extends EventEmitter {
 		}
 	}
 
-	subscribe(name: string, fn: SubscriptionFn): void {
+	publish(name: string, fn: SubscriptionFn): void {
 		if (this[subscriptions].has(name)) {
 			return;
 		}
@@ -87,7 +87,7 @@ export class Server extends EventEmitter {
 	}
 
 	stream(stream: string, fn: SubscriptionFn): void {
-		return this.subscribe(`stream-${ stream }`, fn);
+		return this.publish(`stream-${ stream }`, fn);
 	}
 
 	result(client: Client, { id }: IPacket, result?: any, error?: string): void {
