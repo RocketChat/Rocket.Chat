@@ -1,6 +1,27 @@
 
 # 3.7.0 (Under Release Candidate Process)
 
+## 3.7.0-rc.1
+`2020-09-23  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- LDAP avatar upload ([#18994](https://github.com/RocketChat/Rocket.Chat/pull/18994))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Handle MongoDB authentication issues ([#18993](https://github.com/RocketChat/Rocket.Chat/pull/18993))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 3.7.0-rc.0
 `2020-09-22  ·  8 🎉  ·  3 🚀  ·  36 🐛  ·  21 🔍  ·  21 👩‍💻👨‍💻`
 
@@ -197,6 +218,80 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
+
+# 3.6.2
+`2020-09-18  ·  7 🐛  ·  6 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.17.0`
+
+### 🐛 Bug fixes
+
+
+- Create Custom OAuth services from environment variables ([#17377](https://github.com/RocketChat/Rocket.Chat/pull/17377) by [@mrtndwrd](https://github.com/mrtndwrd))
+
+- Deactivate users that are the last owner of a room using REST API ([#18864](https://github.com/RocketChat/Rocket.Chat/pull/18864))
+
+  Allow for user deactivation through REST API (even if user is the last owner of a room)
+
+- Ignore User action from user card ([#18866](https://github.com/RocketChat/Rocket.Chat/pull/18866))
+
+- invite-all-from and invite-all-to commands don't work with multibyte room names ([#18919](https://github.com/RocketChat/Rocket.Chat/pull/18919))
+
+  Fix slash commands (invite-all-from and invite-all-to) to accept  multi-byte room names.
+
+- Read receipts showing blank names and not marking messages as read ([#18918](https://github.com/RocketChat/Rocket.Chat/pull/18918) by [@wreiske](https://github.com/wreiske))
+
+- Show custom fields of invalid type ([#18794](https://github.com/RocketChat/Rocket.Chat/pull/18794))
+
+- Version update check cron job ([#18916](https://github.com/RocketChat/Rocket.Chat/pull/18916) by [@wreiske](https://github.com/wreiske))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@mrtndwrd](https://github.com/mrtndwrd)
+- [@wreiske](https://github.com/wreiske)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@FelipeParreira](https://github.com/FelipeParreira)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.6.1
+`2020-09-11  ·  7 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.17.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel service status switching to unavailable ([#18835](https://github.com/RocketChat/Rocket.Chat/pull/18835))
+
+- File upload (Avatars, Emoji, Sounds) ([#18841](https://github.com/RocketChat/Rocket.Chat/pull/18841))
+
+- IE11 support livechat widget ([#18850](https://github.com/RocketChat/Rocket.Chat/pull/18850))
+
+- Omnichannel Current Chats open status filter not working ([#18795](https://github.com/RocketChat/Rocket.Chat/pull/18795))
+
+- Showing alerts during setup wizard ([#18862](https://github.com/RocketChat/Rocket.Chat/pull/18862))
+
+- User administration throwing a blank page if user has no role ([#18851](https://github.com/RocketChat/Rocket.Chat/pull/18851))
+
+- User can't invite or join other Omnichannel rooms ([#18852](https://github.com/RocketChat/Rocket.Chat/pull/18852))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.6.0
 `2020-08-29  ·  10 🎉  ·  5 🚀  ·  26 🐛  ·  36 🔍  ·  23 👩‍💻👨‍💻`
