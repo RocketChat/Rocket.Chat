@@ -3,21 +3,21 @@ import { Box } from '@rocket.chat/fuselage';
 
 const Base = (props) => <Box size='x12' borderRadius='full' flexShrink={0} {...props}/>;
 
-export const Busy = () => <Base bg='danger-500'/>;
-export const Away = () => <Base bg='warning-600'/>;
-export const Online = () => <Base bg='success-500'/>;
-export const Offline = () => <Base bg='neutral-600'/>;
+export const Busy = (props) => <Base bg='danger-500' {...props}/>;
+export const Away = (props) => <Base bg='warning-600' {...props}/>;
+export const Online = (props) => <Base bg='success-500' {...props}/>;
+export const Offline = (props) => <Base bg='neutral-600' {...props}/>;
 
 
-export const getStatus = (status) => {
+export const getStatus = (status, props) => {
 	switch (status) {
 		case 'online':
-			return <Online/>;
+			return <Online {...props}/>;
 		case 'busy':
-			return <Busy/>;
+			return <Busy {...props}/>;
 		case 'away':
-			return <Away/>;
+			return <Away {...props}/>;
 		default:
-			return <Offline/>;
+			return <Offline {...props}/>;
 	}
 };
