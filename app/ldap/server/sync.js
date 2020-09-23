@@ -358,6 +358,7 @@ function syncUserAvatar(user, ldapUser) {
 		const file = {
 			userId: user._id,
 			type: 'image/jpeg',
+			size: avatar.length,
 		};
 
 		Meteor.runAsUser(user._id, () => {
