@@ -30,7 +30,7 @@ export class AppUploadBridge {
 		});
 	}
 
-	async createUpload(details, buffer, appId) {
+	async createUpload(details = {}, buffer, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating an upload "${ details.name }"`);
 
 		if (!details.userId) {
@@ -45,7 +45,11 @@ export class AppUploadBridge {
 				const insertSync = Meteor.wrapAsync(fileStore.insert.bind(fileStore));
 				const uploadedFile = insertSync(details, buffer);
 
-				Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
+				if (details.visitorToken) {
+					Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
+				} else {
+					Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
+				}
 
 				resolve(this.orch.getConverters().get('uploads').convertToApp(uploadedFile));
 			} catch (err) {
