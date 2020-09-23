@@ -26,7 +26,6 @@ export const Normal = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='
 		title='John Doe'
 		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 		avatar={avatar}
-		actions={actions}
 	/>
 </Box>;
 
@@ -37,7 +36,6 @@ export const Selected = () => <Box maxWidth='x300' bg='neutral-800' borderRadius
 		title='John Doe'
 		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 		avatar={avatar}
-		actions={actions}
 	/>
 </Box>;
 
@@ -61,5 +59,15 @@ export const Menu = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4
 				action: () => {},
 			},
 		}}
+	/>
+</Box>;
+
+export const Actions = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
+	<Medium
+		clickable
+		title='John Doe'
+		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		avatar={avatar}
+		actions={actions}
 	/>
 </Box>;

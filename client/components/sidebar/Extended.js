@@ -28,18 +28,20 @@ const Extended = ({
 			</Sidebar.Item.Avatar>
 		</Box>
 		<Sidebar.Item.Content>
-			<Sidebar.Item.Wrapper>
-				{ titleIcon }
-				<Sidebar.Item.Title>
-					{ title }
-				</Sidebar.Item.Title>
-			</Sidebar.Item.Wrapper>
+			<Box display='flex' alignItems='stretch' flexDirection='column' w='full'>
+				<Sidebar.Item.Wrapper>
+					{ titleIcon }
+					<Sidebar.Item.Title>
+						{ title }
+					</Sidebar.Item.Title>
+				</Sidebar.Item.Wrapper>
 
-			<Sidebar.Item.Wrapper>
-				<Sidebar.Item.Subtitle>
-					{ subtitle }
-				</Sidebar.Item.Subtitle>
-			</Sidebar.Item.Wrapper>
+				<Sidebar.Item.Wrapper>
+					<Sidebar.Item.Subtitle>
+						{ subtitle }
+					</Sidebar.Item.Subtitle>
+				</Sidebar.Item.Wrapper>
+			</Box>
 		</Sidebar.Item.Content>
 		<Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>

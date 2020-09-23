@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, ActionButton } from '@rocket.chat/fuselage';
+import { Box, ActionButton, Badge } from '@rocket.chat/fuselage';
 
 import Extended from './Extended';
 import * as Status from '../basic/UserStatus';
@@ -18,16 +18,25 @@ const actions = <>
 	<ActionButton icon='phone'/>
 </>;
 
+const title = <Box display='flex' flexDirection='row' w='full' alignItems='center'>
+	<Box flexGrow='1' withTruncatedText>John Doe</Box>
+	<Box fontScale='micro'>15:38</Box>
+</Box>;
+
+const subtitle = <Box display='flex' flexDirection='row' w='full' alignItems='center'>
+	<Box flexGrow='1' withTruncatedText>John Doe: test 123</Box>
+	<Badge bg='neutral-700' color='surface' flexShrink={0}>99</Badge>
+</Box>;
+
 const avatar = <UserAvatar size='x36' url='https://via.placeholder.com/16' />;
 
 export const Normal = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
 	<Extended
 		clickable
-		title='John Doe'
-		subtitle='John Doe: test 123'
+		title={title}
+		subtitle={subtitle}
 		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 		avatar={avatar}
-		actions={actions}
 	/>
 </Box>;
 
@@ -35,19 +44,18 @@ export const Selected = () => <Box maxWidth='x300' bg='neutral-800' borderRadius
 	<Extended
 		clickable
 		selected
-		title='John Doe'
-		subtitle='John Doe: test 123'
+		title={title}
+		subtitle={subtitle}
 		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 		avatar={avatar}
-		actions={actions}
 	/>
 </Box>;
 
 export const Menu = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
 	<Extended
 		clickable
-		title='John Doe'
-		subtitle='John Doe: test 123'
+		title={title}
+		subtitle={subtitle}w
 		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 		avatar={avatar}
 		menuOptions={{
@@ -64,5 +72,16 @@ export const Menu = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4
 				action: () => {},
 			},
 		}}
+	/>
+</Box>;
+
+export const Actions = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
+	<Extended
+		clickable
+		title='John Doe'
+		subtitle='John Doe: test 123'
+		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		avatar={avatar}
+		actions={actions}
 	/>
 </Box>;
