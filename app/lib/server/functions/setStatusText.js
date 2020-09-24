@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
-import { Notifications } from '../../../notifications';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
+import { Streamer } from '../../../../server/sdk';
 
 // mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
 const STATUS_MAP = {
@@ -28,12 +28,13 @@ export const _setStatusTextPromise = async function(userId, statusText) {
 
 	await UsersRaw.updateStatusText(user._id, statusText);
 
-	Notifications.notifyLogged('user-status', [
-		user._id,
-		user.username,
-		STATUS_MAP[user.status],
+	const { _id: uid, username } = user;
+	Streamer.sendUserStatus({
+		uid,
+		username,
+		status: STATUS_MAP[user.status],
 		statusText,
-	]);
+	});
 
 	return true;
 };
@@ -59,12 +60,13 @@ export const _setStatusText = function(userId, statusText) {
 	Users.updateStatusText(user._id, statusText);
 	user.statusText = statusText;
 
-	Notifications.notifyLogged('user-status', [
-		user._id,
-		user.username,
-		STATUS_MAP[user.status],
+	const { _id: uid, username } = user;
+	Streamer.sendUserStatus({
+		uid,
+		username,
+		status: STATUS_MAP[user.status],
 		statusText,
-	]);
+	});
 
 	return true;
 };

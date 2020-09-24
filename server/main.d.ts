@@ -38,6 +38,11 @@ declare module 'meteor/meteor' {
 			details?: string | undefined | Record<string, string>;
 		}
 
+		interface Streamer {
+			allowWrite(allow: string): void;
+			allowRead(allow: string): void;
+		}
+
 		const server: any;
 
 		interface MethodThisType {
