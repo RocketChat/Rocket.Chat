@@ -126,7 +126,7 @@ export const createTemplateForComponent = (
 	} = {},
 ) => {
 	if (Template[name]) {
-		return name;
+		console.log(`Template ${ name } was overwritten`);
 	}
 
 	const template = new Blaze.Template(name, renderContainerView);

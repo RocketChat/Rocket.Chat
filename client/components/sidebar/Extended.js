@@ -1,32 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Sidebar, Menu, Box, Option } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-const Extended = ({
+import { useFormatTime } from '../../hooks/useFormatTime';
+
+const Extended = React.memo(({
 	titleIcon = <Sidebar.Item.Icon name='lock' />,
 	title = '',
 	avatar,
 	actions,
+	href,
+	time,
 	menuOptions,
 	subtitle = '',
 	...props
 }) => {
-	const [hovered, setHovered] = useState(false);
+	const formatDate = useFormatTime();
 
-	const onMouseEnter = useMutableCallback(() => {
-		setHovered(true);
-	});
-
-	const onMouseLeave = useMutableCallback(() => {
-		setHovered(false);
-	});
-
-	return <Sidebar.Item {...props} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-		<Box mie='x4'>
+	return <Sidebar.Item {...props} href={href} clickable={!!href}>
+		{ avatar && <Box mie='x4'>
 			<Sidebar.Item.Avatar>
 				{ avatar }
 			</Sidebar.Item.Avatar>
-		</Box>
+		</Box>}
 		<Sidebar.Item.Content>
 			<Box display='flex' alignItems='stretch' flexDirection='column' w='full'>
 				<Sidebar.Item.Wrapper>
@@ -34,6 +29,7 @@ const Extended = ({
 					<Sidebar.Item.Title>
 						{ title }
 					</Sidebar.Item.Title>
+					{time && <Sidebar.Item.Time>{formatDate(time)}</Sidebar.Item.Time>}
 				</Sidebar.Item.Wrapper>
 
 				<Sidebar.Item.Wrapper>
@@ -51,12 +47,11 @@ const Extended = ({
 					small
 					color='neutral-700'
 					options={menuOptions}
-					invisible={!hovered}
 					renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
 				/>}
 			</Sidebar.Item.Actions>}
 		</Sidebar.Item.Container>
 	</Sidebar.Item>;
-};
+});
 
 export default Extended;
