@@ -1,10 +1,10 @@
 .toolbar {
-	position: absolute;
-	left: 10px;
+	position: relative;
+	/* left: 10px; */
 
 	width: 100%;
-	margin: 0 -10px;
-	padding: 0 calc(var(--sidebar-default-padding) + 10px);
+	/* margin: 0 -10px; */
+	/* padding: 0 calc(var(--sidebar-default-padding) + 10px); */
 
 	&__wrapper {
 

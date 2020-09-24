@@ -196,7 +196,8 @@ Template.toolbar.onRendered(function() {
 });
 
 Template.toolbar.onCreated(function() {
+	const { onClose } = this.data;
 	this.open = new ReactiveVar(true);
 
-	Tracker.autorun(() => !this.open.get() && toolbarSearch.close());
+	Tracker.autorun(() => !this.open.get() && onClose());
 });
