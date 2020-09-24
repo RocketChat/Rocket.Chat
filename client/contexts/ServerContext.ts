@@ -10,7 +10,7 @@ type ServerContextValue = {
 	absoluteUrl: (path: string) => string;
 	callMethod: (methodName: string, ...args: any[]) => Promise<any>;
 	callEndpoint: (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: string, ...args: any[]) => Promise<any>;
-	uploadToEndpoint: (endpoint: string) => Promise<void>;
+	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
 	getStream: (streamName: string, options?: {}) => IServerStream;
 };
 
@@ -40,9 +40,9 @@ export const useEndpoint = (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: str
 	return useCallback((...args: any[]) => callEndpoint(httpMethod, endpoint, ...args), [callEndpoint, httpMethod, endpoint]);
 };
 
-export const useUpload = (endpoint: string): () => Promise<void> => {
+export const useUpload = (endpoint: string): (params: any, formData: any) => Promise<void> => {
 	const { uploadToEndpoint } = useContext(ServerContext);
-	return useCallback(() => uploadToEndpoint(endpoint), [endpoint, uploadToEndpoint]);
+	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [endpoint, uploadToEndpoint]);
 };
 
 export const useStream = (streamName: string, options?: {}): IServerStream => {

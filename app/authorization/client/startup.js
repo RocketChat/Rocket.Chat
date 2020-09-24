@@ -27,7 +27,9 @@ Meteor.startup(() => {
 			delete role.type;
 			Roles.upsert({ _id: role.name }, role);
 		},
-		removed: (role) => Roles.remove({ _id: role.name }),
+		removed: (role) => {
+			Roles.remove({ _id: role.name });
+		},
 	};
 
 	Tracker.autorun((c) => {

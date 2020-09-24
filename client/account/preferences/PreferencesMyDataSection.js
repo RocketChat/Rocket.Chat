@@ -41,9 +41,10 @@ const PreferencesMyDataSection = ({ onChange, ...props }) => {
 		try {
 			const result = await requestDataDownload({ fullExport });
 			if (result.requested) {
+				const text = t('UserDataDownload_Requested_Text', { pending_operations: result.pendingOperationsBeforeMyRequest });
 				setModal(<MyDataModal
 					title={t('UserDataDownload_Requested')}
-					text={t('UserDataDownload_Requested_Text', { pending_operations: result.pendingOperationsBeforeMyRequest })}
+					text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
 					onCancel={closeModal}
 				/>);
 				return;
@@ -64,9 +65,10 @@ const PreferencesMyDataSection = ({ onChange, ...props }) => {
 					return;
 				}
 
+				const text = t('UserDataDownload_RequestExisted_Text', { pending_operations: result.pendingOperationsBeforeMyRequest });
 				setModal(<MyDataModal
 					title={t('UserDataDownload_Requested')}
-					text={t('UserDataDownload_RequestExisted_Text', { pending_operations: result.pendingOperationsBeforeMyRequest })}
+					text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
 					onCancel={closeModal}
 				/>);
 

@@ -1220,6 +1220,8 @@ Template.room.onCreated(function() {
 			this.sendToBottom();
 		}
 	};
+
+	this.sendToBottomIfNecessaryDebounced = () => {};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
