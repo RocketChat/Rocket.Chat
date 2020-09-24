@@ -70,28 +70,20 @@ const HeaderWithData = () => {
 				--rcx-sidebar-item-background-color-selected: rgba(108, 114, 122, .3);
 			}`}
 		</style>
-		<Header
-			avatar={<UserAvatarButton user={user}/> }
-		>
-			<Home />
-			<Search />
-			<Directory />
-			<Sort />
-			<CreateRoom />
-			<Menu />
-		</Header>
+
+		<Sidebar.TopBar.Section>
+			<UserAvatarButton user={user}/>
+			<Sidebar.TopBar.Actions>
+				<Home />
+				<Search />
+				<Directory />
+				<Sort />
+				<CreateRoom />
+				<Menu />
+			</Sidebar.TopBar.Actions>
+		</Sidebar.TopBar.Section>
 	</>;
 };
 
-export const Header = ({
-	avatar,
-	children,
-	...props
-}) => <Sidebar.TopBar.Section {...props}>
-	{ avatar }
-	<Sidebar.TopBar.Actions>
-		{ children }
-	</Sidebar.TopBar.Actions>
-</Sidebar.TopBar.Section>;
 
 export default HeaderWithData;
