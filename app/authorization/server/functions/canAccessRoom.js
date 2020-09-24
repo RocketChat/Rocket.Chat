@@ -25,6 +25,10 @@ export const roomAccessValidators = [
 		}
 	},
 	async function(room, user) {
+		if (!room || !user) {
+			return;
+		}
+
 		const { type } = Users.findOneById(user._id);
 
 		if (type === 'app') {
