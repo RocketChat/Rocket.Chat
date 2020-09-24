@@ -14,9 +14,16 @@ Subscriptions.on('change', ({ clientAction, id, data }) => {
 
 		case 'removed':
 			data = Subscriptions.trashFindOneById(id, { fields: { u: 1, rid: 1 } });
+			if (!data) {
+				return;
+			}
 			// emit a removed event on msg stream to remove the user's stream-room-messages subscription when the user is removed from room
 			msgStream.__emit(data.u._id, clientAction, data);
 			break;
+	}
+
+	if (!data) {
+		return;
 	}
 
 	Notifications.streamUser.__emit(data.u._id, clientAction, data);

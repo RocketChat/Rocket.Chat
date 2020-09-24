@@ -14,7 +14,7 @@ import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterC
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import TagsPage from './TagsPage';
 import { TagEditWithData, TagNew } from './EditTag';
-import DeleteWarningModal from '../../../../client/omnichannel/DeleteWarningModal';
+import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 
