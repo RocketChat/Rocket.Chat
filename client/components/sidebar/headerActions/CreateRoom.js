@@ -44,7 +44,7 @@ const useAction = (title, content) => useMutableCallback((e) => {
 	});
 });
 
-const CreateRoom = () => {
+const CreateRoom = (props) => {
 	const t = useTranslation();
 	const showCreate = useAtLeastOnePermission(CREATE_ROOM_PERMISSIONS);
 
@@ -83,7 +83,7 @@ const CreateRoom = () => {
 		openPopover(e, items);
 	});
 
-	return showCreate ? <Sidebar.TopBar.Action icon='edit-rounded' onClick={onClick}/> : null;
+	return showCreate ? <Sidebar.TopBar.Action {...props} icon='edit-rounded' onClick={onClick}/> : null;
 };
 
 export default CreateRoom;

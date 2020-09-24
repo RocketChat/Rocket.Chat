@@ -17,6 +17,6 @@ const config = (e) => ({
 
 const onClick = (e) => { popover.open(config(e)); };
 
-const Sort = () => <Sidebar.TopBar.Action icon='sort' onClick={onClick}/>;
+const Sort = (props) => <Sidebar.TopBar.Action {...props} icon='sort' onClick={onClick}/>;
 
 export default Sort;

@@ -63,7 +63,7 @@ const adminOption = (showAdmin, t) => (showAdmin ? {
 	},
 } : undefined);
 
-const Menu = () => {
+const Menu = (props) => {
 	const t = useTranslation();
 	const showAdmin = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 
@@ -73,7 +73,7 @@ const Menu = () => {
 
 	const showMenu = accountBoxItems.length > 0;
 
-	return showAdmin && showMenu ? <Sidebar.TopBar.Action icon='menu' onClick={onClick}/> : null;
+	return showAdmin && showMenu ? <Sidebar.TopBar.Action {...props} icon='menu' onClick={onClick}/> : null;
 };
 
 export default Menu;
