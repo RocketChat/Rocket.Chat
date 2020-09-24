@@ -1,8 +1,8 @@
 
 import { Sidebar, Box, Badge, Scrollable } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useMemo, useRef } from 'react';
-import { FixedSizeList as List } from 'react-window';
+import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import { VariableSizeList as List } from 'react-window';
 
 import { ChatSubscription } from '../../../app/models';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -29,6 +29,18 @@ const useChatRoomTemplate = (sidebarViewMode) => useMemo(() => {
 			return Condensed;
 	}
 }, [sidebarViewMode]);
+
+const itemSizeMap = (sidebarViewMode) => {
+	switch (sidebarViewMode) {
+		case 'extended':
+			return 44;
+		case 'medium':
+			return 36;
+		case 'condensed':
+		default:
+			return 28;
+	}
+};
 
 export default () => {
 	const t = useTranslation();
@@ -139,13 +151,24 @@ export default () => {
 
 	const { ref, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
+	const listRef = useRef();
+
+	const itemSize = itemSizeMap(sidebarViewMode);
+
+	useEffect(() => {
+		listRef.current && listRef.current.resetAfterIndex(0);
+	}, [itemSize]);
+
 	return <Box h='full' w='full' ref={ref}>
 		<List
 			height={blockSize}
+			estimatedItemSize={itemSize}
 			itemCount={items.length}
-			itemSize={46}
+			itemSize={(index) => (typeof items[index] === 'string' ? 40 : itemSize)}
 			itemData={items}
+			overscanCount={3}
 			width='100%'
+			ref={listRef}
 		>
 			{({ data, index, style }) => {
 				if (typeof data[index] === 'string') {
@@ -208,6 +231,9 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, SideBarItemTem
 	}
 	if (prevProps.t !== nextProps.t) {
 		return;
+	}
+	if (prevProps.style.height !== nextProps.style.height) {
+		return false;
 	}
 
 	return prevProps.room._updatedAt.getTime() === nextProps.room._updatedAt.getTime();
