@@ -22,11 +22,11 @@ const Condensed = ({
 	});
 
 	return <Sidebar.Item {...props} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-		<Box mie='x4'>
+		{avatar && <Box mie='x4'>
 			<Sidebar.Item.Avatar>
 				{ avatar }
 			</Sidebar.Item.Avatar>
-		</Box>
+		</Box>}
 		<Sidebar.Item.Content>
 			{ titleIcon }
 			<Sidebar.Item.Title>{title}</Sidebar.Item.Title>
