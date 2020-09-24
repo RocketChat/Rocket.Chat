@@ -1,17 +1,43 @@
 
 import React, { useCallback } from 'react';
-import { Sidebar } from '@rocket.chat/fuselage';
+import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 
 import { ChatSubscription } from '../../../app/models';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useSetting } from '../../contexts/SettingsContext';
+import { roomTypes } from '../../../app/utils';
+import { useUser, useUserPreference } from '../../contexts/UserContext';
+// import Condensed from './Condensed';
 import Condensed from './Condensed';
+import Medium from './Medium';
+import Extended from './Extended';
 
 const query = {};
 const sort = {};
 
+const useChatRoomTemplate = (viewMode) => useCallback(() => {
+	if (viewMode === 'extended') {
+		return Extended;
+	}
+
+	if (viewMode === 'medium') {
+		return Medium;
+	}
+
+	return Condensed;
+}, [viewMode]);
+
 export default () => {
 	const t = useTranslation();
+
+	const user = useUser();
+	const useRealName = useSetting('UI_Use_Real_Name');
+	const viewMode = useUserPreference('sidebarViewMode');
+	const hideAvatars = useUserPreference('hideAvatars');
+	const hideUsernames = useUserPreference('hideUsernames');
+
+	const ChatRoom = useChatRoomTemplate(viewMode);
 
 	const rooms = useReactiveValue(useCallback(() => ChatSubscription.find(query, { sort }).fetch(), [query]));
 
@@ -55,13 +81,50 @@ export default () => {
 
 	const groups = new Map();
 
-	groups.set('Favorites', favorite);
-	groups.set('Unread', unread);
 	groups.set('Omnichannel', omnichannel);
-	groups.set('Private', _private);
-	groups.set('Public', _public);
-	groups.set('Direct', direct);
+	groups.set('Unread', unread);
+	groups.set('Favorites', favorite);
 	groups.set('Discussions', discussion);
+	groups.set('Public', _public);
+	groups.set('Private', _private);
+	groups.set('Direct', direct);
 
-	return [...groups.entries()].flatMap(([key, group]) => [<Sidebar.Section.Title>{t(key)}</Sidebar.Section.Title>, [...group].map((item) => <Condensed title={item.name || item.fname} titleIcon={<Sidebar.Item.Icon name='lock' />}/>)]);
+	return [...groups.entries()].flatMap(([key, group]) => {
+		if (group.size !== 0) {
+			return [
+				<Sidebar.Section.Title>{t(key)}</Sidebar.Section.Title>,
+				[...group].map((room) => {
+					// const rType = roomTypes.getConfig(room.t);
+					const name = roomTypes.getRoomName(room.t, room);
+					const icon = roomTypes.getIcon(room);
+
+					const {
+						lastMessage,
+						unread,
+						userMentions,
+					} = room;
+
+					// TODO: timestamp on extended mode
+					const title = viewMode === 'extended'
+						? name
+						: name;
+
+					const message = `${ lastMessage.u.name || lastMessage.u.username }: ${ lastMessage.msg }`;
+
+					const subtitle = viewMode === 'extended'
+						? <Box display='flex' flexDirection='row' w='full' alignItems='center'>
+							<Box flexGrow='1' withTruncatedText>{message}</Box>
+							{unread && <Badge bg={!userMentions && 'neutral-700'} primary flexShrink={0}>{unread}</Badge>}
+						</Box>
+						: `${ name }`;
+
+					return <ChatRoom
+						title={title}
+						subtitle={subtitle}
+						icon={<Sidebar.Title.Icon name={icon}/>}
+					/>;
+				})];
+		}
+		return null;
+	}).filter(Boolean);
 };
