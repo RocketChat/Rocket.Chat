@@ -1,7 +1,6 @@
 import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions } from '../../../models/server/raw';
 import { getValue } from '../../../settings/server/raw';
-import { Users } from '../../../models/server';
 
 export const roomAccessValidators = [
 	async function(room, user = {}) {
@@ -29,9 +28,7 @@ export const roomAccessValidators = [
 			return;
 		}
 
-		const { type } = Users.findOneById(user._id);
-
-		if (type === 'app') {
+		if (user.type === 'app') {
 			return true;
 		}
 	},

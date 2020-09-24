@@ -13,11 +13,15 @@ Meteor.methods({
 		let user;
 
 		if (userId) {
-			user = Users.findOneById(userId, {
-				fields: {
-					username: 1,
-				},
-			});
+			if (Meteor.isServer) {
+				user = Users.findOneById(userId);
+			} else {
+				user = Users.findOneById(userId, {
+					fields: {
+						username: 1,
+					},
+				});
+			}
 
 			if (!user || !user.username) {
 				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
