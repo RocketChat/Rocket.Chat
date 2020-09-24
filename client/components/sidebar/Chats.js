@@ -1,6 +1,8 @@
 
 import { Sidebar, Box, Badge, Scrollable } from '@rocket.chat/fuselage';
-import React, { useCallback, useMemo } from 'react';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { FixedSizeList as List } from 'react-window';
 
 import { ChatSubscription } from '../../../app/models';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -127,17 +129,45 @@ export default () => {
 
 	const extended = sidebarViewMode === 'extended';
 
-	return <Scrollable vertical smooth><Box>{[...groups.entries()].flatMap(([key, group]) => {
+	const items = [...groups.entries()].reduce((acc, [key, group]) => {
 		if (group.size === 0) {
-			return null;
+			return acc;
 		}
-		return [
-			<Sidebar.Section.Title key={key}>{t(key)}</Sidebar.Section.Title>,
-			[...group].map((room) => <SideBarItemTemplateWithData key={room._id} t={t} room={room} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />)];
-	})}</Box></Scrollable>;
+		acc = [...acc, key, ...group];
+		return acc;
+	}, []);
+
+	const { ref, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
+
+	return <Box h='full' w='full' ref={ref}>
+		<List
+			height={blockSize}
+			itemCount={items.length}
+			itemSize={46}
+			itemData={items}
+			width='100%'
+		>
+			{({ data, index, style }) => {
+				if (typeof data[index] === 'string') {
+					return <Sidebar.Section.Title key={data[index]} style={style}>{t(data[index])}</Sidebar.Section.Title>;
+				}
+				const room = data[index];
+				return <SideBarItemTemplateWithData style={style} key={room._id} t={t} room={room} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+			}}
+		</List>
+	</Box>;
+
+	// return <Scrollable vertical smooth><Box>{[...groups.entries()].flatMap(([key, group]) => {
+	// 	if (group.size === 0) {
+	// 		return null;
+	// 	}
+	// 	return [
+	// 		<Sidebar.Section.Title key={key}>{t(key)}</Sidebar.Section.Title>,
+	// 		[...group].map((room) => <SideBarItemTemplateWithData key={room._id} t={t} room={room} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />)];
+	// })}</Box></Scrollable>;
 };
 
-const SideBarItemTemplateWithData = React.memo(({ room, extended, SideBarItemTemplate, AvatarTemplate, t }) => {
+const SideBarItemTemplateWithData = React.memo(({ room, extended, SideBarItemTemplate, AvatarTemplate, t, style }) => {
 // const rType = roomTypes.getConfig(room.t);
 	const title = roomTypes.getRoomName(room.t, room);
 	const icon = <Sidebar.Item.Icon name={roomTypes.getIcon(room)}/>;
@@ -163,6 +193,7 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, SideBarItemTem
 		time={lastMessage?.ts}
 		subtitle={subtitle}
 		icon={icon}
+		style={style}
 		avatar={<AvatarTemplate {...room}/>}
 	/>;
 }, function areEqual(prevProps, nextProps) {
