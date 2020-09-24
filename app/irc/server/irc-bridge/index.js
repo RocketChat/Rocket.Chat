@@ -75,21 +75,26 @@ class Bridge {
 		this.logQueue(`Processing "${ item.command }" command from "${ item.from }"`);
 
 		// Handle the command accordingly
-		switch (item.from) {
-			case 'local':
-				if (!localCommandHandlers[item.command]) {
-					throw new Error(`Could not find handler for local:${ item.command }`);
-				}
+		try {
+			// Handle the command accordingly
+			switch (item.from) {
+				case 'local':
+					if (!localCommandHandlers[item.command]) {
+						throw new Error(`Could not find handler for local:${ item.command }`);
+					}
 
-				await localCommandHandlers[item.command].apply(this, item.parameters);
-				break;
-			case 'peer':
-				if (!peerCommandHandlers[item.command]) {
-					throw new Error(`Could not find handler for peer:${ item.command }`);
-				}
+					await localCommandHandlers[item.command].apply(this, item.parameters);
+					break;
+				case 'peer':
+					if (!peerCommandHandlers[item.command]) {
+						throw new Error(`Could not find handler for peer:${ item.command }`);
+					}
 
-				await peerCommandHandlers[item.command].apply(this, item.parameters);
-				break;
+					await peerCommandHandlers[item.command].apply(this, item.parameters);
+					break;
+			}
+		} catch (e) {
+			this.logQueue(e);
 		}
 
 		// Keep the queue going
