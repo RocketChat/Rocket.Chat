@@ -1,17 +1,14 @@
 <template name="sideNav">
 	<aside class="sidebar sidebar--{{sidebarViewMode}} {{#if sidebarHideAvatar}}sidebar--hide-avatar{{/if}}" role="navigation">
 		{{> sidebarHeader }}
-		{{> sidebarChats }}
 		{{#if loggedInUser}}
-			<div class="wrapper-unread">
-				<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
-					<i class="icon-up-big"></i> {{_ "More_unreads"}}
-				</div>
+		<div class="wrapper-unread">
+			<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
+				<i class="icon-up-big"></i> {{_ "More_unreads"}}
 			</div>
-			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
-				{{#each roomType}}
-					{{> Template.dynamic template=template data=data }}
-				{{/each}}
+		</div>
+		<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
+				{{> sidebarChats }}
 			</div>
 			<div class="wrapper-unread">
 				<div class="unread-rooms background-primary-action-color color-primary-action-contrast bottom-unread-rooms hidden">
