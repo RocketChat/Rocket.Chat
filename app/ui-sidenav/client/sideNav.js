@@ -11,6 +11,7 @@ import { Users } from '../../models';
 import { createTemplateForComponent } from '../../../client/reactAdapters';
 
 createTemplateForComponent('sidebarHeader', () => import('../../../client/components/sidebar/Header'));
+createTemplateForComponent('sidebarChats', () => import('../../../client/components/sidebar/Chats'));
 
 Template.sideNav.helpers({
 	flexTemplate() {

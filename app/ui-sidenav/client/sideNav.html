@@ -1,6 +1,7 @@
 <template name="sideNav">
 	<aside class="sidebar sidebar--{{sidebarViewMode}} {{#if sidebarHideAvatar}}sidebar--hide-avatar{{/if}}" role="navigation">
 		{{> sidebarHeader }}
+		{{> sidebarChats }}
 		{{#if loggedInUser}}
 			<div class="wrapper-unread">
 				<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
