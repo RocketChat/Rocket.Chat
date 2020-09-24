@@ -25,7 +25,7 @@ function handleAvatar(request, response) {
 	caches.open(version).then((cache) => cache.put(new Request(url), clonedResponse));
 }
 
-const fetchFromNetwork = (event) => {
+const fetchFromNetwork = (event, cached) => {
 	const requestToFetch = event.request.clone();
 	return fetch(requestToFetch, { cache: 'reload' }).then((response) => {
 		const clonedResponse = response.clone();
@@ -57,7 +57,7 @@ const fetchFromNetwork = (event) => {
 		}
 		return response;
 	}).catch(() => {
-		if (hasHash(event.request.url)) { return caches.match(event.request.url); }
+		if (cached) { return cached; }
 		// If the request URL hasn't been served from cache and isn't sockjs we suppose it's HTML
 		if (!/\/sockjs\//.test(event.request.url)) { return caches.match(HTMLToCache); }
 		// Only for sockjs
@@ -106,9 +106,13 @@ self.addEventListener('fetch', (event) => {
 				const resourceType = cached.headers.get('content-type');
 				// We only return non css/js/html cached response e.g images
 				if (!hasHash(event.request.url) && !/text\/html/.test(resourceType)) {
+					// If API call try to respond with network response first
+					if (/\/api\//.test(event.request.url)) {
+						return fetchFromNetwork(event, cached);
+					}
 					// Refresh resources which are not(sound or assets)
 					if (!/sounds/.test(event.request.url) && !/assets/.test(event.request.url) && !/font/.test(event.request.url)) {
-						fetchFromNetwork(event);
+						fetchFromNetwork(event, cached);
 					}
 					return cached;
 				}
