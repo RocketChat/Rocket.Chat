@@ -166,6 +166,18 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, SideBarItemTem
 		avatar={<AvatarTemplate {...room}/>}
 	/>;
 }, function areEqual(prevProps, nextProps) {
-	console.log(prevProps, nextProps);
+	if (prevProps.extended !== nextProps.extended) {
+		return false;
+	}
+	if (prevProps.SideBarItemTemplate !== nextProps.SideBarItemTemplate) {
+		return false;
+	}
+	if (prevProps.AvatarTemplate !== nextProps.AvatarTemplate) {
+		return false;
+	}
+	if (prevProps.t !== nextProps.t) {
+		return;
+	}
+
 	return prevProps.room._updatedAt.getTime() === nextProps.room._updatedAt.getTime();
 });
