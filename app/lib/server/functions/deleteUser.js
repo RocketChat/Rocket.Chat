@@ -4,11 +4,11 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { Notifications } from '../../../notifications/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
+import { Streamer } from '../../../../server/sdk';
 
 export const deleteUser = function(userId, confirmRelinquish = false) {
 	const user = Users.findOneById(userId, {
@@ -65,7 +65,7 @@ export const deleteUser = function(userId, confirmRelinquish = false) {
 		}
 
 		Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
-		Notifications.notifyLogged('Users:Deleted', { userId });
+		Streamer.sendUserDeleted(userId);
 	}
 
 	// Remove user from users database

@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { hasPermission } from '../../../authorization';
-import { Notifications } from '../../../notifications';
 import { CustomUserStatus } from '../../../models';
+import { Streamer } from '../../../../server/sdk';
 
 Meteor.methods({
 	insertOrUpdateUserStatus(userStatusData) {
@@ -49,7 +49,7 @@ Meteor.methods({
 
 			const _id = CustomUserStatus.create(createUserStatus);
 
-			Notifications.notifyLogged('updateCustomUserStatus', { userStatusData: createUserStatus });
+			Streamer.sendUpdateCustomUserStatus(createUserStatus);
 
 			return _id;
 		}
@@ -63,7 +63,7 @@ Meteor.methods({
 			CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 		}
 
-		Notifications.notifyLogged('updateCustomUserStatus', { userStatusData });
+		Streamer.sendUpdateCustomUserStatus(userStatusData);
 
 		return true;
 	},

@@ -15,6 +15,42 @@ export class Streamer extends ServiceClass implements IStreamer {
 		this.streamLogged.allowRead('logged');
 	}
 
+	sendDeleteCustomEmoji(emojiData: Record<string, any>): void {
+		this.streamLogged.emit('deleteEmojiCustom', [
+			{ emojiData },
+		]);
+	}
+
+	sendUpdateCustomEmoji(emojiData: Record<string, any>): void {
+		this.streamLogged.emit('updateEmojiCustom', [
+			{ emojiData },
+		]);
+	}
+
+	sendUserDeleted(uid: string): void {
+		this.streamLogged.emit('Users:Deleted', [
+			{ userId: uid },
+		]);
+	}
+
+	sendUserNameChanged(userData: Record<string, any>): void {
+		this.streamLogged.emit('Users:NameChanged', [
+			{ userData },
+		]);
+	}
+
+	sendDeleteCustomUserStatus(userStatusData: Record<string, any>): void {
+		this.streamLogged.emit('deleteCustomUserStatus', [
+			{ userStatusData },
+		]);
+	}
+
+	sendUpdateCustomUserStatus(userStatusData: Record<string, any>): void {
+		this.streamLogged.emit('updateCustomUserStatus', [
+			{ userStatusData },
+		]);
+	}
+
 	sendUserStatus({ uid, username, status, statusText }: { uid: string; username: string; status: STATUS_MAP; statusText?: string }): void {
 		this.streamLogged.emit('user-status', [
 			uid,

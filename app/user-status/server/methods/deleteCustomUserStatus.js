@@ -1,25 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization';
-import { Notifications } from '../../../notifications';
-import { CustomUserStatus } from '../../../models';
+import { hasPermission } from '../../../authorization/server';
+import { CustomUserStatus } from '../../../models/server';
+import { Streamer } from '../../../../server/sdk';
 
 Meteor.methods({
 	deleteCustomUserStatus(userStatusID) {
-		let userStatus = null;
-
-		if (hasPermission(this.userId, 'manage-user-status')) {
-			userStatus = CustomUserStatus.findOneById(userStatusID);
-		} else {
+		if (!hasPermission(this.userId, 'manage-user-status')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
+		const userStatus = CustomUserStatus.findOneById(userStatusID);
 		if (userStatus == null) {
 			throw new Meteor.Error('Custom_User_Status_Error_Invalid_User_Status', 'Invalid user status', { method: 'deleteCustomUserStatus' });
 		}
 
 		CustomUserStatus.removeById(userStatusID);
-		Notifications.notifyLogged('deleteCustomUserStatus', { userStatusData: userStatus });
+		Streamer.sendDeleteCustomUserStatus(userStatus);
 
 		return true;
 	},
