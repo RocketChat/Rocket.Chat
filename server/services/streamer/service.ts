@@ -16,39 +16,39 @@ export class Streamer extends ServiceClass implements IStreamer {
 	}
 
 	sendDeleteCustomEmoji(emojiData: Record<string, any>): void {
-		this.streamLogged.emit('deleteEmojiCustom', [
-			{ emojiData },
-		]);
+		this.streamLogged.emit('deleteEmojiCustom', {
+			emojiData,
+		});
 	}
 
 	sendUpdateCustomEmoji(emojiData: Record<string, any>): void {
-		this.streamLogged.emit('updateEmojiCustom', [
-			{ emojiData },
-		]);
+		this.streamLogged.emit('updateEmojiCustom', {
+			emojiData,
+		});
 	}
 
 	sendUserDeleted(uid: string): void {
-		this.streamLogged.emit('Users:Deleted', [
-			{ userId: uid },
-		]);
+		this.streamLogged.emit('Users:Deleted', {
+			userId: uid,
+		});
 	}
 
 	sendUserNameChanged(userData: Record<string, any>): void {
-		this.streamLogged.emit('Users:NameChanged', [
-			{ userData },
-		]);
+		this.streamLogged.emit('Users:NameChanged', {
+			userData,
+		});
 	}
 
 	sendDeleteCustomUserStatus(userStatusData: Record<string, any>): void {
-		this.streamLogged.emit('deleteCustomUserStatus', [
-			{ userStatusData },
-		]);
+		this.streamLogged.emit('deleteCustomUserStatus', {
+			userStatusData,
+		});
 	}
 
 	sendUpdateCustomUserStatus(userStatusData: Record<string, any>): void {
-		this.streamLogged.emit('updateCustomUserStatus', [
-			{ userStatusData },
-		]);
+		this.streamLogged.emit('updateCustomUserStatus', {
+			userStatusData,
+		});
 	}
 
 	sendUserStatus({ uid, username, status, statusText }: { uid: string; username: string; status: STATUS_MAP; statusText?: string }): void {
