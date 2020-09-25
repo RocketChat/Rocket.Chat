@@ -34,9 +34,7 @@ export class Streamer extends ServiceClass implements IStreamer {
 	}
 
 	sendUserNameChanged(userData: Record<string, any>): void {
-		this.streamLogged.emit('Users:NameChanged', {
-			userData,
-		});
+		this.streamLogged.emit('Users:NameChanged', userData);
 	}
 
 	sendDeleteCustomUserStatus(userStatusData: Record<string, any>): void {
@@ -61,37 +59,29 @@ export class Streamer extends ServiceClass implements IStreamer {
 	}
 
 	sendPermission({ clientAction, data }: any): void {
-		this.streamLogged.emitWithoutBroadcast('permissions-changed', [
-			clientAction,
-			data,
-		]);
+		this.streamLogged.emitWithoutBroadcast('permissions-changed', clientAction, data);
 	}
 
 	sendPrivateSetting({ clientAction, setting }: any): void {
-		this.streamLogged.emitWithoutBroadcast('private-settings-changed', [
-			clientAction,
-			setting,
-		]);
+		this.streamLogged.emitWithoutBroadcast('private-settings-changed', clientAction, setting);
 	}
 
 	sendUserAvatarUpdate({ username, etag }: { username: string; etag?: string }): void {
-		this.streamLogged.emit('updateAvatar', [
+		this.streamLogged.emit('updateAvatar', {
 			username,
 			etag,
-		]);
+		});
 	}
 
 	sendRoomAvatarUpdate({ rid, etag }: { rid: string; etag?: string }): void {
-		this.streamLogged.emit('updateAvatar', [
+		this.streamLogged.emit('updateAvatar', {
 			rid,
 			etag,
-		]);
+		});
 	}
 
 	sendRoleUpdate(update: Record<string, any>): void {
-		this.streamLogged.emit('roles-change', [
-			update,
-		]);
+		this.streamLogged.emit('roles-change', update);
 	}
 
 	notifyAll(eventName: string, ...args: any[]): void {
