@@ -16,6 +16,7 @@ import Condensed from './Condensed';
 import Extended from './Extended';
 import Medium from './Medium';
 import RoomAvatar from '../basic/avatar/RoomAvatar';
+import RoomMenu from './RoomMenu';
 import { useSession } from '../../contexts/SessionContext';
 
 const query = {};
@@ -211,6 +212,9 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, Side
 		userMentions,
 		groupMentions,
 		tunread = [],
+		rid,
+		t: type,
+		cl,
 	} = room;
 
 	const message = extended && lastMessage ? `${ lastMessage.u.name || lastMessage.u.username }: ${ lastMessage.msg }` : t('No_messages_yet');
@@ -232,6 +236,7 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, Side
 		icon={icon}
 		style={style}
 		avatar={<AvatarTemplate {...room}/>}
+		actions={<RoomMenu rid={rid} unread={!!unread.length} roomOpen={false} type={type} cl={cl} name={title}/>}
 	/>;
 }, function areEqual(prevProps, nextProps) {
 	if (prevProps.extended !== nextProps.extended) {
