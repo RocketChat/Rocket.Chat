@@ -209,13 +209,17 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, Side
 		lastMessage,
 		unread,
 		userMentions,
+		groupMentions,
+		tunread = [],
 	} = room;
 
 	const message = extended && lastMessage ? `${ lastMessage.u.name || lastMessage.u.username }: ${ lastMessage.msg }` : t('No_messages_yet');
 
+	const variant = (userMentions && 'danger') || (tunread.length && 'primary') || (groupMentions && 'warning') || 'ghost';
+
 	const subtitle = extended && <Box display='flex' flexDirection='row' w='full' alignItems='center'>
 		<Box flexGrow='1' withTruncatedText>{message}</Box>
-		{unread > 0 && <Badge bg={!userMentions && 'neutral-700'} primary flexShrink={0}>{unread}</Badge>}
+		{unread > 0 && <Badge variant={ variant } flexShrink={0}>{unread}</Badge>}
 	</Box>;
 
 	return <SideBarItemTemplate
