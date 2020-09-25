@@ -1,8 +1,8 @@
 import Settings from '../../../../models/server/models/Settings';
-import { Notifications } from '../../../../notifications/server';
 import { CONSTANTS } from '../../../lib';
 import Permissions from '../../../../models/server/models/Permissions';
 import { clearCache } from '../../functions/hasPermission';
+import { Streamer } from '../../../../../server/sdk';
 
 Permissions.on('change', ({ clientAction, id, data, diff }) => {
 	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
@@ -22,11 +22,7 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 
 	clearCache();
 
-	Notifications.notifyLoggedInThisInstance(
-		'permissions-changed',
-		clientAction,
-		data,
-	);
+	Streamer.sendPermission({ clientAction, data });
 
 	if (data.level && data.level === CONSTANTS.SETTINGS_LEVEL) {
 		// if the permission changes, the effect on the visible settings depends on the role affected.
@@ -36,10 +32,6 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 		if (!setting) {
 			return;
 		}
-		Notifications.notifyLoggedInThisInstance(
-			'private-settings-changed',
-			'updated',
-			setting,
-		);
+		Streamer.sendPrivateSetting({ clientAction: 'updated', setting });
 	}
 });

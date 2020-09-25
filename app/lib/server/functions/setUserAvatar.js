@@ -4,7 +4,7 @@ import { HTTP } from 'meteor/http';
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload';
 import { Users } from '../../../models';
-import { Notifications } from '../../../notifications';
+import { Streamer } from '../../../../server/sdk';
 
 export const setUserAvatar = function(user, dataURI, contentType, service) {
 	let encoding;
@@ -64,7 +64,7 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 	fileStore.insert(file, buffer, (err, result) => {
 		Meteor.setTimeout(function() {
 			Users.setAvatarData(user._id, service, result.etag);
-			Notifications.notifyLogged('updateAvatar', { username: user.username, etag: result.etag });
+			Streamer.sendUserAvatarUpdate({ username: user.username, etag: result.etag });
 		}, 500);
 	});
 };

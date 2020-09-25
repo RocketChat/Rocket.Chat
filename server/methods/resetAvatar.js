@@ -4,8 +4,8 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { FileUpload } from '../../app/file-upload';
 import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings';
-import { Notifications } from '../../app/notifications';
 import { hasPermission } from '../../app/authorization/server';
+import { Streamer } from '../sdk';
 
 Meteor.methods({
 	resetAvatar(userId) {
@@ -43,10 +43,7 @@ Meteor.methods({
 
 		FileUpload.getStore('Avatars').deleteByName(user.username);
 		Users.unsetAvatarData(user._id);
-		Notifications.notifyLogged('updateAvatar', {
-			username: user.username,
-			etag: null,
-		});
+		Streamer.sendUserAvatarUpdate({ username: user.username, etag: null });
 	},
 });
 

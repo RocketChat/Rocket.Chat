@@ -2,6 +2,7 @@ import { Settings } from '../../../app/models/server';
 import { Notifications } from '../../../app/notifications/server';
 import { hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { SettingsEvents } from '../../../app/settings/server/functions/settings';
+import { Streamer } from '../../sdk';
 
 Settings.on('change', ({ clientAction, id, data, diff }) => {
 	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
@@ -29,7 +30,7 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 			if (setting.public === true) {
 				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
 			}
-			Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, setting);
+			Streamer.sendPrivateSetting({ clientAction, setting });
 			break;
 		}
 
@@ -39,7 +40,7 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 			if (setting && setting.public === true) {
 				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, { _id: id });
 			}
-			Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, { _id: id });
+			Streamer.sendPrivateSetting({ clientAction, setting: { _id: id } });
 			break;
 		}
 	}

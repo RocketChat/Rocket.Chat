@@ -24,6 +24,34 @@ export class Streamer extends ServiceClass implements IStreamer {
 		]);
 	}
 
+	sendPermission({ clientAction, data }: any): void {
+		this.streamLogged.emitWithoutBroadcast('permissions-changed', [
+			clientAction,
+			data,
+		]);
+	}
+
+	sendPrivateSetting({ clientAction, setting }: any): void {
+		this.streamLogged.emitWithoutBroadcast('private-settings-changed', [
+			clientAction,
+			setting,
+		]);
+	}
+
+	sendUserAvatarUpdate({ username, etag }: { username: string; etag?: string }): void {
+		this.streamLogged.emit('updateAvatar', [
+			username,
+			etag,
+		]);
+	}
+
+	sendRoomAvatarUpdate({ rid, etag }: { rid: string; etag?: string }): void {
+		this.streamLogged.emit('updateAvatar', [
+			rid,
+			etag,
+		]);
+	}
+
 	notifyAll(eventName: string, ...args: any[]): void {
 		console.log('notifyAll', eventName, args);
 	}
