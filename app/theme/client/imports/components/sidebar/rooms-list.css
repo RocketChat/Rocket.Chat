@@ -1,4 +1,5 @@
 .rooms-list {
+	display: flex;
 	position: relative;
 
 	overflow-x: hidden;

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { HTML } from 'meteor/htmljs';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -11,7 +12,7 @@ import { Users } from '../../models';
 import { createTemplateForComponent } from '../../../client/reactAdapters';
 
 createTemplateForComponent('sidebarHeader', () => import('../../../client/components/sidebar/Header'));
-createTemplateForComponent('sidebarChats', () => import('../../../client/components/sidebar/Chats'));
+createTemplateForComponent('sidebarChats', () => import('../../../client/components/sidebar/Chats'), { renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }) });// eslint-disable-line new-cap
 
 Template.sideNav.helpers({
 	flexTemplate() {
