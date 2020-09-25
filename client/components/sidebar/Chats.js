@@ -1,8 +1,9 @@
 
-import { Sidebar, Box, Badge, Scrollable } from '@rocket.chat/fuselage';
+import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { VariableSizeList as List } from 'react-window';
+import { VariableSizeList as List, areEqual } from 'react-window';
+import memoize from 'memoize-one';
 
 import { ChatSubscription } from '../../../app/models';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -15,6 +16,7 @@ import Condensed from './Condensed';
 import Extended from './Extended';
 import Medium from './Medium';
 import RoomAvatar from '../basic/avatar/RoomAvatar';
+import { useSession } from '../../contexts/SessionContext';
 
 const query = {};
 
@@ -42,8 +44,27 @@ const itemSizeMap = (sidebarViewMode) => {
 	}
 };
 
+const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate) => ({
+	items,
+	extended,
+	t,
+	SideBarItemTemplate,
+	AvatarTemplate,
+}));
+
+const Row = React.memo(({ data, index, style }) => {
+	const { extended, items, t, SideBarItemTemplate, AvatarTemplate } = data;
+	const item = items[index];
+	if (typeof item === 'string') {
+		return <Sidebar.Section.Title style={style}>{t(item)}</Sidebar.Section.Title>;
+	}
+	return <SideBarItemTemplateWithData style={style} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+});
+
 export default () => {
 	const t = useTranslation();
+
+	// const openedRoom = useSession('openedRoom');
 
 	const sortBy = useUserPreference('sidebarSortby');
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
@@ -159,39 +180,27 @@ export default () => {
 		listRef.current && listRef.current.resetAfterIndex(0);
 	}, [itemSize]);
 
+
+	const itemData = createItemData(items, extended, t, SideBarItemTemplate, AvatarTemplate);
+
+
 	return <Box h='full' w='full' ref={ref}>
 		<List
 			height={blockSize}
 			estimatedItemSize={itemSize}
 			itemCount={items.length}
 			itemSize={(index) => (typeof items[index] === 'string' ? 40 : itemSize)}
-			itemData={items}
-			overscanCount={3}
+			itemData={itemData}
+			overscanCount={25}
 			width='100%'
 			ref={listRef}
 		>
-			{({ data, index, style }) => {
-				if (typeof data[index] === 'string') {
-					return <Sidebar.Section.Title key={data[index]} style={style}>{t(data[index])}</Sidebar.Section.Title>;
-				}
-				const room = data[index];
-				return <SideBarItemTemplateWithData style={style} key={room._id} t={t} room={room} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
-			}}
+			{Row}
 		</List>
 	</Box>;
-
-	// return <Scrollable vertical smooth><Box>{[...groups.entries()].flatMap(([key, group]) => {
-	// 	if (group.size === 0) {
-	// 		return null;
-	// 	}
-	// 	return [
-	// 		<Sidebar.Section.Title key={key}>{t(key)}</Sidebar.Section.Title>,
-	// 		[...group].map((room) => <SideBarItemTemplateWithData key={room._id} t={t} room={room} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />)];
-	// })}</Box></Scrollable>;
 };
 
-const SideBarItemTemplateWithData = React.memo(({ room, extended, SideBarItemTemplate, AvatarTemplate, t, style }) => {
-// const rType = roomTypes.getConfig(room.t);
+const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style }) => {
 	const title = roomTypes.getRoomName(room.t, room);
 	const icon = <Sidebar.Item.Icon name={roomTypes.getIcon(room)}/>;
 	const href = roomTypes.getRouteLink(room.t, room);
@@ -211,6 +220,7 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, SideBarItemTem
 
 	return <SideBarItemTemplate
 		is='a'
+		selected={selected}
 		href={href}
 		title={title}
 		time={lastMessage?.ts}
@@ -221,6 +231,9 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, SideBarItemTem
 	/>;
 }, function areEqual(prevProps, nextProps) {
 	if (prevProps.extended !== nextProps.extended) {
+		return false;
+	}
+	if (prevProps.selected !== nextProps.selected) {
 		return false;
 	}
 	if (prevProps.SideBarItemTemplate !== nextProps.SideBarItemTemplate) {
