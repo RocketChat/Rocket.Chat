@@ -23,15 +23,6 @@ export const roomAccessValidators = [
 			return true;
 		}
 	},
-	async function(room, user) {
-		if (!room || !user) {
-			return;
-		}
-
-		if (user.type === 'app') {
-			return true;
-		}
-	},
 ];
 
 export const canAccessRoomAsync = async (room, user, extraData) => {

@@ -14,8 +14,9 @@ Meteor.methods({
 		}
 
 		const room = Meteor.call('canAccessRoom', roomId, Meteor.userId());
+		const user = Meteor.user();
 
-		if (!room) {
+		if (user && user.type !== 'app' && !room) {
 			return false;
 		}
 
@@ -65,7 +66,6 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		const user = Meteor.user();
 		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,
