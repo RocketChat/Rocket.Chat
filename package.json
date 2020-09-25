@@ -150,7 +150,7 @@
 		"apn": "2.2.0",
 		"archiver": "^3.1.1",
 		"arraybuffer-to-string": "^1.0.2",
-		"atlassian-crowd": "^0.5.0",
+		"atlassian-crowd-patched": "^0.5.1",
 		"autolinker": "^1.8.3",
 		"aws-sdk": "^2.735.0",
 		"bad-words": "^3.0.3",
