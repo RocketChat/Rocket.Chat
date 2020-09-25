@@ -22,6 +22,10 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 
 			SettingsEvents.emit('change-setting', setting, value);
 
+			if (setting.hidden) {
+				return;
+			}
+
 			if (setting.public === true) {
 				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
 			}
