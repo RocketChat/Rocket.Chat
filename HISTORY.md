@@ -1,6 +1,27 @@
 
 # 3.7.0 (Under Release Candidate Process)
 
+## 3.7.0-rc.2
+`2020-09-25  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Federation issues ([#18978](https://github.com/RocketChat/Rocket.Chat/pull/18978))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Obbey to settings properties ([#19020](https://github.com/RocketChat/Rocket.Chat/pull/19020))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@alansikora](https://github.com/alansikora)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.7.0-rc.1
 `2020-09-23  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
@@ -68,7 +89,7 @@
 
 - **ENTERPRISE:** Omnichannel service status switching to unavailable ([#18835](https://github.com/RocketChat/Rocket.Chat/pull/18835))
 
-- API call users.setStatus does not trigger status update of clients ([#18961](https://github.com/RocketChat/Rocket.Chat/pull/18961))
+- API call users.setStatus does not trigger status update of clients ([#18961](https://github.com/RocketChat/Rocket.Chat/pull/18961) by [@FelipeParreira](https://github.com/FelipeParreira))
 
   Notify logged users via WebSockets message when a user changes status via REST API.
 
@@ -80,7 +101,7 @@
 
 - Custom fields required if minLength set and no text typed. ([#18838](https://github.com/RocketChat/Rocket.Chat/pull/18838))
 
-- Deactivate users that are the last owner of a room using REST API ([#18864](https://github.com/RocketChat/Rocket.Chat/pull/18864))
+- Deactivate users that are the last owner of a room using REST API ([#18864](https://github.com/RocketChat/Rocket.Chat/pull/18864) by [@FelipeParreira](https://github.com/FelipeParreira))
 
   Allow for user deactivation through REST API (even if user is the last owner of a room)
 
@@ -98,13 +119,13 @@
 
 - IE11 support livechat widget ([#18850](https://github.com/RocketChat/Rocket.Chat/pull/18850))
 
-- If there is `ufs` somewhere in url the request to api always returns 404 ([#18874](https://github.com/RocketChat/Rocket.Chat/pull/18874))
+- If there is `ufs` somewhere in url the request to api always returns 404 ([#18874](https://github.com/RocketChat/Rocket.Chat/pull/18874) by [@FelipeParreira](https://github.com/FelipeParreira))
 
 - Ignore User action from user card ([#18866](https://github.com/RocketChat/Rocket.Chat/pull/18866))
 
 - Jitsi call start updating subscriptions ([#18837](https://github.com/RocketChat/Rocket.Chat/pull/18837))
 
-- Non-upload requests being passed to UFS proxy middleware ([#18931](https://github.com/RocketChat/Rocket.Chat/pull/18931))
+- Non-upload requests being passed to UFS proxy middleware ([#18931](https://github.com/RocketChat/Rocket.Chat/pull/18931) by [@FelipeParreira](https://github.com/FelipeParreira))
 
   Avoid non-upload request to be caught by UFS proxy middleware.
 
@@ -114,7 +135,7 @@
 
 - PDF not rendering ([#18956](https://github.com/RocketChat/Rocket.Chat/pull/18956))
 
-- Purged threads still show as unread ([#18944](https://github.com/RocketChat/Rocket.Chat/pull/18944))
+- Purged threads still show as unread ([#18944](https://github.com/RocketChat/Rocket.Chat/pull/18944) by [@FelipeParreira](https://github.com/FelipeParreira))
 
   Remove threads from subscription (and update counter) when messages are purged (or threads are disabled).
 
@@ -194,6 +215,7 @@
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
+- [@FelipeParreira](https://github.com/FelipeParreira)
 - [@Karting06](https://github.com/Karting06)
 - [@d-sko](https://github.com/d-sko)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
@@ -204,7 +226,6 @@
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
-- [@FelipeParreira](https://github.com/FelipeParreira)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@diegolmello](https://github.com/diegolmello)
@@ -233,13 +254,13 @@
 
 - Create Custom OAuth services from environment variables ([#17377](https://github.com/RocketChat/Rocket.Chat/pull/17377) by [@mrtndwrd](https://github.com/mrtndwrd))
 
-- Deactivate users that are the last owner of a room using REST API ([#18864](https://github.com/RocketChat/Rocket.Chat/pull/18864))
+- Deactivate users that are the last owner of a room using REST API ([#18864](https://github.com/RocketChat/Rocket.Chat/pull/18864) by [@FelipeParreira](https://github.com/FelipeParreira))
 
   Allow for user deactivation through REST API (even if user is the last owner of a room)
 
 - Ignore User action from user card ([#18866](https://github.com/RocketChat/Rocket.Chat/pull/18866))
 
-- invite-all-from and invite-all-to commands don't work with multibyte room names ([#18919](https://github.com/RocketChat/Rocket.Chat/pull/18919))
+- invite-all-from and invite-all-to commands don't work with multibyte room names ([#18919](https://github.com/RocketChat/Rocket.Chat/pull/18919) by [@FelipeParreira](https://github.com/FelipeParreira))
 
   Fix slash commands (invite-all-from and invite-all-to) to accept  multi-byte room names.
 
@@ -251,12 +272,12 @@
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
+- [@FelipeParreira](https://github.com/FelipeParreira)
 - [@mrtndwrd](https://github.com/mrtndwrd)
 - [@wreiske](https://github.com/wreiske)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
-- [@FelipeParreira](https://github.com/FelipeParreira)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@sampaiodiego](https://github.com/sampaiodiego)
