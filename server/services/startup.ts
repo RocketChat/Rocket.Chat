@@ -6,4 +6,6 @@ import { Authorization } from './authorization/service';
 import { Streamer } from './streamer/service';
 
 api.registerService(new Authorization(MongoInternals.defaultRemoteCollectionDriver().mongo.db));
-api.registerService(new Streamer(Meteor.Streamer));
+
+// TODO how to make typescript know that "Meteor.Streamer" actually exists?
+api.registerService(new Streamer((Meteor as any).Streamer));
