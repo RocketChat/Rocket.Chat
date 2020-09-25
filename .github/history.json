@@ -50030,6 +50030,36 @@
           ]
         }
       ]
+    },
+    "3.7.0-rc.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.18.0-beta.3848",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19020",
+          "title": "Obbey to settings properties",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.6.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18978",
+          "title": "[FIX] Federation issues",
+          "userLogin": "alansikora",
+          "milestone": "3.6.3",
+          "contributors": [
+            "alansikora"
+          ]
+        }
+      ]
     }
   }
 }
