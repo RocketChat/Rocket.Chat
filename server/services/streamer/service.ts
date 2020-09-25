@@ -52,6 +52,12 @@ export class Streamer extends ServiceClass implements IStreamer {
 		]);
 	}
 
+	sendRoleUpdate(update: Record<string, any>): void {
+		this.streamLogged.emit('roles-change', [
+			update,
+		]);
+	}
+
 	notifyAll(eventName: string, ...args: any[]): void {
 		console.log('notifyAll', eventName, args);
 	}

@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { Notifications } from '../../../notifications/server';
 import { hasPermission } from '../functions/hasPermission';
 import { rolesStreamer } from '../lib/streamer';
+import { Streamer } from '../../../../server/sdk';
 
 Meteor.methods({
 	'authorization:saveRole'(roleData) {
@@ -27,7 +27,7 @@ Meteor.methods({
 
 		const update = Roles.createOrUpdate(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
 		if (settings.get('UI_DisplayRoles')) {
-			Notifications.notifyLogged('roles-change', {
+			Streamer.sendRoleUpdate({
 				type: 'changed',
 				_id: roleData.name,
 			});

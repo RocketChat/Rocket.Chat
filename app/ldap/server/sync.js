@@ -8,7 +8,6 @@ import LDAP from './ldap';
 import { callbacks } from '../../callbacks/server';
 import { RocketChatFile } from '../../file';
 import { settings } from '../../settings';
-import { Notifications } from '../../notifications';
 import { Users, Roles, Rooms, Subscriptions } from '../../models';
 import { Logger } from '../../logger';
 import { _setRealName, _setUsername } from '../../lib';
@@ -265,7 +264,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 
 		const del = Roles.removeUserRoles(user._id, roleName);
 		if (settings.get('UI_DisplayRoles') && del) {
-			Notifications.notifyLogged('roles-change', {
+			Streamer.sendRoleUpdate({
 				type: 'removed',
 				_id: roleName,
 				u: {
@@ -413,7 +412,7 @@ export function syncUserData(user, ldapUser, ldap) {
 		for (const roleName of userRoles) {
 			const add = Roles.addUserRoles(user._id, roleName);
 			if (settings.get('UI_DisplayRoles') && add) {
-				Notifications.notifyLogged('roles-change', {
+				Streamer.sendRoleUpdate({
 					type: 'added',
 					_id: roleName,
 					u: {
