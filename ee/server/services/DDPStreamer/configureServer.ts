@@ -1,9 +1,14 @@
+import { EventEmitter } from 'events';
+
 import { DDP_EVENTS } from './constants';
-import { Account, Presence } from '../../../../server/sdk';
+import { Account, Presence, MeteorService } from '../../../../server/sdk';
 import { USER_STATUS } from '../../../../definition/UserStatus';
 import { Server } from './Server';
+import { AutoUpdateRecord } from '../../../../server/sdk/types/IMeteor';
 
 export const server = new Server();
+
+export const events = new EventEmitter();
 
 // TODO: remove, this was replaced by stream-notify-user/[user-id]/userData
 // server.subscribe('userData', async function(publication) {
@@ -27,8 +32,27 @@ server.publish('meteor.loginServiceConfiguration', function(pub) {
 	pub.ready();
 });
 
-server.publish('meteor_autoupdate_clientVersions', function(pub) {
-	// TODO implement to be compatible with meteor's web client
+const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
+
+MeteorService.getLastAutoUpdateClientVersions().then((records) => {
+	records.forEach((record) => autoUpdateRecords.set(record._id, record));
+});
+
+const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
+server.publish(autoUpdateCollection, function(pub) {
+	autoUpdateRecords.forEach((record) => pub.added(autoUpdateCollection, record._id, record));
+
+	const fn = (record: any): void => {
+		autoUpdateRecords.set(record._id, record);
+		pub.changed(autoUpdateCollection, record._id, record);
+	};
+
+	events.on('meteor.autoUpdateClientVersionChanged', fn);
+
+	pub.once('stop', () => {
+		events.removeListener('meteor.autoUpdateClientVersionChanged', fn);
+	});
+
 	pub.ready();
 });
 

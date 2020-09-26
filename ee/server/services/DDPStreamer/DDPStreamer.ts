@@ -9,6 +9,7 @@ import { Client, MeteorClient } from './Client';
 // import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
 import { isEmpty } from './lib/utils';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
+import { events } from './configureServer';
 
 const {
 	PORT: port = 4000,
@@ -245,6 +246,10 @@ export class DDPStreamer extends ServiceClass {
 		// role(payload) {
 		this.onEvent('role', (payload): void => {
 			Streamer.streamRoles.emit('roles', payload);
+		});
+
+		this.onEvent('meteor.autoUpdateClientVersionChanged', ({ record }): void => {
+			events.emit('meteor.autoUpdateClientVersionChanged', record);
 		});
 	}
 }

@@ -122,4 +122,26 @@ export class Server extends EventEmitter {
 			this.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.READY, [DDP_EVENTS.SUBSCRIPTIONS]: [packet.id] }),
 		);
 	}
+
+	added(client: Client, collection: string, id: string, fields: any): void {
+		return client.send(
+			this.serialize({
+				[DDP_EVENTS.MSG]: DDP_EVENTS.ADDED,
+				[DDP_EVENTS.COLLECTION]: collection,
+				[DDP_EVENTS.ID]: id,
+				[DDP_EVENTS.FIELDS]: fields,
+			}),
+		);
+	}
+
+	changed(client: Client, collection: string, id: string, fields: any): void {
+		return client.send(
+			this.serialize({
+				[DDP_EVENTS.MSG]: DDP_EVENTS.CHANGED,
+				[DDP_EVENTS.COLLECTION]: collection,
+				[DDP_EVENTS.ID]: id,
+				[DDP_EVENTS.FIELDS]: fields,
+			}),
+		);
+	}
 }

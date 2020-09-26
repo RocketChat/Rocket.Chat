@@ -16,5 +16,8 @@ module.exports = {
 		script: app.script || `ts-node ${ app.name }/service.ts`,
 		watch: app.watch || ['.', '../broker.ts', '../../../server/sdk'],
 		instances: 1,
+		env: {
+			MOLECULER_LOG_LEVEL: 'info',
+		},
 	})),
 };

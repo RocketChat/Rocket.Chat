@@ -30,6 +30,14 @@ export class Publication extends EventEmitter {
 		this.emit('stop', this.client, this.packet);
 	}
 
+	added(collection: string, id: string, fields: any): void {
+		this.server.added(this.client, collection, id, fields);
+	}
+
+	changed(collection: string, id: string, fields: any): void {
+		this.server.changed(this.client, collection, id, fields);
+	}
+
 	get uid(): string {
 		return this.client.uid;
 	}

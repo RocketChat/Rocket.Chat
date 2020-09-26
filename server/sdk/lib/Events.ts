@@ -7,6 +7,7 @@ import { IRoom } from '../../../definition/IRoom';
 import { ISetting } from '../../../definition/ISetting';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IUser } from '../../../definition/IUser';
+import { AutoUpdateRecord } from '../types/IMeteor';
 
 export type BufferList = ReturnType<MessagePack['encode']>;
 
@@ -22,4 +23,5 @@ export type EventSignatures = {
 	'user.name'(data: { action: string; user: Partial<IUser> }): void;
 	'role'(data: {type: 'changed' | 'removed' } & Partial<IRole>): void;
 	'license.module'(data: {module: string; valid: boolean}): void;
+	'meteor.autoUpdateClientVersionChanged'(data: {record: AutoUpdateRecord}): void;
 }
