@@ -273,7 +273,6 @@ export class Users extends Base {
 
 		const options = {
 			fields: {
-				name: 1,
 				username: 1,
 				phone: 1,
 				customFields: 1,
@@ -281,6 +280,19 @@ export class Users extends Base {
 				livechat: 1,
 			},
 		};
+
+		switch (settings.get('Livechat_show_agent_info')) {
+			case 'name':
+				options.fields.name = 1;
+				break;
+			case 'nickname':
+				options.fields.nickname = 1;
+				break;
+			case 'none':
+				break;
+			default:
+				break;
+		}
 
 		if (settings.get('Livechat_show_agent_email')) {
 			options.fields.emails = 1;

@@ -112,7 +112,7 @@ Meteor.startup(function() {
 	});
 
 	settings.add('Livechat_show_agent_info', true, {
-		type: 'boolean',
+		type: 'string',
 		group: 'Omnichannel',
 		section: 'Livechat',
 		public: true,

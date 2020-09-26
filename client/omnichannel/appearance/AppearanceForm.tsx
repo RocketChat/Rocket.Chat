@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import React, { FC, FormEvent } from 'react';
-import { Box, Field, TextInput, ToggleSwitch, Accordion, FieldGroup, InputBox, TextAreaInput, NumberInput } from '@rocket.chat/fuselage';
+import React, { FC, FormEvent, useMemo } from 'react';
+import { Box, Field, TextInput, ToggleSwitch, Accordion, FieldGroup, InputBox, TextAreaInput, NumberInput, Select, SelectOptions } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -9,7 +9,7 @@ type AppearanceFormProps = {
 	values: {
 		Livechat_title?: string;
 		Livechat_title_color?: string;
-		Livechat_show_agent_info?: boolean;
+		Livechat_show_agent_info?: string;
 		Livechat_show_agent_email?: boolean;
 		Livechat_display_offline_form?: boolean;
 		Livechat_offline_form_unavailable?: string;
@@ -101,6 +101,12 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 		handleLivechat_message_character_limit && handleLivechat_message_character_limit(Number(value) < 0 ? 0 : value);
 	});
 
+	const conditionOptions: SelectOptions = useMemo(() => [
+		['none', t('None')],
+		['name', t('Name')],
+		['nickname', t('Nickname')],
+	], [t]);
+
 	return <Accordion>
 		<Accordion.Item defaultExpanded title={t('Livechat_online')}>
 			<FieldGroup>
@@ -128,12 +134,10 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 					</Field.Row>
 				</Field>
 				<Field>
-					<Box display='flex' flexDirection='row'>
-						<Field.Label >{t('Show_agent_info')}</Field.Label>
-						<Field.Row>
-							<ToggleSwitch checked={Livechat_show_agent_info} onChange={handleLivechat_show_agent_info}/>
-						</Field.Row>
-					</Box>
+					<Field.Label >{t('Show_agent_info')}</Field.Label>
+					<Field.Row>
+						<Select options={conditionOptions} value={Livechat_show_agent_info} onChange={handleLivechat_show_agent_info}/>
+					</Field.Row>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row'>
