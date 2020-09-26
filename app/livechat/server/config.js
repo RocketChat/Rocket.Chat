@@ -111,7 +111,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Allow_switching_departments',
 	});
 
-	settings.add('Livechat_show_agent_info', true, {
+	settings.add('Livechat_show_agent_info', 'none', {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Livechat',
