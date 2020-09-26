@@ -248,6 +248,10 @@ export class DDPStreamer extends ServiceClass {
 			Streamer.streamRoles.emit('roles', payload);
 		});
 
+		this.onEvent('meteor.loginServiceConfiguration', ({ action, record }): void => {
+			events.emit('meteor.loginServiceConfiguration', action, record);
+		});
+
 		this.onEvent('meteor.autoUpdateClientVersionChanged', ({ record }): void => {
 			events.emit('meteor.autoUpdateClientVersionChanged', record);
 		});

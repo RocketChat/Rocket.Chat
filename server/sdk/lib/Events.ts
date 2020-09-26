@@ -24,4 +24,5 @@ export type EventSignatures = {
 	'role'(data: {type: 'changed' | 'removed' } & Partial<IRole>): void;
 	'license.module'(data: {module: string; valid: boolean}): void;
 	'meteor.autoUpdateClientVersionChanged'(data: {record: AutoUpdateRecord}): void;
+	'meteor.loginServiceConfiguration'(data: {action: string; record: any}): void;
 }

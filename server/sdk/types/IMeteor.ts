@@ -12,4 +12,6 @@ export type AutoUpdateRecord = {
 
 export interface IMeteor extends IServiceClass {
 	getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]>;
+
+	getLoginServiceConfiguration(): Promise<any[]>;
 }

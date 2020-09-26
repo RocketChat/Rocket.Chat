@@ -7,6 +7,7 @@ import { watchRoles } from './watchRoles';
 import { watchInquiries } from './watchInquiries';
 import { getConnection } from '../mongo';
 import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
+import { watchLoginServiceConfiguration } from './watchLoginServiceConfiguration';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -22,6 +23,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Rooms = db.collection('rocketchat_room');
 		const Settings = db.collection('rocketchat_settings');
 		const Inquiry = db.collection('rocketchat_livechat_inquiry');
+		const loginServiceConfiguration = db.collection('meteor_accounts_loginServiceConfiguration');
 
 		Users.watch([], { fullDocument: 'updateLookup' }).on('change', watchUsers);
 
@@ -58,5 +60,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 				},
 			},
 		}], { fullDocument: 'updateLookup' }).on('change', watchSettings);
+
+		loginServiceConfiguration.watch([{ $project: { 'fullDocument.secret': 0 } }], { fullDocument: 'updateLookup' }).on('change', watchLoginServiceConfiguration);
 	}
 }

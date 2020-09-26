@@ -38,6 +38,10 @@ export class Publication extends EventEmitter {
 		this.server.changed(this.client, collection, id, fields);
 	}
 
+	removed(collection: string, id: string): void {
+		this.server.removed(this.client, collection, id);
+	}
+
 	get uid(): string {
 		return this.client.uid;
 	}

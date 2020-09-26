@@ -27,8 +27,34 @@ export const events = new EventEmitter();
 // 	publication.ready();
 // });
 
-server.publish('meteor.loginServiceConfiguration', function(pub) {
-	// TODO implement to be compatible with meteor's web client
+const loginServiceConfigurationCollection = 'meteor_accounts_loginServiceConfiguration';
+const loginServiceConfigurationPublication = 'meteor.loginServiceConfiguration';
+const loginServices = new Map<string, any>();
+
+MeteorService.getLoginServiceConfiguration().then((records) => records.forEach((record) => loginServices.set(record._id, record)));
+
+server.publish(loginServiceConfigurationPublication, async function(pub) {
+	loginServices.forEach((record) => pub.added(loginServiceConfigurationCollection, record._id, record));
+
+	const fn = (action: string, record: any): void => {
+		switch (action) {
+			case 'added':
+			case 'changed':
+				loginServices.set(record._id, record);
+				pub[action](loginServiceConfigurationCollection, record._id, record);
+				break;
+			case 'removed':
+				loginServices.delete(record._id);
+				pub[action](loginServiceConfigurationCollection, record._id);
+		}
+	};
+
+	events.on(loginServiceConfigurationPublication, fn);
+
+	pub.once('stop', () => {
+		events.removeListener(loginServiceConfigurationPublication, fn);
+	});
+
 	pub.ready();
 });
 

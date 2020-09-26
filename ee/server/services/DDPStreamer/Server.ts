@@ -144,4 +144,14 @@ export class Server extends EventEmitter {
 			}),
 		);
 	}
+
+	removed(client: Client, collection: string, id: string): void {
+		return client.send(
+			this.serialize({
+				[DDP_EVENTS.MSG]: DDP_EVENTS.REMOVED,
+				[DDP_EVENTS.COLLECTION]: collection,
+				[DDP_EVENTS.ID]: id,
+			}),
+		);
+	}
 }

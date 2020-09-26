@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
@@ -28,5 +29,9 @@ export class MeteorService extends ServiceClass implements IMeteor {
 
 	async getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]> {
 		return [...autoUpdateRecords.values()];
+	}
+
+	async getLoginServiceConfiguration(): Promise<any[]> {
+		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
 	}
 }
