@@ -25,7 +25,9 @@ class NetworkBroker implements IBroker {
 
 	private localBroker = new LocalBroker();
 
-	private allowed = false;
+	private allowed: Promise<boolean>;
+
+	private started: Promise<void>;
 
 	private whitelist = {
 		events: ['license.module'],
@@ -34,10 +36,18 @@ class NetworkBroker implements IBroker {
 
 	constructor(broker: ServiceBroker) {
 		this.broker = broker;
+
+		api.setBroker(this);
+
+		this.started = this.broker.start();
+
+		this.allowed = License.hasLicense('scalability');
 	}
 
 	async call(method: string, data: any): Promise<any> {
-		if (!this.allowed && !this.whitelist.actions.includes(method)) {
+		await this.started;
+
+		if (!(this.whitelist.actions.includes(method) || await this.allowed)) {
 			return this.localBroker.call(method, data);
 		}
 
@@ -54,7 +64,7 @@ class NetworkBroker implements IBroker {
 		instance.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability') {
 				// Should we believe on the event only? Could it be a call from the CE version?
-				this.allowed = valid && await License.hasLicense('scalability');
+				this.allowed = valid ? License.hasLicense('scalability') : Promise.resolve(false);
 				// console.log('on license.module', { allowed: this.allowed });
 			}
 		});
@@ -74,14 +84,6 @@ class NetworkBroker implements IBroker {
 				}
 				return [event, (data: any[]): void => fn(...data)];
 			})),
-			started: async (): Promise<void> => {
-				if (name === 'license') {
-					return;
-				}
-
-				this.allowed = await License.hasLicense('scalability');
-				// console.log('on started', { allowed: this.allowed });
-			},
 		};
 
 		if (!service.events || !service.actions) {
@@ -111,8 +113,8 @@ class NetworkBroker implements IBroker {
 				nodeID: ctx.nodeID,
 				requestID: ctx.requestID,
 				broker: this,
-			}, (): any => {
-				if (this.allowed || this.whitelist.actions.includes(`${ name }.${ method }`)) {
+			}, async (): Promise<any> => {
+				if (this.whitelist.actions.includes(`${ name }.${ method }`) || await this.allowed) {
 					return i[method](...ctx.params);
 				}
 			});
@@ -122,7 +124,7 @@ class NetworkBroker implements IBroker {
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		if (!this.allowed && !this.whitelist.events.includes(event)) {
+		if (!(this.whitelist.events.includes(event) || await this.allowed)) {
 			return this.localBroker.broadcast(event, ...args);
 		}
 		return this.broker.broadcast(event, args);
@@ -253,6 +255,4 @@ const network = new ServiceBroker({
 	},
 });
 
-api.setBroker(new NetworkBroker(network));
-
-network.start();
+new NetworkBroker(network);
