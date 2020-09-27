@@ -8,7 +8,7 @@ import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { Streamer } from '../../../../server/sdk';
+import { StreamService } from '../../../../server/sdk';
 
 export const deleteUser = function(userId, confirmRelinquish = false) {
 	const user = Users.findOneById(userId, {
@@ -65,7 +65,7 @@ export const deleteUser = function(userId, confirmRelinquish = false) {
 		}
 
 		Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
-		Streamer.sendUserDeleted(userId);
+		StreamService.sendUserDeleted(userId);
 	}
 
 	// Remove user from users database

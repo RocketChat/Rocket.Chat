@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { Users, Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
-import { Streamer } from '../../../../server/sdk';
+import { StreamService } from '../../../../server/sdk';
 
 Meteor.methods({
 	'authorization:addUserToRole'(roleName, username, scope) {
@@ -50,7 +50,7 @@ Meteor.methods({
 		const add = Roles.addUserRoles(user._id, roleName, scope);
 
 		if (settings.get('UI_DisplayRoles')) {
-			Streamer.sendRoleUpdate({
+			StreamService.sendRoleUpdate({
 				type: 'added',
 				_id: roleName,
 				u: {

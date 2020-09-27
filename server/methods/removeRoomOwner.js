@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import { hasPermission, getUsersInRole } from '../../app/authorization';
 import { Users, Subscriptions, Messages } from '../../app/models';
 import { settings } from '../../app/settings';
-import { Streamer } from '../sdk';
+import { StreamService } from '../sdk';
 
 Meteor.methods({
 	removeRoomOwner(rid, userId) {
@@ -65,7 +65,7 @@ Meteor.methods({
 		});
 
 		if (settings.get('UI_DisplayRoles')) {
-			Streamer.sendRoleUpdate({
+			StreamService.sendRoleUpdate({
 				type: 'removed',
 				_id: 'owner',
 				u: {

@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
-import { Streamer } from '../../../../server/sdk';
+import { StreamService } from '../../../../server/sdk';
 
 Meteor.methods({
 	'authorization:removeUserFromRole'(roleName, username, scope) {
@@ -55,7 +55,7 @@ Meteor.methods({
 
 		const remove = Roles.removeUserRoles(user._id, roleName, scope);
 		if (settings.get('UI_DisplayRoles')) {
-			Streamer.sendRoleUpdate({
+			StreamService.sendRoleUpdate({
 				type: 'removed',
 				_id: roleName,
 				u: {

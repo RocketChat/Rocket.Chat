@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { slashCommands } from '../../utils';
-import { Notifications } from '../../notifications';
+import { StreamService } from '../../../server/sdk';
 
 /*
 * Help is a named function that will replace /join commands
@@ -39,10 +38,7 @@ slashCommands.add('help', function Help(command, params, item) {
 	},
 	];
 	keys.forEach((key) => {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
-			_id: Random.id(),
-			rid: item.rid,
-			ts: new Date(),
+		StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
 			msg: TAPi18n.__(Object.keys(key)[0], {
 				postProcess: 'sprintf',
 				sprintf: [key[Object.keys(key)[0]]],

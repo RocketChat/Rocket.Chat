@@ -5,7 +5,7 @@ import { Users } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
-import { Streamer } from '../../../../server/sdk';
+import { StreamService } from '../../../../server/sdk';
 
 // mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
 const STATUS_MAP = {
@@ -29,7 +29,7 @@ export const _setStatusTextPromise = async function(userId, statusText) {
 	await UsersRaw.updateStatusText(user._id, statusText);
 
 	const { _id: uid, username } = user;
-	Streamer.sendUserStatus({
+	StreamService.sendUserStatus({
 		uid,
 		username,
 		status: STATUS_MAP[user.status],
@@ -61,7 +61,7 @@ export const _setStatusText = function(userId, statusText) {
 	user.statusText = statusText;
 
 	const { _id: uid, username } = user;
-	Streamer.sendUserStatus({
+	StreamService.sendUserStatus({
 		uid,
 		username,
 		status: STATUS_MAP[user.status],

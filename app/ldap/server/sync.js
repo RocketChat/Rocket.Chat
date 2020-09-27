@@ -14,7 +14,7 @@ import { _setRealName, _setUsername } from '../../lib';
 import { templateVarHandler } from '../../utils';
 import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
-import { Streamer } from '../../../server/sdk';
+import { StreamService } from '../../../server/sdk';
 
 
 export const logger = new Logger('LDAPSync', {});
@@ -264,7 +264,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 
 		const del = Roles.removeUserRoles(user._id, roleName);
 		if (settings.get('UI_DisplayRoles') && del) {
-			Streamer.sendRoleUpdate({
+			StreamService.sendRoleUpdate({
 				type: 'removed',
 				_id: roleName,
 				u: {
@@ -365,7 +365,7 @@ function syncUserAvatar(user, ldapUser) {
 			fileStore.insert(file, rs, (err, result) => {
 				Meteor.setTimeout(function() {
 					Users.setAvatarData(user._id, 'ldap', result.etag);
-					Streamer.sendUserAvatarUpdate({ username: user.username, etag: result.etag });
+					StreamService.sendUserAvatarUpdate({ username: user.username, etag: result.etag });
 				}, 500);
 			});
 		});
@@ -412,7 +412,7 @@ export function syncUserData(user, ldapUser, ldap) {
 		for (const roleName of userRoles) {
 			const add = Roles.addUserRoles(user._id, roleName);
 			if (settings.get('UI_DisplayRoles') && add) {
-				Streamer.sendRoleUpdate({
+				StreamService.sendRoleUpdate({
 					type: 'added',
 					_id: roleName,
 					u: {

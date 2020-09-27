@@ -1,6 +1,8 @@
 import { EJSON } from 'meteor/ejson';
 import { Db } from 'mongodb';
 
+import { IStreamer } from './sdk/types/IStreamService';
+
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {
 	namespace Random {
@@ -38,10 +40,7 @@ declare module 'meteor/meteor' {
 			details?: string | undefined | Record<string, string>;
 		}
 
-		interface Streamer {
-			allowWrite(allow: string): void;
-			allowRead(allow: string): void;
-		}
+		const Streamer: IStreamer;
 
 		const server: any;
 

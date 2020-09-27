@@ -5,7 +5,7 @@ import { FileUpload } from '../../app/file-upload';
 import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings';
 import { hasPermission } from '../../app/authorization/server';
-import { Streamer } from '../sdk';
+import { StreamService } from '../sdk';
 
 Meteor.methods({
 	resetAvatar(userId) {
@@ -43,7 +43,7 @@ Meteor.methods({
 
 		FileUpload.getStore('Avatars').deleteByName(user.username);
 		Users.unsetAvatarData(user._id);
-		Streamer.sendUserAvatarUpdate({ username: user.username, etag: null });
+		StreamService.sendUserAvatarUpdate({ username: user.username, etag: null });
 	},
 });
 

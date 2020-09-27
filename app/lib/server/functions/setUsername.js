@@ -7,7 +7,7 @@ import { Users, Invites } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
-import { Streamer } from '../../../../server/sdk';
+import { StreamService } from '../../../../server/sdk';
 
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
@@ -76,7 +76,7 @@ export const _setUsername = function(userId, u, fullUser) {
 		}
 	}
 
-	Streamer.sendUserNameChanged({
+	StreamService.sendUserNameChanged({
 		_id: user._id,
 		name: user.name,
 		username: user.username,

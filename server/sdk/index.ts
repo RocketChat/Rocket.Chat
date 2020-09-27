@@ -6,7 +6,7 @@ import { IServiceContext } from './types/ServiceClass';
 import { IPresence } from './types/IPresence';
 import { IAccount } from './types/IAccount';
 import { ILicense } from './types/ILicense';
-import { IStreamer } from './types/IStreamer';
+import { IStreamService } from './types/IStreamService';
 import { IMeteor } from './types/IMeteor';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -14,7 +14,7 @@ export const Authorization = proxify<IAuthorization>('authorization');
 export const Presence = proxify<IPresence>('presence');
 export const Account = proxify<IAccount>('accounts');
 export const License = proxify<ILicense>('license');
-export const Streamer = proxify<IStreamer>('streamer');
+export const StreamService = proxify<IStreamService>('streamer');
 export const MeteorService = proxify<IMeteor>('meteor');
 
 export const asyncLocalStorage = new AsyncLocalStorage<IServiceContext>();

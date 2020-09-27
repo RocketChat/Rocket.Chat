@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Avatars, Messages } from '../../../models/server';
-import { Streamer } from '../../../../server/sdk';
+import { StreamService } from '../../../../server/sdk';
 
 export const setRoomAvatar = function(rid, dataURI, user) {
 	const fileStore = FileUpload.getStore('Avatars');
@@ -33,7 +33,7 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 			}
 			Rooms.setAvatarData(rid, 'upload', result.etag);
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
-			Streamer.sendRoomAvatarUpdate({ rid, etag: result.etag });
+			StreamService.sendRoomAvatarUpdate({ rid, etag: result.etag });
 		}, 500);
 	});
 };

@@ -4,7 +4,7 @@ import limax from 'limax';
 import { hasPermission } from '../../../authorization';
 import { RocketChatFile } from '../../../file';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
-import { Streamer } from '../../../../server/sdk';
+import { StreamService } from '../../../../server/sdk';
 
 Meteor.methods({
 	uploadEmojiCustom(binaryContent, contentType, emojiData) {
@@ -21,7 +21,7 @@ Meteor.methods({
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
 		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`), contentType);
 		ws.on('end', Meteor.bindEnvironment(() =>
-			Meteor.setTimeout(() => Streamer.sendUpdateCustomEmoji(emojiData), 500),
+			Meteor.setTimeout(() => StreamService.sendUpdateCustomEmoji(emojiData), 500),
 		));
 
 		rs.pipe(ws);

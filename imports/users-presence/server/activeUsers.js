@@ -1,7 +1,7 @@
 import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
 import { settings } from '../../../app/settings/server';
-import { Streamer } from '../../../server/sdk';
+import { StreamService } from '../../../server/sdk';
 
 // mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
 export const STATUS_MAP = {
@@ -20,7 +20,7 @@ export const setUserStatus = (user, status/* , statusConnection*/) => {
 
 	// since this callback can be called by only one instance in the cluster
 	// we need to broadcast the change to all instances
-	Streamer.sendUserStatus({
+	StreamService.sendUserStatus({
 		uid,
 		username,
 		status: STATUS_MAP[status],
