@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhscl/nodejs-8-rhel7
+FROM registry.access.redhat.com/ubi8/nodejs-12
 
 ENV RC_VERSION 3.7.0-develop
 
@@ -13,9 +13,9 @@ LABEL name="Rocket.Chat" \
       description="The Ultimate Open Source Web Chat Platform" \
       run="docker run -d --name ${NAME} ${IMAGE}"
 
-
-# This is ugly... But for some reason npm and node aren't available at this stage.
-ENV PATH /opt/rh/rh-nodejs8/root/usr/bin:/opt/app-root/src/node_modules/.bin/:/opt/app-root/src/.npm-global/bin/:/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+USER root
+RUN dnf install -y python38 && rm -rf /var/cache /var/log/dnf* /var/log/yum.*
+USER default
 
 RUN set -x \
  && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EBE9FD7F9D0414FD08104 \
@@ -31,10 +31,6 @@ COPY licenses /licenses
 VOLUME /opt/app-root/src/uploads
 
 WORKDIR /opt/app-root/src/bundle
-
-# Hack needed to force use of bundled library instead of system level outdated library
-# https://github.com/lovell/sharp/issues/892
-ENV LD_PRELOAD=/opt/app-root/src/bundle/programs/server/npm/node_modules/sharp/vendor/lib/libz.so
 
 ENV DEPLOY_METHOD=docker-redhat \
     NODE_ENV=production \
