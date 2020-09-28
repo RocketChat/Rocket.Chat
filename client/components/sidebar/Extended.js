@@ -10,6 +10,7 @@ const Extended = React.memo(({
 	actions,
 	href,
 	time,
+	menu,
 	menuOptions,
 	subtitle = '',
 	badges,
@@ -43,18 +44,13 @@ const Extended = React.memo(({
 				</Sidebar.Item.Wrapper>
 			</Box>
 		</Sidebar.Item.Content>
-		<Sidebar.Item.Container>
+		{ actions && <Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>
 				{ actions }
-				{ menuOptions && <Menu
-					square
-					small
-					color='neutral-700'
-					options={menuOptions}
-					renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
-				/>}
 			</Sidebar.Item.Actions>}
 		</Sidebar.Item.Container>
+		}
+		{menu && <Sidebar.Item.Menu>{menu}</Sidebar.Item.Menu>}
 	</Sidebar.Item>;
 });
 
