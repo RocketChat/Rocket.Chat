@@ -52,21 +52,8 @@ export const STREAM_NAMES = {
 	ROOMS_CHANGED: 'rooms-changed',
 	ROOM_DATA: 'room-data', // TODO both data are the same plx merge them
 
-
 	ROOM_MESSAGES: 'room-messages',
-	NOTIFY_ALL: 'notify-all',
-	NOTIFY_LOGGED: 'notify-logged',
-	NOTIFY_ROOM: 'notify-room',
-	NOTIFY_USER: 'notify-user',
 	PRESENCE: 'userpresence',
 
-	IMPORTERS: 'importers',
-	ROLES: 'roles',
-	APPS: 'apps',
-	CANNED_RESPONSES: 'canned-responses',
-	LIVECHAT_INQUIRY: 'livechat-inquiry-queue-observer',
-	LIVECHAT_ROOM: 'livechat-room',
-
-	NOTIFY_ROOM_USERS: 'notify-room-users',
 	'my-message': '__my_messages__',
 };

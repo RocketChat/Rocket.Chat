@@ -21,7 +21,7 @@ export class Client extends EventEmitter {
 
 	public wait = false;
 
-	public uid: string;
+	public userId: string;
 
 	constructor(
 		public ws: WebSocket,

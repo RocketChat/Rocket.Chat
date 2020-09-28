@@ -1,4 +1,4 @@
-import { IStreamer } from '../../sdk/types/IStreamService';
+import { IStreamer, StreamerClass } from '../../sdk/types/IStreamService';
 
 export class NotificationsModule {
 	private debug = false
@@ -34,8 +34,8 @@ export class NotificationsModule {
 	public readonly streamRoomData: IStreamer;
 
 	constructor(
-		private Streamer: IStreamer,
-		private RoomStreamer: IStreamer,
+		private Streamer: StreamerClass,
+		private RoomStreamer: StreamerClass,
 	) {
 		this.notifyUser = this.notifyUser.bind(this);
 

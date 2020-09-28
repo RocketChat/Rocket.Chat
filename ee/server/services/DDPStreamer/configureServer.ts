@@ -89,7 +89,7 @@ server.methods({
 			throw new Error('login error');
 		}
 
-		this.uid = result.uid;
+		this.userId = result.uid;
 
 		this.emit(DDP_EVENTS.LOGGED);
 
@@ -103,20 +103,20 @@ server.methods({
 		};
 	},
 	'UserPresence:setDefaultStatus'(status) {
-		const { uid } = this;
-		return Presence.setStatus(uid, status);
+		const { userId } = this;
+		return Presence.setStatus(userId, status);
 	},
 	'UserPresence:online'() {
-		const { uid, session } = this;
-		return Presence.setConnectionStatus(uid, USER_STATUS.ONLINE, session);
+		const { userId, session } = this;
+		return Presence.setConnectionStatus(userId, USER_STATUS.ONLINE, session);
 	},
 	'UserPresence:away'() {
-		const { uid, session } = this;
-		return Presence.setConnectionStatus(uid, USER_STATUS.AWAY, session);
+		const { userId, session } = this;
+		return Presence.setConnectionStatus(userId, USER_STATUS.AWAY, session);
 	},
 	'setUserStatus'(status, statusText) {
-		const { uid } = this;
-		return Presence.setStatus(uid, status, statusText);
+		const { userId } = this;
+		return Presence.setStatus(userId, status, statusText);
 	},
 });
 

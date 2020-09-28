@@ -8,26 +8,31 @@ export enum STATUS_MAP {
 	BUDY = 3,
 }
 
+type Publication = {
+	userId?: string;
+}
+type Rule = (this: Publication, eventName: string, ...args: any) => boolean | Promise<boolean>;
+
 export interface IStreamer {
 	serverOnly: boolean;
 
 	// eslint-disable-next-line @typescript-eslint/no-misused-new
-	new(name: string, options?: {retransmit: boolean}): IStreamer;
+	// new(name: string, options?: {retransmit?: boolean; retransmitToSelf?: boolean}): IStreamer;
 
-	allowEmit(allow: string): void;
+	allowEmit(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined;
 
-	allowWrite(allow: string): void;
+	allowWrite(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined;
 
-	allowWrite(allow: (this: {userId?: string}, eventName: string, ...args: any[]) => void): void;
-
-	allowRead(allow: string): void;
-
-	allowRead(allow: (this: {userId?: string}, eventName: string, ...args: any[]) => void): void;
+	allowRead(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined;
 
 	emit(event: string, ...data: any[]): void;
 
+	__emit(...data: any[]): void;
+
 	emitWithoutBroadcast(event: string, ...data: any[]): void;
 }
+
+export type StreamerClass = new (name: string, options?: {retransmit?: boolean; retransmitToSelf?: boolean}) => IStreamer;
 
 export interface IStreamService extends IServiceClass {
 	notifyAll(eventName: string, ...args: any[]): void;

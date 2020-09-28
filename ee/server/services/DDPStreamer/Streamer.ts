@@ -7,8 +7,9 @@ import { isEmpty } from './lib/utils';
 import { Publication } from './Publication';
 import { Client } from './Client';
 import { api } from '../../../../server/sdk/api';
+import { StreamerClass } from '../../../../server/sdk/types/IStreamService';
 
-type Rule = (this: Publication, eventName: string, ...args: any) => Promise<boolean>;
+type Rule = (this: Publication, eventName: string, ...args: any) => boolean | Promise<boolean>;
 
 interface IRules {
 	[k: string]: Rule;
@@ -40,12 +41,14 @@ export const publish = Symbol('publish');
 
 export const Streams = new Map();
 
-export class Stream extends EventEmitter {
+export class Stream extends EventEmitter implements StreamerClass {
 	subscriptionName: string;
 
-	// retransmit = true;
+	serverOnly: boolean;
 
-	// retransmitToSelf = false;
+	retransmit = true;
+
+	retransmitToSelf = false;
 
 	private subscriptionsByEventName = new Map<string, Set<ISubscription>>();
 
@@ -53,15 +56,17 @@ export class Stream extends EventEmitter {
 
 	private _allowWrite = {};
 
+	private _allowEmit = {};
+
 	constructor(
 		private name: string,
-		// { retransmit = true, retransmitToSelf = false }: {retransmit?: boolean; retransmitToSelf?: boolean } = {},
+		options: {retransmit: boolean; retransmitToSelf: boolean } = { retransmit: true, retransmitToSelf: false },
 	) {
 		super();
 
 		this.subscriptionName = `${ STREAM_NAMES.STREAMER_PREFIX }${ name }`;
-		// this.retransmit = retransmit;
-		// this.retransmitToSelf = retransmitToSelf;
+		this.retransmit = options.retransmit;
+		this.retransmitToSelf = options.retransmitToSelf;
 
 		// this.subscriptionsByEventName = new Map();
 
@@ -106,18 +111,22 @@ export class Stream extends EventEmitter {
 
 			if (eventName === 'logged') {
 				rules[_eventName] = async function(): Promise<boolean> {
-					return Boolean(this.uid);
+					return Boolean(this.userId);
 				};
 			}
 		};
 	}
 
-	allowRead(eventName: string | boolean | Rule, fn?: Rule): boolean | undefined {
+	allowRead(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined {
 		return this[allow](this._allowRead, 'allowRead')(eventName, fn);
 	}
 
-	allowWrite(eventName: string | boolean | Rule, fn?: Rule): boolean | undefined {
+	allowWrite(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined {
 		return this[allow](this._allowWrite, 'allowWrite')(eventName, fn);
+	}
+
+	allowEmit(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined {
+		return this[allow](this._allowEmit, 'allowEmit')(eventName, fn);
 	}
 
 	[isAllowed](rules: IRules, defaultPermission = false) {
@@ -269,7 +278,8 @@ export class Stream extends EventEmitter {
 		return super.emit(event, ...args);
 	}
 
-	// emitWithoutBroadcast(event: string, ...args: any[]): boolean {
-	// 	return this._emit(event, args, undefined, false);
-	// }
+	emitWithoutBroadcast(event: string, ...args: any[]): boolean {
+		// On microservices all emit needs to be broadcasted.
+		return this.emit(event, ...args);
+	}
 }

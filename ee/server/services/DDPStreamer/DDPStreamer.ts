@@ -10,6 +10,7 @@ import { Client, MeteorClient } from './Client';
 import { isEmpty } from './lib/utils';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { events } from './configureServer';
+import notifications from './streams/index';
 
 const {
 	PORT: port = 4000,
@@ -111,11 +112,11 @@ export class DDPStreamer extends ServiceClass {
 		// [STREAM_NAMES.LIVECHAT_INQUIRY]({ action, inquiry }) {
 		this.onEvent('livechat-inquiry-queue-observer', ({ action, inquiry }): void => {
 			if (!inquiry.department) {
-				Streamer.streamLivechatInquiry.emit('public', action, inquiry);
+				notifications.streamLivechatQueueData.emit('public', action, inquiry);
 				return;
 			}
-			Streamer.streamLivechatInquiry.emit(`department/${ inquiry.department }`, action, inquiry);
-			Streamer.streamLivechatInquiry.emit(inquiry._id, action, inquiry);
+			notifications.streamLivechatQueueData.emit(`department/${ inquiry.department }`, action, inquiry);
+			notifications.streamLivechatQueueData.emit(inquiry._id, action, inquiry);
 		});
 
 		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
@@ -144,7 +145,7 @@ export class DDPStreamer extends ServiceClass {
 			} = payload;
 			// Streamer.userpresence.emit(_id, status);
 			if (status) {
-				Streamer.notifyLogged.emit('user-status', [_id, username, STATUS_MAP[status], statusText]);
+				notifications.notifyLogged('user-status', [_id, username, STATUS_MAP[status], statusText]);
 			}
 			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user); // use this method
 		});
@@ -182,8 +183,9 @@ export class DDPStreamer extends ServiceClass {
 					break;
 			}
 
-			Streamer.notifyUser.emit(
-				`${ _id }/userData`,
+			_id && notifications.notifyUser(
+				_id,
+				'userData',
 				data,
 			);
 
@@ -196,7 +198,7 @@ export class DDPStreamer extends ServiceClass {
 				user: { _id, name, username },
 			} = payload;
 			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user);
-			Streamer.notifyLogged.emit('Users:NameChanged', { _id, name, username });
+			notifications.notifyLogged('Users:NameChanged', { _id, name, username });
 		});
 
 		// 'setting'() { },
@@ -206,13 +208,14 @@ export class DDPStreamer extends ServiceClass {
 				return;
 			}
 
-			Streamer.notifyUser.emit(
-				`${ subscription.u._id }/subscriptions-changed`,
+			notifications.notifyUser(
+				subscription.u._id,
+				'subscriptions-changed',
 				action,
 				subscription,
 			);
 
-			Streamer.notifyUser.__emit(subscription.u._id, action, subscription);
+			notifications.streamUser.__emit(subscription.u._id, action, subscription);
 
 			// RocketChat.Notifications.notifyUserInThisInstance(
 			// 	subscription.u._id,
@@ -233,8 +236,8 @@ export class DDPStreamer extends ServiceClass {
 			if (!room._id) {
 				return;
 			}
-			Streamer.notifyUser.__emit(room._id, action, room);
-			Streamer.streamRoomData.emit(room._id, action, room); // TODO REMOVE
+			notifications.streamUser.__emit(room._id, action, room);
+			notifications.streamRoomData.emit(room._id, action, room); // TODO REMOVE
 		});
 		// stream: {
 		// 	group: 'streamer',
@@ -245,7 +248,7 @@ export class DDPStreamer extends ServiceClass {
 		// },
 		// role(payload) {
 		this.onEvent('role', (payload): void => {
-			Streamer.streamRoles.emit('roles', payload);
+			notifications.streamRoles.emit('roles', payload);
 		});
 
 		this.onEvent('meteor.loginServiceConfiguration', ({ action, record }): void => {
@@ -254,6 +257,16 @@ export class DDPStreamer extends ServiceClass {
 
 		this.onEvent('meteor.autoUpdateClientVersionChanged', ({ record }): void => {
 			events.emit('meteor.autoUpdateClientVersionChanged', record);
+		});
+
+		this.onEvent('stream.ephemeralMessage', (uid, rid, message): void => {
+			notifications.notifyUser(uid, 'message', {
+				groupable: false,
+				...message,
+				_id: String(Date.now()),
+				rid,
+				ts: new Date(),
+			});
 		});
 	}
 }

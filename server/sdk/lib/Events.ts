@@ -25,4 +25,5 @@ export type EventSignatures = {
 	'license.module'(data: {module: string; valid: boolean}): void;
 	'meteor.autoUpdateClientVersionChanged'(data: {record: AutoUpdateRecord}): void;
 	'meteor.loginServiceConfiguration'(data: {action: string; record: any}): void;
+	'stream.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 }

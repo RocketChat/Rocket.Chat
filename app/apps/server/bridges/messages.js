@@ -1,7 +1,7 @@
 import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { StreamService } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 export class AppMessageBridge {
 	constructor(orch) {
@@ -50,7 +50,7 @@ export class AppMessageBridge {
 			return;
 		}
 
-		StreamService.sendEphemeralMessage(user.id, msg.rid, {
+		api.broadcast('stream.ephemeralMessage', user.id, msg.rid, {
 			...msg,
 		});
 	}
@@ -71,7 +71,7 @@ export class AppMessageBridge {
 		Users.findByIds(users, { fields: { _id: 1 } })
 			.fetch()
 			.forEach(({ _id }) =>
-				StreamService.sendEphemeralMessage(_id, room.id, {
+				api.broadcast('stream.ephemeralMessage', _id, room.id, {
 					...msg,
 				}),
 			);
