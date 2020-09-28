@@ -67,10 +67,7 @@ export function dispatchEvents(domains, events) {
 }
 
 export function dispatchEvent(domains, event) {
-	// Ensure the domain list is distinct to avoid excessive events
-	const distinctDomains = [...new Set(domains)].filter((domain) => domain === event.origin);
-
-	dispatchEvents(distinctDomains, [event]);
+	dispatchEvents([...new Set(domains)], [event]);
 }
 
 export function getUpload(domain, fileId) {
