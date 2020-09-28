@@ -7,15 +7,16 @@ import { css } from '@rocket.chat/css-in-js';
 
 import '../../../../app/ui-sidenav/client/toolbar';
 import { useOutsideClick } from '../../../hooks/useOutsideClick';
+import SearchList from '../SearchList';
 
 const Search = (props) => {
 	const [searchOpen, setSearchOpen] = useState(false);
 
-	const viewRef = useRef();
+	// const viewRef = useRef();
 
 	const handleCloseSearch = useMutableCallback(() => {
 		setSearchOpen(false);
-		viewRef.current && Blaze.remove(viewRef.current);
+		// viewRef.current && Blaze.remove(viewRef.current);
 	});
 
 	const handleSearch = useMutableCallback(() => {
@@ -24,19 +25,20 @@ const Search = (props) => {
 
 	const ref = useOutsideClick(handleCloseSearch);
 
-	useEffect(() => {
-		if (searchOpen) {
-			const renderSearch = async () => {
-				viewRef.current = ref.current && Blaze.renderWithData(Template.toolbar, { onClose: handleCloseSearch }, ref.current);
-			};
-			renderSearch();
-		}
-		return () => viewRef.current && Blaze.remove(viewRef.current);
-	}, [handleCloseSearch, ref, searchOpen]);
+	// useEffect(() => {
+	// 	if (searchOpen) {
+	// 		const renderSearch = async () => {
+	// 			viewRef.current = ref.current && Blaze.renderWithData(Template.toolbar, { onClose: handleCloseSearch }, ref.current);
+	// 		};
+	// 		renderSearch();
+	// 	}
+	// 	return () => viewRef.current && Blaze.remove(viewRef.current);
+	// }, [handleCloseSearch, ref, searchOpen]);
 
 	return <>
 		<Sidebar.TopBar.Action icon='magnifier' onClick={handleSearch} {...props}/>
-		{searchOpen && <Box position='absolute' w='full' p='x16' bg='neutral-200' className={[css`left: 0; top: 0;`]} ref={ref} />}
+		{searchOpen && <SearchList ref={ref} onClose={handleCloseSearch}/>}
+		{/* {searchOpen && <Box position='absolute' w='full' p='x16' bg='neutral-200' className={[css`left: 0; top: 0;`]} ref={ref} />} */}
 	</>;
 };
 
