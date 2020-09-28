@@ -9,6 +9,7 @@ import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../apps/server';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
@@ -225,7 +226,7 @@ export const normalizeAgent = (agentId) => {
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
 
-	Livechat.stream.emit(rid, {
+	notifications.streamLivechatRoom.emit(rid, {
 		type: 'agentData',
 		data: agent,
 	});

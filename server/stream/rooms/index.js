@@ -1,13 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { roomTypes } from '../../../app/utils';
-import { ROOM_DATA_STREAM } from '../../../app/utils/stream/constants';
+import notifications from '../../../app/notifications/server/lib/Notifications';
 
-export const roomDataStream = new Meteor.Streamer(ROOM_DATA_STREAM);
-
-roomDataStream.allowWrite('none');
-
-roomDataStream.allowRead(function(rid) {
+notifications.streamRoomData.allowRead(function(rid) {
 	try {
 		const room = Meteor.call('canAccessRoom', rid, this.userId);
 		if (!room) {
@@ -29,5 +25,5 @@ export function emitRoomDataEvent(id, data) {
 		return;
 	}
 
-	roomDataStream.emitWithoutBroadcast(id, data);
+	notifications.streamRoomData.emitWithoutBroadcast(id, data);
 }

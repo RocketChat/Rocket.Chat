@@ -7,6 +7,7 @@ import { Log } from 'meteor/logging';
 
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization/server';
+import notifications from '../../notifications/server/lib/Notifications';
 
 export const processString = function(string, date) {
 	let obj;
@@ -52,15 +53,13 @@ export const StdOut = new class extends EventEmitter {
 	}
 }();
 
-const stdoutStreamer = new Meteor.Streamer('stdout');
-stdoutStreamer.allowWrite('none');
-stdoutStreamer.allowRead(function() {
+notifications.streamStdout.allowRead(function() {
 	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
 });
 
 Meteor.startup(() => {
 	const handler = (string, item) => {
-		stdoutStreamer.emitWithoutBroadcast('stdout', {
+		notifications.streamStdout.emitWithoutBroadcast('stdout', {
 			...item,
 		});
 	};

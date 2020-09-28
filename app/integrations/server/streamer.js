@@ -1,11 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-
 import { hasAtLeastOnePermission } from '../../authorization/server';
 import { IntegrationHistory } from '../../models/server';
+import notifications from '../../notifications/server/lib/Notifications';
 
-export const integrationHistoryStreamer = new Meteor.Streamer('integrationHistory');
-integrationHistoryStreamer.allowWrite('none');
-integrationHistoryStreamer.allowRead(function() {
+notifications.streamIntegrationHistory.allowRead(function() {
 	return this.userId && hasAtLeastOnePermission(this.userId, [
 		'manage-outgoing-integrations',
 		'manage-own-outgoing-integrations',
@@ -19,11 +16,11 @@ IntegrationHistory.on('change', ({ clientAction, id, data, diff }) => {
 			if (!history && !history.integration) {
 				return;
 			}
-			integrationHistoryStreamer.emit(history.integration._id, { id, diff, type: clientAction });
+			notifications.streamIntegrationHistory.emit(history.integration._id, { id, diff, type: clientAction });
 			break;
 		}
 		case 'inserted': {
-			integrationHistoryStreamer.emit(data.integration._id, { data, type: clientAction });
+			notifications.streamIntegrationHistory.emit(data.integration._id, { data, type: clientAction });
 			break;
 		}
 	}

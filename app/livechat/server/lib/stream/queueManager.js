@@ -1,17 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-
 import { hasPermission } from '../../../../authorization/server';
 import { LivechatInquiry } from '../../../../models/server';
-import { LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER } from '../../../lib/stream/constants';
 import { RoutingManager } from '../RoutingManager';
+import notifications from '../../../../notifications/server/lib/Notifications';
 
-const queueDataStreamer = new Meteor.Streamer(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER);
-queueDataStreamer.allowWrite('none');
-queueDataStreamer.allowRead(function() {
+notifications.streamLivechatQueueData.allowRead(function() {
 	return this.userId ? hasPermission(this.userId, 'view-l-room') : false;
 });
 
-const emitQueueDataEvent = (event, data) => queueDataStreamer.emitWithoutBroadcast(event, data);
+const emitQueueDataEvent = (event, data) => notifications.streamLivechatQueueData.emitWithoutBroadcast(event, data);
 const mountDataToEmit = (type, data) => ({ type, ...data });
 
 LivechatInquiry.on('change', ({ clientAction, id: _id, data: record }) => {

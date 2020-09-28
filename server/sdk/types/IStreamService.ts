@@ -9,8 +9,12 @@ export enum STATUS_MAP {
 }
 
 export interface IStreamer {
+	serverOnly: boolean;
+
 	// eslint-disable-next-line @typescript-eslint/no-misused-new
-	new(name: string): IStreamer;
+	new(name: string, options?: {retransmit: boolean}): IStreamer;
+
+	allowEmit(allow: string): void;
 
 	allowWrite(allow: string): void;
 

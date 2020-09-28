@@ -13,9 +13,9 @@ import {
 } from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
-import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
+import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (agentId) {
@@ -82,7 +82,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	const { position, department } = inquiry;
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
 	const propagateInquiryPosition = Meteor.bindEnvironment((inquiry) => {
-		Livechat.stream.emit(inquiry.rid, {
+		notifications.streamLivechatRoom.emit(inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
