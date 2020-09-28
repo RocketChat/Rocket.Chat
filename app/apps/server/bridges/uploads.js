@@ -30,31 +30,36 @@ export class AppUploadBridge {
 		});
 	}
 
-	async createUpload(details = {}, buffer, appId) {
+	async createUpload(details, buffer, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating an upload "${ details.name }"`);
 
 		if (!details.userId && !details.visitorToken) {
 			throw new Error('Missing user to perform the upload operation');
 		}
 
+		if (details.visitorToken) {
+			delete details.userId;
+		}
+
 		const fileStore = FileUpload.getStore('Uploads');
-		const insertSync = Meteor.wrapAsync(fileStore.insert.bind(fileStore));
+		const insertSync = details.userId
+			? (...args) => Meteor.runAsUser(details.userId, () => fileStore.insertSync(...args))
+			: Meteor.wrapAsync(fileStore.insert.bind(fileStore));
 
 		details.type = determineFileType(buffer, details);
 
-		if (details.visitorToken) {
-			delete details.userId;
-			const uploadedFile = insertSync(details, buffer);
-
-			Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
-			return this.orch.getConverters().get('uploads').convertToApp(uploadedFile);
-		}
-
-		return new Promise((resolve, reject) => Meteor.runAsUser(details.userId, () => {
+		return new Promise(Meteor.bindEnvironment((resolve, reject) => {
 			try {
 				const uploadedFile = insertSync(details, buffer);
 
-				Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
+				if (details.visitorToken) {
+					Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
+				} else {
+					Meteor.runAsUser(details.userId, () => {
+						Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
+					});
+				}
+
 				resolve(this.orch.getConverters().get('uploads').convertToApp(uploadedFile));
 			} catch (err) {
 				reject(err);
