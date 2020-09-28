@@ -21,7 +21,7 @@ import { useSession } from '../../contexts/SessionContext';
 
 const query = {};
 
-const useChatRoomTemplate = (sidebarViewMode) => useMemo(() => {
+export const useChatRoomTemplate = (sidebarViewMode) => useMemo(() => {
 	switch (sidebarViewMode) {
 		case 'extended':
 			return Extended;
@@ -33,7 +33,7 @@ const useChatRoomTemplate = (sidebarViewMode) => useMemo(() => {
 	}
 }, [sidebarViewMode]);
 
-const useAvatarTemplate = (sidebarHideAvatar, sidebarViewMode) => useMemo(() => {
+export const useAvatarTemplate = (sidebarHideAvatar, sidebarViewMode) => useMemo(() => {
 	if (sidebarHideAvatar) {
 		return null;
 	}
@@ -53,7 +53,7 @@ const useAvatarTemplate = (sidebarHideAvatar, sidebarViewMode) => useMemo(() => 
 	return React.memo((room) => <RoomAvatar size={size} room={{ ...room, _id: room.rid, type: room.t }} />);
 }, [sidebarHideAvatar, sidebarViewMode]);
 
-const itemSizeMap = (sidebarViewMode) => {
+export const itemSizeMap = (sidebarViewMode) => {
 	switch (sidebarViewMode) {
 		case 'extended':
 			return 44;
@@ -65,7 +65,7 @@ const itemSizeMap = (sidebarViewMode) => {
 	}
 };
 
-const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom) => ({
+export const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom) => ({
 	items,
 	extended,
 	t,
@@ -74,7 +74,7 @@ const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarT
 	openedRoom,
 }));
 
-const Row = React.memo(({ data, index, style }) => {
+export const Row = React.memo(({ data, index, style }) => {
 	const { extended, items, t, SideBarItemTemplate, AvatarTemplate, openedRoom } = data;
 	const item = items[index];
 	if (typeof item === 'string') {
@@ -215,7 +215,7 @@ export default () => {
 	</Box>;
 };
 
-const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style }) => {
+export const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style }) => {
 	const title = roomTypes.getRoomName(room.t, room);
 	const icon = <Sidebar.Item.Icon name={roomTypes.getIcon(room)}/>;
 	const href = roomTypes.getRouteLink(room.t, room);
