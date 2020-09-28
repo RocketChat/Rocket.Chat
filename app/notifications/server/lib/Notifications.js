@@ -5,7 +5,7 @@ import { WEB_RTC_EVENTS } from '../../../webrtc';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
-import { hasPermission } from '../../../authorization/client';
+import { hasPermission } from '../../../authorization/server';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
