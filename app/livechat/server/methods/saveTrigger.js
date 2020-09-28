@@ -16,6 +16,7 @@ Meteor.methods({
 			description: String,
 			enabled: Boolean,
 			runOnce: Boolean,
+			registeredOnly: Boolean,
 			conditions: Array,
 			actions: Array,
 		});

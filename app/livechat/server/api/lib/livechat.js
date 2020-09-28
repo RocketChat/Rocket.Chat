@@ -14,11 +14,11 @@ export function online(department) {
 }
 
 export function findFilters() {
-	return LivechatFilter.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'regex', 'slug'));
+	return LivechatFilter.findEnabled().fetch().map((filter) => _.pick(filter, '_id', 'regex', 'slug'));
 }
 
 export function findTriggers() {
-	return LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
+	return LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce', 'registeredOnly'));
 }
 
 export function findDepartments() {
@@ -136,6 +136,7 @@ export function settings(url) {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
 			registrationForm: shouldShowRegistrationForm(),
+			startSessionOnNewChat: initSettings.Livechat_start_session_on_new_chat,
 			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,

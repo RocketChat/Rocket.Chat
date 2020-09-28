@@ -161,6 +161,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Show_preregistration_form',
 	});
 
+	settings.add('Livechat_start_session_on_new_chat', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_Start_session_on_new_chat',
+	});
+
 	settings.add('Livechat_skip_registration_form_DomainsList', '', {
 		type: 'string',
 		group: 'Omnichannel',

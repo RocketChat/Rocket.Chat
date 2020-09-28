@@ -11,6 +11,7 @@ Meteor.methods({
 			title: null,
 			color: null,
 			registrationForm: null,
+			startSessionOnNewChat: null,
 			room: null,
 			visitor: null,
 			filters: [],
@@ -70,6 +71,7 @@ Meteor.methods({
 		info.color = initSettings.Livechat_title_color;
 		info.enabled = initSettings.Livechat_enabled;
 		info.registrationForm = initSettings.Livechat_registration_form;
+		info.startSessionOnNewChat = initSettings.Livechat_start_session_on_new_chat;
 		info.offlineTitle = initSettings.Livechat_offline_title;
 		info.offlineColor = initSettings.Livechat_offline_title_color;
 		info.offlineMessage = initSettings.Livechat_offline_message;
@@ -96,7 +98,7 @@ Meteor.methods({
 		});
 
 		LivechatTrigger.findEnabled().forEach((trigger) => {
-			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
+			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce', 'registeredOnly'));
 		});
 
 		LivechatDepartment.findEnabledWithAgents().forEach((department) => {
