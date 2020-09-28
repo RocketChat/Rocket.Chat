@@ -2,6 +2,7 @@ import { MongoInternals } from 'meteor/mongo';
 
 import { Users } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
+import loginServiceConfiguration from '../../../models/server/models/LoginServiceConfiguration';
 
 let processOnChange;
 // eslint-disable-next-line no-undef
@@ -10,6 +11,7 @@ const disableOplog = Package['disable-oplog'];
 if (disableOplog) {
 	// Stores the callbacks for the disconnection reactivity bellow
 	const userCallbacks = new Map();
+	const serviceConfigCallbacks = new Set();
 
 	// Overrides the native observe changes to prevent database polling and stores the callbacks
 	// for the users' tokens to re-implement the reactivity based on our database listeners
@@ -32,11 +34,17 @@ if (disableOplog) {
 				userCallbacks.set(selector._id, cbs);
 			}
 		}
+
+		if (collectionName === 'meteor_accounts_loginServiceConfiguration') {
+			serviceConfigCallbacks.add(callbacks);
+		}
+
 		return {
 			stop() {
 				if (cbs) {
 					cbs.delete(callbacks);
 				}
+				serviceConfigCallbacks.delete(callbacks);
 			},
 		};
 	};
@@ -57,6 +65,23 @@ if (disableOplog) {
 			}
 		}
 	};
+
+	loginServiceConfiguration.on('change', ({ clientAction, id, data, diff }) => {
+		switch (clientAction) {
+			case 'inserted':
+			case 'updated':
+				const record = { ...data || diff };
+				delete record.secret;
+				serviceConfigCallbacks.forEach((callbacks) => {
+					callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, record);
+				});
+				break;
+			case 'removed':
+				serviceConfigCallbacks.forEach((callbacks) => {
+					callbacks.removed?.(id);
+				});
+		}
+	});
 }
 
 Users.on('change', ({ clientAction, id, data, diff }) => {
