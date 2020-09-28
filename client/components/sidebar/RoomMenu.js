@@ -143,6 +143,7 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 
 
 	return <Menu
+		rcx-sidebar-item__menu
 		square
 		small
 		color='neutral-700'
