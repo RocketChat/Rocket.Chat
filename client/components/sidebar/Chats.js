@@ -1,6 +1,6 @@
 
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useResizeObserver, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import memoize from 'memoize-one';
@@ -35,7 +35,7 @@ const useChatRoomTemplate = (sidebarViewMode) => useMemo(() => {
 
 const useAvatarTemplate = (sidebarHideAvatar, sidebarViewMode) => useMemo(() => {
 	if (sidebarHideAvatar) {
-		return () => null;
+		return null;
 	}
 
 	const size = (() => {
@@ -184,6 +184,21 @@ export default () => {
 	const itemData = createItemData(items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom);
 
 
+	// Flowrouter uses an addEventListener on the document to capture any clink link, since the react synthetic event use an addEventListener on the document too,
+	// it is impossible/hard to determine which one will happen before and prevent/stop propagation, so feel free to remove this effect after remove flow router :)
+	const stopPropagation = useMutableCallback((e) => {
+		if ([e.target.nodeName, e.target.parentElement.nodeName].includes('BUTTON')) {
+			e.preventDefault();
+		}
+	});
+
+	useEffect(() => {
+		const { current } = ref;
+		current.addEventListener('click', stopPropagation);
+
+		return () => current.addEventListener('click', stopPropagation);
+	}, [ref, stopPropagation]);
+
 	return <Box h='full' w='full' ref={ref}>
 		<List
 			height={blockSize}
@@ -216,26 +231,24 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, Side
 		cl,
 	} = room;
 
+	const threadUnread = tunread.length > 0;
 	const message = extended && lastMessage ? `${ lastMessage.u.name || lastMessage.u.username }: ${ lastMessage.msg }` : t('No_messages_yet');
-
-	const variant = (userMentions && 'danger') || (tunread.length && 'primary') || (groupMentions && 'warning') || 'ghost';
-
-	const subtitle = extended && <Box display='flex' flexDirection='row' w='full' alignItems='center'>
-		<Box flexGrow='1' withTruncatedText>{message}</Box>
-		{unread > 0 && <Badge variant={ variant } flexShrink={0}>{unread}</Badge>}
-	</Box>;
+	const variant = (userMentions && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
+	const badges = unread > 0 ? <Badge variant={ variant } flexShrink={0}>{unread}</Badge> : null;
 
 	return <SideBarItemTemplate
 		is='a'
-		onClick={console.log}
+		unread={unread}
+		threadUnread={threadUnread}
 		selected={selected}
 		href={href}
 		title={title}
 		time={lastMessage?.ts}
-		subtitle={subtitle}
+		subtitle={message}
 		icon={icon}
 		style={style}
-		avatar={<AvatarTemplate {...room}/>}
+		badges={badges}
+		avatar={AvatarTemplate && <AvatarTemplate {...room}/>}
 		actions={<RoomMenu rid={rid} unread={!!unread.length} roomOpen={false} type={type} cl={cl} name={title}/>}
 	/>;
 }, function areEqual(prevProps, nextProps) {
@@ -255,6 +268,22 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, Side
 		return;
 	}
 	if (prevProps.style.height !== nextProps.style.height) {
+		return false;
+	}
+
+	if (prevProps.room.unread !== nextProps.room.unread) {
+		return false;
+	}
+
+	if (prevProps.room.tunread !== nextProps.room.tunread) {
+		return false;
+	}
+
+	if (prevProps.room.groupMentions !== nextProps.room.groupMentions) {
+		return false;
+	}
+
+	if (prevProps.room.userMentions !== nextProps.room.userMentions) {
 		return false;
 	}
 
