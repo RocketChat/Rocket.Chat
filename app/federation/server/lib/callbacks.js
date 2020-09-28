@@ -1,14 +1,23 @@
 import { callbacks } from '../../../callbacks/server';
+import { settings } from '../../../settings/server';
 
 const callbackDefinitions = [];
 
-export function registerCallback(callbackDefition) {
-	callbackDefinitions.push(callbackDefition);
+function enableCallback(definition) {
+	callbacks.add(definition.hook, definition.callback, callbacks.priority.LOW, definition.id);
+}
+
+export function registerCallback(callbackDefinition) {
+	callbackDefinitions.push(callbackDefinition);
+
+	if (settings.get('FEDERATION_Enabled')) {
+		enableCallback(callbackDefinition);
+	}
 }
 
 export function enableCallbacks() {
 	for (const definition of callbackDefinitions) {
-		callbacks.add(definition.hook, definition.callback, callbacks.priority.LOW, definition.id);
+		enableCallback(definition);
 	}
 }
 
