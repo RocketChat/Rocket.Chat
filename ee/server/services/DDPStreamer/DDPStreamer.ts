@@ -4,7 +4,7 @@ import url from 'url';
 import WebSocket from 'ws';
 // import PromService from 'moleculer-prometheus';
 
-import * as Streamer from './streams';
+import { Streams } from './Streamer';
 import { Client, MeteorClient } from './Client';
 // import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
 import { isEmpty } from './lib/utils';
@@ -121,14 +121,14 @@ export class DDPStreamer extends ServiceClass {
 
 		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
 		this.onEvent('stream', ([streamer, eventName, payload]): void => {
-			const stream = Streamer.Streams.get(streamer);
+			const stream = Streams.get(streamer);
 			return stream && stream.emitPayload(eventName, payload);
 		});
 
 		// message({ message }) {
 		this.onEvent('message', ({ message }): void => {
 			// roomMessages.emitWithoutBroadcast('__my_messages__', record, {});
-			Streamer.roomMessages.emit(message.rid, message);
+			notifications.streamRoomMessage.emit(message.rid, message);
 		});
 
 		// userpresence(payload) {

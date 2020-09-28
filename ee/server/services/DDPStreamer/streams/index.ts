@@ -5,9 +5,6 @@ import { getCollection, Collections } from '../../mongo';
 import { Publication } from '../Publication';
 import { Authorization } from '../../../../../server/sdk';
 
-export * from './roomMessages';
-export * from './presence';
-
 export class RoomStreamer extends Stream {
 	async [publish](publication: Publication, eventName = '', options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
 		super[publish](publication, eventName, options);
@@ -64,9 +61,53 @@ export class RoomStreamer extends Stream {
 	}
 }
 
-const notifications = new NotificationsModule(Stream, RoomStreamer);
+class MessageStream extends Stream {
+	// TODO: implement the code bellow
+	// getSubscriptionByUserIdAndRoomId(userId, rid) {
+	// 	return this.subscriptions.find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
+	// }
+
+	// _publish(publication, eventName, options) {
+	// 	super._publish(publication, eventName, options);
+	// 	const uid = Meteor.userId();
+
+	// 	const userEvent = (clientAction, { rid }) => {
+	// 		switch (clientAction) {
+	// 			case 'removed':
+	// 				this.removeListener(uid, userEvent);
+	// 				this.removeSubscription(this.getSubscriptionByUserIdAndRoomId(uid, rid), eventName);
+	// 				break;
+	// 		}
+	// 	};
+	// 	this.on(uid, userEvent);
+	// }
+
+	// mymessage = (eventName, args) => {
+	// 	const subscriptions = this.subscriptionsByEventName[eventName];
+	// 	if (!Array.isArray(subscriptions)) {
+	// 		return;
+	// 	}
+	// 	subscriptions.forEach(({ subscription }) => {
+	// 		const options = this.isEmitAllowed(subscription, eventName, args);
+	// 		if (options) {
+	// 			send(subscription._session, changedPayload(this.subscriptionName, 'id', {
+	// 				eventName,
+	// 				args: [args, options],
+	// 			}));
+	// 		}
+	// 	});
+	// }
+}
+
+const notifications = new NotificationsModule(Stream, RoomStreamer, MessageStream);
 
 export default notifications;
+
+// TODO: Implementation not complete
+notifications.streamRoomMessage.allowRead(function(rid) {
+	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
+});
+
 
 // export const streamRoomData = new Stream(STREAM_NAMES.ROOM_DATA);
 notifications.streamRoomData.allowRead(function(rid) {

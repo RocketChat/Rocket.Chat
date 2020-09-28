@@ -1,4 +1,4 @@
-import { IStreamer, StreamerClass } from '../../sdk/types/IStreamService';
+import { IStreamer, IStreamerConstructor } from '../../sdk/types/IStreamService';
 
 export class NotificationsModule {
 	private debug = false
@@ -12,6 +12,8 @@ export class NotificationsModule {
 	public readonly streamRoomUsers: IStreamer;
 
 	public readonly streamUser: IStreamer;
+
+	public readonly streamRoomMessage: IStreamer;
 
 	public readonly streamImporters: IStreamer;
 
@@ -34,8 +36,9 @@ export class NotificationsModule {
 	public readonly streamRoomData: IStreamer;
 
 	constructor(
-		private Streamer: StreamerClass,
-		private RoomStreamer: StreamerClass,
+		private Streamer: IStreamerConstructor,
+		private RoomStreamer: IStreamerConstructor,
+		private MessageStreamer: IStreamerConstructor,
 	) {
 		this.notifyUser = this.notifyUser.bind(this);
 
@@ -55,6 +58,9 @@ export class NotificationsModule {
 		this.streamRoomUsers = new this.Streamer('notify-room-users');
 		this.streamRoomUsers.allowRead('none');
 		// this.streamRoomUsers.allowWrite(function(eventName, ...args) { // Implemented outside
+
+		this.streamRoomMessage = new this.MessageStreamer('room-messages');
+		this.streamRoomMessage.allowWrite('none');
 
 		this.streamUser = new this.RoomStreamer('notify-user');
 		this.streamUser.allowWrite('logged');

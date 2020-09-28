@@ -16,9 +16,6 @@ type Rule = (this: Publication, eventName: string, ...args: any) => boolean | Pr
 export interface IStreamer {
 	serverOnly: boolean;
 
-	// eslint-disable-next-line @typescript-eslint/no-misused-new
-	// new(name: string, options?: {retransmit?: boolean; retransmitToSelf?: boolean}): IStreamer;
-
 	allowEmit(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined;
 
 	allowWrite(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined;
@@ -32,7 +29,10 @@ export interface IStreamer {
 	emitWithoutBroadcast(event: string, ...data: any[]): void;
 }
 
-export type StreamerClass = new (name: string, options?: {retransmit?: boolean; retransmitToSelf?: boolean}) => IStreamer;
+export interface IStreamerConstructor {
+	// eslint-disable-next-line @typescript-eslint/no-misused-new
+	new(name: string, options?: {retransmit?: boolean; retransmitToSelf?: boolean}): IStreamer;
+}
 
 export interface IStreamService extends IServiceClass {
 	notifyAll(eventName: string, ...args: any[]): void;

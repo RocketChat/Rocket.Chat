@@ -52,8 +52,5 @@ export const STREAM_NAMES = {
 	ROOMS_CHANGED: 'rooms-changed',
 	ROOM_DATA: 'room-data', // TODO both data are the same plx merge them
 
-	ROOM_MESSAGES: 'room-messages',
-	PRESENCE: 'userpresence',
-
 	'my-message': '__my_messages__',
 };

@@ -7,7 +7,7 @@ import { isEmpty } from './lib/utils';
 import { Publication } from './Publication';
 import { Client } from './Client';
 import { api } from '../../../../server/sdk/api';
-import { StreamerClass } from '../../../../server/sdk/types/IStreamService';
+import { IStreamer } from '../../../../server/sdk/types/IStreamService';
 
 type Rule = (this: Publication, eventName: string, ...args: any) => boolean | Promise<boolean>;
 
@@ -41,7 +41,7 @@ export const publish = Symbol('publish');
 
 export const Streams = new Map();
 
-export class Stream extends EventEmitter implements StreamerClass {
+export class Stream extends EventEmitter implements IStreamer {
 	subscriptionName: string;
 
 	serverOnly: boolean;
@@ -60,13 +60,13 @@ export class Stream extends EventEmitter implements StreamerClass {
 
 	constructor(
 		private name: string,
-		options: {retransmit: boolean; retransmitToSelf: boolean } = { retransmit: true, retransmitToSelf: false },
+		{ retransmit = true, retransmitToSelf = false }: {retransmit?: boolean; retransmitToSelf?: boolean } = { },
 	) {
 		super();
 
 		this.subscriptionName = `${ STREAM_NAMES.STREAMER_PREFIX }${ name }`;
-		this.retransmit = options.retransmit;
-		this.retransmitToSelf = options.retransmitToSelf;
+		this.retransmit = retransmit;
+		this.retransmitToSelf = retransmitToSelf;
 
 		// this.subscriptionsByEventName = new Map();
 

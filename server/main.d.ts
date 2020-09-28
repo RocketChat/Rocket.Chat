@@ -1,7 +1,7 @@
 import { EJSON } from 'meteor/ejson';
 import { Db } from 'mongodb';
 
-import { StreamerClass } from './sdk/types/IStreamService';
+import { IStreamerConstructor } from './sdk/types/IStreamService';
 
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {
@@ -40,7 +40,7 @@ declare module 'meteor/meteor' {
 			details?: string | undefined | Record<string, string>;
 		}
 
-		const Streamer: StreamerClass;
+		const Streamer: IStreamerConstructor;
 
 		const server: any;
 

@@ -5,6 +5,7 @@ import { WEB_RTC_EVENTS } from '../../../webrtc';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
+import { hasPermission } from '../../../authorization/client';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
@@ -59,9 +60,46 @@ class RoomStreamer extends Meteor.Streamer {
 	}
 }
 
+class MessageStream extends Meteor.Streamer {
+	getSubscriptionByUserIdAndRoomId(userId, rid) {
+		return this.subscriptions.find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
+	}
+
+	_publish(publication, eventName, options) {
+		super._publish(publication, eventName, options);
+		const uid = Meteor.userId();
+
+		const userEvent = (clientAction, { rid }) => {
+			switch (clientAction) {
+				case 'removed':
+					this.removeListener(uid, userEvent);
+					this.removeSubscription(this.getSubscriptionByUserIdAndRoomId(uid, rid), eventName);
+					break;
+			}
+		};
+		this.on(uid, userEvent);
+	}
+
+	mymessage = (eventName, args) => {
+		const subscriptions = this.subscriptionsByEventName[eventName];
+		if (!Array.isArray(subscriptions)) {
+			return;
+		}
+		subscriptions.forEach(({ subscription }) => {
+			const options = this.isEmitAllowed(subscription, eventName, args);
+			if (options) {
+				send(subscription._session, changedPayload(this.subscriptionName, 'id', {
+					eventName,
+					args: [args, options],
+				}));
+			}
+		});
+	}
+}
+
 class Notifications extends NotificationsModule {
-	constructor(Streamer, RoomStreamer) {
-		super(Streamer, RoomStreamer);
+	constructor(Streamer, RoomStreamer, MessageStream) {
+		super(Streamer, RoomStreamer, MessageStream);
 
 		const self = this;
 		this.streamRoomUsers.allowWrite(function(eventName, ...args) {
@@ -97,7 +135,7 @@ class Notifications extends NotificationsModule {
 	}
 }
 
-const notifications = new Notifications(Meteor.Streamer, RoomStreamer);
+const notifications = new Notifications(Meteor.Streamer, RoomStreamer, MessageStream);
 
 notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
 	const [roomId, e] = eventName.split('/');
@@ -132,3 +170,44 @@ notifications.streamRoom.allowWrite(function(eventName, username, typing, extraD
 });
 
 export default notifications;
+
+
+notifications.streamRoomMessage.allowRead(function(eventName, args) {
+	try {
+		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
+
+		if (!room) {
+			return false;
+		}
+
+		if (room.t === 'c' && !hasPermission(this.userId, 'preview-c-room') && !Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
+			return false;
+		}
+
+		return true;
+	} catch (error) {
+		/* error*/
+		return false;
+	}
+});
+
+notifications.streamRoomMessage.allowRead('__my_messages__', 'all');
+
+notifications.streamRoomMessage.allowEmit('__my_messages__', function(eventName, msg) {
+	try {
+		const room = Meteor.call('canAccessRoom', msg.rid, this.userId);
+
+		if (!room) {
+			return false;
+		}
+
+		return {
+			roomParticipant: Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null,
+			roomType: room.t,
+			roomName: room.name,
+		};
+	} catch (error) {
+		/* error*/
+		return false;
+	}
+});
