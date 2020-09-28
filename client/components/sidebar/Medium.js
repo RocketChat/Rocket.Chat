@@ -2,12 +2,15 @@ import React from 'react';
 import { Sidebar, Menu, Box, Option } from '@rocket.chat/fuselage';
 
 const Medium = React.memo(({
-	titleIcon = <Sidebar.Item.Icon name='lock' />,
+	icon,
 	title = '',
 	avatar,
 	actions,
 	href,
 	menuOptions,
+	badges,
+	unread,
+	threadUnread,
 	...props
 }) => <Sidebar.Item {...props} href={href} clickable={!!href}>
 	{avatar && <Box mie='x4'>
@@ -16,8 +19,9 @@ const Medium = React.memo(({
 		</Sidebar.Item.Avatar>
 	</Box>}
 	<Sidebar.Item.Content>
-		{ titleIcon }
-		<Sidebar.Item.Title>{title}</Sidebar.Item.Title>
+		{ icon }
+		<Sidebar.Item.Title className={(unread || threadUnread) && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title>
+		{badges}
 	</Sidebar.Item.Content>
 	<Sidebar.Item.Container>
 		{<Sidebar.Item.Actions>

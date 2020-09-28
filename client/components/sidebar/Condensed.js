@@ -2,7 +2,7 @@ import React from 'react';
 import { Sidebar, Menu, Box, Option } from '@rocket.chat/fuselage';
 
 const Condensed = React.memo(({
-	titleIcon = <Sidebar.Item.Icon name='lock' />,
+	icon,
 	title = '',
 	avatar,
 	actions,
@@ -17,7 +17,7 @@ const Condensed = React.memo(({
 		</Sidebar.Item.Avatar>
 	</Box>}
 	<Sidebar.Item.Content>
-		{ titleIcon }
+		{ icon }
 		<Sidebar.Item.Title>{title}</Sidebar.Item.Title>
 	</Sidebar.Item.Content>
 	<Sidebar.Item.Container>

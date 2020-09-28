@@ -4,7 +4,7 @@ import { Sidebar, Menu, Box, Option } from '@rocket.chat/fuselage';
 import { useFormatTime } from '../../hooks/useFormatTime';
 
 const Extended = React.memo(({
-	titleIcon = <Sidebar.Item.Icon name='lock' />,
+	icon,
 	title = '',
 	avatar,
 	actions,
@@ -12,11 +12,14 @@ const Extended = React.memo(({
 	time,
 	menuOptions,
 	subtitle = '',
+	badges,
+	threadUnread,
+	unread,
 	...props
 }) => {
 	const formatDate = useFormatTime();
 
-	return <Sidebar.Item {...props} href={href} clickable={!!href}>
+	return <Sidebar.Item highlighted={unread} {...props} href={href} clickable={!!href}>
 		{ avatar && <Box mie='x4'>
 			<Sidebar.Item.Avatar>
 				{ avatar }
@@ -25,17 +28,18 @@ const Extended = React.memo(({
 		<Sidebar.Item.Content>
 			<Box display='flex' alignItems='stretch' flexDirection='column' w='full'>
 				<Sidebar.Item.Wrapper>
-					{ titleIcon }
-					<Sidebar.Item.Title>
+					{ icon }
+					<Sidebar.Item.Title className={unread && 'rcx-sidebar-item--highlighted'}>
 						{ title }
 					</Sidebar.Item.Title>
 					{time && <Sidebar.Item.Time>{formatDate(time)}</Sidebar.Item.Time>}
 				</Sidebar.Item.Wrapper>
 
 				<Sidebar.Item.Wrapper>
-					<Sidebar.Item.Subtitle>
+					<Sidebar.Item.Subtitle className={(unread || threadUnread) && 'rcx-sidebar-item--highlighted'}>
 						{ subtitle }
 					</Sidebar.Item.Subtitle>
+					{badges}
 				</Sidebar.Item.Wrapper>
 			</Box>
 		</Sidebar.Item.Content>
