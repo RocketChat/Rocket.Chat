@@ -2,7 +2,7 @@
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { VariableSizeList as List, areEqual } from 'react-window';
+import { VariableSizeList as List } from 'react-window';
 import memoize from 'memoize-one';
 
 import { ChatSubscription } from '../../../app/models';
@@ -33,6 +33,26 @@ const useChatRoomTemplate = (sidebarViewMode) => useMemo(() => {
 	}
 }, [sidebarViewMode]);
 
+const useAvatarTemplate = (sidebarHideAvatar, sidebarViewMode) => useMemo(() => {
+	if (sidebarHideAvatar) {
+		return () => null;
+	}
+
+	const size = (() => {
+		switch (sidebarViewMode) {
+			case 'extended':
+				return 'x38';
+			case 'medium':
+				return 'x28';
+			case 'condensed':
+			default:
+				return 'x16';
+		}
+	})();
+
+	return React.memo((room) => <RoomAvatar size={size} room={{ ...room, _id: room.rid, type: room.t }} />);
+}, [sidebarHideAvatar, sidebarViewMode]);
+
 const itemSizeMap = (sidebarViewMode) => {
 	switch (sidebarViewMode) {
 		case 'extended':
@@ -45,29 +65,31 @@ const itemSizeMap = (sidebarViewMode) => {
 	}
 };
 
-const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate) => ({
+const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom) => ({
 	items,
 	extended,
 	t,
 	SideBarItemTemplate,
 	AvatarTemplate,
+	openedRoom,
 }));
 
 const Row = React.memo(({ data, index, style }) => {
-	const { extended, items, t, SideBarItemTemplate, AvatarTemplate } = data;
+	const { extended, items, t, SideBarItemTemplate, AvatarTemplate, openedRoom } = data;
 	const item = items[index];
 	if (typeof item === 'string') {
 		return <Sidebar.Section.Title style={style}>{t(item)}</Sidebar.Section.Title>;
 	}
-	return <SideBarItemTemplateWithData style={style} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+	return <SideBarItemTemplateWithData style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
 
 export default () => {
 	const t = useTranslation();
 
-	// const openedRoom = useSession('openedRoom');
+	const openedRoom = useSession('openedRoom');
 
 	const sortBy = useUserPreference('sidebarSortby');
+	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = useUserPreference('sidebarHideAvatar');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
@@ -78,26 +100,7 @@ export default () => {
 
 	const omnichannelEnabled = useSetting('Livechat_enabled');
 	const showOmnichannel = usePermission('view-l-room') && omnichannelEnabled;
-
-	const AvatarTemplate = useMemo(() => {
-		if (sidebarHideAvatar) {
-			return () => null;
-		}
-
-		const size = (() => {
-			switch (sidebarViewMode) {
-				case 'extended':
-					return 'x38';
-				case 'medium':
-					return 'x28';
-				case 'condensed':
-				default:
-					return 'x16';
-			}
-		})();
-
-		return React.memo((room) => <RoomAvatar size={size} room={{ ...room, _id: room.rid, type: room.t }} />);
-	}, [sidebarHideAvatar, sidebarViewMode]);
+	const AvatarTemplate = useAvatarTemplate(sidebarHideAvatar, sidebarViewMode);
 
 	const sort = useMemo(() => ({
 		...sortBy === 'activity' && { lm: -1 },
@@ -117,6 +120,7 @@ export default () => {
 		const _public = new Set();
 		const direct = new Set();
 		const discussion = new Set();
+		const channels = new Set();
 
 		rooms.forEach((room) => {
 			if (favoritesEnabled && room.f) {
@@ -139,13 +143,15 @@ export default () => {
 				_private.add(room);
 			}
 
-			if (showOmnichannel && room.t === 'l') {
-				omnichannel.add(room);
+			if (room.t === 'l') {
+				return showOmnichannel && omnichannel.add(room);
 			}
 
 			if (room.t === 'd') {
 				direct.add(room);
 			}
+
+			channels.add(room);
 		});
 
 		const groups = new Map();
@@ -153,24 +159,17 @@ export default () => {
 		favoritesEnabled && groups.set('Favorites', favorite);
 		sidebarShowUnread && groups.set('Unread', unread);
 		groups.set('Omnichannel', omnichannel);
-		groups.set('Private', _private);
-		groups.set('Public', _public);
-		groups.set('Direct', direct);
+		sidebarGroupByType && groups.set('Private', _private);
+		sidebarGroupByType && groups.set('Public', _public);
+		sidebarGroupByType && groups.set('Direct', direct);
+		!sidebarGroupByType && groups.set('Channels', channels);
 		showDiscussion && groups.set('Discussions', discussion);
 		return groups;
-	}, [favoritesEnabled, rooms, showDiscussion, sidebarShowUnread, showOmnichannel]);
-
+	}, [favoritesEnabled, rooms, showDiscussion, sidebarShowUnread, showOmnichannel, sidebarGroupByType]);
 
 	const extended = sidebarViewMode === 'extended';
 
-	const items = [...groups.entries()].reduce((acc, [key, group]) => {
-		if (group.size === 0) {
-			return acc;
-		}
-		acc = [...acc, key, ...group];
-		return acc;
-	}, []);
-
+	const items = useMemo(() => [...groups.entries()].flatMap(([key, group]) => [key, ...group]), [groups]);
 	const { ref, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
 	const listRef = useRef();
@@ -182,7 +181,7 @@ export default () => {
 	}, [itemSize]);
 
 
-	const itemData = createItemData(items, extended, t, SideBarItemTemplate, AvatarTemplate);
+	const itemData = createItemData(items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom);
 
 
 	return <Box h='full' w='full' ref={ref}>
@@ -228,6 +227,7 @@ const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, Side
 
 	return <SideBarItemTemplate
 		is='a'
+		onClick={console.log}
 		selected={selected}
 		href={href}
 		title={title}
