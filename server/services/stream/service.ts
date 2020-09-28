@@ -98,15 +98,6 @@ export class StreamService extends ServiceClass implements IStreamService {
 		});
 	}
 
-	sendUserStatus({ uid, username, status, statusText }: { uid: string; username: string; status: STATUS_MAP; statusText?: string }): void {
-		this.streamLogged.emit('user-status', [
-			uid,
-			username,
-			status,
-			statusText,
-		]);
-	}
-
 	sendPermission({ clientAction, data }: any): void {
 		this.streamLogged.emitWithoutBroadcast('permissions-changed', clientAction, data);
 	}

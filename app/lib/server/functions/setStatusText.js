@@ -5,15 +5,7 @@ import { Users } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
-import { StreamService } from '../../../../server/sdk';
-
-// mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
-const STATUS_MAP = {
-	offline: 0,
-	online: 1,
-	away: 2,
-	busy: 3,
-};
+import { api } from '../../../../server/sdk/api';
 
 export const _setStatusTextPromise = async function(userId, statusText) {
 	if (!userId) { return false; }
@@ -28,13 +20,8 @@ export const _setStatusTextPromise = async function(userId, statusText) {
 
 	await UsersRaw.updateStatusText(user._id, statusText);
 
-	const { _id: uid, username } = user;
-	StreamService.sendUserStatus({
-		uid,
-		username,
-		status: STATUS_MAP[user.status],
-		statusText,
-	});
+	const { _id, username, status } = user;
+	api.broadcast('userpresence', { user: { _id, username, status, statusText } });
 
 	return true;
 };
@@ -60,13 +47,8 @@ export const _setStatusText = function(userId, statusText) {
 	Users.updateStatusText(user._id, statusText);
 	user.statusText = statusText;
 
-	const { _id: uid, username } = user;
-	StreamService.sendUserStatus({
-		uid,
-		username,
-		status: STATUS_MAP[user.status],
-		statusText,
-	});
+	const { _id, username, status } = user;
+	api.broadcast('userpresence', { user: { _id, username, status, statusText } });
 
 	return true;
 };
