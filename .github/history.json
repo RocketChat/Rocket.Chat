@@ -50060,6 +50060,136 @@
           ]
         }
       ]
+    },
+    "3.6.3": {
+      "node_version": "12.16.1",
+      "npm_version": "6.14.0",
+      "apps_engine_version": "1.17.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19022",
+          "title": "Release 3.6.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "gabriellsh",
+            "sampaiodiego",
+            "pierre-lehnen-rc",
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "19020",
+          "title": "Obey to settings properties",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.6.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "18978",
+          "title": "[FIX] Federation issues",
+          "userLogin": "alansikora",
+          "milestone": "3.6.3",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "18994",
+          "title": "[FIX] LDAP avatar upload",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.6.3",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "18948",
+          "title": "[FIX] Errors in LDAP avatar sync preventing login",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.6.3",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "18956",
+          "title": "[FIX] PDF not rendering",
+          "userLogin": "gabriellsh",
+          "milestone": "3.6.3",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.7.0-rc.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.18.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19005",
+          "title": "Regression: Elements select & multiSelect not rendered correctly in the App Settings",
+          "userLogin": "lolimay",
+          "milestone": "3.7.0",
+          "contributors": [
+            "lolimay",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19047",
+          "title": "[NEW] Apps-Engine v1.18.0",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "18995",
+          "title": "Regression: File upload via apps not working in some scenarios",
+          "userLogin": "lolimay",
+          "milestone": "3.7.0",
+          "contributors": [
+            "lolimay",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "19002",
+          "title": "[NEW][Apps] Add support to the \"encoding\" option in http requests from Apps",
+          "userLogin": "lolimay",
+          "milestone": "3.7.0",
+          "contributors": [
+            "lolimay",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19033",
+          "title": "Regression: Fix login screen reactivity of external login providers",
+          "userLogin": "rodrigok",
+          "milestone": "3.7.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }

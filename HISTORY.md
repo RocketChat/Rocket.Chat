@@ -1,6 +1,34 @@
 
 # 3.7.0 (Under Release Candidate Process)
 
+## 3.7.0-rc.3
+`2020-09-28  ·  2 🎉  ·  3 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- **Apps:** Add support to the "encoding" option in http requests from Apps ([#19002](https://github.com/RocketChat/Rocket.Chat/pull/19002))
+
+- Apps-Engine v1.18.0 ([#19047](https://github.com/RocketChat/Rocket.Chat/pull/19047))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Elements select & multiSelect not rendered correctly in the App Settings ([#19005](https://github.com/RocketChat/Rocket.Chat/pull/19005))
+
+- Regression: File upload via apps not working in some scenarios ([#18995](https://github.com/RocketChat/Rocket.Chat/pull/18995))
+
+- Regression: Fix login screen reactivity of external login providers ([#19033](https://github.com/RocketChat/Rocket.Chat/pull/19033))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@lolimay](https://github.com/lolimay)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 3.7.0-rc.2
 `2020-09-25  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
@@ -239,6 +267,43 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
+
+# 3.6.3
+`2020-09-25  ·  4 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.17.0`
+
+### 🐛 Bug fixes
+
+
+- Errors in LDAP avatar sync preventing login ([#18948](https://github.com/RocketChat/Rocket.Chat/pull/18948))
+
+- Federation issues ([#18978](https://github.com/RocketChat/Rocket.Chat/pull/18978))
+
+- LDAP avatar upload ([#18994](https://github.com/RocketChat/Rocket.Chat/pull/18994))
+
+- PDF not rendering ([#18956](https://github.com/RocketChat/Rocket.Chat/pull/18956))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Obey to settings properties ([#19020](https://github.com/RocketChat/Rocket.Chat/pull/19020))
+
+- Release 3.6.3 ([#19022](https://github.com/RocketChat/Rocket.Chat/pull/19022))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@alansikora](https://github.com/alansikora)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.6.2
 `2020-09-18  ·  7 🐛  ·  6 👩‍💻👨‍💻`
