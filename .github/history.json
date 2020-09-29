@@ -50043,7 +50043,7 @@
       "pull_requests": [
         {
           "pr": "19020",
-          "title": "Obbey to settings properties",
+          "title": "Obey to settings properties",
           "userLogin": "sampaiodiego",
           "milestone": "3.6.3",
           "contributors": [
@@ -50210,6 +50210,17 @@
           ]
         }
       ]
+    },
+    "3.7.0": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.18.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
     }
   }
 }
