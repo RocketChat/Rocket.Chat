@@ -46,6 +46,7 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 		type,
 		i18nLabel,
 		i18nDescription,
+		values,
 	} = appSetting;
 
 	const label = (i18nLabel && tApp(i18nLabel)) || (id || tApp(id));
@@ -58,6 +59,7 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 		value={value}
 		onChangeValue={onChange}
 		_id={id}
+		values={values}
 		{...props}
 	/>;
 }
