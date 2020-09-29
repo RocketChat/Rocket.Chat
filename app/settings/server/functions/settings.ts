@@ -5,9 +5,11 @@ import _ from 'underscore';
 
 import { SettingsBase, SettingValue } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
+import { setValue, updateValue } from '../raw';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
+const wizardRequiredSettings = new Set<string>();
 
 if (process.env.SETTINGS_BLOCKED) {
 	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings.add(settingId.trim()));
@@ -15,6 +17,10 @@ if (process.env.SETTINGS_BLOCKED) {
 
 if (process.env.SETTINGS_HIDDEN) {
 	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => hiddenSettings.add(settingId.trim()));
+}
+
+if (process.env.SETTINGS_REQUIRED_ON_WIZARD) {
+	process.env.SETTINGS_REQUIRED_ON_WIZARD.split(',').forEach((settingId) => wizardRequiredSettings.add(settingId.trim()));
 }
 
 export const SettingsEvents = new EventEmitter();
@@ -67,6 +73,7 @@ export interface ISettingAddOptions {
 	valueSource?: string;
 	hidden?: boolean;
 	blocked?: boolean;
+	requiredOnWizard?: boolean;
 	secret?: boolean;
 	sorter?: number;
 	i18nLabel?: string;
@@ -154,6 +161,7 @@ class Settings extends SettingsBase {
 		options.valueSource = 'packageValue';
 		options.hidden = options.hidden || false;
 		options.blocked = options.blocked || false;
+		options.requiredOnWizard = options.requiredOnWizard || false;
 		options.secret = options.secret || false;
 		options.enterprise = options.enterprise || false;
 
@@ -179,6 +187,9 @@ class Settings extends SettingsBase {
 		}
 		if (hiddenSettings.has(_id)) {
 			options.hidden = true;
+		}
+		if (wizardRequiredSettings.has(_id)) {
+			options.requiredOnWizard = true;
 		}
 		if (options.autocomplete == null) {
 			options.autocomplete = true;
@@ -385,13 +396,28 @@ class Settings extends SettingsBase {
 	*/
 	init(): void {
 		this.initialLoad = true;
-		SettingsModel.find().observe({
-			added: (record: ISettingRecord) => this.storeSettingValue(record, this.initialLoad),
-			changed: (record: ISettingRecord) => this.storeSettingValue(record, this.initialLoad),
-			removed: (record: ISettingRecord) => this.removeSettingValue(record, this.initialLoad),
+		SettingsModel.find().fetch().forEach((record: ISettingRecord) => {
+			this.storeSettingValue(record, this.initialLoad);
+			updateValue(record._id, { value: record.value });
 		});
 		this.initialLoad = false;
 		this.afterInitialLoad.forEach((fn) => fn(Meteor.settings));
+
+		SettingsModel.on('change', ({ clientAction, id, data }) => {
+			switch (clientAction) {
+				case 'inserted':
+				case 'updated':
+					data = data ?? SettingsModel.findOneById(id);
+					this.storeSettingValue(data, this.initialLoad);
+					updateValue(id, { value: data.value });
+					break;
+				case 'removed':
+					data = SettingsModel.trashFindOneById(id);
+					this.removeSettingValue(data, this.initialLoad);
+					setValue(id, undefined);
+					break;
+			}
+		});
 	}
 
 	onAfterInitialLoad(fn: (settings: Meteor.Settings) => void): void {

@@ -11,7 +11,7 @@ export const STATUS_MAP = {
 	busy: 3,
 };
 
-const setUserStatus = (user, status/* , statusConnection*/) => {
+export const setUserStatus = (user, status/* , statusConnection*/) => {
 	const {
 		_id,
 		username,
