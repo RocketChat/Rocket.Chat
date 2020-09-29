@@ -1,4 +1,113 @@
 
+# 3.6.3
+`2020-09-25  ·  4 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.17.0`
+
+### 🐛 Bug fixes
+
+
+- Errors in LDAP avatar sync preventing login ([#18948](https://github.com/RocketChat/Rocket.Chat/pull/18948))
+
+- Federation issues ([#18978](https://github.com/RocketChat/Rocket.Chat/pull/18978))
+
+- LDAP avatar upload ([#18994](https://github.com/RocketChat/Rocket.Chat/pull/18994))
+
+- PDF not rendering ([#18956](https://github.com/RocketChat/Rocket.Chat/pull/18956))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Obey to settings properties ([#19020](https://github.com/RocketChat/Rocket.Chat/pull/19020))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@alansikora](https://github.com/alansikora)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.6.2
+`2020-09-18  ·  7 🐛  ·  6 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.17.0`
+
+### 🐛 Bug fixes
+
+
+- Create Custom OAuth services from environment variables ([#17377](https://github.com/RocketChat/Rocket.Chat/pull/17377) by [@mrtndwrd](https://github.com/mrtndwrd))
+
+- Deactivate users that are the last owner of a room using REST API ([#18864](https://github.com/RocketChat/Rocket.Chat/pull/18864) by [@FelipeParreira](https://github.com/FelipeParreira))
+
+  Allow for user deactivation through REST API (even if user is the last owner of a room)
+
+- Ignore User action from user card ([#18866](https://github.com/RocketChat/Rocket.Chat/pull/18866))
+
+- invite-all-from and invite-all-to commands don't work with multibyte room names ([#18919](https://github.com/RocketChat/Rocket.Chat/pull/18919) by [@FelipeParreira](https://github.com/FelipeParreira))
+
+  Fix slash commands (invite-all-from and invite-all-to) to accept  multi-byte room names.
+
+- Read receipts showing blank names and not marking messages as read ([#18918](https://github.com/RocketChat/Rocket.Chat/pull/18918) by [@wreiske](https://github.com/wreiske))
+
+- Show custom fields of invalid type ([#18794](https://github.com/RocketChat/Rocket.Chat/pull/18794))
+
+- Version update check cron job ([#18916](https://github.com/RocketChat/Rocket.Chat/pull/18916) by [@wreiske](https://github.com/wreiske))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@FelipeParreira](https://github.com/FelipeParreira)
+- [@mrtndwrd](https://github.com/mrtndwrd)
+- [@wreiske](https://github.com/wreiske)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.6.1
+`2020-09-11  ·  7 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.16.1`
+- NPM: `6.14.0`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.17.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel service status switching to unavailable ([#18835](https://github.com/RocketChat/Rocket.Chat/pull/18835))
+
+- File upload (Avatars, Emoji, Sounds) ([#18841](https://github.com/RocketChat/Rocket.Chat/pull/18841))
+
+- IE11 support livechat widget ([#18850](https://github.com/RocketChat/Rocket.Chat/pull/18850))
+
+- Omnichannel Current Chats open status filter not working ([#18795](https://github.com/RocketChat/Rocket.Chat/pull/18795))
+
+- Showing alerts during setup wizard ([#18862](https://github.com/RocketChat/Rocket.Chat/pull/18862))
+
+- User administration throwing a blank page if user has no role ([#18851](https://github.com/RocketChat/Rocket.Chat/pull/18851))
+
+- User can't invite or join other Omnichannel rooms ([#18852](https://github.com/RocketChat/Rocket.Chat/pull/18852))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.6.0
 `2020-08-29  ·  10 🎉  ·  5 🚀  ·  26 🐛  ·  36 🔍  ·  23 👩‍💻👨‍💻`
 
@@ -38,8 +147,10 @@
 
 - **2FA:** Password enforcement setting and 2FA protection when saving settings or resetting E2E encryption ([#18640](https://github.com/RocketChat/Rocket.Chat/pull/18640))
 
-  - Increase the 2FA remembering time from 5min to 30min  
-  - Add new setting to enforce 2FA password fallback (enabled only for new installations)  
+  - Increase the 2FA remembering time from 5min to 30min
+
+  - Add new setting to enforce 2FA password fallback (enabled only for new installations)
+
   - Require 2FA to save settings and reset E2E Encryption keys
 
 - **Omnichannel:** Allow set other agent status via method `livechat:changeLivechatStatus ` ([#18571](https://github.com/RocketChat/Rocket.Chat/pull/18571))
@@ -407,9 +518,12 @@
 
 - Mention autocomplete UI and performance improvements  ([#18309](https://github.com/RocketChat/Rocket.Chat/pull/18309))
 
-  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)  
-  * The UI shows whenever the user is not a member of the room  
-  * The UI shows when the suggestion came from the last messages for quick selection/reply  
+  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)
+
+  * The UI shows whenever the user is not a member of the room
+
+  * The UI shows when the suggestion came from the last messages for quick selection/reply
+
   * The suggestions follow this order:
     * The user with the exact username and member of the room
     * The user with the exact username but not a member of the room (if allowed to list non-members)
@@ -1267,9 +1381,12 @@
 
 - Notification sounds ([#17616](https://github.com/RocketChat/Rocket.Chat/pull/17616))
 
-  * Global CDN config was ignored when loading the sound files  
-  * Upload of custom sounds wasn't getting the file extension correctly  
-  * Some translations were missing  
+  * Global CDN config was ignored when loading the sound files
+
+  * Upload of custom sounds wasn't getting the file extension correctly
+
+  * Some translations were missing
+
   * Edit and delete of custom sounds were not working correctly
 
 - Omnichannel departments are not saved when the offline channel name is not defined ([#17553](https://github.com/RocketChat/Rocket.Chat/pull/17553))
@@ -1558,11 +1675,16 @@
 - Better Push and Email Notification logic ([#17357](https://github.com/RocketChat/Rocket.Chat/pull/17357))
 
   We are still using the same logic to define which notifications every new message will generate, it takes some servers' settings, users's preferences and subscriptions' settings in consideration to determine who will receive each notification type (desktop, audio, email and mobile push), but now it doesn't check the user's status (online, away, offline) for email and mobile push notifications but send those notifications to a new queue with the following rules:
-  
-  - When the user is online the notification is scheduled to be sent in 120 seconds  
-  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away  
-  - When the user is offline the notification is scheduled to be sent right away  
-  - When the user reads a channel all the notifications for that user are removed (clear queue)  
+
+
+  - When the user is online the notification is scheduled to be sent in 120 seconds
+
+  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away
+
+  - When the user is offline the notification is scheduled to be sent right away
+
+  - When the user reads a channel all the notifications for that user are removed (clear queue)
+
   - When a notification is processed to be sent to a user and there are other scheduled notifications:
     - All the scheduled notifications for that user are rescheduled to now
     - The current notification goes back to the queue to be processed ordered by creation date
