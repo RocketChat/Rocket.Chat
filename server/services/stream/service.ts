@@ -1,5 +1,5 @@
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { IStreamService, STATUS_MAP, IStreamer, IStreamerConstructor } from '../../sdk/types/IStreamService';
+import { IStreamService, IStreamer, IStreamerConstructor } from '../../sdk/types/IStreamService';
 // import { Notifications } from '../../../app/notifications/server';
 import { IMessage } from '../../../definition/IMessage';
 
