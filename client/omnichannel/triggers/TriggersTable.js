@@ -3,7 +3,7 @@ import { useMutableCallback, Button } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useMemo } from 'react';
 
 import GenericTable from '../../components/GenericTable';
-import DeleteWarningModal from '../../components/DeleteWarningModal';
+import DangerModal from '../../components/DangerModal';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -25,6 +25,7 @@ const TriggersRow = memo(function TriggersRow(props) {
 	const t = useTranslation();
 
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 
 	const bhRoute = useRoute('omnichannel-triggers');
 
@@ -58,7 +59,14 @@ const TriggersRow = memo(function TriggersRow(props) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteTrigger} onCancel={() => setModal()}/>);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onDeleteTrigger}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		/>);
 	});
 
 	return <Table.Row

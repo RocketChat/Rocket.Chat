@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
 	Field,
 	Box,
@@ -6,8 +6,9 @@ import {
 	Margins,
 	Button,
 } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { SuccessModal, DeleteWarningModal } from './EditIntegrationsPage';
+import { SuccessModal } from './EditIntegrationsPage';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -16,6 +17,7 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';
+import DangerModal from '../../../components/DangerModal';
 import { useForm } from '../../../hooks/useForm';
 
 export default function EditOutgoingWebhookWithData({ integrationId, ...props }) {
@@ -85,22 +87,31 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 	const deleteQuery = useMemo(() => ({ type: 'webhook-outgoing', integrationId: data._id }), [data._id]);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
 
-	const handleDeleteIntegration = useCallback(() => {
+	const handleDeleteIntegration = useMutableCallback(() => {
 		const closeModal = () => setModal();
 		const onDelete = async () => {
 			const result = await deleteIntegration();
 			if (result.success) { setModal(<SuccessModal onClose={() => { closeModal(); router.push({}); }}/>); }
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDelete} onCancel={closeModal} />);
-	}, [deleteIntegration, router]);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onDelete}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		>
+			{t('Integration_Delete_Warning')}
+		</DangerModal>);
+	});
 
 	const {
 		urls,
 		triggerWords,
 	} = formValues;
 
-	const handleSave = useCallback(async () => {
+	const handleSave = useMutableCallback(async () => {
 		try {
 			await saveIntegration(data._id, {
 				...formValues,
@@ -113,7 +124,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
 		}
-	}, [data._id, dispatchToastMessage, formValues, onChange, saveIntegration, t, triggerWords, urls]);
+	});
 
 	const actionButtons = useMemo(() => <Field>
 		<Field.Row display='flex' flexDirection='column'>

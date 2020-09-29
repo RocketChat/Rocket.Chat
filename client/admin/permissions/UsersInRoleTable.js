@@ -3,7 +3,7 @@ import { Box, Table, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
-import DeleteWarningModal from '../../components/DeleteWarningModal';
+import DangerModal from '../../components/DangerModal';
 import { useMethod } from '../../contexts/ServerContext';
 import { GenericTable } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -61,9 +61,17 @@ export function UsersInRoleTable({ data, reload, roleName, total, params, setPar
 			closeModal();
 			reload();
 		};
-		setModal(<DeleteWarningModal onCancel={closeModal} onDelete={remove}>
+
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={remove}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		>
 			{t('The_user_s_will_be_removed_from_role_s', username, roleName)}
-		</DeleteWarningModal>);
+		</DangerModal>);
 	});
 
 	return <GenericTable

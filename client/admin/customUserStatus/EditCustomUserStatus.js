@@ -1,5 +1,6 @@
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Box, Button, ButtonGroup, TextInput, Field, Select, Icon, Skeleton, Throbber, InputBox, Modal } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -7,26 +8,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import VerticalBar from '../../components/basic/VerticalBar';
-
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Custom_User_Status_Delete_Warning')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
+import DangerModal from '../../components/DangerModal';
 
 const SuccessModal = ({ onClose, ...props }) => {
 	const t = useTranslation();
@@ -88,6 +70,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const [name, setName] = useState('');
 	const [statusType, setStatusType] = useState('');
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -98,7 +81,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const deleteStatus = useMethod('deleteCustomUserStatus');
 
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousStatusType !== statusType, [name, previousName, previousStatusType, statusType]);
-	const handleSave = useCallback(async () => {
+	const handleSave = useMutableCallback(async () => {
 		try {
 			await saveStatus({
 				_id,
@@ -112,9 +95,9 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [saveStatus, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
+	});
 
-	const onDeleteConfirm = useCallback(async () => {
+	const onDeleteConfirm = useMutableCallback(async () => {
 		try {
 			await deleteStatus(_id);
 			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
@@ -122,9 +105,18 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			dispatchToastMessage({ type: 'error', message: error });
 			onChange();
 		}
-	}, [_id, close, deleteStatus, dispatchToastMessage, onChange]);
+	});
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
+	const openConfirmDelete = useMutableCallback(() => setModal(<DangerModal
+		title={t('Are_you_sure')}
+		onConfirm={onDeleteConfirm}
+		onCancel={closeModal}
+		onClose={closeModal}
+		confirmButtonText={t('Delete')}
+		secondaryButtonText={t('Cancel')}
+	>
+		{t('Custom_User_Status_Delete_Warning')}
+	</DangerModal>));
 
 	const presenceOptions = [
 		['online', t('Online')],

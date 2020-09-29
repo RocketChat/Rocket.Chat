@@ -6,7 +6,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import VerticalBar from '../../components/basic/VerticalBar';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import RoomAvatarEditor from '../../components/basic/avatar/RoomAvatarEditor';
-import DeleteChannelWarning from '../../components/DeleteChannelWarning';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
@@ -15,6 +14,7 @@ import { roomTypes, RoomSettingsEnum } from '../../../app/utils/client';
 import { useMethod } from '../../contexts/ServerContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import DangerModal from '../../components/DangerModal';
 
 const getInitialValues = (room) => ({
 	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, { type: room.t, ...room }),
@@ -159,7 +159,16 @@ function EditRoom({ room, onChange }) {
 			setDeleted(true);
 		};
 
-		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onConfirm}
+			onCancel={onCancel}
+			onClose={onCancel}
+			confirmButtonText={t('Yes_delete_it')}
+			secondaryButtonText={t('Cancel')}
+		>
+			{t('Delete_Room_Warning')}
+		</DangerModal>);
 	});
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>

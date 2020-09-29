@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useEffect } from 'react';
 
 import GenericTable from '../../../client/components/GenericTable';
-import DeleteWarningModal from '../../../client/components/DeleteWarningModal';
+import DangerModal from '../../../client/components/DangerModal';
 import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
@@ -36,6 +36,7 @@ const MonitorsRow = memo(function MonitorsRow(props) {
 	} = props;
 
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -55,7 +56,14 @@ const MonitorsRow = memo(function MonitorsRow(props) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteMonitor} onCancel={() => setModal()}/>);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onDeleteMonitor}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		/>);
 	});
 
 	return <Table.Row

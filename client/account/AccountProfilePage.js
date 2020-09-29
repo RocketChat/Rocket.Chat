@@ -1,6 +1,7 @@
-import { ButtonGroup, Button, Box, Icon, PasswordInput, TextInput, Modal } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Box, Icon, PasswordInput, TextInput } from '@rocket.chat/fuselage';
 import { SHA256 } from 'meteor/sha';
 import React, { useMemo, useState, useCallback } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../components/basic/Page';
 import AccountProfileForm from './AccountProfileForm';
@@ -14,6 +15,7 @@ import { useMethod } from '../contexts/ServerContext';
 import { useSetModal } from '../contexts/ModalContext';
 import { useUpdateAvatar } from '../hooks/useUpdateAvatar';
 import { getUserEmailAddress } from '../helpers/getUserEmailAddress';
+import DangerModal from '../components/DangerModal';
 
 const ActionConfirmModal = ({ onSave, onCancel, title, text, isPassword, ...props }) => {
 	const t = useTranslation();
@@ -22,24 +24,19 @@ const ActionConfirmModal = ({ onSave, onCancel, title, text, isPassword, ...prop
 	const handleChange = useCallback((e) => setInputText(e.currentTarget.value), [setInputText]);
 	const handleSave = useCallback(() => { onSave(inputText); onCancel(); }, [inputText, onSave, onCancel]);
 
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{title}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			<Box mb='x8'>{text}</Box>
-			{isPassword && <PasswordInput w='full' value={inputText} onChange={handleChange}/>}
-			{!isPassword && <TextInput w='full' value={inputText} onChange={handleChange}/>}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={handleSave}>{t('Continue')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
+	return <DangerModal
+		title={title}
+		onClose={onCancel}
+		onCancel={onCancel}
+		onConfirm={handleSave}
+		confirmButtonText={t('Continue')}
+		secondaryButtonText={t('Cancel')}
+		{...props}
+	>
+		<Box mb='x8'>{text}</Box>
+		{isPassword && <PasswordInput w='full' value={inputText} onChange={handleChange}/>}
+		{!isPassword && <TextInput w='full' value={inputText} onChange={handleChange}/>}
+	</DangerModal>;
 };
 
 const getInitialValues = (user) => ({
@@ -132,7 +129,7 @@ const AccountProfilePage = () => {
 
 	const updateAvatar = useUpdateAvatar(avatar, user._id);
 
-	const onSave = useCallback(async () => {
+	const onSave = useMutableCallback(async () => {
 		const save = async (typedPassword) => {
 			try {
 				const avatarResult = await updateAvatar();
@@ -168,36 +165,9 @@ const AccountProfilePage = () => {
 		}
 
 		save();
-	}, [
-		saveFn,
-		allowEmailChange,
-		allowPasswordChange,
-		allowRealNameChange,
-		allowUserStatusMessageChange,
-		bio,
-		canChangeUsername,
-		email,
-		password,
-		realname,
-		statusText,
-		username,
-		user,
-		updateAvatar,
-		handleAvatar,
-		closeModal,
-		requirePasswordConfirmation,
-		dispatchToastMessage,
-		t,
-		customFields,
-		statusType,
-		setModal,
-		commit,
-		nickname,
-		handlePassword,
-		handleConfirmationPassword,
-	]);
+	});
 
-	const handleLogoutOtherLocations = useCallback(async () => {
+	const handleLogoutOtherLocations = useMutableCallback(async () => {
 		setLoggingOut(true);
 		try {
 			await logoutOtherClients();
@@ -206,9 +176,9 @@ const AccountProfilePage = () => {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 		setLoggingOut(false);
-	}, [logoutOtherClients, dispatchToastMessage, t]);
+	});
 
-	const handleDeleteOwnAccount = useCallback(async () => {
+	const handleDeleteOwnAccount = useMutableCallback(async () => {
 		const save = async (passwordOrUsername) => {
 			try {
 				await deleteOwnAccount(SHA256(passwordOrUsername));
@@ -247,7 +217,7 @@ const AccountProfilePage = () => {
 			text={t('If_you_are_sure_type_in_your_username')}
 			isPassword
 		/>);
-	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t, setModal]);
+	});
 
 	return <Page>
 		<Page.Header title={t('Profile')}>

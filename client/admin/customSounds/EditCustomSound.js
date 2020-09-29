@@ -1,5 +1,6 @@
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox, Modal } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -9,26 +10,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { validate, createSoundData } from './lib';
 import { useSetModal } from '../../contexts/ModalContext';
 import VerticalBar from '../../components/basic/VerticalBar';
-
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Custom_Sound_Delete_Warning')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
+import DangerModal from '../../components/DangerModal';
 
 const SuccessModal = ({ onClose, ...props }) => {
 	const t = useTranslation();
@@ -89,6 +71,7 @@ function EditSound({ close, onChange, data, ...props }) {
 	const [name, setName] = useState('');
 	const [sound, setSound] = useState();
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -99,13 +82,13 @@ function EditSound({ close, onChange, data, ...props }) {
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
-	const handleChangeFile = useCallback((soundFile) => {
+	const handleChangeFile = useMutableCallback((soundFile) => {
 		setSound(soundFile);
-	}, []);
+	});
 
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
-	const saveAction = useCallback(async (sound) => {
+	const saveAction = useMutableCallback(async (sound) => {
 		const soundData = createSoundData(sound, name, { previousName, previousSound, _id });
 		const validation = validate(soundData, sound);
 		if (validation.length === 0) {
@@ -136,14 +119,14 @@ function EditSound({ close, onChange, data, ...props }) {
 		}
 
 		validation.forEach((error) => dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', { field: t(error) }) }));
-	}, [_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound]);
+	});
 
-	const handleSave = useCallback(async () => {
+	const handleSave = useMutableCallback(async () => {
 		saveAction(sound);
 		onChange();
-	}, [saveAction, sound, onChange]);
+	});
 
-	const onDeleteConfirm = useCallback(async () => {
+	const onDeleteConfirm = useMutableCallback(async () => {
 		try {
 			await deleteCustomSound(_id);
 			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
@@ -151,9 +134,18 @@ function EditSound({ close, onChange, data, ...props }) {
 			dispatchToastMessage({ type: 'error', message: error });
 			onChange();
 		}
-	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange]);
+	});
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
+	const openConfirmDelete = useMutableCallback(() => setModal(<DangerModal
+		title={t('Are_you_sure')}
+		onConfirm={onDeleteConfirm}
+		onCancel={closeModal}
+		onClose={closeModal}
+		confirmButtonText={t('Delete')}
+		secondaryButtonText={t('Cancel')}
+	>
+		{t('Custom_Sound_Delete_Warning')}
+	</DangerModal>));
 
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 

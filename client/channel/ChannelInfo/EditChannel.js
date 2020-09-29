@@ -19,7 +19,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import VerticalBar from '../../components/basic/VerticalBar';
 import RawText from '../../components/basic/RawText';
 import RoomAvatarEditor from '../../components/basic/avatar/RoomAvatarEditor';
-import DeleteChannelWarning from '../../components/DeleteChannelWarning';
+import DangerModal from '../../components/DangerModal';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { roomTypes, RoomSettingsEnum } from '../../../app/utils/client';
@@ -252,7 +252,16 @@ function EditChannel({ room }) {
 			onCancel();
 		};
 
-		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onConfirm}
+			onCancel={onCancel}
+			onClose={onCancel}
+			confirmButtonText={t('Yes_delete_it')}
+			secondaryButtonText={t('Cancel')}
+		>
+			{t('Delete_Room_Warning')}
+		</DangerModal>);
 	});
 
 	const changeRoomType = useMutableCallback(() => {

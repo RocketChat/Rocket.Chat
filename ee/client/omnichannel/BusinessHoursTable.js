@@ -7,7 +7,7 @@ import { useRoute } from '../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../client/hooks/useEndpointDataExperimental';
-import DeleteWarningModal from '../../../client/components/DeleteWarningModal';
+import DangerModal from '../../../client/components/DangerModal';
 import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
@@ -16,6 +16,7 @@ import { useMethod } from '../../../client/contexts/ServerContext';
 export function RemoveBusinessHourButton({ _id, type, reload }) {
 	const removeBusinessHour = useMethod('livechat:removeBusinessHour');
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -40,7 +41,14 @@ export function RemoveBusinessHourButton({ _id, type, reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onBusinessHour} onCancel={() => setModal()}/>);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onBusinessHour}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		/>);
 	});
 
 	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText>

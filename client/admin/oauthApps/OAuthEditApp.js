@@ -14,6 +14,7 @@ import {
 	FieldGroup,
 	Modal,
 } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod, useAbsoluteUrl } from '../../contexts/ServerContext';
@@ -21,27 +22,8 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import DangerModal from '../../components/DangerModal';
 import VerticalBar from '../../components/basic/VerticalBar';
-
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Application_delete_warning')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
 
 const SuccessModal = ({ onClose, ...props }) => {
 	const t = useTranslation();
@@ -111,6 +93,7 @@ function EditOauthApp({ onChange, data, ...props }) {
 		redirectUri: Array.isArray(data.redirectUri) ? data.redirectUri.join('\n') : data.redirectUri,
 	});
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 
 	const router = useRoute('admin-oauth-apps');
 
@@ -123,7 +106,7 @@ function EditOauthApp({ onChange, data, ...props }) {
 	const saveApp = useMethod('updateOAuthApp');
 	const deleteApp = useMethod('deleteOAuthApp');
 
-	const handleSave = useCallback(async () => {
+	const handleSave = useMutableCallback(async () => {
 		try {
 			await saveApp(
 				data._id,
@@ -134,18 +117,27 @@ function EditOauthApp({ onChange, data, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [data._id, dispatchToastMessage, newData, onChange, saveApp, t]);
+	});
 
-	const onDeleteConfirm = useCallback(async () => {
+	const onDeleteConfirm = useMutableCallback(async () => {
 		try {
 			await deleteApp(data._id);
 			setModal(() => <SuccessModal onClose={() => { setModal(); close(); }}/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [close, data._id, deleteApp, dispatchToastMessage]);
+	});
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
+	const openConfirmDelete = useMutableCallback(() => setModal(<DangerModal
+		title={t('Are_you_sure')}
+		onConfirm={onDeleteConfirm}
+		onCancel={closeModal}
+		onClose={closeModal}
+		confirmButtonText={t('Delete')}
+		secondaryButtonText={t('Cancel')}
+	>
+		{t('Application_delete_warning')}
+	</DangerModal>));
 
 	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) => setNewData({ ...newData, [field]: getValue(e) });
 

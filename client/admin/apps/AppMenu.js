@@ -1,5 +1,6 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
@@ -8,7 +9,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { appEnabledStatuses, warnStatusChange, handleAPIError } from './helpers';
 import { CloudLoginModal } from './CloudLoginModal';
 import { IframeModal } from './IframeModal';
-import WarningModal from './WarningModal';
+import DangerModal from '../../components/DangerModal';
 
 function AppMenu({ app, ...props }) {
 	const t = useTranslation();
@@ -25,24 +26,22 @@ function AppMenu({ app, ...props }) {
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 	const isAppEnabled = appEnabledStatuses.includes(app.status);
 
-	const closeModal = useCallback(() => {
-		setModal(null);
-	}, [setModal]);
+	const closeModal = useMutableCallback(() => setModal(null));
 
-	const handleEnable = useCallback(async () => {
+	const handleEnable = useMutableCallback(async () => {
 		try {
 			const { status } = await setAppStatus({ status: 'manually_enabled' });
 			warnStatusChange(app.name, status);
 		} catch (error) {
 			handleAPIError(error);
 		}
-	}, [app.name, setAppStatus]);
+	});
 
-	const handleViewLogs = useCallback(() => {
+	const handleViewLogs = useMutableCallback(() => {
 		appsRoute.push({ context: 'logs', id: app.id });
-	}, [app.id, appsRoute]);
+	});
 
-	const handleSubscription = useCallback(async () => {
+	const handleSubscription = useMutableCallback(async () => {
 		if (!await checkUserLoggedIn()) {
 			setModal(<CloudLoginModal />);
 			return;
@@ -70,17 +69,9 @@ function AppMenu({ app, ...props }) {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal}/>);
-	}, [
-		checkUserLoggedIn,
-		setModal,
-		closeModal,
-		buildExternalUrl,
-		app.id,
-		app.purchaseType,
-		syncApp,
-	]);
+	});
 
-	const handleDisable = useCallback(() => {
+	const handleDisable = useMutableCallback(() => {
 		const confirm = async () => {
 			closeModal();
 			try {
@@ -90,15 +81,20 @@ function AppMenu({ app, ...props }) {
 				handleAPIError(error);
 			}
 		};
-		setModal(<WarningModal
-			close={closeModal}
-			confirm={confirm}
-			text={t('Apps_Marketplace_Deactivate_App_Prompt')}
-			confirmText={t('Yes')}
-		/>);
-	}, [app.name, closeModal, setAppStatus, setModal, t]);
 
-	const handleUninstall = useCallback(() => {
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={confirm}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Yes')}
+			secondaryButtonText={t('Cancel')}
+		>
+			{t('Apps_Marketplace_Deactivate_App_Prompt')}
+		</DangerModal>);
+	});
+
+	const handleUninstall = useMutableCallback(() => {
 		const uninstall = async () => {
 			closeModal();
 			try {
@@ -113,23 +109,29 @@ function AppMenu({ app, ...props }) {
 				await handleSubscription();
 			};
 
-			setModal(<WarningModal
-				close={closeModal}
-				cancel={uninstall}
-				confirm={confirm}
-				text={t('Apps_Marketplace_Uninstall_Subscribed_App_Prompt')}
-				confirmText={t('Apps_Marketplace_Modify_App_Subscription')}
-				cancelText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
-			/>);
+			setModal(<DangerModal
+				title={t('Are_you_sure')}
+				onConfirm={confirm}
+				onCancel={uninstall}
+				onClose={closeModal}
+				confirmButtonText={t('Apps_Marketplace_Modify_App_Subscription')}
+				secondaryButtonText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
+			>
+				{t('Apps_Marketplace_Uninstall_Subscribed_App_Prompt')}
+			</DangerModal>);
 		}
 
-		setModal(<WarningModal
-			close={closeModal}
-			confirm={uninstall}
-			text={t('Apps_Marketplace_Uninstall_App_Prompt')}
-			confirmText={t('Yes')}
-		/>);
-	}, [closeModal, handleSubscription, isSubscribed, setModal, t, uninstallApp]);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={uninstall}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Yes')}
+			secondaryButtonText={t('Cancel')}
+		>
+			{t('Apps_Marketplace_Uninstall_App_Prompt')}
+		</DangerModal>);
+	});
 
 	const menuOptions = useMemo(() => ({
 		...canAppBeSubscribed && { subscribe: {

@@ -4,14 +4,14 @@ import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks
 import moment from 'moment';
 import { useSubscription } from 'use-subscription';
 
-import { formsSubscription } from '../additionalForms';
 import Page from '../../components/basic/Page';
+import DangerModal from '../../components/DangerModal';
+import { formsSubscription } from '../additionalForms';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { GenericTable } from '../../components/GenericTable';
 import { useMethod } from '../../contexts/ServerContext';
-import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { AutoCompleteDepartment } from '../../components/basic/AutoCompleteDepartment';
@@ -45,6 +45,7 @@ const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, ...props }) =
 
 const FilterByText = ({ setFilter, reload, ...props }) => {
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -126,7 +127,14 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAll} onCancel={() => setModal()}/>);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onDeleteAll}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		/>);
 	});
 
 

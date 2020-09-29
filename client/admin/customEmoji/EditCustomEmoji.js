@@ -1,5 +1,6 @@
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox, Modal } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
@@ -8,26 +9,7 @@ import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import VerticalBar from '../../components/basic/VerticalBar';
-
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Custom_Emoji_Delete_Warning')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
+import DangerModal from '../../components/DangerModal';
 
 const SuccessModal = ({ onClose, ...props }) => {
 	const t = useTranslation();
@@ -89,24 +71,26 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 	const [name, setName] = useState(previousName);
 	const [aliases, setAliases] = useState(previousAliases.join(', '));
 	const [emojiFile, setEmojiFile] = useState();
-	const setModal = useSetModal();
 	const [newEmojiPreview, setNewEmojiPreview] = useState(`/emoji-custom/${ encodeURIComponent(previousName) }.${ previousExtension }`);
+
+	const setModal = useSetModal();
+	const closeModal = () => setModal();
 
 	useEffect(() => {
 		setName(previousName || '');
 		setAliases((previousAliases && previousAliases.join(', ')) || '');
 	}, [previousName, previousAliases, previousEmoji, _id]);
 
-	const setEmojiPreview = useCallback(async (file) => {
+	const setEmojiPreview = useMutableCallback(async (file) => {
 		setEmojiFile(file);
 		setNewEmojiPreview(URL.createObjectURL(file));
-	}, [setEmojiFile]);
+	});
 
 	const hasUnsavedChanges = useMemo(() => previousName !== name || aliases !== previousAliases.join(', ') || !!emojiFile, [previousName, name, aliases, previousAliases, emojiFile]);
 
 	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
 
-	const handleSave = useCallback(async () => {
+	const handleSave = useMutableCallback(async () => {
 		const formData = new FormData();
 		formData.append('emoji', emojiFile);
 		formData.append('_id', _id);
@@ -116,20 +100,29 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 		if (result.success) {
 			onChange();
 		}
-	}, [emojiFile, _id, name, aliases, saveAction, onChange]);
+	});
 
 	const deleteAction = useEndpointAction('POST', 'emoji-custom.delete', useMemo(() => ({ emojiId: _id }), [_id]));
 
-	const onDeleteConfirm = useCallback(async () => {
+	const onDeleteConfirm = useMutableCallback(async () => {
 		const result = await deleteAction();
 		if (result.success) {
 			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
 		}
-	}, [close, deleteAction, onChange]);
+	});
 
-	const openConfirmDelete = useCallback(() => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>), [onDeleteConfirm, setModal]);
+	const openConfirmDelete = useMutableCallback(() => setModal(<DangerModal
+		title={t('Are_you_sure')}
+		onConfirm={onDeleteConfirm}
+		onCancel={closeModal}
+		onClose={closeModal}
+		confirmButtonText={t('Delete')}
+		secondaryButtonText={t('Cancel')}
+	>
+		{t('Custom_Emoji_Delete_Warning')}
+	</DangerModal>));
 
-	const handleAliasesChange = useCallback((e) => setAliases(e.currentTarget.value), [setAliases]);
+	const handleAliasesChange = useMutableCallback((e) => setAliases(e.currentTarget.value));
 
 	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
 

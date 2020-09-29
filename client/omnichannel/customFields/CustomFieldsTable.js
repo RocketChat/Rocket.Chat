@@ -8,7 +8,7 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
-import DeleteWarningModal from '../../components/DeleteWarningModal';
+import DangerModal from '../../components/DangerModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -16,6 +16,7 @@ import { useMethod } from '../../contexts/ServerContext';
 export function RemoveCustomFieldButton({ _id, reload }) {
 	const removeChat = useMethod('livechat:removeCustomField');
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -40,7 +41,14 @@ export function RemoveCustomFieldButton({ _id, reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onDeleteAgent}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		/>);
 	});
 
 	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>

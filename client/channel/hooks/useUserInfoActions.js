@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
-import { useAutoFocus, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Box } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import s from 'underscore.string';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -16,7 +16,7 @@ import { RoomRoles } from '../../../app/models/client';
 import { roomTypes, RoomMemberActions } from '../../../app/utils';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { useUserRoom } from './useUserRoom';
-
+import DangerModal from '../../components/DangerModal';
 
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
 
@@ -55,28 +55,6 @@ const getUserIsMuted = (room, user, userCanPostReadonly) => {
 
 	return room && Array.isArray(room.muted) && room.muted.indexOf(user && user.username) > -1;
 };
-
-const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
-	const refAutoFocus = useAutoFocus(true);
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='warning' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={close}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{text}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={close}>{t('Cancel')}</Button>
-				<Button ref={refAutoFocus} primary danger onClick={confirm}>{confirmText}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
-
 
 const mapOptions = ([key, { action, label, icon }]) => [
 	key,
@@ -289,12 +267,16 @@ export const useUserInfoActions = (user = {}, rid) => {
 				return onConfirm();
 			}
 
-			setModal(<WarningModal
-				text={t('The_user_wont_be_able_to_type_in_s', roomName)}
-				close={closeModal}
-				confirmText={t('Yes_mute_user')}
-				confirm={onConfirm}
-			/>);
+			setModal(<DangerModal
+				title={t('Are_you_sure')}
+				onConfirm={onConfirm}
+				onCancel={closeModal}
+				onClose={closeModal}
+				confirmButtonText={t('Yes_mute_user')}
+				secondaryButtonText={t('Cancel')}
+			>
+				{t('The_user_wont_be_able_to_type_in_s', roomName)}
+			</DangerModal>);
 		};
 
 		return roomCanMute && userCanMute && {
@@ -306,12 +288,16 @@ export const useUserInfoActions = (user = {}, rid) => {
 
 	const removeUserAction = useEndpointActionExperimental('POST', `${ endpointPrefix }.kick`, t('User_has_been_removed_from_s', roomName));
 	const removeUserOptionAction = useMutableCallback(() => {
-		setModal(<WarningModal
-			text={t('The_user_will_be_removed_from_s', roomName)}
-			close={closeModal}
-			confirmText={t('Yes_remove_user')}
-			confirm={() => { removeUserAction({ roomId: rid, userId: uid }); closeModal(); }}
-		/>);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={() => { removeUserAction({ roomId: rid, userId: uid }); closeModal(); }}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Yes_remove_user')}
+			secondaryButtonText={t('Cancel')}
+		>
+			{t('The_user_will_be_removed_from_s', roomName)}
+		</DangerModal>);
 	});
 	const removeUserOption = useMemo(() => roomCanRemove && userCanRemove && {
 		label: <Box color='danger'>{t('Remove_from_room')}</Box>,

@@ -15,7 +15,7 @@ import AgentInfo from './AgentInfo';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import VerticalBar from '../../components/basic/VerticalBar';
-import DeleteWarningModal from '../../components/DeleteWarningModal';
+import DangerModal from '../../components/DangerModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
@@ -23,6 +23,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 export function RemoveAgentButton({ _id, reload }) {
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${ _id }`);
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -46,7 +47,14 @@ export function RemoveAgentButton({ _id, reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onDeleteAgent}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		/>);
 	});
 
 	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
@@ -62,6 +70,7 @@ export function AgentInfoActions({ reload }) {
 	const agentsRoute = useRoute('omnichannel-agents');
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${ _id }`);
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleRemoveClick = useMutableCallback(async () => {
@@ -84,7 +93,14 @@ export function AgentInfoActions({ reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onDeleteAgent}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		/>);
 	});
 
 	const handleEditClick = useMutableCallback(() => agentsRoute.push({

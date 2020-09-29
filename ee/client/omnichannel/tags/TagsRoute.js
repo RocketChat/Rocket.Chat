@@ -14,7 +14,7 @@ import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterC
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import TagsPage from './TagsPage';
 import { TagEditWithData, TagNew } from './EditTag';
-import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
+import DangerModal from '../../../../client/components/DangerModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 
@@ -22,6 +22,7 @@ export function RemoveTagButton({ _id, reload }) {
 	const removeTag = useMethod('livechat:removeTag');
 	const tagsRoute = useRoute('omnichannel-tags');
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -47,7 +48,14 @@ export function RemoveTagButton({ _id, reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={onDeleteAgent}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		/>);
 	});
 
 	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText>

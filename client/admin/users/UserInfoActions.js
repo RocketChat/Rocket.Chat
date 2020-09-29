@@ -1,9 +1,11 @@
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Button, ButtonGroup, Icon, Menu, Modal, Option } from '@rocket.chat/fuselage';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { useUserInfoActionsSpread } from '../../channel/hooks/useUserInfoActions';
 import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
 import UserInfo from '../../components/basic/UserInfo';
+import DangerModal from '../../components/DangerModal';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
@@ -11,27 +13,6 @@ import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-
-const ConfirmWarningModal = ({ onConfirm, onCancel, confirmText, text, ...props }) => {
-	const t = useTranslation();
-
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{text}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onConfirm}>{confirmText}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
 
 const SuccessModal = ({ onClose, title, text, ...props }) => {
 	const t = useTranslation();
@@ -55,6 +36,7 @@ const SuccessModal = ({ onClose, title, text, ...props }) => {
 export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
+	const closeModal = useMutableCallback(() => setModal());
 
 	const directRoute = useRoute('direct');
 	const userRoute = useRoute('admin-users');
@@ -112,12 +94,21 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		confirmLabel: t('Delete'),
 	});
 
-	const confirmDeleteUser = useCallback(() => {
-		setModal(<ConfirmWarningModal onConfirm={deleteUser} onCancel={() => setModal()} text={t(`Delete_User_Warning_${ erasureType }`)} confirmText={t('Delete')} />);
-	}, [deleteUser, erasureType, setModal, t]);
+	const confirmDeleteUser = useMutableCallback(() => {
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={deleteUser}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Delete')}
+			secondaryButtonText={t('Cancel')}
+		>
+			{t(`Delete_User_Warning_${ erasureType }`)}
+		</DangerModal>);
+	});
 
 	const setAdminStatus = useMethod('setAdminStatus');
-	const changeAdminStatus = useCallback(async () => {
+	const changeAdminStatus = useMutableCallback(async () => {
 		try {
 			await setAdminStatus(_id, !isAdmin);
 			const message = isAdmin ? 'User_is_no_longer_an_admin' : 'User_is_now_an_admin';
@@ -126,21 +117,30 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [_id, dispatchToastMessage, isAdmin, onChange, setAdminStatus, t]);
+	});
 
 	const resetE2EEKeyRequest = useEndpoint('POST', 'users.resetE2EKey');
-	const resetE2EEKey = useCallback(async () => {
+	const resetE2EEKey = useMutableCallback(async () => {
 		setModal();
 		const result = await resetE2EEKeyRequest({ userId: _id });
 
 		if (result) {
 			setModal(<SuccessModal title={t('Success')} text={t('Users_key_has_been_reset')} onClose={() => { setModal(); onChange(); }}/>);
 		}
-	}, [resetE2EEKeyRequest, onChange, setModal, t, _id]);
+	});
 
-	const confirmResetE2EEKey = useCallback(() => {
-		setModal(<ConfirmWarningModal onConfirm={resetE2EEKey} onCancel={() => setModal()} text={t('E2E_Reset_Other_Key_Warning')} confirmText={t('Reset')} />);
-	}, [resetE2EEKey, t, setModal]);
+	const confirmResetE2EEKey = useMutableCallback(() => {
+		setModal(<DangerModal
+			title={t('Are_you_sure')}
+			onConfirm={resetE2EEKey}
+			onCancel={closeModal}
+			onClose={closeModal}
+			confirmButtonText={t('Reset')}
+			secondaryButtonText={t('Cancel')}
+		>
+			{t('E2E_Reset_Other_Key_Warning')}
+		</DangerModal>);
+	});
 
 	const activeStatusQuery = useMemo(() => ({
 		userId: _id,
@@ -167,11 +167,11 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		confirmLabel: t('Yes_deactivate_it'),
 	});
 
-	const directMessageClick = useCallback(() => directRoute.push({
+	const directMessageClick = useMutableCallback(() => directRoute.push({
 		rid: username,
 	}), [directRoute, username]);
 
-	const editUserClick = useCallback(() => userRoute.push({
+	const editUserClick = useMutableCallback(() => userRoute.push({
 		context: 'edit',
 		id: _id,
 	}), [_id, userRoute]);
