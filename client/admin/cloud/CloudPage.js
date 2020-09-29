@@ -13,6 +13,7 @@ import TroubleshootingSection from './TroubleshootingSection';
 import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
 import WorkspaceLoginSection from './WorkspaceLoginSection';
 import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';
+import { useSetModal } from '../../contexts/ModalContext';
 import { cloudConsoleUrl } from './constants';
 
 function CloudPage() {
@@ -61,7 +62,7 @@ function CloudPage() {
 	}, [errorCode, code, state, page, dispatchToastMessage, t, cloudRoute, finishOAuthAuthorization]);
 
 	const [registerStatus, setRegisterStatus] = useSafely(useState());
-	const [modal, setModal] = useState(null);
+	const setModal = useSetModal();
 
 	const fetchRegisterStatus = useMutableCallback(async () => {
 		try {
@@ -117,7 +118,6 @@ function CloudPage() {
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
-			{modal}
 			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 				<Margins block='x24'>
 					<WhatIsItSection />

@@ -46,14 +46,14 @@ export const findOrCreateInvite = (userId, invite) => {
 		throw new Meteor.Error('error-room-type-not-allowed', 'Cannot create invite links for this room type', { method: 'findOrCreateInvite' });
 	}
 
-	let { days, maxUses } = invite;
+	const { days = 1, maxUses = 0 } = invite;
 
 	if (!possibleDays.includes(days)) {
-		days = 1;
+		throw new Meteor.Error('invalid-number-of-days', 'Invite should expire in 1, 7, 15 or 30 days, or send 0 to never expire.');
 	}
 
 	if (!possibleUses.includes(maxUses)) {
-		maxUses = 0;
+		throw new Meteor.Error('invalid-number-of-uses', 'Invite should be valid for 1, 5, 10, 25, 50, 100 or infinite (0) uses.');
 	}
 
 	// Before anything, let's check if there's an existing invite with the same settings for the same channel and user and that has not yet expired.

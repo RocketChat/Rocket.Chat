@@ -43,7 +43,7 @@
   "Accounts_BlockedDomainsList_Description": "รายชื่อ Domain ที่ไม่ยอมรับคั่นด้วยคอมม่า",
   "Accounts_BlockedUsernameList": "รายชื่อผู้ใช้ที่ไม่ยอมรับ",
   "Accounts_BlockedUsernameList_Description": "รายชื่อผู้ใช้ที่ไม่ยอมรับคั่นด้วยคอมม่า (ไม่สนใจตัวอักษร)",
-  "Accounts_CustomFields_Description": "คุณจะเป็น JSON ที่ถูกต้องโดยมี Keys เป็นชื่อประกอบไปด้วย Doctionary ของรายละเอียดของ Keys. ตัวอย่างเช่น:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
+  "Accounts_CustomFields_Description": "คุณจะเป็น JSON ที่ถูกต้องโดยมี Keys เป็นชื่อประกอบไปด้วย Doctionary ของรายละเอียดของ Keys. ตัวอย่างเช่น:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
   "Accounts_CustomFieldsToShowInUserInfo": "ฟิลด์ที่กำหนดเองเพื่อแสดงในข้อมูลผู้ใช้",
   "Accounts_Default_User_Preferences": "ค่ากำหนดผู้ใช้ที่เป็นค่าเริ่มต้น",
   "Accounts_Default_User_Preferences_audioNotifications": "การแจ้งเตือนผิดพลาด",

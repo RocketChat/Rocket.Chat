@@ -18,7 +18,7 @@ function inviteAll(type) {
 			return;
 		}
 
-		const regexp = /#?([\d-_\w]+)/g;
+		const regexp = /#?([^\s,.:;"']+)(?=[\s,.:;"']|$)/g;
 		const [, channel] = regexp.exec(params.trim());
 
 		if (!channel) {
