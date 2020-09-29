@@ -50190,6 +50190,26 @@
           ]
         }
       ]
+    },
+    "3.7.0-rc.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.18.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "18919",
+          "title": "[FIX] invite-all-from and invite-all-to commands don't work with multibyte room names",
+          "userLogin": "FelipeParreira",
+          "contributors": [
+            "FelipeParreira"
+          ]
+        }
+      ]
     }
   }
 }
