@@ -42,7 +42,7 @@ const proxy = function(req: IncomingMessage, res: ServerResponse): void {
 const httpServer = http.createServer((req, res) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
-	if (!/^\/sockjs\/info\?cb=/.test(req.url || '')) {
+	if (process.env.NODE_ENV !== 'production' && !/^\/sockjs\/info\?cb=/.test(req.url || '')) {
 		return proxy(req, res);
 
 		// res.writeHead(404);

@@ -1,5 +1,44 @@
 # Rocket.Chat Micro-Services
 
+## PM2
+
+This usually suits better for development purposes.
+
+Start NATS first, you can it via Docker:
+
+```
+docker run --rm -d -p 4222:4222 nats
+```
+
+Then run Rocket.Chat as usual with an additional `TRANSPORTER` env var:
+
+```
+TRANSPORTER=nats://localhost:4222 MOLECULER_LOG_LEVEL=debug meteor
+```
+
+Set up an Enterprise license going to Admin > Enterprise.
+
+Then you can spin up micro services. From this folder, first install dependencies:
+
+```
+meteor npm i
+```
+
+You can run on `dev` to have hot reloading:
+
+```
+MONGO_URL=mongodb://localhost:3001/meteor \
+MOLECULER_LOG_LEVEL=debug \
+TRANSPORTER=nats://localhost:4222 \
+meteor npm run dev
+```
+
+To see process logs, do:
+
+```
+meteor npm run pm2 -- logs
+```
+
 ## Docker Compose
 
 The `docker-compose.yml` file contais a setup of the micro-services plus some extra tools:
