@@ -31,7 +31,7 @@ Meteor.startup(function() {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				const message = data || Messages.findOne({ _id: id });
+				const message = data ?? Messages.findOne({ _id: id });
 				publishMessage(clientAction, message);
 				break;
 		}

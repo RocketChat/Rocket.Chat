@@ -39,6 +39,7 @@ const LoadingRow = ({ cols }) => <Table.Row>
 export const GenericTable = forwardRef(function GenericTable({
 	children,
 	results,
+	fixed = true,
 	total,
 	renderRow: RenderRow,
 	header,
@@ -79,7 +80,7 @@ export const GenericTable = forwardRef(function GenericTable({
 			: <>
 				<Scrollable>
 					<Box mi='neg-x24' pi='x24' flexGrow={1} ref={ref}>
-						<Table fixed sticky>
+						<Table fixed={fixed} sticky>
 							{header && <Table.Head>
 								<Table.Row>
 									{header}
