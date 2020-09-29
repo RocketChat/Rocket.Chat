@@ -447,13 +447,11 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	getLastTimestamp(options) {
-		if (options == null) { options = {}; }
-		const query = { ts: { $exists: 1 } };
+	getLastTimestamp(options = { fields: { _id: 0, ts: 1 } }) {
 		options.sort = { ts: -1 };
 		options.limit = 1;
-		const [message] = this.find(query, options).fetch();
-		return message && message.ts;
+		const [message] = this.find({}, options).fetch();
+		return message?.ts;
 	}
 
 	findByRoomIdAndMessageIds(rid, messageIds, options) {
@@ -929,6 +927,29 @@ export class Messages extends Base {
 
 	removeByRoomIds(rids) {
 		return this.remove({ rid: { $in: rids } });
+	}
+
+	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
+		const query = {
+			rid,
+			ts,
+			tlm: { $exists: 1 },
+			tcount: { $exists: 1 },
+		};
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
+		}
+
+		if (users.length > 0) {
+			query['u.username'] = { $in: users };
+		}
+
+		return this.find(query, options);
 	}
 
 	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {

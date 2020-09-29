@@ -65,7 +65,7 @@ Meteor.startup(function() {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['starred', 'threads', 'message', 'message-mobile'],
+		context: ['starred', 'threads', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
@@ -92,7 +92,7 @@ Meteor.startup(function() {
 			return msg.starred && msg.starred.find((star) => star._id === u._id);
 		},
 		order: 100,
-		group: 'menu',
+		group: ['message', 'menu'],
 	});
 
 	MessageAction.addButton({

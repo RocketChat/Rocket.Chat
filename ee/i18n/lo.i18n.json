@@ -28,5 +28,6 @@
   "Invalid_Department": "ພາກສ່ວນບໍ່ຖືກຕ້ອງ",
   "LDAP_Advanced_Sync": "ຊິງຂັ້ນສູງ",
   "LDAP_Default_Role_To_User": "ຄ່າເລີ່ມຕົ້ນຂອງຜູ້ໃຊ້",
-  "LDAP_Default_Role_To_User_Description": "ຄ່າເລີ່ມຕົ້ນສິດທິຂອງ RC ທີ່ຈະໃຊ້ກັບຜູ້ໃຊ້ ຖ້າຜຸ້ໃຊ້ມີສິດທິ LDAP ບາງຕົວທີ່ບໍ່ຖືກລວມເຂົ້າກັນ"
+  "LDAP_Default_Role_To_User_Description": "ຄ່າເລີ່ມຕົ້ນສິດທິຂອງ RC ທີ່ຈະໃຊ້ກັບຜູ້ໃຊ້ ຖ້າຜຸ້ໃຊ້ມີສິດທິ LDAP ບາງຕົວທີ່ບໍ່ຖືກລວມເຂົ້າກັນ",
+  "LDAP_Enable_LDAP_Roles_To_RC_Roles": "ເປີດການໃຊ້ງານບົດບາດການເຊື່ອມເຂົ້າກັນຈາກ LDAP ໄປຍັງ Rocket.Chat"
 }
