@@ -5,7 +5,7 @@ import Busboy from 'busboy';
 import { API } from '../../../api/server';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
-import { Info } from '../../../utils';
+import { Info, isNetworkError } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
 
@@ -78,6 +78,11 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
+						if (isNetworkError(e.code)) {
+							// air gapped environment, a.k.a. no internet to reach the marketplace
+							orchestrator.getRocketChatLogger().warn('Error getting the Apps due to a networking problem:', e.message);
+							return API.v1.success([]);
+						}
 						orchestrator.getRocketChatLogger().error('Error getting the Apps:', e.response.data);
 						return API.v1.internalError();
 					}
@@ -354,6 +359,11 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
+						if (isNetworkError(e.code)) {
+							// air gapped environment, a.k.a. no internet to reach the marketplace
+							orchestrator.getRocketChatLogger().warn('Error getting the Apps due to a networking problem:', e.message);
+							return API.v1.success([]);
+						}
 						return handleError('Error getting the App information from the Marketplace:', e);
 					}
 
@@ -380,6 +390,11 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
+						if (isNetworkError(e.code)) {
+							// air gapped environment, a.k.a. no internet to reach the marketplace
+							orchestrator.getRocketChatLogger().warn('Error getting the Apps due to a networking problem:', e.message);
+							return API.v1.success([]);
+						}
 						return handleError('Error getting the App update info from the Marketplace:', e);
 					}
 
