@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Promise } from 'meteor/promise';
 import { DDPCommon } from 'meteor/ddp-common';
 
 import { WEB_RTC_EVENTS } from '../../../webrtc';
@@ -12,7 +13,9 @@ import { IUser } from '../../../../definition/IUser';
 
 export class Stream extends Streamer {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
-		Meteor.publish(name, fn);
+		Meteor.publish(name, function(eventName, options) {
+			return Promise.await(fn.call(this, eventName, options));
+		});
 	}
 
 	registerMethod(methods: Record<string, (eventName: string, ...args: any[]) => any>): void {

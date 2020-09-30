@@ -257,7 +257,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 	abstract registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void;
 
 	iniPublication(): void {
-		const { _publish } = this;
+		const _publish = this._publish.bind(this);
 		this.registerPublication(this.subscriptionName, function(this: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any}) {
 			return _publish(this, eventName, options);
 		});
@@ -266,7 +266,10 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 	abstract registerMethod(methods: Record<string, (eventName: string, ...args: any[]) => any>): void;
 
 	initMethod(): void {
-		const { isWriteAllowed, __emit, _emit, retransmit } = this;
+		const isWriteAllowed = this.isWriteAllowed.bind(this);
+		const __emit = this.__emit.bind(this);
+		const _emit = this._emit.bind(this);
+		const { retransmit } = this;
 
 		const method: Record<string, (eventName: string, ...args: any[]) => any> = {
 			async [this.subscriptionName](this: Publication, eventName, ...args): Promise<void> {
