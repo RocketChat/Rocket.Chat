@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { StreamService } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 import { hasPermission } from '../../../authorization';
 import { EmojiCustom } from '../../../models';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
@@ -18,7 +18,7 @@ Meteor.methods({
 
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emoji.name }.${ emoji.extension }`));
 		EmojiCustom.removeById(emojiID);
-		StreamService.sendDeleteCustomEmoji(emoji);
+		api.broadcast('emoji.deleteCustom', { emoji });
 
 		return true;
 	},

@@ -24,5 +24,11 @@ export class NotificationService extends ServiceClass {
 
 			notifications.notifyLogged('user-status', [_id, username, STATUS_MAP[status], statusText]);
 		});
+
+		this.onEvent('emoji.deleteCustom', ({ emoji }) => {
+			notifications.notifyLogged('deleteEmojiCustom', {
+				emojiData: emoji,
+			});
+		});
 	}
 }

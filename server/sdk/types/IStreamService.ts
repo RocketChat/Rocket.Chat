@@ -9,7 +9,6 @@ export interface IStreamService extends IServiceClass {
 	sendUserAvatarUpdate({ username, etag }: { username: string; etag?: string }): void;
 	sendRoomAvatarUpdate({ rid, etag }: { rid: string; etag?: string }): void;
 	sendRoleUpdate(update: Record<string, any>): void;
-	sendDeleteCustomEmoji(emojiData: Record<string, any>): void;
 	sendUpdateCustomEmoji(emojiData: Record<string, any>): void;
 	sendUserDeleted(uid: string): void;
 	sendUserNameChanged(userData: Record<string, any>): void;

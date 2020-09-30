@@ -8,6 +8,7 @@ import { ISetting } from '../../../definition/ISetting';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IUser } from '../../../definition/IUser';
 import { AutoUpdateRecord } from '../types/IMeteor';
+import { IEmoji } from '../../../definition/IEmoji';
 
 export type BufferList = ReturnType<MessagePack['encode']>;
 
@@ -26,4 +27,5 @@ export type EventSignatures = {
 	'meteor.autoUpdateClientVersionChanged'(data: {record: AutoUpdateRecord}): void;
 	'meteor.loginServiceConfiguration'(data: {action: string; record: any}): void;
 	'stream.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
+	'emoji.deleteCustom'(emoji: IEmoji): void;
 }
