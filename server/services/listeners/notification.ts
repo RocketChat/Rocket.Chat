@@ -30,5 +30,11 @@ export class NotificationService extends ServiceClass {
 				emojiData: emoji,
 			});
 		});
+
+		this.onEvent('emoji.updateCustom', ({ emoji }) => {
+			notifications.notifyLogged('updateEmojiCustom', {
+				emojiData: emoji,
+			});
+		});
 	}
 }

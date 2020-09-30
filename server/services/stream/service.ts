@@ -65,12 +65,6 @@ export class StreamService extends ServiceClass implements IStreamService {
 		});
 	}
 
-	sendUpdateCustomEmoji(emojiData: Record<string, any>): void {
-		this.streamLogged.emit('updateEmojiCustom', {
-			emojiData,
-		});
-	}
-
 	sendUserDeleted(uid: string): void {
 		this.streamLogged.emit('Users:Deleted', {
 			userId: uid,

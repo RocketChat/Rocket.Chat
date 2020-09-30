@@ -28,4 +28,5 @@ export type EventSignatures = {
 	'meteor.loginServiceConfiguration'(data: {action: string; record: any}): void;
 	'stream.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'emoji.deleteCustom'(emoji: IEmoji): void;
+	'emoji.updateCustom'(emoji: IEmoji): void;
 }
