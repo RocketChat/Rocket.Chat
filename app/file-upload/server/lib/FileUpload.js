@@ -178,14 +178,15 @@ export const FileUpload = {
 	},
 
 	avatarsOnValidate(file) {
-		if (file.rid) {
-			return FileUpload.avatarRoomOnFinishUpload(file);
-		}
-
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
-		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
+
+		if (file.rid) {
+			if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
+				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+			}
+		} else if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
