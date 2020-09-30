@@ -5,11 +5,6 @@ import { Subscriptions } from '../../../app/models';
 import { msgStream } from '../../../app/lib/server';
 import './emitter';
 
-
-export const MY_MESSAGE = '__my_messages__';
-
-msgStream.allowWrite('none');
-
 msgStream.allowRead(function(eventName, args) {
 	try {
 		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
@@ -29,6 +24,7 @@ msgStream.allowRead(function(eventName, args) {
 	}
 });
 
+export const MY_MESSAGE = '__my_messages__';
 msgStream.allowRead(MY_MESSAGE, 'all');
 
 msgStream.allowEmit(MY_MESSAGE, function(eventName, msg) {

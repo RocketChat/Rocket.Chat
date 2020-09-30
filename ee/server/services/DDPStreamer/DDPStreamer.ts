@@ -4,13 +4,13 @@ import url from 'url';
 import WebSocket from 'ws';
 // import PromService from 'moleculer-prometheus';
 
-import { Streams } from './Streamer';
 import { Client, MeteorClient } from './Client';
 // import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
 import { isEmpty } from './lib/utils';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { events } from './configureServer';
 import notifications from './streams/index';
+import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 
 const {
 	PORT: port = 4000,
@@ -120,9 +120,9 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
-		this.onEvent('stream', ([streamer, eventName, payload]): void => {
-			const stream = Streams.get(streamer);
-			return stream && stream.emitPayload(eventName, payload);
+		this.onEvent('stream', ([streamer, eventName, args]): void => {
+			const stream = StreamerCentral.instances[streamer];
+			return stream && stream.emitWithoutBroadcast(eventName, ...args);
 		});
 
 		// message({ message }) {

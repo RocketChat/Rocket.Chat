@@ -33,29 +33,29 @@ const loginServices = new Map<string, any>();
 
 MeteorService.getLoginServiceConfiguration().then((records) => records.forEach((record) => loginServices.set(record._id, record)));
 
-server.publish(loginServiceConfigurationPublication, async function(pub) {
-	loginServices.forEach((record) => pub.added(loginServiceConfigurationCollection, record._id, record));
+server.publish(loginServiceConfigurationPublication, async function() {
+	loginServices.forEach((record) => this.added(loginServiceConfigurationCollection, record._id, record));
 
 	const fn = (action: string, record: any): void => {
 		switch (action) {
 			case 'added':
 			case 'changed':
 				loginServices.set(record._id, record);
-				pub[action](loginServiceConfigurationCollection, record._id, record);
+				this[action](loginServiceConfigurationCollection, record._id, record);
 				break;
 			case 'removed':
 				loginServices.delete(record._id);
-				pub[action](loginServiceConfigurationCollection, record._id);
+				this[action](loginServiceConfigurationCollection, record._id);
 		}
 	};
 
 	events.on(loginServiceConfigurationPublication, fn);
 
-	pub.once('stop', () => {
+	this.onStop(() => {
 		events.removeListener(loginServiceConfigurationPublication, fn);
 	});
 
-	pub.ready();
+	this.ready();
 });
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -65,21 +65,21 @@ MeteorService.getLastAutoUpdateClientVersions().then((records) => {
 });
 
 const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
-server.publish(autoUpdateCollection, function(pub) {
-	autoUpdateRecords.forEach((record) => pub.added(autoUpdateCollection, record._id, record));
+server.publish(autoUpdateCollection, function() {
+	autoUpdateRecords.forEach((record) => this.added(autoUpdateCollection, record._id, record));
 
 	const fn = (record: any): void => {
 		autoUpdateRecords.set(record._id, record);
-		pub.changed(autoUpdateCollection, record._id, record);
+		this.changed(autoUpdateCollection, record._id, record);
 	};
 
 	events.on('meteor.autoUpdateClientVersionChanged', fn);
 
-	pub.once('stop', () => {
+	this.onStop(() => {
 		events.removeListener('meteor.autoUpdateClientVersionChanged', fn);
 	});
 
-	pub.ready();
+	this.ready();
 });
 
 server.methods({

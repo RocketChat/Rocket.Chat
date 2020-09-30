@@ -1,7 +1,7 @@
 import { EJSON } from 'meteor/ejson';
 import { Db } from 'mongodb';
 
-import { IStreamerConstructor } from './sdk/types/IStreamService';
+import { IStreamerConstructor } from './modules/streamer/streamer.module';
 
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {

@@ -1,24 +1,24 @@
-import { Stream, send, changedPayload, publish } from '../Streamer';
+import { Stream } from '../Streamer';
 import { NotificationsModule } from '../../../../../server/modules/notifications/notifications.module';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import { getCollection, Collections } from '../../mongo';
-import { Publication } from '../Publication';
 import { Authorization } from '../../../../../server/sdk';
+import { Publication } from '../../../../../server/modules/streamer/streamer.module';
 
 export class RoomStreamer extends Stream {
-	async [publish](publication: Publication, eventName = '', options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
-		super[publish](publication, eventName, options);
+	async _publish(publication: Publication, eventName = '', options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+		super._publish(publication, eventName, options);
 		// const uid = Meteor.userId();
 		const { userId } = publication.client;
 		if (/rooms-changed/.test(eventName)) {
 			// TODO: change this to serialize only once
 			const roomEvent = (...args: any[]): void => {
-				const payload = changedPayload(this.subscriptionName, {
+				const payload = this.changedPayload(this.subscriptionName, 'id', {
 					eventName: `${ userId }/rooms-changed`,
 					args,
 				});
 
-				payload && send(
+				payload && publication.client?.send(
 					publication,
 					payload,
 				);
@@ -53,7 +53,7 @@ export class RoomStreamer extends Stream {
 			};
 			this.on(userId, userEvent);
 
-			publication.once('stop', () => {
+			publication.onStop(() => {
 				this.removeListener(userId, userEvent);
 				subscriptions.forEach(({ rid }) => this.removeListener(rid, roomEvent));
 			});
@@ -104,17 +104,17 @@ const notifications = new NotificationsModule(Stream, RoomStreamer, MessageStrea
 export default notifications;
 
 // TODO: Implementation not complete
-notifications.streamRoomMessage.allowRead(function(rid) {
+notifications.streamRoomMessage.allowRead(async function(rid) {
 	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
 });
 
 
 // export const streamRoomData = new Stream(STREAM_NAMES.ROOM_DATA);
-notifications.streamRoomData.allowRead(function(rid) {
+notifications.streamRoomData.allowRead(async function(rid) {
 	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
 });
 
-notifications.streamLivechatQueueData.allowRead(function() {
+notifications.streamLivechatQueueData.allowRead(async function() {
 	return !!this.userId && Authorization.hasPermission(this.userId, 'view-l-room');
 });
 

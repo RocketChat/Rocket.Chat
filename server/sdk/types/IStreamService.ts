@@ -1,32 +1,6 @@
 import { IServiceClass } from './ServiceClass';
 import { IMessage } from '../../../definition/IMessage';
 
-type Publication = {
-	userId?: string;
-}
-type Rule = (this: Publication, eventName: string, ...args: any) => boolean | Promise<boolean>;
-
-export interface IStreamer {
-	serverOnly: boolean;
-
-	allowEmit(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined;
-
-	allowWrite(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined;
-
-	allowRead(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined;
-
-	emit(event: string, ...data: any[]): void;
-
-	__emit(...data: any[]): void;
-
-	emitWithoutBroadcast(event: string, ...data: any[]): void;
-}
-
-export interface IStreamerConstructor {
-	// eslint-disable-next-line @typescript-eslint/no-misused-new
-	new(name: string, options?: {retransmit?: boolean; retransmitToSelf?: boolean}): IStreamer;
-}
-
 export interface IStreamService extends IServiceClass {
 	notifyAll(eventName: string, ...args: any[]): void;
 	notifyUser(uid: string, eventName: string, ...args: any[]): void;

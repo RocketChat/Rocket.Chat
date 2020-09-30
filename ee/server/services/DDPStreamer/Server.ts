@@ -7,7 +7,7 @@ import { Publication } from './Publication';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
 
-type SubscriptionFn = (publication: Publication, client: Client, eventName: string, options: object) => void;
+type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
 type MethodFn = (this: Client, ...args: any[]) => any;
 type Methods = {
 	[k: string]: MethodFn;
@@ -16,16 +16,13 @@ type Methods = {
 // eslint-disable-next-line @typescript-eslint/camelcase
 export const SERVER_ID = ejson.stringify({ server_id: '0' });
 
-const methods = Symbol('methods');
-const subscriptions = Symbol('subscriptions');
-
 // TODO: remove, web-client still receives the object of the logged in user, verify if that works
 // export const User = new Publish('user');
 
 export class Server extends EventEmitter {
-	[subscriptions] = new Map<string, SubscriptionFn>();
+	private _subscriptions = new Map<string, SubscriptionFn>();
 
-	[methods] = new Map<string, MethodFn>();
+	private _methods = new Map<string, MethodFn>();
 
 	serialize = ejson.stringify;
 
@@ -36,10 +33,10 @@ export class Server extends EventEmitter {
 
 	async call(client: Client, packet: IPacket): Promise<void> {
 		try {
-			if (!this[methods].has(packet.method)) {
+			if (!this._methods.has(packet.method)) {
 				throw new Error(`Method '${ packet.method }' doesn't exist`);
 			}
-			const fn = this[methods].get(packet.method);
+			const fn = this._methods.get(packet.method);
 
 			if (!fn) {
 				throw Error('method not found');
@@ -54,36 +51,36 @@ export class Server extends EventEmitter {
 
 	methods(obj: Methods): void {
 		Object.entries(obj).forEach(([name, fn]) => {
-			if (this[methods].has(name)) {
+			if (this._methods.has(name)) {
 				return;
 			}
-			this[methods].set(name, fn);
+			this._methods.set(name, fn);
 		});
 	}
 
 	async subscribe(client: Client, packet: IPacket): Promise<void> {
 		try {
-			if (!this[subscriptions].has(packet.name)) {
+			if (!this._subscriptions.has(packet.name)) {
 				throw new Error(`Subscription '${ packet.name }' doesn't exist`);
 			}
-			const fn = this[subscriptions].get(packet.name);
+			const fn = this._subscriptions.get(packet.name);
 			if (!fn) {
 				throw new Error('subscription not found');
 			}
 
 			const publication = new Publication(client, packet, this);
 			const [eventName, ...options] = packet.params;
-			await fn(publication, client, eventName, options);
+			await fn.call(publication, eventName, options);
 		} catch (error) {
 			this.nosub(client, packet, error.toString());
 		}
 	}
 
 	publish(name: string, fn: SubscriptionFn): void {
-		if (this[subscriptions].has(name)) {
+		if (this._subscriptions.has(name)) {
 			return;
 		}
-		this[subscriptions].set(name, fn);
+		this._subscriptions.set(name, fn);
 	}
 
 	stream(stream: string, fn: SubscriptionFn): void {

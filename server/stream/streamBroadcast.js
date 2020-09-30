@@ -12,6 +12,7 @@ import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
 import { Users } from '../../app/models/server';
 import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
+import { StreamerCentral } from '../modules/streamer/streamer.module';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -182,7 +183,7 @@ Meteor.methods({
 			return 'not-authorized';
 		}
 
-		const instance = Meteor.StreamerCentral.instances[streamName];
+		const instance = StreamerCentral.instances[streamName];
 		if (!instance) {
 			return 'stream-not-exists';
 		}
@@ -190,7 +191,7 @@ Meteor.methods({
 		if (instance.serverOnly) {
 			instance.__emit(eventName, ...args);
 		} else {
-			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+			StreamerCentral.instances[streamName]._emit(eventName, args);
 		}
 	},
 });
@@ -233,7 +234,7 @@ function startStreamCastBroadcast(value) {
 			return 'not-authorized';
 		}
 
-		const instance = Meteor.StreamerCentral.instances[streamName];
+		const instance = StreamerCentral.instances[streamName];
 		if (!instance) {
 			return 'stream-not-exists';
 		}
@@ -319,10 +320,10 @@ function startStreamBroadcast() {
 		TroubleshootDisableInstanceBroadcast = value;
 
 		if (value) {
-			return Meteor.StreamerCentral.removeListener('broadcast', onBroadcast);
+			return StreamerCentral.removeListener('broadcast', onBroadcast);
 		}
 
-		Meteor.StreamerCentral.on('broadcast', onBroadcast);
+		StreamerCentral.on('broadcast', onBroadcast);
 	});
 }
 

@@ -1,285 +1,61 @@
-import { EventEmitter } from 'events';
+import WebSocket from 'ws';
 
 import { server } from './configureServer';
-import { DDP_EVENTS, STREAM_NAMES } from './constants';
-import { sendBroadcast } from './lib/sendBroadcast';
+import { DDP_EVENTS } from './constants';
 import { isEmpty } from './lib/utils';
-import { Publication } from './Publication';
-import { Client } from './Client';
+import { Streamer, DDPSubscription, Connection, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { api } from '../../../../server/sdk/api';
-import { IStreamer } from '../../../../server/sdk/types/IStreamService';
 
-type Rule = (this: Publication, eventName: string, ...args: any) => boolean | Promise<boolean>;
-
-interface IRules {
-	[k: string]: Rule;
-}
-
-export type ISubscription = {
-	client: Client;
-}
-
-export const send = function(self: Publication, msg: string): void {
-	if (!self.client) {
-		return;
-	}
-	self.client.send(msg);
-};
-
-export const changedPayload = (collection: string, fields: object): string | false => !isEmpty(fields) && server.serialize({
-	[DDP_EVENTS.MSG]: DDP_EVENTS.CHANGED,
-	[DDP_EVENTS.COLLECTION]: collection,
-	[DDP_EVENTS.ID]: 'id',
-	[DDP_EVENTS.FIELDS]: fields,
+StreamerCentral.on('broadcast', (name, eventName, args) => {
+	api.broadcast('stream', [
+		name,
+		eventName,
+		args,
+	]);
 });
 
-// PRIVATE METHODS
-
-const allow = Symbol('allow');
-const isAllowed = Symbol('isAllowed');
-export const publish = Symbol('publish');
-
-export const Streams = new Map();
-
-export class Stream extends EventEmitter implements IStreamer {
-	subscriptionName: string;
-
-	serverOnly: boolean;
-
-	retransmit = true;
-
-	retransmitToSelf = false;
-
-	private subscriptionsByEventName = new Map<string, Set<ISubscription>>();
-
-	private _allowRead = {};
-
-	private _allowWrite = {};
-
-	private _allowEmit = {};
-
-	constructor(
-		private name: string,
-		{ retransmit = true, retransmitToSelf = false }: {retransmit?: boolean; retransmitToSelf?: boolean } = { },
-	) {
-		super();
-
-		this.subscriptionName = `${ STREAM_NAMES.STREAMER_PREFIX }${ name }`;
-		this.retransmit = retransmit;
-		this.retransmitToSelf = retransmitToSelf;
-
-		// this.subscriptionsByEventName = new Map();
-
-		this.iniPublication();
-
-		this.allowRead('none');
-		this.allowWrite('none');
-
-		Streams.set(name, this);
+export class Stream extends Streamer {
+	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
+		server.publish(name, fn);
 	}
 
-	[allow](rules: IRules, name: string) {
-		return (eventName: string | boolean | Rule, fn?: Rule): boolean | undefined => {
-			const _eventName: string = typeof eventName === 'string' ? eventName : '__all__';
-
-			if (typeof eventName === 'function') {
-				fn = eventName;
-			}
-
-			if (fn) {
-				rules[_eventName] = fn;
-				return;
-			}
-
-			if (!['all', 'none', 'logged'].includes(_eventName)) {
-				console.error(`${ name } shortcut '${ fn }' is invalid`);
-			}
-
-			if (eventName === 'all' || eventName === true) {
-				rules[_eventName] = async function(): Promise<boolean> {
-					return true;
-				};
-				return;
-			}
-
-			if (eventName === 'none' || eventName === false) {
-				rules[_eventName] = async function(): Promise<boolean> {
-					return false;
-				};
-				return;
-			}
-
-			if (eventName === 'logged') {
-				rules[_eventName] = async function(): Promise<boolean> {
-					return Boolean(this.userId);
-				};
-			}
-		};
+	registerMethod(methods: Record<string, (eventName: string, ...args: any[]) => any>): void {
+		server.methods(methods);
 	}
 
-	allowRead(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined {
-		return this[allow](this._allowRead, 'allowRead')(eventName, fn);
-	}
-
-	allowWrite(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined {
-		return this[allow](this._allowWrite, 'allowWrite')(eventName, fn);
-	}
-
-	allowEmit(eventName: string | boolean | Rule, fn?: Rule): Promise<boolean> | boolean | undefined {
-		return this[allow](this._allowEmit, 'allowEmit')(eventName, fn);
-	}
-
-	[isAllowed](rules: IRules, defaultPermission = false) {
-		return async (scope: Publication, eventName: string, args: any): Promise<boolean> => {
-			if (rules[eventName]) {
-				return rules[eventName].call(scope, eventName, ...args);
-			}
-
-			if (rules.__all__) {
-				return rules.__all__.call(scope, eventName, ...args);
-			}
-
-			// TODO: Check this since we have permissions not defined here yet
-			return defaultPermission;
-		};
-	}
-
-	async isReadAllowed(scope: Publication, eventName: string, args: any): Promise<boolean> {
-		// TODO: Check this since we have permissions not defined here yet
-		return this[isAllowed](this._allowRead, true)(scope, eventName, args);
-	}
-
-	async isWriteAllowed(scope: Publication, eventName: string, args: any): Promise<boolean> {
-		return this[isAllowed](this._allowWrite)(scope, eventName, args);
-	}
-
-	addSubscription(subscription: ISubscription, eventName: string): void {
-		// this.subscriptions.add(subscription);
-		if (!this.subscriptionsByEventName.has(eventName)) {
-			this.subscriptionsByEventName.set(
-				eventName,
-				new Set([subscription]),
-			);
-			return;
-		}
-
-		this.subscriptionsByEventName.get(eventName)?.add(subscription);
-	}
-
-	removeSubscription(subscription: ISubscription, eventName: string): void {
-		// this.subscriptions.delete(subscription);
-		const subscriptions = this.subscriptionsByEventName.get(eventName);
-		if (subscriptions) {
-			subscriptions.delete(subscription);
-			if (!subscriptions.size) {
-				this.subscriptionsByEventName.delete(eventName);
-			}
-		}
-	}
-
-	async [publish](publication: Publication, eventName = '', options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
-		let args = [];
-
-		if (typeof options === 'boolean') {
-			// useCollection = options;
-		} else {
-			if (options.useCollection) {
-				// useCollection = options.useCollection;
-			}
-
-			if (options.args) {
-				args = options.args;
-			}
-		}
-		if (!eventName || eventName.length === 0) {
-			throw new Error('invalid-event-name');
-		}
-
-		const isAllowed = await this.isReadAllowed(publication, eventName, args);
-		if (isAllowed !== true) {
-			throw new Error('not-allowed');
-		}
-
-		this.addSubscription(publication, eventName);
-		publication.once('stop', () =>
-			this.removeSubscription(publication, eventName),
-		);
-		publication.ready();
-	}
-
-	async iniPublication(): Promise<void> {
-		const p = this[publish].bind(this);
-		const initMethod = this.initMethod.bind(this);
-		server.publish(this.subscriptionName, function(publication, _client, eventName, options) {
-			initMethod(publication);
-			return p(publication, eventName, options);
+	changedPayload(collection: string, id: string, fields: Record<string, any>): string | false {
+		return !isEmpty(fields) && server.serialize({
+			[DDP_EVENTS.MSG]: DDP_EVENTS.CHANGED,
+			[DDP_EVENTS.COLLECTION]: collection,
+			[DDP_EVENTS.ID]: id,
+			[DDP_EVENTS.FIELDS]: fields,
 		});
 	}
 
-	async initMethod(publication: Publication): Promise<void> {
-		const { name, subscriptionName } = this;
-		const isWriteAllowed = this.isWriteAllowed.bind(this);
+	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], msg: string): Promise<void> {
+		// TODO: missing typing
+		const data = Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(`a${ JSON.stringify([msg]) }`), {
+			fin: true, // sending a single fragment message
+			rsv1: false, // don"t set rsv1 bit (no compression)
+			opcode: 1, // opcode for a text frame
+			mask: false, // set false for client-side
+			readOnly: false, // the data can be modified as needed
+		}));
 
-		const method = {
-			async [this.subscriptionName](this: Client, eventName: string, ...args: any[]): Promise<void> {
-				const isAllowed = await isWriteAllowed(publication, eventName, args);
-				if (isAllowed !== true) {
-					return;
-				}
+		for await (const { subscription } of subscriptions) {
+			if (this.retransmitToSelf === false && origin && origin === subscription.connection) {
+				return;
+			}
 
-				const payload = changedPayload(subscriptionName, { eventName, args });
-
-				if (!payload) {
-					return;
-				}
-
-				api.broadcast('stream', [
-					name,
-					eventName,
-					payload,
-				]);
-			},
-		};
-
-		server.methods(method);
-	}
-
-	async emitPayload(eventName: string, payload: string): Promise<void> {
-		if (!payload) {
-			return;
+			if (this.isEmitAllowed(subscription, eventName, ...args)) {
+				await new Promise((resolve) => {
+					// TODO: missing typing
+					(subscription.client.ws as any)._sender.sendFrame(
+						data,
+						resolve,
+					);
+				});
+			}
 		}
-		const subscriptions = this.subscriptionsByEventName.get(eventName);
-		if (!subscriptions || !subscriptions.size) {
-			return;
-		}
-		return sendBroadcast(subscriptions, payload);
-	}
-
-	emit(eventName: string, ...args: any[]): boolean {
-		const subscriptions = this.subscriptionsByEventName.get(eventName);
-		if (!subscriptions || !subscriptions.size) {
-			return false;
-		}
-
-		const msg = changedPayload(this.subscriptionName, {
-			eventName,
-			args,
-		});
-
-		if (!msg) {
-			return false;
-		}
-
-		sendBroadcast(subscriptions, msg);
-		return true;
-	}
-
-	__emit(event: string, ...args: any[]): boolean {
-		return super.emit(event, ...args);
-	}
-
-	emitWithoutBroadcast(event: string, ...args: any[]): boolean {
-		// On microservices all emit needs to be broadcasted.
-		return this.emit(event, ...args);
 	}
 }

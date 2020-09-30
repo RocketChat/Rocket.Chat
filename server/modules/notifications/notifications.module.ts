@@ -1,4 +1,4 @@
-import { IStreamer, IStreamerConstructor } from '../../sdk/types/IStreamService';
+import { IStreamer, IStreamerConstructor } from '../streamer/streamer.module';
 
 export class NotificationsModule {
 	private debug = false
@@ -64,7 +64,7 @@ export class NotificationsModule {
 
 		this.streamUser = new this.RoomStreamer('notify-user');
 		this.streamUser.allowWrite('logged');
-		this.streamUser.allowRead(function(eventName) {
+		this.streamUser.allowRead(async function(eventName) {
 			const [userId] = eventName.split('/');
 			return (this.userId != null) && this.userId === userId;
 		});

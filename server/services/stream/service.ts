@@ -1,7 +1,8 @@
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { IStreamService, IStreamer, IStreamerConstructor } from '../../sdk/types/IStreamService';
+import { IStreamService } from '../../sdk/types/IStreamService';
 // import { Notifications } from '../../../app/notifications/server';
 import { IMessage } from '../../../definition/IMessage';
+import { IStreamer, IStreamerConstructor } from '../../modules/streamer/streamer.module';
 
 export class StreamService extends ServiceClass implements IStreamService {
 	protected name = 'streamer';
@@ -58,7 +59,7 @@ export class StreamService extends ServiceClass implements IStreamService {
 		// 	return subscription != null;
 		// });
 		this.streamRoomUsers.allowRead('none');
-		this.streamUser.allowRead(function(eventName) {
+		this.streamUser.allowRead(async function(eventName) {
 			const [userId] = eventName.split('/');
 			return (this.userId != null) && this.userId === userId;
 		});
