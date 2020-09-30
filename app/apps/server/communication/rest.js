@@ -60,6 +60,26 @@ export class AppsRestApi {
 		const manager = this._manager;
 		const fileHandler = this._handleFile;
 
+		const handleError = (message, e) => {
+			if (isNetworkError(e.code)) {
+				// air gapped environment, a.k.a. no internet to reach the marketplace
+				orchestrator.getRocketChatLogger().error(message, e.message);
+				return API.v1.internalError('Could not reach the Marketplace');
+			}
+
+			orchestrator.getRocketChatLogger().error(message, e.response.data);
+
+			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+				return API.v1.internalError();
+			}
+
+			if (e.response.statusCode === 404) {
+				return API.v1.notFound();
+			}
+
+			return API.v1.failure();
+		};
+
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				const baseUrl = orchestrator.getMarketplaceUrl();
@@ -78,13 +98,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						if (isNetworkError(e.code)) {
-							// air gapped environment, a.k.a. no internet to reach the marketplace
-							orchestrator.getRocketChatLogger().warn('Error getting the Apps due to a networking problem:', e.message);
-							return API.v1.success([]);
-						}
-						orchestrator.getRocketChatLogger().error('Error getting the Apps:', e.response.data);
-						return API.v1.internalError();
+						return handleError('Error getting the App information from the Marketplace:', e);
 					}
 
 					if (!result || result.statusCode !== 200) {
@@ -328,20 +342,6 @@ export class AppsRestApi {
 			},
 		});
 
-		const handleError = (message, e) => {
-			orchestrator.getRocketChatLogger().error(message, e.response.data);
-
-			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
-				return API.v1.internalError();
-			}
-
-			if (e.response.statusCode === 404) {
-				return API.v1.notFound();
-			}
-
-			return API.v1.failure();
-		};
-
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				if (this.queryParams.marketplace && this.queryParams.version) {
@@ -359,11 +359,6 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						if (isNetworkError(e.code)) {
-							// air gapped environment, a.k.a. no internet to reach the marketplace
-							orchestrator.getRocketChatLogger().warn('Error getting the Apps due to a networking problem:', e.message);
-							return API.v1.success([]);
-						}
 						return handleError('Error getting the App information from the Marketplace:', e);
 					}
 
@@ -390,11 +385,6 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						if (isNetworkError(e.code)) {
-							// air gapped environment, a.k.a. no internet to reach the marketplace
-							orchestrator.getRocketChatLogger().warn('Error getting the Apps due to a networking problem:', e.message);
-							return API.v1.success([]);
-						}
 						return handleError('Error getting the App update info from the Marketplace:', e);
 					}
 
