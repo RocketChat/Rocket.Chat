@@ -1,9 +1,12 @@
 import { Stream } from '../Streamer';
 import { NotificationsModule } from '../../../../../server/modules/notifications/notifications.module';
 import { ISubscription } from '../../../../../definition/ISubscription';
-import { getCollection, Collections } from '../../mongo';
-import { Authorization } from '../../../../../server/sdk';
+import { IRoom } from '../../../../../definition/IRoom';
+import { getCollection, Collections, getConnection } from '../../mongo';
+// import { Authorization } from '../../../../../server/sdk';
 import { Publication } from '../../../../../server/modules/streamer/streamer.module';
+import { RoomsRaw } from '../../../../../app/models/server/raw/Rooms';
+import { SubscriptionsRaw } from '../../../../../app/models/server/raw/Subscriptions';
 
 export class RoomStreamer extends Stream {
 	async _publish(publication: Publication, eventName = '', options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
@@ -101,22 +104,30 @@ class MessageStream extends Stream {
 
 const notifications = new NotificationsModule(Stream, RoomStreamer, MessageStream);
 
+getConnection()
+	.then((db) => {
+		notifications.configure({
+			Rooms: new RoomsRaw(db.collection<IRoom>(Collections.Rooms)),
+			Subscriptions: new SubscriptionsRaw(db.collection<ISubscription>(Collections.Subscriptions)),
+		});
+	});
+
 export default notifications;
 
 // TODO: Implementation not complete
-notifications.streamRoomMessage.allowRead(async function(rid) {
-	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
-});
+// notifications.streamRoomMessage.allowRead(async function(rid) {
+// 	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
+// });
 
 
 // export const streamRoomData = new Stream(STREAM_NAMES.ROOM_DATA);
-notifications.streamRoomData.allowRead(async function(rid) {
-	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
-});
+// notifications.streamRoomData.allowRead(async function(rid) {
+// 	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
+// });
 
-notifications.streamLivechatQueueData.allowRead(async function() {
-	return !!this.userId && Authorization.hasPermission(this.userId, 'view-l-room');
-});
+// notifications.streamLivechatQueueData.allowRead(async function() {
+// 	return !!this.userId && Authorization.hasPermission(this.userId, 'view-l-room');
+// });
 
 // TODO: Implement permission
 // this.streamCannedResponses.allowRead(function() { // Implemented outside

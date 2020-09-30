@@ -4,6 +4,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 
 import { WEB_RTC_EVENTS } from '../../../webrtc';
 import { Subscriptions, Rooms, LivechatRooms } from '../../../models/server';
+import { Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
@@ -119,6 +120,12 @@ class MessageStream extends Stream {
 }
 
 const notifications = new NotificationsModule(Stream, RoomStreamer, MessageStream);
+
+notifications.configure({
+	Rooms: RoomsRaw,
+	Subscriptions: SubscriptionsRaw,
+});
+
 export default notifications;
 
 notifications.streamRoomUsers.allowWrite(async function(eventName, ...args) {
@@ -234,65 +241,6 @@ notifications.streamRoomData.allowRead(function(rid) {
 
 		return roomTypes.getConfig(room.t).isEmitAllowed();
 	} catch (error) {
-		return false;
-	}
-});
-
-notifications.streamRoomMessage.allowRead(async function(eventName, args) {
-	try {
-		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
-
-		if (!room) {
-			return false;
-		}
-
-		if (room.t === 'c' && !hasPermission(this.userId, 'preview-c-room') && !Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
-			return false;
-		}
-
-		return true;
-	} catch (error) {
-		/* error*/
-		return false;
-	}
-});
-
-notifications.streamRoomMessage.allowRead('__my_messages__', 'all');
-
-notifications.streamRoomMessage.allowEmit('__my_messages__', async function(_eventName, msg) {
-	try {
-		const room = Meteor.call('canAccessRoom', msg.rid, this.userId);
-
-		if (!room) {
-			return false;
-		}
-
-		return {
-			roomParticipant: Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null,
-			roomType: room.t,
-			roomName: room.name,
-		};
-	} catch (error) {
-		/* error*/
-		return false;
-	}
-});
-
-notifications.streamRoomMessage.allowRead(async function(eventName, args) {
-	try {
-		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
-
-		if (!room) {
-			return false;
-		}
-
-		if (room.t === 'c' && !hasPermission(this.userId, 'preview-c-room') && !Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
-			return false;
-		}
-
-		return true;
-	} catch (error) {
-		/* error*/
 		return false;
 	}
 });
