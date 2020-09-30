@@ -914,6 +914,24 @@ API.v1.addRoute('channels.setType', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('channels.setRoomAvatar', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.hasOwnProperty('base64')) {
+			return API.v1.failure('Image Base64 "string" is required');
+		}
+
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'roomAvatar', this.bodyParams.base64);
+		});
+
+		return API.v1.success({
+			base64: this.bodyParams.base64,
+		});
+	},
+});
+
 API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
