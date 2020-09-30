@@ -5,6 +5,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { css } from '@rocket.chat/css-in-js';
 
+import { useUser } from '../../contexts/UserContext';
 import { popover, modal, AccountBox } from '../../../app/ui-utils';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -123,25 +124,30 @@ const onClick = (e, t, allowAnonymousRead) => {
 	}
 };
 
-const UserAvatarButton = ({ user }) => {
+const UserAvatarButton = React.memo(({
+	status,
+	username,
+	avatarETag,
+}) => {
 	const t = useTranslation();
-
-	const {
-		status,
-		username,
-		avatarETag,
-	} = user;
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 
 	const handleClick = useMutableCallback((e) => onClick(e, t, allowAnonymousRead));
 
-	return <Box position='relative' onClick={handleClick} className={[css`cursor: pointer;`]}>
+	return <Box position='relative' onClick={handleClick} className={css`cursor: pointer;`}>
 		<UserAvatar size='x24' username={username} etag={avatarETag}/>
-		<Box className={[css`bottom: 0; right: 0;`]} position='absolute' p='x2' bg='neutral-200' borderRadius='full' mie='neg-x2' mbe='neg-x2'>
+		<Box className={css`bottom: 0; right: 0;`} position='absolute' p='x2' bg='neutral-200' borderRadius='full' mie='neg-x2' mbe='neg-x2'>
 			{getStatus(status, { size: 'x8' })}
 		</Box>
 	</Box>;
-};
+});
 
-export default UserAvatarButton;
+export default () => {
+	const {
+		status,
+		username,
+		avatarETag,
+	} = useUser();
+	return <UserAvatarButton status={status} username={username} avatarETag={avatarETag} />;
+};

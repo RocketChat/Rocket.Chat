@@ -1,6 +1,6 @@
 
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
-import { useResizeObserver, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import memoize from 'memoize-one';
@@ -8,18 +8,24 @@ import memoize from 'memoize-one';
 import { ChatSubscription } from '../../../app/models';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { roomTypes } from '../../../app/utils';
 import { useUserPreference } from '../../contexts/UserContext';
-import { usePermission } from '../../contexts/AuthorizationContext';
 import Condensed from './Condensed';
 import Extended from './Extended';
 import Medium from './Medium';
 import RoomAvatar from '../basic/avatar/RoomAvatar';
 import RoomMenu from './RoomMenu';
 import { useSession } from '../../contexts/SessionContext';
+import Omnichannel from './sections/Omnichannel';
 
 const query = {};
+
+
+const sections = {
+	Omnichannel,
+};
 
 export const useChatRoomTemplate = (sidebarViewMode) => useMemo(() => {
 	switch (sidebarViewMode) {
@@ -78,7 +84,8 @@ export const Row = React.memo(({ data, index, style }) => {
 	const { extended, items, t, SideBarItemTemplate, AvatarTemplate, openedRoom } = data;
 	const item = items[index];
 	if (typeof item === 'string') {
-		return <Sidebar.Section.Title style={style}>{t(item)}</Sidebar.Section.Title>;
+		const Section = sections[item];
+		return Section ? <Section style={style}/> : <Sidebar.Section.Title style={style}>{t(item)}</Sidebar.Section.Title>;
 	}
 	return <SideBarItemTemplateWithData style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
@@ -98,8 +105,7 @@ export default () => {
 	const showRealName = useSetting('UI_Use_Real_Name');
 	const SideBarItemTemplate = useChatRoomTemplate(sidebarViewMode);
 
-	const omnichannelEnabled = useSetting('Livechat_enabled');
-	const showOmnichannel = usePermission('view-l-room') && omnichannelEnabled;
+	const showOmnichannel = useOmnichannelEnabled();
 	const AvatarTemplate = useAvatarTemplate(sidebarHideAvatar, sidebarViewMode);
 
 	const sort = useMemo(() => ({
@@ -112,6 +118,8 @@ export default () => {
 
 	const rooms = useReactiveValue(useCallback(() => ChatSubscription.find(query, { sort }).fetch(), [query, sort]));
 
+	const queuedInquiries = useQueuedInquiries();
+
 	const groups = useMemo(() => {
 		const favorite = new Set();
 		const omnichannel = new Set();
@@ -120,7 +128,7 @@ export default () => {
 		const _public = new Set();
 		const direct = new Set();
 		const discussion = new Set();
-		const channels = new Set();
+		const conversation = new Set();
 
 		rooms.forEach((room) => {
 			if (favoritesEnabled && room.f) {
@@ -151,21 +159,23 @@ export default () => {
 				direct.add(room);
 			}
 
-			channels.add(room);
+			conversation.add(room);
 		});
 
 		const groups = new Map();
-
+		showOmnichannel && queuedInquiries.length && groups.set('Omnichannel', []);
+		showOmnichannel && !queuedInquiries.length && groups.set('Omnichannel', omnichannel);
+		showOmnichannel && queuedInquiries.length && groups.set('Incoming_Livechats', queuedInquiries);
+		showOmnichannel && queuedInquiries.length && groups.set('Open_Livechats', omnichannel);
 		favoritesEnabled && groups.set('Favorites', favorite);
 		sidebarShowUnread && groups.set('Unread', unread);
-		groups.set('Omnichannel', omnichannel);
+		showDiscussion && groups.set('Discussions', discussion);
 		sidebarGroupByType && groups.set('Private', _private);
 		sidebarGroupByType && groups.set('Public', _public);
 		sidebarGroupByType && groups.set('Direct', direct);
-		!sidebarGroupByType && groups.set('Channels', channels);
-		showDiscussion && groups.set('Discussions', discussion);
+		!sidebarGroupByType && groups.set('Conversations', conversation);
 		return groups;
-	}, [favoritesEnabled, rooms, showDiscussion, sidebarShowUnread, showOmnichannel, sidebarGroupByType]);
+	}, [showOmnichannel, favoritesEnabled, rooms, showDiscussion, sidebarShowUnread, sidebarGroupByType, queuedInquiries.length && queuedInquiries]);
 
 	const extended = sidebarViewMode === 'extended';
 
@@ -176,37 +186,32 @@ export default () => {
 
 	const itemSize = itemSizeMap(sidebarViewMode);
 
-	useEffect(() => {
-		listRef.current && listRef.current.resetAfterIndex(0);
-	}, [itemSize]);
-
-
 	const itemData = createItemData(items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom);
 
 
 	// Flowrouter uses an addEventListener on the document to capture any clink link, since the react synthetic event use an addEventListener on the document too,
 	// it is impossible/hard to determine which one will happen before and prevent/stop propagation, so feel free to remove this effect after remove flow router :)
-	const stopPropagation = useMutableCallback((e) => {
-		if ([e.target.nodeName, e.target.parentElement.nodeName].includes('BUTTON')) {
-			e.preventDefault();
-		}
-	});
+
 
 	useEffect(() => {
 		const { current } = ref;
+		const stopPropagation = (e) => {
+			if ([e.target.nodeName, e.target.parentElement.nodeName].includes('BUTTON')) {
+				e.preventDefault();
+			}
+		};
 		current.addEventListener('click', stopPropagation);
 
 		return () => current.addEventListener('click', stopPropagation);
-	}, [ref, stopPropagation]);
+	}, [ref]);
 
 	return <Box h='full' w='full' ref={ref}>
 		<List
 			height={blockSize}
-			estimatedItemSize={itemSize}
 			itemCount={items.length}
-			itemSize={(index) => (typeof items[index] === 'string' ? 40 : itemSize)}
+			itemSize={(index) => (typeof items[index] === 'string' ? (sections[items[index]] && sections[items[index]].size) || 40 : itemSize)}
 			itemData={itemData}
-			overscanCount={25}
+			// overscanCount={150}
 			width='100%'
 			ref={listRef}
 		>
@@ -222,7 +227,7 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 
 	const {
 		lastMessage,
-		unread,
+		unread = false,
 		userMentions,
 		groupMentions,
 		tunread = [],
@@ -249,7 +254,7 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 		style={style}
 		badges={badges}
 		avatar={AvatarTemplate && <AvatarTemplate {...room}/>}
-		menu={<RoomMenu rid={rid} unread={!!unread.length} roomOpen={false} type={type} cl={cl} name={title}/>}
+		menu={<RoomMenu rid={rid} unread={!!unread} roomOpen={false} type={type} cl={cl} name={title}/>}
 	/>;
 }, function areEqual(prevProps, nextProps) {
 	if (prevProps.extended !== nextProps.extended) {
@@ -287,5 +292,5 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 		return false;
 	}
 
-	return prevProps.room._updatedAt.getTime() === nextProps.room._updatedAt.getTime();
+	return prevProps.room._updatedAt?.getTime() === nextProps.room._updatedAt?.getTime();
 });

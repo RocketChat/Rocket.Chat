@@ -146,7 +146,6 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 		rcx-sidebar-item__menu
 		square
 		small
-		color='neutral-700'
 		options={menuOptions}
 		renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
 	/>;
