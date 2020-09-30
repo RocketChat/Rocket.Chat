@@ -34,7 +34,7 @@ export class Stream extends Streamer {
 
 class RoomStreamer extends Stream {
 	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
-		super._publish(publication, eventName, options);
+		await super._publish(publication, eventName, options);
 		const uid = Meteor.userId();
 		if (!uid) {
 			return;
@@ -81,7 +81,7 @@ class MessageStream extends Stream {
 	}
 
 	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
-		super._publish(publication, eventName, options);
+		await super._publish(publication, eventName, options);
 		const uid = Meteor.userId();
 		if (!uid) {
 			return;

@@ -253,11 +253,11 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		publication.ready();
 	}
 
-	abstract registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void;
+	abstract registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => Promise<void>): void;
 
 	iniPublication(): void {
 		const _publish = this._publish.bind(this);
-		this.registerPublication(this.subscriptionName, function(this: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any}) {
+		this.registerPublication(this.subscriptionName, async function(this: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any}) {
 			return _publish(this, eventName, options);
 		});
 	}
