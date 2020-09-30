@@ -83,6 +83,10 @@ class CustomOplogHandle {
 		return this;
 	}
 
+	async stop(): Promise<void> {
+		return this.client?.close();
+	}
+
 	async startOplog(): Promise<void> {
 		const isMasterDoc = await this.db.admin().command({ ismaster: 1 });
 		if (!isMasterDoc || !isMasterDoc.setName) {
@@ -197,3 +201,13 @@ export const getOplogHandle = async (): Promise<OplogHandle | CustomOplogHandle 
 	}
 	return mongo._oplogHandle;
 };
+
+process.on('SIGTERM', async () => {
+	if (!oplogHandle) {
+		process.exit(0);
+	}
+
+	// gracefully closes oplog connection on SIGTERM
+	await (await oplogHandle).stop();
+	process.exit(0);
+});
