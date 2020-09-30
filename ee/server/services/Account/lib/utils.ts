@@ -20,7 +20,7 @@ type Password = string | {
 
 export const getPassword = (password: Password): string => {
 	if (typeof password === 'string') {
-		return crypto.createHash('sha256').update(password).digest('hex');
+		return crypto.createHash('sha256').update(password).digest('hex'); // lgtm [js/insufficient-password-hash]
 	}
 	if (typeof password.digest === 'undefined') {
 		throw new Error('invalid password');

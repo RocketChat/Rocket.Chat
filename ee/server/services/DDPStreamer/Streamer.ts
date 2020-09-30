@@ -47,7 +47,7 @@ export class Stream extends Streamer {
 				return;
 			}
 
-			if (this.isEmitAllowed(subscription, eventName, ...args)) {
+			if (await this.isEmitAllowed(subscription, eventName, ...args)) {
 				await new Promise((resolve) => {
 					// TODO: missing typing
 					(subscription.client.ws as any)._sender.sendFrame(

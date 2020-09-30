@@ -13,8 +13,6 @@ export class Client extends EventEmitter {
 
 	protected timeout: NodeJS.Timeout;
 
-	public kind = 'default';
-
 	public readonly session = uuidv1();
 
 	public subscriptions = new Map();
@@ -149,8 +147,6 @@ export class Client extends EventEmitter {
 }
 
 export class MeteorClient extends Client {
-	public kind = 'meteor';
-
 	// TODO implement meteor errors
 	// a["{\"msg\":\"result\",\"id\":\"12\",\"error\":{\"isClientSafe\":true,\"error\":403,\"reason\":\"User has no password set\",\"message\":\"User has no password set [403]\",\"errorType\":\"Meteor.Error\"}}"]
 

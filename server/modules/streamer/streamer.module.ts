@@ -12,7 +12,6 @@ export const StreamerCentral = new StreamerCentralClass();
 
 export type Client = {
 	ws: any;
-	kind: any;
 	userId: string;
 	send: Function;
 }
@@ -319,12 +318,12 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 	}
 
 	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], msg: string): Promise<void> {
-		subscriptions.forEach((subscription) => {
+		subscriptions.forEach(async (subscription) => {
 			if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
 				return;
 			}
 
-			if (this.isEmitAllowed(subscription.subscription, eventName, ...args)) {
+			if (await this.isEmitAllowed(subscription.subscription, eventName, ...args)) {
 				subscription.subscription._session.socket?.send(msg);
 			}
 		});
