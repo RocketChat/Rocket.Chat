@@ -34,13 +34,13 @@ export class Stream extends Streamer {
 
 	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], msg: string): Promise<void> {
 		// TODO: missing typing
-		const data = Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(`a${ JSON.stringify([msg]) }`), {
+		const data = [Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(`a${ JSON.stringify([msg]) }`), {
 			fin: true, // sending a single fragment message
 			rsv1: false, // don"t set rsv1 bit (no compression)
 			opcode: 1, // opcode for a text frame
 			mask: false, // set false for client-side
 			readOnly: false, // the data can be modified as needed
-		}));
+		}))];
 
 		for await (const { subscription } of subscriptions) {
 			if (this.retransmitToSelf === false && origin && origin === subscription.connection) {
