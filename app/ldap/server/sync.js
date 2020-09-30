@@ -337,6 +337,41 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 	return userChannels;
 }
 
+function syncUserAvatar(user, ldapUser) {
+	if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
+		return;
+	}
+
+	const avatarField = (settings.get('LDAP_Avatar_Field') || 'thumbnailPhoto').trim();
+	const avatar = ldapUser._raw[avatarField] || ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
+	if (!avatar) {
+		return;
+	}
+
+	logger.info('Syncing user avatar');
+
+	Meteor.defer(() => {
+		const rs = RocketChatFile.bufferToStream(avatar);
+		const fileStore = FileUpload.getStore('Avatars');
+		fileStore.deleteByName(user.username);
+
+		const file = {
+			userId: user._id,
+			type: 'image/jpeg',
+			size: avatar.length,
+		};
+
+		Meteor.runAsUser(user._id, () => {
+			fileStore.insert(file, rs, (err, result) => {
+				Meteor.setTimeout(function() {
+					Users.setAvatarData(user._id, 'ldap', result.etag);
+					Notifications.notifyLogged('updateAvatar', { username: user.username, etag: result.etag });
+				}, 500);
+			});
+		});
+	});
+}
+
 export function syncUserData(user, ldapUser, ldap) {
 	logger.info('Syncing user data');
 	logger.debug('user', { email: user.email, _id: user._id });
@@ -397,33 +432,7 @@ export function syncUserData(user, ldapUser, ldap) {
 		}
 	}
 
-	const avatarField = (settings.get('LDAP_Avatar_Field') || 'thumbnailPhoto').trim();
-
-	if (user && user._id && settings.get('LDAP_Sync_User_Avatar') === true) {
-		const avatar = ldapUser._raw[avatarField] || ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
-
-		if (avatar) {
-			logger.info('Syncing user avatar');
-
-			const rs = RocketChatFile.bufferToStream(avatar);
-			const fileStore = FileUpload.getStore('Avatars');
-			fileStore.deleteByName(user.username);
-
-			const file = {
-				userId: user._id,
-				type: 'image/jpeg',
-			};
-
-			Meteor.runAsUser(user._id, () => {
-				fileStore.insert(file, rs, (err, result) => {
-					Meteor.setTimeout(function() {
-						Users.setAvatarData(user._id, 'ldap', result.etag);
-						Notifications.notifyLogged('updateAvatar', { username: user.username, etag: result.etag });
-					}, 500);
-				});
-			});
-		}
-	}
+	syncUserAvatar(user, ldapUser);
 }
 
 export function addLdapUser(ldapUser, username, password, ldap) {
