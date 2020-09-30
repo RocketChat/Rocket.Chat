@@ -4,8 +4,6 @@ import { settings } from '../../../app/settings';
 import { Users, Messages } from '../../../app/models';
 import { msgStream } from '../../../app/lib/server';
 
-import { MY_MESSAGE } from '.';
-
 Meteor.startup(function() {
 	function publishMessage(type, record) {
 		if (record._hidden !== true && (record.imported == null)) {
@@ -22,7 +20,7 @@ Meteor.startup(function() {
 					mention.name = user && user.name;
 				});
 			}
-			msgStream.mymessage(MY_MESSAGE, record);
+			msgStream.mymessage('__my_messages__', record);
 			msgStream.emitWithoutBroadcast(record.rid, record);
 		}
 	}

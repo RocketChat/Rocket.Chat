@@ -3,13 +3,14 @@ import { Promise } from 'meteor/promise';
 import { DDPCommon } from 'meteor/ddp-common';
 
 import { WEB_RTC_EVENTS } from '../../../webrtc';
-import { Subscriptions, Rooms } from '../../../models/server';
+import { Subscriptions, Rooms, LivechatRooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
 import { Streamer, Publication, DDPSubscription } from '../../../../server/modules/streamer/streamer.module';
 import { ISubscription } from '../../../../definition/ISubscription';
 import { IUser } from '../../../../definition/IUser';
+import { roomTypes } from '../../../utils/server';
 
 export class Stream extends Streamer {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
@@ -118,6 +119,7 @@ class MessageStream extends Stream {
 }
 
 const notifications = new NotificationsModule(Stream, RoomStreamer, MessageStream);
+export default notifications;
 
 notifications.streamRoomUsers.allowWrite(async function(eventName, ...args) {
 	const [roomId, e] = eventName.split('/');
@@ -183,8 +185,58 @@ notifications.streamRoom.allowWrite(async function(eventName, username, _typing,
 	return false;
 });
 
-export default notifications;
+notifications.streamLivechatQueueData.allowRead(function() {
+	return this.userId ? hasPermission(this.userId, 'view-l-room') : false;
+});
 
+notifications.streamIntegrationHistory.allowRead(function() {
+	return this.userId && hasAtLeastOnePermission(this.userId, [
+		'manage-outgoing-integrations',
+		'manage-own-outgoing-integrations',
+	]);
+});
+
+notifications.streamLivechatRoom.allowRead(async function(roomId, extraData) {
+	const room = LivechatRooms.findOneById(roomId);
+
+	if (!room) {
+		console.warn(`Invalid eventName: "${ roomId }"`);
+		return false;
+	}
+
+	if (room.t === 'l' && extraData && extraData.visitorToken && room.v.token === extraData.visitorToken) {
+		return true;
+	}
+	return false;
+});
+
+notifications.streamStdout.allowRead(function() {
+	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
+});
+
+notifications.streamCannedResponses.allowRead(function() {
+	return this.userId && settings.get('Canned_Responses_Enable') && hasPermission(this.userId, 'view-canned-responses');
+});
+
+notifications.streamAll.allowRead('private-settings-changed', function() {
+	if (this.userId == null) {
+		return false;
+	}
+	return hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+});
+
+notifications.streamRoomData.allowRead(function(rid) {
+	try {
+		const room = Meteor.call('canAccessRoom', rid, this.userId);
+		if (!room) {
+			return false;
+		}
+
+		return roomTypes.getConfig(room.t).isEmitAllowed();
+	} catch (error) {
+		return false;
+	}
+});
 
 notifications.streamRoomMessage.allowRead(async function(eventName, args) {
 	try {
@@ -220,6 +272,25 @@ notifications.streamRoomMessage.allowEmit('__my_messages__', async function(_eve
 			roomType: room.t,
 			roomName: room.name,
 		};
+	} catch (error) {
+		/* error*/
+		return false;
+	}
+});
+
+notifications.streamRoomMessage.allowRead(async function(eventName, args) {
+	try {
+		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
+
+		if (!room) {
+			return false;
+		}
+
+		if (room.t === 'c' && !hasPermission(this.userId, 'preview-c-room') && !Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
+			return false;
+		}
+
+		return true;
 	} catch (error) {
 		/* error*/
 		return false;

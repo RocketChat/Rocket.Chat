@@ -6,7 +6,6 @@ import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
 
 import { settings } from '../../settings';
-import { hasPermission } from '../../authorization/server';
 import notifications from '../../notifications/server/lib/Notifications';
 
 export const processString = function(string, date) {
@@ -52,10 +51,6 @@ export const StdOut = new class extends EventEmitter {
 		};
 	}
 }();
-
-notifications.streamStdout.allowRead(function() {
-	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
-});
 
 Meteor.startup(() => {
 	const handler = (string, item) => {

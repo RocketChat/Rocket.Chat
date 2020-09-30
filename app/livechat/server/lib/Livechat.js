@@ -1157,20 +1157,6 @@ export const Livechat = {
 	},
 };
 
-notifications.streamLivechatRoom.allowRead((roomId, extraData) => {
-	const room = LivechatRooms.findOneById(roomId);
-
-	if (!room) {
-		console.warn(`Invalid eventName: "${ roomId }"`);
-		return false;
-	}
-
-	if (room.t === 'l' && extraData && extraData.visitorToken && room.v.token === extraData.visitorToken) {
-		return true;
-	}
-	return false;
-});
-
 settings.get('Livechat_history_monitor_type', (key, value) => {
 	Livechat.historyMonitorType = value;
 });

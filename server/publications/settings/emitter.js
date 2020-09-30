@@ -1,6 +1,5 @@
 import { Settings } from '../../../app/models/server';
 import { Notifications } from '../../../app/notifications/server';
-import { hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { SettingsEvents } from '../../../app/settings/server/functions/settings';
 import { StreamService } from '../../sdk';
 
@@ -44,11 +43,4 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 			break;
 		}
 	}
-});
-
-Notifications.streamAll.allowRead('private-settings-changed', function() {
-	if (this.userId == null) {
-		return false;
-	}
-	return hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
 });

@@ -1,11 +1,6 @@
-import { hasPermission } from '../../../../authorization/server';
 import { LivechatInquiry } from '../../../../models/server';
 import { RoutingManager } from '../RoutingManager';
 import notifications from '../../../../notifications/server/lib/Notifications';
-
-notifications.streamLivechatQueueData.allowRead(function() {
-	return this.userId ? hasPermission(this.userId, 'view-l-room') : false;
-});
 
 const emitQueueDataEvent = (event, data) => notifications.streamLivechatQueueData.emitWithoutBroadcast(event, data);
 const mountDataToEmit = (type, data) => ({ type, ...data });

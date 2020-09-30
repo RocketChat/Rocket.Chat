@@ -1,13 +1,5 @@
-import { hasAtLeastOnePermission } from '../../authorization/server';
 import { IntegrationHistory } from '../../models/server';
 import notifications from '../../notifications/server/lib/Notifications';
-
-notifications.streamIntegrationHistory.allowRead(function() {
-	return this.userId && hasAtLeastOnePermission(this.userId, [
-		'manage-outgoing-integrations',
-		'manage-own-outgoing-integrations',
-	]);
-});
 
 IntegrationHistory.on('change', ({ clientAction, id, data, diff }) => {
 	switch (clientAction) {
