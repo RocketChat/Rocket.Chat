@@ -11,6 +11,7 @@ const Medium = React.memo(({
 	badges,
 	unread,
 	threadUnread,
+	menu,
 	...props
 }) => <Sidebar.Item {...props} href={href} clickable={!!href}>
 	{avatar && <Box mie='x4'>
@@ -35,6 +36,7 @@ const Medium = React.memo(({
 			/>}
 		</Sidebar.Item.Actions>}
 	</Sidebar.Item.Container>
+	{menu && <Sidebar.Item.Menu>{menu}</Sidebar.Item.Menu>}
 </Sidebar.Item>);
 
 export default Medium;

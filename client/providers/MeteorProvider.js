@@ -13,6 +13,7 @@ import UserProvider from './UserProvider';
 import { AvatarUrlProvider } from './AvatarUrlProvider';
 import { CustomSoundProvider } from './CustomSoundProvides';
 import ModalProvider from './ModalProvider';
+import OmniChannelProvider from './OmniChannelProvider';
 
 export function MeteorProvider({ children }) {
 	return <ConnectionStatusProvider>
@@ -27,9 +28,11 @@ export function MeteorProvider({ children }) {
 										<AvatarUrlProvider>
 											<UserProvider>
 												<AuthorizationProvider>
-													<ModalProvider>
-														{children}
-													</ModalProvider>
+													<OmniChannelProvider>
+														<ModalProvider>
+															{children}
+														</ModalProvider>
+													</OmniChannelProvider>
 												</AuthorizationProvider>
 											</UserProvider>
 										</AvatarUrlProvider>

@@ -9,6 +9,7 @@ const Condensed = React.memo(({
 	href,
 	menuOptions,
 	unread,
+	menu,
 	...props
 }) => <Sidebar.Item {...props} href={href} clickable={!!href}>
 	{avatar && <Box mie='x4'>
@@ -32,6 +33,7 @@ const Condensed = React.memo(({
 			/>}
 		</Sidebar.Item.Actions>}
 	</Sidebar.Item.Container>
+	{menu && <Sidebar.Item.Menu>{menu}</Sidebar.Item.Menu>}
 </Sidebar.Item>);
 
 export default Condensed;
