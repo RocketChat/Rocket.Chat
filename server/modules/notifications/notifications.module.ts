@@ -221,7 +221,15 @@ export class NotificationsModule {
 		});
 
 		this.streamIntegrationHistory.allowWrite('none');
-		// this.streamIntegrationHistory.allowRead(function() { // Implemented outside
+		this.streamIntegrationHistory.allowRead(async function() {
+			if (!this.userId) {
+				return false;
+			}
+			return Authorization.hasAtLeastOnePermission(this.userId, [
+				'manage-outgoing-integrations',
+				'manage-own-outgoing-integrations',
+			]);
+		});
 
 		// this.streamLivechatRoom.allowRead((roomId, extraData) => { // Implemented outside
 

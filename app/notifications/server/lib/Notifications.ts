@@ -199,13 +199,6 @@ notifications.streamLivechatQueueData.allowRead(function() {
 	return this.userId ? hasPermission(this.userId, 'view-l-room') : false;
 });
 
-notifications.streamIntegrationHistory.allowRead(function() {
-	return this.userId && hasAtLeastOnePermission(this.userId, [
-		'manage-outgoing-integrations',
-		'manage-own-outgoing-integrations',
-	]);
-});
-
 notifications.streamLivechatRoom.allowRead(async function(roomId, extraData) {
 	const room = LivechatRooms.findOneById(roomId);
 
