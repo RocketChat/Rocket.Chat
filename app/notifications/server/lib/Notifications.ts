@@ -8,10 +8,20 @@ import { Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '../../../m
 import { settings } from '../../../settings/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
-import { Streamer, Publication, DDPSubscription } from '../../../../server/modules/streamer/streamer.module';
+import { Streamer, Publication, DDPSubscription, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { ISubscription } from '../../../../definition/ISubscription';
 import { IUser } from '../../../../definition/IUser';
 import { roomTypes } from '../../../utils/server';
+import { api } from '../../../../server/sdk/api';
+
+// TODO: Replace this in favor of the api.broadcast
+StreamerCentral.on('broadcast', (name, eventName, args) => {
+	api.broadcast('stream', [
+		name,
+		eventName,
+		args,
+	]);
+});
 
 export class Stream extends Streamer {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
@@ -127,20 +137,6 @@ notifications.configure({
 });
 
 export default notifications;
-
-notifications.streamRoomUsers.allowWrite(async function(eventName, ...args) {
-	const [roomId, e] = eventName.split('/');
-	// const user = Meteor.users.findOne(this.userId, {
-	// 	fields: {
-	// 		username: 1
-	// 	}
-	// });
-	if (Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId) != null) {
-		const subscriptions: ISubscription[] = Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId).fetch();
-		subscriptions.forEach((subscription) => notifications.notifyUser(subscription.u._id, e, ...args));
-	}
-	return false;
-});
 
 notifications.streamRoom.allowRead(async function(eventName, extraData) {
 	const [roomId] = eventName.split('/');

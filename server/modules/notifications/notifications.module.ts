@@ -2,6 +2,7 @@ import { IStreamer, IStreamerConstructor } from '../streamer/streamer.module';
 import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
+import { ISubscription } from '../../../definition/ISubscription';
 
 interface IModelsParam {
 	Rooms: RoomsRaw;
@@ -69,6 +70,8 @@ export class NotificationsModule {
 	}
 
 	async configure({ Rooms, Subscriptions }: IModelsParam): Promise<void> {
+		const notifyUser = this.notifyUser.bind(this);
+
 		this.streamRoomMessage.allowWrite('none');
 		this.streamRoomMessage.allowRead(async function(eventName /* , args*/) {
 			const room = await Rooms.findOneById(eventName);
@@ -126,7 +129,14 @@ export class NotificationsModule {
 		// notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) { // Implemented outside
 
 		this.streamRoomUsers.allowRead('none');
-		// this.streamRoomUsers.allowWrite(function(eventName, ...args) { // Implemented outside
+		this.streamRoomUsers.allowWrite(async function(eventName, ...args) {
+			const [roomId, e] = eventName.split('/');
+			if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
+				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, { project: { 'u._id': 1, _id: 0 } }).toArray();
+				subscriptions.forEach((subscription) => notifyUser(subscription.u._id, e, ...args));
+			}
+			return false;
+		});
 
 		this.streamUser.allowWrite('logged');
 		this.streamUser.allowRead(async function(eventName) {

@@ -1,13 +1,24 @@
 import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw {
-	findOneByRoomIdAndUserId(rid, uid, options) {
+	findOneByRoomIdAndUserId(rid, uid, options = {}) {
 		const query = {
 			rid,
 			'u._id': uid,
 		};
 
 		return this.col.findOne(query, options);
+	}
+
+	findByRoomIdAndNotUserId(roomId, userId, options = {}) {
+		const query = {
+			rid: roomId,
+			'u._id': {
+				$ne: userId,
+			},
+		};
+
+		return this.col.find(query, options);
 	}
 
 	countByRoomIdAndUserId(rid, uid) {
