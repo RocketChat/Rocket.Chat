@@ -4,7 +4,6 @@ import { DDPCommon } from 'meteor/ddp-common';
 
 import { WEB_RTC_EVENTS } from '../../../webrtc';
 import { Subscriptions, Rooms, LivechatRooms } from '../../../models/server';
-import { Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
@@ -13,6 +12,12 @@ import { ISubscription } from '../../../../definition/ISubscription';
 import { IUser } from '../../../../definition/IUser';
 import { roomTypes } from '../../../utils/server';
 import { api } from '../../../../server/sdk/api';
+import {
+	Subscriptions as SubscriptionsRaw,
+	Rooms as RoomsRaw,
+	Users as UsersRaw,
+	Settings as SettingsRaw,
+} from '../../../models/server/raw';
 
 // TODO: Replace this in favor of the api.broadcast
 StreamerCentral.on('broadcast', (name, eventName, args) => {
@@ -134,6 +139,8 @@ const notifications = new NotificationsModule(Stream, RoomStreamer, MessageStrea
 notifications.configure({
 	Rooms: RoomsRaw,
 	Subscriptions: SubscriptionsRaw,
+	Users: UsersRaw,
+	Settings: SettingsRaw,
 });
 
 export default notifications;

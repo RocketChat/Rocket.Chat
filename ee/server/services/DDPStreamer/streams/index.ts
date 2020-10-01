@@ -2,11 +2,15 @@ import { Stream } from '../Streamer';
 import { NotificationsModule } from '../../../../../server/modules/notifications/notifications.module';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import { IRoom } from '../../../../../definition/IRoom';
+import { IUser } from '../../../../../definition/IUser';
+import { ISetting } from '../../../../../definition/ISetting';
 import { getCollection, Collections, getConnection } from '../../mongo';
 // import { Authorization } from '../../../../../server/sdk';
 import { Publication } from '../../../../../server/modules/streamer/streamer.module';
 import { RoomsRaw } from '../../../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../../../app/models/server/raw/Subscriptions';
+import { UsersRaw } from '../../../../../app/models/server/raw/Users';
+import { SettingsRaw } from '../../../../../app/models/server/raw/Settings';
 
 export class RoomStreamer extends Stream {
 	async _publish(publication: Publication, eventName = '', options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
@@ -109,6 +113,8 @@ getConnection()
 		notifications.configure({
 			Rooms: new RoomsRaw(db.collection<IRoom>(Collections.Rooms)),
 			Subscriptions: new SubscriptionsRaw(db.collection<ISubscription>(Collections.Subscriptions)),
+			Users: new UsersRaw(db.collection<IUser>(Collections.User)),
+			Settings: new SettingsRaw(db.collection<ISetting>(Collections.Settings)),
 		});
 	});
 
@@ -146,57 +152,6 @@ export default notifications;
 // 	if (Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId) != null) {
 // 		const subscriptions = Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId).fetch();
 // 		subscriptions.forEach((subscription) => self.notifyUser(subscription.u._id, e, ...args));
-// 	}
-// 	return false;
-// });
-
-// TODO: Implement permission
-// notifications.streamRoom.allowRead(function(eventName, extraData) {
-// 	const [roomId] = eventName.split('/');
-// 	const room = Rooms.findOneById(roomId);
-// 	if (!room) {
-// 		console.warn(`Invalid streamRoom eventName: "${ eventName }"`);
-// 		return false;
-// 	}
-// 	if (room.t === 'l' && extraData && extraData.token && room.v.token === extraData.token) {
-// 		return true;
-// 	}
-// 	if (this.userId == null) {
-// 		return false;
-// 	}
-// 	const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { fields: { _id: 1 } });
-// 	return subscription != null;
-// });
-
-// TODO: Implement permission
-// notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
-// 	const [roomId, e] = eventName.split('/');
-
-// 	if (isNaN(e) ? e === WEB_RTC_EVENTS.WEB_RTC : parseFloat(e) === WEB_RTC_EVENTS.WEB_RTC) {
-// 		return true;
-// 	}
-
-// 	if (e === 'typing') {
-// 		const key = settings.get('UI_Use_Real_Name') ? 'name' : 'username';
-// 		// typing from livechat widget
-// 		if (extraData && extraData.token) {
-// 			const room = Rooms.findOneById(roomId);
-// 			if (room && room.t === 'l' && room.v.token === extraData.token) {
-// 				return true;
-// 			}
-// 		}
-
-// 		const user = Meteor.users.findOne(this.userId, {
-// 			fields: {
-// 				[key]: 1,
-// 			},
-// 		});
-
-// 		if (!user) {
-// 			return false;
-// 		}
-
-// 		return user[key] === username;
 // 	}
 // 	return false;
 // });

@@ -27,7 +27,7 @@ export class SubscriptionsRaw extends BaseRaw {
 			'u._id': uid,
 		};
 
-		const cursor = this.col.find(query);
+		const cursor = this.col.find(query, { projection: { _id: 0 } });
 
 		return cursor.count();
 	}

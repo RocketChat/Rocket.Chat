@@ -3,10 +3,14 @@ import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { ISubscription } from '../../../definition/ISubscription';
+import { UsersRaw } from '../../../app/models/server/raw/Users';
+import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 
 interface IModelsParam {
 	Rooms: RoomsRaw;
 	Subscriptions: SubscriptionsRaw;
+	Users: UsersRaw;
+	Settings: SettingsRaw;
 }
 
 export class NotificationsModule {
@@ -69,7 +73,7 @@ export class NotificationsModule {
 		this.streamRoomData = new this.Streamer('room-data');
 	}
 
-	async configure({ Rooms, Subscriptions }: IModelsParam): Promise<void> {
+	async configure({ Rooms, Subscriptions, Users, Settings }: IModelsParam): Promise<void> {
 		const notifyUser = this.notifyUser.bind(this);
 
 		this.streamRoomMessage.allowWrite('none');
@@ -124,9 +128,62 @@ export class NotificationsModule {
 		this.streamLogged.allowWrite('none');
 		this.streamLogged.allowRead('logged');
 
-		this.streamRoom.allowWrite('none');
-		// this.streamRoom.allowRead(function(eventName, extraData) { // Implemented outside
-		// notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) { // Implemented outside
+		this.streamRoom.allowRead(async function(eventName, extraData) {
+			if (!this.userId) {
+				return false;
+			}
+
+			const [rid] = eventName.split('/');
+
+			// typing from livechat widget
+			if (extraData?.token) {
+				// TODO improve this to make a query 'v.token'
+				const room = await Rooms.findOneById(rid, { projection: { t: 1, 'v.token': 1 } });
+				return room && room.t === 'l' && room.v.token === extraData.token;
+			}
+
+			const subsCount = await Subscriptions.countByRoomIdAndUserId(rid, this.userId);
+			return subsCount > 0;
+		});
+
+		this.streamRoom.allowWrite(async function(eventName, username, _typing, extraData) {
+			const [rid, e] = eventName.split('/');
+
+			// TODO should this use WEB_RTC_EVENTS enum?
+			if (e === 'webrtc') {
+				return true;
+			}
+
+			if (e !== 'typing') {
+				return false;
+			}
+
+			try {
+				// TODO consider using something to cache settings
+				const key = await Settings.getValueById('UI_Use_Real_Name') ? 'name' : 'username';
+
+				// typing from livechat widget
+				if (extraData?.token) {
+					// TODO improve this to make a query 'v.token'
+					const room = await Rooms.findOneById(rid, { projection: { t: 1, 'v.token': 1 } });
+					return room && room.t === 'l' && room.v.token === extraData.token;
+				}
+
+				const user = await Users.findOneById(this.userId, {
+					projection: {
+						[key]: 1,
+					},
+				});
+				if (!user) {
+					return false;
+				}
+
+				return user[key] === username;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		});
 
 		this.streamRoomUsers.allowRead('none');
 		this.streamRoomUsers.allowWrite(async function(eventName, ...args) {
