@@ -240,7 +240,23 @@ export class NotificationsModule {
 		// this.streamStdout.allowRead(function() { // Implemented outside
 
 		this.streamRoomData.allowWrite('none');
-		// this.streamRoomData.allowRead(function(rid) { // Implemented outside
+		this.streamRoomData.allowRead(async function(rid) {
+			try {
+				const room = await Rooms.findOneById(rid);
+				if (!room) {
+					return false;
+				}
+
+				const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId });
+				if (!canAccess) {
+					return false;
+				}
+
+				return true;
+			} catch (error) {
+				return false;
+			}
+		});
 
 		this.streamRoles.allowWrite('none');
 		this.streamRoles.allowRead('logged');

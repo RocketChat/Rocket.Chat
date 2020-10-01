@@ -76,5 +76,4 @@ import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
 import './stream/messages';
-import './stream/rooms';
 import './stream/streamBroadcast';
