@@ -64,13 +64,6 @@ export class StreamService extends ServiceClass implements IStreamService {
 		});
 	}
 
-	sendUserAvatarUpdate({ username, etag }: { username: string; etag?: string }): void {
-		this.streamLogged.emit('updateAvatar', {
-			username,
-			etag,
-		});
-	}
-
 	sendRoomAvatarUpdate({ rid, etag }: { rid: string; etag?: string }): void {
 		this.streamLogged.emit('updateAvatar', {
 			rid,

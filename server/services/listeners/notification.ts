@@ -44,6 +44,19 @@ export class NotificationService extends ServiceClass {
 			notifications.notifyLogged('private-settings-changed', clientAction, setting);
 		});
 
+		this.onEvent('user.avatarUpdate', ({ username, avatarETag: etag }) => {
+			notifications.notifyLogged('updateAvatar', {
+				username,
+				etag,
+			});
+		});
+
+		this.onEvent('user.deleted', ({ _id: userId }) => {
+			notifications.notifyLogged('Users:Deleted', {
+				userId,
+			});
+		});
+
 		this.onEvent('user.deleteCustomStatus', (userStatus) => {
 			notifications.notifyLogged('deleteCustomUserStatus', {
 				userStatusData: userStatus,
@@ -53,12 +66,6 @@ export class NotificationService extends ServiceClass {
 		this.onEvent('user.updateCustomStatus', (userStatus) => {
 			notifications.notifyLogged('updateCustomUserStatus', {
 				userStatusData: userStatus,
-			});
-		});
-
-		this.onEvent('user.deleted', ({ _id: userId }) => {
-			notifications.notifyLogged('Users:Deleted', {
-				userId,
 			});
 		});
 

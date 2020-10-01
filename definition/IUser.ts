@@ -89,6 +89,7 @@ export interface IUser {
 	statusConnection?: string;
 	lastLogin?: Date;
 	avatarOrigin?: string;
+	avatarETag?: string;
 	utcOffset?: number;
 	language?: string;
 	statusDefault?: USER_STATUS;

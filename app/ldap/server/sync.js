@@ -14,6 +14,7 @@ import { _setRealName, _setUsername } from '../../lib';
 import { templateVarHandler } from '../../utils';
 import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
+import { api } from '../../../server/sdk/api';
 import { StreamService } from '../../../server/sdk';
 
 
@@ -365,7 +366,7 @@ function syncUserAvatar(user, ldapUser) {
 			fileStore.insert(file, rs, (err, result) => {
 				Meteor.setTimeout(function() {
 					Users.setAvatarData(user._id, 'ldap', result.etag);
-					StreamService.sendUserAvatarUpdate({ username: user.username, etag: result.etag });
+					api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: result.etag });
 				}, 500);
 			});
 		});

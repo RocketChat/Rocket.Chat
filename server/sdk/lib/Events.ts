@@ -31,6 +31,7 @@ export type EventSignatures = {
 	'stream.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user'(data: { action: string; user: Partial<IUser> }): void;
+	'user.avatarUpdate'(user: Partial<IUser>): void;
 	'user.deleted'(user: Partial<IUser>): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
