@@ -30,6 +30,10 @@ export class NotificationService extends ServiceClass {
 			notifications.notifyLogged('permissions-changed', clientAction, data);
 		});
 
+		this.onEvent('setting.privateChanged', ({ clientAction, setting }) => {
+			notifications.notifyLogged('private-settings-changed', clientAction, setting);
+		});
+
 		this.onEvent('user.deleteCustomStatus', (userStatus) => {
 			notifications.notifyLogged('deleteCustomUserStatus', {
 				userStatusData: userStatus,

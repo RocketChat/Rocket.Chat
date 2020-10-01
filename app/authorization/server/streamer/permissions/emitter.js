@@ -32,6 +32,6 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 		if (!setting) {
 			return;
 		}
-		StreamService.sendPrivateSetting({ clientAction: 'updated', setting });
+		api.broadcast('setting.privateChanged', { clientAction: 'updated', setting });
 	}
 });

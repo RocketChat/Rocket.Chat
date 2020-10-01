@@ -25,6 +25,7 @@ export type EventSignatures = {
 	'role'(data: {type: 'changed' | 'removed' } & Partial<IRole>): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
+	'setting.privateChanged'(data: { clientAction: string; setting: any }): void;
 	'stream'([streamer, eventName, payload]: [string, string, string]): void;
 	'stream.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;

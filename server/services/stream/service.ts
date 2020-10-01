@@ -65,10 +65,6 @@ export class StreamService extends ServiceClass implements IStreamService {
 		});
 	}
 
-	sendPrivateSetting({ clientAction, setting }: any): void {
-		this.streamLogged.emitWithoutBroadcast('private-settings-changed', clientAction, setting);
-	}
-
 	sendUserAvatarUpdate({ username, etag }: { username: string; etag?: string }): void {
 		this.streamLogged.emit('updateAvatar', {
 			username,
