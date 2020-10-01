@@ -5,7 +5,7 @@ import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Uploads, Settings, Users, Messages } from '../../models';
 import { FileUpload } from '../../file-upload';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 class GoogleVision {
 	constructor() {
@@ -66,7 +66,7 @@ class GoogleVision {
 						FileUpload.getStore('Uploads').deleteById(file._id);
 						const user = Users.findOneById(message.u && message.u._id);
 						if (user) {
-							StreamService.sendEphemeralMessage(user._id, message.rid, {
+							api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 								msg: TAPi18n.__('Adult_images_are_not_allowed', {}, user.language),
 							});
 						}

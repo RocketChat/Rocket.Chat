@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Messages } from '../../models';
 import { slashCommands } from '../../utils';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 function Archive(command, params, item) {
 	if (command !== 'archive' || !Match.test(params, String)) {
@@ -25,7 +25,7 @@ function Archive(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 
 	if (!room) {
-		StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Channel_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
@@ -39,7 +39,7 @@ function Archive(command, params, item) {
 	}
 
 	if (room.archived) {
-		StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Duplicate_archived_channel_name', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
@@ -50,7 +50,7 @@ function Archive(command, params, item) {
 	Meteor.call('archiveRoom', room._id);
 
 	Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
-	StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+	api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 		msg: TAPi18n.__('Channel_Archived', {
 			postProcess: 'sprintf',
 			sprintf: [channel],

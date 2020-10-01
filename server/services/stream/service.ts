@@ -1,7 +1,6 @@
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IStreamService } from '../../sdk/types/IStreamService';
 // import { Notifications } from '../../../app/notifications/server';
-import { IMessage } from '../../../definition/IMessage';
 import { IStreamer, IStreamerConstructor } from '../../modules/streamer/streamer.module';
 
 export class StreamService extends ServiceClass implements IStreamService {
@@ -81,28 +80,5 @@ export class StreamService extends ServiceClass implements IStreamService {
 
 	sendRoleUpdate(update: Record<string, any>): void {
 		this.streamLogged.emit('roles-change', update);
-	}
-
-	sendEphemeralMessage(uid: string, rid: string, message: Partial<IMessage>): void {
-		this.notifyUser(uid, 'message', {
-			groupable: false,
-			...message,
-			_id: String(Date.now()),
-			rid,
-			ts: new Date(),
-		});
-	}
-
-	notifyAll(eventName: string, ...args: any[]): void {
-		console.log('notifyAll', eventName, args);
-	}
-
-	notifyUser(uid: string, eventName: string, ...args: any[]): void {
-		console.log('notifyUser', uid, eventName, args);
-		// if (this.debug === true) {
-		// 	console.log('notifyUser', [userId, eventName, ...args]);
-		// }
-
-		return this.streamUser.emit(`${ uid }/${ eventName }`, ...args);
 	}
 }

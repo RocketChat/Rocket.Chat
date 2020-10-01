@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Users, Subscriptions } from '../../models';
 import { slashCommands } from '../../utils';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 const Kick = function(command, params, { rid }) {
 	if (command !== 'kick' || !Match.test(params, String)) {
@@ -21,7 +21,7 @@ const Kick = function(command, params, { rid }) {
 	const kickedUser = Users.findOneByUsernameIgnoringCase(username);
 
 	if (kickedUser == null) {
-		return StreamService.sendEphemeralMessage(userId, rid, {
+		return api.broadcast('notify.ephemeralMessage', userId, rid, {
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [username],
@@ -31,7 +31,7 @@ const Kick = function(command, params, { rid }) {
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		return StreamService.sendEphemeralMessage(userId, rid, {
+		return api.broadcast('notify.ephemeralMessage', userId, rid, {
 			msg: TAPi18n.__('Username_is_not_in_this_room', {
 				postProcess: 'sprintf',
 				sprintf: [username],

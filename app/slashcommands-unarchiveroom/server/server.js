@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Rooms, Messages } from '../../models';
 import { slashCommands } from '../../utils';
 import { roomTypes, RoomMemberActions } from '../../utils/server';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 function Unarchive(command, params, item) {
 	if (command !== 'unarchive' || !Match.test(params, String)) {
@@ -26,7 +26,7 @@ function Unarchive(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 
 	if (!room) {
-		return StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+		return api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Channel_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
@@ -40,7 +40,7 @@ function Unarchive(command, params, item) {
 	}
 
 	if (!room.archived) {
-		StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Channel_already_Unarchived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
@@ -52,7 +52,7 @@ function Unarchive(command, params, item) {
 	Meteor.call('unarchiveRoom', room._id);
 
 	Messages.createRoomUnarchivedByRoomIdAndUser(room._id, Meteor.user());
-	StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+	api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 		msg: TAPi18n.__('Channel_Unarchived', {
 			postProcess: 'sprintf',
 			sprintf: [channel],

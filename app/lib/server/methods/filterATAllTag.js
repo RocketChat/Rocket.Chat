@@ -6,7 +6,7 @@ import moment from 'moment';
 import { hasPermission } from '../../../authorization';
 import { callbacks } from '../../../callbacks';
 import { Users } from '../../../models';
-import { StreamService } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 callbacks.add('beforeSaveMessage', function(message) {
 	// If the message was edited, or is older than 60 seconds (imported)
@@ -26,7 +26,7 @@ callbacks.add('beforeSaveMessage', function(message) {
 
 			// Add a notification to the chat, informing the user that this
 			// action is not allowed.
-			StreamService.sendEphemeralMessage(message.u._id, message.rid, {
+			api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
 				msg: TAPi18n.__('error-action-not-allowed', { action }, language),
 			});
 

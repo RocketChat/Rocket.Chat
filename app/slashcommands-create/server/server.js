@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings } from '../../settings';
 import { Rooms } from '../../models';
 import { slashCommands } from '../../utils';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 function Create(command, params, item) {
 	function getParams(str) {
@@ -35,7 +35,7 @@ function Create(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 	const room = Rooms.findOneByName(channel);
 	if (room != null) {
-		StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Channel_already_exist', {
 				postProcess: 'sprintf',
 				sprintf: [channel],

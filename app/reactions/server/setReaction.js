@@ -7,7 +7,7 @@ import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
 import { isTheLastMessage, msgStream } from '../../lib';
 import { hasPermission } from '../../authorization/server/functions/hasPermission';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
@@ -111,7 +111,7 @@ Meteor.methods({
 			return Promise.await(executeSetReaction(reaction, messageId, shouldReact));
 		} catch (e) {
 			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
-				StreamService.sendEphemeralMessage(Meteor.userId(), e.details.rid, {
+				api.broadcast('notify.ephemeralMessage', Meteor.userId(), e.details.rid, {
 					msg: e.reason,
 				});
 

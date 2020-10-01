@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { handleError, slashCommands } from '../../utils';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 function Status(command, params, item) {
 	if (command === 'status') {
@@ -15,14 +15,14 @@ function Status(command, params, item) {
 				}
 
 				if (err.error === 'error-not-allowed') {
-					StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+					api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 						msg: TAPi18n.__('StatusMessage_Change_Disabled', null, user.language),
 					});
 				}
 
 				throw err;
 			} else {
-				StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+				api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 					msg: TAPi18n.__('StatusMessage_Changed_Successfully', null, user.language),
 				});
 			}

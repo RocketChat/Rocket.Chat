@@ -12,7 +12,7 @@ import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
-import { StreamService } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {
@@ -80,7 +80,7 @@ export function executeSendMessage(uid, message) {
 		SystemLogger.error('Error sending message:', error);
 
 		const errorMessage = typeof error === 'string' ? error : error.error || error.message;
-		StreamService.sendEphemeralMessage(uid, message.rid, {
+		api.broadcast('notify.ephemeralMessage', uid, message.rid, {
 			msg: TAPi18n.__(errorMessage, {}, user.language),
 		});
 

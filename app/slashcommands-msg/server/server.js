@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { slashCommands } from '../../utils';
 import { Users } from '../../models';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 /*
 * Msg is a named function that will replace /msg commands
@@ -19,7 +19,7 @@ function Msg(command, params, item) {
 	const separator = trimmedParams.indexOf(' ');
 	const user = Meteor.users.findOne(Meteor.userId());
 	if (separator === -1) {
-		return StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+		return api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Username_and_message_must_not_be_empty', null, user.language),
 		});
 	}
@@ -28,7 +28,7 @@ function Msg(command, params, item) {
 	const targetUsername = targetUsernameOrig.replace('@', '');
 	const targetUser = Users.findOneByUsernameIgnoringCase(targetUsername);
 	if (targetUser == null) {
-		StreamService.sendEphemeralMessage(Meteor.userId(), item.rid, {
+		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [targetUsernameOrig],

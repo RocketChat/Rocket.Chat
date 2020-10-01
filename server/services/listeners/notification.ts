@@ -26,6 +26,16 @@ export class NotificationService extends ServiceClass {
 			});
 		});
 
+		this.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
+			notifications.notifyLogged(`${ uid }/message`, {
+				groupable: false,
+				...message,
+				_id: String(Date.now()),
+				rid,
+				ts: new Date(),
+			});
+		});
+
 		this.onEvent('permission.changed', ({ clientAction, data }) => {
 			notifications.notifyLogged('permissions-changed', clientAction, data);
 		});

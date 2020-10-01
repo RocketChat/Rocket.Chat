@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { slashCommands } from '../../utils';
 import { Users, Subscriptions } from '../../models';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 /*
 * Mute is a named function that will replace /mute commands
@@ -22,7 +22,7 @@ slashCommands.add('mute', function Mute(command, params, item) {
 	const user = Meteor.users.findOne(userId);
 	const mutedUser = Users.findOneByUsernameIgnoringCase(username);
 	if (mutedUser == null) {
-		StreamService.sendEphemeralMessage(userId, item.rid, {
+		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [username],
@@ -33,7 +33,7 @@ slashCommands.add('mute', function Mute(command, params, item) {
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, mutedUser._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		StreamService.sendEphemeralMessage(userId, item.rid, {
+		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Username_is_not_in_this_room', {
 				postProcess: 'sprintf',
 				sprintf: [username],

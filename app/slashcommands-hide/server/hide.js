@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions } from '../../models';
 import { slashCommands } from '../../utils';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 /*
 * Hide is a named function that will replace /hide commands
@@ -28,7 +28,7 @@ function Hide(command, param, item) {
 		});
 
 		if (!roomObject) {
-			StreamService.sendEphemeralMessage(user._id, item.rid, {
+			api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [room],
@@ -37,7 +37,7 @@ function Hide(command, param, item) {
 		}
 
 		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
-			return StreamService.sendEphemeralMessage(user._id, item.rid, {
+			return api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 				msg: TAPi18n.__('error-logged-user-not-in-room', {
 					postProcess: 'sprintf',
 					sprintf: [room],
@@ -49,7 +49,7 @@ function Hide(command, param, item) {
 
 	Meteor.call('hideRoom', rid, (error) => {
 		if (error) {
-			return StreamService.sendEphemeralMessage(user._id, item.rid, {
+			return api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 				msg: TAPi18n.__(error, null, user.language),
 			});
 		}

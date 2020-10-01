@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { slashCommands } from '../../utils';
 import { Subscriptions } from '../../models';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 /*
 * Invite is a named function that will replace /invite commands
@@ -29,7 +29,7 @@ function Invite(command, params, item) {
 	const userId = Meteor.userId();
 	const currentUser = Meteor.users.findOne(userId);
 	if (users.count() === 0) {
-		StreamService.sendEphemeralMessage(userId, item.rid, {
+		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('User_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [usernames.join(' @')],
@@ -42,7 +42,7 @@ function Invite(command, params, item) {
 		if (subscription == null) {
 			return true;
 		}
-		StreamService.sendEphemeralMessage(userId, item.rid, {
+		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Username_is_already_in_here', {
 				postProcess: 'sprintf',
 				sprintf: [user.username],
@@ -59,11 +59,11 @@ function Invite(command, params, item) {
 			});
 		} catch ({ error }) {
 			if (error === 'cant-invite-for-direct-room') {
-				StreamService.sendEphemeralMessage(userId, item.rid, {
+				api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language),
 				});
 			} else {
-				StreamService.sendEphemeralMessage(userId, item.rid, {
+				api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 					msg: TAPi18n.__(error, null, currentUser.language),
 				});
 			}

@@ -6,7 +6,7 @@ import MentionsServer from './Mentions';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Users, Subscriptions, Rooms } from '../../models';
-import { StreamService } from '../../../server/sdk';
+import { api } from '../../../server/sdk/api';
 
 const mention = new MentionsServer({
 	pattern: () => settings.get('UTF8_Names_Validation'),
@@ -20,7 +20,7 @@ const mention = new MentionsServer({
 		const { language } = this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
-		StreamService.sendEphemeralMessage(sender._id, rid, {
+		api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,
 		});
 

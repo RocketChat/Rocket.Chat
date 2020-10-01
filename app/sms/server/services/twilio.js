@@ -6,11 +6,11 @@ import filesize from 'filesize';
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import { StreamService } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) => StreamService.sendEphemeralMessage(userId, rid, {
+const notifyAgent = (userId, rid, msg) => api.broadcast('notify.ephemeralMessage', userId, rid, {
 	msg,
 });
 
