@@ -26,7 +26,6 @@ export class RoomStreamer extends Stream {
 				});
 
 				payload && publication.client?.send(
-					publication,
 					payload,
 				);
 			};
