@@ -65,10 +65,6 @@ export class StreamService extends ServiceClass implements IStreamService {
 		});
 	}
 
-	sendPermission({ clientAction, data }: any): void {
-		this.streamLogged.emitWithoutBroadcast('permissions-changed', clientAction, data);
-	}
-
 	sendPrivateSetting({ clientAction, setting }: any): void {
 		this.streamLogged.emitWithoutBroadcast('private-settings-changed', clientAction, setting);
 	}

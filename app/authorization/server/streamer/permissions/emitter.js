@@ -2,7 +2,7 @@ import Settings from '../../../../models/server/models/Settings';
 import { CONSTANTS } from '../../../lib';
 import Permissions from '../../../../models/server/models/Permissions';
 import { clearCache } from '../../functions/hasPermission';
-import { StreamService } from '../../../../../server/sdk';
+import { api } from '../../../../../server/sdk/api';
 
 Permissions.on('change', ({ clientAction, id, data, diff }) => {
 	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
@@ -22,7 +22,7 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 
 	clearCache();
 
-	StreamService.sendPermission({ clientAction, data });
+	api.broadcast('permission.changed', { clientAction, data });
 
 	if (data.level && data.level === CONSTANTS.SETTINGS_LEVEL) {
 		// if the permission changes, the effect on the visible settings depends on the role affected.

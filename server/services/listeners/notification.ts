@@ -26,6 +26,10 @@ export class NotificationService extends ServiceClass {
 			});
 		});
 
+		this.onEvent('permission.changed', ({ clientAction, data }) => {
+			notifications.notifyLogged('permissions-changed', clientAction, data);
+		});
+
 		this.onEvent('user.deleteCustomStatus', (userStatus) => {
 			notifications.notifyLogged('deleteCustomUserStatus', {
 				userStatusData: userStatus,
