@@ -65,12 +65,6 @@ export class StreamService extends ServiceClass implements IStreamService {
 		});
 	}
 
-	sendUpdateCustomUserStatus(userStatusData: Record<string, any>): void {
-		this.streamLogged.emit('updateCustomUserStatus', {
-			userStatusData,
-		});
-	}
-
 	sendPermission({ clientAction, data }: any): void {
 		this.streamLogged.emitWithoutBroadcast('permissions-changed', clientAction, data);
 	}

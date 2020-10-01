@@ -3,7 +3,7 @@ import s from 'underscore.string';
 
 import { hasPermission } from '../../../authorization';
 import { CustomUserStatus } from '../../../models';
-import { StreamService } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	insertOrUpdateUserStatus(userStatusData) {
@@ -49,7 +49,7 @@ Meteor.methods({
 
 			const _id = CustomUserStatus.create(createUserStatus);
 
-			StreamService.sendUpdateCustomUserStatus(createUserStatus);
+			api.broadcast('user.updateCustomStatus', createUserStatus);
 
 			return _id;
 		}
@@ -63,7 +63,7 @@ Meteor.methods({
 			CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 		}
 
-		StreamService.sendUpdateCustomUserStatus(userStatusData);
+		api.broadcast('user.updateCustomStatus', userStatusData);
 
 		return true;
 	},

@@ -30,6 +30,7 @@ export type EventSignatures = {
 	'user'(data: { action: string; user: Partial<IUser> }): void;
 	'user.deleted'(user: Partial<IUser>): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
+	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'user.nameChanged'(user: Partial<IUser>): void;
 	'user.name'(data: { action: string; user: Partial<IUser> }): void;
 	'userpresence'(data: { action: string; user: Partial<IUser> }): void;

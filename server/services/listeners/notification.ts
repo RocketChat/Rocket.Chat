@@ -32,6 +32,12 @@ export class NotificationService extends ServiceClass {
 			});
 		});
 
+		this.onEvent('user.updateCustomStatus', (userStatus) => {
+			notifications.notifyLogged('updateCustomUserStatus', {
+				userStatusData: userStatus,
+			});
+		});
+
 		this.onEvent('user.deleted', ({ _id: userId }) => {
 			notifications.notifyLogged('Users:Deleted', {
 				userId,
