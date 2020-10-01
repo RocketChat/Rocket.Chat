@@ -40,6 +40,13 @@ export class NotificationService extends ServiceClass {
 			notifications.notifyLogged('permissions-changed', clientAction, data);
 		});
 
+		this.onEvent('room.avatarUpdate', ({ _id: rid, avatarETag: etag }) => {
+			notifications.notifyLogged('updateAvatar', {
+				rid,
+				etag,
+			});
+		});
+
 		this.onEvent('setting.privateChanged', ({ clientAction, setting }) => {
 			notifications.notifyLogged('private-settings-changed', clientAction, setting);
 		});
@@ -63,14 +70,12 @@ export class NotificationService extends ServiceClass {
 			});
 		});
 
-		this.onEvent('user.updateCustomStatus', (userStatus) => {
-			notifications.notifyLogged('updateCustomUserStatus', {
-				userStatusData: userStatus,
-			});
-		});
-
 		this.onEvent('user.nameChanged', (user) => {
 			notifications.notifyLogged('Users:NameChanged', user);
+		});
+
+		this.onEvent('user.roleUpdate', (update) => {
+			notifications.notifyLogged('roles-change', update);
 		});
 
 		this.onEvent('userpresence', ({ user }) => {
@@ -84,8 +89,10 @@ export class NotificationService extends ServiceClass {
 			notifications.notifyLogged('user-status', [_id, username, STATUS_MAP[status], statusText]);
 		});
 
-		this.onEvent('user.roleUpdate', (update) => {
-			notifications.notifyLogged('roles-change', update);
+		this.onEvent('user.updateCustomStatus', (userStatus) => {
+			notifications.notifyLogged('updateCustomUserStatus', {
+				userStatusData: userStatus,
+			});
 		});
 	}
 }

@@ -25,6 +25,7 @@ export type EventSignatures = {
 	'permission.changed'(data: { clientAction: string; data: any }): void;
 	'role'(data: {type: 'changed' | 'removed' } & Partial<IRole>): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
+	'room.avatarUpdate'(room: Partial<IRoom>): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
 	'setting.privateChanged'(data: { clientAction: string; setting: any }): void;
 	'stream'([streamer, eventName, payload]: [string, string, string]): void;
@@ -32,11 +33,11 @@ export type EventSignatures = {
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user'(data: { action: string; user: Partial<IUser> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
-	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.deleted'(user: Partial<IUser>): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
-	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'user.nameChanged'(user: Partial<IUser>): void;
 	'user.name'(data: { action: string; user: Partial<IUser> }): void;
+	'user.roleUpdate'(update: Record<string, any>): void;
+	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'userpresence'(data: { action: string; user: Partial<IUser> }): void;
 }
