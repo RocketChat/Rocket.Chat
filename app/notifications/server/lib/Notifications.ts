@@ -224,10 +224,6 @@ notifications.streamStdout.allowRead(function() {
 	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
 });
 
-notifications.streamCannedResponses.allowRead(function() {
-	return this.userId && settings.get('Canned_Responses_Enable') && hasPermission(this.userId, 'view-canned-responses');
-});
-
 notifications.streamAll.allowRead('private-settings-changed', function() {
 	if (this.userId == null) {
 		return false;

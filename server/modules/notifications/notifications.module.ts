@@ -189,7 +189,7 @@ export class NotificationsModule {
 		this.streamRoomUsers.allowWrite(async function(eventName, ...args) {
 			const [roomId, e] = eventName.split('/');
 			if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
-				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, { project: { 'u._id': 1, _id: 0 } }).toArray();
+				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, { projection: { 'u._id': 1, _id: 0 } }).toArray();
 				subscriptions.forEach((subscription) => notifyUser(subscription.u._id, e, ...args));
 			}
 			return false;
@@ -216,7 +216,9 @@ export class NotificationsModule {
 		this.streamAppsEngine.allowWrite('none');
 
 		this.streamCannedResponses.allowWrite('none');
-		// this.streamCannedResponses.allowRead(function() { // Implemented outside
+		this.streamCannedResponses.allowRead(async function() {
+			return this.userId && await Settings.getValueById('Canned_Responses_Enable') && Authorization.hasPermission(this.userId, 'view-canned-responses');
+		});
 
 		this.streamIntegrationHistory.allowWrite('none');
 		// this.streamIntegrationHistory.allowRead(function() { // Implemented outside
