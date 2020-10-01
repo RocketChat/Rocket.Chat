@@ -170,16 +170,3 @@ notifications.streamAll.allowRead('private-settings-changed', function() {
 	}
 	return hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
 });
-
-notifications.streamRoomData.allowRead(function(rid) {
-	try {
-		const room = Meteor.call('canAccessRoom', rid, this.userId);
-		if (!room) {
-			return false;
-		}
-
-		return roomTypes.getConfig(room.t).isEmitAllowed();
-	} catch (error) {
-		return false;
-	}
-});

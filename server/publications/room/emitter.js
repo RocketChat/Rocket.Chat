@@ -1,6 +1,6 @@
-import { emitRoomDataEvent } from '../../stream/rooms';
-import { Rooms, Subscriptions } from '../../../app/models';
-import { Notifications } from '../../../app/notifications';
+import { Rooms, Subscriptions } from '../../../app/models/server';
+import { Notifications } from '../../../app/notifications/server';
+import notifications from '../../../app/notifications/server/lib/Notifications';
 
 import { fields } from '.';
 
@@ -38,5 +38,6 @@ Rooms.on('change', ({ clientAction, id, data }) => {
 
 	Notifications.streamUser.__emit(id, clientAction, data);
 
-	emitRoomDataEvent(id, data);
+	// TODO validate emitWithoutBroadcast
+	notifications.streamRoomData.emitWithoutBroadcast(id, clientAction, data);
 });

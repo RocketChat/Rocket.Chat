@@ -124,12 +124,6 @@ export default notifications;
 // 	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
 // });
 
-
-// export const streamRoomData = new Stream(STREAM_NAMES.ROOM_DATA);
-// notifications.streamRoomData.allowRead(async function(rid) {
-// 	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
-// });
-
 // notifications.streamLivechatQueueData.allowRead(async function() {
 // 	return !!this.userId && Authorization.hasPermission(this.userId, 'view-l-room');
 // });
