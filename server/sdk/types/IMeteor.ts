@@ -14,4 +14,6 @@ export interface IMeteor extends IServiceClass {
 	getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]>;
 
 	getLoginServiceConfiguration(): Promise<any[]>;
+
+	callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any>;
 }

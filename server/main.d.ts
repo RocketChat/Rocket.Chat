@@ -44,6 +44,8 @@ declare module 'meteor/meteor' {
 
 		const server: any;
 
+		const runAsUser: (userId: string, scope: Function) => any;
+
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
 		}
