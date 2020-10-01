@@ -15,7 +15,6 @@ import { templateVarHandler } from '../../utils';
 import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
 import { api } from '../../../server/sdk/api';
-import { StreamService } from '../../../server/sdk';
 
 
 export const logger = new Logger('LDAPSync', {});
@@ -265,7 +264,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 
 		const del = Roles.removeUserRoles(user._id, roleName);
 		if (settings.get('UI_DisplayRoles') && del) {
-			StreamService.sendRoleUpdate({
+			api.broadcast('user.roleUpdate', {
 				type: 'removed',
 				_id: roleName,
 				u: {
@@ -413,7 +412,7 @@ export function syncUserData(user, ldapUser, ldap) {
 		for (const roleName of userRoles) {
 			const add = Roles.addUserRoles(user._id, roleName);
 			if (settings.get('UI_DisplayRoles') && add) {
-				StreamService.sendRoleUpdate({
+				api.broadcast('user.roleUpdate', {
 					type: 'added',
 					_id: roleName,
 					u: {

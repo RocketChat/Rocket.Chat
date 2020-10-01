@@ -83,5 +83,9 @@ export class NotificationService extends ServiceClass {
 
 			notifications.notifyLogged('user-status', [_id, username, STATUS_MAP[status], statusText]);
 		});
+
+		this.onEvent('user.roleUpdate', (update) => {
+			notifications.notifyLogged('roles-change', update);
+		});
 	}
 }

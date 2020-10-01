@@ -70,8 +70,4 @@ export class StreamService extends ServiceClass implements IStreamService {
 			etag,
 		});
 	}
-
-	sendRoleUpdate(update: Record<string, any>): void {
-		this.streamLogged.emit('roles-change', update);
-	}
 }
