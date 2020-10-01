@@ -2,14 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { DDPCommon } from 'meteor/ddp-common';
 
-import { WEB_RTC_EVENTS } from '../../../webrtc';
 import { Subscriptions, Rooms, LivechatRooms } from '../../../models/server';
-import { settings } from '../../../settings/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
 import { Streamer, Publication, DDPSubscription, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { ISubscription } from '../../../../definition/ISubscription';
-import { IUser } from '../../../../definition/IUser';
 import { roomTypes } from '../../../utils/server';
 import { api } from '../../../../server/sdk/api';
 import {
@@ -144,56 +141,6 @@ notifications.configure({
 });
 
 export default notifications;
-
-notifications.streamRoom.allowRead(async function(eventName, extraData) {
-	const [roomId] = eventName.split('/');
-	const room = Rooms.findOneById(roomId);
-	if (!room) {
-		console.warn(`Invalid streamRoom eventName: "${ eventName }"`);
-		return false;
-	}
-	if (room.t === 'l' && extraData && extraData.token && room.v.token === extraData.token) {
-		return true;
-	}
-	if (this.userId == null) {
-		return false;
-	}
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { fields: { _id: 1 } });
-	return subscription != null;
-});
-
-notifications.streamRoom.allowWrite(async function(eventName, username, _typing, extraData) {
-	const [roomId, e] = eventName.split('/');
-
-	// if (isNaN(parseFloat(e)) ? e === WEB_RTC_EVENTS.WEB_RTC : parseFloat(e) === WEB_RTC_EVENTS.WEB_RTC) {
-	if (e === WEB_RTC_EVENTS.WEB_RTC) {
-		return true;
-	}
-
-	if (e === 'typing') {
-		const key = settings.get('UI_Use_Real_Name') ? 'name' : 'username';
-		// typing from livechat widget
-		if (extraData && extraData.token) {
-			const room = Rooms.findOneById(roomId);
-			if (room && room.t === 'l' && room.v.token === extraData.token) {
-				return true;
-			}
-		}
-
-		const user = Meteor.users.findOne(this.userId, {
-			fields: {
-				[key]: 1,
-			},
-		}) as IUser;
-
-		if (!user) {
-			return false;
-		}
-
-		return user[key] === username;
-	}
-	return false;
-});
 
 notifications.streamLivechatQueueData.allowRead(function() {
 	return this.userId ? hasPermission(this.userId, 'view-l-room') : false;
