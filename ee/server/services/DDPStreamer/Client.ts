@@ -134,6 +134,7 @@ export class Client extends EventEmitter {
 			}
 			this.process(packet.msg, packet);
 		} catch (err) {
+			console.error(err);
 			return this.ws.close(
 				WS_ERRORS.UNSUPPORTED_DATA,
 				WS_ERRORS_MESSAGES.UNSUPPORTED_DATA,

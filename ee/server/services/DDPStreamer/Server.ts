@@ -27,7 +27,7 @@ export class Server extends EventEmitter {
 	serialize = ejson.stringify;
 
 	parse = (packet: string): IPacket => {
-		const [payload] = JSON.parse(packet);
+		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
 		return ejson.parse(payload);
 	}
 
