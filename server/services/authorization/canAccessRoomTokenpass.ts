@@ -2,7 +2,7 @@ import { IAuthorizationTokenpass } from '../../sdk/types/IAuthorizationTokenpass
 import { proxify } from '../../sdk/lib/proxify';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 
-export const AuthorizationTokenpass = proxify<IAuthorizationTokenpass>('authorization.tokenpass');
+export const AuthorizationTokenpass = proxify<IAuthorizationTokenpass>('authorization-tokenpass');
 
 export const canAccessRoomTokenpass: RoomAccessValidator = async (room, user): Promise<boolean> => {
 	if (!room.tokenpass) {
