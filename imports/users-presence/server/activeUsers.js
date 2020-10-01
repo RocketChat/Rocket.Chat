@@ -2,6 +2,7 @@ import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
 import { Notifications } from '../../../app/notifications/server';
 import { settings } from '../../../app/settings/server';
+import { Notification } from '../../../app/notification-queue/server/NotificationQueue';
 
 // mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
 export const STATUS_MAP = {
@@ -26,6 +27,11 @@ export const setUserStatus = (user, status/* , statusConnection*/) => {
 		STATUS_MAP[status],
 		statusText,
 	]);
+
+	if (status == 'offline' || status == 'away') {
+		// Expedite notification schedule for this user
+		Notification.expediteSheduleByUserId(_id);
+	}
 };
 
 let TroubleshootDisablePresenceBroadcast;

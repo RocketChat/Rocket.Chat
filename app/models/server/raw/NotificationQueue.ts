@@ -54,6 +54,23 @@ export class NotificationQueueRaw extends BaseRaw {
 		return op.deletedCount;
 	}
 
+	/**
+	 * Expedite scheduled notifications for given user, to be scheduled now.
+	 * Used when the user that was "online" becomes "away" or "offline".
+	 * @param uid User ID
+	 */
+	async expediteSheduleByUserId(uid: string) {
+		const now = new Date();
+		return this.col.updateMany({
+			uid,
+			schedule: { $gt: now },
+		}, {
+			$set: {
+				schedule: now,
+			},
+		});
+	}
+
 	async findNextInQueueOrExpired(expired: Date): Promise<INotification | undefined> {
 		const now = new Date();
 
