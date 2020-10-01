@@ -65,22 +65,6 @@ export class StreamService extends ServiceClass implements IStreamService {
 		});
 	}
 
-	sendUserDeleted(uid: string): void {
-		this.streamLogged.emit('Users:Deleted', {
-			userId: uid,
-		});
-	}
-
-	sendUserNameChanged(userData: Record<string, any>): void {
-		this.streamLogged.emit('Users:NameChanged', userData);
-	}
-
-	sendDeleteCustomUserStatus(userStatusData: Record<string, any>): void {
-		this.streamLogged.emit('deleteCustomUserStatus', {
-			userStatusData,
-		});
-	}
-
 	sendUpdateCustomUserStatus(userStatusData: Record<string, any>): void {
 		this.streamLogged.emit('updateCustomUserStatus', {
 			userStatusData,

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization/server';
 import { CustomUserStatus } from '../../../models/server';
-import { StreamService } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	deleteCustomUserStatus(userStatusID) {
@@ -16,7 +16,7 @@ Meteor.methods({
 		}
 
 		CustomUserStatus.removeById(userStatusID);
-		StreamService.sendDeleteCustomUserStatus(userStatus);
+		api.broadcast('user.deleteCustomStatus', userStatus);
 
 		return true;
 	},

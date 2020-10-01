@@ -14,6 +14,34 @@ export class NotificationService extends ServiceClass {
 	constructor() {
 		super();
 
+		this.onEvent('emoji.deleteCustom', (emoji) => {
+			notifications.notifyLogged('deleteEmojiCustom', {
+				emojiData: emoji,
+			});
+		});
+
+		this.onEvent('emoji.updateCustom', (emoji) => {
+			notifications.notifyLogged('updateEmojiCustom', {
+				emojiData: emoji,
+			});
+		});
+
+		this.onEvent('user.deleteCustomStatus', (userStatus) => {
+			notifications.notifyLogged('deleteCustomUserStatus', {
+				userStatusData: userStatus,
+			});
+		});
+
+		this.onEvent('user.deleted', ({ _id: userId }) => {
+			notifications.notifyLogged('Users:Deleted', {
+				userId,
+			});
+		});
+
+		this.onEvent('user.nameChanged', (user) => {
+			notifications.notifyLogged('Users:NameChanged', user);
+		});
+
 		this.onEvent('userpresence', ({ user }) => {
 			const {
 				_id, username, status, statusText,
@@ -23,18 +51,6 @@ export class NotificationService extends ServiceClass {
 			}
 
 			notifications.notifyLogged('user-status', [_id, username, STATUS_MAP[status], statusText]);
-		});
-
-		this.onEvent('emoji.deleteCustom', ({ emoji }) => {
-			notifications.notifyLogged('deleteEmojiCustom', {
-				emojiData: emoji,
-			});
-		});
-
-		this.onEvent('emoji.updateCustom', ({ emoji }) => {
-			notifications.notifyLogged('updateEmojiCustom', {
-				emojiData: emoji,
-			});
 		});
 	}
 }

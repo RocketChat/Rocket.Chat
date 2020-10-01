@@ -5,7 +5,7 @@ import { Users } from '../../../models/server';
 import { settings } from '../../../settings';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
-import { StreamService } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 export const _setRealName = function(userId, name, fullUser) {
 	name = s.trim(name);
@@ -30,7 +30,7 @@ export const _setRealName = function(userId, name, fullUser) {
 	user.name = name;
 
 	if (settings.get('UI_Use_Real_Name') === true) {
-		StreamService.sendUserNameChanged({
+		api.broadcast('user.nameChanged', {
 			_id: user._id,
 			name: user.name,
 			username: user.username,

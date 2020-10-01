@@ -73,7 +73,7 @@ Meteor.methods({
 
 			const _id = EmojiCustom.create(createEmoji);
 
-			api.broadcast('emoji.updateCustom', { emoji: createEmoji });
+			api.broadcast('emoji.updateCustom', createEmoji);
 
 			return _id;
 		}
@@ -107,7 +107,7 @@ Meteor.methods({
 			EmojiCustom.setAliases(emojiData._id, []);
 		}
 
-		api.broadcast('emoji.updateCustom', { emoji: emojiData });
+		api.broadcast('emoji.updateCustom', emojiData);
 
 		return true;
 	},
