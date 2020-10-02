@@ -231,7 +231,19 @@ export class NotificationsModule {
 			]);
 		});
 
-		// this.streamLivechatRoom.allowRead((roomId, extraData) => { // Implemented outside
+		this.streamLivechatRoom.allowRead(async function(roomId, extraData) {
+			const room = await Rooms.findOneById(roomId, { projection: { _id: 0, t: 1, v: 1 } });
+
+			if (!room) {
+				console.warn(`Invalid eventName: "${ roomId }"`);
+				return false;
+			}
+
+			if (room.t === 'l' && extraData?.visitorToken && room.v.token === extraData.visitorToken) {
+				return true;
+			}
+			return false;
+		});
 
 		this.streamLivechatQueueData.allowWrite('none');
 		// this.streamLivechatQueueData.allowRead(function() { // Implemented outside
