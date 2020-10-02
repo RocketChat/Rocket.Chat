@@ -310,9 +310,7 @@ function startStreamBroadcast() {
 		return results;
 	}
 
-	const onBroadcast = function(streamName, eventName, args) {
-		return broadcast(streamName, eventName, args);
-	};
+	const onBroadcast = Meteor.bindEnvironment(broadcast);
 
 	let TroubleshootDisableInstanceBroadcast;
 	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
