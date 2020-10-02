@@ -32,6 +32,7 @@ export class Client extends EventEmitter {
 
 	constructor(
 		public ws: WebSocket,
+		public meteorClient = false,
 	) {
 		super();
 
@@ -72,6 +73,9 @@ export class Client extends EventEmitter {
 
 	greeting(): void {
 		// no greeting by default
+		if (this.meteorClient) {
+			return this.ws.send('o');
+		}
 	}
 
 	async callMethod(packet: IPacket): Promise<void> {
@@ -157,20 +161,17 @@ export class Client extends EventEmitter {
 		}
 	};
 
-	send(payload: string): void {
-		return this.ws.send(payload);
-	}
-}
-
-export class MeteorClient extends Client {
-	// TODO implement meteor errors
-	// a["{\"msg\":\"result\",\"id\":\"12\",\"error\":{\"isClientSafe\":true,\"error\":403,\"reason\":\"User has no password set\",\"message\":\"User has no password set [403]\",\"errorType\":\"Meteor.Error\"}}"]
-
-	greeting(): void {
-		return this.ws.send('o');
+	encodePayload(payload: string): string {
+		if (this.meteorClient) {
+			return `a${ JSON.stringify([payload]) }`;
+		}
+		return payload;
 	}
 
 	send(payload: string): void {
-		return this.ws.send(`a${ JSON.stringify([payload]) }`);
+		return this.ws.send(this.encodePayload(payload));
 	}
 }
+
+// TODO implement meteor errors
+// a["{\"msg\":\"result\",\"id\":\"12\",\"error\":{\"isClientSafe\":true,\"error\":403,\"reason\":\"User has no password set\",\"message\":\"User has no password set [403]\",\"errorType\":\"Meteor.Error\"}}"]

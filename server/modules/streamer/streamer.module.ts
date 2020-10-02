@@ -11,6 +11,7 @@ class StreamerCentralClass extends EventEmitter {
 export const StreamerCentral = new StreamerCentralClass();
 
 export type Client = {
+	meteorClient: boolean;
 	ws: any;
 	userId: string;
 	send: Function;

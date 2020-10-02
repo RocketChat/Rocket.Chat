@@ -4,7 +4,7 @@ import url from 'url';
 import WebSocket from 'ws';
 // import PromService from 'moleculer-prometheus';
 
-import { Client, MeteorClient } from './Client';
+import { Client } from './Client';
 // import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
 import { isEmpty } from './lib/utils';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
@@ -58,7 +58,7 @@ httpServer.listen(port);
 
 const wss = new WebSocket.Server({ server: httpServer });
 
-wss.on('connection', (ws, req) => (req.url === '/websocket' ? new Client(ws) : new MeteorClient(ws)));
+wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket'));
 
 // export default {
 // 	name: 'streamer',
