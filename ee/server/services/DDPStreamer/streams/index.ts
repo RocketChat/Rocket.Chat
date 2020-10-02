@@ -118,33 +118,3 @@ getConnection()
 	});
 
 export default notifications;
-
-// TODO: Implementation not complete
-// notifications.streamRoomMessage.allowRead(async function(rid) {
-// 	return !!this.userId && Authorization.canAccessRoom({ _id: rid }, { _id: this.userId });
-// });
-
-// notifications.streamLivechatQueueData.allowRead(async function() {
-// 	return !!this.userId && Authorization.hasPermission(this.userId, 'view-l-room');
-// });
-
-// TODO: Implement permission
-// this.streamCannedResponses.allowRead(function() { // Implemented outside
-// this.streamLivechatRoom.allowRead((roomId, extraData) => { // Implemented outside
-
-
-// TODO: Implement permission
-// const self = this;
-// notifications.streamRoomUsers.allowWrite(function(eventName, ...args) {
-// 	const [roomId, e] = eventName.split('/');
-// 	// const user = Meteor.users.findOne(this.userId, {
-// 	// 	fields: {
-// 	// 		username: 1
-// 	// 	}
-// 	// });
-// 	if (Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId) != null) {
-// 		const subscriptions = Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId).fetch();
-// 		subscriptions.forEach((subscription) => self.notifyUser(subscription.u._id, e, ...args));
-// 	}
-// 	return false;
-// });
