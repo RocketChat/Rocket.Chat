@@ -20,7 +20,7 @@ import RoomMenu from './RoomMenu';
 import { useSession } from '../../contexts/SessionContext';
 import Omnichannel from './sections/Omnichannel';
 
-const query = {};
+const query = { open: { $ne: false } };
 
 
 const sections = {
@@ -118,7 +118,7 @@ export default () => {
 
 	const rooms = useReactiveValue(useCallback(() => ChatSubscription.find(query, { sort }).fetch(), [query, sort]));
 
-	const queuedInquiries = useQueuedInquiries();
+	const inquiries = useQueuedInquiries();
 
 	const groups = useMemo(() => {
 		const favorite = new Set();
@@ -163,10 +163,10 @@ export default () => {
 		});
 
 		const groups = new Map();
-		showOmnichannel && queuedInquiries.length && groups.set('Omnichannel', []);
-		showOmnichannel && !queuedInquiries.length && groups.set('Omnichannel', omnichannel);
-		showOmnichannel && queuedInquiries.length && groups.set('Incoming_Livechats', queuedInquiries);
-		showOmnichannel && queuedInquiries.length && groups.set('Open_Livechats', omnichannel);
+		showOmnichannel && inquiries.enabled && groups.set('Omnichannel', []);
+		showOmnichannel && !inquiries.enabled && groups.set('Omnichannel', omnichannel);
+		showOmnichannel && inquiries.enabled && groups.set('Incoming_Livechats', inquiries.queue);
+		showOmnichannel && inquiries.enabled && groups.set('Open_Livechats', omnichannel);
 		favoritesEnabled && groups.set('Favorites', favorite);
 		sidebarShowUnread && groups.set('Unread', unread);
 		showDiscussion && groups.set('Discussions', discussion);
@@ -175,7 +175,7 @@ export default () => {
 		sidebarGroupByType && groups.set('Direct', direct);
 		!sidebarGroupByType && groups.set('Conversations', conversation);
 		return groups;
-	}, [showOmnichannel, favoritesEnabled, rooms, showDiscussion, sidebarShowUnread, sidebarGroupByType, queuedInquiries.length && queuedInquiries]);
+	}, [rooms, showOmnichannel, inquiries.enabled, inquiries.queue, favoritesEnabled, sidebarShowUnread, showDiscussion, sidebarGroupByType]);
 
 	const extended = sidebarViewMode === 'extended';
 
@@ -228,6 +228,7 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 	const {
 		lastMessage,
 		unread = false,
+		alert,
 		userMentions,
 		groupMentions,
 		tunread = [],
@@ -243,7 +244,7 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 
 	return <SideBarItemTemplate
 		is='a'
-		unread={unread}
+		unread={alert || unread}
 		threadUnread={threadUnread}
 		selected={selected}
 		href={href}

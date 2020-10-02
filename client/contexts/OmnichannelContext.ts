@@ -18,18 +18,26 @@ export type OmichannelRoutingConfig = {
 	autoAssignAgent: boolean;
 };
 
+type Inquiries = {
+	enabled: true;
+	queue: Array<any>;
+} | {
+	enabled: false;
+}
+
+
 
 export type OmnichannelContextValue = {
+	inquiries: Inquiries;
 	enabled: boolean;
-	queuedInquiries: Array<any>;
 	agentAvailable: boolean;
 	routeConfig?: OmichannelRoutingConfig;
 	showOmnichannelQueueLink: boolean;
 };
 
 export const OmnichannelContext = createContext<OmnichannelContextValue>({
+	inquiries: { enabled: false },
 	enabled: false,
-	queuedInquiries: [],
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
 });
@@ -38,6 +46,6 @@ export const useOmnichannel = (): OmnichannelContextValue => useContext(Omnichan
 export const useOmnichannelShowQueueLink = (): boolean => useOmnichannel().showOmnichannelQueueLink;
 export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined => useOmnichannel().routeConfig;
 export const useOmnichannelAgentAvailable = (): boolean => useOmnichannel().agentAvailable;
-export const useQueuedInquiries = () => useOmnichannel().queuedInquiries;
+export const useQueuedInquiries = (): Inquiries => useOmnichannel().inquiries;
 export const useOmnichannelQueueLink = () => '/livechat-queue';
 export const useOmnichannelEnabled = () => useOmnichannel().enabled;

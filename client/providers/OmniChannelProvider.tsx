@@ -4,7 +4,7 @@ import { Notifications } from '../../app/notifications/client';
 import { OmnichannelContext, OmnichannelContextValue, OmnichannelAgent, OmichannelRoutingConfig } from '../contexts/OmnichannelContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useUser, useUserId } from '../contexts/UserContext';
-import { useMethodData } from '../contexts/ServerContext';
+import { useMethodData, AsyncState } from '../contexts/ServerContext';
 import { usePermission, useRole } from '../contexts/AuthorizationContext';
 import { useSetting } from '../contexts/SettingsContext';
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
@@ -13,7 +13,7 @@ import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/s
 const args = [] as any;
 
 const emptyContext = {
-	queuedInquiries: [],
+	inquiries: { enabled: false },
 	enabled: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
@@ -27,15 +27,14 @@ const useOmnichannelInquiries = (): Array<any> => {
 	useEffect(() => {
 		let cleanup: undefined | (() => void);
 
-		(async () => {
-			cleanup = await initializeLivechatInquiryStream(uid, isOmnichannelManger);
+		(async (): Promise<void> => {
+			initializeLivechatInquiryStream(uid, isOmnichannelManger);
 			Notifications.onUser('departmentAgentData', async () => {
-				cleanup && cleanup();
-				cleanup = await initializeLivechatInquiryStream(uid, isOmnichannelManger);
+				initializeLivechatInquiryStream(uid, isOmnichannelManger);
 			});
 		})();
 
-		return () => {
+		return (): void => {
 			Notifications.unUser('departmentAgentData');
 			cleanup && cleanup();
 		};
@@ -56,28 +55,36 @@ const useOmnichannelInquiries = (): Array<any> => {
 const OmnichannelDisabledProvider: FC = ({ children }) => <OmnichannelContext.Provider value={emptyContext} children={children}/>;
 
 const OmnichannelManualSelectionProvider: FC<{ value: OmnichannelContextValue }> = ({ value, children }) => {
-	const queuedInquiries = useOmnichannelInquiries();
+	const queue = useOmnichannelInquiries();
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean && value.agentAvailable;
 
 	const contextValue = useMemo(() => ({
 		...value,
-		queuedInquiries,
+		inquiries: {
+			enabled: true,
+			queue,
+		},
 		showOmnichannelQueueLink,
-	}), [value, queuedInquiries, showOmnichannelQueueLink]);
+	}), [value, queue, showOmnichannelQueueLink]);
 
 	return <OmnichannelContext.Provider value={contextValue} children={children}/>;
 };
 
 const OmnichannelEnabledProvider: FC = ({ children }) => {
+	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const [contextValue, setContextValue] = useState<OmnichannelContextValue>({
 		...emptyContext,
 		enabled: true,
 	});
 
 	const user = useUser() as OmnichannelAgent;
-	const [routeConfig] = useMethodData<OmichannelRoutingConfig>('livechat:getRoutingConfig', args);
+	const [routeConfig, status, reload] = useMethodData<OmichannelRoutingConfig>('livechat:getRoutingConfig', args);
 
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
+
+	useEffect(() => {
+		status !== AsyncState.LOADING && reload();
+	}, [omnichannelRouting, reload]); // eslint-disable-line
 
 	useEffect(() => {
 		setContextValue((context) => ({
