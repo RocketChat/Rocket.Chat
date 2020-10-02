@@ -141,11 +141,6 @@ notifications.configure({
 
 export default notifications;
 
-notifications.streamLivechatQueueData.allowRead(function() {
-	return this.userId ? hasPermission(this.userId, 'view-l-room') : false;
-});
-
-
 notifications.streamStdout.allowRead(function() {
 	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
 });

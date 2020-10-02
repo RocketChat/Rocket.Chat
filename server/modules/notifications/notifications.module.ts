@@ -246,7 +246,9 @@ export class NotificationsModule {
 		});
 
 		this.streamLivechatQueueData.allowWrite('none');
-		// this.streamLivechatQueueData.allowRead(function() { // Implemented outside
+		this.streamLivechatQueueData.allowRead(async function() {
+			return this.userId ? Authorization.hasPermission(this.userId, 'view-l-room') : false;
+		});
 
 		this.streamStdout.allowWrite('none');
 		// this.streamStdout.allowRead(function() { // Implemented outside
