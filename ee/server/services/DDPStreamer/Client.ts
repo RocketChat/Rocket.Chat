@@ -8,6 +8,11 @@ import { SERVER_ID } from './Server';
 import { server } from './configureServer';
 import { IPacket } from './types/IPacket';
 
+interface IConnection {
+	livechatToken?: string;
+	onClose(fn: (...args: any[]) => void): void;
+}
+
 export class Client extends EventEmitter {
 	private chain = Promise.resolve();
 
@@ -16,6 +21,8 @@ export class Client extends EventEmitter {
 	public readonly session = uuidv1();
 
 	public subscriptions = new Map();
+
+	public connection: IConnection;
 
 	public wait = false;
 
@@ -27,6 +34,12 @@ export class Client extends EventEmitter {
 		public ws: WebSocket,
 	) {
 		super();
+
+		this.connection = {
+			onClose: (fn): void => {
+				this.on('close', fn);
+			},
+		};
 
 		this.renewTimeout(TIMEOUT / 1000);
 		this.ws.on('message', this.handler);
