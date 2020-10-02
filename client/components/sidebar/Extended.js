@@ -19,6 +19,11 @@ const Extended = React.memo(({
 	...props
 }) => {
 	const formatDate = useFormatTime();
+	const [menuVisibility, setMenuVisibility] = useState(false);
+
+	const handleMenu = useMutableCallback((e) => {
+		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
+	});
 
 	return <Sidebar.Item highlighted={unread} {...props} href={href} clickable={!!href}>
 		{ avatar && <Box mie='x4'>
@@ -50,7 +55,7 @@ const Extended = React.memo(({
 			</Sidebar.Item.Actions>}
 		</Sidebar.Item.Container>
 		}
-		{menu && <Sidebar.Item.Menu>{menu}</Sidebar.Item.Menu>}
+		<Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
 	</Sidebar.Item>;
 });
 

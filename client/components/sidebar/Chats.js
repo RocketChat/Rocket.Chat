@@ -255,7 +255,7 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 		style={style}
 		badges={badges}
 		avatar={AvatarTemplate && <AvatarTemplate {...room}/>}
-		menu={<RoomMenu rid={rid} unread={!!unread} roomOpen={false} type={type} cl={cl} name={title}/>}
+		menu={() => <RoomMenu rid={rid} unread={!!unread} roomOpen={false} type={type} cl={cl} name={title}/>}
 	/>;
 }, function areEqual(prevProps, nextProps) {
 	if (prevProps.extended !== nextProps.extended) {
