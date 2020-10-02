@@ -7,7 +7,7 @@ import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import UserCard from '../../components/basic/UserCard';
 import { Backdrop } from '../../components/basic/Backdrop';
-import * as UserStatus from '../../components/basic/UserStatus';
+import { ReactiveUserStatus } from '../../components/basic/UserStatus';
 import { LocalTime } from '../../components/basic/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
 import { useCurrentRoute } from '../../contexts/RouterContext';
@@ -55,7 +55,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			_id,
 			name = username,
 			roles = defaultValue,
-			status,
+			status = null,
 			statusText = status,
 			bio = defaultValue,
 			utcOffset = defaultValue,
@@ -75,7 +75,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			localTime: Number.isInteger(utcOffset) && (
 				<LocalTime utcOffset={utcOffset} />
 			),
-			status: UserStatus.getStatus(status),
+			status: status && <ReactiveUserStatus uid={_id} presence={status} />,
 			customStatus: statusText,
 			nickname,
 		};

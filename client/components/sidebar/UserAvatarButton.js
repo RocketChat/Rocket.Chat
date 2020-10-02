@@ -9,7 +9,7 @@ import { useUser } from '../../contexts/UserContext';
 import { popover, modal, AccountBox } from '../../../app/ui-utils';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { getStatus } from '../basic/UserStatus';
+import { UserStatus } from '../basic/UserStatus';
 import { userStatus } from '../../../app/user-status';
 import { callbacks } from '../../../app/callbacks';
 import UserAvatar from '../basic/avatar/UserAvatar';
@@ -138,7 +138,7 @@ const UserAvatarButton = React.memo(({
 	return <Box position='relative' onClick={handleClick} className={css`cursor: pointer;`}>
 		<UserAvatar size='x24' username={username} etag={avatarETag}/>
 		<Box className={css`bottom: 0; right: 0;`} position='absolute' p='x2' bg='neutral-200' borderRadius='full' mie='neg-x2' mbe='neg-x2'>
-			{getStatus(status, { size: 'x8' })}
+			<UserStatus status={status} size= 'x8'/>
 		</Box>
 	</Box>;
 });
