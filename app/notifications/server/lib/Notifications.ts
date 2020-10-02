@@ -48,25 +48,40 @@ export class Stream extends Streamer {
 class RoomStreamer extends Stream {
 	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
 		await super._publish(publication, eventName, options);
-		const uid = Meteor.userId();
-		if (!uid) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			return;
 		}
 
 		if (/rooms-changed/.test(eventName)) {
-			const roomEvent = (...args: any[]): void => publication._session.socket?.send(this.changedPayload(this.subscriptionName, 'id', {
-				eventName: `${ uid }/rooms-changed`,
-				args,
-			}));
-			const rooms: Pick<ISubscription, 'rid'>[] = Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
-			rooms.forEach(({ rid }) => {
+			const roomEvent = (...args: any[]): void => {
+				const payload = this.changedPayload(this.subscriptionName, 'id', {
+					eventName: `${ userId }/rooms-changed`,
+					args,
+				});
+
+				publication._session.socket?.send(
+					payload,
+				);
+			};
+
+			const subscriptions: Pick<ISubscription, 'rid'>[] = Subscriptions.find(
+				{ 'u._id': userId },
+				{ fields: { rid: 1 } },
+			).fetch();
+
+			subscriptions.forEach(({ rid }) => {
 				this.on(rid, roomEvent);
 			});
 
-			const userEvent = (clientAction: string, { rid }: {rid: string}): void => {
+			const userEvent = (clientAction: string, { rid }: Partial<ISubscription> = {}): void => {
+				if (!rid) {
+					return;
+				}
+
 				switch (clientAction) {
 					case 'inserted':
-						rooms.push({ rid });
+						subscriptions.push({ rid });
 						this.on(rid, roomEvent);
 
 						// after a subscription is added need to emit the room again
@@ -78,11 +93,11 @@ class RoomStreamer extends Stream {
 						break;
 				}
 			};
-			this.on(uid, userEvent);
+			this.on(userId, userEvent);
 
 			publication.onStop(() => {
-				this.removeListener(uid, userEvent);
-				rooms.forEach(({ rid }) => this.removeListener(rid, roomEvent));
+				this.removeListener(userId, userEvent);
+				subscriptions.forEach(({ rid }) => this.removeListener(rid, roomEvent));
 			});
 		}
 	}

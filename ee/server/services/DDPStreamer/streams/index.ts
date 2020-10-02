@@ -13,10 +13,13 @@ import { UsersRaw } from '../../../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../../../app/models/server/raw/Settings';
 
 export class RoomStreamer extends Stream {
-	async _publish(publication: Publication, eventName = '', options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
-		super._publish(publication, eventName, options);
-		// const uid = Meteor.userId();
+	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+		await super._publish(publication, eventName, options);
 		const { userId } = publication.client;
+		if (!userId) {
+			return;
+		}
+
 		if (/rooms-changed/.test(eventName)) {
 			// TODO: change this to serialize only once
 			const roomEvent = (...args: any[]): void => {
@@ -50,6 +53,10 @@ export class RoomStreamer extends Stream {
 					case 'inserted':
 						subscriptions.push({ rid });
 						this.on(rid, roomEvent);
+
+						// From Original Notifications.ts
+						// after a subscription is added need to emit the room again
+						// roomEvent('inserted', Rooms.findOneById(rid));
 						break;
 
 					case 'removed':
