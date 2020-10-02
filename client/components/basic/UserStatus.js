@@ -1,5 +1,69 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import EventEmitter from 'wolfy87-eventemitter';
+
+import { useTranslation } from '../../contexts/TranslationContext';
+import { APIClient } from '../../../app/utils/client';
+
+export const Presence = new EventEmitter();
+
+const Statuses = new Map();
+
+const getPresence = (() => {
+	const uids = new Set();
+
+	let timer;
+	const fetch = () => {
+		timer && clearTimeout(timer);
+		timer = setTimeout(async () => {
+			const params = {
+				ids: [...uids],
+			};
+
+			const {
+				users,
+			} = await APIClient.v1.get('users.presence', params);
+
+			users.forEach((user) => {
+				Statuses.set(user._id, user.status);
+				Presence.emit(user._id, user);
+			});
+
+			uids.clear();
+		}, 100);
+	};
+
+	const get = async (uid) => {
+		uids.add(uid);
+		fetch();
+	};
+
+	Presence.on('reset', () => {
+		Presence.once('restart', () => Object.keys(Presence._events).filter((e) => Boolean(e) && !['reset', 'restart'].includes(e) && typeof e === 'string').forEach(get));
+	});
+
+	return get;
+})();
+
+
+Presence.listen = async (uid, handle) => {
+	Presence.on(uid, handle);
+	Presence.on('reset', handle);
+	if (Statuses.has(uid)) {
+		return handle({ status: Statuses.get(uid) });
+	}
+	getPresence(uid);
+};
+
+Presence.stop = (uid, handle) => {
+	Presence.off(uid, handle);
+	Presence.off('reset', handle);
+	Statuses.delete(uid);
+};
+
+Presence.reset = () => {
+	Presence.emit('reset', { status: 'offline' });
+};
 
 const Base = (props) => <Box size='x12' borderRadius='full' flexShrink={0} {...props}/>;
 
@@ -8,16 +72,39 @@ export const Away = (props) => <Base bg='warning-600' {...props}/>;
 export const Online = (props) => <Base bg='success-500' {...props}/>;
 export const Offline = (props) => <Base bg='neutral-600' {...props}/>;
 
+// TODO: fuselage
 
-export const getStatus = (status, props) => {
+export const UserStatus = React.memo(({ status, ...props }) => {
+	const t = useTranslation();
 	switch (status) {
 		case 'online':
-			return <Online {...props}/>;
+			return <Online title={t('online')} {...props}/>;
 		case 'busy':
-			return <Busy {...props}/>;
+			return <Busy title={t('busy')} {...props}/>;
 		case 'away':
-			return <Away {...props}/>;
+			return <Away title={t('onlinawaye')} {...props}/>;
 		default:
-			return <Offline {...props}/>;
+			return <Offline title={t('offline')} {...props}/>;
 	}
+});
+
+
+export const usePresence = (uid, presence = 'offline') => {
+	const [status, setStatus] = useState(presence);
+	useEffect(() => {
+		const handle = ({ status }) => {
+			setStatus(status);
+		};
+		Presence.listen(uid, handle);
+		return () => {
+			Presence.stop(uid, handle);
+		};
+	}, [uid]);
+
+	return status;
 };
+
+export const ReactiveUserStatus = React.memo(({ uid, presence, ...props }) => {
+	const status = usePresence(uid, presence);
+	return <UserStatus status={status} {...props} />;
+});

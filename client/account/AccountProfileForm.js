@@ -9,7 +9,7 @@ import { useMethod } from '../contexts/ServerContext';
 import { getUserEmailAddress } from '../helpers/getUserEmailAddress';
 import { UserAvatarEditor } from '../components/basic/avatar/UserAvatarEditor';
 import CustomFieldsForm from '../components/CustomFieldsForm';
-import UserStatusMenu from '../components/basic/userStatus/UserStatusMenu';
+import UserStatusMenu from '../components/basic/UserStatusMenu';
 
 const STATUS_TEXT_MAX_LENGTH = 120;
 
