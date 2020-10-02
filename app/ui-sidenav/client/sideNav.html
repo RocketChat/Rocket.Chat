@@ -8,16 +8,16 @@
 			</div>
 		</div>
 		<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
-				{{> sidebarChats }}
+			{{> sidebarChats }}
+		</div>
+		<div class="wrapper-unread">
+			<div class="unread-rooms background-primary-action-color color-primary-action-contrast bottom-unread-rooms hidden">
+				<i class="icon-down-big"></i> {{_ "More_unreads"}}
 			</div>
-			<div class="wrapper-unread">
-				<div class="unread-rooms background-primary-action-color color-primary-action-contrast bottom-unread-rooms hidden">
-					<i class="icon-down-big"></i> {{_ "More_unreads"}}
-				</div>
-			</div>
-			<div class="flex-nav animated-hidden">
-				{{> Template.dynamic template=flexTemplate data=flexData }}
-			</div>
+		</div>
+		<div class="flex-nav animated-hidden">
+			{{> Template.dynamic template=flexTemplate data=flexData }}
+		</div>
 		{{else}}
 			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
 				<div class="wrapper">
