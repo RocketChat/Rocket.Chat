@@ -7,7 +7,6 @@ import { NotificationsModule } from '../../../../server/modules/notifications/no
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
 import { Streamer, Publication, DDPSubscription, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { ISubscription } from '../../../../definition/ISubscription';
-import { roomTypes } from '../../../utils/server';
 import { api } from '../../../../server/sdk/api';
 import {
 	Subscriptions as SubscriptionsRaw,
