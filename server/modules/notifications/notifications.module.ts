@@ -124,6 +124,12 @@ export class NotificationsModule {
 
 		this.streamAll.allowWrite('none');
 		this.streamAll.allowRead('all');
+		this.streamAll.allowRead('private-settings-changed', async function() {
+			if (this.userId == null) {
+				return false;
+			}
+			return Authorization.hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+		});
 
 		this.streamLogged.allowWrite('none');
 		this.streamLogged.allowRead('logged');

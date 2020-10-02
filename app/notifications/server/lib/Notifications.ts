@@ -144,10 +144,3 @@ export default notifications;
 notifications.streamStdout.allowRead(function() {
 	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
 });
-
-notifications.streamAll.allowRead('private-settings-changed', function() {
-	if (this.userId == null) {
-		return false;
-	}
-	return hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
-});
