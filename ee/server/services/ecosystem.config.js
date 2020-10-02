@@ -14,7 +14,7 @@ module.exports = {
 		name: 'DDPStreamer',
 	}].map((app) => Object.assign(app, {
 		script: app.script || `ts-node ${ app.name }/service.ts`,
-		watch: app.watch || ['.', '../broker.ts', '../../../server/sdk'],
+		watch: app.watch || ['.', '../broker.ts', '../../../server/sdk', '../../../server/modules'],
 		instances: 1,
 		env: {
 			MOLECULER_LOG_LEVEL: 'info',

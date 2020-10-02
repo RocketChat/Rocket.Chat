@@ -4,6 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
+import { Users } from '../../../app/models/server/raw/index';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -33,5 +34,18 @@ export class MeteorService extends ServiceClass implements IMeteor {
 
 	async getLoginServiceConfiguration(): Promise<any[]> {
 		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
+	}
+
+	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {
+		const user = await Users.findOneByIdAndLoginHashedToken(userId, token, { projection: { _id: 1 } });
+		if (!user) {
+			return {
+				result: Meteor.call(method, ...args),
+			};
+		}
+
+		return {
+			result: Meteor.runAsUser(userId, () => Meteor.call(method, ...args)),
+		};
 	}
 }

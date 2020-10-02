@@ -58,11 +58,7 @@ httpServer.listen(port);
 
 const wss = new WebSocket.Server({ server: httpServer });
 
-wss.on('connection', (ws, req) => {
-	const isMobile = /^RC Mobile/.test(req.headers['user-agent'] || '');
-
-	return isMobile ? new Client(ws) : new MeteorClient(ws);
-});
+wss.on('connection', (ws, req) => (req.url === '/websocket' ? new Client(ws) : new MeteorClient(ws)));
 
 // export default {
 // 	name: 'streamer',

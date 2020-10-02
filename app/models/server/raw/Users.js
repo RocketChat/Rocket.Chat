@@ -48,6 +48,15 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneByIdAndLoginHashedToken(_id, token, options = {}) {
+		const query = {
+			_id,
+			'services.resume.loginTokens.hashedToken': token,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }

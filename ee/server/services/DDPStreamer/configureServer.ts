@@ -90,6 +90,7 @@ server.methods({
 		}
 
 		this.userId = result.uid;
+		this.userToken = result.token;
 
 		this.emit(DDP_EVENTS.LOGGED);
 

@@ -6,6 +6,7 @@ import { DDP_EVENTS } from './constants';
 import { Publication } from './Publication';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
+import { MeteorService } from '../../../../server/sdk';
 
 type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
 type MethodFn = (this: Client, ...args: any[]) => any;
@@ -27,13 +28,18 @@ export class Server extends EventEmitter {
 	serialize = ejson.stringify;
 
 	parse = (packet: string): IPacket => {
-		const [payload] = JSON.parse(packet);
+		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
 		return ejson.parse(payload);
 	}
 
 	async call(client: Client, packet: IPacket): Promise<void> {
 		try {
 			if (!this._methods.has(packet.method)) {
+				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
+				if (result?.result) {
+					return this.result(client, packet, result.result);
+				}
+
 				throw new Error(`Method '${ packet.method }' doesn't exist`);
 			}
 			const fn = this._methods.get(packet.method);
