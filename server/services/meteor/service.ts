@@ -5,6 +5,7 @@ import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
 import { Users } from '../../../app/models/server/raw/index';
+import { Livechat } from '../../../app/livechat/server';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -47,5 +48,9 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		return {
 			result: Meteor.runAsUser(userId, () => Meteor.call(method, ...args)),
 		};
+	}
+
+	async notifyGuestStatusChanged(token: string, status: string): Promise<void> {
+		return Livechat.notifyGuestStatusChanged(token, status);
 	}
 }

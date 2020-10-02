@@ -4,7 +4,7 @@ import url from 'url';
 import WebSocket from 'ws';
 // import PromService from 'moleculer-prometheus';
 
-import { Client, MeteorClient } from './Client';
+import { Client } from './Client';
 // import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
 import { isEmpty } from './lib/utils';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
@@ -58,7 +58,7 @@ httpServer.listen(port);
 
 const wss = new WebSocket.Server({ server: httpServer });
 
-wss.on('connection', (ws, req) => (req.url === '/websocket' ? new Client(ws) : new MeteorClient(ws)));
+wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket'));
 
 // export default {
 // 	name: 'streamer',
@@ -99,6 +99,13 @@ wss.on('connection', (ws, req) => (req.url === '/websocket' ? new Client(ws) : n
 // 	},
 // 	mixins: PROMETHEUS_PORT !== 'false' ? [PromService] : [],
 
+const types: Record<string, string> = {
+	inserted: 'added',
+	updated: 'changed',
+	removed: 'removed',
+};
+const mountDataToEmit = (type: string, data: object): object => ({ type: types[type], ...data });
+
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
 
@@ -108,11 +115,11 @@ export class DDPStreamer extends ServiceClass {
 		// [STREAM_NAMES.LIVECHAT_INQUIRY]({ action, inquiry }) {
 		this.onEvent('livechat-inquiry-queue-observer', ({ action, inquiry }): void => {
 			if (!inquiry.department) {
-				notifications.streamLivechatQueueData.emit('public', action, inquiry);
+				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', mountDataToEmit(action, inquiry));
 				return;
 			}
-			notifications.streamLivechatQueueData.emit(`department/${ inquiry.department }`, action, inquiry);
-			notifications.streamLivechatQueueData.emit(inquiry._id, action, inquiry);
+			notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${ inquiry.department }`, mountDataToEmit(action, inquiry));
+			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, mountDataToEmit(action, inquiry));
 		});
 
 		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {

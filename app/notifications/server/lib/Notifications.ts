@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { DDPCommon } from 'meteor/ddp-common';
 
-import { Subscriptions, Rooms, LivechatRooms } from '../../../models/server';
+import { Subscriptions, Rooms } from '../../../models/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
 import { Streamer, Publication, DDPSubscription, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
@@ -140,28 +140,3 @@ notifications.configure({
 });
 
 export default notifications;
-
-notifications.streamLivechatQueueData.allowRead(function() {
-	return this.userId ? hasPermission(this.userId, 'view-l-room') : false;
-});
-
-notifications.streamLivechatRoom.allowRead(async function(roomId, extraData) {
-	const room = LivechatRooms.findOneById(roomId);
-
-	if (!room) {
-		console.warn(`Invalid eventName: "${ roomId }"`);
-		return false;
-	}
-
-	if (room.t === 'l' && extraData && extraData.visitorToken && room.v.token === extraData.visitorToken) {
-		return true;
-	}
-	return false;
-});
-
-notifications.streamAll.allowRead('private-settings-changed', function() {
-	if (this.userId == null) {
-		return false;
-	}
-	return hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
-});

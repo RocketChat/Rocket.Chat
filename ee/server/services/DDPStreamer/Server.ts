@@ -75,7 +75,7 @@ export class Server extends EventEmitter {
 			}
 
 			const publication = new Publication(client, packet, this);
-			const [eventName, ...options] = packet.params;
+			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
 		} catch (error) {
 			this.nosub(client, packet, error.toString());

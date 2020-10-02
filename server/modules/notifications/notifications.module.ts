@@ -124,6 +124,12 @@ export class NotificationsModule {
 
 		this.streamAll.allowWrite('none');
 		this.streamAll.allowRead('all');
+		this.streamAll.allowRead('private-settings-changed', async function() {
+			if (this.userId == null) {
+				return false;
+			}
+			return Authorization.hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+		});
 
 		this.streamLogged.allowWrite('none');
 		this.streamLogged.allowRead('logged');
@@ -231,10 +237,24 @@ export class NotificationsModule {
 			]);
 		});
 
-		// this.streamLivechatRoom.allowRead((roomId, extraData) => { // Implemented outside
+		this.streamLivechatRoom.allowRead(async function(roomId, extraData) {
+			const room = await Rooms.findOneById(roomId, { projection: { _id: 0, t: 1, v: 1 } });
+
+			if (!room) {
+				console.warn(`Invalid eventName: "${ roomId }"`);
+				return false;
+			}
+
+			if (room.t === 'l' && extraData?.visitorToken && room.v.token === extraData.visitorToken) {
+				return true;
+			}
+			return false;
+		});
 
 		this.streamLivechatQueueData.allowWrite('none');
-		// this.streamLivechatQueueData.allowRead(function() { // Implemented outside
+		this.streamLivechatQueueData.allowRead(async function() {
+			return this.userId ? Authorization.hasPermission(this.userId, 'view-l-room') : false;
+		});
 
 		this.streamStdout.allowWrite('none');
 		this.streamStdout.allowRead(async function() {
