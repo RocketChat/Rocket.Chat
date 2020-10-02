@@ -59,5 +59,9 @@ Meteor.startup(() => {
 			...item,
 		});
 	};
-	StdOut.on('write', handler);
+
+	// does not emit to StdOut if moleculer log level set to debug because it creates an infinite loop
+	if (String(process.env.MOLECULER_LOG_LEVEL).toLowerCase() !== 'debug') {
+		StdOut.on('write', handler);
+	}
 });
