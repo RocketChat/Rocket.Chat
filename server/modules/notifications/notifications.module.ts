@@ -237,7 +237,12 @@ export class NotificationsModule {
 		// this.streamLivechatQueueData.allowRead(function() { // Implemented outside
 
 		this.streamStdout.allowWrite('none');
-		// this.streamStdout.allowRead(function() { // Implemented outside
+		this.streamStdout.allowRead(async function() {
+			if (!this.userId) {
+				return false;
+			}
+			return Authorization.hasPermission(this.userId, 'view-logs');
+		});
 
 		this.streamRoomData.allowWrite('none');
 		this.streamRoomData.allowRead(async function(rid) {

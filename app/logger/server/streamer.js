@@ -54,7 +54,8 @@ export const StdOut = new class extends EventEmitter {
 
 Meteor.startup(() => {
 	const handler = (string, item) => {
-		notifications.streamStdout.emitWithoutBroadcast('stdout', {
+		// TODO change to 'emit' from 'emitWithoutBroadcast' because ddp-streamer needs to receive this as well but we may need to think a way to broadcast only if needed
+		notifications.streamStdout.emit('stdout', {
 			...item,
 		});
 	};

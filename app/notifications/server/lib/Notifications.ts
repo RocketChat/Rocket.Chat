@@ -159,10 +159,6 @@ notifications.streamLivechatRoom.allowRead(async function(roomId, extraData) {
 	return false;
 });
 
-notifications.streamStdout.allowRead(function() {
-	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
-});
-
 notifications.streamAll.allowRead('private-settings-changed', function() {
 	if (this.userId == null) {
 		return false;
