@@ -6,16 +6,16 @@ import { IUser } from '../../../../../definition/IUser';
 import { ISetting } from '../../../../../definition/ISetting';
 import { getCollection, Collections, getConnection } from '../../mongo';
 // import { Authorization } from '../../../../../server/sdk';
-import { Publication, DDPSubscription } from '../../../../../server/modules/streamer/streamer.module';
+import { IPublication, DDPSubscription } from '../../../../../server/modules/streamer/streamer.module';
 import { RoomsRaw } from '../../../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../../../app/models/server/raw/Settings';
 
 export class RoomStreamer extends Stream {
-	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+	async _publish(publication: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
 		await super._publish(publication, eventName, options);
-		const { userId } = publication.client;
+		const { userId } = publication._session;
 		if (!userId) {
 			return;
 		}
@@ -79,9 +79,9 @@ class MessageStream extends Stream {
 		return [...this.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
 	}
 
-	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+	async _publish(publication: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
 		await super._publish(publication, eventName, options);
-		const { userId } = publication.client;
+		const { userId } = publication._session;
 		if (!userId) {
 			return;
 		}

@@ -4,7 +4,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 
 import { Subscriptions, Rooms } from '../../../models/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
-import { Streamer, Publication, DDPSubscription, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import { Streamer, IPublication, DDPSubscription, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { ISubscription } from '../../../../definition/ISubscription';
 import { api } from '../../../../server/sdk/api';
 import {
@@ -45,9 +45,9 @@ export class Stream extends Streamer {
 }
 
 class RoomStreamer extends Stream {
-	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+	async _publish(publication: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
 		await super._publish(publication, eventName, options);
-		const userId = Meteor.userId();
+		const { userId } = publication._session;
 		if (!userId) {
 			return;
 		}
@@ -107,9 +107,9 @@ class MessageStream extends Stream {
 		return [...this.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
 	}
 
-	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+	async _publish(publication: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
 		await super._publish(publication, eventName, options);
-		const userId = Meteor.userId();
+		const { userId } = publication._session;
 		if (!userId) {
 			return;
 		}

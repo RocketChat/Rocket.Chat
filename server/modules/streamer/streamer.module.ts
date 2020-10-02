@@ -17,12 +17,13 @@ export type Client = {
 	send: Function;
 }
 
-export type Publication = {
+export interface IPublication {
 	onStop: Function;
 	stop: Function;
 	connection: Connection;
 	_session: {
 		sendAdded(publicationName: string, id: string, fields: Record<string, any>): void;
+		userId: string;
 		socket?: {
 			send: Function;
 		};
@@ -32,7 +33,7 @@ export type Publication = {
 	client: Client;
 }
 
-type Rule = (this: Publication, eventName: string, ...args: any) => Promise<boolean | object>;
+type Rule = (this: IPublication, eventName: string, ...args: any) => Promise<boolean | object>;
 
 interface IRules {
 	[k: string]: Rule;
@@ -42,7 +43,7 @@ export type Connection = any;
 
 export type DDPSubscription = {
 	eventName: string;
-	subscription: Publication;
+	subscription: IPublication;
 }
 
 export interface IStreamer {
@@ -167,7 +168,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 	}
 
 	private isAllowed(rules: IRules) {
-		return async (scope: Publication, eventName: string, args: any): Promise<boolean | object> => {
+		return async (scope: IPublication, eventName: string, args: any): Promise<boolean | object> => {
 			if (rules[eventName]) {
 				return rules[eventName].call(scope, eventName, ...args);
 			}
@@ -176,15 +177,15 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		};
 	}
 
-	async isReadAllowed(scope: Publication, eventName: string, args: any): Promise<boolean | object> {
+	async isReadAllowed(scope: IPublication, eventName: string, args: any): Promise<boolean | object> {
 		return this.isAllowed(this._allowRead)(scope, eventName, args);
 	}
 
-	async isEmitAllowed(scope: Publication, eventName: string, ...args: any[]): Promise<boolean | object> {
+	async isEmitAllowed(scope: IPublication, eventName: string, ...args: any[]): Promise<boolean | object> {
 		return this.isAllowed(this._allowEmit)(scope, eventName, args);
 	}
 
-	async isWriteAllowed(scope: Publication, eventName: string, args: any): Promise<boolean | object> {
+	async isWriteAllowed(scope: IPublication, eventName: string, args: any): Promise<boolean | object> {
 		return this.isAllowed(this._allowWrite)(scope, eventName, args);
 	}
 
@@ -206,7 +207,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 	}
 
-	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+	async _publish(publication: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
 		let useCollection;
 		let args = [];
 
@@ -258,7 +259,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 
 	iniPublication(): void {
 		const _publish = this._publish.bind(this);
-		this.registerPublication(this.subscriptionName, async function(this: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any}) {
+		this.registerPublication(this.subscriptionName, async function(this: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any}) {
 			return _publish(this, eventName, options);
 		});
 	}
@@ -272,7 +273,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		const { retransmit } = this;
 
 		const method: Record<string, (eventName: string, ...args: any[]) => any> = {
-			async [this.subscriptionName](this: Publication, eventName, ...args): Promise<void> {
+			async [this.subscriptionName](this: IPublication, eventName, ...args): Promise<void> {
 				if (await isWriteAllowed(this, eventName, args) !== true) {
 					return;
 				}

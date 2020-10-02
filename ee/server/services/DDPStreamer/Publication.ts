@@ -3,15 +3,12 @@ import { EventEmitter } from 'events';
 import { Server } from './Server';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
+import { IPublication } from '../../../../server/modules/streamer/streamer.module';
 
-interface ISession {
-	socket?: {
-		send: Function;
-	};
-}
+export class Publication extends EventEmitter implements IPublication {
+	_session: IPublication['_session'];
 
-export class Publication extends EventEmitter {
-	_session: ISession;
+	connection: IPublication['connection'];
 
 	constructor(
 		public client: Client,
@@ -25,8 +22,12 @@ export class Publication extends EventEmitter {
 		this.once('stop', () => client.subscriptions.delete(packet.id));
 
 		this._session = {
+			sendAdded: this.added,
 			socket: client,
+			userId: client.userId,
 		};
+
+		this.connection = {};
 	}
 
 	ready(): void {
