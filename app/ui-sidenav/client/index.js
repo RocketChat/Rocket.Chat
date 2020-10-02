@@ -1,5 +1,5 @@
 import './chatRoomItem.html';
-import './sidebarHeader.html';
+
 import './sidebarItem.html';
 import './sideNav.html';
 import './toolbar.html';
