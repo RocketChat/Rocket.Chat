@@ -277,21 +277,29 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 		return false;
 	}
 
-	if (prevProps.room.unread !== nextProps.room.unread) {
-		return false;
-	}
+	// if (prevProps.room.unread !== nextProps.room.unread) {
+	// 	return false;
+	// }
 
-	if (prevProps.room.tunread !== nextProps.room.tunread) {
-		return false;
-	}
+	// if (prevProps.room.alert !== nextProps.room.alert) {
+	// 	return false;
+	// }
 
-	if (prevProps.room.groupMentions !== nextProps.room.groupMentions) {
-		return false;
-	}
+	// if (prevProps.room.open !== nextProps.room.open) {
+	// 	return false;
+	// }
 
-	if (prevProps.room.userMentions !== nextProps.room.userMentions) {
-		return false;
-	}
+	// if (prevProps.room.tunread !== nextProps.room.tunread) {
+	// 	return false;
+	// }
+
+	// if (prevProps.room.groupMentions !== nextProps.room.groupMentions) {
+	// 	return false;
+	// }
+
+	// if (prevProps.room.userMentions !== nextProps.room.userMentions) {
+	// 	return false;
+	// }
 
 	return prevProps.room._updatedAt?.getTime() === nextProps.room._updatedAt?.getTime();
 });
