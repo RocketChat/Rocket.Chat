@@ -6,7 +6,7 @@ import { IUser } from '../../../../../definition/IUser';
 import { ISetting } from '../../../../../definition/ISetting';
 import { getCollection, Collections, getConnection } from '../../mongo';
 // import { Authorization } from '../../../../../server/sdk';
-import { Publication } from '../../../../../server/modules/streamer/streamer.module';
+import { Publication, DDPSubscription } from '../../../../../server/modules/streamer/streamer.module';
 import { RoomsRaw } from '../../../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../../../app/models/server/raw/Users';
@@ -75,41 +75,45 @@ export class RoomStreamer extends Stream {
 }
 
 class MessageStream extends Stream {
-	// TODO: implement the code bellow
-	// getSubscriptionByUserIdAndRoomId(userId, rid) {
-	// 	return this.subscriptions.find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
-	// }
+	getSubscriptionByUserIdAndRoomId(userId: string, rid: string): DDPSubscription | undefined {
+		return [...this.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
+	}
 
-	// _publish(publication, eventName, options) {
-	// 	super._publish(publication, eventName, options);
-	// 	const uid = Meteor.userId();
+	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+		await super._publish(publication, eventName, options);
+		const { userId } = publication.client;
+		if (!userId) {
+			return;
+		}
 
-	// 	const userEvent = (clientAction, { rid }) => {
-	// 		switch (clientAction) {
-	// 			case 'removed':
-	// 				this.removeListener(uid, userEvent);
-	// 				this.removeSubscription(this.getSubscriptionByUserIdAndRoomId(uid, rid), eventName);
-	// 				break;
-	// 		}
-	// 	};
-	// 	this.on(uid, userEvent);
-	// }
+		const userEvent = (clientAction: string, { rid }: {rid: string}): void => {
+			switch (clientAction) {
+				case 'removed':
+					this.removeListener(userId, userEvent);
+					const sub = this.getSubscriptionByUserIdAndRoomId(userId, rid);
+					sub && this.removeSubscription(sub, eventName);
+					break;
+			}
+		};
+		this.on(userId, userEvent);
+	}
 
-	// mymessage = (eventName, args) => {
-	// 	const subscriptions = this.subscriptionsByEventName[eventName];
-	// 	if (!Array.isArray(subscriptions)) {
-	// 		return;
-	// 	}
-	// 	subscriptions.forEach(({ subscription }) => {
-	// 		const options = this.isEmitAllowed(subscription, eventName, args);
-	// 		if (options) {
-	// 			send(subscription._session, changedPayload(this.subscriptionName, 'id', {
-	// 				eventName,
-	// 				args: [args, options],
-	// 			}));
-	// 		}
-	// 	});
-	// }
+	mymessage(eventName: string, args: any[]): void {
+		const subscriptions = this.subscriptionsByEventName.get(eventName);
+		if (!Array.isArray(subscriptions)) {
+			return;
+		}
+		subscriptions.forEach(async ({ subscription }) => {
+			// TODO: bring back the options
+			const options = await this.isEmitAllowed(subscription, eventName, args);
+			if (options) {
+				subscription._session.socket?.send(this.changedPayload(this.subscriptionName, 'id', {
+					eventName,
+					args: [args, options],
+				}));
+			}
+		});
+	}
 }
 
 const notifications = new NotificationsModule(Stream, RoomStreamer, MessageStream);

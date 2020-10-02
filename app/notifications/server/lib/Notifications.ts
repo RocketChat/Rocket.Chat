@@ -4,7 +4,6 @@ import { DDPCommon } from 'meteor/ddp-common';
 
 import { Subscriptions, Rooms } from '../../../models/server';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
-import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
 import { Streamer, Publication, DDPSubscription, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { ISubscription } from '../../../../definition/ISubscription';
 import { api } from '../../../../server/sdk/api';
@@ -110,21 +109,21 @@ class MessageStream extends Stream {
 
 	async _publish(publication: Publication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
 		await super._publish(publication, eventName, options);
-		const uid = Meteor.userId();
-		if (!uid) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			return;
 		}
 
 		const userEvent = (clientAction: string, { rid }: {rid: string}): void => {
 			switch (clientAction) {
 				case 'removed':
-					this.removeListener(uid, userEvent);
-					const sub = this.getSubscriptionByUserIdAndRoomId(uid, rid);
+					this.removeListener(userId, userEvent);
+					const sub = this.getSubscriptionByUserIdAndRoomId(userId, rid);
 					sub && this.removeSubscription(sub, eventName);
 					break;
 			}
 		};
-		this.on(uid, userEvent);
+		this.on(userId, userEvent);
 	}
 
 	mymessage(eventName: string, args: any[]): void {
