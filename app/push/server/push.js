@@ -8,6 +8,7 @@ import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger, LoggerManager } from './logger';
 import { settings } from '../../settings/server';
+import { callbacks } from '../../callbacks';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
@@ -174,6 +175,8 @@ export class PushClass {
 
 	sendNotification(notification = { badge: 0 }) {
 		logger.debug('Sending notification', notification);
+
+		callbacks.run('beforeSendPushNotification', notification);
 
 		const countApn = [];
 		const countGcm = [];
