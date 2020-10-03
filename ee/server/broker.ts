@@ -52,6 +52,12 @@ class NetworkBroker implements IBroker {
 		}
 
 		await this.broker.waitForServices(method.split('.')[0]);
+
+		const context = asyncLocalStorage.getStore();
+		if (context?.ctx?.call) {
+			return context.ctx.call(method, data);
+		}
+
 		return this.broker.call(method, data);
 	}
 
@@ -113,6 +119,7 @@ class NetworkBroker implements IBroker {
 				nodeID: ctx.nodeID,
 				requestID: ctx.requestID,
 				broker: this,
+				ctx,
 			}, async (): Promise<any> => {
 				if (this.whitelist.actions.includes(`${ name }.${ method }`) || await this.allowed) {
 					return i[method](...ctx.params);

@@ -41,6 +41,14 @@ meteor npm run pm2 -- logs
 
 ## Docker Compose
 
+The `.env` file defines the HTTP address to be used, default to `localhost`.
+
+It requires meteor to be running, and the config at `services/.config/services/service.env` uses the default meteor mongodb. To run it:
+
+```
+TRANSPORTER=nats://localhost:4222 MOLECULER_LOG_LEVEL=debug meteor
+```
+
 The `docker-compose.yml` file contais a setup of the micro-services plus some extra tools:
 
 ### Traefik

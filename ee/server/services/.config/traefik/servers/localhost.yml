@@ -2,7 +2,7 @@ http:
   routers:
     router2:
       rule: Host(`localhost`) && PathPrefix(`/sockjs/`, `/websocket/`)
-      service: ddp-streamer-service-services@docker
+      service: ddp-streamer-service@docker
       priority: 2
       entryPoints:
         - web
