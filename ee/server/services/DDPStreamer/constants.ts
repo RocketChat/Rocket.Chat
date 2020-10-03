@@ -46,11 +46,11 @@ export const WS_ERRORS_MESSAGES = {
 
 export const TIMEOUT = 1000 * 30; // 30 seconds
 
-export const STREAM_NAMES = {
-	STREAMER_PREFIX: 'stream-',
+// export const STREAM_NAMES = {
+// 	STREAMER_PREFIX: 'stream-',
 
-	ROOMS_CHANGED: 'rooms-changed',
-	ROOM_DATA: 'room-data', // TODO both data are the same plx merge them
+// 	ROOMS_CHANGED: 'rooms-changed',
+// 	ROOM_DATA: 'room-data', // TODO both data are the same plx merge them
 
-	'my-message': '__my_messages__',
-};
+// 	'my-message': '__my_messages__',
+// };

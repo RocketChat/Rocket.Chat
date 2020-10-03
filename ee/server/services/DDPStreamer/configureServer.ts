@@ -12,11 +12,11 @@ export const events = new EventEmitter();
 
 // TODO: remove, this was replaced by stream-notify-user/[user-id]/userData
 // server.subscribe('userData', async function(publication) {
-// 	if (!publication.uid) {
+// 	if (!publication.userId) {
 // 		throw new Error('user should be connected');
 // 	}
 
-// 	const key = `${ STREAMER_EVENTS.USER_CHANGED }/${ publication.uid }`;
+// 	const key = `${ STREAMER_EVENTS.USER_CHANGED }/${ publication.userId }`;
 // 	await User.addSubscription(publication, key);
 // 	publication.once('stop', () => User.removeSubscription(publication, key));
 // 	publication.ready();
@@ -136,15 +136,15 @@ server.methods({
 	},
 });
 
-server.on(DDP_EVENTS.LOGGED, ({ uid, session }) => {
-	Presence.newConnection(uid, session);
+server.on(DDP_EVENTS.LOGGED, ({ userId, session }) => {
+	Presence.newConnection(userId, session);
 });
 
-server.on(DDP_EVENTS.DISCONNECTED, ({ uid, session }) => {
-	if (!uid) {
+server.on(DDP_EVENTS.DISCONNECTED, ({ userId, session }) => {
+	if (!userId) {
 		return;
 	}
-	Presence.removeConnection(uid, session);
+	Presence.removeConnection(userId, session);
 });
 
 // TODO: resolve metrics
@@ -168,7 +168,7 @@ server.on(DDP_EVENTS.DISCONNECTED, ({ uid, session }) => {
 // 	});
 // });
 
-// server.on(DDP_EVENTS.DISCONNECTED, ({ uid }) => {
+// server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
 // 	broker.emit('metrics.update', {
 // 		name: 'streamer_users_connected',
 // 		method: 'dec',
@@ -176,7 +176,7 @@ server.on(DDP_EVENTS.DISCONNECTED, ({ uid, session }) => {
 // 			nodeID: broker.nodeID,
 // 		},
 // 	});
-// 	if (uid) {
+// 	if (userId) {
 // 		broker.emit('metrics.update', {
 // 			name: 'streamer_users_logged',
 // 			method: 'dec',
