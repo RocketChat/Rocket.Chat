@@ -20,7 +20,12 @@ Meteor.startup(function() {
 					mention.name = user && user.name;
 				});
 			}
-			msgStream.mymessage('__my_messages__', record);
+
+			msgStream._emit('__my_messages__', [record], undefined, false, (streamer, sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
+				eventName,
+				args: [args, allowed],
+			}));
+
 			msgStream.emitWithoutBroadcast(record.rid, record);
 		}
 	}

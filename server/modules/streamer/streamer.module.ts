@@ -49,6 +49,10 @@ export type DDPSubscription = {
 export interface IStreamer {
 	serverOnly: boolean;
 
+	subscriptions: Set<DDPSubscription>;
+
+	subscriptionName: string;
+
 	allowEmit(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void;
 
 	allowWrite(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void;
@@ -57,9 +61,19 @@ export interface IStreamer {
 
 	emit(event: string, ...data: any[]): void;
 
+	on(event: string, fn: (...data: any[]) => void): void;
+
+	removeSubscription(subscription: DDPSubscription, eventName: string): void;
+
+	removeListener(event: string, fn: (...data: any[]) => void): void;
+
 	__emit(...data: any[]): void;
 
+	_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean;
+
 	emitWithoutBroadcast(event: string, ...data: any[]): void;
+
+	changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
 }
 
 export interface IStreamerConstructor {
@@ -67,8 +81,10 @@ export interface IStreamerConstructor {
 	new(name: string, options?: {retransmit?: boolean; retransmitToSelf?: boolean}): IStreamer;
 }
 
+export type TransformMessage = (streamer: Streamer, subscription: DDPSubscription, eventName: string, args: any[], allowed: boolean | object) => string | false;
+
 export abstract class Streamer extends EventEmitter implements IStreamer {
-	protected subscriptions = new Set<DDPSubscription>();
+	public subscriptions = new Set<DDPSubscription>();
 
 	protected subscriptionsByEventName = new Map<string, Set<DDPSubscription>>();
 
@@ -253,6 +269,8 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 
 		publication.ready();
+
+		super.emit('_afterPublish', this, publication, eventName, options);
 	}
 
 	abstract registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => Promise<void>): void;
@@ -295,7 +313,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 
 	abstract changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
 
-	_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean): boolean {
+	_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean {
 		if (broadcast === true) {
 			StreamerCentral.emit('broadcast', this.name, eventName, args);
 		}
@@ -303,6 +321,12 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		const subscriptions = this.subscriptionsByEventName.get(eventName);
 		if (!subscriptions || !subscriptions.size) {
 			return false;
+		}
+
+		if (transform) {
+			this.sendToManySubscriptions(subscriptions, origin, eventName, args, transform);
+
+			return true;
 		}
 
 		const msg = this.changedPayload(this.subscriptionName, 'id', {
@@ -319,14 +343,18 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		return true;
 	}
 
-	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], msg: string): Promise<void> {
+	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], getMsg: string | TransformMessage): Promise<void> {
 		subscriptions.forEach(async (subscription) => {
 			if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
 				return;
 			}
 
-			if (await this.isEmitAllowed(subscription.subscription, eventName, ...args)) {
-				subscription.subscription._session.socket?.send(msg);
+			const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
+			if (allowed) {
+				const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
+				if (msg) {
+					subscription.subscription._session.socket?.send(msg);
+				}
 			}
 		});
 	}

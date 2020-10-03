@@ -1,4 +1,4 @@
-import { IStreamer, IStreamerConstructor } from '../streamer/streamer.module';
+import { IStreamer, IStreamerConstructor, IPublication } from '../streamer/streamer.module';
 import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
@@ -50,17 +50,11 @@ export class NotificationsModule {
 
 	constructor(
 		private Streamer: IStreamerConstructor,
-		private RoomStreamer: IStreamerConstructor,
-		private MessageStreamer: IStreamerConstructor,
 	) {
-		// this.notifyUser = this.notifyUser.bind(this);
-
 		this.streamAll = new this.Streamer('notify-all');
 		this.streamLogged = new this.Streamer('notify-logged');
 		this.streamRoom = new this.Streamer('notify-room');
 		this.streamRoomUsers = new this.Streamer('notify-room-users');
-		this.streamRoomMessage = new this.MessageStreamer('room-messages');
-		this.streamUser = new this.RoomStreamer('notify-user');
 		this.streamImporters = new this.Streamer('importers', { retransmit: false });
 		this.streamRoles = new this.Streamer('roles');
 		this.streamApps = new this.Streamer('apps', { retransmit: false });
@@ -71,6 +65,29 @@ export class NotificationsModule {
 		this.streamLivechatQueueData = new this.Streamer('livechat-inquiry-queue-observer');
 		this.streamStdout = new this.Streamer('stdout');
 		this.streamRoomData = new this.Streamer('room-data');
+
+		this.streamRoomMessage = new this.Streamer('room-messages');
+
+		this.streamRoomMessage.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
+			const { userId } = publication._session;
+			if (!userId) {
+				return;
+			}
+
+			const userEvent = (clientAction: string, { rid }: {rid: string}): void => {
+				switch (clientAction) {
+					case 'removed':
+						streamer.removeListener(userId, userEvent);
+						const sub = [...streamer.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
+						sub && streamer.removeSubscription(sub, eventName);
+						break;
+				}
+			};
+
+			streamer.on(userId, userEvent);
+		});
+
+		this.streamUser = new this.Streamer('notify-user');
 	}
 
 	async configure({ Rooms, Subscriptions, Users, Settings }: IModelsParam): Promise<void> {
@@ -95,7 +112,6 @@ export class NotificationsModule {
 			return true;
 		});
 
-		// TODO need to test
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
 		this.streamRoomMessage.allowEmit('__my_messages__', async function(_eventName, { rid }) {
 			try {
@@ -285,6 +301,62 @@ export class NotificationsModule {
 
 		this.streamRoles.allowWrite('none');
 		this.streamRoles.allowRead('logged');
+
+		this.streamUser.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
+			const { userId } = publication._session;
+			if (!userId) {
+				return;
+			}
+
+			if (/rooms-changed/.test(eventName)) {
+				// TODO: change this to serialize only once
+				const roomEvent = (...args: any[]): void => {
+					const payload = streamer.changedPayload(streamer.subscriptionName, 'id', {
+						eventName: `${ userId }/rooms-changed`,
+						args,
+					});
+
+					payload && publication._session.socket?.send(
+						payload,
+					);
+				};
+
+				const subscriptions: Pick<ISubscription, 'rid'>[] = await Subscriptions.find(
+					{ 'u._id': userId },
+					{ projection: { rid: 1 } },
+				).toArray();
+
+				subscriptions.forEach(({ rid }) => {
+					streamer.on(rid, roomEvent);
+				});
+
+				const userEvent = async (clientAction: string, { rid }: Partial<ISubscription> = {}): Promise<void> => {
+					if (!rid) {
+						return;
+					}
+
+					switch (clientAction) {
+						case 'inserted':
+							subscriptions.push({ rid });
+							streamer.on(rid, roomEvent);
+
+							// after a subscription is added need to emit the room again
+							roomEvent('inserted', await Rooms.findOneById(rid));
+							break;
+
+						case 'removed':
+							streamer.removeListener(rid, roomEvent);
+							break;
+					}
+				};
+				streamer.on(userId, userEvent);
+
+				publication.onStop(() => {
+					streamer.removeListener(userId, userEvent);
+					subscriptions.forEach(({ rid }) => streamer.removeListener(rid, roomEvent));
+				});
+			}
+		});
 	}
 
 	notifyAll(eventName: string, ...args: any[]): void {

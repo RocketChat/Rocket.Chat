@@ -130,7 +130,11 @@ export class DDPStreamer extends ServiceClass {
 
 		// message({ message }) {
 		this.onEvent('message', ({ message }): void => {
-			// roomMessages.emitWithoutBroadcast('__my_messages__', record, {});
+			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
+				eventName,
+				args: [args, allowed],
+			}));
+
 			notifications.streamRoomMessage.emit(message.rid, message);
 		});
 

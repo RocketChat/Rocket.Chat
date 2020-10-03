@@ -3,7 +3,7 @@ import WebSocket from 'ws';
 import { server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { isEmpty } from './lib/utils';
-import { Streamer, DDPSubscription, Connection, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import { Streamer, DDPSubscription, Connection, StreamerCentral, TransformMessage } from '../../../../server/modules/streamer/streamer.module';
 import { api } from '../../../../server/sdk/api';
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
@@ -32,7 +32,11 @@ export class Stream extends Streamer {
 		});
 	}
 
-	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], msg: string): Promise<void> {
+	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], getMsg: string | TransformMessage): Promise<void> {
+		if (typeof getMsg === 'function') {
+			return super.sendToManySubscriptions(subscriptions, origin, eventName, args, getMsg);
+		}
+
 		// TODO: missing typing
 		const options = {
 			fin: true, // sending a single fragment message
@@ -41,9 +45,10 @@ export class Stream extends Streamer {
 			mask: false, // set false for client-side
 			readOnly: false, // the data can be modified as needed
 		};
+
 		const data = {
-			meteor: [Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(`a${ JSON.stringify([msg]) }`), options))],
-			normal: [Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(msg), options))],
+			meteor: [Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(`a${ JSON.stringify([getMsg]) }`), options))],
+			normal: [Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(getMsg), options))],
 		};
 
 		for await (const { subscription } of subscriptions) {
