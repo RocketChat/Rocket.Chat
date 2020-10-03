@@ -60,7 +60,7 @@ Template.pushNotificationsFlexTab.helpers({
 		const audioNotificationValue = Template.instance().form.audioNotificationValue.get();
 		const value = audioNotificationValue && audioNotificationValue.split(' ');
 		if (!value || value[0] === '0') {
-			return t('Use_account_preference');
+			return t('Default (Chime)');
 		}
 
 		return value[1];
@@ -83,7 +83,7 @@ Template.pushNotificationsFlexTab.helpers({
 				case 'nothing':
 					return t('Nothing');
 				case 'default':
-					return t('Use_account_preference');
+					return t('Default (All messages)');
 				case 'mentions':
 					return t('Mentions');
 				default:
