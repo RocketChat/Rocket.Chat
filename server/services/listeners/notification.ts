@@ -1,5 +1,5 @@
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import notifications from '../../../app/notifications/server/lib/Notifications';
+import { NotificationsModule } from '../../modules/notifications/notifications.module';
 
 const STATUS_MAP: {[k: string]: number} = {
 	offline: 0,
@@ -8,10 +8,13 @@ const STATUS_MAP: {[k: string]: number} = {
 	busy: 3,
 };
 
+// TODO: Convert to module and implement/import on monolith and on DDPStreamer
 export class NotificationService extends ServiceClass {
 	protected name = 'notification';
 
-	constructor() {
+	constructor(
+		notifications: NotificationsModule,
+	) {
 		super();
 
 		this.onEvent('emoji.deleteCustom', (emoji) => {
@@ -93,6 +96,39 @@ export class NotificationService extends ServiceClass {
 			notifications.notifyLogged('updateCustomUserStatus', {
 				userStatusData: userStatus,
 			});
+		});
+
+		this.onEvent('watch.messages', ({ message }) => {
+			if (!message.rid) {
+				return;
+			}
+
+			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
+				eventName,
+				args: [args, allowed],
+			}));
+
+			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+		});
+
+		this.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
+			if (!subscription.u?._id) {
+				return;
+			}
+
+			// emit a removed event on msg stream to remove the user's stream-room-messages subscription when the user is removed from room
+			if (clientAction === 'removed') {
+				notifications.streamRoomMessage.__emit(subscription.u._id, clientAction, subscription);
+			}
+
+			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
+
+			notifications.notifyUserInThisInstance(
+				subscription.u._id,
+				'subscriptions-changed',
+				clientAction,
+				subscription,
+			);
 		});
 	}
 }

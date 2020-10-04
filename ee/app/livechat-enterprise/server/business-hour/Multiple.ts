@@ -78,6 +78,9 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		const toRemove = [...(currentDepartments || []).filter((dept: Record<string, any>) => !departments.includes(dept._id))];
 		await this.removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(businessHourData._id, toRemove);
 		const businessHour = await this.BusinessHourRepository.findOneById(businessHourData._id);
+		if (!businessHour) {
+			return;
+		}
 		const businessHourIdToOpen = (await filterBusinessHoursThatMustBeOpened([businessHour])).map((businessHour) => businessHour._id);
 		if (!businessHourIdToOpen.length) {
 			return closeBusinessHour(businessHour);
@@ -92,6 +95,9 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return options;
 		}
 		const defaultBusinessHour = await this.BusinessHourRepository.findOneDefaultBusinessHour();
+		if (!defaultBusinessHour) {
+			return options;
+		}
 		await removeBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
 		if (!department.businessHourId) {
 			return options;
@@ -144,6 +150,9 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return options;
 		}
 		const defaultBusinessHour = await this.BusinessHourRepository.findOneDefaultBusinessHour();
+		if (!defaultBusinessHour) {
+			return options;
+		}
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([defaultBusinessHour]);
 		if (!businessHourToOpen.length) {
 			return options;

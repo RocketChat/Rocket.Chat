@@ -25,7 +25,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 			return;
 		}
 
-		const businessHour: ILivechatBusinessHour = await this.BusinessHourRepository.findOneById(id);
+		const businessHour = await this.BusinessHourRepository.findOneById(id);
 		if (!businessHour) {
 			return;
 		}
@@ -62,13 +62,13 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		await this.BusinessHourRepository.removeById(businessHourId);
 		await this.removeBusinessHourFromAgents(businessHourId);
 		await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId);
-		return this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
 	private async removeBusinessHourFromAgents(businessHourId: string): Promise<void> {
 		const departmentIds = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
 		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
-		return this.UsersRepository.removeBusinessHourByAgentIds(agentIds, businessHourId);
+		this.UsersRepository.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 
 	private async removeBusinessHourFromDepartmentsIfNeeded(businessHourId: string, departmentsToRemove: string[]): Promise<void> {

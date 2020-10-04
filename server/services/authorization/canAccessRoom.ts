@@ -21,6 +21,9 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function(room, user): Promise<boolean> {
+		if (!room._id) {
+			return false;
+		}
 		if (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) {
 			return true;
 		}
@@ -31,7 +34,11 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		if (!room.prid) {
 			return false;
 		}
-		return Authorization.canAccessRoom(Rooms.findOne(room.prid), user);
+		room = await Rooms.findOne(room.prid);
+		if (!room) {
+			return false;
+		}
+		return Authorization.canAccessRoom(room, user);
 	},
 	canAccessRoomLivechat,
 	canAccessRoomTokenpass,

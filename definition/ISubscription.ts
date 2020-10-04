@@ -5,4 +5,8 @@ export interface ISubscription {
 	u: {
 		_id: string;
 	};
+	roles?: string[];
+	ls?: Date;
+	alert?: boolean;
+	tunread?: string[];
 }

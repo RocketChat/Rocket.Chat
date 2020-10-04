@@ -128,16 +128,6 @@ export class DDPStreamer extends ServiceClass {
 			return stream && stream.emitWithoutBroadcast(eventName, ...args);
 		});
 
-		// message({ message }) {
-		this.onEvent('message', ({ message }): void => {
-			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
-				eventName,
-				args: [args, allowed],
-			}));
-
-			notifications.streamRoomMessage.emit(message.rid, message);
-		});
-
 		// userpresence(payload) {
 		this.onEvent('userpresence', (payload): void => {
 			const STATUS_MAP: {[k: string]: number} = {
@@ -206,35 +196,6 @@ export class DDPStreamer extends ServiceClass {
 			} = payload;
 			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user);
 			notifications.notifyLogged('Users:NameChanged', { _id, name, username });
-		});
-
-		// 'setting'() { },
-		// subscription({ action, subscription }) {
-		this.onEvent('subscription', ({ action, subscription }): void => {
-			if (!subscription.u?._id) {
-				return;
-			}
-
-			notifications.notifyUser(
-				subscription.u._id,
-				'subscriptions-changed',
-				action,
-				subscription,
-			);
-
-			notifications.streamUser.__emit(subscription.u._id, action, subscription);
-
-			// RocketChat.Notifications.notifyUserInThisInstance(
-			// 	subscription.u._id,
-			// 	'subscriptions-changed',
-			// 	action,
-			// 	subscription
-			// );
-			// notifyUser.emit('subscriptions-changed', action, subscription); TODO REMOVE ID
-
-			// notifyUser.emit(subscription.u._id, 'subscriptions-changed', action, subscription);
-			// RocketChat.Notifications.streamUser.__emit(subscription.u._id, action, subscription);
-			// RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', action, subscription);
 		});
 
 		// room({ room, action }) {

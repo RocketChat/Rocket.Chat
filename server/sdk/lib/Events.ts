@@ -40,4 +40,6 @@ export type EventSignatures = {
 	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'userpresence'(data: { action: string; user: Partial<IUser> }): void;
+	'watch.messages'(data: { clientAction: string; message: Partial<IMessage> }): void;
+	'watch.subscriptions'(data: { clientAction: string; subscription: Partial<ISubscription> }): void;
 }
