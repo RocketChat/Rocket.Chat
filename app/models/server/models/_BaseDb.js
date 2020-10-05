@@ -4,7 +4,8 @@ import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
-import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
+import { metrics } from '../../../metrics/server/lib/metrics';
+import { getOplogHandle } from './_oplogHandle';
 
 const baseName = 'rocketchat_';
 
@@ -20,6 +21,12 @@ try {
 } catch (e) {
 	console.log(e);
 }
+
+const actions = {
+	i: 'insert',
+	u: 'update',
+	d: 'remove',
+};
 
 export class BaseDb extends EventEmitter {
 	constructor(model, baseModel, options = {}) {
@@ -37,12 +44,14 @@ export class BaseDb extends EventEmitter {
 
 		this.baseModel = baseModel;
 
+		this.preventSetUpdatedAt = !!options.preventSetUpdatedAt;
+
 		this.wrapModel();
 
-		const { oplogEnabled, mongo } = getMongoInfo();
+		const _oplogHandle = Promise.await(getOplogHandle());
 
 		// When someone start listening for changes we start oplog if available
-		const handleListener = (event /* , listener*/) => {
+		const handleListener = async (event /* , listener*/) => {
 			if (event !== 'change') {
 				return;
 			}
@@ -53,7 +62,7 @@ export class BaseDb extends EventEmitter {
 				collection: this.collectionName,
 			};
 
-			if (!mongo._oplogHandle) {
+			if (!_oplogHandle) {
 				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
 				1. Start your mongodb in a replicaset mode: mongod --smallfiles --oplogSize 128 --replSet rs0\n
 				2. Start the replicaset via mongodb shell: mongo mongo/meteor --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"\n
@@ -61,19 +70,19 @@ export class BaseDb extends EventEmitter {
 				`);
 			}
 
-			mongo._oplogHandle.onOplogEntry(
+			_oplogHandle.onOplogEntry(
 				query,
 				this.processOplogRecord.bind(this),
 			);
 			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
 			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
-				mongo._oplogHandle._defineTooFarBehind(
+				_oplogHandle._defineTooFarBehind(
 					Number.MAX_SAFE_INTEGER,
 				);
 			}
 		};
 
-		if (oplogEnabled) {
+		if (_oplogHandle) {
 			this.on('newListener', handleListener);
 		}
 
@@ -85,6 +94,9 @@ export class BaseDb extends EventEmitter {
 	}
 
 	setUpdatedAt(record = {}) {
+		if (this.preventSetUpdatedAt) {
+			return record;
+		}
 		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
 		// setUpdatedAt(record = {}, checkQuery = false, query) {
 		// if (checkQuery === true) {
@@ -189,62 +201,68 @@ export class BaseDb extends EventEmitter {
 		);
 	}
 
-	processOplogRecord(action) {
-		if (action.op.op === 'i') {
+	processOplogRecord({ id, op }) {
+		const action = actions[op.op];
+		metrics.oplog.inc({
+			collection: this.collectionName,
+			op: action,
+		});
+
+		if (action === 'insert') {
 			this.emit('change', {
-				action: 'insert',
+				action,
 				clientAction: 'inserted',
-				id: action.op.o._id,
-				data: action.op.o,
+				id: op.o._id,
+				data: op.o,
 				oplog: true,
 			});
 			return;
 		}
 
-		if (action.op.op === 'u') {
-			if (!action.op.o.$set && !action.op.o.$unset) {
+		if (action === 'update') {
+			if (!op.o.$set && !op.o.$unset) {
 				this.emit('change', {
-					action: 'update',
+					action,
 					clientAction: 'updated',
-					id: action.id,
-					data: action.op.o,
+					id,
+					data: op.o,
 					oplog: true,
 				});
 				return;
 			}
 
 			const diff = {};
-			if (action.op.o.$set) {
-				for (const key in action.op.o.$set) {
-					if (action.op.o.$set.hasOwnProperty(key)) {
-						diff[key] = action.op.o.$set[key];
+			if (op.o.$set) {
+				for (const key in op.o.$set) {
+					if (op.o.$set.hasOwnProperty(key)) {
+						diff[key] = op.o.$set[key];
 					}
 				}
 			}
 
-			if (action.op.o.$unset) {
-				for (const key in action.op.o.$unset) {
-					if (action.op.o.$unset.hasOwnProperty(key)) {
+			if (op.o.$unset) {
+				for (const key in op.o.$unset) {
+					if (op.o.$unset.hasOwnProperty(key)) {
 						diff[key] = undefined;
 					}
 				}
 			}
 
 			this.emit('change', {
-				action: 'update',
+				action,
 				clientAction: 'updated',
-				id: action.id,
+				id,
 				diff,
 				oplog: true,
 			});
 			return;
 		}
 
-		if (action.op.op === 'd') {
+		if (action === 'remove') {
 			this.emit('change', {
-				action: 'remove',
+				action,
 				clientAction: 'removed',
-				id: action.id,
+				id,
 				oplog: true,
 			});
 		}

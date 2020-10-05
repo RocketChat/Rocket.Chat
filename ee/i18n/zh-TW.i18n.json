@@ -24,7 +24,7 @@
   "Enterprise_License": "企業授權",
   "Enterprise_License_Description": "如果您的工作區已註冊，並且授權是由Rocket.Chat Cloud提供的，則無需在此處手動更新授權。",
   "Estimated_due_time_in_minutes": "預計到期時間（以分鐘為單位）",
-  "Estimated_due_time": "預計到期時間",
+  "Estimated_due_time": "預計到期時間（以分鐘為單位）",
   "Failed_to_add_monitor": "新增監控失敗",
   "Invalid Canned Response": "無效的罐頭訊息",
   "Invalid_Department": "無效的部門",
