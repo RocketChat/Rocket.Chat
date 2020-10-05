@@ -3,7 +3,8 @@ import { FindOneOptions, Cursor, UpdateQuery, FilterQuery } from 'mongodb';
 import { BaseRaw } from './BaseRaw';
 import { ISubscription } from '../../../../definition/ISubscription';
 
-export class SubscriptionsRaw<T = ISubscription> extends BaseRaw<T> {
+type T = ISubscription;
+export class SubscriptionsRaw extends BaseRaw<T> {
 	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOneOptions<T> = {}): Promise<T | undefined> {
 		const query = {
 			rid,
@@ -50,12 +51,12 @@ export class SubscriptionsRaw<T = ISubscription> extends BaseRaw<T> {
 	}
 
 	setAsReadByRoomIdAndUserId(rid: string, uid: string, alert = false, options: FindOneOptions<T> = {}): ReturnType<BaseRaw<T>['update']> {
-		const query: FilterQuery<ISubscription> = {
+		const query: FilterQuery<T> = {
 			rid,
 			'u._id': uid,
 		};
 
-		const update: UpdateQuery<ISubscription> = {
+		const update: UpdateQuery<T> = {
 			$set: {
 				open: true,
 				alert,

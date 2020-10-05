@@ -34,7 +34,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			Subscriptions: new SubscriptionsRaw(Subscriptions, Trash),
 			Settings: new SettingsRaw(Settings, Trash),
 		}, (model, fn) => {
-			model.col.watch<{_id: string}>([]).on('change', (event) => {
+			model.col.watch([]).on('change', (event) => {
 				switch (event.operationType) {
 					case 'insert':
 						fn({

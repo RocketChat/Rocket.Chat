@@ -8,6 +8,7 @@ import { IMessage } from '../../../definition/IMessage';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { api } from '../../sdk/api';
+import { IBaseData } from '../../../definition/IBaseData';
 
 interface IModelsParam {
 	// Rooms: RoomsRaw;
@@ -22,10 +23,10 @@ interface IChange<T> {
 	clientAction: 'inserted' | 'updated' | 'removed';
 	id: string;
 	data?: T;
-	diff?: Partial<T>;
+	diff?: Record<string, any>;
 }
 
-type Watcher = <T>(model: IBaseRaw<T>, fn: (event: IChange<{_id: string}>) => void) => void;
+type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>) => void) => void;
 
 // TODO: find a better place
 export const subscriptionFields = {
