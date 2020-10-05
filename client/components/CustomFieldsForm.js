@@ -11,7 +11,7 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 	const verify = useMemo(() => {
 		const error = [];
 		if (!state && required) { error.push(t('Field_required')); }
-		if (state.length < minLength) { error.push(t('Min_length_is', minLength)); }
+		if (state.length < minLength && state.length > 0) { error.push(t('Min_length_is', minLength)); }
 		return error.join(', ');
 	}, [state, required, minLength, t]);
 

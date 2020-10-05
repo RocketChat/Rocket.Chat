@@ -156,7 +156,7 @@ Template.message.helpers({
 		return msg.alias || (settings.UI_Use_Real_Name && msg.u && msg.u.name);
 	},
 	own() {
-		const { msg, u } = this;
+		const { msg, u = {} } = this;
 		if (msg.u && msg.u._id === u._id) {
 			return 'own';
 		}
@@ -321,6 +321,25 @@ Template.message.helpers({
 		const { msg } = this;
 		if (_.isEmpty(msg.reactions)) {
 			return 'hidden';
+		}
+	},
+	hideAddReaction() {
+		const { room, u, msg, subscription } = this;
+
+		if (!room) {
+			return true;
+		}
+
+		if (!subscription) {
+			return true;
+		}
+
+		if (msg.private) {
+			return true;
+		}
+
+		if (roomTypes.readOnly(room._id, u._id) && !room.reactWhenReadOnly) {
+			return true;
 		}
 	},
 	hideMessageActions() {

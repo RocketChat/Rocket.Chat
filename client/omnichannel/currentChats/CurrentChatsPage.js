@@ -11,7 +11,7 @@ import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperime
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { GenericTable } from '../../components/GenericTable';
 import { useMethod } from '../../contexts/ServerContext';
-import DeleteWarningModal from '../DeleteWarningModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { AutoCompleteDepartment } from '../../components/basic/AutoCompleteDepartment';

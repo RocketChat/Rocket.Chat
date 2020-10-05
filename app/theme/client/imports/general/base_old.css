@@ -2113,11 +2113,11 @@
 		border-radius: 2px;
 
 		&--me {
-			background-color: var(--mention-link-me-background);
+			background-color: var(--mention-link-me-text-color);
 		}
 
 		&--group {
-			background-color: var(--mention-link-group-background);
+			background-color: var(--mention-link-group-text-color);
 		}
 	}
 }
