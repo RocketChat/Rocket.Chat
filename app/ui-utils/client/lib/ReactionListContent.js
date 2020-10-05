@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Tag, Divider, Modal, Icon, ButtonGroup, Button, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Tag, Divider, Modal, ButtonGroup, Button, Scrollable } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import Emoji from '../../../../client/components/basic/Emoji';
