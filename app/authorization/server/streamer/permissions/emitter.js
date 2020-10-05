@@ -12,7 +12,7 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
-			data = data || Permissions.findOneById(id);
+			data = data ?? Permissions.findOneById(id);
 			break;
 
 		case 'removed':
@@ -32,7 +32,10 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 		// if the permission changes, the effect on the visible settings depends on the role affected.
 		// The selected-settings-based consumers have to react accordingly and either add or remove the
 		// setting from the user's collection
-		const setting = Settings.findOneById(data.settingId);
+		const setting = Settings.findOneNotHiddenById(data.settingId);
+		if (!setting) {
+			return;
+		}
 		Notifications.notifyLoggedInThisInstance(
 			'private-settings-changed',
 			'updated',
