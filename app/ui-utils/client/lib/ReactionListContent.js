@@ -11,8 +11,8 @@ export function Reactions(props) {
 		<Box>
 			{reactionKeys.map((reaction) => <Box key={reaction}>
 				<Box display='flex' flexWrap='wrap' overflowX='hidden' mb='x8'>
-					<Emoji emojiHandle={reaction} title={reaction} marginInlineEnd='x4' />
-					<Usernames usernames={props.reactions[reaction].usernames} marginInlineEnd='x4' />
+					<Emoji emojiHandle={reaction} title={reaction} />
+					<Usernames usernames={props.reactions[reaction].usernames} />
 				</Box>
 			</Box>)}
 		</Box>
@@ -21,7 +21,7 @@ export function Reactions(props) {
 
 export function Usernames(props) {
 	return <Box paddingBlock='x4'>
-		{ props.usernames.map((user) => <Tag marginInlineEnd='4x' key={user}>{user}</Tag>)}
+		{ props.usernames.map((user) => <Tag marginInlineEnd='x4' key={user}>{user}</Tag>)}
 	</Box>;
 }
 
