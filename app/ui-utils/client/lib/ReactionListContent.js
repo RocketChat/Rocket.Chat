@@ -9,12 +9,11 @@ export function Reactions(props) {
 
 	return <Scrollable>
 		<Box>
-			{reactionKeys.map((reaction, i) => <Box key={reaction}>
-				<Box display='flex' flexWrap='wrap' overflowX='hidden'>
+			{reactionKeys.map((reaction) => <Box key={reaction}>
+				<Box display='flex' flexWrap='wrap' overflowX='hidden' mb='x8'>
 					<Emoji emojiHandle={reaction} title={reaction} marginInlineEnd='x4' />
 					<Usernames usernames={props.reactions[reaction].usernames} marginInlineEnd='x4' />
 				</Box>
-				{ i !== (reactionKeys.length - 1) && <Divider key={reaction} marginBlockStart='x8' marginBlockEnd='x16'/> }
 			</Box>)}
 		</Box>
 	</Scrollable>;
