@@ -23,7 +23,6 @@ export type EventSignatures = {
 	'meteor.loginServiceConfiguration'(data: { action: string; record: any }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'permission.changed'(data: { clientAction: string; data: any }): void;
-	'role'(data: {type: 'changed' | 'removed' } & Partial<IRole>): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Partial<IRoom>): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
@@ -41,5 +40,6 @@ export type EventSignatures = {
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'userpresence'(data: { action: string; user: Partial<IUser> }): void;
 	'watch.messages'(data: { clientAction: string; message: Partial<IMessage> }): void;
+	'watch.roles'(data: { clientAction: string; role: Partial<IRole> }): void;
 	'watch.subscriptions'(data: { clientAction: string; subscription: Partial<ISubscription> }): void;
 }

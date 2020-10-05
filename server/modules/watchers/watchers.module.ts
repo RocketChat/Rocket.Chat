@@ -4,8 +4,10 @@ import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
+import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { IMessage } from '../../../definition/IMessage';
 import { ISubscription } from '../../../definition/ISubscription';
+import { IRole } from '../../../definition/IRole';
 import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { api } from '../../sdk/api';
 import { IBaseData } from '../../../definition/IBaseData';
@@ -16,6 +18,7 @@ interface IModelsParam {
 	Users: UsersRaw;
 	Settings: SettingsRaw;
 	Messages: MessagesRaw;
+	Roles: RolesRaw;
 }
 
 interface IChange<T> {
@@ -69,7 +72,7 @@ export const subscriptionFields = {
 	tunreadUser: 1,
 };
 
-export function initWatchers({ Messages, Users, Settings, Subscriptions }: IModelsParam, watch: Watcher): void {
+export function initWatchers({ Messages, Users, Settings, Subscriptions, Roles }: IModelsParam, watch: Watcher): void {
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
@@ -120,5 +123,20 @@ export function initWatchers({ Messages, Users, Settings, Subscriptions }: IMode
 		}
 
 		api.broadcast('watch.subscriptions', { clientAction, subscription: data });
+	});
+
+	watch<IRole>(Roles, async ({ clientAction, id, data }) => {
+		const role = clientAction === 'removed'
+			? { _id: id, name: id }
+			: data || await Roles.findOneById(id);
+
+		if (!role) {
+			return;
+		}
+
+		api.broadcast('watch.roles', {
+			clientAction: clientAction !== 'removed' ? 'changed' : clientAction,
+			role,
+		});
 	});
 }

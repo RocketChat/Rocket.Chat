@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 
 import * as Models from '../../../models/server';
 import { hasPermission } from '../functions/hasPermission';
-import notifications from '../../../notifications/server/lib/Notifications';
 
 Meteor.methods({
 	'authorization:deleteRole'(roleName) {
@@ -36,13 +35,6 @@ Meteor.methods({
 			});
 		}
 
-		const removed = Models.Roles.remove(role.name);
-		if (removed) {
-			notifications.streamRoles.emit('roles', {
-				type: 'removed',
-				name: roleName,
-			});
-		}
-		return removed;
+		return Models.Roles.remove(role.name);
 	},
 });

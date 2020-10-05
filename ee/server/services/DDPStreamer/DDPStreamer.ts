@@ -215,9 +215,6 @@ export class DDPStreamer extends ServiceClass {
 		// 	},
 		// },
 		// role(payload) {
-		this.onEvent('role', (payload): void => {
-			notifications.streamRoles.emit('roles', payload);
-		});
 
 		this.onEvent('meteor.loginServiceConfiguration', ({ action, record }): void => {
 			events.emit('meteor.loginServiceConfiguration', action, record);

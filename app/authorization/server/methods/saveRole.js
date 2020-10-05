@@ -4,7 +4,6 @@ import { Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
-import notifications from '../../../notifications/server/lib/Notifications';
 
 Meteor.methods({
 	'authorization:saveRole'(roleData) {
@@ -32,10 +31,6 @@ Meteor.methods({
 				_id: roleData.name,
 			});
 		}
-		notifications.streamRoles.emit('roles', {
-			type: 'changed',
-			...roleData,
-		});
 		return update;
 	},
 });

@@ -1,7 +1,6 @@
 import { watchUsers } from './watchUsers';
 import { watchSettings } from './watchSettings';
 import { watchRooms } from './watchRooms';
-import { watchRoles } from './watchRoles';
 import { watchInquiries } from './watchInquiries';
 import { getConnection } from '../mongo';
 import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
@@ -11,6 +10,7 @@ import { MessagesRaw } from '../../../../app/models/server/raw/Messages';
 import { UsersRaw } from '../../../../app/models/server/raw/Users';
 import { SubscriptionsRaw } from '../../../../app/models/server/raw/Subscriptions';
 import { SettingsRaw } from '../../../../app/models/server/raw/Settings';
+import { RolesRaw } from '../../../../app/models/server/raw/Roles';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -19,21 +19,28 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const db = await getConnection();
 
 		const Trash = db.collection('rocketchat_trash');
-		const Users = db.collection('users');
-		const Roles = db.collection('rocketchat_roles');
-		const Messages = db.collection('rocketchat_message');
-		const Subscriptions = db.collection('rocketchat_subscription');
 		const Rooms = db.collection('rocketchat_room');
-		const Settings = db.collection('rocketchat_settings');
 		const Inquiry = db.collection('rocketchat_livechat_inquiry');
 		const loginServiceConfiguration = db.collection('meteor_accounts_loginServiceConfiguration');
 
-		initWatchers({
-			Messages: new MessagesRaw(Messages, Trash),
-			Users: new UsersRaw(Users, Trash),
-			Subscriptions: new SubscriptionsRaw(Subscriptions, Trash),
-			Settings: new SettingsRaw(Settings, Trash),
-		}, (model, fn) => {
+		const UsersCol = db.collection('users');
+		const SettingsCol = db.collection('rocketchat_settings');
+
+		const Settings = new SettingsRaw(SettingsCol, Trash);
+		const Users = new UsersRaw(UsersCol, Trash);
+		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), Trash);
+		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
+		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash, { Users, Subscriptions });
+
+		const models = {
+			Messages,
+			Users,
+			Subscriptions,
+			Settings,
+			Roles,
+		};
+
+		initWatchers(models, (model, fn) => {
 			model.col.watch([]).on('change', (event) => {
 				switch (event.operationType) {
 					case 'insert':
@@ -83,7 +90,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			});
 		});
 
-		Users.watch([], { fullDocument: 'updateLookup' }).on('change', watchUsers);
+		UsersCol.watch([], { fullDocument: 'updateLookup' }).on('change', watchUsers);
 
 		// TODO: check the improvement mentioned below that was ignored on code unification
 		// Messages.watch([{
@@ -102,9 +109,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 
 		Rooms.watch([], { fullDocument: 'updateLookup' }).on('change', watchRooms);
 
-		Roles.watch([], { fullDocument: 'updateLookup' }).on('change', watchRoles);
-
-		Settings.watch([{
+		SettingsCol.watch([{
 			$addFields: {
 				tmpfields: {
 					$objectToArray: '$updateDescription.updatedFields',

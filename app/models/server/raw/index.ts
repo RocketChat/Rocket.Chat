@@ -56,7 +56,6 @@ import { initWatchers } from '../../../../server/modules/watchers/watchers.modul
 const trashCollection = trash.rawCollection();
 
 export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection(), trashCollection);
-export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection);
 export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCollection(), trashCollection);
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection(), trashCollection);
 export const Users = new UsersRaw(UsersModel.model.rawCollection(), trashCollection);
@@ -81,12 +80,14 @@ export const Statistics = new StatisticsRaw(StatisticsModel.model.rawCollection(
 export const NotificationQueue = new NotificationQueueRaw(NotificationQueueModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollection(), trashCollection);
+export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection, { Users, Subscriptions });
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
 	[Users.col.collectionName]: UsersModel,
 	[Subscriptions.col.collectionName]: SubscriptionsModel,
 	[Settings.col.collectionName]: SettingsModel,
+	[Roles.col.collectionName]: RolesModel,
 };
 
 initWatchers({
@@ -94,6 +95,7 @@ initWatchers({
 	Users,
 	Subscriptions,
 	Settings,
+	Roles,
 }, (model, fn) => {
 	const meteorModel = map[model.col.collectionName];
 

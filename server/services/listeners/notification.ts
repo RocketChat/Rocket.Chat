@@ -130,5 +130,13 @@ export class NotificationService extends ServiceClass {
 				subscription,
 			);
 		});
+
+		this.onEvent('watch.roles', ({ clientAction, role }): void => {
+			const payload = {
+				type: clientAction,
+				...role,
+			};
+			notifications.streamRoles.emit('roles', payload);
+		});
 	}
 }
