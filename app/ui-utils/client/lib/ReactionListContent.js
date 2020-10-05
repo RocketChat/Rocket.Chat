@@ -29,7 +29,7 @@ export function Usernames(props) {
 export default function ReactionListContent({ reactions, onClose }) {
 	const t = useTranslation();
 
-	return <>
+	return <Box m='neg-x16'>
 		<Modal.Header>
 			<Icon name='emoji' size={20}/>
 			<Modal.Title>{t('Reactions')}</Modal.Title>
@@ -43,5 +43,5 @@ export default function ReactionListContent({ reactions, onClose }) {
 				<Button primary onClick={onClose}>{t('Ok')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
-	</>;
+	</Box>;
 }
