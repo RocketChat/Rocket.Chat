@@ -8,6 +8,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { messageArgs } from './messageArgs';
@@ -366,7 +367,9 @@ Meteor.startup(async function() {
 			const { msg: { reactions } } = messageArgs(this);
 
 			modal.open({
-				template: createTemplateForComponent('reactionList', () => import('./ReactionListContent')),
+				template: createTemplateForComponent('reactionList', () => import('./ReactionListContent'), {
+					renderContainerView: () => HTML.DIV({ style: 'margin: -16px; height: 100%; display: flex; flex-direction: column; overflow: hidden;' }), // eslint-disable-line new-cap
+				}),
 				data: { reactions, onClose: () => modal.close() },
 			});
 		},

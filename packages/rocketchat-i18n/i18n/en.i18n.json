@@ -3775,6 +3775,7 @@
   "User_not_found_or_incorrect_password": "User not found or incorrect password",
   "User_or_channel_name": "User or channel name",
   "User_Presence": "User Presence",
+  "Users_reacted": "Users that Reacted",
   "User_removed": "User removed",
   "User_removed_by": "User <em>__user_removed__</em> removed by <em>__user_by__</em>.",
   "User_sent_a_message_on_channel": "<strong>__username__</strong> sent a message on <strong>__channel__</strong>",

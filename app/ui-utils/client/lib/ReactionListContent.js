@@ -10,10 +10,10 @@ export function Reactions(props) {
 	return <Scrollable>
 		<Box>
 			{reactionKeys.map((reaction, i) => <Box key={reaction}>
-				<Box display='flex'>
-					<Emoji emojiHandle={reaction}/> {reaction}
+				<Box display='flex' flexWrap='wrap' overflowX='hidden'>
+					<Emoji emojiHandle={reaction} title={reaction} marginInlineEnd='x4' />
+					<Usernames usernames={props.reactions[reaction].usernames} marginInlineEnd='x4' />
 				</Box>
-				<Usernames usernames={props.reactions[reaction].usernames}></Usernames>
 				{ i !== (reactionKeys.length - 1) && <Divider key={reaction} marginBlockStart='x8' marginBlockEnd='x16'/> }
 			</Box>)}
 		</Box>
@@ -29,10 +29,9 @@ export function Usernames(props) {
 export default function ReactionListContent({ reactions, onClose }) {
 	const t = useTranslation();
 
-	return <Box m='neg-x16'>
+	return <>
 		<Modal.Header>
-			<Icon name='emoji' size={20}/>
-			<Modal.Title>{t('Reactions')}</Modal.Title>
+			<Modal.Title>{t('Users_reacted')}</Modal.Title>
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
@@ -43,5 +42,5 @@ export default function ReactionListContent({ reactions, onClose }) {
 				<Button primary onClick={onClose}>{t('Ok')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
-	</Box>;
+	</>;
 }
