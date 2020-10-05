@@ -1,5 +1,6 @@
 // import mem from 'mem';
 import { Db, Collection } from 'mongodb';
+import mem from 'mem';
 
 import { IAuthorization, RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
@@ -25,6 +26,10 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private Users: Collection;
 
+	private getRolesCached = mem(this.getRoles.bind(this), { maxAge: 1000, cacheKey: JSON.stringify })
+
+	private rolesHasPermissionCached = mem(this.rolesHasPermission.bind(this), { cacheKey: JSON.stringify, ...process.env.TEST_MODE === 'true' && { maxAge: 1 } })
+
 	constructor(db: Db) {
 		super();
 
@@ -34,6 +39,11 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
 		Settings = new SettingsRaw(db.collection('rocketchat_settings'));
 		Rooms = new RoomsRaw(db.collection('rocketchat_room'));
+
+		this.onEvent('permission.changed', () => {
+			mem.clear(this.getRolesCached);
+			mem.clear(this.rolesHasPermissionCached);
+		});
 	}
 
 	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
@@ -88,9 +98,9 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	// }
 
 	private async atLeastOne(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRoles(uid, scope);
+		const sortedRoles = await this.getRolesCached(uid, scope);
 		for (const permission of permissions) {
-			if (await this.rolesHasPermission(permission, sortedRoles)) { // eslint-disable-line
+			if (await this.rolesHasPermissionCached(permission, sortedRoles)) { // eslint-disable-line
 				return true;
 			}
 		}
@@ -99,9 +109,9 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	private async all(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRoles(uid, scope);
+		const sortedRoles = await this.getRolesCached(uid, scope);
 		for (const permission of permissions) {
-			if (!await this.rolesHasPermission(permission, sortedRoles)) { // eslint-disable-line
+			if (!await this.rolesHasPermissionCached(permission, sortedRoles)) { // eslint-disable-line
 				return false;
 			}
 		}

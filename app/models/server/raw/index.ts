@@ -88,6 +88,7 @@ const map = {
 	[Subscriptions.col.collectionName]: SubscriptionsModel,
 	[Settings.col.collectionName]: SettingsModel,
 	[Roles.col.collectionName]: RolesModel,
+	[Permissions.col.collectionName]: PermissionsModel,
 };
 
 initWatchers({
@@ -95,6 +96,7 @@ initWatchers({
 	Users,
 	Subscriptions,
 	Settings,
+	Permissions,
 	Roles,
 }, (model, fn) => {
 	const meteorModel = map[model.col.collectionName];

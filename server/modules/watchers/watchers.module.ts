@@ -3,6 +3,7 @@
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
+import { PermissionsRaw } from '../../../app/models/server/raw/Permissions';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { IMessage } from '../../../definition/IMessage';
@@ -11,10 +12,12 @@ import { IRole } from '../../../definition/IRole';
 import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { api } from '../../sdk/api';
 import { IBaseData } from '../../../definition/IBaseData';
+import { IPermission } from '../../../definition/IPermission';
 
 interface IModelsParam {
 	// Rooms: RoomsRaw;
 	Subscriptions: SubscriptionsRaw;
+	Permissions: PermissionsRaw;
 	Users: UsersRaw;
 	Settings: SettingsRaw;
 	Messages: MessagesRaw;
@@ -72,7 +75,14 @@ export const subscriptionFields = {
 	tunreadUser: 1,
 };
 
-export function initWatchers({ Messages, Users, Settings, Subscriptions, Roles }: IModelsParam, watch: Watcher): void {
+export function initWatchers({
+	Messages,
+	Users,
+	Settings,
+	Subscriptions,
+	Roles,
+	Permissions,
+}: IModelsParam, watch: Watcher): void {
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
@@ -138,5 +148,39 @@ export function initWatchers({ Messages, Users, Settings, Subscriptions, Roles }
 			clientAction: clientAction !== 'removed' ? 'changed' : clientAction,
 			role,
 		});
+	});
+
+	watch<IPermission>(Permissions, async ({ clientAction, id, data, diff }) => {
+		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
+			// avoid useless changes
+			return;
+		}
+		switch (clientAction) {
+			case 'updated':
+			case 'inserted':
+				data = data ?? await Permissions.findOneById(id);
+				break;
+
+			case 'removed':
+				data = { _id: id, roles: [] };
+				break;
+		}
+
+		if (!data) {
+			return;
+		}
+
+		api.broadcast('permission.changed', { clientAction, data });
+
+		if (data.level === 'settings' && data.settingId) {
+			// if the permission changes, the effect on the visible settings depends on the role affected.
+			// The selected-settings-based consumers have to react accordingly and either add or remove the
+			// setting from the user's collection
+			const setting = await Settings.findOneNotHiddenById(data.settingId);
+			if (!setting) {
+				return;
+			}
+			api.broadcast('setting.privateChanged', { clientAction: 'updated', setting });
+		}
 	});
 }

@@ -21,6 +21,7 @@
 		"bcrypt": "^4.0.1",
 		"ejson": "^2.2.0",
 		"jaeger-client": "^3.18.1",
+		"mem": "^6.1.0",
 		"moleculer": "^0.14.10",
 		"mongodb": "^3.6.1",
 		"msgpack5": "^4.2.1",

@@ -30,12 +30,14 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Users = new UsersRaw(UsersCol, Trash);
 		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), Trash);
 		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
+		const Permissions = new MessagesRaw(db.collection('rocketchat_permissions'), Trash);
 		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash, { Users, Subscriptions });
 
 		const models = {
 			Messages,
 			Users,
 			Subscriptions,
+			Permissions,
 			Settings,
 			Roles,
 		};
