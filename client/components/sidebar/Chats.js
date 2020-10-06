@@ -176,7 +176,7 @@ export default () => {
 				return favorite.add(room);
 			}
 
-			if (sidebarShowUnread && room.alert && room.unread && !room.hideUnreadStatus) {
+			if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
 				return unread.add(room);
 			}
 
