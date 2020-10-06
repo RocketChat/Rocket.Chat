@@ -181,7 +181,8 @@ const mergeRoomSub = (room) => {
 		rid: room._id,
 	}, {
 		$set: {
-			...room.uids && { uids: room.uids.filter((uid) => uid !== Meteor.userId()) },
+			...Array.isArray(room.uids) && { uids: room.uids },
+			...Array.isArray(room.uids) && { usernames: room.usernames },
 			...room.v && { v: room.v },
 			lastMessage: room.lastMessage,
 			streamingOptions: room.streamingOptions,

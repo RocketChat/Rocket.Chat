@@ -81,7 +81,13 @@ const SidebarIcon = ({ room }) => {
 		case 'l':
 			return <Sidebar.Item.Icon name='headset' color={colors[room.v.status]}/>;
 		case 'd':
-			return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus uid={room.uids[0]} /></Sidebar.Item.Icon>;
+			if (room.uids && room.uids.length === 1) {
+				return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus uid={room.uids[0]} /></Sidebar.Item.Icon>;
+			}
+			if (room.uids && room.uids.length > 1) {
+				return <Sidebar.Item.Icon name='team'/>;
+			}
+			return <Sidebar.Item.Icon name={roomTypes.getIcon(room)}/>;
 		default:
 			return null;
 	}
