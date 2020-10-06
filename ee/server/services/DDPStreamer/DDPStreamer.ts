@@ -99,28 +99,11 @@ wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket'));
 // 	},
 // 	mixins: PROMETHEUS_PORT !== 'false' ? [PromService] : [],
 
-const types: Record<string, string> = {
-	inserted: 'added',
-	updated: 'changed',
-	removed: 'removed',
-};
-const mountDataToEmit = (type: string, data: object): object => ({ type: types[type], ...data });
-
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
 
 	constructor() {
 		super();
-
-		// [STREAM_NAMES.LIVECHAT_INQUIRY]({ action, inquiry }) {
-		this.onEvent('livechat-inquiry-queue-observer', ({ action, inquiry }): void => {
-			if (!inquiry.department) {
-				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', mountDataToEmit(action, inquiry));
-				return;
-			}
-			notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${ inquiry.department }`, mountDataToEmit(action, inquiry));
-			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, mountDataToEmit(action, inquiry));
-		});
 
 		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
 		this.onEvent('stream', ([streamer, eventName, args]): void => {

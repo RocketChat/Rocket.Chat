@@ -1,6 +1,5 @@
 import { watchUsers } from './watchUsers';
 import { watchRooms } from './watchRooms';
-import { watchInquiries } from './watchInquiries';
 import { getConnection } from '../mongo';
 import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { watchLoginServiceConfiguration } from './watchLoginServiceConfiguration';
@@ -10,6 +9,7 @@ import { UsersRaw } from '../../../../app/models/server/raw/Users';
 import { SubscriptionsRaw } from '../../../../app/models/server/raw/Subscriptions';
 import { SettingsRaw } from '../../../../app/models/server/raw/Settings';
 import { RolesRaw } from '../../../../app/models/server/raw/Roles';
+import { LivechatInquiryRaw } from '../../../../app/models/server/raw/LivechatInquiry';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -19,7 +19,6 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 
 		const Trash = db.collection('rocketchat_trash');
 		const Rooms = db.collection('rocketchat_room');
-		const Inquiry = db.collection('rocketchat_livechat_inquiry');
 		const loginServiceConfiguration = db.collection('meteor_accounts_loginServiceConfiguration');
 
 		const UsersCol = db.collection('users');
@@ -28,6 +27,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Settings = new SettingsRaw(SettingsCol, Trash);
 		const Users = new UsersRaw(UsersCol, Trash);
 		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), Trash);
+		const LivechatInquiry = new LivechatInquiryRaw(db.collection('rocketchat_livechat_inquiry'), Trash);
 		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
 		const Permissions = new MessagesRaw(db.collection('rocketchat_permissions'), Trash);
 		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash, { Users, Subscriptions });
@@ -37,6 +37,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			Users,
 			Subscriptions,
 			Permissions,
+			LivechatInquiry,
 			Settings,
 			Roles,
 		};
@@ -105,8 +106,6 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		// 			$nin: ['u.username'], // avoid flood the streamer with messages changes (by username change)
 		// 		},
 		// 	} }], { fullDocument: 'updateLookup' }).on('change', watchMessages);
-
-		Inquiry.watch([], { fullDocument: 'updateLookup' }).on('change', watchInquiries);
 
 		Rooms.watch([], { fullDocument: 'updateLookup' }).on('change', watchRooms);
 

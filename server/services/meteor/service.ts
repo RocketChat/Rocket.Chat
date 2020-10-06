@@ -8,6 +8,8 @@ import { Users } from '../../../app/models/server/raw/index';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server/functions/settings';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
+import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -69,5 +71,9 @@ export class MeteorService extends ServiceClass implements IMeteor {
 
 	async notifyGuestStatusChanged(token: string, status: string): Promise<void> {
 		return Livechat.notifyGuestStatusChanged(token, status);
+	}
+
+	getRoutingManagerConfig(): IRoutingManagerConfig {
+		return RoutingManager.getConfig();
 	}
 }

@@ -1,4 +1,5 @@
 import { IServiceClass } from './ServiceClass';
+import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
 export type AutoUpdateRecord = {
 	_id: string;
@@ -18,4 +19,6 @@ export interface IMeteor extends IServiceClass {
 	callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any>;
 
 	notifyGuestStatusChanged(token: string, status: string): Promise<void>;
+
+	getRoutingManagerConfig(): IRoutingManagerConfig;
 }

@@ -41,5 +41,6 @@ export type EventSignatures = {
 	'watch.messages'(data: { clientAction: string; message: Partial<IMessage> }): void;
 	'watch.roles'(data: { clientAction: string; role: Partial<IRole> }): void;
 	'watch.subscriptions'(data: { clientAction: string; subscription: Partial<ISubscription> }): void;
+	'watch.inquiries'(data: { clientAction: string; inquiry: IInquiry; diff?: Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: string; setting: ISetting }): void;
 }

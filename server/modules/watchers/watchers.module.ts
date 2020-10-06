@@ -10,10 +10,12 @@ import { IMessage } from '../../../definition/IMessage';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IRole } from '../../../definition/IRole';
 import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
+import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
 import { api } from '../../sdk/api';
 import { IBaseData } from '../../../definition/IBaseData';
 import { IPermission } from '../../../definition/IPermission';
 import { ISetting } from '../../../definition/ISetting';
+import { IInquiry } from '../../../definition/IInquiry';
 
 interface IModelsParam {
 	// Rooms: RoomsRaw;
@@ -22,6 +24,7 @@ interface IModelsParam {
 	Users: UsersRaw;
 	Settings: SettingsRaw;
 	Messages: MessagesRaw;
+	LivechatInquiry: LivechatInquiryRaw;
 	Roles: RolesRaw;
 }
 
@@ -83,6 +86,7 @@ export function initWatchers({
 	Subscriptions,
 	Roles,
 	Permissions,
+	LivechatInquiry,
 }: IModelsParam, watch: Watcher): void {
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
@@ -149,6 +153,29 @@ export function initWatchers({
 			clientAction: clientAction !== 'removed' ? 'changed' : clientAction,
 			role,
 		});
+	});
+
+	watch<IInquiry>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
+		// if (RoutingManager.getConfig().autoAssignAgent) {
+		// 	return;
+		// }
+
+		switch (clientAction) {
+			case 'inserted':
+			case 'updated':
+				data = data ?? await LivechatInquiry.findOneById(id);
+				break;
+
+			case 'removed':
+				data = await LivechatInquiry.trashFindOneById(id);
+				break;
+		}
+
+		if (!data) {
+			return;
+		}
+
+		api.broadcast('watch.inquiries', { clientAction, inquiry: data, diff });
 	});
 
 	watch<IPermission>(Permissions, async ({ clientAction, id, data, diff }) => {

@@ -89,6 +89,7 @@ const map = {
 	[Settings.col.collectionName]: SettingsModel,
 	[Roles.col.collectionName]: RolesModel,
 	[Permissions.col.collectionName]: PermissionsModel,
+	[LivechatInquiry.col.collectionName]: LivechatInquiryModel,
 };
 
 initWatchers({
@@ -96,6 +97,7 @@ initWatchers({
 	Users,
 	Subscriptions,
 	Settings,
+	LivechatInquiry,
 	Permissions,
 	Roles,
 }, (model, fn) => {

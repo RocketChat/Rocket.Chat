@@ -1,6 +1,7 @@
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../../modules/notifications/notifications.module';
-import { EnterpriseSettings } from '../../sdk/index';
+import { EnterpriseSettings, MeteorService } from '../../sdk/index';
+import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
 const STATUS_MAP: {[k: string]: number} = {
 	offline: 0,
@@ -136,7 +137,51 @@ export class NotificationService extends ServiceClass {
 			notifications.streamRoles.emit('roles', payload);
 		});
 
+		let autoAssignAgent: IRoutingManagerConfig | undefined;
+		async function getRoutingManagerConfig(): Promise<IRoutingManagerConfig> {
+			if (!autoAssignAgent) {
+				autoAssignAgent = await MeteorService.getRoutingManagerConfig();
+			}
+
+			return autoAssignAgent;
+		}
+
+		const inquiryTypeMap: Record<string, string> = { inserted: 'added', updated: 'changed', removed: 'removed' };
+		this.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
+			const config = await getRoutingManagerConfig();
+			if (config.autoAssignAgent) {
+				return;
+			}
+
+			const type = inquiryTypeMap[clientAction];
+			if (clientAction === 'removed') {
+				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, { _id: inquiry._id, clientAction });
+
+				if (inquiry.department) {
+					return notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${ inquiry.department }`, { type, ...inquiry });
+				}
+
+				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });
+			}
+
+			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, { ...inquiry, clientAction });
+
+			if (!inquiry.department) {
+				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });
+			}
+
+			notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${ inquiry.department }`, { type, ...inquiry });
+
+			if (clientAction === 'updated' && !diff?.department) {
+				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });
+			}
+		});
+
 		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			if (setting._id === 'Livechat_Routing_Method') {
+				autoAssignAgent = undefined;
+			}
+
 			if (clientAction !== 'removed') {
 				const result = await EnterpriseSettings.changeSettingValue(setting);
 				if (!(result instanceof Error)) {
