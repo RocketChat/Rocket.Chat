@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Template } from 'meteor/templating';
-import { Blaze } from 'meteor/blaze';
-import { Sidebar, Box } from '@rocket.chat/fuselage';
+import React, { useState } from 'react';
+import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { css } from '@rocket.chat/css-in-js';
+// import { css } from '@rocket.chat/css-in-js';
 
 import '../../../../app/ui-sidenav/client/toolbar';
 import { useOutsideClick } from '../../../hooks/useOutsideClick';

@@ -65,6 +65,7 @@ const HeaderWithData = () => <>
 				--rcx-sidebar-item-background-color-selected: rgba(108, 114, 122, .3);
 
 				--rcx-tag-colors-ghost-background-color: var(--rcx-color-neutral-300);
+				--rcx-color-surface: var(--rcx-color-neutral-100);
 			}`}
 	</style>
 
