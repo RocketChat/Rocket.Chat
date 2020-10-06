@@ -22,7 +22,6 @@
    * [DigitalOcean](#digitalocean-droplet)
    * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
-   * [Yunohost.org](#yunohostorg)
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio)
@@ -35,7 +34,6 @@
   * [Raspberry Pi 4](#raspberry-pi-4)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
-  * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
   * [Syncloud.org](#syncloudorg)
 * [About Rocket.Chat](#about-rocketchat)
@@ -73,9 +71,9 @@ Get to know more about us and explore current openings at https://jobs.rocket.ch
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
 
-[![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=support)](https://open.rocket.chat/channel/support) for help from our community with general Rocket.Chat questions.
+<a href="https://open.rocket.chat/channel/support"><img alt="Rocket.Chat" src="https://i.imgur.com/uBYxOJg.png" width="150"/></a> for help from our community with general Rocket.Chat questions.
 
-[![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
+<a href="https://open.rocket.chat/channel/dev"><img alt="Rocket.Chat" src="https://i.imgur.com/S6jICIf.png" width="150" /></a> for developers needing help from the community to developing new features.
 
 You can also join the conversation on [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
 
@@ -126,15 +124,10 @@ Instantly deploy your Rocket.Chat server for free on next generation auto-scalin
 
 Painless SSL. Automatically scale your server cluster based on usage demand.
 
-## Yunohost.org
-Host your own Rocket.Chat server in a few seconds.
-
-[![Install RocketChat with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=rocketchat)
-
 ## IndieHosters
 Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
 
-[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
+<a href="https://indiehosters.net/shop/product/rocket-chat-21"><img alt="Rocket.Chat on IndieHosters" src="https://i.imgur.com/REFFKGq.png" width="250"/></a>
 
 ## Cloudron.io
 
@@ -200,11 +193,6 @@ Add Rocket.Chat to this world famous time tested small enterprise server today.
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/).
-
-## WeDeploy
-Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
-
-[![Deploy](https://cdn.wedeploy.com/images/deploy.svg)](https://console.wedeploy.com/deploy?repo=https://github.com/wedeploy-examples/rocketchat-example)
 
 ## D2C.io
 Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
