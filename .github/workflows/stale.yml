@@ -5,11 +5,10 @@ on:
   - cron: "0 */6 * * *"
 
 jobs:
-  stale:
+  no-response:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/stale@v3
+    - uses: actions/stale@v3.0.8
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-stale: 10
@@ -24,7 +23,10 @@ jobs:
         stale-issue-label: 'stat: no response'
         operations-per-run: 40
 
-    - uses: actions/stale@v3
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v3.0.8
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-stale: 60
