@@ -1,5 +1,4 @@
 import { watchUsers } from './watchUsers';
-import { watchSettings } from './watchSettings';
 import { watchRooms } from './watchRooms';
 import { watchInquiries } from './watchInquiries';
 import { getConnection } from '../mongo';
@@ -111,19 +110,19 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 
 		Rooms.watch([], { fullDocument: 'updateLookup' }).on('change', watchRooms);
 
-		SettingsCol.watch([{
-			$addFields: {
-				tmpfields: {
-					$objectToArray: '$updateDescription.updatedFields',
-				},
-			},
-		}, {
-			$match: {
-				'tmpfields.k': {
-					$in: ['value'], // avoid flood the streamer with messages changes (by username change)
-				},
-			},
-		}], { fullDocument: 'updateLookup' }).on('change', watchSettings);
+		// SettingsCol.watch([{
+		// 	$addFields: {
+		// 		tmpfields: {
+		// 			$objectToArray: '$updateDescription.updatedFields',
+		// 		},
+		// 	},
+		// }, {
+		// 	$match: {
+		// 		'tmpfields.k': {
+		// 			$in: ['value'], // avoid flood the streamer with messages changes (by username change)
+		// 		},
+		// 	},
+		// }], { fullDocument: 'updateLookup' }).on('change', watchSettings);
 
 		loginServiceConfiguration.watch([{ $project: { 'fullDocument.secret': 0 } }], { fullDocument: 'updateLookup' }).on('change', watchLoginServiceConfiguration);
 	}

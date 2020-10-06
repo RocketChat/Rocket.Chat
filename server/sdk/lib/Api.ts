@@ -28,6 +28,11 @@ export class Api {
 		return this.broker.call(method, data);
 	}
 
+	async waitAndCall(method: string, data: any): Promise<any> {
+		// console.log('api call', method, this.broker.constructor.name);
+		return this.broker.waitAndCall(method, data);
+	}
+
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		return this.broker.broadcast(event, ...args);
 	}

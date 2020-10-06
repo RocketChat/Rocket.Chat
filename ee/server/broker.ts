@@ -51,6 +51,25 @@ class NetworkBroker implements IBroker {
 			return this.localBroker.call(method, data);
 		}
 
+		const context = asyncLocalStorage.getStore();
+		if (context?.ctx?.call) {
+			return context.ctx.call(method, data);
+		}
+
+		const services: {name: string}[] = await this.broker.call('$node.services', { onlyAvailable: true });
+		if (!services.find((service) => service.name === method.split('.')[0])) {
+			return new Error('method-not-available');
+		}
+		return this.broker.call(method, data);
+	}
+
+	async waitAndCall(method: string, data: any): Promise<any> {
+		await this.started;
+
+		if (!(this.whitelist.actions.includes(method) || await this.allowed)) {
+			return this.localBroker.call(method, data);
+		}
+
 		await this.broker.waitForServices(method.split('.')[0]);
 
 		const context = asyncLocalStorage.getStore();

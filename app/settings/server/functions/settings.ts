@@ -3,9 +3,10 @@ import { EventEmitter } from 'events';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { SettingsBase, SettingValue } from '../../lib/settings';
+import { SettingsBase } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
-import { setValue, updateValue } from '../raw';
+import { updateValue } from '../raw';
+import { ISetting, SettingValue } from '../../../../definition/ISetting';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
@@ -64,44 +65,8 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 	return value;
 };
 
-export interface ISettingAddOptions {
-	_id?: string;
-	type?: 'group' | 'boolean' | 'int' | 'string' | 'asset' | 'code' | 'select' | 'password' | 'action' | 'relativeUrl' | 'language' | 'date' | 'color' | 'font' | 'roomPick' | 'multiSelect';
-	editor?: string;
-	packageEditor?: string;
-	packageValue?: SettingValue;
-	valueSource?: string;
-	hidden?: boolean;
-	blocked?: boolean;
-	requiredOnWizard?: boolean;
-	secret?: boolean;
-	sorter?: number;
-	i18nLabel?: string;
-	i18nDescription?: string;
-	autocomplete?: boolean;
+export interface ISettingAddOptions extends Partial<ISetting> {
 	force?: boolean;
-	group?: string;
-	section?: string;
-	enableQuery?: any;
-	processEnvValue?: SettingValue;
-	meteorSettingsValue?: SettingValue;
-	value?: SettingValue;
-	ts?: Date;
-	multiline?: boolean;
-	values?: Array<ISettingSelectOption>;
-	public?: boolean;
-	enterprise?: boolean;
-	modules?: Array<string>;
-	invalidValue?: SettingValue;
-}
-export interface ISettingSelectOption {
-	key: string;
-	i18nLabel: string;
-}
-export interface ISettingRecord extends ISettingAddOptions {
-	_id: string;
-	env: boolean;
-	value: SettingValue;
 }
 
 export interface ISettingAddGroupOptions {
@@ -362,7 +327,7 @@ class Settings extends SettingsBase {
 	/*
 	* Change a setting value on the Meteor.settings object
 	*/
-	storeSettingValue(record: ISettingRecord, initialLoad: boolean): void {
+	storeSettingValue(record: ISetting, initialLoad: boolean): void {
 		const newData = {
 			value: record.value,
 		};
@@ -380,7 +345,7 @@ class Settings extends SettingsBase {
 	/*
 	* Remove a setting value on the Meteor.settings object
 	*/
-	removeSettingValue(record: ISettingRecord, initialLoad: boolean): void {
+	removeSettingValue(record: ISetting, initialLoad: boolean): void {
 		SettingsEvents.emit('remove-setting-value', record);
 
 		delete Meteor.settings[record._id];
@@ -396,28 +361,12 @@ class Settings extends SettingsBase {
 	*/
 	init(): void {
 		this.initialLoad = true;
-		SettingsModel.find().fetch().forEach((record: ISettingRecord) => {
+		SettingsModel.find().fetch().forEach((record: ISetting) => {
 			this.storeSettingValue(record, this.initialLoad);
 			updateValue(record._id, { value: record.value });
 		});
 		this.initialLoad = false;
 		this.afterInitialLoad.forEach((fn) => fn(Meteor.settings));
-
-		SettingsModel.on('change', ({ clientAction, id, data }) => {
-			switch (clientAction) {
-				case 'inserted':
-				case 'updated':
-					data = data ?? SettingsModel.findOneById(id);
-					this.storeSettingValue(data, this.initialLoad);
-					updateValue(id, { value: data.value });
-					break;
-				case 'removed':
-					data = SettingsModel.trashFindOneById(id);
-					this.removeSettingValue(data, this.initialLoad);
-					setValue(id, undefined);
-					break;
-			}
-		});
 	}
 
 	onAfterInitialLoad(fn: (settings: Meteor.Settings) => void): void {

@@ -26,7 +26,6 @@ export type EventSignatures = {
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Partial<IRoom>): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
-	'setting.privateChanged'(data: { clientAction: string; setting: ISetting }): void;
 	'stream'([streamer, eventName, payload]: [string, string, string]): void;
 	'stream.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
@@ -42,4 +41,5 @@ export type EventSignatures = {
 	'watch.messages'(data: { clientAction: string; message: Partial<IMessage> }): void;
 	'watch.roles'(data: { clientAction: string; role: Partial<IRole> }): void;
 	'watch.subscriptions'(data: { clientAction: string; subscription: Partial<ISubscription> }): void;
+	'watch.settings'(data: { clientAction: string; setting: ISetting }): void;
 }

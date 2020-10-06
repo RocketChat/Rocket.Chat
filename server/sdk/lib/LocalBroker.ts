@@ -19,6 +19,10 @@ export class LocalBroker implements IBroker {
 		return result;
 	}
 
+	async waitAndCall(method: string, data: any): Promise<any> {
+		return this.call(method, data);
+	}
+
 	createService(instance: ServiceClass): void {
 		const namespace = instance.getName();
 

@@ -13,6 +13,7 @@ import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { api } from '../../sdk/api';
 import { IBaseData } from '../../../definition/IBaseData';
 import { IPermission } from '../../../definition/IPermission';
+import { ISetting } from '../../../definition/ISetting';
 
 interface IModelsParam {
 	// Rooms: RoomsRaw;
@@ -180,7 +181,33 @@ export function initWatchers({
 			if (!setting) {
 				return;
 			}
-			api.broadcast('setting.privateChanged', { clientAction: 'updated', setting });
+			api.broadcast('watch.settings', { clientAction: 'updated', setting });
 		}
+	});
+
+	watch<ISetting>(Settings, async ({ clientAction, id, data, diff }) => {
+		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
+			return;
+		}
+
+		let setting;
+		switch (clientAction) {
+			case 'updated':
+			case 'inserted': {
+				setting = data ?? await Settings.findOneById(id);
+				break;
+			}
+
+			case 'removed': {
+				setting = data ?? await Settings.trashFindOneById(id);
+				break;
+			}
+		}
+
+		if (!setting) {
+			return;
+		}
+
+		api.broadcast('watch.settings', { clientAction, setting });
 	});
 }

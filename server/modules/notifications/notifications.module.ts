@@ -239,7 +239,7 @@ export class NotificationsModule {
 
 		this.streamCannedResponses.allowWrite('none');
 		this.streamCannedResponses.allowRead(async function() {
-			return this.userId && await Settings.getValueById('Canned_Responses_Enable') && Authorization.hasPermission(this.userId, 'view-canned-responses');
+			return !!this.userId && !!await Settings.getValueById('Canned_Responses_Enable') && Authorization.hasPermission(this.userId, 'view-canned-responses');
 		});
 
 		this.streamIntegrationHistory.allowWrite('none');

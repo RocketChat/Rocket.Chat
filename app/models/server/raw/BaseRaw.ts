@@ -74,7 +74,7 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 		}, options);
 	}
 
-	async trashFindOneById(_id: string, options: FindOneOptions<T>): Promise<T | undefined> {
+	async trashFindOneById(_id: string, options: FindOneOptions<T> = {}): Promise<T | undefined> {
 		const query: object = {
 			_id,
 			__collection__: this.col.collectionName,

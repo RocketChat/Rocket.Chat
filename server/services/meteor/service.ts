@@ -6,6 +6,8 @@ import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
 import { Users } from '../../../app/models/server/raw/index';
 import { Livechat } from '../../../app/livechat/server';
+import { settings } from '../../../app/settings/server/functions/settings';
+import { setValue, updateValue } from '../../../app/settings/server/raw';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -28,6 +30,21 @@ Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
 
 export class MeteorService extends ServiceClass implements IMeteor {
 	protected name = 'meteor';
+
+	constructor() {
+		super();
+
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			if (clientAction !== 'removed') {
+				settings.storeSettingValue(setting, false);
+				updateValue(setting._id, { value: setting.value });
+				return;
+			}
+
+			settings.removeSettingValue(setting, false);
+			setValue(setting._id, undefined);
+		});
+	}
 
 	async getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]> {
 		return [...autoUpdateRecords.values()];

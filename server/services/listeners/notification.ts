@@ -1,5 +1,6 @@
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../../modules/notifications/notifications.module';
+import { EnterpriseSettings } from '../../sdk/index';
 
 const STATUS_MAP: {[k: string]: number} = {
 	offline: 0,
@@ -48,10 +49,6 @@ export class NotificationService extends ServiceClass {
 				rid,
 				etag,
 			});
-		});
-
-		this.onEvent('setting.privateChanged', ({ clientAction, setting }) => {
-			notifications.notifyLogged('private-settings-changed', clientAction, setting);
 		});
 
 		this.onEvent('user.avatarUpdate', ({ username, avatarETag: etag }) => {
@@ -137,6 +134,35 @@ export class NotificationService extends ServiceClass {
 				...role,
 			};
 			notifications.streamRoles.emit('roles', payload);
+		});
+
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			if (clientAction !== 'removed') {
+				const result = await EnterpriseSettings.changeSettingValue(setting);
+				if (!(result instanceof Error)) {
+					setting.value = result?.value;
+				}
+			}
+
+			if (setting.hidden) {
+				return;
+			}
+
+
+			const value = {
+				_id: setting._id,
+				value: setting.value,
+				editor: setting.editor,
+				properties: setting.properties,
+				enterprise: setting.enterprise,
+				requiredOnWizard: setting.requiredOnWizard,
+			};
+
+			if (setting.public === true) {
+				notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
+			}
+
+			notifications.notifyLogged('private-settings-changed', clientAction, value);
 		});
 	}
 }

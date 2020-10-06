@@ -8,12 +8,20 @@ type Prom<T> = {
 	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any> ? T[K] : (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]>>;
 }
 
-function handler<T extends object>(namespace: string): ProxyHandler<T> {
+type PromOrError<T> = {
+	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any> ? (...params: Parameters<T[K]>) => ReturnType<T[K]> | Promise<Error> : (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]> | Error>;
+}
+
+function handler<T extends object>(namespace: string, waitService: boolean): ProxyHandler<T> {
 	return {
-		get: (_target: T, prop: string): any => (...params: any): Promise<any> => api.call(`${ namespace }.${ prop }`, params),
+		get: (_target: T, prop: string): any => (...params: any): Promise<any> => api[waitService ? 'waitAndCall' : 'call'](`${ namespace }.${ prop }`, params),
 	};
 }
 
-export function proxify<T>(namespace: string): Prom<T> {
-	return new Proxy({}, handler(namespace)) as unknown as Prom<T>;
+export function proxifyWithWait<T>(namespace: string): Prom<T> {
+	return new Proxy({}, handler(namespace, true)) as unknown as Prom<T>;
+}
+
+export function proxify<T>(namespace: string): PromOrError<T> {
+	return new Proxy({}, handler(namespace, false)) as unknown as Prom<T>;
 }
