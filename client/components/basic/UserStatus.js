@@ -30,7 +30,7 @@ const getPresence = (() => {
 			});
 
 			uids.clear();
-		}, 100);
+		}, 50);
 	};
 
 	const get = async (uid) => {
@@ -67,6 +67,13 @@ Presence.reset = () => {
 
 const Base = (props) => <Box size='x12' borderRadius='full' flexShrink={0} {...props}/>;
 
+export const colors = {
+	busy: 'danger-500',
+	away: 'warning-600',
+	online: 'success-500',
+	offline: 'neutral-600',
+};
+
 export const Busy = (props) => <Base bg='danger-500' {...props}/>;
 export const Away = (props) => <Base bg='warning-600' {...props}/>;
 export const Online = (props) => <Base bg='success-500' {...props}/>;
@@ -82,7 +89,7 @@ export const UserStatus = React.memo(({ status, ...props }) => {
 		case 'busy':
 			return <Busy title={t('busy')} {...props}/>;
 		case 'away':
-			return <Away title={t('onlinawaye')} {...props}/>;
+			return <Away title={t('away')} {...props}/>;
 		default:
 			return <Offline title={t('offline')} {...props}/>;
 	}

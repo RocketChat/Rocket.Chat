@@ -1,5 +1,6 @@
-import React from 'react';
-import { Sidebar, Menu, Box, Option } from '@rocket.chat/fuselage';
+import React, { useState } from 'react';
+import { Sidebar } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 const Condensed = React.memo(({
 	icon,
@@ -11,29 +12,27 @@ const Condensed = React.memo(({
 	unread,
 	menu,
 	...props
-}) => <Sidebar.Item {...props} href={href} clickable={!!href}>
-	{avatar && <Box mie='x4'>
-		<Sidebar.Item.Avatar>
+}) => {
+	const [menuVisibility, setMenuVisibility] = useState(false);
+
+	const handleMenu = useMutableCallback((e) => {
+		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
+	});
+	return <Sidebar.Item {...props} href={href} clickable={!!href}>
+		{avatar && <Sidebar.Item.Avatar>
 			{ avatar }
-		</Sidebar.Item.Avatar>
-	</Box>}
-	<Sidebar.Item.Content>
-		{ icon }
-		<Sidebar.Item.Title>{title}</Sidebar.Item.Title>
-	</Sidebar.Item.Content>
-	<Sidebar.Item.Container>
-		{<Sidebar.Item.Actions>
-			{ actions }
-			{ menuOptions && <Menu
-				square
-				small
-				color='neutral-700'
-				options={menuOptions}
-				renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
-			/>}
-		</Sidebar.Item.Actions>}
-	</Sidebar.Item.Container>
-	{menu && <Sidebar.Item.Menu>{menu}</Sidebar.Item.Menu>}
-</Sidebar.Item>);
+		</Sidebar.Item.Avatar>}
+		<Sidebar.Item.Content>
+			{ icon }
+			<Sidebar.Item.Title>{title}</Sidebar.Item.Title>
+		</Sidebar.Item.Content>
+		<Sidebar.Item.Container>
+			{<Sidebar.Item.Actions>
+				{ actions }
+			</Sidebar.Item.Actions>}
+		</Sidebar.Item.Container>
+		<Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
+	</Sidebar.Item>;
+});
 
 export default Condensed;

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Sidebar, Menu, Box, Option } from '@rocket.chat/fuselage';
+import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useFormatTime } from '../../hooks/useFormatTime';
+
+import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
 const Extended = React.memo(({
 	icon,
@@ -18,7 +19,7 @@ const Extended = React.memo(({
 	unread,
 	...props
 }) => {
-	const formatDate = useFormatTime();
+	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(false);
 
 	const handleMenu = useMutableCallback((e) => {

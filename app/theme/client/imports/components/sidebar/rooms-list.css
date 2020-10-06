@@ -1,6 +1,7 @@
 .rooms-list {
-	display: flex;
 	position: relative;
+
+	display: flex;
 
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -45,17 +46,16 @@
 
 	&__toolbar-search {
 		position: absolute;
-
-		left: 0;
 		z-index: 10;
-
-		padding-block-start: 12px;
-
-		height: 100%;
+		left: 0;
 
 		overflow-y: scroll;
 
+		height: 100%;
+
 		background-color: var(--sidebar-background);
+
+		padding-block-start: 12px;
 	}
 }
 
