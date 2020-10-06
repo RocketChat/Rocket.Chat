@@ -1,5 +1,6 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Sidebar } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { popover, AccountBox, SideNav } from '../../../../app/ui-utils';
@@ -69,11 +70,11 @@ const Menu = (props) => {
 
 	const accountBoxItems = useReactiveValue(getItems);
 
-	const onClick = useCallback((e) => openPopover(e, accountBoxItems, t, adminOption(showAdmin, t)), [accountBoxItems, showAdmin, t]);
+	const onClick = useMutableCallback((e) => openPopover(e, accountBoxItems, t, adminOption(showAdmin, t)));
 
 	const showMenu = accountBoxItems.length > 0;
 
-	return showAdmin && showMenu ? <Sidebar.TopBar.Action {...props} icon='menu' onClick={onClick}/> : null;
+	return showAdmin || showMenu ? <Sidebar.TopBar.Action {...props} icon='menu' onClick={onClick}/> : null;
 };
 
 export default Menu;
