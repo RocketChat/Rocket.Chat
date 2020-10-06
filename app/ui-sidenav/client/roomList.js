@@ -146,6 +146,8 @@ const mergeSubRoom = (subscription) => {
 		fields: {
 			lm: 1,
 			lastMessage: 1,
+			uids: 1,
+			v: 1,
 			streamingOptions: 1,
 		},
 	};
@@ -153,6 +155,14 @@ const mergeSubRoom = (subscription) => {
 	const room = Rooms.findOne({ _id: subscription.rid }, options) || { };
 
 	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
+
+	if (room.uids) {
+		subscription.uids = room.uids?.filter((uid) => uid !== Meteor.userId());
+	}
+
+	if (room.v) {
+		subscription.v = room.v;
+	}
 
 	subscription.lastMessage = room.lastMessage;
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
@@ -171,6 +181,8 @@ const mergeRoomSub = (room) => {
 		rid: room._id,
 	}, {
 		$set: {
+			...room.uids && { uids: room.uids.filter((uid) => uid !== Meteor.userId()) },
+			...room.v && { v: room.v },
 			lastMessage: room.lastMessage,
 			streamingOptions: room.streamingOptions,
 			...getLowerCaseNames(room, sub.name, sub.fname),

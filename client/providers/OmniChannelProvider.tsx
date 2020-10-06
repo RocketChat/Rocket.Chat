@@ -109,7 +109,7 @@ const OmniChannelProvider: FC = React.memo(({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const hasAccess = usePermission('view-l-room') as boolean;
 
-	if (!omniChannelEnabled && !hasAccess) {
+	if (!omniChannelEnabled || !hasAccess) {
 		return <OmnichannelDisabledProvider children={children}/>;
 	}
 	return <OmnichannelEnabledProvider children={children}/>;

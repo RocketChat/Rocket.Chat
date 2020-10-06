@@ -25,8 +25,6 @@ type Inquiries = {
 	enabled: false;
 }
 
-
-
 export type OmnichannelContextValue = {
 	inquiries: Inquiries;
 	enabled: boolean;

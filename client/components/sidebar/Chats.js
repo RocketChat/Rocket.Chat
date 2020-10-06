@@ -1,10 +1,12 @@
-
+import s from 'underscore.string';
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import memoize from 'memoize-one';
 
+import { renderMessageBody } from '../../../app/ui-utils/client';
+import { ReactiveUserStatus, colors } from '../basic/UserStatus';
 import { ChatSubscription } from '../../../app/models';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -47,7 +49,7 @@ export const useAvatarTemplate = (sidebarHideAvatar, sidebarViewMode) => useMemo
 	const size = (() => {
 		switch (sidebarViewMode) {
 			case 'extended':
-				return 'x38';
+				return 'x36';
 			case 'medium':
 				return 'x28';
 			case 'condensed':
@@ -71,6 +73,20 @@ export const itemSizeMap = (sidebarViewMode) => {
 	}
 };
 
+const SidebarIcon = ({ room }) => {
+	switch (room.t) {
+		case 'p':
+		case 'c':
+			return <Sidebar.Item.Icon name={roomTypes.getIcon(room)} />;
+		case 'l':
+			return <Sidebar.Item.Icon name='headset' color={colors[room.v.status]}/>;
+		case 'd':
+			return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus uid={room.uids[0]} /></Sidebar.Item.Icon>;
+		default:
+			return null;
+	}
+};
+
 export const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom) => ({
 	items,
 	extended,
@@ -89,6 +105,25 @@ export const Row = React.memo(({ data, index, style }) => {
 	}
 	return <SideBarItemTemplateWithData style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
+
+export const normalizeThreadMessage = ({ ...message }) => {
+	if (message.msg) {
+		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
+	}
+
+	if (message.attachments) {
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
+
+		if (attachment && attachment.description) {
+			return s.escapeHTML(attachment.description);
+		}
+
+		if (attachment && attachment.title) {
+			return s.escapeHTML(attachment.title);
+		}
+	}
+};
+
 
 export default () => {
 	const t = useTranslation();
@@ -188,6 +223,9 @@ export default () => {
 
 	const itemData = createItemData(items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom);
 
+	useEffect(() => {
+		listRef.current?.resetAfterIndex(0);
+	}, [sidebarViewMode]);
 
 	// Flowrouter uses an addEventListener on the document to capture any clink link, since the react synthetic event use an addEventListener on the document too,
 	// it is impossible/hard to determine which one will happen before and prevent/stop propagation, so feel free to remove this effect after remove flow router :)
@@ -222,7 +260,7 @@ export default () => {
 
 export const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style }) => {
 	const title = roomTypes.getRoomName(room.t, room);
-	const icon = <Sidebar.Item.Icon name={roomTypes.getIcon(room)}/>;
+	const icon = <SidebarIcon room={room}/>;
 	const href = roomTypes.getRouteLink(room.t, room);
 
 	const {
@@ -238,7 +276,7 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 	} = room;
 
 	const threadUnread = tunread.length > 0;
-	const message = extended && lastMessage ? `${ lastMessage.u.name || lastMessage.u.username }: ${ lastMessage.msg }` : t('No_messages_yet');
+	const message = <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: extended && lastMessage ? `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeThreadMessage(lastMessage) }` : t('No_messages_yet') }}/>;
 	const variant = (userMentions && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const badges = unread > 0 ? <Badge variant={ variant } flexShrink={0}>{unread}</Badge> : null;
 
