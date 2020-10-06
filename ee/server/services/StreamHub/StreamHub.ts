@@ -10,6 +10,7 @@ import { SubscriptionsRaw } from '../../../../app/models/server/raw/Subscription
 import { SettingsRaw } from '../../../../app/models/server/raw/Settings';
 import { RolesRaw } from '../../../../app/models/server/raw/Roles';
 import { LivechatInquiryRaw } from '../../../../app/models/server/raw/LivechatInquiry';
+import { UsersSessionsRaw } from '../../../../app/models/server/raw/UsersSessions';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -26,6 +27,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 
 		const Settings = new SettingsRaw(SettingsCol, Trash);
 		const Users = new UsersRaw(UsersCol, Trash);
+		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash);
 		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), Trash);
 		const LivechatInquiry = new LivechatInquiryRaw(db.collection('rocketchat_livechat_inquiry'), Trash);
 		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
@@ -35,6 +37,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const models = {
 			Messages,
 			Users,
+			UsersSessions,
 			Subscriptions,
 			Permissions,
 			LivechatInquiry,

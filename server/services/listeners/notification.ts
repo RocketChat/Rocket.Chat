@@ -10,6 +10,8 @@ const STATUS_MAP: {[k: string]: number} = {
 	busy: 3,
 };
 
+export const minimongoChangeMap: Record<string, string> = { inserted: 'added', updated: 'changed', removed: 'removed' };
+
 // TODO: Convert to module and implement/import on monolith and on DDPStreamer
 export class NotificationService extends ServiceClass {
 	protected name = 'notification';
@@ -146,14 +148,13 @@ export class NotificationService extends ServiceClass {
 			return autoAssignAgent;
 		}
 
-		const inquiryTypeMap: Record<string, string> = { inserted: 'added', updated: 'changed', removed: 'removed' };
 		this.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
 			const config = await getRoutingManagerConfig();
 			if (config.autoAssignAgent) {
 				return;
 			}
 
-			const type = inquiryTypeMap[clientAction];
+			const type = minimongoChangeMap[clientAction];
 			if (clientAction === 'removed') {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, { _id: inquiry._id, clientAction });
 

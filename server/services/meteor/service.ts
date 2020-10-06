@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
@@ -10,6 +11,7 @@ import { settings } from '../../../app/settings/server/functions/settings';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
+import { minimongoChangeMap } from '../listeners/notification';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -45,6 +47,20 @@ export class MeteorService extends ServiceClass implements IMeteor {
 
 			settings.removeSettingValue(setting, false);
 			setValue(setting._id, undefined);
+		});
+
+		// TODO: May need to merge with https://github.com/RocketChat/Rocket.Chat/blob/0ddc2831baf8340cbbbc432f88fc2cb97be70e9b/ee/server/services/Presence/Presence.ts#L28
+		this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
+			if (clientAction === 'removed') {
+				UserPresenceMonitor.processUserSession({
+					_id: userSession._id,
+					connections: [{
+						fake: true,
+					}],
+				}, 'removed');
+			}
+
+			UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
 		});
 	}
 

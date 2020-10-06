@@ -10,6 +10,7 @@ import { IUser } from '../../../definition/IUser';
 import { AutoUpdateRecord } from '../types/IMeteor';
 import { IEmoji } from '../../../definition/IEmoji';
 import { IUserStatus } from '../../../definition/IUserStatus';
+import { IUserSession } from '../../../definition/IUserSession';
 
 export type BufferList = ReturnType<MessagePack['encode']>;
 
@@ -41,6 +42,7 @@ export type EventSignatures = {
 	'watch.messages'(data: { clientAction: string; message: Partial<IMessage> }): void;
 	'watch.roles'(data: { clientAction: string; role: Partial<IRole> }): void;
 	'watch.subscriptions'(data: { clientAction: string; subscription: Partial<ISubscription> }): void;
+	'watch.userSessions'(data: { clientAction: string; userSession: Partial<IUserSession> }): void;
 	'watch.inquiries'(data: { clientAction: string; inquiry: IInquiry; diff?: Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: string; setting: ISetting }): void;
 }

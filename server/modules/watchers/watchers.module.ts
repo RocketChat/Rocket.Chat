@@ -16,6 +16,8 @@ import { IBaseData } from '../../../definition/IBaseData';
 import { IPermission } from '../../../definition/IPermission';
 import { ISetting } from '../../../definition/ISetting';
 import { IInquiry } from '../../../definition/IInquiry';
+import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
+import { IUserSession } from '../../../definition/IUserSession';
 
 interface IModelsParam {
 	// Rooms: RoomsRaw;
@@ -25,6 +27,7 @@ interface IModelsParam {
 	Settings: SettingsRaw;
 	Messages: MessagesRaw;
 	LivechatInquiry: LivechatInquiryRaw;
+	UsersSessions: UsersSessionsRaw;
 	Roles: RolesRaw;
 }
 
@@ -84,6 +87,7 @@ export function initWatchers({
 	Users,
 	Settings,
 	Subscriptions,
+	UsersSessions,
 	Roles,
 	Permissions,
 	LivechatInquiry,
@@ -155,11 +159,24 @@ export function initWatchers({
 		});
 	});
 
-	watch<IInquiry>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
-		// if (RoutingManager.getConfig().autoAssignAgent) {
-		// 	return;
-		// }
+	watch<IUserSession>(UsersSessions, async ({ clientAction, id, data }) => {
+		switch (clientAction) {
+			case 'inserted':
+			case 'updated':
+				data = data ?? await UsersSessions.findOneById(id);
+				if (!data) {
+					return;
+				}
 
+				api.broadcast('watch.userSessions', { clientAction, userSession: data });
+				break;
+			case 'removed':
+				api.broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
+				break;
+		}
+	});
+
+	watch<IInquiry>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':

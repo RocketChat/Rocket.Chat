@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { UserPresence, UserPresenceMonitor } from 'meteor/konecty:user-presence';
+import { UserPresence } from 'meteor/konecty:user-presence';
 
 import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
 import UsersSessionsModel from '../../app/models/server/models/UsersSessions';
@@ -42,28 +42,6 @@ Meteor.startup(function() {
 			switch (clientAction) {
 				case 'removed':
 					UserPresence.removeConnectionsByInstanceId(id);
-					break;
-			}
-		});
-
-		UsersSessionsModel.on('change', ({ clientAction, id, data }) => {
-			switch (clientAction) {
-				case 'inserted':
-					UserPresenceMonitor.processUserSession(data, 'added');
-					break;
-				case 'updated':
-					data = data ?? UsersSessionsModel.findOneById(id);
-					if (data) {
-						UserPresenceMonitor.processUserSession(data, 'changed');
-					}
-					break;
-				case 'removed':
-					UserPresenceMonitor.processUserSession({
-						_id: id,
-						connections: [{
-							fake: true,
-						}],
-					}, 'removed');
 					break;
 			}
 		});

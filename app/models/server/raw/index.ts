@@ -49,6 +49,8 @@ import { NotificationQueueRaw } from './NotificationQueue';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
 import { LivechatBusinessHoursRaw } from './LivechatBusinessHours';
 import ServerEventModel from '../models/ServerEvents';
+import { UsersSessionsRaw } from './UsersSessions';
+import UsersSessionsModel from '../models/UsersSessions';
 import { ServerEventsRaw } from './ServerEvents';
 import { trash } from '../models/_BaseDb';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
@@ -81,6 +83,7 @@ export const NotificationQueue = new NotificationQueueRaw(NotificationQueueModel
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollection(), trashCollection);
 export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection, { Users, Subscriptions });
+export const UsersSessions = new UsersSessionsRaw(UsersSessionsModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
@@ -90,6 +93,7 @@ const map = {
 	[Roles.col.collectionName]: RolesModel,
 	[Permissions.col.collectionName]: PermissionsModel,
 	[LivechatInquiry.col.collectionName]: LivechatInquiryModel,
+	[UsersSessions.col.collectionName]: UsersSessionsModel,
 };
 
 initWatchers({
@@ -98,6 +102,7 @@ initWatchers({
 	Subscriptions,
 	Settings,
 	LivechatInquiry,
+	UsersSessions,
 	Permissions,
 	Roles,
 }, (model, fn) => {
