@@ -274,6 +274,7 @@ export class Users extends Base {
 		const options = {
 			fields: {
 				name: 1,
+				nickname: 1,
 				username: 1,
 				phone: 1,
 				customFields: 1,
