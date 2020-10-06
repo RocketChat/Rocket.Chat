@@ -96,6 +96,7 @@ const toolbarButtons = (/* user */) => [{
 				showConfirmButton: false,
 				showCancelButton: false,
 				confirmOnEnter: false,
+				allowOutsideClick: false,
 			});
 		};
 
