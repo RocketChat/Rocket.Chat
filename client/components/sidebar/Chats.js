@@ -85,7 +85,7 @@ const SidebarIcon = ({ room }) => {
 				return <Sidebar.Item.Icon name='team'/>;
 			}
 			if (room.uids && room.uids.length > 0) {
-				return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus uid={room.uids[0]} /></Sidebar.Item.Icon>;
+				return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus uid={room.uids.filter((uid) => uid !== room.u._id)[0]} /></Sidebar.Item.Icon>;
 			}
 			return <Sidebar.Item.Icon name={roomTypes.getIcon(room)}/>;
 		default:
