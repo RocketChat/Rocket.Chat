@@ -6,7 +6,7 @@ declare module '@rocket.chat/fuselage' {
 		ElementType,
 		ForwardRefExoticComponent,
 		PropsWithChildren,
-		RefAttributes,
+		RefAttributes,, Context
 	} from 'react';
 
 	type CssClassName = ReturnType<typeof css>;
@@ -152,6 +152,13 @@ declare module '@rocket.chat/fuselage' {
 	};
 	export const Accordion: ForwardRefExoticComponent<AccordionProps> & {
 		Item: ForwardRefExoticComponent<AccordionItemProps>;
+	};
+
+	type AvatarProps = BoxProps;
+	export const Avatar: ForwardRefExoticComponent<AvatarProps> & {
+		Context: Context<{
+			baseUrl: string;
+		}>;
 	};
 
 	type ButtonProps = BoxProps & {
