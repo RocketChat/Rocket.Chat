@@ -51,7 +51,7 @@ export const Livechat = {
 		},
 	}),
 
-	addTyingListener(rid, callback) {
+	addTypingListener(rid, callback) {
 		if (rooms[rid]) {
 			return;
 		}
@@ -59,7 +59,7 @@ export const Livechat = {
 		return LivechatNotifications.onRoom(rid, 'typing', rooms[rid]);
 	},
 
-	removeTyingListener(rid) {
+	removeTypingListener(rid) {
 		if (rooms[rid]) {
 			LivechatNotifications.unRoom(rid, 'typing', rooms[rid]);
 			delete rooms[rid];
@@ -397,7 +397,7 @@ export const Livechat = {
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
 			callbacks.runAsync('livechat.closeRoom', room);
-			Livechat.removeTyingListener(rid);
+			Livechat.removeTypingListener(rid);
 		});
 
 		return true;
@@ -413,7 +413,7 @@ export const Livechat = {
 		Messages.removeByRoomId(rid);
 		Subscriptions.removeByRoomId(rid);
 		LivechatInquiry.removeByRoomId(rid);
-		Livechat.removeTyingListener(rid);
+		Livechat.removeTypingListener(rid);
 		return LivechatRooms.removeById(rid);
 	},
 
