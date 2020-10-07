@@ -5,6 +5,7 @@ import _ from 'underscore';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
+
 import { normalizeAgent } from '../../lib/Helper';
 
 export function online(department) {
@@ -112,6 +113,7 @@ export function settings() {
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
 			limitTextLength: initSettings.Livechat_enable_message_character_limit
 			&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			nickNameField: initSettings.Livechat_nickname_field_registration_form,
 		},
 		theme: {
 			title: initSettings.Livechat_title,

@@ -42,6 +42,7 @@ import { businessHourManager } from '../business-hour';
 export const Livechat = {
 	Analytics,
 	historyMonitorType: 'url',
+	nickNameField: 'nickname',
 
 	logger: new Logger('Livechat', {
 		sections: {
@@ -456,11 +457,16 @@ export const Livechat = {
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
+			'Livechat_nickname_field_registration_form',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
 
 		settings.get('Livechat_history_monitor_type', (key, value) => {
+			rcSettings[key] = value;
+		});
+
+		settings.get('Livechat_nickname_field_registration_form', (key, value) => {
 			rcSettings[key] = value;
 		});
 
@@ -1174,4 +1180,8 @@ Livechat.stream.allowRead((roomId, extraData) => {
 
 settings.get('Livechat_history_monitor_type', (key, value) => {
 	Livechat.historyMonitorType = value;
+});
+
+settings.get('Livechat_nickname_field_registration_form', (key, value) => {
+	Livechat.nickNameField = value;
 });

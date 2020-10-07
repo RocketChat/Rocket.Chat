@@ -13,6 +13,7 @@ export async function findAppearance({ userId }) {
 				'Livechat_enable_message_character_limit',
 				'Livechat_message_character_limit',
 				'Livechat_show_agent_info',
+				'Livechat_nickname_field_registration_form',
 				'Livechat_show_agent_email',
 				'Livechat_display_offline_form',
 				'Livechat_offline_form_unavailable',

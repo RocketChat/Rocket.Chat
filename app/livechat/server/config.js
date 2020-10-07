@@ -119,6 +119,18 @@ Meteor.startup(function() {
 		i18nLabel: 'Show_agent_info',
 	});
 
+	settings.add('Livechat_nickname_field_registration_form', 'nickname', {
+		type: 'select',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		i18nLabel: 'Livechat_nickname_field_registration_form',
+		values: [
+			{ key: 'none', i18nLabel: 'None' },
+			{ key: 'name', i18nLabel: 'Name' },
+			{ key: 'nickname', i18nLabel: 'Nick_name' },
+		],
+	});
+
 	settings.add('Livechat_show_agent_email', true, {
 		type: 'boolean',
 		group: 'Omnichannel',

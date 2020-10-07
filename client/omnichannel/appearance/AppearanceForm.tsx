@@ -26,6 +26,7 @@ type AppearanceFormProps = {
 		Livechat_conversation_finished_text?: string;
 		Livechat_enable_message_character_limit?: boolean;
 		Livechat_message_character_limit?: number;
+
 	};
 	handlers: {
 		handleLivechat_title?: (event: FormEvent<HTMLInputElement>) => void;
@@ -106,8 +107,10 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 			<FieldGroup>
 				<Field>
 					<Field.Label>{t('Title')}</Field.Label>
+					<Field.Label>{t('Livechat_title')}</Field.Label>
 					<Field.Row>
 						<TextInput value={Livechat_title} onChange={handleLivechat_title} placeholder={t('Title')}/>
+						<InputBox type='text' value={Livechat_title} onChange={handleLivechat_title}/>
 					</Field.Row>
 				</Field>
 				<Field>
@@ -132,6 +135,22 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 						<Field.Label >{t('Show_agent_info')}</Field.Label>
 						<Field.Row>
 							<ToggleSwitch checked={Livechat_show_agent_info} onChange={handleLivechat_show_agent_info}/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row'>
+						<Field.Label >{t('Show_agent_info')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch checked={Livechat_show_agent_info} onChange={handleLivechat_show_agent_info}/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row'>
+						<Field.Label >{t('Show_name_field')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch checked={Livechat_name_field_registration_form} onChange={handleLivechat_name_field_registration_form}/>
 						</Field.Row>
 					</Box>
 				</Field>
