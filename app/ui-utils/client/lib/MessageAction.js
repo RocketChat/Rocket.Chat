@@ -363,14 +363,14 @@ Meteor.startup(async function() {
 		icon: 'emoji',
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
-		action() {
+		action(_, roomInstance) {
 			const { msg: { reactions } } = messageArgs(this);
 
 			modal.open({
 				template: createTemplateForComponent('reactionList', () => import('./ReactionListContent'), {
 					renderContainerView: () => HTML.DIV({ style: 'margin: -16px; height: 100%; display: flex; flex-direction: column; overflow: hidden;' }), // eslint-disable-line new-cap
 				}),
-				data: { reactions, onClose: () => modal.close() },
+				data: { reactions, roomInstance, onClose: () => modal.close() },
 			});
 		},
 		condition({ msg: { reactions } }) {

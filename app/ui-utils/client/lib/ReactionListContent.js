@@ -1,31 +1,54 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, Tag, Modal, ButtonGroup, Button, Scrollable } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useSetting } from '../../../../client/contexts/SettingsContext';
+import { useSession } from '../../../../client/contexts/SessionContext';
 import Emoji from '../../../../client/components/basic/Emoji';
+import { openUserCard } from '../../../ui/client/lib/UserCard';
+import { openProfileTabOrOpenDM } from '../../../ui/client/views/app/room';
 
-export function Reactions(props) {
-	const reactionKeys = useMemo(() => Object.keys(props.reactions), [props.reactions]);
+export function Reactions({ reactions, roomInstance, onClose }) {
+	const useRealName = useSetting('UI_Use_Real_Name');
 
 	return <Scrollable>
 		<Box>
-			{reactionKeys.map((reaction) => <Box key={reaction}>
+			{Object.entries(reactions).map(([reaction, { names, usernames }]) => <Box key={reaction}>
 				<Box display='flex' flexWrap='wrap' overflowX='hidden' mb='x8'>
-					<Emoji emojiHandle={reaction} title={reaction} />
-					<Usernames usernames={props.reactions[reaction].usernames} />
+					<Emoji emojiHandle={reaction} />
+					<Box paddingBlock='x4' mis='x4'>
+						{usernames.map((username, i) => <Username
+							key={username}
+							displayName={useRealName ? names[i] : username}
+							username={username}
+							roomInstance={roomInstance}
+							onClose={onClose}
+						/>)}
+					</Box>
 				</Box>
 			</Box>)}
 		</Box>
 	</Scrollable>;
 }
 
-export function Usernames(props) {
-	return <Box paddingBlock='x4'>
-		{ props.usernames.map((user) => <Tag marginInlineEnd='x4' key={user}>{user}</Tag>)}
-	</Box>;
+export function Username({ username, displayName, roomInstance, onClose }) {
+	const openedRoom = useSession('openedRoom');
+	const handleUserCard = useMutableCallback((e) => openUserCard({
+		username,
+		rid: openedRoom,
+		target: e.currentTarget,
+		open: (e) => {
+			e.preventDefault();
+			onClose();
+			openProfileTabOrOpenDM(e, roomInstance, username);
+		},
+	}));
+
+	return <Tag onClick={handleUserCard} marginInlineEnd='x4' key={displayName}>{displayName}</Tag>;
 }
 
-export default function ReactionListContent({ reactions, onClose }) {
+export default function ReactionListContent({ reactions, roomInstance, onClose }) {
 	const t = useTranslation();
 
 	return <>
@@ -34,7 +57,7 @@ export default function ReactionListContent({ reactions, onClose }) {
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			<Reactions reactions={reactions} />
+			<Reactions reactions={reactions} roomInstance={roomInstance} onClose={onClose}/>
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
