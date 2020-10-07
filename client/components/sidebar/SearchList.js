@@ -1,21 +1,21 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue, useSafely, useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useDebouncedValue, useStableArray, useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
 import { css } from '@rocket.chat/css-in-js';
 import { FixedSizeList as List } from 'react-window';
+// import { NamedChunksPlugin } from 'webpack';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useSession } from '../../contexts/SessionContext';
+// import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+// import { useSession } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useMethod, useMethodData, AsyncState } from '../../contexts/ServerContext';
+import { useMethodData } from '../../contexts/ServerContext';
 import { roomTypes } from '../../../app/utils';
 // import { usePermission } from '../../contexts/AuthorizationContext';
-import { useUser, useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { Rooms, Subscriptions } from '../../../app/models';
+import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
+// import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useChatRoomTemplate, useAvatarTemplate, itemSizeMap, SideBarItemTemplateWithData } from './Chats';
 
 export const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName) => ({
@@ -62,17 +62,9 @@ const shortcut = (() => {
 	return '(\u2303+K)';
 })();
 
-const useSearch = (filterText = '') => {
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const user = useUser();
-	const userId = user._id;
-
+const useSpotlight = (filterText = '', usernames) => {
 	const expression = /(@|#)?(.*)/i;
 	const [, mention, name] = filterText.match(expression);
-
-
-	// const collection = userId ? Subscriptions : Rooms;
 
 	const searchForChannels = mention === '#';
 	const searchForDMs = mention === '@';
@@ -86,17 +78,71 @@ const useSearch = (filterText = '') => {
 		}
 		return { users: true, rooms: true };
 	}, [searchForChannels, searchForDMs]);
-
-	const args = useMemo(() => [name, [], type], [type, name]);
+	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
 
 	const [data = { users: [], rooms: [] }] = useMethodData('spotlight', args);
 
 	return useMemo(() => {
 		if (!data) {
-			return [];
+			return { users: [], rooms: [] };
 		}
-		return [...data.users, ...data.rooms];
+		return data;
 	}, [data]);
+};
+
+const useSearchItems = (filterText) => {
+	const expression = /(@|#)?(.*)/i;
+	const teste = filterText.match(expression);
+
+	const [, type, name] = teste;
+	const query = useMemo(() => {
+		const filterRegex = new RegExp(RegExp.escape(name), 'i');
+
+		return {
+			$or: [
+				{ name: filterRegex },
+				{ fname: filterRegex },
+			],
+			...type && {
+				t: type === '@' ? 'd' : { $ne: 'd' },
+			},
+		};
+	}, [name, type]);
+
+	const localRooms = useUserSubscriptions(query);
+
+	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean));
+
+	const spotlight = useSpotlight(filterText, usernamesFromClient);
+
+	return useMemo(() => {
+		let exactUser = null;
+		let exactRoom = null;
+		if (spotlight.users[0] && spotlight.users[0].username === name) {
+			exactUser = spotlight.users.shift();
+		}
+		if (spotlight.rooms[0] && spotlight.rooms[0].username === name) {
+			exactRoom = spotlight.rooms.shift();
+		}
+
+		const resultsFromServer = [];
+
+		const roomFilter = (room) => !localRooms.find((item) => [item.rid, item._id].includes(room._id));
+		const userMap = (user) => ({
+			_id: user._id,
+			t: 'd',
+			name: user.username,
+			fname: user.name,
+			avatarETag: user.avatarETag,
+		});
+
+		resultsFromServer.push(...spotlight.users.map(userMap));
+		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
+
+		exactRoom = exactRoom ? [roomFilter(exactRoom)] : [];
+		exactUser = exactUser ? [userMap(exactUser)] : [];
+		return exactUser.concat(exactRoom, localRooms, resultsFromServer);
+	}, [localRooms, name, spotlight]);
 };
 
 const useInput = (initial) => {
@@ -120,34 +166,13 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 	const AvatarTemplate = useAvatarTemplate(sidebarHideAvatar, sidebarViewMode);
 	const itemSize = itemSizeMap(sidebarViewMode);
 
-
-	const query = useMemo(() => {
-		const expression = /(@|#)?(.*)/i;
-		const [, type, name] = filter.value.match(expression);
-		const filterRegex = new RegExp(RegExp.escape(name), 'i');
-
-		return {
-			$or: [
-				{ name: filterRegex },
-				{ fname: filterRegex },
-			],
-			...type && {
-				t: type === '@' ? 'd' : { $ne: 'd' },
-			},
-		};
-	}, [filter.value]);
-
-	const localRooms = useUserSubscriptions(query);
-
 	const filterText = useDebouncedValue(filter.value, 100);
 
 	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
 
-	const items = useSearch(filterText);
+	const items = useSearchItems(filterText);
 
-	console.log(items);
-
-	const itemData = createItemData(localRooms, t, SideBarItemTemplate, AvatarTemplate, showRealName);
+	const itemData = createItemData(items, t, SideBarItemTemplate, AvatarTemplate, showRealName);
 
 	const { boxRef, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
@@ -158,7 +183,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		<Box h='full' w='full' ref={boxRef}>
 			<List
 				height={blockSize}
-				itemCount={localRooms?.length}
+				itemCount={items?.length}
 				itemSize={itemSize}
 				itemData={itemData}
 				overscanCount={25}
