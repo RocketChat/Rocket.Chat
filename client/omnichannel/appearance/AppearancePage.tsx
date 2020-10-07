@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Callout, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
+import { Callout, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
