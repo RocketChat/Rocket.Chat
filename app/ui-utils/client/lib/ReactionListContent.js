@@ -14,13 +14,13 @@ export function Reactions({ reactions, roomInstance, onClose }) {
 
 	return <Scrollable>
 		<Box>
-			{Object.entries(reactions).map(([reaction, { names, usernames }]) => <Box key={reaction}>
+			{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => <Box key={reaction}>
 				<Box display='flex' flexWrap='wrap' overflowX='hidden' mb='x8'>
 					<Emoji emojiHandle={reaction} />
 					<Box paddingBlock='x4' mis='x4'>
 						{usernames.map((username, i) => <Username
 							key={username}
-							displayName={useRealName ? names[i] : username}
+							displayName={useRealName ? names[i] || username : username}
 							username={username}
 							roomInstance={roomInstance}
 							onClose={onClose}
