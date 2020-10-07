@@ -6,7 +6,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath } from '../../contexts/RouterContext';
 import { ActionButton } from './Buttons/ActionButton';
 
-const Sidebar = ({ children, ...props }) => <Box display='flex' flexDirection='column' h='100vh' {...props}>
+const Sidebar = ({ children, ...props }) => <Box display='flex' flexDirection='column' h='full' {...props}>
 	{children}
 </Box>;
 
