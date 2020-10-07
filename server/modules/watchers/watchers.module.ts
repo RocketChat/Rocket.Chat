@@ -108,7 +108,12 @@ export function initWatchers({
 		api.broadcast('watch.subscriptions', { clientAction, subscription: data });
 	});
 
-	watch<IRole>(Roles, async ({ clientAction, id, data }) => {
+	watch<IRole>(Roles, async ({ clientAction, id, data, diff }) => {
+		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
+			// avoid useless changes
+			return;
+		}
+
 		const role = clientAction === 'removed'
 			? { _id: id, name: id }
 			: data || await Roles.findOneById(id);

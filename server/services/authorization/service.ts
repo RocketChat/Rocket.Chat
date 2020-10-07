@@ -40,10 +40,13 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		Settings = new SettingsRaw(db.collection('rocketchat_settings'));
 		Rooms = new RoomsRaw(db.collection('rocketchat_room'));
 
-		this.onEvent('permission.changed', () => {
+		const clearCache = (): void => {
 			mem.clear(this.getRolesCached);
 			mem.clear(this.rolesHasPermissionCached);
-		});
+		};
+
+		this.onEvent('watch.roles', clearCache);
+		this.onEvent('permission.changed', clearCache);
 	}
 
 	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
@@ -80,22 +83,12 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		const result = await this.Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
 		return !!result;
 	}
-	// , {
-	// 	cacheKey: JSON.stringify,
-	// 	...process.env.TEST_MODE === 'true' && { maxAge: 1 },
-	// });
 
 	private async getRoles(uid: string, scope?: string): Promise<string[]> {
 		const { roles: userRoles = [] } = await this.Users.findOne<IUser>({ _id: uid }, { projection: { roles: 1 } }) || {};
 		const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
-	// , { maxAge: 1000, cacheKey: JSON.stringify });
-
-	// private clearCache = (): void => {
-	// 	mem.clear(getRoles);
-	// 	mem.clear(rolesHasPermission);
-	// }
 
 	private async atLeastOne(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.getRolesCached(uid, scope);
