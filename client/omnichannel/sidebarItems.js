@@ -44,7 +44,7 @@ export const {
 		permissionGranted: () => hasPermission('view-livechat-installation'),
 	}, {
 		href: 'omnichannel-appearance',
-		i18nLabel: 'Omnichannel_appearance',
+		i18nLabel: 'Livechat_Appearance',
 		permissionGranted: () => hasPermission('view-livechat-appearance'),
 	}, {
 		href: 'omnichannel-webhooks',

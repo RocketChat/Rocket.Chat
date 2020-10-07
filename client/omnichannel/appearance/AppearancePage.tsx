@@ -110,7 +110,7 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 		<Page.Header title={t('Appearance')}>
 			<ButtonGroup align='end'>
 				<Button onClick={handleResetButtonClick}>
-					<Icon size='x16' name='back'/>{t('Back')}
+					{t('Reset')}
 				</Button>
 				<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
 					{t('Save')}
