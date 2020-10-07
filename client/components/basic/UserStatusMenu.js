@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import UserStatus from './UserStatus';
+import { UserStatus } from './UserStatus';
 
 const UserStatusMenu = ({
 	onChange = () => {},

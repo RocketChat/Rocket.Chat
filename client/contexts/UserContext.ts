@@ -10,12 +10,17 @@ type Fields = {
 	[key: string]: boolean;
 }
 
+type Sort = {
+	[key: string]: boolean;
+}
+
 type UserContextValue = {
 	userId: string | null;
 	user: Meteor.User | null;
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
 	queryPreference: <T>(key: string | Mongo.ObjectID, defaultValue?: T) => Subscription<T | undefined>;
-	querySubscription: (query: SubscriptionQuery, fields: Fields) => Subscription <any | null>;
+	querySubscription: (query: SubscriptionQuery, fields: Fields, sort?: Sort) => Subscription <any | null>;
+	querySubscriptions: (query: SubscriptionQuery, fields: Fields, sort?: Sort) => Subscription <any | null>;
 };
 
 export const UserContext = createContext<UserContextValue>({
@@ -27,6 +32,10 @@ export const UserContext = createContext<UserContextValue>({
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
 	querySubscription: () => ({
+		getCurrentValue: (): undefined => undefined,
+		subscribe: (): Unsubscribe => (): void => undefined,
+	}),
+	querySubscriptions: () => ({
 		getCurrentValue: (): undefined => undefined,
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
@@ -53,8 +62,14 @@ export const useUserSubscription = <T>(rid: string | Mongo.ObjectID, fields: Fie
 	return useSubscription(subscription);
 };
 
-export const useUserSubscriptionByName = <T>(name: string, fields: Fields): T | undefined => {
+export const useUserSubscriptions = <T>(query: SubscriptionQuery, fields: Fields, sort? : Sort): T | undefined => {
+	const { querySubscriptions } = useContext(UserContext);
+	const subscription = useMemo(() => querySubscriptions(query, fields, sort), [querySubscriptions, query, fields, sort]);
+	return useSubscription(subscription);
+};
+
+export const useUserSubscriptionByName = <T>(name: string, fields: Fields, sort?: Sort): T | undefined => {
 	const { querySubscription } = useContext(UserContext);
-	const subscription = useMemo(() => querySubscription({ name }, fields), [querySubscription, name, fields]);
+	const subscription = useMemo(() => querySubscription({ name }, fields, sort), [querySubscription, name, fields, sort]);
 	return useSubscription(subscription);
 };

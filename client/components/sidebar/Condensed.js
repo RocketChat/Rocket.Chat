@@ -11,6 +11,7 @@ const Condensed = React.memo(({
 	menuOptions,
 	unread,
 	menu,
+	badges,
 	...props
 }) => {
 	const [menuVisibility, setMenuVisibility] = useState(false);
@@ -24,7 +25,7 @@ const Condensed = React.memo(({
 		</Sidebar.Item.Avatar>}
 		<Sidebar.Item.Content>
 			{ icon }
-			<Sidebar.Item.Title>{title}</Sidebar.Item.Title>
+			<Sidebar.Item.Title className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title> {badges}
 		</Sidebar.Item.Content>
 		<Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>

@@ -35,6 +35,7 @@ const UserProvider: FC = ({ children }) => {
 			(key, defaultValue) => getUserPreference(userId, key, defaultValue),
 		),
 		querySubscription: createReactiveSubscriptionFactory((query, fields) => Subscriptions.findOne(query, { fields })),
+		querySubscriptions: createReactiveSubscriptionFactory((query, fields, sort) => Subscriptions.find(query, { fields, sort }).fetch()),
 	}), [userId, user]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
