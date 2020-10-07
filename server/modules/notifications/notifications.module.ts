@@ -311,6 +311,7 @@ export class NotificationsModule {
 			if (/rooms-changed/.test(eventName)) {
 				// TODO: change this to serialize only once
 				const roomEvent = (...args: any[]): void => {
+					// TODO if receive a removed event could do => streamer.removeListener(rid, roomEvent);
 					const payload = streamer.changedPayload(streamer.subscriptionName, 'id', {
 						eventName: `${ userId }/rooms-changed`,
 						args,

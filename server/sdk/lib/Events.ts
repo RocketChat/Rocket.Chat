@@ -41,6 +41,7 @@ export type EventSignatures = {
 	'userpresence'(data: { action: string; user: Partial<IUser> }): void;
 	'watch.messages'(data: { clientAction: string; message: Partial<IMessage> }): void;
 	'watch.roles'(data: { clientAction: string; role: Partial<IRole> }): void;
+	'watch.rooms'(data: { clientAction: string; room: Pick<IRoom, '_id'> & Partial<IRoom> }): void;
 	'watch.subscriptions'(data: { clientAction: string; subscription: Partial<ISubscription> }): void;
 	'watch.userSessions'(data: { clientAction: string; userSession: Partial<IUserSession> }): void;
 	'watch.inquiries'(data: { clientAction: string; inquiry: IInquiry; diff?: Record<string, any> }): void;

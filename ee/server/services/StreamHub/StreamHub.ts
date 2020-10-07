@@ -1,5 +1,4 @@
 import { watchUsers } from './watchUsers';
-import { watchRooms } from './watchRooms';
 import { getConnection } from '../mongo';
 import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { watchLoginServiceConfiguration } from './watchLoginServiceConfiguration';
@@ -11,6 +10,7 @@ import { SettingsRaw } from '../../../../app/models/server/raw/Settings';
 import { RolesRaw } from '../../../../app/models/server/raw/Roles';
 import { LivechatInquiryRaw } from '../../../../app/models/server/raw/LivechatInquiry';
 import { UsersSessionsRaw } from '../../../../app/models/server/raw/UsersSessions';
+import { RoomsRaw } from '../../../../app/models/server/raw/Rooms';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -19,12 +19,12 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const db = await getConnection();
 
 		const Trash = db.collection('rocketchat_trash');
-		const Rooms = db.collection('rocketchat_room');
 		const loginServiceConfiguration = db.collection('meteor_accounts_loginServiceConfiguration');
 
 		const UsersCol = db.collection('users');
 		const SettingsCol = db.collection('rocketchat_settings');
 
+		const Rooms = new RoomsRaw(db.collection('rocketchat_room'), Trash);
 		const Settings = new SettingsRaw(SettingsCol, Trash);
 		const Users = new UsersRaw(UsersCol, Trash);
 		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash);
@@ -43,6 +43,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			LivechatInquiry,
 			Settings,
 			Roles,
+			Rooms,
 		};
 
 		initWatchers(models, (model, fn) => {
@@ -109,8 +110,6 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		// 			$nin: ['u.username'], // avoid flood the streamer with messages changes (by username change)
 		// 		},
 		// 	} }], { fullDocument: 'updateLookup' }).on('change', watchMessages);
-
-		Rooms.watch([], { fullDocument: 'updateLookup' }).on('change', watchRooms);
 
 		// SettingsCol.watch([{
 		// 	$addFields: {

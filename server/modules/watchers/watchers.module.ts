@@ -6,9 +6,11 @@ import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { PermissionsRaw } from '../../../app/models/server/raw/Permissions';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
+import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { IMessage } from '../../../definition/IMessage';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IRole } from '../../../definition/IRole';
+import { IRoom } from '../../../definition/IRoom';
 import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
 import { api } from '../../sdk/api';
@@ -18,6 +20,7 @@ import { ISetting } from '../../../definition/ISetting';
 import { IInquiry } from '../../../definition/IInquiry';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import { IUserSession } from '../../../definition/IUserSession';
+import { subscriptionFields, roomFields } from './publishFields';
 
 interface IModelsParam {
 	// Rooms: RoomsRaw;
@@ -29,6 +32,7 @@ interface IModelsParam {
 	LivechatInquiry: LivechatInquiryRaw;
 	UsersSessions: UsersSessionsRaw;
 	Roles: RolesRaw;
+	Rooms: RoomsRaw;
 }
 
 interface IChange<T> {
@@ -41,47 +45,6 @@ interface IChange<T> {
 
 type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>) => void) => void;
 
-// TODO: find a better place
-export const subscriptionFields = {
-	t: 1,
-	ts: 1,
-	ls: 1,
-	lr: 1,
-	name: 1,
-	fname: 1,
-	rid: 1,
-	code: 1,
-	f: 1,
-	u: 1,
-	open: 1,
-	alert: 1,
-	roles: 1,
-	unread: 1,
-	prid: 1,
-	userMentions: 1,
-	groupMentions: 1,
-	archived: 1,
-	audioNotifications: 1,
-	audioNotificationValue: 1,
-	desktopNotifications: 1,
-	mobilePushNotifications: 1,
-	emailNotifications: 1,
-	unreadAlert: 1,
-	_updatedAt: 1,
-	blocked: 1,
-	blocker: 1,
-	autoTranslate: 1,
-	autoTranslateLanguage: 1,
-	disableNotifications: 1,
-	hideUnreadStatus: 1,
-	muteGroupMentions: 1,
-	ignored: 1,
-	E2EKey: 1,
-	tunread: 1,
-	tunreadGroup: 1,
-	tunreadUser: 1,
-};
-
 export function initWatchers({
 	Messages,
 	Users,
@@ -91,6 +54,7 @@ export function initWatchers({
 	Roles,
 	Permissions,
 	LivechatInquiry,
+	Rooms,
 }: IModelsParam, watch: Watcher): void {
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
@@ -253,5 +217,19 @@ export function initWatchers({
 		}
 
 		api.broadcast('watch.settings', { clientAction, setting });
+	});
+
+	watch<IRoom>(Rooms, async ({ clientAction, id, data }) => {
+		if (clientAction === 'removed') {
+			api.broadcast('watch.rooms', { clientAction, room: { _id: id } });
+			return;
+		}
+
+		const room = data ?? await Rooms.findOneById(id, { projection: roomFields });
+		if (!room) {
+			return;
+		}
+
+		api.broadcast('watch.rooms', { clientAction, room });
 	});
 }

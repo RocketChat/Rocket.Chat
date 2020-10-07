@@ -94,6 +94,7 @@ const map = {
 	[Permissions.col.collectionName]: PermissionsModel,
 	[LivechatInquiry.col.collectionName]: LivechatInquiryModel,
 	[UsersSessions.col.collectionName]: UsersSessionsModel,
+	[Rooms.col.collectionName]: RoomsModel,
 };
 
 initWatchers({
@@ -105,6 +106,7 @@ initWatchers({
 	UsersSessions,
 	Permissions,
 	Roles,
+	Rooms,
 }, (model, fn) => {
 	const meteorModel = map[model.col.collectionName];
 

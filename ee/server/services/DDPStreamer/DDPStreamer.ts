@@ -181,15 +181,6 @@ export class DDPStreamer extends ServiceClass {
 			notifications.notifyLogged('Users:NameChanged', { _id, name, username });
 		});
 
-		// room({ room, action }) {
-		this.onEvent('room', ({ room, action }): void => {
-			// RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
-			if (!room._id) {
-				return;
-			}
-			notifications.streamUser.__emit(room._id, action, room);
-			notifications.streamRoomData.emit(room._id, action, room); // TODO REMOVE
-		});
 		// stream: {
 		// 	group: 'streamer',
 		// 	handler(payload) {

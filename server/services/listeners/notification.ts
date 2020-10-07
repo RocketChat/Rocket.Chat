@@ -210,5 +210,13 @@ export class NotificationService extends ServiceClass {
 
 			notifications.notifyLogged('private-settings-changed', clientAction, value);
 		});
+
+		this.onEvent('watch.rooms', ({ clientAction, room }): void => {
+			// this emit will cause the user to receive a 'rooms-changed' event
+			notifications.streamUser.__emit(room._id, clientAction, room);
+
+			// TODO validate emitWithoutBroadcast
+			notifications.streamRoomData.emitWithoutBroadcast(room._id, clientAction, room);
+		});
 	}
 }
