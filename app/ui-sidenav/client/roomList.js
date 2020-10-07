@@ -149,6 +149,7 @@ const mergeSubRoom = (subscription) => {
 			uids: 1,
 			v: 1,
 			streamingOptions: 1,
+			usernames: 1,
 		},
 	};
 
@@ -163,6 +164,8 @@ const mergeSubRoom = (subscription) => {
 	if (room.v) {
 		subscription.v = room.v;
 	}
+
+	subscription.usernames = room.usernames;
 
 	subscription.lastMessage = room.lastMessage;
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
