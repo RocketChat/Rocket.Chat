@@ -13,6 +13,8 @@
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
+## Table of contents
+
 * [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-a-single-codebase)
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
@@ -50,7 +52,7 @@
   * [Documentation](#documentation)
   * [License](#license)
 * [Development](#development)
- * [Quick Start](#quick-start-for-code-developers)
+  * [Quick Start](#quick-start-for-code-developers)
   * [Branching Model](#branching-model)
   * [Translations](#translations)
   * [How to Contribute](#how-to-contribute)
@@ -62,13 +64,8 @@
 
 Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/rocket-chat-is-moving-to-a-single-codebase-get-to-know-the-reasons-and-how-the-community-will-benefit-from-it/).
 
-# Help Wanted
+[back to top](#table-of-contents)
 
-At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
-
-If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
-
-Get to know more about us and explore current openings at https://jobs.rocket.chat/"
 
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
@@ -85,13 +82,18 @@ We’d love to hear about [your experience](https://survey.zohopublic.com/zs/e4B
 ## Subscribe for Updates
 Once a month our marketing team releases an email update with news about product releases, company related topics, events and use cases. [Sign Up!](https://rocket.chat/newsletter/?utm_source=github&utm_medium=readme&utm_campaign=community)
 
+[back to top](#table-of-contents)
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
+
+[back to top](#table-of-contents)
 
 
 # Mobile Apps
 
 [![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)  [![](https://user-images.githubusercontent.com/551004/48210349-50649480-e35e-11e8-97d9-74a4331faf3a.png)](https://f-droid.org/en/packages/chat.rocket.android/)
+
+[back to top](#table-of-contents)
 
 # Deployment
 
@@ -215,6 +217,8 @@ Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with 
 Run Rocket.Chat on your easy to use personal device.
 
 [![Deploy](https://syncloud.org/images/logo_min.svg)](https://syncloud.org)
+
+[back to top](#table-of-contents)
 
 # About Rocket.Chat
 
@@ -356,6 +360,8 @@ Check out [Rocket.Chat documentation](https://rocket.chat/docs/).
 
 Note that Rocket.Chat is distributed under the [MIT License](http://opensource.org/licenses/MIT).
 
+[back to top](#table-of-contents)
+
 # Development
 
 ## Quick start for code developers
@@ -407,6 +413,8 @@ A lot of work has already gone into Rocket.Chat, but we have much bigger plans f
 
 Please review and sign our CLA at https://cla-assistant.io/RocketChat/Rocket.Chat
 
+[back to top](#table-of-contents)
+
 # Credits
 
 Thanks to our core team
@@ -431,6 +439,18 @@ Testing with [BrowserStack](https://www.browserstack.com)
 
 Translations done with [LingoHub](https://www.lingohub.com)
 
+[back to top](#table-of-contents)
+
+# Help Wanted
+
+At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
+
+If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
+
+Get to know more about us and explore current openings at https://jobs.rocket.chat/"
+
+[back to top](#table-of-contents)
+
 # Donate
 
 Rocket.Chat will be free forever, but you can help us speed up the development!
@@ -439,3 +459,5 @@ Rocket.Chat will be free forever, but you can help us speed up the development!
 
 
 [BountySource](https://www.bountysource.com/teams/rocketchat)
+
+[back to top](#table-of-contents)
