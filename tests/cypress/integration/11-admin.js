@@ -632,7 +632,7 @@ describe('[Administration]', () => {
 					admin.generalStreamCastAdress.scrollIntoView();
 				});
 
-				it('it should show the stream cast adress field', () => {
+				it('it should show the stream cast address field', () => {
 					admin.generalStreamCastAdress.should('be.visible');
 				});
 			});

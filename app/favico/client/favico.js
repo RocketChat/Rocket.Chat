@@ -134,7 +134,7 @@
 		 */
 		var icon = {};
 		/**
-		 * Icon is ready (reset icon) and start animation (if ther is any)
+		 * Icon is ready (reset icon) and start animation (if there is any)
 		 */
 		icon.ready = function() {
 			_ready = true;

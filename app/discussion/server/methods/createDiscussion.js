@@ -36,7 +36,7 @@ const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
 };
 
 const create = ({ prid, pmid, t_name, reply, users, user }) => {
-	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
+	// if you set both, prid and pmid, and the rooms does not match... should throw an error)
 	let message = false;
 	if (pmid) {
 		message = Messages.findOne({ _id: pmid });

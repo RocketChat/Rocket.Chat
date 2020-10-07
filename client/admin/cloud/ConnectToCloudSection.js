@@ -34,7 +34,7 @@ function ConnectToCloudSection({
 			const isSynced = await syncWorkspace();
 
 			if (!isSynced) {
-				throw Error(t('An error occured syncing'));
+				throw Error(t('An error occurred syncing'));
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Sync Complete') });

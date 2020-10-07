@@ -1,7 +1,7 @@
 import { Migrations } from '../../../app/migrations';
 import { Settings } from '../../../app/models';
 
-// Enable iframe usage for existant RC installations.
+// Enable iframe usage for existent RC installations.
 Migrations.add({
 	version: 164,
 	up() {

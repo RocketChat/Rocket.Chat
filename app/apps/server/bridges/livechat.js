@@ -122,7 +122,7 @@ export class AppLivechatBridge {
 	}
 
 	async transferVisitor(visitor, transferData, appId) {
-		this.orch.debugLog(`The App ${ appId } is transfering a livechat.`);
+		this.orch.debugLog(`The App ${ appId } is transferring a livechat.`);
 
 		if (!visitor) {
 			throw new Error('Invalid visitor, cannot transfer');

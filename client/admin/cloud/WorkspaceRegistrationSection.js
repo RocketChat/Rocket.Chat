@@ -33,7 +33,7 @@ function WorkspaceRegistrationSection({
 			const isConnected = await connectWorkspace(token);
 
 			if (!isConnected) {
-				throw Error(t('An error occured connecting'));
+				throw Error(t('An error occurred connecting'));
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Connected') });
@@ -41,7 +41,7 @@ function WorkspaceRegistrationSection({
 			const isSynced = await syncWorkspace();
 
 			if (!isSynced) {
-				throw Error(t('An error occured syncing'));
+				throw Error(t('An error occurred syncing'));
 			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

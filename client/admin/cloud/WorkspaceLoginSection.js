@@ -55,7 +55,7 @@ function WorkspaceLoginSection({
 			const success = await disconnectWorkspace();
 
 			if (!success) {
-				throw Error(t('An error occured disconnecting'));
+				throw Error(t('An error occurred disconnecting'));
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Disconnected') });

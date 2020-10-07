@@ -174,7 +174,7 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 	const convertShortName = mem(function(shortname) {
 		// the fix is basically adding this .replace(/[+]/g, '\\$&')
 		if ((typeof shortname === 'undefined') || (shortname === '') || (ns.shortnames.indexOf(shortname.replace(/[+]/g, '\\$&')) === -1)) {
-			// if the shortname doesnt exist just return the entire match
+			// if the shortname does not exist just return the entire match
 			return shortname;
 		}
 
@@ -209,7 +209,7 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 		const mappedUnicode = ns.mapUnicodeToShort();
 
 		if ((typeof m3 === 'undefined') || (m3 === '') || !(ns.unescapeHTML(m3) in ns.asciiList)) {
-			// if the ascii doesnt exist just return the entire match
+			// if the ascii does not exist just return the entire match
 			return entire;
 		}
 

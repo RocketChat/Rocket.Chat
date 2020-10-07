@@ -779,7 +779,7 @@
 		onOfflineFormSubmit: function(fn) { registerCallback('offline-form-submit', fn); }
 	};
 
-	// proccess queue
+	// process queue
 	queue.forEach(function(c) {
 		c.call(w.RocketChat.livechat);
 	});

@@ -10,7 +10,7 @@ API.helperMethods.set('getPaginationItems', function _getPaginationItems() {
 	const offset = this.queryParams.offset ? parseInt(this.queryParams.offset) : 0;
 	let count = defaultCount;
 
-	// Ensure count is an appropiate amount
+	// Ensure count is an appropriate amount
 	if (typeof this.queryParams.count !== 'undefined') {
 		count = parseInt(this.queryParams.count);
 	} else {

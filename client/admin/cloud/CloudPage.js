@@ -80,7 +80,7 @@ function CloudPage() {
 					const isConnected = await connectWorkspace(token);
 
 					if (!isConnected) {
-						throw Error(t('An error occured connecting'));
+						throw Error(t('An error occurred connecting'));
 					}
 
 					dispatchToastMessage({ type: 'success', message: t('Connected') });

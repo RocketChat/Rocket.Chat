@@ -55,7 +55,7 @@ Meteor.methods({
 				updatedAt: new Date(),
 			};
 
-			// XXX: We might want to check the id - Why isnt there a match for id
+			// XXX: We might want to check the id - Why is not there a match for id
 			// in the Meteor check... Normal length 17 (could be larger), and
 			// numbers+letters are used in Random.id() with exception of 0 and 1
 			doc._id = options.id || Random.id();

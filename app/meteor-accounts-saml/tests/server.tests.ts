@@ -347,7 +347,7 @@ describe('SAML', () => {
 				});
 			});
 
-			it('should fail to parse a reponse with no Status tag', () => {
+			it('should fail to parse a response with no Status tag', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(samlResponseMissingStatus, (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Missing StatusCode');
@@ -356,7 +356,7 @@ describe('SAML', () => {
 				});
 			});
 
-			it('should fail to parse a reponse with a failed status', () => {
+			it('should fail to parse a response with a failed status', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(samlResponseFailedStatus, (err, data, loggedOut) => {
 					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Status is: Failed');

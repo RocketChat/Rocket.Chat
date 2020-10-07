@@ -26,7 +26,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 				// If the tests run as a suite,a user may already be logged-in
 				logoutRocketchat();
 			} catch (e) {
-				// most possibly already logged off since started seperately => try to continue
+				// most possibly already logged off since started separately => try to continue
 			}
 			checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
 			openAdminView();

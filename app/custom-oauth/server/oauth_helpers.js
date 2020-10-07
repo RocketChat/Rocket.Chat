@@ -27,14 +27,14 @@ export function updateRolesFromSSO(user, identity, roleClaimName) {
 
 		const toRemove = user.roles.filter((val) => !rolesFromSSO.includes(val));
 
-		// loop through roles that user has that sso doesnt have and remove
+		// loop through roles that user has that sso does not have and remove
 		toRemove.forEach(function(role) {
 			removeUserFromRoles(user._id, role);
 		});
 
 		const toAdd = rolesFromSSO.filter((val) => !user.roles.includes(val));
 
-		// loop through roles sso has that user doesnt and add
+		// loop through roles sso has that user does not and add
 		toAdd.forEach(function(role) {
 			addUserRoles(user._id, role);
 		});

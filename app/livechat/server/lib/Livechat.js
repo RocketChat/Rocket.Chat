@@ -362,7 +362,7 @@ export const Livechat = {
 			transcriptRequested: !!transcriptRequest,
 		};
 
-		// Retreive the closed room
+		// Retrieve the closed room
 		room = LivechatRooms.findOneByIdOrName(rid);
 
 		sendMessage(user || visitor, message, room);
