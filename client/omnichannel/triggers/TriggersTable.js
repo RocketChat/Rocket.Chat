@@ -1,5 +1,5 @@
-import { Table, Callout, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback, Button } from '@rocket.chat/fuselage-hooks';
+import { Table, Callout, Icon, Button } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useMemo } from 'react';
 
 import GenericTable from '../../components/GenericTable';
