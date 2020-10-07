@@ -89,7 +89,6 @@ export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
 		ts: new Date(),
 	};
 
-	console.log('getRoom');
 	Livechat.addTypingListener(rid, (username, typing) => {
 		Apps.triggerEvent(AppEvents.IRoomUserTyping, { roomId: rid, username, typing });
 	});
