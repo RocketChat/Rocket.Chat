@@ -50,8 +50,8 @@ const toCssVars = (colors, selector = ':root') => `${ selector } { ${ Object.ent
 
 const HeaderWithData = () => <>
 	<style>
-		{useMemo(() => toCssVars(invert(groupByName(colors)), '.sidebar.sidebar--main'), [])}
-		{`.sidebar.sidebar--main {
+		{useMemo(() => toCssVars(invert(groupByName(colors)), '.sidebar .sidebar--custom-colors'), [])}
+		{`.sidebar .sidebar--custom-colors {
 				--rcx-button-colors-secondary-active-border-color: var(--rcx-color-neutral-100);
 				--rcx-button-colors-secondary-active-background-color: var(--rcx-color-neutral-200);
 				--rcx-button-colors-secondary-color: var(--rcx-color-neutral-400);
@@ -69,7 +69,7 @@ const HeaderWithData = () => <>
 			}`}
 	</style>
 
-	<Sidebar.TopBar.Section>
+	<Sidebar.TopBar.Section className='sidebar--custom-colors'>
 		<UserAvatarButton/>
 		<Sidebar.TopBar.Actions>
 			<Home />

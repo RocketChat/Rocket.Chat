@@ -26,7 +26,7 @@ const Medium = React.memo(({
 		</Sidebar.Item.Avatar>}
 		<Sidebar.Item.Content>
 			{ icon }
-			<Sidebar.Item.Title className={(unread || threadUnread) && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title>
+			<Sidebar.Item.Title className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title>
 			{badges}
 		</Sidebar.Item.Content>
 		<Sidebar.Item.Container>

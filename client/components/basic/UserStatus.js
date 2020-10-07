@@ -38,8 +38,15 @@ const getPresence = (() => {
 		fetch();
 	};
 
+	Presence.on('remove', (uid) => {
+		if (Presence._events[uid]) {
+			return;
+		}
+		Statuses.delete(uid);
+	});
+
 	Presence.on('reset', () => {
-		Presence.once('restart', () => Object.keys(Presence._events).filter((e) => Boolean(e) && !['reset', 'restart'].includes(e) && typeof e === 'string').forEach(get));
+		Presence.once('restart', () => Object.keys(Presence._events).filter((e) => Boolean(e) && !['reset', 'restart', 'remove'].includes(e) && typeof e === 'string').forEach(get));
 	});
 
 	return get;
@@ -58,7 +65,7 @@ Presence.listen = async (uid, handle) => {
 Presence.stop = (uid, handle) => {
 	Presence.off(uid, handle);
 	Presence.off('reset', handle);
-	Statuses.delete(uid);
+	Presence.emit('remove', uid);
 };
 
 Presence.reset = () => {
@@ -85,13 +92,13 @@ export const UserStatus = React.memo(({ status, ...props }) => {
 	const t = useTranslation();
 	switch (status) {
 		case 'online':
-			return <Online title={t('online')} {...props}/>;
+			return <Online title={t('Online')} {...props}/>;
 		case 'busy':
-			return <Busy title={t('busy')} {...props}/>;
+			return <Busy title={t('Busy')} {...props}/>;
 		case 'away':
-			return <Away title={t('away')} {...props}/>;
+			return <Away title={t('Away')} {...props}/>;
 		default:
-			return <Offline title={t('offline')} {...props}/>;
+			return <Offline title={t('Offline')} {...props}/>;
 	}
 });
 

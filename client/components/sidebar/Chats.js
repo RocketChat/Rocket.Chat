@@ -157,7 +157,7 @@ export default () => {
 		},
 	}), [sortBy, showRealName]);
 
-	const rooms = useReactiveValue(useCallback(() => ChatSubscription.find(query, { sort }).fetch(), [query, sort]));
+	const rooms = useReactiveValue(useCallback(() => ChatSubscription.find(query, { sort }).fetch(), [sort]));
 
 	const inquiries = useQueuedInquiries();
 
@@ -206,11 +206,11 @@ export default () => {
 		const groups = new Map();
 		showOmnichannel && inquiries.enabled && groups.set('Omnichannel', []);
 		showOmnichannel && !inquiries.enabled && groups.set('Omnichannel', omnichannel);
-		showOmnichannel && inquiries.enabled && groups.set('Incoming_Livechats', inquiries.queue);
-		showOmnichannel && inquiries.enabled && groups.set('Open_Livechats', omnichannel);
-		favoritesEnabled && groups.set('Favorites', favorite);
-		sidebarShowUnread && groups.set('Unread', unread);
-		showDiscussion && groups.set('Discussions', discussion);
+		showOmnichannel && inquiries.enabled && inquiries.queue.length && groups.set('Incoming_Livechats', inquiries.queue);
+		showOmnichannel && inquiries.enabled && omnichannel.size && groups.set('Open_Livechats', omnichannel);
+		sidebarShowUnread && unread.size && groups.set('Unread', unread);
+		favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
+		showDiscussion && discussion.size && groups.set('Discussions', discussion);
 		sidebarGroupByType && groups.set('Private', _private);
 		sidebarGroupByType && groups.set('Public', _public);
 		sidebarGroupByType && groups.set('Direct', direct);
@@ -255,7 +255,7 @@ export default () => {
 			itemCount={items.length}
 			itemSize={(index) => (typeof items[index] === 'string' ? (sections[items[index]] && sections[items[index]].size) || 40 : itemSize)}
 			itemData={itemData}
-			// overscanCount={150}
+			overscanCount={10}
 			width='100%'
 			ref={listRef}
 		>
@@ -271,11 +271,12 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 
 	const {
 		lastMessage,
-		unread = false,
-		alert,
+		unread = 0,
+		// alert,
 		userMentions,
 		groupMentions,
 		tunread = [],
+		tunreadUser = [],
 		rid,
 		t: type,
 		cl,
@@ -283,12 +284,12 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 
 	const threadUnread = tunread.length > 0;
 	const message = <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: extended && lastMessage ? `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeThreadMessage(lastMessage) }` : t('No_messages_yet') }}/>;
-	const variant = (userMentions && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
-	const badges = unread > 0 ? <Badge variant={ variant } flexShrink={0}>{unread}</Badge> : null;
+	const variant = ((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
+	const badges = unread > 0 || threadUnread ? <Badge variant={ variant } flexShrink={0}>{unread + tunread?.length}</Badge> : null;
 
 	return <SideBarItemTemplate
 		is='a'
-		unread={alert || unread}
+		unread={unread}
 		threadUnread={threadUnread}
 		selected={selected}
 		href={href}
@@ -315,35 +316,38 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 		return false;
 	}
 	if (prevProps.t !== nextProps.t) {
-		return;
+		return false;
 	}
 	if (prevProps.style.height !== nextProps.style.height) {
 		return false;
 	}
+	if (prevProps.room._updatedAt?.getTime() !== nextProps.room._updatedAt?.getTime()) {
+		return false;
+	}
 
-	// if (prevProps.room.unread !== nextProps.room.unread) {
-	// 	return false;
-	// }
+	if (prevProps.room.unread !== nextProps.room.unread) {
+		return false;
+	}
 
-	// if (prevProps.room.alert !== nextProps.room.alert) {
-	// 	return false;
-	// }
+	if (prevProps.room.alert !== nextProps.room.alert) {
+		return false;
+	}
 
-	// if (prevProps.room.open !== nextProps.room.open) {
-	// 	return false;
-	// }
+	if (prevProps.room.open !== nextProps.room.open) {
+		return false;
+	}
 
-	// if (prevProps.room.tunread !== nextProps.room.tunread) {
-	// 	return false;
-	// }
+	if (prevProps.room.tunread !== nextProps.room.tunread) {
+		return false;
+	}
 
-	// if (prevProps.room.groupMentions !== nextProps.room.groupMentions) {
-	// 	return false;
-	// }
+	if (prevProps.room.groupMentions !== nextProps.room.groupMentions) {
+		return false;
+	}
 
-	// if (prevProps.room.userMentions !== nextProps.room.userMentions) {
-	// 	return false;
-	// }
+	if (prevProps.room.userMentions !== nextProps.room.userMentions) {
+		return false;
+	}
 
-	return prevProps.room._updatedAt?.getTime() === nextProps.room._updatedAt?.getTime();
+	return true;
 });
