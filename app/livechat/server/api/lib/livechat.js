@@ -8,6 +8,7 @@ import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger, L
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
+import { Apps, AppEvents } from '../../../../apps/server';
 
 export function online(department) {
 	return Livechat.online(department);
@@ -69,6 +70,11 @@ export function findOpenRoom(token, departmentId) {
 		room = rooms[0];
 	}
 
+	if (room) {
+		Livechat.addTyingListener(room._id, (username, typing) => {
+			Apps.triggerEvent(AppEvents.IRoomUserTyping, { roomId: room._id, username, typing });
+		});
+	}
 	return room;
 }
 
@@ -82,6 +88,11 @@ export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
 		token,
 		ts: new Date(),
 	};
+
+	console.log('getRoom');
+	Livechat.addTyingListener(rid, (username, typing) => {
+		Apps.triggerEvent(AppEvents.IRoomUserTyping, { roomId: rid, username, typing });
+	});
 
 	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
 }
