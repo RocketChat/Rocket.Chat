@@ -116,18 +116,12 @@ const useSearchItems = (filterText) => {
 	const spotlight = useSpotlight(filterText, usernamesFromClient);
 
 	return useMemo(() => {
-		let exactUser = null;
-		let exactRoom = null;
-		if (spotlight.users[0] && spotlight.users[0].username === name) {
-			exactUser = spotlight.users.shift();
-		}
-		if (spotlight.rooms[0] && spotlight.rooms[0].username === name) {
-			exactRoom = spotlight.rooms.shift();
-		}
-
 		const resultsFromServer = [];
 
-		const roomFilter = (room) => !localRooms.find((item) => [item.rid, item._id].includes(room._id));
+		const filterUsersUnique = ({ _id }, index, arr) => index === arr.findIndex((user) => _id === user._id);
+		const roomFilter = (room) => !localRooms.find((item) => (room.t === 'd' && room.uids.length > 1 && room.uids.includes(item._id)) || [item.rid, item._id].includes(room._id));
+		const usersfilter = (user) => !localRooms.find((room) => room.t !== 'd' || (room.uids.length === 2 && room.uids.includes(user._id)));
+
 		const userMap = (user) => ({
 			_id: user._id,
 			t: 'd',
@@ -136,12 +130,12 @@ const useSearchItems = (filterText) => {
 			avatarETag: user.avatarETag,
 		});
 
-		resultsFromServer.push(...spotlight.users.map(userMap));
+		const exact = resultsFromServer.filter((item) => [item.usernamame, item.name, item.fname].includes(name));
+
+		resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap));
 		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
 
-		exactRoom = exactRoom ? [roomFilter(exactRoom)] : [];
-		exactUser = exactUser ? [userMap(exactUser)] : [];
-		return exactUser.concat(exactRoom, localRooms, resultsFromServer);
+		return Array.from(new Set([...exact, ...localRooms, ...resultsFromServer]));
 	}, [localRooms, name, spotlight]);
 };
 

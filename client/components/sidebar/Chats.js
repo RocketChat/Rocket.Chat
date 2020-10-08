@@ -1,7 +1,7 @@
 import s from 'underscore.string';
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import memoize from 'memoize-one';
 
@@ -130,6 +130,24 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
+const usePreventPropagation = (ref) => {
+	// Flowrouter uses an addEventListener on the document to capture any clink link, since the react synthetic event use an addEventListener on the document too,
+	// it is impossible/hard to determine which one will happen before and prevent/stop propagation, so feel free to remove this effect after remove flow router :)
+
+	useLayoutEffect(() => {
+		const { current } = ref;
+		const stopPropagation = (e) => {
+			if ([e.target.nodeName, e.target.parentElement.nodeName].includes('BUTTON')) {
+				e.preventDefault();
+			}
+		};
+		current?.addEventListener('click', stopPropagation);
+
+		return () => current?.addEventListener('click', stopPropagation);
+	}, [ref.current]);
+
+	return { ref };
+};
 
 export default () => {
 	const t = useTranslation();
@@ -223,31 +241,18 @@ export default () => {
 	const items = useMemo(() => [...groups.entries()].flatMap(([key, group]) => [key, ...group]), [groups]);
 	const { ref, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
-	const listRef = useRef();
 
 	const itemSize = itemSizeMap(sidebarViewMode);
 
 	const itemData = createItemData(items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom);
 
+	usePreventPropagation(ref);
+
+	const listRef = useRef();
+
 	useEffect(() => {
 		listRef.current?.resetAfterIndex(0);
 	}, [sidebarViewMode]);
-
-	// Flowrouter uses an addEventListener on the document to capture any clink link, since the react synthetic event use an addEventListener on the document too,
-	// it is impossible/hard to determine which one will happen before and prevent/stop propagation, so feel free to remove this effect after remove flow router :)
-
-
-	useEffect(() => {
-		const { current } = ref;
-		const stopPropagation = (e) => {
-			if ([e.target.nodeName, e.target.parentElement.nodeName].includes('BUTTON')) {
-				e.preventDefault();
-			}
-		};
-		current.addEventListener('click', stopPropagation);
-
-		return () => current.addEventListener('click', stopPropagation);
-	}, [ref]);
 
 	return <Box h='full' w='full' ref={ref}>
 		<List
@@ -302,52 +307,4 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 		avatar={AvatarTemplate && <AvatarTemplate {...room}/>}
 		menu={() => <RoomMenu rid={rid} unread={!!unread} roomOpen={false} type={type} cl={cl} name={title}/>}
 	/>;
-}, function areEqual(prevProps, nextProps) {
-	if (prevProps.extended !== nextProps.extended) {
-		return false;
-	}
-	if (prevProps.selected !== nextProps.selected) {
-		return false;
-	}
-	if (prevProps.SideBarItemTemplate !== nextProps.SideBarItemTemplate) {
-		return false;
-	}
-	if (prevProps.AvatarTemplate !== nextProps.AvatarTemplate) {
-		return false;
-	}
-	if (prevProps.t !== nextProps.t) {
-		return false;
-	}
-	if (prevProps.style.height !== nextProps.style.height) {
-		return false;
-	}
-	if (prevProps.room._updatedAt?.getTime() !== nextProps.room._updatedAt?.getTime()) {
-		return false;
-	}
-
-	if (prevProps.room.unread !== nextProps.room.unread) {
-		return false;
-	}
-
-	if (prevProps.room.alert !== nextProps.room.alert) {
-		return false;
-	}
-
-	if (prevProps.room.open !== nextProps.room.open) {
-		return false;
-	}
-
-	if (prevProps.room.tunread !== nextProps.room.tunread) {
-		return false;
-	}
-
-	if (prevProps.room.groupMentions !== nextProps.room.groupMentions) {
-		return false;
-	}
-
-	if (prevProps.room.userMentions !== nextProps.room.userMentions) {
-		return false;
-	}
-
-	return true;
 });
