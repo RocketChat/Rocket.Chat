@@ -1,7 +1,11 @@
+import { HTML } from 'meteor/htmljs';
+
 import { createTemplateForComponent } from '../reactAdapters';
 import { createRouteGroup } from '../helpers/createRouteGroup';
 
-createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'));
+createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'), {
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
+});
 
 export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
 
