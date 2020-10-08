@@ -9,6 +9,7 @@ import Sort from './headerActions/Sort';
 import CreateRoom from './headerActions/CreateRoom';
 import Menu from './headerActions/Menu';
 import UserAvatarButton from './UserAvatarButton';
+import { useUser } from '../../contexts/UserContext';
 
 const groupByName = (colors) => {
 	const map = {};
@@ -48,10 +49,13 @@ const invert = (colors) => Object.entries(colors).reduce((result, [key, colors])
 
 const toCssVars = (colors, selector = ':root') => `${ selector } { ${ Object.entries(colors).map(([group, colors]) => Object.entries(colors).map(([id, value]) => `--rcx-color-${ COLOR_MAP[group] }-${ id }: ${ value };`).join('\n')).join('\n') }}`;
 
-const HeaderWithData = () => <>
-	<style>
-		{useMemo(() => toCssVars(invert(groupByName(colors)), '.sidebar .sidebar--custom-colors'), [])}
-		{`.sidebar .sidebar--custom-colors {
+const HeaderWithData = () => {
+	const user = useUser();
+
+	return <>
+		<style>
+			{useMemo(() => toCssVars(invert(groupByName(colors)), '.sidebar .sidebar--custom-colors'), [])}
+			{`.sidebar .sidebar--custom-colors {
 				--rcx-button-colors-secondary-active-border-color: var(--rcx-color-neutral-100);
 				--rcx-button-colors-secondary-active-background-color: var(--rcx-color-neutral-200);
 				--rcx-button-colors-secondary-color: var(--rcx-color-neutral-400);
@@ -67,20 +71,24 @@ const HeaderWithData = () => <>
 				--rcx-tag-colors-ghost-background-color: var(--rcx-color-neutral-300);
 				--rcx-color-surface: var(--rcx-color-neutral-100);
 			}`}
-	</style>
+		</style>
 
-	<Sidebar.TopBar.Section className='sidebar--custom-colors'>
-		<UserAvatarButton/>
-		<Sidebar.TopBar.Actions>
-			<Home />
-			<Search />
-			<Directory />
-			<Sort />
-			<CreateRoom />
-			<Menu />
-		</Sidebar.TopBar.Actions>
-	</Sidebar.TopBar.Section>
-</>;
+
+		<Sidebar.TopBar.Section className='sidebar--custom-colors'>
+			<UserAvatarButton user={user}/>
+			<Sidebar.TopBar.Actions>
+				<Home />
+				<Search />
+				{user && <>
+					<Directory />
+					<Sort />
+					<CreateRoom />
+					<Menu />
+				</>}
+			</Sidebar.TopBar.Actions>
+		</Sidebar.TopBar.Section>
+	</>;
+};
 
 
 export default HeaderWithData;
