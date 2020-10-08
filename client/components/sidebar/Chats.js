@@ -58,7 +58,7 @@ export const useAvatarTemplate = (sidebarHideAvatar, sidebarViewMode) => useMemo
 		}
 	})();
 
-	return React.memo((room) => <RoomAvatar size={size} room={{ ...room, _id: room.rid, type: room.t }} />);
+	return React.memo((room) => <RoomAvatar size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />);
 }, [sidebarHideAvatar, sidebarViewMode]);
 
 export const itemSizeMap = (sidebarViewMode) => {
