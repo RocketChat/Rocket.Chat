@@ -20,7 +20,7 @@ const fields = {
 	name: 1,
 };
 
-const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => {
+const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '', status }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -41,6 +41,8 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
+
+	const isQueued = status === 'queued';
 
 	const canLeave = (() => {
 		if (type === 'c' && !canLeaveChannel) { return false; }
@@ -115,7 +117,6 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 
 	const handleToggleFavorite = useMutableCallback(async () => {
 		try {
-			// TODO warning modal
 			await toggleFavorite(rid, !isFavorite);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -142,13 +143,13 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 	}), [canFavorite, canLeave, handleHide, handleLeave, handleToggleFavorite, handleToggleRead, isFavorite, t, unread]);
 
 
-	return <Menu
+	return !isQueued ? <Menu
 		rcx-sidebar-item__menu
 		square
 		small
 		options={menuOptions}
 		renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
-	/>;
+	/> : null;
 });
 
 export default RoomMenu;
