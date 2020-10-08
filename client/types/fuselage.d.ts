@@ -1,12 +1,13 @@
 declare module '@rocket.chat/fuselage' {
 	import { css } from '@rocket.chat/css-in-js';
 	import {
-		CSSProperties,
 		AllHTMLAttributes,
+		Context,
+		CSSProperties,
 		ElementType,
 		ForwardRefExoticComponent,
 		PropsWithChildren,
-		RefAttributes,, Context
+		RefAttributes,
 	} from 'react';
 
 	type CssClassName = ReturnType<typeof css>;
@@ -165,6 +166,7 @@ declare module '@rocket.chat/fuselage' {
 		primary?: boolean;
 		ghost?: boolean;
 		danger?: boolean;
+		small?: boolean;
 	};
 	export const Button: ForwardRefExoticComponent<ButtonProps>;
 
@@ -207,8 +209,37 @@ declare module '@rocket.chat/fuselage' {
 	type InputBoxProps = BoxProps;
 	export const InputBox: ForwardRefExoticComponent<InputBoxProps>;
 
+	type ModalProps = BoxProps;
+	type ModalHeaderProps = BoxProps;
+	type ModalTitleProps = BoxProps;
+	type ModalCloseProps = BoxProps;
+	type ModalContentProps = BoxProps;
+	type ModalFooterProps = BoxProps;
+	export const Modal: ForwardRefExoticComponent<ModalProps> & {
+		Header: ForwardRefExoticComponent<ModalHeaderProps>;
+		Title: ForwardRefExoticComponent<ModalTitleProps>;
+		Close: ForwardRefExoticComponent<ModalCloseProps>;
+		Content: ForwardRefExoticComponent<ModalContentProps>;
+		Footer: ForwardRefExoticComponent<ModalFooterProps>;
+	};
+
 	type NumberInputProps = BoxProps;
 	export const NumberInput: ForwardRefExoticComponent<NumberInputProps>;
+
+	type PasswordInputProps = BoxProps & {
+		error?: string;
+	};
+	export const PasswordInput: ForwardRefExoticComponent<PasswordInputProps>;
+
+	type TableProps = BoxProps;
+	type TableRowProps = Omit<BoxProps, 'action'> & {
+		action?: boolean;
+	};
+	type TableCellProps = BoxProps;
+	export const Table: ForwardRefExoticComponent<TableProps> & {
+		Row: ForwardRefExoticComponent<TableRowProps>;
+		Cell: ForwardRefExoticComponent<TableCellProps>;
+	};
 
 	type TextAreaInputProps = BoxProps;
 	export const TextAreaInput: ForwardRefExoticComponent<TextAreaInputProps>;
