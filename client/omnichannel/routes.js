@@ -78,6 +78,11 @@ registerOmnichannelRoute('/current', {
 	lazyRouteComponent: () => import('./currentChats/CurrentChatsRoute'),
 });
 
+registerOmnichannelRoute('/departments/:context?/:id?', {
+	name: 'omnichannel-departments',
+	lazyRouteComponent: () => import('./departments/DepartmentsRoute'),
+});
+
 registerOmnichannelRoute('/realtime-monitoring', {
 	name: 'omnichannel-realTime',
 	lazyRouteComponent: () => import('./realTimeMonitoring/RealTimeMonitoringPage'),
