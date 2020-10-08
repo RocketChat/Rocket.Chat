@@ -158,7 +158,7 @@ const mergeSubRoom = (subscription) => {
 	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
 
 	if (room.uids) {
-		subscription.uids = room.uids?.filter((uid) => uid !== Meteor.userId());
+		subscription.uids = room.uids;
 	}
 
 	if (room.v) {
