@@ -105,7 +105,7 @@ class OplogHandle {
 
 		this.stream = oplogCollection.find(oplogSelector, {
 			tailable: true,
-			// awaitData: true,
+			awaitData: true,
 		}).stream();
 
 		// Prevent warning about many listeners, we add 11

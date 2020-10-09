@@ -16,7 +16,7 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 	}, [state, required, minLength, t]);
 
 	return useMemo(() => <Field className={className}>
-		<Field.Label>{name}</Field.Label>
+		<Field.Label>{t(name)}</Field.Label>
 		<Field.Row>
 			<TextInput name={name} error={verify} maxLength={maxLength} flexGrow={1} value={state} required={required} onChange={(e) => setState(e.currentTarget.value)}/>
 		</Field.Row>
@@ -30,7 +30,7 @@ const CustomSelect = ({ name, required, options, setState, state, className }) =
 	const verify = useMemo(() => (!state.length && required ? t('Field_required') : ''), [required, state.length, t]);
 
 	return useMemo(() => <Field className={className}>
-		<Field.Label>{name}</Field.Label>
+		<Field.Label>{t(name)}</Field.Label>
 		<Field.Row>
 			<Select name={name} error={verify} flexGrow={1} value={state} options={mappedOptions} required={required} onChange={(val) => setState(val)}/>
 		</Field.Row>
