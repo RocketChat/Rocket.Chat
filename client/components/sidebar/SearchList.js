@@ -87,6 +87,13 @@ const useSpotlight = (filterText = '', usernames) => {
 	}, [data]);
 };
 
+const options = {
+	sort: {
+		lm: -1,
+		name: 1,
+	},
+};
+
 const useSearchItems = (filterText) => {
 	const expression = /(@|#)?(.*)/i;
 	const teste = filterText.match(expression);
@@ -106,7 +113,7 @@ const useSearchItems = (filterText) => {
 		};
 	}, [name, type]);
 
-	const localRooms = useUserSubscriptions(query);
+	const localRooms = useUserSubscriptions(query, options);
 
 	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean));
 

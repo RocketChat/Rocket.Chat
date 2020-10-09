@@ -14,13 +14,18 @@ type Sort = {
 	[key: string]: boolean;
 }
 
+type FindOptions = {
+	fields?: Fields;
+	sort?: Sort;
+}
+
 type UserContextValue = {
 	userId: string | null;
 	user: Meteor.User | null;
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
 	queryPreference: <T>(key: string | Mongo.ObjectID, defaultValue?: T) => Subscription<T | undefined>;
 	querySubscription: (query: SubscriptionQuery, fields: Fields, sort?: Sort) => Subscription <any | null>;
-	querySubscriptions: (query: SubscriptionQuery, fields: Fields, sort?: Sort) => Subscription <any | null>;
+	querySubscriptions: (query: SubscriptionQuery, options?: FindOptions) => Subscription <any | null>;
 };
 
 export const UserContext = createContext<UserContextValue>({
@@ -62,9 +67,9 @@ export const useUserSubscription = <T>(rid: string | Mongo.ObjectID, fields: Fie
 	return useSubscription(subscription);
 };
 
-export const useUserSubscriptions = <T>(query: SubscriptionQuery, fields: Fields, sort? : Sort): T | undefined => {
+export const useUserSubscriptions = <T>(query: SubscriptionQuery, options?: FindOptions): T | undefined => {
 	const { querySubscriptions } = useContext(UserContext);
-	const subscription = useMemo(() => querySubscriptions(query, fields, sort), [querySubscriptions, query, fields, sort]);
+	const subscription = useMemo(() => querySubscriptions(query, options), [querySubscriptions, query, options]);
 	return useSubscription(subscription);
 };
 
