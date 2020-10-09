@@ -261,7 +261,7 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 	const {
 		lastMessage,
 		unread = 0,
-		// alert,
+		alert,
 		userMentions,
 		groupMentions,
 		tunread = [],
@@ -280,7 +280,7 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 		is='a'
 		data-qa='sidebar-item'
 		aria-level='2'
-		unread={unread}
+		unread={alert || unread}
 		threadUnread={threadUnread}
 		selected={selected}
 		href={href}
