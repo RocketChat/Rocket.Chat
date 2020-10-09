@@ -7,6 +7,7 @@ declare module '@rocket.chat/fuselage' {
 		ElementType,
 		ForwardRefExoticComponent,
 		PropsWithChildren,
+		ReactNode,
 		RefAttributes,
 	} from 'react';
 
@@ -190,6 +191,9 @@ declare module '@rocket.chat/fuselage' {
 	};
 	export const Chevron: ForwardRefExoticComponent<ChevronProps>;
 
+	type ChipProps = BoxProps;
+	export const Chip: ForwardRefExoticComponent<ChipProps>;
+
 	type FieldProps = BoxProps;
 	export const Field: ForwardRefExoticComponent<FieldProps> & {
 		Row: ForwardRefExoticComponent<BoxProps>;
@@ -231,6 +235,11 @@ declare module '@rocket.chat/fuselage' {
 	};
 	export const PasswordInput: ForwardRefExoticComponent<PasswordInputProps>;
 
+	type SkeletonProps = BoxProps & {
+		variant?: 'rect';
+	};
+	export const Skeleton: ForwardRefExoticComponent<SkeletonProps>;
+
 	type TableProps = BoxProps;
 	type TableRowProps = Omit<BoxProps, 'action'> & {
 		action?: boolean;
@@ -241,8 +250,17 @@ declare module '@rocket.chat/fuselage' {
 		Cell: ForwardRefExoticComponent<TableCellProps>;
 	};
 
+	type TagProps = BoxProps;
+	export const Tag: ForwardRefExoticComponent<TagProps>;
+
 	type TextAreaInputProps = BoxProps;
 	export const TextAreaInput: ForwardRefExoticComponent<TextAreaInputProps>;
+
+	type TextInputProps = BoxProps & {
+		addon?: ReactNode;
+		error?: string;
+	};
+	export const TextInput: ForwardRefExoticComponent<TextInputProps>;
 
 	type TileProps = BoxProps;
 	export const Tile: ForwardRefExoticComponent<TileProps>;
@@ -255,11 +273,6 @@ declare module '@rocket.chat/fuselage' {
 
 	type ToggleSwitchProps = BoxProps;
 	export const ToggleSwitch: ForwardRefExoticComponent<ToggleSwitchProps>;
-
-	type TextInputProps = BoxProps & {
-		error?: string;
-	};
-	export const TextInput: ForwardRefExoticComponent<TextInputProps>;
 
 	type MarginsProps = PropsWithChildren<{
 		all?: BoxProps['margin'];
