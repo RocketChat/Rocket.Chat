@@ -55,6 +55,10 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatusText === 'function' && this.roomTypes[roomType].getUserStatusText(rid);
 	}
 
+	getCustomBadges(roomType, room) {
+		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getCustomBadges === 'function' && this.roomTypes[roomType].getCustomBadges(room);
+	}
+
 	findRoom(roomType, identifier, user) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].findRoom(identifier, user);
 	}

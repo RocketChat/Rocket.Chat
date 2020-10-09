@@ -137,4 +137,16 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		instance.tabBar.open();
 		return true;
 	}
+
+	getCustomBadges(room) {
+		if (!room || !room.screenSharing || !room.screenSharing.status) {
+			return;
+		}
+		switch (room.screenSharing.status) {
+			case 'active':
+				return 'icon-videocam';
+			case 'requested':
+				return 'icon-alert';
+		}
+	}
 }

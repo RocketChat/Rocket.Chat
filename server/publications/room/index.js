@@ -56,6 +56,7 @@ export const fields = {
 	servedBy: 1,
 	priorityId: 1,
 	transcriptRequest: 1,
+	screenSharing: 1,
 
 	// fields used by DMs
 	usernames: 1,

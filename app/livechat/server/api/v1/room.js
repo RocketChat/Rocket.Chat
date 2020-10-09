@@ -10,6 +10,7 @@ import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } 
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
+import { ScreenSharingManager } from '../../lib/screenSharing/ScreenSharingManager';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -210,6 +211,47 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 			room = Livechat.changeRoomVisitor(this.userId, rid, visitor);
 
 			return API.v1.success({ room });
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+});
+
+API.v1.addRoute('livechat/room.shareScreen', {
+	post() {
+		try {
+			check(this.bodyParams, {
+				rid: String,
+				token: String,
+				messageType: String,
+			});
+
+			const { rid, token, messageType } = this.bodyParams;
+
+			const visitor = findGuest(token);
+			if (!visitor) {
+				throw new Meteor.Error('invalid-token');
+			}
+
+			const room = findRoom(token, rid);
+			if (!room) {
+				throw new Meteor.Error('invalid-room');
+			}
+
+			if (!room.open) {
+				throw new Meteor.Error('room-closed');
+			}
+			if (messageType === 'livechat_screen_sharing_request_rejected') {
+				ScreenSharingManager.rejectRequest(rid, visitor);
+			} else if (messageType === 'livechat_screen_sharing_request_accepted') {
+				ScreenSharingManager.acceptRequest(rid, visitor, room.servedBy);
+			} else if (messageType === 'guest_requesting_livechat_screen_sharing') {
+				ScreenSharingManager.requestSession(rid, visitor, 'visitor');
+			} else if (messageType === 'guest_ended_livechat_screen_sharing') {
+				ScreenSharingManager.endSession(rid, visitor);
+			}
+
+			return API.v1.success();
 		} catch (e) {
 			return API.v1.failure(e);
 		}

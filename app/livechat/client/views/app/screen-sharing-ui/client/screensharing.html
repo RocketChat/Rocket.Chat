@@ -1,0 +1,17 @@
+<template name="screenSharingDialog">
+	<div class="rc-old screensharing-dialog secondary-background-color">
+		<div class="video-container">
+			<iframe width="{{iframeWidth}}" height="{{iframeHeight}}" src="{{src}}"></iframe>
+		</div>
+		<div class="buttons">
+			<span class="buttons__wrapper">
+				<button class="rc-button rc-button--nude rc-button--small cancel">{{_ "End_Livechat_Screen_Sharing_Session"}}</button>
+				{{#if windowMaximized}}
+					<button class="rc-button rc-button--primary rc-button--small minimize">{{_ "Minimize"}}</button>
+				{{else}}
+					<button class="rc-button rc-button--primary rc-button--small maximize">{{_ "Maximize"}}</button>
+				{{/if}}
+			</span>
+		</div>
+	</div>
+</template>

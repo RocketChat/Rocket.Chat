@@ -20,6 +20,7 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ screenSharing: 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -588,6 +589,36 @@ export class LivechatRooms extends Base {
 		const update = {
 			$set: {
 				'v.status': status,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	resetScreenSharingStatus(roomId) {
+		const query = {
+			t: 'l',
+			screenSharing: { $exists: true },
+			...roomId && { _id: roomId },
+		};
+		const update = {
+			$unset: {
+				screenSharing: 1,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateScreenSharingStatus(roomId, { sessionUrl, status }) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				'screenSharing.status': status,
+				'screenSharing.sessionUrl': sessionUrl,
 			},
 		};
 

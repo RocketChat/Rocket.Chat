@@ -80,3 +80,33 @@ MessageTypes.registerType({
 	system: true,
 	message: 'New_videocall_request',
 });
+
+MessageTypes.registerType({
+	id: 'request_livechat_screen_sharing_access',
+	system: true,
+	message: 'request_livechat_screen_sharing_access',
+});
+
+MessageTypes.registerType({
+	id: 'end_livechat_screen_sharing_session',
+	system: true,
+	message: 'end_livechat_screen_sharing_session',
+});
+
+MessageTypes.registerType({
+	id: 'livechat_screen_sharing_request_accepted',
+	system: true,
+	message: 'livechat_screen_sharing_request_accepted',
+});
+
+MessageTypes.registerType({
+	id: 'livechat_screen_sharing_request_rejected',
+	system: true,
+	message: 'livechat_screen_sharing_request_rejected',
+});
+
+MessageTypes.registerType({
+	id: 'guest_requesting_livechat_screen_sharing',
+	system: true,
+	message: 'guest_requesting_livechat_screen_sharing',
+});

@@ -50,6 +50,9 @@ Template.sidebarItem.helpers({
 
 		return this.lastMessage.ts > this.ls;
 	},
+	isScreenSharingActive() {
+		return this.screenSharing && this.screenSharing.status === 'active';
+	},
 	badgeClass() {
 		const { unread, userMentions, groupMentions, tunread = [], tunreadGroup = [], tunreadUser = [] } = this;
 
@@ -68,6 +71,11 @@ Template.sidebarItem.helpers({
 		if (unread) {
 			return 'badge';
 		}
+
+		return roomTypes.getCustomBadges(this.t, this);
+	},
+	customBadgeClass() {
+		return roomTypes.getCustomBadges(this.t, this);
 	},
 });
 

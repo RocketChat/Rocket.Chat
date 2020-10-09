@@ -65,6 +65,7 @@
 		"@types/bcrypt": "^3.0.0",
 		"@types/chai": "^4.2.12",
 		"@types/chai-spies": "^1.0.1",
+		"@types/jsrsasign": "^8.0.5",
 		"@types/meteor": "^1.4.49",
 		"@types/mocha": "^8.0.3",
 		"@types/mock-require": "^2.0.0",

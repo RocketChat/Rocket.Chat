@@ -1,4 +1,5 @@
 import '../lib/messageTypes';
+import './messageBoxActions';
 import './roomType';
 import './route';
 import './ui';
